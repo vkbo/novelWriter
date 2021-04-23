@@ -11,7 +11,6 @@ SOURCES += \
     nw/dialogs/projload.py \
     nw/dialogs/projsettings.py \
     nw/dialogs/wordlist.py \
-    nw/gui/build.py \
     nw/gui/custom.py \
     nw/gui/doceditor.py \
     nw/gui/docviewer.py \
@@ -22,10 +21,11 @@ SOURCES += \
     nw/gui/outlinedetails.py \
     nw/gui/projdetails.py \
     nw/gui/projtree.py \
-    nw/gui/projwizard.py \
     nw/gui/statusbar.py \
     nw/gui/theme.py \
-    nw/gui/writingstats.py \
+    nw/tools/build.py \
+    nw/tools/projwizard.py \
+    nw/tools/writingstats.py \
     nw/common.py \
     nw/constants.py \
     nw/error.py \

@@ -29,14 +29,14 @@ from tools import cmpFiles, getGuiItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QMessageBox, QFileDialog
 
-from nw.gui import GuiBuildNovel
+from nw.tools import GuiBuildNovel
 
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
+def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     """Test the build tool.
     """
     # Block message box
@@ -251,4 +251,4 @@ def testGuiBuild_Tool(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
 
     # qtbot.stopForInteraction()
 
-# END Test testGuiBuild_Tool
+# END Test testToolBuild_Main

@@ -432,347 +432,347 @@
 <context>
     <name>GuiBuildNovel</name>
     <message>
-        <location filename="../nw/gui/build.py" line="578"/>
+        <location filename="../nw/tools/build.py" line="578"/>
         <source>Failed to generate preview. The result is too big.</source>
         <translation>A geração do rascunho falhou. O resultado é muito grande.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="442"/>
+        <location filename="../nw/tools/build.py" line="442"/>
         <source>Open Document (.odt)</source>
         <translation>Open Document (.odt)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="843"/>
+        <location filename="../nw/tools/build.py" line="843"/>
         <source>PDF</source>
         <translation>PDF</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="819"/>
+        <location filename="../nw/tools/build.py" line="819"/>
         <source>Plain HTML</source>
         <translation>HTML Simples</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="998"/>
+        <location filename="../nw/tools/build.py" line="998"/>
         <source>Unknown format</source>
         <translation>Formato desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="450"/>
+        <location filename="../nw/tools/build.py" line="450"/>
         <source>novelWriter HTML (.htm)</source>
         <translation>HTML do novelWriter (.htm)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="454"/>
+        <location filename="../nw/tools/build.py" line="454"/>
         <source>novelWriter Markdown (.nwd)</source>
         <translation>Markdown do novelWriter (.nwd)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="835"/>
+        <location filename="../nw/tools/build.py" line="835"/>
         <source>JSON + novelWriter HTML</source>
         <translation>JSON + HTML do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="470"/>
+        <location filename="../nw/tools/build.py" line="470"/>
         <source>JSON + novelWriter Markdown (.json)</source>
         <translation>JSON + Markdown do novelWriter (.json)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="86"/>
+        <location filename="../nw/tools/build.py" line="86"/>
         <source>Build Novel Project</source>
         <translation>Construção do Projeto do Livro</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="103"/>
+        <location filename="../nw/tools/build.py" line="103"/>
         <source>Title Formats for Novel Files</source>
         <translation>Formatos de Título para Arquivos do Livro</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="188"/>
+        <location filename="../nw/tools/build.py" line="188"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="189"/>
+        <location filename="../nw/tools/build.py" line="189"/>
         <source>Chapter</source>
         <translation>Capítulo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="190"/>
+        <location filename="../nw/tools/build.py" line="190"/>
         <source>Unnumbered</source>
         <translation>Sem Numeração</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="192"/>
+        <location filename="../nw/tools/build.py" line="192"/>
         <source>Section</source>
         <translation>Seção</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="252"/>
+        <location filename="../nw/tools/build.py" line="252"/>
         <source>Font family</source>
         <translation>Família da fonte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="253"/>
+        <location filename="../nw/tools/build.py" line="253"/>
         <source>Font size</source>
         <translation>Tamanho da fonte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="255"/>
+        <location filename="../nw/tools/build.py" line="255"/>
         <source>Justify text</source>
         <translation>Texto justificado</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="256"/>
+        <location filename="../nw/tools/build.py" line="256"/>
         <source>Disable styling</source>
         <translation>Desabilita a estilização</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="322"/>
+        <location filename="../nw/tools/build.py" line="322"/>
         <source>Include synopsis</source>
         <translation>Inclui a sinopse</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="323"/>
+        <location filename="../nw/tools/build.py" line="323"/>
         <source>Include comments</source>
         <translation>Inclui comentários</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="324"/>
+        <location filename="../nw/tools/build.py" line="324"/>
         <source>Include keywords</source>
         <translation>Inclui palavras-chave</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="325"/>
+        <location filename="../nw/tools/build.py" line="325"/>
         <source>Include body text</source>
         <translation>Inclui o corpo do texto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="342"/>
+        <location filename="../nw/tools/build.py" line="342"/>
         <source>File Filter Options</source>
         <translation>Opções de Filtro de Arquivos</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="359"/>
+        <location filename="../nw/tools/build.py" line="359"/>
         <source>Ignore the &apos;Include when building project&apos; setting and include all files in the output.</source>
         <translation>Ignora a configuração &apos;Inclui quando estiver construindo o projeto&apos; e inclui todos os arquivos no resultado.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="367"/>
+        <location filename="../nw/tools/build.py" line="367"/>
         <source>Include novel files</source>
         <translation>Inclui arquivos do livro</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="368"/>
+        <location filename="../nw/tools/build.py" line="368"/>
         <source>Include note files</source>
         <translation>Inclui arquivos de notas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="369"/>
+        <location filename="../nw/tools/build.py" line="369"/>
         <source>Ignore export flag</source>
         <translation>Ignora opção de exportação</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="384"/>
+        <location filename="../nw/tools/build.py" line="384"/>
         <source>Export Options</source>
         <translation>Opções de Exportação</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="398"/>
+        <location filename="../nw/tools/build.py" line="398"/>
         <source>Replace tabs with spaces</source>
         <translation>Substitui tabulações com espaços</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="425"/>
+        <location filename="../nw/tools/build.py" line="425"/>
         <source>Print</source>
         <translation>Imprimir</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="474"/>
+        <location filename="../nw/tools/build.py" line="474"/>
         <source>Close</source>
         <translation>Fechar</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="860"/>
+        <location filename="../nw/tools/build.py" line="860"/>
         <source>Save Document As</source>
         <translation>Salvar Documento Como</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1002"/>
+        <location filename="../nw/tools/build.py" line="1002"/>
         <source>{0} file successfully written to:</source>
         <translation>Arquivo {0} escrito com sucesso para:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1009"/>
+        <location filename="../nw/tools/build.py" line="1009"/>
         <source>Failed to write {0} file. {1}</source>
         <translation>Falhou para escrever o arquivo {0}. {1}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="414"/>
+        <location filename="../nw/tools/build.py" line="414"/>
         <source>Build Preview</source>
         <translation>Construir Prévia</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="428"/>
+        <location filename="../nw/tools/build.py" line="428"/>
         <source>Print Preview</source>
         <translation>Imprimir Prévia</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="432"/>
+        <location filename="../nw/tools/build.py" line="432"/>
         <source>Print to PDF</source>
         <translation>Imprimir para PDF</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="446"/>
+        <location filename="../nw/tools/build.py" line="446"/>
         <source>Flat Open Document (.fodt)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="458"/>
+        <location filename="../nw/tools/build.py" line="458"/>
         <source>Standard Markdown (.md)</source>
         <translation>Markdown Padrão (.md)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="462"/>
+        <location filename="../nw/tools/build.py" line="462"/>
         <source>GitHub Markdown (.md)</source>
         <translation>Markdown do GitHub (.md)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="751"/>
+        <location filename="../nw/tools/build.py" line="751"/>
         <source>There were problems when building the project</source>
         <translation>Houveram problemas ao construir o projeto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="191"/>
+        <location filename="../nw/tools/build.py" line="191"/>
         <source>Scene</source>
         <translation>Cena</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="214"/>
+        <location filename="../nw/tools/build.py" line="214"/>
         <source>Font Options</source>
         <translation>Opções de Fonte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="254"/>
+        <location filename="../nw/tools/build.py" line="254"/>
         <source>Line height</source>
         <translation>Altura da linha</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="298"/>
+        <location filename="../nw/tools/build.py" line="298"/>
         <source>Include Options</source>
         <translation>Opções de Inclusão</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="399"/>
+        <location filename="../nw/tools/build.py" line="399"/>
         <source>Replace Unicode in HTML</source>
         <translation>Substituir Unicode no HTML</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="107"/>
+        <location filename="../nw/tools/build.py" line="107"/>
         <source>{0} for the title as set in the document</source>
         <translation>{0} para o titulo como definido no documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="107"/>
+        <location filename="../nw/tools/build.py" line="107"/>
         <source>{0} for chapter number (1, 2, 3)</source>
         <translation>{0} para o numero do capítulo (1, 2, 3)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="107"/>
+        <location filename="../nw/tools/build.py" line="107"/>
         <source>{0} for chapter number as a word (one, two)</source>
         <translation>{0} para o numero do capítulo por extenso (um, dois)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="107"/>
+        <location filename="../nw/tools/build.py" line="107"/>
         <source>{0} for chapter number in upper case Roman</source>
         <translation>{0} para o número do capítulo em numerais romanos maiúsculos</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="107"/>
+        <location filename="../nw/tools/build.py" line="107"/>
         <source>{0} for chapter number in lower case Roman</source>
         <translation>{0} para o número do capítulo em numerais romanos minúsculos</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="107"/>
+        <location filename="../nw/tools/build.py" line="107"/>
         <source>{0} for scene number within chapter</source>
         <translation>{0} para o número da cena no capítulo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="107"/>
+        <location filename="../nw/tools/build.py" line="107"/>
         <source>{0} for scene number within novel</source>
         <translation>{0} para o número da cena no livro</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="117"/>
+        <location filename="../nw/tools/build.py" line="117"/>
         <source>Leave blank to skip this heading, or set to a static text, like for instance &apos;{0}&apos;, to make a separator. The separator will be centred automatically and only appear between sections of the same type.</source>
         <translation>Deixe em branco para ignorar este cabeçalho ou defina um texto estático como {0}, por exemplo, para fazer um separador. O separador será centralizado automaticamente a aparecerá apenas entre seções do mesmo tipo.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="347"/>
+        <location filename="../nw/tools/build.py" line="347"/>
         <source>Include files with layouts other than &apos;Note&apos;.</source>
         <translation>Inclui arquivos com leiautes diferentes de &apos;Nota&apos;.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="353"/>
+        <location filename="../nw/tools/build.py" line="353"/>
         <source>Include files with layout &apos;Note&apos;.</source>
         <translation>Inclui arquivos com leiaute &apos;Nota&apos;.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="107"/>
+        <location filename="../nw/tools/build.py" line="107"/>
         <source>Formatting Codes:</source>
         <translation>Códigos de Formatação:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="439"/>
+        <location filename="../nw/tools/build.py" line="439"/>
         <source>Save As</source>
         <translation>Salvar Como</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="811"/>
+        <location filename="../nw/tools/build.py" line="811"/>
         <source>Open Document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="815"/>
+        <location filename="../nw/tools/build.py" line="815"/>
         <source>Flat Open Document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="823"/>
+        <location filename="../nw/tools/build.py" line="823"/>
         <source>novelWriter Markdown</source>
         <translation>Markdown do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="827"/>
+        <location filename="../nw/tools/build.py" line="827"/>
         <source>Standard Markdown</source>
         <translation>Markdown Padrão</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="831"/>
+        <location filename="../nw/tools/build.py" line="831"/>
         <source>GitHub Markdown</source>
         <translation>Markdown do GitHub</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="466"/>
+        <location filename="../nw/tools/build.py" line="466"/>
         <source>JSON + novelWriter HTML (.json)</source>
         <translation>JSON + HTML do novelWriter (.json)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="839"/>
+        <location filename="../nw/tools/build.py" line="839"/>
         <source>JSON + novelWriter Markdown</source>
         <translation>JSON + Markdown do novelWriter</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="273"/>
+        <location filename="../nw/tools/build.py" line="273"/>
         <source>Styling Options</source>
         <translation>Opções de Estilo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="193"/>
+        <location filename="../nw/tools/build.py" line="193"/>
         <source>Language</source>
         <translation>Idioma</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="168"/>
+        <location filename="../nw/tools/build.py" line="168"/>
         <source>Not Set</source>
         <translation>Não definido</translation>
     </message>
@@ -780,17 +780,17 @@
 <context>
     <name>GuiBuildNovelDocView</name>
     <message>
-        <location filename="../nw/gui/build.py" line="1358"/>
+        <location filename="../nw/tools/build.py" line="1358"/>
         <source>Unknown</source>
         <translation>Desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1209"/>
+        <location filename="../nw/tools/build.py" line="1209"/>
         <source>This area will show the content of the document to be exported or printed. Press the &quot;Build Preview&quot; button to generate content.</source>
         <translation>Esta área vai mostrar o conteúdo do documento a ser exportado ou impresso. Clique no botão &quot;Construir Prévia&quot; para gerar o conteúdo.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/build.py" line="1360"/>
+        <location filename="../nw/tools/build.py" line="1360"/>
         <source>&lt;b&gt;Build Time:&lt;/b&gt; {0}</source>
         <translation>&lt;b&gt;Tempo de Construção:&lt;/b&gt; {0}</translation>
     </message>
@@ -4092,142 +4092,142 @@
 <context>
     <name>GuiWritingStats</name>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="271"/>
+        <location filename="../nw/tools/writingstats.py" line="271"/>
         <source>JSON Data File (.json)</source>
         <translation>Aruivo de Dados JSON (.json)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="275"/>
+        <location filename="../nw/tools/writingstats.py" line="275"/>
         <source>CSV Data File (.csv)</source>
         <translation>Arquivo de Dados CSV (.csv)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="76"/>
+        <location filename="../nw/tools/writingstats.py" line="76"/>
         <source>Writing Statistics</source>
         <translation>Estatísticas de Escrita</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="99"/>
+        <location filename="../nw/tools/writingstats.py" line="99"/>
         <source>Session Start</source>
         <translation>Início da Sessão</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="99"/>
+        <location filename="../nw/tools/writingstats.py" line="99"/>
         <source>Length</source>
         <translation>Tamanho</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="99"/>
+        <location filename="../nw/tools/writingstats.py" line="99"/>
         <source>Words</source>
         <translation>Palavras</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="99"/>
+        <location filename="../nw/tools/writingstats.py" line="99"/>
         <source>Histogram</source>
         <translation>Histograma</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="135"/>
+        <location filename="../nw/tools/writingstats.py" line="135"/>
         <source>Sum Totals</source>
         <translation>Soma dos Totais</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="163"/>
+        <location filename="../nw/tools/writingstats.py" line="163"/>
         <source>Total Time:</source>
         <translation>Tempo Total:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="165"/>
+        <location filename="../nw/tools/writingstats.py" line="165"/>
         <source>Filtered Time:</source>
         <translation>Tempo Filtrado:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="166"/>
+        <location filename="../nw/tools/writingstats.py" line="166"/>
         <source>Novel Word Count:</source>
         <translation>Contagem de Palavras do Livro:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="167"/>
+        <location filename="../nw/tools/writingstats.py" line="167"/>
         <source>Notes Word Count:</source>
         <translation>Contagem de Palavras das Notas:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="168"/>
+        <location filename="../nw/tools/writingstats.py" line="168"/>
         <source>Total Word Count:</source>
         <translation>Contagem Total de Palavras:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="189"/>
+        <location filename="../nw/tools/writingstats.py" line="189"/>
         <source>Filters</source>
         <translation>Filtros</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="229"/>
+        <location filename="../nw/tools/writingstats.py" line="229"/>
         <source>Count novel files</source>
         <translation>Contagem dos arquivos do livro</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="230"/>
+        <location filename="../nw/tools/writingstats.py" line="230"/>
         <source>Count note files</source>
         <translation>Contagem dos arquvos de notas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="231"/>
+        <location filename="../nw/tools/writingstats.py" line="231"/>
         <source>Hide zero word count</source>
         <translation>Ocultar contagem zerada de palavras</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="232"/>
+        <location filename="../nw/tools/writingstats.py" line="232"/>
         <source>Hide negative word count</source>
         <translation>Ocultar contagem negativa de palavras</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="233"/>
+        <location filename="../nw/tools/writingstats.py" line="233"/>
         <source>Group entries by day</source>
         <translation>Agrupar entradas por dia</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="255"/>
+        <location filename="../nw/tools/writingstats.py" line="255"/>
         <source>Word count cap for the histogram</source>
         <translation>Limite de quantidade de palavras no histograma</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="265"/>
+        <location filename="../nw/tools/writingstats.py" line="265"/>
         <source>Save As</source>
         <translation>Salvar Como</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="490"/>
+        <location filename="../nw/tools/writingstats.py" line="490"/>
         <source>Failed to read session log file.</source>
         <translation>Houve uma falha ao ler o arquivo de log da sessão.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="99"/>
+        <location filename="../nw/tools/writingstats.py" line="99"/>
         <source>Idle</source>
         <translation>Ocioso</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="164"/>
+        <location filename="../nw/tools/writingstats.py" line="164"/>
         <source>Idle Time:</source>
         <translation>Tempo Ocioso:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="234"/>
+        <location filename="../nw/tools/writingstats.py" line="234"/>
         <source>Show idle time</source>
         <translation>Mostrar tempo ocioso</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="357"/>
+        <location filename="../nw/tools/writingstats.py" line="357"/>
         <source>JSON Data File</source>
         <translation>Aruivo de Dados JSON</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="360"/>
+        <location filename="../nw/tools/writingstats.py" line="360"/>
         <source>CSV Data File</source>
         <translation>Arquivo de Dados CSV</translation>
     </message>
     <message>
-        <location filename="../nw/gui/writingstats.py" line="372"/>
+        <location filename="../nw/tools/writingstats.py" line="372"/>
         <source>Save Data As</source>
         <translation>Salvar Dados Como</translation>
     </message>
@@ -4561,42 +4561,42 @@
 <context>
     <name>ProjWizardCustomPage</name>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="293"/>
+        <location filename="../nw/tools/projwizard.py" line="293"/>
         <source>Custom Project Options</source>
         <translation>Opções Personalizadas do Projeto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="294"/>
+        <location filename="../nw/tools/projwizard.py" line="294"/>
         <source>Select which additional root folders to make, and how to populate the Novel folder. If you don&apos;t want to add chapters or scenes, set the values to 0. You can add scenes without chapters.</source>
         <translation>Selecione quais diretórios-raiz adicionais criar e como popular o diretório do livro. Se você não quiser adicionar capítulos ou cenas, deixe os valores em 0. Você pode adicionar cenas sem capítulos.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="304"/>
+        <location filename="../nw/tools/projwizard.py" line="304"/>
         <source>Additional Root Folders</source>
         <translation>Diretórios-raiz adicionais</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="353"/>
+        <location filename="../nw/tools/projwizard.py" line="353"/>
         <source>Populate Novel Folder</source>
         <translation>Popular Diretório do Livro</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="368"/>
+        <location filename="../nw/tools/projwizard.py" line="368"/>
         <source>Add chapters</source>
         <translation>Adicionar capítulos</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="369"/>
+        <location filename="../nw/tools/projwizard.py" line="369"/>
         <source>Scenes (per chapter)</source>
         <translation>Cenas (por capítulo)</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="370"/>
+        <location filename="../nw/tools/projwizard.py" line="370"/>
         <source>Add chapter folders</source>
         <translation>Adicionar diretórios de capítulo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="323"/>
+        <location filename="../nw/tools/projwizard.py" line="323"/>
         <source>{0} folder</source>
         <translation>Diretório {0}</translation>
     </message>
@@ -4604,27 +4604,27 @@
 <context>
     <name>ProjWizardFinalPage</name>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="411"/>
+        <location filename="../nw/tools/projwizard.py" line="411"/>
         <source>Finished</source>
         <translation>Finalizado</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="412"/>
+        <location filename="../nw/tools/projwizard.py" line="412"/>
         <source>All done.</source>
         <translation>Tudo pronto.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="412"/>
+        <location filename="../nw/tools/projwizard.py" line="412"/>
         <source>Done</source>
         <translation>Pronto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="412"/>
+        <location filename="../nw/tools/projwizard.py" line="412"/>
         <source>Finish</source>
         <translation>Terminar</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="412"/>
+        <location filename="../nw/tools/projwizard.py" line="412"/>
         <source>Press &apos;{0}&apos; to create the new project.</source>
         <translation>Pressione &apos;{0}&apos; para criar um novo projeto.</translation>
     </message>
@@ -4632,22 +4632,22 @@
 <context>
     <name>ProjWizardFolderPage</name>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="215"/>
+        <location filename="../nw/tools/projwizard.py" line="215"/>
         <source>Select Project Folder</source>
         <translation>Selecione o Diretório do Projeto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="168"/>
+        <location filename="../nw/tools/projwizard.py" line="168"/>
         <source>Select a location to store the project. A new project folder will be created in the selected location.</source>
         <translation>Selecione o local para armazenar o projeto. Um novo diretório será criado para o projeto no local selecionado.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="180"/>
+        <location filename="../nw/tools/projwizard.py" line="180"/>
         <source>Required</source>
         <translation>Obrigatório</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="187"/>
+        <location filename="../nw/tools/projwizard.py" line="187"/>
         <source>Project Path</source>
         <translation>Caminho do projeto</translation>
     </message>
@@ -4655,47 +4655,47 @@
 <context>
     <name>ProjWizardIntroPage</name>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="99"/>
+        <location filename="../nw/tools/projwizard.py" line="99"/>
         <source>Provide at least a working title. The working title should not be change beyond this point as it is used by the application for generating file names for for instance backups. The other fields are optional and can be changed at any time in Project Settings.</source>
         <translation>Forneça pelo menos um nome de projeto. O nome do projeto não poderá ser modificado após esse ponto pois é utilizado pela aplicação para a geração de nomes de arquivos e para cópias de segurança. Os outros campos são opcionais e podem ser modificados a qualquer momento nas Configurações do Projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="107"/>
+        <location filename="../nw/tools/projwizard.py" line="107"/>
         <source>Side image by {0}, {1}</source>
         <translation>Imagem ao lado por {0}, {1}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="98"/>
+        <location filename="../nw/tools/projwizard.py" line="98"/>
         <source>Create New Project</source>
         <translation>Criar um Projeto Novo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="123"/>
+        <location filename="../nw/tools/projwizard.py" line="123"/>
         <source>Required</source>
         <translation>Obrigatório</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="128"/>
+        <location filename="../nw/tools/projwizard.py" line="128"/>
         <source>Optional</source>
         <translation>Opcional</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="133"/>
+        <location filename="../nw/tools/projwizard.py" line="133"/>
         <source>Optional. One name per line.</source>
         <translation>Opcional. Um nome por linha.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="136"/>
+        <location filename="../nw/tools/projwizard.py" line="136"/>
         <source>Working Title</source>
         <translation>Nome do projeto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="137"/>
+        <location filename="../nw/tools/projwizard.py" line="137"/>
         <source>Novel Title</source>
         <translation>Nome do Livro</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="138"/>
+        <location filename="../nw/tools/projwizard.py" line="138"/>
         <source>Author(s)</source>
         <translation>Autor(es)</translation>
     </message>
@@ -4703,27 +4703,27 @@
 <context>
     <name>ProjWizardPopulatePage</name>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="238"/>
+        <location filename="../nw/tools/projwizard.py" line="238"/>
         <source>Populate Project</source>
         <translation>Popular o Projeto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="239"/>
+        <location filename="../nw/tools/projwizard.py" line="239"/>
         <source>Choose how to pre-fill the project. Either with a minimal set of starter items, an example project explaining and showing many of the features, or show further custom options on the next page.</source>
         <translation>Escolha como pré-popular o projeto. escolha entre um conjunto mínimo de items iniciais, um projeto de exemplo explicando e mostrando várias das funcionalidades ou escolha opções personalizadas na próxima página.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="249"/>
+        <location filename="../nw/tools/projwizard.py" line="249"/>
         <source>Fill the project with a minimal set of items</source>
         <translation>Popular o projeto com um conjunto mínimo de items</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="250"/>
+        <location filename="../nw/tools/projwizard.py" line="250"/>
         <source>Fill the project with example files</source>
         <translation>Popular o projeto com arquivos de exemplo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projwizard.py" line="251"/>
+        <location filename="../nw/tools/projwizard.py" line="251"/>
         <source>Show detailed options for filling the project</source>
         <translation>Mostrar opções detalhadas para popular o projeto</translation>
     </message>

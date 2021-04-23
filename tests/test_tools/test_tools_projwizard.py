@@ -29,11 +29,10 @@ from tools import getGuiItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFileDialog, QWizard, QMessageBox
 
-from nw.gui import GuiProjectWizard
 from nw.enum import nwItemClass
-from nw.gui.projwizard import (
-    ProjWizardIntroPage, ProjWizardFolderPage, ProjWizardPopulatePage,
-    ProjWizardCustomPage, ProjWizardFinalPage
+from nw.tools.projwizard import (
+    GuiProjectWizard, ProjWizardIntroPage, ProjWizardFolderPage,
+    ProjWizardPopulatePage, ProjWizardCustomPage, ProjWizardFinalPage
 )
 
 keyDelay = 2
@@ -41,7 +40,7 @@ typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testGuiProjectWizard_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
+def testToolProjectWizard_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test the new project wizard.
     """
     # Block message box
@@ -227,4 +226,4 @@ def testGuiProjectWizard_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
 
     # qtbot.stopForInteraction()
 
-# END Test testGuiProjectWizard_Main
+# END Test testToolProjectWizard_Main
