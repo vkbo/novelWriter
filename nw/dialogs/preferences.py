@@ -38,7 +38,8 @@ from PyQt5.QtWidgets import (
 from nw.core import NWSpellSimple, NWSpellEnchant
 from nw.enum import nwAlert
 from nw.constants import nwConst
-from nw.gui.custom import QSwitch, QConfigLayout, PagedDialog, QuotesDialog
+from nw.gui.custom import QSwitch, QConfigLayout, PagedDialog
+from nw.dialogs.quotes import GuiQuoteSelect
 
 logger = logging.getLogger(__name__)
 
@@ -1223,7 +1224,7 @@ class GuiPreferencesQuotes(QWidget):
     def _getQuote(self, qType):
         """Dialog for single quote open.
         """
-        qtBox = QuotesDialog(self, currentQuote=self.quoteSym[qType].text())
+        qtBox = GuiQuoteSelect(self, currentQuote=self.quoteSym[qType].text())
         if qtBox.exec_() == QDialog.Accepted:
             self.quoteSym[qType].setText(qtBox.selectedQuote)
 

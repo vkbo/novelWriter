@@ -33,8 +33,7 @@ from PyQt5.QtWidgets import (
 )
 
 from nw.config import Config
-from nw.gui.custom import QuotesDialog
-from nw.dialogs import GuiPreferences
+from nw.dialogs import GuiPreferences, GuiQuoteSelect
 from nw.constants import nwConst
 
 keyDelay = 2
@@ -234,8 +233,8 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     tabQuote = nwPrefs.tabQuote
     nwPrefs._tabBox.setCurrentWidget(tabQuote)
 
-    monkeypatch.setattr(QuotesDialog, "selectedQuote", "'")
-    monkeypatch.setattr(QuotesDialog, "exec_", lambda *args: QDialog.Accepted)
+    monkeypatch.setattr(GuiQuoteSelect, "selectedQuote", "'")
+    monkeypatch.setattr(GuiQuoteSelect, "exec_", lambda *args: QDialog.Accepted)
     qtbot.mouseClick(tabQuote.btnDoubleStyleC, Qt.LeftButton)
 
     # Save and Check Config

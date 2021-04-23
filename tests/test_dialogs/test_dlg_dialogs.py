@@ -25,20 +25,20 @@ import pytest
 from PyQt5.QtCore import QItemSelectionModel
 from PyQt5.QtWidgets import QListWidgetItem, QDialog, QMessageBox
 
-from nw.gui.custom import QuotesDialog
+from nw.dialogs import GuiQuoteSelect
 
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testGuiDialogs_Quotes(qtbot, monkeypatch, nwGUI, nwMinimal):
+def testDialogs_QuoteSelect(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test the quote symbols dialog.
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
 
-    nwQuot = QuotesDialog(nwGUI)
+    nwQuot = GuiQuoteSelect(nwGUI)
     nwQuot.show()
 
     lastItem = ""
@@ -58,4 +58,4 @@ def testGuiDialogs_Quotes(qtbot, monkeypatch, nwGUI, nwMinimal):
     nwQuot._doReject()
     nwQuot.close()
 
-# END Test testDialogs_Quotes
+# END Test testDialogs_QuoteSelect

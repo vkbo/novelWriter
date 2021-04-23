@@ -2762,47 +2762,47 @@
 <context>
     <name>GuiPreferences</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="57"/>
+        <location filename="../nw/dialogs/preferences.py" line="58"/>
         <source>Preferences</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="67"/>
+        <location filename="../nw/dialogs/preferences.py" line="68"/>
         <source>General</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="68"/>
+        <location filename="../nw/dialogs/preferences.py" line="69"/>
         <source>Projects</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="69"/>
+        <location filename="../nw/dialogs/preferences.py" line="70"/>
         <source>Documents</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="70"/>
+        <location filename="../nw/dialogs/preferences.py" line="71"/>
         <source>Editor</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="71"/>
+        <location filename="../nw/dialogs/preferences.py" line="72"/>
         <source>Highlighting</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="72"/>
+        <location filename="../nw/dialogs/preferences.py" line="73"/>
         <source>Automation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="106"/>
+        <location filename="../nw/dialogs/preferences.py" line="107"/>
         <source>Some changes will not be applied until novelWriter has been restarted.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="73"/>
+        <location filename="../nw/dialogs/preferences.py" line="74"/>
         <source>Quotes</source>
         <translation></translation>
     </message>
@@ -2810,107 +2810,107 @@
 <context>
     <name>GuiPreferencesAutomation</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="976"/>
+        <location filename="../nw/dialogs/preferences.py" line="977"/>
         <source>Automatic Features</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="981"/>
+        <location filename="../nw/dialogs/preferences.py" line="982"/>
         <source>Auto-select word under cursor</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="981"/>
+        <location filename="../nw/dialogs/preferences.py" line="982"/>
         <source>Apply formatting to word under cursor if no selection is made.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="991"/>
+        <location filename="../nw/dialogs/preferences.py" line="992"/>
         <source>Auto-replace text as you type</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="991"/>
+        <location filename="../nw/dialogs/preferences.py" line="992"/>
         <source>Allow the editor to replace symbols as you type.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="999"/>
+        <location filename="../nw/dialogs/preferences.py" line="1000"/>
         <source>Replace as You Type</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1005"/>
+        <location filename="../nw/dialogs/preferences.py" line="1006"/>
         <source>Auto-replace single quotes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1005"/>
+        <location filename="../nw/dialogs/preferences.py" line="1006"/>
         <source>Try to guess which is an opening or a closing single quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1015"/>
+        <location filename="../nw/dialogs/preferences.py" line="1016"/>
         <source>Auto-replace double quotes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1015"/>
+        <location filename="../nw/dialogs/preferences.py" line="1016"/>
         <source>Try to guess which is an opening or a closing double quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1025"/>
+        <location filename="../nw/dialogs/preferences.py" line="1026"/>
         <source>Auto-replace dashes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1025"/>
+        <location filename="../nw/dialogs/preferences.py" line="1026"/>
         <source>Double and triple hyphens become short and long dashes.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1035"/>
+        <location filename="../nw/dialogs/preferences.py" line="1036"/>
         <source>Auto-replace dots</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1035"/>
+        <location filename="../nw/dialogs/preferences.py" line="1036"/>
         <source>Three consecutive dots become ellipsis.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1043"/>
+        <location filename="../nw/dialogs/preferences.py" line="1044"/>
         <source>Automatic Padding</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1049"/>
+        <location filename="../nw/dialogs/preferences.py" line="1050"/>
         <source>Insert non-breaking space before</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1059"/>
+        <location filename="../nw/dialogs/preferences.py" line="1060"/>
         <source>Insert non-breaking space after</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1069"/>
+        <location filename="../nw/dialogs/preferences.py" line="1070"/>
         <source>Use thin space instead</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1049"/>
+        <location filename="../nw/dialogs/preferences.py" line="1050"/>
         <source>Automatically add space before any of these symbols.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1059"/>
+        <location filename="../nw/dialogs/preferences.py" line="1060"/>
         <source>Automatically add space after any of these symbols.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1069"/>
+        <location filename="../nw/dialogs/preferences.py" line="1070"/>
         <source>Inserts a thin space instead of a regular space.</source>
         <translation></translation>
     </message>
@@ -2918,107 +2918,107 @@
 <context>
     <name>GuiPreferencesDocuments</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="498"/>
+        <location filename="../nw/dialogs/preferences.py" line="499"/>
         <source>Text Style</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="508"/>
+        <location filename="../nw/dialogs/preferences.py" line="509"/>
         <source>Font family</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="508"/>
+        <location filename="../nw/dialogs/preferences.py" line="509"/>
         <source>Font for the document editor and viewer.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="521"/>
+        <location filename="../nw/dialogs/preferences.py" line="522"/>
         <source>Font size</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="521"/>
+        <location filename="../nw/dialogs/preferences.py" line="522"/>
         <source>Font size for the document editor and viewer.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="521"/>
+        <location filename="../nw/dialogs/preferences.py" line="522"/>
         <source>pt</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="530"/>
+        <location filename="../nw/dialogs/preferences.py" line="531"/>
         <source>Text Flow</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="538"/>
+        <location filename="../nw/dialogs/preferences.py" line="539"/>
         <source>Maximum text width in &quot;Normal Mode&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="551"/>
+        <location filename="../nw/dialogs/preferences.py" line="552"/>
         <source>Horizontal margins are scaled automatically.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="604"/>
+        <location filename="../nw/dialogs/preferences.py" line="605"/>
         <source>px</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="551"/>
+        <location filename="../nw/dialogs/preferences.py" line="552"/>
         <source>Maximum text width in &quot;Focus Mode&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="561"/>
+        <location filename="../nw/dialogs/preferences.py" line="562"/>
         <source>Disable maximum text width in &quot;Normal Mode&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="561"/>
+        <location filename="../nw/dialogs/preferences.py" line="562"/>
         <source>Text width is defined by the margins only.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="570"/>
+        <location filename="../nw/dialogs/preferences.py" line="571"/>
         <source>Hide document footer in &quot;Focus Mode&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="570"/>
+        <location filename="../nw/dialogs/preferences.py" line="571"/>
         <source>Hide the information bar at the bottom of the document.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="579"/>
+        <location filename="../nw/dialogs/preferences.py" line="580"/>
         <source>Justify the text margins in editor and viewer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="579"/>
+        <location filename="../nw/dialogs/preferences.py" line="580"/>
         <source>Lay out text with straight edges in the editor and viewer.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="591"/>
+        <location filename="../nw/dialogs/preferences.py" line="592"/>
         <source>Text margin</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="591"/>
+        <location filename="../nw/dialogs/preferences.py" line="592"/>
         <source>If maximum width is set, this becomes the minimum margin.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="604"/>
+        <location filename="../nw/dialogs/preferences.py" line="605"/>
         <source>Tab width</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="604"/>
+        <location filename="../nw/dialogs/preferences.py" line="605"/>
         <source>The width of a tab key press in the editor and viewer.</source>
         <translation></translation>
     </message>
@@ -3026,127 +3026,127 @@
 <context>
     <name>GuiPreferencesEditor</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="670"/>
+        <location filename="../nw/dialogs/preferences.py" line="671"/>
         <source>Spell Checking</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="678"/>
+        <location filename="../nw/dialogs/preferences.py" line="679"/>
         <source>Internal</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="691"/>
+        <location filename="../nw/dialogs/preferences.py" line="692"/>
         <source>Spell check provider</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="691"/>
+        <location filename="../nw/dialogs/preferences.py" line="692"/>
         <source>Note that the internal spell check tool is quite slow.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="696"/>
+        <location filename="../nw/dialogs/preferences.py" line="697"/>
         <source>Spell check language</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="696"/>
+        <location filename="../nw/dialogs/preferences.py" line="697"/>
         <source>Available languages are determined by your system.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="708"/>
+        <location filename="../nw/dialogs/preferences.py" line="709"/>
         <source>Big document limit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="708"/>
+        <location filename="../nw/dialogs/preferences.py" line="709"/>
         <source>Full spell checking is disabled above this limit.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="708"/>
+        <location filename="../nw/dialogs/preferences.py" line="709"/>
         <source>kB</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="717"/>
+        <location filename="../nw/dialogs/preferences.py" line="718"/>
         <source>Word Count</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="726"/>
+        <location filename="../nw/dialogs/preferences.py" line="727"/>
         <source>Word count interval</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="726"/>
+        <location filename="../nw/dialogs/preferences.py" line="727"/>
         <source>How often the word count is updated.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="726"/>
+        <location filename="../nw/dialogs/preferences.py" line="727"/>
         <source>seconds</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="735"/>
+        <location filename="../nw/dialogs/preferences.py" line="736"/>
         <source>Writing Guides</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="740"/>
+        <location filename="../nw/dialogs/preferences.py" line="741"/>
         <source>Show tabs and spaces</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="740"/>
+        <location filename="../nw/dialogs/preferences.py" line="741"/>
         <source>Add symbols to indicate tabs and spaces in the editor.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="749"/>
+        <location filename="../nw/dialogs/preferences.py" line="750"/>
         <source>Show line endings</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="749"/>
+        <location filename="../nw/dialogs/preferences.py" line="750"/>
         <source>Add a symbol to indicate line endings in the editor.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="757"/>
+        <location filename="../nw/dialogs/preferences.py" line="758"/>
         <source>Scroll Behaviour</source>
         <translation>Scroll Behavior</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="762"/>
+        <location filename="../nw/dialogs/preferences.py" line="763"/>
         <source>Scroll past end of the document</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="762"/>
+        <location filename="../nw/dialogs/preferences.py" line="763"/>
         <source>Also improves trypewriter scrolling for short documents.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="771"/>
+        <location filename="../nw/dialogs/preferences.py" line="772"/>
         <source>Typewriter style scrolling when you type</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="771"/>
+        <location filename="../nw/dialogs/preferences.py" line="772"/>
         <source>Try to keep the cursor at a fixed vertical position.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="783"/>
+        <location filename="../nw/dialogs/preferences.py" line="784"/>
         <source>Minimum position for Typewriter scrolling</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="783"/>
+        <location filename="../nw/dialogs/preferences.py" line="784"/>
         <source>Percentage of the editor height from the top.</source>
         <translation></translation>
     </message>
@@ -3154,82 +3154,82 @@
 <context>
     <name>GuiPreferencesGeneral</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="153"/>
+        <location filename="../nw/dialogs/preferences.py" line="154"/>
         <source>Look and Feel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="166"/>
+        <location filename="../nw/dialogs/preferences.py" line="167"/>
         <source>Main GUI language</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="234"/>
+        <location filename="../nw/dialogs/preferences.py" line="235"/>
         <source>Changing this requires restarting novelWriter.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="182"/>
+        <location filename="../nw/dialogs/preferences.py" line="183"/>
         <source>Main GUI theme</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="198"/>
+        <location filename="../nw/dialogs/preferences.py" line="199"/>
         <source>Main icon theme</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="207"/>
+        <location filename="../nw/dialogs/preferences.py" line="208"/>
         <source>Prefer icons for dark backgrounds</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="207"/>
+        <location filename="../nw/dialogs/preferences.py" line="208"/>
         <source>May improve the look of icons on dark themes.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="221"/>
+        <location filename="../nw/dialogs/preferences.py" line="222"/>
         <source>Font family</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="234"/>
+        <location filename="../nw/dialogs/preferences.py" line="235"/>
         <source>Font size</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="234"/>
+        <location filename="../nw/dialogs/preferences.py" line="235"/>
         <source>pt</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="243"/>
+        <location filename="../nw/dialogs/preferences.py" line="244"/>
         <source>GUI Settings</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="247"/>
+        <location filename="../nw/dialogs/preferences.py" line="248"/>
         <source>Show full path in document header</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="247"/>
+        <location filename="../nw/dialogs/preferences.py" line="248"/>
         <source>Add the parent folder names to the header.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="255"/>
+        <location filename="../nw/dialogs/preferences.py" line="256"/>
         <source>Hide vertical scroll bars in main windows</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="263"/>
+        <location filename="../nw/dialogs/preferences.py" line="264"/>
         <source>Scrolling available with mouse wheel and keys only.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="263"/>
+        <location filename="../nw/dialogs/preferences.py" line="264"/>
         <source>Hide horizontal scroll bars in main windows</source>
         <translation></translation>
     </message>
@@ -3237,107 +3237,107 @@
 <context>
     <name>GuiPreferencesProjects</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="338"/>
+        <location filename="../nw/dialogs/preferences.py" line="339"/>
         <source>Automatic Save</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="346"/>
+        <location filename="../nw/dialogs/preferences.py" line="347"/>
         <source>Save document interval</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="346"/>
+        <location filename="../nw/dialogs/preferences.py" line="347"/>
         <source>How often the open document is automatically saved.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="359"/>
+        <location filename="../nw/dialogs/preferences.py" line="360"/>
         <source>seconds</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="359"/>
+        <location filename="../nw/dialogs/preferences.py" line="360"/>
         <source>Save project interval</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="359"/>
+        <location filename="../nw/dialogs/preferences.py" line="360"/>
         <source>How often the open project is automatically saved.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="368"/>
+        <location filename="../nw/dialogs/preferences.py" line="369"/>
         <source>Project Backup</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="372"/>
+        <location filename="../nw/dialogs/preferences.py" line="373"/>
         <source>Browse</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="374"/>
+        <location filename="../nw/dialogs/preferences.py" line="375"/>
         <source>Backup storage location</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="466"/>
+        <location filename="../nw/dialogs/preferences.py" line="467"/>
         <source>Path: {0}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="384"/>
+        <location filename="../nw/dialogs/preferences.py" line="385"/>
         <source>Run backup when the project is closed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="384"/>
+        <location filename="../nw/dialogs/preferences.py" line="385"/>
         <source>Can be overridden for individual projects in Project Settings.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="395"/>
+        <location filename="../nw/dialogs/preferences.py" line="396"/>
         <source>Ask before running backup</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="395"/>
+        <location filename="../nw/dialogs/preferences.py" line="396"/>
         <source>If off, backups will run in the background.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="403"/>
+        <location filename="../nw/dialogs/preferences.py" line="404"/>
         <source>Session Timer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="408"/>
+        <location filename="../nw/dialogs/preferences.py" line="409"/>
         <source>Pause the session timer when not writing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="408"/>
+        <location filename="../nw/dialogs/preferences.py" line="409"/>
         <source>Also pauses when the application window does not have focus.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="421"/>
+        <location filename="../nw/dialogs/preferences.py" line="422"/>
         <source>Editor inactive time before pausing timer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="421"/>
+        <location filename="../nw/dialogs/preferences.py" line="422"/>
         <source>User activity includes typing and changing the content.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="421"/>
+        <location filename="../nw/dialogs/preferences.py" line="422"/>
         <source>minutes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="461"/>
+        <location filename="../nw/dialogs/preferences.py" line="462"/>
         <source>Backup Directory</source>
         <translation></translation>
     </message>
@@ -3345,47 +3345,47 @@
 <context>
     <name>GuiPreferencesQuotes</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1132"/>
+        <location filename="../nw/dialogs/preferences.py" line="1133"/>
         <source>Quotation Style</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1148"/>
+        <location filename="../nw/dialogs/preferences.py" line="1149"/>
         <source>Single quote open style</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1148"/>
+        <location filename="../nw/dialogs/preferences.py" line="1149"/>
         <source>The symbol to use for a leading single quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1164"/>
+        <location filename="../nw/dialogs/preferences.py" line="1165"/>
         <source>Single quote close style</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1164"/>
+        <location filename="../nw/dialogs/preferences.py" line="1165"/>
         <source>The symbol to use for a trailing single quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1181"/>
+        <location filename="../nw/dialogs/preferences.py" line="1182"/>
         <source>Double quote open style</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1181"/>
+        <location filename="../nw/dialogs/preferences.py" line="1182"/>
         <source>The symbol to use for a leading double quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1197"/>
+        <location filename="../nw/dialogs/preferences.py" line="1198"/>
         <source>Double quote close style</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1197"/>
+        <location filename="../nw/dialogs/preferences.py" line="1198"/>
         <source>The symbol to use for a trailing double quote.</source>
         <translation></translation>
     </message>
@@ -3393,67 +3393,67 @@
 <context>
     <name>GuiPreferencesSyntax</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="868"/>
+        <location filename="../nw/dialogs/preferences.py" line="869"/>
         <source>Highlighting Theme</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="879"/>
+        <location filename="../nw/dialogs/preferences.py" line="880"/>
         <source>Highlighting theme</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="879"/>
+        <location filename="../nw/dialogs/preferences.py" line="880"/>
         <source>Colour theme to apply to the editor and viewer.</source>
         <translation>Color theme to apply to the editor and viewer.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="887"/>
+        <location filename="../nw/dialogs/preferences.py" line="888"/>
         <source>Quotes &amp; Dialogue</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="892"/>
+        <location filename="../nw/dialogs/preferences.py" line="893"/>
         <source>Highlight text wrapped in quotes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="892"/>
+        <location filename="../nw/dialogs/preferences.py" line="893"/>
         <source>Applies to single, double and straight quotes.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="900"/>
+        <location filename="../nw/dialogs/preferences.py" line="901"/>
         <source>Allow open-ended single quotes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="900"/>
+        <location filename="../nw/dialogs/preferences.py" line="901"/>
         <source>Highlight single-quoted line with no closing quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="908"/>
+        <location filename="../nw/dialogs/preferences.py" line="909"/>
         <source>Allow open-ended double quotes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="908"/>
+        <location filename="../nw/dialogs/preferences.py" line="909"/>
         <source>Highlight double-quoted line with no closing quote.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="916"/>
+        <location filename="../nw/dialogs/preferences.py" line="917"/>
         <source>Text Emphasis</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="920"/>
+        <location filename="../nw/dialogs/preferences.py" line="921"/>
         <source>Add highlight colour to emphasised text</source>
         <translation>Add highlight color to emphasised text</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="920"/>
+        <location filename="../nw/dialogs/preferences.py" line="921"/>
         <source>Applies to emphasis (italic) and strong (bold).</source>
         <translation></translation>
     </message>

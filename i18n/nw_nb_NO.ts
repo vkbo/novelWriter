@@ -2762,47 +2762,47 @@
 <context>
     <name>GuiPreferences</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="57"/>
+        <location filename="../nw/dialogs/preferences.py" line="58"/>
         <source>Preferences</source>
         <translation>Innstillinger</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="67"/>
+        <location filename="../nw/dialogs/preferences.py" line="68"/>
         <source>General</source>
         <translation>Generelt</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="68"/>
+        <location filename="../nw/dialogs/preferences.py" line="69"/>
         <source>Projects</source>
         <translation>Prosjekt</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="69"/>
+        <location filename="../nw/dialogs/preferences.py" line="70"/>
         <source>Documents</source>
         <translation>Dokument</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="70"/>
+        <location filename="../nw/dialogs/preferences.py" line="71"/>
         <source>Editor</source>
         <translation>Editor</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="71"/>
+        <location filename="../nw/dialogs/preferences.py" line="72"/>
         <source>Highlighting</source>
         <translation>Fremheving</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="72"/>
+        <location filename="../nw/dialogs/preferences.py" line="73"/>
         <source>Automation</source>
         <translation>Automasjon</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="106"/>
+        <location filename="../nw/dialogs/preferences.py" line="107"/>
         <source>Some changes will not be applied until novelWriter has been restarted.</source>
         <translation>Noen endringer vil ikke tas i bruk før neste gang novelWriter startes.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="73"/>
+        <location filename="../nw/dialogs/preferences.py" line="74"/>
         <source>Quotes</source>
         <translation>Sitattegn</translation>
     </message>
@@ -2810,107 +2810,107 @@
 <context>
     <name>GuiPreferencesAutomation</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="976"/>
+        <location filename="../nw/dialogs/preferences.py" line="977"/>
         <source>Automatic Features</source>
         <translation>Automatiske funksjoner</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="981"/>
+        <location filename="../nw/dialogs/preferences.py" line="982"/>
         <source>Auto-select word under cursor</source>
         <translation>Auto-velg ord under markør</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="981"/>
+        <location filename="../nw/dialogs/preferences.py" line="982"/>
         <source>Apply formatting to word under cursor if no selection is made.</source>
         <translation>Hvis ingen tekst er valgt, formatter ordet hvor markøren står.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="991"/>
+        <location filename="../nw/dialogs/preferences.py" line="992"/>
         <source>Auto-replace text as you type</source>
         <translation>Erstatt mens du skriver</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="991"/>
+        <location filename="../nw/dialogs/preferences.py" line="992"/>
         <source>Allow the editor to replace symbols as you type.</source>
         <translation>La editoren erstatte symboler mens du skriver.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="999"/>
+        <location filename="../nw/dialogs/preferences.py" line="1000"/>
         <source>Replace as You Type</source>
         <translation>Erstatt mens du skriver</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1005"/>
+        <location filename="../nw/dialogs/preferences.py" line="1006"/>
         <source>Auto-replace single quotes</source>
         <translation>Erstatt enkle sitattegn</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1005"/>
+        <location filename="../nw/dialogs/preferences.py" line="1006"/>
         <source>Try to guess which is an opening or a closing single quote.</source>
         <translation>Forsøker å gjette hva som er venstre og høyre tegn.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1015"/>
+        <location filename="../nw/dialogs/preferences.py" line="1016"/>
         <source>Auto-replace double quotes</source>
         <translation>Erstatt doble sitattegn</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1015"/>
+        <location filename="../nw/dialogs/preferences.py" line="1016"/>
         <source>Try to guess which is an opening or a closing double quote.</source>
         <translation>Forsøker å gjette hva som er venstre og høyre tegn.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1025"/>
+        <location filename="../nw/dialogs/preferences.py" line="1026"/>
         <source>Auto-replace dashes</source>
         <translation>Erstatt bindestreker</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1025"/>
+        <location filename="../nw/dialogs/preferences.py" line="1026"/>
         <source>Double and triple hyphens become short and long dashes.</source>
         <translation>To og tre bindestreker erstattes med kort og lang bindestrek.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1035"/>
+        <location filename="../nw/dialogs/preferences.py" line="1036"/>
         <source>Auto-replace dots</source>
         <translation>Erstatt tre punktum</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1035"/>
+        <location filename="../nw/dialogs/preferences.py" line="1036"/>
         <source>Three consecutive dots become ellipsis.</source>
         <translation>Tre punktum på rad erstattes med ellipsis.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1043"/>
+        <location filename="../nw/dialogs/preferences.py" line="1044"/>
         <source>Automatic Padding</source>
         <translation>Automatisk mellomrom</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1049"/>
+        <location filename="../nw/dialogs/preferences.py" line="1050"/>
         <source>Insert non-breaking space before</source>
         <translation>Sett inn hardt mellomrom foran</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1059"/>
+        <location filename="../nw/dialogs/preferences.py" line="1060"/>
         <source>Insert non-breaking space after</source>
         <translation>Sett inn hardt mellomrom etter</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1069"/>
+        <location filename="../nw/dialogs/preferences.py" line="1070"/>
         <source>Use thin space instead</source>
         <translation>Bruk tynt mellomrom istedet</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1049"/>
+        <location filename="../nw/dialogs/preferences.py" line="1050"/>
         <source>Automatically add space before any of these symbols.</source>
         <translation>Legg til mellomrom automatisk foran disse tegnene.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1059"/>
+        <location filename="../nw/dialogs/preferences.py" line="1060"/>
         <source>Automatically add space after any of these symbols.</source>
         <translation>Legg til mellomrom automatisk etter disse tegnene.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1069"/>
+        <location filename="../nw/dialogs/preferences.py" line="1070"/>
         <source>Inserts a thin space instead of a regular space.</source>
         <translation>Sett inn et tynt mellomrom istedenfor et vanlig et.</translation>
     </message>
@@ -2918,107 +2918,107 @@
 <context>
     <name>GuiPreferencesDocuments</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="498"/>
+        <location filename="../nw/dialogs/preferences.py" line="499"/>
         <source>Text Style</source>
         <translation>Tekststil</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="508"/>
+        <location filename="../nw/dialogs/preferences.py" line="509"/>
         <source>Font family</source>
         <translation>Skriftfamilie</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="508"/>
+        <location filename="../nw/dialogs/preferences.py" line="509"/>
         <source>Font for the document editor and viewer.</source>
         <translation>Skrifttype til bruk for editor og visning.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="521"/>
+        <location filename="../nw/dialogs/preferences.py" line="522"/>
         <source>Font size</source>
         <translation>Skriftstørrelse</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="521"/>
+        <location filename="../nw/dialogs/preferences.py" line="522"/>
         <source>Font size for the document editor and viewer.</source>
         <translation>Skriftstørrelse til bruk for editor og visning.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="521"/>
+        <location filename="../nw/dialogs/preferences.py" line="522"/>
         <source>pt</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="530"/>
+        <location filename="../nw/dialogs/preferences.py" line="531"/>
         <source>Text Flow</source>
         <translation>Tekstflyt</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="538"/>
+        <location filename="../nw/dialogs/preferences.py" line="539"/>
         <source>Maximum text width in &quot;Normal Mode&quot;</source>
         <translation>Maks tekstbredde i &quot;Normal-modues&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="551"/>
+        <location filename="../nw/dialogs/preferences.py" line="552"/>
         <source>Horizontal margins are scaled automatically.</source>
         <translation>Horisontale marger skalerer da automatisk.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="604"/>
+        <location filename="../nw/dialogs/preferences.py" line="605"/>
         <source>px</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="551"/>
+        <location filename="../nw/dialogs/preferences.py" line="552"/>
         <source>Maximum text width in &quot;Focus Mode&quot;</source>
         <translation>Maks tekstbredde i &quot;Fokus-modues&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="561"/>
+        <location filename="../nw/dialogs/preferences.py" line="562"/>
         <source>Disable maximum text width in &quot;Normal Mode&quot;</source>
         <translation>Slå av maks tekstbredde i &quot;Normal-modus&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="561"/>
+        <location filename="../nw/dialogs/preferences.py" line="562"/>
         <source>Text width is defined by the margins only.</source>
         <translation>Tekstbredden er kun definert av margene.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="570"/>
+        <location filename="../nw/dialogs/preferences.py" line="571"/>
         <source>Hide document footer in &quot;Focus Mode&quot;</source>
         <translation>Gjem dokumentets bunnlinje i &quot;Fokus-modus&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="570"/>
+        <location filename="../nw/dialogs/preferences.py" line="571"/>
         <source>Hide the information bar at the bottom of the document.</source>
         <translation>Gjemmer informasjonslinja i bunnen av dokumentet.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="579"/>
+        <location filename="../nw/dialogs/preferences.py" line="580"/>
         <source>Justify the text margins in editor and viewer</source>
         <translation>Bruk justerte marger i editor og visning</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="579"/>
+        <location filename="../nw/dialogs/preferences.py" line="580"/>
         <source>Lay out text with straight edges in the editor and viewer.</source>
         <translation>Justerte marger gir rette linjeender i avsnitt.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="591"/>
+        <location filename="../nw/dialogs/preferences.py" line="592"/>
         <source>Text margin</source>
         <translation>Marger</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="591"/>
+        <location filename="../nw/dialogs/preferences.py" line="592"/>
         <source>If maximum width is set, this becomes the minimum margin.</source>
         <translation>Hvis tekstbredde er satt, så blir dette istedet minste marger.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="604"/>
+        <location filename="../nw/dialogs/preferences.py" line="605"/>
         <source>Tab width</source>
         <translation>Tabulatorens bredde</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="604"/>
+        <location filename="../nw/dialogs/preferences.py" line="605"/>
         <source>The width of a tab key press in the editor and viewer.</source>
         <translation>Hvor langt tabulatoren hopper i editor og visning.</translation>
     </message>
@@ -3026,127 +3026,127 @@
 <context>
     <name>GuiPreferencesEditor</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="670"/>
+        <location filename="../nw/dialogs/preferences.py" line="671"/>
         <source>Spell Checking</source>
         <translation>Stavekontroll</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="678"/>
+        <location filename="../nw/dialogs/preferences.py" line="679"/>
         <source>Internal</source>
         <translation>Intern</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="691"/>
+        <location filename="../nw/dialogs/preferences.py" line="692"/>
         <source>Spell check provider</source>
         <translation>Verktøy for stavekontroll</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="691"/>
+        <location filename="../nw/dialogs/preferences.py" line="692"/>
         <source>Note that the internal spell check tool is quite slow.</source>
         <translation>Merk at den interne stavekontrollen er ganske treg.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="696"/>
+        <location filename="../nw/dialogs/preferences.py" line="697"/>
         <source>Spell check language</source>
         <translation>Språk for stavekontroll</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="696"/>
+        <location filename="../nw/dialogs/preferences.py" line="697"/>
         <source>Available languages are determined by your system.</source>
         <translation>Tilgjengelige språk hentes fra operativystemet ditt.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="708"/>
+        <location filename="../nw/dialogs/preferences.py" line="709"/>
         <source>Big document limit</source>
         <translation>Grense for store dokumenter</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="708"/>
+        <location filename="../nw/dialogs/preferences.py" line="709"/>
         <source>Full spell checking is disabled above this limit.</source>
         <translation>Automatisk stavekontroll slås av over grensen.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="708"/>
+        <location filename="../nw/dialogs/preferences.py" line="709"/>
         <source>kB</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="717"/>
+        <location filename="../nw/dialogs/preferences.py" line="718"/>
         <source>Word Count</source>
         <translation>Telling av ord</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="726"/>
+        <location filename="../nw/dialogs/preferences.py" line="727"/>
         <source>Word count interval</source>
         <translation>Telle-intervall</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="726"/>
+        <location filename="../nw/dialogs/preferences.py" line="727"/>
         <source>How often the word count is updated.</source>
         <translation>Hvor ofte antall ord blir oppdatert.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="726"/>
+        <location filename="../nw/dialogs/preferences.py" line="727"/>
         <source>seconds</source>
         <translation>sekunder</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="735"/>
+        <location filename="../nw/dialogs/preferences.py" line="736"/>
         <source>Writing Guides</source>
         <translation>Hjelpesymboler</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="740"/>
+        <location filename="../nw/dialogs/preferences.py" line="741"/>
         <source>Show tabs and spaces</source>
         <translation>Synlige tabulatorer og mellomrom</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="740"/>
+        <location filename="../nw/dialogs/preferences.py" line="741"/>
         <source>Add symbols to indicate tabs and spaces in the editor.</source>
         <translation>Viser symboler for å indikere disse i editoren.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="749"/>
+        <location filename="../nw/dialogs/preferences.py" line="750"/>
         <source>Show line endings</source>
         <translation>Synlige linjeender</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="749"/>
+        <location filename="../nw/dialogs/preferences.py" line="750"/>
         <source>Add a symbol to indicate line endings in the editor.</source>
         <translation>Viser symbol for å indikere dette i editoren.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="757"/>
+        <location filename="../nw/dialogs/preferences.py" line="758"/>
         <source>Scroll Behaviour</source>
         <translation>Rullefelt</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="762"/>
+        <location filename="../nw/dialogs/preferences.py" line="763"/>
         <source>Scroll past end of the document</source>
         <translation>Tillat å rulle forbi slutten av dokumentet</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="762"/>
+        <location filename="../nw/dialogs/preferences.py" line="763"/>
         <source>Also improves trypewriter scrolling for short documents.</source>
         <translation>Forbedrer funksjonen til skrivemaskin-rulling.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="771"/>
+        <location filename="../nw/dialogs/preferences.py" line="772"/>
         <source>Typewriter style scrolling when you type</source>
         <translation>Skrivemaskin-liknende rulling mens du skriver</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="771"/>
+        <location filename="../nw/dialogs/preferences.py" line="772"/>
         <source>Try to keep the cursor at a fixed vertical position.</source>
         <translation>Prøver å holde markøren på samme sted vertikalt.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="783"/>
+        <location filename="../nw/dialogs/preferences.py" line="784"/>
         <source>Minimum position for Typewriter scrolling</source>
         <translation>Minste avstand for skrivemaskin-rulling</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="783"/>
+        <location filename="../nw/dialogs/preferences.py" line="784"/>
         <source>Percentage of the editor height from the top.</source>
         <translation>I prosent fra toppen av editor-vinduet.</translation>
     </message>
@@ -3154,82 +3154,82 @@
 <context>
     <name>GuiPreferencesGeneral</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="153"/>
+        <location filename="../nw/dialogs/preferences.py" line="154"/>
         <source>Look and Feel</source>
         <translation>Utseende</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="182"/>
+        <location filename="../nw/dialogs/preferences.py" line="183"/>
         <source>Main GUI theme</source>
         <translation>Fargetema</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="234"/>
+        <location filename="../nw/dialogs/preferences.py" line="235"/>
         <source>Changing this requires restarting novelWriter.</source>
         <translation>Endring av dette krever omstart av novelWriter.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="198"/>
+        <location filename="../nw/dialogs/preferences.py" line="199"/>
         <source>Main icon theme</source>
         <translation>Ikon-tema</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="207"/>
+        <location filename="../nw/dialogs/preferences.py" line="208"/>
         <source>Prefer icons for dark backgrounds</source>
         <translation>Foretrekk ikoner for mørk bakgrunn</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="207"/>
+        <location filename="../nw/dialogs/preferences.py" line="208"/>
         <source>May improve the look of icons on dark themes.</source>
         <translation>Kan forbedre utseende på mørke temaer.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="221"/>
+        <location filename="../nw/dialogs/preferences.py" line="222"/>
         <source>Font family</source>
         <translation>Skriftfamilie</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="234"/>
+        <location filename="../nw/dialogs/preferences.py" line="235"/>
         <source>Font size</source>
         <translation>Skriftstørrelse</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="234"/>
+        <location filename="../nw/dialogs/preferences.py" line="235"/>
         <source>pt</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="243"/>
+        <location filename="../nw/dialogs/preferences.py" line="244"/>
         <source>GUI Settings</source>
         <translation>Brukergrensesnitt</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="247"/>
+        <location filename="../nw/dialogs/preferences.py" line="248"/>
         <source>Show full path in document header</source>
         <translation>Vis full prosjektbane i dokumenthoder</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="247"/>
+        <location filename="../nw/dialogs/preferences.py" line="248"/>
         <source>Add the parent folder names to the header.</source>
         <translation>Legger til mappene foran dokumentets navn.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="255"/>
+        <location filename="../nw/dialogs/preferences.py" line="256"/>
         <source>Hide vertical scroll bars in main windows</source>
         <translation>Skjul vertikale rullefelt i hovedvinduer</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="263"/>
+        <location filename="../nw/dialogs/preferences.py" line="264"/>
         <source>Scrolling available with mouse wheel and keys only.</source>
         <translation>Rulling kan bare gjøres med mus og tastatur.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="263"/>
+        <location filename="../nw/dialogs/preferences.py" line="264"/>
         <source>Hide horizontal scroll bars in main windows</source>
         <translation>Skjul horisontale rullefelt i hovedvinduer</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="166"/>
+        <location filename="../nw/dialogs/preferences.py" line="167"/>
         <source>Main GUI language</source>
         <translation>Programspråk</translation>
     </message>
@@ -3237,107 +3237,107 @@
 <context>
     <name>GuiPreferencesProjects</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="338"/>
+        <location filename="../nw/dialogs/preferences.py" line="339"/>
         <source>Automatic Save</source>
         <translation>Automatisk lagring</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="346"/>
+        <location filename="../nw/dialogs/preferences.py" line="347"/>
         <source>Save document interval</source>
         <translation>Interval for lagring av dokument</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="346"/>
+        <location filename="../nw/dialogs/preferences.py" line="347"/>
         <source>How often the open document is automatically saved.</source>
         <translation>Hvor ofte det åpne dokumentet lagres automatisk.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="359"/>
+        <location filename="../nw/dialogs/preferences.py" line="360"/>
         <source>seconds</source>
         <translation>sekunder</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="359"/>
+        <location filename="../nw/dialogs/preferences.py" line="360"/>
         <source>Save project interval</source>
         <translation>Interval for lagring av prosjekt</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="359"/>
+        <location filename="../nw/dialogs/preferences.py" line="360"/>
         <source>How often the open project is automatically saved.</source>
         <translation>Hvor ofte det åpne prosjektet lagres automatisk.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="368"/>
+        <location filename="../nw/dialogs/preferences.py" line="369"/>
         <source>Project Backup</source>
         <translation>Sikkerhetskopi</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="372"/>
+        <location filename="../nw/dialogs/preferences.py" line="373"/>
         <source>Browse</source>
         <translation>Bla</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="374"/>
+        <location filename="../nw/dialogs/preferences.py" line="375"/>
         <source>Backup storage location</source>
         <translation>Filbane for sikkerhetskopi</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="466"/>
+        <location filename="../nw/dialogs/preferences.py" line="467"/>
         <source>Path: {0}</source>
         <translation>Filbane: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="384"/>
+        <location filename="../nw/dialogs/preferences.py" line="385"/>
         <source>Run backup when the project is closed</source>
         <translation>Lag sikkerhetskopi når prosjektet lukkes</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="384"/>
+        <location filename="../nw/dialogs/preferences.py" line="385"/>
         <source>Can be overridden for individual projects in Project Settings.</source>
         <translation>Kan overstyres fra individuelle prosjektinnstillinger.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="395"/>
+        <location filename="../nw/dialogs/preferences.py" line="396"/>
         <source>Ask before running backup</source>
         <translation>Spør før sikkerhetskopi tas</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="395"/>
+        <location filename="../nw/dialogs/preferences.py" line="396"/>
         <source>If off, backups will run in the background.</source>
         <translation>Hvis avslått, tas sikkerhetskopi automatisk.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="403"/>
+        <location filename="../nw/dialogs/preferences.py" line="404"/>
         <source>Session Timer</source>
         <translation>Sesjons-klokke</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="408"/>
+        <location filename="../nw/dialogs/preferences.py" line="409"/>
         <source>Pause the session timer when not writing</source>
         <translation>Sett klokka på pause når du er inaktiv</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="408"/>
+        <location filename="../nw/dialogs/preferences.py" line="409"/>
         <source>Also pauses when the application window does not have focus.</source>
         <translation>Pauses også når du ikke jobber i applikasjonens vindu.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="421"/>
+        <location filename="../nw/dialogs/preferences.py" line="422"/>
         <source>Editor inactive time before pausing timer</source>
         <translation>Tid uten skriving før klokka settes på pause</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="421"/>
+        <location filename="../nw/dialogs/preferences.py" line="422"/>
         <source>User activity includes typing and changing the content.</source>
         <translation>Dette måler kun endringer i teksteditoren.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="421"/>
+        <location filename="../nw/dialogs/preferences.py" line="422"/>
         <source>minutes</source>
         <translation>minutter</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="461"/>
+        <location filename="../nw/dialogs/preferences.py" line="462"/>
         <source>Backup Directory</source>
         <translation>Mappe for sikkerhetskopi</translation>
     </message>
@@ -3345,47 +3345,47 @@
 <context>
     <name>GuiPreferencesQuotes</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1132"/>
+        <location filename="../nw/dialogs/preferences.py" line="1133"/>
         <source>Quotation Style</source>
         <translation>Sitattegn</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1148"/>
+        <location filename="../nw/dialogs/preferences.py" line="1149"/>
         <source>Single quote open style</source>
         <translation>Enkelt sitat, venstre side</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1148"/>
+        <location filename="../nw/dialogs/preferences.py" line="1149"/>
         <source>The symbol to use for a leading single quote.</source>
         <translation>Symbol for enkelt sitattegn før et sitat.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1164"/>
+        <location filename="../nw/dialogs/preferences.py" line="1165"/>
         <source>Single quote close style</source>
         <translation>Enkelt sitat, høyre side</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1164"/>
+        <location filename="../nw/dialogs/preferences.py" line="1165"/>
         <source>The symbol to use for a trailing single quote.</source>
         <translation>Symbol for enkelt sitattegn etter et sitat.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1181"/>
+        <location filename="../nw/dialogs/preferences.py" line="1182"/>
         <source>Double quote open style</source>
         <translation>Dobbelt sitat, venstre side</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1181"/>
+        <location filename="../nw/dialogs/preferences.py" line="1182"/>
         <source>The symbol to use for a leading double quote.</source>
         <translation>Symbol for dobbelt sitattegn før et sitat.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1197"/>
+        <location filename="../nw/dialogs/preferences.py" line="1198"/>
         <source>Double quote close style</source>
         <translation>Dobbelt sitat, høyre side</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="1197"/>
+        <location filename="../nw/dialogs/preferences.py" line="1198"/>
         <source>The symbol to use for a trailing double quote.</source>
         <translation>Symbol for dobbelt sitattegn etter et sitat.</translation>
     </message>
@@ -3393,67 +3393,67 @@
 <context>
     <name>GuiPreferencesSyntax</name>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="868"/>
+        <location filename="../nw/dialogs/preferences.py" line="869"/>
         <source>Highlighting Theme</source>
         <translation>Syntaksfremheving</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="879"/>
+        <location filename="../nw/dialogs/preferences.py" line="880"/>
         <source>Highlighting theme</source>
         <translation>Fremhevingstema</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="879"/>
+        <location filename="../nw/dialogs/preferences.py" line="880"/>
         <source>Colour theme to apply to the editor and viewer.</source>
         <translation>Fargetema for editor og visning.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="887"/>
+        <location filename="../nw/dialogs/preferences.py" line="888"/>
         <source>Quotes &amp; Dialogue</source>
         <translation>Sitattegn &amp; dialog</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="892"/>
+        <location filename="../nw/dialogs/preferences.py" line="893"/>
         <source>Highlight text wrapped in quotes</source>
         <translation>Fremhev tekst mellom sitattegn</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="892"/>
+        <location filename="../nw/dialogs/preferences.py" line="893"/>
         <source>Applies to single, double and straight quotes.</source>
         <translation>Gjelder enkle, doble og rette sitattegn.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="900"/>
+        <location filename="../nw/dialogs/preferences.py" line="901"/>
         <source>Allow open-ended single quotes</source>
         <translation>Tillat enkle sitattegn som ikke lukkes</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="900"/>
+        <location filename="../nw/dialogs/preferences.py" line="901"/>
         <source>Highlight single-quoted line with no closing quote.</source>
         <translation>Fremhev sitater som ikke er lukket i samme avsnitt.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="908"/>
+        <location filename="../nw/dialogs/preferences.py" line="909"/>
         <source>Allow open-ended double quotes</source>
         <translation>Tillat doble sitattegn som ikke lukkes</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="908"/>
+        <location filename="../nw/dialogs/preferences.py" line="909"/>
         <source>Highlight double-quoted line with no closing quote.</source>
         <translation>Fremhev sitater som ikke er lukket i samme avsnitt.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="916"/>
+        <location filename="../nw/dialogs/preferences.py" line="917"/>
         <source>Text Emphasis</source>
         <translation>Fremheving av tekst</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="920"/>
+        <location filename="../nw/dialogs/preferences.py" line="921"/>
         <source>Add highlight colour to emphasised text</source>
         <translation>Fremhev formattert tekst</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/preferences.py" line="920"/>
+        <location filename="../nw/dialogs/preferences.py" line="921"/>
         <source>Applies to emphasis (italic) and strong (bold).</source>
         <translation>Gjelder kursiv og fet tekst.</translation>
     </message>
