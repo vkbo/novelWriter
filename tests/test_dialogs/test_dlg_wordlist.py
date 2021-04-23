@@ -28,14 +28,14 @@ from PyQt5.QtWidgets import QDialog, QMessageBox, QAction
 from tools import writeFile, readFile, getGuiItem
 from dummy import causeOSError
 
-from nw.gui.wordlist import GuiWordList
+from nw.dialogs import GuiWordList
 from nw.constants import nwFiles
 
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
-def testGuiWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal, tmpDir):
+def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal, tmpDir):
     """test the word list editor.
     """
     monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
@@ -130,4 +130,4 @@ def testGuiWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal, tmpDir):
     # qtbot.stopForInteraction()
     wList._doClose()
 
-# END Test testGuiWordList_Dialog
+# END Test testDlgWordList_Dialog

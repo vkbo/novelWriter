@@ -26,14 +26,14 @@ from tools import getGuiItem
 
 from PyQt5.QtWidgets import QAction, QMessageBox
 
-from nw.gui import GuiAbout
+from nw.dialogs import GuiAbout
 
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testGuiAbout_Dialog(qtbot, monkeypatch, nwGUI):
+def testDlgAbout_Dialog(qtbot, monkeypatch, nwGUI):
     """Test the full about dialogs.
     """
     # NW About
@@ -67,4 +67,4 @@ def testGuiAbout_Dialog(qtbot, monkeypatch, nwGUI):
     # qtbot.stopForInteraction()
     msgAbout._doClose()
 
-# END Test testGuiAbout_Dialog
+# END Test testDlgAbout_Dialog

@@ -32,9 +32,9 @@ from PyQt5.QtWidgets import (
     QDialogButtonBox, QDialog, QAction, QFileDialog, QFontDialog, QMessageBox
 )
 
-from nw.gui import GuiPreferences
 from nw.config import Config
 from nw.gui.custom import QuotesDialog
+from nw.dialogs import GuiPreferences
 from nw.constants import nwConst
 
 keyDelay = 2
@@ -42,7 +42,7 @@ typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
+def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     """Test the load project wizard.
     """
     # Block message box
@@ -259,4 +259,4 @@ def testGuiPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
 
     # qtbot.stopForInteraction()
 
-# END Test testGuiPreferences_Main
+# END Test testDlgPreferences_Main
