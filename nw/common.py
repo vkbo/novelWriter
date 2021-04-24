@@ -24,6 +24,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
+import os
 import logging
 
 from datetime import datetime
@@ -35,6 +37,10 @@ from nw.enum import nwItemClass, nwItemType, nwItemLayout
 from nw.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
+
+# =========================================================================== #
+#  Checker Functions
+# =========================================================================== #
 
 def checkString(value, default, allowNone=False):
     """Check if a variable is a string or a none.
@@ -97,6 +103,10 @@ def checkHandle(value, default, allowNone=False):
         return str(value)
     return default
 
+# =========================================================================== #
+#  Validator Functions
+# =========================================================================== #
+
 def isHandle(theString):
     """Check if a string is a valid novelWriter handle.
     Note: This is case sensitive. Must be lower case!
@@ -149,6 +159,10 @@ def hexToInt(value, default=0):
             return default
     return default
 
+# =========================================================================== #
+#  Formatting Functions
+# =========================================================================== #
+
 def formatInt(theInt):
     """Formats an integer with k, M, G etc.
     """
@@ -187,6 +201,10 @@ def formatTime(tS):
         else:
             return f"{tS//3600:02d}:{tS%3600//60:02d}:{tS%60:02d}"
     return "ERROR"
+
+# =========================================================================== #
+#  String Functions
+# =========================================================================== #
 
 def splitVersionNumber(vString):
     """ Splits a version string on the form aa.bb.cc into major, minor
@@ -292,23 +310,6 @@ def fuzzyTime(secDiff):
             "Common", "{0} years ago"
         ).format(int(round(secDiff/31557600)))
 
-def makeFileNameSafe(theText):
-    """Returns a filename safe version of the text.
-    """
-    cleanName = ""
-    for c in theText.strip():
-        if c.isalpha() or c.isdigit() or c == " ":
-            cleanName += c
-    return cleanName
-
-def getGuiItem(theName):
-    """Returns a QtWidget based on its objectName.
-    """
-    for qWidget in qApp.topLevelWidgets():
-        if qWidget.objectName() == theName:
-            return qWidget
-    return None
-
 def numberToRoman(numVal, isLower=False):
     """Convert an integer to a roman number.
     """
@@ -331,3 +332,66 @@ def numberToRoman(numVal, isLower=False):
             break
 
     return romNum.lower() if isLower else romNum
+
+# =========================================================================== #
+#  Other Functions
+# =========================================================================== #
+
+def makeFileNameSafe(theText):
+    """Returns a filename safe version of the text.
+    """
+    cleanName = ""
+    for c in theText.strip():
+        if c.isalpha() or c.isdigit() or c == " ":
+            cleanName += c
+    return cleanName
+
+def getGuiItem(theName):
+    """Returns a QtWidget based on its objectName.
+    """
+    for qWidget in qApp.topLevelWidgets():
+        if qWidget.objectName() == theName:
+            return qWidget
+    return None
+
+# =========================================================================== #
+#  File I/O Functions
+# =========================================================================== #
+
+def safeMakeDir(thePath):
+    """Create a folder and return if successful.
+    """
+    if os.path.isdir(thePath):
+        return True
+
+    try:
+        os.mkdir(thePath)
+    except Exception:
+        logger.error("Could not create: %s" % str(thePath))
+        nw.logException()
+        return False
+
+    return True
+
+def safeUnlink(theObject):
+    """Delete a file or a folder, and capture any error.
+    """
+    try:
+        os.unlink(theObject)
+    except Exception:
+        logger.error("Could not unlink: %s" % str(theObject))
+        nw.logException()
+        return False
+
+    return True
+
+def safeFileRead(theFile, defaultVal=""):
+    """Read a file and return all the content.
+    """
+    try:
+        with open(theFile, mode="r", encoding="utf8") as inFile:
+            return inFile.read()
+    except Exception:
+        logger.error("Could not read: %s" % str(theFile))
+        nw.logException()
+        return defaultVal

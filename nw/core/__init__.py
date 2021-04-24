@@ -5,8 +5,9 @@ from nw.core.index import NWIndex, countWords
 from nw.core.project import NWProject
 from nw.core.spellcheck import NWSpellCheck, NWSpellEnchant, NWSpellSimple
 from nw.core.tohtml import ToHtml
-from nw.core.toodt import ToOdt
 from nw.core.tomd import ToMarkdown
+from nw.core.toodt import ToOdt
+from nw.core.versions import NWVersions
 
 __all__ = [
     "countWords",
@@ -16,7 +17,8 @@ __all__ = [
     "NWSpellCheck",
     "NWSpellEnchant",
     "NWSpellSimple",
+    "NWVersions",
     "ToHtml",
-    "ToOdt",
     "ToMarkdown",
+    "ToOdt",
 ]

@@ -24,7 +24,13 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
+import os
+import shutil
 import logging
+import datetime
+
+from nw.common import isHandle, safeUnlink, safeFileRead, safeMakeDir
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +40,102 @@ class NWVersions():
 
         self.theProject = theProject
 
+        # Internals
+        self._docHandle   = None
+        self._docLocation = None
+        self._versionPath = None
+        self._docVersions = []
+
         return
+
+    def clearVersions(self):
+        """Clear the versions object.
+        """
+        self._docHandle   = None
+        self._docLocation = None
+        self._versionPath = None
+        self._docVersions = []
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def setDocument(self, docHandle):
+        """Set which document to extract version information from.
+        """
+        self.clearVersions()
+
+        if not isHandle(docHandle):
+            logger.warning("Not a handle: %s" % docHandle)
+            return False
+
+        if self.theProject.projVers is None:
+            logger.error("Versions path is not set")
+            return False
+
+        if not os.path.isdir(self.theProject.projVers):
+            logger.error("Versions path does not exist: %s" % self.theProject.projVers)
+            return False
+
+        self._docHandle = docHandle
+        self._docLocation = os.path.join(self.theProject.projContent, self._docHandle+".nwd")
+        self._versionPath = os.path.join(self.theProject.projVers, docHandle)
+
+        if not os.path.isdir(self._versionPath):
+            logger.verbose("No previous version information exists for %s" % docHandle)
+            return True
+
+        return True
+
+    def saveSessionVersion(self):
+        """Save a backup copy of the current document from the previous
+        session. This is called before a document is edited.
+        """
+        if self._versionPath is None:
+            return False
+
+        if not safeMakeDir(self._versionPath):
+            return False
+
+        sessStamp = self._formatTimeStamp(self.theProject.projOpened)
+        prevStamp = "None"
+
+        dataFile = os.path.join(self._versionPath, "session.dat")
+        if os.path.isfile(dataFile):
+            prevStamp = safeFileRead(dataFile, prevStamp)
+
+        sessFile = os.path.join(self._versionPath, self._docHandle+"_session.nwd")
+        if os.path.isfile(sessFile):
+            logger.verbose("Session file stamps: %s vs %s" % (sessStamp, prevStamp))
+            if sessStamp == prevStamp:
+                logger.debug("Session file already saved")
+                return True
+            else:
+                logger.debug("Deleting old session file")
+                safeUnlink(sessFile)
+
+        if os.path.isfile(self._docLocation):
+            try:
+                shutil.copy2(self._docLocation, sessFile)
+                with open(dataFile, mode="w", encoding="utf8") as outFile:
+                    outFile.write(sessStamp)
+                logger.debug("Session version of %s created" % self._docHandle)
+
+            except Exception:
+                logger.error("Failed to save session version file")
+                nw.logException()
+                return False
+
+        return True
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _formatTimeStamp(self, theTime):
+        """Returns an ISO 8601 formatted timestamp without timezone.
+        """
+        return datetime.datetime.fromtimestamp(theTime).strftime(r"%Y-%m-%dT%H:%M:%S.%f")
 
 # END Class NWVersions
