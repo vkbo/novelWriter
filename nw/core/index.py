@@ -32,7 +32,7 @@ import os
 
 from time import time
 
-from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from nw.enum import nwItemType, nwItemClass, nwItemLayout
 from nw.common import isHandle, isTitleTag, isItemClass, isItemLayout
 from nw.constants import nwFiles, nwKeyWords, nwUnicode
 from nw.core.document import NWDoc
@@ -157,10 +157,6 @@ class NWIndex():
                 logger.error("Failed to load index file")
                 nw.logException()
                 self.indexBroken = True
-                self.theParent.makeAlert(
-                    "Could not load cached index file. Rebuilding index.",
-                    nwAlert.WARN
-                )
                 return False
 
             self._tagIndex   = theData.get("tagIndex", {})
