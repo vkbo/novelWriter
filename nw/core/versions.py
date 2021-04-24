@@ -28,7 +28,6 @@ import nw
 import os
 import shutil
 import logging
-import datetime
 
 from nw.common import isHandle, safeUnlink, safeFileRead, safeMakeDir
 
@@ -98,17 +97,17 @@ class NWVersions():
         if not safeMakeDir(self._versionPath):
             return False
 
-        sessStamp = self._formatTimeStamp(self.theProject.projOpened)
-        prevStamp = "None"
+        sessID = "ID:" + self.theProject.sessionID
+        prevID = "ID:None"
 
         dataFile = os.path.join(self._versionPath, "session.dat")
         if os.path.isfile(dataFile):
-            prevStamp = safeFileRead(dataFile, prevStamp)
+            prevID = safeFileRead(dataFile, prevID)
 
         sessFile = os.path.join(self._versionPath, self._docHandle+"_session.nwd")
         if os.path.isfile(sessFile):
-            logger.verbose("Session file stamps: %s vs %s" % (sessStamp, prevStamp))
-            if sessStamp == prevStamp:
+            logger.verbose("Session file stamps: %s vs %s" % (sessID, prevID))
+            if sessID == prevID:
                 logger.debug("Session file already saved")
                 return True
             else:
@@ -119,7 +118,7 @@ class NWVersions():
             try:
                 shutil.copy2(self._docLocation, sessFile)
                 with open(dataFile, mode="w", encoding="utf8") as outFile:
-                    outFile.write(sessStamp)
+                    outFile.write(sessID)
                 logger.debug("Session version of %s created" % self._docHandle)
 
             except Exception:
@@ -128,14 +127,5 @@ class NWVersions():
                 return False
 
         return True
-
-    ##
-    #  Internal Functions
-    ##
-
-    def _formatTimeStamp(self, theTime):
-        """Returns an ISO 8601 formatted timestamp without timezone.
-        """
-        return datetime.datetime.fromtimestamp(theTime).strftime(r"%Y-%m-%dT%H:%M:%S.%f")
 
 # END Class NWVersions

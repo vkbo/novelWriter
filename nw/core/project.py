@@ -29,6 +29,7 @@ import logging
 import os
 import json
 import shutil
+import datetime
 
 from lxml import etree
 from time import time
@@ -71,6 +72,7 @@ class NWProject():
         self.saveCount   = 0     # Meta data: number of saves
         self.autoCount   = 0     # Meta data: number of automatic saves
         self.editTime    = 0     # The accumulated edit time read from the project file
+        self.sessionID   = ""    # A 9 character hex value based on the session time stamp
 
         # Class Settings
         self.projPath    = None # The full path to where the currently open project is saved
@@ -186,6 +188,7 @@ class NWProject():
         self.projAltered = False
         self.saveCount   = 0
         self.autoCount   = 0
+        self.sessionID   = ""
 
         # Project Tree
         self.projTree.clear()
@@ -360,6 +363,7 @@ class NWProject():
         # Finalise
         if popCustom or popMinimal:
             self.projOpened = time()
+            self._generateSessionID()
             self.setProjectChanged(True)
             self.saveProject(autoSave=True)
 
@@ -601,6 +605,7 @@ class NWProject():
         self.projAltered = False
 
         self._writeLockFile()
+        self._generateSessionID()
         self.setProjectChanged(False)
 
         return True
@@ -1496,6 +1501,16 @@ class NWProject():
             return False
 
         return True
+
+    def _generateSessionID(self):
+        """Generate a session ID based on the opened time. This function
+        hardcodes an epoch to make sure it can be reversed even if not
+        on the same system.
+        """
+        theEpoch = datetime.datetime(2000, 1, 1, tzinfo=datetime.timezone.utc).timestamp()
+        self.sessionID = "%08x" % int(self.projOpened - theEpoch)
+        logger.verbose("Session ID is %s" % self.sessionID)
+        return
 
     ##
     #  Legacy Data Structure Handlers
