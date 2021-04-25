@@ -98,7 +98,7 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
         assert theDoc.getError() == "OSError"
 
     # Saving with no handle
-    theDoc.clearDocument()
+    theDoc._docHandle = None
     assert not theDoc.writeDocument(theText)
 
     # Delete the last document

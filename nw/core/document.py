@@ -40,25 +40,19 @@ class NWDoc():
 
         # Internal Variables
         self._docHandle = theHandle
-        self._theItem   = self.theProject.projTree[theHandle]
+        self._theItem   = None
         self._fileLoc   = None
         self._docMeta   = {}
         self._docError  = ""
+
+        if theHandle is not None:
+            self._theItem = self.theProject.projTree[theHandle]
 
         return
 
     ##
     #  Class Methods
     ##
-
-    def clearDocument(self):
-        """Clear the document contents.
-        """
-        self._theItem   = None
-        self._docHandle = None
-        self._fileLoc   = None
-        self._docMeta   = {}
-        return
 
     def readDocument(self, isOrphan=False):
         """Read a document from set handle, capturing potential file
@@ -68,11 +62,11 @@ class NWDoc():
         """
         self._docError = ""
         if not isHandle(self._docHandle):
-            self._docError = "No document handle set."
+            logger.error("No document handle set")
             return None
 
         if self._theItem is None and not isOrphan:
-            self._docError = "Unknown novelWriter document."
+            logger.error("Unknown novelWriter document")
             return None
 
         docFile = self._docHandle+".nwd"
@@ -101,10 +95,6 @@ class NWDoc():
 
             except Exception as e:
                 self._docError = str(e)
-                # Note: Document must be cleared in case of an io error,
-                # or else the auto-save or save will try to overwrite it
-                # with an empty file. Return None to alert the caller.
-                self.clearDocument()
                 return None
 
         else:
@@ -121,7 +111,7 @@ class NWDoc():
         """
         self._docError = ""
         if not isHandle(self._docHandle):
-            self._docError = "No document handle set."
+            logger.error("No document handle set")
             return False
 
         self.theProject.ensureFolderStructure()
@@ -164,7 +154,7 @@ class NWDoc():
         """
         self._docError = ""
         if not isHandle(self._docHandle):
-            self._docError = "No document handle set."
+            logger.error("No document handle set")
             return False
 
         docFile = self._docHandle+".nwd"
