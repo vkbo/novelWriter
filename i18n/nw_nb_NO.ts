@@ -798,22 +798,22 @@
 <context>
     <name>GuiDocEditFooter</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2482"/>
+        <location filename="../nw/gui/doceditor.py" line="2489"/>
         <source>Status</source>
         <translation>Status</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2623"/>
+        <location filename="../nw/gui/doceditor.py" line="2630"/>
         <source>Line: {0} ({1})</source>
         <translation>Linje: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2639"/>
+        <location filename="../nw/gui/doceditor.py" line="2646"/>
         <source>Words: {0} ({1})</source>
         <translation>Ord: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2644"/>
+        <location filename="../nw/gui/doceditor.py" line="2651"/>
         <source>Document size is {0} bytes</source>
         <translation>Dokumentet er {0} byte</translation>
     </message>
@@ -821,22 +821,22 @@
 <context>
     <name>GuiDocEditHeader</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2274"/>
+        <location filename="../nw/gui/doceditor.py" line="2281"/>
         <source>Edit document meta</source>
         <translation>Rediger dokumentinstillinger</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2285"/>
+        <location filename="../nw/gui/doceditor.py" line="2292"/>
         <source>Search document</source>
         <translation>Søk i dokumentet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2296"/>
+        <location filename="../nw/gui/doceditor.py" line="2303"/>
         <source>Toggle Focus Mode</source>
         <translation>Slå av/på &quot;Fokus-modus&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2307"/>
+        <location filename="../nw/gui/doceditor.py" line="2314"/>
         <source>Close the document</source>
         <translation>Lukk dokumentet</translation>
     </message>
@@ -844,97 +844,97 @@
 <context>
     <name>GuiDocEditSearch</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1902"/>
+        <location filename="../nw/gui/doceditor.py" line="1909"/>
         <source>Search</source>
         <translation>Søk</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1893"/>
+        <location filename="../nw/gui/doceditor.py" line="1900"/>
         <source>Replace</source>
         <translation>Erstatt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1906"/>
+        <location filename="../nw/gui/doceditor.py" line="1913"/>
         <source>Case Sensitive</source>
         <translation>Skill store/små bokstaver</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1907"/>
+        <location filename="../nw/gui/doceditor.py" line="1914"/>
         <source>Match case</source>
         <translation>Søket skiller mellom store og små bokstaver</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1914"/>
+        <location filename="../nw/gui/doceditor.py" line="1921"/>
         <source>Whole Words Only</source>
         <translation>Kun hele ord</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1915"/>
+        <location filename="../nw/gui/doceditor.py" line="1922"/>
         <source>Match whole words</source>
         <translation>Søk kun etter hele ord</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1922"/>
+        <location filename="../nw/gui/doceditor.py" line="1929"/>
         <source>RegEx Mode</source>
         <translation>RegEx-modus</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1923"/>
+        <location filename="../nw/gui/doceditor.py" line="1930"/>
         <source>Search using regular expressions</source>
         <translation>Søk ved hjelp av &quot;regular expressions&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1930"/>
+        <location filename="../nw/gui/doceditor.py" line="1937"/>
         <source>Loop Search</source>
         <translation>Søk rundt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1931"/>
+        <location filename="../nw/gui/doceditor.py" line="1938"/>
         <source>Loop the search when reaching the end</source>
         <translation>Begynn søket på nytt når enden er nådd</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1938"/>
+        <location filename="../nw/gui/doceditor.py" line="1945"/>
         <source>Search Next File</source>
         <translation>Søk i neste file</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1939"/>
+        <location filename="../nw/gui/doceditor.py" line="1946"/>
         <source>Continue searching in the next file</source>
         <translation>Fortsett søket i neste fil</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1948"/>
+        <location filename="../nw/gui/doceditor.py" line="1955"/>
         <source>Preserve Case</source>
         <translation>Behold store/små bokstaver</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1949"/>
+        <location filename="../nw/gui/doceditor.py" line="1956"/>
         <source>Preserve case on replace</source>
         <translation>Behold store og små bokstaver på samme sted ved erstatt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1958"/>
+        <location filename="../nw/gui/doceditor.py" line="1965"/>
         <source>Close Search</source>
         <translation>Lukk søk</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1959"/>
+        <location filename="../nw/gui/doceditor.py" line="1966"/>
         <source>Close the search box [{0}]</source>
         <translation>Lukk søkeboksen [{0}]</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1971"/>
+        <location filename="../nw/gui/doceditor.py" line="1978"/>
         <source>Show/hide the replace text box</source>
         <translation>Vis/skjul erstatt-boksen</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1977"/>
+        <location filename="../nw/gui/doceditor.py" line="1984"/>
         <source>Find in current document</source>
         <translation>Søk i det åpne dokumentet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1982"/>
+        <location filename="../nw/gui/doceditor.py" line="1989"/>
         <source>Find and replace in current document</source>
         <translation>Søk og erstatt i det åpne dokumentet</translation>
     </message>
@@ -942,102 +942,102 @@
 <context>
     <name>GuiDocEditor</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="310"/>
+        <location filename="../nw/gui/doceditor.py" line="313"/>
         <source>The document you are trying to open is too big. The document size is {0} MB. The maximum size allowed is {1} MB.</source>
         <translation>Dokumentet du prøver å åpne er for stort. Dokumenter er på {0} MB. Den maksimale størrelsen tillat er {1} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="409"/>
+        <location filename="../nw/gui/doceditor.py" line="411"/>
         <source>The text you are trying to add is too big. The text size is {0} MB. The maximum size allowed is {1} MB.</source>
         <translation>Teksten du forsøker å legge til er for stor. Teksten er {0} MB. Den maksimale tillatte størrelsen er {1} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="687"/>
+        <location filename="../nw/gui/doceditor.py" line="694"/>
         <source>Spell check complete</source>
         <translation>Stavekontrollen er ferdig</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="781"/>
+        <location filename="../nw/gui/doceditor.py" line="788"/>
         <source>File Location</source>
         <translation>Filens plassering</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="781"/>
+        <location filename="../nw/gui/doceditor.py" line="788"/>
         <source>The currently open file is saved in:</source>
         <translation>Det åpne dokumentet er lagret på følgende sted:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="971"/>
+        <location filename="../nw/gui/doceditor.py" line="978"/>
         <source>The document has grown too big and you cannot add more text to it. The maximum size of a single novelWriter document is {0} MB.</source>
         <translation>Dokumentet har blitt for stort og du kan ikke legge til mer tekst. Den maksimale tillatte størrelsen for et novelWriter-dokument er {0} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1009"/>
+        <location filename="../nw/gui/doceditor.py" line="1016"/>
         <source>Follow Tag</source>
         <translation>Følg knagg</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1015"/>
+        <location filename="../nw/gui/doceditor.py" line="1022"/>
         <source>Cut</source>
         <translation>Klipp</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1019"/>
+        <location filename="../nw/gui/doceditor.py" line="1026"/>
         <source>Copy</source>
         <translation>Kopier</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1023"/>
+        <location filename="../nw/gui/doceditor.py" line="1030"/>
         <source>Paste</source>
         <translation>Lim inn</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1032"/>
+        <location filename="../nw/gui/doceditor.py" line="1039"/>
         <source>Select All</source>
         <translation>Velg hele teksten</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1036"/>
+        <location filename="../nw/gui/doceditor.py" line="1043"/>
         <source>Select Word</source>
         <translation>Velg hele ordet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1042"/>
+        <location filename="../nw/gui/doceditor.py" line="1049"/>
         <source>Select Paragraph</source>
         <translation>Velg hele avsnittet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1068"/>
+        <location filename="../nw/gui/doceditor.py" line="1075"/>
         <source>Spelling Suggestion(s)</source>
         <translation>Forslag fra stavekontrollen</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1080"/>
+        <location filename="../nw/gui/doceditor.py" line="1087"/>
         <source>No Suggestions</source>
         <translation>Ingen forslag</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1086"/>
+        <location filename="../nw/gui/doceditor.py" line="1093"/>
         <source>Add Word to Dictionary</source>
         <translation>Legg til ord i ordbok</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1514"/>
+        <location filename="../nw/gui/doceditor.py" line="1521"/>
         <source>Please select some text before calling replace quotes.</source>
         <translation>Venligst velg en del av teksten før du velger å erstatte sitattegn.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="384"/>
+        <location filename="../nw/gui/doceditor.py" line="386"/>
         <source>Opened Document: {0}</source>
         <translation>Åpnet dokument: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="474"/>
+        <location filename="../nw/gui/doceditor.py" line="482"/>
         <source>Saved Document: {0}</source>
         <translation>Lagret dokument: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="450"/>
+        <location filename="../nw/gui/doceditor.py" line="458"/>
         <source>Could not save document.</source>
         <translation>Kunne ikke lagre dokumentet.</translation>
     </message>

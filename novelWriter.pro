@@ -1,6 +1,5 @@
 SOURCES += \
     i18n/dummy_qtbase.py \
-    nw/core/document.py \
     nw/core/project.py \
     nw/core/tokenizer.py \
     nw/dialogs/about.py \
