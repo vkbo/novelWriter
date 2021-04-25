@@ -798,22 +798,22 @@
 <context>
     <name>GuiDocEditFooter</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2464"/>
+        <location filename="../nw/gui/doceditor.py" line="2475"/>
         <source>Status</source>
         <translation>État</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2605"/>
+        <location filename="../nw/gui/doceditor.py" line="2616"/>
         <source>Line: {0} ({1})</source>
         <translation>Ligne: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2621"/>
+        <location filename="../nw/gui/doceditor.py" line="2632"/>
         <source>Words: {0} ({1})</source>
         <translation>Mots: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2626"/>
+        <location filename="../nw/gui/doceditor.py" line="2637"/>
         <source>Document size is {0} bytes</source>
         <translation>La taille du document est de {0} octets</translation>
     </message>
@@ -821,22 +821,22 @@
 <context>
     <name>GuiDocEditHeader</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2256"/>
+        <location filename="../nw/gui/doceditor.py" line="2267"/>
         <source>Edit document meta</source>
         <translation>Modifier les métadonnées du document</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2267"/>
+        <location filename="../nw/gui/doceditor.py" line="2278"/>
         <source>Search document</source>
         <translation>Chercher dans le document</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2278"/>
+        <location filename="../nw/gui/doceditor.py" line="2289"/>
         <source>Toggle Focus Mode</source>
         <translation>Basculer le mode focus</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2289"/>
+        <location filename="../nw/gui/doceditor.py" line="2300"/>
         <source>Close the document</source>
         <translation>Fermer le document</translation>
     </message>
@@ -844,97 +844,97 @@
 <context>
     <name>GuiDocEditSearch</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1884"/>
+        <location filename="../nw/gui/doceditor.py" line="1895"/>
         <source>Search</source>
         <translation>Chercher</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1875"/>
+        <location filename="../nw/gui/doceditor.py" line="1886"/>
         <source>Replace</source>
         <translation>Remplacer</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1888"/>
+        <location filename="../nw/gui/doceditor.py" line="1899"/>
         <source>Case Sensitive</source>
         <translation>Sensible à la casse</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1889"/>
+        <location filename="../nw/gui/doceditor.py" line="1900"/>
         <source>Match case</source>
         <translation>Respecter la casse</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1896"/>
+        <location filename="../nw/gui/doceditor.py" line="1907"/>
         <source>Whole Words Only</source>
         <translation>Mots entiers uniquement</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1897"/>
+        <location filename="../nw/gui/doceditor.py" line="1908"/>
         <source>Match whole words</source>
         <translation>Ne vérifier la correspondance que sur des mots entiers</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1904"/>
+        <location filename="../nw/gui/doceditor.py" line="1915"/>
         <source>RegEx Mode</source>
         <translation>Expressions régulières</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1905"/>
+        <location filename="../nw/gui/doceditor.py" line="1916"/>
         <source>Search using regular expressions</source>
         <translation>Chercher en utilisant des expressions régulières</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1912"/>
+        <location filename="../nw/gui/doceditor.py" line="1923"/>
         <source>Loop Search</source>
         <translation>Recherche en boucle</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1913"/>
+        <location filename="../nw/gui/doceditor.py" line="1924"/>
         <source>Loop the search when reaching the end</source>
         <translation>Reprendre la recherche au début du texte lorsque la fin est atteinte</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1920"/>
+        <location filename="../nw/gui/doceditor.py" line="1931"/>
         <source>Search Next File</source>
         <translation>Chercher dans le fichier suivant</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1921"/>
+        <location filename="../nw/gui/doceditor.py" line="1932"/>
         <source>Continue searching in the next file</source>
         <translation>Continuer la recherche dans le fichier suivant</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1930"/>
+        <location filename="../nw/gui/doceditor.py" line="1941"/>
         <source>Preserve Case</source>
         <translation>Conserver la casse</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1931"/>
+        <location filename="../nw/gui/doceditor.py" line="1942"/>
         <source>Preserve case on replace</source>
         <translation>Conserver la casse lors d&apos;un remplacement</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1940"/>
+        <location filename="../nw/gui/doceditor.py" line="1951"/>
         <source>Close Search</source>
         <translation>Terminer la recherche</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1941"/>
+        <location filename="../nw/gui/doceditor.py" line="1952"/>
         <source>Close the search box [{0}]</source>
         <translation>Fermer la boîte de recherche [{0}]</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1953"/>
+        <location filename="../nw/gui/doceditor.py" line="1964"/>
         <source>Show/hide the replace text box</source>
         <translation>Montrer/cacher le texte de remplacement</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1959"/>
+        <location filename="../nw/gui/doceditor.py" line="1970"/>
         <source>Find in current document</source>
         <translation>Chercher dans le document actuel</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1964"/>
+        <location filename="../nw/gui/doceditor.py" line="1975"/>
         <source>Find and replace in current document</source>
         <translation>Chercher et remplacer dans le document actuel</translation>
     </message>
@@ -947,84 +947,94 @@
         <translation>Le document que vous essayez d&apos;ouvrir est trop grand. La taille du document est de {0} MB alors que la taille maximale est de {1} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="401"/>
+        <location filename="../nw/gui/doceditor.py" line="407"/>
         <source>The text you are trying to add is too big. The text size is {0} MB. The maximum size allowed is {1} MB.</source>
         <translation>Le texte que vous voulez ajouter est trop grand. La taille du texte est de {0} MB alors que la taille maximale est de {1} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="669"/>
+        <location filename="../nw/gui/doceditor.py" line="680"/>
         <source>Spell check complete</source>
         <translation>La vérification orthographique est terminée</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="763"/>
+        <location filename="../nw/gui/doceditor.py" line="774"/>
         <source>File Location</source>
         <translation>Emplacement du fichier</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="763"/>
+        <location filename="../nw/gui/doceditor.py" line="774"/>
         <source>The currently open file is saved in:</source>
         <translation>Le fichier actuellement ouvert est enregistré dans :</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="953"/>
+        <location filename="../nw/gui/doceditor.py" line="964"/>
         <source>The document has grown too big and you cannot add more text to it. The maximum size of a single novelWriter document is {0} MB.</source>
         <translation>Le document est devenu trop grand et vous ne pouvez plus lui ajouter de texte. La taille maximale d&apos;un fichier novelWriter est de {0} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="991"/>
+        <location filename="../nw/gui/doceditor.py" line="1002"/>
         <source>Follow Tag</source>
         <translation>Suivre cette étiquette</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="997"/>
+        <location filename="../nw/gui/doceditor.py" line="1008"/>
         <source>Cut</source>
         <translation>Couper</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1001"/>
+        <location filename="../nw/gui/doceditor.py" line="1012"/>
         <source>Copy</source>
         <translation>Copier</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1005"/>
+        <location filename="../nw/gui/doceditor.py" line="1016"/>
         <source>Paste</source>
         <translation>Coller</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1014"/>
+        <location filename="../nw/gui/doceditor.py" line="1025"/>
         <source>Select All</source>
         <translation>Sélectionner tout</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1018"/>
+        <location filename="../nw/gui/doceditor.py" line="1029"/>
         <source>Select Word</source>
         <translation>Sélectionner le mot</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1024"/>
+        <location filename="../nw/gui/doceditor.py" line="1035"/>
         <source>Select Paragraph</source>
         <translation>Sélectionner le paragraphe</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1050"/>
+        <location filename="../nw/gui/doceditor.py" line="1061"/>
         <source>Spelling Suggestion(s)</source>
         <translation>Orthographe suggérée</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1062"/>
+        <location filename="../nw/gui/doceditor.py" line="1073"/>
         <source>No Suggestions</source>
         <translation>Pas de suggestion</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1068"/>
+        <location filename="../nw/gui/doceditor.py" line="1079"/>
         <source>Add Word to Dictionary</source>
         <translation>Ajouter ce mot au dictionnaire</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1496"/>
+        <location filename="../nw/gui/doceditor.py" line="1507"/>
         <source>Please select some text before calling replace quotes.</source>
         <translation>Veuillez sélectionner du texte avant de demander le remplacement des guillemets.</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/doceditor.py" line="382"/>
+        <source>Opened Document: {0}</source>
+        <translation>Document ouvert : {0}</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/doceditor.py" line="467"/>
+        <source>Saved Document: {0}</source>
+        <translation>Document enregistré : {0}</translation>
     </message>
 </context>
 <context>
@@ -1050,17 +1060,17 @@
         <translation>Pas de document source trouvé. Aucune action.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docmerge.py" line="117"/>
+        <location filename="../nw/dialogs/docmerge.py" line="118"/>
         <source>No source document selected. Nothing to do.</source>
         <translation>Pas de document source sélectionné. Aucune action.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docmerge.py" line="124"/>
+        <location filename="../nw/dialogs/docmerge.py" line="125"/>
         <source>Could not parse source document.</source>
         <translation>Impossible d&apos;interpréter le nom du document source.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docmerge.py" line="167"/>
+        <location filename="../nw/dialogs/docmerge.py" line="168"/>
         <source>Element selected in the project tree must be a folder.</source>
         <translation>L&apos;élement selectionné dans l&apos;arborescence doit être un dossier.</translation>
     </message>
@@ -1068,7 +1078,7 @@
 <context>
     <name>GuiDocSplit</name>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="167"/>
+        <location filename="../nw/dialogs/docsplit.py" line="170"/>
         <source>Split Document</source>
         <translation>Découper un document</translation>
     </message>
@@ -1113,27 +1123,27 @@
         <translation>Impossible d&apos;interpréter le nom du document source.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="150"/>
+        <location filename="../nw/dialogs/docsplit.py" line="153"/>
         <source>No headers found. Nothing to do.</source>
         <translation>Pas d&apos;en-tête trouvé. Aucune action.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="158"/>
+        <location filename="../nw/dialogs/docsplit.py" line="161"/>
         <source>Cannot add new folder for the document split. Maximum folder depth has been reached. Please move the file to another level in the project tree.</source>
         <translation>Impossible d&apos;ajouter un nouveau dossier lors du découpage. Le nombre maximum de dossiers a été atteint. Veuillez placer ce fichier à un autre niveau dans l&apos;arborescence.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="167"/>
+        <location filename="../nw/dialogs/docsplit.py" line="170"/>
         <source>The document will be split into {0} file(s) in a new folder. The original document will remain intact.</source>
         <translation>Ce document va être découpé en {0} fichier(s) dans un nouveau dossier. Le document d&apos;origine restera intact.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="167"/>
+        <location filename="../nw/dialogs/docsplit.py" line="170"/>
         <source>Continue with the splitting process?</source>
         <translation>Continuer le découpage ?</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="253"/>
+        <location filename="../nw/dialogs/docsplit.py" line="256"/>
         <source>Element selected in the project tree must be a file.</source>
         <translation>L&apos;élément sélectionné dans l&apos;arborescence doit être un fichier.</translation>
     </message>
@@ -1379,7 +1389,7 @@
         <translation>Fermer le projet en cours ?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1151"/>
+        <location filename="../nw/guimain.py" line="1147"/>
         <source>Changes are saved automatically.</source>
         <translation>Les changements sont enregistrés automatiquement.</translation>
     </message>
@@ -1464,57 +1474,57 @@
         <translation>Le contenu du fichier importé va remplacer le contenu actuel du document. Faut-il continuer ?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="887"/>
+        <location filename="../nw/guimain.py" line="886"/>
         <source>Indexing: &apos;{0}&apos;</source>
         <translation>Indexation d e: &apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="887"/>
+        <location filename="../nw/guimain.py" line="886"/>
         <source>Unknown item</source>
         <translation>Item inconnu</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="905"/>
+        <location filename="../nw/guimain.py" line="901"/>
         <source>Indexing completed in {0} ms</source>
         <translation>Indexation effectuée en {0} ms</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="912"/>
+        <location filename="../nw/guimain.py" line="908"/>
         <source>The project index has been successfully rebuilt.</source>
         <translation>L&apos;index du projet a été correctement reconstruit.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1115"/>
+        <location filename="../nw/guimain.py" line="1111"/>
         <source>Information</source>
         <translation>Information</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1117"/>
+        <location filename="../nw/guimain.py" line="1113"/>
         <source>Warning</source>
         <translation>Avertissement</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1119"/>
+        <location filename="../nw/guimain.py" line="1115"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1121"/>
+        <location filename="../nw/guimain.py" line="1117"/>
         <source>This is a bug!</source>
         <translation>Ceci est un bug !</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1122"/>
+        <location filename="../nw/guimain.py" line="1118"/>
         <source>Internal Error</source>
         <translation>Erreur interne</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1151"/>
+        <location filename="../nw/guimain.py" line="1147"/>
         <source>Exit</source>
         <translation>Sortir</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1151"/>
+        <location filename="../nw/guimain.py" line="1147"/>
         <source>Do you want to exit novelWriter?</source>
         <translation>Voulez-vous sortir de novelWriter ?</translation>
     </message>
@@ -3940,57 +3950,57 @@
         <translation>Nouveau dossier</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="432"/>
+        <location filename="../nw/gui/projtree.py" line="435"/>
         <source>There is currently no Trash folder in this project.</source>
         <translation>Il n&apos;existe pas actuellement de dossier Corbeille pour ce projet.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="443"/>
+        <location filename="../nw/gui/projtree.py" line="446"/>
         <source>The Trash folder is already empty.</source>
         <translation>Le dossier Corbeille est déjà vide.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="446"/>
+        <location filename="../nw/gui/projtree.py" line="449"/>
         <source>Empty Trash</source>
         <translation>Vider la Corbeille</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="446"/>
+        <location filename="../nw/gui/projtree.py" line="449"/>
         <source>Permanently delete {0} file(s) from Trash?</source>
         <translation>Effacer définitivement {0} fichier(s) dans la Corbeille ?</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="536"/>
+        <location filename="../nw/gui/projtree.py" line="539"/>
         <source>Delete File</source>
         <translation>Effacer un fichier</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="508"/>
+        <location filename="../nw/gui/projtree.py" line="511"/>
         <source>Permanently delete file &apos;{0}&apos;?</source>
         <translation>Effacer définitivement le fichier &apos;{0}&apos; ?</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="536"/>
+        <location filename="../nw/gui/projtree.py" line="539"/>
         <source>Move file &apos;{0}&apos; to Trash?</source>
         <translation>Mettre le fichier &apos;{0}&apos; dans la Corbeille ?</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="569"/>
+        <location filename="../nw/gui/projtree.py" line="572"/>
         <source>Cannot delete folder. It is not empty. Recursive deletion is not supported. Please delete the content first.</source>
         <translation>Impossible d&apos;effacer le dossier car il n&apos;est pas vide. Les effacements récursifs n&apos;étant pas permis vous devez d&apos;abord effacer le contenu.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="585"/>
+        <location filename="../nw/gui/projtree.py" line="588"/>
         <source>Cannot delete root folder. It is not empty. Recursive deletion is not supported. Please delete the content first.</source>
         <translation>Impossible d&apos;effacer le dossier racine car il n&apos;est pas vide. Les effacements récursifs n&apos;étant pas permis vous devez d&apos;abord effacer le contenu.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="872"/>
+        <location filename="../nw/gui/projtree.py" line="875"/>
         <source>The item cannot be moved to that location.</source>
         <translation>Impossible de déplacer cet item vers cet emplacement.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="969"/>
+        <location filename="../nw/gui/projtree.py" line="972"/>
         <source>There is nowhere to add item with name &apos;{0}&apos;.</source>
         <translation>Il n&apos;y a pas d&apos;emplacement pour ajouter l&apos;item nommé &apos;{0}&apos;.</translation>
     </message>
@@ -3998,52 +4008,52 @@
 <context>
     <name>GuiProjectTreeMenu</name>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1091"/>
+        <location filename="../nw/gui/projtree.py" line="1094"/>
         <source>Edit Project Item</source>
         <translation>Éditer les caractéristiques</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1095"/>
+        <location filename="../nw/gui/projtree.py" line="1098"/>
         <source>Open Document</source>
         <translation>Ouvrir ce document</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1099"/>
+        <location filename="../nw/gui/projtree.py" line="1102"/>
         <source>View Document</source>
         <translation>Afficher ce document</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1103"/>
+        <location filename="../nw/gui/projtree.py" line="1106"/>
         <source>Toggle Included Flag</source>
         <translation>Basculer le marqueur d&apos;inclusion</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1107"/>
+        <location filename="../nw/gui/projtree.py" line="1110"/>
         <source>New File</source>
         <translation>Nouveau fichier</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1111"/>
+        <location filename="../nw/gui/projtree.py" line="1114"/>
         <source>New Folder</source>
         <translation>Nouveau dossier</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1115"/>
+        <location filename="../nw/gui/projtree.py" line="1118"/>
         <source>Delete Item</source>
         <translation>Supprimer ce composant</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1119"/>
+        <location filename="../nw/gui/projtree.py" line="1122"/>
         <source>Empty Trash</source>
         <translation>Vider la corbeille</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1123"/>
+        <location filename="../nw/gui/projtree.py" line="1126"/>
         <source>Move Item Up</source>
         <translation>Faire monter ce composant</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1127"/>
+        <location filename="../nw/gui/projtree.py" line="1130"/>
         <source>Move Item Down</source>
         <translation>Faire descendre ce composant</translation>
     </message>
@@ -4240,22 +4250,12 @@
         <translation>Impossible d&apos;ouvrir le document.</translation>
     </message>
     <message>
-        <location filename="../nw/core/document.py" line="131"/>
-        <source>Opened Document: {0}</source>
-        <translation>Document ouvert : {0}</translation>
-    </message>
-    <message>
-        <location filename="../nw/core/document.py" line="167"/>
+        <location filename="../nw/core/document.py" line="162"/>
         <source>Could not save document.</source>
         <translation>Impossible d&apos;enregistrer le document.</translation>
     </message>
     <message>
-        <location filename="../nw/core/document.py" line="177"/>
-        <source>Saved Document: {0}</source>
-        <translation>Document enregistré : {0}</translation>
-    </message>
-    <message>
-        <location filename="../nw/core/document.py" line="202"/>
+        <location filename="../nw/core/document.py" line="192"/>
         <source>Could not delete document file.</source>
         <translation>Impossible d&apos;effacer le document.</translation>
     </message>
@@ -4923,12 +4923,12 @@
         <translation>Synopsis</translation>
     </message>
     <message>
-        <location filename="../nw/core/tokenizer.py" line="291"/>
+        <location filename="../nw/core/tokenizer.py" line="294"/>
         <source>Document &apos;{0}&apos; is too big ({1} MB). Skipping.</source>
         <translation>Le document &apos;{0}&apos; est trop grand ({1} Mo). Ignoré.</translation>
     </message>
     <message>
-        <location filename="../nw/core/tokenizer.py" line="294"/>
+        <location filename="../nw/core/tokenizer.py" line="297"/>
         <source>ERROR</source>
         <translation>ERREUR</translation>
     </message>
