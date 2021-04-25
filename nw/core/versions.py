@@ -26,10 +26,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import nw
 import os
+import time
 import shutil
 import logging
 
-from nw.common import isHandle, safeUnlink, safeFileRead, safeMakeDir
+from nw.common import (
+    isHandle, safeUnlink, safeFileRead, safeMakeDir, formatTimeStamp
+)
 
 logger = logging.getLogger(__name__)
 
@@ -123,6 +126,48 @@ class NWVersions():
 
             except Exception:
                 logger.error("Failed to save session version file")
+                nw.logException()
+                return False
+
+        return True
+
+    def saveVersion(self, theMessage):
+        """Save a permament version file with a message.
+        """
+        if self._versionPath is None:
+            return False
+
+        if not safeMakeDir(self._versionPath):
+            return False
+
+        sessID   = self.theProject.sessionID
+        dataFile = os.path.join(self._versionPath, "versions.dat")
+
+        versFile = None
+        versNum  = 0
+        for nItt in range(100):
+            versFile = os.path.join(self._versionPath, "%s_%s_%02d.nwd" % (
+                self._docHandle, sessID, nItt
+            ))
+            if not os.path.isfile(versFile):
+                versNum = nItt
+                break
+
+        if versFile is None:
+            logger.error("Failed to generate unique version file name")
+            return False
+
+        if os.path.isfile(self._docLocation):
+            try:
+                shutil.copy2(self._docLocation, versFile)
+                with open(dataFile, mode="a+", encoding="utf8") as outFile:
+                    outFile.write("%8s_%02d  %19s  %s\n" % (
+                        sessID, versNum, formatTimeStamp(time.time()), str(theMessage)
+                    ))
+                logger.debug("Saved version file for %s" % self._docHandle)
+
+            except Exception:
+                logger.error("Failed to save version file: %s" % versFile)
                 nw.logException()
                 return False
 
