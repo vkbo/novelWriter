@@ -37,7 +37,7 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
     assert theProject.openProject(nwMinimal)
     assert theProject.projPath == nwMinimal
 
-    theDoc = NWDoc(theProject, dummyGUI)
+    theDoc = NWDoc(theProject)
     sHandle = "8c659a11cd429"
 
     # Not a valid handle
@@ -126,7 +126,7 @@ def testCoreDocument_Methods(monkeypatch, dummyGUI, nwMinimal):
     assert theProject.openProject(nwMinimal)
     assert theProject.projPath == nwMinimal
 
-    theDoc = NWDoc(theProject, dummyGUI)
+    theDoc = NWDoc(theProject)
     sHandle = "8c659a11cd429"
     docPath = os.path.join(nwMinimal, "content", sHandle+".nwd")
 

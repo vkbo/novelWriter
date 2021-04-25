@@ -75,7 +75,7 @@ class GuiDocEditor(QTextEdit):
         self.theTheme   = theParent.theTheme
         self.theIndex   = theParent.theIndex
         self.theProject = theParent.theProject
-        self.nwDocument = NWDoc(self.theProject, self.theParent)
+        self.nwDocument = NWDoc(self.theProject)
 
         self.docChanged = False # Flag for changed status of document
         self.spellCheck = False # Flag for spell checking enabled

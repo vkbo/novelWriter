@@ -76,10 +76,10 @@ class Tokenizer():
     A_Z_TOPMRG = 0x0100 # Zero top margin
     A_Z_BTMMRG = 0x0200 # Zero bottom margin
 
-    def __init__(self, theProject, theParent):
+    def __init__(self, theProject):
 
         self.theProject = theProject
-        self.theParent  = theParent
+        self.theParent  = theProject.theParent
 
         # Data Variables
         self.theText     = ""   # The raw text to be tokenized
@@ -284,7 +284,7 @@ class Tokenizer():
             self.theText = theText
         else:
             # Otherwise, load it from file
-            theDoc  = NWDoc(self.theProject, self.theParent)
+            theDoc  = NWDoc(self.theProject)
             theText = theDoc.readDocument(theHandle)
             if theText:
                 self.theText = theText

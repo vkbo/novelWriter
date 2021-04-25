@@ -266,7 +266,7 @@ class NWProject():
             titlePage = "%s%s %s\n" % (titlePage, self.tr("By"), self.getAuthors())
 
         # Document object for writing files
-        aDoc = NWDoc(self, self.theParent)
+        aDoc = NWDoc(self)
 
         if popMinimal:
             # Creating a minimal project with a few root folders and a
@@ -1393,7 +1393,7 @@ class NWProject():
             return
 
         # Handle orphans
-        aDoc = NWDoc(self, self.theParent)
+        aDoc = NWDoc(self)
         nOrph = 0
         noWhere = False
         oPrefix = self.tr("Recovered")

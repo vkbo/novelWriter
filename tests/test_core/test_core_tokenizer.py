@@ -33,7 +33,7 @@ def testCoreToken_Setters(dummyGUI):
     """Test all the setters for the Tokenizer class.
     """
     theProject = NWProject(dummyGUI)
-    theToken = Tokenizer(theProject, dummyGUI)
+    theToken = Tokenizer(theProject)
 
     # Verify defaults
     assert theToken.fmtTitle == "%title%"
@@ -120,7 +120,7 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
     theProject.projLang = "en"
     theProject._loadProjectLocalisation()
 
-    theToken = Tokenizer(theProject, dummyGUI)
+    theToken = Tokenizer(theProject)
     theToken.setKeepMarkdown(True)
 
     assert theProject.openProject(nwMinimal)
@@ -137,7 +137,7 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
     )
     docTextR = docText.replace("<A>", "this").replace("<B>", "that")
 
-    nDoc = NWDoc(theProject, dummyGUI)
+    nDoc = NWDoc(theProject)
     nDoc.readDocument(sHandle)
     nDoc.writeDocument(docText)
     nDoc.clearDocument()
@@ -200,7 +200,7 @@ def testCoreToken_Tokenize(dummyGUI):
     """Test the tokenization of the Tokenizer class.
     """
     theProject = NWProject(dummyGUI)
-    theToken = Tokenizer(theProject, dummyGUI)
+    theToken = Tokenizer(theProject)
     theToken.setKeepMarkdown(True)
 
     # Header 1
@@ -417,7 +417,7 @@ def testCoreToken_Headers(dummyGUI):
     theProject = NWProject(dummyGUI)
     theProject.projLang = "en"
     theProject._loadProjectLocalisation()
-    theToken = Tokenizer(theProject, dummyGUI)
+    theToken = Tokenizer(theProject)
 
     # Nothing
     theToken.theText = "Some text ...\n"

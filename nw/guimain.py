@@ -88,7 +88,7 @@ class GuiMain(QMainWindow):
         # Core Classes and Settings
         self.theTheme    = GuiTheme(self)
         self.theProject  = NWProject(self)
-        self.theIndex    = NWIndex(self.theProject, self)
+        self.theIndex    = NWIndex(self.theProject)
         self.hasProject  = False
         self.isFocusMode = False
         self.idleRefTime = time()

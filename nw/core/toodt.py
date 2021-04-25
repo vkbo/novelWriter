@@ -65,8 +65,8 @@ class ToOdt(Tokenizer):
     X_BRK = 0x08 # Line break
     X_TAB = 0x10 # Tab
 
-    def __init__(self, theProject, theParent, isFlat):
-        Tokenizer.__init__(self, theProject, theParent)
+    def __init__(self, theProject, isFlat):
+        Tokenizer.__init__(self, theProject)
 
         self.mainConf = nw.CONFIG
 

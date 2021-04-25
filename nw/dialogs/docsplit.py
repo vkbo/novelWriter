@@ -127,7 +127,7 @@ class GuiDocSplit(QDialog):
             )
             return
 
-        theDoc  = NWDoc(self.theProject, self.theParent)
+        theDoc  = NWDoc(self.theProject)
         theText = theDoc.readDocument(self.sourceItem)
         if theText is None:
             theText = ""
@@ -259,7 +259,7 @@ class GuiDocSplit(QDialog):
             return
 
         self.listBox.clear()
-        theDoc  = NWDoc(self.theProject, self.theParent)
+        theDoc  = NWDoc(self.theProject)
         theText = theDoc.readDocument(self.sourceItem)
         if theText is None:
             theText = ""

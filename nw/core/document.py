@@ -38,10 +38,10 @@ logger = logging.getLogger(__name__)
 
 class NWDoc():
 
-    def __init__(self, theProject, theParent):
+    def __init__(self, theProject):
 
         self.theProject = theProject
-        self.theParent  = theParent
+        self.theParent  = theProject.theParent
 
         # Internal Variables
         self._theItem   = None # The currently open item
