@@ -32,7 +32,7 @@ from functools import partial
 from PyQt5.QtCore import QCoreApplication
 
 from nw.enum import nwAlert, nwItemLayout, nwItemClass
-from nw.common import isHandle
+from nw.common import isHandle, safeMakeDir, formatTimeStamp
 
 logger = logging.getLogger(__name__)
 
@@ -134,7 +134,7 @@ class NWDoc():
 
         return theText
 
-    def saveDocument(self, docText):
+    def saveDocument(self, docText, versionSuffix=None, metaTime=0, metaNote=""):
         """Save the document. The file is saved via a temp file in case
         of save failure. Returns True if successful, False if not.
         """
@@ -143,11 +143,18 @@ class NWDoc():
 
         self.theProject.ensureFolderStructure()
 
-        docFile = self._docHandle+".nwd"
-        logger.debug("Saving document %s" % docFile)
+        if versionSuffix is None:
+            docFile = "%s.nwd" % self._docHandle
+            docBase = self.theProject.projContent
+        else:
+            docFile = "%s_%s.nwd" % (self._docHandle, versionSuffix)
+            docBase = os.path.join(self.theProject.projVers, self._docHandle)
+            safeMakeDir(docBase)
 
-        docPath = os.path.join(self.theProject.projContent, docFile)
-        docTemp = os.path.join(self.theProject.projContent, docFile+"~")
+        docPath = os.path.join(docBase, docFile)
+        docTemp = os.path.join(docBase, docFile+"~")
+
+        logger.debug("Saving document %s" % docFile)
 
         # DocMeta line
         if self._theItem is None:
@@ -158,6 +165,11 @@ class NWDoc():
                 f"%%~path: {self._theItem.itemParent}/{self._theItem.itemHandle}\n"
                 f"%%~kind: {self._theItem.itemClass.name}/{self._theItem.itemLayout.name}\n"
             )
+            if versionSuffix is not None:
+                docMeta += (
+                    f"%%~sess: {self.theProject.sessionID}/{formatTimeStamp(int(metaTime))}\n"
+                    f"%%~note: {str(metaNote)}\n"
+                )
 
         try:
             with open(docTemp, mode="w", encoding="utf8") as outFile:
