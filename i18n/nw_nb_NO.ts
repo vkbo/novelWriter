@@ -798,22 +798,22 @@
 <context>
     <name>GuiDocEditFooter</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2475"/>
+        <location filename="../nw/gui/doceditor.py" line="2482"/>
         <source>Status</source>
         <translation>Status</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2616"/>
+        <location filename="../nw/gui/doceditor.py" line="2623"/>
         <source>Line: {0} ({1})</source>
         <translation>Linje: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2632"/>
+        <location filename="../nw/gui/doceditor.py" line="2639"/>
         <source>Words: {0} ({1})</source>
         <translation>Ord: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2637"/>
+        <location filename="../nw/gui/doceditor.py" line="2644"/>
         <source>Document size is {0} bytes</source>
         <translation>Dokumentet er {0} byte</translation>
     </message>
@@ -821,22 +821,22 @@
 <context>
     <name>GuiDocEditHeader</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2267"/>
+        <location filename="../nw/gui/doceditor.py" line="2274"/>
         <source>Edit document meta</source>
         <translation>Rediger dokumentinstillinger</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2278"/>
+        <location filename="../nw/gui/doceditor.py" line="2285"/>
         <source>Search document</source>
         <translation>Søk i dokumentet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2289"/>
+        <location filename="../nw/gui/doceditor.py" line="2296"/>
         <source>Toggle Focus Mode</source>
         <translation>Slå av/på &quot;Fokus-modus&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2300"/>
+        <location filename="../nw/gui/doceditor.py" line="2307"/>
         <source>Close the document</source>
         <translation>Lukk dokumentet</translation>
     </message>
@@ -844,97 +844,97 @@
 <context>
     <name>GuiDocEditSearch</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1895"/>
+        <location filename="../nw/gui/doceditor.py" line="1902"/>
         <source>Search</source>
         <translation>Søk</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1886"/>
+        <location filename="../nw/gui/doceditor.py" line="1893"/>
         <source>Replace</source>
         <translation>Erstatt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1899"/>
+        <location filename="../nw/gui/doceditor.py" line="1906"/>
         <source>Case Sensitive</source>
         <translation>Skill store/små bokstaver</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1900"/>
+        <location filename="../nw/gui/doceditor.py" line="1907"/>
         <source>Match case</source>
         <translation>Søket skiller mellom store og små bokstaver</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1907"/>
+        <location filename="../nw/gui/doceditor.py" line="1914"/>
         <source>Whole Words Only</source>
         <translation>Kun hele ord</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1908"/>
+        <location filename="../nw/gui/doceditor.py" line="1915"/>
         <source>Match whole words</source>
         <translation>Søk kun etter hele ord</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1915"/>
+        <location filename="../nw/gui/doceditor.py" line="1922"/>
         <source>RegEx Mode</source>
         <translation>RegEx-modus</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1916"/>
+        <location filename="../nw/gui/doceditor.py" line="1923"/>
         <source>Search using regular expressions</source>
         <translation>Søk ved hjelp av &quot;regular expressions&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1923"/>
+        <location filename="../nw/gui/doceditor.py" line="1930"/>
         <source>Loop Search</source>
         <translation>Søk rundt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1924"/>
+        <location filename="../nw/gui/doceditor.py" line="1931"/>
         <source>Loop the search when reaching the end</source>
         <translation>Begynn søket på nytt når enden er nådd</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1931"/>
+        <location filename="../nw/gui/doceditor.py" line="1938"/>
         <source>Search Next File</source>
         <translation>Søk i neste file</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1932"/>
+        <location filename="../nw/gui/doceditor.py" line="1939"/>
         <source>Continue searching in the next file</source>
         <translation>Fortsett søket i neste fil</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1941"/>
+        <location filename="../nw/gui/doceditor.py" line="1948"/>
         <source>Preserve Case</source>
         <translation>Behold store/små bokstaver</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1942"/>
+        <location filename="../nw/gui/doceditor.py" line="1949"/>
         <source>Preserve case on replace</source>
         <translation>Behold store og små bokstaver på samme sted ved erstatt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1951"/>
+        <location filename="../nw/gui/doceditor.py" line="1958"/>
         <source>Close Search</source>
         <translation>Lukk søk</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1952"/>
+        <location filename="../nw/gui/doceditor.py" line="1959"/>
         <source>Close the search box [{0}]</source>
         <translation>Lukk søkeboksen [{0}]</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1964"/>
+        <location filename="../nw/gui/doceditor.py" line="1971"/>
         <source>Show/hide the replace text box</source>
         <translation>Vis/skjul erstatt-boksen</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1970"/>
+        <location filename="../nw/gui/doceditor.py" line="1977"/>
         <source>Find in current document</source>
         <translation>Søk i det åpne dokumentet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1975"/>
+        <location filename="../nw/gui/doceditor.py" line="1982"/>
         <source>Find and replace in current document</source>
         <translation>Søk og erstatt i det åpne dokumentet</translation>
     </message>
@@ -942,99 +942,104 @@
 <context>
     <name>GuiDocEditor</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="308"/>
+        <location filename="../nw/gui/doceditor.py" line="310"/>
         <source>The document you are trying to open is too big. The document size is {0} MB. The maximum size allowed is {1} MB.</source>
         <translation>Dokumentet du prøver å åpne er for stort. Dokumenter er på {0} MB. Den maksimale størrelsen tillat er {1} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="407"/>
+        <location filename="../nw/gui/doceditor.py" line="409"/>
         <source>The text you are trying to add is too big. The text size is {0} MB. The maximum size allowed is {1} MB.</source>
         <translation>Teksten du forsøker å legge til er for stor. Teksten er {0} MB. Den maksimale tillatte størrelsen er {1} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="680"/>
+        <location filename="../nw/gui/doceditor.py" line="687"/>
         <source>Spell check complete</source>
         <translation>Stavekontrollen er ferdig</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="774"/>
+        <location filename="../nw/gui/doceditor.py" line="781"/>
         <source>File Location</source>
         <translation>Filens plassering</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="774"/>
+        <location filename="../nw/gui/doceditor.py" line="781"/>
         <source>The currently open file is saved in:</source>
         <translation>Det åpne dokumentet er lagret på følgende sted:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="964"/>
+        <location filename="../nw/gui/doceditor.py" line="971"/>
         <source>The document has grown too big and you cannot add more text to it. The maximum size of a single novelWriter document is {0} MB.</source>
         <translation>Dokumentet har blitt for stort og du kan ikke legge til mer tekst. Den maksimale tillatte størrelsen for et novelWriter-dokument er {0} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1002"/>
+        <location filename="../nw/gui/doceditor.py" line="1009"/>
         <source>Follow Tag</source>
         <translation>Følg knagg</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1008"/>
+        <location filename="../nw/gui/doceditor.py" line="1015"/>
         <source>Cut</source>
         <translation>Klipp</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1012"/>
+        <location filename="../nw/gui/doceditor.py" line="1019"/>
         <source>Copy</source>
         <translation>Kopier</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1016"/>
+        <location filename="../nw/gui/doceditor.py" line="1023"/>
         <source>Paste</source>
         <translation>Lim inn</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1025"/>
+        <location filename="../nw/gui/doceditor.py" line="1032"/>
         <source>Select All</source>
         <translation>Velg hele teksten</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1029"/>
+        <location filename="../nw/gui/doceditor.py" line="1036"/>
         <source>Select Word</source>
         <translation>Velg hele ordet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1035"/>
+        <location filename="../nw/gui/doceditor.py" line="1042"/>
         <source>Select Paragraph</source>
         <translation>Velg hele avsnittet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1061"/>
+        <location filename="../nw/gui/doceditor.py" line="1068"/>
         <source>Spelling Suggestion(s)</source>
         <translation>Forslag fra stavekontrollen</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1073"/>
+        <location filename="../nw/gui/doceditor.py" line="1080"/>
         <source>No Suggestions</source>
         <translation>Ingen forslag</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1079"/>
+        <location filename="../nw/gui/doceditor.py" line="1086"/>
         <source>Add Word to Dictionary</source>
         <translation>Legg til ord i ordbok</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1507"/>
+        <location filename="../nw/gui/doceditor.py" line="1514"/>
         <source>Please select some text before calling replace quotes.</source>
         <translation>Venligst velg en del av teksten før du velger å erstatte sitattegn.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="382"/>
+        <location filename="../nw/gui/doceditor.py" line="384"/>
         <source>Opened Document: {0}</source>
         <translation>Åpnet dokument: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="467"/>
+        <location filename="../nw/gui/doceditor.py" line="474"/>
         <source>Saved Document: {0}</source>
         <translation>Lagret dokument: {0}</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/doceditor.py" line="450"/>
+        <source>Could not save document.</source>
+        <translation>Kunne ikke lagre dokumentet.</translation>
     </message>
 </context>
 <context>
@@ -1060,25 +1065,35 @@
         <translation>Ingen kilde-dokument funnet. Det er ingenting å gjøre.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docmerge.py" line="118"/>
+        <location filename="../nw/dialogs/docmerge.py" line="123"/>
         <source>No source document selected. Nothing to do.</source>
         <translation>Ingen kilde-dokument er valgt. Det er ingenting å gjøre.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docmerge.py" line="125"/>
+        <location filename="../nw/dialogs/docmerge.py" line="130"/>
         <source>Could not parse source document.</source>
         <translation>Klarte ikke å lese kilde-dokumentet.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docmerge.py" line="168"/>
+        <location filename="../nw/dialogs/docmerge.py" line="177"/>
         <source>Element selected in the project tree must be a folder.</source>
         <translation>Elementet som er valgt i prosjekttreet må være en mappe.</translation>
+    </message>
+    <message>
+        <location filename="../nw/dialogs/docmerge.py" line="116"/>
+        <source>Failed to open document file.</source>
+        <translation>Kunne ikke åpne dokumentets fil.</translation>
+    </message>
+    <message>
+        <location filename="../nw/dialogs/docmerge.py" line="141"/>
+        <source>Could not save document.</source>
+        <translation>Kunne ikke lagre dokumentet.</translation>
     </message>
 </context>
 <context>
     <name>GuiDocSplit</name>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="170"/>
+        <location filename="../nw/dialogs/docsplit.py" line="177"/>
         <source>Split Document</source>
         <translation>Del opp dokument</translation>
     </message>
@@ -1123,29 +1138,39 @@
         <translation>Klarte ikke å lese kilde-dokumentet.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="153"/>
+        <location filename="../nw/dialogs/docsplit.py" line="160"/>
         <source>No headers found. Nothing to do.</source>
         <translation>Ingen overskrifter ble funnet i dokumentet. Det er ikke noe å gjøre.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="161"/>
+        <location filename="../nw/dialogs/docsplit.py" line="168"/>
         <source>Cannot add new folder for the document split. Maximum folder depth has been reached. Please move the file to another level in the project tree.</source>
         <translation>Kan ikke legge til ny mappe for å dele opp dokumentet. Dokumentet har allerede maksimal dybde i prosjekttreet. Flytt dokumentet til et annet nivå først.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="170"/>
+        <location filename="../nw/dialogs/docsplit.py" line="177"/>
         <source>The document will be split into {0} file(s) in a new folder. The original document will remain intact.</source>
         <translation>Dokumentet vil nå bli delt opp i {0} nye filer i en ny mappe. Det originale dokumentet vil ikke bli endret eller fjernet.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="170"/>
+        <location filename="../nw/dialogs/docsplit.py" line="177"/>
         <source>Continue with the splitting process?</source>
         <translation>Fortsette med oppdelingen?</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="256"/>
+        <location filename="../nw/dialogs/docsplit.py" line="267"/>
         <source>Element selected in the project tree must be a file.</source>
         <translation>Elementet som er valgt i prosjekttreet må være et dokument.</translation>
+    </message>
+    <message>
+        <location filename="../nw/dialogs/docsplit.py" line="135"/>
+        <source>Failed to open document file.</source>
+        <translation>Kunne ikke åpne dokumentets fil.</translation>
+    </message>
+    <message>
+        <location filename="../nw/dialogs/docsplit.py" line="230"/>
+        <source>Could not save document.</source>
+        <translation>Kunne ikke lagre dokumentet.</translation>
     </message>
 </context>
 <context>
@@ -3965,7 +3990,7 @@
         <translation>Vil du slette {0} filer i søppel-mappen for godt?</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="539"/>
+        <location filename="../nw/gui/projtree.py" line="544"/>
         <source>Delete File</source>
         <translation>Slett fil</translation>
     </message>
@@ -3975,22 +4000,22 @@
         <translation>Slette filen &apos;{0}&apos; for godt?</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="539"/>
+        <location filename="../nw/gui/projtree.py" line="544"/>
         <source>Move file &apos;{0}&apos; to Trash?</source>
         <translation>Vil du flytte filen &apos;{0}&apos; til søpla?</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="572"/>
+        <location filename="../nw/gui/projtree.py" line="577"/>
         <source>Cannot delete folder. It is not empty. Recursive deletion is not supported. Please delete the content first.</source>
         <translation>Kan ikke slette mappen da den ikke er tom. Rekursiv sletting er ikke støttet. Du må slette innholdet først.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="588"/>
+        <location filename="../nw/gui/projtree.py" line="593"/>
         <source>Cannot delete root folder. It is not empty. Recursive deletion is not supported. Please delete the content first.</source>
         <translation>Kan ikke slette hovedmappen da den ikke er tom. Rekursiv sletting er ikke støttet. Du må slette innholdet først.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="875"/>
+        <location filename="../nw/gui/projtree.py" line="880"/>
         <source>The item cannot be moved to that location.</source>
         <translation>Denne enheten kan ikke flyttes til denne lokasjonen.</translation>
     </message>
@@ -4000,60 +4025,65 @@
         <translation>Kan ikke legge til nye filer eller mapper til søppel-mappen.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="972"/>
+        <location filename="../nw/gui/projtree.py" line="977"/>
         <source>There is nowhere to add item with name &apos;{0}&apos;.</source>
         <translation>Fant ikke noe sted å legge til enheten med navn &apos;{0}&apos;.</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/projtree.py" line="532"/>
+        <source>Could not delete document file.</source>
+        <translation>Kunne ikke slette dokumentets fil.</translation>
     </message>
 </context>
 <context>
     <name>GuiProjectTreeMenu</name>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1094"/>
+        <location filename="../nw/gui/projtree.py" line="1099"/>
         <source>Edit Project Item</source>
         <translation>Endre enhet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1098"/>
+        <location filename="../nw/gui/projtree.py" line="1103"/>
         <source>Open Document</source>
         <translation>Åpne dokument</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1102"/>
+        <location filename="../nw/gui/projtree.py" line="1107"/>
         <source>View Document</source>
         <translation>Vis dokument</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1106"/>
+        <location filename="../nw/gui/projtree.py" line="1111"/>
         <source>Toggle Included Flag</source>
         <translation>Slå av/på inkludering</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1110"/>
+        <location filename="../nw/gui/projtree.py" line="1115"/>
         <source>New File</source>
         <translation>Ny fil</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1114"/>
+        <location filename="../nw/gui/projtree.py" line="1119"/>
         <source>New Folder</source>
         <translation>Ny mappe</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1118"/>
+        <location filename="../nw/gui/projtree.py" line="1123"/>
         <source>Delete Item</source>
         <translation>Slett enhet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1122"/>
+        <location filename="../nw/gui/projtree.py" line="1127"/>
         <source>Empty Trash</source>
         <translation>Tøm søppel</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1126"/>
+        <location filename="../nw/gui/projtree.py" line="1131"/>
         <source>Move Item Up</source>
         <translation>Flytt enhet opp</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1130"/>
+        <location filename="../nw/gui/projtree.py" line="1135"/>
         <source>Move Item Down</source>
         <translation>Flytt enhet ned</translation>
     </message>
@@ -4243,24 +4273,6 @@
     </message>
 </context>
 <context>
-    <name>NWDoc</name>
-    <message>
-        <location filename="../nw/core/document.py" line="118"/>
-        <source>Failed to open document file.</source>
-        <translation>Kunne ikke åpne dokumentets fil.</translation>
-    </message>
-    <message>
-        <location filename="../nw/core/document.py" line="162"/>
-        <source>Could not save document.</source>
-        <translation>Kunne ikke lagre dokumentet.</translation>
-    </message>
-    <message>
-        <location filename="../nw/core/document.py" line="192"/>
-        <source>Could not delete document file.</source>
-        <translation>Kunne ikke slette dokumentets fil.</translation>
-    </message>
-</context>
-<context>
     <name>NWProject</name>
     <message>
         <location filename="../nw/core/project.py" line="166"/>
@@ -4313,237 +4325,237 @@
         <translation>Av</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="305"/>
+        <location filename="../nw/core/project.py" line="299"/>
         <source>Novel</source>
         <translation>Roman</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="276"/>
+        <location filename="../nw/core/project.py" line="273"/>
         <source>Plot</source>
         <translation>Plott</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="277"/>
+        <location filename="../nw/core/project.py" line="274"/>
         <source>Characters</source>
         <translation>Karakterer</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="278"/>
+        <location filename="../nw/core/project.py" line="275"/>
         <source>World</source>
         <translation>Verden</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="311"/>
+        <location filename="../nw/core/project.py" line="305"/>
         <source>Title Page</source>
         <translation>Tittelside</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="292"/>
+        <location filename="../nw/core/project.py" line="288"/>
         <source>New Chapter</source>
         <translation>Nytt kapittel</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="296"/>
+        <location filename="../nw/core/project.py" line="291"/>
         <source>New Scene</source>
         <translation>Ny scene</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="326"/>
+        <location filename="../nw/core/project.py" line="319"/>
         <source>Chapter {0}</source>
         <translation>Kapittel {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="351"/>
+        <location filename="../nw/core/project.py" line="342"/>
         <source>Scene {0}</source>
         <translation>Scene {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="375"/>
+        <location filename="../nw/core/project.py" line="365"/>
         <source>File not found: {0}</source>
         <translation>Fant ikke filen: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="435"/>
+        <location filename="../nw/core/project.py" line="425"/>
         <source>Failed to parse project xml.</source>
         <translation>Kunne ikke lese prosjektets xml-data.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="429"/>
+        <location filename="../nw/core/project.py" line="419"/>
         <source>Attempting to open backup project file instead.</source>
         <translation>Forsøker å åpne prosjektets sekundære prosjektfil istedet.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="449"/>
+        <location filename="../nw/core/project.py" line="439"/>
         <source>Unknown</source>
         <translation>Ukjent</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="458"/>
+        <location filename="../nw/core/project.py" line="448"/>
         <source>Project file does not appear to be a novelWriterXML file.</source>
         <translation>Prosjektfilen later ikke til å være en novelWriterXML-fil.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="478"/>
+        <location filename="../nw/core/project.py" line="468"/>
         <source>Unknown or unsupported novelWriter project file format. The project cannot be opened by this version of novelWriter. The file was saved with novelWriter version {0}.</source>
         <translation>Prosjektfilen har et ukjent eller ikke støttet format, og kan ikke åpnes med denne versjonen av novelWriter. Prosjektet ble lagret av novelWriter versjon {0}.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="492"/>
+        <location filename="../nw/core/project.py" line="482"/>
         <source>Version Conflict</source>
         <translation>Versjonskonflikt</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="592"/>
+        <location filename="../nw/core/project.py" line="582"/>
         <source>Opened Project: {0}</source>
         <translation>Åpnet prosjekt: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="613"/>
+        <location filename="../nw/core/project.py" line="603"/>
         <source>Project path not set, cannot save project.</source>
         <translation>Prosjektet mangler filbane, og kan ikke lagres.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="694"/>
+        <location filename="../nw/core/project.py" line="684"/>
         <source>Failed to save project.</source>
         <translation>Kunne ikke lagre prosjektet.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="713"/>
+        <location filename="../nw/core/project.py" line="703"/>
         <source>Saved Project: {0}</source>
         <translation>Lagret prosjekt: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="765"/>
+        <location filename="../nw/core/project.py" line="755"/>
         <source>Backing up project ...</source>
         <translation>Lager sikkerhetskopi ...</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="768"/>
+        <location filename="../nw/core/project.py" line="758"/>
         <source>Cannot backup project because no backup path is set. Please set a valid backup location in Tools &gt; Preferences.</source>
         <translation>Kan ikke ta sikkerhetskopi av prosjektet da ingen filbane er satt. Du må først sette en filbane i Verktøy &gt; Innstillinger.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="777"/>
+        <location filename="../nw/core/project.py" line="767"/>
         <source>Cannot backup project because no project name is set. Please set a Working Title in Project &gt; Project Settings.</source>
         <translation>Kan ikke ta sikkerhetskopi av prosjektet da ingen arbeidstittel er satt. Du må først sette en arbeidstittel i Prosjekt &gt; Prosjektinnstillinger.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="786"/>
+        <location filename="../nw/core/project.py" line="776"/>
         <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Tools &gt; Preferences.</source>
         <translation>Kan ikke ta sikkerhetskopi av prosjektet da filbane ikke finnes. Du må sette en ny filbane i Verktøy &gt; Innstillinger.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="801"/>
+        <location filename="../nw/core/project.py" line="791"/>
         <source>Could not create backup folder.</source>
         <translation>Kunne ikke lage mappe til sikkerhetskopi.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="808"/>
+        <location filename="../nw/core/project.py" line="798"/>
         <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Tools &gt; Preferences.</source>
         <translation>Kan ikke ta sikkerhetskopi av prosjektet da filbanen er inne i prosjektmappen. Du må sette en ny filbane i Verktøy &gt; Innstillinger.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="817"/>
+        <location filename="../nw/core/project.py" line="807"/>
         <source>Backup from {0}</source>
         <translation>Sikkerhetskopi fra {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="826"/>
+        <location filename="../nw/core/project.py" line="816"/>
         <source>Backup archive file written to: {0}</source>
         <translation>Sikkerhetskopi skrevet til: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="835"/>
+        <location filename="../nw/core/project.py" line="825"/>
         <source>Could not write backup archive.</source>
         <translation>Kunne ikke lage sikkerhetskopi.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="841"/>
+        <location filename="../nw/core/project.py" line="831"/>
         <source>Project backed up to &apos;{0}&apos;</source>
         <translation>Sikkerhetskopi skrevet til &apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="889"/>
+        <location filename="../nw/core/project.py" line="879"/>
         <source>Failed to create a new example project.</source>
         <translation>Kunne ikke lage nytt eksempel-prosjekt.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="894"/>
+        <location filename="../nw/core/project.py" line="884"/>
         <source>Failed to create a new example project. Could not find the necessary files. They seem to be missing from this installation.</source>
         <translation>Kunne ikke lage nytt eksempel-prosjekt. Kunne ikke finne de nødvendige filene. De ser ut til å mangle i denne installasjonen.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="929"/>
+        <location filename="../nw/core/project.py" line="919"/>
         <source>Could not create new project folder.</source>
         <translation>Kunne ikke lage ny prosjekt-mappe.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="936"/>
+        <location filename="../nw/core/project.py" line="926"/>
         <source>New project folder is not empty. Each project requires a dedicated project folder.</source>
         <translation>Ny prosjektmappe er ikke tom. Hvert prosjekt trenger sin egen mappe.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="988"/>
+        <location filename="../nw/core/project.py" line="978"/>
         <source>You must set a valid backup path in Preferences to use the automatic project backup feature.</source>
         <translation>Du må sette en gyldig filbane i innstillingene for å kunne bruke automatisk sikkerhetskopi.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="997"/>
+        <location filename="../nw/core/project.py" line="987"/>
         <source>You must set a valid project name in Project Settings to use the automatic project backup feature.</source>
         <translation>Du må sette en gyldig arbeidstittel i prosjektinnstillingene for å kunne bruke automatisk sikkerhetskopi.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1141"/>
+        <location filename="../nw/core/project.py" line="1131"/>
         <source>and</source>
         <translation>og</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1387"/>
+        <location filename="../nw/core/project.py" line="1377"/>
         <source>Found {0} orphaned file(s) in project folder.</source>
         <translation>Fant {0} tapte filer i prosjektmappen.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1399"/>
+        <location filename="../nw/core/project.py" line="1388"/>
         <source>Recovered</source>
         <translation>Gjennopprettet</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1411"/>
+        <location filename="../nw/core/project.py" line="1402"/>
         <source>[{0}] {1}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1416"/>
+        <location filename="../nw/core/project.py" line="1407"/>
         <source>Recovered File {0}</source>
         <translation>Gjennopprettet fil {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1443"/>
+        <location filename="../nw/core/project.py" line="1434"/>
         <source>One or more orphaned files could not be added back into the project. Make sure at least a Novel root folder exists.</source>
         <translation>Én eller flere gjennopprettede filer kunne ikke bli lagt til i posjektet. Pass på at &quot;Roman&quot;-mappen i det minste eksisterer.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1504"/>
+        <location filename="../nw/core/project.py" line="1495"/>
         <source>Not a folder: {0}</source>
         <translation>Ikke en mappe: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1527"/>
+        <location filename="../nw/core/project.py" line="1518"/>
         <source>Could not move: {0}</source>
         <translation>Kunne ikke flytte: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1551"/>
+        <location filename="../nw/core/project.py" line="1542"/>
         <source>Could not delete: {0}</source>
         <translation>Kunne ikke slette: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1563"/>
+        <location filename="../nw/core/project.py" line="1554"/>
         <source>Could not make folder: {0}</source>
         <translation>Kunne ikke lage mappe: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1574"/>
+        <location filename="../nw/core/project.py" line="1565"/>
         <source>Could not move item {0} to {1}.</source>
         <translation>Kunne ikke flytte {0} til {1}.</translation>
     </message>
@@ -4553,7 +4565,7 @@
         <translation>Kapittel</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="492"/>
+        <location filename="../nw/core/project.py" line="482"/>
         <source>This project was saved by a newer version of novelWriter, version {0}. This is version {1}. If you continue to open the project, some attributes and settings may not be preserved, but the overall project should be fine. Continue opening the project?</source>
         <translation>Dette prosjektet ble lagret av en nyere versjon av novelWriter, versjon {0}. Dette er versjon {1}. Hvis du ønsker å fortsette med å åpne prosjektet, kan noen av innstillingene bli borte, men selve prosjektet vil være i orden. Vil du fortsatt åpne prosjektet?</translation>
     </message>
