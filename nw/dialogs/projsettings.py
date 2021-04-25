@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 class GuiProjectSettings(PagedDialog):
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         PagedDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiProjectSettings ...")
@@ -50,8 +50,8 @@ class GuiProjectSettings(PagedDialog):
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
-        self.optState   = theProject.optState
+        self.theProject = theParent.theProject
+        self.optState   = theParent.theProject.optState
 
         self.theProject.countStatus()
         self.setWindowTitle(self.tr("Project Settings"))

@@ -42,7 +42,7 @@ class GuiQuoteSelect(QDialog):
 
     selectedQuote = ""
 
-    def __init__(self, theParent=None, currentQuote="\""):
+    def __init__(self, theParent=None, currentQuote='"'):
         QDialog.__init__(self, parent=theParent)
 
         self.mainConf = nw.CONFIG

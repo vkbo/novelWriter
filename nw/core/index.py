@@ -44,12 +44,11 @@ class NWIndex():
     H_VALID = ("H0", "H1", "H2", "H3", "H4")
     H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
 
-    def __init__(self, theProject, theParent):
+    def __init__(self, theProject):
 
         # Internal
         self.mainConf    = nw.CONFIG
         self.theProject  = theProject
-        self.theParent   = theParent
         self.indexBroken = False
 
         # Indices
@@ -116,8 +115,8 @@ class NWIndex():
         if tItem.itemType != nwItemType.FILE:
             return False
 
-        theDoc = NWDoc(self.theProject, self.theParent)
-        theText = theDoc.openDocument(tHandle, showStatus=False)
+        theDoc = NWDoc(self.theProject)
+        theText = theDoc.readDocument(tHandle)
         if theText:
             self.scanText(tHandle, theText)
 

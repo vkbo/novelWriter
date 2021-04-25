@@ -286,8 +286,11 @@ class GuiProjectTree(QTreeWidget):
             return True
 
         # This is a new files, so let's add some content
-        newDoc = NWDoc(self.theProject, self.theParent)
-        curTxt = newDoc.openDocument(tHandle, showStatus=False)
+        newDoc = NWDoc(self.theProject)
+        curTxt = newDoc.readDocument(tHandle)
+        if curTxt is None:
+            curTxt = ""
+
         if curTxt == "":
             if nwItem.itemLayout == nwItemLayout.CHAPTER:
                 newText = f"## {nwItem.itemName}\n\n"
@@ -299,7 +302,7 @@ class GuiProjectTree(QTreeWidget):
                 newText = f"# {nwItem.itemName}\n\n"
 
             # Save the text and index it
-            newDoc.saveDocument(newText)
+            newDoc.writeDocument(newText)
             self.theIndex.scanText(tHandle, newText)
 
             # Get Word Counts
@@ -524,7 +527,7 @@ class GuiProjectTree(QTreeWidget):
                     if self.theParent.docEditor.theHandle == tHandle:
                         self.theParent.closeDocument()
 
-                    theDoc = NWDoc(self.theProject, self.theParent)
+                    theDoc = NWDoc(self.theProject)
                     theDoc.deleteDocument(tHandle)
                     self.theIndex.deleteHandle(tHandle)
                     self._deleteTreeItem(tHandle)

@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 class GuiDocSplit(QDialog):
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiDocSplit ...")
@@ -50,8 +50,8 @@ class GuiDocSplit(QDialog):
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
-        self.optState   = self.theProject.optState
+        self.theProject = theParent.theProject
+        self.optState   = theParent.theProject.optState
         self.sourceItem = None
 
         self.outerBox = QVBoxLayout()
@@ -127,8 +127,11 @@ class GuiDocSplit(QDialog):
             )
             return
 
-        theDoc   = NWDoc(self.theProject, self.theParent)
-        theText  = theDoc.openDocument(self.sourceItem, False)
+        theDoc  = NWDoc(self.theProject)
+        theText = theDoc.readDocument(self.sourceItem)
+        if theText is None:
+            theText = ""
+
         theLines = theText.splitlines()
         nLines   = len(theLines)
         theLines.insert(0, "%Split Doc")
@@ -214,8 +217,8 @@ class GuiDocSplit(QDialog):
 
             theText = "\n".join(theLines[iStart:iEnd])
             theText = theText.rstrip("\n") + "\n\n"
-            theDoc.openDocument(nHandle, False)
-            theDoc.saveDocument(theText)
+            theDoc.readDocument(nHandle)
+            theDoc.writeDocument(theText)
             theDoc.clearDocument()
             self.theParent.treeView.revealNewTreeItem(nHandle)
 
@@ -256,8 +259,10 @@ class GuiDocSplit(QDialog):
             return
 
         self.listBox.clear()
-        theDoc  = NWDoc(self.theProject, self.theParent)
-        theText = theDoc.openDocument(self.sourceItem, False)
+        theDoc  = NWDoc(self.theProject)
+        theText = theDoc.readDocument(self.sourceItem)
+        if theText is None:
+            theText = ""
 
         spLevel = self.splitLevel.currentData()
         self.optState.setValue("GuiDocSplit", "spLevel", spLevel)

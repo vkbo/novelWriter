@@ -37,8 +37,8 @@ class ToHtml(Tokenizer):
     M_EXPORT  = 1 # Tweak output for saving to HTML or printing
     M_EBOOK   = 2 # Tweak output for converting to epub
 
-    def __init__(self, theProject, theParent):
-        Tokenizer.__init__(self, theProject, theParent)
+    def __init__(self, theProject):
+        Tokenizer.__init__(self, theProject)
 
         self.genMode   = self.M_EXPORT
         self.cssStyles = True

@@ -88,7 +88,7 @@ class GuiMain(QMainWindow):
         # Core Classes and Settings
         self.theTheme    = GuiTheme(self)
         self.theProject  = NWProject(self)
-        self.theIndex    = NWIndex(self.theProject, self)
+        self.theIndex    = NWIndex(self.theProject)
         self.hasProject  = False
         self.isFocusMode = False
         self.idleRefTime = time()
@@ -756,7 +756,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        dlgMerge = GuiDocMerge(self, self.theProject)
+        dlgMerge = GuiDocMerge(self)
         dlgMerge.exec_()
 
         return True
@@ -768,7 +768,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        dlgSplit = GuiDocSplit(self, self.theProject)
+        dlgSplit = GuiDocSplit(self)
         dlgSplit.exec_()
 
         return True
@@ -837,7 +837,7 @@ class GuiMain(QMainWindow):
             return
 
         logger.verbose("Requesting change to item %s" % tHandle)
-        dlgProj = GuiItemEditor(self, self.theProject, tHandle)
+        dlgProj = GuiItemEditor(self, tHandle)
         dlgProj.exec_()
         if dlgProj.result() == QDialog.Accepted:
             self.treeView.setTreeItemValues(tHandle)
@@ -958,7 +958,7 @@ class GuiMain(QMainWindow):
     def showPreferencesDialog(self):
         """Open the preferences dialog.
         """
-        dlgConf = GuiPreferences(self, self.theProject)
+        dlgConf = GuiPreferences(self)
         dlgConf.exec_()
 
         if dlgConf.result() == QDialog.Accepted:
@@ -982,7 +982,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return
 
-        dlgProj = GuiProjectSettings(self, self.theProject)
+        dlgProj = GuiProjectSettings(self)
         dlgProj.exec_()
 
         if dlgProj.result() == QDialog.Accepted:
@@ -1001,7 +1001,7 @@ class GuiMain(QMainWindow):
 
         self.treeView.flushTreeOrder()
 
-        dlgDetails = GuiProjectDetails(self, self.theProject)
+        dlgDetails = GuiProjectDetails(self)
         dlgDetails.setModal(False)
         dlgDetails.show()
 
@@ -1016,7 +1016,7 @@ class GuiMain(QMainWindow):
 
         dlgBuild = getGuiItem("GuiBuildNovel")
         if dlgBuild is None:
-            dlgBuild = GuiBuildNovel(self, self.theProject)
+            dlgBuild = GuiBuildNovel(self)
 
         dlgBuild.setModal(False)
         dlgBuild.show()
@@ -1032,7 +1032,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return
 
-        dlgWords = GuiWordList(self, self.theProject)
+        dlgWords = GuiWordList(self)
         dlgWords.exec_()
 
         if dlgWords.result() == QDialog.Accepted:
@@ -1050,7 +1050,7 @@ class GuiMain(QMainWindow):
 
         dlgStats = getGuiItem("GuiWritingStats")
         if dlgStats is None:
-            dlgStats = GuiWritingStats(self, self.theProject)
+            dlgStats = GuiWritingStats(self)
 
         dlgStats.setModal(False)
         dlgStats.show()

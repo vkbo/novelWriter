@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 class GuiWordList(QDialog):
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiWordList ...")
@@ -50,8 +50,8 @@ class GuiWordList(QDialog):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
-        self.theProject = theProject
-        self.optState   = theProject.optState
+        self.theProject = theParent.theProject
+        self.optState   = theParent.theProject.optState
 
         self.setWindowTitle(self.tr("Project Word List"))
 

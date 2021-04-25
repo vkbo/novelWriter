@@ -48,7 +48,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, outDir, refDir):
 
     monkeypatch.setattr("nw.core.index.time", lambda: 123.4)
 
-    theIndex = NWIndex(theProject, dummyGUI)
+    theIndex = NWIndex(theProject)
     notIndexable = {
         "b3643d0f92e32": False, # Novel ROOT
         "45e6b01ca35c1": False, # Chapter One FOLDER
@@ -132,7 +132,7 @@ def testCoreIndex_ScanThis(nwMinimal, dummyGUI):
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
-    theIndex = NWIndex(theProject, dummyGUI)
+    theIndex = NWIndex(theProject)
 
     isValid, theBits, thePos = theIndex.scanThis("tag: this, and this")
     assert not isValid
@@ -183,7 +183,7 @@ def testCoreIndex_CheckThese(nwMinimal, dummyGUI):
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
-    theIndex = NWIndex(theProject, dummyGUI)
+    theIndex = NWIndex(theProject)
     nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
     cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
     nItem = theProject.projTree[nHandle]
@@ -244,7 +244,7 @@ def testCoreIndex_ScanText(nwMinimal, dummyGUI):
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
-    theIndex = NWIndex(theProject, dummyGUI)
+    theIndex = NWIndex(theProject)
 
     # Some items for fail to scan tests
     dHandle = theProject.newFolder("Folder", nwItemClass.NOVEL, "a508bb932959c")
@@ -449,7 +449,7 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
-    theIndex = NWIndex(theProject, dummyGUI)
+    theIndex = NWIndex(theProject)
     nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
     cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
 
@@ -678,7 +678,7 @@ def testCoreIndex_CheckTagIndex(dummyGUI):
     """Test the tag index checker.
     """
     theProject = NWProject(dummyGUI)
-    theIndex = NWIndex(theProject, dummyGUI)
+    theIndex = NWIndex(theProject)
 
     # Valid Index
     theIndex._tagIndex = {
@@ -742,7 +742,7 @@ def testCoreIndex_CheckRefIndex(dummyGUI):
     """Test the reference index checker.
     """
     theProject = NWProject(dummyGUI)
-    theIndex = NWIndex(theProject, dummyGUI)
+    theIndex = NWIndex(theProject)
 
     # Valid Index
     theIndex._refIndex = {
@@ -864,7 +864,7 @@ def testCoreIndex_CheckNovelNoteIndex(dummyGUI):
     """Test the novel and note index checkers.
     """
     theProject = NWProject(dummyGUI)
-    theIndex = NWIndex(theProject, dummyGUI)
+    theIndex = NWIndex(theProject)
 
     # Valid Index
     theIndex._novelIndex = {
@@ -1122,7 +1122,7 @@ def testCoreIndex_CheckTextCounts(dummyGUI):
     """Test the text counts checker.
     """
     theProject = NWProject(dummyGUI)
-    theIndex = NWIndex(theProject, dummyGUI)
+    theIndex = NWIndex(theProject)
 
     # Valid Index
     theIndex._textCounts = {

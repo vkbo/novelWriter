@@ -798,22 +798,22 @@
 <context>
     <name>GuiDocEditFooter</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2464"/>
+        <location filename="../nw/gui/doceditor.py" line="2475"/>
         <source>Status</source>
         <translation>Status</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2605"/>
+        <location filename="../nw/gui/doceditor.py" line="2616"/>
         <source>Line: {0} ({1})</source>
         <translation>Linje: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2621"/>
+        <location filename="../nw/gui/doceditor.py" line="2632"/>
         <source>Words: {0} ({1})</source>
         <translation>Ord: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2626"/>
+        <location filename="../nw/gui/doceditor.py" line="2637"/>
         <source>Document size is {0} bytes</source>
         <translation>Dokumentet er {0} byte</translation>
     </message>
@@ -821,22 +821,22 @@
 <context>
     <name>GuiDocEditHeader</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2256"/>
+        <location filename="../nw/gui/doceditor.py" line="2267"/>
         <source>Edit document meta</source>
         <translation>Rediger dokumentinstillinger</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2267"/>
+        <location filename="../nw/gui/doceditor.py" line="2278"/>
         <source>Search document</source>
         <translation>Søk i dokumentet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2278"/>
+        <location filename="../nw/gui/doceditor.py" line="2289"/>
         <source>Toggle Focus Mode</source>
         <translation>Slå av/på &quot;Fokus-modus&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2289"/>
+        <location filename="../nw/gui/doceditor.py" line="2300"/>
         <source>Close the document</source>
         <translation>Lukk dokumentet</translation>
     </message>
@@ -844,97 +844,97 @@
 <context>
     <name>GuiDocEditSearch</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1884"/>
+        <location filename="../nw/gui/doceditor.py" line="1895"/>
         <source>Search</source>
         <translation>Søk</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1875"/>
+        <location filename="../nw/gui/doceditor.py" line="1886"/>
         <source>Replace</source>
         <translation>Erstatt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1888"/>
+        <location filename="../nw/gui/doceditor.py" line="1899"/>
         <source>Case Sensitive</source>
         <translation>Skill store/små bokstaver</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1889"/>
+        <location filename="../nw/gui/doceditor.py" line="1900"/>
         <source>Match case</source>
         <translation>Søket skiller mellom store og små bokstaver</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1896"/>
+        <location filename="../nw/gui/doceditor.py" line="1907"/>
         <source>Whole Words Only</source>
         <translation>Kun hele ord</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1897"/>
+        <location filename="../nw/gui/doceditor.py" line="1908"/>
         <source>Match whole words</source>
         <translation>Søk kun etter hele ord</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1904"/>
+        <location filename="../nw/gui/doceditor.py" line="1915"/>
         <source>RegEx Mode</source>
         <translation>RegEx-modus</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1905"/>
+        <location filename="../nw/gui/doceditor.py" line="1916"/>
         <source>Search using regular expressions</source>
         <translation>Søk ved hjelp av &quot;regular expressions&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1912"/>
+        <location filename="../nw/gui/doceditor.py" line="1923"/>
         <source>Loop Search</source>
         <translation>Søk rundt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1913"/>
+        <location filename="../nw/gui/doceditor.py" line="1924"/>
         <source>Loop the search when reaching the end</source>
         <translation>Begynn søket på nytt når enden er nådd</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1920"/>
+        <location filename="../nw/gui/doceditor.py" line="1931"/>
         <source>Search Next File</source>
         <translation>Søk i neste file</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1921"/>
+        <location filename="../nw/gui/doceditor.py" line="1932"/>
         <source>Continue searching in the next file</source>
         <translation>Fortsett søket i neste fil</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1930"/>
+        <location filename="../nw/gui/doceditor.py" line="1941"/>
         <source>Preserve Case</source>
         <translation>Behold store/små bokstaver</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1931"/>
+        <location filename="../nw/gui/doceditor.py" line="1942"/>
         <source>Preserve case on replace</source>
         <translation>Behold store og små bokstaver på samme sted ved erstatt</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1940"/>
+        <location filename="../nw/gui/doceditor.py" line="1951"/>
         <source>Close Search</source>
         <translation>Lukk søk</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1941"/>
+        <location filename="../nw/gui/doceditor.py" line="1952"/>
         <source>Close the search box [{0}]</source>
         <translation>Lukk søkeboksen [{0}]</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1953"/>
+        <location filename="../nw/gui/doceditor.py" line="1964"/>
         <source>Show/hide the replace text box</source>
         <translation>Vis/skjul erstatt-boksen</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1959"/>
+        <location filename="../nw/gui/doceditor.py" line="1970"/>
         <source>Find in current document</source>
         <translation>Søk i det åpne dokumentet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1964"/>
+        <location filename="../nw/gui/doceditor.py" line="1975"/>
         <source>Find and replace in current document</source>
         <translation>Søk og erstatt i det åpne dokumentet</translation>
     </message>
@@ -947,84 +947,94 @@
         <translation>Dokumentet du prøver å åpne er for stort. Dokumenter er på {0} MB. Den maksimale størrelsen tillat er {1} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="401"/>
+        <location filename="../nw/gui/doceditor.py" line="407"/>
         <source>The text you are trying to add is too big. The text size is {0} MB. The maximum size allowed is {1} MB.</source>
         <translation>Teksten du forsøker å legge til er for stor. Teksten er {0} MB. Den maksimale tillatte størrelsen er {1} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="669"/>
+        <location filename="../nw/gui/doceditor.py" line="680"/>
         <source>Spell check complete</source>
         <translation>Stavekontrollen er ferdig</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="763"/>
+        <location filename="../nw/gui/doceditor.py" line="774"/>
         <source>File Location</source>
         <translation>Filens plassering</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="763"/>
+        <location filename="../nw/gui/doceditor.py" line="774"/>
         <source>The currently open file is saved in:</source>
         <translation>Det åpne dokumentet er lagret på følgende sted:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="953"/>
+        <location filename="../nw/gui/doceditor.py" line="964"/>
         <source>The document has grown too big and you cannot add more text to it. The maximum size of a single novelWriter document is {0} MB.</source>
         <translation>Dokumentet har blitt for stort og du kan ikke legge til mer tekst. Den maksimale tillatte størrelsen for et novelWriter-dokument er {0} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="991"/>
+        <location filename="../nw/gui/doceditor.py" line="1002"/>
         <source>Follow Tag</source>
         <translation>Følg knagg</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="997"/>
+        <location filename="../nw/gui/doceditor.py" line="1008"/>
         <source>Cut</source>
         <translation>Klipp</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1001"/>
+        <location filename="../nw/gui/doceditor.py" line="1012"/>
         <source>Copy</source>
         <translation>Kopier</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1005"/>
+        <location filename="../nw/gui/doceditor.py" line="1016"/>
         <source>Paste</source>
         <translation>Lim inn</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1014"/>
+        <location filename="../nw/gui/doceditor.py" line="1025"/>
         <source>Select All</source>
         <translation>Velg hele teksten</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1018"/>
+        <location filename="../nw/gui/doceditor.py" line="1029"/>
         <source>Select Word</source>
         <translation>Velg hele ordet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1024"/>
+        <location filename="../nw/gui/doceditor.py" line="1035"/>
         <source>Select Paragraph</source>
         <translation>Velg hele avsnittet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1050"/>
+        <location filename="../nw/gui/doceditor.py" line="1061"/>
         <source>Spelling Suggestion(s)</source>
         <translation>Forslag fra stavekontrollen</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1062"/>
+        <location filename="../nw/gui/doceditor.py" line="1073"/>
         <source>No Suggestions</source>
         <translation>Ingen forslag</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1068"/>
+        <location filename="../nw/gui/doceditor.py" line="1079"/>
         <source>Add Word to Dictionary</source>
         <translation>Legg til ord i ordbok</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1496"/>
+        <location filename="../nw/gui/doceditor.py" line="1507"/>
         <source>Please select some text before calling replace quotes.</source>
         <translation>Venligst velg en del av teksten før du velger å erstatte sitattegn.</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/doceditor.py" line="382"/>
+        <source>Opened Document: {0}</source>
+        <translation>Åpnet dokument: {0}</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/doceditor.py" line="467"/>
+        <source>Saved Document: {0}</source>
+        <translation>Lagret dokument: {0}</translation>
     </message>
 </context>
 <context>
@@ -1050,17 +1060,17 @@
         <translation>Ingen kilde-dokument funnet. Det er ingenting å gjøre.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docmerge.py" line="117"/>
+        <location filename="../nw/dialogs/docmerge.py" line="118"/>
         <source>No source document selected. Nothing to do.</source>
         <translation>Ingen kilde-dokument er valgt. Det er ingenting å gjøre.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docmerge.py" line="124"/>
+        <location filename="../nw/dialogs/docmerge.py" line="125"/>
         <source>Could not parse source document.</source>
         <translation>Klarte ikke å lese kilde-dokumentet.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docmerge.py" line="167"/>
+        <location filename="../nw/dialogs/docmerge.py" line="168"/>
         <source>Element selected in the project tree must be a folder.</source>
         <translation>Elementet som er valgt i prosjekttreet må være en mappe.</translation>
     </message>
@@ -1068,7 +1078,7 @@
 <context>
     <name>GuiDocSplit</name>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="167"/>
+        <location filename="../nw/dialogs/docsplit.py" line="170"/>
         <source>Split Document</source>
         <translation>Del opp dokument</translation>
     </message>
@@ -1113,27 +1123,27 @@
         <translation>Klarte ikke å lese kilde-dokumentet.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="150"/>
+        <location filename="../nw/dialogs/docsplit.py" line="153"/>
         <source>No headers found. Nothing to do.</source>
         <translation>Ingen overskrifter ble funnet i dokumentet. Det er ikke noe å gjøre.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="158"/>
+        <location filename="../nw/dialogs/docsplit.py" line="161"/>
         <source>Cannot add new folder for the document split. Maximum folder depth has been reached. Please move the file to another level in the project tree.</source>
         <translation>Kan ikke legge til ny mappe for å dele opp dokumentet. Dokumentet har allerede maksimal dybde i prosjekttreet. Flytt dokumentet til et annet nivå først.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="167"/>
+        <location filename="../nw/dialogs/docsplit.py" line="170"/>
         <source>The document will be split into {0} file(s) in a new folder. The original document will remain intact.</source>
         <translation>Dokumentet vil nå bli delt opp i {0} nye filer i en ny mappe. Det originale dokumentet vil ikke bli endret eller fjernet.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="167"/>
+        <location filename="../nw/dialogs/docsplit.py" line="170"/>
         <source>Continue with the splitting process?</source>
         <translation>Fortsette med oppdelingen?</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="253"/>
+        <location filename="../nw/dialogs/docsplit.py" line="256"/>
         <source>Element selected in the project tree must be a file.</source>
         <translation>Elementet som er valgt i prosjekttreet må være et dokument.</translation>
     </message>
@@ -1374,7 +1384,7 @@
         <translation>Ønsker du å lukke dette prosjektet?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1151"/>
+        <location filename="../nw/guimain.py" line="1147"/>
         <source>Changes are saved automatically.</source>
         <translation>Endringer lagres automatisk.</translation>
     </message>
@@ -1459,57 +1469,57 @@
         <translation>Å importere filen vil overskrive all eksisterende tekst i dokumentet. Ønsker du å fortsette?</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="887"/>
+        <location filename="../nw/guimain.py" line="886"/>
         <source>Indexing: &apos;{0}&apos;</source>
         <translation>Indekserer: &apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="887"/>
+        <location filename="../nw/guimain.py" line="886"/>
         <source>Unknown item</source>
         <translation>Ukjent enhet</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="905"/>
+        <location filename="../nw/guimain.py" line="901"/>
         <source>Indexing completed in {0} ms</source>
         <translation>Indekseringen tok {0} ms</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="912"/>
+        <location filename="../nw/guimain.py" line="908"/>
         <source>The project index has been successfully rebuilt.</source>
         <translation>Prosjektets indeks har blitt bygget på nytt.</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1115"/>
+        <location filename="../nw/guimain.py" line="1111"/>
         <source>Information</source>
         <translation>Informasjon</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1117"/>
+        <location filename="../nw/guimain.py" line="1113"/>
         <source>Warning</source>
         <translation>Advarsel</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1119"/>
+        <location filename="../nw/guimain.py" line="1115"/>
         <source>Error</source>
         <translation>Feil</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1121"/>
+        <location filename="../nw/guimain.py" line="1117"/>
         <source>This is a bug!</source>
         <translation>Dette er en systemfeil!</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1122"/>
+        <location filename="../nw/guimain.py" line="1118"/>
         <source>Internal Error</source>
         <translation>Intern feil</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1151"/>
+        <location filename="../nw/guimain.py" line="1147"/>
         <source>Exit</source>
         <translation>Avslutt</translation>
     </message>
     <message>
-        <location filename="../nw/guimain.py" line="1151"/>
+        <location filename="../nw/guimain.py" line="1147"/>
         <source>Do you want to exit novelWriter?</source>
         <translation>Ønsker du å avslutte novelWriter?</translation>
     </message>
@@ -3935,52 +3945,52 @@
         <translation>Ny mappe</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="432"/>
+        <location filename="../nw/gui/projtree.py" line="435"/>
         <source>There is currently no Trash folder in this project.</source>
         <translation>Det er for øyeblikket ingen søppel-mappe i dette prosjektet.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="443"/>
+        <location filename="../nw/gui/projtree.py" line="446"/>
         <source>The Trash folder is already empty.</source>
         <translation>Søppel-mappen er allerede tom.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="446"/>
+        <location filename="../nw/gui/projtree.py" line="449"/>
         <source>Empty Trash</source>
         <translation>Tøm søppel</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="446"/>
+        <location filename="../nw/gui/projtree.py" line="449"/>
         <source>Permanently delete {0} file(s) from Trash?</source>
         <translation>Vil du slette {0} filer i søppel-mappen for godt?</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="536"/>
+        <location filename="../nw/gui/projtree.py" line="539"/>
         <source>Delete File</source>
         <translation>Slett fil</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="508"/>
+        <location filename="../nw/gui/projtree.py" line="511"/>
         <source>Permanently delete file &apos;{0}&apos;?</source>
         <translation>Slette filen &apos;{0}&apos; for godt?</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="536"/>
+        <location filename="../nw/gui/projtree.py" line="539"/>
         <source>Move file &apos;{0}&apos; to Trash?</source>
         <translation>Vil du flytte filen &apos;{0}&apos; til søpla?</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="569"/>
+        <location filename="../nw/gui/projtree.py" line="572"/>
         <source>Cannot delete folder. It is not empty. Recursive deletion is not supported. Please delete the content first.</source>
         <translation>Kan ikke slette mappen da den ikke er tom. Rekursiv sletting er ikke støttet. Du må slette innholdet først.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="585"/>
+        <location filename="../nw/gui/projtree.py" line="588"/>
         <source>Cannot delete root folder. It is not empty. Recursive deletion is not supported. Please delete the content first.</source>
         <translation>Kan ikke slette hovedmappen da den ikke er tom. Rekursiv sletting er ikke støttet. Du må slette innholdet først.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="872"/>
+        <location filename="../nw/gui/projtree.py" line="875"/>
         <source>The item cannot be moved to that location.</source>
         <translation>Denne enheten kan ikke flyttes til denne lokasjonen.</translation>
     </message>
@@ -3990,7 +4000,7 @@
         <translation>Kan ikke legge til nye filer eller mapper til søppel-mappen.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="969"/>
+        <location filename="../nw/gui/projtree.py" line="972"/>
         <source>There is nowhere to add item with name &apos;{0}&apos;.</source>
         <translation>Fant ikke noe sted å legge til enheten med navn &apos;{0}&apos;.</translation>
     </message>
@@ -3998,52 +4008,52 @@
 <context>
     <name>GuiProjectTreeMenu</name>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1091"/>
+        <location filename="../nw/gui/projtree.py" line="1094"/>
         <source>Edit Project Item</source>
         <translation>Endre enhet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1095"/>
+        <location filename="../nw/gui/projtree.py" line="1098"/>
         <source>Open Document</source>
         <translation>Åpne dokument</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1099"/>
+        <location filename="../nw/gui/projtree.py" line="1102"/>
         <source>View Document</source>
         <translation>Vis dokument</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1103"/>
+        <location filename="../nw/gui/projtree.py" line="1106"/>
         <source>Toggle Included Flag</source>
         <translation>Slå av/på inkludering</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1107"/>
+        <location filename="../nw/gui/projtree.py" line="1110"/>
         <source>New File</source>
         <translation>Ny fil</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1111"/>
+        <location filename="../nw/gui/projtree.py" line="1114"/>
         <source>New Folder</source>
         <translation>Ny mappe</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1115"/>
+        <location filename="../nw/gui/projtree.py" line="1118"/>
         <source>Delete Item</source>
         <translation>Slett enhet</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1119"/>
+        <location filename="../nw/gui/projtree.py" line="1122"/>
         <source>Empty Trash</source>
         <translation>Tøm søppel</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1123"/>
+        <location filename="../nw/gui/projtree.py" line="1126"/>
         <source>Move Item Up</source>
         <translation>Flytt enhet opp</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1127"/>
+        <location filename="../nw/gui/projtree.py" line="1130"/>
         <source>Move Item Down</source>
         <translation>Flytt enhet ned</translation>
     </message>
@@ -4240,22 +4250,12 @@
         <translation>Kunne ikke åpne dokumentets fil.</translation>
     </message>
     <message>
-        <location filename="../nw/core/document.py" line="131"/>
-        <source>Opened Document: {0}</source>
-        <translation>Åpnet dokument: {0}</translation>
-    </message>
-    <message>
-        <location filename="../nw/core/document.py" line="167"/>
+        <location filename="../nw/core/document.py" line="162"/>
         <source>Could not save document.</source>
         <translation>Kunne ikke lagre dokumentet.</translation>
     </message>
     <message>
-        <location filename="../nw/core/document.py" line="177"/>
-        <source>Saved Document: {0}</source>
-        <translation>Lagret dokumentet: {0}</translation>
-    </message>
-    <message>
-        <location filename="../nw/core/document.py" line="202"/>
+        <location filename="../nw/core/document.py" line="192"/>
         <source>Could not delete document file.</source>
         <translation>Kunne ikke slette dokumentets fil.</translation>
     </message>
@@ -4918,12 +4918,12 @@
 <context>
     <name>Tokenizer</name>
     <message>
-        <location filename="../nw/core/tokenizer.py" line="291"/>
+        <location filename="../nw/core/tokenizer.py" line="294"/>
         <source>Document &apos;{0}&apos; is too big ({1} MB). Skipping.</source>
         <translation>Dokumentet &apos;{0}&apos; er for stort ({1} MB). Hopper over.</translation>
     </message>
     <message>
-        <location filename="../nw/core/tokenizer.py" line="294"/>
+        <location filename="../nw/core/tokenizer.py" line="297"/>
         <source>ERROR</source>
         <translation></translation>
     </message>
