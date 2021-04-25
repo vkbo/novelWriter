@@ -17,28 +17,27 @@
 
 novelWriter is a plain text editor designed for writing novels assembled from many smaller text
 documents. It uses a minimal formatting syntax inspired by Markdown, and adds a meta data syntax
-for comments, synopsis, and cross-referencing between files. It's designed to be a simple text
-editor that allows for easy organisation of text and notes. It uses human readable text files for
-storage for robustness.
+for comments, synopsis, and cross-referencing. It's designed to be a simple text editor that allows
+for easy organisation of text and notes, using human readable text files as storage for robustness.
 
-The storage text files are suitable for version control software, and also well suited for file
-synchronisation tools. All text is saved as plain text files with a meta data header. The core
-project structure is stored in a single project XML file. Other meta data is primarily saved in
+The project storage is suitable for version control software, and also well suited for file
+synchronisation tools. All text is saved as plain text files with a meta data header, the core
+project structure is stored in a single project XML file, and other meta data is primarily saved as
 JSON files.
 
 The full documentation is available on [readthedocs.io](https://novelwriter.readthedocs.io).
 
 ## Implementation
 
-The application is written in Python 3 using Qt5 and PyQt5. It is developed on Linux, but it should
-in principle work fine on other operating systems as well, as long as dependencies are met. It is
-regularly tested on Ubuntu Linux, Windows, and macOS.
+The application is written in Python 3 (3.6+) using Qt5 and PyQt5 (5.3+). It is developed on Linux,
+but should in principle work fine on other operating systems as well as long as dependencies are
+met. It is regularly tested on Debian and Ubuntu Linux, Windows, and macOS.
 
 ## Project Contributions
 
 Contributions to this project are welcome. However, please read the
 [Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md) before
-submitting larger additions or changes to this project.
+submitting larger additions or changes.
 
 ## Key Features
 
@@ -47,7 +46,7 @@ Some key features of novelWriter are listed below. Consult the
 
 ### Markdown Flavour
 
-novelWriter is _not_ a full-feature Markdown editor. It is a plain text editor that uses
+Note that novelWriter is _not_ a proper Markdown editor. It is a plain text editor that uses
 Markdown-like syntax to allow for a minimal set of formatting that is useful for the specific task
 of writing novels. The formatting is currently limited to:
 
@@ -58,30 +57,30 @@ of writing novels. The formatting is currently limited to:
 
 That is it. Features not supported in the editor are also not exported when using the export tool.
 
-In addition, novelWriter adds the following, which is otherwise not supported by Markdown:
+In addition, novelWriter adds the following syntax used for its additional features:
 
 * A line starting with `%` is treated as a comment and not rendered on exports unless requested.
-  Comments do not count towards the word count.
+  Comments do not count towards word counts and other statistics.
 * If the first word of the comment is `synopsis:`, the comment is indexed and treated as the
-  synopsis for the section of text under the same header. These synopsis comments can be used to
-  build an outline and exported to external documents.
-* A set of meta data keyword/values starting with the character `@`. This is used for tagging
-  and inter-linking documents, and can also be included when generate a project outline.
+  synopsis for the section of text where it occurs. These synopsis comments can be used to build an
+  outline and exported to external documents.
+* A set of meta data keyword/values starting with the character `@`. These are used for tagging
+  and inter-linking documents, and can also be included when generating a project outline.
 * A variety of thin and non-breaking spaces are supported. Some of them depend on the system
   running at least Qt 5.9. Earlier versions of Qt will unfortunately strip them out when saving.
 * Tabs can be used in the text, and should be properly aligned in both editor and viewer. This can
-  be used to make simple tables and lists. Full Markdown tables and lists are not supported. Note
-  that for HTML exports, most browsers will treat a tab as a space, so it may not show up like
-  expected. Open Document exports should produce the expected result.
+  be used to make simple tables and lists. Note that for HTML exports, most browsers will treat a
+  tab as a space, so it may not show up like expected. Open Document exports should produce the
+  expected result.
 
 The core export formats of novelWriter are Open Document and HTML5. Open Document is an open
 standard for office type documents that is supported by most office applications. See
 [Open Document > Application Support](https://en.wikipedia.org/wiki/OpenDocument#Application_support)
 for more details.
 
-You can also export the entire project as a single novelWriter Markdown-flavour document. These can
-later be imported again into novelWriter. In addition, printing and export to PDF is offered
-through the Qt library, although with limitations to formatting.
+You can also export the entire project as a single novelWriter-flavour document. These can later be
+imported again into novelWriter. In addition, printing and export to PDF is offered through the Qt
+library, although with limitations to formatting.
 
 ### Colour Themes
 
@@ -92,14 +91,14 @@ syntax highlighting themes. Optional GUI themes are also available, including da
 
 The structure of the project is shown on the left hand side of the main window. Project files are
 organised into root folders, indicating what class of file they are. The most important root folder
-is the `Novel` folder, which contains all of the files that make up the finished novel. Each root
+is the `Novel` folder, which contains all of the files that make up the novel itself. Each root
 folder can have subfolders. Subfolders have no impact on the final project structure, they are
 there for you to organise your files in whatever way you want.
 
-The editor supports four levels of headings, which determines what level the following text belongs
+The editor supports four levels of headings, which determine what level the following text belongs
 to. Headings of level one signify a book or partition title. Headings of level two signify the
 start of a new chapter. Headings of level three signify the start of a new scene. Headings of level
-four can be used internally in each scene to separate sections.
+four can be used internally in each scene to create separate sections.
 
 Each novel file can be assigned a layout format, which shows up as a flag next to the item in the
 project tree. These are mostly to help the user track what they contain, but they also have some
@@ -108,8 +107,8 @@ impact on the format of the exported document. See the
 
 ### Project Notes
 
-Supporting note files can be added for the story plot, characters, locations, story timeline, etc.
-These have their separate root folders. These are optional files.
+Supporting notes can be added for the story plot, characters, locations, story timeline, etc. These
+have their separate root folders and are optional to use.
 
 ### Visualisation of Story Elements
 
@@ -117,7 +116,7 @@ The different notes can be assigned tags, which other files can refer back to us
 meta keywords. This information can be used to display an outline of the story, showing where each
 scene connects to the plot, and which characters, etc. occur in them. In addition, the tags
 themselves are clickable in the document view pane, and control-clickable in the editor. They make
-it possible to quickly navigate between the documents while editing.
+it possible to quickly navigate between the documents while writing.
 
 ## Standard Installation
 
