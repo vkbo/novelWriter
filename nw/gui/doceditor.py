@@ -75,7 +75,7 @@ class GuiDocEditor(QTextEdit):
         self.theTheme   = theParent.theTheme
         self.theIndex   = theParent.theIndex
         self.theProject = theParent.theProject
-        self.nwDocument = NWDoc(self.theProject)
+        self.nwDocument = NWDoc(self.theProject, None)
 
         self.docChanged = False # Flag for changed status of document
         self.spellCheck = False # Flag for spell checking enabled
@@ -165,7 +165,7 @@ class GuiDocEditor(QTextEdit):
         """Clear the current document and reset all document related
         flags and counters.
         """
-        self.nwDocument.clearDocument()
+        self.nwDocument = NWDoc(self.theProject, None)
         self.setReadOnly(True)
         self.clear()
         self.wcTimer.stop()
@@ -297,7 +297,9 @@ class GuiDocEditor(QTextEdit):
         document is new (empty string), we set up the editor for editing
         the file.
         """
-        theDoc = self.nwDocument.readDocument(tHandle)
+        self.nwDocument = NWDoc(self.theProject, tHandle)
+
+        theDoc = self.nwDocument.readDocument()
         if theDoc is None:
             # There was an io error
             self.clearEditor()

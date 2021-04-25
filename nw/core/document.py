@@ -38,16 +38,16 @@ logger = logging.getLogger(__name__)
 
 class NWDoc():
 
-    def __init__(self, theProject):
+    def __init__(self, theProject, theHandle):
 
         self.theProject = theProject
         self.theParent  = theProject.theParent
 
         # Internal Variables
-        self._theItem   = None # The currently open item
-        self._docHandle = None # The handle of the currently open item
-        self._fileLoc   = None # The file location of the currently open item
-        self._docMeta   = {}   # The meta data of the currently open item
+        self._docHandle = theHandle
+        self._theItem   = self.theProject.projTree[theHandle]
+        self._fileLoc   = None
+        self._docMeta   = {}
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
@@ -68,26 +68,16 @@ class NWDoc():
         self._docMeta   = {}
         return
 
-    def readDocument(self, tHandle, isOrphan=False):
-        """Read a document from handle, capturing potential file system
-        errors and parse meta data. If the document doesn't exist on
-        disk, return an empty string. If something went wrong, return
+    def readDocument(self, isOrphan=False):
+        """Read a document from set handle, capturing potential file
+        system errors and parse meta data. If the document doesn't exist
+        on disk, return an empty string. If something went wrong, return
         None.
         """
-        if not isHandle(tHandle):
+        if not isHandle(self._docHandle):
             return None
 
-        # Always clear first, since the object will often be reused.
-        self.clearDocument()
-
-        self._docHandle = tHandle
-        if not isOrphan:
-            self._theItem = self.theProject.projTree[tHandle]
-        else:
-            self._theItem = None
-
         if self._theItem is None and not isOrphan:
-            self.clearDocument()
             return None
 
         docFile = self._docHandle+".nwd"
@@ -133,7 +123,7 @@ class NWDoc():
         """Write the document. The file is saved via a temp file in case
         of save failure. Returns True if successful, False if not.
         """
-        if self._docHandle is None:
+        if not isHandle(self._docHandle):
             return False
 
         self.theProject.ensureFolderStructure()
@@ -170,14 +160,14 @@ class NWDoc():
 
         return True
 
-    def deleteDocument(self, tHandle):
+    def deleteDocument(self):
         """Permanently delete a document source file and related files
         from the project data folder.
         """
-        if not isHandle(tHandle):
+        if not isHandle(self._docHandle):
             return False
 
-        docFile = tHandle+".nwd"
+        docFile = self._docHandle+".nwd"
 
         chkList = []
         chkList.append(os.path.join(self.theProject.projContent, docFile))

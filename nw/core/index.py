@@ -115,8 +115,8 @@ class NWIndex():
         if tItem.itemType != nwItemType.FILE:
             return False
 
-        theDoc = NWDoc(self.theProject)
-        theText = theDoc.readDocument(tHandle)
+        theDoc = NWDoc(self.theProject, tHandle)
+        theText = theDoc.readDocument()
         if theText:
             self.scanText(tHandle, theText)
 

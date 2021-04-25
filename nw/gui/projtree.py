@@ -286,8 +286,8 @@ class GuiProjectTree(QTreeWidget):
             return True
 
         # This is a new files, so let's add some content
-        newDoc = NWDoc(self.theProject)
-        curTxt = newDoc.readDocument(tHandle)
+        newDoc = NWDoc(self.theProject, tHandle)
+        curTxt = newDoc.readDocument()
         if curTxt is None:
             curTxt = ""
 
@@ -527,8 +527,8 @@ class GuiProjectTree(QTreeWidget):
                     if self.theParent.docEditor.theHandle == tHandle:
                         self.theParent.closeDocument()
 
-                    theDoc = NWDoc(self.theProject)
-                    theDoc.deleteDocument(tHandle)
+                    delDoc = NWDoc(self.theProject, tHandle)
+                    delDoc.deleteDocument()
                     self.theIndex.deleteHandle(tHandle)
                     self._deleteTreeItem(tHandle)
                     self._setTreeChanged(True)
