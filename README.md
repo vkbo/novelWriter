@@ -15,15 +15,16 @@
 
 <img align="left" style="margin: 0 16px 4px 0;" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/icons/scaled/icon-novelwriter-96.png">
 
-novelWriter is a Markdown-like text editor designed for writing novels assembled from many smaller
-text documents. It uses a minimal formatting syntax inspired by Markdown, and adds a meta data
-syntax for comments, synopsis, and cross-referencing between files. It's designed to be a simple
-text editor that allows for easy organisation of text files and notes, built on plain text files
-for robustness.
+novelWriter is a plain text editor designed for writing novels assembled from many smaller text
+documents. It uses a minimal formatting syntax inspired by Markdown, and adds a meta data syntax
+for comments, synopsis, and cross-referencing between files. It's designed to be a simple text
+editor that allows for easy organisation of text and notes. It uses human readable text files for
+storage for robustness.
 
-The plain text files are suitable for version control software, and also well suited for file
-synchronisation tools. The core project structure is stored in a single project XML file. Other
-meta data is primarily saved in JSON files.
+The storage text files are suitable for version control software, and also well suited for file
+synchronisation tools. All text is saved as plain text files with a meta data header. The core
+project structure is stored in a single project XML file. Other meta data is primarily saved in
+JSON files.
 
 The full documentation is available on [readthedocs.io](https://novelwriter.readthedocs.io).
 
