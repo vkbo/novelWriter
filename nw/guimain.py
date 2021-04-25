@@ -48,7 +48,7 @@ from nw.dialogs import (
     GuiProjectLoad, GuiProjectSettings, GuiWordList
 )
 from nw.tools import GuiBuildNovel, GuiProjectWizard, GuiWritingStats
-from nw.core import NWProject, NWDoc, NWIndex
+from nw.core import NWProject, NWIndex
 from nw.enum import nwItemType, nwItemClass, nwAlert, nwWidget
 from nw.common import getGuiItem, hexToInt
 from nw.constants import nwLists
@@ -88,7 +88,7 @@ class GuiMain(QMainWindow):
         # Core Classes and Settings
         self.theTheme    = GuiTheme(self)
         self.theProject  = NWProject(self)
-        self.theIndex    = NWIndex(self.theProject, self)
+        self.theIndex    = NWIndex(self.theProject)
         self.hasProject  = False
         self.isFocusMode = False
         self.idleRefTime = time()
@@ -756,7 +756,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        dlgMerge = GuiDocMerge(self, self.theProject)
+        dlgMerge = GuiDocMerge(self)
         dlgMerge.exec_()
 
         return True
@@ -768,7 +768,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        dlgSplit = GuiDocSplit(self, self.theProject)
+        dlgSplit = GuiDocSplit(self)
         dlgSplit.exec_()
 
         return True
@@ -837,7 +837,7 @@ class GuiMain(QMainWindow):
             return
 
         logger.verbose("Requesting change to item %s" % tHandle)
-        dlgProj = GuiItemEditor(self, self.theProject, tHandle)
+        dlgProj = GuiItemEditor(self, tHandle)
         dlgProj.exec_()
         if dlgProj.result() == QDialog.Accepted:
             self.treeView.setTreeItemValues(tHandle)
@@ -878,7 +878,6 @@ class GuiMain(QMainWindow):
         self.treeView.saveTreeOrder()
         self.theIndex.clearIndex()
 
-        theDoc = NWDoc(self.theProject, self)
         for nDone, tItem in enumerate(self.theProject.projTree):
 
             if tItem is not None:
@@ -888,10 +887,7 @@ class GuiMain(QMainWindow):
 
             if tItem is not None and tItem.itemType == nwItemType.FILE:
                 logger.verbose("Scanning: %s" % tItem.itemName)
-                theText = theDoc.openDocument(tItem.itemHandle, showStatus=False)
-
-                # Build tag index
-                self.theIndex.scanText(tItem.itemHandle, theText)
+                self.theIndex.reIndexHandle(tItem.itemHandle)
 
                 # Get Word Counts
                 cC, wC, pC = self.theIndex.getCounts(tItem.itemHandle)
@@ -962,7 +958,7 @@ class GuiMain(QMainWindow):
     def showPreferencesDialog(self):
         """Open the preferences dialog.
         """
-        dlgConf = GuiPreferences(self, self.theProject)
+        dlgConf = GuiPreferences(self)
         dlgConf.exec_()
 
         if dlgConf.result() == QDialog.Accepted:
@@ -986,7 +982,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return
 
-        dlgProj = GuiProjectSettings(self, self.theProject)
+        dlgProj = GuiProjectSettings(self)
         dlgProj.exec_()
 
         if dlgProj.result() == QDialog.Accepted:
@@ -1005,7 +1001,7 @@ class GuiMain(QMainWindow):
 
         self.treeView.flushTreeOrder()
 
-        dlgDetails = GuiProjectDetails(self, self.theProject)
+        dlgDetails = GuiProjectDetails(self)
         dlgDetails.setModal(False)
         dlgDetails.show()
 
@@ -1020,7 +1016,7 @@ class GuiMain(QMainWindow):
 
         dlgBuild = getGuiItem("GuiBuildNovel")
         if dlgBuild is None:
-            dlgBuild = GuiBuildNovel(self, self.theProject)
+            dlgBuild = GuiBuildNovel(self)
 
         dlgBuild.setModal(False)
         dlgBuild.show()
@@ -1036,7 +1032,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return
 
-        dlgWords = GuiWordList(self, self.theProject)
+        dlgWords = GuiWordList(self)
         dlgWords.exec_()
 
         if dlgWords.result() == QDialog.Accepted:
@@ -1054,7 +1050,7 @@ class GuiMain(QMainWindow):
 
         dlgStats = getGuiItem("GuiWritingStats")
         if dlgStats is None:
-            dlgStats = GuiWritingStats(self, self.theProject)
+            dlgStats = GuiWritingStats(self)
 
         dlgStats.setModal(False)
         dlgStats.show()

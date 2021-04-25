@@ -37,14 +37,14 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
     assert theProject.openProject(nwMinimal)
     assert theProject.projPath == nwMinimal
 
-    theDoc = NWDoc(theProject, dummyGUI)
+    theDoc = NWDoc(theProject)
     sHandle = "8c659a11cd429"
 
     # Not a valid handle
-    assert theDoc.openDocument("dummy") is None
+    assert theDoc.readDocument("dummy") is None
 
     # Non-existent handle
-    assert theDoc.openDocument("0000000000000") is None
+    assert theDoc.readDocument("0000000000000") is None
 
     # Cause open() to fail while loading
     def dummyOpen(*args, **kwargs):
@@ -52,29 +52,29 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
 
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", dummyOpen)
-        assert theDoc.openDocument(sHandle) is None
+        assert theDoc.readDocument(sHandle) is None
 
     # Load the text
-    assert theDoc.openDocument(sHandle) == "### New Scene\n\n"
+    assert theDoc.readDocument(sHandle) == "### New Scene\n\n"
 
     # Try to open a new (non-existent) file
     nHandle = theProject.projTree.findRoot(nwItemClass.NOVEL)
     assert nHandle is not None
     xHandle = theProject.newFile("New File", nwItemClass.NOVEL, nHandle)
-    assert theDoc.openDocument(xHandle) == ""
+    assert theDoc.readDocument(xHandle) == ""
 
     # Check cached item
     assert isinstance(theDoc._theItem, NWItem)
-    assert theDoc.openDocument(xHandle, isOrphan=True) == ""
+    assert theDoc.readDocument(xHandle, isOrphan=True) == ""
     assert theDoc._theItem is None
 
     # Set handle and save again
     theText = "### Test File\n\nText ...\n\n"
-    assert theDoc.openDocument(xHandle) == ""
-    assert theDoc.saveDocument(theText)
+    assert theDoc.readDocument(xHandle) == ""
+    assert theDoc.writeDocument(theText)
 
     # Save again to ensure temp file and previous file is handled
-    assert theDoc.saveDocument(theText)
+    assert theDoc.writeDocument(theText)
 
     # Check file content
     docPath = os.path.join(nwMinimal, "content", xHandle+".nwd")
@@ -89,7 +89,7 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
 
     # Force no meta data
     theDoc._theItem = None
-    assert theDoc.saveDocument(theText)
+    assert theDoc.writeDocument(theText)
 
     with open(docPath, mode="r", encoding="utf8") as inFile:
         assert inFile.read() == theText
@@ -97,11 +97,11 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
     # Cause open() to fail while saving
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        assert not theDoc.saveDocument(theText)
+        assert not theDoc.writeDocument(theText)
 
     # Saving with no handle
     theDoc.clearDocument()
-    assert not theDoc.saveDocument(theText)
+    assert not theDoc.writeDocument(theText)
 
     # Delete the last document
     assert not theDoc.deleteDocument("dummy")
@@ -126,11 +126,11 @@ def testCoreDocument_Methods(monkeypatch, dummyGUI, nwMinimal):
     assert theProject.openProject(nwMinimal)
     assert theProject.projPath == nwMinimal
 
-    theDoc = NWDoc(theProject, dummyGUI)
+    theDoc = NWDoc(theProject)
     sHandle = "8c659a11cd429"
     docPath = os.path.join(nwMinimal, "content", sHandle+".nwd")
 
-    assert theDoc.openDocument(sHandle) == "### New Scene\n\n"
+    assert theDoc.readDocument(sHandle) == "### New Scene\n\n"
 
     # Check location
     assert theDoc.getFileLocation() == docPath
@@ -147,7 +147,7 @@ def testCoreDocument_Methods(monkeypatch, dummyGUI, nwMinimal):
     assert theLayout == nwItemLayout.SCENE
 
     # Add meta data garbage
-    assert theDoc.saveDocument("%%~ stuff\n### Test File\n\nText ...\n\n")
+    assert theDoc.writeDocument("%%~ stuff\n### Test File\n\nText ...\n\n")
     with open(docPath, mode="r", encoding="utf8") as inFile:
         assert inFile.read() == (
             "%%~name: New Scene\n"
@@ -158,6 +158,6 @@ def testCoreDocument_Methods(monkeypatch, dummyGUI, nwMinimal):
             "Text ...\n\n"
         )
 
-    assert theDoc.openDocument(sHandle) == "### Test File\n\nText ...\n\n"
+    assert theDoc.readDocument(sHandle) == "### Test File\n\nText ...\n\n"
 
 # END Test testCoreDocument_Methods

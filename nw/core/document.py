@@ -38,10 +38,10 @@ logger = logging.getLogger(__name__)
 
 class NWDoc():
 
-    def __init__(self, theProject, theParent):
+    def __init__(self, theProject):
 
         self.theProject = theProject
-        self.theParent  = theParent
+        self.theParent  = theProject.theParent
 
         # Internal Variables
         self._theItem   = None # The currently open item
@@ -68,8 +68,8 @@ class NWDoc():
         self._docMeta   = {}
         return
 
-    def openDocument(self, tHandle, showStatus=True, isOrphan=False):
-        """Open a document from handle, capturing potential file system
+    def readDocument(self, tHandle, isOrphan=False):
+        """Read a document from handle, capturing potential file system
         errors and parse meta data. If the document doesn't exist on
         disk, return an empty string. If something went wrong, return
         None.
@@ -127,15 +127,10 @@ class NWDoc():
             logger.debug("The requested document does not exist.")
             return ""
 
-        if showStatus and not isOrphan:
-            self.theParent.setStatus(
-                self.tr("Opened Document: {0}").format(self._theItem.itemName)
-            )
-
         return theText
 
-    def saveDocument(self, docText):
-        """Save the document. The file is saved via a temp file in case
+    def writeDocument(self, docText):
+        """Write the document. The file is saved via a temp file in case
         of save failure. Returns True if successful, False if not.
         """
         if self._docHandle is None:
@@ -172,11 +167,6 @@ class NWDoc():
         if os.path.isfile(docPath):
             os.unlink(docPath)
         os.rename(docTemp, docPath)
-
-        if self._theItem is not None:
-            self.theParent.setStatus(
-                self.tr("Saved Document: {0}").format(self._theItem.itemName)
-            )
 
         return True
 

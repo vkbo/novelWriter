@@ -66,17 +66,17 @@ class GuiBuildNovel(QDialog):
     FMT_JSON_H = 8 # HTML5 wrapped in JSON
     FMT_JSON_M = 9 # nW Markdown wrapped in JSON
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiBuildNovel ...")
         self.setObjectName("GuiBuildNovel")
 
         self.mainConf   = nw.CONFIG
-        self.theProject = theProject
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
-        self.optState   = self.theProject.optState
+        self.theProject = theParent.theProject
+        self.optState   = theParent.theProject.optState
 
         self.htmlText  = [] # List of html documents
         self.htmlStyle = [] # List of html styles
@@ -608,7 +608,7 @@ class GuiBuildNovel(QDialog):
         # Build Preview
         # =============
 
-        makeHtml = ToHtml(self.theProject, self.theParent)
+        makeHtml = ToHtml(self.theProject)
         self._doBuild(makeHtml, isPreview=True)
         if replaceTabs:
             makeHtml.replaceTabs()
@@ -875,7 +875,7 @@ class GuiBuildNovel(QDialog):
         wSuccess = False
 
         if theFmt == self.FMT_ODT:
-            makeOdt = ToOdt(self.theProject, self.theParent, isFlat=False)
+            makeOdt = ToOdt(self.theProject, isFlat=False)
             self._doBuild(makeOdt)
             try:
                 makeOdt.saveOpenDocText(savePath)
@@ -884,7 +884,7 @@ class GuiBuildNovel(QDialog):
                 errMsg = str(e)
 
         elif theFmt == self.FMT_FODT:
-            makeOdt = ToOdt(self.theProject, self.theParent, isFlat=True)
+            makeOdt = ToOdt(self.theProject, isFlat=True)
             self._doBuild(makeOdt)
             try:
                 makeOdt.saveFlatXML(savePath)
@@ -893,7 +893,7 @@ class GuiBuildNovel(QDialog):
                 errMsg = str(e)
 
         elif theFmt == self.FMT_HTM:
-            makeHtml = ToHtml(self.theProject, self.theParent)
+            makeHtml = ToHtml(self.theProject)
             self._doBuild(makeHtml)
             if replaceTabs:
                 makeHtml.replaceTabs()
@@ -905,7 +905,7 @@ class GuiBuildNovel(QDialog):
                 errMsg = str(e)
 
         elif theFmt == self.FMT_NWD:
-            makeNwd = ToMarkdown(self.theProject, self.theParent)
+            makeNwd = ToMarkdown(self.theProject)
             makeNwd.setKeepMarkdown(True)
             self._doBuild(makeNwd, doConvert=False)
             if replaceTabs:
@@ -918,7 +918,7 @@ class GuiBuildNovel(QDialog):
                 errMsg = str(e)
 
         elif theFmt in (self.FMT_MD, self.FMT_GH):
-            makeMd = ToMarkdown(self.theProject, self.theParent)
+            makeMd = ToMarkdown(self.theProject)
             if theFmt == self.FMT_GH:
                 makeMd.setGitHubMarkdown()
             else:
@@ -945,7 +945,7 @@ class GuiBuildNovel(QDialog):
             }
 
             if theFmt == self.FMT_JSON_H:
-                makeHtml = ToHtml(self.theProject, self.theParent)
+                makeHtml = ToHtml(self.theProject)
                 self._doBuild(makeHtml)
                 if replaceTabs:
                     makeHtml.replaceTabs()
@@ -959,7 +959,7 @@ class GuiBuildNovel(QDialog):
                 }
 
             elif theFmt == self.FMT_JSON_M:
-                makeMd = ToHtml(self.theProject, self.theParent)
+                makeMd = ToHtml(self.theProject)
                 makeMd.setKeepMarkdown(True)
                 self._doBuild(makeMd, doConvert=False)
                 if replaceTabs:

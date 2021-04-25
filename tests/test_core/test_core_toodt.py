@@ -48,8 +48,8 @@ def testCoreToOdt_Convert(dummyGUI):
     """Test the converter of the ToHtml class.
     """
     theProject = NWProject(dummyGUI)
-    dummyGUI.theIndex = NWIndex(theProject, dummyGUI)
-    theDoc = ToOdt(theProject, dummyGUI, isFlat=True)
+    dummyGUI.theIndex = NWIndex(theProject)
+    theDoc = ToOdt(theProject, isFlat=True)
 
     # Export Mode
     # ===========

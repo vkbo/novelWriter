@@ -168,7 +168,7 @@ class GuiDocViewer(QTextBrowser):
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
 
         sPos = self.verticalScrollBar().value()
-        aDoc = ToHtml(self.theProject, self.theParent)
+        aDoc = ToHtml(self.theProject)
         aDoc.setPreview(self.mainConf.viewComments, self.mainConf.viewSynopsis)
         aDoc.setLinkHeaders(True)
 

@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 class GuiDocMerge(QDialog):
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiDocMerge ...")
@@ -49,7 +49,7 @@ class GuiDocMerge(QDialog):
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
+        self.theProject = theParent.theProject
         self.sourceItem = None
 
         self.outerBox = QVBoxLayout()
@@ -107,11 +107,12 @@ class GuiDocMerge(QDialog):
             )
             return
 
-        theDoc = NWDoc(self.theProject, self.theParent)
+        theDoc = NWDoc(self.theProject)
         theText = ""
         for tHandle in finalOrder:
-            theText += theDoc.openDocument(tHandle, False).rstrip("\n")
-            theText += "\n\n"
+            docText = theDoc.readDocument(tHandle).rstrip("\n")
+            if docText:
+                theText += docText+"\n\n"
 
         if self.sourceItem is None:
             self.theParent.makeAlert(
@@ -130,8 +131,8 @@ class GuiDocMerge(QDialog):
         newItem = self.theProject.projTree[nHandle]
         newItem.setStatus(srcItem.itemStatus)
 
-        theDoc.openDocument(nHandle, False)
-        theDoc.saveDocument(theText)
+        theDoc.readDocument(nHandle)
+        theDoc.writeDocument(theText)
         self.theParent.treeView.revealNewTreeItem(nHandle)
         self.theParent.openDocument(nHandle, doScroll=True)
 

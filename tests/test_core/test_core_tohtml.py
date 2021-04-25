@@ -32,8 +32,8 @@ def testCoreToHtml_Format(dummyGUI):
     """Test all the formatters for the ToHtml class.
     """
     theProject = NWProject(dummyGUI)
-    dummyGUI.theIndex = NWIndex(theProject, dummyGUI)
-    theHtml = ToHtml(theProject, dummyGUI)
+    dummyGUI.theIndex = NWIndex(theProject)
+    theHtml = ToHtml(theProject)
 
     # Export Mode
     # ===========
@@ -84,8 +84,8 @@ def testCoreToHtml_Convert(dummyGUI):
     """Test the converter of the ToHtml class.
     """
     theProject = NWProject(dummyGUI)
-    dummyGUI.theIndex = NWIndex(theProject, dummyGUI)
-    theHtml = ToHtml(theProject, dummyGUI)
+    dummyGUI.theIndex = NWIndex(theProject)
+    theHtml = ToHtml(theProject)
 
     # Export Mode
     # ===========
@@ -348,7 +348,7 @@ def testCoreToHtml_Complex(dummyGUI, fncDir):
     """Test the ave method of the ToHtml class.
     """
     theProject = NWProject(dummyGUI)
-    theHtml = ToHtml(theProject, dummyGUI)
+    theHtml = ToHtml(theProject)
 
     # Build Project
     # =============
@@ -421,7 +421,7 @@ def testCoreToHtml_Methods(dummyGUI):
     """Test all the other methods of the ToHtml class.
     """
     theProject = NWProject(dummyGUI)
-    theHtml = ToHtml(theProject, dummyGUI)
+    theHtml = ToHtml(theProject)
     theHtml.setKeepMarkdown(True)
 
     # Auto-Replace, keep Unicode

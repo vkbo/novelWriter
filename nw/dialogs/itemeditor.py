@@ -41,15 +41,15 @@ logger = logging.getLogger(__name__)
 
 class GuiItemEditor(QDialog):
 
-    def __init__(self, theParent, theProject, tHandle):
+    def __init__(self, theParent, tHandle):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiItemEditor ...")
         self.setObjectName("GuiItemEditor")
 
         self.mainConf   = nw.CONFIG
-        self.theProject = theProject
         self.theParent  = theParent
+        self.theProject = theParent.theProject
 
         ##
         #  Build GUI
