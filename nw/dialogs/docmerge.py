@@ -110,7 +110,7 @@ class GuiDocMerge(QDialog):
         theDoc = NWDoc(self.theProject, self.theParent)
         theText = ""
         for tHandle in finalOrder:
-            docText = theDoc.readDocument(tHandle, False).rstrip("\n")
+            docText = theDoc.readDocument(tHandle).rstrip("\n")
             if docText:
                 theText += docText+"\n\n"
 
@@ -131,7 +131,7 @@ class GuiDocMerge(QDialog):
         newItem = self.theProject.projTree[nHandle]
         newItem.setStatus(srcItem.itemStatus)
 
-        theDoc.readDocument(nHandle, False)
+        theDoc.readDocument(nHandle)
         theDoc.writeDocument(theText)
         self.theParent.treeView.revealNewTreeItem(nHandle)
         self.theParent.openDocument(nHandle, doScroll=True)

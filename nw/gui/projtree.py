@@ -287,7 +287,7 @@ class GuiProjectTree(QTreeWidget):
 
         # This is a new files, so let's add some content
         newDoc = NWDoc(self.theProject, self.theParent)
-        curTxt = newDoc.readDocument(tHandle, showStatus=False)
+        curTxt = newDoc.readDocument(tHandle)
         if curTxt is None:
             curTxt = ""
 

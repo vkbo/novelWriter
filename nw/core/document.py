@@ -68,7 +68,7 @@ class NWDoc():
         self._docMeta   = {}
         return
 
-    def readDocument(self, tHandle, showStatus=True, isOrphan=False):
+    def readDocument(self, tHandle, isOrphan=False):
         """Read a document from handle, capturing potential file system
         errors and parse meta data. If the document doesn't exist on
         disk, return an empty string. If something went wrong, return
@@ -127,11 +127,6 @@ class NWDoc():
             logger.debug("The requested document does not exist.")
             return ""
 
-        if showStatus and not isOrphan:
-            self.theParent.setStatus(
-                self.tr("Opened Document: {0}").format(self._theItem.itemName)
-            )
-
         return theText
 
     def writeDocument(self, docText):
@@ -172,11 +167,6 @@ class NWDoc():
         if os.path.isfile(docPath):
             os.unlink(docPath)
         os.rename(docTemp, docPath)
-
-        if self._theItem is not None:
-            self.theParent.setStatus(
-                self.tr("Saved Document: {0}").format(self._theItem.itemName)
-            )
 
         return True
 

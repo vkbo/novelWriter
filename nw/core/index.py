@@ -117,7 +117,7 @@ class NWIndex():
             return False
 
         theDoc = NWDoc(self.theProject, self.theParent)
-        theText = theDoc.readDocument(tHandle, showStatus=False)
+        theText = theDoc.readDocument(tHandle)
         if theText:
             self.scanText(tHandle, theText)
 

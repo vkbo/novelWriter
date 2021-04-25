@@ -284,15 +284,15 @@ class NWProject():
             self.projTree.setFileItemLayout(xHandle[5], nwItemLayout.TITLE)
             self.projTree.setFileItemLayout(xHandle[7], nwItemLayout.CHAPTER)
 
-            aDoc.readDocument(xHandle[5], showStatus=False)
+            aDoc.readDocument(xHandle[5])
             aDoc.writeDocument(titlePage)
             aDoc.clearDocument()
 
-            aDoc.readDocument(xHandle[7], showStatus=False)
+            aDoc.readDocument(xHandle[7])
             aDoc.writeDocument("## %s\n\n" % self.tr("New Chapter"))
             aDoc.clearDocument()
 
-            aDoc.readDocument(xHandle[8], showStatus=False)
+            aDoc.readDocument(xHandle[8])
             aDoc.writeDocument("### %s\n\n" % self.tr("New Scene"))
             aDoc.clearDocument()
 
@@ -311,7 +311,7 @@ class NWProject():
             tHandle = self.newFile(self.tr("Title Page"), nwItemClass.NOVEL, nHandle)
             self.projTree.setFileItemLayout(tHandle, nwItemLayout.TITLE)
 
-            aDoc.readDocument(tHandle, showStatus=False)
+            aDoc.readDocument(tHandle)
             aDoc.writeDocument(titlePage)
             aDoc.clearDocument()
 
@@ -331,7 +331,7 @@ class NWProject():
                     cHandle = self.newFile(chTitle, nwItemClass.NOVEL, pHandle)
                     self.projTree.setFileItemLayout(cHandle, nwItemLayout.CHAPTER)
 
-                    aDoc.readDocument(cHandle, showStatus=False)
+                    aDoc.readDocument(cHandle)
                     aDoc.writeDocument("## %s\n\n" % chTitle)
                     aDoc.clearDocument()
 
@@ -341,7 +341,7 @@ class NWProject():
                             scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
                             sHandle = self.newFile(scTitle, nwItemClass.NOVEL, pHandle)
 
-                            aDoc.readDocument(sHandle, showStatus=False)
+                            aDoc.readDocument(sHandle)
                             aDoc.writeDocument("### %s\n\n" % scTitle)
                             aDoc.clearDocument()
 
@@ -351,7 +351,7 @@ class NWProject():
                     scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
                     sHandle = self.newFile(scTitle, nwItemClass.NOVEL, nHandle)
 
-                    aDoc.readDocument(sHandle, showStatus=False)
+                    aDoc.readDocument(sHandle)
                     aDoc.writeDocument("### %s\n\n" % scTitle)
                     aDoc.clearDocument()
 
@@ -1404,7 +1404,7 @@ class NWProject():
             oParent = None
             oClass = None
             oLayout = None
-            if aDoc.readDocument(oHandle, showStatus=False, isOrphan=True) is not None:
+            if aDoc.readDocument(oHandle, isOrphan=True) is not None:
                 oName, oParent, oClass, oLayout = aDoc.getMeta()
 
             if oName:

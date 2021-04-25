@@ -288,7 +288,7 @@ class GuiDocEditor(QTextEdit):
 
         return True
 
-    def loadText(self, tHandle, tLine=None, showStatus=True):
+    def loadText(self, tHandle, tLine=None):
         """Load text from a document into the editor. If we have an io
         error, we must handle this and clear the editor so that we don't
         risk overwriting the file if it exists. This can for instance
@@ -297,7 +297,7 @@ class GuiDocEditor(QTextEdit):
         document is new (empty string), we set up the editor for editing
         the file.
         """
-        theDoc = self.nwDocument.readDocument(tHandle, showStatus=showStatus)
+        theDoc = self.nwDocument.readDocument(tHandle)
         if theDoc is None:
             # There was an io error
             self.clearEditor()
@@ -376,6 +376,12 @@ class GuiDocEditor(QTextEdit):
             self.setPlainText("\n")
             self.setPlainText("")
             self.setCursorPosition(0)
+
+        # Update the status bar
+        if theItem is not None:
+            self.theParent.setStatus(
+                self.tr("Opened Document: {0}").format(theItem.itemName)
+            )
 
         return True
 
@@ -456,6 +462,11 @@ class GuiDocEditor(QTextEdit):
             self.theParent.treeView.setTreeItemValues(tHandle)
             self.nwDocument.writeDocument(docText)
             self.docFooter.updateInfo()
+
+        # Update the status bar
+        self.theParent.setStatus(
+            self.tr("Saved Document: {0}").format(theItem.itemName)
+        )
 
         return True
 
