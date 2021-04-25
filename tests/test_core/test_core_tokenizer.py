@@ -138,8 +138,8 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
     docTextR = docText.replace("<A>", "this").replace("<B>", "that")
 
     nDoc = NWDoc(theProject, dummyGUI)
-    nDoc.openDocument(sHandle)
-    nDoc.saveDocument(docText)
+    nDoc.readDocument(sHandle)
+    nDoc.writeDocument(docText)
     nDoc.clearDocument()
 
     theProject.setAutoReplace({"A": "this", "B": "that"})

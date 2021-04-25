@@ -127,8 +127,11 @@ class GuiDocSplit(QDialog):
             )
             return
 
-        theDoc   = NWDoc(self.theProject, self.theParent)
-        theText  = theDoc.openDocument(self.sourceItem, False)
+        theDoc  = NWDoc(self.theProject, self.theParent)
+        theText = theDoc.readDocument(self.sourceItem, False)
+        if theText is None:
+            theText = ""
+
         theLines = theText.splitlines()
         nLines   = len(theLines)
         theLines.insert(0, "%Split Doc")
@@ -214,8 +217,8 @@ class GuiDocSplit(QDialog):
 
             theText = "\n".join(theLines[iStart:iEnd])
             theText = theText.rstrip("\n") + "\n\n"
-            theDoc.openDocument(nHandle, False)
-            theDoc.saveDocument(theText)
+            theDoc.readDocument(nHandle, False)
+            theDoc.writeDocument(theText)
             theDoc.clearDocument()
             self.theParent.treeView.revealNewTreeItem(nHandle)
 
@@ -257,7 +260,9 @@ class GuiDocSplit(QDialog):
 
         self.listBox.clear()
         theDoc  = NWDoc(self.theProject, self.theParent)
-        theText = theDoc.openDocument(self.sourceItem, False)
+        theText = theDoc.readDocument(self.sourceItem, False)
+        if theText is None:
+            theText = ""
 
         spLevel = self.splitLevel.currentData()
         self.optState.setValue("GuiDocSplit", "spLevel", spLevel)

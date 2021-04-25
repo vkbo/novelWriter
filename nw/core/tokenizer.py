@@ -278,13 +278,16 @@ class Tokenizer():
         if self.theItem is None:
             return False
 
+        self.theText = ""
         if theText is not None:
             # If the text is set, just use that
             self.theText = theText
         else:
             # Otherwise, load it from file
-            theDocument  = NWDoc(self.theProject, self.theParent)
-            self.theText = theDocument.openDocument(theHandle)
+            theDoc  = NWDoc(self.theProject, self.theParent)
+            theText = theDoc.readDocument(theHandle)
+            if theText:
+                self.theText = theText
 
         docSize = len(self.theText)
         if docSize > nwConst.MAX_DOCSIZE:

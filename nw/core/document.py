@@ -68,8 +68,8 @@ class NWDoc():
         self._docMeta   = {}
         return
 
-    def openDocument(self, tHandle, showStatus=True, isOrphan=False):
-        """Open a document from handle, capturing potential file system
+    def readDocument(self, tHandle, showStatus=True, isOrphan=False):
+        """Read a document from handle, capturing potential file system
         errors and parse meta data. If the document doesn't exist on
         disk, return an empty string. If something went wrong, return
         None.
@@ -134,8 +134,8 @@ class NWDoc():
 
         return theText
 
-    def saveDocument(self, docText):
-        """Save the document. The file is saved via a temp file in case
+    def writeDocument(self, docText):
+        """Write the document. The file is saved via a temp file in case
         of save failure. Returns True if successful, False if not.
         """
         if self._docHandle is None:

@@ -297,7 +297,7 @@ class GuiDocEditor(QTextEdit):
         document is new (empty string), we set up the editor for editing
         the file.
         """
-        theDoc = self.nwDocument.openDocument(tHandle, showStatus=showStatus)
+        theDoc = self.nwDocument.readDocument(tHandle, showStatus=showStatus)
         if theDoc is None:
             # There was an io error
             self.clearEditor()
@@ -438,7 +438,7 @@ class GuiDocEditor(QTextEdit):
         theItem.setParaCount(self.paraCount)
 
         self.saveCursorPosition()
-        self.nwDocument.saveDocument(docText)
+        self.nwDocument.writeDocument(docText)
         self.setDocumentChanged(False)
 
         self.theIndex.scanText(tHandle, docText)
@@ -454,7 +454,7 @@ class GuiDocEditor(QTextEdit):
 
         if self.theProject.projTree.updateItemLayout(tHandle, hLevel):
             self.theParent.treeView.setTreeItemValues(tHandle)
-            self.nwDocument.saveDocument(docText)
+            self.nwDocument.writeDocument(docText)
             self.docFooter.updateInfo()
 
         return True

@@ -48,7 +48,7 @@ from nw.dialogs import (
     GuiProjectLoad, GuiProjectSettings, GuiWordList
 )
 from nw.tools import GuiBuildNovel, GuiProjectWizard, GuiWritingStats
-from nw.core import NWProject, NWDoc, NWIndex
+from nw.core import NWProject, NWIndex
 from nw.enum import nwItemType, nwItemClass, nwAlert, nwWidget
 from nw.common import getGuiItem, hexToInt
 from nw.constants import nwLists
@@ -878,7 +878,6 @@ class GuiMain(QMainWindow):
         self.treeView.saveTreeOrder()
         self.theIndex.clearIndex()
 
-        theDoc = NWDoc(self.theProject, self)
         for nDone, tItem in enumerate(self.theProject.projTree):
 
             if tItem is not None:
@@ -888,10 +887,7 @@ class GuiMain(QMainWindow):
 
             if tItem is not None and tItem.itemType == nwItemType.FILE:
                 logger.verbose("Scanning: %s" % tItem.itemName)
-                theText = theDoc.openDocument(tItem.itemHandle, showStatus=False)
-
-                # Build tag index
-                self.theIndex.scanText(tItem.itemHandle, theText)
+                self.theIndex.reIndexHandle(tItem.itemHandle)
 
                 # Get Word Counts
                 cC, wC, pC = self.theIndex.getCounts(tItem.itemHandle)

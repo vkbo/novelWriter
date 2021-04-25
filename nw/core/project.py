@@ -284,16 +284,16 @@ class NWProject():
             self.projTree.setFileItemLayout(xHandle[5], nwItemLayout.TITLE)
             self.projTree.setFileItemLayout(xHandle[7], nwItemLayout.CHAPTER)
 
-            aDoc.openDocument(xHandle[5], showStatus=False)
-            aDoc.saveDocument(titlePage)
+            aDoc.readDocument(xHandle[5], showStatus=False)
+            aDoc.writeDocument(titlePage)
             aDoc.clearDocument()
 
-            aDoc.openDocument(xHandle[7], showStatus=False)
-            aDoc.saveDocument("## %s\n\n" % self.tr("New Chapter"))
+            aDoc.readDocument(xHandle[7], showStatus=False)
+            aDoc.writeDocument("## %s\n\n" % self.tr("New Chapter"))
             aDoc.clearDocument()
 
-            aDoc.openDocument(xHandle[8], showStatus=False)
-            aDoc.saveDocument("### %s\n\n" % self.tr("New Scene"))
+            aDoc.readDocument(xHandle[8], showStatus=False)
+            aDoc.writeDocument("### %s\n\n" % self.tr("New Scene"))
             aDoc.clearDocument()
 
         elif popCustom:
@@ -311,8 +311,8 @@ class NWProject():
             tHandle = self.newFile(self.tr("Title Page"), nwItemClass.NOVEL, nHandle)
             self.projTree.setFileItemLayout(tHandle, nwItemLayout.TITLE)
 
-            aDoc.openDocument(tHandle, showStatus=False)
-            aDoc.saveDocument(titlePage)
+            aDoc.readDocument(tHandle, showStatus=False)
+            aDoc.writeDocument(titlePage)
             aDoc.clearDocument()
 
             # Create chapters and scenes
@@ -331,8 +331,8 @@ class NWProject():
                     cHandle = self.newFile(chTitle, nwItemClass.NOVEL, pHandle)
                     self.projTree.setFileItemLayout(cHandle, nwItemLayout.CHAPTER)
 
-                    aDoc.openDocument(cHandle, showStatus=False)
-                    aDoc.saveDocument("## %s\n\n" % chTitle)
+                    aDoc.readDocument(cHandle, showStatus=False)
+                    aDoc.writeDocument("## %s\n\n" % chTitle)
                     aDoc.clearDocument()
 
                     # Create chapter scenes
@@ -341,8 +341,8 @@ class NWProject():
                             scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
                             sHandle = self.newFile(scTitle, nwItemClass.NOVEL, pHandle)
 
-                            aDoc.openDocument(sHandle, showStatus=False)
-                            aDoc.saveDocument("### %s\n\n" % scTitle)
+                            aDoc.readDocument(sHandle, showStatus=False)
+                            aDoc.writeDocument("### %s\n\n" % scTitle)
                             aDoc.clearDocument()
 
             # Create scenes (no chapters)
@@ -351,8 +351,8 @@ class NWProject():
                     scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
                     sHandle = self.newFile(scTitle, nwItemClass.NOVEL, nHandle)
 
-                    aDoc.openDocument(sHandle, showStatus=False)
-                    aDoc.saveDocument("### %s\n\n" % scTitle)
+                    aDoc.readDocument(sHandle, showStatus=False)
+                    aDoc.writeDocument("### %s\n\n" % scTitle)
                     aDoc.clearDocument()
 
         # Finalise
@@ -1404,7 +1404,7 @@ class NWProject():
             oParent = None
             oClass = None
             oLayout = None
-            if aDoc.openDocument(oHandle, showStatus=False, isOrphan=True) is not None:
+            if aDoc.readDocument(oHandle, showStatus=False, isOrphan=True) is not None:
                 oName, oParent, oClass, oLayout = aDoc.getMeta()
 
             if oName:
