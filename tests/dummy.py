@@ -107,7 +107,7 @@ class DummyApp:
 # =========================================================================== #
 
 def causeOSError(*args, **kwargs):
-    raise OSError
+    raise OSError("OSError")
 
 def causeException(*args, **kwargs):
-    raise Exception
+    raise Exception("Exception")

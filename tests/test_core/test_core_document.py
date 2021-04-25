@@ -26,7 +26,6 @@ import pytest
 from dummy import causeOSError
 
 from nw.core import NWProject, NWDoc
-from nw.core.item import NWItem
 from nw.enum import nwItemClass, nwItemLayout
 
 @pytest.mark.core
@@ -37,39 +36,37 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
     assert theProject.openProject(nwMinimal)
     assert theProject.projPath == nwMinimal
 
-    theDoc = NWDoc(theProject)
     sHandle = "8c659a11cd429"
 
     # Not a valid handle
-    assert theDoc.readDocument("dummy") is None
+    theDoc = NWDoc(theProject, "dummy")
+    assert theDoc.readDocument() is None
 
     # Non-existent handle
-    assert theDoc.readDocument("0000000000000") is None
+    theDoc = NWDoc(theProject, "0000000000000")
+    assert theDoc.readDocument() is None
 
     # Cause open() to fail while loading
-    def dummyOpen(*args, **kwargs):
-        raise OSError
-
     with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", dummyOpen)
-        assert theDoc.readDocument(sHandle) is None
+        mp.setattr("builtins.open", causeOSError)
+        theDoc = NWDoc(theProject, sHandle)
+        assert theDoc.readDocument() is None
+        assert theDoc.getError() == "OSError"
 
     # Load the text
-    assert theDoc.readDocument(sHandle) == "### New Scene\n\n"
+    theDoc = NWDoc(theProject, sHandle)
+    assert theDoc.readDocument() == "### New Scene\n\n"
 
     # Try to open a new (non-existent) file
     nHandle = theProject.projTree.findRoot(nwItemClass.NOVEL)
     assert nHandle is not None
     xHandle = theProject.newFile("New File", nwItemClass.NOVEL, nHandle)
-    assert theDoc.readDocument(xHandle) == ""
-
-    # Check cached item
-    assert isinstance(theDoc._theItem, NWItem)
-    assert theDoc.readDocument(xHandle, isOrphan=True) == ""
-    assert theDoc._theItem is None
+    theDoc = NWDoc(theProject, xHandle)
+    assert theDoc.readDocument() == ""
 
     # Set handle and save again
     theText = "### Test File\n\nText ...\n\n"
+    theDoc = NWDoc(theProject, xHandle)
     assert theDoc.readDocument(xHandle) == ""
     assert theDoc.writeDocument(theText)
 
@@ -98,22 +95,27 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         assert not theDoc.writeDocument(theText)
+        assert theDoc.getError() == "OSError"
 
     # Saving with no handle
     theDoc.clearDocument()
     assert not theDoc.writeDocument(theText)
 
     # Delete the last document
-    assert not theDoc.deleteDocument("dummy")
+    theDoc = NWDoc(theProject, "dummy")
+    assert not theDoc.deleteDocument()
     assert os.path.isfile(docPath)
 
     # Cause the delete to fail
     with monkeypatch.context() as mp:
         mp.setattr("os.unlink", causeOSError)
-        assert not theDoc.deleteDocument(xHandle)
+        theDoc = NWDoc(theProject, xHandle)
+        assert not theDoc.deleteDocument()
+        assert theDoc.getError() == "OSError"
 
     # Make the delete pass
-    assert theDoc.deleteDocument(xHandle)
+    theDoc = NWDoc(theProject, xHandle)
+    assert theDoc.deleteDocument()
     assert not os.path.isfile(docPath)
 
 # END Test testCoreDocument_Load
@@ -126,11 +128,11 @@ def testCoreDocument_Methods(monkeypatch, dummyGUI, nwMinimal):
     assert theProject.openProject(nwMinimal)
     assert theProject.projPath == nwMinimal
 
-    theDoc = NWDoc(theProject)
     sHandle = "8c659a11cd429"
+    theDoc = NWDoc(theProject, sHandle)
     docPath = os.path.join(nwMinimal, "content", sHandle+".nwd")
 
-    assert theDoc.readDocument(sHandle) == "### New Scene\n\n"
+    assert theDoc.readDocument() == "### New Scene\n\n"
 
     # Check location
     assert theDoc.getFileLocation() == docPath
@@ -158,6 +160,6 @@ def testCoreDocument_Methods(monkeypatch, dummyGUI, nwMinimal):
             "Text ...\n\n"
         )
 
-    assert theDoc.readDocument(sHandle) == "### Test File\n\nText ...\n\n"
+    assert theDoc.readDocument() == "### Test File\n\nText ...\n\n"
 
 # END Test testCoreDocument_Methods
