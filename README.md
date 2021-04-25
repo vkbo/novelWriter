@@ -17,11 +17,10 @@
 
 novelWriter is a plain text editor designed for writing novels assembled from many smaller text
 documents. It uses a minimal formatting syntax inspired by Markdown, and adds a meta data syntax
-for comments, synopsis, and cross-referencing between files. It's designed to be a simple text
-editor that allows for easy organisation of text and notes. It uses human readable text files for
-storage for robustness.
+for comments, synopsis, and cross-referencing. It's designed to be a simple text editor that allows
+for easy organisation of text and notes, using human readable text files as storage for robustness.
 
-The storage text files are suitable for version control software, and also well suited for file
+The project storage is suitable for version control software, and also well suited for file
 synchronisation tools. All text is saved as plain text files with a meta data header. The core
 project structure is stored in a single project XML file. Other meta data is primarily saved in
 JSON files.
