@@ -111,6 +111,11 @@ class GuiDocMerge(QDialog):
         for tHandle in finalOrder:
             inDoc = NWDoc(self.theProject, tHandle)
             docText = inDoc.readDocument().rstrip("\n")
+            docErr = inDoc.getError()
+            if docText is None and docErr:
+                self.makeAlert(
+                    [self.tr("Failed to open document file."), docErr], nwAlert.ERROR
+                )
             if docText:
                 theText += docText+"\n\n"
 
@@ -132,7 +137,10 @@ class GuiDocMerge(QDialog):
         newItem.setStatus(srcItem.itemStatus)
 
         outDoc = NWDoc(self.theProject, nHandle)
-        outDoc.writeDocument(theText)
+        if not outDoc.writeDocument(theText):
+            self.theParent.makeAlert(
+                [self.tr("Could not save document."), outDoc.getError()], nwAlert.ERROR
+            )
 
         self.theParent.treeView.revealNewTreeItem(nHandle)
         self.theParent.openDocument(nHandle, doScroll=True)

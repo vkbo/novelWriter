@@ -446,7 +446,12 @@ class GuiDocEditor(QTextEdit):
         theItem.setParaCount(self.paraCount)
 
         self.saveCursorPosition()
-        self.nwDocument.writeDocument(docText)
+        if not self.nwDocument.writeDocument(docText):
+            self.theParent.makeAlert([
+                self.tr("Could not save document."), self.nwDocument.getError()
+            ], nwAlert.ERROR)
+            return False
+
         self.setDocumentChanged(False)
 
         self.theIndex.scanText(tHandle, docText)

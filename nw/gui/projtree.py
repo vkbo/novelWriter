@@ -528,7 +528,12 @@ class GuiProjectTree(QTreeWidget):
                         self.theParent.closeDocument()
 
                     delDoc = NWDoc(self.theProject, tHandle)
-                    delDoc.deleteDocument()
+                    if not delDoc.deleteDocument():
+                        self.makeAlert([
+                            self.tr("Could not delete document file."), delDoc.getError()
+                        ], nwAlert.ERROR)
+                        return False
+
                     self.theIndex.deleteHandle(tHandle)
                     self._deleteTreeItem(tHandle)
                     self._setTreeChanged(True)

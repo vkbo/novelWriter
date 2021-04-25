@@ -129,6 +129,13 @@ class GuiDocSplit(QDialog):
 
         inDoc = NWDoc(self.theProject, self.sourceItem)
         theText = inDoc.readDocument()
+
+        docErr = inDoc.getError()
+        if theText is None and docErr:
+            self.theParent.makeAlert(
+                [self.tr("Failed to open document file."), docErr], nwAlert.ERROR
+            )
+
         if theText is None:
             theText = ""
 
@@ -219,7 +226,10 @@ class GuiDocSplit(QDialog):
             theText = theText.rstrip("\n") + "\n\n"
 
             outDoc = NWDoc(self.theProject, nHandle)
-            outDoc.writeDocument(theText)
+            if not outDoc.writeDocument(theText):
+                self.theParent.makeAlert(
+                    [self.tr("Could not save document."), outDoc.getError()], nwAlert.ERROR
+                )
 
             self.theParent.treeView.revealNewTreeItem(nHandle)
 
