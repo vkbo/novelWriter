@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 
 class GuiPreferences(PagedDialog):
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         PagedDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiPreferences ...")
@@ -53,7 +53,7 @@ class GuiPreferences(PagedDialog):
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
+        self.theProject = theParent.theProject
 
         self.setWindowTitle(self.tr("Preferences"))
 

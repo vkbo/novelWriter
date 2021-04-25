@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 class GuiDocMerge(QDialog):
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiDocMerge ...")
@@ -49,7 +49,7 @@ class GuiDocMerge(QDialog):
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
+        self.theProject = theParent.theProject
         self.sourceItem = None
 
         self.outerBox = QVBoxLayout()

@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 class GuiDocSplit(QDialog):
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiDocSplit ...")
@@ -50,8 +50,8 @@ class GuiDocSplit(QDialog):
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
-        self.optState   = self.theProject.optState
+        self.theProject = theParent.theProject
+        self.optState   = theParent.theProject.optState
         self.sourceItem = None
 
         self.outerBox = QVBoxLayout()

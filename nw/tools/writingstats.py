@@ -56,7 +56,7 @@ class GuiWritingStats(QDialog):
     FMT_JSON = 0
     FMT_CSV  = 1
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiWritingStats ...")
@@ -64,9 +64,9 @@ class GuiWritingStats(QDialog):
 
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
-        self.theProject = theProject
         self.theTheme   = theParent.theTheme
-        self.optState   = theProject.optState
+        self.theProject = theParent.theProject
+        self.optState   = theParent.theProject.optState
 
         self.logData    = []
         self.filterData = []

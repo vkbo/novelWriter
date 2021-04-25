@@ -66,17 +66,17 @@ class GuiBuildNovel(QDialog):
     FMT_JSON_H = 8 # HTML5 wrapped in JSON
     FMT_JSON_M = 9 # nW Markdown wrapped in JSON
 
-    def __init__(self, theParent, theProject):
+    def __init__(self, theParent):
         QDialog.__init__(self, theParent)
 
         logger.debug("Initialising GuiBuildNovel ...")
         self.setObjectName("GuiBuildNovel")
 
         self.mainConf   = nw.CONFIG
-        self.theProject = theProject
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
-        self.optState   = self.theProject.optState
+        self.theProject = theParent.theProject
+        self.optState   = theParent.theProject.optState
 
         self.htmlText  = [] # List of html documents
         self.htmlStyle = [] # List of html styles
