@@ -50,7 +50,6 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
 
     # Open a project
     assert nwGUI.openProject(nwLipsum)
-    nwGUI.mainConf.lastPath = nwLipsum
 
     # Open the tool
     nwGUI.mainMenu.aBuildProject.activate(QAction.Trigger)
@@ -62,18 +61,37 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     nwBuild.textFont.setText("DejaVu Sans")
     nwBuild.textSize.setValue(11)
 
+    # Test Save
+    # =========
+
+    # Invalid file format
+    assert not nwBuild._saveDocument(-1)
+
+    # Non-existent path
+    with monkeypatch.context() as mp:
+        mp.setattr("os.path.expanduser", lambda *args, **kwargs: nwLipsum)
+        assert nwGUI.mainConf.lastPath != nwLipsum
+        nwGUI.mainConf.lastPath = "no_such_path"
+        assert nwBuild._saveDocument(nwBuild.FMT_NWD)
+        assert nwGUI.mainConf.lastPath == nwLipsum
+
+    # No path selected
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getSaveFileName", lambda *args, **kwargs: ("", ""))
+        assert not nwBuild._saveDocument(nwBuild.FMT_NWD)
+
     # Default Settings
+    nwGUI.mainConf.lastPath = nwLipsum
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
 
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
-    assert nwBuild._saveDocument(nwBuild.FMT_HTM)
-
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
     testFile = os.path.join(outDir, "guiBuild_Tool_Step1_Lorem_Ipsum.nwd")
     compFile = os.path.join(refDir, "guiBuild_Tool_Step1_Lorem_Ipsum.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
+    assert nwBuild._saveDocument(nwBuild.FMT_HTM)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
     testFile = os.path.join(outDir, "guiBuild_Tool_Step1_Lorem_Ipsum.htm")
     compFile = os.path.join(refDir, "guiBuild_Tool_Step1_Lorem_Ipsum.htm")
@@ -93,6 +111,13 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     compFile = os.path.join(refDir, "guiBuild_Tool_Step1G_Lorem_Ipsum.md")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
+
+    assert nwBuild._saveDocument(nwBuild.FMT_FODT)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.fodt")
+    testFile = os.path.join(outDir, "guiBuild_Tool_Step1G_Lorem_Ipsum.fodt")
+    compFile = os.path.join(refDir, "guiBuild_Tool_Step1G_Lorem_Ipsum.fodt")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile, [4])
 
     # Change Title Formats and Flip Switches
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
@@ -121,14 +146,13 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
 
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
-    assert nwBuild._saveDocument(nwBuild.FMT_HTM)
-
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
     testFile = os.path.join(outDir, "guiBuild_Tool_Step2_Lorem_Ipsum.nwd")
     compFile = os.path.join(refDir, "guiBuild_Tool_Step2_Lorem_Ipsum.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
+    assert nwBuild._saveDocument(nwBuild.FMT_HTM)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
     testFile = os.path.join(outDir, "guiBuild_Tool_Step2_Lorem_Ipsum.htm")
     compFile = os.path.join(refDir, "guiBuild_Tool_Step2_Lorem_Ipsum.htm")
@@ -141,6 +165,13 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     compFile = os.path.join(refDir, "guiBuild_Tool_Step2_Lorem_Ipsum.md")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
+
+    assert nwBuild._saveDocument(nwBuild.FMT_FODT)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.fodt")
+    testFile = os.path.join(outDir, "guiBuild_Tool_Step2_Lorem_Ipsum.fodt")
+    compFile = os.path.join(refDir, "guiBuild_Tool_Step2_Lorem_Ipsum.fodt")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile, [4])
 
     # Replace Tabs with Spaces
     qtbot.mouseClick(nwBuild.replaceTabs, Qt.LeftButton)
@@ -169,6 +200,13 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     compFile = os.path.join(refDir, "guiBuild_Tool_Step3_Lorem_Ipsum.md")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
+
+    assert nwBuild._saveDocument(nwBuild.FMT_FODT)
+    projFile = os.path.join(nwLipsum, "Lorem Ipsum.fodt")
+    testFile = os.path.join(outDir, "guiBuild_Tool_Step3_Lorem_Ipsum.fodt")
+    compFile = os.path.join(refDir, "guiBuild_Tool_Step3_Lorem_Ipsum.fodt")
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile, [4])
 
     # Putline Mode
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
@@ -219,12 +257,12 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [8])
 
-    # Save other file types handled by Qt
-    # We assume the export itself by the Qt library works, so we just
-    # check that novelWriter successfully writes the files.
+    # Since odt and fodt is built by the same code, we don't check the
+    # output. but just that the different format can be written as well
     assert nwBuild._saveDocument(nwBuild.FMT_ODT)
     assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.odt"))
 
+    # Print to PDF
     if not nwGUI.mainConf.osDarwin:
         assert nwBuild._saveDocument(nwBuild.FMT_PDF)
         assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.pdf"))
