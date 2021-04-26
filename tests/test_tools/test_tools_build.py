@@ -114,8 +114,8 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
 
     assert nwBuild._saveDocument(nwBuild.FMT_FODT)
     projFile = os.path.join(nwLipsum, "Lorem Ipsum.fodt")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step1G_Lorem_Ipsum.fodt")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step1G_Lorem_Ipsum.fodt")
+    testFile = os.path.join(outDir, "guiBuild_Tool_Step1_Lorem_Ipsum.fodt")
+    compFile = os.path.join(refDir, "guiBuild_Tool_Step1_Lorem_Ipsum.fodt")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [4])
 

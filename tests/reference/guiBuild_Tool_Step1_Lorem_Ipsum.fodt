@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.2" office:mimetype="application/vnd.oasis.opendocument.text">
   <office:meta>
-    <meta:creation-date>2021-04-26T23:36:34.366445</meta:creation-date>
+    <meta:creation-date>2021-04-26T23:36:34</meta:creation-date>
     <meta:generator>novelWriter/1.3rc1</meta:generator>
   </office:meta>
   <office:font-face-decls>
