@@ -298,7 +298,7 @@ class ToOdt(Tokenizer):
 
         # Meta Data
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "creation-date"))
-        xMeta.text = datetime.now().isoformat()
+        xMeta.text = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "generator"))
         xMeta.text = f"novelWriter/{nw.__version__}"
