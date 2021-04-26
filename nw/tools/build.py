@@ -853,10 +853,10 @@ class GuiBuildNovel(QDialog):
             cleanName = makeFileNameSafe(self.theProject.projName)
             fileName  = "%s.%s" % (cleanName, fileExt)
             saveDir   = self.mainConf.lastPath
-            savePath  = os.path.join(saveDir, fileName)
             if not os.path.isdir(saveDir):
-                saveDir = self.mainConf.homePath
+                saveDir = os.path.expanduser("~")
 
+            savePath  = os.path.join(saveDir, fileName)
             savePath, _ = QFileDialog.getSaveFileName(
                 self, self.tr("Save Document As"), savePath
             )

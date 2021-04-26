@@ -210,7 +210,7 @@ class ProjWizardFolderPage(QWizardPage):
         """
         lastPath = self.mainConf.lastPath
         if not os.path.isdir(lastPath):
-            lastPath = ""
+            lastPath = os.path.expanduser("~")
 
         projDir = QFileDialog.getExistingDirectory(
             self, self.tr("Select Project Folder"), lastPath, options=QFileDialog.ShowDirsOnly

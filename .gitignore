@@ -42,3 +42,4 @@ ToC.txt
 
 # Coverage
 /.coverage
+/coverage.*
