@@ -229,7 +229,7 @@ def buildQtI18n():
         print(str(e))
 
     print("")
-    print("Copying Files to nw/assets")
+    print("Moving QM Files to Assets")
     print("")
 
     langDir = os.path.join("nw", "assets", "i18n")
