@@ -217,11 +217,35 @@ def buildQtDocs():
 def buildQtI18n():
     """Build the lang.qm files for Qt Linguist.
     """
+    print("")
+    print("Building Qt Localisation Files")
+    print("==============================")
+    print("")
+
     try:
         subprocess.call(["lrelease", "-verbose", "novelWriter.pro"])
     except Exception as e:
         print("QtI18n Release Error:")
         print(str(e))
+
+    print("")
+    print("Copying Files to nw/assets")
+    print("")
+
+    langDir = os.path.join("nw", "assets", "i18n")
+    for langFile in os.listdir("i18n"):
+        langPath = os.path.join("i18n", langFile)
+        if not os.path.isfile(langPath):
+            continue
+
+        if langFile.endswith(".qm"):
+            destPath = os.path.join(langDir, langFile)
+            os.rename(langPath, destPath)
+            print("Moved: %s -> %s" % (langPath, destPath))
+
+    print("")
+
+    return
 
 ##
 #  Qt Linguist TS Builder (qtlupdate)
@@ -230,11 +254,20 @@ def buildQtI18n():
 def buildQtI18nTS():
     """Build the lang.ts files for Qt Linguist.
     """
+    print("")
+    print("Building Qt Translation Files")
+    print("=============================")
+    print("")
+
     try:
         subprocess.call(["pylupdate5", "-verbose", "-noobsolete", "novelWriter.pro"])
     except Exception as e:
         print("QtI18n Release Error:")
         print(str(e))
+
+    print("")
+
+    return
 
 ##
 #  Sample Project ZIP File Builder (sample)

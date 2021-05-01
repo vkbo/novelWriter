@@ -307,7 +307,7 @@ class Config:
         self.appIcon   = os.path.join(self.iconPath, "novelwriter.svg")
 
         # Internationalisation
-        self.nwLangPath = os.path.join(self.appRoot, "i18n")
+        self.nwLangPath = os.path.join(self.assetPath, "i18n")
 
         logger.verbose("App path: %s" % self.appPath)
         logger.verbose("Last path: %s" % self.lastPath)
