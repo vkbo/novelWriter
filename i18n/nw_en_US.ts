@@ -757,22 +757,17 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="860"/>
+        <location filename="../nw/tools/build.py" line="858"/>
         <source>Save Document As</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="998"/>
-        <source>Unknown format</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../nw/tools/build.py" line="1002"/>
+        <location filename="../nw/tools/build.py" line="1001"/>
         <source>{0} file successfully written to:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="1009"/>
+        <location filename="../nw/tools/build.py" line="1008"/>
         <source>Failed to write {0} file. {1}</source>
         <translation></translation>
     </message>
@@ -780,17 +775,17 @@
 <context>
     <name>GuiBuildNovelDocView</name>
     <message>
-        <location filename="../nw/tools/build.py" line="1209"/>
+        <location filename="../nw/tools/build.py" line="1208"/>
         <source>This area will show the content of the document to be exported or printed. Press the &quot;Build Preview&quot; button to generate content.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="1358"/>
+        <location filename="../nw/tools/build.py" line="1357"/>
         <source>Unknown</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="1360"/>
+        <location filename="../nw/tools/build.py" line="1359"/>
         <source>&lt;b&gt;Build Time:&lt;/b&gt; {0}</source>
         <translation></translation>
     </message>
