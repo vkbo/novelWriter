@@ -39,6 +39,10 @@ Contributions to this project are welcome. However, please read the
 [Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md) before
 submitting larger additions or changes.
 
+If you want to help translating novelWriter into another language, please see the
+[README](https://github.com/vkbo/novelWriter/blob/main/i18n/README.md) in the `nw/assets/i18n`
+folder.
+
 ## Key Features
 
 Some key features of novelWriter are listed below. Consult the
