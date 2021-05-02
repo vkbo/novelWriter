@@ -39,13 +39,16 @@ class NWDoc():
         self.theProject = theProject
 
         # Internal Variables
-        self._docHandle = theHandle
-        self._theItem   = None
-        self._fileLoc   = None
-        self._docMeta   = {}
-        self._docError  = ""
+        self._theItem   = None # The currently open item
+        self._docHandle = None # The handle of the currently open item
+        self._fileLoc   = None # The file location of the currently open item
+        self._docMeta   = {}   # The meta data of the currently open item
+        self._docError  = ""   # The latest encountered IO error
 
-        if theHandle is not None:
+        if isHandle(theHandle):
+            self._docHandle = theHandle
+
+        if self._docHandle is not None:
             self._theItem = self.theProject.projTree[theHandle]
 
         return
@@ -61,7 +64,7 @@ class NWDoc():
         None.
         """
         self._docError = ""
-        if not isHandle(self._docHandle):
+        if self._docHandle is None:
             logger.error("No document handle set")
             return None
 
@@ -110,7 +113,7 @@ class NWDoc():
         of save failure. Returns True if successful, False if not.
         """
         self._docError = ""
-        if not isHandle(self._docHandle):
+        if self._docHandle is None:
             logger.error("No document handle set")
             return False
 
@@ -153,7 +156,7 @@ class NWDoc():
         from the project data folder.
         """
         self._docError = ""
-        if not isHandle(self._docHandle):
+        if self._docHandle is None:
             logger.error("No document handle set")
             return False
 
