@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Dummy Qt Translation File
-=========================
+Qt Base Translation File
+========================
 
 This file causes Qt Linguist to generate translation entries for the Qt
 elements that need translation in novelWriter for those languages who do

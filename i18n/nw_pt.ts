@@ -452,11 +452,6 @@
         <translation>HTML Simples</translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="998"/>
-        <source>Unknown format</source>
-        <translation>Formato desconhecido</translation>
-    </message>
-    <message>
         <location filename="../nw/tools/build.py" line="450"/>
         <source>novelWriter HTML (.htm)</source>
         <translation>HTML do novelWriter (.htm)</translation>
@@ -592,17 +587,17 @@
         <translation>Fechar</translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="860"/>
+        <location filename="../nw/tools/build.py" line="858"/>
         <source>Save Document As</source>
         <translation>Salvar Documento Como</translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="1002"/>
+        <location filename="../nw/tools/build.py" line="1001"/>
         <source>{0} file successfully written to:</source>
         <translation>Arquivo {0} escrito com sucesso para:</translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="1009"/>
+        <location filename="../nw/tools/build.py" line="1008"/>
         <source>Failed to write {0} file. {1}</source>
         <translation>Falhou para escrever o arquivo {0}. {1}</translation>
     </message>
@@ -780,17 +775,17 @@
 <context>
     <name>GuiBuildNovelDocView</name>
     <message>
-        <location filename="../nw/tools/build.py" line="1358"/>
+        <location filename="../nw/tools/build.py" line="1357"/>
         <source>Unknown</source>
         <translation>Desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="1209"/>
+        <location filename="../nw/tools/build.py" line="1208"/>
         <source>This area will show the content of the document to be exported or printed. Press the &quot;Build Preview&quot; button to generate content.</source>
         <translation>Esta área vai mostrar o conteúdo do documento a ser exportado ou impresso. Clique no botão &quot;Construir Prévia&quot; para gerar o conteúdo.</translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="1360"/>
+        <location filename="../nw/tools/build.py" line="1359"/>
         <source>&lt;b&gt;Build Time:&lt;/b&gt; {0}</source>
         <translation>&lt;b&gt;Tempo de Construção:&lt;/b&gt; {0}</translation>
     </message>
