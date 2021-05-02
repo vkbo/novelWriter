@@ -118,14 +118,14 @@ class GuiDocSplit(QDialog):
             self.theParent.makeAlert(
                 self.tr("No source document selected. Nothing to do."), nwAlert.ERROR
             )
-            return
+            return False
 
         srcItem = self.theProject.projTree[self.sourceItem]
         if srcItem is None:
             self.theParent.makeAlert(
                 self.tr("Could not parse source document."), nwAlert.ERROR
             )
-            return
+            return False
 
         inDoc = NWDoc(self.theProject, self.sourceItem)
         theText = inDoc.readDocument()
@@ -160,7 +160,7 @@ class GuiDocSplit(QDialog):
             self.theParent.makeAlert(
                 self.tr("No headers found. Nothing to do."), nwAlert.ERROR
             )
-            return
+            return False
 
         # Check that another folder can be created
         parTree = self.theProject.projTree.getItemPath(srcItem.itemParent)
@@ -172,7 +172,7 @@ class GuiDocSplit(QDialog):
                     "Please move the file to another level in the project tree."
                 ), nwAlert.ERROR
             )
-            return
+            return False
 
         msgYes = self.theParent.askQuestion(
             self.tr("Split Document"),
@@ -186,7 +186,7 @@ class GuiDocSplit(QDialog):
             )
         )
         if not msgYes:
-            return
+            return False
 
         # Create the folder
         fHandle = self.theProject.newFolder(
@@ -230,12 +230,13 @@ class GuiDocSplit(QDialog):
                 self.theParent.makeAlert(
                     [self.tr("Could not save document."), outDoc.getError()], nwAlert.ERROR
                 )
+                return False
 
             self.theParent.treeView.revealNewTreeItem(nHandle)
 
         self._doClose()
 
-        return
+        return True
 
     def _doClose(self):
         """Close the dialog window without doing anything.
@@ -254,26 +255,28 @@ class GuiDocSplit(QDialog):
         are then added to the list view in order. The list itself can be
         reordered by the user.
         """
+        self.listBox.clear()
         if self.sourceItem is None:
             self.sourceItem = self.theParent.treeView.getSelectedHandle()
 
         if self.sourceItem is None:
-            return
+            return False
 
         nwItem = self.theProject.projTree[self.sourceItem]
         if nwItem is None:
-            return
+            return False
+
         if nwItem.itemType is not nwItemType.FILE:
             self.theParent.makeAlert(
                 self.tr("Element selected in the project tree must be a file."), nwAlert.ERROR
             )
-            return
+            return False
 
-        self.listBox.clear()
         inDoc = NWDoc(self.theProject, self.sourceItem)
         theText = inDoc.readDocument()
         if theText is None:
             theText = ""
+            return False
 
         spLevel = self.splitLevel.currentData()
         self.optState.setValue("GuiDocSplit", "spLevel", spLevel)
@@ -302,6 +305,6 @@ class GuiDocSplit(QDialog):
                 newItem.setData(Qt.UserRole, onLine)
                 self.listBox.addItem(newItem)
 
-        return
+        return True
 
 # END Class GuiDocSplit

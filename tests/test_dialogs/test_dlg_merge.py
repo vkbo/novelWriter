@@ -66,8 +66,8 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
 
-    assert nwGUI.saveProject()
-    assert nwGUI.closeProject()
+    assert nwGUI.saveProject() is True
+    assert nwGUI.closeProject() is True
 
     tChapterOne = "## Chapter One\n\n% Chapter one comment\n"
     tSceneOne   = "### Scene One\n\nThere once was a man from Nantucket"
@@ -82,7 +82,7 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     writeFile(os.path.join(contentDir, hSceneThree+".nwd"), tSceneThree)
     writeFile(os.path.join(contentDir, hSceneFour+".nwd"), tSceneFour)
 
-    assert nwGUI.openProject(fncProj)
+    assert nwGUI.openProject(fncProj) is True
 
     # Open the Merge tool
     nwGUI.switchFocus(nwWidget.TREE)
@@ -106,7 +106,7 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     # No item selected
     nwGUI.treeView.clearSelection()
-    assert not nwMerge._populateList()
+    assert nwMerge._populateList() is False
     assert nwMerge.listBox.count() == 0
 
     # Non-existing item
@@ -114,19 +114,19 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
         mp.setattr(NWTree, "__getitem__", lambda *a: None)
         nwGUI.treeView.clearSelection()
         nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
-        assert not nwMerge._populateList()
+        assert nwMerge._populateList() is False
         assert nwMerge.listBox.count() == 0
 
     # Select a non-folder
     nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem(hChapterOne).setSelected(True)
-    assert not nwMerge._populateList()
+    assert nwMerge._populateList() is False
     assert nwMerge.listBox.count() == 0
 
     # Select the chapter folder
     nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
-    assert nwMerge._populateList()
+    assert nwMerge._populateList() is True
     assert nwMerge.listBox.count() == 5
 
     # Merge Documents
@@ -135,8 +135,8 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # First, a successful merge
     with monkeypatch.context() as mp:
         mp.setattr(GuiDocMerge, "_doClose", lambda *a: None)
-        assert nwMerge._doMerge()
-        assert nwGUI.saveProject()
+        assert nwMerge._doMerge() is True
+        assert nwGUI.saveProject() is True
         mergedFile = os.path.join(contentDir, hMergedDoc+".nwd")
         assert os.path.isfile(mergedFile)
         assert readFile(mergedFile) == (
@@ -159,20 +159,20 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # OS error
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        assert not nwMerge._doMerge()
+        assert nwMerge._doMerge() is False
 
     # Can't find the source item
     with monkeypatch.context() as mp:
         mp.setattr(NWTree, "__getitem__", lambda *a: None)
-        assert not nwMerge._doMerge()
+        assert nwMerge._doMerge() is False
 
     # No source handle set
     nwMerge.sourceItem = None
-    assert not nwMerge._doMerge()
+    assert nwMerge._doMerge() is False
 
     # No documents to merge
     nwMerge.listBox.clear()
-    assert not nwMerge._doMerge()
+    assert nwMerge._doMerge() is False
 
     # Close up
     nwMerge._doClose()

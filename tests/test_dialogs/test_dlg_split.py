@@ -23,56 +23,80 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import pytest
 import os
 
-from shutil import copyfile
-from tools import cmpFiles, getGuiItem
+from tools import getGuiItem, readFile, writeFile
+from mock import causeOSError
 
-from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt5.QtWidgets import QAction, QMessageBox, QDialog
 
-from nw.dialogs import GuiDocMerge, GuiDocSplit
+from nw.dialogs import GuiDocSplit, GuiItemEditor
+from nw.enum import nwItemType, nwWidget
+from nw.core.document import NWDoc
+from nw.core.tree import NWTree
 
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testDlgMergeSplit_Tools(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
-    """Test the full merge and split tools.
+def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
+    """Test the split document tool.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
 
+    # Create a new project
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.openProject(nwLipsum)
-    qtbot.wait(stepDelay)
+    assert nwGUI.newProject({"projPath": fncProj}) is True
 
-    assert nwGUI.treeView.setSelectedHandle("45e6b01ca35c1")
-    qtbot.wait(stepDelay)
+    # Handles for new objects
+    hNovelRoot  = "73475cb40a568"
+    hChapterDir = "31489056e0916"
+    hToSplit    = "1a6562590ef19"
+    hPartition  = "41cfc0d1f2d12"
+    hChapterOne = "2858dcd1057d3"
+    hSceneOne   = "2fca346db6561"
+    hSceneTwo   = "02d20bbd7e394"
+    hSceneThree = "7688b6ef52555"
+    hSceneFour  = "c837649cce43f"
+    hSceneFive  = "6208ef0f7750c"
 
-    monkeypatch.setattr(GuiDocMerge, "exec_", lambda *args: None)
-    nwGUI.mainMenu.aMergeDocs.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiDocMerge") is not None, timeout=1000)
+    # Add Project Content
+    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: QDialog.Accepted)
+    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI.treeView.clearSelection()
+    nwGUI.treeView._getTreeItem(hNovelRoot).setSelected(True)
+    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
 
-    nwMerge = getGuiItem("GuiDocMerge")
-    assert isinstance(nwMerge, GuiDocMerge)
-    nwMerge.show()
-    qtbot.wait(stepDelay)
+    assert nwGUI.saveProject() is True
+    assert nwGUI.closeProject() is True
 
-    nwMerge._doMerge()
-    qtbot.wait(stepDelay)
+    tPartition  = "# Nantucket"
+    tChapterOne = "## Chapter One\n\n% Chapter one comment"
+    tSceneOne   = "### Scene One\n\nThere once was a man from Nantucket"
+    tSceneTwo   = "### Scene Two\n\nWho kept all his cash in a bucket."
+    tSceneThree = "### Scene Three\n\n\tBut his daughter, named Nan,  \n\tRan away with a man"
+    tSceneFour  = "### Scene Four\n\nAnd as for the bucket, Nantucket."
+    tSceneFive  = "#### The End\n\nend"
 
-    assert nwGUI.theProject.projTree["73475cb40a568"] is not None
+    tToSplit = (
+        f"{tPartition}\n\n{tChapterOne}\n\n"
+        f"{tSceneOne}\n\n{tSceneTwo}\n\n"
+        f"{tSceneThree}\n\n{tSceneFour}\n\n"
+        f"{tSceneFive}\n\n"
+    )
 
-    projFile = os.path.join(nwLipsum, "content", "73475cb40a568.nwd")
-    testFile = os.path.join(outDir, "guiMerge_73475cb40a568.nwd")
-    compFile = os.path.join(refDir, "guiMerge_73475cb40a568.nwd")
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
+    contentDir = os.path.join(fncProj, "content")
+    writeFile(os.path.join(contentDir, hToSplit+".nwd"), tToSplit)
 
-    # Split By Chapter
-    assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
-    qtbot.wait(stepDelay)
+    assert nwGUI.openProject(fncProj) is True
 
-    monkeypatch.setattr(GuiDocSplit, "exec_", lambda *args: None)
+    # Open the Split tool
+    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI.treeView.clearSelection()
+    nwGUI.treeView._getTreeItem(hToSplit).setSelected(True)
+
+    monkeypatch.setattr(GuiDocSplit, "exec_", lambda *a: None)
     nwGUI.mainMenu.aSplitDoc.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiDocSplit") is not None, timeout=1000)
 
@@ -81,105 +105,157 @@ def testDlgMergeSplit_Tools(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir)
     nwSplit.show()
     qtbot.wait(stepDelay)
 
+    # Populate List
+    # =============
+
+    nwSplit.listBox.clear()
+    assert nwSplit.listBox.count() == 0
+
+    # No item selected
+    nwSplit.sourceItem = None
+    nwGUI.treeView.clearSelection()
+    assert nwSplit._populateList() is False
+    assert nwSplit.listBox.count() == 0
+
+    # Non-existing item
+    with monkeypatch.context() as mp:
+        mp.setattr(NWTree, "__getitem__", lambda *a: None)
+        nwSplit.sourceItem = None
+        nwGUI.treeView.clearSelection()
+        nwGUI.treeView._getTreeItem(hToSplit).setSelected(True)
+        assert nwSplit._populateList() is False
+        assert nwSplit.listBox.count() == 0
+
+    # Select a non-file
+    nwSplit.sourceItem = None
+    nwGUI.treeView.clearSelection()
+    nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
+    assert nwSplit._populateList() is False
+    assert nwSplit.listBox.count() == 0
+
+    # Error when reading documents
+    with monkeypatch.context() as mp:
+        mp.setattr(NWDoc, "readDocument", lambda *a: None)
+        nwSplit.sourceItem = hToSplit
+        assert nwSplit._populateList() is False
+        assert nwSplit.listBox.count() == 0
+
+    # Read properly, and check split levels
+
+    # Level 1
+    nwSplit.splitLevel.setCurrentIndex(0)
+    nwSplit.sourceItem = hToSplit
+    assert nwSplit._populateList() is True
+    assert nwSplit.listBox.count() == 1
+
+    # Level 2
     nwSplit.splitLevel.setCurrentIndex(1)
-    qtbot.wait(stepDelay)
+    nwSplit.sourceItem = hToSplit
+    assert nwSplit._populateList() is True
+    assert nwSplit.listBox.count() == 2
 
-    nwSplit._doSplit()
-    assert nwGUI.theProject.projTree["71ee45a3c0db9"] is not None
-
-    # This should give us back the file as it was before
-    projFile = os.path.join(nwLipsum, "content", "71ee45a3c0db9.nwd")
-    testFile = os.path.join(outDir, "guiMerge_71ee45a3c0db9.nwd")
-    compFile = os.path.join(refDir, "guiMerge_73475cb40a568.nwd")
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [1, 2, 3])
-
-    # Split By Scene
-    assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
-    qtbot.wait(stepDelay)
-    nwGUI.mainMenu.aSplitDoc.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiDocSplit") is not None, timeout=1000)
-
-    nwSplit = getGuiItem("GuiDocSplit")
-    assert isinstance(nwSplit, GuiDocSplit)
-    qtbot.wait(stepDelay)
+    # Level 3
     nwSplit.splitLevel.setCurrentIndex(2)
-    qtbot.wait(stepDelay)
+    nwSplit.sourceItem = hToSplit
+    assert nwSplit._populateList() is True
+    assert nwSplit.listBox.count() == 6
 
-    nwSplit._doSplit()
-
-    assert nwGUI.theProject.projTree["25fc0e7096fc6"] is not None
-    assert nwGUI.theProject.projTree["31489056e0916"] is not None
-    assert nwGUI.theProject.projTree["98010bd9270f9"] is not None
-
-    projFile = os.path.join(nwLipsum, "content", "25fc0e7096fc6.nwd")
-    testFile = os.path.join(outDir, "guiSplit_25fc0e7096fc6.nwd")
-    compFile = os.path.join(refDir, "guiSplit_25fc0e7096fc6.nwd")
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
-
-    projFile = os.path.join(nwLipsum, "content", "31489056e0916.nwd")
-    testFile = os.path.join(outDir, "guiSplit_31489056e0916.nwd")
-    compFile = os.path.join(refDir, "guiSplit_31489056e0916.nwd")
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
-
-    projFile = os.path.join(nwLipsum, "content", "98010bd9270f9.nwd")
-    testFile = os.path.join(outDir, "guiSplit_98010bd9270f9.nwd")
-    compFile = os.path.join(refDir, "guiSplit_98010bd9270f9.nwd")
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
-
-    # Split By Section
-    assert nwGUI.treeView.setSelectedHandle("73475cb40a568")
-    qtbot.wait(stepDelay)
-    nwGUI.mainMenu.aSplitDoc.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiDocSplit") is not None, timeout=1000)
-
-    nwSplit = getGuiItem("GuiDocSplit")
-    assert isinstance(nwSplit, GuiDocSplit)
-    qtbot.wait(stepDelay)
+    # Level 4
     nwSplit.splitLevel.setCurrentIndex(3)
-    qtbot.wait(stepDelay)
+    nwSplit.sourceItem = hToSplit
+    assert nwSplit._populateList() is True
+    assert nwSplit.listBox.count() == 7
 
-    nwSplit._doSplit()
+    # Split Document
+    # ==============
 
-    assert nwGUI.theProject.projTree["1a6562590ef19"] is not None
-    assert nwGUI.theProject.projTree["031b4af5197ec"] is not None
-    assert nwGUI.theProject.projTree["41cfc0d1f2d12"] is not None
-    assert nwGUI.theProject.projTree["2858dcd1057d3"] is not None
-    assert nwGUI.theProject.projTree["2fca346db6561"] is not None
+    # Test a proper split first
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiDocSplit, "_doClose", lambda *a: None)
+        assert nwSplit._doSplit() is True
+        assert nwGUI.saveProject()
 
-    projFile = os.path.join(nwLipsum, "content", "1a6562590ef19.nwd")
-    testFile = os.path.join(outDir, "guiSplit_1a6562590ef19.nwd")
-    compFile = os.path.join(refDir, "guiSplit_25fc0e7096fc6.nwd")
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [1, 2, 3])
+        assert readFile(os.path.join(contentDir, hPartition+".nwd")) == (
+            "%%%%~name: Nantucket\n"
+            "%%%%~path: 031b4af5197ec/%s\n"
+            "%%%%~kind: NOVEL/PARTITION\n"
+            "%s\n\n"
+        ) % (hPartition, tPartition)
 
-    projFile = os.path.join(nwLipsum, "content", "031b4af5197ec.nwd")
-    testFile = os.path.join(outDir, "guiSplit_031b4af5197ec.nwd")
-    compFile = os.path.join(refDir, "guiSplit_031b4af5197ec.nwd")
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
+        assert readFile(os.path.join(contentDir, hChapterOne+".nwd")) == (
+            "%%%%~name: Chapter One\n"
+            "%%%%~path: 031b4af5197ec/%s\n"
+            "%%%%~kind: NOVEL/CHAPTER\n"
+            "%s\n\n"
+        ) % (hChapterOne, tChapterOne)
 
-    projFile = os.path.join(nwLipsum, "content", "41cfc0d1f2d12.nwd")
-    testFile = os.path.join(outDir, "guiSplit_41cfc0d1f2d12.nwd")
-    compFile = os.path.join(refDir, "guiSplit_41cfc0d1f2d12.nwd")
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
+        assert readFile(os.path.join(contentDir, hSceneOne+".nwd")) == (
+            "%%%%~name: Scene One\n"
+            "%%%%~path: 031b4af5197ec/%s\n"
+            "%%%%~kind: NOVEL/SCENE\n"
+            "%s\n\n"
+        ) % (hSceneOne, tSceneOne)
 
-    projFile = os.path.join(nwLipsum, "content", "2858dcd1057d3.nwd")
-    testFile = os.path.join(outDir, "guiSplit_2858dcd1057d3.nwd")
-    compFile = os.path.join(refDir, "guiSplit_2858dcd1057d3.nwd")
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
+        assert readFile(os.path.join(contentDir, hSceneTwo+".nwd")) == (
+            "%%%%~name: Scene Two\n"
+            "%%%%~path: 031b4af5197ec/%s\n"
+            "%%%%~kind: NOVEL/SCENE\n"
+            "%s\n\n"
+        ) % (hSceneTwo, tSceneTwo)
 
-    projFile = os.path.join(nwLipsum, "content", "2fca346db6561.nwd")
-    testFile = os.path.join(outDir, "guiSplit_2fca346db6561.nwd")
-    compFile = os.path.join(refDir, "guiSplit_2fca346db6561.nwd")
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
+        assert readFile(os.path.join(contentDir, hSceneThree+".nwd")) == (
+            "%%%%~name: Scene Three\n"
+            "%%%%~path: 031b4af5197ec/%s\n"
+            "%%%%~kind: NOVEL/SCENE\n"
+            "%s\n\n"
+        ) % (hSceneThree, tSceneThree)
+
+        assert readFile(os.path.join(contentDir, hSceneFour+".nwd")) == (
+            "%%%%~name: Scene Four\n"
+            "%%%%~path: 031b4af5197ec/%s\n"
+            "%%%%~kind: NOVEL/SCENE\n"
+            "%s\n\n"
+        ) % (hSceneFour, tSceneFour)
+
+        assert readFile(os.path.join(contentDir, hSceneFive+".nwd")) == (
+            "%%%%~name: The End\n"
+            "%%%%~path: 031b4af5197ec/%s\n"
+            "%%%%~kind: NOVEL/SCENE\n"
+            "%s\n\n"
+        ) % (hSceneFive, tSceneFive)
+
+    # OS error
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert nwSplit._doSplit() is False
+
+    # Select to not split
+    with monkeypatch.context() as mp:
+        mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
+        assert nwSplit._doSplit() is False
+
+    # Block folder creation by returning that the folder has a depth
+    # of 50 items in the tree
+    with monkeypatch.context() as mp:
+        mp.setattr(NWTree, "getItemPath", lambda *a: [""]*50)
+        assert nwSplit._doSplit() is False
+
+    # Clear the list
+    nwSplit.listBox.clear()
+    assert nwSplit._doSplit() is False
+
+    # Can't find sourcv item
+    with monkeypatch.context() as mp:
+        mp.setattr(NWTree, "__getitem__", lambda *a: None)
+        assert nwSplit._doSplit() is False
+
+    # No source item set
+    nwSplit.sourceItem = None
+    assert nwSplit._doSplit() is False
+
+    # Close up
+    nwSplit._doClose()
 
     # qtbot.stopForInteraction()
 
-# END Test testDlgMergeSplit_Tools
+# END Test testDlgSplit_Main
