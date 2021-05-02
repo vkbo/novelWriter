@@ -105,32 +105,30 @@ class GuiDocMerge(QDialog):
             self.theParent.makeAlert(
                 self.tr("No source documents found. Nothing to do."), nwAlert.ERROR
             )
-            return
+            return False
 
         theText = ""
         for tHandle in finalOrder:
             inDoc = NWDoc(self.theProject, tHandle)
-            docText = inDoc.readDocument().rstrip("\n")
+            docText = inDoc.readDocument()
             docErr = inDoc.getError()
             if docText is None and docErr:
-                self.makeAlert(
+                self.theParent.makeAlert(
                     [self.tr("Failed to open document file."), docErr], nwAlert.ERROR
                 )
             if docText:
-                theText += docText+"\n\n"
+                theText += docText.rstrip("\n")+"\n\n"
 
         if self.sourceItem is None:
             self.theParent.makeAlert(
-                self.tr("No source document selected. Nothing to do."), nwAlert.ERROR
+                self.tr("No source folder selected. Nothing to do."), nwAlert.ERROR
             )
-            return
+            return False
 
         srcItem = self.theProject.projTree[self.sourceItem]
         if srcItem is None:
-            self.theParent.makeAlert(
-                self.tr("Could not parse source document."), nwAlert.ERROR
-            )
-            return
+            self.theParent.makeAlert(self.tr("Internal error."), nwAlert.ERROR)
+            return False
 
         nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemClass, srcItem.itemParent)
         newItem = self.theProject.projTree[nHandle]
@@ -141,13 +139,14 @@ class GuiDocMerge(QDialog):
             self.theParent.makeAlert(
                 [self.tr("Could not save document."), outDoc.getError()], nwAlert.ERROR
             )
+            return False
 
         self.theParent.treeView.revealNewTreeItem(nHandle)
         self.theParent.openDocument(nHandle, doScroll=True)
 
         self._doClose()
 
-        return
+        return True
 
     def _doClose(self):
         """Close the dialog window without doing anything.
@@ -168,16 +167,17 @@ class GuiDocMerge(QDialog):
         tHandle = self.theParent.treeView.getSelectedHandle()
         self.sourceItem = tHandle
         if tHandle is None:
-            return
+            return False
 
         nwItem = self.theProject.projTree[tHandle]
         if nwItem is None:
-            return
+            return False
+
         if nwItem.itemType is not nwItemType.FOLDER:
             self.theParent.makeAlert(
                 self.tr("Element selected in the project tree must be a folder."), nwAlert.ERROR
             )
-            return
+            return False
 
         for sHandle in self.theParent.treeView.getTreeFromHandle(tHandle):
             newItem = QListWidgetItem()
@@ -188,6 +188,6 @@ class GuiDocMerge(QDialog):
             newItem.setData(Qt.UserRole, sHandle)
             self.listBox.addItem(newItem)
 
-        return
+        return True
 
 # END Class GuiDocMerge
