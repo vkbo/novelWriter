@@ -145,13 +145,13 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
     assert theProject.saveProject()
 
     # Root heading
-    assert theToken.addRootHeading("dummy") is False
+    assert theToken.addRootHeading("stuff") is False
     assert theToken.addRootHeading(sHandle) is False
     assert theToken.addRootHeading("7695ce551d265") is True
     assert theToken.theMarkdown[-1] == "# Notes: Plot\n\n"
 
     # Set text
-    assert theToken.setText("dummy") is False
+    assert theToken.setText("stuff") is False
     assert theToken.setText(sHandle) is True
     assert theToken.theText == docText
 

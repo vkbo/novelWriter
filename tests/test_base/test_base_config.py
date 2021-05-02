@@ -27,7 +27,7 @@ import configparser
 
 from shutil import copyfile
 
-from dummy import causeOSError, DummyApp
+from mock import causeOSError, MockApp
 from tools import cmpFiles, writeFile
 
 from nw.config import Config
@@ -195,7 +195,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     writeFile(os.path.join(i18nDir, "nw_en_GB.ts"), "")
     writeFile(os.path.join(i18nDir, "nw_abcd.qm"), "")
 
-    tstApp = DummyApp()
+    tstApp = MockApp()
     tstConf.initLocalisation(tstApp)
     theList = tstConf.listLanguages(tstConf.LANG_NW)
     assert theList == [("en_GB", "British English")]
@@ -252,7 +252,7 @@ def testBaseConfig_RecentCache(monkeypatch, tmpConf, tmpDir, fncDir):
     }
 
     # Remove Non-Existent Entry
-    assert not tmpConf.removeFromRecentCache("dummy")
+    assert not tmpConf.removeFromRecentCache("stuff")
     assert tmpConf.recentProj == {
         pathOne: {"time": 1600002000, "title": "Proj One", "words": 100},
         pathTwo: {"time": 1600005600, "title": "Proj Two", "words": 200},
@@ -490,7 +490,7 @@ def testBaseConfig_Internal(monkeypatch, tmpConf):
     cnfParse = configparser.ConfigParser()
     cnfParse.read_string(
         "[Main]\n"
-        "val_string = dummy\n"
+        "val_string = stuff\n"
         "val_int = 123\n"
         "val_bool = True\n"
         "val_list_string = A, B, C\n"
@@ -499,7 +499,7 @@ def testBaseConfig_Internal(monkeypatch, tmpConf):
 
     assert tmpConf._parseLine(
         cnfParse, "Main", "val_string", tmpConf.CNF_STR, "default"
-    ) == "dummy"
+    ) == "stuff"
     assert tmpConf._parseLine(
         cnfParse, "Main", "nope", tmpConf.CNF_STR, "default"
     ) == "default"
@@ -554,7 +554,7 @@ def testBaseConfig_Internal(monkeypatch, tmpConf):
         assert tmpConf.hasEnchant is False
 
     with monkeypatch.context() as mp:
-        mp.setattr("shutil.which", lambda *args: "dummy")
+        mp.setattr("shutil.which", lambda *args: "stuff")
         tmpConf._checkOptionalPackages()
         assert tmpConf.hasAssistant is True
 

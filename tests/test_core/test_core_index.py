@@ -26,7 +26,7 @@ import json
 
 from shutil import copyfile
 
-from dummy import causeException
+from mock import causeException
 from tools import cmpFiles
 
 from nw.core.project import NWProject

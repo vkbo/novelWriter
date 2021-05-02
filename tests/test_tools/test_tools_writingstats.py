@@ -25,7 +25,7 @@ import json
 import os
 
 from tools import getGuiItem, writeFile
-from dummy import causeOSError
+from mock import causeOSError
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox

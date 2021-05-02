@@ -269,7 +269,7 @@ class NWIndex():
         logger.debug("Indexing item with handle %s" % tHandle)
 
         # Check file type, and reset its old index
-        # Also add a dummy entry T000000 in case the file has no title
+        # Also add a default entry T000000 in case the file has no title
         self._refIndex[tHandle] = {}
         self._refIndex[tHandle]["T000000"] = {
             "tags"    : [],

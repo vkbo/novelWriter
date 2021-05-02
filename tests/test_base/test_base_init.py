@@ -25,19 +25,19 @@ import pytest
 import logging
 import sys
 
-from dummy import DummyMain
+from mock import MockGuiMain
 
 @pytest.mark.base
 def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
     """Check launching the main GUI.
     """
-    monkeypatch.setattr("nw.guimain.GuiMain", DummyMain)
+    monkeypatch.setattr("nw.guimain.GuiMain", MockGuiMain)
 
     # Testmode launch
     nwGUI = nw.main(
         ["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
     )
-    assert isinstance(nwGUI, DummyMain)
+    assert isinstance(nwGUI, MockGuiMain)
 
     # Darwin launch
     monkeypatch.setitem(sys.modules, "Foundation", None)
@@ -46,7 +46,7 @@ def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
     nwGUI = nw.main(
         ["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
     )
-    assert isinstance(nwGUI, DummyMain)
+    assert isinstance(nwGUI, MockGuiMain)
     assert "Foundation" in caplog.messages[1]
     nw.CONFIG.osDarwin = osDarwin
 
@@ -68,7 +68,7 @@ def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
 def testBaseInit_Options(monkeypatch, tmpDir):
     """Test command line options for logging level.
     """
-    monkeypatch.setattr("nw.guimain.GuiMain", DummyMain)
+    monkeypatch.setattr("nw.guimain.GuiMain", MockGuiMain)
     monkeypatch.setattr(sys, "argv", [
         "novelWriter.py", "--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir
     ])
@@ -140,7 +140,7 @@ def testBaseInit_Options(monkeypatch, tmpDir):
 def testBaseInit_Imports(caplog, monkeypatch, tmpDir):
     """Check import error handling.
     """
-    monkeypatch.setattr("nw.guimain.GuiMain", DummyMain)
+    monkeypatch.setattr("nw.guimain.GuiMain", MockGuiMain)
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.__init__", lambda *args: None)
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.exec_", lambda *args: 0)
     monkeypatch.setattr("PyQt5.QtWidgets.QErrorMessage.__init__", lambda *args: None)

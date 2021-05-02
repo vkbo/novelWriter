@@ -85,10 +85,10 @@
       <status>New</status>
       <exported>True</exported>
       <layout>BOOK</layout>
-      <charCount>466</charCount>
+      <charCount>482</charCount>
       <wordCount>83</wordCount>
       <paraCount>4</paraCount>
-      <cursorPos>604</cursorPos>
+      <cursorPos>620</cursorPos>
     </item>
     <item handle="44cb730c42048" order="1" parent="None">
       <name>Plot</name>

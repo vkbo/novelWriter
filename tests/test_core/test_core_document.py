@@ -23,7 +23,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import pytest
 
-from dummy import causeOSError
+from mock import causeOSError
 
 from nw.core import NWProject, NWDoc
 from nw.enum import nwItemClass, nwItemLayout
@@ -39,7 +39,7 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
     sHandle = "8c659a11cd429"
 
     # Not a valid handle
-    theDoc = NWDoc(theProject, "dummy")
+    theDoc = NWDoc(theProject, "stuff")
     assert theDoc.readDocument() is None
 
     # Non-existent handle
@@ -102,7 +102,7 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
     assert not theDoc.writeDocument(theText)
 
     # Delete the last document
-    theDoc = NWDoc(theProject, "dummy")
+    theDoc = NWDoc(theProject, "stuff")
     assert not theDoc.deleteDocument()
     assert os.path.isfile(docPath)
 
