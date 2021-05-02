@@ -1,4 +1,4 @@
-name: macOS (3.9)
+name: macOS
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main, testing, dev ]
 
 jobs:
-  testMac39:
+  testMac:
     runs-on: macos-latest
     steps:
       - name: Python Setup
