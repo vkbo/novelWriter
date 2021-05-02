@@ -75,7 +75,9 @@ class GuiDocEditor(QTextEdit):
         self.theTheme   = theParent.theTheme
         self.theIndex   = theParent.theIndex
         self.theProject = theParent.theProject
-        self.nwDocument = NWDoc(self.theProject)
+
+        self.nwDocument = None
+        self.nwItem     = None
 
         self.docChanged = False # Flag for changed status of document
         self.spellCheck = False # Flag for spell checking enabled
@@ -165,7 +167,7 @@ class GuiDocEditor(QTextEdit):
         """Clear the current document and reset all document related
         flags and counters.
         """
-        self.nwDocument.clearDocument()
+        self.nwDocument = None
         self.setReadOnly(True)
         self.clear()
         self.wcTimer.stop()
@@ -297,7 +299,10 @@ class GuiDocEditor(QTextEdit):
         document is new (empty string), we set up the editor for editing
         the file.
         """
-        theDoc = self.nwDocument.readDocument(tHandle)
+        self.nwDocument = NWDoc(self.theProject, tHandle)
+        self.nwItem = self.nwDocument.getCurrentItem()
+
+        theDoc = self.nwDocument.readDocument()
         if theDoc is None:
             # There was an io error
             self.clearEditor()
@@ -350,16 +355,15 @@ class GuiDocEditor(QTextEdit):
         self.updateDocMargins()
         self.hLight.spellCheck = spTemp
 
-        theItem = self.nwDocument.getCurrentItem()
-        if tLine is None and theItem is not None:
+        if tLine is None and self.nwItem is not None:
             # For large documents we queue the repositioning until the
             # document layout has grown past the point we want to move
             # the cursor to. This makes the loading significantly
             # faster.
             if docSize > 50000:
-                self.queuePos = theItem.cursorPos
+                self.queuePos = self.nwItem.cursorPos
             else:
-                self.setCursorPosition(theItem.cursorPos)
+                self.setCursorPosition(self.nwItem.cursorPos)
         else:
             self.setCursorLine(tLine)
 
@@ -378,9 +382,9 @@ class GuiDocEditor(QTextEdit):
             self.setCursorPosition(0)
 
         # Update the status bar
-        if theItem is not None:
+        if self.nwItem is not None:
             self.theParent.setStatus(
-                self.tr("Opened Document: {0}").format(theItem.itemName)
+                self.tr("Opened Document: {0}").format(self.nwItem.itemName)
             )
 
         return True
@@ -429,22 +433,33 @@ class GuiDocEditor(QTextEdit):
         """Save the text currently in the editor to the NWDoc object,
         and update the NWItem meta data.
         """
-        theItem = self.nwDocument.getCurrentItem()
-        if theItem is None:
+        if self.nwItem is None or self.nwDocument is None:
+            logger.error("Cannot save text as no document is open")
+            return False
+
+        tHandle = self.nwItem.itemHandle
+        if self.theHandle != tHandle:
+            logger.error("Editor handle %s and item handle %s do not match" % (
+                self.theHandle, tHandle
+            ))
             return False
 
         docText = self.getText()
-        tHandle = theItem.itemHandle
 
         cC, wC, pC = countWords(docText)
         self._updateCounts(cC, wC, pC)
 
-        theItem.setCharCount(self.charCount)
-        theItem.setWordCount(self.wordCount)
-        theItem.setParaCount(self.paraCount)
+        self.nwItem.setCharCount(self.charCount)
+        self.nwItem.setWordCount(self.wordCount)
+        self.nwItem.setParaCount(self.paraCount)
 
         self.saveCursorPosition()
-        self.nwDocument.writeDocument(docText)
+        if not self.nwDocument.writeDocument(docText):
+            self.theParent.makeAlert([
+                self.tr("Could not save document."), self.nwDocument.getError()
+            ], nwAlert.ERROR)
+            return False
+
         self.setDocumentChanged(False)
 
         self.theIndex.scanText(tHandle, docText)
@@ -465,7 +480,7 @@ class GuiDocEditor(QTextEdit):
 
         # Update the status bar
         self.theParent.setStatus(
-            self.tr("Saved Document: {0}").format(theItem.itemName)
+            self.tr("Saved Document: {0}").format(self.nwItem.itemName)
         )
 
         return True
@@ -592,10 +607,9 @@ class GuiDocEditor(QTextEdit):
     def saveCursorPosition(self):
         """Save the cursor position to the current project item object.
         """
-        theItem = self.nwDocument.getCurrentItem()
-        if theItem is not None:
+        if self.nwItem is not None:
             cursPos = self.getCursorPosition()
-            theItem.setCursorPos(cursPos)
+            self.nwItem.setCursorPos(cursPos)
         return
 
     def setCursorLine(self, theLine):
@@ -766,7 +780,7 @@ class GuiDocEditor(QTextEdit):
         """Tell the user where on the file system the file in the editor
         is saved.
         """
-        if self.theHandle is None:
+        if self.nwDocument is None:
             logger.error("No document open")
             return False
 
@@ -1133,8 +1147,7 @@ class GuiDocEditor(QTextEdit):
     def _updateCounts(self, cCount, wCount, pCount):
         """Slot for the word counter's finished signal
         """
-        theItem = self.nwDocument.getCurrentItem()
-        if self.theHandle is None or theItem is None:
+        if self.theHandle is None or self.nwItem is None:
             return
 
         logger.verbose("Updating word count")
@@ -1142,9 +1155,10 @@ class GuiDocEditor(QTextEdit):
         self.charCount = cCount
         self.wordCount = wCount
         self.paraCount = pCount
-        theItem.setCharCount(cCount)
-        theItem.setWordCount(wCount)
-        theItem.setParaCount(pCount)
+
+        self.nwItem.setCharCount(cCount)
+        self.nwItem.setWordCount(wCount)
+        self.nwItem.setParaCount(pCount)
 
         self.theParent.treeView.propagateCount(self.theHandle, wCount)
         self.theParent.treeView.projectWordCount()

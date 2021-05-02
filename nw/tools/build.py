@@ -173,7 +173,7 @@ class GuiBuildNovel(QDialog):
         if langIdx != -1:
             self.buildLang.setCurrentIndex(langIdx)
 
-        # Dummy boxes due to QGridView and QLineEdit expand bug
+        # Wrapper boxes due to QGridView and QLineEdit expand bug
         self.boxTitle = QHBoxLayout()
         self.boxTitle.addWidget(self.fmtTitle)
         self.boxChapter = QHBoxLayout()
@@ -245,7 +245,7 @@ class GuiBuildNovel(QDialog):
             self.optState.getFloat("GuiBuildNovel", "lineHeight", 1.15)
         )
 
-        # Dummy box due to QGridView and QLineEdit expand bug
+        # Wrapper box due to QGridView and QLineEdit expand bug
         self.boxFont = QHBoxLayout()
         self.boxFont.addWidget(self.textFont)
 

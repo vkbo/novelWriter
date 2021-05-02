@@ -284,8 +284,8 @@ class Tokenizer():
             self.theText = theText
         else:
             # Otherwise, load it from file
-            theDoc  = NWDoc(self.theProject)
-            theText = theDoc.readDocument(theHandle)
+            theDoc  = NWDoc(self.theProject, theHandle)
+            theText = theDoc.readDocument()
             if theText:
                 self.theText = theText
 

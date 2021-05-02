@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-novelWriter – Test Suite Dummy Classes
-======================================
+novelWriter – Test Suite Mocked Classes
+=======================================
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen
@@ -24,14 +24,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #  Mock GUI
 # =========================================================================== #
 
-class DummyMain():
+class MockGuiMain():
 
     def __init__(self):
         self.mainConf = None
         self.hasProject = True
         self.theIndex = None
         self.theProject = None
-        self.statusBar = DummyStatusBar()
+        self.statusBar = MockStatusBar()
 
         # Test Variables
         self.askResponse = True
@@ -79,9 +79,9 @@ class DummyMain():
         self.lastAlert = ""
         return
 
-# END Class DummyMain
+# END Class MockGuiMain
 
-class DummyStatusBar():
+class MockStatusBar():
 
     def __init__(self):
         return
@@ -89,9 +89,9 @@ class DummyStatusBar():
     def setStatus(self, theText):
         return
 
-# END Class DummyStatusBar
+# END Class MockStatusBar
 
-class DummyApp:
+class MockApp:
 
     def __init__(self):
         return
@@ -99,15 +99,15 @@ class DummyApp:
     def installTranslator(self, theLang):
         return
 
-# END Class DummyApp
+# END Class MockApp
 
 # =========================================================================== #
 #  Error Functions
-#  Dummy functions that will raise errors instead.
+#  Mock functions that will raise errors instead.
 # =========================================================================== #
 
 def causeOSError(*args, **kwargs):
-    raise OSError
+    raise OSError("OSError")
 
 def causeException(*args, **kwargs):
-    raise Exception
+    raise Exception("Exception")

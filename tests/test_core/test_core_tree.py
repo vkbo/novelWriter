@@ -31,7 +31,7 @@ from nw.constants import nwFiles
 
 @pytest.fixture(scope="function")
 def dummyItems(dummyGUI):
-    """Create a list of dummy items.
+    """Create a list of mock items.
     """
     theProject = NWProject(dummyGUI)
 
@@ -176,7 +176,7 @@ def testCoreTree_BuildTree(dummyGUI, dummyItems):
     assert len(theTree) == len(dummyItems) + 1
 
     # Delete a non-existing item
-    del theTree["dummy"]
+    del theTree["stuff"]
     assert len(theTree) == len(dummyItems) + 1
 
     # Delete the last item
@@ -214,7 +214,7 @@ def testCoreTree_Methods(dummyGUI, dummyItems):
     assert len(theTree) == len(dummyItems)
 
     # Root item lookup
-    theTree._treeRoots.append("dummy")
+    theTree._treeRoots.append("stuff")
     assert theTree.findRoot(nwItemClass.WORLD) is None
     assert theTree.findRoot(nwItemClass.NOVEL) == "a000000000001"
     assert theTree.findRoot(nwItemClass.CHARACTER) == "a000000000004"
@@ -229,16 +229,16 @@ def testCoreTree_Methods(dummyGUI, dummyItems):
     assert theTree.getRootItem("b000000000001").itemHandle == "a000000000001"
     assert theTree.getRootItem("c000000000001").itemHandle == "a000000000001"
     assert theTree.getRootItem("c000000000002").itemHandle == "a000000000001"
-    assert theTree.getRootItem("dummy") is None
+    assert theTree.getRootItem("stuff") is None
 
     # Get item path
-    assert theTree.getItemPath("dummy") == []
+    assert theTree.getItemPath("stuff") == []
     assert theTree.getItemPath("c000000000001") == [
         "c000000000001", "b000000000001", "a000000000001"
     ]
 
     # Break the folder parent handle
-    theTree["b000000000001"].itemParent = "dummy"
+    theTree["b000000000001"].itemParent = "stuff"
     assert theTree.getItemPath("c000000000001") == [
         "c000000000001", "b000000000001"
     ]
@@ -249,7 +249,7 @@ def testCoreTree_Methods(dummyGUI, dummyItems):
     ]
 
     # Change file layout
-    assert not theTree.setFileItemLayout("dummy", nwItemLayout.UNNUMBERED)
+    assert not theTree.setFileItemLayout("stuff", nwItemLayout.UNNUMBERED)
     assert not theTree.setFileItemLayout("b000000000001", nwItemLayout.UNNUMBERED)
     assert not theTree.setFileItemLayout("c000000000001", "stuff")
     assert theTree.setFileItemLayout("c000000000001", nwItemLayout.UNNUMBERED)
@@ -424,7 +424,7 @@ def testCoreTree_Stats(dummyGUI, dummyItems):
         theTree.append(tHandle, pHandle, nwItem)
 
     assert len(theTree) == len(dummyItems)
-    theTree._treeOrder.append("dummy")
+    theTree._treeOrder.append("stuff")
 
     # Count Words
     novelWords, noteWords = theTree.sumWords()
@@ -461,10 +461,10 @@ def testCoreTree_Reorder(dummyGUI, dummyItems):
     theTree.setOrder(bHandle)
     assert theTree.handles() == bHandle
 
-    theTree.setOrder(bHandle + ["dummy"])
+    theTree.setOrder(bHandle + ["stuff"])
     assert theTree.handles() == bHandle
 
-    theTree._treeOrder.append("dummy")
+    theTree._treeOrder.append("stuff")
     theTree.setOrder(bHandle)
     assert theTree.handles() == bHandle
 
@@ -536,7 +536,7 @@ def testCoreTree_ToCFile(monkeypatch, dummyGUI, dummyItems, tmpDir):
         theTree.append(tHandle, pHandle, nwItem)
 
     assert len(theTree) == len(dummyItems)
-    theTree._treeOrder.append("dummy")
+    theTree._treeOrder.append("stuff")
 
     def dummyIsFile(fileName):
         """Return True for items that are files in novelWriter and

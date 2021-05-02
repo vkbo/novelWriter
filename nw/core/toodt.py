@@ -563,7 +563,7 @@ class ToOdt(Tokenizer):
         ##
 
         if len(theText) != len(theFmt):
-            # Generate dummy format if there isn't any or it doesn't match
+            # Generate an empty format if there isn't any or it doesn't match
             theFmt = " "*len(theText)
 
         # XML functions

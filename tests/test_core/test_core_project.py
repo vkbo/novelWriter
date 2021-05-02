@@ -28,7 +28,7 @@ from zipfile import ZipFile
 from lxml import etree
 
 from tools import cmpFiles, writeFile, readFile
-from dummy import causeOSError
+from mock import causeOSError
 
 from nw.core.project import NWProject
 from nw.enum import nwItemClass, nwItemType, nwItemLayout
@@ -354,11 +354,11 @@ def testCoreProject_Open(monkeypatch, nwMinimal, dummyGUI):
     oName = os.path.join(nwMinimal, nwFiles.PROJ_FILE[:-3]+"orig")
     bName = os.path.join(nwMinimal, nwFiles.PROJ_FILE[:-3]+"bak")
     os.rename(rName, oName)
-    writeFile(rName, "dummy")
+    writeFile(rName, "stuff")
     assert theProject.openProject(nwMinimal) is False
 
     # Also write a jun XML backup file
-    writeFile(bName, "dummy")
+    writeFile(bName, "stuff")
     assert theProject.openProject(nwMinimal) is False
 
     # Wrong root item
@@ -426,9 +426,9 @@ def testCoreProject_Open(monkeypatch, nwMinimal, dummyGUI):
     os.rename(oName, rName)
 
     # Add some legacy stuff that cannot be removed
-    writeFile(os.path.join(nwMinimal, "junk"), "dummy")
+    writeFile(os.path.join(nwMinimal, "junk"), "stuff")
     os.mkdir(os.path.join(nwMinimal, "data_0"))
-    writeFile(os.path.join(nwMinimal, "data_0", "junk"), "dummy")
+    writeFile(os.path.join(nwMinimal, "data_0", "junk"), "stuff")
     dummyGUI.clear()
     assert theProject.openProject(nwMinimal) is True
     assert "data_0" in dummyGUI.lastAlert
@@ -559,19 +559,19 @@ def testCoreProject_Helpers(monkeypatch, fncDir, dummyGUI):
 
     # Create a file to block meta folder
     metaDir = os.path.join(fncDir, "meta")
-    writeFile(metaDir, "dummy")
+    writeFile(metaDir, "stuff")
     assert theProject.ensureFolderStructure() is False
     os.unlink(metaDir)
 
     # Create a file to block cache folder
     cacheDir = os.path.join(fncDir, "cache")
-    writeFile(cacheDir, "dummy")
+    writeFile(cacheDir, "stuff")
     assert theProject.ensureFolderStructure() is False
     os.unlink(cacheDir)
 
     # Create a file to block content folder
     contentDir = os.path.join(fncDir, "content")
-    writeFile(contentDir, "dummy")
+    writeFile(contentDir, "stuff")
     assert theProject.ensureFolderStructure() is False
     os.unlink(contentDir)
 
@@ -977,7 +977,7 @@ def testCoreProject_OldFormat(dummyGUI, nwOldProj):
     """
     theProject = NWProject(dummyGUI)
 
-    # Create dummy files for known legacy files
+    # Create mock files for known legacy files
     deleteFiles = [
         os.path.join(nwOldProj, "cache", "nwProject.nwx.0"),
         os.path.join(nwOldProj, "cache", "nwProject.nwx.1"),
@@ -1005,7 +1005,7 @@ def testCoreProject_OldFormat(dummyGUI, nwOldProj):
     os.mkdir(os.path.join(nwOldProj, "stuff"))
     os.mkdir(os.path.join(nwOldProj, "data_1", "stuff"))
 
-    # Create dummy files
+    # Create mock files
     os.mkdir(os.path.join(nwOldProj, "cache"))
     for aFile in deleteFiles:
         writeFile(aFile, "Hi")
@@ -1071,7 +1071,7 @@ def testCoreProject_LegacyData(monkeypatch, dummyGUI, fncDir):
 
     # Check behaviour of deprecated files function on OSError
     tstFile = os.path.join(fncDir, "ToC.json")
-    writeFile(tstFile, "dummy")
+    writeFile(tstFile, "stuff")
     assert os.path.isfile(tstFile)
 
     with monkeypatch.context() as mp:
@@ -1083,7 +1083,7 @@ def testCoreProject_LegacyData(monkeypatch, dummyGUI, fncDir):
 
     # Check processing non-folders
     tstFile = os.path.join(fncDir, "data_0")
-    writeFile(tstFile, "dummy")
+    writeFile(tstFile, "stuff")
     assert os.path.isfile(tstFile)
 
     errList = []
@@ -1128,12 +1128,12 @@ def testCoreProject_LegacyData(monkeypatch, dummyGUI, fncDir):
     tstDoc3b = os.path.join(tstData, "tooshort003_main.bak")
 
     os.mkdir(tstData)
-    writeFile(tstDoc1m, "dummy")
-    writeFile(tstDoc1b, "dummy")
-    writeFile(tstDoc2m, "dummy")
-    writeFile(tstDoc2b, "dummy")
-    writeFile(tstDoc3m, "dummy")
-    writeFile(tstDoc3b, "dummy")
+    writeFile(tstDoc1m, "stuff")
+    writeFile(tstDoc1b, "stuff")
+    writeFile(tstDoc2m, "stuff")
+    writeFile(tstDoc2b, "stuff")
+    writeFile(tstDoc3m, "stuff")
+    writeFile(tstDoc3b, "stuff")
 
     # Make the above fail
     with monkeypatch.context() as mp:

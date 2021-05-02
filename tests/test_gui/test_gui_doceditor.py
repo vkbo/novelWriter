@@ -249,14 +249,14 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDi
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
-    for c in "This is a paragraph of dummy text.":
+    for c in "This is a paragraph of nonsense text.":
         qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     for c in (
-        "This is another paragraph of much longer dummy text. "
-        "It is in fact 1 very very DUMB dummy text! "
+        "This is another paragraph of much longer nonsense text. "
+        "It is in fact 1 very very NONSENSICAL nonsense text! "
     ):
         qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     for c in "We can also try replacing \"quotes\", even single 'quotes' are replaced. ":
