@@ -371,6 +371,7 @@ def makeMinimalPackage(targetOS):
     with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=9) as zipObj:
 
         if targetOS != OS_WIN:
+            # Not needed for Windows as the icons are in nw/assets/icons
             for nRoot, _, nFiles in os.walk("setup"):
                 print("Adding Folder: %s [%d files]" % (nRoot, len(nFiles)))
                 for aFile in nFiles:
@@ -388,15 +389,6 @@ def makeMinimalPackage(targetOS):
                     continue
                 zipObj.write(os.path.join(nRoot, aFile))
 
-        for aFile in os.listdir("i18n"):
-            i18File = os.path.join("i18n", aFile)
-            if not os.path.isfile(i18File):
-                continue
-
-            if i18File.endswith((".json", ".qm")):
-                zipObj.write(i18File)
-                print("Adding File: %s" % i18File)
-
         if targetOS == OS_WIN:
             zipObj.write("novelWriter.py", "novelWriter.pyw")
             print("Adding File: novelWriter.pyw")
@@ -409,7 +401,6 @@ def makeMinimalPackage(targetOS):
             print("Adding File: novelWriter.py")
 
         for aFile in rootFiles:
-            assert os.path.isfile(aFile)
             print("Adding File: %s" % aFile)
             zipObj.write(aFile)
 
