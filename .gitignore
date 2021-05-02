@@ -8,6 +8,10 @@
 setup.iss
 novelwriter.desktop
 novelWriter.pyw
+
+# Translations
+/nw/assets/i18n/*.qm
+.qmake.stash
 i18n/*.qm
 i18n/*.qph
 
