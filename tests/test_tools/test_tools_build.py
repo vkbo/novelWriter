@@ -117,7 +117,7 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     testFile = os.path.join(outDir, "guiBuild_Tool_Step1_Lorem_Ipsum.fodt")
     compFile = os.path.join(refDir, "guiBuild_Tool_Step1_Lorem_Ipsum.fodt")
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [4])
+    assert cmpFiles(testFile, compFile, [4, 5])
 
     # Change Title Formats and Flip Switches
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
@@ -171,7 +171,7 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     testFile = os.path.join(outDir, "guiBuild_Tool_Step2_Lorem_Ipsum.fodt")
     compFile = os.path.join(refDir, "guiBuild_Tool_Step2_Lorem_Ipsum.fodt")
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [4])
+    assert cmpFiles(testFile, compFile, [4, 5])
 
     # Replace Tabs with Spaces
     qtbot.mouseClick(nwBuild.replaceTabs, Qt.LeftButton)
@@ -206,7 +206,7 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     testFile = os.path.join(outDir, "guiBuild_Tool_Step3_Lorem_Ipsum.fodt")
     compFile = os.path.join(refDir, "guiBuild_Tool_Step3_Lorem_Ipsum.fodt")
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [4])
+    assert cmpFiles(testFile, compFile, [4, 5])
 
     # Putline Mode
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
