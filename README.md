@@ -1,11 +1,8 @@
 # novelWriter
 
-[![Linux (3.6)](https://github.com/vkbo/novelWriter/workflows/Linux%20(3.6)/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
-[![Linux (3.7)](https://github.com/vkbo/novelWriter/workflows/Linux%20(3.7)/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
-[![Linux (3.8)](https://github.com/vkbo/novelWriter/workflows/Linux%20(3.8)/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
-[![Linux (3.9)](https://github.com/vkbo/novelWriter/workflows/Linux%20(3.9)/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
-[![Windows (3.9)](https://github.com/vkbo/novelWriter/workflows/Windows%20(3.9)/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
-[![macOS (3.9)](https://github.com/vkbo/novelWriter/workflows/macOS%20(3.9)/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions)
+[![Linux](https://github.com/vkbo/novelWriter/actions/workflows/test_linux.yml/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions/workflows/test_linux.yml)
+[![Windows](https://github.com/vkbo/novelWriter/actions/workflows/test_win.yml/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions/workflows/test_win.yml)
+[![macOS](https://github.com/vkbo/novelWriter/actions/workflows/test_mac.yml/badge.svg?branch=main)](https://github.com/vkbo/novelWriter/actions/workflows/test_mac.yml)
 [![flake8](https://github.com/vkbo/novelWriter/workflows/flake8/badge.svg)](https://github.com/vkbo/novelWriter/actions)
 [![codecov](https://codecov.io/gh/vkbo/novelWriter/branch/main/graph/badge.svg)](https://codecov.io/gh/vkbo/novelWriter)
 [![docs](https://readthedocs.org/projects/novelwriter/badge/?version=latest)](https://novelwriter.readthedocs.io/en/latest/?badge=latest)
