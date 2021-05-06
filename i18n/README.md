@@ -36,8 +36,15 @@ test it.
 Please do not submit the `.qm` files to the repository. Only the `.ts` files in the `i18n` folder
 are needed.
 
-**Note:** This requires that you have the tools Qt 5 Linguist and the PyQt5 tool `pylupdate5`
+**Note**
+
+These commands require that you have the tools Qt 5 Linguist and the PyQt5 tool `pylupdate5`
 installed on your system.
+
+For Ubuntu/Debian, run:
+```bash
+sudo apt install qttools5-dev-tools pyqt5-dev-tools
+```
 
 ### Missing QtBase Translations
 
