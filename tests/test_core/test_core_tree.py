@@ -24,6 +24,7 @@ import os
 import pytest
 
 from lxml import etree
+from hashlib import sha256
 
 from nw.core.project import NWProject, NWItem, NWTree
 from nw.enum import nwItemClass, nwItemType, nwItemLayout
@@ -394,22 +395,33 @@ def testCoreTree_MakeHandles(monkeypatch, dummyGUI):
     tHandle = theTree._makeHandle()
     assert tHandle == "73475cb40a568"
 
-    # Add the next in line to the project to foprce duplicate
+    # Add the next in line to the project to force duplicate
     theTree._projTree["44cb730c42048"] = None
     tHandle = theTree._makeHandle()
     assert tHandle == "71ee45a3c0db9"
 
     # Fix the time() function and force a handle collission
     theTree.setSeed(None)
+    theTree._handleCount = 0
     monkeypatch.setattr("nw.core.tree.time", lambda: 123.4)
 
     tHandle = theTree._makeHandle()
     theTree._projTree[tHandle] = None
-    assert tHandle == "5f466d7afa48b"
+    newSeed = "123.4_0_"
+    assert tHandle == sha256(newSeed.encode()).hexdigest()[0:13]
 
     tHandle = theTree._makeHandle()
     theTree._projTree[tHandle] = None
-    assert tHandle == "a79acf4c634a7"
+    newSeed = "123.4_1_"
+    assert tHandle == sha256(newSeed.encode()).hexdigest()[0:13]
+
+    # Reset the count and the handle for 0 and 1 should be duplicates
+    # which forces the function to add the '!'
+    theTree._handleCount = 0
+    tHandle = theTree._makeHandle()
+    theTree._projTree[tHandle] = None
+    newSeed = "123.4_1_!"
+    assert tHandle == sha256(newSeed.encode()).hexdigest()[0:13]
 
 # END Test testCoreTree_MakeHandles
 
