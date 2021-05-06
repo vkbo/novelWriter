@@ -1,5 +1,35 @@
 # novelWriter Changelog
 
+## Version 1.3.1 [2021-05-06]
+
+### Release Notes
+
+This is a patch release primarily to fix a problem with the Qt translation library used to make
+novelWriter available in multiple languages. One of the function calls made to the library was
+added recently, in Qt 5.15, which many users on Linux will not have installed on their system. The
+issue could be resolved by updating the library, but it's an unnecessary and inconvenient
+restriction.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* The code to load translation files for the main GUI was using a function in the QTranslate class
+  that was added in version 5.15, which means novelWriter could not start on a lower version of the
+  Qt library if translation files were present. We don't want to force users to use Qt 5.15, so the
+  call has been removed. Issue #773. PR #774.
+
+**Other Fixes**
+
+* When generating a new project on Windows, the code that generates the new documents in the
+  project would create duplicate handles, causing a warning to be printed. The warning is harmless
+  as the collisions are handled. They are caused by the resolution of the clock available to Python
+  on Windows being in the tens of millisecond range, much slower than the code generates the new
+  project files. The solution was to append a counter to the timestamp from the clock, ensuring
+  that the seed is always unique. Issue #769. PR #776.
+
+----
+
 ## Version 1.3 [2021-05-02]
 
 ### Release Notes
