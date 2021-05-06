@@ -21,7 +21,7 @@ jobs:
       - name: Install Packages
         run: |
           sudo apt update
-          sudo apt install libenchant-dev qt5-default
+          sudo apt install libenchant-dev qt5-default qttools5-dev-tools
       - name: Checkout Source
         uses: actions/checkout@v2
       - name: Install Dependencies
@@ -32,6 +32,8 @@ jobs:
           pip install pytest-cov
           pip install pytest-qt
           pip install codecov
+      - name: Update Translations
+        run: python setup.py qtlrelease
       - name: Run Tests
         run: |
           export QT_QPA_PLATFORM=offscreen
