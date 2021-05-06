@@ -106,8 +106,8 @@ Building the Translation Files
 
 If you installed novelWriter from a package, the translation files should be pre-built and
 included. If you're running novelWriter from the source code, you will need to generate the files
-yourself. The files you need will be written to the ``i18n`` folder, and will have the ``.qm`` file
-extension.
+yourself. The files you need will be written to the ``nw/assets/i18n`` folder, and will have the
+``.qm`` file extension.
 
 You can build the ``.qm`` files with:
 
@@ -115,7 +115,8 @@ You can build the ``.qm`` files with:
 
    python3 setup.py qtlrelease
 
-This requires that the Python package ``pylupdate5`` to be installed.
+This requires that the Qt Linguist tool is installed on your system. On Ubuntu and Debian, the
+needed package is called `qttools5-dev-tools`.
 
 .. note::
    If you want to improve novelWriter with translation files for another language, or update an
