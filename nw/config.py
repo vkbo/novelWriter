@@ -391,7 +391,7 @@ class Config:
                 lngFile = "%s_%s" % (lngBase, lngCode.replace("-", "_"))
                 if lngFile not in self.qtTrans:
                     if qTrans.load(lngFile, lngPath):
-                        logger.debug("Loaded: %s" % qTrans.filePath())
+                        logger.debug("Loaded: %s" % os.path.join(lngPath, lngFile))
                         nwApp.installTranslator(qTrans)
                         self.qtTrans[lngFile] = qTrans
 
