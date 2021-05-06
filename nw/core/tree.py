@@ -77,6 +77,7 @@ class NWTree():
         self._treeChanged = False # True if tree structure has changed
 
         self._handleSeed  = None  # Used for generating handles for testing
+        self._handleCount = 0     # A counter that is added to the handle generator
 
         return
 
@@ -515,7 +516,8 @@ class NWTree():
         handle requests come faster than the clock resolution.
         """
         if self._handleSeed is None:
-            newSeed = str(time()) + addSeed
+            newSeed = "%s_%d_%s" % (str(time()), self._handleCount, addSeed)
+            self._handleCount += 1
         else:
             # This is used for debugging
             newSeed = str(self._handleSeed)
