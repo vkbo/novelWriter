@@ -225,8 +225,9 @@ def buildQtI18n():
     try:
         subprocess.call(["lrelease", "-verbose", "novelWriter.pro"])
     except Exception as e:
-        print("QtI18n Release Error:")
+        print("Qt5 Linguist tools seem to be missing")
         print(str(e))
+        sys.exit(1)
 
     print("")
     print("Moving QM Files to Assets")
@@ -262,8 +263,9 @@ def buildQtI18nTS():
     try:
         subprocess.call(["pylupdate5", "-verbose", "-noobsolete", "novelWriter.pro"])
     except Exception as e:
-        print("QtI18n Release Error:")
+        print("PyQt5 Linguist tools seem to be missing")
         print(str(e))
+        sys.exit(1)
 
     print("")
 

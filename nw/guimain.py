@@ -371,9 +371,9 @@ class GuiMain(QMainWindow):
 
         logger.info("Creating new project")
         if self.theProject.newProject(projData):
+            self.hasProject = True
             self.rebuildTrees()
             self.saveProject()
-            self.hasProject = True
             self.docEditor.setDictionaries()
             self.rebuildIndex(beQuiet=True)
             self.statusBar.setRefTime(self.theProject.projOpened)
