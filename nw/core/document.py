@@ -27,31 +27,29 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import os
 
-from functools import partial
-
-from PyQt5.QtCore import QCoreApplication
-
-from nw.enum import nwAlert, nwItemLayout, nwItemClass
 from nw.common import isHandle, safeMakeDir, formatTimeStamp
+from nw.enum import nwItemLayout, nwItemClass
 
 logger = logging.getLogger(__name__)
 
 class NWDoc():
 
-    def __init__(self, theProject):
+    def __init__(self, theProject, theHandle):
 
         self.theProject = theProject
-        self.theParent  = theProject.theParent
 
         # Internal Variables
         self._theItem   = None # The currently open item
         self._docHandle = None # The handle of the currently open item
         self._fileLoc   = None # The file location of the currently open item
         self._docMeta   = {}   # The meta data of the currently open item
+        self._docError  = ""   # The latest encountered IO error
 
-        # Internal Mapping
-        self.makeAlert = self.theParent.makeAlert
-        self.tr = partial(QCoreApplication.translate, "NWDoc")
+        if isHandle(theHandle):
+            self._docHandle = theHandle
+
+        if self._docHandle is not None:
+            self._theItem = self.theProject.projTree[theHandle]
 
         return
 
@@ -59,35 +57,19 @@ class NWDoc():
     #  Class Methods
     ##
 
-    def clearDocument(self):
-        """Clear the document contents.
-        """
-        self._theItem   = None
-        self._docHandle = None
-        self._fileLoc   = None
-        self._docMeta   = {}
-        return
-
-    def readDocument(self, tHandle, isOrphan=False):
-        """Read a document from handle, capturing potential file system
-        errors and parse meta data. If the document doesn't exist on
-        disk, return an empty string. If something went wrong, return
+    def readDocument(self, isOrphan=False):
+        """Read a document from set handle, capturing potential file
+        system errors and parse meta data. If the document doesn't exist
+        on disk, return an empty string. If something went wrong, return
         None.
         """
-        if not isHandle(tHandle):
+        self._docError = ""
+        if self._docHandle is None:
+            logger.error("No document handle set")
             return None
 
-        # Always clear first, since the object will often be reused.
-        self.clearDocument()
-
-        self._docHandle = tHandle
-        if not isOrphan:
-            self._theItem = self.theProject.projTree[tHandle]
-        else:
-            self._theItem = None
-
         if self._theItem is None and not isOrphan:
-            self.clearDocument()
+            logger.error("Unknown novelWriter document")
             return None
 
         docFile = self._docHandle+".nwd"
@@ -115,12 +97,9 @@ class NWDoc():
                     theText += inFile.read()
 
             except Exception as e:
-                self.makeAlert([self.tr("Failed to open document file."), str(e)], nwAlert.ERROR)
-                # Note: Document must be cleared in case of an io error,
-                # or else the auto-save or save will try to overwrite it
-                # with an empty file. Return None to alert the caller.
-                self.clearDocument()
+                self._docError = str(e)
                 return None
+
         else:
             # The document file does not exist, so we assume it's a new
             # document and initialise an empty text string.
@@ -133,7 +112,9 @@ class NWDoc():
         """Write the document. The file is saved via a temp file in case
         of save failure. Returns True if successful, False if not.
         """
+        self._docError = ""
         if self._docHandle is None:
+            logger.error("No document handle set")
             return False
 
         self.theProject.ensureFolderStructure()
@@ -171,7 +152,7 @@ class NWDoc():
                 outFile.write(docMeta)
                 outFile.write(docText)
         except Exception as e:
-            self.makeAlert([self.tr("Could not save document."), str(e)], nwAlert.ERROR)
+            self._docError = str(e)
             return False
 
         # If we're here, the file was successfully saved, so we can
@@ -182,14 +163,16 @@ class NWDoc():
 
         return True
 
-    def deleteDocument(self, tHandle):
+    def deleteDocument(self):
         """Permanently delete a document source file and related files
         from the project data folder.
         """
-        if not isHandle(tHandle):
+        self._docError = ""
+        if self._docHandle is None:
+            logger.error("No document handle set")
             return False
 
-        docFile = tHandle+".nwd"
+        docFile = self._docHandle+".nwd"
 
         chkList = []
         chkList.append(os.path.join(self.theProject.projContent, docFile))
@@ -201,9 +184,7 @@ class NWDoc():
                     os.unlink(chkFile)
                     logger.debug("Deleted: %s" % chkFile)
                 except Exception as e:
-                    self.makeAlert(
-                        [self.tr("Could not delete document file."), str(e)], nwAlert.ERROR
-                    )
+                    self._docError = str(e)
                     return False
 
         return True
@@ -232,6 +213,11 @@ class NWDoc():
         theLayout = self._docMeta.get("layout", None)
 
         return theName, theParent, theClass, theLayout
+
+    def getError(self):
+        """Return the last recorded exception.
+        """
+        return self._docError
 
     ##
     #  Internal Functions

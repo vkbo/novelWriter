@@ -49,7 +49,7 @@ def testCoreStatus_Entries():
 
     # Lookups
     assert theStatus.lookupEntry(None) is None
-    assert theStatus.lookupEntry("dummy") is None
+    assert theStatus.lookupEntry("stuff") is None
     assert theStatus.lookupEntry("Main") == 3
 
     # Checks

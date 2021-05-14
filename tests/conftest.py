@@ -25,7 +25,7 @@ import pytest
 import shutil
 import os
 
-from dummy import DummyMain
+from mock import MockGuiMain
 from tools import cleanProject
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
@@ -136,12 +136,12 @@ def fncConf(fncDir):
 
 @pytest.fixture(scope="function")
 def dummyGUI(monkeypatch, tmpConf):
-    """Create a dummy instance of novelWriter's main GUI class.
+    """Create a mock instance of novelWriter's main GUI class.
     """
     monkeypatch.setattr("nw.CONFIG", tmpConf)
-    theDummy = DummyMain()
-    theDummy.mainConf = tmpConf
-    return theDummy
+    theGui = MockGuiMain()
+    theGui.mainConf = tmpConf
+    return theGui
 
 @pytest.fixture(scope="function")
 def nwGUI(qtbot, monkeypatch, fncDir, fncConf):
@@ -191,7 +191,7 @@ def nwMinimal(tmpDir):
 @pytest.fixture(scope="function")
 def nwLipsum(tmpDir):
     """A medium sized novelWriter example project with a lot of Lorem
-    Ipsum dummy text.
+    Ipsum text.
     """
     tstDir = os.path.dirname(__file__)
     srcDir = os.path.join(tstDir, "lipsum")

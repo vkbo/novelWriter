@@ -307,7 +307,7 @@ class Config:
         self.appIcon   = os.path.join(self.iconPath, "novelwriter.svg")
 
         # Internationalisation
-        self.nwLangPath = os.path.join(self.appRoot, "i18n")
+        self.nwLangPath = os.path.join(self.assetPath, "i18n")
 
         logger.verbose("App path: %s" % self.appPath)
         logger.verbose("Last path: %s" % self.lastPath)
@@ -391,7 +391,7 @@ class Config:
                 lngFile = "%s_%s" % (lngBase, lngCode.replace("-", "_"))
                 if lngFile not in self.qtTrans:
                     if qTrans.load(lngFile, lngPath):
-                        logger.debug("Loaded: %s" % qTrans.filePath())
+                        logger.debug("Loaded: %s" % os.path.join(lngPath, lngFile))
                         nwApp.installTranslator(qTrans)
                         self.qtTrans[lngFile] = qTrans
 

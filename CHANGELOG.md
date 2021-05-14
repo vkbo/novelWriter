@@ -1,5 +1,89 @@
 # novelWriter Changelog
 
+## Version 1.3.1 [2021-05-06]
+
+### Release Notes
+
+This is a patch release primarily to fix a problem with the Qt translation library used to make
+novelWriter available in multiple languages. One of the function calls made to the library was
+added recently, in Qt 5.15, which many users on Linux will not have installed on their system. The
+issue could be resolved by updating the library, but it's an unnecessary and inconvenient
+restriction.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* The code to load translation files for the main GUI was using a function in the QTranslate class
+  that was added in version 5.15, which means novelWriter could not start on a lower version of the
+  Qt library if translation files were present. We don't want to force users to use Qt 5.15, so the
+  call has been removed. Issue #773. PR #774.
+
+**Other Fixes**
+
+* When generating a new project on Windows, the code that generates the new documents in the
+  project would create duplicate handles, causing a warning to be printed. The warning is harmless
+  as the collisions are handled. They are caused by the resolution of the clock available to Python
+  on Windows being in the tens of millisecond range, much slower than the code generates the new
+  project files. The solution was to append a counter to the timestamp from the clock, ensuring
+  that the seed is always unique. Issue #769. PR #776.
+
+----
+
+## Version 1.3 [2021-05-02]
+
+### Release Notes
+
+The main feature of the 1.3 release is internationalisation. The release introduces support for
+Portuguese, French, and Norwegian for the main GUI, in addition to the default English. The
+settings for choosing the GUI language can be found in the main Preferences.
+
+The implementation is such that the projects themselves can use a different language than the one
+selected for the GUI. To allow for better support for multiple language projects, the Build Novel
+Project tool has the added option to select the language of the injected text into exported
+documents. In particularly for the number words that can be added for chapter headers. Available
+languages here are the same as mentioned above for the main GUI, plus German.
+
+Settings have also been added in Preferences to allow for automatic injection of spaces or non-
+breaking spaces in front of, or behind, certain characters. These are features generally available
+in text editors for French, but the implementation in novelWriter simply makes them a free text box
+where you can list all characters or symbols where you want a space added automatically.
+
+The translation files for this release have been provided by Bruno Meneguello for the Portuguese
+translation, by Jan Lüdke (jyhelle) for the French translation, by Veronica Berglyd Olsen for the
+Norwegian translation as well as the minor modifications for US English, and Marian Lückhof
+provided the translation file for chapter numbers in German.
+
+The work to rewrite novelWriter to allow for internationalisation was done by Bruno Meneguello and
+Veronica Berglyd Olsen.
+
+_These Release Notes also include the changes from 1.3 Beta 1 and RC 1._
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue when saving a document from the Build Novel Project tool when the previous path
+  used for a file dialog no longer existed. The dialog defaults to show the same folder as last
+  time it was opened, but should default to the user's home folder if that path no longer exists.
+  There was a bug in this default behaviour that resulted in a critical error. Issue #761. PR #762.
+* Remove a duplicate error message triggered by a broken cached index file. The two error messages
+  reported on the same error. The first of them was also not included in the translation framework.
+  PR #759.
+
+**Installation**
+
+* The setup script, and file locations for the translation files, have been updated such that the
+  translation files are available in both the PyPi package and in the Minimal Install packages.
+  PRs #753, #764 and #765.
+
+**Code Maintenance**
+
+* The source code files for dialogs and tools have been moved out of the main `gui` source folder.
+  The `gui` folder now only contains sub-elements of the main GUI class. PR #754.
+
+----
+
 ## Version 1.3 RC 1 [2021-04-18]
 
 ### Release Notes

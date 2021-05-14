@@ -165,7 +165,7 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert isinstance(anIcon, QIcon)
     assert not anIcon.isNull()
 
-    # Add dummy icons and test alternative load paths
+    # Add test icons and test alternative load paths
     theIcons.ICON_MAP["testicon1"] = (QStyle.SP_DriveHDIcon, None)
     anIcon = theIcons.getIcon("testicon1")
     assert isinstance(anIcon, QIcon)

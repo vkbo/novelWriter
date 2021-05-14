@@ -217,11 +217,36 @@ def buildQtDocs():
 def buildQtI18n():
     """Build the lang.qm files for Qt Linguist.
     """
+    print("")
+    print("Building Qt Localisation Files")
+    print("==============================")
+    print("")
+
     try:
         subprocess.call(["lrelease", "-verbose", "novelWriter.pro"])
     except Exception as e:
-        print("QtI18n Release Error:")
+        print("Qt5 Linguist tools seem to be missing")
         print(str(e))
+        sys.exit(1)
+
+    print("")
+    print("Moving QM Files to Assets")
+    print("")
+
+    langDir = os.path.join("nw", "assets", "i18n")
+    for langFile in os.listdir("i18n"):
+        langPath = os.path.join("i18n", langFile)
+        if not os.path.isfile(langPath):
+            continue
+
+        if langFile.endswith(".qm"):
+            destPath = os.path.join(langDir, langFile)
+            os.rename(langPath, destPath)
+            print("Moved: %s -> %s" % (langPath, destPath))
+
+    print("")
+
+    return
 
 ##
 #  Qt Linguist TS Builder (qtlupdate)
@@ -230,11 +255,21 @@ def buildQtI18n():
 def buildQtI18nTS():
     """Build the lang.ts files for Qt Linguist.
     """
+    print("")
+    print("Building Qt Translation Files")
+    print("=============================")
+    print("")
+
     try:
         subprocess.call(["pylupdate5", "-verbose", "-noobsolete", "novelWriter.pro"])
     except Exception as e:
-        print("QtI18n Release Error:")
+        print("PyQt5 Linguist tools seem to be missing")
         print(str(e))
+        sys.exit(1)
+
+    print("")
+
+    return
 
 ##
 #  Sample Project ZIP File Builder (sample)
@@ -338,6 +373,7 @@ def makeMinimalPackage(targetOS):
     with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=9) as zipObj:
 
         if targetOS != OS_WIN:
+            # Not needed for Windows as the icons are in nw/assets/icons
             for nRoot, _, nFiles in os.walk("setup"):
                 print("Adding Folder: %s [%d files]" % (nRoot, len(nFiles)))
                 for aFile in nFiles:
@@ -355,15 +391,6 @@ def makeMinimalPackage(targetOS):
                     continue
                 zipObj.write(os.path.join(nRoot, aFile))
 
-        for aFile in os.listdir("i18n"):
-            i18File = os.path.join("i18n", aFile)
-            if not os.path.isfile(i18File):
-                continue
-
-            if i18File.endswith((".json", ".qm")):
-                zipObj.write(i18File)
-                print("Adding File: %s" % i18File)
-
         if targetOS == OS_WIN:
             zipObj.write("novelWriter.py", "novelWriter.pyw")
             print("Adding File: novelWriter.pyw")
@@ -376,7 +403,6 @@ def makeMinimalPackage(targetOS):
             print("Adding File: novelWriter.py")
 
         for aFile in rootFiles:
-            assert os.path.isfile(aFile)
             print("Adding File: %s" % aFile)
             zipObj.write(aFile)
 

@@ -452,11 +452,6 @@
         <translation>HTML Simples</translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="998"/>
-        <source>Unknown format</source>
-        <translation>Formato desconhecido</translation>
-    </message>
-    <message>
         <location filename="../nw/tools/build.py" line="450"/>
         <source>novelWriter HTML (.htm)</source>
         <translation>HTML do novelWriter (.htm)</translation>
@@ -592,17 +587,17 @@
         <translation>Fechar</translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="860"/>
+        <location filename="../nw/tools/build.py" line="858"/>
         <source>Save Document As</source>
         <translation>Salvar Documento Como</translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="1002"/>
+        <location filename="../nw/tools/build.py" line="1001"/>
         <source>{0} file successfully written to:</source>
         <translation>Arquivo {0} escrito com sucesso para:</translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="1009"/>
+        <location filename="../nw/tools/build.py" line="1008"/>
         <source>Failed to write {0} file. {1}</source>
         <translation>Falhou para escrever o arquivo {0}. {1}</translation>
     </message>
@@ -780,17 +775,17 @@
 <context>
     <name>GuiBuildNovelDocView</name>
     <message>
-        <location filename="../nw/tools/build.py" line="1358"/>
+        <location filename="../nw/tools/build.py" line="1357"/>
         <source>Unknown</source>
         <translation>Desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="1209"/>
+        <location filename="../nw/tools/build.py" line="1208"/>
         <source>This area will show the content of the document to be exported or printed. Press the &quot;Build Preview&quot; button to generate content.</source>
         <translation>Esta área vai mostrar o conteúdo do documento a ser exportado ou impresso. Clique no botão &quot;Construir Prévia&quot; para gerar o conteúdo.</translation>
     </message>
     <message>
-        <location filename="../nw/tools/build.py" line="1360"/>
+        <location filename="../nw/tools/build.py" line="1359"/>
         <source>&lt;b&gt;Build Time:&lt;/b&gt; {0}</source>
         <translation>&lt;b&gt;Tempo de Construção:&lt;/b&gt; {0}</translation>
     </message>
@@ -798,22 +793,22 @@
 <context>
     <name>GuiDocEditFooter</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2616"/>
+        <location filename="../nw/gui/doceditor.py" line="2630"/>
         <source>Line: {0} ({1})</source>
         <translation>Linha: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2632"/>
+        <location filename="../nw/gui/doceditor.py" line="2646"/>
         <source>Words: {0} ({1})</source>
         <translation>Palavras: {0} ({1})</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2475"/>
+        <location filename="../nw/gui/doceditor.py" line="2489"/>
         <source>Status</source>
         <translation>Estado</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2637"/>
+        <location filename="../nw/gui/doceditor.py" line="2651"/>
         <source>Document size is {0} bytes</source>
         <translation>O tamanho do documento é {0} bytes</translation>
     </message>
@@ -821,22 +816,22 @@
 <context>
     <name>GuiDocEditHeader</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2267"/>
+        <location filename="../nw/gui/doceditor.py" line="2281"/>
         <source>Edit document meta</source>
         <translation>Editar os meta-dados do documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2278"/>
+        <location filename="../nw/gui/doceditor.py" line="2292"/>
         <source>Search document</source>
         <translation>Procurar no documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2289"/>
+        <location filename="../nw/gui/doceditor.py" line="2303"/>
         <source>Toggle Focus Mode</source>
         <translation>Alternar o &quot;Modo Foco&quot;</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="2300"/>
+        <location filename="../nw/gui/doceditor.py" line="2314"/>
         <source>Close the document</source>
         <translation>Fechar o documento</translation>
     </message>
@@ -844,97 +839,97 @@
 <context>
     <name>GuiDocEditSearch</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1895"/>
+        <location filename="../nw/gui/doceditor.py" line="1909"/>
         <source>Search</source>
         <translation>Pesquisa</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1886"/>
+        <location filename="../nw/gui/doceditor.py" line="1900"/>
         <source>Replace</source>
         <translation>Substituir</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1899"/>
+        <location filename="../nw/gui/doceditor.py" line="1913"/>
         <source>Case Sensitive</source>
         <translation>Diferenciar Maiúsculas e Minúsculas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1900"/>
+        <location filename="../nw/gui/doceditor.py" line="1914"/>
         <source>Match case</source>
         <translation>Diferencia Maiúsculas e Minúsculas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1907"/>
+        <location filename="../nw/gui/doceditor.py" line="1921"/>
         <source>Whole Words Only</source>
         <translation>Apenas Palavras Inteiras</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1908"/>
+        <location filename="../nw/gui/doceditor.py" line="1922"/>
         <source>Match whole words</source>
         <translation>Encontra apenas palavras inteiras</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1915"/>
+        <location filename="../nw/gui/doceditor.py" line="1929"/>
         <source>RegEx Mode</source>
         <translation>Expressão Regular</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1923"/>
+        <location filename="../nw/gui/doceditor.py" line="1937"/>
         <source>Loop Search</source>
         <translation>Pesquisa do Início</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1924"/>
+        <location filename="../nw/gui/doceditor.py" line="1938"/>
         <source>Loop the search when reaching the end</source>
         <translation>Pesquisa do início quando chega no final do documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1931"/>
+        <location filename="../nw/gui/doceditor.py" line="1945"/>
         <source>Search Next File</source>
         <translation>Busca no Próximo Arquivo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1932"/>
+        <location filename="../nw/gui/doceditor.py" line="1946"/>
         <source>Continue searching in the next file</source>
         <translation>Continua a busca no próximo arquivo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1941"/>
+        <location filename="../nw/gui/doceditor.py" line="1955"/>
         <source>Preserve Case</source>
         <translation>Preserva Maiúsculas e Minúsculas</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1942"/>
+        <location filename="../nw/gui/doceditor.py" line="1956"/>
         <source>Preserve case on replace</source>
         <translation>Preserva maiúsculas e minúsculas ao substituir</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1951"/>
+        <location filename="../nw/gui/doceditor.py" line="1965"/>
         <source>Close Search</source>
         <translation>Fechar a Busca</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1964"/>
+        <location filename="../nw/gui/doceditor.py" line="1978"/>
         <source>Show/hide the replace text box</source>
         <translation>Mostrar/Ocultar a caixa substituição</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1970"/>
+        <location filename="../nw/gui/doceditor.py" line="1984"/>
         <source>Find in current document</source>
         <translation>Encontrar no documento atual</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1975"/>
+        <location filename="../nw/gui/doceditor.py" line="1989"/>
         <source>Find and replace in current document</source>
         <translation>Encontrar e substituir no documento atual</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1952"/>
+        <location filename="../nw/gui/doceditor.py" line="1966"/>
         <source>Close the search box [{0}]</source>
         <translation>Fechar a caixa de busca [{0}]</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1916"/>
+        <location filename="../nw/gui/doceditor.py" line="1930"/>
         <source>Search using regular expressions</source>
         <translation>Busca usando expressões regulares</translation>
     </message>
@@ -942,99 +937,104 @@
 <context>
     <name>GuiDocEditor</name>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="680"/>
+        <location filename="../nw/gui/doceditor.py" line="694"/>
         <source>Spell check complete</source>
         <translation>Verificação ortográfica completa</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1073"/>
+        <location filename="../nw/gui/doceditor.py" line="1087"/>
         <source>No Suggestions</source>
         <translation>Sem Sugestões</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="308"/>
+        <location filename="../nw/gui/doceditor.py" line="313"/>
         <source>The document you are trying to open is too big. The document size is {0} MB. The maximum size allowed is {1} MB.</source>
         <translation>O documento que você está tentando abrir é muito grande. O tamanho do documento é {0} MB. O tamanho máximo permitido é {1} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="407"/>
+        <location filename="../nw/gui/doceditor.py" line="411"/>
         <source>The text you are trying to add is too big. The text size is {0} MB. The maximum size allowed is {1} MB.</source>
         <translation>O texto que você está tentando adicionar é muito grande. O tamanho do texto é {0} MB. O tamanho máximo permitido é {1} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="774"/>
+        <location filename="../nw/gui/doceditor.py" line="788"/>
         <source>File Location</source>
         <translation>Localização do Arquivo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1002"/>
+        <location filename="../nw/gui/doceditor.py" line="1016"/>
         <source>Follow Tag</source>
         <translation>Seguir Etiqueta</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1008"/>
+        <location filename="../nw/gui/doceditor.py" line="1022"/>
         <source>Cut</source>
         <translation>Recortar</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1012"/>
+        <location filename="../nw/gui/doceditor.py" line="1026"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1016"/>
+        <location filename="../nw/gui/doceditor.py" line="1030"/>
         <source>Paste</source>
         <translation>Colar</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1025"/>
+        <location filename="../nw/gui/doceditor.py" line="1039"/>
         <source>Select All</source>
         <translation>Selecionar Tudo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1029"/>
+        <location filename="../nw/gui/doceditor.py" line="1043"/>
         <source>Select Word</source>
         <translation>Selecionar Palavra</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1035"/>
+        <location filename="../nw/gui/doceditor.py" line="1049"/>
         <source>Select Paragraph</source>
         <translation>Selecionar Parágrafo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1061"/>
+        <location filename="../nw/gui/doceditor.py" line="1075"/>
         <source>Spelling Suggestion(s)</source>
         <translation>Sugestão de Ortografia</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1079"/>
+        <location filename="../nw/gui/doceditor.py" line="1093"/>
         <source>Add Word to Dictionary</source>
         <translation>Adicionar Palavra ao Dicionário</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="1507"/>
+        <location filename="../nw/gui/doceditor.py" line="1521"/>
         <source>Please select some text before calling replace quotes.</source>
         <translation>Por favor, selecione algum texto antes de invocar a substituição de aspas.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="774"/>
+        <location filename="../nw/gui/doceditor.py" line="788"/>
         <source>The currently open file is saved in:</source>
         <translation>O arquivo aberto atualmente está salvo em:</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="964"/>
+        <location filename="../nw/gui/doceditor.py" line="978"/>
         <source>The document has grown too big and you cannot add more text to it. The maximum size of a single novelWriter document is {0} MB.</source>
         <translation>O tamanho do documento aumentou muito e você não pode adicionar mais texto nele. O tamanho máximo de um único documento do novelWriter é {0} MB.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="382"/>
+        <location filename="../nw/gui/doceditor.py" line="386"/>
         <source>Opened Document: {0}</source>
         <translation>Documento Aberto: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/gui/doceditor.py" line="467"/>
+        <location filename="../nw/gui/doceditor.py" line="482"/>
         <source>Saved Document: {0}</source>
         <translation>Documento Salvo: {0}</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/doceditor.py" line="458"/>
+        <source>Could not save document.</source>
+        <translation>Não foi possível salvar o documento.</translation>
     </message>
 </context>
 <context>
@@ -1060,19 +1060,29 @@
         <translation>Nenhum documento-fonte foi encontrado. Nada para fazer.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docmerge.py" line="118"/>
+        <location filename="../nw/dialogs/docmerge.py" line="123"/>
         <source>No source document selected. Nothing to do.</source>
         <translation>Nenhum documento de origem selecionado. Nada a ser feito.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docmerge.py" line="125"/>
+        <location filename="../nw/dialogs/docmerge.py" line="130"/>
         <source>Could not parse source document.</source>
         <translation>Não foi possível interpretar o documento.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docmerge.py" line="168"/>
+        <location filename="../nw/dialogs/docmerge.py" line="177"/>
         <source>Element selected in the project tree must be a folder.</source>
         <translation>O elemento selecionado na árvore do projeto deve ser um diretório.</translation>
+    </message>
+    <message>
+        <location filename="../nw/dialogs/docmerge.py" line="116"/>
+        <source>Failed to open document file.</source>
+        <translation>Houve uma falha ao abrir o arquivo do documento.</translation>
+    </message>
+    <message>
+        <location filename="../nw/dialogs/docmerge.py" line="141"/>
+        <source>Could not save document.</source>
+        <translation>Não foi possível salvar o documento.</translation>
     </message>
 </context>
 <context>
@@ -1108,7 +1118,7 @@
         <translation>Dividir até os cabeçalhos de nível 4 (Seção)</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="170"/>
+        <location filename="../nw/dialogs/docsplit.py" line="177"/>
         <source>Split Document</source>
         <translation>Divisão de Documento</translation>
     </message>
@@ -1123,29 +1133,39 @@
         <translation>Não foi possível interpretar o documento.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="153"/>
+        <location filename="../nw/dialogs/docsplit.py" line="160"/>
         <source>No headers found. Nothing to do.</source>
         <translation>Nenhum cabeçalho foi encontrado. Nada para fazer.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="161"/>
+        <location filename="../nw/dialogs/docsplit.py" line="168"/>
         <source>Cannot add new folder for the document split. Maximum folder depth has been reached. Please move the file to another level in the project tree.</source>
         <translation>Não é possível adicionar um novo diretório para a divisão do documento. A profundidade máxima dos diretórios foi alcançada. Por favor mova o arquivo para outro nível na árvore do projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="170"/>
+        <location filename="../nw/dialogs/docsplit.py" line="177"/>
         <source>Continue with the splitting process?</source>
         <translation>Continuar com o processo de divisão?</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="256"/>
+        <location filename="../nw/dialogs/docsplit.py" line="267"/>
         <source>Element selected in the project tree must be a file.</source>
         <translation>O elemento selecionado na árvore do projeto deve ser um arquivo.</translation>
     </message>
     <message>
-        <location filename="../nw/dialogs/docsplit.py" line="170"/>
+        <location filename="../nw/dialogs/docsplit.py" line="177"/>
         <source>The document will be split into {0} file(s) in a new folder. The original document will remain intact.</source>
         <translation>O documento será dividio em {0} arquivo(s) em um novo diretório. O documento original será mantido intacto.</translation>
+    </message>
+    <message>
+        <location filename="../nw/dialogs/docsplit.py" line="135"/>
+        <source>Failed to open document file.</source>
+        <translation>Houve uma falha ao abrir o arquivo do documento.</translation>
+    </message>
+    <message>
+        <location filename="../nw/dialogs/docsplit.py" line="230"/>
+        <source>Could not save document.</source>
+        <translation>Não foi possível salvar o documento.</translation>
     </message>
 </context>
 <context>
@@ -3910,12 +3930,12 @@
         <translation>Esvaziar a Lixeira</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="539"/>
+        <location filename="../nw/gui/projtree.py" line="544"/>
         <source>Delete File</source>
         <translation>Remover Arquivo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="875"/>
+        <location filename="../nw/gui/projtree.py" line="880"/>
         <source>The item cannot be moved to that location.</source>
         <translation>O item não pode ser movido para este local.</translation>
     </message>
@@ -3980,17 +4000,17 @@
         <translation>Permanentemente remover o arquivo &apos;{0}&apos;?</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="539"/>
+        <location filename="../nw/gui/projtree.py" line="544"/>
         <source>Move file &apos;{0}&apos; to Trash?</source>
         <translation>Mover o arquivo &apos;{0}&apos; para a Lixeira?</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="572"/>
+        <location filename="../nw/gui/projtree.py" line="577"/>
         <source>Cannot delete folder. It is not empty. Recursive deletion is not supported. Please delete the content first.</source>
         <translation>Não foi possível remover o diretório. O diretório não está vazio. Exclusão recursiva não é suportada. Por favor remova todo o conteúdo primeiro.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="588"/>
+        <location filename="../nw/gui/projtree.py" line="593"/>
         <source>Cannot delete root folder. It is not empty. Recursive deletion is not supported. Please delete the content first.</source>
         <translation>Não foi possível remover o diretório-raiz. O diretório não está vazio. Exclusão recursiva não é suportada. Por favor remova todo o conteúdo primeiro.</translation>
     </message>
@@ -4000,60 +4020,65 @@
         <translation>Não foi possível adicionar novos arquivos ou diretórios à Lixeira.</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="972"/>
+        <location filename="../nw/gui/projtree.py" line="977"/>
         <source>There is nowhere to add item with name &apos;{0}&apos;.</source>
         <translation>Não há lugar para adicionar o item com o nome &apos;{0}&apos;.</translation>
+    </message>
+    <message>
+        <location filename="../nw/gui/projtree.py" line="532"/>
+        <source>Could not delete document file.</source>
+        <translation>Não foi possível remover o arquivo do documento.</translation>
     </message>
 </context>
 <context>
     <name>GuiProjectTreeMenu</name>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1094"/>
+        <location filename="../nw/gui/projtree.py" line="1099"/>
         <source>Edit Project Item</source>
         <translation>Editar Item do Projeto</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1098"/>
+        <location filename="../nw/gui/projtree.py" line="1103"/>
         <source>Open Document</source>
         <translation>Abrir Documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1102"/>
+        <location filename="../nw/gui/projtree.py" line="1107"/>
         <source>View Document</source>
         <translation>Ver Documento</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1106"/>
+        <location filename="../nw/gui/projtree.py" line="1111"/>
         <source>Toggle Included Flag</source>
         <translation>Alternar Opção de Inclusão</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1110"/>
+        <location filename="../nw/gui/projtree.py" line="1115"/>
         <source>New File</source>
         <translation>Novo Arquivo</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1114"/>
+        <location filename="../nw/gui/projtree.py" line="1119"/>
         <source>New Folder</source>
         <translation>Novo Diretório</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1118"/>
+        <location filename="../nw/gui/projtree.py" line="1123"/>
         <source>Delete Item</source>
         <translation>Remover Item</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1122"/>
+        <location filename="../nw/gui/projtree.py" line="1127"/>
         <source>Empty Trash</source>
         <translation>Esvaziar a Lixeira</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1126"/>
+        <location filename="../nw/gui/projtree.py" line="1131"/>
         <source>Move Item Up</source>
         <translation>Mover Item Acima</translation>
     </message>
     <message>
-        <location filename="../nw/gui/projtree.py" line="1130"/>
+        <location filename="../nw/gui/projtree.py" line="1135"/>
         <source>Move Item Down</source>
         <translation>Mover Item Abaixo</translation>
     </message>
@@ -4243,24 +4268,6 @@
     </message>
 </context>
 <context>
-    <name>NWDoc</name>
-    <message>
-        <location filename="../nw/core/document.py" line="118"/>
-        <source>Failed to open document file.</source>
-        <translation>Houve uma falha ao abrir o arquivo do documento.</translation>
-    </message>
-    <message>
-        <location filename="../nw/core/document.py" line="162"/>
-        <source>Could not save document.</source>
-        <translation>Não foi possível salvar o documento.</translation>
-    </message>
-    <message>
-        <location filename="../nw/core/document.py" line="192"/>
-        <source>Could not delete document file.</source>
-        <translation>Não foi possível remover o arquivo do documento.</translation>
-    </message>
-</context>
-<context>
     <name>NWProject</name>
     <message>
         <location filename="../nw/core/project.py" line="166"/>
@@ -4308,232 +4315,232 @@
         <translation>Novo Projeto</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="305"/>
+        <location filename="../nw/core/project.py" line="299"/>
         <source>Novel</source>
         <translation>Livro</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="276"/>
+        <location filename="../nw/core/project.py" line="273"/>
         <source>Plot</source>
         <translation>Enredo</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="277"/>
+        <location filename="../nw/core/project.py" line="274"/>
         <source>Characters</source>
         <translation>Personagens</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="278"/>
+        <location filename="../nw/core/project.py" line="275"/>
         <source>World</source>
         <translation>Mundo</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="311"/>
+        <location filename="../nw/core/project.py" line="305"/>
         <source>Title Page</source>
         <translation>Página de Título</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="292"/>
+        <location filename="../nw/core/project.py" line="288"/>
         <source>New Chapter</source>
         <translation>Novo Capítulo</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="296"/>
+        <location filename="../nw/core/project.py" line="291"/>
         <source>New Scene</source>
         <translation>Nova Cena</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="435"/>
+        <location filename="../nw/core/project.py" line="425"/>
         <source>Failed to parse project xml.</source>
         <translation>Houve uma falha ao interpretar o conteúdo XML do projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="429"/>
+        <location filename="../nw/core/project.py" line="419"/>
         <source>Attempting to open backup project file instead.</source>
         <translation>Tentando abrir a cópia de segurança do projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="449"/>
+        <location filename="../nw/core/project.py" line="439"/>
         <source>Unknown</source>
         <translation>Desconhecido</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="458"/>
+        <location filename="../nw/core/project.py" line="448"/>
         <source>Project file does not appear to be a novelWriterXML file.</source>
         <translation>O arquivo do projeto não parece ser um arquivo XML do novelWriter.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="492"/>
+        <location filename="../nw/core/project.py" line="482"/>
         <source>Version Conflict</source>
         <translation>Conflito de Versão</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="592"/>
+        <location filename="../nw/core/project.py" line="582"/>
         <source>Opened Project: {0}</source>
         <translation>Projeto Aberto: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="613"/>
+        <location filename="../nw/core/project.py" line="603"/>
         <source>Project path not set, cannot save project.</source>
         <translation>O caminho do projeto não foi definido, não é possível salvar o projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="694"/>
+        <location filename="../nw/core/project.py" line="684"/>
         <source>Failed to save project.</source>
         <translation>Houve uma falha ao salvar o projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="713"/>
+        <location filename="../nw/core/project.py" line="703"/>
         <source>Saved Project: {0}</source>
         <translation>Projeto Salvo: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="765"/>
+        <location filename="../nw/core/project.py" line="755"/>
         <source>Backing up project ...</source>
         <translation>Realizando uma cópia de segurança do projeto...</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="768"/>
+        <location filename="../nw/core/project.py" line="758"/>
         <source>Cannot backup project because no backup path is set. Please set a valid backup location in Tools &gt; Preferences.</source>
         <translation>Não foi possível realizar uma cópia de segurança do projeto porquê o caminho das cópias de segurança não foi definido. Por favor, defina um caminho válido para as cópias de segurança em Ferramentas &gt; Preferências.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="777"/>
+        <location filename="../nw/core/project.py" line="767"/>
         <source>Cannot backup project because no project name is set. Please set a Working Title in Project &gt; Project Settings.</source>
         <translation>Não foi possível realizar a cópia de segurança do projeto porque o nome do projeto não está definido. Por favor defina o Nome do Projeto em Projeto &gt; Configurações do Projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="786"/>
+        <location filename="../nw/core/project.py" line="776"/>
         <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Tools &gt; Preferences.</source>
         <translation>Não foi possível realizar a cópia de segurança do projeto porque o caminho das cópias de segurança não exite. Por favor, defina um cainho válido para as cópias de segurança em Ferramentas &gt; Preferências.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="801"/>
+        <location filename="../nw/core/project.py" line="791"/>
         <source>Could not create backup folder.</source>
         <translation>Não foi possível ler o diretório de cópias de segurança.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="808"/>
+        <location filename="../nw/core/project.py" line="798"/>
         <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Tools &gt; Preferences.</source>
         <translation>Não foi possível realizar a cópia de segurança do projeto porque o caminho das cópias de segurança está em um caminho dentro do diretório do projeto. Por favor, escolha um caminho diferente para as cópias de segurança em Ferramentas&gt; Preferências.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="835"/>
+        <location filename="../nw/core/project.py" line="825"/>
         <source>Could not write backup archive.</source>
         <translation>Não foi possível escrever o arquivo da cópia de segurança.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="889"/>
+        <location filename="../nw/core/project.py" line="879"/>
         <source>Failed to create a new example project.</source>
         <translation>Houve uma falha ao criar um novo projeto de exemplo.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="894"/>
+        <location filename="../nw/core/project.py" line="884"/>
         <source>Failed to create a new example project. Could not find the necessary files. They seem to be missing from this installation.</source>
         <translation>Houve uma falha ao criar um novo projeto de exemplo. Não foi possível encontrar os arquivos necessários. Eles parecem estar faltando nesta instalação.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="929"/>
+        <location filename="../nw/core/project.py" line="919"/>
         <source>Could not create new project folder.</source>
         <translation>Não foi possível criar o diretório do novo projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="936"/>
+        <location filename="../nw/core/project.py" line="926"/>
         <source>New project folder is not empty. Each project requires a dedicated project folder.</source>
         <translation>O diretório do novo projeto não está vazio. Cada projeto requer um diretório dedicado.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="988"/>
+        <location filename="../nw/core/project.py" line="978"/>
         <source>You must set a valid backup path in Preferences to use the automatic project backup feature.</source>
         <translation>Deve ser definido um caminho válido para as cópias de segurança nas preferências para usar a funcionalidade de cópias de segurança automáticas.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="997"/>
+        <location filename="../nw/core/project.py" line="987"/>
         <source>You must set a valid project name in Project Settings to use the automatic project backup feature.</source>
         <translation>Deve ser definido um nome de projeto válido nas preferências do projeto para usar a funcionalidade de cópias de segurança automáticas.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1399"/>
+        <location filename="../nw/core/project.py" line="1388"/>
         <source>Recovered</source>
         <translation>Recuperado</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1443"/>
+        <location filename="../nw/core/project.py" line="1434"/>
         <source>One or more orphaned files could not be added back into the project. Make sure at least a Novel root folder exists.</source>
         <translation>Um ou mais arquivos-órfãos não puderam ser readicionados ao projeto. Verifique que pelo menos um diretório-raiz de Livro exista.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1527"/>
+        <location filename="../nw/core/project.py" line="1518"/>
         <source>Could not move: {0}</source>
         <translation>Não foi possível mover: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1551"/>
+        <location filename="../nw/core/project.py" line="1542"/>
         <source>Could not delete: {0}</source>
         <translation>Não foi possível remover: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1563"/>
+        <location filename="../nw/core/project.py" line="1554"/>
         <source>Could not make folder: {0}</source>
         <translation>Não foi possível criar o diretório: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="326"/>
+        <location filename="../nw/core/project.py" line="319"/>
         <source>Chapter {0}</source>
         <translation>Capítulo {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="351"/>
+        <location filename="../nw/core/project.py" line="342"/>
         <source>Scene {0}</source>
         <translation>Cena {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="375"/>
+        <location filename="../nw/core/project.py" line="365"/>
         <source>File not found: {0}</source>
         <translation>Arquivo não encontrado: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="817"/>
+        <location filename="../nw/core/project.py" line="807"/>
         <source>Backup from {0}</source>
         <translation>Cópia de segurança de {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="826"/>
+        <location filename="../nw/core/project.py" line="816"/>
         <source>Backup archive file written to: {0}</source>
         <translation>Arquivo da cópia de segurança escrito em: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="841"/>
+        <location filename="../nw/core/project.py" line="831"/>
         <source>Project backed up to &apos;{0}&apos;</source>
         <translation>Cópia de segurança realizada para &apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1387"/>
+        <location filename="../nw/core/project.py" line="1377"/>
         <source>Found {0} orphaned file(s) in project folder.</source>
         <translation>Foram encontrados {0} arquivos-órfãos no diretório do projeto.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1416"/>
+        <location filename="../nw/core/project.py" line="1407"/>
         <source>Recovered File {0}</source>
         <translation>Arquivo Recuperado {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1504"/>
+        <location filename="../nw/core/project.py" line="1495"/>
         <source>Not a folder: {0}</source>
         <translation>Não é um diretório: {0}</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="478"/>
+        <location filename="../nw/core/project.py" line="468"/>
         <source>Unknown or unsupported novelWriter project file format. The project cannot be opened by this version of novelWriter. The file was saved with novelWriter version {0}.</source>
         <translation>Format de arquivo de projeto do novelWriter desconhecido ou não-suportado. O projeto não pode ser aberto por essa versão do novelWriter. O arquivo foi salvo com a versão {0} do novelWriter.</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1411"/>
+        <location filename="../nw/core/project.py" line="1402"/>
         <source>[{0}] {1}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1574"/>
+        <location filename="../nw/core/project.py" line="1565"/>
         <source>Could not move item {0} to {1}.</source>
         <translation>Não foi possível mover o item {0} para {1}.</translation>
     </message>
@@ -4543,7 +4550,7 @@
         <translation>Por</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="1141"/>
+        <location filename="../nw/core/project.py" line="1131"/>
         <source>and</source>
         <translation>e</translation>
     </message>
@@ -4553,7 +4560,7 @@
         <translation>Capítulo</translation>
     </message>
     <message>
-        <location filename="../nw/core/project.py" line="492"/>
+        <location filename="../nw/core/project.py" line="482"/>
         <source>This project was saved by a newer version of novelWriter, version {0}. This is version {1}. If you continue to open the project, some attributes and settings may not be preserved, but the overall project should be fine. Continue opening the project?</source>
         <translation>O projeto foi salvo por uma versão mais nova do novelWriter, versão {0}. Esta é a versão {1}. Caso deseje continuar a abrir o projeto, alguns atributos e configurações podem não ser preservados, mas o projeto deve funcionar corretamente. Continuar a abrir o projeto?</translation>
     </message>

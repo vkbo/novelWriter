@@ -25,7 +25,7 @@ import pytest
 
 from PyQt5.QtWidgets import qApp
 
-from dummy import causeException
+from mock import causeException
 
 from nw.error import NWErrorMessage, exceptionHandler
 

@@ -1,4 +1,4 @@
-name: Windows (3.9)
+name: Windows
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main, testing, dev ]
 
 jobs:
-  testWin39:
+  testWin:
     runs-on: windows-latest
     steps:
       - name: Python Setup

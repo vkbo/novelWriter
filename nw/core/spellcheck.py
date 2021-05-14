@@ -47,17 +47,17 @@ class NWSpellCheck():
         return
 
     def setLanguage(self, theLang, projectDict=None):
-        """Dummy function.
+        """Default function.
         """
         return
 
     def checkWord(self, theWord):
-        """Dummy function.
+        """Default function.
         """
         return True
 
     def suggestWords(self, theWord):
-        """Dummy function.
+        """Default function.
         """
         return []
 
@@ -78,12 +78,12 @@ class NWSpellCheck():
         return False
 
     def listDictionaries(self):
-        """Dummy function.
+        """Default function.
         """
         return []
 
     def describeDict(self):
-        """Dummy function.
+        """Default function.
         """
         return "", ""
 
@@ -136,7 +136,7 @@ class NWSpellEnchant(NWSpellCheck):
 
     def setLanguage(self, theLang, projectDict=None):
         """Load a dictionary for the language specified in the config.
-        If that fails, we load a dummy dictionary so that lookups don't
+        If that fails, we load a mock dictionary so that lookups don't
         crash.
         """
         try:

@@ -173,7 +173,7 @@ class GuiBuildNovel(QDialog):
         if langIdx != -1:
             self.buildLang.setCurrentIndex(langIdx)
 
-        # Dummy boxes due to QGridView and QLineEdit expand bug
+        # Wrapper boxes due to QGridView and QLineEdit expand bug
         self.boxTitle = QHBoxLayout()
         self.boxTitle.addWidget(self.fmtTitle)
         self.boxChapter = QHBoxLayout()
@@ -245,7 +245,7 @@ class GuiBuildNovel(QDialog):
             self.optState.getFloat("GuiBuildNovel", "lineHeight", 1.15)
         )
 
-        # Dummy box due to QGridView and QLineEdit expand bug
+        # Wrapper box due to QGridView and QLineEdit expand bug
         self.boxFont = QHBoxLayout()
         self.boxFont.addWidget(self.textFont)
 
@@ -848,25 +848,20 @@ class GuiBuildNovel(QDialog):
         # Generate File Name
         # ==================
 
-        if fileExt:
+        cleanName = makeFileNameSafe(self.theProject.projName)
+        fileName  = "%s.%s" % (cleanName, fileExt)
+        saveDir   = self.mainConf.lastPath
+        if not os.path.isdir(saveDir):
+            saveDir = os.path.expanduser("~")
 
-            cleanName = makeFileNameSafe(self.theProject.projName)
-            fileName  = "%s.%s" % (cleanName, fileExt)
-            saveDir   = self.mainConf.lastPath
-            savePath  = os.path.join(saveDir, fileName)
-            if not os.path.isdir(saveDir):
-                saveDir = self.mainConf.homePath
-
-            savePath, _ = QFileDialog.getSaveFileName(
-                self, self.tr("Save Document As"), savePath
-            )
-            if not savePath:
-                return False
-
-            self.mainConf.setLastPath(savePath)
-
-        else:
+        savePath  = os.path.join(saveDir, fileName)
+        savePath, _ = QFileDialog.getSaveFileName(
+            self, self.tr("Save Document As"), savePath
+        )
+        if not savePath:
             return False
+
+        self.mainConf.setLastPath(savePath)
 
         # Build and Write
         # ===============
@@ -995,9 +990,13 @@ class GuiBuildNovel(QDialog):
                 errMsg - str(e)
 
         else:
-            errMsg = self.tr("Unknown format")
+            # If the if statements above and here match, it should not
+            # be possible to reach this else statement.
+            return False # pragma: no cover
 
-        # Report to user
+        # Report to User
+        # ==============
+
         if wSuccess:
             self.theParent.makeAlert(
                 "%s<br>%s" % (

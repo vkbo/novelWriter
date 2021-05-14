@@ -185,7 +185,6 @@ class GuiDocViewer(QTextBrowser):
             logger.error("Failed to generate preview for document with handle '%s'" % tHandle)
             nw.logException()
             self.setText(self.tr("An error occurred while generating the preview."))
-            return False
 
         # Refresh the tab stops
         if self.mainConf.verQtValue >= 51000:

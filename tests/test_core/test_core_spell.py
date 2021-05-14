@@ -24,7 +24,7 @@ import os
 import sys
 import pytest
 
-from dummy import causeOSError
+from mock import causeOSError
 from tools import readFile, writeFile
 
 from nw.core.spellcheck import NWSpellCheck, NWSpellEnchant, NWSpellSimple
@@ -38,7 +38,7 @@ def testCoreSpell_Super(monkeypatch, tmpDir):
 
     spChk = NWSpellCheck()
 
-    # Check that dummy functions return results that reflects that spell
+    # Check that default functions return results that reflects that spell
     # checking is effectively disabled
     assert spChk.setLanguage("", "") is None
     assert spChk.checkWord("")
@@ -47,7 +47,7 @@ def testCoreSpell_Super(monkeypatch, tmpDir):
     assert spChk.describeDict() == ("", "")
 
     # Add a word to the user's dictionary
-    assert spChk._readProjectDictionary("dummy") is False
+    assert spChk._readProjectDictionary("stuff") is False
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         assert spChk._readProjectDictionary(wList) is False
@@ -77,7 +77,7 @@ def testCoreSpell_Enchant(monkeypatch, tmpDir):
     wList = os.path.join(tmpDir, "wordlist.txt")
     writeFile(wList, "a_word\nb_word\nc_word\n")
 
-    # Block the enchant package (and trigger the dummy class)
+    # Block the enchant package (and trigger the default class)
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "enchant", None)
         spChk = NWSpellEnchant()

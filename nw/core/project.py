@@ -270,9 +270,6 @@ class NWProject():
         if self.bookAuthors:
             titlePage = "%s%s %s\n" % (titlePage, self.tr("By"), self.getAuthors())
 
-        # Document object for writing files
-        aDoc = NWDoc(self)
-
         if popMinimal:
             # Creating a minimal project with a few root folders and a
             # single chapter folder with a single file.
@@ -289,17 +286,14 @@ class NWProject():
             self.projTree.setFileItemLayout(xHandle[5], nwItemLayout.TITLE)
             self.projTree.setFileItemLayout(xHandle[7], nwItemLayout.CHAPTER)
 
-            aDoc.readDocument(xHandle[5])
+            aDoc = NWDoc(self, xHandle[5])
             aDoc.writeDocument(titlePage)
-            aDoc.clearDocument()
 
-            aDoc.readDocument(xHandle[7])
+            aDoc = NWDoc(self, xHandle[7])
             aDoc.writeDocument("## %s\n\n" % self.tr("New Chapter"))
-            aDoc.clearDocument()
 
-            aDoc.readDocument(xHandle[8])
+            aDoc = NWDoc(self, xHandle[8])
             aDoc.writeDocument("### %s\n\n" % self.tr("New Scene"))
-            aDoc.clearDocument()
 
         elif popCustom:
             # Create a project structure based on selected root folders
@@ -316,9 +310,8 @@ class NWProject():
             tHandle = self.newFile(self.tr("Title Page"), nwItemClass.NOVEL, nHandle)
             self.projTree.setFileItemLayout(tHandle, nwItemLayout.TITLE)
 
-            aDoc.readDocument(tHandle)
+            aDoc = NWDoc(self, tHandle)
             aDoc.writeDocument(titlePage)
-            aDoc.clearDocument()
 
             # Create chapters and scenes
             numChapters = projData.get("numChapters", 0)
@@ -336,9 +329,8 @@ class NWProject():
                     cHandle = self.newFile(chTitle, nwItemClass.NOVEL, pHandle)
                     self.projTree.setFileItemLayout(cHandle, nwItemLayout.CHAPTER)
 
-                    aDoc.readDocument(cHandle)
+                    aDoc = NWDoc(self, cHandle)
                     aDoc.writeDocument("## %s\n\n" % chTitle)
-                    aDoc.clearDocument()
 
                     # Create chapter scenes
                     if numScenes > 0:
@@ -346,9 +338,8 @@ class NWProject():
                             scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
                             sHandle = self.newFile(scTitle, nwItemClass.NOVEL, pHandle)
 
-                            aDoc.readDocument(sHandle)
+                            aDoc = NWDoc(self, sHandle)
                             aDoc.writeDocument("### %s\n\n" % scTitle)
-                            aDoc.clearDocument()
 
             # Create scenes (no chapters)
             elif numScenes > 0:
@@ -356,9 +347,8 @@ class NWProject():
                     scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
                     sHandle = self.newFile(scTitle, nwItemClass.NOVEL, nHandle)
 
-                    aDoc.readDocument(sHandle)
+                    aDoc = NWDoc(self, sHandle)
                     aDoc.writeDocument("### %s\n\n" % scTitle)
-                    aDoc.clearDocument()
 
         # Finalise
         if popCustom or popMinimal:
@@ -1403,7 +1393,6 @@ class NWProject():
             return
 
         # Handle orphans
-        aDoc = NWDoc(self)
         nOrph = 0
         noWhere = False
         oPrefix = self.tr("Recovered")
@@ -1414,7 +1403,9 @@ class NWProject():
             oParent = None
             oClass = None
             oLayout = None
-            if aDoc.readDocument(oHandle, isOrphan=True) is not None:
+
+            aDoc = NWDoc(self, oHandle)
+            if aDoc.readDocument(isOrphan=True) is not None:
                 oName, oParent, oClass, oLayout = aDoc.getMeta()
 
             if oName:

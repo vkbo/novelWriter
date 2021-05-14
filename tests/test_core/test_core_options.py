@@ -24,7 +24,7 @@ import os
 import json
 import pytest
 
-from dummy import causeOSError
+from mock import causeOSError
 
 from nw.core import NWProject
 from nw.core.options import OptionState
