@@ -207,7 +207,7 @@ class GuiProjectEditMain(QWidget):
 
         self.spellLang = QComboBox(self)
         self.spellLang.setMaximumWidth(xW)
-        theDict = self.theParent.docEditor.theDict
+        theDict = self.theParent.docEditor.currentDictionary()
         self.spellLang.addItem(self.tr("Default"), "None")
         if theDict is not None:
             for spTag, spProv in theDict.listDictionaries():

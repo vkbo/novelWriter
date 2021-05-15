@@ -119,6 +119,9 @@ class GuiMain(QMainWindow):
         self.projMeta  = GuiOutlineDetails(self)
         self.mainMenu  = GuiMainMenu(self)
 
+        # Signals Between Main Elements
+        self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
+
         # Minor GUI Elements
         self.statusIcons = []
         self.importIcons = []

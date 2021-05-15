@@ -29,7 +29,7 @@ import logging
 
 from time import time
 
-from PyQt5.QtCore import QLocale
+from PyQt5.QtCore import QLocale, pyqtSlot
 from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
@@ -123,7 +123,7 @@ class GuiMainStatus(QStatusBar):
         """Reset all widgets on the status bar to default values.
         """
         self.setRefTime(None)
-        self.setLanguage(None)
+        self.setLanguage(None, "")
         self.setStats(0, 0)
         self.setProjectStatus(None)
         self.setDocumentStatus(None)
@@ -147,7 +147,8 @@ class GuiMainStatus(QStatusBar):
         qApp.processEvents()
         return
 
-    def setLanguage(self, theLanguage, theProvider=""):
+    @pyqtSlot(str, str)
+    def setLanguage(self, theLanguage, theProvider):
         """Set the language code for the spell checker.
         """
         if theLanguage is None:

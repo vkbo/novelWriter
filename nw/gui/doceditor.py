@@ -64,6 +64,9 @@ class GuiDocEditor(QTextEdit):
         Qt.Key_PageUp, Qt.Key_PageDown
     )
 
+    # Custom Signals
+    spellDictionaryChanged = pyqtSignal(str, str)
+
     def __init__(self, theParent):
         QTextEdit.__init__(self, theParent)
 
@@ -84,7 +87,7 @@ class GuiDocEditor(QTextEdit):
         self._docHeaders = []    # Record of headers in the file
 
         self._spellCheck = False # Flag for spell checking enabled
-        self.theDict     = None  # The current spell check dictionary
+        self._theDict    = None  # The current spell check dictionary
         self._nonWord    = "\"'" # Characters to not include in spell checking
 
         # Document Variables
@@ -579,6 +582,11 @@ class GuiDocEditor(QTextEdit):
         """
         return self._qDocument.isEmpty()
 
+    def currentDictionary(self):
+        """Return the current dictionary object.
+        """
+        return self._theDict
+
     ##
     #  Getters
     ##
@@ -670,10 +678,10 @@ class GuiDocEditor(QTextEdit):
         else:
             theLang = self.theProject.projSpell
 
-        self.theDict.setLanguage(theLang, self.theProject.projDict)
-        theTag, theProvider = self.theDict.describeDict()
+        self._theDict.setLanguage(theLang, self.theProject.projDict)
+        _, theProvider = self._theDict.describeDict()
 
-        self.theParent.statusBar.setLanguage(theLang, theProvider)
+        self.spellDictionaryChanged.emit(theLang, theProvider)
 
         if not self._bigDoc:
             self.spellCheckDocument()
@@ -689,7 +697,7 @@ class GuiDocEditor(QTextEdit):
         if theMode is None:
             theMode = not self._spellCheck
 
-        if self.theDict.spellLanguage is None:
+        if self._theDict.spellLanguage is None:
             theMode = False
 
         self._spellCheck = theMode
@@ -987,7 +995,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     ##
-    #  Signals and Slots
+    #  Slots
     ##
 
     @pyqtSlot(int, int, int)
@@ -1092,14 +1100,14 @@ class GuiDocEditor(QTextEdit):
 
         if spellCheck:
             logger.verbose("Looking up '%s' in the dictionary" % theWord)
-            spellCheck &= not self.theDict.checkWord(theWord)
+            spellCheck &= not self._theDict.checkWord(theWord)
 
         if spellCheck:
             mnuContext.addSeparator()
             mnuHead = QAction(self.tr("Spelling Suggestion(s)"), mnuContext)
             mnuContext.addAction(mnuHead)
 
-            theSuggest = self.theDict.suggestWords(theWord)[:15]
+            theSuggest = self._theDict.suggestWords(theWord)[:15]
             if len(theSuggest) > 0:
                 for aWord in theSuggest:
                     mnuWord = QAction("%s %s" % (nwUnicode.U_ENDASH, aWord), mnuContext)
@@ -1144,8 +1152,8 @@ class GuiDocEditor(QTextEdit):
         """
         theWord = theCursor.selectedText().strip().strip(self._nonWord)
         logger.debug("Added '%s' to project dictionary" % theWord)
-        self.theDict.addWord(theWord)
-        self.hLight.setDict(self.theDict)
+        self._theDict.addWord(theWord)
+        self.hLight.setDict(self._theDict)
         self.hLight.rehighlightBlock(theCursor.block())
         return
 
@@ -1816,11 +1824,11 @@ class GuiDocEditor(QTextEdit):
         """
         if self.mainConf.spellTool == nwConst.SP_ENCHANT:
             from nw.core.spellcheck import NWSpellEnchant
-            self.theDict = NWSpellEnchant()
+            self._theDict = NWSpellEnchant()
         else:
-            self.theDict = NWSpellSimple()
+            self._theDict = NWSpellSimple()
 
-        self.hLight.setDict(self.theDict)
+        self.hLight.setDict(self._theDict)
 
         return
 

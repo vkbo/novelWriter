@@ -152,7 +152,7 @@ class NWSpellEnchant(NWSpellCheck):
 
         except Exception:
             logger.error("Failed to load enchant spell checking for language %s" % theLang)
-            self.theDict = NWSpellEnchantDummy()
+            self.theDict = FakeEnchant()
             self.spellLanguage = None
 
         self._readProjectDictionary(projectDict)
@@ -208,7 +208,7 @@ class NWSpellEnchant(NWSpellCheck):
 
 # END Class NWSpellEnchant
 
-class NWSpellEnchantDummy:
+class FakeEnchant:
     """Fallback for when Enchant is selected, but not installed.
     """
     def __init__(self):
@@ -223,7 +223,7 @@ class NWSpellEnchantDummy:
     def add_to_session(self, theWord):
         return
 
-# END Class NWSpellEnchantDummy
+# END Class FakeEnchant
 
 # =============================================================================================== #
 #  Fallback SpellChecking Using difflib
