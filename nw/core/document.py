@@ -32,7 +32,8 @@ import os
 
 from nw.enum import nwItemLayout, nwItemClass
 from nw.common import (
-    isHandle, safeMakeDir, safeFileRead, safeUnlink, formatTimeStamp
+    isHandle, safeMakeDir, safeFileRead, safeUnlink, formatTimeStamp,
+    parseTimeStamp
 )
 
 logger = logging.getLogger(__name__)
@@ -62,7 +63,7 @@ class NWDoc():
     #  Class Methods
     ##
 
-    def readDocument(self, isOrphan=False):
+    def readDocument(self, isOrphan=False, versionSuffix=None):
         """Read a document from set handle, capturing potential file
         system errors and parse meta data. If the document doesn't exist
         on disk, return an empty string. If something went wrong, return
@@ -77,18 +78,24 @@ class NWDoc():
             logger.error("Unknown novelWriter document")
             return None
 
-        docFile = self._docHandle+".nwd"
-        logger.debug("Opening document %s" % docFile)
+        if versionSuffix is None:
+            docFile = "%s.nwd" % self._docHandle
+            docBase = self.theProject.projContent
+        else:
+            docFile = "%s_%s.nwd" % (self._docHandle, versionSuffix)
+            docBase = os.path.join(self.theProject.projVers, self._docHandle)
+            safeMakeDir(docBase)
 
-        docPath = os.path.join(self.theProject.projContent, docFile)
+        docPath = os.path.join(docBase, docFile)
         self._fileLoc = docPath
+
+        logger.debug("Opening document %s" % docFile)
 
         theText = ""
         self._docMeta = {}
         if os.path.isfile(docPath):
             try:
                 with open(docPath, mode="r", encoding="utf8") as inFile:
-
                     # Check the first <= 10 lines for metadata
                     for i in range(10):
                         inLine = inFile.readline()
@@ -209,8 +216,7 @@ class NWDoc():
         return self._theItem
 
     def getMeta(self):
-        """Parses the document meta tag and returns the path and name as
-        a list and a string.
+        """Returns the standard document meta tags.
         """
         theName = self._docMeta.get("name", "")
         theParent = self._docMeta.get("parent", None)
@@ -218,6 +224,14 @@ class NWDoc():
         theLayout = self._docMeta.get("layout", None)
 
         return theName, theParent, theClass, theLayout
+
+    def getVersionMeta(self):
+        """Returns the versioned document meta tags.
+        """
+        sessID = self._docMeta.get("sessionID", "")
+        versTime = self._docMeta.get("versionTime", 0.0)
+        versNote = self._docMeta.get("versionNote", "")
+        return sessID, versTime, versNote
 
     def getError(self):
         """Return the last recorded exception.
@@ -227,6 +241,84 @@ class NWDoc():
     ##
     #  Versioning
     ##
+
+    def listVersions(self):
+        """List all versions of the document in the versions folder.
+        """
+        theList = []
+
+        # Assemble the version folder for the document
+        versionPath = os.path.join(self.theProject.projVers, self._docHandle)
+        if not os.path.isdir(versionPath):
+            return theList
+
+        dataFile = os.path.join(versionPath, "versions.dat")
+        if not os.path.isfile(dataFile):
+            return theList
+
+        try:
+            with open(dataFile, mode="r", encoding="utf-8") as inFIle:
+                for aLine in inFIle.readlines():
+                    aLine = aLine.strip()
+                    if len(aLine) < 32:
+                        continue
+                    versName = aLine[0:11]
+                    versDate = parseTimeStamp(aLine[13:32], 0.0)
+                    versNote = aLine[34:]
+                    theList.append((versName, versDate, versNote))
+
+        except Exception:
+            logger.error("Failed to parse versions file")
+            nw.logException()
+            self.rebuildVersions()
+            return theList
+
+        logger.debug("Found %d version(s) of document %s" % (len(theList), self._docHandle))
+
+        return theList
+
+    def rebuildVersions(self):
+        """Rebuild the versins file.
+        """
+        versionPath = os.path.join(self.theProject.projVers, self._docHandle)
+        dataFile = os.path.join(versionPath, "versions.dat")
+        if os.path.isfile(dataFile):
+            safeUnlink(dataFile)
+
+        versData = ""
+        versCount = 0
+        for aFile in os.listdir(versionPath):
+            docPath = os.path.join(versionPath, aFile)
+
+            # Check the entries, and reject anything that seems wrong
+            if not os.path.isfile(docPath):
+                continue
+            if not aFile.startswith(self._docHandle+"_"):
+                continue
+            if not len(aFile) == 29:
+                continue
+            versSuffix = aFile[14:25]
+            if len(versSuffix) != 11:
+                continue
+            if versSuffix[8] != "_":
+                continue
+
+            docText = self.readDocument(versionSuffix=versSuffix)
+            if docText is None:
+                continue
+
+            _, vT, vN = self.getVersionMeta()
+            versData += "%11s  %19s  %s\n" % (
+                versSuffix, formatTimeStamp(vT), str(vN)
+            )
+            versCount += 1
+
+        with open(dataFile, mode="w", encoding="utf8") as outFile:
+            outFile.write(versData)
+
+        logger.debug("Recreated %d records in %s/versions.dat" % (versCount, self._docHandle))
+
+        return True
 
     def saveSessionVersion(self):
         """Save a backup copy of the current document from the previous
@@ -324,6 +416,7 @@ class NWDoc():
                     return False
 
         return True
+
     ##
     #  Internal Functions
     ##
@@ -352,6 +445,17 @@ class NWDoc():
                     self._docMeta["class"] = nwItemClass[metaBits[0]]
                 if metaBits[1] in nwItemLayout.__members__:
                     self._docMeta["layout"] = nwItemLayout[metaBits[1]]
+
+        elif metaLine.startswith("%%~sess:"):
+            metaVal = metaLine[8:].strip()
+            metaBits = metaVal.split("/")
+            if len(metaBits) == 2:
+                if isHandle(metaBits[0]):
+                    self._docMeta["sessionID"] = metaBits[0]
+                self._docMeta["versionTime"] = parseTimeStamp(metaBits[1], 0.0)
+
+        elif metaLine.startswith("%%~note:"):
+            self._docMeta["versionNote"] = metaLine[8:].strip()
 
         else:
             logger.debug("Ignoring meta data: '%s'" % metaLine.strip())

@@ -78,6 +78,7 @@ class GuiDocEditor(QTextEdit):
 
         self.nwDocument = None
         self.nwItem     = None
+        self.docVers    = []
 
         self.docChanged = False # Flag for changed status of document
         self.spellCheck = False # Flag for spell checking enabled
@@ -329,6 +330,7 @@ class GuiDocEditor(QTextEdit):
 
         # Save session version
         self.nwDocument.saveSessionVersion()
+        self.docVers = self.nwDocument.listVersions()
 
         # Check that the document is not too big for full, initial spell
         # checking. If it is too big, we switch to only check as we type
