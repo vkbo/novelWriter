@@ -49,7 +49,7 @@ from PyQt5.QtWidgets import (
     QFrame
 )
 
-from nw.core import NWDoc, NWVersions, NWSpellSimple, countWords
+from nw.core import NWDoc, NWSpellSimple, countWords
 from nw.enum import nwAlert, nwDocAction, nwDocInsert, nwItemClass
 from nw.common import transferCase
 from nw.constants import nwConst, trConst, nwKeyWords, nwLabels, nwUnicode
@@ -76,7 +76,6 @@ class GuiDocEditor(QTextEdit):
         self.theIndex   = theParent.theIndex
         self.theProject = theParent.theProject
 
-        self.nwVersions = NWVersions(self.theProject)
         self.nwDocument = None
         self.nwItem     = None
 
@@ -168,7 +167,6 @@ class GuiDocEditor(QTextEdit):
         """Clear the current document and reset all document related
         flags and counters.
         """
-        self.nwVersions.clearVersions()
         self.nwDocument = None
         self.setReadOnly(True)
         self.clear()
@@ -329,9 +327,8 @@ class GuiDocEditor(QTextEdit):
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self.hLight.setHandle(tHandle)
 
-        # Handle versions
-        self.nwVersions.setDocument(tHandle)
-        self.nwVersions.saveSessionVersion()
+        # Save session version
+        self.nwDocument.saveSessionVersion()
 
         # Check that the document is not too big for full, initial spell
         # checking. If it is too big, we switch to only check as we type

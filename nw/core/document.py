@@ -24,11 +24,16 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
 import logging
+import shutil
+import time
 import os
 
-from nw.common import isHandle, safeMakeDir, formatTimeStamp
 from nw.enum import nwItemLayout, nwItemClass
+from nw.common import (
+    isHandle, safeMakeDir, safeFileRead, safeUnlink, formatTimeStamp
+)
 
 logger = logging.getLogger(__name__)
 
@@ -219,6 +224,106 @@ class NWDoc():
         """
         return self._docError
 
+    ##
+    #  Versioning
+    ##
+
+    def saveSessionVersion(self):
+        """Save a backup copy of the current document from the previous
+        session. This function should be called before it is possible to
+        edit a document. Only one copy will be saved for any given
+        session.
+        """
+        self.theProject.ensureFolderStructure()
+
+        # Assemble the version folder for the document
+        versionPath = os.path.join(self.theProject.projVers, self._docHandle)
+        if not safeMakeDir(versionPath):
+            return False
+
+        sessID = "ID:" + self.theProject.sessionID
+        prevID = "ID:None"
+
+        dataFile = os.path.join(versionPath, "session.dat")
+        if os.path.isfile(dataFile):
+            prevID = safeFileRead(dataFile, prevID)
+
+        sessFile = os.path.join(versionPath, self._docHandle+"_session.nwd")
+        if os.path.isfile(sessFile):
+            logger.verbose("Session file stamps: %s vs %s" % (sessID, prevID))
+            if sessID == prevID:
+                logger.debug("Session file already saved")
+                return True
+            else:
+                logger.debug("Deleting old session file")
+                safeUnlink(sessFile)
+
+        docPath = os.path.join(self.theProject.projContent, "%s.nwd" % self._docHandle)
+        if os.path.isfile(docPath):
+            try:
+                shutil.copy2(docPath, sessFile)
+                with open(dataFile, mode="w", encoding="utf8") as outFile:
+                    outFile.write(sessID)
+                logger.debug("Session version of %s created" % self._docHandle)
+
+            except Exception:
+                logger.error("Failed to save session version file")
+                nw.logException()
+                return False
+
+        return True
+
+    def savePermanentVersion(self, theMessage):
+        """Save a permament version file with a message.
+        """
+        self.theProject.ensureFolderStructure()
+
+        # Assemble the version folder for the document
+        versionPath = os.path.join(self.theProject.projVers, self._docHandle)
+        if not safeMakeDir(versionPath):
+            return False
+
+        sessID   = self.theProject.sessionID
+        dataFile = os.path.join(versionPath, "versions.dat")
+        metaTime = time.time()
+
+        versFile = None
+        versNum  = 0
+        for nItt in range(100):
+            versFile = os.path.join(versionPath, "%13s_%8s_%02d.nwd" % (
+                self._docHandle, sessID, nItt
+            ))
+            if not os.path.isfile(versFile):
+                versNum = nItt
+                break
+
+        if versFile is None:
+            logger.error("Failed to generate unique version file name")
+            return False
+
+        versionSuffix = "%8s_%02d" % (sessID, versNum)
+        docText = self.readDocument()
+        if docText:
+            wrStatus = self.writeDocument(
+                docText,
+                versionSuffix=versionSuffix,
+                metaTime=metaTime,
+                metaNote=str(theMessage)
+            )
+            if wrStatus:
+                try:
+                    with open(dataFile, mode="a+", encoding="utf8") as outFile:
+                        outFile.write("%11s  %19s  %s\n" % (
+                            versionSuffix, formatTimeStamp(metaTime), str(theMessage)
+                        ))
+                    logger.debug("Saved version file for %s" % self._docHandle)
+
+                except Exception:
+                    logger.error("Failed to save version file: %s" % versFile)
+                    nw.logException()
+                    return False
+
+        return True
     ##
     #  Internal Functions
     ##
