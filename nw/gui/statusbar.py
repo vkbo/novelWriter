@@ -126,7 +126,7 @@ class GuiMainStatus(QStatusBar):
         self.setLanguage(None, "")
         self.setStats(0, 0)
         self.setProjectStatus(None)
-        self.setDocumentStatus(None)
+        self.updateDocumentStatus(None)
         self.updateTime()
         return True
 
@@ -145,36 +145,6 @@ class GuiMainStatus(QStatusBar):
         """
         self.showMessage(theMessage, int(timeOut*1000))
         qApp.processEvents()
-        return
-
-    @pyqtSlot(str, str)
-    def setLanguage(self, theLanguage, theProvider):
-        """Set the language code for the spell checker.
-        """
-        if theLanguage is None:
-            self.langText.setText(self.tr("None"))
-            self.langText.setToolTip("")
-        else:
-            qLocal = QLocale(theLanguage)
-            spLang = qLocal.nativeLanguageName().title()
-            self.langText.setText(spLang)
-            if theProvider:
-                self.langText.setToolTip("%s (%s)" % (theLanguage, theProvider))
-            else:
-                self.langText.setToolTip(theLanguage)
-
-        return
-
-    def setProjectStatus(self, isChanged):
-        """Set the project status colour icon.
-        """
-        self.projIcon.setState(isChanged)
-        return
-
-    def setDocumentStatus(self, isChanged):
-        """Set the document status colour icon.
-        """
-        self.docIcon.setState(isChanged)
         return
 
     def setStats(self, pWC, sWC):
@@ -211,6 +181,42 @@ class GuiMainStatus(QStatusBar):
             else:
                 sessTime = round(time() - self.refTime)
             self.timeText.setText(formatTime(sessTime))
+        return
+
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot(str, str)
+    def setLanguage(self, theLanguage, theProvider):
+        """Set the language code for the spell checker.
+        """
+        if theLanguage is None:
+            self.langText.setText(self.tr("None"))
+            self.langText.setToolTip("")
+        else:
+            qLocal = QLocale(theLanguage)
+            spLang = qLocal.nativeLanguageName().title()
+            self.langText.setText(spLang)
+            if theProvider:
+                self.langText.setToolTip("%s (%s)" % (theLanguage, theProvider))
+            else:
+                self.langText.setToolTip(theLanguage)
+
+        return
+
+    @pyqtSlot(bool)
+    def setProjectStatus(self, isChanged):
+        """Set the project status colour icon.
+        """
+        self.projIcon.setState(isChanged)
+        return
+
+    @pyqtSlot(bool)
+    def updateDocumentStatus(self, isChanged):
+        """Set the document status colour icon.
+        """
+        self.docIcon.setState(isChanged)
         return
 
 # END Class GuiMainStatus

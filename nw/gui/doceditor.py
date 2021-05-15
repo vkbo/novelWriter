@@ -66,6 +66,7 @@ class GuiDocEditor(QTextEdit):
 
     # Custom Signals
     spellDictionaryChanged = pyqtSignal(str, str)
+    editorDocumentChanged = pyqtSignal(bool)
 
     def __init__(self, theParent):
         QTextEdit.__init__(self, theParent)
@@ -623,7 +624,7 @@ class GuiDocEditor(QTextEdit):
         status.
         """
         self._docChanged = bValue
-        self.theParent.statusBar.setDocumentStatus(self._docChanged)
+        self.editorDocumentChanged.emit(self._docChanged)
         return self._docChanged
 
     def setCursorPosition(self, thePosition):
@@ -728,7 +729,7 @@ class GuiDocEditor(QTextEdit):
             qApp.restoreOverrideCursor()
             afTime = time()
             logger.debug("Document highlighted in %.3f ms" % (1000*(afTime-bfTime)))
-            self.theParent.statusBar.showMessage(self.tr("Spell check complete"))
+            self.theParent.statusBar.setStatus(self.tr("Spell check complete"))
 
         return True
 
