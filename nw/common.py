@@ -202,6 +202,17 @@ def formatTime(tS):
             return f"{tS//3600:02d}:{tS%3600//60:02d}:{tS%60:02d}"
     return "ERROR"
 
+def parseTimeStamp(theStamp, default, allowNone=False):
+    """Parses a text representation of a time stamp and converts it into
+    a float.
+    """
+    if str(theStamp).lower() == "none" and allowNone:
+        return None
+    try:
+        return datetime.strptime(theStamp, nwConst.FMT_TSTAMP).timestamp()
+    except Exception:
+        return default
+
 # =========================================================================== #
 #  String Functions
 # =========================================================================== #
@@ -361,10 +372,9 @@ def getGuiItem(theName):
 def safeMakeDir(thePath):
     """Create a folder and return if successful.
     """
-    if os.path.isdir(thePath):
-        return True
-
     try:
+        if os.path.isdir(thePath):
+            return True
         os.mkdir(thePath)
     except Exception:
         logger.error("Could not create: %s" % str(thePath))
@@ -374,7 +384,7 @@ def safeMakeDir(thePath):
     return True
 
 def safeUnlink(theObject):
-    """Delete a file or a folder, and capture any error.
+    """Delete a file, and capture any error.
     """
     try:
         os.unlink(theObject)

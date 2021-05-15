@@ -20,14 +20,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
 import time
 import pytest
 
+from datetime import datetime
+from tools import writeFile
+from mock import causeOSError
+
 from nw.common import (
-    checkString, checkBool, checkInt, formatInt, transferCase,
-    fuzzyTime, checkHandle, formatTimeStamp, formatTime, hexToInt,
+    checkString, checkBool, checkInt, formatInt, transferCase, fuzzyTime,
+    checkHandle, formatTimeStamp, parseTimeStamp, formatTime, hexToInt,
     makeFileNameSafe, isHandle, isTitleTag, isItemClass, isItemType,
-    isItemLayout, numberToRoman
+    isItemLayout, numberToRoman, safeMakeDir, safeUnlink, safeFileRead
 )
 
 @pytest.mark.base
@@ -223,6 +228,20 @@ def testBaseCommon_FormatTime():
 # END Test testBaseCommon_FormatTime
 
 @pytest.mark.base
+def testBaseCommon_ParseTimeStamp():
+    """Test the parseTimeStamp function.
+    """
+    localEpoch = datetime(1970, 1, 1, 0, 0, 0).timestamp()
+    assert parseTimeStamp(None, 0.0, allowNone=True) is None
+    assert parseTimeStamp("None", 0.0, allowNone=True) is None
+    assert parseTimeStamp("None", 0.0) == 0.0
+    assert parseTimeStamp("1970-01-01 00:00:00", 123.0) == localEpoch
+    assert parseTimeStamp("1970-13-01 00:00:00", 123.0) == 123.0
+    assert parseTimeStamp("1970-01-32 00:00:00", 123.0) == 123.0
+
+# END Test testBaseCommon_ParseTimeStamp
+
+@pytest.mark.base
 def testBaseCommon_FormatInt():
     """Test the formatInt function.
     """
@@ -323,3 +342,61 @@ def testBaseCommon_RomanNumbers():
     assert numberToRoman(999, True) == "cmxcix"
 
 # END Test testBaseCommon_RomanNumbers
+
+@pytest.mark.core
+def testBaseCommon_SafeMakeDir(fncDir, monkeypatch):
+    """Test the safe creation of a folder.
+    """
+    testDir = os.path.join(fncDir, "testDir")
+
+    with monkeypatch.context() as mp:
+        mp.setattr("os.mkdir", causeOSError)
+        assert safeMakeDir(testDir) is False
+
+    assert safeMakeDir(None) is False
+    assert not os.path.isdir(testDir)
+
+    assert safeMakeDir(testDir) is True
+    assert os.path.isdir(testDir)
+
+    assert safeMakeDir(testDir) is True
+    assert os.path.isdir(testDir)
+
+# END Test testBaseCommon_SafeMakeDir
+
+@pytest.mark.core
+def testBaseCommon_SafeUnlink(fncDir, monkeypatch):
+    """Test the safe deletion of a file.
+    """
+    testFile = os.path.join(fncDir, "testFile")
+    writeFile(testFile, "testFile")
+    assert os.path.isfile(testFile)
+
+    with monkeypatch.context() as mp:
+        mp.setattr("os.unlink", causeOSError)
+        assert safeUnlink(testFile) is False
+        assert os.path.isfile(testFile)
+
+    assert safeUnlink(None) is False
+    assert os.path.isfile(testFile)
+
+    assert safeUnlink(testFile) is True
+    assert not os.path.isfile(testFile)
+
+# END Test testBaseCommon_SafeUnlink
+
+@pytest.mark.core
+def testBaseCommon_SafeFileRead(fncDir, monkeypatch):
+    """Test the safe reading of a file.
+    """
+    testFile = os.path.join(fncDir, "testFile")
+    writeFile(testFile, "testFile")
+    assert os.path.isfile(testFile)
+
+    assert safeFileRead(testFile, "whatever") == "testFile"
+
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert safeFileRead(testFile, "whatever") == "whatever"
+
+# END Test testBaseCommon_SafeFileRead
