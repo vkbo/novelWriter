@@ -292,9 +292,9 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDi
     qtbot.wait(stepDelay)
 
     # Save the document
-    assert nwGUI.docEditor.docChanged
+    assert nwGUI.docEditor.docChanged()
     assert nwGUI.saveDocument()
-    assert not nwGUI.docEditor.docChanged
+    assert not nwGUI.docEditor.docChanged()
     qtbot.wait(stepDelay)
     nwGUI.rebuildIndex()
     qtbot.wait(stepDelay)
@@ -503,7 +503,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
 
     # Next Match
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
-    assert nwGUI.docEditor.theHandle == "2426c6f0ca922" # Next document
+    assert nwGUI.docEditor.docHandle() == "2426c6f0ca922" # Next document
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
     assert abs(nwGUI.docEditor.getCursorPosition() - 620) < 3
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)

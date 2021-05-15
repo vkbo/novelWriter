@@ -407,7 +407,7 @@ class GuiMain(QMainWindow):
             if not msgYes:
                 return False
 
-        if self.docEditor.docChanged:
+        if self.docEditor.docChanged():
             self.saveDocument()
 
         if self.theProject.projAltered:
@@ -576,7 +576,7 @@ class GuiMain(QMainWindow):
             self.toggleFocusMode()
 
         self.docEditor.saveCursorPosition()
-        if self.docEditor.docChanged:
+        if self.docEditor.docChanged():
             self.saveDocument()
         self.docEditor.clearEditor()
 
@@ -658,7 +658,7 @@ class GuiMain(QMainWindow):
 
             if self.docEditor.hasFocus():
                 logger.verbose("Trying editor document")
-                tHandle = self.docEditor.theHandle
+                tHandle = self.docEditor.docHandle()
 
             if tHandle is not None:
                 self.saveDocument()
@@ -727,7 +727,7 @@ class GuiMain(QMainWindow):
             ], nwAlert.ERROR)
             return False
 
-        if self.docEditor.theHandle is None:
+        if self.docEditor.docHandle() is None:
             self.makeAlert(
                 self.tr("Please open a document to import the text file into."),
                 nwAlert.ERROR
@@ -822,7 +822,7 @@ class GuiMain(QMainWindow):
 
         if tHandle is None:
             if self.docEditor.anyFocus() or self.isFocusMode:
-                tHandle = self.docEditor.theHandle
+                tHandle = self.docEditor.docHandle()
             else:
                 tHandle = self.treeView.getSelectedHandle()
 
@@ -1218,7 +1218,7 @@ class GuiMain(QMainWindow):
         """Main GUI Focus Mode hides tree, view pane and optionally also
         statusbar and menu.
         """
-        if self.docEditor.theHandle is None:
+        if self.docEditor.docHandle() is None:
             logger.error("No document open, so not activating Focus Mode")
             self.mainMenu.setFocusMode(self.isFocusMode)
             return False
@@ -1385,7 +1385,7 @@ class GuiMain(QMainWindow):
         """Triggered by the auto-save document timer to save the
         document.
         """
-        if self.hasProject and self.docEditor.docChanged:
+        if self.hasProject and self.docEditor.docChanged():
             logger.debug("Autosaving document")
             self.saveDocument()
         return
@@ -1477,7 +1477,7 @@ class GuiMain(QMainWindow):
             return
 
         currTime = time()
-        editIdle = currTime - self.docEditor.lastActive > self.mainConf.userIdleTime
+        editIdle = currTime - self.docEditor.lastActive() > self.mainConf.userIdleTime
         userIdle = qApp.applicationState() != Qt.ApplicationActive
 
         if editIdle or userIdle:

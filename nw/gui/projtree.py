@@ -524,7 +524,7 @@ class GuiProjectTree(QTreeWidget):
                     tIndex = trItemP.indexOfChild(trItemS)
                     trItemC = trItemP.takeChild(tIndex)
 
-                    if self.theParent.docEditor.theHandle == tHandle:
+                    if self.theParent.docEditor.docHandle() == tHandle:
                         self.theParent.closeDocument()
 
                     delDoc = NWDoc(self.theProject, tHandle)
