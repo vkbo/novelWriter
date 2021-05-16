@@ -72,7 +72,7 @@ class NWProject():
         self.saveCount   = 0     # Meta data: number of saves
         self.autoCount   = 0     # Meta data: number of automatic saves
         self.editTime    = 0     # The accumulated edit time read from the project file
-        self.sessionID   = ""    # A 9 character hex value based on the session time stamp
+        self.sessionID   = ""    # An 8 character hex value based on the session timestamp
 
         # Class Settings
         self.projPath    = None # The full path to where the currently open project is saved
@@ -630,6 +630,7 @@ class NWProject():
             "hexVersion"  : str(nw.__hexversion__),
             "fileVersion" : "1.2",
             "timeStamp"   : formatTimeStamp(saveTime),
+            "sessionID"   : str(self.sessionID),
         })
 
         editTime = int(self.editTime + saveTime - self.projOpened)
