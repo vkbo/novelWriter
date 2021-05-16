@@ -121,7 +121,7 @@ class GuiMain(QMainWindow):
 
         # Signals Between Main Elements
         self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
-        self.docEditor.editorDocumentChanged.connect(self.statusBar.updateDocumentStatus)
+        self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
 
         # Minor GUI Elements
         self.statusIcons = []
@@ -382,7 +382,7 @@ class GuiMain(QMainWindow):
             self.rebuildIndex(beQuiet=True)
             self.statusBar.setRefTime(self.theProject.projOpened)
             self.statusBar.setProjectStatus(True)
-            self.statusBar.updateDocumentStatus(None)
+            self.statusBar.setDocumentStatus(None)
             self.statusBar.setStatus(self.tr("New project created ..."))
             self._updateWindowTitle(self.theProject.projName)
         else:

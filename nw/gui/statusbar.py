@@ -126,7 +126,7 @@ class GuiMainStatus(QStatusBar):
         self.setLanguage(None, "")
         self.setStats(0, 0)
         self.setProjectStatus(None)
-        self.updateDocumentStatus(None)
+        self.setDocumentStatus(None)
         self.updateTime()
         return True
 
@@ -145,6 +145,18 @@ class GuiMainStatus(QStatusBar):
         """
         self.showMessage(theMessage, int(timeOut*1000))
         qApp.processEvents()
+        return
+
+    def setProjectStatus(self, isChanged):
+        """Set the project status colour icon.
+        """
+        self.projIcon.setState(isChanged)
+        return
+
+    def setDocumentStatus(self, isChanged):
+        """Set the document status colour icon.
+        """
+        self.docIcon.setState(isChanged)
         return
 
     def setStats(self, pWC, sWC):
@@ -191,7 +203,7 @@ class GuiMainStatus(QStatusBar):
     def setLanguage(self, theLanguage, theProvider):
         """Set the language code for the spell checker.
         """
-        if theLanguage is None:
+        if theLanguage == "None":
             self.langText.setText(self.tr("None"))
             self.langText.setToolTip("")
         else:
@@ -206,17 +218,17 @@ class GuiMainStatus(QStatusBar):
         return
 
     @pyqtSlot(bool)
-    def setProjectStatus(self, isChanged):
-        """Set the project status colour icon.
+    def doUpdateProjectStatus(self, isChanged):
+        """Slot for updating the project status.
         """
-        self.projIcon.setState(isChanged)
+        self.setProjectStatus(isChanged)
         return
 
     @pyqtSlot(bool)
-    def updateDocumentStatus(self, isChanged):
-        """Set the document status colour icon.
+    def doUpdateDocumentStatus(self, isChanged):
+        """Slot for updating the document status.
         """
-        self.docIcon.setState(isChanged)
+        self.setDocumentStatus(isChanged)
         return
 
 # END Class GuiMainStatus

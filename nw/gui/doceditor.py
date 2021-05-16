@@ -66,7 +66,7 @@ class GuiDocEditor(QTextEdit):
 
     # Custom Signals
     spellDictionaryChanged = pyqtSignal(str, str)
-    editorDocumentChanged = pyqtSignal(bool)
+    docEditedStatusChanged = pyqtSignal(bool)
 
     def __init__(self, theParent):
         QTextEdit.__init__(self, theParent)
@@ -624,7 +624,7 @@ class GuiDocEditor(QTextEdit):
         status.
         """
         self._docChanged = bValue
-        self.editorDocumentChanged.emit(self._docChanged)
+        self.docEditedStatusChanged.emit(self._docChanged)
         return self._docChanged
 
     def setCursorPosition(self, thePosition):
@@ -682,7 +682,7 @@ class GuiDocEditor(QTextEdit):
         self._theDict.setLanguage(theLang, self.theProject.projDict)
         _, theProvider = self._theDict.describeDict()
 
-        self.spellDictionaryChanged.emit(theLang, theProvider)
+        self.spellDictionaryChanged.emit(str(theLang), str(theProvider))
 
         if not self._bigDoc:
             self.spellCheckDocument()
