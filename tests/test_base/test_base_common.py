@@ -24,7 +24,7 @@ import os
 import time
 import pytest
 
-from datetime import datetime, timezone
+from datetime import datetime
 from tools import writeFile
 from mock import causeOSError
 
@@ -231,13 +231,13 @@ def testBaseCommon_FormatTime():
 def testBaseCommon_ParseTimeStamp():
     """Test the parseTimeStamp function.
     """
-    localEpoch = datetime(1970, 1, 1, tzinfo=timezone.utc).timestamp()
+    localEpoch = datetime(2000, 1, 1).timestamp()
     assert parseTimeStamp(None, 0.0, allowNone=True) is None
     assert parseTimeStamp("None", 0.0, allowNone=True) is None
     assert parseTimeStamp("None", 0.0) == 0.0
-    assert parseTimeStamp("1970-01-01 00:00:00", 123.0) == localEpoch
-    assert parseTimeStamp("1970-13-01 00:00:00", 123.0) == 123.0
-    assert parseTimeStamp("1970-01-32 00:00:00", 123.0) == 123.0
+    assert parseTimeStamp("2000-01-01 00:00:00", 123.0) == localEpoch
+    assert parseTimeStamp("2000-13-01 00:00:00", 123.0) == 123.0
+    assert parseTimeStamp("2000-01-32 00:00:00", 123.0) == 123.0
 
 # END Test testBaseCommon_ParseTimeStamp
 

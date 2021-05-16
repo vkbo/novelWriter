@@ -204,7 +204,8 @@ def formatTime(tS):
 
 def parseTimeStamp(theStamp, default, allowNone=False):
     """Parses a text representation of a time stamp and converts it into
-    a float.
+    a float. Note that negative timestamps cause an OSError on Windows.
+    See https://bugs.python.org/issue29097
     """
     if str(theStamp).lower() == "none" and allowNone:
         return None

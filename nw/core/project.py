@@ -1496,7 +1496,9 @@ class NWProject():
     def _generateSessionID(self):
         """Generate a session ID based on the opened time. This function
         hardcodes an epoch to make sure it can be reversed even if not
-        on the same system.
+        on the same system. It also uses an epoch that will not cause
+        problems on Windows due to negative time stamps causeing an
+        OSError. See https://bugs.python.org/issue29097
         """
         theEpoch = datetime.datetime(2000, 1, 1, tzinfo=datetime.timezone.utc).timestamp()
         self.sessionID = "%08x" % int(self.projOpened - theEpoch)
