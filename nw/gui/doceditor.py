@@ -308,7 +308,7 @@ class GuiDocEditor(QTextEdit):
         self._nwDocument = NWDoc(self.theProject, tHandle)
         self._nwItem = self._nwDocument.getCurrentItem()
 
-        theDoc = self._nwDocument.readDocument()
+        theDoc = self._nwDocument.readDocument(sessCopy=True)
         if theDoc is None:
             # There was an io error
             self.clearEditor()
@@ -334,8 +334,7 @@ class GuiDocEditor(QTextEdit):
         self.hLight.setHandle(tHandle)
 
         # Save session version
-        self._nwDocument.saveSessionVersion()
-        self._docVers = self._nwDocument.listVersions()
+        # self._docVers = self._nwDocument.listVersions()
 
         # Check that the document is not too big for full, initial spell
         # checking. If it is too big, we switch to only check as we type

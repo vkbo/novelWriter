@@ -29,7 +29,9 @@ import logging
 from lxml import etree
 
 from nw.enum import nwItemType, nwItemClass, nwItemLayout
-from nw.common import checkInt, isHandle, isItemClass, isItemLayout, isItemType
+from nw.common import (
+    checkBool, checkInt, isHandle, isItemClass, isItemLayout, isItemType
+)
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +58,9 @@ class NWItem():
         self.paraCount = 0 # Current paragraph count
         self.initCount = 0 # Initial word count
         self.cursorPos = 0 # Last cursor position
+
+        # Runtime Values (Not Saved)
+        self.sessionBak = False # Whether a session copy has been made
 
         return
 
@@ -294,6 +299,16 @@ class NWItem():
         """Set the initial word count.
         """
         self.initCount = self.wordCount
+        return
+
+    ##
+    #  Set Runtime Values
+    ##
+
+    def setSessionBackup(self, theState):
+        """Set the flag for the session backup file.
+        """
+        self.sessionBak = checkBool(theState, False)
         return
 
 # END Class NWItem

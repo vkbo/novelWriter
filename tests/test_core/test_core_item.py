@@ -100,31 +100,31 @@ def testCoreItem_Setters(dummyGUI):
 
     # Expanded
     theItem.setExpanded(8)
-    assert not theItem.isExpanded
+    assert theItem.isExpanded is False
     theItem.setExpanded(None)
-    assert not theItem.isExpanded
+    assert theItem.isExpanded is False
     theItem.setExpanded("None")
-    assert not theItem.isExpanded
+    assert theItem.isExpanded is False
     theItem.setExpanded("What?")
-    assert not theItem.isExpanded
+    assert theItem.isExpanded is False
     theItem.setExpanded("True")
-    assert theItem.isExpanded
+    assert theItem.isExpanded is True
     theItem.setExpanded(True)
-    assert theItem.isExpanded
+    assert theItem.isExpanded is True
 
     # Exported
     theItem.setExported(8)
-    assert not theItem.isExported
+    assert theItem.isExported is False
     theItem.setExported(None)
-    assert not theItem.isExported
+    assert theItem.isExported is False
     theItem.setExported("None")
-    assert not theItem.isExported
+    assert theItem.isExported is False
     theItem.setExported("What?")
-    assert not theItem.isExported
+    assert theItem.isExported is False
     theItem.setExported("True")
-    assert theItem.isExported
+    assert theItem.isExported is True
     theItem.setExported(True)
-    assert theItem.isExported
+    assert theItem.isExported is True
 
     # CharCount
     theItem.setCharCount(None)
@@ -162,6 +162,13 @@ def testCoreItem_Setters(dummyGUI):
     theItem.setWordCount(234)
     theItem.saveInitialCount()
     assert theItem.initCount == 234
+
+    # Session Backup
+    assert theItem.sessionBak is False
+    theItem.setSessionBackup(True)
+    assert theItem.sessionBak is True
+    theItem.setSessionBackup(None)
+    assert theItem.sessionBak is False
 
 # END Test testCoreItem_Setters
 

@@ -372,9 +372,13 @@ def getGuiItem(theName):
 def safeMakeDir(thePath):
     """Create a folder and return if successful.
     """
+    if not isinstance(thePath, str):
+        return False
+
+    if os.path.isdir(thePath):
+        return True
+
     try:
-        if os.path.isdir(thePath):
-            return True
         os.mkdir(thePath)
     except Exception:
         logger.error("Could not create: %s" % str(thePath))
@@ -383,13 +387,17 @@ def safeMakeDir(thePath):
 
     return True
 
-def safeUnlink(theObject):
+def safeUnlink(thePath):
     """Delete a file, and capture any error.
     """
+    if not isinstance(thePath, str):
+        return False
+
     try:
-        os.unlink(theObject)
+        if os.path.isfile(thePath):
+            os.unlink(thePath)
     except Exception:
-        logger.error("Could not unlink: %s" % str(theObject))
+        logger.error("Could not unlink: %s" % str(thePath))
         nw.logException()
         return False
 

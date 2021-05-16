@@ -32,8 +32,7 @@ import os
 
 from nw.enum import nwItemLayout, nwItemClass
 from nw.common import (
-    isHandle, safeMakeDir, safeFileRead, safeUnlink, formatTimeStamp,
-    parseTimeStamp
+    isHandle, safeMakeDir, safeUnlink, formatTimeStamp, parseTimeStamp
 )
 
 logger = logging.getLogger(__name__)
@@ -63,7 +62,7 @@ class NWDoc():
     #  Class Methods
     ##
 
-    def readDocument(self, isOrphan=False, versionSuffix=None):
+    def readDocument(self, isOrphan=False, sessCopy=False, versionSuffix=None):
         """Read a document from set handle, capturing potential file
         system errors and parse meta data. If the document doesn't exist
         on disk, return an empty string. If something went wrong, return
@@ -89,7 +88,7 @@ class NWDoc():
         docPath = os.path.join(docBase, docFile)
         self._fileLoc = docPath
 
-        logger.debug("Opening document %s" % docFile)
+        logger.debug("Opening document: %s" % docFile)
 
         theText = ""
         self._docMeta = {}
@@ -118,6 +117,17 @@ class NWDoc():
             logger.debug("The requested document does not exist.")
             return ""
 
+        # If requested, also make a copy of the document, for the
+        # current session only. This will only be done once per session.
+        if sessCopy and not isOrphan and versionSuffix is None:
+            if not self._theItem.sessionBak:
+                bakFile = "%s.bak" % self._docHandle
+                bakPath = os.path.join(docBase, bakFile)
+                safeUnlink(bakPath)
+                shutil.copy2(docPath, bakPath)
+                logger.debug("Created session backup: %s" % bakFile)
+                self._theItem.setSessionBackup(True)
+
         return theText
 
     def writeDocument(self, docText, versionSuffix=None, metaTime=0, metaNote=""):
@@ -142,7 +152,7 @@ class NWDoc():
         docPath = os.path.join(docBase, docFile)
         docTemp = os.path.join(docBase, docFile+"~")
 
-        logger.debug("Saving document %s" % docFile)
+        logger.debug("Saving document: %s" % docFile)
 
         # DocMeta line
         if self._theItem is None:
@@ -317,51 +327,6 @@ class NWDoc():
             outFile.write(versData)
 
         logger.debug("Recreated %d records in %s/versions.dat" % (versCount, self._docHandle))
-
-        return True
-
-    def saveSessionVersion(self):
-        """Save a backup copy of the current document from the previous
-        session. This function should be called before it is possible to
-        edit a document. Only one copy will be saved for any given
-        session.
-        """
-        self.theProject.ensureFolderStructure()
-
-        # Assemble the version folder for the document
-        versionPath = os.path.join(self.theProject.projVers, self._docHandle)
-        if not safeMakeDir(versionPath):
-            return False
-
-        sessID = "ID:" + self.theProject.sessionID
-        prevID = "ID:None"
-
-        dataFile = os.path.join(versionPath, "session.dat")
-        if os.path.isfile(dataFile):
-            prevID = safeFileRead(dataFile, prevID)
-
-        sessFile = os.path.join(versionPath, self._docHandle+"_session.nwd")
-        if os.path.isfile(sessFile):
-            logger.verbose("Session file stamps: %s vs %s" % (sessID, prevID))
-            if sessID == prevID:
-                logger.debug("Session file already saved")
-                return True
-            else:
-                logger.debug("Deleting old session file")
-                safeUnlink(sessFile)
-
-        docPath = os.path.join(self.theProject.projContent, "%s.nwd" % self._docHandle)
-        if os.path.isfile(docPath):
-            try:
-                shutil.copy2(docPath, sessFile)
-                with open(dataFile, mode="w", encoding="utf8") as outFile:
-                    outFile.write(sessID)
-                logger.debug("Session version of %s created" % self._docHandle)
-
-            except Exception:
-                logger.error("Failed to save session version file")
-                nw.logException()
-                return False
 
         return True
 
