@@ -275,7 +275,6 @@ class GuiMain(QMainWindow):
 
         # Forward Functions
         self.setStatus = self.statusBar.setStatus
-        self.setProjectStatus = self.statusBar.setProjectStatus
 
         # Force a show of the GUI
         self.show()
