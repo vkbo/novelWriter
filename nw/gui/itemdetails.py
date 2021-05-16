@@ -27,7 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import logging
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 
@@ -212,17 +212,6 @@ class GuiItemDetails(QWidget):
 
         return
 
-    def updateCounts(self, tHandle, cC, wC, pC):
-        """Update the counts if the handle is the same as the one we're
-        already showing. Otherwise, do nothing.
-        """
-        if tHandle == self.theHandle:
-            self.cCountData.setText(f"{cC:n}")
-            self.wCountData.setText(f"{wC:n}")
-            self.pCountData.setText(f"{pC:n}")
-
-        return
-
     def updateViewBox(self, tHandle):
         """Populate the details box from a given handle.
         """
@@ -278,6 +267,22 @@ class GuiItemDetails(QWidget):
             self.cCountData.setText("–")
             self.wCountData.setText("–")
             self.pCountData.setText("–")
+
+        return
+
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot(str, int, int, int)
+    def doUpdateCounts(self, tHandle, cC, wC, pC):
+        """Update the counts if the handle is the same as the one we're
+        already showing. Otherwise, do nothing.
+        """
+        if tHandle == self.theHandle:
+            self.cCountData.setText(f"{cC:n}")
+            self.wCountData.setText(f"{wC:n}")
+            self.pCountData.setText(f"{pC:n}")
 
         return
 

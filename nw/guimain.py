@@ -119,9 +119,16 @@ class GuiMain(QMainWindow):
         self.projMeta  = GuiOutlineDetails(self)
         self.mainMenu  = GuiMainMenu(self)
 
-        # Signals Between Main Elements
+        # Connect Signals Between Main Elements
         self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
         self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
+        self.docEditor.docCountsChanged.connect(self.treeMeta.doUpdateCounts)
+        self.docEditor.docCountsChanged.connect(self.treeView.doUpdateCounts)
+
+        self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
+        self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
+        self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
+        self.treeView.projectWordCountChanged.connect(self.statusBar.doUpdateProjectStats)
 
         # Minor GUI Elements
         self.statusIcons = []
@@ -231,9 +238,6 @@ class GuiMain(QMainWindow):
         self.docEditor.closeSearch()
 
         # Initialise the Project Tree
-        self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
-        self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
-        self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
         self.rebuildTrees()
 
         # Set Main Window Elements
@@ -524,7 +528,7 @@ class GuiMain(QMainWindow):
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.setAutoOutline(self.theProject.autoOutline)
         self.statusBar.setRefTime(self.theProject.projOpened)
-        self.statusBar.setStats(self.theProject.currWCount, 0)
+        self.statusBar.doUpdateProjectStats(self.theProject.currWCount, 0)
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
@@ -882,7 +886,7 @@ class GuiMain(QMainWindow):
         self.treeView.saveTreeOrder()
         self.theIndex.clearIndex()
 
-        for nDone, tItem in enumerate(self.theProject.projTree):
+        for tItem in self.theProject.projTree:
 
             if tItem is not None:
                 self.setStatus(self.tr("Indexing: '{0}'").format(tItem.itemName))

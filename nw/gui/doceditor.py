@@ -67,6 +67,7 @@ class GuiDocEditor(QTextEdit):
     # Custom Signals
     spellDictionaryChanged = pyqtSignal(str, str)
     docEditedStatusChanged = pyqtSignal(bool)
+    docCountsChanged = pyqtSignal(str, int, int, int)
 
     def __init__(self, theParent):
         QTextEdit.__init__(self, theParent)
@@ -1193,9 +1194,9 @@ class GuiDocEditor(QTextEdit):
         self._nwItem.setWordCount(wCount)
         self._nwItem.setParaCount(pCount)
 
-        self.theParent.treeView.propagateCount(self._docHandle, wCount)
-        self.theParent.treeView.projectWordCount()
-        self.theParent.treeMeta.updateCounts(self._docHandle, cCount, wCount, pCount)
+        # Must not be emitted if docHandle is None!
+        self.docCountsChanged.emit(self._docHandle, cCount, wCount, pCount)
+
         self._checkDocSize(self._qDocument.characterCount())
         self.docFooter.updateCounts()
 
