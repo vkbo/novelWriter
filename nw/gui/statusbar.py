@@ -34,6 +34,7 @@ from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
 from nw.common import formatTime
+from nw.enum import nwState
 
 logger = logging.getLogger(__name__)
 
@@ -125,8 +126,8 @@ class GuiMainStatus(QStatusBar):
         self.setRefTime(None)
         self.setLanguage(None, "")
         self.setStats(0, 0)
-        self.setProjectStatus(None)
-        self.setDocumentStatus(None)
+        self.setProjectStatus(nwState.NONE)
+        self.setDocumentStatus(nwState.NONE)
         self.updateTime()
         return True
 
@@ -147,16 +148,16 @@ class GuiMainStatus(QStatusBar):
         qApp.processEvents()
         return
 
-    def setProjectStatus(self, isChanged):
+    def setProjectStatus(self, theState):
         """Set the project status colour icon.
         """
-        self.projIcon.setState(isChanged)
+        self.projIcon.setState(theState)
         return
 
-    def setDocumentStatus(self, isChanged):
+    def setDocumentStatus(self, theState):
         """Set the document status colour icon.
         """
-        self.docIcon.setState(isChanged)
+        self.docIcon.setState(theState)
         return
 
     def setStats(self, pWC, sWC):
@@ -221,26 +222,26 @@ class GuiMainStatus(QStatusBar):
     def doUpdateProjectStatus(self, isChanged):
         """Slot for updating the project status.
         """
-        self.setProjectStatus(isChanged)
+        self.setProjectStatus(nwState.GOOD if isChanged else nwState.BAD)
         return
 
     @pyqtSlot(bool)
     def doUpdateDocumentStatus(self, isChanged):
         """Slot for updating the document status.
         """
-        self.setDocumentStatus(isChanged)
+        self.setDocumentStatus(nwState.GOOD if isChanged else nwState.BAD)
         return
 
 # END Class GuiMainStatus
 
 class StatusLED(QAbstractButton):
 
-    def __init__(self, colNone, colTrue, colFalse, sW, sH, parent=None):
+    def __init__(self, colNone, colGood, colBad, sW, sH, parent=None):
         super().__init__(parent=parent)
 
-        self.colNone  = colNone
-        self.colTrue  = colTrue
-        self.colFalse = colFalse
+        self._colNone = colNone
+        self._colGood = colGood
+        self._colBad  = colBad
         self._theCol  = colNone
 
         self.setFixedWidth(sW)
@@ -255,11 +256,12 @@ class StatusLED(QAbstractButton):
     def setState(self, theState):
         """Set the colour state.
         """
-        self._theCol = self.colNone
-        if theState is True:
-            self._theCol = self.colTrue
-        elif theState is False:
-            self._theCol = self.colFalse
+        if theState == nwState.GOOD:
+            self._theCol = self._colGood
+        elif theState == nwState.BAD:
+            self._theCol = self._colBad
+        else:
+            self._theCol = self._colNone
 
         self.update()
 
@@ -269,7 +271,7 @@ class StatusLED(QAbstractButton):
     #  Events
     ##
 
-    def paintEvent(self, event):
+    def paintEvent(self, _):
         """Drawing the LED.
         """
         qPalette = self.palette()

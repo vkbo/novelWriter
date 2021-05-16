@@ -49,7 +49,7 @@ from nw.dialogs import (
 )
 from nw.tools import GuiBuildNovel, GuiProjectWizard, GuiWritingStats
 from nw.core import NWProject, NWIndex
-from nw.enum import nwItemType, nwItemClass, nwAlert, nwWidget
+from nw.enum import nwItemType, nwItemClass, nwAlert, nwWidget, nwState
 from nw.common import getGuiItem, hexToInt
 from nw.constants import nwLists
 
@@ -381,8 +381,8 @@ class GuiMain(QMainWindow):
             self.docEditor.setDictionaries()
             self.rebuildIndex(beQuiet=True)
             self.statusBar.setRefTime(self.theProject.projOpened)
-            self.statusBar.setProjectStatus(True)
-            self.statusBar.setDocumentStatus(None)
+            self.statusBar.setProjectStatus(nwState.GOOD)
+            self.statusBar.setDocumentStatus(nwState.NONE)
             self.statusBar.setStatus(self.tr("New project created ..."))
             self._updateWindowTitle(self.theProject.projName)
         else:

@@ -112,6 +112,14 @@ class nwAlert(Enum):
 
 # END Enum nwAlert
 
+class nwState(Enum):
+
+    NONE = 0
+    BAD  = 1
+    GOOD = 2
+
+# END Enum nwState
+
 class nwWidget(Enum):
 
     TREE    = 1
