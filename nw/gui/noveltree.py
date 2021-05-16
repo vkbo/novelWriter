@@ -2,7 +2,7 @@
 """
 novelWriter – GUI Novel Tree
 ============================
-GUI classe for the main window novel tree
+GUI class for the main window novel tree
 
 File History:
 Created: 2020-12-20 [1.1a0]
@@ -132,7 +132,7 @@ class GuiNovelTree(QTreeWidget):
         self._lastBuild = 0
         return
 
-    def refreshTree(self, overRide=False):
+    def refreshTree(self):
         """Called whenever the Novel tab is activated.
         """
         logger.verbose("Requesting refresh of the novel tree")

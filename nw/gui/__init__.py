@@ -11,6 +11,7 @@ from nw.gui.projdetails import GuiProjectDetails
 from nw.gui.projtree import GuiProjectTree
 from nw.gui.statusbar import GuiMainStatus
 from nw.gui.theme import GuiTheme
+from nw.gui.versiontree import GuiVersionTree
 
 __all__ = [
     "GuiDocEditor",
@@ -25,4 +26,5 @@ __all__ = [
     "GuiProjectDetails",
     "GuiProjectTree",
     "GuiTheme",
+    "GuiVersionTree",
 ]

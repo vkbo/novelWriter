@@ -336,7 +336,7 @@ class GuiDocEditor(QTextEdit):
 
         # Save session version
         self._nwDocument.saveSessionVersion()
-        self._docVers = self._nwDocument.listVersions()
+        # self._docVers = self._nwDocument.listVersions()
 
         # Check that the document is not too big for full, initial spell
         # checking. If it is too big, we switch to only check as we type

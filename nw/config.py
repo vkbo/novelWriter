@@ -107,6 +107,7 @@ class Config:
         self.prefGeometry  = [700, 615]
         self.treeColWidth  = [200, 50, 30]
         self.novelColWidth = [200, 50]
+        self.versColWidth  = [200]
         self.projColWidth  = [200, 60, 140]
         self.mainPanePos   = [300, 800]
         self.docPanePos    = [400, 400]
@@ -485,6 +486,9 @@ class Config:
         self.novelColWidth = self._parseLine(
             cnfParse, cnfSec, "novelcols", self.CNF_I_LST, self.novelColWidth
         )
+        self.versColWidth = self._parseLine(
+            cnfParse, cnfSec, "versioncols", self.CNF_I_LST, self.versColWidth
+        )
         self.projColWidth = self._parseLine(
             cnfParse, cnfSec, "projcols", self.CNF_I_LST, self.projColWidth
         )
@@ -720,6 +724,7 @@ class Config:
         cnfParse.set(cnfSec, "preferences", self._packList(self.prefGeometry))
         cnfParse.set(cnfSec, "treecols",    self._packList(self.treeColWidth))
         cnfParse.set(cnfSec, "novelcols",   self._packList(self.novelColWidth))
+        cnfParse.set(cnfSec, "versioncols", self._packList(self.versColWidth))
         cnfParse.set(cnfSec, "projcols",    self._packList(self.projColWidth))
         cnfParse.set(cnfSec, "mainpane",    self._packList(self.mainPanePos))
         cnfParse.set(cnfSec, "docpane",     self._packList(self.docPanePos))
@@ -957,6 +962,11 @@ class Config:
         self.confChanged = True
         return True
 
+    def setVersionColWidths(self, colWidths):
+        self.versColWidth = [int(x/self.guiScale) for x in colWidths]
+        self.confChanged = True
+        return True
+
     def setProjColWidths(self, colWidths):
         self.projColWidth = [int(x/self.guiScale) for x in colWidths]
         self.confChanged = True
@@ -1018,6 +1028,9 @@ class Config:
 
     def getNovelColWidths(self):
         return [int(x*self.guiScale) for x in self.novelColWidth]
+
+    def getVersionColWidths(self):
+        return [int(x*self.guiScale) for x in self.versColWidth]
 
     def getProjColWidths(self):
         return [int(x*self.guiScale) for x in self.projColWidth]
