@@ -1119,7 +1119,7 @@ class NWProject():
         information to the GUI statusbar.
         """
         self.projChanged = bValue
-        self.theParent.setProjectStatus(self.projChanged)
+        self.theParent.statusBar.doUpdateProjectStatus(bValue)
         if bValue:
             # If we've changed the project at all, this should be True
             self.projAltered = True
