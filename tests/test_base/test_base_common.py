@@ -24,7 +24,7 @@ import os
 import time
 import pytest
 
-from datetime import datetime
+from datetime import datetime, timezone
 from tools import writeFile
 from mock import causeOSError
 
@@ -231,7 +231,7 @@ def testBaseCommon_FormatTime():
 def testBaseCommon_ParseTimeStamp():
     """Test the parseTimeStamp function.
     """
-    localEpoch = datetime(1970, 1, 1, 0, 0, 0).timestamp()
+    localEpoch = datetime(1970, 1, 1, tzinfo=timezone.utc).timestamp()
     assert parseTimeStamp(None, 0.0, allowNone=True) is None
     assert parseTimeStamp("None", 0.0, allowNone=True) is None
     assert parseTimeStamp("None", 0.0) == 0.0
