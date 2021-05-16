@@ -97,9 +97,9 @@ def testGuiNovelTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     # Double-click item
     scItem.setSelected(True)
     assert scItem.isSelected()
-    assert nwGUI.docEditor.theHandle is None
+    assert nwGUI.docEditor.docHandle() is None
     nwTree._treeDoubleClick(scItem, 0)
-    assert nwGUI.docEditor.theHandle == "8c659a11cd429"
+    assert nwGUI.docEditor.docHandle() == "8c659a11cd429"
 
     # Open item with middle mouse button
     scItem.setSelected(True)

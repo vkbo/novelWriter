@@ -54,9 +54,6 @@ class MockGuiMain():
     def setStatus(self, theMessage):
         return
 
-    def setProjectStatus(self, isChanged):
-        return
-
     def openProject(self, projPath):
         return
 
@@ -87,6 +84,9 @@ class MockStatusBar():
         return
 
     def setStatus(self, theText):
+        return
+
+    def doUpdateProjectStatus(self, theStatus):
         return
 
 # END Class MockStatusBar

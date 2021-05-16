@@ -49,7 +49,7 @@ from nw.dialogs import (
 )
 from nw.tools import GuiBuildNovel, GuiProjectWizard, GuiWritingStats
 from nw.core import NWProject, NWIndex
-from nw.enum import nwItemType, nwItemClass, nwAlert, nwWidget
+from nw.enum import nwItemType, nwItemClass, nwAlert, nwWidget, nwState
 from nw.common import getGuiItem, hexToInt
 from nw.constants import nwLists
 
@@ -118,6 +118,17 @@ class GuiMain(QMainWindow):
         self.projView  = GuiOutline(self)
         self.projMeta  = GuiOutlineDetails(self)
         self.mainMenu  = GuiMainMenu(self)
+
+        # Connect Signals Between Main Elements
+        self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
+        self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
+        self.docEditor.docCountsChanged.connect(self.treeMeta.doUpdateCounts)
+        self.docEditor.docCountsChanged.connect(self.treeView.doUpdateCounts)
+
+        self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
+        self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
+        self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
+        self.treeView.projectWordCountChanged.connect(self.statusBar.doUpdateProjectStats)
 
         # Minor GUI Elements
         self.statusIcons = []
@@ -227,9 +238,6 @@ class GuiMain(QMainWindow):
         self.docEditor.closeSearch()
 
         # Initialise the Project Tree
-        self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
-        self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
-        self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
         self.rebuildTrees()
 
         # Set Main Window Elements
@@ -267,7 +275,6 @@ class GuiMain(QMainWindow):
 
         # Forward Functions
         self.setStatus = self.statusBar.setStatus
-        self.setProjectStatus = self.statusBar.setProjectStatus
 
         # Force a show of the GUI
         self.show()
@@ -377,8 +384,8 @@ class GuiMain(QMainWindow):
             self.docEditor.setDictionaries()
             self.rebuildIndex(beQuiet=True)
             self.statusBar.setRefTime(self.theProject.projOpened)
-            self.statusBar.setProjectStatus(True)
-            self.statusBar.setDocumentStatus(None)
+            self.statusBar.setProjectStatus(nwState.GOOD)
+            self.statusBar.setDocumentStatus(nwState.NONE)
             self.statusBar.setStatus(self.tr("New project created ..."))
             self._updateWindowTitle(self.theProject.projName)
         else:
@@ -407,7 +414,7 @@ class GuiMain(QMainWindow):
             if not msgYes:
                 return False
 
-        if self.docEditor.docChanged:
+        if self.docEditor.docChanged():
             self.saveDocument()
 
         if self.theProject.projAltered:
@@ -520,7 +527,7 @@ class GuiMain(QMainWindow):
         self.docEditor.setSpellCheck(self.theProject.spellCheck)
         self.mainMenu.setAutoOutline(self.theProject.autoOutline)
         self.statusBar.setRefTime(self.theProject.projOpened)
-        self.statusBar.setStats(self.theProject.currWCount, 0)
+        self.statusBar.doUpdateProjectStats(self.theProject.currWCount, 0)
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
@@ -576,7 +583,7 @@ class GuiMain(QMainWindow):
             self.toggleFocusMode()
 
         self.docEditor.saveCursorPosition()
-        if self.docEditor.docChanged:
+        if self.docEditor.docChanged():
             self.saveDocument()
         self.docEditor.clearEditor()
 
@@ -658,7 +665,7 @@ class GuiMain(QMainWindow):
 
             if self.docEditor.hasFocus():
                 logger.verbose("Trying editor document")
-                tHandle = self.docEditor.theHandle
+                tHandle = self.docEditor.docHandle()
 
             if tHandle is not None:
                 self.saveDocument()
@@ -727,7 +734,7 @@ class GuiMain(QMainWindow):
             ], nwAlert.ERROR)
             return False
 
-        if self.docEditor.theHandle is None:
+        if self.docEditor.docHandle() is None:
             self.makeAlert(
                 self.tr("Please open a document to import the text file into."),
                 nwAlert.ERROR
@@ -822,7 +829,7 @@ class GuiMain(QMainWindow):
 
         if tHandle is None:
             if self.docEditor.anyFocus() or self.isFocusMode:
-                tHandle = self.docEditor.theHandle
+                tHandle = self.docEditor.docHandle()
             else:
                 tHandle = self.treeView.getSelectedHandle()
 
@@ -878,7 +885,7 @@ class GuiMain(QMainWindow):
         self.treeView.saveTreeOrder()
         self.theIndex.clearIndex()
 
-        for nDone, tItem in enumerate(self.theProject.projTree):
+        for tItem in self.theProject.projTree:
 
             if tItem is not None:
                 self.setStatus(self.tr("Indexing: '{0}'").format(tItem.itemName))
@@ -1218,7 +1225,7 @@ class GuiMain(QMainWindow):
         """Main GUI Focus Mode hides tree, view pane and optionally also
         statusbar and menu.
         """
-        if self.docEditor.theHandle is None:
+        if self.docEditor.docHandle() is None:
             logger.error("No document open, so not activating Focus Mode")
             self.mainMenu.setFocusMode(self.isFocusMode)
             return False
@@ -1385,7 +1392,7 @@ class GuiMain(QMainWindow):
         """Triggered by the auto-save document timer to save the
         document.
         """
-        if self.hasProject and self.docEditor.docChanged:
+        if self.hasProject and self.docEditor.docChanged():
             logger.debug("Autosaving document")
             self.saveDocument()
         return
@@ -1477,7 +1484,7 @@ class GuiMain(QMainWindow):
             return
 
         currTime = time()
-        editIdle = currTime - self.docEditor.lastActive > self.mainConf.userIdleTime
+        editIdle = currTime - self.docEditor.lastActive() > self.mainConf.userIdleTime
         userIdle = qApp.applicationState() != Qt.ApplicationActive
 
         if editIdle or userIdle:

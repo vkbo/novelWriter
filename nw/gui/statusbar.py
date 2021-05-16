@@ -29,11 +29,12 @@ import logging
 
 from time import time
 
-from PyQt5.QtCore import QLocale
+from PyQt5.QtCore import QLocale, pyqtSlot
 from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
 from nw.common import formatTime
+from nw.enum import nwState
 
 logger = logging.getLogger(__name__)
 
@@ -123,10 +124,10 @@ class GuiMainStatus(QStatusBar):
         """Reset all widgets on the status bar to default values.
         """
         self.setRefTime(None)
-        self.setLanguage(None)
-        self.setStats(0, 0)
-        self.setProjectStatus(None)
-        self.setDocumentStatus(None)
+        self.setLanguage(None, "")
+        self.doUpdateProjectStats(0, 0)
+        self.setProjectStatus(nwState.NONE)
+        self.setDocumentStatus(nwState.NONE)
         self.updateTime()
         return True
 
@@ -147,40 +148,16 @@ class GuiMainStatus(QStatusBar):
         qApp.processEvents()
         return
 
-    def setLanguage(self, theLanguage, theProvider=""):
-        """Set the language code for the spell checker.
-        """
-        if theLanguage is None:
-            self.langText.setText(self.tr("None"))
-            self.langText.setToolTip("")
-        else:
-            qLocal = QLocale(theLanguage)
-            spLang = qLocal.nativeLanguageName().title()
-            self.langText.setText(spLang)
-            if theProvider:
-                self.langText.setToolTip("%s (%s)" % (theLanguage, theProvider))
-            else:
-                self.langText.setToolTip(theLanguage)
-
-        return
-
-    def setProjectStatus(self, isChanged):
+    def setProjectStatus(self, theState):
         """Set the project status colour icon.
         """
-        self.projIcon.setState(isChanged)
+        self.projIcon.setState(theState)
         return
 
-    def setDocumentStatus(self, isChanged):
+    def setDocumentStatus(self, theState):
         """Set the document status colour icon.
         """
-        self.docIcon.setState(isChanged)
-        return
-
-    def setStats(self, pWC, sWC):
-        """Set the current project statistics.
-        """
-        self.statsText.setText(self.tr("Words: {0} ({1})").format(f"{pWC:n}", f"{sWC:+n}"))
-        self.statsText.setToolTip(self.tr("Project word count (session change)"))
+        self.docIcon.setState(theState)
         return
 
     def setUserIdle(self, userIdle):
@@ -212,16 +189,60 @@ class GuiMainStatus(QStatusBar):
             self.timeText.setText(formatTime(sessTime))
         return
 
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot(str, str)
+    def setLanguage(self, theLanguage, theProvider):
+        """Set the language code for the spell checker.
+        """
+        if theLanguage == "None":
+            self.langText.setText(self.tr("None"))
+            self.langText.setToolTip("")
+        else:
+            qLocal = QLocale(theLanguage)
+            spLang = qLocal.nativeLanguageName().title()
+            self.langText.setText(spLang)
+            if theProvider:
+                self.langText.setToolTip("%s (%s)" % (theLanguage, theProvider))
+            else:
+                self.langText.setToolTip(theLanguage)
+
+        return
+
+    @pyqtSlot(int, int)
+    def doUpdateProjectStats(self, pWC, sWC):
+        """Update the current project statistics.
+        """
+        self.statsText.setText(self.tr("Words: {0} ({1})").format(f"{pWC:n}", f"{sWC:+n}"))
+        self.statsText.setToolTip(self.tr("Project word count (session change)"))
+        return
+
+    @pyqtSlot(bool)
+    def doUpdateProjectStatus(self, isChanged):
+        """Slot for updating the project status.
+        """
+        self.setProjectStatus(nwState.GOOD if isChanged else nwState.BAD)
+        return
+
+    @pyqtSlot(bool)
+    def doUpdateDocumentStatus(self, isChanged):
+        """Slot for updating the document status.
+        """
+        self.setDocumentStatus(nwState.GOOD if isChanged else nwState.BAD)
+        return
+
 # END Class GuiMainStatus
 
 class StatusLED(QAbstractButton):
 
-    def __init__(self, colNone, colTrue, colFalse, sW, sH, parent=None):
+    def __init__(self, colNone, colGood, colBad, sW, sH, parent=None):
         super().__init__(parent=parent)
 
-        self.colNone  = colNone
-        self.colTrue  = colTrue
-        self.colFalse = colFalse
+        self._colNone = colNone
+        self._colGood = colGood
+        self._colBad  = colBad
         self._theCol  = colNone
 
         self.setFixedWidth(sW)
@@ -236,11 +257,12 @@ class StatusLED(QAbstractButton):
     def setState(self, theState):
         """Set the colour state.
         """
-        self._theCol = self.colNone
-        if theState is True:
-            self._theCol = self.colTrue
-        elif theState is False:
-            self._theCol = self.colFalse
+        if theState == nwState.GOOD:
+            self._theCol = self._colGood
+        elif theState == nwState.BAD:
+            self._theCol = self._colBad
+        else:
+            self._theCol = self._colNone
 
         self.update()
 
@@ -250,7 +272,7 @@ class StatusLED(QAbstractButton):
     #  Events
     ##
 
-    def paintEvent(self, event):
+    def paintEvent(self, _):
         """Drawing the LED.
         """
         qPalette = self.palette()

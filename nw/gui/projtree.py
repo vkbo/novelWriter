@@ -30,7 +30,7 @@ import logging
 
 from time import time
 
-from PyQt5.QtCore import Qt, QSize, pyqtSignal
+from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction
@@ -51,6 +51,7 @@ class GuiProjectTree(QTreeWidget):
 
     novelItemChanged = pyqtSignal()
     noteItemChanged = pyqtSignal()
+    projectWordCountChanged = pyqtSignal(int, int)
 
     def __init__(self, theParent):
         QTreeWidget.__init__(self, theParent)
@@ -524,7 +525,7 @@ class GuiProjectTree(QTreeWidget):
                     tIndex = trItemP.indexOfChild(trItemS)
                     trItemC = trItemP.takeChild(tIndex)
 
-                    if self.theParent.docEditor.theHandle == tHandle:
+                    if self.theParent.docEditor.docHandle() == tHandle:
                         self.theParent.closeDocument()
 
                     delDoc = NWDoc(self.theProject, tHandle)
@@ -674,7 +675,8 @@ class GuiProjectTree(QTreeWidget):
 
         self.theProject.setProjectWordCount(nWords)
         sWords = self.theProject.getSessionWordCount()
-        self.theParent.statusBar.setStats(nWords, sWords)
+
+        self.projectWordCountChanged.emit(nWords, sWords)
 
         return
 
@@ -779,6 +781,7 @@ class GuiProjectTree(QTreeWidget):
     #  Slots
     ##
 
+    @pyqtSlot("QPoint")
     def _rightClickMenu(self, clickPos):
         """The user right clicked an element in the project tree, so we
         open a context menu in-place.
@@ -793,6 +796,14 @@ class GuiProjectTree(QTreeWidget):
                     # Only open menu if any actions remain after filter
                     self.ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
 
+        return
+
+    @pyqtSlot(str, int, int, int)
+    def doUpdateCounts(self, tHandle, cCount, wCount, pCount):
+        """Slot for updating the word count of a specific item.
+        """
+        self.propagateCount(tHandle, wCount)
+        self.projectWordCount()
         return
 
     ##
@@ -1171,6 +1182,7 @@ class GuiProjectTreeMenu(QMenu):
     #  Slots
     ##
 
+    @pyqtSlot()
     def _doOpenItem(self):
         """Forward the open document call to the main GUI window.
         """
@@ -1178,6 +1190,7 @@ class GuiProjectTreeMenu(QMenu):
             self.theTree.theParent.openDocument(self.theItem.itemHandle, doScroll=False)
         return
 
+    @pyqtSlot()
     def _doViewItem(self):
         """Forward the view document call to the main GUI window.
         """
@@ -1185,6 +1198,7 @@ class GuiProjectTreeMenu(QMenu):
             self.theTree.theParent.viewDocument(self.theItem.itemHandle)
         return
 
+    @pyqtSlot()
     def _doEditItem(self):
         """Forward the edit item call to the main GUI window.
         """
@@ -1192,6 +1206,7 @@ class GuiProjectTreeMenu(QMenu):
             self.theTree.theParent.editItem()
         return
 
+    @pyqtSlot()
     def _doMakeFile(self):
         """Forward the new file call to the project tree.
         """
@@ -1199,6 +1214,7 @@ class GuiProjectTreeMenu(QMenu):
             self.theTree.newTreeItem(nwItemType.FILE, None)
         return
 
+    @pyqtSlot()
     def _doMakeFolder(self):
         """Forward the new folder call to the project tree.
         """
@@ -1206,6 +1222,7 @@ class GuiProjectTreeMenu(QMenu):
             self.theTree.newTreeItem(nwItemType.FOLDER, None)
         return
 
+    @pyqtSlot()
     def _doToggleExported(self):
         """Flip the isExported flag of the current item.
         """
@@ -1214,6 +1231,7 @@ class GuiProjectTreeMenu(QMenu):
             self.theTree.setTreeItemValues(self.theItem.itemHandle)
         return
 
+    @pyqtSlot()
     def _doDeleteItem(self):
         """Forward the delete item call to the project tree.
         """
@@ -1221,18 +1239,21 @@ class GuiProjectTreeMenu(QMenu):
             self.theTree.deleteItem()
         return
 
+    @pyqtSlot()
     def _doEmptyTrash(self):
         """Forward the empty trash call to the project tree.
         """
         self.theTree.emptyTrash()
         return
 
+    @pyqtSlot()
     def _doMoveUp(self):
         """Forward the move item call to the project tree.
         """
         self.theTree.moveTreeItem(-1)
         return
 
+    @pyqtSlot()
     def _doMoveDown(self):
         """Forward the move item call to the project tree.
         """
