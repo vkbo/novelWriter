@@ -62,7 +62,7 @@ class NWDoc():
     #  Class Methods
     ##
 
-    def readDocument(self, isOrphan=False, sessCopy=False, versionSuffix=None):
+    def readDocument(self, isOrphan=False, versionSuffix=None, sessCopy=False):
         """Read a document from set handle, capturing potential file
         system errors and parse meta data. If the document doesn't exist
         on disk, return an empty string. If something went wrong, return
@@ -78,8 +78,12 @@ class NWDoc():
             return None
 
         if versionSuffix is None:
-            docFile = "%s.nwd" % self._docHandle
-            docBase = self.theProject.projContent
+            if sessCopy:
+                docFile = "%s.bak" % self._docHandle
+                docBase = self.theProject.projVers
+            else:
+                docFile = "%s.nwd" % self._docHandle
+                docBase = self.theProject.projContent
         else:
             docFile = "%s_%s.nwd" % (self._docHandle, versionSuffix)
             docBase = os.path.join(self.theProject.projVers, self._docHandle)
@@ -116,17 +120,6 @@ class NWDoc():
             # document and initialise an empty text string.
             logger.debug("The requested document does not exist.")
             return ""
-
-        # If requested, also make a copy of the document, for the
-        # current session only. This will only be done once per session.
-        if sessCopy and not isOrphan and versionSuffix is None:
-            if not self._theItem.sessionBak:
-                bakFile = "%s.bak" % self._docHandle
-                bakPath = os.path.join(docBase, bakFile)
-                safeUnlink(bakPath)
-                shutil.copy2(docPath, bakPath)
-                logger.debug("Created session backup: %s" % bakFile)
-                self._theItem.setSessionBackup(True)
 
         return theText
 
@@ -179,8 +172,7 @@ class NWDoc():
 
         # If we're here, the file was successfully saved, so we can
         # replace the temp file with the actual file
-        if os.path.isfile(docPath):
-            os.unlink(docPath)
+        safeUnlink(docPath)
         os.rename(docTemp, docPath)
 
         return True
@@ -194,11 +186,10 @@ class NWDoc():
             logger.error("No document handle set")
             return False
 
-        docFile = self._docHandle+".nwd"
-
         chkList = []
-        chkList.append(os.path.join(self.theProject.projContent, docFile))
-        chkList.append(os.path.join(self.theProject.projContent, docFile+"~"))
+        chkList.append(os.path.join(self.theProject.projContent, self._docHandle+".nwd"))
+        chkList.append(os.path.join(self.theProject.projContent, self._docHandle+".nwd~"))
+        chkList.append(os.path.join(self.theProject.projVers, self._docHandle+".bak"))
 
         for chkFile in chkList:
             if os.path.isfile(chkFile):
@@ -327,6 +318,33 @@ class NWDoc():
             outFile.write(versData)
 
         logger.debug("Recreated %d records in %s/versions.dat" % (versCount, self._docHandle))
+
+        return True
+
+    def saveSessionVersion(self):
+        """Make a session copy of the document.
+        """
+        if self._docHandle is None or self._theItem is None:
+            logger.error("Unknown document")
+            return False
+
+        if self._theItem.sessionBak:
+            logger.verbose("Already made a session copy of %s" % self._docHandle)
+            return True
+
+        self.theProject.ensureFolderStructure()
+
+        docFile = "%s.nwd" % self._docHandle
+        bakFile = "%s.bak" % self._docHandle
+        docPath = os.path.join(self.theProject.projContent, docFile)
+        bakPath = os.path.join(self.theProject.projVers, bakFile)
+
+        safeUnlink(bakPath)
+        shutil.copy2(docPath, bakPath)
+
+        logger.debug("Created session copy: %s" % bakFile)
+
+        self._theItem.setSessionBackup(True)
 
         return True
 
