@@ -32,7 +32,7 @@ from datetime import datetime
 
 from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtWidgets import (
-    QHBoxLayout, QLineEdit, QPushButton, QWidget, QVBoxLayout, QTreeWidget,
+    QAction, QHBoxLayout, QLineEdit, QMenu, QPushButton, QWidget, QVBoxLayout, QTreeWidget,
     QTreeWidgetItem, QAbstractItemView, QLabel
 )
 
@@ -230,6 +230,11 @@ class GuiVersionTree(QTreeWidget):
         self._lastBuild = 0
         self._docHandle = None
 
+        # Context Menu
+        self.ctxMenu = GuiVersionTreeMenu(self)
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._rightClickMenu)
+
         # Build GUI
         iPx = self.theTheme.baseIconSize
         self.setIconSize(QSize(iPx, iPx))
@@ -318,6 +323,7 @@ class GuiVersionTree(QTreeWidget):
 
         sessDir = QTreeWidgetItem()
         sessDir.setText(self.C_NOTE, self.tr("Session Version"))
+        sessDir.setData(self.C_NOTE, Qt.UserRole, "None")
         sessDir.setIcon(self.C_NOTE, self.theTheme.getIcon("proj_folder"))
         self.addTopLevelItem(sessDir)
 
@@ -344,6 +350,7 @@ class GuiVersionTree(QTreeWidget):
 
         versDir = QTreeWidgetItem()
         versDir.setText(self.C_NOTE, self.tr("Permanent Versions"))
+        versDir.setData(self.C_NOTE, Qt.UserRole, "None")
         versDir.setIcon(self.C_NOTE, self.theTheme.getIcon("proj_folder"))
         self.addTopLevelItem(versDir)
 
@@ -375,4 +382,113 @@ class GuiVersionTree(QTreeWidget):
 
         return
 
+    ##
+    #  Actions
+    ##
+
+    def showVersionDocument(self, theVersion):
+        """Open a version document in the main document viewer.
+        """
+        logger.verbose("Viewing document version %s" % str(theVersion))
+        return
+
+    def diffVersionDocument(self, theVersion):
+        """Open the diff of a version document in the main document
+        viewer. The diff is generated against the currently open
+        document.
+        """
+        logger.verbose("Diffing document version %s" % str(theVersion))
+        return
+
+    def restoreVersionDocument(self, theVersion):
+        """Restore a previous version over the currently open document.
+        """
+        logger.verbose("Restoring document version %s" % str(theVersion))
+        return
+
+    def deleteVersionDocument(self, theVersion):
+        """Delete a version document.
+        """
+        logger.verbose("Deleting document version %s" % str(theVersion))
+        return
+
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot("QPoint")
+    def _rightClickMenu(self, clickPos):
+        """The user right clicked an element in the version tree, so we
+        open a context menu in-place.
+        """
+        selItem = self.itemAt(clickPos)
+        if isinstance(selItem, QTreeWidgetItem):
+            theVersion = selItem.data(self.C_NOTE, Qt.UserRole)
+            if theVersion != "None":
+                self.ctxMenu.setVersion(theVersion)
+                self.ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
+
+        return
+
 # END Class GuiVersionTree
+
+class GuiVersionTreeMenu(QMenu):
+
+    def __init__(self, theTree):
+        QMenu.__init__(self, theTree)
+
+        self._theTree = theTree
+        self._theVersion = None
+
+        self.viewVersion = QAction(self.tr("View Version"))
+        self.viewVersion.triggered.connect(self._doViewVersion)
+        self.addAction(self.viewVersion)
+
+        self.diffVersion = QAction(self.tr("Show Version Diff"))
+        self.diffVersion.triggered.connect(self._doDiffVersion)
+        self.addAction(self.diffVersion)
+
+        self.restoreVersion = QAction(self.tr("Restore Version"))
+        self.restoreVersion.triggered.connect(self._doRestoreVersion)
+        self.addAction(self.restoreVersion)
+
+        self.deleteVersion = QAction(self.tr("Delete Version"))
+        self.deleteVersion.triggered.connect(self._doDeleteVersion)
+        self.addAction(self.deleteVersion)
+
+        return
+
+    def setVersion(self, theVersion):
+        """Set the version ID the menu should acto on.
+        """
+        if theVersion == "None":
+            self._theVersion = None
+        else:
+            self._theVersion = theVersion
+        return
+
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot()
+    def _doViewVersion(self):
+        self._theTree.showVersionDocument(self._theVersion)
+        return
+
+    @pyqtSlot()
+    def _doDiffVersion(self):
+        self._theTree.diffVersionDocument(self._theVersion)
+        return
+
+    @pyqtSlot()
+    def _doRestoreVersion(self):
+        self._theTree.restoreVersionDocument(self._theVersion)
+        return
+
+    @pyqtSlot()
+    def _doDeleteVersion(self):
+        self._theTree.deleteVersionDocument(self._theVersion)
+        return
+
+# END Class GuiVersionTreeMenu
