@@ -28,6 +28,7 @@ __pycache__
 /nw/assets/sample.zip
 /sample/cache
 /sample/meta
+/sample/versions
 *.bak
 *.lock
 ToC.txt
