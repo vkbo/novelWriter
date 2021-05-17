@@ -58,9 +58,12 @@ class GuiDocViewer(QTextBrowser):
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theParent.theProject
-        self.theHandle  = None
 
-        self.qDocument = self.document()
+        # Internal Variables
+        self._docHandle  = None
+        self._qDocument = self.document()
+
+        # Settings
         self.setMinimumWidth(self.mainConf.pxInt(300))
         self.setAutoFillBackground(True)
         self.setOpenExternalLinks(False)
@@ -90,8 +93,8 @@ class GuiDocViewer(QTextBrowser):
         """
         self.clear()
         self.setSearchPaths([""])
-        self.theHandle = None
-        self.docHeader.setTitleFromHandle(self.theHandle)
+        self._docHandle = None
+        self.docHeader.setTitleFromHandle(self._docHandle)
         return True
 
     def initViewer(self):
@@ -103,7 +106,7 @@ class GuiDocViewer(QTextBrowser):
         theFont = QFont()
         if self.mainConf.textFont is None:
             # If none is defined, set the default back to config
-            self.mainConf.textFont = self.qDocument.defaultFont().family()
+            self.mainConf.textFont = self._qDocument.defaultFont().family()
         theFont.setFamily(self.mainConf.textFont)
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
@@ -124,11 +127,11 @@ class GuiDocViewer(QTextBrowser):
         self.docFooter.matchColours()
 
         # Set default text margins
-        self.qDocument.setDocumentMargin(0)
+        self._qDocument.setDocumentMargin(0)
         theOpt = QTextOption()
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
-        self.qDocument.setDefaultTextOption(theOpt)
+        self._qDocument.setDefaultTextOption(theOpt)
 
         # Scroll bars
         if self.mainConf.hideVScroll:
@@ -148,7 +151,7 @@ class GuiDocViewer(QTextBrowser):
             self.setTabStopWidth(self.mainConf.getTabWidth())
 
         # If we have a document open, we should reload it in case the font changed
-        if self.theHandle is not None:
+        if self._docHandle is not None:
             self.reloadText()
 
         return True
@@ -205,11 +208,11 @@ class GuiDocViewer(QTextBrowser):
             theCursor = self.textCursor()
             theCursor.insertText("\t")
 
-        if self.theHandle == tHandle:
+        if self._docHandle == tHandle:
             self.verticalScrollBar().setValue(sPos)
-        self.theHandle = tHandle
+        self._docHandle = tHandle
         self.theProject.setLastViewed(tHandle)
-        self.docHeader.setTitleFromHandle(self.theHandle)
+        self.docHeader.setTitleFromHandle(self._docHandle)
         self.updateDocMargins()
 
         # Make sure the main GUI knows we changed the content
@@ -225,13 +228,13 @@ class GuiDocViewer(QTextBrowser):
     def reloadText(self):
         """Reload the text in the current document.
         """
-        self.loadText(self.theHandle, updateHistory=False)
+        self.loadText(self._docHandle, updateHistory=False)
         return
 
     def redrawText(self):
         """Redraw the text by marking the document content as "dirty".
         """
-        self.qDocument.markContentsDirty(0, self.qDocument.characterCount())
+        self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
         self.updateDocMargins()
         return
 
@@ -265,7 +268,7 @@ class GuiDocViewer(QTextBrowser):
         document.
         """
         logger.verbose("Requesting action: %s" % theAction.name)
-        if self.theHandle is None:
+        if self._docHandle is None:
             logger.error("No document open")
             return False
         if theAction == nwDocAction.CUT:
@@ -337,10 +340,20 @@ class GuiDocViewer(QTextBrowser):
         """Called when an item label is changed to check if the document
         title bar needs updating,
         """
-        if tHandle == self.theHandle:
-            self.docHeader.setTitleFromHandle(self.theHandle)
+        if tHandle == self._docHandle:
+            self.docHeader.setTitleFromHandle(self._docHandle)
             self.updateDocMargins()
         return
+
+    ##
+    #  Properties
+    ##
+
+    def docHandle(self):
+        """Return the handle of the currently open document. Returns
+        None if no document is open.
+        """
+        return self._docHandle
 
     ##
     #  Setters
@@ -363,7 +376,7 @@ class GuiDocViewer(QTextBrowser):
         if not isinstance(theLine, int):
             return False
         if theLine >= 0:
-            theBlock = self.qDocument.findBlockByLineNumber(theLine)
+            theBlock = self._qDocument.findBlockByLineNumber(theLine)
             if theBlock:
                 self.setCursorPosition(theBlock.position())
                 logger.verbose("Cursor moved to line %d" % theLine)
@@ -553,7 +566,7 @@ class GuiDocViewer(QTextBrowser):
             mColG = self.theTheme.colMod[1],
             mColB = self.theTheme.colMod[2],
         )
-        self.qDocument.setDefaultStyleSheet(styleSheet)
+        self._qDocument.setDefaultStyleSheet(styleSheet)
 
         return True
 
@@ -707,7 +720,9 @@ class GuiDocViewHeader(QWidget):
         self.theParent  = docViewer.theParent
         self.theProject = docViewer.theProject
         self.theTheme   = docViewer.theTheme
-        self.theHandle  = None
+
+        # Internal Variables
+        self._docHandle = None
 
         fPx = int(0.9*self.theTheme.fontPixelSize)
         hSp = self.mainConf.pxInt(6)
@@ -825,7 +840,7 @@ class GuiDocViewHeader(QWidget):
         """Sets the document title from the handle, or alternatively,
         set the whole document path.
         """
-        self.theHandle = tHandle
+        self._docHandle = tHandle
         if tHandle is None:
             self.theTitle.setText("")
             self.backButton.setVisible(False)
@@ -876,7 +891,7 @@ class GuiDocViewHeader(QWidget):
     def _refreshDocument(self):
         """Reload the content of the document.
         """
-        if self.docViewer.theHandle == self.theParent.docEditor.docHandle():
+        if self.docViewer.docHandle() == self.theParent.docEditor.docHandle():
             self.theParent.saveDocument()
         self.docViewer.reloadText()
         return
@@ -889,7 +904,7 @@ class GuiDocViewHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.theParent.treeView.setSelectedHandle(self.theHandle, doScroll=True)
+        self.theParent.treeView.setSelectedHandle(self._docHandle, doScroll=True)
         return
 
 # END Class GuiDocViewHeader
@@ -911,7 +926,9 @@ class GuiDocViewFooter(QWidget):
         self.theParent = docViewer.theParent
         self.theTheme  = docViewer.theTheme
         self.viewMeta  = docViewer.theParent.viewMeta
-        self.theHandle = None
+
+        # Internal Variables
+        self._docHandle = None
 
         fPx = int(0.9*self.theTheme.fontPixelSize)
         bSp = self.mainConf.pxInt(2)
@@ -1097,8 +1114,8 @@ class GuiDocViewFooter(QWidget):
         """
         logger.verbose("Reference sticky is %s" % str(theState))
         self.docViewer.stickyRef = theState
-        if not theState and self.docViewer.theHandle is not None:
-            self.viewMeta.refreshReferences(self.docViewer.theHandle)
+        if not theState and self.docViewer.docHandle() is not None:
+            self.viewMeta.refreshReferences(self.docViewer.docHandle())
         return
 
     def _doToggleComments(self, theState):

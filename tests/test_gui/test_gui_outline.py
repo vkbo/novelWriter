@@ -85,7 +85,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     # Click POV Link
     assert nwGUI.projMeta.povKeyValue.text() == "<a href='#pov=Bod'>Bod</a>"
     nwGUI.projMeta._tagClicked("#pov=Bod")
-    assert nwGUI.docViewer.theHandle == "4c4f28287af27"
+    assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
 
     # qtbot.stopForInteraction()
 

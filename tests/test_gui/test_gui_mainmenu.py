@@ -337,17 +337,17 @@ def testGuiMenu_ContextMenus(qtbot, monkeypatch, nwGUI, nwLipsum):
 
     # Navigation History
     assert nwGUI.viewDocument("04468803b92e1")
-    assert nwGUI.docViewer.theHandle == "04468803b92e1"
+    assert nwGUI.docViewer.docHandle() == "04468803b92e1"
     assert nwGUI.docViewer.docHeader.backButton.isEnabled()
     assert not nwGUI.docViewer.docHeader.forwardButton.isEnabled()
 
     qtbot.mouseClick(nwGUI.docViewer.docHeader.backButton, Qt.LeftButton)
-    assert nwGUI.docViewer.theHandle == "4c4f28287af27"
+    assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
     assert not nwGUI.docViewer.docHeader.backButton.isEnabled()
     assert nwGUI.docViewer.docHeader.forwardButton.isEnabled()
 
     qtbot.mouseClick(nwGUI.docViewer.docHeader.forwardButton, Qt.LeftButton)
-    assert nwGUI.docViewer.theHandle == "04468803b92e1"
+    assert nwGUI.docViewer.docHandle() == "04468803b92e1"
     assert nwGUI.docViewer.docHeader.backButton.isEnabled()
     assert not nwGUI.docViewer.docHeader.forwardButton.isEnabled()
 
