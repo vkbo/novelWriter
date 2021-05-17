@@ -1251,7 +1251,7 @@ class GuiMain(QMainWindow):
 
         if self.splitView.isVisible():
             self.splitView.setVisible(False)
-        elif self.docViewer.theHandle is not None:
+        elif self.docViewer.docHandle() is not None:
             self.splitView.setVisible(True)
 
         return True

@@ -104,19 +104,19 @@ def testGuiNovelTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     # Open item with middle mouse button
     scItem.setSelected(True)
     assert scItem.isSelected()
-    assert nwGUI.docViewer.theHandle is None
+    assert nwGUI.docViewer.docHandle() is None
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=vPort.rect().center(), delay=10)
-    assert nwGUI.docViewer.theHandle is None
+    assert nwGUI.docViewer.docHandle() is None
 
     scRect = nwTree.visualItemRect(scItem)
     oldData = scItem.data(nwTree.C_TITLE, Qt.UserRole)
     scItem.setData(nwTree.C_TITLE, Qt.UserRole, (None, "", ""))
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
-    assert nwGUI.docViewer.theHandle is None
+    assert nwGUI.docViewer.docHandle() is None
 
     scItem.setData(nwTree.C_TITLE, Qt.UserRole, oldData)
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
-    assert nwGUI.docViewer.theHandle == "8c659a11cd429"
+    assert nwGUI.docViewer.docHandle() == "8c659a11cd429"
 
     ##
     #  Populate Tree
