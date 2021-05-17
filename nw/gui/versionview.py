@@ -32,10 +32,12 @@ from datetime import datetime
 
 from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QAbstractItemView
+    QHBoxLayout, QLineEdit, QPushButton, QWidget, QVBoxLayout, QTreeWidget,
+    QTreeWidgetItem, QAbstractItemView, QLabel
 )
 
 from nw.core import NWDoc
+from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
 
@@ -52,19 +54,65 @@ class GuiVersionView(QWidget):
         self.theProject = theParent.theProject
 
         # Internal Variables
-        self._lastBuild = 0
         self._docHandle = None
 
         # Build GUI
+        # =========
+
+        # Sizes
+        hSp = self.mainConf.pxInt(4)
+        vSp = self.mainConf.pxInt(6)
+        mPx = self.mainConf.pxInt(6)
+
+        # Header
+        self.docHeader = QLabel(self.tr("None"))
+
+        hFont = self.docHeader.font()
+        hFont.setBold(True)
+        hFont.setPointSizeF(1.8*self.theTheme.fontPointSize)
+        self.docHeader.setFont(hFont)
+
+        # Version Form
+        self.formTitle = QLabel(self.tr("Add New Version"))
+
+        self.versNote = QLineEdit()
+        self.versNote.setPlaceholderText(self.tr("Version Note"))
+        self.versNote.setMaxLength(200)
+
+        self.versButton = QPushButton("")
+        self.versButton.setIcon(self.theTheme.getIcon("add"))
+        self.versButton.clicked.connect(self._createPermamentVersion)
+
+        # The Tree
         self.treeView = GuiVersionTree(self)
 
         # Assemble
+        self.inputBox = QHBoxLayout()
+        self.inputBox.addWidget(self.versNote, 1)
+        self.inputBox.addWidget(self.versButton, 0)
+        self.inputBox.setContentsMargins(0, 0, 0, 0)
+        self.inputBox.setSpacing(hSp)
+
+        self.topLayout = QVBoxLayout()
+        self.topLayout.addWidget(self.docHeader)
+        self.topLayout.addSpacing(2*vSp)
+        self.topLayout.addWidget(self.formTitle)
+        self.topLayout.addLayout(self.inputBox)
+        self.topLayout.setContentsMargins(mPx, mPx, mPx, mPx)
+        self.topLayout.setSpacing(0)
+
+        self.topWidget = QWidget(self)
+        self.topWidget.setLayout(self.topLayout)
+
         self.outerBox = QVBoxLayout()
+        self.outerBox.addWidget(self.topWidget)
         self.outerBox.addWidget(self.treeView)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
+        self.outerBox.setSpacing(vSp)
 
         self.setLayout(self.outerBox)
         self.initWidget()
+        self._updateDocument(None)
 
         logger.debug("GuiVersionView initialisation complete")
 
@@ -90,16 +138,18 @@ class GuiVersionView(QWidget):
 
         return
 
+    def clearWidget(self):
+        """Clear the data of the widget.
+        """
+        self._docHandle = None
+        self.treeView.clearTree()
+        self._updateDocument(None)
+        return
+
     def getColumnSizes(self):
         """Return the column widths for the tree columns.
         """
         return [self.treeView.columnWidth(0)]
-
-    def clearWidget(self):
-        """Clear the data of the widget.
-        """
-        self.treeView.clearTree()
-        return
 
     ##
     #  Slots
@@ -109,9 +159,54 @@ class GuiVersionView(QWidget):
     def doUpdateDocument(self, tHandle):
         """The editor's document handle has changed.
         """
-        logger.debug("Refreshing version tree with %s" % tHandle)
-        self._docHandle = tHandle
+        logger.debug("Refreshing version widget with %s" % tHandle)
+        self._updateDocument(tHandle)
         self.treeView.populateTree(tHandle)
+        return
+
+    def _createPermamentVersion(self):
+        """Create a new version of the current document.
+        """
+        if self._docHandle is None:
+            return False
+
+        self.theParent.saveDocument()
+        nwDoc = NWDoc(self.theProject, self._docHandle)
+        if not nwDoc.isValid():
+            return False
+
+        versNote = self.versNote.text().strip()
+        if not versNote:
+            self.theParent.makeAlert(self.tr("Please provide a version note."), nwAlert.ERROR)
+            return False
+
+        if not nwDoc.savePermanentVersion(versNote):
+            self.theParent.makeAlert(self.tr("Failed to save new version."), nwAlert.ERROR)
+            return False
+
+        self.treeView.populateTree(self._docHandle)
+
+        return True
+
+    ##
+    #  Internal Function
+    ##
+
+    def _updateDocument(self, tHandle):
+        """Update the document information on the widget
+        """
+        self._docHandle = tHandle
+        self.docHeader.setText(self.tr("None"))
+
+        if tHandle is None:
+            return
+
+        nwItem = self.theProject.projTree[tHandle]
+        if nwItem is None:
+            return
+
+        self.docHeader.setText(nwItem.itemName)
+
         return
 
 # END Class GuiVersionView
@@ -121,15 +216,15 @@ class GuiVersionTree(QTreeWidget):
     C_NOTE = 0
     C_DATE = 1
 
-    def __init__(self, theParent):
-        QTreeWidget.__init__(self, theParent)
+    def __init__(self, theWidget):
+        QTreeWidget.__init__(self, theWidget)
 
         logger.debug("Initialising GuiVersionTree ...")
 
         self.mainConf   = nw.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
+        self.theParent  = theWidget.theParent
+        self.theTheme   = theWidget.theTheme
+        self.theProject = theWidget.theProject
 
         # Internal Variables
         self._lastBuild = 0
@@ -140,7 +235,7 @@ class GuiVersionTree(QTreeWidget):
         self.setIconSize(QSize(iPx, iPx))
         self.setIndentation(iPx)
         self.setColumnCount(2)
-        self.setHeaderLabels([self.tr("Note"), self.tr("Date")])
+        self.setHeaderLabels([self.tr("Version Note"), self.tr("Date")])
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setExpandsOnDoubleClick(False)
@@ -222,7 +317,7 @@ class GuiVersionTree(QTreeWidget):
         # ===============
 
         sessDir = QTreeWidgetItem()
-        sessDir.setText(self.C_NOTE, self.tr("Session"))
+        sessDir.setText(self.C_NOTE, self.tr("Session Version"))
         sessDir.setIcon(self.C_NOTE, self.theTheme.getIcon("proj_folder"))
         self.addTopLevelItem(sessDir)
 
@@ -248,7 +343,7 @@ class GuiVersionTree(QTreeWidget):
         # ==============
 
         versDir = QTreeWidgetItem()
-        versDir.setText(self.C_NOTE, self.tr("Versions"))
+        versDir.setText(self.C_NOTE, self.tr("Permanent Versions"))
         versDir.setIcon(self.C_NOTE, self.theTheme.getIcon("proj_folder"))
         self.addTopLevelItem(versDir)
 

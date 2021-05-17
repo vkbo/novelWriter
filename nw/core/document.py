@@ -62,6 +62,12 @@ class NWDoc():
     #  Class Methods
     ##
 
+    def isValid(self):
+        """Returns true of the class contains a valid document. This
+        will not return True if called on an orphaned document.
+        """
+        return self._theItem is not None
+
     def readDocument(self, isOrphan=False, versionSuffix=None, sessCopy=False):
         """Read a document from set handle, capturing potential file
         system errors and parse meta data. If the document doesn't exist
