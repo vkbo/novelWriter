@@ -46,7 +46,9 @@ class GuiItemDetails(QWidget):
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.theTheme   = theParent.theTheme
-        self.theHandle  = None
+
+        # Internal Variables
+        self._itemHandle  = None
 
         # Sizes
         hSp = self.mainConf.pxInt(6)
@@ -55,92 +57,92 @@ class GuiItemDetails(QWidget):
         iPx = self.theTheme.baseIconSize
         fPt = self.theTheme.fontPointSize
 
-        self.expCheck = self.theTheme.getPixmap("check", (iPx, iPx))
-        self.expCross = self.theTheme.getPixmap("cross", (iPx, iPx))
+        self._expCheck = self.theTheme.getPixmap("check", (iPx, iPx))
+        self._expCross = self.theTheme.getPixmap("cross", (iPx, iPx))
 
-        self.fntLabel = QFont()
-        self.fntLabel.setBold(True)
-        self.fntLabel.setPointSizeF(0.9*fPt)
+        fntLabel = QFont()
+        fntLabel.setBold(True)
+        fntLabel.setPointSizeF(0.9*fPt)
 
-        self.fntValue = QFont()
-        self.fntValue.setPointSizeF(0.9*fPt)
+        fntValue = QFont()
+        fntValue.setPointSizeF(0.9*fPt)
 
         # Label
         self.labelName = QLabel(self.tr("Label"))
-        self.labelName.setFont(self.fntLabel)
+        self.labelName.setFont(fntLabel)
         self.labelName.setAlignment(Qt.AlignLeft | Qt.AlignBaseline)
 
         self.labelFlag = QLabel("")
         self.labelFlag.setAlignment(Qt.AlignRight | Qt.AlignBaseline)
 
         self.labelData = QLabel("")
-        self.labelData.setFont(self.fntValue)
+        self.labelData.setFont(fntValue)
         self.labelData.setAlignment(Qt.AlignLeft | Qt.AlignBaseline)
         self.labelData.setWordWrap(True)
 
         # Status
         self.statusName = QLabel(self.tr("Status"))
-        self.statusName.setFont(self.fntLabel)
+        self.statusName.setFont(fntLabel)
         self.statusName.setAlignment(Qt.AlignLeft)
 
         self.statusFlag = QLabel("")
         self.statusFlag.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.statusData = QLabel("")
-        self.statusData.setFont(self.fntValue)
+        self.statusData.setFont(fntValue)
         self.statusData.setAlignment(Qt.AlignLeft)
 
         # Class
         self.className = QLabel(self.tr("Class"))
-        self.className.setFont(self.fntLabel)
+        self.className.setFont(fntLabel)
         self.className.setAlignment(Qt.AlignLeft)
 
         self.classFlag = QLabel("")
-        self.classFlag.setFont(self.fntValue)
+        self.classFlag.setFont(fntValue)
         self.classFlag.setAlignment(Qt.AlignRight)
 
         self.classData = QLabel("")
-        self.classData.setFont(self.fntValue)
+        self.classData.setFont(fntValue)
         self.classData.setAlignment(Qt.AlignLeft)
 
         # Layout
         self.layoutName = QLabel(self.tr("Layout"))
-        self.layoutName.setFont(self.fntLabel)
+        self.layoutName.setFont(fntLabel)
         self.layoutName.setAlignment(Qt.AlignLeft)
 
         self.layoutFlag = QLabel("")
-        self.layoutFlag.setFont(self.fntValue)
+        self.layoutFlag.setFont(fntValue)
         self.layoutFlag.setAlignment(Qt.AlignRight)
 
         self.layoutData = QLabel("")
-        self.layoutData.setFont(self.fntValue)
+        self.layoutData.setFont(fntValue)
         self.layoutData.setAlignment(Qt.AlignLeft)
 
         # Character Count
         self.cCountName = QLabel("  "+self.tr("Characters"))
-        self.cCountName.setFont(self.fntLabel)
+        self.cCountName.setFont(fntLabel)
         self.cCountName.setAlignment(Qt.AlignRight)
 
         self.cCountData = QLabel("")
-        self.cCountData.setFont(self.fntValue)
+        self.cCountData.setFont(fntValue)
         self.cCountData.setAlignment(Qt.AlignRight)
 
         # Word Count
         self.wCountName = QLabel("  "+self.tr("Words"))
-        self.wCountName.setFont(self.fntLabel)
+        self.wCountName.setFont(fntLabel)
         self.wCountName.setAlignment(Qt.AlignRight)
 
         self.wCountData = QLabel("")
-        self.wCountData.setFont(self.fntValue)
+        self.wCountData.setFont(fntValue)
         self.wCountData.setAlignment(Qt.AlignRight)
 
         # Paragraph Count
         self.pCountName = QLabel("  "+self.tr("Paragraphs"))
-        self.pCountName.setFont(self.fntLabel)
+        self.pCountName.setFont(fntLabel)
         self.pCountName.setAlignment(Qt.AlignRight)
 
         self.pCountData = QLabel("")
-        self.pCountData.setFont(self.fntValue)
+        self.pCountData.setFont(fntValue)
         self.pCountData.setAlignment(Qt.AlignRight)
 
         # Assemble
@@ -180,8 +182,8 @@ class GuiItemDetails(QWidget):
         self.setLayout(self.mainBox)
 
         # Make sure the columns for flags and counts don't resize too often
-        flagWidth  = self.theTheme.getTextWidth("Mm", self.fntValue)
-        countWidth = self.theTheme.getTextWidth("99,999", self.fntValue)
+        flagWidth  = self.theTheme.getTextWidth("Mm", fntValue)
+        countWidth = self.theTheme.getTextWidth("99,999", fntValue)
         self.mainBox.setColumnMinimumWidth(1, flagWidth)
         self.mainBox.setColumnMinimumWidth(4, countWidth)
 
@@ -224,7 +226,7 @@ class GuiItemDetails(QWidget):
             self.clearDetails()
             return
 
-        self.theHandle = tHandle
+        self._itemHandle = tHandle
         theLabel = nwItem.itemName
         if len(theLabel) > 100:
             theLabel = theLabel[:96].rstrip()+" ..."
@@ -239,9 +241,9 @@ class GuiItemDetails(QWidget):
 
         if nwItem.itemType == nwItemType.FILE:
             if nwItem.isExported:
-                self.labelFlag.setPixmap(self.expCheck)
+                self.labelFlag.setPixmap(self._expCheck)
             else:
-                self.labelFlag.setPixmap(self.expCross)
+                self.labelFlag.setPixmap(self._expCross)
         else:
             self.labelFlag.setPixmap(QPixmap(1, 1))
 
@@ -279,7 +281,7 @@ class GuiItemDetails(QWidget):
         """Update the counts if the handle is the same as the one we're
         already showing. Otherwise, do nothing.
         """
-        if tHandle == self.theHandle:
+        if tHandle == self._itemHandle:
             self.cCountData.setText(f"{cC:n}")
             self.wCountData.setText(f"{wC:n}")
             self.pCountData.setText(f"{pC:n}")

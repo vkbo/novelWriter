@@ -58,7 +58,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     theItem = nwGUI.treeView._getTreeItem("88243afbe5ed8")
     theRect = nwGUI.treeView.visualItemRect(theItem)
     qtbot.mouseClick(nwGUI.treeView.viewport(), Qt.MidButton, pos=theRect.center())
-    assert nwGUI.docViewer.theHandle == "88243afbe5ed8"
+    assert nwGUI.docViewer.docHandle() == "88243afbe5ed8"
 
     # Reload the text
     origText = nwGUI.docViewer.toPlainText()
@@ -112,7 +112,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
 
     # Close document
     nwGUI.docViewer.docHeader._closeDocument()
-    assert nwGUI.docViewer.theHandle is None
+    assert nwGUI.docViewer.docHandle() is None
 
     # Action on no document
     assert not nwGUI.docViewer.docAction(nwDocAction.COPY)
@@ -127,13 +127,13 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     theRect = nwGUI.docViewer.cursorRect()
     # qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.LeftButton, pos=theRect.center(), delay=100)
     nwGUI.docViewer._linkClicked(QUrl("#char=Bod"))
-    assert nwGUI.docViewer.theHandle == "4c4f28287af27"
+    assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
 
     # Click mouse nav buttons
     qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.BackButton, pos=theRect.center(), delay=100)
-    assert nwGUI.docViewer.theHandle == "88243afbe5ed8"
+    assert nwGUI.docViewer.docHandle() == "88243afbe5ed8"
     qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.ForwardButton, pos=theRect.center(), delay=100)
-    assert nwGUI.docViewer.theHandle == "4c4f28287af27"
+    assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
 
     # Scroll bar default on empty document
     nwGUI.docViewer.clear()
