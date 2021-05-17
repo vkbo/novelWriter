@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import (
 from nw.gui import (
     GuiDocEditor, GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiMainMenu,
     GuiMainStatus, GuiNovelTree, GuiOutline, GuiOutlineDetails,
-    GuiProjectDetails, GuiProjectTree, GuiTheme, GuiVersionTree
+    GuiProjectDetails, GuiProjectTree, GuiTheme, GuiVersionView
 )
 from nw.dialogs import (
     GuiAbout, GuiDocMerge, GuiDocSplit, GuiItemEditor, GuiPreferences,
@@ -118,14 +118,14 @@ class GuiMain(QMainWindow):
         self.projView  = GuiOutline(self)
         self.projMeta  = GuiOutlineDetails(self)
         self.mainMenu  = GuiMainMenu(self)
-        self.versTree  = GuiVersionTree(self)
+        self.versView  = GuiVersionView(self)
 
         # Connect Signals Between Main Elements
         self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
         self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
         self.docEditor.docCountsChanged.connect(self.treeMeta.doUpdateCounts)
         self.docEditor.docCountsChanged.connect(self.treeView.doUpdateCounts)
-        self.docEditor.currentDocumentChanged.connect(self.versTree.doUpdateDocument)
+        self.docEditor.currentDocumentChanged.connect(self.versView.doUpdateDocument)
 
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
@@ -142,7 +142,7 @@ class GuiMain(QMainWindow):
         self.projTabs.setStyleSheet(r"QTabWidget::pane {border: 0;};")
         self.projTabs.addTab(self.treeView, self.tr("Project"))
         self.projTabs.addTab(self.novelView, self.tr("Novel"))
-        self.projTabs.addTab(self.versTree, self.tr("Versions"))
+        self.projTabs.addTab(self.versView, self.tr("Versions"))
         self.projTabs.currentChanged.connect(self._projTabsChanged)
 
         tabFont = self.projTabs.tabBar().font()
@@ -227,7 +227,7 @@ class GuiMain(QMainWindow):
         self.idxTabProj   = self.mainTabs.indexOf(self.splitOutline)
         self.idxTreeView  = self.projTabs.indexOf(self.treeView)
         self.idxNovelView = self.projTabs.indexOf(self.novelView)
-        self.idxVersView  = self.projTabs.indexOf(self.versTree)
+        self.idxVersView  = self.projTabs.indexOf(self.versView)
 
         # Splitter Behaviour
         self.splitMain.setCollapsible(self.idxTree, False)
@@ -315,7 +315,7 @@ class GuiMain(QMainWindow):
         # Project Area
         self.treeView.clearTree()
         self.novelView.clearTree()
-        self.versTree.clearTree()
+        self.versView.clearWidget()
         self.treeMeta.clearDetails()
 
         # Work Area
@@ -982,7 +982,7 @@ class GuiMain(QMainWindow):
             self.docViewer.initViewer()
             self.treeView.initTree()
             self.novelView.initTree()
-            self.versTree.initTree()
+            self.versView.initWidget()
             self.projView.initOutline()
             self.projMeta.initDetails()
 
@@ -1179,7 +1179,7 @@ class GuiMain(QMainWindow):
         self.mainConf.setShowRefPanel(self.viewMeta.isVisible())
         self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
         self.mainConf.setNovelColWidths(self.novelView.getColumnSizes())
-        self.mainConf.setVersionColWidths(self.versTree.getColumnSizes())
+        self.mainConf.setVersionColWidths(self.versView.getColumnSizes())
         if not self.mainConf.isFullScreen:
             self.mainConf.setWinSize(self.width(), self.height())
 

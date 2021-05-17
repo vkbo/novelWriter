@@ -31,16 +31,95 @@ from time import time
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QSize, pyqtSlot
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QAbstractItemView
+)
 
 from nw.core import NWDoc
 
 logger = logging.getLogger(__name__)
 
+class GuiVersionView(QWidget):
+
+    def __init__(self, theParent):
+        QWidget.__init__(self, theParent)
+
+        logger.debug("Initialising GuiVersionView ...")
+
+        self.mainConf   = nw.CONFIG
+        self.theParent  = theParent
+        self.theTheme   = theParent.theTheme
+        self.theProject = theParent.theProject
+
+        # Internal Variables
+        self._lastBuild = 0
+        self._docHandle = None
+
+        # Build GUI
+        self.treeView = GuiVersionTree(self)
+
+        # Assemble
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addWidget(self.treeView)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
+
+        self.setLayout(self.outerBox)
+        self.initWidget()
+
+        logger.debug("GuiVersionView initialisation complete")
+
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def initWidget(self):
+        """Set or update widget settings.
+        """
+        # Scroll bars
+        if self.mainConf.hideVScroll:
+            self.treeView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.treeView.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        if self.mainConf.hideHScroll:
+            self.treeView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        else:
+            self.treeView.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        return
+
+    def getColumnSizes(self):
+        """Return the column widths for the tree columns.
+        """
+        return [self.treeView.columnWidth(0)]
+
+    def clearWidget(self):
+        """Clear the data of the widget.
+        """
+        self.treeView.clearTree()
+        return
+
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot(str)
+    def doUpdateDocument(self, tHandle):
+        """The editor's document handle has changed.
+        """
+        logger.debug("Refreshing version tree with %s" % tHandle)
+        self._docHandle = tHandle
+        self.treeView.populateTree(tHandle)
+        return
+
+# END Class GuiVersionView
+
 class GuiVersionTree(QTreeWidget):
 
-    C_DATE = 0
-    C_NOTE = 1
+    C_NOTE = 0
+    C_DATE = 1
 
     def __init__(self, theParent):
         QTreeWidget.__init__(self, theParent)
@@ -61,8 +140,7 @@ class GuiVersionTree(QTreeWidget):
         self.setIconSize(QSize(iPx, iPx))
         self.setIndentation(iPx)
         self.setColumnCount(2)
-        self.setHeaderLabels([self.tr("Date"), self.tr("Note")])
-        self.itemDoubleClicked.connect(self._treeDoubleClick)
+        self.setHeaderLabels([self.tr("Note"), self.tr("Date")])
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setExpandsOnDoubleClick(False)
@@ -79,31 +157,9 @@ class GuiVersionTree(QTreeWidget):
                 self.setColumnWidth(colN, colW)
 
         # The last column should just auto-scale
-        self.resizeColumnToContents(self.C_NOTE)
-
-        # Set custom settings
-        self.initTree()
+        self.resizeColumnToContents(self.C_DATE)
 
         logger.debug("GuiVersionTree initialisation complete")
-
-        # Internal Mapping
-        self.makeAlert = self.theParent.makeAlert
-
-        return
-
-    def initTree(self):
-        """Set or update tree widget settings.
-        """
-        # Scroll bars
-        if self.mainConf.hideVScroll:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        else:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-
-        if self.mainConf.hideHScroll:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        else:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         return
 
@@ -117,12 +173,6 @@ class GuiVersionTree(QTreeWidget):
         self.clear()
         self._lastBuild = 0
         return
-
-    def getColumnSizes(self):
-        """Return the column widths for the tree columns.
-        """
-        retVals = [self.columnWidth(0)]
-        return retVals
 
     ##
     #  Events
@@ -154,32 +204,15 @@ class GuiVersionTree(QTreeWidget):
         return
 
     ##
-    #  Slots
+    #  Methods
     ##
 
-    @pyqtSlot(str)
-    def doUpdateDocument(self, tHandle):
-        """The editor's document handle has changed.
+    def populateTree(self, tHandle):
+        """Build the version tree from a given handle.
         """
-        logger.debug("Refreshing version tree with %s" % tHandle)
         self._docHandle = tHandle
-        self._populateTree()
-        return
 
-    def _treeDoubleClick(self, tItem, tCol):
-        return
-
-    ##
-    #  Internal Functions
-    ##
-
-    def _populateTree(self):
-        """Build the tree based on the project index.
-        """
-        if self._docHandle is None:
-            return False
-
-        nwItem = self.theProject.projTree[self._docHandle]
+        nwItem = self.theProject.projTree[tHandle]
         if nwItem is None:
             return False
 
@@ -189,24 +222,24 @@ class GuiVersionTree(QTreeWidget):
         # ===============
 
         sessDir = QTreeWidgetItem()
-        sessDir.setText(self.C_DATE, self.tr("Session"))
-        sessDir.setIcon(self.C_DATE, self.theTheme.getIcon("proj_folder"))
+        sessDir.setText(self.C_NOTE, self.tr("Session"))
+        sessDir.setIcon(self.C_NOTE, self.theTheme.getIcon("proj_folder"))
         self.addTopLevelItem(sessDir)
 
-        sessTime = datetime.fromtimestamp(self.theProject.projOpened).strftime("%c")
+        sessTime = datetime.fromtimestamp(self.theProject.projOpened).strftime("%x %X")
         sessNote = self.tr("Current Session")
         sessItem = QTreeWidgetItem()
         if nwItem.sessionBak:
-            sessItem.setText(self.C_DATE, sessTime)
             sessItem.setText(self.C_NOTE, sessNote)
-            sessItem.setToolTip(self.C_DATE, sessTime)
+            sessItem.setText(self.C_DATE, sessTime)
             sessItem.setToolTip(self.C_NOTE, sessNote)
-            sessItem.setData(self.C_DATE, Qt.UserRole, "Session")
-            sessItem.setIcon(self.C_DATE, self.theTheme.getIcon("proj_document"))
+            sessItem.setToolTip(self.C_DATE, sessTime)
+            sessItem.setIcon(self.C_NOTE, self.theTheme.getIcon("proj_document"))
+            sessItem.setData(self.C_NOTE, Qt.UserRole, "Session")
         else:
-            sessItem.setText(self.C_DATE, self.tr("None"))
-            sessItem.setData(self.C_DATE, Qt.UserRole, "None")
-            sessItem.setIcon(self.C_DATE, self.theTheme.getIcon("cross"))
+            sessItem.setText(self.C_NOTE, self.tr("None"))
+            sessItem.setData(self.C_NOTE, Qt.UserRole, "None")
+            sessItem.setIcon(self.C_NOTE, self.theTheme.getIcon("cross"))
 
         sessDir.addChild(sessItem)
         sessDir.setExpanded(True)
@@ -215,30 +248,30 @@ class GuiVersionTree(QTreeWidget):
         # ==============
 
         versDir = QTreeWidgetItem()
-        versDir.setText(self.C_DATE, self.tr("Versions"))
-        versDir.setIcon(self.C_DATE, self.theTheme.getIcon("proj_folder"))
+        versDir.setText(self.C_NOTE, self.tr("Versions"))
+        versDir.setIcon(self.C_NOTE, self.theTheme.getIcon("proj_folder"))
         self.addTopLevelItem(versDir)
 
-        nwDoc = NWDoc(self.theProject, self._docHandle)
+        nwDoc = NWDoc(self.theProject, tHandle)
         versList = nwDoc.listVersions()
         if versList:
             for versName, versDate, versNote in versList:
-                versTime = datetime.fromtimestamp(versDate).strftime("%c")
+                versTime = datetime.fromtimestamp(versDate).strftime("%x %X")
 
                 versItem = QTreeWidgetItem()
-                versItem.setText(self.C_DATE, versTime)
                 versItem.setText(self.C_NOTE, versNote)
-                versItem.setToolTip(self.C_DATE, versTime)
+                versItem.setText(self.C_DATE, versTime)
                 versItem.setToolTip(self.C_NOTE, versNote)
-                versItem.setData(self.C_DATE, Qt.UserRole, versName)
-                versItem.setIcon(self.C_DATE, self.theTheme.getIcon("proj_document"))
+                versItem.setToolTip(self.C_DATE, versTime)
+                versItem.setData(self.C_NOTE, Qt.UserRole, versName)
+                versItem.setIcon(self.C_NOTE, self.theTheme.getIcon("proj_document"))
 
                 versDir.addChild(versItem)
         else:
             versItem = QTreeWidgetItem()
-            versItem.setText(self.C_DATE, self.tr("None"))
-            versItem.setData(self.C_DATE, Qt.UserRole, "None")
-            versItem.setIcon(self.C_DATE, self.theTheme.getIcon("cross"))
+            versItem.setText(self.C_NOTE, self.tr("None"))
+            versItem.setData(self.C_NOTE, Qt.UserRole, "None")
+            versItem.setIcon(self.C_NOTE, self.theTheme.getIcon("cross"))
             versDir.addChild(versItem)
 
         versDir.setExpanded(True)
