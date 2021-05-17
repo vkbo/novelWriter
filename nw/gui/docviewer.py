@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
     QAction, QMenu
 )
 
-from nw.core import ToHtml
+from nw.core import ToHtml, NWDoc
 from nw.enum import nwAlert, nwItemType, nwDocAction
 from nw.constants import nwUnicode
 
@@ -156,7 +156,7 @@ class GuiDocViewer(QTextBrowser):
 
         return True
 
-    def loadText(self, tHandle, updateHistory=True):
+    def loadText(self, tHandle, updateHistory=True, tVersion=None):
         """Load text into the viewer from an item handle.
         """
         tItem = self.theProject.projTree[tHandle]
@@ -178,8 +178,18 @@ class GuiDocViewer(QTextBrowser):
         # Be extra careful here to prevent crashes when first opening a
         # project as a crash here leaves no way of recovering.
         # See issue #298
+        nwDoc = NWDoc(self.theProject, tHandle)
+        if not nwDoc.isValid():
+            logger.warning("Cannot load document")
+            return False
+
+        docText = nwDoc.readDocument(versionSuffix=tVersion)
+        if docText is None:
+            logger.warning("Document is empty")
+            return False
+
         try:
-            aDoc.setText(tHandle)
+            aDoc.setText(tHandle, theText=docText)
             aDoc.doPreProcessing()
             aDoc.tokenizeText()
             aDoc.doConvert()

@@ -390,6 +390,7 @@ class GuiVersionTree(QTreeWidget):
         """Open a version document in the main document viewer.
         """
         logger.verbose("Viewing document version %s" % str(theVersion))
+        self.theParent.viewDocument(self._docHandle, tVersion=theVersion)
         return
 
     def diffVersionDocument(self, theVersion):

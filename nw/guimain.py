@@ -658,7 +658,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def viewDocument(self, tHandle=None, tAnchor=None):
+    def viewDocument(self, tHandle=None, tAnchor=None, tVersion=None):
         """Load a document for viewing in the view panel.
         """
         if not self.hasProject:
@@ -690,7 +690,7 @@ class GuiMain(QMainWindow):
         self.mainTabs.setCurrentWidget(self.splitDocs)
 
         logger.debug("Viewing document with handle %s" % tHandle)
-        if self.docViewer.loadText(tHandle):
+        if self.docViewer.loadText(tHandle, tVersion=tVersion):
             if not self.splitView.isVisible():
                 bPos = self.splitMain.sizes()
                 self.splitView.setVisible(True)

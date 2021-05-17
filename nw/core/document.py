@@ -68,7 +68,7 @@ class NWDoc():
         """
         return self._theItem is not None
 
-    def readDocument(self, isOrphan=False, versionSuffix=None, sessCopy=False):
+    def readDocument(self, isOrphan=False, versionSuffix=None):
         """Read a document from set handle, capturing potential file
         system errors and parse meta data. If the document doesn't exist
         on disk, return an empty string. If something went wrong, return
@@ -84,16 +84,15 @@ class NWDoc():
             return None
 
         if versionSuffix is None:
-            if sessCopy:
+            docFile = "%s.nwd" % self._docHandle
+            docBase = self.theProject.projContent
+        else:
+            if versionSuffix.lower() == "session":
                 docFile = "%s.bak" % self._docHandle
                 docBase = self.theProject.projVers
             else:
-                docFile = "%s.nwd" % self._docHandle
-                docBase = self.theProject.projContent
-        else:
-            docFile = "%s_%s.nwd" % (self._docHandle, versionSuffix)
-            docBase = os.path.join(self.theProject.projVers, self._docHandle)
-            safeMakeDir(docBase)
+                docFile = "%s_%s.nwd" % (self._docHandle, versionSuffix)
+                docBase = os.path.join(self.theProject.projVers, self._docHandle)
 
         docPath = os.path.join(docBase, docFile)
         self._fileLoc = docPath
