@@ -94,7 +94,7 @@ class ToMarkdown(Tokenizer):
             # Process Text Type
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
-                    tTemp = "\n".join(thisPar)
+                    tTemp = "  \n".join(thisPar)
                     tmpResult.append("%s\n\n" % tTemp.rstrip(" "))
                 thisPar = []
 

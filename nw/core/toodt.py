@@ -400,15 +400,14 @@ class ToOdt(Tokenizer):
                 self._addTextPar("Text_Body", oStyle, "")
 
             elif tType == self.T_TEXT:
-                tTemp = tText
                 if parStyle is None:
                     parStyle = oStyle
 
-                tFmt = " "*len(tTemp)
+                tFmt = " "*len(tText)
                 for xPos, xLen, xFmt in tFormat:
                     tFmt = tFmt[:xPos] + odtTags[xFmt] + tFmt[xPos+xLen:]
 
-                tTxt = tTemp.rstrip()
+                tTxt = tText.rstrip()
                 tFmt = tFmt[:len(tTxt)]
                 thisPar.append(tTxt)
                 thisFmt.append(tFmt)
