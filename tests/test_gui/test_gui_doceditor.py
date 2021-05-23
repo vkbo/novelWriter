@@ -25,12 +25,12 @@ import pytest
 from mock import causeOSError
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QTextCursor, QTextOption
+from PyQt5.QtGui import QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtWidgets import QAction, QMessageBox, qApp
 
 from nw.gui.doceditor import GuiDocEditor
-from nw.enum import nwDocAction, nwItemLayout
-from nw.constants import nwUnicode
+from nw.enum import nwDocAction, nwDocInsert, nwItemLayout
+from nw.constants import nwKeyWords, nwUnicode
 
 keyDelay = 2
 typeDelay = 1
@@ -458,6 +458,95 @@ def testGuiEditor_Actions(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     # qtbot.stopForInteraction()
 
 # END Test testGuiEditor_Actions
+
+@pytest.mark.gui
+def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
+    """Test the document insert functions.
+    """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
+
+    # Open project
+    sHandle = "8c659a11cd429"
+    assert nwGUI.openProject(nwMinimal) is True
+    assert nwGUI.openDocument(sHandle) is True
+    qtbot.wait(stepDelay)
+
+    theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
+    assert nwGUI.docEditor.replaceText(theText) is True
+
+    # Insert Text
+    # ===========
+
+    theText = "### A Scene\n\n%s" % ipsumText[0]
+    assert nwGUI.docEditor.replaceText(theText) is True
+
+    # No Document Handle
+    nwGUI.docEditor._docHandle = None
+    assert nwGUI.docEditor.setCursorPosition(24) is True
+    assert nwGUI.docEditor.insertText("Stuff") is False
+    nwGUI.docEditor._docHandle = sHandle
+
+    # Insert String
+    assert nwGUI.docEditor.setCursorPosition(24) is True
+    assert nwGUI.docEditor.insertText(", ipsumer,") is True
+    assert nwGUI.docEditor.getText() == theText[:24] + ", ipsumer," + theText[24:]
+
+    # Single Quotes
+    assert nwGUI.docEditor.replaceText(theText) is True
+    assert nwGUI.docEditor.setCursorPosition(41) is True
+    assert nwGUI.docEditor.insertText(nwDocInsert.QUOTE_LS) is True
+    assert nwGUI.docEditor.setCursorPosition(53) is True
+    assert nwGUI.docEditor.insertText(nwDocInsert.QUOTE_RS) is True
+    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "\u2018consectetur\u2019")
+
+    # Double Quotes
+    assert nwGUI.docEditor.replaceText(theText) is True
+    assert nwGUI.docEditor.setCursorPosition(41) is True
+    assert nwGUI.docEditor.insertText(nwDocInsert.QUOTE_LD) is True
+    assert nwGUI.docEditor.setCursorPosition(53) is True
+    assert nwGUI.docEditor.insertText(nwDocInsert.QUOTE_RD) is True
+    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "\u201cconsectetur\u201d")
+
+    # Invalid Inserts
+    assert nwGUI.docEditor.insertText(nwDocInsert.NO_INSERT) is False
+    assert nwGUI.docEditor.insertText(123) is False
+
+    # Insert KeyWords
+    # ===============
+
+    theText = "### A Scene\n\n\n%s" % ipsumText[0]
+    assert nwGUI.docEditor.replaceText(theText) is True
+    assert nwGUI.docEditor.setCursorLine(2)
+
+    # Invalid Keyword
+    assert nwGUI.docEditor.insertKeyWord("stuff") is False
+    assert nwGUI.docEditor.getText() == theText
+
+    # Valid Keyword
+    assert nwGUI.docEditor.insertKeyWord(nwKeyWords.POV_KEY) is True
+    assert nwGUI.docEditor.insertText("Jane\n")
+    assert nwGUI.docEditor.getText() == theText.replace(
+        "\n\n\n", "\n\n@pov: Jane\n\n", 1
+    )
+
+    # Invalid Block
+    with monkeypatch.context() as mp:
+        mp.setattr(QTextBlock, "isValid", lambda *a, **k: False)
+        assert nwGUI.docEditor.insertKeyWord(nwKeyWords.POV_KEY) is False
+
+    # Insert In-Block
+    assert nwGUI.docEditor.setCursorPosition(20) is True
+    assert nwGUI.docEditor.insertKeyWord(nwKeyWords.CHAR_KEY) is True
+    assert nwGUI.docEditor.insertText("John")
+    assert nwGUI.docEditor.getText() == theText.replace(
+        "\n\n\n", "\n\n@pov: Jane\n@char: John\n\n", 1
+    )
+
+    # qtbot.stopForInteraction()
+
+# END Test testGuiEditor_Insert
 
 @pytest.mark.gui
 def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
