@@ -467,10 +467,6 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert nwGUI.docEditor.getText() == nwUnicode.U_DIVIDE
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsHardBreak.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == "  \n"
-    nwGUI.docEditor.clear()
-
     nwGUI.mainMenu.aInsNBSpace.activate(QAction.Trigger)
     if nwGUI.mainConf.verQtValue >= 50900:
         assert nwGUI.docEditor.getText() == nwUnicode.U_NBSP

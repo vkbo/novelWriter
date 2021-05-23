@@ -634,15 +634,8 @@ class GuiMainMenu(QMenuBar):
         self.aInsDPrime.triggered.connect(lambda: self._docInsert(nwUnicode.U_DPRIME))
         self.mInsPunct.addAction(self.aInsDPrime)
 
-        # Insert > Breaks and Spaces
-        self.mInsBreaks = self.insertMenu.addMenu(self.tr("Breaks and Spaces"))
-
-        # Insert > Hard Line Break
-        self.aInsHardBreak = QAction(self.tr("Hard Line Break"), self)
-        self.aInsHardBreak.setStatusTip(self.tr("Insert a hard line break"))
-        self.aInsHardBreak.setShortcut("Ctrl+K, Return")
-        self.aInsHardBreak.triggered.connect(lambda: self._docInsert(nwDocInsert.HARD_BREAK))
-        self.mInsBreaks.addAction(self.aInsHardBreak)
+        # Insert > White Spaces
+        self.mInsBreaks = self.insertMenu.addMenu(self.tr("White Spaces"))
 
         # Insert > Non-Breaking Space
         self.aInsNBSpace = QAction(self.tr("Non-Breaking Space"), self)

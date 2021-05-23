@@ -95,11 +95,10 @@ class nwDocAction(Enum):
 class nwDocInsert(Enum):
 
     NO_INSERT  = 0
-    HARD_BREAK = 1
-    QUOTE_LS   = 2
-    QUOTE_RS   = 3
-    QUOTE_LD   = 4
-    QUOTE_RD   = 5
+    QUOTE_LS   = 1
+    QUOTE_RS   = 2
+    QUOTE_LD   = 3
+    QUOTE_RD   = 4
 
 # END Enum nwDocInsert
 

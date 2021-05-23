@@ -840,9 +840,7 @@ class GuiDocEditor(QTextEdit):
         if isinstance(theInsert, str):
             theText = theInsert
         elif isinstance(theInsert, nwDocInsert):
-            if theInsert == nwDocInsert.HARD_BREAK:
-                theText = "  \n"
-            elif theInsert == nwDocInsert.QUOTE_LS:
+            if theInsert == nwDocInsert.QUOTE_LS:
                 theText = self._typSQOpen
             elif theInsert == nwDocInsert.QUOTE_RS:
                 theText = self._typSQClose
