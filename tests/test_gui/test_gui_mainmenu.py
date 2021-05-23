@@ -236,6 +236,47 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
         "Also text with “double” quotes which are “less tricky”.\n\n"
     )
 
+    # Remove in-paragraph line breaks
+    nwGUI.docEditor.setText((
+        "### New Text\n\n"
+        "@char: Someone\n"
+        "@location: Somewhere\n\n"
+        "% Some comment ...\n\n"
+        "Here is some text\non multiple\nlines.\n\n"
+        "With another paragraph\nhere."
+    ))
+    nwGUI.mainMenu.aFmtRmBreaks.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == (
+        "### New Text\n\n"
+        "@char: Someone\n"
+        "@location: Somewhere\n\n"
+        "% Some comment ...\n\n"
+        "Here is some text on multiple lines.\n\n"
+        "With another paragraph here.\n"
+    )
+
+    nwGUI.docEditor.setText((
+        "### New Text\n\n"
+        "@char: Someone\n"
+        "@location: Somewhere\n\n"
+        "% Some comment ...\n\n"
+        "Here is some text\non multiple\nlines.\n\n"
+        "With another paragraph\nhere."
+    ))
+    theCursor = nwGUI.docEditor.textCursor()
+    theCursor.setPosition(74)
+    theCursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, 29)
+    nwGUI.docEditor.setTextCursor(theCursor)
+    nwGUI.mainMenu.aFmtRmBreaks.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == (
+        "### New Text\n\n"
+        "@char: Someone\n"
+        "@location: Somewhere\n\n"
+        "% Some comment ...\n\n"
+        "Here is some text on multiple lines.\n\n"
+        "With another paragraph\nhere."
+    )
+
     # Test Invalid Document Action
     assert not nwGUI.docEditor.docAction(nwDocAction.NO_ACTION)
 
