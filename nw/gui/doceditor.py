@@ -716,7 +716,8 @@ class GuiDocEditor(QTextEdit):
     def spellCheckDocument(self):
         """Rerun the highlighter to update spell checking status of the
         currently loaded text. The fastest way to do this, at least as
-        of Qt 5.13, is to clear the text and put it back.
+        of Qt 5.13, is to clear the text and put it back. This clears
+        the undo stack, so we only do it for big documents.
         """
         logger.verbose("Running spell checker")
         if self._spellCheck:
@@ -745,10 +746,15 @@ class GuiDocEditor(QTextEdit):
         passed to it without having to consider the internal logic of
         this class when calling these actions from other classes.
         """
-        logger.verbose("Requesting action: %s" % theAction.name)
         if self._docHandle is None:
             logger.error("No document open")
             return False
+
+        if not isinstance(theAction, nwDocAction):
+            logger.error("Not a document action")
+            return False
+
+        logger.verbose("Requesting action: %s" % theAction.name)
 
         self._allowAutoReplace(False)
         if theAction == nwDocAction.UNDO:
