@@ -40,7 +40,7 @@ typeDelay = 1
 stepDelay = 20
 
 @pytest.mark.gui
-def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDir):
+def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     """Test the document editor.
     """
     # Block message box

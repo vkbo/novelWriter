@@ -791,6 +791,8 @@ class GuiDocEditor(QTextEdit):
             self._replaceQuotes("'", self._typSQOpen, self._typSQClose)
         elif theAction == nwDocAction.REPL_DBL:
             self._replaceQuotes("\"", self._typDQOpen, self._typDQClose)
+        elif theAction == nwDocAction.RM_BREAKS:
+            self._removeInParLineBreaks()
         else:
             logger.debug("Unknown or unsupported document action %s" % str(theAction))
             self._allowAutoReplace(True)
@@ -840,9 +842,7 @@ class GuiDocEditor(QTextEdit):
         if isinstance(theInsert, str):
             theText = theInsert
         elif isinstance(theInsert, nwDocInsert):
-            if theInsert == nwDocInsert.HARD_BREAK:
-                theText = "  \n"
-            elif theInsert == nwDocInsert.QUOTE_LS:
+            if theInsert == nwDocInsert.QUOTE_LS:
                 theText = self._typSQOpen
             elif theInsert == nwDocInsert.QUOTE_RS:
                 theText = self._typSQClose
@@ -1784,6 +1784,54 @@ class GuiDocEditor(QTextEdit):
             theCursor.setPosition(posO - cOffset)
         theCursor.endEditBlock()
         self.setTextCursor(theCursor)
+
+        return True
+
+    def _removeInParLineBreaks(self):
+        """Strip line breaks within paragraphs in the selected text.
+        """
+        theCursor = self.textCursor()
+        theDoc = self.document()
+
+        iS = 0
+        iE = theDoc.blockCount() - 1
+        rS = 0
+        rE = theDoc.characterCount()
+        if theCursor.hasSelection():
+            sBlock = theDoc.findBlock(theCursor.selectionStart())
+            eBlock = theDoc.findBlock(theCursor.selectionEnd())
+            iS = sBlock.blockNumber()
+            iE = eBlock.blockNumber()
+            rS = sBlock.position()
+            rE = eBlock.position() + eBlock.length()
+
+        # Clean up the text
+        currPar = []
+        cleanText = ""
+        for i in range(iS, iE+1):
+            cBlock = theDoc.findBlockByNumber(i)
+            cText = cBlock.text()
+            if cText.strip() == "":
+                if currPar:
+                    cleanText += " ".join(currPar) + "\n\n"
+                else:
+                    cleanText += "\n"
+                currPar = []
+            elif cText.startswith(("# ", "## ", "### ", "#### ", "@", "%")):
+                cleanText += cText + "\n"
+            else:
+                currPar.append(cText)
+
+        if currPar:
+            cleanText += " ".join(currPar) + "\n\n"
+
+        # Replace the text with the cleaned up text
+        theCursor.beginEditBlock()
+        theCursor.clearSelection()
+        theCursor.setPosition(rS)
+        theCursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, rE-rS)
+        theCursor.insertText(cleanText.rstrip() + "\n")
+        theCursor.endEditBlock()
 
         return True
 

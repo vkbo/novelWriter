@@ -205,15 +205,16 @@ tricky for languages that use the same symbol for these.
 
 .. _a_ui_md:
 
-Markdown Format
-===============
+The Markdown-Like Format
+========================
 
-The document editor uses a simplified markdown format. That is, it supports basic formatting like
-emphasis (italic), strong importance (bold) and strikethrough text, as well as four levels of
-headings.
+The editor itself is a plaintext editor that uses formatting codes for setting meta data values and
+allowing for some text formatting. The syntax is based on Markdown, but novelWriter is *not* a
+Markdown editor. It supports basic formatting like emphasis (italic), strong importance (bold)
+and strikethrough text, as well as four levels of headings.
 
-Some non-standard markdown features have been added. For instance, novelWriter allows for comments,
-a synopsis tag, and a set of keyword and value sets used for tags and references.
+In addition to formatting codes, novelWriter allows for comments, a synopsis tag, and a set of
+keyword and value sets used for tags and references.
 
 
 .. _a_ui_md_head:
@@ -251,6 +252,33 @@ level of the novel. See :ref:`a_struct_heads` for more details.
    If you do use the automatic numbering feature for exports, you can tell the export tool to skip
    assigning a number to a specific chapter by adding a ``*`` as the first character of the title
    itself. See :ref:`a_struct_heads_unnum` for more details.
+
+
+.. _a_ui_md_text:
+
+Text Paragraphs
+---------------
+
+A text paragraph is indicated by a blank line. That is, you need two line breaks to separate two
+fragments of text into two paragraphs. Single line breaks are treated as line breaks within a
+paragraph.
+
+In addition, the editor supports a few additional types of whitespaces.
+
+* A non-breaking space can be inserted with :kbd:`Ctrl`:kbd:`K`, :kbd:`Space`.
+* Thin spaces are also supported, and can be inserted with :kbd:`Ctrl`:kbd:`K`,
+   :kbd:`Shift`:kbd:`Space`.
+* Non-breaking thin space can be inserted  with :kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`Space`.
+
+These are all insert features, and the :guilabel:`Insert` menu has more. They are also listed
+in :ref:`a_ui_shortcuts_ins`.
+
+Non-breaking spaces are highlighted by the syntax highlighter with an alternate coloured
+background, depending on the selected theme.
+
+.. tip::
+   Non-breaking spaces are the correct type of space to separate a number from its unit. Generally,
+   it prevents the line wrapping algorithms from adding line breaks where it shouldn't.
 
 
 .. _a_ui_md_emph:
@@ -331,34 +359,6 @@ them multiple times under the same heading will just override the previous setti
 
 The available tag and reference keywords are listed in the :ref:`a_struct_tags` section. They can
 also be inserted at the cursor position in the editor via the :guilabel:`Insert` menu.
-
-
-.. _a_ui_md_add:
-
-Additional Markdown and Non-Standard Features
----------------------------------------------
-
-The editor and viewer also support markdown standard hard line breaks, and preserve non-breaking
-spaces if running with Qt 5.9 or higher. For older versions, the non-breaking spaces are lost when
-the document is saved. This is unfortunately hard-coded into the Qt text editor.
-
-* A hard line break can be achieved by leaving two or more spaces at the end of the line. This is
-  standard markdown syntax. Alternatively, the user can press :kbd:`Ctrl`:kbd:`K`, :kbd:`Return` to
-  insert this type of line break.
-* A non-breaking space can be inserted with :kbd:`Ctrl`:kbd:`K`, :kbd:`Space`.
-* Thin spaces are also supported, and can be inserted with :kbd:`Ctrl`:kbd:`K`,
-  :kbd:`Shift`:kbd:`Space`.
-* Non-breaking thin space can be inserted  with :kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`Space`.
-
-These are all insert features, and the :guilabel:`Insert` menu has more. They are also listed
-in :ref:`a_ui_shortcuts_ins`.
-
-Both hard line breaks and non-breaking spaces are highlighted by the syntax highlighter as an
-alternate coloured background, depending on the selected theme.
-
-.. tip::
-   Non-breaking spaces are the correct type of space to separate a number from its unit. Generally,
-   it prevents the line wrapping algorithms from adding line breaks where it shouldn't.
 
 
 .. _a_ui_outline:
@@ -514,7 +514,6 @@ a key or key combination for the inserted content.
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`.`",                 "Insert an ellipsis."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`'`",      "Insert a prime."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`""`",     "Insert a double prime."
-   ":kbd:`Ctrl`:kbd:`K`, :kbd:`Return`",            "Insert a hard line break."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`Space`",             "Insert a non-breaking space."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`Shift`:kbd:`Space`", "Insert a thin space."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`Space`",  "Insert a thin non-breaking space."

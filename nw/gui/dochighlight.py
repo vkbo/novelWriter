@@ -71,7 +71,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colKey    = QColor(0, 0, 0)
         self.colVal    = QColor(0, 0, 0)
         self.colSpell  = QColor(0, 0, 0)
-        self.colTagErr = QColor(0, 0, 0)
+        self.colError  = QColor(0, 0, 0)
         self.colRepTag = QColor(0, 0, 0)
 
         self.initHighlighter()
@@ -95,11 +95,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colKey    = QColor(*self.theTheme.colKey)
         self.colVal    = QColor(*self.theTheme.colVal)
         self.colSpell  = QColor(*self.theTheme.colSpell)
-        self.colTagErr = QColor(*self.theTheme.colTagErr)
+        self.colError  = QColor(*self.theTheme.colError)
         self.colRepTag = QColor(*self.theTheme.colRepTag)
         self.colMod    = QColor(*self.theTheme.colMod)
-        self.colTrail  = QColor(*self.theTheme.colEmph)
-        self.colTrail.setAlpha(64)
+        self.colBreak  = QColor(*self.theTheme.colEmph)
+        self.colBreak.setAlpha(64)
 
         self.colEmph = None
         if self.mainConf.highlightEmph:
@@ -117,8 +117,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "bold"       : self._makeFormat(self.colEmph, "bold"),
             "italic"     : self._makeFormat(self.colEmph, "italic"),
             "strike"     : self._makeFormat(self.colHidden, "strike"),
-            "trailing"   : self._makeFormat(self.colTrail, "background"),
-            "nobreak"    : self._makeFormat(self.colTrail, "background"),
+            "mspaces"    : self._makeFormat(self.colError, "errline"),
+            "nobreak"    : self._makeFormat(self.colBreak, "background"),
             "dialogue1"  : self._makeFormat(self.colDialN),
             "dialogue2"  : self._makeFormat(self.colDialD),
             "dialogue3"  : self._makeFormat(self.colDialS),
@@ -131,12 +131,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         self.hRules = []
 
-        # Trailing Spaces, 2+
-        self.hRules.append((
-            r"[ ]{2,}$", {
-                0 : self.hStyles["trailing"],
-            }
-        ))
+        # Multiple or Trailing Spaces
+        if self.mainConf.showMultiSpaces:
+            self.hRules.append((
+                r"[ ]{2,}|[ ]*$", {
+                    0 : self.hStyles["mspaces"],
+                }
+            ))
 
         # Non-Breaking Spaces
         self.hRules.append((
@@ -174,7 +175,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 }
             ))
 
-        # Markdown
+        # Markdown Syntax
         self.hRules.append((
             nwRegEx.FMT_EI, {
                 1 : self.hStyles["hidden"],
@@ -296,7 +297,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                             self.setFormat(xPos, xLen, self.hStyles["value"])
                     else:
                         kwFmt = self.format(xPos)
-                        kwFmt.setUnderlineColor(self.colTagErr)
+                        kwFmt.setUnderlineColor(self.colError)
                         kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
                         self.setFormat(xPos, xLen, kwFmt)
 
@@ -391,6 +392,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 theFormat.setFontItalic(True)
             if "strike" in fmtStyle:
                 theFormat.setFontStrikeOut(True)
+            if "errline" in fmtStyle:
+                theFormat.setUnderlineColor(self.colError)
+                theFormat.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
             if "underline" in fmtStyle:
                 theFormat.setFontUnderline(True)
             if "background" in fmtStyle:

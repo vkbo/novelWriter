@@ -151,7 +151,6 @@ class ToHtml(Tokenizer):
         thisPar = []
         parStyle = None
         tmpResult = []
-        hasHardBreak = False
 
         for tType, tLine, tText, tFormat, tStyle in self.theTokens:
 
@@ -196,16 +195,15 @@ class ToHtml(Tokenizer):
             if tType == self.T_EMPTY:
                 if parStyle is None:
                     parStyle = ""
-                if hasHardBreak and self.cssStyles:
+                if len(thisPar) > 1 and self.cssStyles:
                     parClass = " class='break'"
                 else:
                     parClass = ""
                 if len(thisPar) > 0:
-                    tTemp = "".join(thisPar)
+                    tTemp = "<br/>".join(thisPar)
                     tmpResult.append("<p%s%s>%s</p>\n" % (parStyle, parClass, tTemp.rstrip()))
                 thisPar = []
                 parStyle = None
-                hasHardBreak = False
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(r"\\", "<br/>")
@@ -239,11 +237,7 @@ class ToHtml(Tokenizer):
                     parStyle = hStyle
                 for xPos, xLen, xFmt in reversed(tFormat):
                     tTemp = tTemp[:xPos] + htmlTags[xFmt] + tTemp[xPos+xLen:]
-                if tText.endswith("  "):
-                    thisPar.append(tTemp.rstrip() + "<br/>")
-                    hasHardBreak = True
-                else:
-                    thisPar.append(tTemp.rstrip() + " ")
+                thisPar.append(tTemp.rstrip())
 
             elif tType == self.T_SYNOPSIS and self.doSynopsis:
                 tmpResult.append(self._formatSynopsis(tText))

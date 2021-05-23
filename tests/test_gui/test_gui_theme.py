@@ -109,7 +109,7 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert nwGUI.theTheme.colKey    == [242, 119, 122]
     assert nwGUI.theTheme.colVal    == [204, 153, 204]
     assert nwGUI.theTheme.colSpell  == [242, 119, 122]
-    assert nwGUI.theTheme.colTagErr == [153, 204, 153]
+    assert nwGUI.theTheme.colError  == [153, 204, 153]
     assert nwGUI.theTheme.colRepTag == [102, 204, 204]
     assert nwGUI.theTheme.colMod    == [249, 145, 57]
 

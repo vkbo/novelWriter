@@ -924,6 +924,19 @@ class GuiPreferencesSyntax(QWidget):
             self.tr("Applies to emphasis (italic) and strong (bold).")
         )
 
+        # Text Errors
+        # ===========
+
+        self.mainForm.addGroupLabel(self.tr("Text Errors"))
+
+        self.showMultiSpaces = QSwitch()
+        self.showMultiSpaces.setChecked(self.mainConf.showMultiSpaces)
+        self.mainForm.addRow(
+            self.tr("Mark redundant spaces"),
+            self.showMultiSpaces,
+            self.tr("Trailing spaces or multiple spaces between words.")
+        )
+
         return
 
     def saveValues(self):
@@ -939,6 +952,9 @@ class GuiPreferencesSyntax(QWidget):
 
         # Text Emphasis
         self.mainConf.highlightEmph = self.highlightEmph.isChecked()
+
+        # Text Errors
+        self.mainConf.showMultiSpaces = self.showMultiSpaces.isChecked()
 
         self.mainConf.confChanged = True
 
