@@ -111,9 +111,9 @@ class GuiDocEditor(QTextEdit):
         self._typPadChar = " "
 
         # Core Elements and Signals
-        self._qDocument = self.document()
-        self._qDocument.contentsChange.connect(self._docChange)
-        self._qDocument.documentLayout().documentSizeChanged.connect(self._docSizeChanged)
+        qDoc = self.document()
+        qDoc.contentsChange.connect(self._docChange)
+        qDoc.documentLayout().documentSizeChanged.connect(self._docSizeChanged)
 
         # Document Title
         self.docHeader = GuiDocEditHeader(self)
@@ -121,7 +121,7 @@ class GuiDocEditor(QTextEdit):
         self.docSearch = GuiDocEditSearch(self)
 
         # Syntax
-        self.hLight = GuiDocHighlighter(self._qDocument, self.theParent)
+        self.hLight = GuiDocHighlighter(qDoc, self.theParent)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -221,9 +221,10 @@ class GuiDocEditor(QTextEdit):
 
         # Set font
         theFont = QFont()
+        qDoc = self.document()
         if self.mainConf.textFont is None:
             # If none is defined, set the default back to config
-            self.mainConf.textFont = self._qDocument.defaultFont().family()
+            self.mainConf.textFont = qDoc.defaultFont().family()
 
         theFont.setFamily(self.mainConf.textFont)
         theFont.setPointSize(self.mainConf.textSize)
@@ -246,7 +247,7 @@ class GuiDocEditor(QTextEdit):
 
         # Set default text margins
         cM = self.mainConf.getTextMargin()
-        self._qDocument.setDocumentMargin(0)
+        qDoc.setDocumentMargin(0)
         self.setViewportMargins(cM, cM, cM, cM)
 
         # Also set the document text options for the document text flow
@@ -259,7 +260,7 @@ class GuiDocEditor(QTextEdit):
         if self.mainConf.showLineEndings:
             theOpt.setFlags(theOpt.flags() | QTextOption.ShowLineAndParagraphSeparators)
 
-        self._qDocument.setDefaultTextOption(theOpt)
+        qDoc.setDefaultTextOption(theOpt)
 
         # Scroll bars
         if self.mainConf.hideVScroll:
@@ -373,7 +374,6 @@ class GuiDocEditor(QTextEdit):
             self.setCursorLine(tLine)
 
         self.docFooter.updateLineCount()
-        self.lengthLast = self._qDocument.characterCount()
         self._docHeaders = self.theIndex.getHandleHeaders(self._docHandle)
 
         qApp.processEvents()
@@ -381,7 +381,7 @@ class GuiDocEditor(QTextEdit):
         qApp.restoreOverrideCursor()
 
         # This is a hack to fix invisble cursor on an empty document
-        if self._qDocument.characterCount() <= 1:
+        if self.document().characterCount() <= 1:
             self.setPlainText("\n")
             self.setPlainText("")
             self.setCursorPosition(0)
@@ -403,7 +403,7 @@ class GuiDocEditor(QTextEdit):
     def redrawText(self):
         """Redraw the text by marking the document content as "dirty".
         """
-        self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
+        self.document().markContentsDirty(0, self.document().characterCount())
         self.updateDocMargins()
         return
 
@@ -538,9 +538,9 @@ class GuiDocEditor(QTextEdit):
 
         tmpDocChanged = self._docChanged
         if self.mainConf.scrollPastEnd:
-            docFrame = self._qDocument.rootFrame().frameFormat()
+            docFrame = self.document().rootFrame().frameFormat()
             docFrame.setBottomMargin(max(0, 0.9*(wH - uM - lM - 4*tB)))
-            self._qDocument.rootFrame().setFrameFormat(docFrame)
+            self.document().rootFrame().setFrameFormat(docFrame)
 
         # This is needed as the setFrameFormat function itself will
         # trigger the contetsChanged signal which sets _docChanged, so we
@@ -582,7 +582,7 @@ class GuiDocEditor(QTextEdit):
     def isEmpty(self):
         """Wrapper function to check if the current document is empty.
         """
-        return self._qDocument.isEmpty()
+        return self.document().isEmpty()
 
     def currentDictionary(self):
         """Return the current dictionary object.
@@ -602,7 +602,7 @@ class GuiDocEditor(QTextEdit):
         See: https://doc.qt.io/qt-5/qtextdocument.html#toPlainText
         """
         if self.mainConf.verQtValue >= 50900:
-            theText = self._qDocument.toRawText()
+            theText = self.document().toRawText()
             theText = theText.replace(nwUnicode.U_LSEP, "\n") # Line separators
             theText = theText.replace(nwUnicode.U_PSEP, "\n") # Paragraph separators
         else:
@@ -634,7 +634,7 @@ class GuiDocEditor(QTextEdit):
         if not isinstance(thePosition, int):
             return False
 
-        nChars = self._qDocument.characterCount()
+        nChars = self.document().characterCount()
         if nChars > 1:
             theCursor = self.textCursor()
             theCursor.setPosition(min(max(thePosition, 0), nChars-1))
@@ -658,7 +658,7 @@ class GuiDocEditor(QTextEdit):
             return False
 
         if theLine >= 0:
-            theBlock = self._qDocument.findBlockByLineNumber(theLine)
+            theBlock = self.document().findBlockByLineNumber(theLine)
             if theBlock:
                 self.setCursorPosition(theBlock.position())
                 self.docFooter.updateLineCount()
@@ -1008,7 +1008,7 @@ class GuiDocEditor(QTextEdit):
         self._lastEdit = time()
         self._lastFind = None
 
-        if self._qDocument.characterCount() > nwConst.MAX_DOCSIZE:
+        if self.document().characterCount() > nwConst.MAX_DOCSIZE:
             self.theParent.makeAlert(
                 self.tr(
                     "The document has grown too big and you cannot add more text to it. "
@@ -1028,7 +1028,7 @@ class GuiDocEditor(QTextEdit):
             self.wcTimer.start()
 
         if self._doReplace and chrAdd == 1:
-            self._docAutoReplace(self._qDocument.findBlock(thePos))
+            self._docAutoReplace(self.document().findBlock(thePos))
 
         return
 
@@ -1197,7 +1197,7 @@ class GuiDocEditor(QTextEdit):
         # Must not be emitted if docHandle is None!
         self.docCountsChanged.emit(self._docHandle, cCount, wCount, pCount)
 
-        self._checkDocSize(self._qDocument.characterCount())
+        self._checkDocSize(self.document().characterCount())
         self.docFooter.updateCounts()
 
         return
@@ -1210,7 +1210,7 @@ class GuiDocEditor(QTextEdit):
         moved to has been drawn before the move is made.
         """
         if self._queuePos is not None:
-            thePos = self._qDocument.documentLayout().hitTest(
+            thePos = self.document().documentLayout().hitTest(
                 QPointF(theSize.width(), theSize.height()), Qt.FuzzyHit
             )
             if self._queuePos <= thePos:
@@ -1596,8 +1596,9 @@ class GuiDocEditor(QTextEdit):
             posS = theCursor.selectionStart()
             posE = theCursor.selectionEnd()
 
-            blockS = self._qDocument.findBlock(posS)
-            blockE = self._qDocument.findBlock(posE)
+            qDoc = self.document()
+            blockS = qDoc.findBlock(posS)
+            blockE = qDoc.findBlock(posE)
             if blockS != blockE:
                 posE = blockS.position() + blockS.length() - 1
 
@@ -1650,10 +1651,11 @@ class GuiDocEditor(QTextEdit):
             # Underscore counts as a part of the word, so check that the
             # selection isn't wrapped in italics markers.
             reSelect = False
-            if self._qDocument.characterAt(posS) == "_":
+            qDoc = self.document()
+            if qDoc.characterAt(posS) == "_":
                 posS += 1
                 reSelect = True
-            if self._qDocument.characterAt(posE) == "_":
+            if qDoc.characterAt(posE) == "_":
                 posE -= 1
                 reSelect = True
             if reSelect:
@@ -1675,8 +1677,8 @@ class GuiDocEditor(QTextEdit):
             posS = theCursor.selectionStart()
             posE = theCursor.selectionEnd()
 
-            blockS = self._qDocument.findBlock(posS)
-            blockE = self._qDocument.findBlock(posE)
+            blockS = self.document().findBlock(posS)
+            blockE = self.document().findBlock(posE)
 
             if blockS != blockE:
                 posE = blockS.position() + blockS.length() - 1
@@ -1687,14 +1689,14 @@ class GuiDocEditor(QTextEdit):
 
             numB = 0
             for n in range(fLen):
-                if self._qDocument.characterAt(posS-n-1) == fChar:
+                if self.document().characterAt(posS-n-1) == fChar:
                     numB += 1
                 else:
                     break
 
             numA = 0
             for n in range(fLen):
-                if self._qDocument.characterAt(posE+n) == fChar:
+                if self.document().characterAt(posE+n) == fChar:
                     numA += 1
                 else:
                     break
@@ -2707,7 +2709,7 @@ class GuiDocEditFooter(QWidget):
         else:
             theCursor = self.docEditor.textCursor()
             iLine = theCursor.blockNumber() + 1
-            iDist = 100*iLine/self.docEditor._qDocument.blockCount()
+            iDist = 100*iLine/self.docEditor.document().blockCount()
 
         self.linesText.setText(
             self.tr("Line: {0} ({1})").format(f"{iLine:n}", f"{iDist:.0f} %")
@@ -2729,7 +2731,7 @@ class GuiDocEditFooter(QWidget):
             self.tr("Words: {0} ({1})").format(f"{wCount:n}", f"{wDiff:+n}")
         )
 
-        byteSize = self.docEditor._qDocument.characterCount()
+        byteSize = self.docEditor.document().characterCount()
         self.wordsText.setToolTip(
             self.tr("Document size is {0} bytes").format(f"{byteSize:n}")
         )

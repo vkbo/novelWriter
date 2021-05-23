@@ -983,7 +983,7 @@ class GuiBuildNovel(QDialog):
                 thePrinter.setFontEmbeddingEnabled(True)
                 thePrinter.setColorMode(QPrinter.Color)
                 thePrinter.setOutputFileName(savePath)
-                self.docView.qDocument.print(thePrinter)
+                self.docView.document().print(thePrinter)
                 wSuccess = True
 
             except Exception as e:
@@ -1025,7 +1025,7 @@ class GuiBuildNovel(QDialog):
         """
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         thePrinter.setOrientation(QPrinter.Portrait)
-        self.docView.qDocument.print(thePrinter)
+        self.docView.document().print(thePrinter)
         qApp.restoreOverrideCursor()
         return
 
@@ -1203,8 +1203,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.setMinimumWidth(40*self.theParent.theTheme.textNWidth)
         self.setOpenExternalLinks(False)
 
-        self.qDocument = self.document()
-        self.qDocument.setDocumentMargin(self.mainConf.getTextMargin())
+        self.document().setDocumentMargin(self.mainConf.getTextMargin())
         self.setPlaceholderText(self.tr(
             "This area will show the content of the document to be "
             "exported or printed. Press the \"Build Preview\" button "
@@ -1214,7 +1213,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         theFont = QFont()
         if self.mainConf.textFont is None:
             # If none is defined, set the default back to config
-            self.mainConf.textFont = self.qDocument.defaultFont().family()
+            self.mainConf.textFont = self.document().defaultFont().family()
         theFont.setFamily(self.mainConf.textFont)
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
@@ -1264,12 +1263,12 @@ class GuiBuildNovelDocView(QTextBrowser):
     def setJustify(self, doJustify):
         """Set the justify text option.
         """
-        theOpt = self.qDocument.defaultTextOption()
+        theOpt = self.document().defaultTextOption()
         if doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
         else:
             theOpt.setAlignment(Qt.AlignAbsolute)
-        self.qDocument.setDefaultTextOption(theOpt)
+        self.document().setDefaultTextOption(theOpt)
         return
 
     def setTextFont(self, textFont, textSize):
@@ -1306,7 +1305,7 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         # Since we change the content while it may still be rendering, we mark
         # the document dirty again to make sure it's re-rendered properly.
-        self.qDocument.markContentsDirty(0, self.qDocument.characterCount())
+        self.document().markContentsDirty(0, self.document().characterCount())
         qApp.restoreOverrideCursor()
 
         return
@@ -1320,14 +1319,14 @@ class GuiBuildNovelDocView(QTextBrowser):
             theStyles.append(r"a {color: rgb(66, 113, 174);}")
             theStyles.append(r".tags {color: rgb(245, 135, 31); font-weight: bold;}")
 
-        self.qDocument.setDefaultStyleSheet("\n".join(theStyles))
+        self.document().setDefaultStyleSheet("\n".join(theStyles))
 
         return
 
     def clearStyleSheet(self):
         """Clears the document stylesheet.
         """
-        self.qDocument.setDefaultStyleSheet("")
+        self.document().setDefaultStyleSheet("")
         return
 
     ##
