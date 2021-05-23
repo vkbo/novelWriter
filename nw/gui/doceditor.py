@@ -276,7 +276,7 @@ class GuiDocEditor(QTextEdit):
         # Refresh the tab stops
         if self.mainConf.verQtValue >= 51000:
             self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:
+        else: # pragma: no cover
             self.setTabStopWidth(self.mainConf.getTabWidth())
 
         # Initialise the syntax highlighter
@@ -394,7 +394,7 @@ class GuiDocEditor(QTextEdit):
 
         return True
 
-    def updateTagHighLighting(self, forceBigDoc=False):
+    def updateTagHighLighting(self):
         """Rerun the syntax highlighter on all meta data lines.
         """
         self.hLight.rehighlightByType(GuiDocHighlighter.BLOCK_META)
@@ -1563,7 +1563,7 @@ class GuiDocEditor(QTextEdit):
         """Check if document size crosses the big document limit set in
         config. If so, we will set the big document flag to True.
         """
-        bigLim = self.mainConf.bigDocLimit*1000
+        bigLim = round(self.mainConf.bigDocLimit*1000)
         newState = theSize > bigLim
 
         if newState != self._bigDoc:

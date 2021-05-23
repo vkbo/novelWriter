@@ -22,16 +22,176 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
+from mock import causeOSError
+
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QTextCursor
+from PyQt5.QtGui import QTextCursor, QTextOption
 from PyQt5.QtWidgets import QAction, QMessageBox
 
 from nw.gui.doceditor import GuiDocEditor
-from nw.enum import nwDocAction
+from nw.enum import nwDocAction, nwItemLayout
+from nw.constants import nwUnicode
 
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
+@pytest.mark.gui
+def testGuiEditor_Init(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
+    """Test initialising the editor.
+    """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+
+    # Open project
+    assert nwGUI.openProject(nwMinimal)
+    assert nwGUI.openDocument("8c659a11cd429")
+
+    nwGUI.docEditor.setText("### Lorem Ipsum\n\n%s" % ipsumText[0])
+    assert nwGUI.saveDocument()
+    qtbot.wait(stepDelay)
+
+    # Check Defaults
+    qDoc = nwGUI.docEditor.document()
+    assert qDoc.defaultTextOption().alignment() == Qt.AlignLeft
+    assert nwGUI.docEditor.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    assert nwGUI.docEditor.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    assert nwGUI.docEditor._typPadChar == nwUnicode.U_NBSP
+
+    # Check that editor handles settings
+    nwGUI.mainConf.textFont = None
+    nwGUI.mainConf.doJustify = True
+    nwGUI.mainConf.showTabsNSpaces = True
+    nwGUI.mainConf.showLineEndings = True
+    nwGUI.mainConf.hideVScroll = True
+    nwGUI.mainConf.hideHScroll = True
+    nwGUI.mainConf.fmtPadThin = True
+
+    assert nwGUI.docEditor.initEditor()
+
+    qDoc = nwGUI.docEditor.document()
+    assert nwGUI.mainConf.textFont == qDoc.defaultFont().family()
+    assert qDoc.defaultTextOption().alignment() == Qt.AlignJustify
+    assert qDoc.defaultTextOption().flags() & QTextOption.ShowTabsAndSpaces
+    assert qDoc.defaultTextOption().flags() & QTextOption.ShowLineAndParagraphSeparators
+    assert nwGUI.docEditor.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert nwGUI.docEditor.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert nwGUI.docEditor._typPadChar == nwUnicode.U_THNBSP
+
+    # qtbot.stopForInteraction()
+
+# END Test testGuiEditor_Init
+
+@pytest.mark.gui
+def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumText):
+    """Test loading text into the editor.
+    """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
+
+    # Open project
+    sHandle = "8c659a11cd429"
+    assert nwGUI.openProject(nwMinimal) is True
+    assert nwGUI.openDocument(sHandle) is True
+
+    longText = "### Lorem Ipsum\n\n%s" % "\n\n".join(ipsumText*20)
+    nwGUI.docEditor.replaceText(longText)
+    assert nwGUI.saveDocument() is True
+    assert nwGUI.closeDocument() is True
+    qtbot.wait(stepDelay)
+
+    # Load Text
+    # =========
+
+    # Invalid handle
+    assert nwGUI.docEditor.loadText("abcdefghijklm") is False
+
+    # Document too big
+    with monkeypatch.context() as mp:
+        mp.setattr("nw.constants.nwConst.MAX_DOCSIZE", 100)
+        assert nwGUI.docEditor.loadText(sHandle) is False
+        assert "The document you are trying to open is too big." in caplog.text
+
+    # Regular open
+    assert nwGUI.docEditor.loadText(sHandle) is True
+    assert nwGUI.docEditor._bigDoc is False
+
+    # Reload too big text
+    with monkeypatch.context() as mp:
+        mp.setattr("nw.constants.nwConst.MAX_DOCSIZE", 100)
+        assert nwGUI.docEditor.replaceText(longText) is False
+        assert "The document you are trying to open is too big." in caplog.text
+
+    # Big doc handling
+    nwGUI.mainConf.bigDocLimit = 50
+    assert nwGUI.docEditor.loadText(sHandle) is True
+    assert nwGUI.docEditor._bigDoc is True
+
+    # Regular open, with line number
+    assert nwGUI.docEditor.loadText(sHandle, tLine=4) is True
+    cursPos = nwGUI.docEditor.getCursorPosition()
+    assert nwGUI.docEditor.document().findBlock(cursPos).blockNumber() == 4
+
+    # Load empty document
+    nwGUI.docEditor.replaceText("")
+    assert nwGUI.saveDocument() is True
+    assert nwGUI.docEditor.loadText(sHandle) is True
+    assert nwGUI.docEditor.toPlainText() == ""
+
+    # qtbot.stopForInteraction()
+
+# END Test testGuiEditor_LoadText
+
+@pytest.mark.gui
+def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumText):
+    """Test loading text into the editor.
+    """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
+
+    # Open project
+    sHandle = "8c659a11cd429"
+    assert nwGUI.openProject(nwMinimal) is True
+    assert nwGUI.openDocument(sHandle) is True
+    qtbot.wait(stepDelay)
+
+    # Save Text
+    # =========
+
+    longText = "### Lorem Ipsum\n\n%s" % "\n\n".join(ipsumText)
+    nwGUI.docEditor.replaceText(longText)
+
+    # Missing item
+    nwItem = nwGUI.docEditor._nwItem
+    nwGUI.docEditor._nwItem = None
+    assert nwGUI.docEditor.saveText() is False
+    nwGUI.docEditor._nwItem = nwItem
+
+    # Unkown handle
+    nwGUI.docEditor._docHandle = "0123456789abcdef"
+    assert nwGUI.docEditor.saveText() is False
+    nwGUI.docEditor._docHandle = sHandle
+
+    # Cause error when saving
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert nwGUI.docEditor.saveText() is False
+        assert "Could not save document." in caplog.text
+
+    # Change header level
+    assert nwGUI.theProject.projTree[sHandle].itemLayout == nwItemLayout.SCENE
+    nwGUI.docEditor.replaceText(longText[1:])
+    assert nwGUI.docEditor.saveText() is True
+    assert nwGUI.theProject.projTree[sHandle].itemLayout == nwItemLayout.CHAPTER
+
+    # Regular save
+    assert nwGUI.docEditor.saveText() is True
+
+    # qtbot.stopForInteraction()
+
+# END Test testGuiEditor_SaveText
 
 @pytest.mark.gui
 def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):

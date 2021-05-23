@@ -29,7 +29,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox
 
 @pytest.mark.gui
-def testGuiNovelTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
+def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test navigating the novel tree.
     """
     # Block message box
