@@ -743,60 +743,6 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def _buildSearchMenu(self):
-        """Assemble the Search menu.
-        """
-        # Search
-        self.srcMenu = self.addMenu(self.tr("&Search"))
-
-        # Search > Find
-        self.aFind = QAction(self.tr("Find"), self)
-        self.aFind.setStatusTip(self.tr("Find text in document"))
-        self.aFind.setShortcut("Ctrl+F")
-        self.aFind.triggered.connect(lambda: self.theParent.docEditor.beginSearch())
-        self.srcMenu.addAction(self.aFind)
-
-        # Search > Replace
-        self.aReplace = QAction(self.tr("Replace"), self)
-        self.aReplace.setStatusTip(self.tr("Replace text in document"))
-        if self.mainConf.osDarwin:
-            self.aReplace.setShortcut("Ctrl+=")
-        else:
-            self.aReplace.setShortcut("Ctrl+H")
-        self.aReplace.triggered.connect(lambda: self.theParent.docEditor.beginReplace())
-        self.srcMenu.addAction(self.aReplace)
-
-        # Search > Find Next
-        self.aFindNext = QAction(self.tr("Find Next"), self)
-        self.aFindNext.setStatusTip(self.tr("Find next occurrence of text in document"))
-        if self.mainConf.osDarwin:
-            self.aFindNext.setShortcuts(["Ctrl+G", "F3"])
-        else:
-            self.aFindNext.setShortcuts(["F3", "Ctrl+G"])
-        self.aFindNext.triggered.connect(lambda: self.theParent.docEditor.findNext())
-        self.srcMenu.addAction(self.aFindNext)
-
-        # Search > Find Prev
-        self.aFindPrev = QAction(self.tr("Find Previous"), self)
-        self.aFindPrev.setStatusTip(self.tr("Find previous occurrence of text in document"))
-        if self.mainConf.osDarwin:
-            self.aFindPrev.setShortcuts(["Ctrl+Shift+G", "Shift+F3"])
-        else:
-            self.aFindPrev.setShortcuts(["Shift+F3", "Ctrl+Shift+G"])
-        self.aFindPrev.triggered.connect(lambda: self.theParent.docEditor.findNext(goBack=True))
-        self.srcMenu.addAction(self.aFindPrev)
-
-        # Search > Replace Next
-        self.aReplaceNext = QAction(self.tr("Replace Next"), self)
-        self.aReplaceNext.setStatusTip(
-            self.tr("Find and replace next occurrence of text in document")
-        )
-        self.aReplaceNext.setShortcut("Ctrl+Shift+1")
-        self.aReplaceNext.triggered.connect(lambda: self.theParent.docEditor.replaceNext())
-        self.srcMenu.addAction(self.aReplaceNext)
-
-        return
-
     def _buildFormatMenu(self):
         """Assemble the Format menu.
         """
@@ -904,6 +850,68 @@ class GuiMainMenu(QMenuBar):
         )
         self.aFmtReplDbl.triggered.connect(lambda: self._docAction(nwDocAction.REPL_DBL))
         self.fmtMenu.addAction(self.aFmtReplDbl)
+
+        # Format > Remove In-Paragraph Breaks
+        self.aFmtRmBreaks = QAction(self.tr("Remove In-Paragraph Breaks"), self)
+        self.aFmtRmBreaks.setStatusTip(
+            self.tr("Removes all line breaks within paragraphs in the selected text")
+        )
+        self.aFmtRmBreaks.triggered.connect(lambda: self._docAction(nwDocAction.RM_BREAKS))
+        self.fmtMenu.addAction(self.aFmtRmBreaks)
+
+        return
+
+    def _buildSearchMenu(self):
+        """Assemble the Search menu.
+        """
+        # Search
+        self.srcMenu = self.addMenu(self.tr("&Search"))
+
+        # Search > Find
+        self.aFind = QAction(self.tr("Find"), self)
+        self.aFind.setStatusTip(self.tr("Find text in document"))
+        self.aFind.setShortcut("Ctrl+F")
+        self.aFind.triggered.connect(lambda: self.theParent.docEditor.beginSearch())
+        self.srcMenu.addAction(self.aFind)
+
+        # Search > Replace
+        self.aReplace = QAction(self.tr("Replace"), self)
+        self.aReplace.setStatusTip(self.tr("Replace text in document"))
+        if self.mainConf.osDarwin:
+            self.aReplace.setShortcut("Ctrl+=")
+        else:
+            self.aReplace.setShortcut("Ctrl+H")
+        self.aReplace.triggered.connect(lambda: self.theParent.docEditor.beginReplace())
+        self.srcMenu.addAction(self.aReplace)
+
+        # Search > Find Next
+        self.aFindNext = QAction(self.tr("Find Next"), self)
+        self.aFindNext.setStatusTip(self.tr("Find next occurrence of text in document"))
+        if self.mainConf.osDarwin:
+            self.aFindNext.setShortcuts(["Ctrl+G", "F3"])
+        else:
+            self.aFindNext.setShortcuts(["F3", "Ctrl+G"])
+        self.aFindNext.triggered.connect(lambda: self.theParent.docEditor.findNext())
+        self.srcMenu.addAction(self.aFindNext)
+
+        # Search > Find Prev
+        self.aFindPrev = QAction(self.tr("Find Previous"), self)
+        self.aFindPrev.setStatusTip(self.tr("Find previous occurrence of text in document"))
+        if self.mainConf.osDarwin:
+            self.aFindPrev.setShortcuts(["Ctrl+Shift+G", "Shift+F3"])
+        else:
+            self.aFindPrev.setShortcuts(["Shift+F3", "Ctrl+Shift+G"])
+        self.aFindPrev.triggered.connect(lambda: self.theParent.docEditor.findNext(goBack=True))
+        self.srcMenu.addAction(self.aFindPrev)
+
+        # Search > Replace Next
+        self.aReplaceNext = QAction(self.tr("Replace Next"), self)
+        self.aReplaceNext.setStatusTip(
+            self.tr("Find and replace next occurrence of text in document")
+        )
+        self.aReplaceNext.setShortcut("Ctrl+Shift+1")
+        self.aReplaceNext.triggered.connect(lambda: self.theParent.docEditor.replaceNext())
+        self.srcMenu.addAction(self.aReplaceNext)
 
         return
 

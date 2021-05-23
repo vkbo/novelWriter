@@ -89,6 +89,7 @@ class nwDocAction(Enum):
     BLOCK_TXT = 18
     REPL_SNG  = 19
     REPL_DBL  = 20
+    RM_BREAKS = 21
 
 # END Enum nwDocAction
 
