@@ -38,8 +38,7 @@ at the same time provide a complete set of features needed for writing a novel.
 
 .. tip::
    If you do need to align information in rows and columns in your notes, you can achieve this with
-   tabs and hard line breaks. The tab stop width can be specified in :guilabel:`Preferences` and
-   hard line breaks can be inserted by adding to spaces at the end of the line.
+   tabs and line breaks. The tab stop width can be specified in :guilabel:`Preferences`.
 
 The main window does not have a toolbar like many other applications do. This reduces clutter, and
 since the documents are formatted with markdown tags, is more or less redundant. However, all
