@@ -327,8 +327,7 @@ class ToOdt(Tokenizer):
         thisPar = []
         thisFmt = []
         parStyle = None
-        hasHardBreak = False
-        for tType, tLine, tText, tFormat, tStyle in self.theTokens:
+        for tType, _, tText, tFormat, tStyle in self.theTokens:
 
             # Styles
             oStyle = ODTParagraphStyle()
@@ -359,13 +358,13 @@ class ToOdt(Tokenizer):
 
             # Process Text Types
             if tType == self.T_EMPTY:
-                if hasHardBreak and parStyle is not None:
+                if len(thisPar) > 1 and parStyle is not None:
                     if self.doJustify:
                         parStyle.setTextAlign("left")
 
                 if len(thisPar) > 0:
-                    tTemp = "".join(thisPar)
-                    fTemp = "".join(thisFmt)
+                    tTemp = "\n".join(thisPar)
+                    fTemp = " ".join(thisFmt)
                     tTxt = tTemp.rstrip()
                     tFmt = fTemp[:len(tTxt)]
                     self._addTextPar("Text_Body", parStyle, tTxt, theFmt=tFmt)
@@ -373,7 +372,6 @@ class ToOdt(Tokenizer):
                 thisPar = []
                 thisFmt = []
                 parStyle = None
-                hasHardBreak = False
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(r"\\", "\n")
@@ -412,13 +410,8 @@ class ToOdt(Tokenizer):
 
                 tTxt = tTemp.rstrip()
                 tFmt = tFmt[:len(tTxt)]
-                if tText.endswith("  "):
-                    thisPar.append(tTxt + "\n")
-                    thisFmt.append(tFmt + " ")
-                    hasHardBreak = True
-                else:
-                    thisPar.append(tTxt + " ")
-                    thisFmt.append(tFmt + " ")
+                thisPar.append(tTxt)
+                thisFmt.append(tFmt)
 
             elif tType == self.T_SYNOPSIS and self.doSynopsis:
                 tTemp, fTemp = self._formatSynopsis(tText)
