@@ -93,7 +93,8 @@ def testCoreToOdt_Convert(dummyGUI):
         '<text:span text:style-name="T2">bold</text:span>'
         '<text:span text:style-name="T1"> and </text:span>'
         '<text:span text:style-name="T3">italics</text:span>'
-        '<text:span text:style-name="T1"> text</text:span> text. No format</text:p>'
+        '<text:span text:style-name="T1"> text</text:span> text.'
+        '<text:line-break/>No format</text:p>'
         '</office:text>'
     )
 
