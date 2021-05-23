@@ -106,7 +106,7 @@ class GuiTheme:
         self.colKey    = [0, 0, 0]
         self.colVal    = [0, 0, 0]
         self.colSpell  = [0, 0, 0]
-        self.colTagErr = [0, 0, 0]
+        self.colError  = [0, 0, 0]
         self.colRepTag = [0, 0, 0]
         self.colMod    = [0, 0, 0]
 
@@ -373,7 +373,7 @@ class GuiTheme:
             self.colKey    = self._loadColour(confParser, cnfSec, "keyword")
             self.colVal    = self._loadColour(confParser, cnfSec, "value")
             self.colSpell  = self._loadColour(confParser, cnfSec, "spellcheckline")
-            self.colTagErr = self._loadColour(confParser, cnfSec, "tagerror")
+            self.colError  = self._loadColour(confParser, cnfSec, "errorline")
             self.colRepTag = self._loadColour(confParser, cnfSec, "replacetag")
             self.colMod    = self._loadColour(confParser, cnfSec, "modifier")
 
