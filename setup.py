@@ -669,15 +669,19 @@ def xdgInstall():
     with open("./novelwriter.desktop", mode="w+") as outFile:
         outFile.write(desktopData)
 
+    # Remove old desktop icon
+    exCode = subprocess.call(
+        ["xdg-desktop-icon", "uninstall", "novelwriter.desktop"]
+    )
+
+    # Install application launcher
     exCode = subprocess.call(
         ["xdg-desktop-menu", "install", "--novendor", "./novelwriter.desktop"]
     )
     if exCode == 0:
-        print("Installed menu desktop file")
+        print("Installed menu launcher file")
     else:
-        print(f"Error {exCode}: Could not install menu desktop file")
-
-    print("")
+        print(f"Error {exCode}: Could not install menu launcher file")
 
     # Install MimeType
     # ================
@@ -690,8 +694,6 @@ def xdgInstall():
         print("Installed mimetype")
     else:
         print(f"Error {exCode}: Could not install mimetype")
-
-    print("")
 
     # Install Icons
     # =============
@@ -757,17 +759,28 @@ def xdgUninstall():
     print("=============")
     print("")
 
+    # Application Menu Icon
     exCode = subprocess.call(
         ["xdg-desktop-menu", "uninstall", "novelwriter.desktop"]
     )
     if exCode == 0:
-        print("Uninstalled menu desktop file")
+        print("Uninstalled menu launcher file")
     else:
-        print(f"Error {exCode}: Could not uninstall menu desktop file")
+        print(f"Error {exCode}: Could not uninstall menu launcher file")
+
+    # Desktop Icon
+    # (No longer installed)
+    exCode = subprocess.call(
+        ["xdg-desktop-icon", "uninstall", "novelwriter.desktop"]
+    )
+    if exCode == 0:
+        print("Uninstalled desktop launcher file")
+    else:
+        print(f"Error {exCode}: Could not uninstall desktop launcher file")
 
     sizeArr = ["16", "22", "24", "32", "48", "64", "96", "128", "256", "512"]
 
-    # App Icon
+    # App Icons
     for aSize in sizeArr:
         exCode = subprocess.call([
             "xdg-icon-resource", "uninstall", "--noupdate",
