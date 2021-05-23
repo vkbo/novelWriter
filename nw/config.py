@@ -139,6 +139,7 @@ class Config:
         self.doJustify       = False # Justify text
         self.showTabsNSpaces = False # Show tabs and spaces in edior
         self.showLineEndings = False # Show line endings in editor
+        self.showMultiSpaces = True  # Highlight multiple spaces in the text
 
         self.doReplace       = True  # Enable auto-replace as you type
         self.doReplaceSQuote = True  # Smart single quotes
@@ -606,6 +607,9 @@ class Config:
         self.showLineEndings = self._parseLine(
             cnfParse, cnfSec, "showlineendings", self.CNF_BOOL, self.showLineEndings
         )
+        self.showMultiSpaces = self._parseLine(
+            cnfParse, cnfSec, "showmultispaces", self.CNF_BOOL, self.showMultiSpaces
+        )
         self.bigDocLimit = self._parseLine(
             cnfParse, cnfSec, "bigdoclimit", self.CNF_INT, self.bigDocLimit
         )
@@ -770,6 +774,7 @@ class Config:
         cnfParse.set(cnfSec, "spellcheck",      str(self.spellLanguage))
         cnfParse.set(cnfSec, "showtabsnspaces", str(self.showTabsNSpaces))
         cnfParse.set(cnfSec, "showlineendings", str(self.showLineEndings))
+        cnfParse.set(cnfSec, "showmultispaces", str(self.showMultiSpaces))
         cnfParse.set(cnfSec, "bigdoclimit",     str(self.bigDocLimit))
         cnfParse.set(cnfSec, "showfullpath",    str(self.showFullPath))
         cnfParse.set(cnfSec, "highlightquotes", str(self.highlightQuotes))

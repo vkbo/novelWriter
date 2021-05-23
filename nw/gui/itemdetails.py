@@ -198,6 +198,8 @@ class GuiItemDetails(QWidget):
     def clearDetails(self):
         """Clear all the data values.
         """
+        self._itemHandle = None
+
         self.labelFlag.setPixmap(QPixmap(1, 1))
         self.statusFlag.setPixmap(QPixmap(1, 1))
         self.classFlag.setText("")

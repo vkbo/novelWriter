@@ -1325,7 +1325,6 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aInsEllipsis)
         self.addAction(self.mainMenu.aInsPrime)
         self.addAction(self.mainMenu.aInsDPrime)
-        self.addAction(self.mainMenu.aInsHardBreak)
         self.addAction(self.mainMenu.aInsNBSpace)
         self.addAction(self.mainMenu.aInsThinSpace)
         self.addAction(self.mainMenu.aInsThinNBSpace)

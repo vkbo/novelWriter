@@ -89,12 +89,12 @@ class ToMarkdown(Tokenizer):
         thisPar = []
         tmpResult = []
 
-        for tType, tLine, tText, tFormat, tStyle in self.theTokens:
+        for tType, _, tText, tFormat, tStyle in self.theTokens:
 
             # Process Text Type
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
-                    tTemp = "".join(thisPar)
+                    tTemp = "  \n".join(thisPar)
                     tmpResult.append("%s\n\n" % tTemp.rstrip(" "))
                 thisPar = []
 
@@ -128,10 +128,7 @@ class ToMarkdown(Tokenizer):
                 tTemp = tText
                 for xPos, xLen, xFmt in reversed(tFormat):
                     tTemp = tTemp[:xPos] + mdTags[xFmt] + tTemp[xPos+xLen:]
-                if tText.endswith("  "):
-                    thisPar.append(tTemp.rstrip() + "  \n")
-                else:
-                    thisPar.append(tTemp.rstrip() + " ")
+                thisPar.append(tTemp.rstrip())
 
             elif tType == self.T_SYNOPSIS and self.doSynopsis:
                 tmpResult.append("**%s:** %s\n\n" % (self._localLookup("Synopsis"), tText))

@@ -54,7 +54,6 @@ of writing novels. The formatting is currently limited to:
 * Headings levels 1 to 4 using the `#` syntax only.
 * Emphasised and strongly emphasised text. These are rendered as italicised and bold text.
 * Strikethrough text.
-* Hard line breaks using two or more spaces at the end of a line.
 
 That is it. Features not supported in the editor are also not exported when using the export tool.
 
