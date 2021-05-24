@@ -1366,6 +1366,293 @@ class GuiDocEditor(QTextEdit):
         return
 
     ##
+    #  Internal Functions : Text Manipulation
+    ##
+
+    def _toggleFormat(self, fLen, fChar):
+        """Toggle the formatting of a specific type for a piece of text.
+        If more than one block is selected, the formatting is applied to
+        the first block.
+        """
+        theCursor = self._autoSelect()
+        if not theCursor.hasSelection():
+            logger.warning("No selection made, nothing to do")
+            return False
+
+        posS = theCursor.selectionStart()
+        posE = theCursor.selectionEnd()
+
+        blockS = self.document().findBlock(posS)
+        blockE = self.document().findBlock(posE)
+
+        if blockS != blockE:
+            posE = blockS.position() + blockS.length() - 1
+            theCursor.clearSelection()
+            theCursor.setPosition(posS, QTextCursor.MoveAnchor)
+            theCursor.setPosition(posE, QTextCursor.KeepAnchor)
+            self.setTextCursor(theCursor)
+
+        numB = 0
+        for n in range(fLen):
+            if self.document().characterAt(posS-n-1) == fChar:
+                numB += 1
+            else:
+                break
+
+        numA = 0
+        for n in range(fLen):
+            if self.document().characterAt(posE+n) == fChar:
+                numA += 1
+            else:
+                break
+
+        if fLen == min(numA, numB):
+            self._clearSurrounding(theCursor, fLen)
+        else:
+            self._wrapSelection(fChar*fLen)
+
+        return True
+
+    def _clearSurrounding(self, theCursor, nChars):
+        """Clears n characters before and after the cursor.
+        """
+        if not theCursor.hasSelection():
+            logger.warning("No selection made, nothing to do")
+            return False
+
+        posS = theCursor.selectionStart()
+        posE = theCursor.selectionEnd()
+        theCursor.clearSelection()
+        theCursor.beginEditBlock()
+        theCursor.setPosition(posS)
+        for i in range(nChars):
+            theCursor.deletePreviousChar()
+        theCursor.setPosition(posE)
+        for i in range(nChars):
+            theCursor.deletePreviousChar()
+        theCursor.endEditBlock()
+        theCursor.clearSelection()
+
+        return True
+
+    def _wrapSelection(self, tBefore, tAfter=None):
+        """Wraps the selected text in whatever is in tBefore and tAfter.
+        If there is no selection, the autoSelect setting decides the
+        action. AutoSelect will select the word under the cursor before
+        wrapping it. If this feature is disabled, nothing is done.
+        """
+        if tAfter is None:
+            tAfter = tBefore
+
+        theCursor = self._autoSelect()
+        if not theCursor.hasSelection():
+            logger.warning("No selection made, nothing to do")
+            return False
+
+        posS = theCursor.selectionStart()
+        posE = theCursor.selectionEnd()
+
+        qDoc = self.document()
+        blockS = qDoc.findBlock(posS)
+        blockE = qDoc.findBlock(posE)
+        if blockS != blockE:
+            posE = blockS.position() + blockS.length() - 1
+
+        theCursor.clearSelection()
+        theCursor.beginEditBlock()
+        theCursor.setPosition(posE)
+        theCursor.insertText(tAfter)
+        theCursor.setPosition(posS)
+        theCursor.insertText(tBefore)
+        theCursor.endEditBlock()
+
+        theCursor.setPosition(posE + len(tBefore), QTextCursor.MoveAnchor)
+        theCursor.setPosition(posS + len(tBefore), QTextCursor.KeepAnchor)
+        self.setTextCursor(theCursor)
+
+        return True
+
+    def _replaceQuotes(self, sQuote, oQuote, cQuote):
+        """Replace all straight quotes in the selected text.
+        """
+        theCursor = self.textCursor()
+        if not theCursor.hasSelection():
+            self.theParent.makeAlert(
+                self.tr("Please select some text before calling replace quotes."),
+                nwAlert.ERROR
+            )
+            return False
+
+        posS = theCursor.selectionStart()
+        posE = theCursor.selectionEnd()
+        closeCheck = (
+            " ", "\n", nwUnicode.U_LSEP, nwUnicode.U_PSEP
+        )
+
+        self._allowAutoReplace(False)
+        for posC in range(posS, posE+1):
+            theCursor.setPosition(posC)
+            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
+            selText = theCursor.selectedText()
+
+            nS = len(selText)
+            if nS == 2:
+                pC = selText[0]
+                cC = selText[1]
+            elif nS == 1:
+                pC = " "
+                cC = selText[0]
+            else: # pragma: no cover
+                continue
+
+            if cC != sQuote:
+                continue
+
+            theCursor.clearSelection()
+            theCursor.setPosition(posC)
+            if pC in closeCheck:
+                theCursor.beginEditBlock()
+                theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
+                theCursor.insertText(oQuote)
+                theCursor.endEditBlock()
+            else:
+                theCursor.beginEditBlock()
+                theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
+                theCursor.insertText(cQuote)
+                theCursor.endEditBlock()
+
+        self._allowAutoReplace(True)
+
+        return True
+
+    def _formatBlock(self, docAction):
+        """Changes the block format of the block under the cursor.
+        """
+        theCursor = self.textCursor()
+        theBlock = theCursor.block()
+        if not theBlock.isValid():
+            logger.debug("Invalid block selected for action %s" % str(docAction))
+            return False
+
+        theText = theBlock.text()
+        if len(theText.strip()) == 0:
+            logger.debug("Empty block selected for action %s" % str(docAction))
+            return False
+
+        # Remove existing format first, if any
+        if theText.startswith("@"):
+            logger.error("Cannot apply block format to keyword/value line")
+            return False
+        elif theText.startswith("% "):
+            newText = theText[2:]
+            cOffset = 2
+        elif theText.startswith("%"):
+            newText = theText[1:]
+            cOffset = 1
+        elif theText.startswith("# "):
+            newText = theText[2:]
+            cOffset = 2
+        elif theText.startswith("## "):
+            newText = theText[3:]
+            cOffset = 3
+        elif theText.startswith("### "):
+            newText = theText[4:]
+            cOffset = 4
+        elif theText.startswith("#### "):
+            newText = theText[5:]
+            cOffset = 5
+        else:
+            newText = theText
+            cOffset = 0
+
+        # Apply new format
+        if docAction == nwDocAction.BLOCK_COM:
+            theText = "% "+newText
+            cOffset -= 2
+        elif docAction == nwDocAction.BLOCK_H1:
+            theText = "# "+newText
+            cOffset -= 2
+        elif docAction == nwDocAction.BLOCK_H2:
+            theText = "## "+newText
+            cOffset -= 3
+        elif docAction == nwDocAction.BLOCK_H3:
+            theText = "### "+newText
+            cOffset -= 4
+        elif docAction == nwDocAction.BLOCK_H4:
+            theText = "#### "+newText
+            cOffset -= 5
+        elif docAction == nwDocAction.BLOCK_TXT:
+            theText = newText
+            cOffset -= 0
+        else:
+            logger.error("Unknown or unsupported block format requested: %s" % str(docAction))
+            return False
+
+        # Replace the block text
+        theCursor.beginEditBlock()
+        posO = theCursor.position()
+        theCursor.select(QTextCursor.BlockUnderCursor)
+        posS = theCursor.selectionStart()
+        theCursor.removeSelectedText()
+        theCursor.setPosition(posS)
+        if posS > 0:
+            theCursor.insertBlock()
+        theCursor.insertText(theText)
+        theCursor.setPosition(max(posO - cOffset, 0))
+        theCursor.endEditBlock()
+        self.setTextCursor(theCursor)
+
+        return True
+
+    def _removeInParLineBreaks(self):
+        """Strip line breaks within paragraphs in the selected text.
+        """
+        theCursor = self.textCursor()
+        theDoc = self.document()
+
+        iS = 0
+        iE = theDoc.blockCount() - 1
+        rS = 0
+        rE = theDoc.characterCount()
+        if theCursor.hasSelection():
+            sBlock = theDoc.findBlock(theCursor.selectionStart())
+            eBlock = theDoc.findBlock(theCursor.selectionEnd())
+            iS = sBlock.blockNumber()
+            iE = eBlock.blockNumber()
+            rS = sBlock.position()
+            rE = eBlock.position() + eBlock.length()
+
+        # Clean up the text
+        currPar = []
+        cleanText = ""
+        for i in range(iS, iE+1):
+            cBlock = theDoc.findBlockByNumber(i)
+            cText = cBlock.text()
+            if cText.strip() == "":
+                if currPar:
+                    cleanText += " ".join(currPar) + "\n\n"
+                else:
+                    cleanText += "\n"
+                currPar = []
+            elif cText.startswith(("# ", "## ", "### ", "#### ", "@", "%")):
+                cleanText += cText + "\n"
+            else:
+                currPar.append(cText)
+
+        if currPar:
+            cleanText += " ".join(currPar) + "\n\n"
+
+        # Replace the text with the cleaned up text
+        theCursor.beginEditBlock()
+        theCursor.clearSelection()
+        theCursor.setPosition(rS)
+        theCursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, rE-rS)
+        theCursor.insertText(cleanText.rstrip() + "\n")
+        theCursor.endEditBlock()
+
+        return True
+
+    ##
     #  Internal Functions
     ##
 
@@ -1512,59 +1799,6 @@ class GuiDocEditor(QTextEdit):
 
         return False
 
-    def _replaceQuotes(self, sQuote, oQuote, cQuote):
-        """Replace all straight quotes in the selected text.
-        """
-        theCursor = self.textCursor()
-        if theCursor.hasSelection():
-            posS = theCursor.selectionStart()
-            posE = theCursor.selectionEnd()
-            closeCheck = (
-                " ", "\n", nwUnicode.U_LSEP, nwUnicode.U_PSEP
-            )
-
-            self._allowAutoReplace(False)
-            for posC in range(posS, posE+1):
-                theCursor.setPosition(posC)
-                theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
-                selText = theCursor.selectedText()
-
-                nS = len(selText)
-                if nS == 2:
-                    pC = selText[0]
-                    cC = selText[1]
-                elif nS == 1:
-                    pC = " "
-                    cC = selText[0]
-                else:
-                    continue
-
-                if cC != sQuote:
-                    continue
-
-                theCursor.clearSelection()
-                theCursor.setPosition(posC)
-                if pC in closeCheck:
-                    theCursor.beginEditBlock()
-                    theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
-                    theCursor.insertText(oQuote)
-                    theCursor.endEditBlock()
-                else:
-                    theCursor.beginEditBlock()
-                    theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
-                    theCursor.insertText(cQuote)
-                    theCursor.endEditBlock()
-
-            self._allowAutoReplace(True)
-
-        else:
-            self.theParent.makeAlert(
-                self.tr("Please select some text before calling replace quotes."),
-                nwAlert.ERROR
-            )
-
-        return
-
     def _checkDocSize(self, theSize):
         """Check if document size crosses the big document limit set in
         config. If so, we will set the big document flag to True.
@@ -1586,62 +1820,6 @@ class GuiDocEditor(QTextEdit):
 
         self._bigDoc = newState
 
-        return
-
-    def _wrapSelection(self, tBefore, tAfter=None):
-        """Wraps the selected text in whatever is in tBefore and tAfter.
-        If there is no selection, the autoSelect setting decides the
-        action. AutoSelect will select the word under the cursor before
-        wrapping it. If this feature is disabled, nothing is done.
-        """
-        if tAfter is None:
-            tAfter = tBefore
-
-        theCursor = self._autoSelect()
-        if theCursor.hasSelection():
-            posS = theCursor.selectionStart()
-            posE = theCursor.selectionEnd()
-
-            qDoc = self.document()
-            blockS = qDoc.findBlock(posS)
-            blockE = qDoc.findBlock(posE)
-            if blockS != blockE:
-                posE = blockS.position() + blockS.length() - 1
-
-            theCursor.clearSelection()
-            theCursor.beginEditBlock()
-            theCursor.setPosition(posE)
-            theCursor.insertText(tAfter)
-            theCursor.setPosition(posS)
-            theCursor.insertText(tBefore)
-            theCursor.endEditBlock()
-
-            theCursor.setPosition(posE + len(tBefore), QTextCursor.MoveAnchor)
-            theCursor.setPosition(posS + len(tBefore), QTextCursor.KeepAnchor)
-            self.setTextCursor(theCursor)
-
-        else:
-            logger.warning("No selection made, nothing to do")
-        return
-
-    def _clearSurrounding(self, theCursor, nChars):
-        """Clears n characters before and after the cursor.
-        """
-        if theCursor.hasSelection():
-            posS = theCursor.selectionStart()
-            posE = theCursor.selectionEnd()
-            theCursor.clearSelection()
-            theCursor.beginEditBlock()
-            theCursor.setPosition(posS)
-            for i in range(nChars):
-                theCursor.deletePreviousChar()
-            theCursor.setPosition(posE)
-            for i in range(nChars):
-                theCursor.deletePreviousChar()
-            theCursor.endEditBlock()
-            theCursor.clearSelection()
-        else:
-            logger.warning("No selection made, nothing to do")
         return
 
     def _autoSelect(self):
@@ -1672,176 +1850,6 @@ class GuiDocEditor(QTextEdit):
             self.setTextCursor(theCursor)
 
         return theCursor
-
-    def _toggleFormat(self, fLen, fChar):
-        """Toggle the formatting of a specific type for a piece of text.
-        If more than one block is selected, the formatting is applied to
-        the first block.
-        """
-        theCursor = self._autoSelect()
-        if theCursor.hasSelection():
-            posS = theCursor.selectionStart()
-            posE = theCursor.selectionEnd()
-
-            blockS = self.document().findBlock(posS)
-            blockE = self.document().findBlock(posE)
-
-            if blockS != blockE:
-                posE = blockS.position() + blockS.length() - 1
-                theCursor.clearSelection()
-                theCursor.setPosition(posS, QTextCursor.MoveAnchor)
-                theCursor.setPosition(posE, QTextCursor.KeepAnchor)
-                self.setTextCursor(theCursor)
-
-            numB = 0
-            for n in range(fLen):
-                if self.document().characterAt(posS-n-1) == fChar:
-                    numB += 1
-                else:
-                    break
-
-            numA = 0
-            for n in range(fLen):
-                if self.document().characterAt(posE+n) == fChar:
-                    numA += 1
-                else:
-                    break
-
-            cLevel = min(numB, numA)
-            if cLevel == fLen:
-                self._clearSurrounding(theCursor, fLen)
-            else:
-                self._wrapSelection(fChar*fLen)
-
-        return
-
-    def _formatBlock(self, docAction):
-        """Changes the block format of the block under the cursor.
-        """
-        theCursor = self.textCursor()
-        theBlock = theCursor.block()
-        if not theBlock.isValid():
-            logger.debug("Invalid block selected for action %s" % str(docAction))
-            return False
-
-        theText = theBlock.text()
-        if len(theText.strip()) == 0:
-            logger.debug("Empty block selected for action %s" % str(docAction))
-            return False
-
-        # Remove existing format first, if any
-        if theText.startswith("@"):
-            logger.error("Cannot apply block format to keyword/value line")
-            return False
-        elif theText.startswith("% "):
-            newText = theText[2:]
-            cOffset = 2
-        elif theText.startswith("%"):
-            newText = theText[1:]
-            cOffset = 1
-        elif theText.startswith("# "):
-            newText = theText[2:]
-            cOffset = 2
-        elif theText.startswith("## "):
-            newText = theText[3:]
-            cOffset = 3
-        elif theText.startswith("### "):
-            newText = theText[4:]
-            cOffset = 4
-        elif theText.startswith("#### "):
-            newText = theText[5:]
-            cOffset = 5
-        else:
-            newText = theText
-            cOffset = 0
-
-        # Apply new format
-        if docAction == nwDocAction.BLOCK_COM:
-            theText = "% "+newText
-            cOffset -= 2
-        elif docAction == nwDocAction.BLOCK_H1:
-            theText = "# "+newText
-            cOffset -= 2
-        elif docAction == nwDocAction.BLOCK_H2:
-            theText = "## "+newText
-            cOffset -= 3
-        elif docAction == nwDocAction.BLOCK_H3:
-            theText = "### "+newText
-            cOffset -= 4
-        elif docAction == nwDocAction.BLOCK_H4:
-            theText = "#### "+newText
-            cOffset -= 5
-        elif docAction == nwDocAction.BLOCK_TXT:
-            theText = newText
-            cOffset -= 0
-        else:
-            logger.error("Unknown or unsupported block format requested: %s" % str(docAction))
-            return False
-
-        # Replace the block text
-        theCursor.beginEditBlock()
-        posO = theCursor.position()
-        theCursor.select(QTextCursor.BlockUnderCursor)
-        posS = theCursor.selectionStart()
-        theCursor.removeSelectedText()
-        theCursor.setPosition(posS)
-        if posS > 0:
-            theCursor.insertBlock()
-        theCursor.insertText(theText)
-        if posO - cOffset >= 0:
-            theCursor.setPosition(posO - cOffset)
-        theCursor.endEditBlock()
-        self.setTextCursor(theCursor)
-
-        return True
-
-    def _removeInParLineBreaks(self):
-        """Strip line breaks within paragraphs in the selected text.
-        """
-        theCursor = self.textCursor()
-        theDoc = self.document()
-
-        iS = 0
-        iE = theDoc.blockCount() - 1
-        rS = 0
-        rE = theDoc.characterCount()
-        if theCursor.hasSelection():
-            sBlock = theDoc.findBlock(theCursor.selectionStart())
-            eBlock = theDoc.findBlock(theCursor.selectionEnd())
-            iS = sBlock.blockNumber()
-            iE = eBlock.blockNumber()
-            rS = sBlock.position()
-            rE = eBlock.position() + eBlock.length()
-
-        # Clean up the text
-        currPar = []
-        cleanText = ""
-        for i in range(iS, iE+1):
-            cBlock = theDoc.findBlockByNumber(i)
-            cText = cBlock.text()
-            if cText.strip() == "":
-                if currPar:
-                    cleanText += " ".join(currPar) + "\n\n"
-                else:
-                    cleanText += "\n"
-                currPar = []
-            elif cText.startswith(("# ", "## ", "### ", "#### ", "@", "%")):
-                cleanText += cText + "\n"
-            else:
-                currPar.append(cText)
-
-        if currPar:
-            cleanText += " ".join(currPar) + "\n\n"
-
-        # Replace the text with the cleaned up text
-        theCursor.beginEditBlock()
-        theCursor.clearSelection()
-        theCursor.setPosition(rS)
-        theCursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, rE-rS)
-        theCursor.insertText(cleanText.rstrip() + "\n")
-        theCursor.endEditBlock()
-
-        return True
 
     def _makeSelection(self, selMode):
         """Wrapper function to select text based on a selection mode.
