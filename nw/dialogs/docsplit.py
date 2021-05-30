@@ -52,7 +52,9 @@ class GuiDocSplit(QDialog):
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.optState   = theParent.theProject.optState
+
         self.sourceItem = None
+        self.sourceText = []
 
         self.outerBox = QVBoxLayout()
         self.setWindowTitle(self.tr("Split Document"))
@@ -139,9 +141,7 @@ class GuiDocSplit(QDialog):
         if theText is None:
             theText = ""
 
-        theLines = theText.splitlines()
-        nLines   = len(theLines)
-        theLines.insert(0, "%Split Doc")
+        nLines = len(self.sourceText)
         logger.debug(
             "Splitting document %s with %d lines" % (self.sourceItem, nLines)
         )
@@ -218,11 +218,11 @@ class GuiDocSplit(QDialog):
             newItem.setStatus(srcItem.itemStatus)
             logger.verbose(
                 "Creating new document %s with text from line %d to %d" % (
-                    nHandle, iStart, iEnd-1
+                    nHandle, iStart+1, iEnd
                 )
             )
 
-            theText = "\n".join(theLines[iStart:iEnd])
+            theText = "\n".join(self.sourceText[iStart:iEnd])
             theText = theText.rstrip("\n") + "\n\n"
 
             outDoc = NWDoc(self.theProject, nHandle)
@@ -284,12 +284,10 @@ class GuiDocSplit(QDialog):
             "Scanning document %s for headings level <= %d" % (self.sourceItem, spLevel)
         )
 
-        lineNo = 0
-        for aLine in theText.splitlines():
+        self.sourceText = theText.splitlines()
+        for lineNo, aLine in enumerate(self.sourceText):
 
-            lineNo += 1
-            onLine  = 0
-
+            onLine = -1
             if aLine.startswith("# ") and spLevel >= 1:
                 onLine = lineNo
             elif aLine.startswith("## ") and spLevel >= 2:
@@ -299,7 +297,7 @@ class GuiDocSplit(QDialog):
             elif aLine.startswith("#### ") and spLevel >= 4:
                 onLine = lineNo
 
-            if onLine > 0:
+            if onLine >= 0:
                 newItem = QListWidgetItem()
                 newItem.setText(aLine.strip())
                 newItem.setData(Qt.UserRole, onLine)
