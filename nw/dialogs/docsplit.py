@@ -53,6 +53,7 @@ class GuiDocSplit(QDialog):
         self.theProject = theProject
         self.optState   = self.theProject.optState
         self.sourceItem = None
+        self.sourceText = []
 
         self.outerBox = QVBoxLayout()
         self.setWindowTitle(self.tr("Split Document"))
@@ -127,11 +128,7 @@ class GuiDocSplit(QDialog):
             )
             return
 
-        theDoc   = NWDoc(self.theProject, self.theParent)
-        theText  = theDoc.openDocument(self.sourceItem, False)
-        theLines = theText.splitlines()
-        nLines   = len(theLines)
-        theLines.insert(0, "%Split Doc")
+        nLines = len(self.sourceText)
         logger.debug(
             "Splitting document %s with %d lines" % (self.sourceItem, nLines)
         )
@@ -186,6 +183,7 @@ class GuiDocSplit(QDialog):
         logger.verbose("Creating folder %s" % fHandle)
 
         # Loop through, and create the files
+        theDoc = NWDoc(self.theProject, self.theParent)
         for wTitle, iStart, iEnd in finalOrder:
 
             itemLayout = nwItemLayout.NOTE
@@ -208,11 +206,11 @@ class GuiDocSplit(QDialog):
             newItem.setStatus(srcItem.itemStatus)
             logger.verbose(
                 "Creating new document %s with text from line %d to %d" % (
-                    nHandle, iStart, iEnd-1
+                    nHandle, iStart+1, iEnd
                 )
             )
 
-            theText = "\n".join(theLines[iStart:iEnd])
+            theText = "\n".join(self.sourceText[iStart:iEnd])
             theText = theText.rstrip("\n") + "\n\n"
             theDoc.openDocument(nHandle, False)
             theDoc.saveDocument(theText)
@@ -265,12 +263,10 @@ class GuiDocSplit(QDialog):
             "Scanning document %s for headings level <= %d" % (self.sourceItem, spLevel)
         )
 
-        lineNo = 0
-        for aLine in theText.splitlines():
+        self.sourceText = theText.splitlines()
+        for lineNo, aLine in enumerate(self.sourceText):
 
-            lineNo += 1
-            onLine  = 0
-
+            onLine = -1
             if aLine.startswith("# ") and spLevel >= 1:
                 onLine = lineNo
             elif aLine.startswith("## ") and spLevel >= 2:
@@ -280,7 +276,7 @@ class GuiDocSplit(QDialog):
             elif aLine.startswith("#### ") and spLevel >= 4:
                 onLine = lineNo
 
-            if onLine > 0:
+            if onLine >= 0:
                 newItem = QListWidgetItem()
                 newItem.setText(aLine.strip())
                 newItem.setData(Qt.UserRole, onLine)
