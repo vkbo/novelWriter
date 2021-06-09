@@ -297,7 +297,6 @@ class NWIndex():
         nTitle = 0
         theLines = theText.splitlines()
         for aLine in theLines:
-            aLine  = aLine
             nLine += 1
             nChar  = len(aLine.strip())
             if nChar == 0:
