@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.4a0" hexVersion="0x010400a0" fileVersion="1.2" timeStamp="2021-06-09 22:06:41">
+<novelWriterXML appVersion="1.4a0" hexVersion="0x010400a0" fileVersion="1.2" timeStamp="2021-06-09 22:47:04">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1083</saveCount>
-    <autoCount>172</autoCount>
-    <editTime>50790</editTime>
+    <saveCount>1088</saveCount>
+    <autoCount>176</autoCount>
+    <editTime>51413</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -17,8 +17,8 @@
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
-    <lastWordCount>1132</lastWordCount>
-    <novelWordCount>756</novelWordCount>
+    <lastWordCount>1164</lastWordCount>
+    <novelWordCount>788</novelWordCount>
     <notesWordCount>376</notesWordCount>
     <autoReplace>
       <entry key="A">B</entry>
@@ -63,10 +63,10 @@
       <status>Started</status>
       <exported>True</exported>
       <layout>TITLE</layout>
-      <charCount>72</charCount>
-      <wordCount>15</wordCount>
-      <paraCount>2</paraCount>
-      <cursorPos>78</cursorPos>
+      <charCount>259</charCount>
+      <wordCount>47</wordCount>
+      <paraCount>3</paraCount>
+      <cursorPos>268</cursorPos>
     </item>
     <item handle="974e400180a99" order="1" parent="7031beac91f75">
       <name>Page</name>
