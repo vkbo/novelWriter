@@ -655,25 +655,18 @@ class Tokenizer():
                         )
 
             # Add a page break after the last entry
-            n = len(self.theTokens) - 1
-            if n >= 0:
-                tToken = self.theTokens[n]
-                self.theTokens[n] = (
+            if len(self.theTokens) > 0:
+                tToken = self.theTokens[-1]
+                self.theTokens[-1] = (
                     tToken[0], tToken[1], tToken[2], tToken[3], tToken[4] | self.A_PBA
                 )
 
-        # A single page is always left-aligned and starts on a fresh
-        # page, unless it's empty.
-        if self.isPage:
-            for n, tToken in enumerate(self.theTokens):
-                if n == 0:
-                    self.theTokens[n] = (
-                        tToken[0], tToken[1], tToken[2], tToken[3], self.A_LEFT | self.A_PBB
-                    )
-                else:
-                    self.theTokens[n] = (
-                        tToken[0], tToken[1], tToken[2], tToken[3], self.A_LEFT
-                    )
+        # A single page always starts on a fresh page, unless it's empty.
+        if self.isPage and len(self.theTokens) > 0:
+            tToken = self.theTokens[0]
+            self.theTokens[0] = (
+                tToken[0], tToken[1], tToken[2], tToken[3], tToken[4] | self.A_PBB
+            )
 
         return True
 

@@ -664,9 +664,10 @@ def testCoreToken_Headers(dummyGUI):
 
     # H1: Title
     theToken.theText = "# Novel Title\n"
-    theToken.tokenizeText()
+    theToken.setTitleFormat(r"T: %title%")
     theToken.isTitle = True
     theToken.isPart = False
+    theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken.theTokens == [
         (Tokenizer.T_TITLE, 1, "Novel Title", None, Tokenizer.A_PBB_AUT | Tokenizer.A_CENTRE),
@@ -676,9 +677,9 @@ def testCoreToken_Headers(dummyGUI):
     # H1: Partition
     theToken.theText = "# Partition Title\n"
     theToken.setTitleFormat(r"T: %title%")
-    theToken.tokenizeText()
     theToken.isTitle = False
     theToken.isPart = True
+    theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken.theTokens == [
         (Tokenizer.T_HEAD1, 1, "Partition Title", None, Tokenizer.A_PBB | Tokenizer.A_CENTRE),
@@ -699,10 +700,10 @@ def testCoreToken_Headers(dummyGUI):
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken.theTokens == [
-        (Tokenizer.T_TEXT, 1, "Page text", [], Tokenizer.A_PBB | Tokenizer.A_LEFT),
-        (Tokenizer.T_EMPTY, 2, "", None, Tokenizer.A_LEFT),
-        (Tokenizer.T_TEXT, 3, "More text", [], Tokenizer.A_LEFT),
-        (Tokenizer.T_EMPTY, 3, "", None, Tokenizer.A_LEFT),
+        (Tokenizer.T_TEXT, 1, "Page text", [], Tokenizer.A_PBB),
+        (Tokenizer.T_EMPTY, 2, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT, 3, "More text", [], Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 3, "", None, Tokenizer.A_NONE),
     ]
 
 # END Test testCoreToken_Headers
