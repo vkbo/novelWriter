@@ -406,6 +406,58 @@ def testCoreToken_Tokenize(dummyGUI):
         "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
     )
 
+    # Alignment
+    theToken.theText = (
+        "Some regular text\n\n"
+        "Some left-aligned text <<\n\n"
+        ">> Some right-aligned text\n\n"
+        ">> Some centered text <<\n\n"
+    )
+    theToken.tokenizeText()
+    assert theToken.theTokens == [
+        (Tokenizer.T_TEXT,  1, "Some regular text", [], Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 2, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  3, "Some left-aligned text", [], Tokenizer.A_LEFT),
+        (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  5, "Some right-aligned text", [], Tokenizer.A_RIGHT),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  7, "Some centered text", [], Tokenizer.A_CENTRE),
+        (Tokenizer.T_EMPTY, 8, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 8, "", None, Tokenizer.A_NONE),
+    ]
+    assert theToken.theMarkdown[-1] == (
+        "Some regular text\n\n"
+        "Some left-aligned text\n\n"
+        "Some right-aligned text\n\n"
+        "Some centered text\n\n\n"
+    )
+
+    # Alignment w/HTML Codes
+    theToken.theText = (
+        "Some regular text\n\n"
+        "Some left-aligned text &lt;&lt;\n\n"
+        "&gt;&gt; Some right-aligned text\n\n"
+        "&gt;&gt; Some centered text &lt;&lt;\n\n"
+    )
+    theToken.tokenizeText()
+    assert theToken.theTokens == [
+        (Tokenizer.T_TEXT,  1, "Some regular text", [], Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 2, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  3, "Some left-aligned text", [], Tokenizer.A_LEFT),
+        (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  5, "Some right-aligned text", [], Tokenizer.A_RIGHT),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  7, "Some centered text", [], Tokenizer.A_CENTRE),
+        (Tokenizer.T_EMPTY, 8, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 8, "", None, Tokenizer.A_NONE),
+    ]
+    assert theToken.theMarkdown[-1] == (
+        "Some regular text\n\n"
+        "Some left-aligned text\n\n"
+        "Some right-aligned text\n\n"
+        "Some centered text\n\n\n"
+    )
+
 # END Test testCoreToken_Tokenize
 
 @pytest.mark.core
