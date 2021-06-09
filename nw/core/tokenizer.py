@@ -75,6 +75,8 @@ class Tokenizer():
     A_PBA_AUT  = 0x0080 # Page break after auto
     A_Z_TOPMRG = 0x0100 # Zero top margin
     A_Z_BTMMRG = 0x0200 # Zero bottom margin
+    A_IND_L    = 0x0400 # Left indentation
+    A_IND_R    = 0x0800 # Right indentation
 
     def __init__(self, theProject):
 
@@ -442,15 +444,23 @@ class Tokenizer():
                     # Skip all body text
                     continue
 
-                # Check Alignment
+                # Check Alignment and Indentation
                 tagLeft = False
                 tagRight = False
+                indLeft = False
+                indRight = False
                 if aLine.startswith(">>"):
                     tagRight = True
                     aLine = aLine[2:].lstrip()
                 elif aLine.startswith("&gt;&gt;"):
                     tagRight = True
                     aLine = aLine[8:].lstrip()
+                elif aLine.startswith(">"):
+                    indLeft = True
+                    aLine = aLine[1:].lstrip()
+                elif aLine.startswith("&gt;"):
+                    indLeft = True
+                    aLine = aLine[4:].lstrip()
 
                 if aLine.endswith("<<"):
                     tagLeft = True
@@ -458,6 +468,12 @@ class Tokenizer():
                 elif aLine.endswith("&lt;&lt;"):
                     tagLeft = True
                     aLine = aLine[:-8].rstrip()
+                elif aLine.endswith("<"):
+                    indRight = True
+                    aLine = aLine[:-1].rstrip()
+                elif aLine.endswith("&lt;"):
+                    indRight = True
+                    aLine = aLine[:-4].rstrip()
 
                 textAlign = defAlign
                 if tagLeft and tagRight:
@@ -466,6 +482,11 @@ class Tokenizer():
                     textAlign = self.A_LEFT
                 elif tagRight:
                     textAlign = self.A_RIGHT
+
+                if indLeft:
+                    textAlign |= self.A_IND_L
+                if indRight:
+                    textAlign |= self.A_IND_R
 
                 # Otherwise we use RegEx to find formatting tags within a line of text
                 fmtPos = []

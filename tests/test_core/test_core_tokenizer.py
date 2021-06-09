@@ -406,12 +406,18 @@ def testCoreToken_Tokenize(dummyGUI):
         "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
     )
 
-    # Alignment
+    # Alignment and Indentation
+    dblIndent = Tokenizer.A_IND_L | Tokenizer.A_IND_R
+    rIndAlign = Tokenizer.A_RIGHT | Tokenizer.A_IND_R
     theToken.theText = (
         "Some regular text\n\n"
         "Some left-aligned text <<\n\n"
         ">> Some right-aligned text\n\n"
         ">> Some centered text <<\n\n"
+        "> Left-indented block\n\n"
+        "Right-indented block <\n\n"
+        "> Double-indented block <\n\n"
+        ">> Right-indent, right-aligned <\n\n"
     )
     theToken.tokenizeText()
     assert theToken.theTokens == [
@@ -423,13 +429,25 @@ def testCoreToken_Tokenize(dummyGUI):
         (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_TEXT,  7, "Some centered text", [], Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 8, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_EMPTY, 8, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  9, "Left-indented block", [], Tokenizer.A_IND_L),
+        (Tokenizer.T_EMPTY, 10, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  11, "Right-indented block", [], Tokenizer.A_IND_R),
+        (Tokenizer.T_EMPTY, 12, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  13, "Double-indented block", [], dblIndent),
+        (Tokenizer.T_EMPTY, 14, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  15, "Right-indent, right-aligned", [], rIndAlign),
+        (Tokenizer.T_EMPTY, 16, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 16, "", None, Tokenizer.A_NONE),
     ]
     assert theToken.theMarkdown[-1] == (
         "Some regular text\n\n"
         "Some left-aligned text\n\n"
         "Some right-aligned text\n\n"
-        "Some centered text\n\n\n"
+        "Some centered text\n\n"
+        "Left-indented block\n\n"
+        "Right-indented block\n\n"
+        "Double-indented block\n\n"
+        "Right-indent, right-aligned\n\n\n"
     )
 
     # Alignment w/HTML Codes
@@ -438,6 +456,10 @@ def testCoreToken_Tokenize(dummyGUI):
         "Some left-aligned text &lt;&lt;\n\n"
         "&gt;&gt; Some right-aligned text\n\n"
         "&gt;&gt; Some centered text &lt;&lt;\n\n"
+        "&gt; Left-indented block\n\n"
+        "Right-indented block &lt;\n\n"
+        "&gt; Double-indented block &lt;\n\n"
+        "&gt;&gt; Right-indent, right-aligned &lt;\n\n"
     )
     theToken.tokenizeText()
     assert theToken.theTokens == [
@@ -449,13 +471,25 @@ def testCoreToken_Tokenize(dummyGUI):
         (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_TEXT,  7, "Some centered text", [], Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 8, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_EMPTY, 8, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  9, "Left-indented block", [], Tokenizer.A_IND_L),
+        (Tokenizer.T_EMPTY, 10, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  11, "Right-indented block", [], Tokenizer.A_IND_R),
+        (Tokenizer.T_EMPTY, 12, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  13, "Double-indented block", [], dblIndent),
+        (Tokenizer.T_EMPTY, 14, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  15, "Right-indent, right-aligned", [], rIndAlign),
+        (Tokenizer.T_EMPTY, 16, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 16, "", None, Tokenizer.A_NONE),
     ]
     assert theToken.theMarkdown[-1] == (
         "Some regular text\n\n"
         "Some left-aligned text\n\n"
         "Some right-aligned text\n\n"
-        "Some centered text\n\n\n"
+        "Some centered text\n\n"
+        "Left-indented block\n\n"
+        "Right-indented block\n\n"
+        "Double-indented block\n\n"
+        "Right-indent, right-aligned\n\n\n"
     )
 
 # END Test testCoreToken_Tokenize
