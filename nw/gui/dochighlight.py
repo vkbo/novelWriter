@@ -198,6 +198,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             }
         ))
 
+        # Alignment Tags
+        self.hRules.append((
+            r"(^>{1,2}|<{1,2}$)", {
+                1 : self.hStyles["hidden"],
+            }
+        ))
+
         # Auto-Replace Tags
         self.hRules.append((
             r"<(\S+?)>", {

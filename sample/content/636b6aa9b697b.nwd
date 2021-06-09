@@ -24,3 +24,13 @@ Thin spaces and thin non-breaking spaces are also supported from the Insert menu
 If you need to split a scene file up into further pieces, you can do so with the level four heading, like above. This is referred to as a section.
 
 Both scene and section titles can be left out of the final exported document. The formatting of titles can be selected from the Build Novel Project dialog. You can also have them replaced with scene separators like “* * *”.
+
+#### Text Alignment
+
+The text by default will have the left or justified alignment. You can also specify alignment for a specific paragraph by “pushing” it away from an edge with a set of ‘>>’ or ‘<<’ symbols, like so:
+
+This text is left-aligned. <<
+
+>> This text is right-aligned.
+
+>> This text is centred. <<

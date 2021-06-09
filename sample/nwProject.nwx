@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.3.2" hexVersion="0x010302f0" fileVersion="1.2" timeStamp="2021-05-30 12:14:18">
+<novelWriterXML appVersion="1.4a0" hexVersion="0x010400a0" fileVersion="1.2" timeStamp="2021-06-09 22:06:41">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1062</saveCount>
-    <autoCount>166</autoCount>
-    <editTime>49870</editTime>
+    <saveCount>1083</saveCount>
+    <autoCount>172</autoCount>
+    <editTime>50790</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -17,8 +17,8 @@
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
-    <lastWordCount>1077</lastWordCount>
-    <novelWordCount>701</novelWordCount>
+    <lastWordCount>1132</lastWordCount>
+    <novelWordCount>756</novelWordCount>
     <notesWordCount>376</notesWordCount>
     <autoReplace>
       <entry key="A">B</entry>
@@ -118,10 +118,10 @@
       <status>1st Draft</status>
       <exported>True</exported>
       <layout>SCENE</layout>
-      <charCount>1810</charCount>
-      <wordCount>318</wordCount>
-      <paraCount>8</paraCount>
-      <cursorPos>1505</cursorPos>
+      <charCount>2107</charCount>
+      <wordCount>373</wordCount>
+      <paraCount>12</paraCount>
+      <cursorPos>2049</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>Another Scene</name>
@@ -145,7 +145,7 @@
       <charCount>633</charCount>
       <wordCount>101</wordCount>
       <paraCount>3</paraCount>
-      <cursorPos>0</cursorPos>
+      <cursorPos>308</cursorPos>
     </item>
     <item handle="96b68994dfa3d" order="4" parent="e7ded148d6e4a">
       <name>A Note on Structure</name>

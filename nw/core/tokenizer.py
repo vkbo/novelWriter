@@ -436,6 +436,31 @@ class Tokenizer():
                     # Skip all body text
                     continue
 
+                # Check Alignment
+                tagLeft = False
+                tagRight = False
+                if aLine.startswith(">>"):
+                    tagRight = True
+                    aLine = aLine[2:].lstrip()
+                elif aLine.startswith("&gt;&gt;"):
+                    tagRight = True
+                    aLine = aLine[8:].lstrip()
+
+                if aLine.endswith("<<"):
+                    tagLeft = True
+                    aLine = aLine[:-2].rstrip()
+                elif aLine.endswith("&lt;&lt;"):
+                    tagLeft = True
+                    aLine = aLine[:-8].rstrip()
+
+                textAlign = self.A_NONE
+                if tagLeft and tagRight:
+                    textAlign = self.A_CENTRE
+                elif tagLeft:
+                    textAlign = self.A_LEFT
+                elif tagRight:
+                    textAlign = self.A_RIGHT
+
                 # Otherwise we use RegEx to find formatting tags within a line of text
                 fmtPos = []
                 for theRX, theKeys in rxFormats:
@@ -452,7 +477,7 @@ class Tokenizer():
                 # sorted by position
                 fmtPos = sorted(fmtPos, key=itemgetter(0))
                 self.theTokens.append((
-                    self.T_TEXT, nLine, aLine, fmtPos, self.A_NONE
+                    self.T_TEXT, nLine, aLine, fmtPos, textAlign
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
