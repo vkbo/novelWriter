@@ -43,6 +43,7 @@ class MockGuiMain():
         return
 
     def makeAlert(self, theMessage, theLevel):
+        assert isinstance(theMessage, str) or isinstance(theMessage, list)
         print("%s: %s" % (str(theLevel), theMessage))
         self.lastAlert = str(theMessage)
         return

@@ -122,14 +122,15 @@ class GuiWordList(QDialog):
         """
         newWord = self.newEntry.text().strip()
         if newWord == "":
-            self.theParent.makeAlert(self.tr("Cannot add a blank word."), nwAlert.ERROR)
+            self.theParent.makeAlert(self.tr(
+                "Cannot add a blank word."
+            ), nwAlert.ERROR)
             return False
 
         if self.listBox.findItems(newWord, Qt.MatchExactly):
-            self.theParent.makeAlert(
-                self.tr("The word '{0}' is already in the word list.").format(newWord),
-                nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "The word '{0}' is already in the word list."
+            ).format(newWord), nwAlert.ERROR)
             return False
 
         self.listBox.addItem(newWord)

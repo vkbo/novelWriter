@@ -350,10 +350,9 @@ class GuiMain(QMainWindow):
         """
         if self.hasProject:
             if not self.closeProject():
-                self.makeAlert(
-                    self.tr("Cannot create new project when another project is open."),
-                    nwAlert.ERROR
-                )
+                self.makeAlert(self.tr(
+                    "Cannot create new project when another project is open."
+                ), nwAlert.ERROR)
                 return False
 
         if projData is None:
@@ -368,12 +367,10 @@ class GuiMain(QMainWindow):
             return False
 
         if os.path.isfile(os.path.join(projPath, self.theProject.projFile)):
-            self.makeAlert(
-                self.tr(
-                    "A project already exists in that location. "
-                    "Please choose another folder."
-                ), nwAlert.ERROR
-            )
+            self.makeAlert(self.tr(
+                "A project already exists in that location. "
+                "Please choose another folder."
+            ), nwAlert.ERROR)
             return False
 
         logger.info("Creating new project")
@@ -538,10 +535,9 @@ class GuiMain(QMainWindow):
 
         # Check if we need to rebuild the index
         if self.theIndex.indexBroken:
-            self.makeAlert(
-                self.tr("The project index is outdated or broken. Rebuilding index."),
-                nwAlert.WARN
-            )
+            self.makeAlert(self.tr(
+                "The project index is outdated or broken. Rebuilding index."
+            ), nwAlert.WARN)
             self.rebuildIndex()
 
         # Make sure the changed status is set to false on all that was
@@ -735,10 +731,9 @@ class GuiMain(QMainWindow):
             return False
 
         if self.docEditor.docHandle() is None:
-            self.makeAlert(
-                self.tr("Please open a document to import the text file into."),
-                nwAlert.ERROR
-            )
+            self.makeAlert(self.tr(
+                "Please open a document to import the text file into."
+            ), nwAlert.ERROR)
             return False
 
         if not self.docEditor.isEmpty():
@@ -912,9 +907,9 @@ class GuiMain(QMainWindow):
         qApp.restoreOverrideCursor()
 
         if not beQuiet:
-            self.makeAlert(
-                self.tr("The project index has been successfully rebuilt."), nwAlert.INFO
-            )
+            self.makeAlert(self.tr(
+                "The project index has been successfully rebuilt."
+            ), nwAlert.INFO)
 
         return True
 

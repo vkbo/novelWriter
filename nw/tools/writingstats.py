@@ -412,17 +412,13 @@ class GuiWritingStats(QDialog):
 
         # Report to user
         if wSuccess:
-            self.theParent.makeAlert(
-                "%s file successfully written to:<br>%s" % (
-                    textFmt, savePath
-                ), nwAlert.INFO
-            )
+            self.theParent.makeAlert([
+                self.tr("{0} file successfully written to:").format(textFmt), savePath
+            ], nwAlert.INFO)
         else:
-            self.theParent.makeAlert(
-                "Failed to write %s file.<br>%s" % (
-                    textFmt, errMsg
-                ), nwAlert.ERROR
-            )
+            self.theParent.makeAlert([
+                self.tr("Failed to write {0} file.").format(textFmt), errMsg
+            ], nwAlert.ERROR)
 
         return wSuccess
 
@@ -487,9 +483,9 @@ class GuiWritingStats(QDialog):
                     self.logData.append((dStart, sDiff, wcNovel, wcNotes, sIdle))
 
         except Exception as e:
-            self.theParent.makeAlert(
-                [self.tr("Failed to read session log file."), str(e)], nwAlert.ERROR
-            )
+            self.theParent.makeAlert([
+                self.tr("Failed to read session log file."), str(e)
+            ], nwAlert.ERROR)
             return False
 
         ttWords = ttNovel + ttNotes
@@ -505,7 +501,7 @@ class GuiWritingStats(QDialog):
     #  Slots
     ##
 
-    def _updateListBox(self, dummyVar=None):
+    def _updateListBox(self):
         """Load/reload the content of the list box. The dummyVar
         variable captures the variable sent from the widgets connecting
         to it and discards it.

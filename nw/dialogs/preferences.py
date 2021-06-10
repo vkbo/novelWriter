@@ -104,10 +104,9 @@ class GuiPreferences(PagedDialog):
         self.tabQuote.saveValues()
 
         if needsRestart:
-            self.theParent.makeAlert(
-                self.tr("Some changes will not be applied until novelWriter has been restarted."),
-                nwAlert.INFO
-            )
+            self.theParent.makeAlert(self.tr(
+                "Some changes will not be applied until novelWriter has been restarted."
+            ), nwAlert.INFO)
 
         self._saveWindowSize()
         self.accept()

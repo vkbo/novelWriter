@@ -397,9 +397,9 @@ class GuiTheme:
                 with open(themeConf, mode="r", encoding="utf8") as inFile:
                     confParser.read_file(inFile)
             except Exception as e:
-                self.makeAlert(
-                    [self.tr("Could not load theme config file."), str(e)], nwAlert.ERROR
-                )
+                self.makeAlert([
+                    self.tr("Could not load theme config file."), str(e)
+                ], nwAlert.ERROR)
                 continue
             themeName = ""
             if confParser.has_section("Main"):
@@ -430,9 +430,9 @@ class GuiTheme:
                 with open(syntaxPath, mode="r", encoding="utf8") as inFile:
                     confParser.read_file(inFile)
             except Exception as e:
-                self.makeAlert(
-                    [self.tr("Could not load syntax file."), str(e)], nwAlert.ERROR
-                )
+                self.makeAlert([
+                    self.tr("Could not load syntax file."), str(e)
+                ], nwAlert.ERROR)
                 return []
             syntaxName = ""
             if confParser.has_section("Main"):
@@ -745,9 +745,9 @@ class GuiIcons:
                 with open(themeConf, mode="r", encoding="utf8") as inFile:
                     confParser.read_file(inFile)
             except Exception as e:
-                self.makeAlert(
-                    [self.tr("Could not load theme config file."), str(e)], nwAlert.ERROR
-                )
+                self.makeAlert([
+                    self.tr("Could not load theme config file."), str(e)
+                ], nwAlert.ERROR)
                 continue
             themeName = ""
             if confParser.has_section("Main"):
