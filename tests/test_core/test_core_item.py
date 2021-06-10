@@ -270,7 +270,7 @@ def testCoreItem_LayoutSetter(dummyGUI):
 # END Test testCoreItem_LayoutSetter
 
 @pytest.mark.core
-def testCoreItem_XMLPackUnpack(dummyGUI):
+def testCoreItem_XMLPackUnpack(dummyGUI, caplog):
     """Test packing and unpacking XML objects for the NWItem class.
     """
     theProject = NWProject(dummyGUI)
@@ -370,31 +370,33 @@ def testCoreItem_XMLPackUnpack(dummyGUI):
     # Errors
 
     ## Not an Item
-    xDummy = etree.SubElement(nwXML, "stuff")
-    assert not theItem.unpackXML(xDummy)
+    mockXml = etree.SubElement(nwXML, "stuff")
+    assert theItem.unpackXML(mockXml) is False
 
     ## Item without Handle
-    xDummy = etree.SubElement(nwXML, "item", attrib={"stuff": "nah"})
-    assert not theItem.unpackXML(xDummy)
+    mockXml = etree.SubElement(nwXML, "item", attrib={"stuff": "nah"})
+    assert theItem.unpackXML(mockXml) is False
 
-    ## Item with Invalid SubElement
-    xDummy = etree.SubElement(nwXML, "item", attrib={"handle": "0123456789abc"})
-    xParam = etree.SubElement(xDummy, "invalid")
+    ## Item with Invalid SubElement is Accepted w/Error
+    mockXml = etree.SubElement(nwXML, "item", attrib={"handle": "0123456789abc"})
+    xParam = etree.SubElement(mockXml, "invalid")
     xParam.text = "stuff"
-    assert not theItem.unpackXML(xDummy)
+    caplog.clear()
+    assert theItem.unpackXML(mockXml) is True
+    assert "Unknown tag 'invalid'" in caplog.text
 
     # Pack Valid Item
-    xDummy = etree.SubElement(nwXML, "group")
-    theItem._subPack(xDummy, "subGroup", {"one": "two"}, "value", False)
-    assert etree.tostring(xDummy, pretty_print=False, encoding="utf-8") == (
+    mockXml = etree.SubElement(nwXML, "group")
+    theItem._subPack(mockXml, "subGroup", {"one": "two"}, "value", False)
+    assert etree.tostring(mockXml, pretty_print=False, encoding="utf-8") == (
         b"<group><subGroup one=\"two\">value</subGroup></group>"
     )
 
     # Pack Not Allowed None
-    xDummy = etree.SubElement(nwXML, "group")
-    assert theItem._subPack(xDummy, "subGroup", {}, None, False) is None
-    assert theItem._subPack(xDummy, "subGroup", {}, "None", False) is None
-    assert etree.tostring(xDummy, pretty_print=False, encoding="utf-8") == (
+    mockXml = etree.SubElement(nwXML, "group")
+    assert theItem._subPack(mockXml, "subGroup", {}, None, False) is None
+    assert theItem._subPack(mockXml, "subGroup", {}, "None", False) is None
+    assert etree.tostring(mockXml, pretty_print=False, encoding="utf-8") == (
         b"<group/>"
     )
 

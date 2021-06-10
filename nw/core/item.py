@@ -106,7 +106,6 @@ class NWItem():
         if "order" in xItem.attrib:
             self.setOrder(xItem.attrib["order"])
 
-        retStatus = True
         for xValue in xItem:
             if xValue.tag == "name":
                 self.setName(xValue.text)
@@ -131,10 +130,12 @@ class NWItem():
             elif xValue.tag == "cursorPos":
                 self.setCursorPos(xValue.text)
             else:
+                # Sliently skip as we may otherwise cause orphaned
+                # items if an otherwise valid file is opened by a
+                # version of novelWriter that doesn't know the tag.
                 logger.error("Unknown tag '%s'" % xValue.tag)
-                retStatus = False
 
-        return retStatus
+        return True
 
     @staticmethod
     def _subPack(xParent, name, attrib=None, text=None, none=True):
