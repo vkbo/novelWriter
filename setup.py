@@ -50,12 +50,19 @@ def extractVersion():
     numVers = "Unknown"
     hexVers = "Unknown"
     initFile = os.path.join("nw", "__init__.py")
-    with open(initFile, mode="r") as inFile:
-        for aLine in inFile:
-            if aLine.startswith("__version__"):
-                numVers = getValue((aLine))
-            if aLine.startswith("__hexversion__"):
-                hexVers = getValue((aLine))
+    try:
+        with open(initFile, mode="r", encoding="utf-8") as inFile:
+            for aLine in inFile:
+                if aLine.startswith("__version__"):
+                    numVers = getValue((aLine))
+                if aLine.startswith("__hexversion__"):
+                    hexVers = getValue((aLine))
+    except Exception as e:
+        print("Could not read file: %s" % initFile)
+        print(str(e))
+
+    print("novelWriter version is: %s (%s)" % (numVers, hexVers))
+    print("")
 
     return numVers, hexVers
 
