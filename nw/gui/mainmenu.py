@@ -468,28 +468,40 @@ class GuiMainMenu(QMenuBar):
         # View > TreeView
         self.aFocusTree = QAction(self.tr("Focus Project Tree"), self)
         self.aFocusTree.setStatusTip(self.tr("Move focus to project tree"))
-        self.aFocusTree.setShortcut("Alt+1")
+        if self.mainConf.osWindows:
+            self.aFocusTree.setShortcut("Ctrl+Alt+1")
+        else:
+            self.aFocusTree.setShortcut("Alt+1")
         self.aFocusTree.triggered.connect(lambda: self.theParent.switchFocus(nwWidget.TREE))
         self.viewMenu.addAction(self.aFocusTree)
 
         # View > Document Pane 1
         self.aFocusEditor = QAction(self.tr("Focus Document Editor"), self)
         self.aFocusEditor.setStatusTip(self.tr("Move focus to left document pane"))
-        self.aFocusEditor.setShortcut("Alt+2")
+        if self.mainConf.osWindows:
+            self.aFocusEditor.setShortcut("Ctrl+Alt+2")
+        else:
+            self.aFocusEditor.setShortcut("Alt+2")
         self.aFocusEditor.triggered.connect(lambda: self.theParent.switchFocus(nwWidget.EDITOR))
         self.viewMenu.addAction(self.aFocusEditor)
 
         # View > Document Pane 2
         self.aFocusView = QAction(self.tr("Focus Document Viewer"), self)
         self.aFocusView.setStatusTip(self.tr("Move focus to right document pane"))
-        self.aFocusView.setShortcut("Alt+3")
+        if self.mainConf.osWindows:
+            self.aFocusView.setShortcut("Ctrl+Alt+3")
+        else:
+            self.aFocusView.setShortcut("Alt+3")
         self.aFocusView.triggered.connect(lambda: self.theParent.switchFocus(nwWidget.VIEWER))
         self.viewMenu.addAction(self.aFocusView)
 
         # View > Outline
         self.aFocusOutline = QAction(self.tr("Focus Outline"), self)
         self.aFocusOutline.setStatusTip(self.tr("Move focus to outline"))
-        self.aFocusOutline.setShortcut("Alt+4")
+        if self.mainConf.osWindows:
+            self.aFocusOutline.setShortcut("Ctrl+Alt+4")
+        else:
+            self.aFocusOutline.setShortcut("Alt+4")
         self.aFocusOutline.triggered.connect(lambda: self.theParent.switchFocus(nwWidget.OUTLINE))
         self.viewMenu.addAction(self.aFocusOutline)
 
