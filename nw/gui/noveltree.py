@@ -99,9 +99,6 @@ class GuiNovelTree(QTreeWidget):
 
         logger.debug("GuiNovelTree initialisation complete")
 
-        # Internal Mapping
-        self.makeAlert = self.theParent.makeAlert
-
         return
 
     def initTree(self):
