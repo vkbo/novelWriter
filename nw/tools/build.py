@@ -747,7 +747,7 @@ class GuiBuildNovel(QDialog):
         tEnd = int(time())
         logger.debug("Built project in %.3f ms" % (1000*(tEnd - tStart)))
 
-        if bldObj.errData and isinstance(bldObj.errData, list):
+        if bldObj.errData:
             self.theParent.makeAlert([
                 self.tr("There were problems when building the project:")
             ] + bldObj.errData, nwAlert.ERROR)
