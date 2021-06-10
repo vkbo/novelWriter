@@ -873,8 +873,9 @@ class NWProject():
 
         else:
             self.makeAlert(self.tr(
-                "Failed to create a new example project. Could not find the "
-                "necessary files. They seem to be missing from this installation."
+                "Failed to create a new example project. "
+                "Could not find the necessary files. "
+                "They seem to be missing from this installation."
             ), nwAlert.ERROR)
 
         if isSuccess:
@@ -1416,8 +1417,8 @@ class NWProject():
 
         if noWhere:
             self.makeAlert(self.tr(
-                "One or more orphaned files could not be added back into the "
-                "project. Make sure at least a Novel root folder exists."
+                "One or more orphaned files could not be added back into the project. "
+                "Make sure at least a Novel root folder exists."
             ), nwAlert.WARN)
 
         return True
