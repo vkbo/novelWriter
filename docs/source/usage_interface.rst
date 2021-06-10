@@ -413,10 +413,10 @@ Most features are available as keyboard shortcuts. These are as follows:
    :widths: 30, 70
    :class: "tight-table"
 
-   ":kbd:`Alt`:kbd:`1`",                 "Switch focus to the project tree."
-   ":kbd:`Alt`:kbd:`2`",                 "Switch focus to document editor."
-   ":kbd:`Alt`:kbd:`3`",                 "Switch focus to document viewer."
-   ":kbd:`Alt`:kbd:`4`",                 "Switch focus to outline view."
+   ":kbd:`Alt`:kbd:`1`",                 "Switch focus to the project tree. On Windows, use :kbd:`Ctrl`:kbd:`Alt`:kbd:`1`."
+   ":kbd:`Alt`:kbd:`2`",                 "Switch focus to document editor. On Windows, use :kbd:`Ctrl`:kbd:`Alt`:kbd:`2`."
+   ":kbd:`Alt`:kbd:`3`",                 "Switch focus to document viewer. On Windows, use :kbd:`Ctrl`:kbd:`Alt`:kbd:`3`."
+   ":kbd:`Alt`:kbd:`4`",                 "Switch focus to outline view. On Windows, use :kbd:`Ctrl`:kbd:`Alt`:kbd:`4`."
    ":kbd:`Alt`:kbd:`Left`",              "Move backward in the view history of the document viewer."
    ":kbd:`Alt`:kbd:`Right`",             "Move forward in the view history of the document viewer."
    ":kbd:`Ctrl`:kbd:`.`",                "Open menu to correct word under cursor."
