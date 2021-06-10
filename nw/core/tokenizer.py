@@ -24,6 +24,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
 import logging
 import re
 
@@ -82,6 +83,7 @@ class Tokenizer():
 
         self.theProject = theProject
         self.theParent  = theProject.theParent
+        self.mainConf   = nw.CONFIG
 
         # Data Variables
         self.theText     = ""   # The raw text to be tokenized
@@ -97,14 +99,15 @@ class Tokenizer():
         self.textFont    = "Serif" # Output text font
         self.textSize    = 11      # Output text size
         self.textFixed   = False   # Fixed width text
-        self.lineHeight  = 1.15    # Line height
+        self.lineHeight  = 1.15    # Line height in units of em
+        self.blockIndent = 4.00    # Block indent in units of em
         self.doJustify   = False   # Justify text
         self.doBodyText  = True    # Include body text
         self.doSynopsis  = False   # Also process synopsis comments
         self.doComments  = False   # Also process comments
         self.doKeywords  = False   # Also process keywords like tags and references
 
-        ## Title Margins
+        ## Margins
         self.marginTitle = (1.000, 0.500)
         self.marginHead1 = (1.000, 0.500)
         self.marginHead2 = (0.834, 0.500)
@@ -188,7 +191,11 @@ class Tokenizer():
         return
 
     def setLineHeight(self, lineHeight):
-        self.lineHeight = float(lineHeight)
+        self.lineHeight = min(max(float(lineHeight), 0.5), 5.0)
+        return
+
+    def setBlockIndent(self, blockIndent):
+        self.blockIndent = min(max(float(blockIndent), 0.0), 10.0)
         return
 
     def setJustify(self, doJustify):
@@ -451,29 +458,29 @@ class Tokenizer():
                 indRight = False
                 if aLine.startswith(">>"):
                     tagRight = True
-                    aLine = aLine[2:].lstrip()
+                    aLine = aLine[2:].lstrip(" ")
                 elif aLine.startswith("&gt;&gt;"):
                     tagRight = True
-                    aLine = aLine[8:].lstrip()
+                    aLine = aLine[8:].lstrip(" ")
                 elif aLine.startswith(">"):
                     indLeft = True
-                    aLine = aLine[1:].lstrip()
+                    aLine = aLine[1:].lstrip(" ")
                 elif aLine.startswith("&gt;"):
                     indLeft = True
-                    aLine = aLine[4:].lstrip()
+                    aLine = aLine[4:].lstrip(" ")
 
                 if aLine.endswith("<<"):
                     tagLeft = True
-                    aLine = aLine[:-2].rstrip()
+                    aLine = aLine[:-2].rstrip(" ")
                 elif aLine.endswith("&lt;&lt;"):
                     tagLeft = True
-                    aLine = aLine[:-8].rstrip()
+                    aLine = aLine[:-8].rstrip(" ")
                 elif aLine.endswith("<"):
                     indRight = True
-                    aLine = aLine[:-1].rstrip()
+                    aLine = aLine[:-1].rstrip(" ")
                 elif aLine.endswith("&lt;"):
                     indRight = True
-                    aLine = aLine[:-4].rstrip()
+                    aLine = aLine[:-4].rstrip(" ")
 
                 textAlign = defAlign
                 if tagLeft and tagRight:
