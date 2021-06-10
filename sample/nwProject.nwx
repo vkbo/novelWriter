@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.4a0" hexVersion="0x010400a0" fileVersion="1.2" timeStamp="2021-06-10 14:15:49">
+<novelWriterXML appVersion="1.4a0" hexVersion="0x010400a0" fileVersion="1.2" timeStamp="2021-06-10 23:37:32">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1095</saveCount>
+    <saveCount>1096</saveCount>
     <autoCount>188</autoCount>
-    <editTime>52304</editTime>
+    <editTime>52328</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -17,8 +17,8 @@
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
-    <lastWordCount>1224</lastWordCount>
-    <novelWordCount>848</novelWordCount>
+    <lastWordCount>1217</lastWordCount>
+    <novelWordCount>841</novelWordCount>
     <notesWordCount>376</notesWordCount>
     <autoReplace>
       <entry key="A">B</entry>
@@ -63,8 +63,8 @@
       <status>Started</status>
       <exported>True</exported>
       <layout>TITLE</layout>
-      <charCount>244</charCount>
-      <wordCount>43</wordCount>
+      <charCount>241</charCount>
+      <wordCount>42</wordCount>
       <paraCount>3</paraCount>
       <cursorPos>252</cursorPos>
     </item>
@@ -118,8 +118,8 @@
       <status>1st Draft</status>
       <exported>True</exported>
       <layout>SCENE</layout>
-      <charCount>2450</charCount>
-      <wordCount>439</wordCount>
+      <charCount>2434</charCount>
+      <wordCount>433</wordCount>
       <paraCount>14</paraCount>
       <cursorPos>61</cursorPos>
     </item>
