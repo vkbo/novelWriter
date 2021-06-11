@@ -52,7 +52,9 @@ class GuiDocSplit(QDialog):
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.optState   = theParent.theProject.optState
+
         self.sourceItem = None
+        self.sourceText = []
 
         self.outerBox = QVBoxLayout()
         self.setWindowTitle(self.tr("Split Document"))
@@ -115,16 +117,16 @@ class GuiDocSplit(QDialog):
         logger.verbose("GuiDocSplit split button clicked")
 
         if self.sourceItem is None:
-            self.theParent.makeAlert(
-                self.tr("No source document selected. Nothing to do."), nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "No source document selected. Nothing to do."
+            ), nwAlert.ERROR)
             return False
 
         srcItem = self.theProject.projTree[self.sourceItem]
         if srcItem is None:
-            self.theParent.makeAlert(
-                self.tr("Could not parse source document."), nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "Could not parse source document."
+            ), nwAlert.ERROR)
             return False
 
         inDoc = NWDoc(self.theProject, self.sourceItem)
@@ -132,16 +134,14 @@ class GuiDocSplit(QDialog):
 
         docErr = inDoc.getError()
         if theText is None and docErr:
-            self.theParent.makeAlert(
-                [self.tr("Failed to open document file."), docErr], nwAlert.ERROR
-            )
+            self.theParent.makeAlert([
+                self.tr("Failed to open document file."), docErr
+            ], nwAlert.ERROR)
 
         if theText is None:
             theText = ""
 
-        theLines = theText.splitlines()
-        nLines   = len(theLines)
-        theLines.insert(0, "%Split Doc")
+        nLines = len(self.sourceText)
         logger.debug(
             "Splitting document %s with %d lines" % (self.sourceItem, nLines)
         )
@@ -157,21 +157,19 @@ class GuiDocSplit(QDialog):
 
         nFiles = len(finalOrder)
         if nFiles == 0:
-            self.theParent.makeAlert(
-                self.tr("No headers found. Nothing to do."), nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "No headers found. Nothing to do."
+            ), nwAlert.ERROR)
             return False
 
         # Check that another folder can be created
         parTree = self.theProject.projTree.getItemPath(srcItem.itemParent)
         if len(parTree) >= nwConst.MAX_DEPTH - 1:
-            self.theParent.makeAlert(
-                self.tr(
-                    "Cannot add new folder for the document split. "
-                    "Maximum folder depth has been reached. "
-                    "Please move the file to another level in the project tree."
-                ), nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "Cannot add new folder for the document split. "
+                "Maximum folder depth has been reached. "
+                "Please move the file to another level in the project tree."
+            ), nwAlert.ERROR)
             return False
 
         msgYes = self.theParent.askQuestion(
@@ -218,18 +216,18 @@ class GuiDocSplit(QDialog):
             newItem.setStatus(srcItem.itemStatus)
             logger.verbose(
                 "Creating new document %s with text from line %d to %d" % (
-                    nHandle, iStart, iEnd-1
+                    nHandle, iStart+1, iEnd
                 )
             )
 
-            theText = "\n".join(theLines[iStart:iEnd])
+            theText = "\n".join(self.sourceText[iStart:iEnd])
             theText = theText.rstrip("\n") + "\n\n"
 
             outDoc = NWDoc(self.theProject, nHandle)
             if not outDoc.writeDocument(theText):
-                self.theParent.makeAlert(
-                    [self.tr("Could not save document."), outDoc.getError()], nwAlert.ERROR
-                )
+                self.theParent.makeAlert([
+                    self.tr("Could not save document."), outDoc.getError()
+                ], nwAlert.ERROR)
                 return False
 
             self.theParent.treeView.revealNewTreeItem(nHandle)
@@ -267,9 +265,9 @@ class GuiDocSplit(QDialog):
             return False
 
         if nwItem.itemType is not nwItemType.FILE:
-            self.theParent.makeAlert(
-                self.tr("Element selected in the project tree must be a file."), nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "Element selected in the project tree must be a file."
+            ), nwAlert.ERROR)
             return False
 
         inDoc = NWDoc(self.theProject, self.sourceItem)
@@ -284,12 +282,10 @@ class GuiDocSplit(QDialog):
             "Scanning document %s for headings level <= %d" % (self.sourceItem, spLevel)
         )
 
-        lineNo = 0
-        for aLine in theText.splitlines():
+        self.sourceText = theText.splitlines()
+        for lineNo, aLine in enumerate(self.sourceText):
 
-            lineNo += 1
-            onLine  = 0
-
+            onLine = -1
             if aLine.startswith("# ") and spLevel >= 1:
                 onLine = lineNo
             elif aLine.startswith("## ") and spLevel >= 2:
@@ -299,7 +295,7 @@ class GuiDocSplit(QDialog):
             elif aLine.startswith("#### ") and spLevel >= 4:
                 onLine = lineNo
 
-            if onLine > 0:
+            if onLine >= 0:
                 newItem = QListWidgetItem()
                 newItem.setText(aLine.strip())
                 newItem.setData(Qt.UserRole, onLine)

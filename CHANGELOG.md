@@ -1,5 +1,34 @@
 # novelWriter Changelog
 
+## Version 1.3.2 [2021-05-30]
+
+### Release Notes
+
+This is a patch release that fixes some minor issues. One issue was with the split tool, which
+would drop the last line from the source document during a split if it was missing a final line
+break. A minor issue with the display of word counts on the details panel under the project tree
+has also been fixed. In addition, the setup script commands for Linux have been improved a bit.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* The details panel under the tree would sometimes show character, word and paragraph counts even
+  when there was no document selected. This has now been fixed. Issue #781. PR #782.
+* The split document tool would drop the last line of the source document. This is generally not a
+  problem if the last line has a line break after it, but if it doesn't, it is lost in the split.
+  This was caused by an offset error when calculating the split positions in the file and has been
+  resolved. Issue #795. PR #796.
+
+**Installation**
+
+* Due to an error in the setup script in the past, a desktop icon was created for novelWriter when
+  running the `xdg-install` command. This is no longer the case, but the old icon was still left on
+  some user's desktops. The setup script will now remove that icon if it exists when the
+  `xdg-install` or `xdg-uninstall` commands are run. PR #784.
+
+----
+
 ## Version 1.3.1 [2021-05-06]
 
 ### Release Notes

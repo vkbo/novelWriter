@@ -316,17 +316,14 @@ class GuiDocEditor(QTextEdit):
 
         docSize = len(theDoc)
         if docSize > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert(
-                self.tr(
-                    "The document you are trying to open is too big. "
-                    "The document size is {0} MB. "
-                    "The maximum size allowed is {1} MB."
-                ).format(
-                    f"{docSize/1.0e6:.2f}",
-                    f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-                ),
-                nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "The document you are trying to open is too big. "
+                "The document size is {0} MB. "
+                "The maximum size allowed is {1} MB."
+            ).format(
+                f"{docSize/1.0e6:.2f}",
+                f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
+            ), nwAlert.ERROR)
             self.clearEditor()
             return False
 
@@ -413,17 +410,14 @@ class GuiDocEditor(QTextEdit):
         """
         docSize = len(theText)
         if docSize > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert(
-                self.tr(
-                    "The text you are trying to add is too big. "
-                    "The text size is {0} MB. "
-                    "The maximum size allowed is {1} MB."
-                ).format(
-                    f"{docSize/1.0e6:.2f}",
-                    f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-                ),
-                nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "The text you are trying to add is too big. "
+                "The text size is {0} MB. "
+                "The maximum size allowed is {1} MB."
+            ).format(
+                f"{docSize/1.0e6:.2f}",
+                f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
+            ), nwAlert.ERROR)
             return False
 
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -1015,15 +1009,12 @@ class GuiDocEditor(QTextEdit):
         self._lastFind = None
 
         if self.document().characterCount() > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert(
-                self.tr(
-                    "The document has grown too big and you cannot add more text to it. "
-                    "The maximum size of a single novelWriter document is {0} MB."
-                ).format(
-                    f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-                ),
-                nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "The document has grown too big and you cannot add more text to it. "
+                "The maximum size of a single novelWriter document is {0} MB."
+            ).format(
+                f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
+            ), nwAlert.ERROR)
             self.undo()
             return
 
@@ -1477,10 +1468,9 @@ class GuiDocEditor(QTextEdit):
         """
         theCursor = self.textCursor()
         if not theCursor.hasSelection():
-            self.theParent.makeAlert(
-                self.tr("Please select some text before calling replace quotes."),
-                nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "Please select some text before calling replace quotes."
+            ), nwAlert.ERROR)
             return False
 
         posS = theCursor.selectionStart()

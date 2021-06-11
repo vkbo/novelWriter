@@ -18,8 +18,8 @@ for comments, synopsis, and cross-referencing. It's designed to be a simple text
 for easy organisation of text and notes, using human readable text files as storage for robustness.
 
 The project storage is suitable for version control software, and also well suited for file
-synchronisation tools. All text is saved as plain text files with a meta data header, the core
-project structure is stored in a single project XML file, and other meta data is primarily saved as
+synchronisation tools. All text is saved as plain text files with a meta data header. The core
+project structure is stored in a single project XML file. Other meta data is primarily saved as
 JSON files.
 
 The full documentation is available on [readthedocs.io](https://novelwriter.readthedocs.io).
@@ -32,13 +32,16 @@ met. It is regularly tested on Debian and Ubuntu Linux, Windows, and macOS.
 
 ## Project Contributions
 
-Contributions to this project are welcome. However, please read the
-[Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md) before
-submitting larger additions or changes.
+The project isn't taking feature contributions at the moment. If you have an idea, please make a
+feature request in the issue tracker. Fixes and patches are welcome. So are new translations.
+Contributions related to packaging and installing novelWriter will also be appreciated.
 
 If you want to help translating novelWriter into another language, please see the
 [README](https://github.com/vkbo/novelWriter/blob/main/i18n/README.md) in the `nw/assets/i18n`
-folder.
+folder for further details.
+
+Before contributing any code, please read the full
+[Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md).
 
 ## Key Features
 

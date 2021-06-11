@@ -748,10 +748,9 @@ class GuiBuildNovel(QDialog):
         logger.debug("Built project in %.3f ms" % (1000*(tEnd - tStart)))
 
         if bldObj.errData:
-            self.theParent.makeAlert("%s:<br>-&nbsp;%s" % (
-                self.tr("There were problems when building the project"),
-                "<br>-&nbsp;".join(bldObj.errData)), nwAlert.ERROR
-            )
+            self.theParent.makeAlert([
+                self.tr("There were problems when building the project:")
+            ] + bldObj.errData, nwAlert.ERROR)
 
         return
 
@@ -998,17 +997,13 @@ class GuiBuildNovel(QDialog):
         # ==============
 
         if wSuccess:
-            self.theParent.makeAlert(
-                "%s<br>%s" % (
-                    self.tr("{0} file successfully written to:").format(textFmt), savePath
-                ),
-                nwAlert.INFO
-            )
+            self.theParent.makeAlert([
+                self.tr("{0} file successfully written to:").format(textFmt), savePath
+            ], nwAlert.INFO)
         else:
-            self.theParent.makeAlert(
-                self.tr("Failed to write {0} file. {1}").format(textFmt, errMsg),
-                nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "Failed to write {0} file. {1}"
+            ).format(textFmt, errMsg), nwAlert.ERROR)
 
         return wSuccess
 

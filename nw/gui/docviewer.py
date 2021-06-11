@@ -245,14 +245,13 @@ class GuiDocViewer(QTextBrowser):
         logger.debug("Loading document from tag '%s'" % theTag)
         tHandle, _, sTitle = self.theParent.theIndex.getTagSource(theTag)
         if tHandle is None:
-            self.theParent.makeAlert(
-                self.tr(
-                    "Could not find the reference for tag '{0}'. It either doesn't "
-                    "exist, or the index is out of date. The index can be updated "
-                    "from the Tools menu, or by pressing {1}."
-                ).format(theTag, "F9"),
-                nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "Could not find the reference for tag '{0}'. It either doesn't "
+                "exist, or the index is out of date. The index can be updated "
+                "from the Tools menu, or by pressing {1}."
+            ).format(
+                theTag, "F9"
+            ), nwAlert.ERROR)
             return False
         else:
             # Let the parent handle the opening as it also ensures that

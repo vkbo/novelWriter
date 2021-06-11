@@ -120,7 +120,7 @@ class NWProject():
         CUSTOM, and always have parent handle set to None.
         """
         if not self.projTree.checkRootUnique(rootClass):
-            self.makeAlert("Duplicate root item detected.", nwAlert.ERROR)
+            self.makeAlert(self.tr("Duplicate root item detected."), nwAlert.ERROR)
             return None
         newItem = NWItem(self)
         newItem.setName(rootName)
@@ -362,7 +362,9 @@ class NWProject():
         if not os.path.isfile(fileName):
             fileName = os.path.join(fileName, nwFiles.PROJ_FILE)
             if not os.path.isfile(fileName):
-                self.makeAlert(self.tr("File not found: {0}").format(fileName), nwAlert.ERROR)
+                self.makeAlert(self.tr(
+                    "File not found: {0}"
+                ).format(fileName), nwAlert.ERROR)
                 return False
 
         self.clearProject()
@@ -411,20 +413,22 @@ class NWProject():
         try:
             nwXML = etree.parse(fileName)
         except Exception as e:
-            self.makeAlert([self.tr("Failed to parse project xml."), str(e)], nwAlert.ERROR)
+            self.makeAlert([
+                self.tr("Failed to parse project xml."), str(e)
+            ], nwAlert.ERROR)
 
             # Trying to open backup file instead
             backFile = fileName[:-3]+"bak"
             if os.path.isfile(backFile):
-                self.makeAlert(
-                    self.tr("Attempting to open backup project file instead."), nwAlert.INFO
-                )
+                self.makeAlert(self.tr(
+                    "Attempting to open backup project file instead."
+                ), nwAlert.INFO)
                 try:
                     nwXML = etree.parse(backFile)
                 except Exception as e:
-                    self.makeAlert(
-                        [self.tr("Failed to parse project xml."), str(e)], nwAlert.ERROR
-                    )
+                    self.makeAlert([
+                        self.tr("Failed to parse project xml."), str(e)
+                    ], nwAlert.ERROR)
                     self.clearProject()
                     return False
             else:
@@ -445,10 +449,9 @@ class NWProject():
         # ===============
 
         if not nwxRoot == "novelWriterXML":
-            self.makeAlert(
-                self.tr("Project file does not appear to be a novelWriterXML file."),
-                nwAlert.ERROR
-            )
+            self.makeAlert(self.tr(
+                "Project file does not appear to be a novelWriterXML file."
+            ), nwAlert.ERROR)
             self.clearProject()
             return False
 
@@ -465,13 +468,11 @@ class NWProject():
         #       read the file. Introduced in version 0.10.
 
         if fileVersion not in ("1.0", "1.1", "1.2"):
-            self.makeAlert((
-                self.tr(
-                    "Unknown or unsupported novelWriter project file format. "
-                    "The project cannot be opened by this version of novelWriter. "
-                    "The file was saved with novelWriter version {0}."
-                ).format(appVersion)
-            ), nwAlert.ERROR)
+            self.makeAlert(self.tr(
+                "Unknown or unsupported novelWriter project file format. "
+                "The project cannot be opened by this version of novelWriter. "
+                "The file was saved with novelWriter version {0}."
+            ).format(appVersion), nwAlert.ERROR)
             self.clearProject()
             return False
 
@@ -600,9 +601,9 @@ class NWProject():
         file.
         """
         if self.projPath is None:
-            self.makeAlert(
-                self.tr("Project path not set, cannot save project."), nwAlert.ERROR
-            )
+            self.makeAlert(self.tr(
+                "Project path not set, cannot save project."
+            ), nwAlert.ERROR)
             return False
 
         saveTime = time()
@@ -681,7 +682,9 @@ class NWProject():
                     xml_declaration = True
                 ))
         except Exception as e:
-            self.makeAlert([self.tr("Failed to save project."), str(e)], nwAlert.ERROR)
+            self.makeAlert([
+                self.tr("Failed to save project."), str(e)
+            ], nwAlert.ERROR)
             return False
 
         # If we're here, the file was successfully saved,
@@ -755,30 +758,24 @@ class NWProject():
         self.theParent.setStatus(self.tr("Backing up project ..."))
 
         if self.mainConf.backupPath is None or self.mainConf.backupPath == "":
-            self.theParent.makeAlert(
-                self.tr(
-                    "Cannot backup project because no backup path is set. "
-                    "Please set a valid backup location in Tools > Preferences."
-                ), nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "Cannot backup project because no backup path is set. "
+                "Please set a valid backup location in Tools > Preferences."
+            ), nwAlert.ERROR)
             return False
 
         if self.projName is None or self.projName == "":
-            self.theParent.makeAlert(
-                self.tr(
-                    "Cannot backup project because no project name is set. "
-                    "Please set a Working Title in Project > Project Settings."
-                ), nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "Cannot backup project because no project name is set. "
+                "Please set a Working Title in Project > Project Settings."
+            ), nwAlert.ERROR)
             return False
 
         if not os.path.isdir(self.mainConf.backupPath):
-            self.theParent.makeAlert(
-                self.tr(
-                    "Cannot backup project because the backup path does not exist. "
-                    "Please set a valid backup location in Tools > Preferences."
-                ), nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "Cannot backup project because the backup path does not exist. "
+                "Please set a valid backup location in Tools > Preferences."
+            ), nwAlert.ERROR)
             return False
 
         cleanName = makeFileNameSafe(self.projName)
@@ -788,20 +785,17 @@ class NWProject():
                 os.mkdir(baseDir)
                 logger.debug("Created folder %s" % baseDir)
             except Exception as e:
-                self.theParent.makeAlert(
-                    [self.tr("Could not create backup folder."), str(e)],
-                    nwAlert.ERROR
-                )
+                self.theParent.makeAlert([
+                    self.tr("Could not create backup folder."), str(e)
+                ], nwAlert.ERROR)
                 return False
 
         if os.path.commonpath([self.projPath, baseDir]) == self.projPath:
-            self.theParent.makeAlert(
-                self.tr(
-                    "Cannot backup project because the backup path is within the "
-                    "project folder to be backed up. Please choose a different "
-                    "backup path in Tools > Preferences."
-                ), nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "Cannot backup project because the backup path is within the "
+                "project folder to be backed up. Please choose a different "
+                "backup path in Tools > Preferences."
+            ), nwAlert.ERROR)
             return False
 
         archName = self.tr("Backup from {0}").format(formatTimeStamp(time(), fileSafe=True))
@@ -813,22 +807,19 @@ class NWProject():
             self._writeLockFile()
             logger.info("Backup written to: %s" % archName)
             if doNotify:
-                self.theParent.makeAlert(
-                    self.tr(
-                        "Backup archive file written to: {0}"
-                    ).format(
-                        f"{os.path.join(cleanName, archName)}.zip"
-                    ), nwAlert.INFO
-                )
+                self.theParent.makeAlert(self.tr(
+                    "Backup archive file written to: {0}"
+                ).format(f"{os.path.join(cleanName, archName)}.zip"), nwAlert.INFO)
 
         except Exception as e:
-            self.theParent.makeAlert(
-                [self.tr("Could not write backup archive."), str(e)],
-                nwAlert.ERROR
-            )
+            self.theParent.makeAlert([
+                self.tr("Could not write backup archive."), str(e)
+            ], nwAlert.ERROR)
             return False
 
-        self.theParent.setStatus(self.tr("Project backed up to '{0}'").format(f"{baseName}.zip"))
+        self.theParent.setStatus(self.tr(
+            "Project backed up to '{0}'"
+        ).format(f"{baseName}.zip"))
 
         return True
 
@@ -854,9 +845,9 @@ class NWProject():
                 shutil.unpack_archive(pkgSample, projPath)
                 isSuccess = True
             except Exception as e:
-                self.makeAlert(
-                    [self.tr("Failed to create a new example project."), str(e)], nwAlert.ERROR
-                )
+                self.makeAlert([
+                    self.tr("Failed to create a new example project."), str(e)
+                ], nwAlert.ERROR)
 
         elif os.path.isdir(srcSample):
 
@@ -876,17 +867,16 @@ class NWProject():
                 isSuccess = True
 
             except Exception as e:
-                self.makeAlert(
-                    [self.tr("Failed to create a new example project."), str(e)], nwAlert.ERROR
-                )
+                self.makeAlert([
+                    self.tr("Failed to create a new example project."), str(e)
+                ], nwAlert.ERROR)
 
         else:
-            self.makeAlert(
-                self.tr(
-                    "Failed to create a new example project. Could not find the "
-                    "necessary files. They seem to be missing from this installation."
-                ), nwAlert.ERROR
-            )
+            self.makeAlert(self.tr(
+                "Failed to create a new example project. "
+                "Could not find the necessary files. "
+                "They seem to be missing from this installation."
+            ), nwAlert.ERROR)
 
         if isSuccess:
             self.clearProject()
@@ -916,19 +906,17 @@ class NWProject():
                     os.mkdir(projPath)
                     logger.debug("Created folder %s" % projPath)
                 except Exception as e:
-                    self.theParent.makeAlert((
-                        [self.tr("Could not create new project folder."), str(e)]
-                    ), nwAlert.ERROR)
+                    self.theParent.makeAlert([
+                        self.tr("Could not create new project folder."), str(e)
+                    ], nwAlert.ERROR)
                     return False
 
             if os.path.isdir(projPath):
                 if os.listdir(self.projPath):
-                    self.theParent.makeAlert(
-                        self.tr(
-                            "New project folder is not empty. "
-                            "Each project requires a dedicated project folder."
-                        ), nwAlert.ERROR
-                    )
+                    self.theParent.makeAlert(self.tr(
+                        "New project folder is not empty. "
+                        "Each project requires a dedicated project folder."
+                    ), nwAlert.ERROR)
                     return False
 
         self.ensureFolderStructure()
@@ -975,21 +963,17 @@ class NWProject():
         self.doBackup = doBackup
         if doBackup:
             if not os.path.isdir(self.mainConf.backupPath):
-                self.theParent.makeAlert(
-                    self.tr(
-                        "You must set a valid backup path in Preferences to use "
-                        "the automatic project backup feature."
-                    ), nwAlert.WARN
-                )
+                self.theParent.makeAlert(self.tr(
+                    "You must set a valid backup path in Preferences to use "
+                    "the automatic project backup feature."
+                ), nwAlert.WARN)
                 return False
 
             if self.projName == "":
-                self.theParent.makeAlert(
-                    self.tr(
-                        "You must set a valid project name in Project Settings to "
-                        "use the automatic project backup feature."
-                    ), nwAlert.WARN
-                )
+                self.theParent.makeAlert(self.tr(
+                    "You must set a valid project name in Project Settings to "
+                    "use the automatic project backup feature."
+                ), nwAlert.WARN)
                 return False
 
         return True
@@ -1317,7 +1301,9 @@ class NWProject():
                 os.mkdir(thePath)
                 logger.debug("Created folder %s" % thePath)
             except Exception as e:
-                self.makeAlert(["Could not create folder.", str(e)], nwAlert.ERROR)
+                self.makeAlert([
+                    self.tr("Could not create folder."), str(e)
+                ], nwAlert.ERROR)
                 return False
         return True
 
@@ -1374,10 +1360,9 @@ class NWProject():
 
         # Report status
         if len(orphanFiles) > 0:
-            self.makeAlert(
-                self.tr("Found {0} orphaned file(s) in project folder.").format(len(orphanFiles)),
-                nwAlert.WARN
-            )
+            self.makeAlert(self.tr(
+                "Found {0} orphaned file(s) in project folder."
+            ).format(len(orphanFiles)), nwAlert.WARN)
         else:
             logger.debug("File check OK")
             return
@@ -1431,12 +1416,10 @@ class NWProject():
             self.projTree.append(oHandle, oParent, orphItem)
 
         if noWhere:
-            self.makeAlert(
-                self.tr(
-                    "One or more orphaned files could not be added back into the "
-                    "project. Make sure at least a Novel root folder exists."
-                ), nwAlert.WARN
-            )
+            self.makeAlert(self.tr(
+                "One or more orphaned files could not be added back into the project. "
+                "Make sure at least a Novel root folder exists."
+            ), nwAlert.WARN)
 
         return True
 
