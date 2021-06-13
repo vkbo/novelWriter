@@ -1728,9 +1728,13 @@ class GuiDocEditor(QTextEdit):
         elif theText.startswith("% "):
             newText = theText[2:]
             cOffset = 2
+            if docAction == nwDocAction.BLOCK_COM:
+                docAction = nwDocAction.BLOCK_TXT
         elif theText.startswith("%"):
             newText = theText[1:]
             cOffset = 1
+            if docAction == nwDocAction.BLOCK_COM:
+                docAction = nwDocAction.BLOCK_TXT
         elif theText.startswith("# "):
             newText = theText[2:]
             cOffset = 2
