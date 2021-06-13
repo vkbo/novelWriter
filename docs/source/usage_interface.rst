@@ -186,8 +186,8 @@ you wish.
 
 .. tip::
    If you don't like auto-replacement, all symbols inserted by this feature are also available in
-   the :guilabel:`Insert` menu, and via convenient :ref:`a_ui_shortcuts_ins`. You may also be using
-   a `Compose Key`_ setup, which means you may not need the auto-replace feature.
+   the :guilabel:`Insert` menu, and via convenient :ref:`a_kb_ins`. You may also be using a
+   `Compose Key`_ setup, which means you may not need the auto-replace feature.
 
 .. _Compose Key: https://en.wikipedia.org/wiki/Compose_key
 
@@ -271,7 +271,7 @@ In addition, the editor supports a few additional types of whitespaces.
 * Non-breaking thin space can be inserted  with :kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`Space`.
 
 These are all insert features, and the :guilabel:`Insert` menu has more. They are also listed
-in :ref:`a_ui_shortcuts_ins`.
+in :ref:`a_kb_ins`.
 
 Non-breaking spaces are highlighted by the syntax highlighter with an alternate coloured
 background, depending on the selected theme.
