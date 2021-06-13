@@ -99,19 +99,20 @@ class ToOdt(Tokenizer):
         self.headerText = ""
 
         # Internal
-        self._fontFamily = "&apos;Liberation Sans&apos;"
-        self._fontPitch  = "variable"
-        self._fSizeTitle = "30pt"
-        self._fSizeHead1 = "24pt"
-        self._fSizeHead2 = "20pt"
-        self._fSizeHead3 = "16pt"
-        self._fSizeHead4 = "14pt"
-        self._fSizeHead  = "14pt"
-        self._fSizeText  = "12pt"
-        self._lineHeight = "115%"
-        self._textAlign  = "left"
-        self._dLanguage  = "en"
-        self._dCountry   = "GB"
+        self._fontFamily  = "&apos;Liberation Sans&apos;"
+        self._fontPitch   = "variable"
+        self._fSizeTitle  = "30pt"
+        self._fSizeHead1  = "24pt"
+        self._fSizeHead2  = "20pt"
+        self._fSizeHead3  = "16pt"
+        self._fSizeHead4  = "14pt"
+        self._fSizeHead   = "14pt"
+        self._fSizeText   = "12pt"
+        self._lineHeight  = "115%"
+        self._blockIndent = "1.693cm"
+        self._textAlign   = "left"
+        self._dLanguage   = "en"
+        self._dCountry    = "GB"
 
         ## Text Margings in Units of em
         self._mTopTitle = "0.423cm"
@@ -222,8 +223,9 @@ class ToOdt(Tokenizer):
             self._colMetaTx = "#813709"
             self._opaMetaTx = "100%"
 
-        self._lineHeight = f"{round(100 * self.lineHeight):d}%"
-        self._textAlign  = "justify" if self.doJustify else "left"
+        self._lineHeight  = f"{round(100 * self.lineHeight):d}%"
+        self._blockIndent = self._emToCm(self.blockIndent)
+        self._textAlign   = "justify" if self.doJustify else "left"
 
         # Document Header
         # ===============
@@ -355,6 +357,11 @@ class ToOdt(Tokenizer):
                     oStyle.setMarginBottom("0.000cm")
                 if tStyle & self.A_Z_TOPMRG:
                     oStyle.setMarginTop("0.000cm")
+
+                if tStyle & self.A_IND_L:
+                    oStyle.setMarginLeft(self._blockIndent)
+                if tStyle & self.A_IND_R:
+                    oStyle.setMarginRight(self._blockIndent)
 
             # Process Text Types
             if tType == self.T_EMPTY:
@@ -515,7 +522,7 @@ class ToOdt(Tokenizer):
     def _formatKeywords(self, tText):
         """Apply formatting to keywords.
         """
-        isValid, theBits, thePos = self.theParent.theIndex.scanThis("@"+tText)
+        isValid, theBits, _ = self.theParent.theIndex.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 
@@ -1008,6 +1015,8 @@ class ODTParagraphStyle():
         self._pAttr = {
             "margin-top":    ["fo", None],
             "margin-bottom": ["fo", None],
+            "margin-left":   ["fo", None],
+            "margin-right":  ["fo", None],
             "line-height":   ["fo", None],
             "text-align":    ["fo", None],
             "break-before":  ["fo", None],
@@ -1062,6 +1071,14 @@ class ODTParagraphStyle():
 
     def setMarginBottom(self, theValue):
         self._pAttr["margin-bottom"][1] = str(theValue)
+        return
+
+    def setMarginLeft(self, theValue):
+        self._pAttr["margin-left"][1] = str(theValue)
+        return
+
+    def setMarginRight(self, theValue):
+        self._pAttr["margin-right"][1] = str(theValue)
         return
 
     def setLineHeight(self, theValue):
@@ -1142,13 +1159,13 @@ class ODTParagraphStyle():
         """Check if there are new settings in refStyle that differ from
         those in the current object.
         """
-        for aName, (aNm, aVal) in refStyle._mAttr.items():
+        for aName, (_, aVal) in refStyle._mAttr.items():
             if aVal is not None and aVal != self._mAttr[aName][1]:
                 return True
-        for aName, (aNm, aVal) in refStyle._pAttr.items():
+        for aName, (_, aVal) in refStyle._pAttr.items():
             if aVal is not None and aVal != self._pAttr[aName][1]:
                 return True
-        for aName, (aNm, aVal) in refStyle._tAttr.items():
+        for aName, (_, aVal) in refStyle._tAttr.items():
             if aVal is not None and aVal != self._tAttr[aName][1]:
                 return True
         return False

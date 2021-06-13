@@ -106,27 +106,27 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self.colEmph = QColor(*self.theTheme.colEmph)
 
         self.hStyles = {
-            "header1"    : self._makeFormat(self.colHead, "bold", 1.8),
-            "header2"    : self._makeFormat(self.colHead, "bold", 1.6),
-            "header3"    : self._makeFormat(self.colHead, "bold", 1.4),
-            "header4"    : self._makeFormat(self.colHead, "bold", 1.2),
-            "header1h"   : self._makeFormat(self.colHeadH, "bold", 1.8),
-            "header2h"   : self._makeFormat(self.colHeadH, "bold", 1.6),
-            "header3h"   : self._makeFormat(self.colHeadH, "bold", 1.4),
-            "header4h"   : self._makeFormat(self.colHeadH, "bold", 1.2),
-            "bold"       : self._makeFormat(self.colEmph, "bold"),
-            "italic"     : self._makeFormat(self.colEmph, "italic"),
-            "strike"     : self._makeFormat(self.colHidden, "strike"),
-            "mspaces"    : self._makeFormat(self.colError, "errline"),
-            "nobreak"    : self._makeFormat(self.colBreak, "background"),
-            "dialogue1"  : self._makeFormat(self.colDialN),
-            "dialogue2"  : self._makeFormat(self.colDialD),
-            "dialogue3"  : self._makeFormat(self.colDialS),
-            "replace"    : self._makeFormat(self.colRepTag),
-            "hidden"     : self._makeFormat(self.colHidden),
-            "keyword"    : self._makeFormat(self.colKey),
-            "modifier"   : self._makeFormat(self.colMod),
-            "value"      : self._makeFormat(self.colVal, "underline"),
+            "header1"   : self._makeFormat(self.colHead, "bold", 1.8),
+            "header2"   : self._makeFormat(self.colHead, "bold", 1.6),
+            "header3"   : self._makeFormat(self.colHead, "bold", 1.4),
+            "header4"   : self._makeFormat(self.colHead, "bold", 1.2),
+            "header1h"  : self._makeFormat(self.colHeadH, "bold", 1.8),
+            "header2h"  : self._makeFormat(self.colHeadH, "bold", 1.6),
+            "header3h"  : self._makeFormat(self.colHeadH, "bold", 1.4),
+            "header4h"  : self._makeFormat(self.colHeadH, "bold", 1.2),
+            "bold"      : self._makeFormat(self.colEmph, "bold"),
+            "italic"    : self._makeFormat(self.colEmph, "italic"),
+            "strike"    : self._makeFormat(self.colHidden, "strike"),
+            "mspaces"   : self._makeFormat(self.colError, "errline"),
+            "nobreak"   : self._makeFormat(self.colBreak, "background"),
+            "dialogue1" : self._makeFormat(self.colDialN),
+            "dialogue2" : self._makeFormat(self.colDialD),
+            "dialogue3" : self._makeFormat(self.colDialS),
+            "replace"   : self._makeFormat(self.colRepTag),
+            "hidden"    : self._makeFormat(self.colHidden),
+            "keyword"   : self._makeFormat(self.colKey),
+            "modifier"  : self._makeFormat(self.colMod),
+            "value"     : self._makeFormat(self.colVal, "underline"),
         }
 
         self.hRules = []
@@ -195,6 +195,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 1 : self.hStyles["hidden"],
                 2 : self.hStyles["strike"],
                 3 : self.hStyles["hidden"],
+            }
+        ))
+
+        # Alignment Tags
+        self.hRules.append((
+            r"(^>{1,2}|<{1,2}$)", {
+                1 : self.hStyles["hidden"],
             }
         ))
 

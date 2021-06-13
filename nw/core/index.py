@@ -908,6 +908,9 @@ def countWords(theText):
     paraCount = 0
     prevEmpty = True
 
+    if not isinstance(theText, str):
+        return charCount, wordCount, paraCount
+
     # We need to treat dashes as word separators for counting words.
     # The check+replace apprach is much faster that direct replace for
     # large texts, and a bit slower for small texts, but in the latter
@@ -920,33 +923,38 @@ def countWords(theText):
     for aLine in theText.splitlines():
 
         countPara = True
-        theLen    = len(aLine)
 
-        if theLen == 0:
+        if not aLine:
             prevEmpty = True
             continue
         if aLine[0] == "@" or aLine[0] == "%":
             continue
 
-        if aLine[0:5] == "#### ":
-            wordCount -= 1
-            charCount -= 5
-            countPara = False
-        elif aLine[0:4] == "### ":
-            wordCount -= 1
-            charCount -= 4
-            countPara = False
-        elif aLine[0:3] == "## ":
-            wordCount -= 1
-            charCount -= 3
-            countPara = False
-        elif aLine[0:2] == "# ":
-            wordCount -= 1
-            charCount -= 2
-            countPara = False
+        if aLine[0] == "#":
+            if aLine[:5] == "#### ":
+                aLine = aLine[5:]
+                countPara = False
+            elif aLine[:4] == "### ":
+                aLine = aLine[4:]
+                countPara = False
+            elif aLine[:3] == "## ":
+                aLine = aLine[3:]
+                countPara = False
+            elif aLine[:2] == "# ":
+                aLine = aLine[2:]
+                countPara = False
+        elif aLine[0] == ">" or aLine[-1] == "<":
+            if aLine[:2] == ">>":
+                aLine = aLine[2:].lstrip(" ")
+            elif aLine[:1] == ">":
+                aLine = aLine[1:].lstrip(" ")
+            if aLine[-2:] == "<<":
+                aLine = aLine[:-2].rstrip(" ")
+            elif aLine[-1:] == "<":
+                aLine = aLine[:-1].rstrip(" ")
 
         wordCount += len(aLine.split())
-        charCount += theLen
+        charCount += len(aLine)
         if countPara and prevEmpty:
             paraCount += 1
 

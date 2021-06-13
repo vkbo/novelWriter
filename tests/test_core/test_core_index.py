@@ -1177,29 +1177,59 @@ def testCoreIndex_CheckTextCounts(dummyGUI):
 def testCoreIndex_CountWords():
     """Test the word counter and the exclusion filers.
     """
-    testText = (
+    # Non-Text
+    assert countWords(None) == (0, 0, 0)
+    assert countWords(1234) == (0, 0, 0)
+
+    # General Text
+    cC, wC, pC = countWords((
         "# Heading One\n"
         "## Heading Two\n"
         "### Heading Three\n"
-        "#### Heading Four\n"
-        "\n"
-        "@tag: value\n"
-        "\n"
-        "% A comment that should n ot be counted.\n"
-        "\n"
-        "The first paragraph.\n"
-        "\n"
-        "The second paragraph.\n"
-        "\n"
-        "\n"
-        "The third paragraph.\n"
-        "\n"
+        "#### Heading Four\n\n"
+        "@tag: value\n\n"
+        "% A comment that should not be counted.\n\n"
+        "The first paragraph.\n\n"
+        "The second paragraph.\n\n\n"
+        "The third paragraph.\n\n"
         "Dashes\u2013and even longer\u2014dashes."
-    )
-    cC, wC, pC = countWords(testText)
-
+    ))
     assert cC == 138
     assert wC == 22
+    assert pC == 4
+
+    # Text Alignment
+    cC, wC, pC = countWords((
+        "# Title\n\n"
+        "Left aligned<<\n\n"
+        "Left aligned <<\n\n"
+        "Right indent<\n\n"
+        "Right indent <\n\n"
+    ))
+    assert cC == 53
+    assert wC == 9
+    assert pC == 4
+
+    cC, wC, pC = countWords((
+        "# Title\n\n"
+        ">>Right aligned\n\n"
+        ">> Right aligned\n\n"
+        ">Left indent\n\n"
+        "> Left indent\n\n"
+    ))
+    assert cC == 53
+    assert wC == 9
+    assert pC == 4
+
+    cC, wC, pC = countWords((
+        "# Title\n\n"
+        ">>Centre aligned<<\n\n"
+        ">> Centre aligned <<\n\n"
+        ">Double indent<\n\n"
+        "> Double indent <\n\n"
+    ))
+    assert cC == 59
+    assert wC == 9
     assert pC == 4
 
 # END Test testCoreIndex_CountWords

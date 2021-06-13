@@ -787,6 +787,16 @@ class GuiDocEditor(QTextEdit):
             self._replaceQuotes("\"", self._typDQOpen, self._typDQClose)
         elif theAction == nwDocAction.RM_BREAKS:
             self._removeInParLineBreaks()
+        elif theAction == nwDocAction.ALIGN_L:
+            self._formatBlock(nwDocAction.ALIGN_L)
+        elif theAction == nwDocAction.ALIGN_C:
+            self._formatBlock(nwDocAction.ALIGN_C)
+        elif theAction == nwDocAction.ALIGN_R:
+            self._formatBlock(nwDocAction.ALIGN_R)
+        elif theAction == nwDocAction.INDENT_L:
+            self._formatBlock(nwDocAction.INDENT_L)
+        elif theAction == nwDocAction.INDENT_R:
+            self._formatBlock(nwDocAction.INDENT_R)
         else:
             logger.debug("Unknown or unsupported document action %s" % str(theAction))
             self._allowAutoReplace(True)
@@ -1718,9 +1728,13 @@ class GuiDocEditor(QTextEdit):
         elif theText.startswith("% "):
             newText = theText[2:]
             cOffset = 2
+            if docAction == nwDocAction.BLOCK_COM:
+                docAction = nwDocAction.BLOCK_TXT
         elif theText.startswith("%"):
             newText = theText[1:]
             cOffset = 1
+            if docAction == nwDocAction.BLOCK_COM:
+                docAction = nwDocAction.BLOCK_TXT
         elif theText.startswith("# "):
             newText = theText[2:]
             cOffset = 2
@@ -1733,9 +1747,31 @@ class GuiDocEditor(QTextEdit):
         elif theText.startswith("#### "):
             newText = theText[5:]
             cOffset = 5
+        elif theText.startswith(">> "):
+            newText = theText[3:]
+            cOffset = 3
+        elif theText.startswith("> ") and docAction != nwDocAction.INDENT_R:
+            newText = theText[2:]
+            cOffset = 2
+        elif theText.startswith(">>"):
+            newText = theText[2:]
+            cOffset = 2
+        elif theText.startswith(">") and docAction != nwDocAction.INDENT_R:
+            newText = theText[1:]
+            cOffset = 1
         else:
             newText = theText
             cOffset = 0
+
+        # Also remove formatting tags at the end
+        if theText.endswith(" <<"):
+            newText = newText[:-3]
+        elif theText.endswith(" <") and docAction != nwDocAction.INDENT_L:
+            newText = newText[:-2]
+        elif theText.endswith("<<"):
+            newText = newText[:-2]
+        elif theText.endswith("<") and docAction != nwDocAction.INDENT_L:
+            newText = newText[:-1]
 
         # Apply new format
         if docAction == nwDocAction.BLOCK_COM:
@@ -1753,9 +1789,21 @@ class GuiDocEditor(QTextEdit):
         elif docAction == nwDocAction.BLOCK_H4:
             theText = "#### "+newText
             cOffset -= 5
+        elif docAction == nwDocAction.ALIGN_L:
+            theText = newText+" <<"
+        elif docAction == nwDocAction.ALIGN_C:
+            theText = ">> "+newText+" <<"
+            cOffset -= 3
+        elif docAction == nwDocAction.ALIGN_R:
+            theText = ">> "+newText
+            cOffset -= 3
+        elif docAction == nwDocAction.INDENT_L:
+            theText = "> "+newText
+            cOffset -= 2
+        elif docAction == nwDocAction.INDENT_R:
+            theText = newText+" <"
         elif docAction == nwDocAction.BLOCK_TXT:
             theText = newText
-            cOffset -= 0
         else:
             logger.error("Unknown or unsupported block format requested: %s" % str(docAction))
             return False

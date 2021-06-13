@@ -78,6 +78,9 @@ class ToHtml(Tokenizer):
         html entities replacement.
         """
         # Control characters must always be replaced
+        # This affects alignment and indenting code, so the Tokenizer
+        # must take this into account when parsing for markup using
+        # angle brackets.
         self._trMap = str.maketrans({
             "<" : "&lt;",
             ">" : "&gt;",
@@ -180,6 +183,11 @@ class ToHtml(Tokenizer):
                     aStyle.append("margin-bottom: 0;")
                 if tStyle & self.A_Z_TOPMRG:
                     aStyle.append("margin-top: 0;")
+
+                if tStyle & self.A_IND_L:
+                    aStyle.append("margin-left: %dpx;" % self.mainConf.tabWidth)
+                if tStyle & self.A_IND_R:
+                    aStyle.append("margin-right: %dpx;" % self.mainConf.tabWidth)
 
             if len(aStyle) > 0:
                 hStyle = " style='%s'" % (" ".join(aStyle))

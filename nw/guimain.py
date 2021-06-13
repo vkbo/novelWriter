@@ -1345,6 +1345,11 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aFmtHead2)
         self.addAction(self.mainMenu.aFmtHead3)
         self.addAction(self.mainMenu.aFmtHead4)
+        self.addAction(self.mainMenu.aFmtAlignLeft)
+        self.addAction(self.mainMenu.aFmtAlignCentre)
+        self.addAction(self.mainMenu.aFmtAlignRight)
+        self.addAction(self.mainMenu.aFmtIndentLeft)
+        self.addAction(self.mainMenu.aFmtIndentRight)
         self.addAction(self.mainMenu.aFmtComment)
         self.addAction(self.mainMenu.aFmtNoFormat)
 

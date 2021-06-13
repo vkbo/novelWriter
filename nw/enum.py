@@ -90,6 +90,11 @@ class nwDocAction(Enum):
     REPL_SNG  = 19
     REPL_DBL  = 20
     RM_BREAKS = 21
+    ALIGN_L   = 22
+    ALIGN_C   = 23
+    ALIGN_R   = 24
+    INDENT_L  = 25
+    INDENT_R  = 26
 
 # END Enum nwDocAction
 

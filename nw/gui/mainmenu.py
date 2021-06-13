@@ -830,6 +830,50 @@ class GuiMainMenu(QMenuBar):
         self.aFmtHead4.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H4))
         self.fmtMenu.addAction(self.aFmtHead4)
 
+        # Format > Separator
+        self.fmtMenu.addSeparator()
+
+        # Format > Align Left
+        self.aFmtAlignLeft = QAction(self.tr("Align Left"), self)
+        self.aFmtAlignLeft.setStatusTip(self.tr("Change the block alignment to left"))
+        self.aFmtAlignLeft.setShortcut("Ctrl+5")
+        self.aFmtAlignLeft.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_L))
+        self.fmtMenu.addAction(self.aFmtAlignLeft)
+
+        # Format > Align Centre
+        self.aFmtAlignCentre = QAction(self.tr("Align Centre"), self)
+        self.aFmtAlignCentre.setStatusTip(self.tr("Change the block alignment to centre"))
+        self.aFmtAlignCentre.setShortcut("Ctrl+6")
+        self.aFmtAlignCentre.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_C))
+        self.fmtMenu.addAction(self.aFmtAlignCentre)
+
+        # Format > Align Right
+        self.aFmtAlignRight = QAction(self.tr("Align Right"), self)
+        self.aFmtAlignRight.setStatusTip(self.tr("Change the block alignment to right"))
+        self.aFmtAlignRight.setShortcut("Ctrl+7")
+        self.aFmtAlignRight.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_R))
+        self.fmtMenu.addAction(self.aFmtAlignRight)
+
+        # Format > Separator
+        self.fmtMenu.addSeparator()
+
+        # Format > Indent Left
+        self.aFmtIndentLeft = QAction(self.tr("Indent Left"), self)
+        self.aFmtIndentLeft.setStatusTip(self.tr("Increase the block's left margin"))
+        self.aFmtIndentLeft.setShortcut("Ctrl+8")
+        self.aFmtIndentLeft.triggered.connect(lambda: self._docAction(nwDocAction.INDENT_L))
+        self.fmtMenu.addAction(self.aFmtIndentLeft)
+
+        # Format > Indent Right
+        self.aFmtIndentRight = QAction(self.tr("Indent Right"), self)
+        self.aFmtIndentRight.setStatusTip(self.tr("Increase the block's right margin"))
+        self.aFmtIndentRight.setShortcut("Ctrl+9")
+        self.aFmtIndentRight.triggered.connect(lambda: self._docAction(nwDocAction.INDENT_R))
+        self.fmtMenu.addAction(self.aFmtIndentRight)
+
+        # Format > Separator
+        self.fmtMenu.addSeparator()
+
         # Format > Comment
         self.aFmtComment = QAction(self.tr("Comment"), self)
         self.aFmtComment.setStatusTip(self.tr("Change the block format to comment"))
