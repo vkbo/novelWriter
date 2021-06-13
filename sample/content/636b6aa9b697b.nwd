@@ -25,7 +25,7 @@ If you need to split a scene file up into further pieces, you can do so with the
 
 Both scene and section titles can be left out of the final exported document. The formatting of titles can be selected from the Build Novel Project dialog. You can also have them replaced with scene separators like “* * *”.
 
-#### Text Alignment and Indent
+#### Text Alignment
 
 The text by default will have the left or justified alignment in the main text files in your project. You can also specify alignment for a specific paragraph by “pushing” it away from an edge with a set of ‘>>’ or ‘<<’ symbols, like so:
 
@@ -35,6 +35,8 @@ This text is left-aligned. <<
 
 >> This text is centred. <<
 
-You can also indent a paragraph from both the left and right margin with ‘>’ and ‘<’ symbols.
+#### Text Indent
+
+You can indent a paragraph from both the left and right margin with ‘>’ and ‘<’ symbols.
 
 > This paragraph is indented from both the left margin and the right margin. This is useful for when you want to quote a large chunk of text for instance. <
