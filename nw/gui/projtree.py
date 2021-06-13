@@ -538,6 +538,7 @@ class GuiProjectTree(QTreeWidget):
                     self.theIndex.deleteHandle(tHandle)
                     self._deleteTreeItem(tHandle)
                     self._setTreeChanged(True)
+                    self.projectWordCount()
 
             else:
                 # The file is not already in the trash folder, so we
