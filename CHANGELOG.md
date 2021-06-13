@@ -1,5 +1,97 @@
 # novelWriter Changelog
 
+## Version 1.4 Beta 1 [2021-06-13]
+
+### Release Notes
+
+This is a preview release of novelWriter 1.4. It contains some new features and a lot of code
+refactoring. This release is a testing release, and may contain bugs. Please be careful when using
+this version to work on your projects.
+
+Below are the main feature changes of this release.
+
+#### Line Breaks
+
+The way line breaks inside paragraphs work has been changed. A single line break is now treated as
+a proper line break and will show up in the document viewer and exported documents. A single line
+break does not start a new paragraph, but forces a break inside the paragraph like a Shift + Enter
+does in most rich text editors. Two line breaks is still needed to start a new paragraph.
+
+The old syntax of adding two spaces to force a line break within a paragraph will still work as
+before, so there is no need to change your existing text if you've used this feature. However,
+there is a new highlighting feature that will show you where in the text you have redundant spaces.
+If you are used to having double spaces between sentences, you may want to switch off this
+highlighting feature in Preferences as it will also detect those.
+
+A helper function has been added to the Format menu that can look through a paragraph and remove
+line breaks in case you've been using line breaks inside your existing text under the assumption
+that the exporter and viewer will ignore them.
+
+I hope this change will not be too inconvenient. I believe the new behaviour will make more sense
+for most people. Especially considering some of the feedback I've gotten on how line breaks work.
+The original implementation was following the Markdown standard, but since novelWriter is not a
+proper Markdown editor and instead just borrows from Markdown, this behaviour always seemed a bit
+unnecessary.
+
+#### Text Alignment and Indentation
+
+The default text alignment is left or justified based on your preferences. For documents with the
+layout set to Title Page or Partitions, the default is centred. However, sometimes you may want to
+override this default. A new set of codes have therefore been added to allow specifying alignment
+as well as additional text margins on individual paragraphs.
+
+The logic of the syntax is as follows:
+
+A single angle bracket will push the text away from the edge it points away from. Therefore, a
+single `>` before the paragraph, or a single `<` after the paragraph, will add indentation on the
+respective side. It's perfectly valid to do this on both sides at the same time.
+
+A double set of angle brackets will push the text all the way towards the opposite aide. Therefore,
+a double set of `>>` before the paragraph will indicate right alignment, and a double set of `<<`
+after the paragraph will force left alignment. Also here both can be used at the same time, which
+results in the paragraph being centred.
+
+Format menu entries and keyboard shortcuts have been added so that you don't have to memorise these
+codes.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* A number of calls for the pop-up alert box were missing translation wrappers. That means they
+  could not be translated into other languages. The alerts have been fixed, but the PR does not add
+  the missing translations. PR #806.
+* A duplicate error message from the index class has been removed. PR #758.
+
+**Features**
+
+* Single line breaks are now treated as proper line breaks within paragraphs. Paragraphs are still
+  separated by two line breaks like before. This means that it is no longer necessary to leave two
+  spaces at the end of the line to force a line break. This is a rather obscure and little known
+  feature taken from Markdown, and it isn't very intuitive. Issue #785. PR #786.
+* It is now possible to specify text alignment and additional indentation on individual paragraphs
+  in the text. Both features use a similar syntax that I hope is fairly intuitive. Menu entries and
+  keyboard shortcuts have also been added to make it easier to use these features. Issues #595 and
+  #803. PR #804.
+
+**Code Improvements**
+
+* Class initialisation has been made consistent. All GUI classes now inherit the main window as its
+  parent class, and all other classes inherit the main project class as its parent. Since the
+  project class and the main window class have pointers to each other, all needed pointers are
+  available from their respective classes. PR #758.
+* The document class has been changed from a reusable class to a class that is intended to wrap a
+  single document via its handle. The class was originally written for the document editor where
+  the reusable approach made more sense. But it is much simple to create and destroy them in other
+  parts of the code when they are not reusable. PRs #758 and #760.
+* The document class no longer generates any pop-up alerts. Errors are recorded and retrieved and
+  displayed by the parent or caller class. PR #758.
+* Refactored the code of the editor class to make it more isolated by making most class variables
+  private. PR #779.
+* Made similar changes to the viewer class and item details class. PR #780.
+
+----
+
 ## Version 1.3.3 [2021-06-13]
 
 ### Release Notes
