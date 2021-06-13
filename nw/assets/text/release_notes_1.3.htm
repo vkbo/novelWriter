@@ -1,0 +1,60 @@
+<!DOCTYPE html public "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<body>
+
+<h2>Release Notes for 1.3.3</h2>
+<p><i>Released on 13 June 2021</i></p>
+<p>This patch release fixes a potential file encoding issue when running setup on Windows, and a
+minor issue with the project word count not being updated immediately when a file is deleted. In
+addition, the keyboard shortcuts to change focus between the project tree, the editor, the viewer,
+and the outline panel, have been changed for Windows users. They keyboard shortcuts were
+interfering with the Alt codes used for special characters. The shortcuts are unchanged for Linux
+and macOS.</p>
+
+<p><i>See also the <a href="https://github.com/vkbo/novelWriter/releases">Releases</a> page.</i></p>
+
+<hr/>
+
+<h2>Release Notes for 1.3.2</h2>
+<p><i>Released on 30 May 2021</i></p>
+<p>This is a patch release that fixes some minor issues. One issue was with the split tool, which
+would drop the last line from the source document during a split if it was missing a final line
+break. A minor issue with the display of word counts on the details panel under the project tree
+has also been fixed. In addition, the setup script commands for Linux have been improved a bit.</p>
+
+<hr/>
+
+<h2>Release Notes for 1.3.1</h2>
+<p><i>Released on 6 May 2021</i></p>
+<p>This is a patch release primarily to fix a problem with the Qt translation library used to make
+novelWriter available in multiple languages. One of the function calls made to the library was
+added recently, in Qt 5.15, which many users on Linux will not have installed on their system. The
+issue could be resolved by updating the library, but it's an unnecessary and inconvenient
+restriction.</p>
+
+<hr/>
+
+<h2>Release Notes for 1.3</h2>
+<p><i>Released on 2 May 2021</i></p>
+<p>The main feature of the 1.3 release is internationalisation. The release introduces support for
+Portuguese, French, and Norwegian for the main GUI, in addition to the default English. The
+settings for choosing the GUI language can be found in the main Preferences.</p>
+<p>The implementation is such that the projects themselves can use a different language than the
+one selected for the GUI. To allow for better support for multiple language projects, the Build
+Novel Project tool has the added option to select the language of the injected text into exported
+documents. In particularly for the number words that can be added for chapter headers. Available
+languages here are the same as mentioned above for the main GUI, plus German.</p>
+<p>Settings have also been added in Preferences to allow for automatic injection of spaces or
+non-breaking spaces in front of, or behind, certain characters. These are features generally
+available in text editors for French, but the implementation in novelWriter simply makes them a
+free text box where you can list all characters or symbols where you want a space added
+automatically.</p>
+<p>The translation files for this release have been provided by Bruno Meneguello for the Portuguese
+translation, by Jan Lüdke (jyhelle) for the French translation, by Veronica Berglyd Olsen for the
+Norwegian translation as well as the minor modifications for US English, and Marian Lückhof
+provided the translation file for chapter numbers in German.</p>
+<p>The work to rewrite novelWriter to allow for internationalisation was done by Bruno Meneguello
+and Veronica Berglyd Olsen.</p>
+
+</body>
+</html>
