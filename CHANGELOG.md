@@ -1,5 +1,40 @@
 # novelWriter Changelog
 
+## Version 1.3.3 [2021-06-13]
+
+### Release Notes
+
+This patch release fixes a potential file encoding issue when running setup on Windows, and a minor
+issue with the project word count not being updated immediately when a file is deleted. In
+addition, the keyboard shortcuts to change focus between the project tree, the editor, the viewer,
+and the outline panel, have been changed for Windows users. They keyboard shortcuts were
+interfering with the Alt codes used for special characters. The shortcuts are unchanged for Linux
+and macOS.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix an issue with file encoding when extracting version information from the source code during
+  setup on Windows. This seems to be a limited issue, but the changes make the relevant function
+  more fault tolerant. Issue #805. PR #807.
+* The project word count on the status bar was not always updated when a file was permanently
+  deleted from the project. This has now been resolved. Issue #799. PR #810.
+* The keyboard shortcuts to change focus will on Windows interfere with the alt key codes as the
+  focus shortcuts used `Alt+` to `Alt+4`. On Windows, these are now instead `Ctrl+Alt+1` to
+  `Ctrl+Alt+4`. Part of issue #740. PR #808.
+
+**Source Code**
+
+* Remove a redundant line in the source code. PR #802.
+* Make the XML parse for project items a little less panicky when encountering unexpected XML tags.
+  Generally, this shouldn't be a problem, but the XML parser should silently ignore unexpected tags
+  when parsing the project file. This may occur if a project is opened in an earlier version of
+  novelWriter. If so, a warning is issued anyway, so it is safe to disregard unrecognised tags as
+  the user has already actively selected to proceed and been sufficiently warned. PR #809.
+
+----
+
 ## Version 1.3.2 [2021-05-30]
 
 ### Release Notes
