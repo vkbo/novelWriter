@@ -1,76 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0">
+<!DOCTYPE TS>
+<TS version="2.1" language="zh_CN">
 <context>
     <name>Common</name>
     <message>
         <location filename="../nw/common.py" line="239"/>
         <source>in the future</source>
-        <translation type="unfinished"></translation>
+        <translation>在未来</translation>
     </message>
     <message>
         <location filename="../nw/common.py" line="243"/>
         <source>just now</source>
-        <translation type="unfinished"></translation>
+        <translation>刚才</translation>
     </message>
     <message>
         <location filename="../nw/common.py" line="247"/>
         <source>a minute ago</source>
-        <translation type="unfinished"></translation>
+        <translation>一分钟之前</translation>
     </message>
     <message>
         <location filename="../nw/common.py" line="251"/>
         <source>{0} minutes ago</source>
-        <translation type="unfinished"></translation>
+        <translation>{0} 分钟之前</translation>
     </message>
     <message>
         <location filename="../nw/common.py" line="255"/>
         <source>an hour ago</source>
-        <translation type="unfinished"></translation>
+        <translation>一小时之前</translation>
     </message>
     <message>
         <location filename="../nw/common.py" line="259"/>
         <source>{0} hours ago</source>
-        <translation type="unfinished"></translation>
+        <translation>{0} 小时之前</translation>
     </message>
     <message>
         <location filename="../nw/common.py" line="263"/>
         <source>a day ago</source>
-        <translation type="unfinished"></translation>
+        <translation>一天之前</translation>
     </message>
     <message>
         <location filename="../nw/common.py" line="267"/>
         <source>{0} days ago</source>
-        <translation type="unfinished"></translation>
+        <translation>{0} 天之前</translation>
     </message>
     <message>
         <location filename="../nw/common.py" line="271"/>
         <source>a week ago</source>
-        <translation type="unfinished"></translation>
+        <translation>一周之前</translation>
     </message>
     <message>
         <location filename="../nw/common.py" line="275"/>
         <source>{0} weeks ago</source>
-        <translation type="unfinished"></translation>
+        <translation>{0} 周之前</translation>
     </message>
     <message>
         <location filename="../nw/common.py" line="279"/>
         <source>a month ago</source>
-        <translation type="unfinished"></translation>
+        <translation>一个月之前</translation>
     </message>
     <message>
         <location filename="../nw/common.py" line="283"/>
         <source>{0} months ago</source>
-        <translation type="unfinished"></translation>
+        <translation>{0} 个月之前</translation>
     </message>
     <message>
         <location filename="../nw/common.py" line="287"/>
         <source>a year ago</source>
-        <translation type="unfinished"></translation>
+        <translation>一年之前</translation>
     </message>
     <message>
         <location filename="../nw/common.py" line="291"/>
         <source>{0} years ago</source>
-        <translation type="unfinished"></translation>
+        <translation>{0} 年之前</translation>
     </message>
 </context>
 <context>
@@ -78,162 +79,162 @@
     <message>
         <location filename="../nw/constants.py" line="166"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>无</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="128"/>
         <source>Novel</source>
-        <translation type="unfinished"></translation>
+        <translation>小说</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="192"/>
         <source>Plot</source>
-        <translation type="unfinished"></translation>
+        <translation>情节</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="191"/>
         <source>Characters</source>
-        <translation type="unfinished"></translation>
+        <translation>章节</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="194"/>
         <source>Locations</source>
-        <translation type="unfinished"></translation>
+        <translation>位置</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="193"/>
         <source>Timeline</source>
-        <translation type="unfinished"></translation>
+        <translation>时间线</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="195"/>
         <source>Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>物品</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="134"/>
         <source>Entity</source>
-        <translation type="unfinished"></translation>
+        <translation>条目</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="197"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>自定义</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="136"/>
         <source>Outtakes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">外卖</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="137"/>
         <source>Trash</source>
-        <translation type="unfinished"></translation>
+        <translation>回收站</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="167"/>
         <source>Title Page</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="168"/>
         <source>Book</source>
-        <translation type="unfinished"></translation>
+        <translation>书</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="169"/>
         <source>Plain Page</source>
-        <translation type="unfinished"></translation>
+        <translation>空白页面</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="170"/>
         <source>Partition</source>
-        <translation type="unfinished"></translation>
+        <translation>分区</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="171"/>
         <source>Unnumbered</source>
-        <translation type="unfinished"></translation>
+        <translation>未编号</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="172"/>
         <source>Chapter</source>
-        <translation type="unfinished"></translation>
+        <translation>章节</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="173"/>
         <source>Scene</source>
-        <translation type="unfinished"></translation>
+        <translation>场景</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="174"/>
         <source>Note</source>
-        <translation type="unfinished"></translation>
+        <translation>笔记</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="188"/>
         <source>Tag</source>
-        <translation type="unfinished"></translation>
+        <translation>标签</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="189"/>
         <source>Point of View</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Point of View</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="208"/>
         <source>Focus</source>
-        <translation type="unfinished"></translation>
+        <translation>聚焦</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="196"/>
         <source>Entities</source>
-        <translation type="unfinished"></translation>
+        <translation>条目</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="200"/>
         <source>Title</source>
-        <translation type="unfinished"></translation>
+        <translation>标题</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="201"/>
         <source>Level</source>
-        <translation type="unfinished"></translation>
+        <translation>登记</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="202"/>
         <source>Document</source>
-        <translation type="unfinished"></translation>
+        <translation>文档</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="203"/>
         <source>Line</source>
-        <translation type="unfinished"></translation>
+        <translation>行</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="204"/>
         <source>Chars</source>
-        <translation type="unfinished"></translation>
+        <translation>字母</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="205"/>
         <source>Words</source>
-        <translation type="unfinished"></translation>
+        <translation>单词</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="206"/>
         <source>Pars</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pars</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="207"/>
         <source>POV</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">POV</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="216"/>
         <source>Synopsis</source>
-        <translation type="unfinished"></translation>
+        <translation>概要</translation>
     </message>
     <message>
         <location filename="../nw/constants.py" line="226"/>
@@ -336,47 +337,47 @@
     <message>
         <location filename="../nw/dialogs/about.py" line="144"/>
         <source>About novelWriter</source>
-        <translation type="unfinished"></translation>
+        <translation>关于 novelWriter</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/about.py" line="93"/>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation>关于</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/about.py" line="94"/>
         <source>Release</source>
-        <translation type="unfinished"></translation>
+        <translation>发布</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/about.py" line="214"/>
         <source>Licence</source>
-        <translation type="unfinished"></translation>
+        <translation>许可证</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/about.py" line="144"/>
         <source>Website: {0}</source>
-        <translation type="unfinished"></translation>
+        <translation>网站: {0}</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/about.py" line="144"/>
         <source>Credits</source>
-        <translation type="unfinished"></translation>
+        <translation>赞助</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/about.py" line="144"/>
         <source>Developer</source>
-        <translation type="unfinished"></translation>
+        <translation>开发者</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/about.py" line="144"/>
         <source>Concept</source>
-        <translation type="unfinished"></translation>
+        <translation>概念</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/about.py" line="144"/>
         <source>i18n</source>
-        <translation type="unfinished"></translation>
+        <translation>i18n</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/about.py" line="144"/>
@@ -777,17 +778,17 @@
     <message>
         <location filename="../nw/tools/build.py" line="1206"/>
         <source>This area will show the content of the document to be exported or printed. Press the &quot;Build Preview&quot; button to generate content.</source>
-        <translation type="unfinished"></translation>
+        <translation>本区域显示的内容将被导出或打印。请点击“生成预览”按钮</translation>
     </message>
     <message>
         <location filename="../nw/tools/build.py" line="1355"/>
         <source>Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>未知</translation>
     </message>
     <message>
         <location filename="../nw/tools/build.py" line="1357"/>
         <source>&lt;b&gt;Build Time:&lt;/b&gt; {0}</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;构建时间:&lt;/b&gt; {0}</translation>
     </message>
 </context>
 <context>
@@ -795,22 +796,22 @@
     <message>
         <location filename="../nw/gui/doceditor.py" line="2611"/>
         <source>Status</source>
-        <translation type="unfinished"></translation>
+        <translation>状态</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2753"/>
         <source>Line: {0} ({1})</source>
-        <translation type="unfinished"></translation>
+        <translation>行数: {0} ({1})</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2769"/>
         <source>Words: {0} ({1})</source>
-        <translation type="unfinished"></translation>
+        <translation>单词树: {0} ({1})</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2774"/>
         <source>Document size is {0} bytes</source>
-        <translation type="unfinished"></translation>
+        <translation>文档大小为 {0} bytes</translation>
     </message>
 </context>
 <context>
@@ -818,22 +819,22 @@
     <message>
         <location filename="../nw/gui/doceditor.py" line="2403"/>
         <source>Edit document meta</source>
-        <translation type="unfinished"></translation>
+        <translation>编辑文档元数据</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2414"/>
         <source>Search document</source>
-        <translation type="unfinished"></translation>
+        <translation>搜索文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2425"/>
         <source>Toggle Focus Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>切换聚焦模式</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2436"/>
         <source>Close the document</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭文档</translation>
     </message>
 </context>
 <context>
@@ -841,97 +842,97 @@
     <message>
         <location filename="../nw/gui/doceditor.py" line="2031"/>
         <source>Search</source>
-        <translation type="unfinished"></translation>
+        <translation>搜索</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2022"/>
         <source>Replace</source>
-        <translation type="unfinished"></translation>
+        <translation>替换</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2035"/>
         <source>Case Sensitive</source>
-        <translation type="unfinished"></translation>
+        <translation>大小写敏感</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2036"/>
         <source>Match case</source>
-        <translation type="unfinished"></translation>
+        <translation>匹配大小写</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2043"/>
         <source>Whole Words Only</source>
-        <translation type="unfinished"></translation>
+        <translation>匹配整个单词</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2044"/>
         <source>Match whole words</source>
-        <translation type="unfinished"></translation>
+        <translation>匹配整个单词</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2051"/>
         <source>RegEx Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>正则表达式模式</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2052"/>
         <source>Search using regular expressions</source>
-        <translation type="unfinished"></translation>
+        <translation>用正则表达式搜索</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2059"/>
         <source>Loop Search</source>
-        <translation type="unfinished"></translation>
+        <translation>循环搜索</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2060"/>
         <source>Loop the search when reaching the end</source>
-        <translation type="unfinished"></translation>
+        <translation>当搜索到底之后从头搜索</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2067"/>
         <source>Search Next File</source>
-        <translation type="unfinished"></translation>
+        <translation>搜索下一个文件</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2068"/>
         <source>Continue searching in the next file</source>
-        <translation type="unfinished"></translation>
+        <translation>在下一个文件中继续搜索</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2077"/>
         <source>Preserve Case</source>
-        <translation type="unfinished"></translation>
+        <translation>保留大小写</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2078"/>
         <source>Preserve case on replace</source>
-        <translation type="unfinished"></translation>
+        <translation>在替换是保留大小写</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2087"/>
         <source>Close Search</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭搜索</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2088"/>
         <source>Close the search box [{0}]</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭搜索窗 [{0}]</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2100"/>
         <source>Show/hide the replace text box</source>
-        <translation type="unfinished"></translation>
+        <translation>显示/隐藏替换文本框</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2106"/>
         <source>Find in current document</source>
-        <translation type="unfinished"></translation>
+        <translation>在当前文档中查找</translation>
     </message>
     <message>
         <location filename="../nw/gui/doceditor.py" line="2111"/>
         <source>Find and replace in current document</source>
-        <translation type="unfinished"></translation>
+        <translation>在当前文档中查找和替换</translation>
     </message>
 </context>
 <context>
@@ -1554,267 +1555,267 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="181"/>
         <source>&amp;Project</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;项目</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="184"/>
         <source>New Project</source>
-        <translation type="unfinished"></translation>
+        <translation>新的项目</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="185"/>
         <source>Create new project</source>
-        <translation type="unfinished"></translation>
+        <translation>新建项目</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="190"/>
         <source>Open Project</source>
-        <translation type="unfinished"></translation>
+        <translation>打开项目</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="191"/>
         <source>Open project</source>
-        <translation type="unfinished"></translation>
+        <translation>打开项目</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="197"/>
         <source>Save Project</source>
-        <translation type="unfinished"></translation>
+        <translation>保存项目</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="198"/>
         <source>Save project</source>
-        <translation type="unfinished"></translation>
+        <translation>保存项目</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="204"/>
         <source>Close Project</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭项目</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="205"/>
         <source>Close project</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭项目</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="214"/>
         <source>Project Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>项目设置</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="215"/>
         <source>Project settings</source>
-        <translation type="unfinished"></translation>
+        <translation>项目设置</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="221"/>
         <source>Project Details</source>
-        <translation type="unfinished"></translation>
+        <translation>项目细节</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="222"/>
         <source>Project details</source>
-        <translation type="unfinished"></translation>
+        <translation>项目细节</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="231"/>
         <source>Create Root Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>新建根目录</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="233"/>
         <source>Novel Root</source>
-        <translation type="unfinished"></translation>
+        <translation>小说根</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="234"/>
         <source>Plot Root</source>
-        <translation type="unfinished"></translation>
+        <translation>情节根</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="235"/>
         <source>Character Root</source>
-        <translation type="unfinished"></translation>
+        <translation>章节根</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="236"/>
         <source>Location Root</source>
-        <translation type="unfinished"></translation>
+        <translation>位置根</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="237"/>
         <source>Timeline Root</source>
-        <translation type="unfinished"></translation>
+        <translation>时间线根</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="238"/>
         <source>Object Root</source>
-        <translation type="unfinished"></translation>
+        <translation>物品根</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="239"/>
         <source>Entity Root</source>
-        <translation type="unfinished"></translation>
+        <translation>条目根</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="240"/>
         <source>Custom Root</source>
-        <translation type="unfinished"></translation>
+        <translation>自定义根</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="241"/>
         <source>Outtakes Root</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Outtakes Root</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="251"/>
         <source>Create Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>新建文件夹</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="252"/>
         <source>Create folder</source>
-        <translation type="unfinished"></translation>
+        <translation>新建文件夹</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="261"/>
         <source>Edit Item</source>
-        <translation type="unfinished"></translation>
+        <translation>编辑条目</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="262"/>
         <source>Change project item settings</source>
-        <translation type="unfinished"></translation>
+        <translation>修改项目设置</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="268"/>
         <source>Delete Item</source>
-        <translation type="unfinished"></translation>
+        <translation>删除条目</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="269"/>
         <source>Delete selected project item</source>
-        <translation type="unfinished"></translation>
+        <translation>删除指定项目</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="275"/>
         <source>Move Item Up</source>
-        <translation type="unfinished"></translation>
+        <translation>条目向上移动</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="276"/>
         <source>Move project item up</source>
-        <translation type="unfinished"></translation>
+        <translation>项目向上移动</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="282"/>
         <source>Move Item Down</source>
-        <translation type="unfinished"></translation>
+        <translation>条目向下移动</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="283"/>
         <source>Move project item down</source>
-        <translation type="unfinished"></translation>
+        <translation>项目向下移动</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="289"/>
         <source>Undo Last Move</source>
-        <translation type="unfinished"></translation>
+        <translation>撤销上一次移动</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="290"/>
         <source>Undo last item move</source>
-        <translation type="unfinished"></translation>
+        <translation>撤销条目上一次移动</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="296"/>
         <source>Empty Trash</source>
-        <translation type="unfinished"></translation>
+        <translation>空回收站</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="297"/>
         <source>Permanently delete all files in the Trash folder</source>
-        <translation type="unfinished"></translation>
+        <translation>永久删除回收站中的所有文件</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="305"/>
         <source>Exit</source>
-        <translation type="unfinished"></translation>
+        <translation>退出</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="306"/>
         <source>Exit novelWriter</source>
-        <translation type="unfinished"></translation>
+        <translation>退出 novelWriter</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="318"/>
         <source>&amp;Document</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="321"/>
         <source>New Document</source>
-        <translation type="unfinished"></translation>
+        <translation>新文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="322"/>
         <source>Create new document</source>
-        <translation type="unfinished"></translation>
+        <translation>新建文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="328"/>
         <source>Open Document</source>
-        <translation type="unfinished"></translation>
+        <translation>打开文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="329"/>
         <source>Open selected document</source>
-        <translation type="unfinished"></translation>
+        <translation>打开选定文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="335"/>
         <source>Save Document</source>
-        <translation type="unfinished"></translation>
+        <translation>保存文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="336"/>
         <source>Save current document</source>
-        <translation type="unfinished"></translation>
+        <translation>保存当前文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="342"/>
         <source>Close Document</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="343"/>
         <source>Close current document</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭当前文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="352"/>
         <source>View Document</source>
-        <translation type="unfinished"></translation>
+        <translation>查看文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="353"/>
         <source>View document as HTML</source>
-        <translation type="unfinished"></translation>
+        <translation>以HTML方式查看文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="359"/>
         <source>Close Document View</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭文档查看</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="360"/>
         <source>Close document view pane</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭文档查看面板</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="369"/>
         <source>Show File Details</source>
-        <translation type="unfinished"></translation>
+        <translation>显示文件详情</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="370"/>
@@ -1824,157 +1825,157 @@
     <message>
         <location filename="../nw/gui/mainmenu.py" line="377"/>
         <source>Import from File</source>
-        <translation type="unfinished"></translation>
+        <translation>从文件中导入</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="378"/>
         <source>Import document from a text or markdown file</source>
-        <translation type="unfinished"></translation>
+        <translation>从文本或markdown文件中导入文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="384"/>
         <source>Merge Folder to Document</source>
-        <translation type="unfinished"></translation>
+        <translation>合并文件夹至文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="385"/>
         <source>Merge a folder of documents to a single document</source>
-        <translation type="unfinished"></translation>
+        <translation>将文件夹中的多个文档合并至单一文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="390"/>
         <source>Split Document to Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>将文档分割至文件夹</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="391"/>
         <source>Split a document into a folder of multiple documents</source>
-        <translation type="unfinished"></translation>
+        <translation>分割单一文档至文件夹中的多个文档</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="403"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;编辑</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="406"/>
         <source>Undo</source>
-        <translation type="unfinished"></translation>
+        <translation>撤销</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="407"/>
         <source>Undo last change</source>
-        <translation type="unfinished"></translation>
+        <translation>撤销上一次改动</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="413"/>
         <source>Redo</source>
-        <translation type="unfinished"></translation>
+        <translation>重做</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="414"/>
         <source>Redo last change</source>
-        <translation type="unfinished"></translation>
+        <translation>重做上一次改动</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="423"/>
         <source>Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>剪贴</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="424"/>
         <source>Cut selected text</source>
-        <translation type="unfinished"></translation>
+        <translation>剪贴选定文本</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="430"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>复制</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="431"/>
         <source>Copy selected text</source>
-        <translation type="unfinished"></translation>
+        <translation>复制选定文本</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="437"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>粘贴</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="438"/>
         <source>Paste text from clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>从剪贴板粘贴文本</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="447"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>全选</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="448"/>
         <source>Select all text in document</source>
-        <translation type="unfinished"></translation>
+        <translation>在文档中全选文本</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="454"/>
         <source>Select Paragraph</source>
-        <translation type="unfinished"></translation>
+        <translation>选择段落</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="455"/>
         <source>Select all text in paragraph</source>
-        <translation type="unfinished"></translation>
+        <translation>选定段落中所有的文本</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="466"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;查看</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="469"/>
         <source>Focus Project Tree</source>
-        <translation type="unfinished"></translation>
+        <translation>聚焦项目树</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="470"/>
         <source>Move focus to project tree</source>
-        <translation type="unfinished"></translation>
+        <translation>移焦至项目树</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="479"/>
         <source>Focus Document Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>聚焦文档编辑器</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="480"/>
         <source>Move focus to left document pane</source>
-        <translation type="unfinished"></translation>
+        <translation>移焦至左侧文档面板</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="489"/>
         <source>Focus Document Viewer</source>
-        <translation type="unfinished"></translation>
+        <translation>聚焦文档查看器</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="490"/>
         <source>Move focus to right document pane</source>
-        <translation type="unfinished"></translation>
+        <translation>移焦至右侧文档面板</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="499"/>
         <source>Focus Outline</source>
-        <translation type="unfinished"></translation>
+        <translation>聚焦大纲</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="500"/>
         <source>Move focus to outline</source>
-        <translation type="unfinished"></translation>
+        <translation>移焦至大纲</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="512"/>
         <source>Go Backward</source>
-        <translation type="unfinished"></translation>
+        <translation>向后</translation>
     </message>
     <message>
         <location filename="../nw/gui/mainmenu.py" line="513"/>
@@ -2836,7 +2837,7 @@
     <message>
         <location filename="../nw/gui/outline.py" line="478"/>
         <source>Select Columns</source>
-        <translation type="unfinished"></translation>
+        <translation>选定列</translation>
     </message>
 </context>
 <context>
@@ -2844,47 +2845,47 @@
     <message>
         <location filename="../nw/dialogs/preferences.py" line="58"/>
         <source>Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>设置</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/preferences.py" line="68"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>通用</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/preferences.py" line="69"/>
         <source>Projects</source>
-        <translation type="unfinished"></translation>
+        <translation>项目</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/preferences.py" line="70"/>
         <source>Documents</source>
-        <translation type="unfinished"></translation>
+        <translation>文档</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/preferences.py" line="71"/>
         <source>Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>编辑器</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/preferences.py" line="72"/>
         <source>Highlighting</source>
-        <translation type="unfinished"></translation>
+        <translation>突出显示</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/preferences.py" line="73"/>
         <source>Automation</source>
-        <translation type="unfinished"></translation>
+        <translation>自动化</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/preferences.py" line="74"/>
         <source>Quotes</source>
-        <translation type="unfinished"></translation>
+        <translation>引号</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/preferences.py" line="107"/>
         <source>Some changes will not be applied until novelWriter has been restarted.</source>
-        <translation type="unfinished"></translation>
+        <translation>某些改动在novelWriter重启后才能启用</translation>
     </message>
 </context>
 <context>
@@ -3319,7 +3320,7 @@
     <message>
         <location filename="../nw/dialogs/preferences.py" line="338"/>
         <source>Automatic Save</source>
-        <translation type="unfinished"></translation>
+        <translation>自动保存</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/preferences.py" line="346"/>
@@ -5007,17 +5008,17 @@
     <message>
         <location filename="../nw/core/tokenizer.py" line="157"/>
         <source>Synopsis</source>
-        <translation type="unfinished"></translation>
+        <translation>简介</translation>
     </message>
     <message>
         <location filename="../nw/core/tokenizer.py" line="304"/>
         <source>Document &apos;{0}&apos; is too big ({1} MB). Skipping.</source>
-        <translation type="unfinished"></translation>
+        <translation>文档 &apos;{0}&apos; 过大 ({1} MB). 跳过...</translation>
     </message>
     <message>
         <location filename="../nw/core/tokenizer.py" line="307"/>
         <source>ERROR</source>
-        <translation type="unfinished"></translation>
+        <translation>错误</translation>
     </message>
 </context>
 </TS>
