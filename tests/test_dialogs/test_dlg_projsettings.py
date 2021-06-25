@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Settings Dialog Class Tester
 ==================================================
@@ -37,6 +36,7 @@ from nw.dialogs import GuiProjectSettings
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 @pytest.mark.gui
 def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDir, refDir):

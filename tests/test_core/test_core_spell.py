@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Spell Check Classes Tester
 ========================================
@@ -28,6 +27,7 @@ from mock import causeOSError
 from tools import readFile, writeFile
 
 from nw.core.spellcheck import NWSpellCheck, NWSpellEnchant, NWSpellSimple
+
 
 @pytest.mark.core
 def testCoreSpell_Super(monkeypatch, tmpDir):
@@ -69,6 +69,7 @@ def testCoreSpell_Super(monkeypatch, tmpDir):
     assert readFile(wList) == "a_word\nb_word\nc_word\nd_word\n"
 
 # END Test testCoreSpell_Super
+
 
 @pytest.mark.core
 def testCoreSpell_Enchant(monkeypatch, tmpDir):
@@ -113,6 +114,7 @@ def testCoreSpell_Enchant(monkeypatch, tmpDir):
     assert aName != ""
 
 # END Test testCoreSpell_Enchant
+
 
 @pytest.mark.core
 def testCoreSpell_Simple(monkeypatch, tmpDir):

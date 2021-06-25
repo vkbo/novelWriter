@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – NWIndex Class Tester
 ==================================
@@ -32,6 +31,7 @@ from tools import cmpFiles
 from nw.core.project import NWProject
 from nw.core.index import NWIndex, countWords
 from nw.enum import nwItemClass, nwItemLayout
+
 
 @pytest.mark.core
 def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, outDir, refDir):
@@ -124,6 +124,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, outDir, refDir):
 
 # END Test testCoreIndex_LoadSave
 
+
 @pytest.mark.core
 def testCoreIndex_ScanThis(nwMinimal, dummyGUI):
     """Test the tag scanner function scanThis.
@@ -174,6 +175,7 @@ def testCoreIndex_ScanThis(nwMinimal, dummyGUI):
     assert theProject.closeProject()
 
 # END Test testCoreIndex_ScanThis
+
 
 @pytest.mark.core
 def testCoreIndex_CheckThese(nwMinimal, dummyGUI):
@@ -235,6 +237,7 @@ def testCoreIndex_CheckThese(nwMinimal, dummyGUI):
     assert theProject.closeProject()
 
 # END Test testCoreIndex_CheckThese
+
 
 @pytest.mark.core
 def testCoreIndex_ScanText(nwMinimal, dummyGUI):
@@ -440,6 +443,7 @@ def testCoreIndex_ScanText(nwMinimal, dummyGUI):
     assert theProject.closeProject()
 
 # END Test testCoreIndex_ScanText
+
 
 @pytest.mark.core
 def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
@@ -673,6 +677,7 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
 
 # END Test testCoreIndex_ExtractData
 
+
 @pytest.mark.core
 def testCoreIndex_CheckTagIndex(dummyGUI):
     """Test the tag index checker.
@@ -736,6 +741,7 @@ def testCoreIndex_CheckTagIndex(dummyGUI):
         theIndex._checkTagIndex()
 
 # END Test testCoreIndex_CheckTagIndex
+
 
 @pytest.mark.core
 def testCoreIndex_CheckRefIndex(dummyGUI):
@@ -858,6 +864,7 @@ def testCoreIndex_CheckRefIndex(dummyGUI):
         theIndex._checkRefIndex()
 
 # END Test testCoreIndex_CheckRefIndex
+
 
 @pytest.mark.core
 def testCoreIndex_CheckNovelNoteIndex(dummyGUI):
@@ -1117,6 +1124,7 @@ def testCoreIndex_CheckNovelNoteIndex(dummyGUI):
 
 # END Test testCoreIndex_CheckNovelNoteIndex
 
+
 @pytest.mark.core
 def testCoreIndex_CheckTextCounts(dummyGUI):
     """Test the text counts checker.
@@ -1172,6 +1180,7 @@ def testCoreIndex_CheckTextCounts(dummyGUI):
         theIndex._checkTextCounts()
 
 # END Test testCoreIndex_CheckTextCounts
+
 
 @pytest.mark.core
 def testCoreIndex_CountWords():

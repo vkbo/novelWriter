@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Error Handler Tester
 ==================================
@@ -28,6 +27,7 @@ from PyQt5.QtWidgets import qApp
 from mock import causeException
 
 from nw.error import NWErrorMessage, exceptionHandler
+
 
 @pytest.mark.base
 def testBaseError_Dialog(qtbot, monkeypatch, fncDir, tmpDir):
@@ -70,6 +70,7 @@ def testBaseError_Dialog(qtbot, monkeypatch, fncDir, tmpDir):
     nwGUI.closeMain()
 
 # END Test testBaseError_Dialog
+
 
 @pytest.mark.base
 def testBaseError_Handler(qtbot, monkeypatch, fncDir, tmpDir):

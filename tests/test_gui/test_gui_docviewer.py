@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Main GUI Viewer Class Tester
 ==========================================
@@ -31,6 +30,7 @@ from nw.enum import nwDocAction
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 @pytest.mark.gui
 def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Theme and Icons Classes Tester
 ================================================
@@ -29,6 +28,7 @@ from PyQt5.QtWidgets import QStyle, QMessageBox
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 @pytest.mark.gui
 def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):

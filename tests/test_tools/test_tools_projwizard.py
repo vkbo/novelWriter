@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – New Project Wizard Class Tester
 =============================================
@@ -38,6 +37,7 @@ from nw.tools.projwizard import (
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 @pytest.mark.gui
 def testToolProjectWizard_Main(qtbot, monkeypatch, nwGUI, nwMinimal):

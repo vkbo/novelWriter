@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Main GUI Novel Tree Class Tester
 ==============================================
@@ -27,6 +26,7 @@ from tools import writeFile
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox
+
 
 @pytest.mark.gui
 def testGuiNovelTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):

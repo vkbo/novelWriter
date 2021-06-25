@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Build Dialog Class Tester
 =======================================
@@ -34,6 +33,7 @@ from nw.tools import GuiBuildNovel
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 @pytest.mark.gui
 def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):

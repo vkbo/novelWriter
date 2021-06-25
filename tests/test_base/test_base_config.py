@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Config Class Tester
 =================================
@@ -32,6 +31,7 @@ from tools import cmpFiles, writeFile
 
 from nw.config import Config
 from nw.constants import nwConst, nwFiles
+
 
 @pytest.mark.base
 def testBaseConfig_Constructor(monkeypatch):
@@ -78,6 +78,7 @@ def testBaseConfig_Constructor(monkeypatch):
     assert tstConf.osUnknown is True
 
 # END Test testBaseConfig_Constructor
+
 
 @pytest.mark.base
 def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
@@ -205,6 +206,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
 
 # END Test testBaseConfig_Init
 
+
 @pytest.mark.base
 def testBaseConfig_RecentCache(monkeypatch, tmpConf, tmpDir, fncDir):
     """Test recent cache file.
@@ -266,6 +268,7 @@ def testBaseConfig_RecentCache(monkeypatch, tmpConf, tmpDir, fncDir):
 
 # END Test testBaseConfig_RecentCache
 
+
 @pytest.mark.base
 def testBaseConfig_SetPath(tmpConf, tmpDir):
     """Test path setters.
@@ -296,6 +299,7 @@ def testBaseConfig_SetPath(tmpConf, tmpDir):
     assert tmpConf.lastPath == ""
 
 # END Test testBaseConfig_SetPath
+
 
 @pytest.mark.base
 def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
@@ -469,6 +473,7 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     assert cmpFiles(testFile, compFile, [2, 9, 10])
 
 # END Test testBaseConfig_SettersGetters
+
 
 @pytest.mark.base
 def testBaseConfig_Internal(monkeypatch, tmpConf):

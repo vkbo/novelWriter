@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Main GUI Main Menu Class Tester
 =============================================
@@ -34,6 +33,7 @@ from nw.constants import nwKeyWords, nwUnicode
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 @pytest.mark.gui
 def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
@@ -368,6 +368,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
 
 # END Test testGuiMenu_EditFormat
 
+
 @pytest.mark.gui
 def testGuiMenu_ContextMenus(qtbot, monkeypatch, nwGUI, nwLipsum):
     """Test the context menus.
@@ -451,6 +452,7 @@ def testGuiMenu_ContextMenus(qtbot, monkeypatch, nwGUI, nwLipsum):
     # qtbot.stopForInteraction()
 
 # END Test testGuiMenu_ContextMenus
+
 
 @pytest.mark.gui
 def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):

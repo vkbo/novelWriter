@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Other Dialog Classes Tester
 =========================================
@@ -34,6 +33,7 @@ from nw.constants import nwFiles
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal, tmpDir):
     """test the word list editor.

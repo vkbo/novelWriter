@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – About Dialog Class Tester
 =======================================
@@ -31,6 +30,7 @@ from nw.dialogs import GuiAbout
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 @pytest.mark.gui
 def testDlgAbout_Dialog(qtbot, monkeypatch, nwGUI):

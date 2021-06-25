@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Main GUI Outline Class Tester
 ===========================================
@@ -30,6 +29,7 @@ from nw.enum import nwOutline
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 @pytest.mark.gui
 def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, nwLipsum):

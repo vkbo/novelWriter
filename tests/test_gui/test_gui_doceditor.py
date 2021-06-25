@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Main GUI Editor Class Tester
 ==========================================
@@ -38,6 +37,7 @@ from nw.enum import nwItemType, nwDocAction, nwWidget
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 @pytest.mark.gui
 def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
@@ -352,6 +352,7 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     # qtbot.stopForInteraction()
 
 # END Test testGuiEditor_Main
+
 
 @pytest.mark.gui
 def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):

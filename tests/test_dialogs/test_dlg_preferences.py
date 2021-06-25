@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Preferences Dialog Class Tester
 =============================================
@@ -39,6 +38,7 @@ from nw.constants import nwConst
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 @pytest.mark.gui
 def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):

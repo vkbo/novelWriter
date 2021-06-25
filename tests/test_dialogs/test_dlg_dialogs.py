@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Other Dialog Classes Tester
 =========================================
@@ -30,6 +29,7 @@ from nw.dialogs import GuiQuoteSelect
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 @pytest.mark.gui
 def testDlgOther_QuoteSelect(qtbot, monkeypatch, nwGUI, nwMinimal):

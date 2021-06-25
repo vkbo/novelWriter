@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Item Editor Dialog Class Tester
 =============================================
@@ -35,6 +34,7 @@ from nw.dialogs import GuiItemEditor
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 @pytest.mark.gui
 def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDir):

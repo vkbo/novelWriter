@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – NWDoc Class Tester
 ================================
@@ -27,6 +26,7 @@ from mock import causeOSError
 
 from nw.core import NWProject, NWDoc
 from nw.enum import nwItemClass, nwItemLayout
+
 
 @pytest.mark.core
 def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
@@ -119,6 +119,7 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
     assert not os.path.isfile(docPath)
 
 # END Test testCoreDocument_Load
+
 
 @pytest.mark.core
 def testCoreDocument_Methods(monkeypatch, dummyGUI, nwMinimal):

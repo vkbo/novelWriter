@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – NWItem Class Tester
 =================================
@@ -27,6 +26,7 @@ from lxml import etree
 from nw.core import NWProject
 from nw.core.item import NWItem
 from nw.enum import nwItemClass, nwItemType, nwItemLayout
+
 
 @pytest.mark.core
 def testCoreItem_Setters(dummyGUI):
@@ -165,6 +165,7 @@ def testCoreItem_Setters(dummyGUI):
 
 # END Test testCoreItem_Setters
 
+
 @pytest.mark.core
 def testCoreItem_TypeSetter(dummyGUI):
     """Test the setter for all the nwItemType values for the NWItem
@@ -192,6 +193,7 @@ def testCoreItem_TypeSetter(dummyGUI):
     assert theItem.itemType == nwItemType.ROOT
 
 # END Test testCoreItem_TypeSetter
+
 
 @pytest.mark.core
 def testCoreItem_ClassSetter(dummyGUI):
@@ -233,6 +235,7 @@ def testCoreItem_ClassSetter(dummyGUI):
 
 # END Test testCoreItem_ClassSetter
 
+
 @pytest.mark.core
 def testCoreItem_LayoutSetter(dummyGUI):
     """Test the setter for all the nwItemLayout values for the NWItem
@@ -268,6 +271,7 @@ def testCoreItem_LayoutSetter(dummyGUI):
     assert theItem.itemLayout == nwItemLayout.NOTE
 
 # END Test testCoreItem_LayoutSetter
+
 
 @pytest.mark.core
 def testCoreItem_XMLPackUnpack(dummyGUI, caplog):

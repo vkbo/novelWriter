@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Writing Stats Dialog Class Tester
 ===============================================
@@ -36,6 +35,7 @@ from nw.constants import nwFiles
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
 
 @pytest.mark.gui
 def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):

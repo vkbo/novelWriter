@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Main Init Tester
 ==============================
@@ -26,6 +25,7 @@ import logging
 import sys
 
 from mock import MockGuiMain
+
 
 @pytest.mark.base
 def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
@@ -63,6 +63,7 @@ def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
     assert ex.value.code == 0
 
 # END Test testBaseInit_Launch
+
 
 @pytest.mark.base
 def testBaseInit_Options(monkeypatch, tmpDir):
@@ -135,6 +136,7 @@ def testBaseInit_Options(monkeypatch, tmpDir):
     assert nwGUI.closeMain() == "closeMain"
 
 # END Test testBaseInit_Options
+
 
 @pytest.mark.base
 def testBaseInit_Imports(caplog, monkeypatch, tmpDir):
