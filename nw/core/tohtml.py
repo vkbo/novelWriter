@@ -82,9 +82,9 @@ class ToHtml(Tokenizer):
         # must take this into account when parsing for markup using
         # angle brackets.
         self._trMap = str.maketrans({
-            "<" : "&lt;",
-            ">" : "&gt;",
-            "&" : "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            "&": "&amp;",
         })
 
         if doReplace:
@@ -115,22 +115,22 @@ class ToHtml(Tokenizer):
         to theResult.
         """
         if self.genMode == self.M_PREVIEW:
-            htmlTags = {     # HTML4 + CSS2
-                self.FMT_B_B : "<b>",
-                self.FMT_B_E : "</b>",
-                self.FMT_I_B : "<i>",
-                self.FMT_I_E : "</i>",
-                self.FMT_D_B : "<span style='text-decoration: line-through;'>",
-                self.FMT_D_E : "</span>",
+            htmlTags = {  # HTML4 + CSS2
+                self.FMT_B_B: "<b>",
+                self.FMT_B_E: "</b>",
+                self.FMT_I_B: "<i>",
+                self.FMT_I_E: "</i>",
+                self.FMT_D_B: "<span style='text-decoration: line-through;'>",
+                self.FMT_D_E: "</span>",
             }
         else:
-            htmlTags = {     # HTML5
-                self.FMT_B_B : "<strong>",
-                self.FMT_B_E : "</strong>",
-                self.FMT_I_B : "<em>",
-                self.FMT_I_E : "</em>",
-                self.FMT_D_B : "<del>",
-                self.FMT_D_E : "</del>",
+            htmlTags = {  # HTML5
+                self.FMT_B_B: "<strong>",
+                self.FMT_B_E: "</strong>",
+                self.FMT_I_B: "<em>",
+                self.FMT_I_E: "</em>",
+                self.FMT_D_B: "<del>",
+                self.FMT_D_E: "</del>",
             }
 
         if self.isNovel and self.genMode != self.M_PREVIEW:

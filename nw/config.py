@@ -846,9 +846,9 @@ class Config:
                     if "words" in theEntry.keys():
                         wordCount = int(theEntry["words"])
                     self.recentProj[projPath] = {
-                        "title" : theTitle,
-                        "time"  : lastTime,
-                        "words" : wordCount,
+                        "title": theTitle,
+                        "time": lastTime,
+                        "words": wordCount,
                     }
 
             except Exception as e:
@@ -887,9 +887,9 @@ class Config:
         """Add or update recent cache information o9n a given project.
         """
         self.recentProj[os.path.abspath(projPath)] = {
-            "title" : projTitle,
-            "time"  : int(saveTime),
-            "words" : int(wordCount),
+            "title": projTitle,
+            "time": int(saveTime),
+            "words": int(wordCount),
         }
         return True
 

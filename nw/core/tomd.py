@@ -72,16 +72,16 @@ class ToMarkdown(Tokenizer):
         if self.genMode == self.M_STD:
             # Standard
             mdTags = {
-                self.FMT_B_B : "**", self.FMT_B_E : "**",
-                self.FMT_I_B : "_",  self.FMT_I_E : "_",
-                self.FMT_D_B : "",   self.FMT_D_E : "",
+                self.FMT_B_B: "**", self.FMT_B_E: "**",
+                self.FMT_I_B: "_",  self.FMT_I_E: "_",
+                self.FMT_D_B: "",   self.FMT_D_E: "",
             }
         else:
             # GitHub
             mdTags = {
-                self.FMT_B_B : "**", self.FMT_B_E : "**",
-                self.FMT_I_B : "_",  self.FMT_I_E : "_",
-                self.FMT_D_B : "~~", self.FMT_D_E : "~~",
+                self.FMT_B_B: "**", self.FMT_B_E: "**",
+                self.FMT_I_B: "_",  self.FMT_I_E: "_",
+                self.FMT_D_B: "~~", self.FMT_D_E: "~~",
             }
 
         self.theResult = ""

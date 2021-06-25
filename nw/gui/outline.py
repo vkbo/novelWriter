@@ -42,43 +42,43 @@ logger = logging.getLogger(__name__)
 class GuiOutline(QTreeWidget):
 
     DEF_WIDTH = {
-        nwOutline.TITLE  : 200,
-        nwOutline.LEVEL  : 40,
-        nwOutline.LABEL  : 150,
-        nwOutline.LINE   : 40,
-        nwOutline.CCOUNT : 50,
-        nwOutline.WCOUNT : 50,
-        nwOutline.PCOUNT : 50,
-        nwOutline.POV    : 100,
-        nwOutline.FOCUS  : 100,
-        nwOutline.CHAR   : 100,
-        nwOutline.PLOT   : 100,
-        nwOutline.TIME   : 100,
-        nwOutline.WORLD  : 100,
-        nwOutline.OBJECT : 100,
-        nwOutline.ENTITY : 100,
-        nwOutline.CUSTOM : 100,
-        nwOutline.SYNOP  : 200,
+        nwOutline.TITLE:  200,
+        nwOutline.LEVEL:  40,
+        nwOutline.LABEL:  150,
+        nwOutline.LINE:   40,
+        nwOutline.CCOUNT: 50,
+        nwOutline.WCOUNT: 50,
+        nwOutline.PCOUNT: 50,
+        nwOutline.POV:    100,
+        nwOutline.FOCUS:  100,
+        nwOutline.CHAR:   100,
+        nwOutline.PLOT:   100,
+        nwOutline.TIME:   100,
+        nwOutline.WORLD:  100,
+        nwOutline.OBJECT: 100,
+        nwOutline.ENTITY: 100,
+        nwOutline.CUSTOM: 100,
+        nwOutline.SYNOP:  200,
     }
 
     DEF_HIDDEN = {
-        nwOutline.TITLE  : False,
-        nwOutline.LEVEL  : True,
-        nwOutline.LABEL  : False,
-        nwOutline.LINE   : True,
-        nwOutline.CCOUNT : True,
-        nwOutline.WCOUNT : False,
-        nwOutline.PCOUNT : False,
-        nwOutline.POV    : False,
-        nwOutline.FOCUS  : True,
-        nwOutline.CHAR   : False,
-        nwOutline.PLOT   : False,
-        nwOutline.TIME   : True,
-        nwOutline.WORLD  : False,
-        nwOutline.OBJECT : True,
-        nwOutline.ENTITY : True,
-        nwOutline.CUSTOM : True,
-        nwOutline.SYNOP  : False,
+        nwOutline.TITLE:  False,
+        nwOutline.LEVEL:  True,
+        nwOutline.LABEL:  False,
+        nwOutline.LINE:   True,
+        nwOutline.CCOUNT: True,
+        nwOutline.WCOUNT: False,
+        nwOutline.PCOUNT: False,
+        nwOutline.POV:    False,
+        nwOutline.FOCUS:  True,
+        nwOutline.CHAR:   False,
+        nwOutline.PLOT:   False,
+        nwOutline.TIME:   True,
+        nwOutline.WORLD:  False,
+        nwOutline.OBJECT: True,
+        nwOutline.ENTITY: True,
+        nwOutline.CUSTOM: True,
+        nwOutline.SYNOP:  False,
     }
 
     def __init__(self, theParent):
@@ -487,7 +487,7 @@ class GuiOutlineHeaderMenu(QMenu):
             self.actionMap[hItem] = QAction(trConst(nwLabels.OUTLINE_COLS[hItem]), self)
             self.actionMap[hItem].setCheckable(True)
             self.actionMap[hItem].toggled.connect(
-                lambda isChecked, tItem=hItem : self._columnToggled(isChecked, tItem)
+                lambda isChecked, tItem=hItem: self._columnToggled(isChecked, tItem)
             )
             self.addAction(self.actionMap[hItem])
 

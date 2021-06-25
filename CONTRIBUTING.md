@@ -106,9 +106,6 @@ readable than lists. They should be used sparingly though.
 The ignored errors are all `pycodestyle` errors, and they are documented
 [here](https://pycodestyle.pycqa.org/en/latest/intro.html#error-codes).
 
-**E203:** whitespace before ‘:’  
-**Reason:** Column alignment.
-
 **E221:** multiple spaces before operator  
 **Reason:** Column alignment.
 

@@ -203,11 +203,11 @@ class NWProject():
         self.bookAuthors = []
         self.autoReplace = {}
         self.titleFormat = {
-            "title"      : r"%title%",
-            "chapter"    : self.tr("Chapter")+r" %ch%: %title%",
-            "unnumbered" : r"%title%",
-            "scene"      : r"* * *",
-            "section"    : r"",
+            "title":      "%title%",
+            "chapter":    self.tr("Chapter")+" %ch%: %title%",
+            "unnumbered": "%title%",
+            "scene":      "* * *",
+            "section":    "",
         }
         self.spellCheck  = False
         self.autoOutline = True
@@ -620,10 +620,10 @@ class NWProject():
         # Root element and project details
         logger.debug("Writing project meta")
         nwXML = etree.Element("novelWriterXML", attrib={
-            "appVersion"  : str(nw.__version__),
-            "hexVersion"  : str(nw.__hexversion__),
-            "fileVersion" : "1.2",
-            "timeStamp"   : formatTimeStamp(saveTime),
+            "appVersion": str(nw.__version__),
+            "hexVersion": str(nw.__hexversion__),
+            "fileVersion": "1.2",
+            "timeStamp": formatTimeStamp(saveTime),
         })
 
         editTime = int(self.editTime + saveTime - self.projOpened)

@@ -123,9 +123,9 @@ class QConfigLayout(QGridLayout):
         """Add a label and a widget as a new row of the grid.
         """
         thisEntry = {
-            "label"  : None,
-            "help"   : None,
-            "widget" : None,
+            "label": None,
+            "help": None,
+            "widget": None,
         }
 
         if isinstance(theLabel, QLabel):

@@ -2149,8 +2149,8 @@ class GuiDocEditSearch(QFrame):
         errCol.setBlueF(bCol/mCol)
 
         self.rxCol = {
-            True  : baseCol,
-            False : errCol
+            True: baseCol,
+            False: errCol
         }
 
         logger.debug("GuiDocEditSearch initialisation complete")
