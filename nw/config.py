@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Config Class
 ==========================
@@ -45,6 +44,7 @@ from nw.constants import nwConst, nwFiles, nwUnicode
 
 logger = logging.getLogger(__name__)
 
+
 class Config:
 
     CNF_STR   = 0
@@ -82,27 +82,27 @@ class Config:
         self.helpPath  = None   # The full path to the novelwriter .qhc help file
 
         # Runtime Settings and Variables
-        self.confChanged = False # True whenever the config has chenged, false after save
-        self.hasHelp     = False # True if the Qt help files are present in the assets folder
+        self.confChanged = False  # True whenever the config has chenged, false after save
+        self.hasHelp     = False  # True if the Qt help files are present in the assets folder
 
-        ## General
+        # General
         self.guiTheme    = "default"
         self.guiSyntax   = "default_light"
         self.guiIcons    = "typicons_colour_light"
-        self.guiDark     = False # Load icons for dark backgrounds, if available
-        self.guiFont     = ""    # Defaults to system default font
-        self.guiFontSize = 11    # Is overridden if system default is loaded
-        self.guiScale    = 1.0   # Set automatically by Theme class
-        self.lastNotes   = "0x0" # The latest release notes that have been shown
+        self.guiDark     = False  # Load icons for dark backgrounds, if available
+        self.guiFont     = ""     # Defaults to system default font
+        self.guiFontSize = 11     # Is overridden if system default is loaded
+        self.guiScale    = 1.0    # Set automatically by Theme class
+        self.lastNotes   = "0x0"  # The latest release notes that have been shown
 
-        ## Localisation
+        # Localisation
         self.qLocal     = QLocale.system()
         self.guiLang    = self.qLocal.name()
         self.qtLangPath = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
         self.nwLangPath = None
         self.qtTrans    = {}
 
-        ## Sizes
+        # Sizes
         self.winGeometry   = [1200, 650]
         self.prefGeometry  = [700, 615]
         self.treeColWidth  = [200, 50, 30]
@@ -114,54 +114,54 @@ class Config:
         self.outlnPanePos  = [500, 150]
         self.isFullScreen  = False
 
-        ## Features
-        self.hideVScroll = False # Hide vertical scroll bars on main widgets
-        self.hideHScroll = False # Hide horizontal scroll bars on main widgets
+        # Features
+        self.hideVScroll = False  # Hide vertical scroll bars on main widgets
+        self.hideHScroll = False  # Hide horizontal scroll bars on main widgets
 
-        ## Project
-        self.autoSaveProj = 60 # Interval for auto-saving project in seconds
-        self.autoSaveDoc  = 30 # Interval for auto-saving document in seconds
+        # Project
+        self.autoSaveProj = 60  # Interval for auto-saving project in seconds
+        self.autoSaveDoc  = 30  # Interval for auto-saving document in seconds
 
-        ## Text Editor
-        self.textFont        = None  # Editor font
-        self.textSize        = 12    # Editor font size
-        self.textFixedW      = True  # Keep editor text fixed width
-        self.textWidth       = 600   # Editor text width
-        self.textMargin      = 40    # Editor/viewer text margin
-        self.tabWidth        = 40    # Editor tabulator width
+        # Text Editor
+        self.textFont        = None   # Editor font
+        self.textSize        = 12     # Editor font size
+        self.textFixedW      = True   # Keep editor text fixed width
+        self.textWidth       = 600    # Editor text width
+        self.textMargin      = 40     # Editor/viewer text margin
+        self.tabWidth        = 40     # Editor tabulator width
 
-        self.focusWidth      = 800   # Focus Mode text width
-        self.hideFocusFooter = False # Hide document footer in Focus Mode
-        self.showFullPath    = True  # Show full document path in editor header
-        self.autoSelect      = True  # Auto-select word when applying format with no selection
+        self.focusWidth      = 800    # Focus Mode text width
+        self.hideFocusFooter = False  # Hide document footer in Focus Mode
+        self.showFullPath    = True   # Show full document path in editor header
+        self.autoSelect      = True   # Auto-select word when applying format with no selection
 
-        self.doJustify       = False # Justify text
-        self.showTabsNSpaces = False # Show tabs and spaces in edior
-        self.showLineEndings = False # Show line endings in editor
-        self.showMultiSpaces = True  # Highlight multiple spaces in the text
+        self.doJustify       = False  # Justify text
+        self.showTabsNSpaces = False  # Show tabs and spaces in edior
+        self.showLineEndings = False  # Show line endings in editor
+        self.showMultiSpaces = True   # Highlight multiple spaces in the text
 
-        self.doReplace       = True  # Enable auto-replace as you type
-        self.doReplaceSQuote = True  # Smart single quotes
-        self.doReplaceDQuote = True  # Smart double quotes
-        self.doReplaceDash   = True  # Replace multiple hyphens with dashes
-        self.doReplaceDots   = True  # Replace three dots with ellipsis
+        self.doReplace       = True   # Enable auto-replace as you type
+        self.doReplaceSQuote = True   # Smart single quotes
+        self.doReplaceDQuote = True   # Smart double quotes
+        self.doReplaceDash   = True   # Replace multiple hyphens with dashes
+        self.doReplaceDots   = True   # Replace three dots with ellipsis
 
-        self.scrollPastEnd   = True  # Allow scrolling past end of document
-        self.autoScroll      = False # Typewriter-like scrolling
-        self.autoScrollPos   = 30    # Start point for typewriter-like scrolling
+        self.scrollPastEnd   = True   # Allow scrolling past end of document
+        self.autoScroll      = False  # Typewriter-like scrolling
+        self.autoScrollPos   = 30     # Start point for typewriter-like scrolling
 
-        self.wordCountTimer  = 5.0   # Interval for word count update in seconds
-        self.bigDocLimit     = 800   # Size threshold for heavy editor features in kilobytes
+        self.wordCountTimer  = 5.0    # Interval for word count update in seconds
+        self.bigDocLimit     = 800    # Size threshold for heavy editor features in kilobytes
 
-        self.highlightQuotes = True  # Highlight text in quotes
-        self.allowOpenSQuote = False # Allow open-ended single quotes
-        self.allowOpenDQuote = True  # Allow open-ended double quotes
-        self.highlightEmph   = True  # Add colour to text emphasis
+        self.highlightQuotes = True   # Highlight text in quotes
+        self.allowOpenSQuote = False  # Allow open-ended single quotes
+        self.allowOpenDQuote = True   # Allow open-ended double quotes
+        self.highlightEmph   = True   # Add colour to text emphasis
 
-        self.stopWhenIdle    = True  # Stop the status bar clock when the user is idle
-        self.userIdleTime    = 300   # Time of inactivity to consider user idle
+        self.stopWhenIdle    = True   # Stop the status bar clock when the user is idle
+        self.userIdleTime    = 300    # Time of inactivity to consider user idle
 
-        ## User-Selected Symbols
+        # User-Selected Symbols
         self.fmtApostrophe   = nwUnicode.U_RSQUO
         self.fmtSingleQuotes = [nwUnicode.U_LSQUO, nwUnicode.U_RSQUO]
         self.fmtDoubleQuotes = [nwUnicode.U_LDQUO, nwUnicode.U_RDQUO]
@@ -169,11 +169,11 @@ class Config:
         self.fmtPadAfter     = ""
         self.fmtPadThin      = False
 
-        ## Spell Checking
+        # Spell Checking
         self.spellTool     = None
         self.spellLanguage = None
 
-        ## Search Bar Switches
+        # Search Bar Switches
         self.searchCase     = False
         self.searchWord     = False
         self.searchRegEx    = False
@@ -181,12 +181,12 @@ class Config:
         self.searchNextFile = False
         self.searchMatchCap = False
 
-        ## Backup
+        # Backup
         self.backupPath      = ""
         self.backupOnClose   = False
         self.askBeforeBackup = True
 
-        ## State
+        # State
         self.showRefPanel = True
         self.viewComments = True
         self.viewSynopsis = True
@@ -235,8 +235,8 @@ class Config:
         self.kernelVer = "Unknown"
 
         # Packages
-        self.hasEnchant   = False # The pyenchant package
-        self.hasAssistant = False # The Qt Assistant executable
+        self.hasEnchant   = False  # The pyenchant package
+        self.hasAssistant = False  # The Qt Assistant executable
 
         # Recent Cache
         self.recentProj = {}
@@ -382,9 +382,9 @@ class Config:
         self.qtTrans = {}
 
         langList = [
-            (self.qtLangPath, "qtbase"), # Qt 5.x
-            (self.nwLangPath, "qtbase"), # Alternative Qt 5.x
-            (self.nwLangPath, "nw"),     # novelWriter
+            (self.qtLangPath, "qtbase"),  # Qt 5.x
+            (self.nwLangPath, "qtbase"),  # Alternative Qt 5.x
+            (self.nwLangPath, "nw"),      # novelWriter
         ]
         for lngPath, lngBase in langList:
             for lngCode in self.qLocal.uiLanguages():
@@ -445,7 +445,7 @@ class Config:
             self.errData.append(str(e))
             return False
 
-        ## Main
+        # Main
         cnfSec = "Main"
         self.guiTheme = self._parseLine(
             cnfParse, cnfSec, "theme", self.CNF_STR, self.guiTheme
@@ -472,7 +472,7 @@ class Config:
             cnfParse, cnfSec, "guilang", self.CNF_STR, self.guiLang
         )
 
-        ## Sizes
+        # Sizes
         cnfSec = "Sizes"
         self.winGeometry = self._parseLine(
             cnfParse, cnfSec, "geometry", self.CNF_I_LST, self.winGeometry
@@ -511,7 +511,7 @@ class Config:
             cnfParse, cnfSec, "hidehscroll", self.CNF_BOOL, self.hideHScroll
         )
 
-        ## Project
+        # Project
         cnfSec = "Project"
         self.autoSaveProj = self._parseLine(
             cnfParse, cnfSec, "autosaveproject", self.CNF_INT, self.autoSaveProj
@@ -520,7 +520,7 @@ class Config:
             cnfParse, cnfSec, "autosavedoc", self.CNF_INT, self.autoSaveDoc
         )
 
-        ## Editor
+        # Editor
         cnfSec = "Editor"
         self.textFont = self._parseLine(
             cnfParse, cnfSec, "textfont", self.CNF_STR, self.textFont
@@ -631,7 +631,7 @@ class Config:
             cnfParse, cnfSec, "useridletime", self.CNF_INT, self.userIdleTime
         )
 
-        ## Backup
+        # Backup
         cnfSec = "Backup"
         self.backupPath = self._parseLine(
             cnfParse, cnfSec, "backuppath", self.CNF_STR, self.backupPath
@@ -643,7 +643,7 @@ class Config:
             cnfParse, cnfSec, "askbeforebackup", self.CNF_BOOL, self.askBeforeBackup
         )
 
-        ## State
+        # State
         cnfSec = "State"
         self.showRefPanel = self._parseLine(
             cnfParse, cnfSec, "showrefpanel", self.CNF_BOOL, self.showRefPanel
@@ -673,7 +673,7 @@ class Config:
             cnfParse, cnfSec, "searchmatchcap", self.CNF_BOOL, self.searchMatchCap
         )
 
-        ## Path
+        # Path
         cnfSec = "Path"
         self.lastPath = self._parseLine(
             cnfParse, cnfSec, "lastpath", self.CNF_STR, self.lastPath
@@ -704,7 +704,7 @@ class Config:
 
         # Set options
 
-        ## Main
+        # Main
         cnfSec = "Main"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "timestamp",   formatTimeStamp(time()))
@@ -717,7 +717,7 @@ class Config:
         cnfParse.set(cnfSec, "lastnotes",   str(self.lastNotes))
         cnfParse.set(cnfSec, "guilang",     str(self.guiLang))
 
-        ## Sizes
+        # Sizes
         cnfSec = "Sizes"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "geometry",    self._packList(self.winGeometry))
@@ -733,13 +733,13 @@ class Config:
         cnfParse.set(cnfSec, "hidevscroll", str(self.hideVScroll))
         cnfParse.set(cnfSec, "hidehscroll", str(self.hideHScroll))
 
-        ## Project
+        # Project
         cnfSec = "Project"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "autosaveproject", str(self.autoSaveProj))
         cnfParse.set(cnfSec, "autosavedoc",     str(self.autoSaveDoc))
 
-        ## Editor
+        # Editor
         cnfSec = "Editor"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "textfont",        str(self.textFont))
@@ -779,14 +779,14 @@ class Config:
         cnfParse.set(cnfSec, "stopwhenidle",    str(self.stopWhenIdle))
         cnfParse.set(cnfSec, "useridletime",    str(self.userIdleTime))
 
-        ## Backup
+        # Backup
         cnfSec = "Backup"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "backuppath",      str(self.backupPath))
         cnfParse.set(cnfSec, "backuponclose",   str(self.backupOnClose))
         cnfParse.set(cnfSec, "askbeforebackup", str(self.askBeforeBackup))
 
-        ## State
+        # State
         cnfSec = "State"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "showrefpanel",    str(self.showRefPanel))
@@ -799,7 +799,7 @@ class Config:
         cnfParse.set(cnfSec, "searchnextfile",  str(self.searchNextFile))
         cnfParse.set(cnfSec, "searchmatchcap",  str(self.searchMatchCap))
 
-        ## Path
+        # Path
         cnfSec = "Path"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "lastpath", str(self.lastPath))
@@ -1119,7 +1119,7 @@ class Config:
         """Cheks if we have the optional packages used by some features.
         """
         try:
-            import enchant # noqa: F401
+            import enchant  # noqa: F401
             self.hasEnchant = True
             logger.debug("Checking package 'pyenchant': OK")
         except Exception:

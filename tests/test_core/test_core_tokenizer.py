@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Tokenizer Class Tester
 ====================================
@@ -27,6 +26,7 @@ from tools import readFile
 
 from nw.core import NWProject, NWDoc
 from nw.core.tokenizer import Tokenizer
+
 
 @pytest.mark.core
 def testCoreToken_Setters(dummyGUI):
@@ -111,6 +111,7 @@ def testCoreToken_Setters(dummyGUI):
 
 # END Test testCoreToken_Setters
 
+
 @pytest.mark.core
 def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
     """Test handling files and text in the Tokenizer class.
@@ -192,6 +193,7 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
     assert readFile(savePath) == "# Notes: Plot\n\n"
 
 # END Test testCoreToken_TextOps
+
 
 @pytest.mark.core
 def testCoreToken_Tokenize(dummyGUI):
@@ -493,6 +495,7 @@ def testCoreToken_Tokenize(dummyGUI):
     )
 
 # END Test testCoreToken_Tokenize
+
 
 @pytest.mark.core
 def testCoreToken_Headers(dummyGUI):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Doc Merge Tool
 ================================
@@ -38,6 +37,7 @@ from nw.enum import nwAlert, nwItemType
 from nw.gui.custom import QHelpLabel
 
 logger = logging.getLogger(__name__)
+
 
 class GuiDocMerge(QDialog):
 

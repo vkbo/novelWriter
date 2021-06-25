@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Other Dialog Classes Tester
 =========================================
@@ -31,12 +30,13 @@ keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
+
 @pytest.mark.gui
-def testDlgOther_QuoteSelect(qtbot, monkeypatch, nwGUI, nwMinimal):
+def testDlgOther_QuoteSelect(monkeypatch, nwGUI):
     """Test the quote symbols dialog.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
     nwQuot = GuiQuoteSelect(nwGUI)
     nwQuot.show()

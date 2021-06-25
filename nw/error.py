@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Exception Handling
 ================================
@@ -35,6 +34,7 @@ from PyQt5.QtWidgets import (
 
 logger = logging.getLogger(__name__)
 
+
 # =============================================================================================== #
 #  Utility Functions
 # =============================================================================================== #
@@ -44,6 +44,7 @@ def logException():
     """
     exType, exValue, _ = sys.exc_info()
     logger.error("%s: %s" % (exType.__name__, str(exValue).strip("'")))
+
 
 # =============================================================================================== #
 #  Error Handler
@@ -150,6 +151,7 @@ class NWErrorMessage(QDialog):
         return
 
 # END Class NWErrorMessage
+
 
 def exceptionHandler(exType, exValue, exTrace):
     """Function to catch unhandled global exceptions.

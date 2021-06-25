@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Merge and Split Dialog Classes Tester
 ===================================================
@@ -37,8 +36,9 @@ keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
+
 @pytest.mark.gui
-def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
+def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj):
     """Test the split document tool.
     """
     # Block message box

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Main Init Tester
 ==============================
@@ -26,6 +25,7 @@ import logging
 import sys
 
 from mock import MockGuiMain
+
 
 @pytest.mark.base
 def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
@@ -63,6 +63,7 @@ def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
     assert ex.value.code == 0
 
 # END Test testBaseInit_Launch
+
 
 @pytest.mark.base
 def testBaseInit_Options(monkeypatch, tmpDir):
@@ -136,6 +137,7 @@ def testBaseInit_Options(monkeypatch, tmpDir):
 
 # END Test testBaseInit_Options
 
+
 @pytest.mark.base
 def testBaseInit_Imports(caplog, monkeypatch, tmpDir):
     """Check import error handling.
@@ -156,10 +158,10 @@ def testBaseInit_Imports(caplog, monkeypatch, tmpDir):
             ["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
         )
 
-    assert ex.value.code & 4 == 4   # Python version not satisfied
-    assert ex.value.code & 8 == 8   # Qt version not satisfied
-    assert ex.value.code & 16 == 16 # PyQt version not satisfied
-    assert ex.value.code & 32 == 32 # lxml package missing
+    assert ex.value.code & 4 == 4    # Python version not satisfied
+    assert ex.value.code & 8 == 8    # Qt version not satisfied
+    assert ex.value.code & 16 == 16  # PyQt version not satisfied
+    assert ex.value.code & 32 == 32  # lxml package missing
 
     assert "At least Python" in caplog.messages[0]
     assert "At least Qt5" in caplog.messages[1]

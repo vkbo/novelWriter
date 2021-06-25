@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Project Outline
 =================================
@@ -38,6 +37,7 @@ from nw.enum import nwOutline
 from nw.constants import trConst, nwKeyWords, nwLabels
 
 logger = logging.getLogger(__name__)
+
 
 class GuiOutline(QTreeWidget):
 
@@ -466,6 +466,7 @@ class GuiOutline(QTreeWidget):
         return newItem
 
 # END Class GuiOutline
+
 
 class GuiOutlineHeaderMenu(QMenu):
 

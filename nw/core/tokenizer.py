@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Text Tokenizer
 ============================
@@ -40,6 +39,7 @@ from nw.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
 
+
 class Tokenizer():
 
     # In-Text Format
@@ -51,33 +51,33 @@ class Tokenizer():
     FMT_D_E    = 6  # End strikeout
 
     # Block Type
-    T_EMPTY    = 1  # Empty line (new paragraph)
-    T_SYNOPSIS = 2  # Synopsis comment
-    T_COMMENT  = 3  # Comment line
-    T_KEYWORD  = 4  # Command line
-    T_TITLE    = 5  # Title
-    T_HEAD1    = 6  # Header 1
-    T_HEAD2    = 7  # Header 2
-    T_HEAD3    = 8  # Header 3
-    T_HEAD4    = 9  # Header 4
-    T_TEXT     = 10 # Text line
-    T_SEP      = 11 # Scene separator
-    T_SKIP     = 12 # Paragraph break
+    T_EMPTY    = 1   # Empty line (new paragraph)
+    T_SYNOPSIS = 2   # Synopsis comment
+    T_COMMENT  = 3   # Comment line
+    T_KEYWORD  = 4   # Command line
+    T_TITLE    = 5   # Title
+    T_HEAD1    = 6   # Header 1
+    T_HEAD2    = 7   # Header 2
+    T_HEAD3    = 8   # Header 3
+    T_HEAD4    = 9   # Header 4
+    T_TEXT     = 10  # Text line
+    T_SEP      = 11  # Scene separator
+    T_SKIP     = 12  # Paragraph break
 
     # Block Style
-    A_NONE     = 0x0000 # No special style
-    A_LEFT     = 0x0001 # Left aligned
-    A_RIGHT    = 0x0002 # Right aligned
-    A_CENTRE   = 0x0004 # Centred
-    A_JUSTIFY  = 0x0008 # Justified
-    A_PBB      = 0x0010 # Page break before always
-    A_PBB_AUT  = 0x0020 # Page break before auto
-    A_PBA      = 0x0040 # Page break after always
-    A_PBA_AUT  = 0x0080 # Page break after auto
-    A_Z_TOPMRG = 0x0100 # Zero top margin
-    A_Z_BTMMRG = 0x0200 # Zero bottom margin
-    A_IND_L    = 0x0400 # Left indentation
-    A_IND_R    = 0x0800 # Right indentation
+    A_NONE     = 0x0000  # No special style
+    A_LEFT     = 0x0001  # Left aligned
+    A_RIGHT    = 0x0002  # Right aligned
+    A_CENTRE   = 0x0004  # Centred
+    A_JUSTIFY  = 0x0008  # Justified
+    A_PBB      = 0x0010  # Page break before always
+    A_PBB_AUT  = 0x0020  # Page break before auto
+    A_PBA      = 0x0040  # Page break after always
+    A_PBA_AUT  = 0x0080  # Page break after auto
+    A_Z_TOPMRG = 0x0100  # Zero top margin
+    A_Z_BTMMRG = 0x0200  # Zero bottom margin
+    A_IND_L    = 0x0400  # Left indentation
+    A_IND_R    = 0x0800  # Right indentation
 
     def __init__(self, theProject):
 
@@ -86,28 +86,28 @@ class Tokenizer():
         self.mainConf   = nw.CONFIG
 
         # Data Variables
-        self.theText     = ""   # The raw text to be tokenized
-        self.theHandle   = None # The handle associated with the text
-        self.theItem     = None # The NWItem associated with the handle
-        self.theTokens   = []   # The list of the processed tokens
-        self.theResult   = ""   # The result of the last document
+        self.theText     = ""    # The raw text to be tokenized
+        self.theHandle   = None  # The handle associated with the text
+        self.theItem     = None  # The NWItem associated with the handle
+        self.theTokens   = []    # The list of the processed tokens
+        self.theResult   = ""    # The result of the last document
 
-        self.keepMarkdown = False # Whether to keep the markdown text
-        self.theMarkdown  = []    # The result novelWriter markdown of all documents
+        self.keepMarkdown = False  # Whether to keep the markdown text
+        self.theMarkdown  = []     # The result novelWriter markdown of all documents
 
         # User Settings
-        self.textFont    = "Serif" # Output text font
-        self.textSize    = 11      # Output text size
-        self.textFixed   = False   # Fixed width text
-        self.lineHeight  = 1.15    # Line height in units of em
-        self.blockIndent = 4.00    # Block indent in units of em
-        self.doJustify   = False   # Justify text
-        self.doBodyText  = True    # Include body text
-        self.doSynopsis  = False   # Also process synopsis comments
-        self.doComments  = False   # Also process comments
-        self.doKeywords  = False   # Also process keywords like tags and references
+        self.textFont    = "Serif"  # Output text font
+        self.textSize    = 11       # Output text size
+        self.textFixed   = False    # Fixed width text
+        self.lineHeight  = 1.15     # Line height in units of em
+        self.blockIndent = 4.00     # Block indent in units of em
+        self.doJustify   = False    # Justify text
+        self.doBodyText  = True     # Include body text
+        self.doSynopsis  = False    # Also process synopsis comments
+        self.doComments  = False    # Also process comments
+        self.doKeywords  = False    # Also process keywords like tags and references
 
-        ## Margins
+        # Margins
         self.marginTitle = (1.000, 0.500)
         self.marginHead1 = (1.000, 0.500)
         self.marginHead2 = (0.834, 0.500)
@@ -116,23 +116,23 @@ class Tokenizer():
         self.marginText  = (0.000, 0.584)
         self.marginMeta  = (0.000, 0.584)
 
-        ## Title Formats
-        self.fmtTitle    = "%title%" # Formatting for titles
-        self.fmtChapter  = "%title%" # Formatting for numbered chapters
-        self.fmtUnNum    = "%title%" # Formatting for unnumbered chapters
-        self.fmtScene    = "%title%" # Formatting for scenes
-        self.fmtSection  = "%title%" # Formatting for sections
+        # Title Formats
+        self.fmtTitle    = "%title%"  # Formatting for titles
+        self.fmtChapter  = "%title%"  # Formatting for numbered chapters
+        self.fmtUnNum    = "%title%"  # Formatting for unnumbered chapters
+        self.fmtScene    = "%title%"  # Formatting for scenes
+        self.fmtSection  = "%title%"  # Formatting for sections
 
-        self.hideScene   = False # Do not include scene headers
-        self.hideSection = False # Do not include section headers
+        self.hideScene   = False  # Do not include scene headers
+        self.hideSection = False  # Do not include section headers
 
-        self.linkHeaders = False # Add an anchor before headers
+        self.linkHeaders = False  # Add an anchor before headers
 
         # Instance Variables
-        self.numChapter  = 0     # Counter for chapter numbers
-        self.numChScene  = 0     # Counter for scene number within chapter
-        self.numAbsScene = 0     # Counter for scene number within novel
-        self.firstScene  = False # Flag to indicate that the first scene of the chapter
+        self.numChapter  = 0      # Counter for chapter numbers
+        self.numChScene  = 0      # Counter for scene number within chapter
+        self.numAbsScene = 0      # Counter for scene number within novel
+        self.firstScene  = False  # Flag to indicate that the first scene of the chapter
 
         # This File
         self.isNone  = False

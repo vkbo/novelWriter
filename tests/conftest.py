@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Test Suite Configuration
 ======================================
@@ -30,9 +29,10 @@ from tools import cleanProject
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
-import nw # noqa: E402
+import nw  # noqa: E402
 
-from nw.config import Config # noqa: E402
+from nw.config import Config  # noqa: E402
+
 
 ##
 #  Core Test Folders
@@ -52,6 +52,7 @@ def tmpDir():
         os.mkdir(theDir)
     return theDir
 
+
 @pytest.fixture(scope="session")
 def refDir():
     """The folder where all the reference files are stored for verifying
@@ -61,6 +62,7 @@ def refDir():
     theDir = os.path.join(testDir, "reference")
     return theDir
 
+
 @pytest.fixture(scope="session")
 def filesDir():
     """The folder where additional test files are stored.
@@ -68,6 +70,7 @@ def filesDir():
     testDir = os.path.dirname(__file__)
     theDir = os.path.join(testDir, "files")
     return theDir
+
 
 @pytest.fixture(scope="session")
 def outDir(tmpDir):
@@ -77,6 +80,7 @@ def outDir(tmpDir):
     if not os.path.isdir(theDir):
         os.mkdir(theDir)
     return theDir
+
 
 @pytest.fixture(scope="function")
 def fncDir(tmpDir):
@@ -92,6 +96,7 @@ def fncDir(tmpDir):
         shutil.rmtree(fncDir)
     return
 
+
 @pytest.fixture(scope="function")
 def fncProj(fncDir):
     """A temporary folder for a single test function,
@@ -103,6 +108,7 @@ def fncProj(fncDir):
     if not os.path.isdir(prjDir):
         os.mkdir(prjDir)
     return prjDir
+
 
 ##
 #  novelWriter Objects
@@ -121,6 +127,7 @@ def tmpConf(tmpDir):
     theConf.guiLang = "en_GB"
     return theConf
 
+
 @pytest.fixture(scope="function")
 def fncConf(fncDir):
     """Create a temporary novelWriter configuration object.
@@ -134,6 +141,7 @@ def fncConf(fncDir):
     theConf.guiLang = "en_GB"
     return theConf
 
+
 @pytest.fixture(scope="function")
 def dummyGUI(monkeypatch, tmpConf):
     """Create a mock instance of novelWriter's main GUI class.
@@ -142,6 +150,7 @@ def dummyGUI(monkeypatch, tmpConf):
     theGui = MockGuiMain()
     theGui.mainConf = tmpConf
     return theGui
+
 
 @pytest.fixture(scope="function")
 def nwGUI(qtbot, monkeypatch, fncDir, fncConf):
@@ -163,6 +172,7 @@ def nwGUI(qtbot, monkeypatch, fncDir, fncConf):
     qtbot.wait(20)
 
     return
+
 
 ##
 #  Temp Project Folders
@@ -188,6 +198,7 @@ def nwMinimal(tmpDir):
 
     return
 
+
 @pytest.fixture(scope="function")
 def nwLipsum(tmpDir):
     """A medium sized novelWriter example project with a lot of Lorem
@@ -208,6 +219,7 @@ def nwLipsum(tmpDir):
         shutil.rmtree(dstDir)
 
     return
+
 
 @pytest.fixture(scope="function")
 def nwOldProj(tmpDir):

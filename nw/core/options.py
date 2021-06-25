@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Options Cache
 ===================================
@@ -33,6 +32,7 @@ import os
 from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
+
 
 class OptionState():
 

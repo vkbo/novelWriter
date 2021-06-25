@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – ODT Text Converter
 ================================
@@ -57,38 +56,39 @@ TAG_TAB  = "{%s}tab" % XML_NS["text"]
 TAG_SPAN = "{%s}span" % XML_NS["text"]
 TAG_STNM = "{%s}style-name" % XML_NS["text"]
 
+
 class ToOdt(Tokenizer):
 
-    X_BLD = 0x01 # Bold format
-    X_ITA = 0x02 # Italic format
-    X_DEL = 0x04 # Strikethrough format
-    X_BRK = 0x08 # Line break
-    X_TAB = 0x10 # Tab
+    X_BLD = 0x01  # Bold format
+    X_ITA = 0x02  # Italic format
+    X_DEL = 0x04  # Strikethrough format
+    X_BRK = 0x08  # Line break
+    X_TAB = 0x10  # Tab
 
     def __init__(self, theProject, isFlat):
         Tokenizer.__init__(self, theProject)
 
         self.mainConf = nw.CONFIG
 
-        self._isFlat = isFlat # Flat: .fodt, otherwise .odt
+        self._isFlat = isFlat  # Flat: .fodt, otherwise .odt
 
-        self._dFlat = None # FODT file XML root
-        self._dCont = None # ODT content.xml root
-        self._dMeta = None # ODT meta.xml root
-        self._dStyl = None # ODT styles.xml root
+        self._dFlat = None  # FODT file XML root
+        self._dCont = None  # ODT content.xml root
+        self._dMeta = None  # ODT meta.xml root
+        self._dStyl = None  # ODT styles.xml root
 
-        self._xMeta = None # Office meta root
-        self._xStyl = None # Office styles root
-        self._xAuto = None # Office auto-styles root
-        self._xMast = None # Office master-styles root
-        self._xBody = None # Office body root
-        self._xText = None # Office text root
+        self._xMeta = None  # Office meta root
+        self._xStyl = None  # Office styles root
+        self._xAuto = None  # Office auto-styles root
+        self._xMast = None  # Office master-styles root
+        self._xBody = None  # Office body root
+        self._xText = None  # Office text root
 
-        self._xAut2 = None # Page layout auto-styles for ODT file
+        self._xAut2 = None  # Page layout auto-styles for ODT file
 
-        self._mainPara = {} # User-accessible paragraph styles
-        self._autoPara = {} # Auto-generated paragraph styles
-        self._autoText = {} # Auto-generated text styles
+        self._mainPara = {}  # User-accessible paragraph styles
+        self._autoPara = {}  # Auto-generated paragraph styles
+        self._autoText = {}  # Auto-generated text styles
 
         # Properties
         self.textFont   = "Liberation Serif"
@@ -114,7 +114,7 @@ class ToOdt(Tokenizer):
         self._dLanguage   = "en"
         self._dCountry    = "GB"
 
-        ## Text Margings in Units of em
+        # Text Margings in Units of em
         self._mTopTitle = "0.423cm"
         self._mTopHead1 = "0.423cm"
         self._mTopHead2 = "0.353cm"
@@ -133,13 +133,13 @@ class ToOdt(Tokenizer):
         self._mBotText  = "0.247cm"
         self._mBotMeta  = "0.106cm"
 
-        ## Document Margins
+        # Document Margins
         self._mDocTop   = "2.000cm"
         self._mDocBtm   = "2.000cm"
         self._mDocLeft  = "2.000cm"
         self._mDocRight = "2.000cm"
 
-        ## Colour
+        # Colour
         self._colHead12 = None
         self._opaHead12 = None
         self._colHead34 = None
@@ -315,15 +315,15 @@ class ToOdt(Tokenizer):
     def doConvert(self):
         """Convert the list of text tokens into XML elements.
         """
-        self.theResult = "" # Not used, but cleared just in case
+        self.theResult = ""  # Not used, but cleared just in case
 
         odtTags = {
-            self.FMT_B_B : "_B", # Bold open format
-            self.FMT_B_E : "b_", # Bold close format
-            self.FMT_I_B : "I",  # Italic open format
-            self.FMT_I_E : "i",  # Italic close format
-            self.FMT_D_B : "_S", # Strikethrough open format
-            self.FMT_D_E : "s_", # Strikethrough close format
+            self.FMT_B_B : "_B",  # Bold open format
+            self.FMT_B_E : "b_",  # Bold close format
+            self.FMT_I_B : "I",   # Italic open format
+            self.FMT_I_E : "i",   # Italic close format
+            self.FMT_D_B : "_S",  # Strikethrough open format
+            self.FMT_D_E : "s_",  # Strikethrough close format
         }
 
         thisPar = []
@@ -985,6 +985,7 @@ class ToOdt(Tokenizer):
 
 # END Class ToOdt
 
+
 # =============================================================================================== #
 #  Auto-Style Classes
 # =============================================================================================== #
@@ -1212,6 +1213,7 @@ class ODTParagraphStyle():
 
 # END Class ODTParagraphStyle
 
+
 class ODTTextStyle():
     """Wrapper class for the text style setting used by the exporter.
     Only the used settings are exposed here to keep the class minimal
@@ -1281,6 +1283,7 @@ class ODTTextStyle():
         return
 
 # END Class ODTTextStyle
+
 
 # =============================================================================================== #
 #  Local Functions

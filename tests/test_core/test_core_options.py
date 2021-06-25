@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – OptionState Class Tester
 ======================================
@@ -29,6 +28,7 @@ from mock import causeOSError
 from nw.core import NWProject
 from nw.core.options import OptionState
 from nw.constants import nwFiles
+
 
 @pytest.mark.core
 def testCoreOptions_LoadSave(monkeypatch, dummyGUI, tmpDir):
@@ -100,8 +100,9 @@ def testCoreOptions_LoadSave(monkeypatch, dummyGUI, tmpDir):
 
 # END Test testCoreOptions_LoadSave
 
+
 @pytest.mark.core
-def testCoreOptions_SetGet(monkeypatch, dummyGUI, tmpDir):
+def testCoreOptions_SetGet(dummyGUI):
     """Test setting and getting values from the OptionState class.
     """
     theProject = NWProject(dummyGUI)

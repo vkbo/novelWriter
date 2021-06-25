@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Test Suite Mocked Classes
 =======================================
@@ -19,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+
 
 # =========================================================================== #
 #  Mock GUI
@@ -79,6 +79,7 @@ class MockGuiMain():
 
 # END Class MockGuiMain
 
+
 class MockStatusBar():
 
     def __init__(self):
@@ -92,6 +93,7 @@ class MockStatusBar():
 
 # END Class MockStatusBar
 
+
 class MockApp:
 
     def __init__(self):
@@ -102,6 +104,7 @@ class MockApp:
 
 # END Class MockApp
 
+
 # =========================================================================== #
 #  Error Functions
 #  Mock functions that will raise errors instead.
@@ -109,6 +112,7 @@ class MockApp:
 
 def causeOSError(*args, **kwargs):
     raise OSError("OSError")
+
 
 def causeException(*args, **kwargs):
     raise Exception("Exception")

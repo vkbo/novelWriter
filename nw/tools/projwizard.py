@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI New Project Wizard
 ====================================
@@ -48,6 +47,7 @@ PAGE_POP    = 2
 PAGE_CUSTOM = 3
 PAGE_FINAL  = 4
 
+
 class GuiProjectWizard(QWizard):
 
     def __init__(self, theParent):
@@ -85,6 +85,7 @@ class GuiProjectWizard(QWizard):
         return
 
 # END Class GuiProjectWizard
+
 
 class ProjWizardIntroPage(QWizardPage):
 
@@ -154,6 +155,7 @@ class ProjWizardIntroPage(QWizardPage):
         return
 
 # END Class ProjWizardIntroPage
+
 
 class ProjWizardFolderPage(QWizardPage):
 
@@ -227,6 +229,7 @@ class ProjWizardFolderPage(QWizardPage):
 
 # END Class ProjWizardFolderPage
 
+
 class ProjWizardPopulatePage(QWizardPage):
 
     def __init__(self, theWizard):
@@ -281,6 +284,7 @@ class ProjWizardPopulatePage(QWizardPage):
             return PAGE_FINAL
 
 # END Class ProjWizardPopulatePage
+
 
 class ProjWizardCustomPage(QWizardPage):
 
@@ -399,6 +403,7 @@ class ProjWizardCustomPage(QWizardPage):
         return
 
 # END Class ProjWizardCustomPage
+
 
 class ProjWizardFinalPage(QWizardPage):
 

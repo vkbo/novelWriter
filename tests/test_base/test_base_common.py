@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Common Functions Tester
 =====================================
@@ -30,6 +29,7 @@ from nw.common import (
     isItemLayout, numberToRoman
 )
 
+
 @pytest.mark.base
 def testBaseCommon_CheckString():
     """Test the checkString function.
@@ -44,6 +44,7 @@ def testBaseCommon_CheckString():
 
 # END Test testBaseCommon_CheckString
 
+
 @pytest.mark.base
 def testBaseCommon_CheckInt():
     """Test the checkInt function.
@@ -56,6 +57,7 @@ def testBaseCommon_CheckInt():
     assert checkInt(True, 3, False) == 1
 
 # END Test testBaseCommon_CheckInt
+
 
 @pytest.mark.base
 def testBaseCommon_CheckBool():
@@ -75,6 +77,7 @@ def testBaseCommon_CheckBool():
 
 # END Test testBaseCommon_CheckBool
 
+
 @pytest.mark.base
 def testBaseCommon_CheckHandle():
     """Test the checkHandle function.
@@ -87,6 +90,7 @@ def testBaseCommon_CheckHandle():
     assert checkHandle("h7666c91c7ccf", None, False) is None
 
 # END Test testBaseCommon_CheckHandle
+
 
 @pytest.mark.base
 def testBaseCommon_IsHandle():
@@ -101,6 +105,7 @@ def testBaseCommon_IsHandle():
     assert not isHandle("STUFF")
 
 # END Test testBaseCommon_IsHandle
+
 
 @pytest.mark.base
 def testBaseCommon_IsTitleTag():
@@ -118,6 +123,7 @@ def testBaseCommon_IsTitleTag():
     assert not isTitleTag("STUFF")
 
 # END Test testBaseCommon_IsTitleTag
+
 
 @pytest.mark.base
 def testBaseCommon_IsItemClass():
@@ -141,6 +147,7 @@ def testBaseCommon_IsItemClass():
 
 # END Test testBaseCommon_IsItemClass
 
+
 @pytest.mark.base
 def testBaseCommon_IsItemType():
     """Test the isItemType function.
@@ -156,6 +163,7 @@ def testBaseCommon_IsItemType():
     assert not isItemType("STUFF")
 
 # END Test testBaseCommon_IsItemType
+
 
 @pytest.mark.base
 def testBaseCommon_IsItemLayout():
@@ -177,6 +185,7 @@ def testBaseCommon_IsItemLayout():
 
 # END Test testBaseCommon_IsItemLayout
 
+
 @pytest.mark.base
 def testBaseCommon_HexToInt():
     """Test the hexToInt function.
@@ -190,6 +199,7 @@ def testBaseCommon_HexToInt():
 
 # END Test testBaseCommon_HexToInt
 
+
 @pytest.mark.base
 def testBaseCommon_FormatTimeStamp():
     """Test the formatTimeStamp function.
@@ -199,6 +209,7 @@ def testBaseCommon_FormatTimeStamp():
     assert formatTimeStamp(tTime, True) == "1970-01-01 00.00.00"
 
 # END Test testBaseCommon_FormatTimeStamp
+
 
 @pytest.mark.base
 def testBaseCommon_FormatTime():
@@ -222,6 +233,7 @@ def testBaseCommon_FormatTime():
 
 # END Test testBaseCommon_FormatTime
 
+
 @pytest.mark.base
 def testBaseCommon_FormatInt():
     """Test the formatInt function.
@@ -237,6 +249,7 @@ def testBaseCommon_FormatInt():
 
 # END Test testBaseCommon_FormatInt
 
+
 @pytest.mark.base
 def testBaseCommon_TransferCase():
     """Test the transferCase function.
@@ -250,6 +263,7 @@ def testBaseCommon_TransferCase():
     assert transferCase("source", "TARGET") == "target"
 
 # END Test testBaseCommon_TransferCase
+
 
 @pytest.mark.base
 def testBaseCommon_FuzzyTime():
@@ -286,6 +300,7 @@ def testBaseCommon_FuzzyTime():
 
 # END Test testBaseCommon_FuzzyTime
 
+
 @pytest.mark.base
 def testBaseCommon_MakeFileNameSafe():
     """Test the fuzzyTime function.
@@ -296,6 +311,7 @@ def testBaseCommon_MakeFileNameSafe():
     assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
 
 # END Test testBaseCommon_MakeFileNameSafe
+
 
 @pytest.mark.core
 def testBaseCommon_RomanNumbers():

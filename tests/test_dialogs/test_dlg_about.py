@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – About Dialog Class Tester
 =======================================
@@ -32,12 +31,13 @@ keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
+
 @pytest.mark.gui
 def testDlgAbout_Dialog(qtbot, monkeypatch, nwGUI):
     """Test the full about dialogs.
     """
     # NW About
-    monkeypatch.setattr(GuiAbout, "exec_", lambda *args: None)
+    monkeypatch.setattr(GuiAbout, "exec_", lambda *a: None)
     nwGUI.mainMenu.aAboutNW.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiAbout") is not None, timeout=1000)
 
@@ -61,7 +61,7 @@ def testDlgAbout_Dialog(qtbot, monkeypatch, nwGUI):
     assert msgAbout.tabBox.currentWidget() == msgAbout.pageNotes
 
     # Qt About
-    monkeypatch.setattr(QMessageBox, "aboutQt", lambda *args, **kwargs: None)
+    monkeypatch.setattr(QMessageBox, "aboutQt", lambda *a, **k: None)
     nwGUI.mainMenu.aAboutQt.activate(QAction.Trigger)
 
     # qtbot.stopForInteraction()

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Index
 ===========================
@@ -38,6 +37,7 @@ from nw.constants import nwFiles, nwKeyWords, nwUnicode
 from nw.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
+
 
 class NWIndex():
 
@@ -482,10 +482,10 @@ class NWIndex():
         """Scan a line starting with @ to check that it's valid. Then
         split it up into its elements and positions as two arrays.
         """
-        theBits = [] # The elements of the string
-        thePos  = [] # The absolute position of each element
+        theBits = []  # The elements of the string
+        thePos  = []  # The absolute position of each element
 
-        aLine = aLine.rstrip() # Remove all trailing white spaces
+        aLine = aLine.rstrip()  # Remove all trailing white spaces
         nChar = len(aLine)
         if nChar < 2:
             return False, theBits, thePos
@@ -894,6 +894,7 @@ class NWIndex():
         return
 
 # END Class NWIndex
+
 
 # =============================================================================================== #
 #  Simple Word Counter

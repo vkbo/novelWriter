@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Markdown Text Converter
 =====================================
@@ -31,10 +30,11 @@ from nw.core.tokenizer import Tokenizer
 
 logger = logging.getLogger(__name__)
 
+
 class ToMarkdown(Tokenizer):
 
-    M_STD = 0 # Standard Markdown
-    M_GH  = 1 # GitHub Markdown
+    M_STD = 0  # Standard Markdown
+    M_GH  = 1  # GitHub Markdown
 
     def __init__(self, theProject):
         Tokenizer.__init__(self, theProject)
