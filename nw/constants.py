@@ -263,7 +263,7 @@ class nwUnicode:
     # Unicode Constants
     # =================
 
-    ## Quotation Marks
+    # Quotation Marks
     U_QUOT   = "\u0022" # Quotation mark
     U_APOS   = "\u0027" # Apostrophe
     U_LAQUO  = "\u00ab" # Left-pointing double angle quotation mark
@@ -284,7 +284,7 @@ class nwUnicode:
     U_LWCQUO = "\u300e" # Left white corner bracket
     U_RWCQUO = "\u300f" # Right white corner bracket
 
-    ## Punctuation
+    # Punctuation
     U_FGDASH = "\u2012" # Figure dash
     U_ENDASH = "\u2013" # Short dash
     U_EMDASH = "\u2014" # Long dash
@@ -294,7 +294,7 @@ class nwUnicode:
     U_PRIME  = "\u2032" # Prime
     U_DPRIME = "\u2033" # Double prime
 
-    ## Spaces and Lines
+    # Spaces and Lines
     U_NBSP   = "\u00a0" # Non-breaking space
     U_THSP   = "\u2009" # Thin space
     U_THNBSP = "\u202f" # Thin non-breaking space
@@ -303,7 +303,7 @@ class nwUnicode:
     U_LSEP   = "\u2028" # Line separator
     U_PSEP   = "\u2029" # Paragraph separator
 
-    ## Symbols
+    # Symbols
     U_CHECK  = "\u2714" # Heavy check mark
     U_CROSS  = "\u2715" # Heavy cross mark
     U_BULL   = "\u2022" # List bullet
@@ -316,7 +316,7 @@ class nwUnicode:
     U_TIMES  = "\u00d7" # Multiplaction sign
     U_DIVIDE = "\u00f7" # Division sign
 
-    ## Arrows
+    # Arrows
     U_UTRI   = "\u25b2" # Up-pointing triangle
     U_UTRIS  = "\u25b4" # Up-pointing triangle, small
     U_RTRI   = "\u25b6" # Right-pointing triangle
@@ -329,7 +329,7 @@ class nwUnicode:
     # HTML Equivalents
     # ================
 
-    ## Quotes
+    # Quotes
     H_QUOT   = "&quot;"
     H_APOS   = "&#39;"
     H_LAQUO  = "&laquo;"
@@ -350,7 +350,7 @@ class nwUnicode:
     H_LWCQUO = "&#12302;"
     H_RWCQUO = "&#12303;"
 
-    ## Punctuation
+    # Punctuation
     H_FGDASH = "&#8210;"
     H_ENDASH = "&ndash;"
     H_EMDASH = "&mdash;"
@@ -360,14 +360,14 @@ class nwUnicode:
     H_PRIME  = "&prime;"
     H_DPRIME = "&#8243;"
 
-    ## Spaces
+    # Spaces
     H_NBSP   = "&nbsp;"
     H_THSP   = "&thinsp;"
     H_THNBSP = "&#8239;"
     H_ENSP   = "&ensp;"
     H_EMSP   = "&emsp;"
 
-    ## Symbols
+    # Symbols
     H_CHECK  = "&#10004;"
     H_CROSS  = "&#10005;"
     H_BULL   = "&bull;"
@@ -380,7 +380,7 @@ class nwUnicode:
     H_TIMES  = "&times;"
     H_DIVIDE = "&divide;"
 
-    ## Arrows
+    # Arrows
     H_UTRI   = "&#9650;"
     H_UTRIS  = "&#9652;"
     H_RTRI   = "&#9654;"
@@ -396,7 +396,7 @@ class nwUnicode:
 class nwHtmlUnicode():
 
     U_TO_H = {
-        ## Quotes
+        # Quotes
         nwUnicode.U_QUOT   : nwUnicode.H_QUOT,
         nwUnicode.U_APOS   : nwUnicode.H_APOS,
         nwUnicode.U_LAQUO  : nwUnicode.H_LAQUO,
@@ -417,7 +417,7 @@ class nwHtmlUnicode():
         nwUnicode.U_LWCQUO : nwUnicode.H_LWCQUO,
         nwUnicode.U_RWCQUO : nwUnicode.H_RWCQUO,
 
-        ## Punctuation
+        # Punctuation
         nwUnicode.U_FGDASH : nwUnicode.H_FGDASH,
         nwUnicode.U_ENDASH : nwUnicode.H_ENDASH,
         nwUnicode.U_EMDASH : nwUnicode.H_EMDASH,
@@ -427,14 +427,14 @@ class nwHtmlUnicode():
         nwUnicode.U_PRIME  : nwUnicode.H_PRIME,
         nwUnicode.U_DPRIME : nwUnicode.H_DPRIME,
 
-        ## Spaces
+        # Spaces
         nwUnicode.U_NBSP   : nwUnicode.H_NBSP,
         nwUnicode.U_THSP   : nwUnicode.H_THSP,
         nwUnicode.U_THNBSP : nwUnicode.H_THNBSP,
         nwUnicode.U_ENSP   : nwUnicode.H_ENSP,
         nwUnicode.U_EMSP   : nwUnicode.H_EMSP,
 
-        ## Symbols
+        # Symbols
         nwUnicode.U_CHECK  : nwUnicode.H_CHECK,
         nwUnicode.U_CROSS  : nwUnicode.H_CROSS,
         nwUnicode.U_BULL   : nwUnicode.H_BULL,

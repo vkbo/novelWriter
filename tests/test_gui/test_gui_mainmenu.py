@@ -113,44 +113,45 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
     qtbot.wait(stepDelay)
 
     # Block Formats
+    # =============
     assert nwGUI.docEditor.setCursorPosition(30)
 
-    ## Header 1
+    # Header 1
     nwGUI.mainMenu.aFmtHead1.activate(QAction.Trigger)
     fmtStr = "# Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[27:76] == fmtStr
     qtbot.wait(stepDelay)
 
-    ## Header 2
+    # Header 2
     nwGUI.mainMenu.aFmtHead2.activate(QAction.Trigger)
     fmtStr = "## Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[27:77] == fmtStr
     qtbot.wait(stepDelay)
 
-    ## Header 3
+    # Header 3
     nwGUI.mainMenu.aFmtHead3.activate(QAction.Trigger)
     fmtStr = "### Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[27:78] == fmtStr
     qtbot.wait(stepDelay)
 
-    ## Header 4
+    # Header 4
     nwGUI.mainMenu.aFmtHead4.activate(QAction.Trigger)
     fmtStr = "#### Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[27:79] == fmtStr
     qtbot.wait(stepDelay)
 
-    ## Clear Format
+    # Clear Format
     nwGUI.mainMenu.aFmtNoFormat.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
     qtbot.wait(stepDelay)
 
-    ## Comment On
+    # Comment On
     nwGUI.mainMenu.aFmtComment.activate(QAction.Trigger)
     fmtStr = "% Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[27:76] == fmtStr
     qtbot.wait(stepDelay)
 
-    ## Comment Off
+    # Comment Off
     nwGUI.mainMenu.aFmtComment.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[27:74] == cleanText
     qtbot.wait(stepDelay)
@@ -228,41 +229,43 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docEditor.isEmpty()
 
     # Alignment & Indent
+    # ==================
+
     cleanText = "A single, short paragraph.\n\n"
     nwGUI.docEditor.setText(cleanText)
     assert nwGUI.docEditor.setCursorPosition(0)
 
-    ## Left Align
+    # Left Align
     nwGUI.mainMenu.aFmtAlignLeft.activate(QAction.Trigger)
     fmtStr = "A single, short paragraph. <<"
     assert nwGUI.docEditor.getText()[:29] == fmtStr
     qtbot.wait(stepDelay)
 
-    ## Right Align
+    # Right Align
     nwGUI.mainMenu.aFmtAlignRight.activate(QAction.Trigger)
     fmtStr = ">> A single, short paragraph."
     assert nwGUI.docEditor.getText()[:29] == fmtStr
     qtbot.wait(stepDelay)
 
-    ## Centre Align
+    # Centre Align
     nwGUI.mainMenu.aFmtAlignCentre.activate(QAction.Trigger)
     fmtStr = ">> A single, short paragraph. <<"
     assert nwGUI.docEditor.getText()[:32] == fmtStr
     qtbot.wait(stepDelay)
 
-    ## Left Indent
+    # Left Indent
     nwGUI.mainMenu.aFmtIndentLeft.activate(QAction.Trigger)
     fmtStr = "> A single, short paragraph."
     assert nwGUI.docEditor.getText()[:28] == fmtStr
     qtbot.wait(stepDelay)
 
-    ## Right Indent
+    # Right Indent
     nwGUI.mainMenu.aFmtIndentRight.activate(QAction.Trigger)
     fmtStr = "> A single, short paragraph. <"
     assert nwGUI.docEditor.getText()[:30] == fmtStr
     qtbot.wait(stepDelay)
 
-    ## No Format
+    # No Format
     nwGUI.mainMenu.aFmtNoFormat.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[:30] == cleanText
     qtbot.wait(stepDelay)

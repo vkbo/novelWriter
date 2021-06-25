@@ -107,7 +107,7 @@ class Tokenizer():
         self.doComments  = False   # Also process comments
         self.doKeywords  = False   # Also process keywords like tags and references
 
-        ## Margins
+        # Margins
         self.marginTitle = (1.000, 0.500)
         self.marginHead1 = (1.000, 0.500)
         self.marginHead2 = (0.834, 0.500)
@@ -116,7 +116,7 @@ class Tokenizer():
         self.marginText  = (0.000, 0.584)
         self.marginMeta  = (0.000, 0.584)
 
-        ## Title Formats
+        # Title Formats
         self.fmtTitle    = "%title%" # Formatting for titles
         self.fmtChapter  = "%title%" # Formatting for numbered chapters
         self.fmtUnNum    = "%title%" # Formatting for unnumbered chapters

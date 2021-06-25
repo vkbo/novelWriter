@@ -372,16 +372,17 @@ def testCoreItem_XMLPackUnpack(dummyGUI, caplog):
     assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
 
     # Errors
+    # ======
 
-    ## Not an Item
+    # Not an Item
     mockXml = etree.SubElement(nwXML, "stuff")
     assert theItem.unpackXML(mockXml) is False
 
-    ## Item without Handle
+    # Item without Handle
     mockXml = etree.SubElement(nwXML, "item", attrib={"stuff": "nah"})
     assert theItem.unpackXML(mockXml) is False
 
-    ## Item with Invalid SubElement is Accepted w/Error
+    # Item with Invalid SubElement is Accepted w/Error
     mockXml = etree.SubElement(nwXML, "item", attrib={"handle": "0123456789abc"})
     xParam = etree.SubElement(mockXml, "invalid")
     xParam.text = "stuff"

@@ -85,7 +85,7 @@ class Config:
         self.confChanged = False # True whenever the config has chenged, false after save
         self.hasHelp     = False # True if the Qt help files are present in the assets folder
 
-        ## General
+        # General
         self.guiTheme    = "default"
         self.guiSyntax   = "default_light"
         self.guiIcons    = "typicons_colour_light"
@@ -95,14 +95,14 @@ class Config:
         self.guiScale    = 1.0   # Set automatically by Theme class
         self.lastNotes   = "0x0" # The latest release notes that have been shown
 
-        ## Localisation
+        # Localisation
         self.qLocal     = QLocale.system()
         self.guiLang    = self.qLocal.name()
         self.qtLangPath = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
         self.nwLangPath = None
         self.qtTrans    = {}
 
-        ## Sizes
+        # Sizes
         self.winGeometry   = [1200, 650]
         self.prefGeometry  = [700, 615]
         self.treeColWidth  = [200, 50, 30]
@@ -114,15 +114,15 @@ class Config:
         self.outlnPanePos  = [500, 150]
         self.isFullScreen  = False
 
-        ## Features
+        # Features
         self.hideVScroll = False # Hide vertical scroll bars on main widgets
         self.hideHScroll = False # Hide horizontal scroll bars on main widgets
 
-        ## Project
+        # Project
         self.autoSaveProj = 60 # Interval for auto-saving project in seconds
         self.autoSaveDoc  = 30 # Interval for auto-saving document in seconds
 
-        ## Text Editor
+        # Text Editor
         self.textFont        = None  # Editor font
         self.textSize        = 12    # Editor font size
         self.textFixedW      = True  # Keep editor text fixed width
@@ -161,7 +161,7 @@ class Config:
         self.stopWhenIdle    = True  # Stop the status bar clock when the user is idle
         self.userIdleTime    = 300   # Time of inactivity to consider user idle
 
-        ## User-Selected Symbols
+        # User-Selected Symbols
         self.fmtApostrophe   = nwUnicode.U_RSQUO
         self.fmtSingleQuotes = [nwUnicode.U_LSQUO, nwUnicode.U_RSQUO]
         self.fmtDoubleQuotes = [nwUnicode.U_LDQUO, nwUnicode.U_RDQUO]
@@ -169,11 +169,11 @@ class Config:
         self.fmtPadAfter     = ""
         self.fmtPadThin      = False
 
-        ## Spell Checking
+        # Spell Checking
         self.spellTool     = None
         self.spellLanguage = None
 
-        ## Search Bar Switches
+        # Search Bar Switches
         self.searchCase     = False
         self.searchWord     = False
         self.searchRegEx    = False
@@ -181,12 +181,12 @@ class Config:
         self.searchNextFile = False
         self.searchMatchCap = False
 
-        ## Backup
+        # Backup
         self.backupPath      = ""
         self.backupOnClose   = False
         self.askBeforeBackup = True
 
-        ## State
+        # State
         self.showRefPanel = True
         self.viewComments = True
         self.viewSynopsis = True
@@ -445,7 +445,7 @@ class Config:
             self.errData.append(str(e))
             return False
 
-        ## Main
+        # Main
         cnfSec = "Main"
         self.guiTheme = self._parseLine(
             cnfParse, cnfSec, "theme", self.CNF_STR, self.guiTheme
@@ -472,7 +472,7 @@ class Config:
             cnfParse, cnfSec, "guilang", self.CNF_STR, self.guiLang
         )
 
-        ## Sizes
+        # Sizes
         cnfSec = "Sizes"
         self.winGeometry = self._parseLine(
             cnfParse, cnfSec, "geometry", self.CNF_I_LST, self.winGeometry
@@ -511,7 +511,7 @@ class Config:
             cnfParse, cnfSec, "hidehscroll", self.CNF_BOOL, self.hideHScroll
         )
 
-        ## Project
+        # Project
         cnfSec = "Project"
         self.autoSaveProj = self._parseLine(
             cnfParse, cnfSec, "autosaveproject", self.CNF_INT, self.autoSaveProj
@@ -520,7 +520,7 @@ class Config:
             cnfParse, cnfSec, "autosavedoc", self.CNF_INT, self.autoSaveDoc
         )
 
-        ## Editor
+        # Editor
         cnfSec = "Editor"
         self.textFont = self._parseLine(
             cnfParse, cnfSec, "textfont", self.CNF_STR, self.textFont
@@ -631,7 +631,7 @@ class Config:
             cnfParse, cnfSec, "useridletime", self.CNF_INT, self.userIdleTime
         )
 
-        ## Backup
+        # Backup
         cnfSec = "Backup"
         self.backupPath = self._parseLine(
             cnfParse, cnfSec, "backuppath", self.CNF_STR, self.backupPath
@@ -643,7 +643,7 @@ class Config:
             cnfParse, cnfSec, "askbeforebackup", self.CNF_BOOL, self.askBeforeBackup
         )
 
-        ## State
+        # State
         cnfSec = "State"
         self.showRefPanel = self._parseLine(
             cnfParse, cnfSec, "showrefpanel", self.CNF_BOOL, self.showRefPanel
@@ -673,7 +673,7 @@ class Config:
             cnfParse, cnfSec, "searchmatchcap", self.CNF_BOOL, self.searchMatchCap
         )
 
-        ## Path
+        # Path
         cnfSec = "Path"
         self.lastPath = self._parseLine(
             cnfParse, cnfSec, "lastpath", self.CNF_STR, self.lastPath
@@ -704,7 +704,7 @@ class Config:
 
         # Set options
 
-        ## Main
+        # Main
         cnfSec = "Main"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "timestamp",   formatTimeStamp(time()))
@@ -717,7 +717,7 @@ class Config:
         cnfParse.set(cnfSec, "lastnotes",   str(self.lastNotes))
         cnfParse.set(cnfSec, "guilang",     str(self.guiLang))
 
-        ## Sizes
+        # Sizes
         cnfSec = "Sizes"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "geometry",    self._packList(self.winGeometry))
@@ -733,13 +733,13 @@ class Config:
         cnfParse.set(cnfSec, "hidevscroll", str(self.hideVScroll))
         cnfParse.set(cnfSec, "hidehscroll", str(self.hideHScroll))
 
-        ## Project
+        # Project
         cnfSec = "Project"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "autosaveproject", str(self.autoSaveProj))
         cnfParse.set(cnfSec, "autosavedoc",     str(self.autoSaveDoc))
 
-        ## Editor
+        # Editor
         cnfSec = "Editor"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "textfont",        str(self.textFont))
@@ -779,14 +779,14 @@ class Config:
         cnfParse.set(cnfSec, "stopwhenidle",    str(self.stopWhenIdle))
         cnfParse.set(cnfSec, "useridletime",    str(self.userIdleTime))
 
-        ## Backup
+        # Backup
         cnfSec = "Backup"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "backuppath",      str(self.backupPath))
         cnfParse.set(cnfSec, "backuponclose",   str(self.backupOnClose))
         cnfParse.set(cnfSec, "askbeforebackup", str(self.askBeforeBackup))
 
-        ## State
+        # State
         cnfSec = "State"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "showrefpanel",    str(self.showRefPanel))
@@ -799,7 +799,7 @@ class Config:
         cnfParse.set(cnfSec, "searchnextfile",  str(self.searchNextFile))
         cnfParse.set(cnfSec, "searchmatchcap",  str(self.searchMatchCap))
 
-        ## Path
+        # Path
         cnfSec = "Path"
         cnfParse.add_section(cnfSec)
         cnfParse.set(cnfSec, "lastpath", str(self.lastPath))

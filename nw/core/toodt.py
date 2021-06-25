@@ -114,7 +114,7 @@ class ToOdt(Tokenizer):
         self._dLanguage   = "en"
         self._dCountry    = "GB"
 
-        ## Text Margings in Units of em
+        # Text Margings in Units of em
         self._mTopTitle = "0.423cm"
         self._mTopHead1 = "0.423cm"
         self._mTopHead2 = "0.353cm"
@@ -133,13 +133,13 @@ class ToOdt(Tokenizer):
         self._mBotText  = "0.247cm"
         self._mBotMeta  = "0.106cm"
 
-        ## Document Margins
+        # Document Margins
         self._mDocTop   = "2.000cm"
         self._mDocBtm   = "2.000cm"
         self._mDocLeft  = "2.000cm"
         self._mDocRight = "2.000cm"
 
-        ## Colour
+        # Colour
         self._colHead12 = None
         self._opaHead12 = None
         self._colHead34 = None

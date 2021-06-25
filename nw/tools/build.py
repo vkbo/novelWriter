@@ -215,7 +215,7 @@ class GuiBuildNovel(QDialog):
         self.fontForm  = QGridLayout(self)
         self.fontGroup.setLayout(self.fontForm)
 
-        ## Font Family
+        # Font Family
         self.textFont = QLineEdit()
         self.textFont.setReadOnly(True)
         self.textFont.setMinimumWidth(xFmt)
