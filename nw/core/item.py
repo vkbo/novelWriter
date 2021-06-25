@@ -67,9 +67,9 @@ class NWItem():
         """Packs all the data in the class instance into an XML object.
         """
         xPack = etree.SubElement(xParent, "item", attrib={
-            "handle" : str(self.itemHandle),
-            "order"  : str(self.itemOrder),
-            "parent" : str(self.itemParent),
+            "handle": str(self.itemHandle),
+            "order":  str(self.itemOrder),
+            "parent": str(self.itemParent),
         })
         self._subPack(xPack, "name",   text=str(self.itemName))
         self._subPack(xPack, "type",   text=str(self.itemType.name))

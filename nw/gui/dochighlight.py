@@ -106,27 +106,27 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self.colEmph = QColor(*self.theTheme.colEmph)
 
         self.hStyles = {
-            "header1"   : self._makeFormat(self.colHead, "bold", 1.8),
-            "header2"   : self._makeFormat(self.colHead, "bold", 1.6),
-            "header3"   : self._makeFormat(self.colHead, "bold", 1.4),
-            "header4"   : self._makeFormat(self.colHead, "bold", 1.2),
-            "header1h"  : self._makeFormat(self.colHeadH, "bold", 1.8),
-            "header2h"  : self._makeFormat(self.colHeadH, "bold", 1.6),
-            "header3h"  : self._makeFormat(self.colHeadH, "bold", 1.4),
-            "header4h"  : self._makeFormat(self.colHeadH, "bold", 1.2),
-            "bold"      : self._makeFormat(self.colEmph, "bold"),
-            "italic"    : self._makeFormat(self.colEmph, "italic"),
-            "strike"    : self._makeFormat(self.colHidden, "strike"),
-            "mspaces"   : self._makeFormat(self.colError, "errline"),
-            "nobreak"   : self._makeFormat(self.colBreak, "background"),
-            "dialogue1" : self._makeFormat(self.colDialN),
-            "dialogue2" : self._makeFormat(self.colDialD),
-            "dialogue3" : self._makeFormat(self.colDialS),
-            "replace"   : self._makeFormat(self.colRepTag),
-            "hidden"    : self._makeFormat(self.colHidden),
-            "keyword"   : self._makeFormat(self.colKey),
-            "modifier"  : self._makeFormat(self.colMod),
-            "value"     : self._makeFormat(self.colVal, "underline"),
+            "header1":   self._makeFormat(self.colHead, "bold", 1.8),
+            "header2":   self._makeFormat(self.colHead, "bold", 1.6),
+            "header3":   self._makeFormat(self.colHead, "bold", 1.4),
+            "header4":   self._makeFormat(self.colHead, "bold", 1.2),
+            "header1h":  self._makeFormat(self.colHeadH, "bold", 1.8),
+            "header2h":  self._makeFormat(self.colHeadH, "bold", 1.6),
+            "header3h":  self._makeFormat(self.colHeadH, "bold", 1.4),
+            "header4h":  self._makeFormat(self.colHeadH, "bold", 1.2),
+            "bold":      self._makeFormat(self.colEmph, "bold"),
+            "italic":    self._makeFormat(self.colEmph, "italic"),
+            "strike":    self._makeFormat(self.colHidden, "strike"),
+            "mspaces":   self._makeFormat(self.colError, "errline"),
+            "nobreak":   self._makeFormat(self.colBreak, "background"),
+            "dialogue1": self._makeFormat(self.colDialN),
+            "dialogue2": self._makeFormat(self.colDialD),
+            "dialogue3": self._makeFormat(self.colDialS),
+            "replace":   self._makeFormat(self.colRepTag),
+            "hidden":    self._makeFormat(self.colHidden),
+            "keyword":   self._makeFormat(self.colKey),
+            "modifier":  self._makeFormat(self.colMod),
+            "value":     self._makeFormat(self.colVal, "underline"),
         }
 
         self.hRules = []
@@ -135,14 +135,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         if self.mainConf.showMultiSpaces:
             self.hRules.append((
                 r"[ ]{2,}|[ ]*$", {
-                    0 : self.hStyles["mspaces"],
+                    0: self.hStyles["mspaces"],
                 }
             ))
 
         # Non-Breaking Spaces
         self.hRules.append((
             "[%s%s]+" % (nwUnicode.U_NBSP, nwUnicode.U_THNBSP), {
-                0 : self.hStyles["nobreak"],
+                0: self.hStyles["nobreak"],
             }
         ))
 
@@ -155,7 +155,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             if fmtDbl != ["\"", "\""]:
                 self.hRules.append((
                     "(\\B\")(.*?)(\"\\B)", {
-                        0 : self.hStyles["dialogue1"],
+                        0: self.hStyles["dialogue1"],
                     }
                 ))
 
@@ -163,7 +163,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             dblEnd = "|$" if self.mainConf.allowOpenDQuote else ""
             self.hRules.append((
                 f"(\\B{fmtDbl[0]})(.*?)({fmtDbl[1]}\\B{dblEnd})", {
-                    0 : self.hStyles["dialogue2"],
+                    0: self.hStyles["dialogue2"],
                 }
             ))
 
@@ -171,44 +171,44 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             sngEnd = "|$" if self.mainConf.allowOpenSQuote else ""
             self.hRules.append((
                 f"(\\B{fmtSng[0]})(.*?)({fmtSng[1]}\\B{sngEnd})", {
-                    0 : self.hStyles["dialogue3"],
+                    0: self.hStyles["dialogue3"],
                 }
             ))
 
         # Markdown Syntax
         self.hRules.append((
             nwRegEx.FMT_EI, {
-                1 : self.hStyles["hidden"],
-                2 : self.hStyles["italic"],
-                3 : self.hStyles["hidden"],
+                1: self.hStyles["hidden"],
+                2: self.hStyles["italic"],
+                3: self.hStyles["hidden"],
             }
         ))
         self.hRules.append((
             nwRegEx.FMT_EB, {
-                1 : self.hStyles["hidden"],
-                2 : self.hStyles["bold"],
-                3 : self.hStyles["hidden"],
+                1: self.hStyles["hidden"],
+                2: self.hStyles["bold"],
+                3: self.hStyles["hidden"],
             }
         ))
         self.hRules.append((
             nwRegEx.FMT_ST, {
-                1 : self.hStyles["hidden"],
-                2 : self.hStyles["strike"],
-                3 : self.hStyles["hidden"],
+                1: self.hStyles["hidden"],
+                2: self.hStyles["strike"],
+                3: self.hStyles["hidden"],
             }
         ))
 
         # Alignment Tags
         self.hRules.append((
             r"(^>{1,2}|<{1,2}$)", {
-                1 : self.hStyles["hidden"],
+                1: self.hStyles["hidden"],
             }
         ))
 
         # Auto-Replace Tags
         self.hRules.append((
             r"<(\S+?)>", {
-                0 : self.hStyles["replace"],
+                0: self.hStyles["replace"],
             }
         ))
 

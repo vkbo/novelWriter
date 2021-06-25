@@ -183,11 +183,11 @@ class NWIndex():
         try:
             with open(indexFile, mode="w+", encoding="utf8") as outFile:
                 json.dump({
-                    "tagIndex"   : self._tagIndex,
-                    "refIndex"   : self._refIndex,
-                    "novelIndex" : self._novelIndex,
-                    "noteIndex"  : self._noteIndex,
-                    "textCounts" : self._textCounts,
+                    "tagIndex":   self._tagIndex,
+                    "refIndex":   self._refIndex,
+                    "novelIndex": self._novelIndex,
+                    "noteIndex":  self._noteIndex,
+                    "textCounts": self._textCounts,
                 }, outFile, indent=2)
         except Exception:
             logger.error("Failed to save index file")
@@ -272,8 +272,8 @@ class NWIndex():
         # Also add a default entry T000000 in case the file has no title
         self._refIndex[tHandle] = {}
         self._refIndex[tHandle]["T000000"] = {
-            "tags"    : [],
-            "updated" : round(time()),
+            "tags": [],
+            "updated": round(time()),
         }
         if itemLayout == nwItemLayout.NOTE:
             self._novelIndex.pop(tHandle, None)
@@ -367,18 +367,18 @@ class NWIndex():
 
         sTitle = "T%06d" % nLine
         self._refIndex[tHandle][sTitle] = {
-            "tags"    : [],
-            "updated" : round(time()),
+            "tags": [],
+            "updated": round(time()),
         }
         theData = {
-            "level"    : hDepth,
-            "title"    : hText,
-            "layout"   : itemLayout.name,
-            "synopsis" : "",
-            "cCount"   : 0,
-            "wCount"   : 0,
-            "pCount"   : 0,
-            "updated"  : round(time()),
+            "level": hDepth,
+            "title": hText,
+            "layout": itemLayout.name,
+            "synopsis": "",
+            "cCount": 0,
+            "wCount": 0,
+            "pCount": 0,
+            "updated": round(time()),
         }
 
         if hText != "":
@@ -395,14 +395,14 @@ class NWIndex():
         """Index a page with no title.
         """
         theData = {
-            "level"    : "H0",
-            "title"    : "Untitled Page",
-            "layout"   : itemLayout.name,
-            "synopsis" : "",
-            "cCount"   : 0,
-            "wCount"   : 0,
-            "pCount"   : 0,
-            "updated"  : round(time()),
+            "level": "H0",
+            "title": "Untitled Page",
+            "layout": itemLayout.name,
+            "synopsis": "",
+            "cCount": 0,
+            "wCount": 0,
+            "pCount": 0,
+            "updated": round(time()),
         }
 
         if isNovel:

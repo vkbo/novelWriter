@@ -409,8 +409,8 @@ def testCoreToHtml_Complex(dummyGUI, fncDir):
         "</body>\n"
         "</html>\n"
     ).format(
-        htmlStyle = "\n".join(theStyle),
-        bodyText = "".join(resText).rstrip()
+        htmlStyle="\n".join(theStyle),
+        bodyText="".join(resText).rstrip()
     )
 
     saveFile = os.path.join(fncDir, "outFile.htm")

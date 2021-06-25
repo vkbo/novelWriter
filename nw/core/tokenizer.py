@@ -341,9 +341,9 @@ class Tokenizer():
         does the standard escaped characters.
         """
         escapeDict = {
-            r"\*" : "*",
-            r"\~" : "~",
-            r"\_" : "_",
+            r"\*": "*",
+            r"\~": "~",
+            r"\_": "_",
         }
         escReplace = re.compile(
             "|".join([re.escape(k) for k in escapeDict.keys()]), flags=re.DOTALL

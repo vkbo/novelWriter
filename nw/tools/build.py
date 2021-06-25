@@ -930,11 +930,11 @@ class GuiBuildNovel(QDialog):
 
         elif theFmt == self.FMT_JSON_H or theFmt == self.FMT_JSON_M:
             jsonData = {
-                "meta" : {
-                    "workingTitle" : self.theProject.projName,
-                    "novelTitle"   : self.theProject.bookTitle,
-                    "authors"      : self.theProject.bookAuthors,
-                    "buildTime"    : self.buildTime,
+                "meta": {
+                    "workingTitle": self.theProject.projName,
+                    "novelTitle": self.theProject.bookTitle,
+                    "authors": self.theProject.bookAuthors,
+                    "buildTime": self.buildTime,
                 }
             }
 
@@ -948,8 +948,8 @@ class GuiBuildNovel(QDialog):
                 for htmlPage in makeHtml.fullHTML:
                     theBody.append(htmlPage.rstrip("\n").split("\n"))
                 jsonData["text"] = {
-                    "css"  : self.htmlStyle,
-                    "html" : theBody,
+                    "css": self.htmlStyle,
+                    "html": theBody,
                 }
 
             elif theFmt == self.FMT_JSON_M:
@@ -963,7 +963,7 @@ class GuiBuildNovel(QDialog):
                 for nwdPage in makeMd.theMarkdown:
                     theBody.append(nwdPage.split("\n"))
                 jsonData["text"] = {
-                    "nwd" : theBody,
+                    "nwd": theBody,
                 }
 
             try:
@@ -1076,9 +1076,9 @@ class GuiBuildNovel(QDialog):
         try:
             with open(buildCache, mode="w+", encoding="utf8") as outFile:
                 outFile.write(json.dumps({
-                    "buildTime" : self.buildTime,
-                    "htmlStyle" : self.htmlStyle,
-                    "htmlText"  : self.htmlText,
+                    "buildTime": self.buildTime,
+                    "htmlStyle": self.htmlStyle,
+                    "htmlText": self.htmlText,
                 }, indent=2))
         except Exception:
             logger.error("Failed to save build cache")
@@ -1116,11 +1116,11 @@ class GuiBuildNovel(QDialog):
 
         # Formatting
         self.theProject.setTitleFormat({
-            "title"      : self.fmtTitle.text().strip(),
-            "chapter"    : self.fmtChapter.text().strip(),
-            "unnumbered" : self.fmtUnnumbered.text().strip(),
-            "scene"      : self.fmtScene.text().strip(),
-            "section"    : self.fmtSection.text().strip(),
+            "title":      self.fmtTitle.text().strip(),
+            "chapter":    self.fmtChapter.text().strip(),
+            "unnumbered": self.fmtUnnumbered.text().strip(),
+            "scene":      self.fmtScene.text().strip(),
+            "section":    self.fmtSection.text().strip(),
         })
 
         buildLang    = self.buildLang.currentData()

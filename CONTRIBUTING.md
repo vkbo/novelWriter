@@ -98,16 +98,13 @@ Some `flake8` error codes are ignored for this project for various reasons. The 
 camelCase function and variable names. This is the standard for the Qt libraries novelWriter
 integrates with. It also happens to be the author's personal preferences. (Yay!)
 
-The reason behind the other ignored error codes are listed below. Most of them are due to PEP8 not
+The reason behind the other ignored error codes are listed below. Two of them are due to PEP8 not
 permitting column alignment as opposed to many other coding styles, like for instance for Go. I
 find them useful in regions of bulk value assignments. There's a reason why tables are more
 readable than lists. They should be used sparingly though.
 
 The ignored errors are all `pycodestyle` errors, and they are documented
 [here](https://pycodestyle.pycqa.org/en/latest/intro.html#error-codes).
-
-**E203:** whitespace before ‘:’  
-**Reason:** Column alignment.
 
 **E221:** multiple spaces before operator  
 **Reason:** Column alignment.
@@ -124,7 +121,4 @@ strings. Use formatting instead.
 **Reason:** See reason for E226. Formatting `%` like `/` and `*` should be possible.
 
 **E241:** multiple spaces after ‘,’  
-**Reason:** Column alignment.
-
-**E251:** unexpected spaces around keyword / parameter equals  
 **Reason:** Column alignment.

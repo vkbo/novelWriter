@@ -223,7 +223,7 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Font family"),
             self.guiFont,
             self.tr("Changing this requires restarting novelWriter."),
-            theButton = self.fontButton
+            theButton=self.fontButton
         )
 
         # Font Size
@@ -236,7 +236,7 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Font size"),
             self.guiFontSize,
             self.tr("Changing this requires restarting novelWriter."),
-            theUnit = self.tr("pt")
+            theUnit=self.tr("pt")
         )
 
         # GUI Settings
@@ -512,7 +512,7 @@ class GuiPreferencesDocuments(QWidget):
             self.tr("Font family"),
             self.textFont,
             self.tr("Font for the document editor and viewer."),
-            theButton = self.fontButton
+            theButton=self.fontButton
         )
 
         # Font Size
@@ -525,7 +525,7 @@ class GuiPreferencesDocuments(QWidget):
             self.tr("Font size"),
             self.textSize,
             self.tr("Font size for the document editor and viewer."),
-            theUnit = self.tr("pt")
+            theUnit=self.tr("pt")
         )
 
         # Text Flow
@@ -788,7 +788,7 @@ class GuiPreferencesEditor(QWidget):
             self.tr("Minimum position for Typewriter scrolling"),
             self.autoScrollPos,
             self.tr("Percentage of the editor height from the top."),
-            theUnit = "%"
+            theUnit="%"
         )
 
         return

@@ -38,12 +38,12 @@ logger = logging.getLogger(__name__)
 
 # Main XML NameSpaces
 XML_NS = {
-    "office" : "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
-    "style"  : "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
-    "loext"  : "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
-    "text"   : "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
-    "meta"   : "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
-    "fo"     : "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
+    "office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
+    "style":  "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
+    "loext":  "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
+    "text":   "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
+    "meta":   "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
+    "fo":     "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
 }
 
 # Mimetype and Version
@@ -318,12 +318,12 @@ class ToOdt(Tokenizer):
         self.theResult = ""  # Not used, but cleared just in case
 
         odtTags = {
-            self.FMT_B_B : "_B",  # Bold open format
-            self.FMT_B_E : "b_",  # Bold close format
-            self.FMT_I_B : "I",   # Italic open format
-            self.FMT_I_E : "i",   # Italic close format
-            self.FMT_D_B : "_S",  # Strikethrough open format
-            self.FMT_D_E : "s_",  # Strikethrough close format
+            self.FMT_B_B: "_B",  # Bold open format
+            self.FMT_B_E: "b_",  # Bold close format
+            self.FMT_I_B: "I",   # Italic open format
+            self.FMT_I_E: "i",   # Italic close format
+            self.FMT_D_B: "_S",  # Strikethrough open format
+            self.FMT_D_E: "s_",  # Strikethrough close format
         }
 
         thisPar = []
@@ -450,16 +450,16 @@ class ToOdt(Tokenizer):
         with open(savePath, mode="wb") as outFile:
             outFile.write(etree.tostring(
                 self._dFlat,
-                pretty_print = True,
-                encoding = "utf-8",
-                xml_declaration = True
+                pretty_print=True,
+                encoding="utf-8",
+                xml_declaration=True
             ))
         return
 
     def saveOpenDocText(self, savePath):
         """Save the data to an .odt file.
         """
-        mMap = {"manifest" : "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"}
+        mMap = {"manifest": "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"}
         mMani = "{%s}manifest" % mMap["manifest"]
         mVers = "{%s}version" % mMap["manifest"]
         mPath = "{%s}full-path" % mMap["manifest"]
@@ -473,7 +473,7 @@ class ToOdt(Tokenizer):
         etree.SubElement(xMani, mFile, attrib={mPath: "meta.xml", mType: "text/xml"})
         etree.SubElement(xMani, mFile, attrib={mPath: "styles.xml", mType: "text/xml"})
 
-        sMap = {"office" : "urn:oasis:names:tc:opendocument:xmlns:office:1.0"}
+        sMap = {"office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0"}
         oRoot = "{%s}document-settings" % sMap["office"]
         oSett = "{%s}settings" % sMap["office"]
         xSett = etree.Element(oRoot, nsmap=sMap)
