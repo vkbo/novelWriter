@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Enums
 ===================
@@ -26,6 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from enum import Enum
 
+
 class nwItemType(Enum):
 
     NO_TYPE = 0
@@ -35,6 +35,7 @@ class nwItemType(Enum):
     TRASH   = 4
 
 # END Enum nwItemType
+
 
 class nwItemClass(Enum):
 
@@ -52,6 +53,7 @@ class nwItemClass(Enum):
 
 # END Enum nwItemClass
 
+
 class nwItemLayout(Enum):
 
     NO_LAYOUT  = 0
@@ -65,6 +67,7 @@ class nwItemLayout(Enum):
     NOTE       = 8
 
 # END Enum nwItemLayout
+
 
 class nwDocAction(Enum):
 
@@ -98,6 +101,7 @@ class nwDocAction(Enum):
 
 # END Enum nwDocAction
 
+
 class nwDocInsert(Enum):
 
     NO_INSERT  = 0
@@ -108,6 +112,7 @@ class nwDocInsert(Enum):
 
 # END Enum nwDocInsert
 
+
 class nwAlert(Enum):
 
     INFO  = 0
@@ -117,6 +122,7 @@ class nwAlert(Enum):
 
 # END Enum nwAlert
 
+
 class nwState(Enum):
 
     NONE = 0
@@ -124,6 +130,7 @@ class nwState(Enum):
     GOOD = 2
 
 # END Enum nwState
+
 
 class nwWidget(Enum):
 
@@ -133,6 +140,7 @@ class nwWidget(Enum):
     OUTLINE = 4
 
 # END Enum nwWidget
+
 
 class nwOutline(Enum):
 

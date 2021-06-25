@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Index
 ===========================
@@ -38,6 +37,7 @@ from nw.constants import nwFiles, nwKeyWords, nwUnicode
 from nw.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
+
 
 class NWIndex():
 
@@ -894,6 +894,7 @@ class NWIndex():
         return
 
 # END Class NWIndex
+
 
 # =============================================================================================== #
 #  Simple Word Counter

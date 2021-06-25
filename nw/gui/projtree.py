@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Project Tree
 ==============================
@@ -41,6 +40,7 @@ from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from nw.constants import nwConst, trConst, nwLists, nwLabels
 
 logger = logging.getLogger(__name__)
+
 
 class GuiProjectTree(QTreeWidget):
 
@@ -1101,6 +1101,7 @@ class GuiProjectTree(QTreeWidget):
         return
 
 # END Class GuiProjectTree
+
 
 class GuiProjectTreeMenu(QMenu):
 

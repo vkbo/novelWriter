@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – ODT Text Converter
 ================================
@@ -56,6 +55,7 @@ TAG_BR   = "{%s}line-break" % XML_NS["text"]
 TAG_TAB  = "{%s}tab" % XML_NS["text"]
 TAG_SPAN = "{%s}span" % XML_NS["text"]
 TAG_STNM = "{%s}style-name" % XML_NS["text"]
+
 
 class ToOdt(Tokenizer):
 
@@ -985,6 +985,7 @@ class ToOdt(Tokenizer):
 
 # END Class ToOdt
 
+
 # =============================================================================================== #
 #  Auto-Style Classes
 # =============================================================================================== #
@@ -1212,6 +1213,7 @@ class ODTParagraphStyle():
 
 # END Class ODTParagraphStyle
 
+
 class ODTTextStyle():
     """Wrapper class for the text style setting used by the exporter.
     Only the used settings are exposed here to keep the class minimal
@@ -1281,6 +1283,7 @@ class ODTTextStyle():
         return
 
 # END Class ODTTextStyle
+
 
 # =============================================================================================== #
 #  Local Functions

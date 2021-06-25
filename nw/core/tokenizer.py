@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Text Tokenizer
 ============================
@@ -39,6 +38,7 @@ from nw.constants import nwConst, nwRegEx, nwUnicode
 from nw.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
+
 
 class Tokenizer():
 

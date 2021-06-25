@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Document Editor
 =================================
@@ -56,6 +55,7 @@ from nw.constants import nwConst, trConst, nwKeyWords, nwLabels, nwUnicode
 from nw.gui.dochighlight import GuiDocHighlighter
 
 logger = logging.getLogger(__name__)
+
 
 class GuiDocEditor(QTextEdit):
 
@@ -1931,6 +1931,7 @@ class GuiDocEditor(QTextEdit):
 
 # END Class GuiDocEditor
 
+
 # =============================================================================================== #
 #  The Off-GUI Thread Word Counter
 #  A runnable for the word counter to be run in the thread pool off the main GUI thread.
@@ -1962,6 +1963,7 @@ class BackgroundWordCounter(QRunnable):
 
 ## END Class BackgroundWordCounter
 
+
 class BackgroundWordCounterSignals(QObject):
     """The QRunnable cannot emit a signal, so we need a simple QObject
     to hold the word counter signal.
@@ -1969,6 +1971,7 @@ class BackgroundWordCounterSignals(QObject):
     countsReady = pyqtSignal(int, int, int)
 
 # END Class BackgroundWordCounterSignals
+
 
 # =============================================================================================== #
 #  The Embedded Document Search/Replace Feature
@@ -2345,6 +2348,7 @@ class GuiDocEditSearch(QFrame):
 
 # END Class GuiDocEditSearch
 
+
 # =============================================================================================== #
 #  The Embedded Document Header
 #  Only used by DocEditor, and is at a fixed position in the QTextEdit's viewport
@@ -2566,6 +2570,7 @@ class GuiDocEditHeader(QWidget):
         return
 
 # END Class GuiDocEditHeader
+
 
 # =============================================================================================== #
 #  The Embedded Document Footer

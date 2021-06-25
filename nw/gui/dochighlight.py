@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Syntax Highlighter
 ====================================
@@ -37,6 +36,7 @@ from PyQt5.QtGui import (
 from nw.constants import nwRegEx, nwUnicode
 
 logger = logging.getLogger(__name__)
+
 
 class GuiDocHighlighter(QSyntaxHighlighter):
 

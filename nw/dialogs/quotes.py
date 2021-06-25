@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Quotes Dialog
 ===============================
@@ -37,6 +36,7 @@ from PyQt5.QtWidgets import (
 from nw.constants import trConst, nwQuotes
 
 logger = logging.getLogger(__name__)
+
 
 class GuiQuoteSelect(QDialog):
 

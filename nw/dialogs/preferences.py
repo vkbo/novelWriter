@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Preferences
 =============================
@@ -42,6 +41,7 @@ from nw.gui.custom import QSwitch, QConfigLayout, PagedDialog
 from nw.dialogs.quotes import GuiQuoteSelect
 
 logger = logging.getLogger(__name__)
+
 
 class GuiPreferences(PagedDialog):
 
@@ -133,6 +133,7 @@ class GuiPreferences(PagedDialog):
         return
 
 # END Class GuiPreferences
+
 
 class GuiPreferencesGeneral(QWidget):
 
@@ -319,6 +320,7 @@ class GuiPreferencesGeneral(QWidget):
 
 # END Class GuiPreferencesGeneral
 
+
 class GuiPreferencesProjects(QWidget):
 
     def __init__(self, theParent):
@@ -478,6 +480,7 @@ class GuiPreferencesProjects(QWidget):
         return
 
 # END Class GuiPreferencesProjects
+
 
 class GuiPreferencesDocuments(QWidget):
 
@@ -648,6 +651,7 @@ class GuiPreferencesDocuments(QWidget):
         return
 
 # END Class GuiPreferencesDocuments
+
 
 class GuiPreferencesEditor(QWidget):
 
@@ -849,6 +853,7 @@ class GuiPreferencesEditor(QWidget):
 
 # END Class GuiPreferencesEditor
 
+
 class GuiPreferencesSyntax(QWidget):
 
     def __init__(self, theParent):
@@ -972,6 +977,7 @@ class GuiPreferencesSyntax(QWidget):
         return
 
 # END Class GuiPreferencesSyntax
+
 
 class GuiPreferencesAutomation(QWidget):
 
@@ -1128,6 +1134,7 @@ class GuiPreferencesAutomation(QWidget):
         return
 
 # END Class GuiPreferencesAutomation
+
 
 class GuiPreferencesQuotes(QWidget):
 

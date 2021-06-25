@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Constants
 =======================
@@ -28,10 +27,12 @@ from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
 from nw.enum import nwItemClass, nwItemLayout, nwItemType, nwOutline
 
+
 def trConst(tString):
     """Wrapper function for locally translating constants.
     """
     return QCoreApplication.translate("Constant", tString)
+
 
 class nwConst():
 
@@ -51,6 +52,7 @@ class nwConst():
 
 # END Class nwConst
 
+
 class nwLists():
     """Lists used for grouping various other constants.
     """
@@ -65,6 +67,7 @@ class nwLists():
 
 # END Class nwLists
 
+
 class nwRegEx():
 
     FMT_EI = r"(?<![\w\\])(_)(?![\s_])(.+?)(?<![\s\\])(\1)(?!\w)"
@@ -72,6 +75,7 @@ class nwRegEx():
     FMT_ST = r"(?<![\w\\])([~]{2})(?![\s~])(.+?)(?<![\s\\])(\1)(?!\w)"
 
 # END Class nwRegEx
+
 
 class nwFiles():
 
@@ -86,6 +90,7 @@ class nwFiles():
     BUILD_CACHE = "prevBuild.json"
 
 # END Class nwFiles
+
 
 class nwKeyWords:
 
@@ -120,6 +125,7 @@ class nwKeyWords:
     }
 
 # END Class nwKeyWords
+
 
 class nwLabels():
 
@@ -218,6 +224,7 @@ class nwLabels():
 
 # END Class nwLabels
 
+
 class nwQuotes():
     """Allowed quotation marks.
     Source: https://en.wikipedia.org/wiki/Quotation_mark
@@ -248,6 +255,7 @@ class nwQuotes():
     }
 
 # END Class nwQuotes
+
 
 class nwUnicode:
     """Supported unicode character constants and their HTML equivalents.
@@ -383,6 +391,7 @@ class nwUnicode:
     H_LTRIS  = "&#9666;"
 
 # END Class nwUnicode
+
 
 class nwHtmlUnicode():
 

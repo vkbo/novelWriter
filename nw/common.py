@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Common Functions
 ==============================
@@ -36,6 +35,7 @@ from nw.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
 
+
 def checkString(value, default, allowNone=False):
     """Check if a variable is a string or a none.
     """
@@ -47,6 +47,7 @@ def checkString(value, default, allowNone=False):
     if isinstance(value, str):
         return str(value)
     return default
+
 
 def checkInt(value, default, allowNone=False):
     """Check if a variable is an integer or a none.
@@ -60,6 +61,7 @@ def checkInt(value, default, allowNone=False):
         return int(value)
     except Exception:
         return default
+
 
 def checkBool(value, default, allowNone=False):
     """Check if a variable is a boolean or a none.
@@ -85,6 +87,7 @@ def checkBool(value, default, allowNone=False):
             return default
     return default
 
+
 def checkHandle(value, default, allowNone=False):
     """Check if a value is a handle.
     """
@@ -96,6 +99,7 @@ def checkHandle(value, default, allowNone=False):
     if isHandle(value):
         return str(value)
     return default
+
 
 def isHandle(theString):
     """Check if a string is a valid novelWriter handle.
@@ -109,6 +113,7 @@ def isHandle(theString):
         if c not in "0123456789abcdef":
             return False
     return True
+
 
 def isTitleTag(theString):
     """Check if a string is a valid title string.
@@ -124,20 +129,24 @@ def isTitleTag(theString):
             return False
     return True
 
+
 def isItemClass(theString):
     """Check if an item is a calid nwItemClass identifier.
     """
     return theString in nwItemClass.__members__
+
 
 def isItemType(theString):
     """Check if an item is a calid nwItemType identifier.
     """
     return theString in nwItemType.__members__
 
+
 def isItemLayout(theString):
     """Check if an item is a calid nwItemLayout identifier.
     """
     return theString in nwItemLayout.__members__
+
 
 def hexToInt(value, default=0):
     """Convert a hex string to an integer.
@@ -148,6 +157,7 @@ def hexToInt(value, default=0):
         except Exception:
             return default
     return default
+
 
 def formatInt(theInt):
     """Formats an integer with k, M, G etc.
@@ -168,6 +178,7 @@ def formatInt(theInt):
 
     return str(theInt)
 
+
 def formatTimeStamp(theTime, fileSafe=False):
     """Take a number (on the format returned by time.time()) and convert
     it to a timestamp string.
@@ -176,6 +187,7 @@ def formatTimeStamp(theTime, fileSafe=False):
         return datetime.fromtimestamp(theTime).strftime(nwConst.FMT_FSTAMP)
     else:
         return datetime.fromtimestamp(theTime).strftime(nwConst.FMT_TSTAMP)
+
 
 def formatTime(tS):
     """Format a time in seconds in HH:MM:SS format or d-HH:MM:SS format
@@ -187,6 +199,7 @@ def formatTime(tS):
         else:
             return f"{tS//3600:02d}:{tS%3600//60:02d}:{tS%60:02d}"
     return "ERROR"
+
 
 def splitVersionNumber(vString):
     """ Splits a version string on the form aa.bb.cc into major, minor
@@ -211,6 +224,7 @@ def splitVersionNumber(vString):
 
     return [vMajor, vMinor, vPatch, vInt]
 
+
 def transferCase(theSource, theTarget):
     """Transfers the case of the source word to the target word. This
     will consider all upper or lower, and first char capitalisation.
@@ -231,6 +245,7 @@ def transferCase(theSource, theTarget):
         theResult = theTarget.lower()
 
     return theResult
+
 
 def fuzzyTime(secDiff):
     """Converts a time difference in seconds into a fuzzy time string.
@@ -292,6 +307,7 @@ def fuzzyTime(secDiff):
             "Common", "{0} years ago"
         ).format(int(round(secDiff/31557600)))
 
+
 def makeFileNameSafe(theText):
     """Returns a filename safe version of the text.
     """
@@ -301,6 +317,7 @@ def makeFileNameSafe(theText):
             cleanName += c
     return cleanName
 
+
 def getGuiItem(theName):
     """Returns a QtWidget based on its objectName.
     """
@@ -308,6 +325,7 @@ def getGuiItem(theName):
         if qWidget.objectName() == theName:
             return qWidget
     return None
+
 
 def numberToRoman(numVal, isLower=False):
     """Convert an integer to a roman number.

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Build Novel Project
 =====================================
@@ -51,6 +50,7 @@ from nw.constants import nwConst, nwFiles
 from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
+
 
 class GuiBuildNovel(QDialog):
 
@@ -1181,6 +1181,7 @@ class GuiBuildNovel(QDialog):
         return theFormat
 
 # END Class GuiBuildNovel
+
 
 class GuiBuildNovelDocView(QTextBrowser):
 

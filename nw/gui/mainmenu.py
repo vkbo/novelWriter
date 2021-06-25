@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Main Menu
 ===========================
@@ -35,6 +34,7 @@ from nw.enum import nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwWidget
 from nw.constants import trConst, nwKeyWords, nwLabels, nwUnicode
 
 logger = logging.getLogger(__name__)
+
 
 class GuiMainMenu(QMenuBar):
 

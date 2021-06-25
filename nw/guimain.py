@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Main Window
 =============================
@@ -54,6 +53,7 @@ from nw.common import getGuiItem, hexToInt
 from nw.constants import nwLists
 
 logger = logging.getLogger(__name__)
+
 
 class GuiMain(QMainWindow):
 

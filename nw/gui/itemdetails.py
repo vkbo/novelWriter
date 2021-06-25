@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Item Details Panel
 ====================================
@@ -35,6 +34,7 @@ from nw.enum import nwItemClass, nwItemType, nwItemLayout
 from nw.constants import trConst, nwLabels
 
 logger = logging.getLogger(__name__)
+
 
 class GuiItemDetails(QWidget):
 

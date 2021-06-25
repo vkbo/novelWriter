@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Writing Statistics
 ====================================
@@ -44,6 +43,7 @@ from nw.constants import nwConst, nwFiles
 from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
+
 
 class GuiWritingStats(QDialog):
 

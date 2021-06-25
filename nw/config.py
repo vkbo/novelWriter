@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Config Class
 ==========================
@@ -44,6 +43,7 @@ from nw.common import splitVersionNumber, formatTimeStamp
 from nw.constants import nwConst, nwFiles, nwUnicode
 
 logger = logging.getLogger(__name__)
+
 
 class Config:
 

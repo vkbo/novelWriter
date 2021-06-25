@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Item Class
 ================================
@@ -32,6 +31,7 @@ from nw.enum import nwItemType, nwItemClass, nwItemLayout
 from nw.common import checkInt, isHandle, isItemClass, isItemLayout, isItemType
 
 logger = logging.getLogger(__name__)
+
 
 class NWItem():
 

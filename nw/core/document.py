@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Document
 ==============================
@@ -31,6 +30,7 @@ from nw.enum import nwItemLayout, nwItemClass
 from nw.common import isHandle
 
 logger = logging.getLogger(__name__)
+
 
 class NWDoc():
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Wrapper
 =============================
@@ -49,6 +48,7 @@ from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from nw.constants import trConst, nwFiles, nwLabels
 
 logger = logging.getLogger(__name__)
+
 
 class NWProject():
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – HTML Text Converter
 =================================
@@ -30,6 +29,7 @@ from nw.core.tokenizer import Tokenizer
 from nw.constants import nwKeyWords, nwLabels, nwHtmlUnicode
 
 logger = logging.getLogger(__name__)
+
 
 class ToHtml(Tokenizer):
 

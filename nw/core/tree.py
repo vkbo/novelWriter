@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Tree Class
 ================================
@@ -61,6 +60,7 @@ LAYOUT_MAP = {
         "H4": nwItemLayout.SCENE,
     },
 }
+
 
 class NWTree():
 

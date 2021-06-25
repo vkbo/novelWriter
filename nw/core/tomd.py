@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Markdown Text Converter
 =====================================
@@ -30,6 +29,7 @@ from nw.constants import nwLabels
 from nw.core.tokenizer import Tokenizer
 
 logger = logging.getLogger(__name__)
+
 
 class ToMarkdown(Tokenizer):
 

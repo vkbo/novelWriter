@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Init File
 =======================
@@ -90,14 +89,18 @@ __docurl__     = "https://novelwriter.readthedocs.io"
 # Add verbose logging level
 VERBOSE = 5
 logging.addLevelName(VERBOSE, "VERBOSE")
+
+
 def logVerbose(self, message, *args, **kws):
     if self.isEnabledFor(VERBOSE):
         self._log(VERBOSE, message, args, **kws)
+
 
 logging.Logger.verbose = logVerbose
 
 # Initiating logging
 logger = logging.getLogger(__name__)
+
 
 ##
 #  Main Program
@@ -105,6 +108,7 @@ logger = logging.getLogger(__name__)
 
 # Load the main config as a global object
 CONFIG = Config()
+
 
 def main(sysArgs=None):
     """Parses command line, sets up logging, and launches main GUI.

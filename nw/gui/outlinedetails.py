@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Project Outline Details
 =========================================
@@ -36,6 +35,7 @@ from nw.common import checkInt
 from nw.constants import trConst, nwKeyWords, nwLabels
 
 logger = logging.getLogger(__name__)
+
 
 class GuiOutlineDetails(QScrollArea):
 

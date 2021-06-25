@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Spell Check Classes
 =================================
@@ -30,6 +29,7 @@ import os
 import difflib
 
 logger = logging.getLogger(__name__)
+
 
 # =============================================================================================== #
 #  SpellChecking SuperClass
@@ -122,6 +122,7 @@ class NWSpellCheck():
 
 # END Class NWSpellCheck
 
+
 # =============================================================================================== #
 #  Enchant Based SpellChecking
 # =============================================================================================== #
@@ -208,6 +209,7 @@ class NWSpellEnchant(NWSpellCheck):
 
 # END Class NWSpellEnchant
 
+
 class FakeEnchant:
     """Fallback for when Enchant is selected, but not installed.
     """
@@ -224,6 +226,7 @@ class FakeEnchant:
         return
 
 # END Class FakeEnchant
+
 
 # =============================================================================================== #
 #  Fallback SpellChecking Using difflib

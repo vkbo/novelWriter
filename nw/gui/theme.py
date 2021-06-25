@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Theme and Icons Classes
 =====================================
@@ -42,6 +41,7 @@ from PyQt5.QtGui import (
 from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
+
 
 # =============================================================================================== #
 #  Gui Theme Class
@@ -495,6 +495,7 @@ class GuiTheme:
         return cnfDefault
 
 # End Class GuiTheme
+
 
 # =============================================================================================== #
 #  Icons Class

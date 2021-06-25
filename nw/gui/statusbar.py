@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Main Window Status Bar
 ========================================
@@ -37,6 +36,7 @@ from nw.common import formatTime
 from nw.enum import nwState
 
 logger = logging.getLogger(__name__)
+
 
 class GuiMainStatus(QStatusBar):
 
@@ -234,6 +234,7 @@ class GuiMainStatus(QStatusBar):
         return
 
 # END Class GuiMainStatus
+
 
 class StatusLED(QAbstractButton):
 
