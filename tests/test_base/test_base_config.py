@@ -96,7 +96,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
 
     # Let the config class figure out the path
     with monkeypatch.context() as mp:
-        mp.setattr("PyQt5.QtCore.QStandardPaths.writableLocation", lambda *args: fncDir)
+        mp.setattr("PyQt5.QtCore.QStandardPaths.writableLocation", lambda *a: fncDir)
         tstConf.verQtValue = 50600
         tstConf.initConfig()
         assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
@@ -133,7 +133,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     # Run again and set the paths directly and correctly
     # This should create a config file as well
     with monkeypatch.context() as mp:
-        mp.setattr("os.path.expanduser", lambda *args: "")
+        mp.setattr("os.path.expanduser", lambda *a: "")
         tstConf.spellTool = nwConst.SP_INTERNAL
         tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
         assert tstConf.confPath == tmpDir

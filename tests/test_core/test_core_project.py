@@ -36,7 +36,7 @@ from nw.constants import nwFiles
 
 
 @pytest.mark.core
-def testCoreProject_NewMinimal(fncDir, outDir, refDir, tmpDir, dummyGUI):
+def testCoreProject_NewMinimal(fncDir, outDir, refDir, dummyGUI):
     """Create a new project from a project wizard dictionary. With
     default setting, creating a Minimal project.
     """
@@ -564,7 +564,7 @@ def testCoreProject_Helpers(monkeypatch, fncDir, dummyGUI):
 
     # Block user's home folder
     with monkeypatch.context() as mp:
-        mp.setattr("os.path.expanduser", lambda *args, **kwargs: fncDir)
+        mp.setattr("os.path.expanduser", lambda *a, **k: fncDir)
         assert theProject.ensureFolderStructure() is False
 
     # Create a file to block meta folder
@@ -603,24 +603,24 @@ def testCoreProject_AccessItems(nwMinimal, dummyGUI):
 
     # Move Novel ROOT to after its files
     oldOrder = [
-        "a508bb932959c", # ROOT: Novel
-        "a35baf2e93843", # FILE: Title Page
-        "a6d311a93600a", # FOLDER: New Chapter
-        "f5ab3e30151e1", # FILE: New Chapter
-        "8c659a11cd429", # FILE: New Scene
-        "7695ce551d265", # ROOT: Plot
-        "afb3043c7b2b3", # ROOT: Characters
-        "9d5247ab588e0", # ROOT: World
+        "a508bb932959c",  # ROOT: Novel
+        "a35baf2e93843",  # FILE: Title Page
+        "a6d311a93600a",  # FOLDER: New Chapter
+        "f5ab3e30151e1",  # FILE: New Chapter
+        "8c659a11cd429",  # FILE: New Scene
+        "7695ce551d265",  # ROOT: Plot
+        "afb3043c7b2b3",  # ROOT: Characters
+        "9d5247ab588e0",  # ROOT: World
     ]
     newOrder = [
-        "a35baf2e93843", # FILE: Title Page
-        "f5ab3e30151e1", # FILE: New Chapter
-        "8c659a11cd429", # FILE: New Scene
-        "a6d311a93600a", # FOLDER: New Chapter
-        "a508bb932959c", # ROOT: Novel
-        "7695ce551d265", # ROOT: Plot
-        "afb3043c7b2b3", # ROOT: Characters
-        "9d5247ab588e0", # ROOT: World
+        "a35baf2e93843",  # FILE: Title Page
+        "f5ab3e30151e1",  # FILE: New Chapter
+        "8c659a11cd429",  # FILE: New Scene
+        "a6d311a93600a",  # FOLDER: New Chapter
+        "a508bb932959c",  # ROOT: Novel
+        "7695ce551d265",  # ROOT: Plot
+        "afb3043c7b2b3",  # ROOT: Characters
+        "9d5247ab588e0",  # ROOT: World
     ]
     assert theProject.projTree.handles() == oldOrder
     assert theProject.setTreeOrder(newOrder)
@@ -639,15 +639,15 @@ def testCoreProject_AccessItems(nwMinimal, dummyGUI):
         retOrder.append(tItem.itemHandle)
 
     assert retOrder == [
-        "a508bb932959c", # ROOT: Novel
-        "7695ce551d265", # ROOT: Plot
-        "afb3043c7b2b3", # ROOT: Characters
-        "9d5247ab588e0", # ROOT: World
-        nHandle,         # FILE: Test File
-        "a35baf2e93843", # FILE: Title Page
-        "a6d311a93600a", # FOLDER: New Chapter
-        "f5ab3e30151e1", # FILE: New Chapter
-        "8c659a11cd429", # FILE: New Scene
+        "a508bb932959c",  # ROOT: Novel
+        "7695ce551d265",  # ROOT: Plot
+        "afb3043c7b2b3",  # ROOT: Characters
+        "9d5247ab588e0",  # ROOT: World
+        nHandle,          # FILE: Test File
+        "a35baf2e93843",  # FILE: Title Page
+        "a6d311a93600a",  # FOLDER: New Chapter
+        "f5ab3e30151e1",  # FILE: New Chapter
+        "8c659a11cd429",  # FILE: New Scene
     ]
     assert theProject.projTree[nHandle].itemParent is None
 
@@ -801,10 +801,10 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
     theProject.projTree["8c659a11cd429"].setStatus("Finished")
     newList = [
         ("New", 1, 1, 1, "New"),
-        ("Draft", 2, 2, 2, "Note"),      # These are swapped
-        ("Note", 3, 3, 3, "Draft"),      # These are swapped
-        ("Edited", 4, 4, 4, "Finished"), # Renamed
-        ("Finished", 5, 5, 5, None),     # New, with reused name
+        ("Draft", 2, 2, 2, "Note"),       # These are swapped
+        ("Note", 3, 3, 3, "Draft"),       # These are swapped
+        ("Edited", 4, 4, 4, "Finished"),  # Renamed
+        ("Finished", 5, 5, 5, None),      # New, with reused name
     ]
     assert theProject.setStatusColours(newList)
     assert theProject.statusItems._theLabels == [
@@ -813,10 +813,10 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
     assert theProject.statusItems._theColours == [
         (1, 1, 1), (2, 2, 2), (3, 3, 3), (4, 4, 4), (5, 5, 5)
     ]
-    assert theProject.projTree["a35baf2e93843"].itemStatus == "Edited" # Renamed
-    assert theProject.projTree["a6d311a93600a"].itemStatus == "Note"   # Swapped
-    assert theProject.projTree["f5ab3e30151e1"].itemStatus == "Draft"  # Swapped
-    assert theProject.projTree["8c659a11cd429"].itemStatus == "Edited" # Renamed
+    assert theProject.projTree["a35baf2e93843"].itemStatus == "Edited"  # Renamed
+    assert theProject.projTree["a6d311a93600a"].itemStatus == "Note"    # Swapped
+    assert theProject.projTree["f5ab3e30151e1"].itemStatus == "Draft"   # Swapped
+    assert theProject.projTree["8c659a11cd429"].itemStatus == "Edited"  # Renamed
 
     # Change importance
     fHandle = theProject.newFile("Jane Doe", nwItemClass.CHARACTER, "afb3043c7b2b3")
@@ -851,7 +851,7 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
 
     # Session stats
     with monkeypatch.context() as mp:
-        mp.setattr("os.path.isdir", lambda *args, **kwargs: False)
+        mp.setattr("os.path.isdir", lambda *a, **k: False)
         assert not theProject._appendSessionStats(idleTime=0)
 
     # Block open

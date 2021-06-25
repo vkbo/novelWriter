@@ -44,8 +44,8 @@ def testToolProjectWizard_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test the new project wizard.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
 
     if sys.platform.startswith("darwin"):
         # Disable for macOS because the test segfaults on QWizard.show()
@@ -62,22 +62,22 @@ def testToolProjectWizard_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     # Close project, but call with invalid path
     assert nwGUI.closeProject()
     with monkeypatch.context() as mp:
-        mp.setattr(nwGUI, "showNewProjectDialog", lambda *args: None)
+        mp.setattr(nwGUI, "showNewProjectDialog", lambda *a: None)
         assert not nwGUI.newProject()
 
         # Now, with an empty dictionary
-        mp.setattr(nwGUI, "showNewProjectDialog", lambda *args: {})
+        mp.setattr(nwGUI, "showNewProjectDialog", lambda *a: {})
         assert not nwGUI.newProject()
 
         # Now, with a non-empty folder
-        mp.setattr(nwGUI, "showNewProjectDialog", lambda *args: {"projPath": nwMinimal})
+        mp.setattr(nwGUI, "showNewProjectDialog", lambda *a: {"projPath": nwMinimal})
         assert not nwGUI.newProject()
 
     ##
     #  Test the Wizard
     ##
 
-    monkeypatch.setattr(GuiProjectWizard, "exec_", lambda *args: None)
+    monkeypatch.setattr(GuiProjectWizard, "exec_", lambda *a: None)
     nwGUI.mainConf.lastPath = " "
 
     nwGUI.closeProject()
@@ -184,7 +184,7 @@ def testToolProjectWizard_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
         # Final Page
         finalPage = nwWiz.currentPage()
         assert isinstance(finalPage, ProjWizardFinalPage)
-        assert nwWiz.button(QWizard.FinishButton).isEnabled() # But we don't click it
+        assert nwWiz.button(QWizard.FinishButton).isEnabled()  # But we don't click it
 
         # Check Data
         projData = nwGUI._assembleProjectWizardData(nwWiz)

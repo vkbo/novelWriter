@@ -50,12 +50,12 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, outDir, refDir):
 
     theIndex = NWIndex(theProject)
     notIndexable = {
-        "b3643d0f92e32": False, # Novel ROOT
-        "45e6b01ca35c1": False, # Chapter One FOLDER
-        "6bd935d2490cd": False, # Chapter Two FOLDER
-        "67a8707f2f249": False, # Character ROOT
-        "6c6afb1247750": False, # Plot ROOT
-        "60bdf227455cc": False, # World ROOT
+        "b3643d0f92e32": False,  # Novel ROOT
+        "45e6b01ca35c1": False,  # Chapter One FOLDER
+        "6bd935d2490cd": False,  # Chapter Two FOLDER
+        "67a8707f2f249": False,  # Character ROOT
+        "6c6afb1247750": False,  # Plot ROOT
+        "60bdf227455cc": False,  # World ROOT
     }
     for tItem in theProject.projTree:
         assert theIndex.reIndexHandle(tItem.itemHandle) is notIndexable.get(tItem.itemHandle, True)
@@ -204,7 +204,7 @@ def testCoreIndex_CheckThese(nwMinimal, dummyGUI):
     assert theIndex.scanText(nHandle, (
         "# Hello World!\n"
         "@pov: Jane\n"
-        "@invalid: John\n" # Checks for issue #688
+        "@invalid: John\n"  # Checks for issue #688
     ))
     assert theIndex._tagIndex == {"Jane": [2, cHandle, "CHARACTER", "T000001"]}
     assert theIndex.getNovelData(nHandle, "T000001")["title"] == "Hello World!"
@@ -312,29 +312,29 @@ def testCoreIndex_ScanText(nwMinimal, dummyGUI):
         "#### Title Four\n\n"
         "% synopsis: Synopsis Four.\n\n"
         "Paragraph Four.\n\n"
-        "##### Title Five\n\n" # Not interpreted as a title, the hashes are counted as a word
+        "##### Title Five\n\n"  # Not interpreted as a title, the hashes are counted as a word
         "Paragraph Five.\n\n"
     ))
-    assert theIndex._refIndex[nHandle].get("T000000", None) is not None # Always there
-    assert theIndex._refIndex[nHandle].get("T000001", None) is not None # Heading 1
+    assert theIndex._refIndex[nHandle].get("T000000", None) is not None  # Always there
+    assert theIndex._refIndex[nHandle].get("T000001", None) is not None  # Heading 1
     assert theIndex._refIndex[nHandle].get("T000002", None) is None
     assert theIndex._refIndex[nHandle].get("T000003", None) is None
     assert theIndex._refIndex[nHandle].get("T000004", None) is None
     assert theIndex._refIndex[nHandle].get("T000005", None) is None
     assert theIndex._refIndex[nHandle].get("T000006", None) is None
-    assert theIndex._refIndex[nHandle].get("T000007", None) is not None # Heading 2
+    assert theIndex._refIndex[nHandle].get("T000007", None) is not None  # Heading 2
     assert theIndex._refIndex[nHandle].get("T000008", None) is None
     assert theIndex._refIndex[nHandle].get("T000009", None) is None
     assert theIndex._refIndex[nHandle].get("T000010", None) is None
     assert theIndex._refIndex[nHandle].get("T000011", None) is None
     assert theIndex._refIndex[nHandle].get("T000012", None) is None
-    assert theIndex._refIndex[nHandle].get("T000013", None) is not None # Heading 3
+    assert theIndex._refIndex[nHandle].get("T000013", None) is not None  # Heading 3
     assert theIndex._refIndex[nHandle].get("T000014", None) is None
     assert theIndex._refIndex[nHandle].get("T000015", None) is None
     assert theIndex._refIndex[nHandle].get("T000016", None) is None
     assert theIndex._refIndex[nHandle].get("T000017", None) is None
     assert theIndex._refIndex[nHandle].get("T000018", None) is None
-    assert theIndex._refIndex[nHandle].get("T000019", None) is not None # Heading 4
+    assert theIndex._refIndex[nHandle].get("T000019", None) is not None  # Heading 4
     assert theIndex._refIndex[nHandle].get("T000020", None) is None
     assert theIndex._refIndex[nHandle].get("T000021", None) is None
     assert theIndex._refIndex[nHandle].get("T000022", None) is None
@@ -403,9 +403,9 @@ def testCoreIndex_ScanText(nwMinimal, dummyGUI):
 
     assert theIndex.scanText(sHandle, (
         "# Title One\n\n"
-        "@pov: One\n\n" # Valid
-        "@char: Two\n\n" # Invalid tag
-        "@:\n\n" # Invalid line
+        "@pov: One\n\n"  # Valid
+        "@char: Two\n\n"  # Invalid tag
+        "@:\n\n"  # Invalid line
         "% synopsis: Synopsis One.\n\n"
         "Paragraph One.\n\n"
     ))
@@ -503,9 +503,9 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
 
     # The novel file should have the correct counts
     cC, wC, pC = theIndex.getCounts(nHandle)
-    assert cC == 62 # Characters in text and title only
-    assert wC == 12 # Words in text and title only
-    assert pC == 2  # Paragraphs in text only
+    assert cC == 62  # Characters in text and title only
+    assert wC == 12  # Words in text and title only
+    assert pC == 2   # Paragraphs in text only
 
     # getReferences
     # =============

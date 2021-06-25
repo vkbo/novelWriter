@@ -29,9 +29,9 @@ from tools import cleanProject
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
-import nw # noqa: E402
+import nw  # noqa: E402
 
-from nw.config import Config # noqa: E402
+from nw.config import Config  # noqa: E402
 
 
 ##

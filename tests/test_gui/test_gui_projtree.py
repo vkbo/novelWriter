@@ -37,11 +37,11 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     """Test adding and removing items from the project tree.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "warning", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(GuiMain, "editItem", lambda *args: None)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(GuiMain, "editItem", lambda *a: None)
 
     nwGUI.theProject.projTree.setSeed(42)
     nwTree = nwGUI.treeView
@@ -82,8 +82,8 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     ]
 
     # Add roots
-    assert not nwTree.newTreeItem(nwItemType.ROOT, nwItemClass.WORLD) # Duplicate
-    assert nwTree.newTreeItem(nwItemType.ROOT, nwItemClass.CUSTOM)    # Valid
+    assert not nwTree.newTreeItem(nwItemType.ROOT, nwItemClass.WORLD)  # Duplicate
+    assert nwTree.newTreeItem(nwItemType.ROOT, nwItemClass.CUSTOM)     # Valid
 
     # Change max depth and try to add a subfolder that is too deep
     monkeypatch.setattr("nw.constants.nwConst.MAX_DEPTH", 2)
@@ -98,12 +98,12 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     nwTree.setSelectedHandle("8c659a11cd429")
 
     # Shift focus and try to move item
-    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *args: False)
+    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: False)
     assert not nwTree.moveTreeItem(1)
     assert nwTree.getTreeFromHandle("a6d311a93600a") == [
         "a6d311a93600a", "f5ab3e30151e1", "8c659a11cd429", "44cb730c42048", "71ee45a3c0db9"
     ]
-    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *args: True)
+    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
     # Move second item up twice (should give same result)
     nwGUI.mainMenu.aMoveUp.activate(QAction.Trigger)
@@ -168,12 +168,12 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
 
     # Delete the items we added earlier
     nwTree.clearSelection()
-    assert not nwTree.emptyTrash() # No folder yet
+    assert not nwTree.emptyTrash()  # No folder yet
     assert not nwTree.deleteItem(None)
     assert not nwTree.deleteItem("1111111111111")
-    assert nwTree.deleteItem("73475cb40a568") # New File
-    assert nwTree.deleteItem("71ee45a3c0db9") # New Folder
-    assert nwTree.deleteItem("811786ad1ae74") # Custom Root
+    assert nwTree.deleteItem("73475cb40a568")  # New File
+    assert nwTree.deleteItem("71ee45a3c0db9")  # New Folder
+    assert nwTree.deleteItem("811786ad1ae74")  # Custom Root
     assert "73475cb40a568" in nwGUI.theProject.projTree._treeOrder
     assert "71ee45a3c0db9" not in nwGUI.theProject.projTree._treeOrder
     assert "811786ad1ae74" not in nwGUI.theProject.projTree._treeOrder
@@ -181,7 +181,7 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     # The file is in trash, empty it
     assert os.path.isfile(os.path.join(nwMinimal, "content", "73475cb40a568.nwd"))
     assert nwTree.emptyTrash()
-    assert not nwTree.emptyTrash() # Already empty
+    assert not nwTree.emptyTrash()  # Already empty
     assert not os.path.isfile(os.path.join(nwMinimal, "content", "73475cb40a568.nwd"))
     assert "73475cb40a568" not in nwGUI.theProject.projTree._treeOrder
 
@@ -228,7 +228,7 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     nwTree.clearSelection()
 
     # Add a file with no parent, and fail to find a suitable parent item
-    monkeypatch.setattr("nw.core.tree.NWTree.findRoot", lambda *args: None)
+    monkeypatch.setattr("nw.core.tree.NWTree.findRoot", lambda *a: None)
 
     assert not nwTree.newTreeItem(nwItemType.FILE, nwItemClass.NOVEL)
     assert not nwTree.newTreeItem(nwItemType.FOLDER, nwItemClass.NOVEL)

@@ -19,8 +19,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import pytest
 import os
+import pytest
 
 from shutil import copyfile
 from tools import cmpFiles
@@ -44,12 +44,12 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     """Test the document editor.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *args: None)
-    monkeypatch.setattr(GuiItemEditor, "result", lambda *args: QDialog.Accepted)
-    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *args: True)
-    monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *args: True)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiItemEditor, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
+    monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
     # Create new, save, close project
     nwGUI.theProject.projTree.setSeed(42)
@@ -315,7 +315,7 @@ def testGuiEditor_Main(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     assert nwGUI.treeView.deleteItem()
     assert nwGUI.treeView.setSelectedHandle(newHandle)
     assert nwGUI.treeView.deleteItem()
-    assert nwGUI.theProject.projTree["2fca346db6561"] is not None # Trash
+    assert nwGUI.theProject.projTree["2fca346db6561"] is not None  # Trash
     assert nwGUI.saveProject()
 
     # Check the files
@@ -359,8 +359,8 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     """Test the document editor search functionality.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *args: True)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.openProject(nwLipsum)
@@ -415,7 +415,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     # Set Invalid RegEx
     assert nwGUI.docEditor.docSearch.setSearchText(r"\bSus[")
     qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=keyDelay)
-    assert nwGUI.docEditor.getCursorPosition() < 3 # No result
+    assert nwGUI.docEditor.getCursorPosition() < 3  # No result
 
     # Set Valid RegEx
     assert nwGUI.docEditor.docSearch.setSearchText(r"\bSus")
@@ -504,7 +504,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
 
     # Next Match
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
-    assert nwGUI.docEditor.docHandle() == "2426c6f0ca922" # Next document
+    assert nwGUI.docEditor.docHandle() == "2426c6f0ca922"  # Next document
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
     assert abs(nwGUI.docEditor.getCursorPosition() - 620) < 3
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)

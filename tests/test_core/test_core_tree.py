@@ -274,9 +274,9 @@ def testCoreTree_UpdateItemLayout(dummyGUI, dummyItems):
     assert len(theTree) == len(dummyItems)
 
     # Check rejected items
-    assert not theTree.updateItemLayout("0000000000000", "H1") # Non-existent handle
-    assert not theTree.updateItemLayout("a000000000004", "H2") # Character file
-    assert not theTree.updateItemLayout("c000000000002", "H0") # Wrong header level
+    assert not theTree.updateItemLayout("0000000000000", "H1")  # Non-existent handle
+    assert not theTree.updateItemLayout("a000000000004", "H2")  # Character file
+    assert not theTree.updateItemLayout("c000000000002", "H0")  # Wrong header level
 
     cHandle = "c000000000002"
 

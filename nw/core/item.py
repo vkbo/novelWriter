@@ -51,11 +51,11 @@ class NWItem():
         self.isExported = True
 
         # Document Meta Data
-        self.charCount = 0 # Current character count
-        self.wordCount = 0 # Current word count
-        self.paraCount = 0 # Current paragraph count
-        self.initCount = 0 # Initial word count
-        self.cursorPos = 0 # Last cursor position
+        self.charCount = 0  # Current character count
+        self.wordCount = 0  # Current word count
+        self.paraCount = 0  # Current paragraph count
+        self.initCount = 0  # Initial word count
+        self.cursorPos = 0  # Last cursor position
 
         return
 
@@ -251,7 +251,7 @@ class NWItem():
         if isinstance(expState, str):
             self.isExpanded = (expState == str(True))
         else:
-            self.isExpanded = (expState == True) # noqa: E712
+            self.isExpanded = (expState == True)  # noqa: E712
         return
 
     def setExported(self, expState):
@@ -260,7 +260,7 @@ class NWItem():
         if isinstance(expState, str):
             self.isExported = (expState == str(True))
         else:
-            self.isExported = (expState == True) # noqa: E712
+            self.isExported = (expState == True)  # noqa: E712
         return
 
     ##

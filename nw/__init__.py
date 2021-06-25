@@ -233,7 +233,7 @@ def main(sysArgs=None):
         errorCode |= 16
 
     try:
-        import lxml # noqa: F401
+        import lxml  # noqa: F401
     except ImportError:
         errorData.append("Python module 'lxml' is missing.")
         errorCode |= 32

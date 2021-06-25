@@ -1294,7 +1294,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # Run the standard setup
-    import setuptools # noqa: F401
+    import setuptools  # noqa: F401
     setuptools.setup()
 
 # END Main

@@ -158,10 +158,10 @@ def testBaseInit_Imports(caplog, monkeypatch, tmpDir):
             ["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
         )
 
-    assert ex.value.code & 4 == 4   # Python version not satisfied
-    assert ex.value.code & 8 == 8   # Qt version not satisfied
-    assert ex.value.code & 16 == 16 # PyQt version not satisfied
-    assert ex.value.code & 32 == 32 # lxml package missing
+    assert ex.value.code & 4 == 4    # Python version not satisfied
+    assert ex.value.code & 8 == 8    # Qt version not satisfied
+    assert ex.value.code & 16 == 16  # PyQt version not satisfied
+    assert ex.value.code & 32 == 32  # lxml package missing
 
     assert "At least Python" in caplog.messages[0]
     assert "At least Qt5" in caplog.messages[1]

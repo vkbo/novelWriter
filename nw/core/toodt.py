@@ -59,36 +59,36 @@ TAG_STNM = "{%s}style-name" % XML_NS["text"]
 
 class ToOdt(Tokenizer):
 
-    X_BLD = 0x01 # Bold format
-    X_ITA = 0x02 # Italic format
-    X_DEL = 0x04 # Strikethrough format
-    X_BRK = 0x08 # Line break
-    X_TAB = 0x10 # Tab
+    X_BLD = 0x01  # Bold format
+    X_ITA = 0x02  # Italic format
+    X_DEL = 0x04  # Strikethrough format
+    X_BRK = 0x08  # Line break
+    X_TAB = 0x10  # Tab
 
     def __init__(self, theProject, isFlat):
         Tokenizer.__init__(self, theProject)
 
         self.mainConf = nw.CONFIG
 
-        self._isFlat = isFlat # Flat: .fodt, otherwise .odt
+        self._isFlat = isFlat  # Flat: .fodt, otherwise .odt
 
-        self._dFlat = None # FODT file XML root
-        self._dCont = None # ODT content.xml root
-        self._dMeta = None # ODT meta.xml root
-        self._dStyl = None # ODT styles.xml root
+        self._dFlat = None  # FODT file XML root
+        self._dCont = None  # ODT content.xml root
+        self._dMeta = None  # ODT meta.xml root
+        self._dStyl = None  # ODT styles.xml root
 
-        self._xMeta = None # Office meta root
-        self._xStyl = None # Office styles root
-        self._xAuto = None # Office auto-styles root
-        self._xMast = None # Office master-styles root
-        self._xBody = None # Office body root
-        self._xText = None # Office text root
+        self._xMeta = None  # Office meta root
+        self._xStyl = None  # Office styles root
+        self._xAuto = None  # Office auto-styles root
+        self._xMast = None  # Office master-styles root
+        self._xBody = None  # Office body root
+        self._xText = None  # Office text root
 
-        self._xAut2 = None # Page layout auto-styles for ODT file
+        self._xAut2 = None  # Page layout auto-styles for ODT file
 
-        self._mainPara = {} # User-accessible paragraph styles
-        self._autoPara = {} # Auto-generated paragraph styles
-        self._autoText = {} # Auto-generated text styles
+        self._mainPara = {}  # User-accessible paragraph styles
+        self._autoPara = {}  # Auto-generated paragraph styles
+        self._autoText = {}  # Auto-generated text styles
 
         # Properties
         self.textFont   = "Liberation Serif"
@@ -315,15 +315,15 @@ class ToOdt(Tokenizer):
     def doConvert(self):
         """Convert the list of text tokens into XML elements.
         """
-        self.theResult = "" # Not used, but cleared just in case
+        self.theResult = ""  # Not used, but cleared just in case
 
         odtTags = {
-            self.FMT_B_B : "_B", # Bold open format
-            self.FMT_B_E : "b_", # Bold close format
-            self.FMT_I_B : "I",  # Italic open format
-            self.FMT_I_E : "i",  # Italic close format
-            self.FMT_D_B : "_S", # Strikethrough open format
-            self.FMT_D_E : "s_", # Strikethrough close format
+            self.FMT_B_B : "_B",  # Bold open format
+            self.FMT_B_E : "b_",  # Bold close format
+            self.FMT_I_B : "I",   # Italic open format
+            self.FMT_I_E : "i",   # Italic close format
+            self.FMT_D_B : "_S",  # Strikethrough open format
+            self.FMT_D_E : "s_",  # Strikethrough close format
         }
 
         thisPar = []

@@ -82,18 +82,18 @@ class Config:
         self.helpPath  = None   # The full path to the novelwriter .qhc help file
 
         # Runtime Settings and Variables
-        self.confChanged = False # True whenever the config has chenged, false after save
-        self.hasHelp     = False # True if the Qt help files are present in the assets folder
+        self.confChanged = False  # True whenever the config has chenged, false after save
+        self.hasHelp     = False  # True if the Qt help files are present in the assets folder
 
         # General
         self.guiTheme    = "default"
         self.guiSyntax   = "default_light"
         self.guiIcons    = "typicons_colour_light"
-        self.guiDark     = False # Load icons for dark backgrounds, if available
-        self.guiFont     = ""    # Defaults to system default font
-        self.guiFontSize = 11    # Is overridden if system default is loaded
-        self.guiScale    = 1.0   # Set automatically by Theme class
-        self.lastNotes   = "0x0" # The latest release notes that have been shown
+        self.guiDark     = False  # Load icons for dark backgrounds, if available
+        self.guiFont     = ""     # Defaults to system default font
+        self.guiFontSize = 11     # Is overridden if system default is loaded
+        self.guiScale    = 1.0    # Set automatically by Theme class
+        self.lastNotes   = "0x0"  # The latest release notes that have been shown
 
         # Localisation
         self.qLocal     = QLocale.system()
@@ -115,51 +115,51 @@ class Config:
         self.isFullScreen  = False
 
         # Features
-        self.hideVScroll = False # Hide vertical scroll bars on main widgets
-        self.hideHScroll = False # Hide horizontal scroll bars on main widgets
+        self.hideVScroll = False  # Hide vertical scroll bars on main widgets
+        self.hideHScroll = False  # Hide horizontal scroll bars on main widgets
 
         # Project
-        self.autoSaveProj = 60 # Interval for auto-saving project in seconds
-        self.autoSaveDoc  = 30 # Interval for auto-saving document in seconds
+        self.autoSaveProj = 60  # Interval for auto-saving project in seconds
+        self.autoSaveDoc  = 30  # Interval for auto-saving document in seconds
 
         # Text Editor
-        self.textFont        = None  # Editor font
-        self.textSize        = 12    # Editor font size
-        self.textFixedW      = True  # Keep editor text fixed width
-        self.textWidth       = 600   # Editor text width
-        self.textMargin      = 40    # Editor/viewer text margin
-        self.tabWidth        = 40    # Editor tabulator width
+        self.textFont        = None   # Editor font
+        self.textSize        = 12     # Editor font size
+        self.textFixedW      = True   # Keep editor text fixed width
+        self.textWidth       = 600    # Editor text width
+        self.textMargin      = 40     # Editor/viewer text margin
+        self.tabWidth        = 40     # Editor tabulator width
 
-        self.focusWidth      = 800   # Focus Mode text width
-        self.hideFocusFooter = False # Hide document footer in Focus Mode
-        self.showFullPath    = True  # Show full document path in editor header
-        self.autoSelect      = True  # Auto-select word when applying format with no selection
+        self.focusWidth      = 800    # Focus Mode text width
+        self.hideFocusFooter = False  # Hide document footer in Focus Mode
+        self.showFullPath    = True   # Show full document path in editor header
+        self.autoSelect      = True   # Auto-select word when applying format with no selection
 
-        self.doJustify       = False # Justify text
-        self.showTabsNSpaces = False # Show tabs and spaces in edior
-        self.showLineEndings = False # Show line endings in editor
-        self.showMultiSpaces = True  # Highlight multiple spaces in the text
+        self.doJustify       = False  # Justify text
+        self.showTabsNSpaces = False  # Show tabs and spaces in edior
+        self.showLineEndings = False  # Show line endings in editor
+        self.showMultiSpaces = True   # Highlight multiple spaces in the text
 
-        self.doReplace       = True  # Enable auto-replace as you type
-        self.doReplaceSQuote = True  # Smart single quotes
-        self.doReplaceDQuote = True  # Smart double quotes
-        self.doReplaceDash   = True  # Replace multiple hyphens with dashes
-        self.doReplaceDots   = True  # Replace three dots with ellipsis
+        self.doReplace       = True   # Enable auto-replace as you type
+        self.doReplaceSQuote = True   # Smart single quotes
+        self.doReplaceDQuote = True   # Smart double quotes
+        self.doReplaceDash   = True   # Replace multiple hyphens with dashes
+        self.doReplaceDots   = True   # Replace three dots with ellipsis
 
-        self.scrollPastEnd   = True  # Allow scrolling past end of document
-        self.autoScroll      = False # Typewriter-like scrolling
-        self.autoScrollPos   = 30    # Start point for typewriter-like scrolling
+        self.scrollPastEnd   = True   # Allow scrolling past end of document
+        self.autoScroll      = False  # Typewriter-like scrolling
+        self.autoScrollPos   = 30     # Start point for typewriter-like scrolling
 
-        self.wordCountTimer  = 5.0   # Interval for word count update in seconds
-        self.bigDocLimit     = 800   # Size threshold for heavy editor features in kilobytes
+        self.wordCountTimer  = 5.0    # Interval for word count update in seconds
+        self.bigDocLimit     = 800    # Size threshold for heavy editor features in kilobytes
 
-        self.highlightQuotes = True  # Highlight text in quotes
-        self.allowOpenSQuote = False # Allow open-ended single quotes
-        self.allowOpenDQuote = True  # Allow open-ended double quotes
-        self.highlightEmph   = True  # Add colour to text emphasis
+        self.highlightQuotes = True   # Highlight text in quotes
+        self.allowOpenSQuote = False  # Allow open-ended single quotes
+        self.allowOpenDQuote = True   # Allow open-ended double quotes
+        self.highlightEmph   = True   # Add colour to text emphasis
 
-        self.stopWhenIdle    = True  # Stop the status bar clock when the user is idle
-        self.userIdleTime    = 300   # Time of inactivity to consider user idle
+        self.stopWhenIdle    = True   # Stop the status bar clock when the user is idle
+        self.userIdleTime    = 300    # Time of inactivity to consider user idle
 
         # User-Selected Symbols
         self.fmtApostrophe   = nwUnicode.U_RSQUO
@@ -235,8 +235,8 @@ class Config:
         self.kernelVer = "Unknown"
 
         # Packages
-        self.hasEnchant   = False # The pyenchant package
-        self.hasAssistant = False # The Qt Assistant executable
+        self.hasEnchant   = False  # The pyenchant package
+        self.hasAssistant = False  # The Qt Assistant executable
 
         # Recent Cache
         self.recentProj = {}
@@ -382,9 +382,9 @@ class Config:
         self.qtTrans = {}
 
         langList = [
-            (self.qtLangPath, "qtbase"), # Qt 5.x
-            (self.nwLangPath, "qtbase"), # Alternative Qt 5.x
-            (self.nwLangPath, "nw"),     # novelWriter
+            (self.qtLangPath, "qtbase"),  # Qt 5.x
+            (self.nwLangPath, "qtbase"),  # Alternative Qt 5.x
+            (self.nwLangPath, "nw"),      # novelWriter
         ]
         for lngPath, lngBase in langList:
             for lngCode in self.qLocal.uiLanguages():
@@ -1119,7 +1119,7 @@ class Config:
         """Cheks if we have the optional packages used by some features.
         """
         try:
-            import enchant # noqa: F401
+            import enchant  # noqa: F401
             self.hasEnchant = True
             logger.debug("Checking package 'pyenchant': OK")
         except Exception:

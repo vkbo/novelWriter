@@ -37,14 +37,14 @@ def trConst(tString):
 class nwConst():
 
     # Date and Time Formats
-    FMT_TSTAMP = "%Y-%m-%d %H:%M:%S" # Default format
-    FMT_FSTAMP = "%Y-%m-%d %H.%M.%S" # FileName safe format
-    FMT_DSTAMP = "%Y-%m-%d"          # Date only format
+    FMT_TSTAMP = "%Y-%m-%d %H:%M:%S"  # Default format
+    FMT_FSTAMP = "%Y-%m-%d %H.%M.%S"  # FileName safe format
+    FMT_DSTAMP = "%Y-%m-%d"           # Date only format
 
     # Various Hard Limits
-    MAX_DEPTH     = 30       # Maximum folder depth of a project
-    MAX_DOCSIZE   = 5000000  # Maxium size of a single document
-    MAX_BUILDSIZE = 10000000 # Maxium size of a project build
+    MAX_DEPTH     = 30        # Maximum folder depth of a project
+    MAX_DOCSIZE   = 5000000   # Maxium size of a single document
+    MAX_BUILDSIZE = 10000000  # Maxium size of a project build
 
     # Spell Check Providers
     SP_INTERNAL = "internal"
@@ -264,67 +264,67 @@ class nwUnicode:
     # =================
 
     # Quotation Marks
-    U_QUOT   = "\u0022" # Quotation mark
-    U_APOS   = "\u0027" # Apostrophe
-    U_LAQUO  = "\u00ab" # Left-pointing double angle quotation mark
-    U_RAQUO  = "\u00bb" # Right-pointing double angle quotation mark
-    U_LSQUO  = "\u2018" # Left single quotation mark
-    U_RSQUO  = "\u2019" # Right single quotation mark
-    U_SBQUO  = "\u201a" # Single low-9 quotation mark
-    U_SUQUO  = "\u201b" # Single high-reversed-9 quotation mark
-    U_LDQUO  = "\u201c" # Left double quotation mark
-    U_RDQUO  = "\u201d" # Right double quotation mark
-    U_BDQUO  = "\u201e" # Double low-9 quotation mark
-    U_UDQUO  = "\u201f" # Double high-reversed-9 quotation mark
-    U_LSAQUO = "\u2039" # Single left-pointing angle quotation mark
-    U_RSAQUO = "\u203a" # Single right-pointing angle quotation mark
-    U_BDRQUO = "\u2e42" # Double low-reversed-9 quotation mark
-    U_LCQUO  = "\u300c" # Left corner bracket
-    U_RCQUO  = "\u300d" # Right corner bracket
-    U_LWCQUO = "\u300e" # Left white corner bracket
-    U_RWCQUO = "\u300f" # Right white corner bracket
+    U_QUOT   = "\u0022"  # Quotation mark
+    U_APOS   = "\u0027"  # Apostrophe
+    U_LAQUO  = "\u00ab"  # Left-pointing double angle quotation mark
+    U_RAQUO  = "\u00bb"  # Right-pointing double angle quotation mark
+    U_LSQUO  = "\u2018"  # Left single quotation mark
+    U_RSQUO  = "\u2019"  # Right single quotation mark
+    U_SBQUO  = "\u201a"  # Single low-9 quotation mark
+    U_SUQUO  = "\u201b"  # Single high-reversed-9 quotation mark
+    U_LDQUO  = "\u201c"  # Left double quotation mark
+    U_RDQUO  = "\u201d"  # Right double quotation mark
+    U_BDQUO  = "\u201e"  # Double low-9 quotation mark
+    U_UDQUO  = "\u201f"  # Double high-reversed-9 quotation mark
+    U_LSAQUO = "\u2039"  # Single left-pointing angle quotation mark
+    U_RSAQUO = "\u203a"  # Single right-pointing angle quotation mark
+    U_BDRQUO = "\u2e42"  # Double low-reversed-9 quotation mark
+    U_LCQUO  = "\u300c"  # Left corner bracket
+    U_RCQUO  = "\u300d"  # Right corner bracket
+    U_LWCQUO = "\u300e"  # Left white corner bracket
+    U_RWCQUO = "\u300f"  # Right white corner bracket
 
     # Punctuation
-    U_FGDASH = "\u2012" # Figure dash
-    U_ENDASH = "\u2013" # Short dash
-    U_EMDASH = "\u2014" # Long dash
-    U_HBAR   = "\u2015" # Horizontal bar
-    U_HELLIP = "\u2026" # Ellipsis
-    U_MAPOSS = "\u02bc" # Modifier letter single apostrophe
-    U_PRIME  = "\u2032" # Prime
-    U_DPRIME = "\u2033" # Double prime
+    U_FGDASH = "\u2012"  # Figure dash
+    U_ENDASH = "\u2013"  # Short dash
+    U_EMDASH = "\u2014"  # Long dash
+    U_HBAR   = "\u2015"  # Horizontal bar
+    U_HELLIP = "\u2026"  # Ellipsis
+    U_MAPOSS = "\u02bc"  # Modifier letter single apostrophe
+    U_PRIME  = "\u2032"  # Prime
+    U_DPRIME = "\u2033"  # Double prime
 
     # Spaces and Lines
-    U_NBSP   = "\u00a0" # Non-breaking space
-    U_THSP   = "\u2009" # Thin space
-    U_THNBSP = "\u202f" # Thin non-breaking space
-    U_ENSP   = "\u2002" # Short (en) space
-    U_EMSP   = "\u2003" # Long (em) space
-    U_LSEP   = "\u2028" # Line separator
-    U_PSEP   = "\u2029" # Paragraph separator
+    U_NBSP   = "\u00a0"  # Non-breaking space
+    U_THSP   = "\u2009"  # Thin space
+    U_THNBSP = "\u202f"  # Thin non-breaking space
+    U_ENSP   = "\u2002"  # Short (en) space
+    U_EMSP   = "\u2003"  # Long (em) space
+    U_LSEP   = "\u2028"  # Line separator
+    U_PSEP   = "\u2029"  # Paragraph separator
 
     # Symbols
-    U_CHECK  = "\u2714" # Heavy check mark
-    U_CROSS  = "\u2715" # Heavy cross mark
-    U_BULL   = "\u2022" # List bullet
-    U_TRBULL = "\u2023" # Triangle bullet
-    U_HYBULL = "\u2043" # Hyphen bullet
-    U_FLOWER = "\u2055" # Flower punctuation mark
-    U_PERMIL = "\u2030" # Per mille sign
-    U_DEGREE = "\u00b0" # Degree symbol
-    U_MINUS  = "\u2212" # Minus sign
-    U_TIMES  = "\u00d7" # Multiplaction sign
-    U_DIVIDE = "\u00f7" # Division sign
+    U_CHECK  = "\u2714"  # Heavy check mark
+    U_CROSS  = "\u2715"  # Heavy cross mark
+    U_BULL   = "\u2022"  # List bullet
+    U_TRBULL = "\u2023"  # Triangle bullet
+    U_HYBULL = "\u2043"  # Hyphen bullet
+    U_FLOWER = "\u2055"  # Flower punctuation mark
+    U_PERMIL = "\u2030"  # Per mille sign
+    U_DEGREE = "\u00b0"  # Degree symbol
+    U_MINUS  = "\u2212"  # Minus sign
+    U_TIMES  = "\u00d7"  # Multiplaction sign
+    U_DIVIDE = "\u00f7"  # Division sign
 
     # Arrows
-    U_UTRI   = "\u25b2" # Up-pointing triangle
-    U_UTRIS  = "\u25b4" # Up-pointing triangle, small
-    U_RTRI   = "\u25b6" # Right-pointing triangle
-    U_RTRIS  = "\u25b8" # Right-pointing triangle, small
-    U_DTRI   = "\u25bc" # Down-pointing triangle
-    U_DTRIS  = "\u25be" # Down-pointing triangle, small
-    U_LTRI   = "\u25c0" # Left-pointing triangle
-    U_LTRIS  = "\u25c2" # Left-pointing triangle, small
+    U_UTRI   = "\u25b2"  # Up-pointing triangle
+    U_UTRIS  = "\u25b4"  # Up-pointing triangle, small
+    U_RTRI   = "\u25b6"  # Right-pointing triangle
+    U_RTRIS  = "\u25b8"  # Right-pointing triangle, small
+    U_DTRI   = "\u25bc"  # Down-pointing triangle
+    U_DTRIS  = "\u25be"  # Down-pointing triangle, small
+    U_LTRI   = "\u25c0"  # Left-pointing triangle
+    U_LTRIS  = "\u25c2"  # Left-pointing triangle, small
 
     # HTML Equivalents
     # ================

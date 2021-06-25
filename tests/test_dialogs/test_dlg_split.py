@@ -38,7 +38,7 @@ stepDelay = 20
 
 
 @pytest.mark.gui
-def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
+def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj):
     """Test the split document tool.
     """
     # Block message box

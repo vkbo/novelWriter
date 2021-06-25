@@ -35,7 +35,7 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     """Test the theme and icon classes.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal])
     qtbot.addWidget(nwGUI)

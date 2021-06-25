@@ -122,7 +122,7 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
 
 
 @pytest.mark.core
-def testCoreDocument_Methods(monkeypatch, dummyGUI, nwMinimal):
+def testCoreDocument_Methods(dummyGUI, nwMinimal):
     """Test other methods of the NWDoc class.
     """
     theProject = NWProject(dummyGUI)

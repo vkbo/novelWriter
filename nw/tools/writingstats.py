@@ -570,7 +570,7 @@ class GuiWritingStats(QDialog):
             if isFirst:
                 # Subtract the offset from the first list entry
                 dwTotal -= self.wordOffset
-                dwTotal = max(dwTotal, 1) # Don't go zero or negative
+                dwTotal = max(dwTotal, 1)  # Don't go zero or negative
                 isFirst = False
 
             if groupByDay:

@@ -482,10 +482,10 @@ class NWIndex():
         """Scan a line starting with @ to check that it's valid. Then
         split it up into its elements and positions as two arrays.
         """
-        theBits = [] # The elements of the string
-        thePos  = [] # The absolute position of each element
+        theBits = []  # The elements of the string
+        thePos  = []  # The absolute position of each element
 
-        aLine = aLine.rstrip() # Remove all trailing white spaces
+        aLine = aLine.rstrip()  # Remove all trailing white spaces
         nChar = len(aLine)
         if nChar < 2:
             return False, theBits, thePos

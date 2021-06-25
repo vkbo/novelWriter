@@ -54,17 +54,17 @@ logger = logging.getLogger(__name__)
 
 class GuiBuildNovel(QDialog):
 
-    FMT_PDF    = 1 # Print to PDF
+    FMT_PDF    = 1  # Print to PDF
 
-    FMT_ODT    = 2 # Open Document file
-    FMT_FODT   = 3 # Flat Open Document file
-    FMT_HTM    = 4 # HTML5
-    FMT_NWD    = 5 # nW Markdown
-    FMT_MD     = 6 # Standard Markdown
-    FMT_GH     = 7 # GitHub Markdown
+    FMT_ODT    = 2  # Open Document file
+    FMT_FODT   = 3  # Flat Open Document file
+    FMT_HTM    = 4  # HTML5
+    FMT_NWD    = 5  # nW Markdown
+    FMT_MD     = 6  # Standard Markdown
+    FMT_GH     = 7  # GitHub Markdown
 
-    FMT_JSON_H = 8 # HTML5 wrapped in JSON
-    FMT_JSON_M = 9 # nW Markdown wrapped in JSON
+    FMT_JSON_H = 8  # HTML5 wrapped in JSON
+    FMT_JSON_M = 9  # nW Markdown wrapped in JSON
 
     def __init__(self, theParent):
         QDialog.__init__(self, theParent)
@@ -78,10 +78,10 @@ class GuiBuildNovel(QDialog):
         self.theProject = theParent.theProject
         self.optState   = theParent.theProject.optState
 
-        self.htmlText  = [] # List of html documents
-        self.htmlStyle = [] # List of html styles
-        self.htmlSize  = 0  # Size of the html document
-        self.buildTime = 0  # The timestamp of the last build
+        self.htmlText  = []  # List of html documents
+        self.htmlStyle = []  # List of html styles
+        self.htmlSize  = 0   # Size of the html document
+        self.buildTime = 0   # The timestamp of the last build
 
         self.setWindowTitle(self.tr("Build Novel Project"))
         self.setMinimumWidth(self.mainConf.pxInt(700))
@@ -991,7 +991,7 @@ class GuiBuildNovel(QDialog):
         else:
             # If the if statements above and here match, it should not
             # be possible to reach this else statement.
-            return False # pragma: no cover
+            return False  # pragma: no cover
 
         # Report to User
         # ==============
@@ -1035,7 +1035,7 @@ class GuiBuildNovel(QDialog):
             self.textFont.setText(theFont.family())
             self.textSize.setValue(theFont.pointSize())
 
-        self.raise_() # Move the dialog to front (fixes a bug on macOS)
+        self.raise_()  # Move the dialog to front (fixes a bug on macOS)
 
         return
 

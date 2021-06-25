@@ -29,12 +29,12 @@ from PyQt5.QtWidgets import QMessageBox
 
 
 @pytest.mark.gui
-def testGuiNovelTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
+def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test navigating the novel tree.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
 
     nwGUI.openProject(nwMinimal)
     nwGUI.theProject.projTree.setSeed(42)

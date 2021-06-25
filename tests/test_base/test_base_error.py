@@ -86,28 +86,28 @@ def testBaseError_Handler(qtbot, monkeypatch, fncDir, tmpDir):
 
     # Normal shutdown
     with monkeypatch.context() as mp:
-        mp.setattr(NWErrorMessage, "exec_", lambda *args: None)
-        mp.setattr("PyQt5.QtWidgets.qApp.exit", lambda *args: None)
+        mp.setattr(NWErrorMessage, "exec_", lambda *a: None)
+        mp.setattr("PyQt5.QtWidgets.qApp.exit", lambda *a: None)
         exceptionHandler(Exception, "Error Message", None)
 
     # Should not crash when no GUI is found
     with monkeypatch.context() as mp:
-        mp.setattr(NWErrorMessage, "exec_", lambda *args: None)
-        mp.setattr("PyQt5.QtWidgets.qApp.exit", lambda *args: None)
+        mp.setattr(NWErrorMessage, "exec_", lambda *a: None)
+        mp.setattr("PyQt5.QtWidgets.qApp.exit", lambda *a: None)
         mp.setattr("PyQt5.QtWidgets.qApp.topLevelWidgets", lambda: [])
         exceptionHandler(Exception, "Error Message", None)
 
     # Should handle qApp failing
     with monkeypatch.context() as mp:
-        mp.setattr(NWErrorMessage, "exec_", lambda *args: None)
-        mp.setattr("PyQt5.QtWidgets.qApp.exit", lambda *args: None)
+        mp.setattr(NWErrorMessage, "exec_", lambda *a: None)
+        mp.setattr("PyQt5.QtWidgets.qApp.exit", lambda *a: None)
         mp.setattr("PyQt5.QtWidgets.qApp.topLevelWidgets", causeException)
         exceptionHandler(Exception, "Error Message", None)
 
     # Should handle failing to close main GUI
     with monkeypatch.context() as mp:
-        mp.setattr(NWErrorMessage, "exec_", lambda *args: None)
-        mp.setattr("PyQt5.QtWidgets.qApp.exit", lambda *args: None)
+        mp.setattr(NWErrorMessage, "exec_", lambda *a: None)
+        mp.setattr("PyQt5.QtWidgets.qApp.exit", lambda *a: None)
         mp.setattr(nwGUI, "closeMain", causeException)
         exceptionHandler(Exception, "Error Message", None)
 

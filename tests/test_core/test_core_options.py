@@ -102,7 +102,7 @@ def testCoreOptions_LoadSave(monkeypatch, dummyGUI, tmpDir):
 
 
 @pytest.mark.core
-def testCoreOptions_SetGet(monkeypatch, dummyGUI, tmpDir):
+def testCoreOptions_SetGet(dummyGUI):
     """Test setting and getting values from the OptionState class.
     """
     theProject = NWProject(dummyGUI)

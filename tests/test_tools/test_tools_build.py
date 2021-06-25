@@ -40,9 +40,9 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     """Test the build tool.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda a, b, c, **kwargs: (c, None))
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda a, b, c, **k: (c, None))
 
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aBuildProject.activate(QAction.Trigger)
@@ -69,7 +69,7 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
 
     # Non-existent path
     with monkeypatch.context() as mp:
-        mp.setattr("os.path.expanduser", lambda *args, **kwargs: nwLipsum)
+        mp.setattr("os.path.expanduser", lambda *a, **k: nwLipsum)
         assert nwGUI.mainConf.lastPath != nwLipsum
         nwGUI.mainConf.lastPath = "no_such_path"
         assert nwBuild._saveDocument(nwBuild.FMT_NWD)
@@ -77,7 +77,7 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
 
     # No path selected
     with monkeypatch.context() as mp:
-        mp.setattr(QFileDialog, "getSaveFileName", lambda *args, **kwargs: ("", ""))
+        mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: ("", ""))
         assert not nwBuild._saveDocument(nwBuild.FMT_NWD)
 
     # Default Settings

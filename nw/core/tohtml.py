@@ -33,9 +33,9 @@ logger = logging.getLogger(__name__)
 
 class ToHtml(Tokenizer):
 
-    M_PREVIEW = 0 # Tweak output for the DocViewer
-    M_EXPORT  = 1 # Tweak output for saving to HTML or printing
-    M_EBOOK   = 2 # Tweak output for converting to epub
+    M_PREVIEW = 0  # Tweak output for the DocViewer
+    M_EXPORT  = 1  # Tweak output for saving to HTML or printing
+    M_EBOOK   = 2  # Tweak output for converting to epub
 
     def __init__(self, theProject):
         Tokenizer.__init__(self, theProject)
