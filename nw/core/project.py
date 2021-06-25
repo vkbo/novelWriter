@@ -677,9 +677,9 @@ class NWProject():
             with open(tempFile, mode="wb") as outFile:
                 outFile.write(etree.tostring(
                     nwXML,
-                    pretty_print = True,
-                    encoding = "utf-8",
-                    xml_declaration = True
+                    pretty_print=True,
+                    encoding="utf-8",
+                    xml_declaration=True
                 ))
         except Exception as e:
             self.makeAlert([

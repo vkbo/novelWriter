@@ -149,9 +149,9 @@ def main(sysArgs=None):
         "     --config=  Alternative config file.\n"
         "     --data=    Alternative user data path.\n"
     ).format(
-        version   = __version__,
-        copyright = __copyright__,
-        date      = __date__,
+        version=__version__,
+        copyright=__copyright__,
+        date=__date__,
     )
 
     # Defaults

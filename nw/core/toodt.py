@@ -450,9 +450,9 @@ class ToOdt(Tokenizer):
         with open(savePath, mode="wb") as outFile:
             outFile.write(etree.tostring(
                 self._dFlat,
-                pretty_print = True,
-                encoding = "utf-8",
-                xml_declaration = True
+                pretty_print=True,
+                encoding="utf-8",
+                xml_declaration=True
             ))
         return
 

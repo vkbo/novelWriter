@@ -142,31 +142,31 @@ class GuiAbout(QDialog):
             "<h3>{title2}</h3>"
             "<p>{credits}</p>"
         ).format(
-            title1 = self.tr("About novelWriter"),
-            copy = nw.__copyright__,
-            link = self.tr("Website: {0}").format(f"<a href='{nw.__url__}'>{nw.__domain__}</a>"),
-            title2 = self.tr("Credits"),
-            credits = self._wrapTable([
+            title1=self.tr("About novelWriter"),
+            copy=nw.__copyright__,
+            link=self.tr("Website: {0}").format(f"<a href='{nw.__url__}'>{nw.__domain__}</a>"),
+            title2=self.tr("Credits"),
+            credits=self._wrapTable([
                 (self.tr("Developer"), "Veronica Berglyd Olsen"),
                 (self.tr("Concept"), "Veronica Berglyd Olsen, Marian Lückhof"),
                 (self.tr("i18n"), "Bruno Meneguello"),
             ]),
-            intro = self.tr(
+            intro=self.tr(
                 "novelWriter is a markdown-like text editor designed for organising and "
                 "writing novels. It is written in Python 3 with a Qt5 GUI, using PyQt5."
             ),
-            license1 = self.tr(
+            license1=self.tr(
                 "novelWriter is free software: you can redistribute it and/or modify it "
                 "under the terms of the GNU General Public License as published by the "
                 "Free Software Foundation, either version 3 of the License, or (at your "
                 "option) any later version."
             ),
-            license2 = self.tr(
+            license2=self.tr(
                 "novelWriter is distributed in the hope that it will be useful, but "
                 "WITHOUT ANY WARRANTY; without even the implied warranty of "
                 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
             ),
-            license3 = self.tr(
+            license3=self.tr(
                 "See the Licence tab for the full licence text, or visit the "
                 "GNU website at {0} for more details."
             ).format(
@@ -271,9 +271,9 @@ class GuiAbout(QDialog):
             "  padding-right: 0.8em;"
             "}}\n"
         ).format(
-            hColR = self.theParent.theTheme.colHead[0],
-            hColG = self.theParent.theTheme.colHead[1],
-            hColB = self.theParent.theTheme.colHead[2],
+            hColR=self.theParent.theTheme.colHead[0],
+            hColG=self.theParent.theTheme.colHead[1],
+            hColB=self.theParent.theTheme.colHead[2],
         )
         self.pageAbout.document().setDefaultStyleSheet(styleSheet)
         self.pageNotes.document().setDefaultStyleSheet(styleSheet)
