@@ -38,6 +38,7 @@ keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
+
 @pytest.mark.gui
 def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     """Test the document editor.
@@ -314,7 +315,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     assert nwGUI.treeView.deleteItem()
     assert nwGUI.treeView.setSelectedHandle(newHandle)
     assert nwGUI.treeView.deleteItem()
-    assert nwGUI.theProject.projTree["2fca346db6561"] is not None # Trash
+    assert nwGUI.theProject.projTree["2fca346db6561"] is not None  # Trash
     assert nwGUI.saveProject()
 
     # Check the files

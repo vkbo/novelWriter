@@ -241,6 +241,7 @@ def nwOldProj(tmpDir):
 
     return
 
+
 ##
 #  Useful Fixtures
 ##
