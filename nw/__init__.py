@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Init File
 =======================
@@ -62,9 +61,9 @@ __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "1.4a0"
-__hexversion__ = "0x010400a0"
-__date__       = "2021-04-01"
+__version__    = "1.4b1"
+__hexversion__ = "0x010400b1"
+__date__       = "2021-06-13"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 __url__        = "https://novelwriter.io"
@@ -90,14 +89,18 @@ __docurl__     = "https://novelwriter.readthedocs.io"
 # Add verbose logging level
 VERBOSE = 5
 logging.addLevelName(VERBOSE, "VERBOSE")
+
+
 def logVerbose(self, message, *args, **kws):
     if self.isEnabledFor(VERBOSE):
         self._log(VERBOSE, message, args, **kws)
+
 
 logging.Logger.verbose = logVerbose
 
 # Initiating logging
 logger = logging.getLogger(__name__)
+
 
 ##
 #  Main Program
@@ -105,6 +108,7 @@ logger = logging.getLogger(__name__)
 
 # Load the main config as a global object
 CONFIG = Config()
+
 
 def main(sysArgs=None):
     """Parses command line, sets up logging, and launches main GUI.
@@ -229,7 +233,7 @@ def main(sysArgs=None):
         errorCode |= 16
 
     try:
-        import lxml # noqa: F401
+        import lxml  # noqa: F401
     except ImportError:
         errorData.append("Python module 'lxml' is missing.")
         errorCode |= 32

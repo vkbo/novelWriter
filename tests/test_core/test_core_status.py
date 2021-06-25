@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – NWStatus Class Tester
 ===================================
@@ -25,6 +24,7 @@ import pytest
 from lxml import etree
 
 from nw.core.status import NWStatus
+
 
 @pytest.mark.core
 def testCoreStatus_Entries():
@@ -99,6 +99,7 @@ def testCoreStatus_Entries():
     assert theStatus._theCounts == [0, 0, 0, 0, 0]
 
 # END Test testCoreStatus_Entries
+
 
 @pytest.mark.core
 def testCoreStatus_XMLPackUnpack():

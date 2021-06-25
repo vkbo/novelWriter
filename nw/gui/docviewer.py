@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Document Viewer
 =================================
@@ -45,6 +44,7 @@ from nw.enum import nwAlert, nwItemType, nwDocAction
 from nw.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
+
 
 class GuiDocViewer(QTextBrowser):
 
@@ -570,6 +570,7 @@ class GuiDocViewer(QTextBrowser):
 
 # END Class GuiDocViewer
 
+
 class GuiDocViewHistory():
 
     def __init__(self, docViewer):
@@ -700,6 +701,7 @@ class GuiDocViewHistory():
         return
 
 # END Class GuiDocViewHistory
+
 
 # =============================================================================================== #
 #  The Embedded Document Header
@@ -906,6 +908,7 @@ class GuiDocViewHeader(QWidget):
         return
 
 # END Class GuiDocViewHeader
+
 
 # =============================================================================================== #
 #  The Embedded Document Footer
@@ -1131,6 +1134,7 @@ class GuiDocViewFooter(QWidget):
         return
 
 # END Class GuiDocViewFooter
+
 
 # =============================================================================================== #
 #  The Document Back-Reference Panel

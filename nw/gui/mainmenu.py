@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Main Menu
 ===========================
@@ -35,6 +34,7 @@ from nw.enum import nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwWidget
 from nw.constants import trConst, nwKeyWords, nwLabels, nwUnicode
 
 logger = logging.getLogger(__name__)
+
 
 class GuiMainMenu(QMenuBar):
 
@@ -241,7 +241,7 @@ class GuiMainMenu(QMenuBar):
         self.rootItems[nwItemClass.ARCHIVE]   = QAction(self.tr("Outtakes Root"),  self.rootMenu)
         nCount = 0
         for itemClass in self.rootItems.keys():
-            nCount += 1 # This forces the lambdas to be unique
+            nCount += 1  # This forces the lambdas to be unique
             self.rootItems[itemClass].triggered.connect(
                 lambda nCount, itemClass=itemClass: self._newTreeItem(nwItemType.ROOT, itemClass)
             )
@@ -830,6 +830,50 @@ class GuiMainMenu(QMenuBar):
         self.aFmtHead4.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H4))
         self.fmtMenu.addAction(self.aFmtHead4)
 
+        # Format > Separator
+        self.fmtMenu.addSeparator()
+
+        # Format > Align Left
+        self.aFmtAlignLeft = QAction(self.tr("Align Left"), self)
+        self.aFmtAlignLeft.setStatusTip(self.tr("Change the block alignment to left"))
+        self.aFmtAlignLeft.setShortcut("Ctrl+5")
+        self.aFmtAlignLeft.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_L))
+        self.fmtMenu.addAction(self.aFmtAlignLeft)
+
+        # Format > Align Centre
+        self.aFmtAlignCentre = QAction(self.tr("Align Centre"), self)
+        self.aFmtAlignCentre.setStatusTip(self.tr("Change the block alignment to centre"))
+        self.aFmtAlignCentre.setShortcut("Ctrl+6")
+        self.aFmtAlignCentre.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_C))
+        self.fmtMenu.addAction(self.aFmtAlignCentre)
+
+        # Format > Align Right
+        self.aFmtAlignRight = QAction(self.tr("Align Right"), self)
+        self.aFmtAlignRight.setStatusTip(self.tr("Change the block alignment to right"))
+        self.aFmtAlignRight.setShortcut("Ctrl+7")
+        self.aFmtAlignRight.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_R))
+        self.fmtMenu.addAction(self.aFmtAlignRight)
+
+        # Format > Separator
+        self.fmtMenu.addSeparator()
+
+        # Format > Indent Left
+        self.aFmtIndentLeft = QAction(self.tr("Indent Left"), self)
+        self.aFmtIndentLeft.setStatusTip(self.tr("Increase the block's left margin"))
+        self.aFmtIndentLeft.setShortcut("Ctrl+8")
+        self.aFmtIndentLeft.triggered.connect(lambda: self._docAction(nwDocAction.INDENT_L))
+        self.fmtMenu.addAction(self.aFmtIndentLeft)
+
+        # Format > Indent Right
+        self.aFmtIndentRight = QAction(self.tr("Indent Right"), self)
+        self.aFmtIndentRight.setStatusTip(self.tr("Increase the block's right margin"))
+        self.aFmtIndentRight.setShortcut("Ctrl+9")
+        self.aFmtIndentRight.triggered.connect(lambda: self._docAction(nwDocAction.INDENT_R))
+        self.fmtMenu.addAction(self.aFmtIndentRight)
+
+        # Format > Separator
+        self.fmtMenu.addSeparator()
+
         # Format > Comment
         self.aFmtComment = QAction(self.tr("Comment"), self)
         self.aFmtComment.setStatusTip(self.tr("Change the block format to comment"))
@@ -938,7 +982,7 @@ class GuiMainMenu(QMenuBar):
         self.aSpellCheck.setStatusTip(self.tr("Toggle check spelling"))
         self.aSpellCheck.setCheckable(True)
         self.aSpellCheck.setChecked(self.theProject.spellCheck)
-        self.aSpellCheck.triggered.connect(self._toggleSpellCheck) # triggered, not toggled!
+        self.aSpellCheck.triggered.connect(self._toggleSpellCheck)  # triggered, not toggled!
         self.aSpellCheck.setShortcut("Ctrl+F7")
         self.toolsMenu.addAction(self.aSpellCheck)
 

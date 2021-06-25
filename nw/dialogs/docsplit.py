@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Doc Split Tool
 ================================
@@ -39,6 +38,7 @@ from nw.constants import nwConst
 from nw.gui.custom import QHelpLabel
 
 logger = logging.getLogger(__name__)
+
 
 class GuiDocSplit(QDialog):
 

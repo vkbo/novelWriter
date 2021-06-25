@@ -1,0 +1,147 @@
+.. _a_kb:
+
+******************
+Keyboard Shortcuts
+******************
+
+Most features in novelWriter are available as keyboard shortcuts.
+
+
+.. _a_kb_main:
+
+Main Shortcuts
+==============
+
+The main shorcuts are as follows:
+
+.. csv-table:: Keyboard Shortcuts
+   :header: "Shortcut", "Description"
+   :widths: 30, 70
+   :class: "tight-table"
+
+   ":kbd:`Alt`:kbd:`1`",                 "Switch focus to the project tree. On Windows, use :kbd:`Ctrl`:kbd:`Alt`:kbd:`1`."
+   ":kbd:`Alt`:kbd:`2`",                 "Switch focus to document editor. On Windows, use :kbd:`Ctrl`:kbd:`Alt`:kbd:`2`."
+   ":kbd:`Alt`:kbd:`3`",                 "Switch focus to document viewer. On Windows, use :kbd:`Ctrl`:kbd:`Alt`:kbd:`3`."
+   ":kbd:`Alt`:kbd:`4`",                 "Switch focus to outline view. On Windows, use :kbd:`Ctrl`:kbd:`Alt`:kbd:`4`."
+   ":kbd:`Alt`:kbd:`Left`",              "Move backward in the view history of the document viewer."
+   ":kbd:`Alt`:kbd:`Right`",             "Move forward in the view history of the document viewer."
+   ":kbd:`Ctrl`:kbd:`.`",                "Open menu to correct word under cursor."
+   ":kbd:`Ctrl`:kbd:`,`",                "Open the :guilabel:`Preferences` dialog."
+   ":kbd:`Ctrl`:kbd:`/`",                "Toggle block format as comment."
+   ":kbd:`Ctrl`:kbd:`0`",                "Remove block formatting for block under cursor."
+   ":kbd:`Ctrl`:kbd:`1`",                "Change block format to header level 1."
+   ":kbd:`Ctrl`:kbd:`2`",                "Change block format to header level 2."
+   ":kbd:`Ctrl`:kbd:`3`",                "Change block format to header level 3."
+   ":kbd:`Ctrl`:kbd:`4`",                "Change block format to header level 4."
+   ":kbd:`Ctrl`:kbd:`5`",                "Change block alignment to left-aligned."
+   ":kbd:`Ctrl`:kbd:`6`",                "Change block alignment to centred."
+   ":kbd:`Ctrl`:kbd:`7`",                "Change block alignment to right-aligned."
+   ":kbd:`Ctrl`:kbd:`8`",                "Add a left margin to the block."
+   ":kbd:`Ctrl`:kbd:`9`",                "Add a right margin to the block."
+   ":kbd:`Ctrl`:kbd:`A`",                "Select all text in the document."
+   ":kbd:`Ctrl`:kbd:`B`",                "Format selected text, or word under cursor, with strong emphasis (bold)."
+   ":kbd:`Ctrl`:kbd:`C`",                "Copy selected text to clipboard."
+   ":kbd:`Ctrl`:kbd:`D`",                "Strikethrough selected text, or word under cursor."
+   ":kbd:`Ctrl`:kbd:`E`",                "If in the project tree, edit a document or folder settings. (Same as :kbd:`F2`.)"
+   ":kbd:`Ctrl`:kbd:`F`",                "Open the search bar and search for the selected word, if any is selected."
+   ":kbd:`Ctrl`:kbd:`G`",                "Find next occurrence of search word in current document. (Same as :kbd:`F3`.)"
+   ":kbd:`Ctrl`:kbd:`H`",                "Open the search and replace bar and search for the selected word, if any is selected. (On Mac, this is :kbd:`Cmd`:kbd:`=`.)"
+   ":kbd:`Ctrl`:kbd:`I`",                "Format selected text, or word under cursor, with emphasis (italic)."
+   ":kbd:`Ctrl`:kbd:`K`",                "Activate the insert commands. The commands are listed in :ref:`a_kb_ins`."
+   ":kbd:`Ctrl`:kbd:`N`",                "Create new document."
+   ":kbd:`Ctrl`:kbd:`O`",                "Open selected document."
+   ":kbd:`Ctrl`:kbd:`Q`",                "Exit novelWriter."
+   ":kbd:`Ctrl`:kbd:`R`",                "If in the project tree, open a document for viewing. If the editor has focus, open current document for viewing."
+   ":kbd:`Ctrl`:kbd:`S`",                "Save the current document in the document editor."
+   ":kbd:`Ctrl`:kbd:`V`",                "Paste text from clipboard to cursor position."
+   ":kbd:`Ctrl`:kbd:`W`",                "Close the current document in the document editor."
+   ":kbd:`Ctrl`:kbd:`X`",                "Cut selected text to clipboard."
+   ":kbd:`Ctrl`:kbd:`Y`",                "Redo latest undo."
+   ":kbd:`Ctrl`:kbd:`Z`",                "Undo latest changes."
+   ":kbd:`Ctrl`:kbd:`F7`",               "Toggle spell checking."
+   ":kbd:`Ctrl`:kbd:`F10`",              "Toggle automatic updating of project outline."
+   ":kbd:`Ctrl`:kbd:`Up`",               "Move item one step up in the project tree."
+   ":kbd:`Ctrl`:kbd:`Down`",             "Move item one step down in the project tree."
+   ":kbd:`Ctrl`:kbd:`Del`",              "Delete next word in editor."
+   ":kbd:`Ctrl`:kbd:`Backspace`",        "Delete previous word in editor."
+   ":kbd:`Ctrl`:kbd:`'`",                "Wrap selected text, or word under cursor, in single quotes."
+   ":kbd:`Ctrl`:kbd:`""`",               "Wrap selected text, or word under cursor, in double quotes."
+   ":kbd:`Ctrl`:kbd:`Retrun`",           "Open the tag or reference under the cursor in the Viewer."
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`,`",    "Open the :guilabel:`Project Settings` dialog."
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`/`",    "Remove block formatting for block under cursor."
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`1`",    "Replace occurrence of search word in current document, and search for next occurrence."
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`A`",    "Select all text in current paragraph."
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`G`",    "Find previous occurrence of search word in current document. (Same as :kbd:`Shift`:kbd:`F3`.)"
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`I`",    "Import text to the current document from a text file."
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`N`",    "Create new folder."
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`O`",    "Open a project."
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`R`",    "Close the document viewer."
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`S`",    "Save the current project."
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`W`",    "Close the current project."
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`Z`",    "Undo move of project tree item."
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`Del`",  "If in the project tree, move a document to trash, or delete a folder."
+   ":kbd:`F1`",                          "Open the documentation. This will either open the Qt Assistant, if available, or send you to the documentation website."
+   ":kbd:`F2`",                          "If in the project tree, edit a document or folder settings. (Same as :kbd:`Ctrl`:kbd:`E`)"
+   ":kbd:`F3`",                          "Find next occurrence of search word in current document. (Same as :kbd:`Ctrl`:kbd:`G`)"
+   ":kbd:`F5`",                          "Open the :guilabel:`Build Novel Project` dialog."
+   ":kbd:`F6`",                          "Open the :guilabel:`Writing Statistics` dialog."
+   ":kbd:`F7`",                          "Re-run spell checker."
+   ":kbd:`F8`",                          "Activate :guilabel:`Focus Mode`, hiding the project tree and document viewer."
+   ":kbd:`F9`",                          "Re-build the project index."
+   ":kbd:`F10`",                         "Re-build the project outline."
+   ":kbd:`F11`",                         "Activate full screen mode."
+   ":kbd:`Shift`:kbd:`F1`",              "Open the online documentation in the system default browser."
+   ":kbd:`Shift`:kbd:`F3`",              "Find previous occurrence of search word in current document. (Same as :kbd:`Ctrl`:kbd:`Shift`:kbd:`G`.)"
+   ":kbd:`Shift`:kbd:`F6`",              "Open the :guilabel:`Project Details` dialog."
+   ":kbd:`Return`",                      "If in the project tree, open a document for editing."
+
+.. note::
+   On macOS, replace :kbd:`Ctrl` with :kbd:`Cmd`.
+
+
+.. _a_kb_ins:
+
+Insert Shortcuts
+================
+
+A set of insert features are also available through shortcuts, but they require a double
+combination of key sequences. The insert feature is activated with :kbd:`Ctrl`:kbd:`K`, followed by
+a key or key combination for the inserted content.
+
+.. csv-table:: Keyboard Shortcuts
+   :header: "Shortcut", "Description"
+   :widths: 40, 60
+   :class: "tight-table"
+
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`−`",                 "Insert a short dash (en dash)."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`_`",                 "Insert a long dash (em dash)."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`_`",      "Insert a horizontal bar (quotation dash)."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`~`",                 "Insert a figure dash (same width as a number)."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`1`",                 "Insert a left single quote."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`2`",                 "Insert a right single quote."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`3`",                 "Insert a left double quote."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`4`",                 "Insert a right double quote."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`'`",                 "Insert a modifier apostrophe."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`.`",                 "Insert an ellipsis."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`'`",      "Insert a prime."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`""`",     "Insert a double prime."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`Space`",             "Insert a non-breaking space."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`Shift`:kbd:`Space`", "Insert a thin space."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`Space`",  "Insert a thin non-breaking space."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`*`",                 "Insert a list bullet."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`−`",      "Insert a hyphen bullet (alternative bullet)."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`*`",      "Insert a flower mark (alternative bullet)."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`%`",                 "Insert a per mille symbol."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`O`",      "Insert a degree symbol."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`X`",      "Insert a times sign."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`D`",      "Insert a division sign."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`G`",                 "Insert a ``@tag`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`V`",                 "Insert a ``@pov`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`F`",                 "Insert a ``@focus`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`C`",                 "Insert a ``@char`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`P`",                 "Insert a ``@plot`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`T`",                 "Insert a ``@time`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`L`",                 "Insert a ``@location`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`O`",                 "Insert an ``@object`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`E`",                 "Insert an ``@entity`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`X`",                 "Insert a ``@custom`` keyword."

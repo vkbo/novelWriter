@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Preferences Dialog Class Tester
 =============================================
@@ -40,13 +39,14 @@ keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
+
 @pytest.mark.gui
 def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     """Test the load project wizard.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
 
     # Must create a clean config and GUI object as the test-wide
     # nw.CONFIG object is created on import an can be tainted by other tests
@@ -69,8 +69,8 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     assert theConf.confPath == fncDir
     theConf.spellTool = nwConst.SP_INTERNAL
 
-    monkeypatch.setattr(GuiPreferences, "exec_", lambda *args: None)
-    monkeypatch.setattr(GuiPreferences, "result", lambda *args: QDialog.Accepted)
+    monkeypatch.setattr(GuiPreferences, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiPreferences, "result", lambda *a: QDialog.Accepted)
     nwGUI.mainMenu.aPreferences.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiPreferences") is not None, timeout=1000)
 
@@ -125,9 +125,9 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     # qtbot.stopForInteraction()
 
     # Check Browse button
-    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "")
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: "")
     assert not tabProjects._backupFolder()
-    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *args, **kwargs: "some/dir")
+    monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: "some/dir")
     qtbot.mouseClick(tabProjects.backupGetPath, Qt.LeftButton)
 
     qtbot.wait(keyDelay)

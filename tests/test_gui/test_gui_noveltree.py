@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Main GUI Novel Tree Class Tester
 ==============================================
@@ -28,13 +27,14 @@ from tools import writeFile
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox
 
+
 @pytest.mark.gui
 def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test navigating the novel tree.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
 
     nwGUI.openProject(nwMinimal)
     nwGUI.theProject.projTree.setSeed(42)

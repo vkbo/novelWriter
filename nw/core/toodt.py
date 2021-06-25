@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – ODT Text Converter
 ================================
@@ -57,38 +56,39 @@ TAG_TAB  = "{%s}tab" % XML_NS["text"]
 TAG_SPAN = "{%s}span" % XML_NS["text"]
 TAG_STNM = "{%s}style-name" % XML_NS["text"]
 
+
 class ToOdt(Tokenizer):
 
-    X_BLD = 0x01 # Bold format
-    X_ITA = 0x02 # Italic format
-    X_DEL = 0x04 # Strikethrough format
-    X_BRK = 0x08 # Line break
-    X_TAB = 0x10 # Tab
+    X_BLD = 0x01  # Bold format
+    X_ITA = 0x02  # Italic format
+    X_DEL = 0x04  # Strikethrough format
+    X_BRK = 0x08  # Line break
+    X_TAB = 0x10  # Tab
 
     def __init__(self, theProject, isFlat):
         Tokenizer.__init__(self, theProject)
 
         self.mainConf = nw.CONFIG
 
-        self._isFlat = isFlat # Flat: .fodt, otherwise .odt
+        self._isFlat = isFlat  # Flat: .fodt, otherwise .odt
 
-        self._dFlat = None # FODT file XML root
-        self._dCont = None # ODT content.xml root
-        self._dMeta = None # ODT meta.xml root
-        self._dStyl = None # ODT styles.xml root
+        self._dFlat = None  # FODT file XML root
+        self._dCont = None  # ODT content.xml root
+        self._dMeta = None  # ODT meta.xml root
+        self._dStyl = None  # ODT styles.xml root
 
-        self._xMeta = None # Office meta root
-        self._xStyl = None # Office styles root
-        self._xAuto = None # Office auto-styles root
-        self._xMast = None # Office master-styles root
-        self._xBody = None # Office body root
-        self._xText = None # Office text root
+        self._xMeta = None  # Office meta root
+        self._xStyl = None  # Office styles root
+        self._xAuto = None  # Office auto-styles root
+        self._xMast = None  # Office master-styles root
+        self._xBody = None  # Office body root
+        self._xText = None  # Office text root
 
-        self._xAut2 = None # Page layout auto-styles for ODT file
+        self._xAut2 = None  # Page layout auto-styles for ODT file
 
-        self._mainPara = {} # User-accessible paragraph styles
-        self._autoPara = {} # Auto-generated paragraph styles
-        self._autoText = {} # Auto-generated text styles
+        self._mainPara = {}  # User-accessible paragraph styles
+        self._autoPara = {}  # Auto-generated paragraph styles
+        self._autoText = {}  # Auto-generated text styles
 
         # Properties
         self.textFont   = "Liberation Serif"
@@ -99,21 +99,22 @@ class ToOdt(Tokenizer):
         self.headerText = ""
 
         # Internal
-        self._fontFamily = "&apos;Liberation Sans&apos;"
-        self._fontPitch  = "variable"
-        self._fSizeTitle = "30pt"
-        self._fSizeHead1 = "24pt"
-        self._fSizeHead2 = "20pt"
-        self._fSizeHead3 = "16pt"
-        self._fSizeHead4 = "14pt"
-        self._fSizeHead  = "14pt"
-        self._fSizeText  = "12pt"
-        self._lineHeight = "115%"
-        self._textAlign  = "left"
-        self._dLanguage  = "en"
-        self._dCountry   = "GB"
+        self._fontFamily  = "&apos;Liberation Sans&apos;"
+        self._fontPitch   = "variable"
+        self._fSizeTitle  = "30pt"
+        self._fSizeHead1  = "24pt"
+        self._fSizeHead2  = "20pt"
+        self._fSizeHead3  = "16pt"
+        self._fSizeHead4  = "14pt"
+        self._fSizeHead   = "14pt"
+        self._fSizeText   = "12pt"
+        self._lineHeight  = "115%"
+        self._blockIndent = "1.693cm"
+        self._textAlign   = "left"
+        self._dLanguage   = "en"
+        self._dCountry    = "GB"
 
-        ## Text Margings in Units of em
+        # Text Margings in Units of em
         self._mTopTitle = "0.423cm"
         self._mTopHead1 = "0.423cm"
         self._mTopHead2 = "0.353cm"
@@ -132,13 +133,13 @@ class ToOdt(Tokenizer):
         self._mBotText  = "0.247cm"
         self._mBotMeta  = "0.106cm"
 
-        ## Document Margins
+        # Document Margins
         self._mDocTop   = "2.000cm"
         self._mDocBtm   = "2.000cm"
         self._mDocLeft  = "2.000cm"
         self._mDocRight = "2.000cm"
 
-        ## Colour
+        # Colour
         self._colHead12 = None
         self._opaHead12 = None
         self._colHead34 = None
@@ -222,8 +223,9 @@ class ToOdt(Tokenizer):
             self._colMetaTx = "#813709"
             self._opaMetaTx = "100%"
 
-        self._lineHeight = f"{round(100 * self.lineHeight):d}%"
-        self._textAlign  = "justify" if self.doJustify else "left"
+        self._lineHeight  = f"{round(100 * self.lineHeight):d}%"
+        self._blockIndent = self._emToCm(self.blockIndent)
+        self._textAlign   = "justify" if self.doJustify else "left"
 
         # Document Header
         # ===============
@@ -313,15 +315,15 @@ class ToOdt(Tokenizer):
     def doConvert(self):
         """Convert the list of text tokens into XML elements.
         """
-        self.theResult = "" # Not used, but cleared just in case
+        self.theResult = ""  # Not used, but cleared just in case
 
         odtTags = {
-            self.FMT_B_B : "_B", # Bold open format
-            self.FMT_B_E : "b_", # Bold close format
-            self.FMT_I_B : "I",  # Italic open format
-            self.FMT_I_E : "i",  # Italic close format
-            self.FMT_D_B : "_S", # Strikethrough open format
-            self.FMT_D_E : "s_", # Strikethrough close format
+            self.FMT_B_B : "_B",  # Bold open format
+            self.FMT_B_E : "b_",  # Bold close format
+            self.FMT_I_B : "I",   # Italic open format
+            self.FMT_I_E : "i",   # Italic close format
+            self.FMT_D_B : "_S",  # Strikethrough open format
+            self.FMT_D_E : "s_",  # Strikethrough close format
         }
 
         thisPar = []
@@ -355,6 +357,11 @@ class ToOdt(Tokenizer):
                     oStyle.setMarginBottom("0.000cm")
                 if tStyle & self.A_Z_TOPMRG:
                     oStyle.setMarginTop("0.000cm")
+
+                if tStyle & self.A_IND_L:
+                    oStyle.setMarginLeft(self._blockIndent)
+                if tStyle & self.A_IND_R:
+                    oStyle.setMarginRight(self._blockIndent)
 
             # Process Text Types
             if tType == self.T_EMPTY:
@@ -515,7 +522,7 @@ class ToOdt(Tokenizer):
     def _formatKeywords(self, tText):
         """Apply formatting to keywords.
         """
-        isValid, theBits, thePos = self.theParent.theIndex.scanThis("@"+tText)
+        isValid, theBits, _ = self.theParent.theIndex.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 
@@ -978,6 +985,7 @@ class ToOdt(Tokenizer):
 
 # END Class ToOdt
 
+
 # =============================================================================================== #
 #  Auto-Style Classes
 # =============================================================================================== #
@@ -1008,6 +1016,8 @@ class ODTParagraphStyle():
         self._pAttr = {
             "margin-top":    ["fo", None],
             "margin-bottom": ["fo", None],
+            "margin-left":   ["fo", None],
+            "margin-right":  ["fo", None],
             "line-height":   ["fo", None],
             "text-align":    ["fo", None],
             "break-before":  ["fo", None],
@@ -1062,6 +1072,14 @@ class ODTParagraphStyle():
 
     def setMarginBottom(self, theValue):
         self._pAttr["margin-bottom"][1] = str(theValue)
+        return
+
+    def setMarginLeft(self, theValue):
+        self._pAttr["margin-left"][1] = str(theValue)
+        return
+
+    def setMarginRight(self, theValue):
+        self._pAttr["margin-right"][1] = str(theValue)
         return
 
     def setLineHeight(self, theValue):
@@ -1142,13 +1160,13 @@ class ODTParagraphStyle():
         """Check if there are new settings in refStyle that differ from
         those in the current object.
         """
-        for aName, (aNm, aVal) in refStyle._mAttr.items():
+        for aName, (_, aVal) in refStyle._mAttr.items():
             if aVal is not None and aVal != self._mAttr[aName][1]:
                 return True
-        for aName, (aNm, aVal) in refStyle._pAttr.items():
+        for aName, (_, aVal) in refStyle._pAttr.items():
             if aVal is not None and aVal != self._pAttr[aName][1]:
                 return True
-        for aName, (aNm, aVal) in refStyle._tAttr.items():
+        for aName, (_, aVal) in refStyle._tAttr.items():
             if aVal is not None and aVal != self._tAttr[aName][1]:
                 return True
         return False
@@ -1194,6 +1212,7 @@ class ODTParagraphStyle():
         return
 
 # END Class ODTParagraphStyle
+
 
 class ODTTextStyle():
     """Wrapper class for the text style setting used by the exporter.
@@ -1264,6 +1283,7 @@ class ODTTextStyle():
         return
 
 # END Class ODTTextStyle
+
 
 # =============================================================================================== #
 #  Local Functions

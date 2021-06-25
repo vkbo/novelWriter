@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Main Window
 =============================
@@ -54,6 +53,7 @@ from nw.common import getGuiItem, hexToInt
 from nw.constants import nwLists
 
 logger = logging.getLogger(__name__)
+
 
 class GuiMain(QMainWindow):
 
@@ -613,9 +613,9 @@ class GuiMain(QMainWindow):
             return False
 
         self.treeView.flushTreeOrder()
-        nHandle = None  # The next handle after tHandle
-        fHandle = None  # The first file handle we encounter
-        foundIt = False # We've found tHandle, pick the next we see
+        nHandle = None   # The next handle after tHandle
+        fHandle = None   # The first file handle we encounter
+        foundIt = False  # We've found tHandle, pick the next we see
         for tItem in self.theProject.projTree:
             if tItem is None:
                 continue
@@ -1345,6 +1345,11 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aFmtHead2)
         self.addAction(self.mainMenu.aFmtHead3)
         self.addAction(self.mainMenu.aFmtHead4)
+        self.addAction(self.mainMenu.aFmtAlignLeft)
+        self.addAction(self.mainMenu.aFmtAlignCentre)
+        self.addAction(self.mainMenu.aFmtAlignRight)
+        self.addAction(self.mainMenu.aFmtIndentLeft)
+        self.addAction(self.mainMenu.aFmtIndentRight)
         self.addAction(self.mainMenu.aFmtComment)
         self.addAction(self.mainMenu.aFmtNoFormat)
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Document
 ==============================
@@ -32,6 +31,7 @@ from nw.common import isHandle
 
 logger = logging.getLogger(__name__)
 
+
 class NWDoc():
 
     def __init__(self, theProject, theHandle):
@@ -39,11 +39,11 @@ class NWDoc():
         self.theProject = theProject
 
         # Internal Variables
-        self._theItem   = None # The currently open item
-        self._docHandle = None # The handle of the currently open item
-        self._fileLoc   = None # The file location of the currently open item
-        self._docMeta   = {}   # The meta data of the currently open item
-        self._docError  = ""   # The latest encountered IO error
+        self._theItem   = None  # The currently open item
+        self._docHandle = None  # The handle of the currently open item
+        self._fileLoc   = None  # The file location of the currently open item
+        self._docMeta   = {}    # The meta data of the currently open item
+        self._docError  = ""    # The latest encountered IO error
 
         if isHandle(theHandle):
             self._docHandle = theHandle

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Item Editor Dialog Class Tester
 =============================================
@@ -36,8 +35,9 @@ keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
+
 @pytest.mark.gui
-def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir, outDir):
+def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     """Test the full item editor dialog.
     """
     projFile = os.path.join(fncProj, "nwProject.nwx")
@@ -45,8 +45,8 @@ def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir,
     compFile = os.path.join(refDir, "guiItemEditor_Dialog_nwProject.nwx")
 
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *args: True)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
     # Create new, save, open project
     nwGUI.theProject.projTree.setSeed(42)
@@ -54,7 +54,7 @@ def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, refDir,
     assert nwGUI.openDocument("0e17daca5f3e1")
     assert nwGUI.treeView.setSelectedHandle("0e17daca5f3e1", doScroll=True)
 
-    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *args: None)
+    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: None)
     nwGUI.mainMenu.aEditItem.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiItemEditor") is not None, timeout=1000)
 

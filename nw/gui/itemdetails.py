@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Item Details Panel
 ====================================
@@ -35,6 +34,7 @@ from nw.enum import nwItemClass, nwItemType, nwItemLayout
 from nw.constants import trConst, nwLabels
 
 logger = logging.getLogger(__name__)
+
 
 class GuiItemDetails(QWidget):
 
@@ -235,10 +235,10 @@ class GuiItemDetails(QWidget):
 
         itStatus = nwItem.itemStatus
         if nwItem.itemClass == nwItemClass.NOVEL:
-            itStatus = self.theProject.statusItems.checkEntry(itStatus) # Make sure it's valid
+            itStatus = self.theProject.statusItems.checkEntry(itStatus)  # Make sure it's valid
             flagIcon = self.theParent.statusIcons[itStatus]
         else:
-            itStatus = self.theProject.importItems.checkEntry(itStatus) # Make sure it's valid
+            itStatus = self.theProject.importItems.checkEntry(itStatus)  # Make sure it's valid
             flagIcon = self.theParent.importIcons[itStatus]
 
         if nwItem.itemType == nwItemType.FILE:

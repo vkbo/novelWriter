@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Document Editor
 =================================
@@ -57,6 +56,7 @@ from nw.gui.dochighlight import GuiDocHighlighter
 
 logger = logging.getLogger(__name__)
 
+
 class GuiDocEditor(QTextEdit):
 
     MOVE_KEYS = (
@@ -84,24 +84,24 @@ class GuiDocEditor(QTextEdit):
         self._nwDocument = None
         self._nwItem     = None
 
-        self._docChanged = False # Flag for changed status of document
-        self._docHandle  = None  # The handle of the open file
-        self._docHeaders = []    # Record of headers in the file
+        self._docChanged = False  # Flag for changed status of document
+        self._docHandle  = None   # The handle of the open file
+        self._docHeaders = []     # Record of headers in the file
 
-        self._spellCheck = False # Flag for spell checking enabled
-        self._theDict    = None  # The current spell check dictionary
-        self._nonWord    = "\"'" # Characters to not include in spell checking
+        self._spellCheck = False  # Flag for spell checking enabled
+        self._theDict    = None   # The current spell check dictionary
+        self._nonWord    = "\"'"  # Characters to not include in spell checking
 
         # Document Variables
-        self._charCount  = 0     # Character count
-        self._wordCount  = 0     # Word count
-        self._paraCount  = 0     # Paragraph count
-        self._lastEdit   = 0     # Time stamp of last edit
-        self._lastActive = 0     # Time stamp of last activity
-        self._lastFind   = None  # Position of the last found search word
-        self._bigDoc     = False # Flag for very large document size
-        self._doReplace  = False # Switch to temporarily disable auto-replace
-        self._queuePos   = None  # Used for delayed change of cursor position
+        self._charCount  = 0      # Character count
+        self._wordCount  = 0      # Word count
+        self._paraCount  = 0      # Paragraph count
+        self._lastEdit   = 0      # Time stamp of last edit
+        self._lastActive = 0      # Time stamp of last activity
+        self._lastFind   = None   # Position of the last found search word
+        self._bigDoc     = False  # Flag for very large document size
+        self._doReplace  = False  # Switch to temporarily disable auto-replace
+        self._queuePos   = None   # Used for delayed change of cursor position
 
         # Typography
         self._typDQOpen  = '"'
@@ -276,7 +276,7 @@ class GuiDocEditor(QTextEdit):
         # Refresh the tab stops
         if self.mainConf.verQtValue >= 51000:
             self.setTabStopDistance(self.mainConf.getTabWidth())
-        else: # pragma: no cover
+        else:  # pragma: no cover
             self.setTabStopWidth(self.mainConf.getTabWidth())
 
         # Initialise the syntax highlighter
@@ -597,8 +597,8 @@ class GuiDocEditor(QTextEdit):
         """
         if self.mainConf.verQtValue >= 50900:
             theText = self.document().toRawText()
-            theText = theText.replace(nwUnicode.U_LSEP, "\n") # Line separators
-            theText = theText.replace(nwUnicode.U_PSEP, "\n") # Paragraph separators
+            theText = theText.replace(nwUnicode.U_LSEP, "\n")  # Line separators
+            theText = theText.replace(nwUnicode.U_PSEP, "\n")  # Paragraph separators
         else:
             theText = self.toPlainText()
         return theText
@@ -793,6 +793,16 @@ class GuiDocEditor(QTextEdit):
             self._replaceQuotes("\"", self._typDQOpen, self._typDQClose)
         elif theAction == nwDocAction.RM_BREAKS:
             self._removeInParLineBreaks()
+        elif theAction == nwDocAction.ALIGN_L:
+            self._formatBlock(nwDocAction.ALIGN_L)
+        elif theAction == nwDocAction.ALIGN_C:
+            self._formatBlock(nwDocAction.ALIGN_C)
+        elif theAction == nwDocAction.ALIGN_R:
+            self._formatBlock(nwDocAction.ALIGN_R)
+        elif theAction == nwDocAction.INDENT_L:
+            self._formatBlock(nwDocAction.INDENT_L)
+        elif theAction == nwDocAction.INDENT_R:
+            self._formatBlock(nwDocAction.INDENT_R)
         else:
             logger.debug("Unknown or unsupported document action %s" % str(theAction))
             self._allowAutoReplace(True)
@@ -1492,7 +1502,7 @@ class GuiDocEditor(QTextEdit):
             elif nS == 1:
                 pC = " "
                 cC = selText[0]
-            else: # pragma: no cover
+            else:  # pragma: no cover
                 continue
 
             if cC != sQuote:
@@ -1536,9 +1546,13 @@ class GuiDocEditor(QTextEdit):
         elif theText.startswith("% "):
             newText = theText[2:]
             cOffset = 2
+            if docAction == nwDocAction.BLOCK_COM:
+                docAction = nwDocAction.BLOCK_TXT
         elif theText.startswith("%"):
             newText = theText[1:]
             cOffset = 1
+            if docAction == nwDocAction.BLOCK_COM:
+                docAction = nwDocAction.BLOCK_TXT
         elif theText.startswith("# "):
             newText = theText[2:]
             cOffset = 2
@@ -1551,9 +1565,31 @@ class GuiDocEditor(QTextEdit):
         elif theText.startswith("#### "):
             newText = theText[5:]
             cOffset = 5
+        elif theText.startswith(">> "):
+            newText = theText[3:]
+            cOffset = 3
+        elif theText.startswith("> ") and docAction != nwDocAction.INDENT_R:
+            newText = theText[2:]
+            cOffset = 2
+        elif theText.startswith(">>"):
+            newText = theText[2:]
+            cOffset = 2
+        elif theText.startswith(">") and docAction != nwDocAction.INDENT_R:
+            newText = theText[1:]
+            cOffset = 1
         else:
             newText = theText
             cOffset = 0
+
+        # Also remove formatting tags at the end
+        if theText.endswith(" <<"):
+            newText = newText[:-3]
+        elif theText.endswith(" <") and docAction != nwDocAction.INDENT_L:
+            newText = newText[:-2]
+        elif theText.endswith("<<"):
+            newText = newText[:-2]
+        elif theText.endswith("<") and docAction != nwDocAction.INDENT_L:
+            newText = newText[:-1]
 
         # Apply new format
         if docAction == nwDocAction.BLOCK_COM:
@@ -1571,9 +1607,21 @@ class GuiDocEditor(QTextEdit):
         elif docAction == nwDocAction.BLOCK_H4:
             theText = "#### "+newText
             cOffset -= 5
+        elif docAction == nwDocAction.ALIGN_L:
+            theText = newText+" <<"
+        elif docAction == nwDocAction.ALIGN_C:
+            theText = ">> "+newText+" <<"
+            cOffset -= 3
+        elif docAction == nwDocAction.ALIGN_R:
+            theText = ">> "+newText
+            cOffset -= 3
+        elif docAction == nwDocAction.INDENT_L:
+            theText = "> "+newText
+            cOffset -= 2
+        elif docAction == nwDocAction.INDENT_R:
+            theText = newText+" <"
         elif docAction == nwDocAction.BLOCK_TXT:
             theText = newText
-            cOffset -= 0
         else:
             logger.error("Unknown or unsupported block format requested: %s" % str(docAction))
             return False
@@ -1588,7 +1636,8 @@ class GuiDocEditor(QTextEdit):
         if posS > 0:
             theCursor.insertBlock()
         theCursor.insertText(theText)
-        theCursor.setPosition(max(posO - cOffset, 0))
+        if posO - cOffset >= 0:
+            theCursor.setPosition(posO - cOffset)
         theCursor.endEditBlock()
         self.setTextCursor(theCursor)
 
@@ -1706,7 +1755,7 @@ class GuiDocEditor(QTextEdit):
         theTwo   = theText[thePos-2:thePos]
         theThree = theText[thePos-3:thePos]
 
-        if not theOne: # Makes Neo sad
+        if not theOne:  # Makes Neo sad
             return
 
         nDelete = 0
@@ -1899,6 +1948,7 @@ class GuiDocEditor(QTextEdit):
 
 # END Class GuiDocEditor
 
+
 # =============================================================================================== #
 #  The Off-GUI Thread Word Counter
 #  A runnable for the word counter to be run in the thread pool off the main GUI thread.
@@ -1928,7 +1978,8 @@ class BackgroundWordCounter(QRunnable):
         self._isRunning = False
         return
 
-## END Class BackgroundWordCounter
+# END Class BackgroundWordCounter
+
 
 class BackgroundWordCounterSignals(QObject):
     """The QRunnable cannot emit a signal, so we need a simple QObject
@@ -1937,6 +1988,7 @@ class BackgroundWordCounterSignals(QObject):
     countsReady = pyqtSignal(int, int, int)
 
 # END Class BackgroundWordCounterSignals
+
 
 # =============================================================================================== #
 #  The Embedded Document Search/Replace Feature
@@ -2201,7 +2253,7 @@ class GuiDocEditSearch(QFrame):
                 self._alertSearchValid(theRegEx.isValid())
                 return theRegEx
 
-            else: # >= 50300 to < 51300
+            else:  # >= 50300 to < 51300
                 if self.isCaseSense:
                     rxOpt = Qt.CaseSensitive
                 else:
@@ -2312,6 +2364,7 @@ class GuiDocEditSearch(QFrame):
         return
 
 # END Class GuiDocEditSearch
+
 
 # =============================================================================================== #
 #  The Embedded Document Header
@@ -2534,6 +2587,7 @@ class GuiDocEditHeader(QWidget):
         return
 
 # END Class GuiDocEditHeader
+
 
 # =============================================================================================== #
 #  The Embedded Document Footer

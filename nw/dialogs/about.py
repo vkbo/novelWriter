@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI About Box
 ===========================
@@ -38,6 +37,7 @@ from PyQt5.QtWidgets import (
 )
 
 logger = logging.getLogger(__name__)
+
 
 class GuiAbout(QDialog):
 

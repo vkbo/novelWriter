@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – NWProject Class Tester
 ====================================
@@ -35,8 +34,9 @@ from nw.enum import nwItemClass, nwItemType, nwItemLayout
 from nw.common import formatTimeStamp
 from nw.constants import nwFiles
 
+
 @pytest.mark.core
-def testCoreProject_NewMinimal(fncDir, outDir, refDir, tmpDir, dummyGUI):
+def testCoreProject_NewMinimal(fncDir, outDir, refDir, dummyGUI):
     """Create a new project from a project wizard dictionary. With
     default setting, creating a Minimal project.
     """
@@ -83,6 +83,7 @@ def testCoreProject_NewMinimal(fncDir, outDir, refDir, tmpDir, dummyGUI):
 
 # END Test testCoreProject_NewMinimal
 
+
 @pytest.mark.core
 def testCoreProject_NewCustomA(fncDir, outDir, refDir, dummyGUI):
     """Create a new project from a project wizard dictionary.
@@ -124,6 +125,7 @@ def testCoreProject_NewCustomA(fncDir, outDir, refDir, dummyGUI):
 
 # END Test testCoreProject_NewCustomA
 
+
 @pytest.mark.core
 def testCoreProject_NewCustomB(fncDir, outDir, refDir, dummyGUI):
     """Create a new project from a project wizard dictionary.
@@ -164,6 +166,7 @@ def testCoreProject_NewCustomB(fncDir, outDir, refDir, dummyGUI):
     assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
 
 # END Test testCoreProject_NewCustomB
+
 
 @pytest.mark.core
 def testCoreProject_NewSampleA(fncDir, tmpConf, dummyGUI, tmpDir):
@@ -213,6 +216,7 @@ def testCoreProject_NewSampleA(fncDir, tmpConf, dummyGUI, tmpDir):
 
 # END Test testCoreProject_NewSampleA
 
+
 @pytest.mark.core
 def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, dummyGUI, tmpDir):
     """Check that we can create a new project can be created from the
@@ -250,6 +254,7 @@ def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, dummyGUI, tmpDir):
 
 # END Test testCoreProject_NewSampleB
 
+
 @pytest.mark.core
 def testCoreProject_NewRoot(fncDir, outDir, refDir, dummyGUI):
     """Check that new root folders can be added to the project.
@@ -286,6 +291,7 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, dummyGUI):
 
 # END Test testCoreProject_NewRoot
 
+
 @pytest.mark.core
 def testCoreProject_NewFile(fncDir, outDir, refDir, dummyGUI):
     """Check that new files can be added to the project.
@@ -314,6 +320,7 @@ def testCoreProject_NewFile(fncDir, outDir, refDir, dummyGUI):
     assert not theProject.projChanged
 
 # END Test testCoreProject_NewFile
+
 
 @pytest.mark.core
 def testCoreProject_Open(monkeypatch, nwMinimal, dummyGUI):
@@ -436,6 +443,7 @@ def testCoreProject_Open(monkeypatch, nwMinimal, dummyGUI):
 
 # END Test testCoreProject_Open
 
+
 @pytest.mark.core
 def testCoreProject_Save(monkeypatch, nwMinimal, dummyGUI, refDir):
     """Test saving a project.
@@ -480,6 +488,7 @@ def testCoreProject_Save(monkeypatch, nwMinimal, dummyGUI, refDir):
     assert theProject.closeProject()
 
 # END Test testCoreProject_Save
+
 
 @pytest.mark.core
 def testCoreProject_LockFile(monkeypatch, fncDir, dummyGUI):
@@ -540,6 +549,7 @@ def testCoreProject_LockFile(monkeypatch, fncDir, dummyGUI):
 
 # END Test testCoreProject_LockFile
 
+
 @pytest.mark.core
 def testCoreProject_Helpers(monkeypatch, fncDir, dummyGUI):
     """Test helper functions for the project folder.
@@ -554,7 +564,7 @@ def testCoreProject_Helpers(monkeypatch, fncDir, dummyGUI):
 
     # Block user's home folder
     with monkeypatch.context() as mp:
-        mp.setattr("os.path.expanduser", lambda *args, **kwargs: fncDir)
+        mp.setattr("os.path.expanduser", lambda *a, **k: fncDir)
         assert theProject.ensureFolderStructure() is False
 
     # Create a file to block meta folder
@@ -583,6 +593,7 @@ def testCoreProject_Helpers(monkeypatch, fncDir, dummyGUI):
 
 # END Test testCoreProject_Helpers
 
+
 @pytest.mark.core
 def testCoreProject_AccessItems(nwMinimal, dummyGUI):
     """Test helper functions for the project folder.
@@ -592,24 +603,24 @@ def testCoreProject_AccessItems(nwMinimal, dummyGUI):
 
     # Move Novel ROOT to after its files
     oldOrder = [
-        "a508bb932959c", # ROOT: Novel
-        "a35baf2e93843", # FILE: Title Page
-        "a6d311a93600a", # FOLDER: New Chapter
-        "f5ab3e30151e1", # FILE: New Chapter
-        "8c659a11cd429", # FILE: New Scene
-        "7695ce551d265", # ROOT: Plot
-        "afb3043c7b2b3", # ROOT: Characters
-        "9d5247ab588e0", # ROOT: World
+        "a508bb932959c",  # ROOT: Novel
+        "a35baf2e93843",  # FILE: Title Page
+        "a6d311a93600a",  # FOLDER: New Chapter
+        "f5ab3e30151e1",  # FILE: New Chapter
+        "8c659a11cd429",  # FILE: New Scene
+        "7695ce551d265",  # ROOT: Plot
+        "afb3043c7b2b3",  # ROOT: Characters
+        "9d5247ab588e0",  # ROOT: World
     ]
     newOrder = [
-        "a35baf2e93843", # FILE: Title Page
-        "f5ab3e30151e1", # FILE: New Chapter
-        "8c659a11cd429", # FILE: New Scene
-        "a6d311a93600a", # FOLDER: New Chapter
-        "a508bb932959c", # ROOT: Novel
-        "7695ce551d265", # ROOT: Plot
-        "afb3043c7b2b3", # ROOT: Characters
-        "9d5247ab588e0", # ROOT: World
+        "a35baf2e93843",  # FILE: Title Page
+        "f5ab3e30151e1",  # FILE: New Chapter
+        "8c659a11cd429",  # FILE: New Scene
+        "a6d311a93600a",  # FOLDER: New Chapter
+        "a508bb932959c",  # ROOT: Novel
+        "7695ce551d265",  # ROOT: Plot
+        "afb3043c7b2b3",  # ROOT: Characters
+        "9d5247ab588e0",  # ROOT: World
     ]
     assert theProject.projTree.handles() == oldOrder
     assert theProject.setTreeOrder(newOrder)
@@ -628,19 +639,20 @@ def testCoreProject_AccessItems(nwMinimal, dummyGUI):
         retOrder.append(tItem.itemHandle)
 
     assert retOrder == [
-        "a508bb932959c", # ROOT: Novel
-        "7695ce551d265", # ROOT: Plot
-        "afb3043c7b2b3", # ROOT: Characters
-        "9d5247ab588e0", # ROOT: World
-        nHandle,         # FILE: Test File
-        "a35baf2e93843", # FILE: Title Page
-        "a6d311a93600a", # FOLDER: New Chapter
-        "f5ab3e30151e1", # FILE: New Chapter
-        "8c659a11cd429", # FILE: New Scene
+        "a508bb932959c",  # ROOT: Novel
+        "7695ce551d265",  # ROOT: Plot
+        "afb3043c7b2b3",  # ROOT: Characters
+        "9d5247ab588e0",  # ROOT: World
+        nHandle,          # FILE: Test File
+        "a35baf2e93843",  # FILE: Title Page
+        "a6d311a93600a",  # FOLDER: New Chapter
+        "f5ab3e30151e1",  # FILE: New Chapter
+        "8c659a11cd429",  # FILE: New Scene
     ]
     assert theProject.projTree[nHandle].itemParent is None
 
 # END Test testCoreProject_AccessItems
+
 
 @pytest.mark.core
 def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
@@ -789,10 +801,10 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
     theProject.projTree["8c659a11cd429"].setStatus("Finished")
     newList = [
         ("New", 1, 1, 1, "New"),
-        ("Draft", 2, 2, 2, "Note"),      # These are swapped
-        ("Note", 3, 3, 3, "Draft"),      # These are swapped
-        ("Edited", 4, 4, 4, "Finished"), # Renamed
-        ("Finished", 5, 5, 5, None),     # New, with reused name
+        ("Draft", 2, 2, 2, "Note"),       # These are swapped
+        ("Note", 3, 3, 3, "Draft"),       # These are swapped
+        ("Edited", 4, 4, 4, "Finished"),  # Renamed
+        ("Finished", 5, 5, 5, None),      # New, with reused name
     ]
     assert theProject.setStatusColours(newList)
     assert theProject.statusItems._theLabels == [
@@ -801,10 +813,10 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
     assert theProject.statusItems._theColours == [
         (1, 1, 1), (2, 2, 2), (3, 3, 3), (4, 4, 4), (5, 5, 5)
     ]
-    assert theProject.projTree["a35baf2e93843"].itemStatus == "Edited" # Renamed
-    assert theProject.projTree["a6d311a93600a"].itemStatus == "Note"   # Swapped
-    assert theProject.projTree["f5ab3e30151e1"].itemStatus == "Draft"  # Swapped
-    assert theProject.projTree["8c659a11cd429"].itemStatus == "Edited" # Renamed
+    assert theProject.projTree["a35baf2e93843"].itemStatus == "Edited"  # Renamed
+    assert theProject.projTree["a6d311a93600a"].itemStatus == "Note"    # Swapped
+    assert theProject.projTree["f5ab3e30151e1"].itemStatus == "Draft"   # Swapped
+    assert theProject.projTree["8c659a11cd429"].itemStatus == "Edited"  # Renamed
 
     # Change importance
     fHandle = theProject.newFile("Jane Doe", nwItemClass.CHARACTER, "afb3043c7b2b3")
@@ -839,7 +851,7 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
 
     # Session stats
     with monkeypatch.context() as mp:
-        mp.setattr("os.path.isdir", lambda *args, **kwargs: False)
+        mp.setattr("os.path.isdir", lambda *a, **k: False)
         assert not theProject._appendSessionStats(idleTime=0)
 
     # Block open
@@ -891,6 +903,7 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
     )
 
 # END Test testCoreProject_Methods
+
 
 @pytest.mark.core
 def testCoreProject_OrphanedFiles(dummyGUI, nwLipsum):
@@ -967,6 +980,7 @@ def testCoreProject_OrphanedFiles(dummyGUI, nwLipsum):
     assert not theProject._scanProjectFolder()
 
 # END Test testCoreProject_OrphanedFiles
+
 
 @pytest.mark.core
 def testCoreProject_OldFormat(dummyGUI, nwOldProj):
@@ -1056,6 +1070,7 @@ def testCoreProject_OldFormat(dummyGUI, nwOldProj):
     assert os.path.isfile(os.path.join(nwOldProj, "ToC.txt"))
 
 # END Test testCoreProject_OldFormat
+
 
 @pytest.mark.core
 def testCoreProject_LegacyData(monkeypatch, dummyGUI, fncDir):
@@ -1161,6 +1176,7 @@ def testCoreProject_LegacyData(monkeypatch, dummyGUI, fncDir):
     assert os.path.isfile(os.path.join(fncDir, "junk", "tooshort003_main.bak"))
 
 # END Test testCoreProject_LegacyData
+
 
 @pytest.mark.core
 def testCoreProject_Backup(monkeypatch, dummyGUI, nwMinimal, tmpDir):

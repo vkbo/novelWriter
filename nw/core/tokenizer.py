@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Text Tokenizer
 ============================
@@ -24,6 +23,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import nw
 import logging
 import re
 
@@ -39,6 +39,7 @@ from nw.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
 
+
 class Tokenizer():
 
     # In-Text Format
@@ -50,59 +51,63 @@ class Tokenizer():
     FMT_D_E    = 6  # End strikeout
 
     # Block Type
-    T_EMPTY    = 1  # Empty line (new paragraph)
-    T_SYNOPSIS = 2  # Synopsis comment
-    T_COMMENT  = 3  # Comment line
-    T_KEYWORD  = 4  # Command line
-    T_TITLE    = 5  # Title
-    T_HEAD1    = 6  # Header 1
-    T_HEAD2    = 7  # Header 2
-    T_HEAD3    = 8  # Header 3
-    T_HEAD4    = 9  # Header 4
-    T_TEXT     = 10 # Text line
-    T_SEP      = 11 # Scene separator
-    T_SKIP     = 12 # Paragraph break
+    T_EMPTY    = 1   # Empty line (new paragraph)
+    T_SYNOPSIS = 2   # Synopsis comment
+    T_COMMENT  = 3   # Comment line
+    T_KEYWORD  = 4   # Command line
+    T_TITLE    = 5   # Title
+    T_HEAD1    = 6   # Header 1
+    T_HEAD2    = 7   # Header 2
+    T_HEAD3    = 8   # Header 3
+    T_HEAD4    = 9   # Header 4
+    T_TEXT     = 10  # Text line
+    T_SEP      = 11  # Scene separator
+    T_SKIP     = 12  # Paragraph break
 
     # Block Style
-    A_NONE     = 0x0000 # No special style
-    A_LEFT     = 0x0001 # Left aligned
-    A_RIGHT    = 0x0002 # Right aligned
-    A_CENTRE   = 0x0004 # Centred
-    A_JUSTIFY  = 0x0008 # Justified
-    A_PBB      = 0x0010 # Page break before always
-    A_PBB_AUT  = 0x0020 # Page break before auto
-    A_PBA      = 0x0040 # Page break after always
-    A_PBA_AUT  = 0x0080 # Page break after auto
-    A_Z_TOPMRG = 0x0100 # Zero top margin
-    A_Z_BTMMRG = 0x0200 # Zero bottom margin
+    A_NONE     = 0x0000  # No special style
+    A_LEFT     = 0x0001  # Left aligned
+    A_RIGHT    = 0x0002  # Right aligned
+    A_CENTRE   = 0x0004  # Centred
+    A_JUSTIFY  = 0x0008  # Justified
+    A_PBB      = 0x0010  # Page break before always
+    A_PBB_AUT  = 0x0020  # Page break before auto
+    A_PBA      = 0x0040  # Page break after always
+    A_PBA_AUT  = 0x0080  # Page break after auto
+    A_Z_TOPMRG = 0x0100  # Zero top margin
+    A_Z_BTMMRG = 0x0200  # Zero bottom margin
+    A_IND_L    = 0x0400  # Left indentation
+    A_IND_R    = 0x0800  # Right indentation
 
     def __init__(self, theProject):
 
         self.theProject = theProject
         self.theParent  = theProject.theParent
+        self.mainConf   = nw.CONFIG
 
         # Data Variables
-        self.theText     = ""   # The raw text to be tokenized
-        self.theHandle   = None # The handle associated with the text
-        self.theItem     = None # The NWItem associated with the handle
-        self.theTokens   = []   # The list of the processed tokens
-        self.theResult   = ""   # The result of the last document
+        self.theText     = ""    # The raw text to be tokenized
+        self.theHandle   = None  # The handle associated with the text
+        self.theItem     = None  # The NWItem associated with the handle
+        self.theTokens   = []    # The list of the processed tokens
+        self.theResult   = ""    # The result of the last document
 
-        self.keepMarkdown = False # Whether to keep the markdown text
-        self.theMarkdown  = []    # The result novelWriter markdown of all documents
+        self.keepMarkdown = False  # Whether to keep the markdown text
+        self.theMarkdown  = []     # The result novelWriter markdown of all documents
 
         # User Settings
-        self.textFont    = "Serif" # Output text font
-        self.textSize    = 11      # Output text size
-        self.textFixed   = False   # Fixed width text
-        self.lineHeight  = 1.15    # Line height
-        self.doJustify   = False   # Justify text
-        self.doBodyText  = True    # Include body text
-        self.doSynopsis  = False   # Also process synopsis comments
-        self.doComments  = False   # Also process comments
-        self.doKeywords  = False   # Also process keywords like tags and references
+        self.textFont    = "Serif"  # Output text font
+        self.textSize    = 11       # Output text size
+        self.textFixed   = False    # Fixed width text
+        self.lineHeight  = 1.15     # Line height in units of em
+        self.blockIndent = 4.00     # Block indent in units of em
+        self.doJustify   = False    # Justify text
+        self.doBodyText  = True     # Include body text
+        self.doSynopsis  = False    # Also process synopsis comments
+        self.doComments  = False    # Also process comments
+        self.doKeywords  = False    # Also process keywords like tags and references
 
-        ## Title Margins
+        # Margins
         self.marginTitle = (1.000, 0.500)
         self.marginHead1 = (1.000, 0.500)
         self.marginHead2 = (0.834, 0.500)
@@ -111,23 +116,23 @@ class Tokenizer():
         self.marginText  = (0.000, 0.584)
         self.marginMeta  = (0.000, 0.584)
 
-        ## Title Formats
-        self.fmtTitle    = "%title%" # Formatting for titles
-        self.fmtChapter  = "%title%" # Formatting for numbered chapters
-        self.fmtUnNum    = "%title%" # Formatting for unnumbered chapters
-        self.fmtScene    = "%title%" # Formatting for scenes
-        self.fmtSection  = "%title%" # Formatting for sections
+        # Title Formats
+        self.fmtTitle    = "%title%"  # Formatting for titles
+        self.fmtChapter  = "%title%"  # Formatting for numbered chapters
+        self.fmtUnNum    = "%title%"  # Formatting for unnumbered chapters
+        self.fmtScene    = "%title%"  # Formatting for scenes
+        self.fmtSection  = "%title%"  # Formatting for sections
 
-        self.hideScene   = False # Do not include scene headers
-        self.hideSection = False # Do not include section headers
+        self.hideScene   = False  # Do not include scene headers
+        self.hideSection = False  # Do not include section headers
 
-        self.linkHeaders = False # Add an anchor before headers
+        self.linkHeaders = False  # Add an anchor before headers
 
         # Instance Variables
-        self.numChapter  = 0     # Counter for chapter numbers
-        self.numChScene  = 0     # Counter for scene number within chapter
-        self.numAbsScene = 0     # Counter for scene number within novel
-        self.firstScene  = False # Flag to indicate that the first scene of the chapter
+        self.numChapter  = 0      # Counter for chapter numbers
+        self.numChScene  = 0      # Counter for scene number within chapter
+        self.numAbsScene = 0      # Counter for scene number within novel
+        self.firstScene  = False  # Flag to indicate that the first scene of the chapter
 
         # This File
         self.isNone  = False
@@ -186,7 +191,11 @@ class Tokenizer():
         return
 
     def setLineHeight(self, lineHeight):
-        self.lineHeight = float(lineHeight)
+        self.lineHeight = min(max(float(lineHeight), 0.5), 5.0)
+        return
+
+    def setBlockIndent(self, blockIndent):
+        self.blockIndent = min(max(float(blockIndent), 0.0), 10.0)
         return
 
     def setJustify(self, doJustify):
@@ -366,6 +375,12 @@ class Tokenizer():
             (QRegularExpression(nwRegEx.FMT_ST), [None, self.FMT_D_B, None, self.FMT_D_E]),
         ]
 
+        # Determine default text alignment
+        if self.isTitle or self.isPart:
+            defAlign = self.A_CENTRE
+        else:
+            defAlign = self.A_NONE
+
         self.theTokens = []
         tmpMarkdown = []
         nLine = 0
@@ -375,7 +390,7 @@ class Tokenizer():
             # Tag lines starting with specific characters
             if len(aLine.strip()) == 0:
                 self.theTokens.append((
-                    self.T_EMPTY, nLine, "", None, self.A_NONE
+                    self.T_EMPTY, nLine, "", None, defAlign
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("\n")
@@ -385,48 +400,48 @@ class Tokenizer():
                 synTag = cLine[:9].lower()
                 if synTag == "synopsis:":
                     self.theTokens.append((
-                        self.T_SYNOPSIS, nLine, cLine[9:].strip(), None, self.A_NONE
+                        self.T_SYNOPSIS, nLine, cLine[9:].strip(), None, defAlign
                     ))
                     if self.doSynopsis and self.keepMarkdown:
                         tmpMarkdown.append("%s\n" % aLine)
                 else:
                     self.theTokens.append((
-                        self.T_COMMENT, nLine, aLine[1:].strip(), None, self.A_NONE
+                        self.T_COMMENT, nLine, aLine[1:].strip(), None, defAlign
                     ))
                     if self.doComments and self.keepMarkdown:
                         tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[0] == "@":
                 self.theTokens.append((
-                    self.T_KEYWORD, nLine, aLine[1:].strip(), None, self.A_NONE
+                    self.T_KEYWORD, nLine, aLine[1:].strip(), None, defAlign
                 ))
                 if self.doKeywords and self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:2] == "# ":
                 self.theTokens.append((
-                    self.T_HEAD1, nLine, aLine[2:].strip(), None, self.A_NONE
+                    self.T_HEAD1, nLine, aLine[2:].strip(), None, defAlign
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:3] == "## ":
                 self.theTokens.append((
-                    self.T_HEAD2, nLine, aLine[3:].strip(), None, self.A_NONE
+                    self.T_HEAD2, nLine, aLine[3:].strip(), None, defAlign
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:4] == "### ":
                 self.theTokens.append((
-                    self.T_HEAD3, nLine, aLine[4:].strip(), None, self.A_NONE
+                    self.T_HEAD3, nLine, aLine[4:].strip(), None, defAlign
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:5] == "#### ":
                 self.theTokens.append((
-                    self.T_HEAD4, nLine, aLine[5:].strip(), None, self.A_NONE
+                    self.T_HEAD4, nLine, aLine[5:].strip(), None, defAlign
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
@@ -435,6 +450,50 @@ class Tokenizer():
                 if not self.doBodyText:
                     # Skip all body text
                     continue
+
+                # Check Alignment and Indentation
+                tagLeft = False
+                tagRight = False
+                indLeft = False
+                indRight = False
+                if aLine.startswith(">>"):
+                    tagRight = True
+                    aLine = aLine[2:].lstrip(" ")
+                elif aLine.startswith("&gt;&gt;"):
+                    tagRight = True
+                    aLine = aLine[8:].lstrip(" ")
+                elif aLine.startswith(">"):
+                    indLeft = True
+                    aLine = aLine[1:].lstrip(" ")
+                elif aLine.startswith("&gt;"):
+                    indLeft = True
+                    aLine = aLine[4:].lstrip(" ")
+
+                if aLine.endswith("<<"):
+                    tagLeft = True
+                    aLine = aLine[:-2].rstrip(" ")
+                elif aLine.endswith("&lt;&lt;"):
+                    tagLeft = True
+                    aLine = aLine[:-8].rstrip(" ")
+                elif aLine.endswith("<"):
+                    indRight = True
+                    aLine = aLine[:-1].rstrip(" ")
+                elif aLine.endswith("&lt;"):
+                    indRight = True
+                    aLine = aLine[:-4].rstrip(" ")
+
+                textAlign = defAlign
+                if tagLeft and tagRight:
+                    textAlign = self.A_CENTRE
+                elif tagLeft:
+                    textAlign = self.A_LEFT
+                elif tagRight:
+                    textAlign = self.A_RIGHT
+
+                if indLeft:
+                    textAlign |= self.A_IND_L
+                if indRight:
+                    textAlign |= self.A_IND_R
 
                 # Otherwise we use RegEx to find formatting tags within a line of text
                 fmtPos = []
@@ -452,14 +511,14 @@ class Tokenizer():
                 # sorted by position
                 fmtPos = sorted(fmtPos, key=itemgetter(0))
                 self.theTokens.append((
-                    self.T_TEXT, nLine, aLine, fmtPos, self.A_NONE
+                    self.T_TEXT, nLine, aLine, fmtPos, textAlign
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
         # Always add an empty line at the end
         self.theTokens.append((
-            self.T_EMPTY, nLine, "", None, self.A_NONE
+            self.T_EMPTY, nLine, "", None, defAlign
         ))
         if self.keepMarkdown:
             tmpMarkdown.append("\n")
@@ -471,8 +530,8 @@ class Tokenizer():
         # ===========
         # Some items need a second pass
 
-        pToken = (self.T_EMPTY, 0, "", None, self.A_NONE)
-        nToken = (self.T_EMPTY, 0, "", None, self.A_NONE)
+        pToken = (self.T_EMPTY, 0, "", None, defAlign)
+        nToken = (self.T_EMPTY, 0, "", None, defAlign)
         tCount = len(self.theTokens)
         for n, tToken in enumerate(self.theTokens):
 
@@ -601,48 +660,41 @@ class Tokenizer():
                             tToken[0], tToken[1], tTemp, None, self.A_NONE
                         )
 
-        # For title page and partitions, we need to centre all text.
-        # For partition, we also add a page break before, and for
-        # both types we always add a page break after the content.
-        # We also swap header level 1 with a title type instead.
+        # For title page we use a different title class, and we will set
+        # an automatic page break before (i.e. added if needed). For
+        # partitions we always need a page break before.
         if self.isTitle or self.isPart:
             for n, tToken in enumerate(self.theTokens):
+                aStyle = tToken[4]
+                if n == 0:
+                    if self.isTitle:
+                        aStyle |= self.A_PBB_AUT
+                    else:
+                        aStyle |= self.A_PBB
+
                 if tToken[0] == self.T_HEAD1:
                     if self.isTitle:
-                        aStyle = self.A_PBB_AUT | self.A_CENTRE
                         self.theTokens[n] = (
                             self.T_TITLE, tToken[1], tToken[2], tToken[3], aStyle
                         )
                     else:
-                        aStyle = self.A_PBB | self.A_CENTRE
                         self.theTokens[n] = (
                             tToken[0], tToken[1], tToken[2], tToken[3], aStyle
                         )
-                else:
-                    self.theTokens[n] = (
-                        tToken[0], tToken[1], tToken[2], tToken[3], self.A_CENTRE
-                    )
 
             # Add a page break after the last entry
-            n = len(self.theTokens) - 1
-            if n >= 0:
-                tToken = self.theTokens[n]
-                self.theTokens[n] = (
+            if len(self.theTokens) > 0:
+                tToken = self.theTokens[-1]
+                self.theTokens[-1] = (
                     tToken[0], tToken[1], tToken[2], tToken[3], tToken[4] | self.A_PBA
                 )
 
-        # A single page is always left-aligned and starts on a fresh
-        # page, unless it's empty.
-        if self.isPage:
-            for n, tToken in enumerate(self.theTokens):
-                if n == 0:
-                    self.theTokens[n] = (
-                        tToken[0], tToken[1], tToken[2], tToken[3], self.A_LEFT | self.A_PBB
-                    )
-                else:
-                    self.theTokens[n] = (
-                        tToken[0], tToken[1], tToken[2], tToken[3], self.A_LEFT
-                    )
+        # A single page always starts on a fresh page, unless it's empty.
+        if self.isPage and len(self.theTokens) > 0:
+            tToken = self.theTokens[0]
+            self.theTokens[0] = (
+                tToken[0], tToken[1], tToken[2], tToken[3], tToken[4] | self.A_PBB
+            )
 
         return True
 

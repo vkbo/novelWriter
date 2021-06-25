@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Theme and Icons Classes
 =====================================
@@ -43,6 +42,7 @@ from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
 
+
 # =============================================================================================== #
 #  Gui Theme Class
 #  Handles the look and feel of novelWriter
@@ -65,8 +65,9 @@ class GuiTheme:
         self.syntaxList = []
 
         # Loaded Theme Settings
+        # =====================
 
-        ## Theme
+        # Theme
         self.themeName        = ""
         self.themeDescription = ""
         self.themeAuthor      = ""
@@ -75,7 +76,7 @@ class GuiTheme:
         self.themeLicense     = ""
         self.themeLicenseUrl  = ""
 
-        ## GUI
+        # GUI
         self.statNone    = [120, 120, 120]
         self.statUnsaved = [200, 15, 39]
         self.statSaved   = [2, 133, 37]
@@ -83,7 +84,7 @@ class GuiTheme:
 
         # Loaded Syntax Settings
 
-        ## Main
+        # Main
         self.syntaxName        = ""
         self.syntaxDescription = ""
         self.syntaxAuthor      = ""
@@ -92,7 +93,7 @@ class GuiTheme:
         self.syntaxLicense     = ""
         self.syntaxLicenseUrl  = ""
 
-        ## Colours
+        # Colours
         self.colBack   = [255, 255, 255]
         self.colText   = [0, 0, 0]
         self.colLink   = [0, 0, 0]
@@ -288,7 +289,7 @@ class GuiTheme:
             nw.logException()
             return False
 
-        ## Main
+        # Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
             self.themeName        = self._parseLine(confParser, cnfSec, "name", "")
@@ -299,7 +300,7 @@ class GuiTheme:
             self.themeLicense     = self._parseLine(confParser, cnfSec, "license", "N/A")
             self.themeLicenseUrl  = self._parseLine(confParser, cnfSec, "licenseurl", "")
 
-        ## Palette
+        # Palette
         cnfSec = "Palette"
         if confParser.has_section(cnfSec):
             self._setPalette(confParser, cnfSec, "window",          QPalette.Window)
@@ -317,7 +318,7 @@ class GuiTheme:
             self._setPalette(confParser, cnfSec, "link",            QPalette.Link)
             self._setPalette(confParser, cnfSec, "linkvisited",     QPalette.LinkVisited)
 
-        ## GUI
+        # GUI
         cnfSec = "GUI"
         if confParser.has_section(cnfSec):
             self.statNone    = self._loadColour(confParser, cnfSec, "statusnone")
@@ -346,7 +347,7 @@ class GuiTheme:
             nw.logException()
             return False
 
-        ## Main
+        # Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
             self.syntaxName        = self._parseLine(confParser, cnfSec, "name", "")
@@ -357,7 +358,7 @@ class GuiTheme:
             self.syntaxLicense     = self._parseLine(confParser, cnfSec, "license", "")
             self.syntaxLicenseUrl  = self._parseLine(confParser, cnfSec, "licenseurl", "")
 
-        ## Syntax
+        # Syntax
         cnfSec = "Syntax"
         if confParser.has_section(cnfSec):
             self.colBack   = self._loadColour(confParser, cnfSec, "background")
@@ -496,6 +497,7 @@ class GuiTheme:
 
 # End Class GuiTheme
 
+
 # =============================================================================================== #
 #  Icons Class
 # =============================================================================================== #
@@ -560,7 +562,7 @@ class GuiIcons:
         "search_cancel"   : (None, None),
         "search_preserve" : (None, None),
 
-        ## General Button Icons
+        # General Button Icons
         "folder-open"    : (QStyle.SP_DirOpenIcon,         "folder-open"),
         "delete"         : (QStyle.SP_DialogDiscardButton, "edit-delete"),
         "close"          : (QStyle.SP_DialogCloseButton,   "window-close"),
@@ -583,7 +585,7 @@ class GuiIcons:
         "forward"        : (None, None),
         "settings"       : (None, None),
 
-        ## Switches
+        # Switches
         "sticky-on"  : (None, None),
         "sticky-off" : (None, None),
         "bullet-on"  : (None, None),
@@ -651,7 +653,7 @@ class GuiIcons:
             nw.logException()
             return False
 
-        ## Main
+        # Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
             self.themeName        = self._parseLine(confParser, cnfSec, "name", "")
@@ -662,7 +664,7 @@ class GuiIcons:
             self.themeLicense     = self._parseLine(confParser, cnfSec, "license", "N/A")
             self.themeLicenseUrl  = self._parseLine(confParser, cnfSec, "licenseurl", "")
 
-        ## Palette
+        # Palette
         cnfSec = "Map"
         if confParser.has_section(cnfSec):
             for iconName, iconFile in confParser.items(cnfSec):

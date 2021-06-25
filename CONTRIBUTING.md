@@ -77,28 +77,28 @@ The `setup.cfg` file in the root of this project has the following settings for 
 matches the coding standard:
 ```conf
 [flake8]
-ignore = E203,E221,E226,E228,E241,E251,E261,E266,E302,E305
+ignore = E203,E221,E226,E228,E241,E251
 max-line-length = 99
 exclude = docs/*
 ```
 
 The command line equivalent, with reporting, is:
 ```bash
-flake8 . --count --ignore E203,E221,E226,E228,E241,E251,E261,E266,E302,E305 --max-line-length=99 --show-source --statistics
+flake8 . --count --ignore E203,E221,E226,E228,E241,E251 --max-line-length=99 --show-source --statistics
 ```
 
-Passing this check is required before contributions are merged into the `main` branch. This is
-checked automatically when you make a pull request. You can run the `flake8` command locally to
-check beforehand. The full command will give you a detailed description of the code lines that do
-not conform to the standard.
+Passing this check is required before contributions are merged into the `main`, `testing` or `dev`
+branches. This is checked automatically when you make a pull request. You can run the `flake8`
+command locally to check beforehand. The full command will give you a detailed description of the
+code lines that do not conform to the standard.
 
 ## Ignored Errors
 
 Some `flake8` error codes are ignored for this project for various reasons. The source also uses
 camelCase function and variable names. This is the standard for the Qt libraries novelWriter
-integrates with. It also happens to be the author's personal preferences.
+integrates with. It also happens to be the author's personal preferences. (Yay!)
 
-The reason behind the other ignored error codes are listed below. Many of them are due to PEP8 not
+The reason behind the other ignored error codes are listed below. Most of them are due to PEP8 not
 permitting column alignment as opposed to many other coding styles, like for instance for Go. I
 find them useful in regions of bulk value assignments. There's a reason why tables are more
 readable than lists. They should be used sparingly though.
@@ -113,10 +113,12 @@ The ignored errors are all `pycodestyle` errors, and they are documented
 **Reason:** Column alignment.
 
 **E226:** missing whitespace around arithmetic operator  
-**Reason:** This doesn't actually follow the PEP8 recommendation of grouping longer equations by
-operator precedence like `2*a + 3*b` instead of `a * a + 3 * b`. Generally, don't use spaces around
-`*`, `/` and `**`, but _do_ use spaces around `+` and `-`. For appending strings, the spaces can be
-dropped. Don't use the `+` operator for appending multiple strings. Use formatting instead.
+**Reason:** This doesn't actually follow the
+[PEP8 recommendation](https://www.python.org/dev/peps/pep-0008/#other-recommendations)
+of grouping longer equations by operator precedence like `2*a + 3*b` instead of `a * a + 3 * b`.
+Generally, don't use spaces around `*`, `/` and `**`, but _do_ use spaces around `+` and `-`.
+For appending strings, the spaces can be dropped. Don't use the `+` operator for appending multiple
+strings. Use formatting instead.
 
 **E228** missing whitespace around modulo operator  
 **Reason:** See reason for E226. Formatting `%` like `/` and `*` should be possible.
@@ -126,18 +128,3 @@ dropped. Don't use the `+` operator for appending multiple strings. Use formatti
 
 **E251:** unexpected spaces around keyword / parameter equals  
 **Reason:** Column alignment.
-
-**E261:** at least two spaces before inline comment  
-**Reason:** With syntax highlighting, this one doesn't make much sense.
-
-**E266:** too many leading ‘#’ for block comment  
-**Reason:** In the source multiple `#`s is sometimes used to indicate importance or heading level,
-like markdown headers.
-
-**E302:** expected 2 blank lines, found 0  
-**Reason:** Applies to classes. Instead, end classes with a comment like `# END Class ClassName` to
-make it easier to see which class just ended. The double line break is then redundant.
-
-**E305:** expected 2 blank lines after end of function or class  
-**Reason:** Instead, _always_ end a function with a `return`, preferably indented at function
-level. The end of the function is then clear.

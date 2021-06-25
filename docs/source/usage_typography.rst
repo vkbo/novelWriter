@@ -7,7 +7,7 @@ Typographical Notes
 novelWriter has some support for typographical symbols that are not usually easily available in
 many text editors. This includes for instance the proper unicode quotation marks, dashes, ellipsis,
 thin spaces, etc. All these symbols are available from the :guilabel:`Insert` menu, and via
-keyboard shortcuts. See :ref:`a_ui_shortcuts_ins`.
+keyboard shortcuts. See :ref:`a_kb_ins`.
 
 This chapter provides some additional information on how novelWriter handles these symbols.
 

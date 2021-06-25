@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 novelWriter – Main Setup Script
 ===============================
@@ -35,6 +34,7 @@ OS_LINUX  = 1
 OS_WIN    = 2
 OS_DARWIN = 3
 
+
 # =============================================================================================== #
 #  Utilities
 # =============================================================================================== #
@@ -65,6 +65,7 @@ def extractVersion():
     print("")
 
     return numVers, hexVers
+
 
 # =============================================================================================== #
 #  General
@@ -101,6 +102,7 @@ def installPackages(hostOS):
             sys.exit(1)
 
     return
+
 
 ##
 #  Clean Build and Dist Folders (clean)
@@ -139,6 +141,7 @@ def cleanInstall():
     print("")
 
     return
+
 
 # =============================================================================================== #
 #  Additional Buiilds
@@ -217,6 +220,7 @@ def buildQtDocs():
 
     return
 
+
 ##
 #  Qt Linguist QM Builder (qtlrelease)
 ##
@@ -255,6 +259,7 @@ def buildQtI18n():
 
     return
 
+
 ##
 #  Qt Linguist TS Builder (qtlupdate)
 ##
@@ -277,6 +282,7 @@ def buildQtI18nTS():
     print("")
 
     return
+
 
 ##
 #  Sample Project ZIP File Builder (sample)
@@ -317,6 +323,7 @@ def buildSampleZip():
     print("")
 
     return
+
 
 # =============================================================================================== #
 #  Python Packaging
@@ -428,6 +435,7 @@ def makeMinimalPackage(targetOS):
     print("")
 
     return
+
 
 ##
 #  Make Simple Package (pack-pyz)
@@ -607,6 +615,7 @@ def makeSimplePackage(embedPython):
 
     return
 
+
 # =============================================================================================== #
 #  General Installers
 # =============================================================================================== #
@@ -754,6 +763,7 @@ def xdgInstall():
 
     return
 
+
 ##
 #  XDG Uninstallation (xdg-uninstall)
 ##
@@ -822,6 +832,7 @@ def xdgUninstall():
     print("")
 
     return
+
 
 ##
 #  WIN Installation (win-install)
@@ -947,6 +958,7 @@ def winInstall():
 
     return
 
+
 ##
 #  WIN Uninstallation (win-uninstall)
 ##
@@ -1033,6 +1045,7 @@ def winUninstall():
 
     return
 
+
 # =============================================================================================== #
 #  Windows Installers
 # =============================================================================================== #
@@ -1069,6 +1082,7 @@ def innoSetup():
         sys.exit(1)
 
     return
+
 
 # =============================================================================================== #
 #  Process Command Line
@@ -1280,7 +1294,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # Run the standard setup
-    import setuptools # noqa: F401
+    import setuptools  # noqa: F401
     setuptools.setup()
 
 # END Main

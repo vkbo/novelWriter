@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Project Settings
 ==================================
@@ -39,6 +38,7 @@ from nw.enum import nwAlert
 from nw.gui.custom import QSwitch, PagedDialog, QConfigLayout
 
 logger = logging.getLogger(__name__)
+
 
 class GuiProjectSettings(PagedDialog):
 
@@ -156,6 +156,7 @@ class GuiProjectSettings(PagedDialog):
 
 # END Class GuiProjectSettings
 
+
 class GuiProjectEditMain(QWidget):
 
     def __init__(self, theParent, theProject):
@@ -238,6 +239,7 @@ class GuiProjectEditMain(QWidget):
         return
 
 # END Class GuiProjectEditMain
+
 
 class GuiProjectEditStatus(QWidget):
 
@@ -486,6 +488,7 @@ class GuiProjectEditStatus(QWidget):
             return self.tr("Used by {0} items").format(nUse)
 
 # END Class GuiProjectEditStatus
+
 
 class GuiProjectEditReplace(QWidget):
 

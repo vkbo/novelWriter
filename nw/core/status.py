@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Item Status Class
 =======================================
@@ -31,6 +30,7 @@ from lxml import etree
 from nw.common import checkInt
 
 logger = logging.getLogger(__name__)
+
 
 class NWStatus():
 

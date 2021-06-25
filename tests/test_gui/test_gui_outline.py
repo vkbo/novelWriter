@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Main GUI Outline Class Tester
 ===========================================
@@ -31,13 +30,14 @@ keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
+
 @pytest.mark.gui
 def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     """Test the outline view.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
 
     assert nwGUI.openProject(nwLipsum)
     nwGUI.mainConf.lastPath = nwLipsum

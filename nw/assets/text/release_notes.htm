@@ -2,48 +2,51 @@
 <html>
 <body>
 
-<h2>Release Notes for 1.3.2</h2>
-<p><i>Released on 30 May 2021</i></p>
-<p>This is a patch release that fixes some minor issues. One issue was with the split tool, which
-would drop the last line from the source document during a split if it was missing a final line
-break. A minor issue with the display of word counts on the details panel under the project tree
-has also been fixed. In addition, the setup script commands for Linux have been improved a bit.</p>
+<h2>Release Notes for 1.4 Beta 1</h2>
+<p><i>Released on 13 June 2021</i></p>
+
+<p>This is a preview release of novelWriter 1.4. It contains some new features and a lot of code
+refactoring. This release is a testing release, and may contain bugs. Please be careful when using
+this version to work on your projects.</p>
+<p>Below are the main feature changes of this release.</p>
+
+<h3>Line Breaks</h3>
+
+<p>The way line breaks inside paragraphs work has been changed. A single line break is now treated
+as a proper line break and will show up in the document viewer and exported documents. A single
+line break does not start a new paragraph, but forces a break inside the paragraph like a Shift +
+Enter does in most rich text editors. Two line breaks is still needed to start a new paragraph.</p>
+<p>The old syntax of adding two spaces to force a line break within a paragraph will still work
+as before, so there is no need to change your existing text if you've used this feature. However,
+there is a new highlighting feature that will show you where in the text you have redundant spaces.
+If you are used to having double spaces between sentences, you may want to switch off this
+highlighting feature in Preferences as it will also detect those.</p>
+<p>A helper function has been added to the Format menu that can look through a paragraph and remove
+line breaks in case you've been using line breaks inside your existing text under the assumption
+that the exporter and viewer will ignore them.</p>
+<p>I hope this change will not be too inconvenient. I believe the new behaviour will make more
+sense for most people. Especially considering some of the feedback I've gotten on how line breaks
+work. The original implementation was following the Markdown standard, but since novelWriter is not
+a proper Markdown editor and instead just borrows from Markdown, this behaviour always seemed a bit
+unnecessary.</p>
+
+<h3>Text Alignment and Indentation</h3>
+<p>The default text alignment is left or justified based on your preferences. For documents with
+the layout set to Title Page or Partitions, the default is centred. However, sometimes you may
+want to override this default. A new set of codes have therefore been added to allow specifying
+alignment as well as additional text margins on individual paragraphs.</p>
+<p>The logic of the syntax is as follows:</p>
+<p>A single angle bracket will push the text away from the edge it points away from. Therefore, a
+single '&gt;' before the paragraph, or a single '&lt;' after the paragraph, will add indentation on
+the respective side. It's perfectly valid to do this on both sides at the same time.</p>
+<p>A double set of angle brackets will push the text all the way towards the opposite aide.
+Therefore, a double set of '&gt;&gt;' before the paragraph will indicate right alignment, and a
+double set of '&lt;&lt;' after the paragraph will force left alignment. Also here both can be used
+at the same time, which results in the paragraph being centred.</p>
+<p>Format menu entries and keyboard shortcuts have been added so that you don't have to memorise
+these codes.</p>
 
 <p><i>See also the <a href="https://github.com/vkbo/novelWriter/releases">Releases</a> page.</i></p>
-
-<hr/>
-
-<h2>Release Notes for 1.3.1</h2>
-<p><i>Released on 6 May 2021</i></p>
-<p>This is a patch release primarily to fix a problem with the Qt translation library used to make
-novelWriter available in multiple languages. One of the function calls made to the library was
-added recently, in Qt 5.15, which many users on Linux will not have installed on their system. The
-issue could be resolved by updating the library, but it's an unnecessary and inconvenient
-restriction.</p>
-
-<hr/>
-
-<h2>Release Notes for 1.3</h2>
-<p><i>Released on 2 May 2021</i></p>
-<p>The main feature of the 1.3 release is internationalisation. The release introduces support for
-Portuguese, French, and Norwegian for the main GUI, in addition to the default English. The
-settings for choosing the GUI language can be found in the main Preferences.</p>
-<p>The implementation is such that the projects themselves can use a different language than the
-one selected for the GUI. To allow for better support for multiple language projects, the Build
-Novel Project tool has the added option to select the language of the injected text into exported
-documents. In particularly for the number words that can be added for chapter headers. Available
-languages here are the same as mentioned above for the main GUI, plus German.</p>
-<p>Settings have also been added in Preferences to allow for automatic injection of spaces or
-non-breaking spaces in front of, or behind, certain characters. These are features generally
-available in text editors for French, but the implementation in novelWriter simply makes them a
-free text box where you can list all characters or symbols where you want a space added
-automatically.</p>
-<p>The translation files for this release have been provided by Bruno Meneguello for the Portuguese
-translation, by Jan Lüdke (jyhelle) for the French translation, by Veronica Berglyd Olsen for the
-Norwegian translation as well as the minor modifications for US English, and Marian Lückhof
-provided the translation file for chapter numbers in German.</p>
-<p>The work to rewrite novelWriter to allow for internationalisation was done by Bruno Meneguello
-and Veronica Berglyd Olsen.</p>
 
 </body>
 </html>

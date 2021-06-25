@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Settings Dialog Class Tester
 ==================================================
@@ -38,6 +37,7 @@ keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
+
 @pytest.mark.gui
 def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDir, refDir):
     """Test the full project settings dialog.
@@ -47,8 +47,8 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
     compFile = os.path.join(refDir, "guiProjSettings_Dialog_nwProject.nwx")
 
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
 
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
@@ -64,8 +64,8 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
     nwGUI.theProject.setAutoReplace({"A": "B", "C": "D"})
 
     # Get the dialog object
-    monkeypatch.setattr(GuiProjectSettings, "exec_", lambda *args: None)
-    monkeypatch.setattr(GuiProjectSettings, "result", lambda *args: QDialog.Accepted)
+    monkeypatch.setattr(GuiProjectSettings, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QDialog.Accepted)
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiProjectSettings") is not None, timeout=1000)
 
@@ -135,7 +135,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
     assert projEdit.tabStatus.listBox.topLevelItemCount() == 3
 
     # Add a new item
-    monkeypatch.setattr(QColorDialog, "getColor", lambda *args: QColor(20, 30, 40))
+    monkeypatch.setattr(QColorDialog, "getColor", lambda *a: QColor(20, 30, 40))
     qtbot.mouseClick(projEdit.tabStatus.addButton, Qt.LeftButton)
     projEdit.tabStatus.listBox.topLevelItem(3).setSelected(True)
     for n in range(8):
