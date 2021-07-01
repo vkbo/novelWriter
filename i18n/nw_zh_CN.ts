@@ -382,17 +382,17 @@
     <message>
         <location filename="../nw/dialogs/about.py" line="144"/>
         <source>novelWriter is a markdown-like text editor designed for organising and writing novels. It is written in Python 3 with a Qt5 GUI, using PyQt5.</source>
-        <translation>NovelWriter 是一个类似 Markdown 的文本编辑器，用于组织和编写小说。 它是用 Python 3 编写的，使用 PyQt5提供 Qt5 图形界面。</translation>
+        <translation>novelWriter 是一个类似 Markdown 的文本编辑器，用于组织和编写小说。 它是用 Python 3 编写的，使用 PyQt5提供 Qt5 图形界面。</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/about.py" line="144"/>
         <source>novelWriter is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</source>
-        <translation>NovelWriter 是免费软件：您可以根据自由软件基金会发布的 GNU 通用公共许可证（许可证的第 3 版或（由您选择）任何更高版本）的条款重新分发和/或修改它。</translation>
+        <translation>novelWriter 是免费软件：您可以根据自由软件基金会发布的 GNU 通用公共许可证（许可证的第 3 版或（由您选择）任何更高版本）的条款重新分发和/或修改它。</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/about.py" line="144"/>
         <source>novelWriter is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</source>
-        <translation>发布NovelWriter 是希望它有用，没有任何保证； 甚至没有对适销性或针对特定目的的适用性的暗示保证。</translation>
+        <translation>发布novelWriter 是希望它有用，没有任何保证； 甚至没有对适销性或针对特定目的的适用性的暗示保证。</translation>
     </message>
     <message>
         <location filename="../nw/dialogs/about.py" line="144"/>
