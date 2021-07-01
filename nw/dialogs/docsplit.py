@@ -191,7 +191,7 @@ class GuiDocSplit(QDialog):
             srcItem.itemName, srcItem.itemClass, srcItem.itemParent
         )
         self.theParent.treeView.revealNewTreeItem(fHandle)
-        logger.verbose("Creating folder %s" % fHandle)
+        logger.verbose("Creating folder '%s'", fHandle)
 
         # Loop through, and create the files
         for wTitle, iStart, iEnd in finalOrder:

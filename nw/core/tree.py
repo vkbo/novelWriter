@@ -111,24 +111,24 @@ class NWTree():
             tHandle = self._makeHandle()
 
         if tHandle in self._projTree:
-            logger.warning("Duplicate handle %s detected, skipping" % tHandle)
+            logger.warning("Duplicate handle '%s' detected, skipping", tHandle)
             return False
 
-        logger.verbose("Adding item %s with parent %s" % (str(tHandle), str(pHandle)))
+        logger.verbose("Adding item '%s' with parent '%s'", str(tHandle), str(pHandle))
 
         nwItem.setHandle(tHandle)
         nwItem.setParent(pHandle)
 
         if nwItem.itemType == nwItemType.ROOT:
-            logger.verbose("Item %s is a root item" % str(tHandle))
+            logger.verbose("Item '%s' is a root item", str(tHandle))
             self._treeRoots.append(tHandle)
             if nwItem.itemClass == nwItemClass.ARCHIVE:
-                logger.verbose("Item %s is the archive folder" % str(tHandle))
+                logger.verbose("Item '%s' is the archive folder", str(tHandle))
                 self._archRoot = tHandle
 
         if nwItem.itemType == nwItemType.TRASH:
             if self._trashRoot is None:
-                logger.verbose("Item %s is the trash folder" % str(tHandle))
+                logger.verbose("Item '%s' is the trash folder", str(tHandle))
                 self._trashRoot = tHandle
             else:
                 logger.error("Only one trash folder allowed")
@@ -245,9 +245,10 @@ class NWTree():
         if iLayout in LAYOUT_MAP:
             if hLevel in LAYOUT_MAP[iLayout]:
                 tItem.itemLayout = LAYOUT_MAP[iLayout][hLevel]
-                logger.debug("Changed layout for %s from %s to %s" % (
+                logger.debug(
+                    "Changed layout for %s from %s to %s",
                     tHandle, iLayout.name, tItem.itemLayout.name
-                ))
+                )
                 return True
 
         return False
@@ -357,13 +358,13 @@ class NWTree():
             if tHandle in self._projTree:
                 tmpOrder.append(tHandle)
             else:
-                logger.error("Handle %s in new tree order is not in project tree" % tHandle)
+                logger.error("Handle '%s' in new tree order is not in project tree", tHandle)
 
         # Do a reverse lookup to check for items that will be lost
         # This is mainly for debugging purposes
         for tHandle in self._treeOrder:
             if tHandle not in tmpOrder:
-                logger.warning("Handle %s in old tree order is not in new tree order" % tHandle)
+                logger.warning("Handle '%s' in old tree order is not in new tree order", tHandle)
 
         # Save the temp list
         self._treeOrder = tmpOrder
@@ -387,7 +388,7 @@ class NWTree():
         if tItem is None:
             return False
         if tItem.itemType != nwItemType.FILE:
-            logger.error("Item %s is not a file" % tHandle)
+            logger.error("Item %s is not a file", tHandle)
             return False
         if not isinstance(itemLayout, nwItemLayout):
             return False
@@ -444,7 +445,7 @@ class NWTree():
         """
         if tHandle in self._projTree:
             return self._projTree[tHandle]
-        logger.error("No tree item with handle %s" % str(tHandle))
+        logger.error("No tree item with handle '%s'", str(tHandle))
         return None
 
     def __delitem__(self, tHandle):
@@ -454,7 +455,7 @@ class NWTree():
             self._treeOrder.remove(tHandle)
             del self._projTree[tHandle]
         else:
-            logger.warning("Failed to delete item %s: item not found" % tHandle)
+            logger.warning("Failed to delete item '%s': item not found", tHandle)
             return
 
         if tHandle in self._treeRoots:
@@ -523,7 +524,7 @@ class NWTree():
             newSeed = str(self._handleSeed)
             self._handleSeed += 1
 
-        logger.verbose("Generating handle with seed '%s'" % newSeed)
+        logger.verbose("Generating handle with seed '%s'", newSeed)
         itemHandle = sha256(newSeed.encode()).hexdigest()[0:13]
         if itemHandle in self._projTree:
             logger.warning("Duplicate handle encountered! Retrying ...")

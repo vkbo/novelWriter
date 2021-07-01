@@ -167,7 +167,7 @@ class GuiDocViewer(QTextBrowser):
         if tItem.itemType != nwItemType.FILE:
             return False
 
-        logger.debug("Generating preview for item %s" % tHandle)
+        logger.debug("Generating preview for item '%s'", tHandle)
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
 
         sPos = self.verticalScrollBar().value()
@@ -185,7 +185,7 @@ class GuiDocViewer(QTextBrowser):
             aDoc.doConvert()
             aDoc.doPostProcessing()
         except Exception:
-            logger.error("Failed to generate preview for document with handle '%s'" % tHandle)
+            logger.error("Failed to generate preview for document with handle '%s'", tHandle)
             nw.logException()
             self.setText(self.tr("An error occurred while generating the preview."))
 
@@ -243,7 +243,7 @@ class GuiDocViewer(QTextBrowser):
         tag rather than a known handle. This function depends on the
         index being up to date.
         """
-        logger.debug("Loading document from tag '%s'" % theTag)
+        logger.debug("Loading document from tag '%s'", theTag)
         tHandle, _, sTitle = self.theParent.theIndex.getTagSource(theTag)
         if tHandle is None:
             self.theParent.makeAlert(self.tr(
@@ -258,7 +258,7 @@ class GuiDocViewer(QTextBrowser):
             # Let the parent handle the opening as it also ensures that
             # the doc view panel is visible in case this request comes
             # from outside this class.
-            logger.verbose("Tag points to %s#%s" % (tHandle, sTitle))
+            logger.verbose("Tag points to '%s#%s'", tHandle, sTitle)
             self.theParent.viewDocument(tHandle, "#%s" % sTitle)
         return True
 
@@ -266,7 +266,7 @@ class GuiDocViewer(QTextBrowser):
         """Wrapper function for various document actions on the current
         document.
         """
-        logger.verbose("Requesting action: %s" % theAction.name)
+        logger.verbose("Requesting action: '%s'", theAction.name)
         if self._docHandle is None:
             logger.error("No document open")
             return False
@@ -279,7 +279,7 @@ class GuiDocViewer(QTextBrowser):
         elif theAction == nwDocAction.SEL_PARA:
             self._makeSelection(QTextCursor.BlockUnderCursor)
         else:
-            logger.debug("Unknown or unsupported document action %s" % str(theAction))
+            logger.debug("Unknown or unsupported document action '%s'", str(theAction))
             return False
         return True
 
@@ -289,7 +289,7 @@ class GuiDocViewer(QTextBrowser):
         if not isinstance(tAnchor, str):
             return False
         if tAnchor.startswith("#"):
-            logger.verbose("Moving to anchor %s" % tAnchor)
+            logger.verbose("Moving to anchor '%s'", tAnchor)
             self.setSource(QUrl(tAnchor))
         return True
 
@@ -378,7 +378,7 @@ class GuiDocViewer(QTextBrowser):
             theBlock = self._qDocument.findBlockByLineNumber(theLine)
             if theBlock:
                 self.setCursorPosition(theBlock.position())
-                logger.verbose("Cursor moved to line %d" % theLine)
+                logger.verbose("Cursor moved to line %d", theLine)
         return True
 
     def setScrollPosition(self, thePos):
@@ -410,7 +410,7 @@ class GuiDocViewer(QTextBrowser):
         """Slot for a link in the document being clicked.
         """
         theLink = theURL.url()
-        logger.verbose("Clicked link: '%s'" % theLink)
+        logger.verbose("Clicked link: '%s'", theLink)
         if len(theLink) > 0:
             theBits = theLink.split("=")
             if len(theBits) == 2:
@@ -617,7 +617,7 @@ class GuiDocViewHistory():
 
         self._dumpHistory()
 
-        logger.verbose("Added %s to view history" % tHandle)
+        logger.verbose("Added '%s' to view history", tHandle)
 
         return True
 
@@ -1114,7 +1114,7 @@ class GuiDocViewFooter(QWidget):
     def _doToggleSticky(self, theState):
         """Toggle the sticky flag for the reference panel.
         """
-        logger.verbose("Reference sticky is %s" % str(theState))
+        logger.verbose("Reference sticky is %s", str(theState))
         self.docViewer.stickyRef = theState
         if not theState and self.docViewer.docHandle() is not None:
             self.viewMeta.refreshReferences(self.docViewer.docHandle())
@@ -1210,7 +1210,7 @@ class GuiDocViewDetails(QScrollArea):
         """Capture the link-click and forward it to the document viewer
         class for handling.
         """
-        logger.verbose("Clicked link: '%s'" % theLink)
+        logger.verbose("Clicked link: '%s'", theLink)
         if len(theLink) == 21:
             tHandle = theLink[:13]
             tAnchor = theLink[13:]

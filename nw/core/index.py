@@ -85,7 +85,7 @@ class NWIndex():
     def deleteHandle(self, tHandle):
         """Delete all entries of a given document handle.
         """
-        logger.debug("Removing item %s from the index" % tHandle)
+        logger.debug("Removing item '%s' from the index", tHandle)
 
         delTags = []
         for tTag in self._tagIndex:
@@ -107,7 +107,7 @@ class NWIndex():
         moved from the archive or trash folders back into the active
         project.
         """
-        logger.debug("Re-indexing item %s" % tHandle)
+        logger.debug("Re-indexing item '%s'", tHandle)
 
         tItem = self.theProject.projTree[tHandle]
         if tItem is None:
@@ -217,7 +217,7 @@ class NWIndex():
             self.indexBroken = True
 
         tEnd = time()
-        logger.debug("Index check took %.3f ms" % ((tEnd - tStart)*1000))
+        logger.debug("Index check took %.3f ms", (tEnd - tStart)*1000)
         logger.debug("Index check complete")
 
         if self.indexBroken:
@@ -239,16 +239,16 @@ class NWIndex():
         theRoot = self.theProject.projTree.getRootItem(tHandle)
 
         if theItem is None:
-            logger.info("Not indexing unknown item %s" % tHandle)
+            logger.info("Not indexing unknown item '%s'", tHandle)
             return False
         if theItem.itemType != nwItemType.FILE:
-            logger.info("Not indexing non-file item %s" % tHandle)
+            logger.info("Not indexing non-file item '%s'", tHandle)
             return False
         if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
-            logger.info("Not indexing no-layout item %s" % tHandle)
+            logger.info("Not indexing no-layout item '%s'", tHandle)
             return False
         if theItem.itemParent is None:
-            logger.info("Not indexing orphaned item %s" % tHandle)
+            logger.info("Not indexing orphaned item '%s'", tHandle)
             return False
 
         # Run word counter for the whole text
@@ -257,16 +257,16 @@ class NWIndex():
 
         # If the file is archived or trashed, we don't index the file itself
         if self.theProject.projTree.isTrashRoot(theItem.itemParent):
-            logger.info("Not indexing trash item %s" % tHandle)
+            logger.info("Not indexing trash item '%s'", tHandle)
             return False
         if theRoot.itemClass == nwItemClass.ARCHIVE:
-            logger.info("Not indexing archived item %s" % tHandle)
+            logger.info("Not indexing archived item '%s'", tHandle)
             return False
 
         itemClass  = theItem.itemClass
         itemLayout = theItem.itemLayout
 
-        logger.debug("Indexing item with handle %s" % tHandle)
+        logger.debug("Indexing item with handle '%s'", tHandle)
 
         # Check file type, and reset its old index
         # Also add a default entry T000000 in case the file has no title
@@ -457,11 +457,11 @@ class NWIndex():
         """
         isValid, theBits, _ = self.scanThis(aLine)
         if not isValid or len(theBits) < 2:
-            logger.warning("Skipping keyword with %d value(s) in %s" % (len(theBits), tHandle))
+            logger.warning("Skipping keyword with %d value(s) in '%s'", len(theBits), tHandle)
             return
 
         if theBits[0] not in nwKeyWords.VALID_KEYS:
-            logger.warning("Skipping invalid keyword '%s' in %s" % (theBits[0], tHandle))
+            logger.warning("Skipping invalid keyword '%s' in '%s'", theBits[0], tHandle)
             return
 
         sTitle = "T%06d" % nTitle

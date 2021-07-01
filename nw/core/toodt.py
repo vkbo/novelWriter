@@ -644,7 +644,7 @@ class ToOdt(Tokenizer):
         """
         refStyle = self._mainPara.get(parName, None)
         if refStyle is None:
-            logger.error("Unknown paragraph style '%s'" % parName)
+            logger.error("Unknown paragraph style '%s'", parName)
             return "Standard"
 
         if not refStyle.checkNew(oStyle):
@@ -1295,5 +1295,5 @@ def _mkTag(nsName, tagName):
     theNS = XML_NS.get(nsName, "")
     if theNS:
         return "{%s}%s" % (theNS, tagName)
-    logger.warning("Missing xml namespace '%s'" % nsName)
+    logger.warning("Missing xml namespace '%s'", nsName)
     return tagName

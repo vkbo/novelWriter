@@ -68,19 +68,19 @@ class GuiMain(QMainWindow):
         # System Info
         # ===========
 
-        logger.info("OS: %s" % self.mainConf.osType)
-        logger.info("Kernel: %s" % self.mainConf.kernelVer)
-        logger.info("Host: %s" % self.mainConf.hostName)
-        logger.info("Qt5 Version: %s (%d)" % (
-            self.mainConf.verQtString, self.mainConf.verQtValue)
+        logger.info("OS: %s", self.mainConf.osType)
+        logger.info("Kernel: %s", self.mainConf.kernelVer)
+        logger.info("Host: %s", self.mainConf.hostName)
+        logger.info(
+            "Qt5 Version: %s (%d)", self.mainConf.verQtString, self.mainConf.verQtValue
         )
-        logger.info("PyQt5 Version: %s (%d)" % (
-            self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
+        logger.info(
+            "PyQt5 Version: %s (%d)", self.mainConf.verPyQtString, self.mainConf.verPyQtValue
         )
-        logger.info("Python Version: %s (0x%x)" % (
-            self.mainConf.verPyString, self.mainConf.verPyHexVal)
+        logger.info(
+            "Python Version: %s (0x%x)", self.mainConf.verPyString, self.mainConf.verPyHexVal
         )
-        logger.info("GUI Language: %s" % self.mainConf.guiLang)
+        logger.info("GUI Language: %s", self.mainConf.guiLang)
 
         # Core Classes
         # ============
@@ -680,7 +680,7 @@ class GuiMain(QMainWindow):
         # Make sure main tab is in Editor view
         self.mainTabs.setCurrentWidget(self.splitDocs)
 
-        logger.debug("Viewing document with handle %s" % tHandle)
+        logger.debug("Viewing document with handle '%s'", tHandle)
         if self.docViewer.loadText(tHandle):
             if not self.splitView.isVisible():
                 bPos = self.splitMain.sizes()
@@ -805,13 +805,13 @@ class GuiMain(QMainWindow):
             logger.warning("No item selected")
             return False
 
-        logger.verbose("Opening item %s" % tHandle)
+        logger.verbose("Opening item '%s'", tHandle)
         nwItem = self.theProject.projTree[tHandle]
         if nwItem.itemType == nwItemType.FILE:
-            logger.verbose("Requested item %s is a file" % tHandle)
+            logger.verbose("Requested item '%s' is a file", tHandle)
             self.openDocument(tHandle, doScroll=False)
         else:
-            logger.verbose("Requested item %s is not a file" % tHandle)
+            logger.verbose("Requested item '%s' is not a file", tHandle)
 
         return True
 
@@ -838,7 +838,7 @@ class GuiMain(QMainWindow):
         if tItem.itemType not in nwLists.REG_TYPES:
             return
 
-        logger.verbose("Requesting change to item %s" % tHandle)
+        logger.verbose("Requesting change to item '%s'", tHandle)
         dlgProj = GuiItemEditor(self, tHandle)
         dlgProj.exec_()
         if dlgProj.result() == QDialog.Accepted:
@@ -888,7 +888,7 @@ class GuiMain(QMainWindow):
                 self.setStatus(self.tr("Indexing: '{0}'").format(self.tr("Unknown item")))
 
             if tItem is not None and tItem.itemType == nwItemType.FILE:
-                logger.verbose("Scanning: %s" % tItem.itemName)
+                logger.verbose("Scanning '%s'", tItem.itemName)
                 self.theIndex.reIndexHandle(tItem.itemHandle)
 
                 # Get Word Counts
@@ -1513,15 +1513,15 @@ class GuiMain(QMainWindow):
         we open it. Otherwise, we do nothing.
         """
         tHandle = tItem.data(self.treeView.C_NAME, Qt.UserRole)
-        logger.verbose("User double clicked tree item with handle %s" % tHandle)
+        logger.verbose("User double clicked tree item with handle '%s'", tHandle)
 
         nwItem = self.theProject.projTree[tHandle]
         if nwItem is not None:
             if nwItem.itemType == nwItemType.FILE:
-                logger.verbose("Requested item %s is a file" % tHandle)
+                logger.verbose("Requested item '%s' is a file", tHandle)
                 self.openDocument(tHandle, changeFocus=False, doScroll=False)
             else:
-                logger.verbose("Requested item %s is a folder" % tHandle)
+                logger.verbose("Requested item '%s' is a folder", tHandle)
 
         return
 
@@ -1545,15 +1545,15 @@ class GuiMain(QMainWindow):
         not change focus to the editor as double click does.
         """
         tHandle = self.treeView.getSelectedHandle()
-        logger.verbose("User pressed return on tree item with handle %s" % tHandle)
+        logger.verbose("User pressed return on tree item with handle '%s'", tHandle)
 
         nwItem = self.theProject.projTree[tHandle]
         if nwItem is not None:
             if nwItem.itemType == nwItemType.FILE:
-                logger.verbose("Requested item %s is a file" % tHandle)
+                logger.verbose("Requested item '%s' is a file", tHandle)
                 self.openDocument(tHandle, changeFocus=False, doScroll=False)
             else:
-                logger.verbose("Requested item %s is a folder" % tHandle)
+                logger.verbose("Requested item '%s' is a folder", tHandle)
 
         return
 

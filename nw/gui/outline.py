@@ -212,7 +212,7 @@ class GuiOutline(QTreeWidget):
         except Exception:
             tLine = 1
 
-        logger.verbose("User selected entry with handle %s on line %s" % (tHandle, tLine))
+        logger.verbose("User selected entry with handle '%s' on line %s", tHandle, tLine)
         self.theParent.openDocument(tHandle, tLine=tLine-1, doScroll=True)
 
         return
@@ -248,7 +248,7 @@ class GuiOutline(QTreeWidget):
         """Receive the changes to column visibility forwarded by the
         header context menu.
         """
-        logger.verbose("User toggled Outline column '%s'" % theItem.name)
+        logger.verbose("User toggled Outline column '%s'", theItem.name)
         if theItem in self.colIndex:
             self.setColumnHidden(self.colIndex[theItem], not isChecked)
             self._saveHeaderState()
@@ -272,7 +272,7 @@ class GuiOutline(QTreeWidget):
             try:
                 treeOrder.append(nwOutline[hName])
             except Exception:
-                logger.warning("Ignored unknown outline column '%s'" % str(hName))
+                logger.warning("Ignored unknown outline column '%s'", str(hName))
 
         # Add columns that was not in the file to the treeOrder array.
         for hItem in nwOutline:
@@ -285,7 +285,7 @@ class GuiOutline(QTreeWidget):
             self.treeOrder = treeOrder
         else:
             logger.error("Failed to extract outline column order from previous session")
-            logger.error("Column count doesn't match %d != %d" % (len(treeOrder), self.treeNCols))
+            logger.error("Column count doesn't match %d != %d", len(treeOrder), self.treeNCols)
 
         # We load whatever column widths and hidden states we find in
         # the file, and leave the rest in their default state.
@@ -294,14 +294,14 @@ class GuiOutline(QTreeWidget):
             try:
                 self.colWidth[nwOutline[hName]] = self.mainConf.pxInt(tmpWidth[hName])
             except Exception:
-                logger.warning("Ignored unknown outline column '%s'" % str(hName))
+                logger.warning("Ignored unknown outline column '%s'", str(hName))
 
         tmpHidden = self.optState.getValue("GuiOutline", "columnHidden", {})
         for hName in tmpHidden:
             try:
                 self.colHidden[nwOutline[hName]] = tmpHidden[hName]
             except Exception:
-                logger.warning("Ignored unknown outline column '%s'" % str(hName))
+                logger.warning("Ignored unknown outline column '%s'", str(hName))
 
         self.headerMenu.setHiddenState(self.colHidden)
 

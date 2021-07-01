@@ -133,7 +133,7 @@ class NWItem():
                 # Sliently skip as we may otherwise cause orphaned
                 # items if an otherwise valid file is opened by a
                 # version of novelWriter that doesn't know the tag.
-                logger.error("Unknown tag '%s'" % xValue.tag)
+                logger.error("Unknown tag '%s'", xValue.tag)
 
         return True
 
@@ -205,7 +205,7 @@ class NWItem():
         elif isItemType(theType):
             self.itemType = nwItemType[theType]
         else:
-            logger.error("Unrecognised item type '%s'" % theType)
+            logger.error("Unrecognised item type '%s'", theType)
             self.itemType = nwItemType.NO_TYPE
         return
 
@@ -218,7 +218,7 @@ class NWItem():
         elif isItemClass(theClass):
             self.itemClass = nwItemClass[theClass]
         else:
-            logger.error("Unrecognised item class '%s'" % theClass)
+            logger.error("Unrecognised item class '%s'", theClass)
             self.itemClass = nwItemClass.NO_CLASS
         return
 
@@ -231,7 +231,7 @@ class NWItem():
         elif isItemLayout(theLayout):
             self.itemLayout = nwItemLayout[theLayout]
         else:
-            logger.error("Unrecognised item layout '%s'" % theLayout)
+            logger.error("Unrecognised item layout '%s'", theLayout)
             self.itemLayout = nwItemLayout.NO_LAYOUT
         return
 

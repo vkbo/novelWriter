@@ -222,7 +222,7 @@ class GuiNovelTree(QTreeWidget):
         tHandle = theData[0]
         tLine = checkInt(theData[1], 1)
 
-        logger.verbose("User selected entry with handle %s on line %s" % (tHandle, tLine))
+        logger.verbose("User selected entry with handle '%s' on line %s", tHandle, tLine)
         self.theParent.openDocument(tHandle, tLine=tLine-1, doScroll=True)
 
         return
