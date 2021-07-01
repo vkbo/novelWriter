@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Build Novel Project
 =====================================
@@ -52,19 +51,20 @@ from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 
+
 class GuiBuildNovel(QDialog):
 
-    FMT_PDF    = 1 # Print to PDF
+    FMT_PDF    = 1  # Print to PDF
 
-    FMT_ODT    = 2 # Open Document file
-    FMT_FODT   = 3 # Flat Open Document file
-    FMT_HTM    = 4 # HTML5
-    FMT_NWD    = 5 # nW Markdown
-    FMT_MD     = 6 # Standard Markdown
-    FMT_GH     = 7 # GitHub Markdown
+    FMT_ODT    = 2  # Open Document file
+    FMT_FODT   = 3  # Flat Open Document file
+    FMT_HTM    = 4  # HTML5
+    FMT_NWD    = 5  # nW Markdown
+    FMT_MD     = 6  # Standard Markdown
+    FMT_GH     = 7  # GitHub Markdown
 
-    FMT_JSON_H = 8 # HTML5 wrapped in JSON
-    FMT_JSON_M = 9 # nW Markdown wrapped in JSON
+    FMT_JSON_H = 8  # HTML5 wrapped in JSON
+    FMT_JSON_M = 9  # nW Markdown wrapped in JSON
 
     def __init__(self, theParent):
         QDialog.__init__(self, theParent)
@@ -78,10 +78,10 @@ class GuiBuildNovel(QDialog):
         self.theProject = theParent.theProject
         self.optState   = theParent.theProject.optState
 
-        self.htmlText  = [] # List of html documents
-        self.htmlStyle = [] # List of html styles
-        self.htmlSize  = 0  # Size of the html document
-        self.buildTime = 0  # The timestamp of the last build
+        self.htmlText  = []  # List of html documents
+        self.htmlStyle = []  # List of html styles
+        self.htmlSize  = 0   # Size of the html document
+        self.buildTime = 0   # The timestamp of the last build
 
         self.setWindowTitle(self.tr("Build Novel Project"))
         self.setMinimumWidth(self.mainConf.pxInt(700))
@@ -215,7 +215,7 @@ class GuiBuildNovel(QDialog):
         self.fontForm  = QGridLayout(self)
         self.fontGroup.setLayout(self.fontForm)
 
-        ## Font Family
+        # Font Family
         self.textFont = QLineEdit()
         self.textFont.setReadOnly(True)
         self.textFont.setMinimumWidth(xFmt)
@@ -930,11 +930,11 @@ class GuiBuildNovel(QDialog):
 
         elif theFmt == self.FMT_JSON_H or theFmt == self.FMT_JSON_M:
             jsonData = {
-                "meta" : {
-                    "workingTitle" : self.theProject.projName,
-                    "novelTitle"   : self.theProject.bookTitle,
-                    "authors"      : self.theProject.bookAuthors,
-                    "buildTime"    : self.buildTime,
+                "meta": {
+                    "workingTitle": self.theProject.projName,
+                    "novelTitle": self.theProject.bookTitle,
+                    "authors": self.theProject.bookAuthors,
+                    "buildTime": self.buildTime,
                 }
             }
 
@@ -948,8 +948,8 @@ class GuiBuildNovel(QDialog):
                 for htmlPage in makeHtml.fullHTML:
                     theBody.append(htmlPage.rstrip("\n").split("\n"))
                 jsonData["text"] = {
-                    "css"  : self.htmlStyle,
-                    "html" : theBody,
+                    "css": self.htmlStyle,
+                    "html": theBody,
                 }
 
             elif theFmt == self.FMT_JSON_M:
@@ -963,7 +963,7 @@ class GuiBuildNovel(QDialog):
                 for nwdPage in makeMd.theMarkdown:
                     theBody.append(nwdPage.split("\n"))
                 jsonData["text"] = {
-                    "nwd" : theBody,
+                    "nwd": theBody,
                 }
 
             try:
@@ -991,7 +991,7 @@ class GuiBuildNovel(QDialog):
         else:
             # If the if statements above and here match, it should not
             # be possible to reach this else statement.
-            return False # pragma: no cover
+            return False  # pragma: no cover
 
         # Report to User
         # ==============
@@ -1035,7 +1035,7 @@ class GuiBuildNovel(QDialog):
             self.textFont.setText(theFont.family())
             self.textSize.setValue(theFont.pointSize())
 
-        self.raise_() # Move the dialog to front (fixes a bug on macOS)
+        self.raise_()  # Move the dialog to front (fixes a bug on macOS)
 
         return
 
@@ -1076,9 +1076,9 @@ class GuiBuildNovel(QDialog):
         try:
             with open(buildCache, mode="w+", encoding="utf8") as outFile:
                 outFile.write(json.dumps({
-                    "buildTime" : self.buildTime,
-                    "htmlStyle" : self.htmlStyle,
-                    "htmlText"  : self.htmlText,
+                    "buildTime": self.buildTime,
+                    "htmlStyle": self.htmlStyle,
+                    "htmlText": self.htmlText,
                 }, indent=2))
         except Exception:
             logger.error("Failed to save build cache")
@@ -1116,11 +1116,11 @@ class GuiBuildNovel(QDialog):
 
         # Formatting
         self.theProject.setTitleFormat({
-            "title"      : self.fmtTitle.text().strip(),
-            "chapter"    : self.fmtChapter.text().strip(),
-            "unnumbered" : self.fmtUnnumbered.text().strip(),
-            "scene"      : self.fmtScene.text().strip(),
-            "section"    : self.fmtSection.text().strip(),
+            "title":      self.fmtTitle.text().strip(),
+            "chapter":    self.fmtChapter.text().strip(),
+            "unnumbered": self.fmtUnnumbered.text().strip(),
+            "scene":      self.fmtScene.text().strip(),
+            "section":    self.fmtSection.text().strip(),
         })
 
         buildLang    = self.buildLang.currentData()
@@ -1181,6 +1181,7 @@ class GuiBuildNovel(QDialog):
         return theFormat
 
 # END Class GuiBuildNovel
+
 
 class GuiBuildNovelDocView(QTextBrowser):
 

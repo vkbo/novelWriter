@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Document Editor
 =================================
@@ -57,6 +56,7 @@ from nw.gui.dochighlight import GuiDocHighlighter
 
 logger = logging.getLogger(__name__)
 
+
 class GuiDocEditor(QTextEdit):
 
     MOVE_KEYS = (
@@ -84,24 +84,24 @@ class GuiDocEditor(QTextEdit):
         self._nwDocument = None
         self._nwItem     = None
 
-        self._docChanged = False # Flag for changed status of document
-        self._docHandle  = None  # The handle of the open file
-        self._docHeaders = []    # Record of headers in the file
+        self._docChanged = False  # Flag for changed status of document
+        self._docHandle  = None   # The handle of the open file
+        self._docHeaders = []     # Record of headers in the file
 
-        self._spellCheck = False # Flag for spell checking enabled
-        self._theDict    = None  # The current spell check dictionary
-        self._nonWord    = "\"'" # Characters to not include in spell checking
+        self._spellCheck = False  # Flag for spell checking enabled
+        self._theDict    = None   # The current spell check dictionary
+        self._nonWord    = "\"'"  # Characters to not include in spell checking
 
         # Document Variables
-        self._charCount  = 0     # Character count
-        self._wordCount  = 0     # Word count
-        self._paraCount  = 0     # Paragraph count
-        self._lastEdit   = 0     # Time stamp of last edit
-        self._lastActive = 0     # Time stamp of last activity
-        self._lastFind   = None  # Position of the last found search word
-        self._bigDoc     = False # Flag for very large document size
-        self._doReplace  = False # Switch to temporarily disable auto-replace
-        self._queuePos   = None  # Used for delayed change of cursor position
+        self._charCount  = 0      # Character count
+        self._wordCount  = 0      # Word count
+        self._paraCount  = 0      # Paragraph count
+        self._lastEdit   = 0      # Time stamp of last edit
+        self._lastActive = 0      # Time stamp of last activity
+        self._lastFind   = None   # Position of the last found search word
+        self._bigDoc     = False  # Flag for very large document size
+        self._doReplace  = False  # Switch to temporarily disable auto-replace
+        self._queuePos   = None   # Used for delayed change of cursor position
 
         # Typography
         self._typDQOpen  = '"'
@@ -597,8 +597,8 @@ class GuiDocEditor(QTextEdit):
         """
         if self.mainConf.verQtValue >= 50900:
             theText = self._qDocument.toRawText()
-            theText = theText.replace(nwUnicode.U_LSEP, "\n") # Line separators
-            theText = theText.replace(nwUnicode.U_PSEP, "\n") # Paragraph separators
+            theText = theText.replace(nwUnicode.U_LSEP, "\n")  # Line separators
+            theText = theText.replace(nwUnicode.U_PSEP, "\n")  # Paragraph separators
         else:
             theText = self.toPlainText()
         return theText
@@ -1424,7 +1424,7 @@ class GuiDocEditor(QTextEdit):
         theTwo   = theText[thePos-2:thePos]
         theThree = theText[thePos-3:thePos]
 
-        if not theOne: # Makes Neo sad
+        if not theOne:  # Makes Neo sad
             return
 
         nDelete = 0
@@ -1931,6 +1931,7 @@ class GuiDocEditor(QTextEdit):
 
 # END Class GuiDocEditor
 
+
 # =============================================================================================== #
 #  The Off-GUI Thread Word Counter
 #  A runnable for the word counter to be run in the thread pool off the main GUI thread.
@@ -1960,7 +1961,8 @@ class BackgroundWordCounter(QRunnable):
         self._isRunning = False
         return
 
-## END Class BackgroundWordCounter
+# END Class BackgroundWordCounter
+
 
 class BackgroundWordCounterSignals(QObject):
     """The QRunnable cannot emit a signal, so we need a simple QObject
@@ -1969,6 +1971,7 @@ class BackgroundWordCounterSignals(QObject):
     countsReady = pyqtSignal(int, int, int)
 
 # END Class BackgroundWordCounterSignals
+
 
 # =============================================================================================== #
 #  The Embedded Document Search/Replace Feature
@@ -2146,8 +2149,8 @@ class GuiDocEditSearch(QFrame):
         errCol.setBlueF(bCol/mCol)
 
         self.rxCol = {
-            True  : baseCol,
-            False : errCol
+            True: baseCol,
+            False: errCol
         }
 
         logger.debug("GuiDocEditSearch initialisation complete")
@@ -2233,7 +2236,7 @@ class GuiDocEditSearch(QFrame):
                 self._alertSearchValid(theRegEx.isValid())
                 return theRegEx
 
-            else: # >= 50300 to < 51300
+            else:  # >= 50300 to < 51300
                 if self.isCaseSense:
                     rxOpt = Qt.CaseSensitive
                 else:
@@ -2344,6 +2347,7 @@ class GuiDocEditSearch(QFrame):
         return
 
 # END Class GuiDocEditSearch
+
 
 # =============================================================================================== #
 #  The Embedded Document Header
@@ -2566,6 +2570,7 @@ class GuiDocEditHeader(QWidget):
         return
 
 # END Class GuiDocEditHeader
+
 
 # =============================================================================================== #
 #  The Embedded Document Footer

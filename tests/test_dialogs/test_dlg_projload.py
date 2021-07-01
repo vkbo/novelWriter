@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Load Dialog Class Tester
 ==============================================
@@ -37,6 +36,7 @@ keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
+
 @pytest.mark.gui
 def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test the load project wizard.
@@ -48,8 +48,8 @@ def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     assert nwGUI.closeProject()
 
     qtbot.wait(stepDelay)
-    monkeypatch.setattr(GuiProjectLoad, "exec_", lambda *args: None)
-    monkeypatch.setattr(GuiProjectLoad, "result", lambda *args: QDialog.Accepted)
+    monkeypatch.setattr(GuiProjectLoad, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiProjectLoad, "result", lambda *a: QDialog.Accepted)
     nwGUI.mainMenu.aOpenProject.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiProjectLoad") is not None, timeout=1000)
 
@@ -106,7 +106,7 @@ def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     assert nwLoad.listBox.topLevelItemCount() == recentCount - 1
 
     getFile = os.path.join(nwMinimal, "nwProject.nwx")
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwargs: (getFile, None))
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (getFile, None))
     qtbot.mouseClick(nwLoad.browseButton, Qt.LeftButton)
     assert nwLoad.openPath == nwMinimal
     assert nwLoad.openState == nwLoad.OPEN_STATE

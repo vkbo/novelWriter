@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Tree Class
 ================================
@@ -62,22 +61,23 @@ LAYOUT_MAP = {
     },
 }
 
+
 class NWTree():
 
     def __init__(self, theProject):
 
         self.theProject = theProject
 
-        self._projTree    = {}    # Holds all the items of the project
-        self._treeOrder   = []    # The order of the tree items on the tree view
-        self._treeRoots   = []    # The root items of the tree
-        self._trashRoot   = None  # The handle of the trash root folder
-        self._archRoot    = None  # The handle of the archive root folder
-        self._theIndex    = 0     # The current iterator index
-        self._treeChanged = False # True if tree structure has changed
+        self._projTree    = {}     # Holds all the items of the project
+        self._treeOrder   = []     # The order of the tree items on the tree view
+        self._treeRoots   = []     # The root items of the tree
+        self._trashRoot   = None   # The handle of the trash root folder
+        self._archRoot    = None   # The handle of the archive root folder
+        self._theIndex    = 0      # The current iterator index
+        self._treeChanged = False  # True if tree structure has changed
 
-        self._handleSeed  = None  # Used for generating handles for testing
-        self._handleCount = 0     # A counter that is added to the handle generator
+        self._handleSeed  = None   # Used for generating handles for testing
+        self._handleCount = 0      # A counter that is added to the handle generator
 
         return
 

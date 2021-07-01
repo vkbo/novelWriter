@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Project Outline Details
 =========================================
@@ -37,13 +36,14 @@ from nw.constants import trConst, nwKeyWords, nwLabels
 
 logger = logging.getLogger(__name__)
 
+
 class GuiOutlineDetails(QScrollArea):
 
     LVL_MAP = {
-        "H1" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Title"),
-        "H2" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Chapter"),
-        "H3" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Scene"),
-        "H4" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Section"),
+        "H1": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Title"),
+        "H2": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Chapter"),
+        "H3": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Scene"),
+        "H4": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Section"),
     }
 
     def __init__(self, theParent):

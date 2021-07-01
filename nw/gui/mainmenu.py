@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Main Menu
 ===========================
@@ -35,6 +34,7 @@ from nw.enum import nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwWidget
 from nw.constants import trConst, nwKeyWords, nwLabels, nwUnicode
 
 logger = logging.getLogger(__name__)
+
 
 class GuiMainMenu(QMenuBar):
 
@@ -241,7 +241,7 @@ class GuiMainMenu(QMenuBar):
         self.rootItems[nwItemClass.ARCHIVE]   = QAction(self.tr("Outtakes Root"),  self.rootMenu)
         nCount = 0
         for itemClass in self.rootItems.keys():
-            nCount += 1 # This forces the lambdas to be unique
+            nCount += 1  # This forces the lambdas to be unique
             self.rootItems[itemClass].triggered.connect(
                 lambda nCount, itemClass=itemClass: self._newTreeItem(nwItemType.ROOT, itemClass)
             )
@@ -982,7 +982,7 @@ class GuiMainMenu(QMenuBar):
         self.aSpellCheck.setStatusTip(self.tr("Toggle check spelling"))
         self.aSpellCheck.setCheckable(True)
         self.aSpellCheck.setChecked(self.theProject.spellCheck)
-        self.aSpellCheck.triggered.connect(self._toggleSpellCheck) # triggered, not toggled!
+        self.aSpellCheck.triggered.connect(self._toggleSpellCheck)  # triggered, not toggled!
         self.aSpellCheck.setShortcut("Ctrl+F7")
         self.toolsMenu.addAction(self.aSpellCheck)
 

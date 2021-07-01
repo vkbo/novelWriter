@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Novel Tree
 ============================
@@ -36,6 +35,7 @@ from nw.common import checkInt
 from nw.constants import nwKeyWords
 
 logger = logging.getLogger(__name__)
+
 
 class GuiNovelTree(QTreeWidget):
 

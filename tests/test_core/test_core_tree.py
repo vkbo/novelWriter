@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – NWTree Class Tester
 =================================
@@ -29,6 +28,7 @@ from hashlib import sha256
 from nw.core.project import NWProject, NWItem, NWTree
 from nw.enum import nwItemClass, nwItemType, nwItemLayout
 from nw.constants import nwFiles
+
 
 @pytest.fixture(scope="function")
 def dummyItems(dummyGUI):
@@ -105,6 +105,7 @@ def dummyItems(dummyGUI):
     ]
 
     return theItems
+
 
 @pytest.mark.core
 def testCoreTree_BuildTree(dummyGUI, dummyItems):
@@ -202,6 +203,7 @@ def testCoreTree_BuildTree(dummyGUI, dummyItems):
 
 # END Test testCoreTree_BuildTree
 
+
 @pytest.mark.core
 def testCoreTree_Methods(dummyGUI, dummyItems):
     """Test bvarious class methods.
@@ -258,6 +260,7 @@ def testCoreTree_Methods(dummyGUI, dummyItems):
 
 # END Test testCoreTree_Methods
 
+
 @pytest.mark.core
 def testCoreTree_UpdateItemLayout(dummyGUI, dummyItems):
     """Test building a project tree from a list of items.
@@ -271,9 +274,9 @@ def testCoreTree_UpdateItemLayout(dummyGUI, dummyItems):
     assert len(theTree) == len(dummyItems)
 
     # Check rejected items
-    assert not theTree.updateItemLayout("0000000000000", "H1") # Non-existent handle
-    assert not theTree.updateItemLayout("a000000000004", "H2") # Character file
-    assert not theTree.updateItemLayout("c000000000002", "H0") # Wrong header level
+    assert not theTree.updateItemLayout("0000000000000", "H1")  # Non-existent handle
+    assert not theTree.updateItemLayout("a000000000004", "H2")  # Character file
+    assert not theTree.updateItemLayout("c000000000002", "H0")  # Wrong header level
 
     cHandle = "c000000000002"
 
@@ -383,6 +386,7 @@ def testCoreTree_UpdateItemLayout(dummyGUI, dummyItems):
 
 # END Test testCoreTree_UpdateItemLayout
 
+
 @pytest.mark.core
 def testCoreTree_MakeHandles(monkeypatch, dummyGUI):
     """Test generating item handles.
@@ -425,6 +429,7 @@ def testCoreTree_MakeHandles(monkeypatch, dummyGUI):
 
 # END Test testCoreTree_MakeHandles
 
+
 @pytest.mark.core
 def testCoreTree_Stats(dummyGUI, dummyItems):
     """Test project stats methods.
@@ -450,6 +455,7 @@ def testCoreTree_Stats(dummyGUI, dummyItems):
     assert nFile == 3
 
 # END Test testCoreTree_Stats
+
 
 @pytest.mark.core
 def testCoreTree_Reorder(dummyGUI, dummyItems):
@@ -481,6 +487,7 @@ def testCoreTree_Reorder(dummyGUI, dummyItems):
     assert theTree.handles() == bHandle
 
 # END Test testCoreTree_Reorder
+
 
 @pytest.mark.core
 def testCoreTree_XMLPackUnpack(dummyGUI, dummyItems):
@@ -536,6 +543,7 @@ def testCoreTree_XMLPackUnpack(dummyGUI, dummyItems):
     assert len(theTree) == len(dummyItems)
 
 # END Test testCoreTree_XMLPackUnpack
+
 
 @pytest.mark.core
 def testCoreTree_ToCFile(monkeypatch, dummyGUI, dummyItems, tmpDir):

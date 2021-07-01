@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Index
 ===========================
@@ -38,6 +37,7 @@ from nw.constants import nwFiles, nwKeyWords, nwUnicode
 from nw.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
+
 
 class NWIndex():
 
@@ -183,11 +183,11 @@ class NWIndex():
         try:
             with open(indexFile, mode="w+", encoding="utf8") as outFile:
                 json.dump({
-                    "tagIndex"   : self._tagIndex,
-                    "refIndex"   : self._refIndex,
-                    "novelIndex" : self._novelIndex,
-                    "noteIndex"  : self._noteIndex,
-                    "textCounts" : self._textCounts,
+                    "tagIndex":   self._tagIndex,
+                    "refIndex":   self._refIndex,
+                    "novelIndex": self._novelIndex,
+                    "noteIndex":  self._noteIndex,
+                    "textCounts": self._textCounts,
                 }, outFile, indent=2)
         except Exception:
             logger.error("Failed to save index file")
@@ -272,8 +272,8 @@ class NWIndex():
         # Also add a default entry T000000 in case the file has no title
         self._refIndex[tHandle] = {}
         self._refIndex[tHandle]["T000000"] = {
-            "tags"    : [],
-            "updated" : round(time()),
+            "tags": [],
+            "updated": round(time()),
         }
         if itemLayout == nwItemLayout.NOTE:
             self._novelIndex.pop(tHandle, None)
@@ -367,18 +367,18 @@ class NWIndex():
 
         sTitle = "T%06d" % nLine
         self._refIndex[tHandle][sTitle] = {
-            "tags"    : [],
-            "updated" : round(time()),
+            "tags": [],
+            "updated": round(time()),
         }
         theData = {
-            "level"    : hDepth,
-            "title"    : hText,
-            "layout"   : itemLayout.name,
-            "synopsis" : "",
-            "cCount"   : 0,
-            "wCount"   : 0,
-            "pCount"   : 0,
-            "updated"  : round(time()),
+            "level": hDepth,
+            "title": hText,
+            "layout": itemLayout.name,
+            "synopsis": "",
+            "cCount": 0,
+            "wCount": 0,
+            "pCount": 0,
+            "updated": round(time()),
         }
 
         if hText != "":
@@ -395,14 +395,14 @@ class NWIndex():
         """Index a page with no title.
         """
         theData = {
-            "level"    : "H0",
-            "title"    : "Untitled Page",
-            "layout"   : itemLayout.name,
-            "synopsis" : "",
-            "cCount"   : 0,
-            "wCount"   : 0,
-            "pCount"   : 0,
-            "updated"  : round(time()),
+            "level": "H0",
+            "title": "Untitled Page",
+            "layout": itemLayout.name,
+            "synopsis": "",
+            "cCount": 0,
+            "wCount": 0,
+            "pCount": 0,
+            "updated": round(time()),
         }
 
         if isNovel:
@@ -482,10 +482,10 @@ class NWIndex():
         """Scan a line starting with @ to check that it's valid. Then
         split it up into its elements and positions as two arrays.
         """
-        theBits = [] # The elements of the string
-        thePos  = [] # The absolute position of each element
+        theBits = []  # The elements of the string
+        thePos  = []  # The absolute position of each element
 
-        aLine = aLine.rstrip() # Remove all trailing white spaces
+        aLine = aLine.rstrip()  # Remove all trailing white spaces
         nChar = len(aLine)
         if nChar < 2:
             return False, theBits, thePos
@@ -894,6 +894,7 @@ class NWIndex():
         return
 
 # END Class NWIndex
+
 
 # =============================================================================================== #
 #  Simple Word Counter

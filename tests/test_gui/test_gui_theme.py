@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Theme and Icons Classes Tester
 ================================================
@@ -30,12 +29,13 @@ keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
+
 @pytest.mark.gui
 def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     """Test the theme and icon classes.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal])
     qtbot.addWidget(nwGUI)

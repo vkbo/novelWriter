@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Writing Statistics
 ====================================
@@ -44,6 +43,7 @@ from nw.constants import nwConst, nwFiles
 from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
+
 
 class GuiWritingStats(QDialog):
 
@@ -570,7 +570,7 @@ class GuiWritingStats(QDialog):
             if isFirst:
                 # Subtract the offset from the first list entry
                 dwTotal -= self.wordOffset
-                dwTotal = max(dwTotal, 1) # Don't go zero or negative
+                dwTotal = max(dwTotal, 1)  # Don't go zero or negative
                 isFirst = False
 
             if groupByDay:

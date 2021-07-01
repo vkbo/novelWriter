@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – ToHtml Class Tester
 =================================
@@ -26,6 +25,7 @@ import pytest
 from tools import readFile
 
 from nw.core import NWProject, NWIndex, ToHtml
+
 
 @pytest.mark.core
 def testCoreToHtml_Format(dummyGUI):
@@ -78,6 +78,7 @@ def testCoreToHtml_Format(dummyGUI):
     )
 
 # END Test testCoreToHtml_Format
+
 
 @pytest.mark.core
 def testCoreToHtml_Convert(dummyGUI):
@@ -344,6 +345,8 @@ def testCoreToHtml_Convert(dummyGUI):
 
 # END Test testCoreToHtml_Convert
 
+
+@pytest.mark.core
 def testCoreToHtml_Complex(dummyGUI, fncDir):
     """Test the ave method of the ToHtml class.
     """
@@ -406,8 +409,8 @@ def testCoreToHtml_Complex(dummyGUI, fncDir):
         "</body>\n"
         "</html>\n"
     ).format(
-        htmlStyle = "\n".join(theStyle),
-        bodyText = "".join(resText).rstrip()
+        htmlStyle="\n".join(theStyle),
+        bodyText="".join(resText).rstrip()
     )
 
     saveFile = os.path.join(fncDir, "outFile.htm")
@@ -415,6 +418,7 @@ def testCoreToHtml_Complex(dummyGUI, fncDir):
     assert readFile(saveFile) == htmlDoc
 
 # END Test testCoreToHtml_Save
+
 
 @pytest.mark.core
 def testCoreToHtml_Methods(dummyGUI):

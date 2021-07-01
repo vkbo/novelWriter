@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Wrapper
 =============================
@@ -50,6 +49,7 @@ from nw.constants import trConst, nwFiles, nwLabels
 
 logger = logging.getLogger(__name__)
 
+
 class NWProject():
 
     def __init__(self, theParent):
@@ -59,48 +59,48 @@ class NWProject():
         self.mainConf  = nw.CONFIG
 
         # Core Elements
-        self.optState = OptionState(self) # Project-specific GUI options
-        self.projTree = NWTree(self)      # The project tree
-        self.langData = {}                # Localisation data
+        self.optState = OptionState(self)  # Project-specific GUI options
+        self.projTree = NWTree(self)       # The project tree
+        self.langData = {}                 # Localisation data
 
         # Project Status
-        self.projOpened  = 0     # The time stamp of when the project file was opened
-        self.projChanged = False # The project has unsaved changes
-        self.projAltered = False # The project has been altered this session
-        self.lockedBy    = None  # Data on which computer has the project open
-        self.saveCount   = 0     # Meta data: number of saves
-        self.autoCount   = 0     # Meta data: number of automatic saves
-        self.editTime    = 0     # The accumulated edit time read from the project file
+        self.projOpened  = 0      # The time stamp of when the project file was opened
+        self.projChanged = False  # The project has unsaved changes
+        self.projAltered = False  # The project has been altered this session
+        self.lockedBy    = None   # Data on which computer has the project open
+        self.saveCount   = 0      # Meta data: number of saves
+        self.autoCount   = 0      # Meta data: number of automatic saves
+        self.editTime    = 0      # The accumulated edit time read from the project file
 
         # Class Settings
-        self.projPath    = None # The full path to where the currently open project is saved
-        self.projMeta    = None # The full path to the project's meta data folder
-        self.projCache   = None # The full path to the project's cache folder
-        self.projContent = None # The full path to the project's content folder
-        self.projDict    = None # The spell check dictionary
-        self.projSpell   = None # The spell check language, if different than default
-        self.projLang    = None # The project language, used for builds
-        self.projFile    = None # The file name of the project main XML file
+        self.projPath    = None  # The full path to where the currently open project is saved
+        self.projMeta    = None  # The full path to the project's meta data folder
+        self.projCache   = None  # The full path to the project's cache folder
+        self.projContent = None  # The full path to the project's content folder
+        self.projDict    = None  # The spell check dictionary
+        self.projSpell   = None  # The spell check language, if different than default
+        self.projLang    = None  # The project language, used for builds
+        self.projFile    = None  # The file name of the project main XML file
 
         # Project Meta
-        self.projName    = "" # Project name (working title)
-        self.bookTitle   = "" # The final title; should only be used for exports
-        self.bookAuthors = [] # A list of book authors
+        self.projName    = ""  # Project name (working title)
+        self.bookTitle   = ""  # The final title; should only be used for exports
+        self.bookAuthors = []  # A list of book authors
 
         # Project Settings
-        self.autoReplace = {}    # Text to auto-replace on exports
-        self.titleFormat = {}    # The formatting of titles for exports
-        self.spellCheck  = False # Controls the spellcheck-as-you-type feature
-        self.autoOutline = True  # If true, the Project Outline is updated automatically
-        self.statusItems = None  # Novel file progress status values
-        self.importItems = None  # Note file importance values
-        self.lastEdited  = None  # The handle of the last file to be edited
-        self.lastViewed  = None  # The handle of the last file to be viewed
-        self.lastWCount  = 0     # The project word count from last session
-        self.currWCount  = 0     # The project word count in current session
-        self.novelWCount = 0     # Total number of words in novel files
-        self.notesWCount = 0     # Total number of words in note files
-        self.doBackup    = True  # Run project backup on exit
+        self.autoReplace = {}     # Text to auto-replace on exports
+        self.titleFormat = {}     # The formatting of titles for exports
+        self.spellCheck  = False  # Controls the spellcheck-as-you-type feature
+        self.autoOutline = True   # If true, the Project Outline is updated automatically
+        self.statusItems = None   # Novel file progress status values
+        self.importItems = None   # Note file importance values
+        self.lastEdited  = None   # The handle of the last file to be edited
+        self.lastViewed  = None   # The handle of the last file to be viewed
+        self.lastWCount  = 0      # The project word count from last session
+        self.currWCount  = 0      # The project word count in current session
+        self.novelWCount = 0      # Total number of words in novel files
+        self.notesWCount = 0      # Total number of words in note files
+        self.doBackup    = True   # Run project backup on exit
 
         # Internal Mapping
         self.makeAlert = self.theParent.makeAlert
@@ -203,11 +203,11 @@ class NWProject():
         self.bookAuthors = []
         self.autoReplace = {}
         self.titleFormat = {
-            "title"      : r"%title%",
-            "chapter"    : self.tr("Chapter")+r" %ch%: %title%",
-            "unnumbered" : r"%title%",
-            "scene"      : r"* * *",
-            "section"    : r"",
+            "title":      "%title%",
+            "chapter":    self.tr("Chapter")+" %ch%: %title%",
+            "unnumbered": "%title%",
+            "scene":      "* * *",
+            "section":    "",
         }
         self.spellCheck  = False
         self.autoOutline = True
@@ -383,7 +383,7 @@ class NWProject():
         # Check for Old Legacy Data
         # =========================
 
-        legacyList = [] # Cleanup is done later
+        legacyList = []  # Cleanup is done later
         for projItem in os.listdir(self.projPath):
             logger.verbose("Project contains: %s" % projItem)
             if projItem.startswith("data_"):
@@ -620,10 +620,10 @@ class NWProject():
         # Root element and project details
         logger.debug("Writing project meta")
         nwXML = etree.Element("novelWriterXML", attrib={
-            "appVersion"  : str(nw.__version__),
-            "hexVersion"  : str(nw.__hexversion__),
-            "fileVersion" : "1.2",
-            "timeStamp"   : formatTimeStamp(saveTime),
+            "appVersion": str(nw.__version__),
+            "hexVersion": str(nw.__hexversion__),
+            "fileVersion": "1.2",
+            "timeStamp": formatTimeStamp(saveTime),
         })
 
         editTime = int(self.editTime + saveTime - self.projOpened)
@@ -677,9 +677,9 @@ class NWProject():
             with open(tempFile, mode="wb") as outFile:
                 outFile.write(etree.tostring(
                     nwXML,
-                    pretty_print = True,
-                    encoding = "utf-8",
-                    xml_declaration = True
+                    pretty_print=True,
+                    encoding="utf-8",
+                    xml_declaration=True
                 ))
         except Exception as e:
             self.makeAlert([

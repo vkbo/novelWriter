@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Custom Widgets and Layouts
 ========================================
@@ -42,6 +41,7 @@ from PyQt5.QtWidgets import (
 from nw.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
+
 
 # =============================================================================================== #
 #  Config Form Layout
@@ -123,9 +123,9 @@ class QConfigLayout(QGridLayout):
         """Add a label and a widget as a new row of the grid.
         """
         thisEntry = {
-            "label"  : None,
-            "help"   : None,
-            "widget" : None,
+            "label": None,
+            "help": None,
+            "widget": None,
         }
 
         if isinstance(theLabel, QLabel):
@@ -198,6 +198,7 @@ class QConfigLayout(QGridLayout):
 
 # END Class QConfigLayout
 
+
 class QHelpLabel(QLabel):
 
     def __init__(self, theText, textCol, fontSize=0.9):
@@ -222,6 +223,7 @@ class QHelpLabel(QLabel):
         return
 
 # END Class QHelpLabel
+
 
 # =============================================================================================== #
 #  Switch Widget
@@ -367,6 +369,7 @@ class QSwitch(QAbstractButton):
 
 # END Class QSwitch
 
+
 # =============================================================================================== #
 #  Paged Dialog w/Custom TabWidget
 # =============================================================================================== #
@@ -416,6 +419,7 @@ class PagedDialog(QDialog):
         return
 
 # END Class PagedDialog
+
 
 class VerticalTabBar(QTabBar):
 

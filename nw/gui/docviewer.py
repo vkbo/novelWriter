@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Document Viewer
 =================================
@@ -45,6 +44,7 @@ from nw.enum import nwAlert, nwItemType, nwDocAction
 from nw.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
+
 
 class GuiDocViewer(QTextBrowser):
 
@@ -543,33 +543,34 @@ class GuiDocViewer(QTextBrowser):
             "  color: rgb({mColR}, {mColG}, {mColB});"
             "}}\n"
         ).format(
-            tColR = self.theTheme.colText[0],
-            tColG = self.theTheme.colText[1],
-            tColB = self.theTheme.colText[2],
-            hColR = self.theTheme.colHead[0],
-            hColG = self.theTheme.colHead[1],
-            hColB = self.theTheme.colHead[2],
-            aColR = self.theTheme.colVal[0],
-            aColG = self.theTheme.colVal[1],
-            aColB = self.theTheme.colVal[2],
-            eColR = self.theTheme.colEmph[0],
-            eColG = self.theTheme.colEmph[1],
-            eColB = self.theTheme.colEmph[2],
-            kColR = self.theTheme.colKey[0],
-            kColG = self.theTheme.colKey[1],
-            kColB = self.theTheme.colKey[2],
-            cColR = self.theTheme.colHidden[0],
-            cColG = self.theTheme.colHidden[1],
-            cColB = self.theTheme.colHidden[2],
-            mColR = self.theTheme.colMod[0],
-            mColG = self.theTheme.colMod[1],
-            mColB = self.theTheme.colMod[2],
+            tColR=self.theTheme.colText[0],
+            tColG=self.theTheme.colText[1],
+            tColB=self.theTheme.colText[2],
+            hColR=self.theTheme.colHead[0],
+            hColG=self.theTheme.colHead[1],
+            hColB=self.theTheme.colHead[2],
+            aColR=self.theTheme.colVal[0],
+            aColG=self.theTheme.colVal[1],
+            aColB=self.theTheme.colVal[2],
+            eColR=self.theTheme.colEmph[0],
+            eColG=self.theTheme.colEmph[1],
+            eColB=self.theTheme.colEmph[2],
+            kColR=self.theTheme.colKey[0],
+            kColG=self.theTheme.colKey[1],
+            kColB=self.theTheme.colKey[2],
+            cColR=self.theTheme.colHidden[0],
+            cColG=self.theTheme.colHidden[1],
+            cColB=self.theTheme.colHidden[2],
+            mColR=self.theTheme.colMod[0],
+            mColG=self.theTheme.colMod[1],
+            mColB=self.theTheme.colMod[2],
         )
         self._qDocument.setDefaultStyleSheet(styleSheet)
 
         return True
 
 # END Class GuiDocViewer
+
 
 class GuiDocViewHistory():
 
@@ -701,6 +702,7 @@ class GuiDocViewHistory():
         return
 
 # END Class GuiDocViewHistory
+
 
 # =============================================================================================== #
 #  The Embedded Document Header
@@ -907,6 +909,7 @@ class GuiDocViewHeader(QWidget):
         return
 
 # END Class GuiDocViewHeader
+
 
 # =============================================================================================== #
 #  The Embedded Document Footer
@@ -1132,6 +1135,7 @@ class GuiDocViewFooter(QWidget):
         return
 
 # END Class GuiDocViewFooter
+
 
 # =============================================================================================== #
 #  The Document Back-Reference Panel

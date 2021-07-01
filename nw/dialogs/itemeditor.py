@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Item Editor
 =============================
@@ -38,6 +37,7 @@ from nw.constants import trConst, nwLists, nwLabels
 from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
+
 
 class GuiItemEditor(QDialog):
 

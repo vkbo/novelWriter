@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Project Tree
 ==============================
@@ -41,6 +40,7 @@ from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from nw.constants import nwConst, trConst, nwLists, nwLabels
 
 logger = logging.getLogger(__name__)
+
 
 class GuiProjectTree(QTreeWidget):
 
@@ -620,10 +620,10 @@ class GuiProjectTree(QTreeWidget):
 
         iStatus = nwItem.itemStatus
         if nwItem.itemClass == nwItemClass.NOVEL:
-            iStatus = self.theProject.statusItems.checkEntry(iStatus) # Make sure it's valid
+            iStatus = self.theProject.statusItems.checkEntry(iStatus)  # Make sure it's valid
             flagIcon = self.theParent.statusIcons[iStatus]
         else:
-            iStatus = self.theProject.importItems.checkEntry(iStatus) # Make sure it's valid
+            iStatus = self.theProject.importItems.checkEntry(iStatus)  # Make sure it's valid
             flagIcon = self.theParent.importIcons[iStatus]
 
         trItem.setText(self.C_NAME, nwItem.itemName)
@@ -790,7 +790,7 @@ class GuiProjectTree(QTreeWidget):
         selItem = self.itemAt(clickPos)
         if isinstance(selItem, QTreeWidgetItem):
             tHandle = selItem.data(self.C_NAME, Qt.UserRole)
-            self.setSelectedHandle(tHandle) # Just to be safe
+            self.setSelectedHandle(tHandle)  # Just to be safe
             tItem = self.theProject.projTree[tHandle]
             if tItem is not None:
                 if self.ctxMenu.filterActions(tItem):
@@ -1101,6 +1101,7 @@ class GuiProjectTree(QTreeWidget):
         return
 
 # END Class GuiProjectTree
+
 
 class GuiProjectTreeMenu(QMenu):
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Project Details
 =================================
@@ -40,6 +39,7 @@ from nw.constants import nwUnicode
 from nw.gui.custom import PagedDialog, QSwitch
 
 logger = logging.getLogger(__name__)
+
 
 class GuiProjectDetails(PagedDialog):
 
@@ -127,6 +127,7 @@ class GuiProjectDetails(PagedDialog):
         return
 
 # END Class GuiProjectDetails
+
 
 class GuiProjectDetailsMain(QWidget):
 
@@ -240,6 +241,7 @@ class GuiProjectDetailsMain(QWidget):
         return
 
 # END Class GuiProjectDetailsMain
+
 
 class GuiProjectDetailsContents(QWidget):
 

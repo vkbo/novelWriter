@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Open Project
 ==============================
@@ -42,6 +41,7 @@ from nw.common import formatInt
 from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
+
 
 class GuiProjectLoad(QDialog):
 

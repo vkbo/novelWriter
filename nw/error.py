@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Exception Handling
 ================================
@@ -35,6 +34,7 @@ from PyQt5.QtWidgets import (
 
 logger = logging.getLogger(__name__)
 
+
 # =============================================================================================== #
 #  Utility Functions
 # =============================================================================================== #
@@ -44,6 +44,7 @@ def logException():
     """
     exType, exValue, _ = sys.exc_info()
     logger.error("%s: %s" % (exType.__name__, str(exValue).strip("'")))
+
 
 # =============================================================================================== #
 #  Error Handler
@@ -103,7 +104,7 @@ class NWErrorMessage(QDialog):
             "message and traceback shown below.</p>"
             "<p>URL: <a href='{issueUrl}'>{issueUrl}</a></p>"
         ).format(
-            issueUrl = __issuesurl__,
+            issueUrl=__issuesurl__,
         ))
 
         try:
@@ -123,16 +124,16 @@ class NWErrorMessage(QDialog):
                 "\n"
                 "Traceback:\n{exTrace}\n"
             ).format(
-                nwVersion = __version__,
-                osType    = sys.platform,
-                osKernel  = kernelVersion,
-                pyVersion = sys.version.split()[0],
-                pyHexVer  = sys.hexversion,
-                qtVers    = QT_VERSION_STR,
-                pyqtVers  = PYQT_VERSION_STR,
-                exType    = exType.__name__,
-                exMessage = str(exValue),
-                exTrace   = "\n".join(format_tb(exTrace)),
+                nwVersion=__version__,
+                osType=sys.platform,
+                osKernel=kernelVersion,
+                pyVersion=sys.version.split()[0],
+                pyHexVer=sys.hexversion,
+                qtVers=QT_VERSION_STR,
+                pyqtVers=PYQT_VERSION_STR,
+                exType=exType.__name__,
+                exMessage=str(exValue),
+                exTrace="\n".join(format_tb(exTrace)),
             ))
         except Exception:
             self.msgBody.setPlainText("Failed to generate error report ...")
@@ -150,6 +151,7 @@ class NWErrorMessage(QDialog):
         return
 
 # END Class NWErrorMessage
+
 
 def exceptionHandler(exType, exValue, exTrace):
     """Function to catch unhandled global exceptions.

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI User Wordlist
 ===============================
@@ -38,6 +37,7 @@ from nw.enum import nwAlert
 from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
+
 
 class GuiWordList(QDialog):
 

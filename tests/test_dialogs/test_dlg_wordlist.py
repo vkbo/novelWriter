@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Other Dialog Classes Tester
 =========================================
@@ -21,6 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import os
+import pytest
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QMessageBox, QAction
@@ -35,14 +35,16 @@ keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
-def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal, tmpDir):
+
+@pytest.mark.gui
+def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal):
     """test the word list editor.
     """
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(GuiWordList, "exec_", lambda *args: None)
-    monkeypatch.setattr(GuiWordList, "result", lambda *args: QDialog.Accepted)
-    monkeypatch.setattr(GuiWordList, "accept", lambda *args: None)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(GuiWordList, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiWordList, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiWordList, "accept", lambda *a: None)
 
     # Open project
     nwGUI.openProject(nwMinimal)
@@ -66,7 +68,7 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal, tmpDir):
         "word_a\n"
         "word_c\n"
         "word_g\n"
-        "      \n" # Should be ignored
+        "      \n"  # Should be ignored
         "word_f\n"
         "word_b\n"
     ))

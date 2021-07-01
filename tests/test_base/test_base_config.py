@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Config Class Tester
 =================================
@@ -32,6 +31,7 @@ from tools import cmpFiles, writeFile
 
 from nw.config import Config
 from nw.constants import nwConst, nwFiles
+
 
 @pytest.mark.base
 def testBaseConfig_Constructor(monkeypatch):
@@ -79,6 +79,7 @@ def testBaseConfig_Constructor(monkeypatch):
 
 # END Test testBaseConfig_Constructor
 
+
 @pytest.mark.base
 def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     """Test config intialisation.
@@ -95,7 +96,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
 
     # Let the config class figure out the path
     with monkeypatch.context() as mp:
-        mp.setattr("PyQt5.QtCore.QStandardPaths.writableLocation", lambda *args: fncDir)
+        mp.setattr("PyQt5.QtCore.QStandardPaths.writableLocation", lambda *a: fncDir)
         tstConf.verQtValue = 50600
         tstConf.initConfig()
         assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
@@ -132,7 +133,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     # Run again and set the paths directly and correctly
     # This should create a config file as well
     with monkeypatch.context() as mp:
-        mp.setattr("os.path.expanduser", lambda *args: "")
+        mp.setattr("os.path.expanduser", lambda *a: "")
         tstConf.spellTool = nwConst.SP_INTERNAL
         tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
         assert tstConf.confPath == tmpDir
@@ -205,6 +206,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
 
 # END Test testBaseConfig_Init
 
+
 @pytest.mark.base
 def testBaseConfig_RecentCache(monkeypatch, tmpConf, tmpDir, fncDir):
     """Test recent cache file.
@@ -266,6 +268,7 @@ def testBaseConfig_RecentCache(monkeypatch, tmpConf, tmpDir, fncDir):
 
 # END Test testBaseConfig_RecentCache
 
+
 @pytest.mark.base
 def testBaseConfig_SetPath(tmpConf, tmpDir):
     """Test path setters.
@@ -296,6 +299,7 @@ def testBaseConfig_SetPath(tmpConf, tmpDir):
     assert tmpConf.lastPath == ""
 
 # END Test testBaseConfig_SetPath
+
 
 @pytest.mark.base
 def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
@@ -469,6 +473,7 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     assert cmpFiles(testFile, compFile, [2, 9, 10])
 
 # END Test testBaseConfig_SettersGetters
+
 
 @pytest.mark.base
 def testBaseConfig_Internal(monkeypatch, tmpConf):

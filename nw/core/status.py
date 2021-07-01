@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Item Status Class
 =======================================
@@ -31,6 +30,7 @@ from lxml import etree
 from nw.common import checkInt
 
 logger = logging.getLogger(__name__)
+
 
 class NWStatus():
 
@@ -122,9 +122,9 @@ class NWStatus():
         """
         for n in range(self._theLength):
             xSub = etree.SubElement(xParent, "entry", attrib={
-                "blue"  : str(self._theColours[n][2]),
-                "green" : str(self._theColours[n][1]),
-                "red"   : str(self._theColours[n][0]),
+                "blue":  str(self._theColours[n][2]),
+                "green": str(self._theColours[n][1]),
+                "red":   str(self._theColours[n][0]),
             })
             xSub.text = self._theLabels[n]
         return True
