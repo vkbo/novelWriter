@@ -25,6 +25,9 @@ either `testing` or `dev` branch.
 * If your contribution is a fix for the latest testing release, branch from the `testing` branch.
 * If your contribution is a new feature, branch from the `dev` branch.
 
+Please do not make your changes on a branch with the same name as any of the above mentioned
+branches. You should make a unique and descriptive branch name in your fork for your changes.
+
 ## Pull Request Process
 
 1. Make sure your code passes all tests and conforms to the style guide. You can check that the
