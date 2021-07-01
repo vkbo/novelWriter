@@ -208,7 +208,7 @@ class GuiProjectTree(QTreeWidget):
 
         # Everything is fine, we have what we need, so we proceed
         logger.verbose(
-            "Adding new item of type %s and class %s to handle %s",
+            "Adding new item of type '%s' and class '%s' to handle '%s'",
             itemType.name, itemClass.name, str(pHandle)
         )
 

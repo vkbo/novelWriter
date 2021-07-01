@@ -439,7 +439,7 @@ class GuiDocEditor(QTextEdit):
         tHandle = self._nwItem.itemHandle
         if self._docHandle != tHandle:
             logger.error(
-                "Editor handle %s and item handle %s do not match", self._docHandle, tHandle
+                "Editor handle '%s' and item handle '%s' do not match", self._docHandle, tHandle
             )
             return False
 
@@ -739,7 +739,7 @@ class GuiDocEditor(QTextEdit):
         passed to it without having to consider the internal logic of
         this class when calling these actions from other classes.
         """
-        logger.verbose("Requesting action: %s", theAction.name)
+        logger.verbose("Requesting action: '%s'", theAction.name)
         if self._docHandle is None:
             logger.error("No document open")
             return False
