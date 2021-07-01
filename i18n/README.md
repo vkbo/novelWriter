@@ -6,6 +6,12 @@ folder at the root of the repository, and the `nw_XX.qm` together with the `proj
 are located in `nw/assets/i18n`. The latter are JSON files translation maps for the novelWriter
 projects, used by the Build Novel Project tool.
 
+**Note**
+
+When making a new translation, or updating an existing one, only commit the `nw_XX.ts` you have
+made changes to. The `qtlupdate` command mentioned below will likely modify all `nw_XX.ts`
+slightly, but please _don't_ commit those changes and add them to the pull request.
+
 ## Qt GUI Localisation
 
 The `.qm` files are the actual files used by the application to translate the GUI into another
