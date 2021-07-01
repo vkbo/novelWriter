@@ -674,7 +674,7 @@ class GuiIcons:
                     iconPath = os.path.join(self.iconPath, iconFile)
                     if os.path.isfile(iconPath):
                         self.themeMap[iconName] = iconPath
-                        logger.verbose("Icon slot '%s' using file '%s'", (iconName, iconFile))
+                        logger.verbose("Icon slot '%s' using file '%s'", iconName, iconFile)
                     else:
                         logger.error("Icon file '%s' not in theme folder", iconFile)
 
