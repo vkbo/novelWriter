@@ -323,7 +323,7 @@ class GuiOutlineDetails(QScrollArea):
     def _tagClicked(self, theLink):
         """Capture the click of a tag in the right-most column.
         """
-        logger.verbose("Clicked link: '%s'" % theLink)
+        logger.verbose("Clicked link: '%s'", theLink)
         if len(theLink) > 0:
             theBits = theLink.split("=")
             if len(theBits) == 2:

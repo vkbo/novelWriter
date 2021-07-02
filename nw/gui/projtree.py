@@ -207,8 +207,9 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         # Everything is fine, we have what we need, so we proceed
-        logger.verbose("Adding new item of type %s and class %s to handle %s" % (
-            itemType.name, itemClass.name, str(pHandle))
+        logger.verbose(
+            "Adding new item of type '%s' and class '%s' to handle '%s'",
+            itemType.name, itemClass.name, str(pHandle)
         )
 
         if itemType == nwItemType.ROOT:
@@ -454,7 +455,7 @@ class GuiProjectTree(QTreeWidget):
         if not msgYes:
             return False
 
-        logger.verbose("Deleting %d file(s) from Trash" % nTrash)
+        logger.verbose("Deleting %d file(s) from Trash", nTrash)
         for tHandle in self.getTreeFromHandle(trashHandle):
             if tHandle == trashHandle:
                 continue
@@ -496,7 +497,7 @@ class GuiProjectTree(QTreeWidget):
 
         wCount = int(trItemS.data(self.C_COUNT, Qt.UserRole))
         if nwItemS.itemType == nwItemType.FILE:
-            logger.debug("User requested file %s deleted" % tHandle)
+            logger.debug("User requested file '%s' deleted", tHandle)
             trItemP = trItemS.parent()
             trItemT = self._addTrashRoot()
             if trItemP is None or trItemT is None:
@@ -519,7 +520,7 @@ class GuiProjectTree(QTreeWidget):
                     doPermanent = True
 
                 if doPermanent:
-                    logger.debug("Permanently deleting file with handle %s" % tHandle)
+                    logger.debug("Permanently deleting file with handle '%s'", tHandle)
 
                     self.propagateCount(tHandle, 0)
                     tIndex = trItemP.indexOfChild(trItemS)
@@ -551,7 +552,7 @@ class GuiProjectTree(QTreeWidget):
                     if pHandle is None:
                         logger.warning("File has no parent item")
 
-                    logger.debug("Moving file %s to trash" % tHandle)
+                    logger.debug("Moving file '%s' to trash", tHandle)
 
                     self.propagateCount(tHandle, 0)
                     tIndex  = trItemP.indexOfChild(trItemS)
@@ -565,7 +566,7 @@ class GuiProjectTree(QTreeWidget):
                     self._setTreeChanged(True)
 
         elif nwItemS.itemType == nwItemType.FOLDER:
-            logger.debug("User requested folder %s deleted" % tHandle)
+            logger.debug("User requested folder '%s' deleted", tHandle)
             trItemP = trItemS.parent()
             if trItemP is None:
                 logger.error("Could not delete folder")
@@ -584,7 +585,7 @@ class GuiProjectTree(QTreeWidget):
                 return False
 
         elif nwItemS.itemType == nwItemType.ROOT:
-            logger.debug("User requested root folder %s deleted" % tHandle)
+            logger.debug("User requested root folder '%s' deleted", tHandle)
             tIndex = self.indexOfTopLevelItem(trItemS)
             if trItemS.childCount() == 0:
                 self.takeTopLevelItem(tIndex)
@@ -695,7 +696,7 @@ class GuiProjectTree(QTreeWidget):
             iCount += 1
             self._addTreeItem(nwItem)
 
-        logger.debug("%d items added to the project tree" % iCount)
+        logger.debug("%d item(s) added to the project tree", iCount)
         return True
 
     def undoLastMove(self):
@@ -724,9 +725,7 @@ class GuiProjectTree(QTreeWidget):
         wCount = int(srcItem.data(self.C_COUNT, Qt.UserRole))
         sHandle = srcItem.data(self.C_NAME, Qt.UserRole)
         dHandle = dstItem.data(self.C_NAME, Qt.UserRole)
-        logger.debug("Moving item %s back to %s, index %d" % (
-            sHandle, dHandle, dstIndex
-        ))
+        logger.debug("Moving item '%s' back to '%s', index %d", sHandle, dHandle, dstIndex)
 
         self.propagateCount(sHandle, 0)
         parItem = srcItem.parent()
@@ -882,7 +881,7 @@ class GuiProjectTree(QTreeWidget):
         allowDrop &= not (self.dropIndicatorPosition() == QAbstractItemView.OnItem and onFile)
 
         if allowDrop and not isRoot:
-            logger.debug("Drag'n'drop of item %s accepted" % sHandle)
+            logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
             self.propagateCount(sHandle, 0)
             QTreeWidget.dropEvent(self, theEvent)
             self._postItemMove(sHandle, snItem, dnItem, wCount)
@@ -890,7 +889,7 @@ class GuiProjectTree(QTreeWidget):
 
         else:
             theEvent.ignore()
-            logger.debug("Drag'n'drop of item %s not accepted" % sHandle)
+            logger.debug("Drag'n'drop of item '%s' not accepted", sHandle)
             self.makeAlert(self.tr(
                 "The item cannot be moved to that location."
             ), nwAlert.ERROR)
@@ -913,9 +912,10 @@ class GuiProjectTree(QTreeWidget):
         # If the item does not have the same class as the target,
         # and the target is not a free root folder, update its class
         if not (isSame or onFree):
-            logger.debug("Item %s class has been changed from %s to %s" % (
+            logger.debug(
+                "Item '%s' class has been changed from '%s' to '%s'",
                 sHandle, snItem.itemClass.name, dnItem.itemClass.name
-            ))
+            )
             snItem.setClass(dnItem.itemClass)
             self.setTreeItemValues(sHandle)
 
@@ -1002,7 +1002,7 @@ class GuiProjectTree(QTreeWidget):
                 try:
                     byIndex = self._treeMap[pHandle].indexOfChild(self._treeMap[nHandle])
                 except Exception:
-                    logger.error("Failed to get index of item with handle %s" % nHandle)
+                    logger.error("Failed to get index of item with handle '%s'", nHandle)
             if byIndex >= 0:
                 self._treeMap[pHandle].insertChild(byIndex+1, newItem)
             else:
@@ -1052,14 +1052,14 @@ class GuiProjectTree(QTreeWidget):
         nwItemS = self.theProject.projTree[tHandle]
         trItemP = trItemS.parent()
         if trItemP is None:
-            logger.error("Failed to find new parent item of %s" % tHandle)
+            logger.error("Failed to find new parent item of '%s'", tHandle)
             return False
 
         pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
         nwItemS.setParent(pHandle)
         self.setTreeItemValues(tHandle)
 
-        logger.debug("The parent of item %s has been changed to %s" % (tHandle, pHandle))
+        logger.debug("The parent of item '%s' has been changed to '%s'", tHandle, pHandle)
 
         return True
 

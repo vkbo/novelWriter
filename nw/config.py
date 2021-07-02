@@ -272,7 +272,7 @@ class Config:
             confRoot = QStandardPaths.writableLocation(QStandardPaths.ConfigLocation)
             self.confPath = os.path.join(os.path.abspath(confRoot), self.appHandle)
         else:
-            logger.info("Setting config from alternative path: %s" % confPath)
+            logger.info("Setting config from alternative path: %s", confPath)
             self.confPath = confPath
 
         if dataPath is None:
@@ -282,11 +282,11 @@ class Config:
                 dataRoot = QStandardPaths.writableLocation(QStandardPaths.DataLocation)
             self.dataPath = os.path.join(os.path.abspath(dataRoot), self.appHandle)
         else:
-            logger.info("Setting data path from alternative path: %s" % dataPath)
+            logger.info("Setting data path from alternative path: %s", dataPath)
             self.dataPath = dataPath
 
-        logger.verbose("Config path: %s" % self.confPath)
-        logger.verbose("Data path: %s" % self.dataPath)
+        logger.verbose("Config path: %s", self.confPath)
+        logger.verbose("Data path: %s", self.dataPath)
 
         self.confFile = self.appHandle+".conf"
         self.lastPath = os.path.expanduser("~")
@@ -310,8 +310,8 @@ class Config:
         # Internationalisation
         self.nwLangPath = os.path.join(self.assetPath, "i18n")
 
-        logger.verbose("App path: %s" % self.appPath)
-        logger.verbose("Last path: %s" % self.lastPath)
+        logger.verbose("App path: %s", self.appPath)
+        logger.verbose("Last path: %s", self.lastPath)
 
         # If config folder does not exist, create it.
         # This assumes that the os config folder itself exists.
@@ -319,7 +319,7 @@ class Config:
             try:
                 os.mkdir(self.confPath)
             except Exception as e:
-                logger.error("Could not create folder: %s" % self.confPath)
+                logger.error("Could not create folder: %s", self.confPath)
                 logException()
                 self.hasError = True
                 self.errData.append("Could not create folder: %s" % self.confPath)
@@ -342,7 +342,7 @@ class Config:
                 try:
                     os.mkdir(self.dataPath)
                 except Exception as e:
-                    logger.error("Could not create folder: %s" % self.dataPath)
+                    logger.error("Could not create folder: %s", self.dataPath)
                     logException()
                     self.hasError = True
                     self.errData.append("Could not create folder: %s" % self.dataPath)
@@ -392,7 +392,7 @@ class Config:
                 lngFile = "%s_%s" % (lngBase, lngCode.replace("-", "_"))
                 if lngFile not in self.qtTrans:
                     if qTrans.load(lngFile, lngPath):
-                        logger.debug("Loaded: %s" % os.path.join(lngPath, lngFile))
+                        logger.debug("Loaded: %s", os.path.join(lngPath, lngFile))
                         nwApp.installTranslator(qTrans)
                         self.qtTrans[lngFile] = qTrans
 
@@ -898,10 +898,10 @@ class Config:
         """
         if thePath in self.recentProj:
             del self.recentProj[thePath]
-            logger.verbose("Removed recent: %s" % thePath)
+            logger.verbose("Removed recent: %s", thePath)
             self.saveRecentCache()
         else:
-            logger.error("Unknown recent: %s" % thePath)
+            logger.error("Unknown recent: %s", thePath)
             return False
         return True
 
