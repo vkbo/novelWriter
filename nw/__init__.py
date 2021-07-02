@@ -209,9 +209,7 @@ def main(sysArgs=None):
     pkgLogger.addHandler(cHandle)
     pkgLogger.setLevel(logLevel)
 
-    logger.info("Starting novelWriter %s (%s) %s" % (
-        __version__, __hexversion__, __date__
-    ))
+    logger.info("Starting novelWriter %s (%s) %s", __version__, __hexversion__, __date__)
 
     # Check Packages and Versions
     errorData = []

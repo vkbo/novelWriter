@@ -43,7 +43,7 @@ def logException():
     """Log the content of an exception message.
     """
     exType, exValue, _ = sys.exc_info()
-    logger.error("%s: %s" % (exType.__name__, str(exValue).strip("'")))
+    logger.error("%s: %s", exType.__name__, str(exValue).strip("'"))
 
 
 # =============================================================================================== #
@@ -159,7 +159,7 @@ def exceptionHandler(exType, exValue, exTrace):
     from traceback import print_tb
     from PyQt5.QtWidgets import qApp
 
-    logger.critical("%s: %s" % (exType.__name__, str(exValue)))
+    logger.critical("%s: %s", exType.__name__, str(exValue))
     print_tb(exTrace)
 
     try:

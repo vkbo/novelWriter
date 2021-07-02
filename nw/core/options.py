@@ -174,11 +174,11 @@ class OptionState():
         """Saves a value, with a given group and name.
         """
         if setGroup not in self.validMap:
-            logger.error("Unknown option group '%s'" % setGroup)
+            logger.error("Unknown option group '%s'", setGroup)
             return False
 
         if setName not in self.validMap[setGroup]:
-            logger.error("Unknown option name '%s'" % setName)
+            logger.error("Unknown option name '%s'", setName)
             return False
 
         if setGroup not in self.theState:

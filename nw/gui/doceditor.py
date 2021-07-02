@@ -344,7 +344,7 @@ class GuiDocEditor(QTextEdit):
 
         self._allowAutoReplace(True)
         afTime = time()
-        logger.debug("Document highlighted in %.3f ms" % (1000*(afTime-bfTime)))
+        logger.debug("Document highlighted in %.3f ms", 1000*(afTime-bfTime))
 
         self._lastEdit = time()
         self._lastActive = time()
@@ -438,9 +438,9 @@ class GuiDocEditor(QTextEdit):
 
         tHandle = self._nwItem.itemHandle
         if self._docHandle != tHandle:
-            logger.error("Editor handle %s and item handle %s do not match" % (
-                self._docHandle, tHandle
-            ))
+            logger.error(
+                "Editor handle '%s' and item handle '%s' do not match", self._docHandle, tHandle
+            )
             return False
 
         docText = self.getText()
@@ -656,7 +656,7 @@ class GuiDocEditor(QTextEdit):
             if theBlock:
                 self.setCursorPosition(theBlock.position())
                 self.docFooter.updateLineCount()
-                logger.verbose("Cursor moved to line %d" % theLine)
+                logger.verbose("Cursor moved to line %d", theLine)
 
         return True
 
@@ -703,7 +703,7 @@ class GuiDocEditor(QTextEdit):
         if not self._bigDoc:
             self.spellCheckDocument()
 
-        logger.verbose("Spell check is set to %s" % str(theMode))
+        logger.verbose("Spell check is set to '%s'", str(theMode))
 
         return True
 
@@ -724,7 +724,7 @@ class GuiDocEditor(QTextEdit):
                 self.hLight.rehighlight()
             qApp.restoreOverrideCursor()
             afTime = time()
-            logger.debug("Document highlighted in %.3f ms" % (1000*(afTime-bfTime)))
+            logger.debug("Document highlighted in %.3f ms", 1000*(afTime-bfTime))
             self.theParent.statusBar.setStatus(self.tr("Spell check complete"))
 
         return True
@@ -804,7 +804,7 @@ class GuiDocEditor(QTextEdit):
         elif theAction == nwDocAction.INDENT_R:
             self._formatBlock(nwDocAction.INDENT_R)
         else:
-            logger.debug("Unknown or unsupported document action %s" % str(theAction))
+            logger.debug("Unknown or unsupported document action '%s'", str(theAction))
             self._allowAutoReplace(True)
             return False
 
@@ -877,15 +877,15 @@ class GuiDocEditor(QTextEdit):
         If the insert line is not blank, a new line is started.
         """
         if keyWord not in nwKeyWords.VALID_KEYS:
-            logger.error("Invalid keyword '%s'" % keyWord)
+            logger.error("Invalid keyword '%s'", keyWord)
             return False
 
-        logger.verbose("Inserting keyword '%s'" % keyWord)
+        logger.verbose("Inserting keyword '%s'", keyWord)
 
         theCursor = self.textCursor()
         theBlock = theCursor.block()
         if not theBlock.isValid():
-            logger.error("Failed to insert keyword '%s'" % keyWord)
+            logger.error("Failed to insert keyword '%s'", keyWord)
             return False
 
         theCursor.beginEditBlock()
@@ -1108,7 +1108,7 @@ class GuiDocEditor(QTextEdit):
             spellCheck &= theWord != ""
 
         if spellCheck:
-            logger.verbose("Looking up '%s' in the dictionary" % theWord)
+            logger.verbose("Looking up '%s' in the dictionary", theWord)
             spellCheck &= not self._theDict.checkWord(theWord)
 
         if spellCheck:
@@ -1160,7 +1160,7 @@ class GuiDocEditor(QTextEdit):
         wants to add a word to the project dictionary.
         """
         theWord = theCursor.selectedText().strip().strip(self._nonWord)
-        logger.debug("Added '%s' to project dictionary" % theWord)
+        logger.debug("Added '%s' to project dictionary", theWord)
         self._theDict.addWord(theWord)
         self.hLight.setDict(self._theDict)
         self.hLight.rehighlightBlock(theCursor.block())
@@ -1221,11 +1221,11 @@ class GuiDocEditor(QTextEdit):
                 QPointF(theSize.width(), theSize.height()), Qt.FuzzyHit
             )
             if self._queuePos <= thePos:
-                logger.verbose("Allowed cursor move to %d <= %d" % (self._queuePos, thePos))
+                logger.verbose("Allowed cursor move to %d <= %d", self._queuePos, thePos)
                 self.setCursorPosition(self._queuePos)
                 self._queuePos = None
             else:
-                logger.verbose("Denied cursor move to %d > %d" % (self._queuePos, thePos))
+                logger.verbose("Denied cursor move to %d > %d", self._queuePos, thePos)
         return
 
     ##
@@ -1356,9 +1356,10 @@ class GuiDocEditor(QTextEdit):
             theCursor.endEditBlock()
             theCursor.setPosition(theCursor.selectionEnd())
             self.setTextCursor(theCursor)
-            logger.verbose("Replaced occurrence of '%s' with '%s' on line %d" % (
+            logger.verbose(
+                "Replaced occurrence of '%s' with '%s' on line %d",
                 searchFor, replWith, theCursor.blockNumber()
-            ))
+            )
         else:
             logger.error("The selected text is not a search result, skipping replace")
 
@@ -1531,12 +1532,12 @@ class GuiDocEditor(QTextEdit):
         theCursor = self.textCursor()
         theBlock = theCursor.block()
         if not theBlock.isValid():
-            logger.debug("Invalid block selected for action %s" % str(docAction))
+            logger.debug("Invalid block selected for action '%s'", str(docAction))
             return False
 
         theText = theBlock.text()
         if len(theText.strip()) == 0:
-            logger.debug("Empty block selected for action %s" % str(docAction))
+            logger.debug("Empty block selected for action '%s'", str(docAction))
             return False
 
         # Remove existing format first, if any
@@ -1623,7 +1624,7 @@ class GuiDocEditor(QTextEdit):
         elif docAction == nwDocAction.BLOCK_TXT:
             theText = newText
         else:
-            logger.error("Unknown or unsupported block format requested: %s" % str(docAction))
+            logger.error("Unknown or unsupported block format requested: '%s'", str(docAction))
             return False
 
         # Replace the block text
@@ -2225,7 +2226,7 @@ class GuiDocEditSearch(QFrame):
         self.searchBox.selectAll()
         if self.isRegEx:
             self._alertSearchValid(True)
-        logger.verbose("Setting search text to '%s'" % theText)
+        logger.verbose("Setting search text to '%s'", theText)
         return True
 
     def setReplaceText(self, theText):

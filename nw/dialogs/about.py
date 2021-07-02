@@ -181,6 +181,7 @@ class GuiAbout(QDialog):
                 ("Français", "Jan Lüdke (jyhelle)"),
                 ("Norsk Bokmål", "Veronica Berglyd Olsen"),
                 ("Português", "Bruno Meneguello"),
+                ("简体中文", "Qianzhi Long"),
             ])
         )
 

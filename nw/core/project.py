@@ -369,7 +369,7 @@ class NWProject():
 
         self.clearProject()
         self.projPath = os.path.abspath(os.path.dirname(fileName))
-        logger.debug("Opening project: %s" % self.projPath)
+        logger.debug("Opening project: %s", self.projPath)
 
         # Standard Folders and Files
         # ==========================
@@ -385,7 +385,7 @@ class NWProject():
 
         legacyList = []  # Cleanup is done later
         for projItem in os.listdir(self.projPath):
-            logger.verbose("Project contains: %s" % projItem)
+            logger.verbose("Project contains: %s", projItem)
             if projItem.startswith("data_"):
                 legacyList.append(projItem)
 
@@ -442,8 +442,8 @@ class NWProject():
         hexVersion  = xRoot.attrib.get("hexVersion", "0x0")
         fileVersion = xRoot.attrib.get("fileVersion", self.tr("Unknown"))
 
-        logger.verbose("XML root is %s" % nwxRoot)
-        logger.verbose("File version is %s" % fileVersion)
+        logger.verbose("XML root is '%s'", nwxRoot)
+        logger.verbose("File version is '%s'", fileVersion)
 
         # Check File Type
         # ===============
@@ -503,13 +503,13 @@ class NWProject():
                     if xItem.text is None:
                         continue
                     if xItem.tag == "name":
-                        logger.verbose("Working Title: '%s'" % xItem.text)
+                        logger.verbose("Working Title: '%s'", xItem.text)
                         self.projName = xItem.text
                     elif xItem.tag == "title":
-                        logger.verbose("Title is '%s'" % xItem.text)
+                        logger.verbose("Title is '%s'", xItem.text)
                         self.bookTitle = xItem.text
                     elif xItem.tag == "author":
-                        logger.verbose("Author: '%s'" % xItem.text)
+                        logger.verbose("Author: '%s'", xItem.text)
                         self.bookAuthors.append(xItem.text)
                     elif xItem.tag == "saveCount":
                         self.saveCount = checkInt(xItem.text, 0)
@@ -610,7 +610,7 @@ class NWProject():
         if not self.ensureFolderStructure():
             return False
 
-        logger.debug("Saving project: %s" % self.projPath)
+        logger.debug("Saving project: %s", self.projPath)
 
         if autoSave:
             self.autoCount += 1
@@ -783,7 +783,7 @@ class NWProject():
         if not os.path.isdir(baseDir):
             try:
                 os.mkdir(baseDir)
-                logger.debug("Created folder %s" % baseDir)
+                logger.debug("Created folder: %s", baseDir)
             except Exception as e:
                 self.theParent.makeAlert([
                     self.tr("Could not create backup folder."), str(e)
@@ -805,7 +805,7 @@ class NWProject():
             self._clearLockFile()
             shutil.make_archive(baseName, "zip", self.projPath, ".")
             self._writeLockFile()
-            logger.info("Backup written to: %s" % archName)
+            logger.info("Backup written to: %s", archName)
             if doNotify:
                 self.theParent.makeAlert(self.tr(
                     "Backup archive file written to: {0}"
@@ -904,7 +904,7 @@ class NWProject():
             if not os.path.isdir(projPath):
                 try:
                     os.mkdir(projPath)
-                    logger.debug("Created folder %s" % projPath)
+                    logger.debug("Created folder: %s", projPath)
                 except Exception as e:
                     self.theParent.makeAlert([
                         self.tr("Could not create new project folder."), str(e)
@@ -1162,12 +1162,12 @@ class NWProject():
                 # Item's parent exists, but hasn't been sent yet, so add
                 # it again to the end, but make sure this doesn't get
                 # out hand, so we cap at 10000 items
-                logger.warning("Item %s found before its parent" % tHandle)
+                logger.warning("Item '%s' found before its parent", tHandle)
                 iterItems.append(tHandle)
                 nMax = min(len(iterItems), 10000)
             else:
                 # Item is orphaned
-                logger.error("Item %s has no parent in current tree" % tHandle)
+                logger.error("Item '%s' has no parent in current tree", tHandle)
                 tItem.setParent(None)
                 yield tItem
 
@@ -1221,7 +1221,7 @@ class NWProject():
         try:
             with open(loadFile, mode="r", encoding="utf8") as inFile:
                 self.langData = json.load(inFile)
-            logger.debug("Loaded project language file: %s" % os.path.basename(loadFile))
+            logger.debug("Loaded project language file: %s", os.path.basename(loadFile))
 
         except Exception:
             logger.error("Failed to project language file")
@@ -1299,7 +1299,7 @@ class NWProject():
         if not os.path.isdir(thePath):
             try:
                 os.mkdir(thePath)
-                logger.debug("Created folder %s" % thePath)
+                logger.debug("Created folder: %s", thePath)
             except Exception as e:
                 self.makeAlert([
                     self.tr("Could not create folder."), str(e)
@@ -1343,19 +1343,19 @@ class NWProject():
         orphanFiles = []
         for fileItem in os.listdir(self.projContent):
             if not fileItem.endswith(".nwd"):
-                logger.warning("Skipping file %s" % fileItem)
+                logger.warning("Skipping file: %s", fileItem)
                 continue
             if len(fileItem) != 17:
-                logger.warning("Skipping file %s" % fileItem)
+                logger.warning("Skipping file: %s", fileItem)
                 continue
             fHandle = fileItem[:13]
             if not isHandle(fHandle):
-                logger.warning("Skipping file %s" % fileItem)
+                logger.warning("Skipping file: %s", fileItem)
                 continue
             if fHandle in self.projTree:
-                logger.debug("Checking file %s, handle %s: OK" % (fileItem, fHandle))
+                logger.debug("Checking file %s, handle '%s': OK", fileItem, fHandle)
             else:
-                logger.warning("Checking file %s, handle %s: Orphaned" % (fileItem, fHandle))
+                logger.warning("Checking file %s, handle '%s': Orphaned", fileItem, fHandle)
                 orphanFiles.append(fHandle)
 
         # Report status
@@ -1436,7 +1436,7 @@ class NWProject():
         sessDiff = self.getSessionWordCount()
         sessTime = nowTime - self.projOpened
 
-        logger.info("The session lasted %d sec and added %d words" % (int(sessTime), sessDiff))
+        logger.info("The session lasted %d sec and added %d words", int(sessTime), sessDiff)
         if sessTime < 300 and sessDiff == 0:
             logger.info("Session too short, skipping log entry")
             return False
@@ -1478,7 +1478,7 @@ class NWProject():
             errList.append(self.tr("Not a folder: {0}").format(theData))
             return errList
 
-        logger.info("Old data folder %s found" % theFolder)
+        logger.info("Old data folder %s found", theFolder)
 
         # Move Documents to Content
         # =========================
@@ -1495,20 +1495,20 @@ class NWProject():
                 newPath = os.path.join(self.projContent, tHandle+".nwd")
                 try:
                     os.rename(theFile, newPath)
-                    logger.info("Moved file: %s" % theFile)
-                    logger.info("New location: %s" % newPath)
+                    logger.info("Moved file: %s", theFile)
+                    logger.info("New location: %s", newPath)
                 except Exception:
                     errList.append(self.tr("Could not move: {0}").format(theFile))
-                    logger.error("Could not move: %s" % theFile)
+                    logger.error("Could not move: %s", theFile)
                     nw.logException()
 
             elif len(dataItem) == 21 and dataItem.endswith("_main.bak"):
                 try:
                     os.unlink(theFile)
-                    logger.info("Deleted file: %s" % theFile)
+                    logger.info("Deleted file: %s", theFile)
                 except Exception:
                     errList.append(self.tr("Could not delete: {0}").format(theFile))
-                    logger.error("Could not delete: %s" % theFile)
+                    logger.error("Could not delete: %s", theFile)
                     nw.logException()
 
             else:
@@ -1520,10 +1520,10 @@ class NWProject():
         # ==================
         try:
             os.rmdir(theData)
-            logger.info("Deleted folder: %s" % theFolder)
+            logger.info("Deleted folder: %s", theFolder)
         except Exception:
             errList.append(self.tr("Could not delete: {0}").format(theFolder))
-            logger.error("Could not delete: %s" % theFolder)
+            logger.error("Could not delete: %s", theFolder)
             nw.logException()
 
         return errList
@@ -1541,9 +1541,9 @@ class NWProject():
 
         try:
             os.rename(theSrc, theDst)
-            logger.info("Moved to junk: %s" % theSrc)
+            logger.info("Moved to junk: %s", theSrc)
         except Exception:
-            logger.error("Could not move item %s to junk." % theSrc)
+            logger.error("Could not move item %s to junk", theSrc)
             nw.logException()
             return self.tr("Could not move item {0} to {1}.").format(theSrc, theJunk)
 
@@ -1574,11 +1574,11 @@ class NWProject():
 
         for rmFile in rmList:
             if os.path.isfile(rmFile):
-                logger.info("Deleting: %s" % rmFile)
+                logger.info("Deleting: %s", rmFile)
                 try:
                     os.unlink(rmFile)
                 except Exception:
-                    logger.error("Could not delete: %s" % rmFile)
+                    logger.error("Could not delete: %s", rmFile)
                     nw.logException()
                     return False
 
