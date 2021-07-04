@@ -24,24 +24,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
-import json
 import os
+import json
+import logging
 
 from time import time
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtGui import (
     QPalette, QColor, QFont, QCursor, QFontInfo
 )
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import (
     qApp, QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton, QLabel,
     QLineEdit, QGroupBox, QGridLayout, QProgressBar, QMenu, QAction,
     QFileDialog, QFontDialog, QSpinBox, QScrollArea, QSplitter, QWidget,
     QSizePolicy, QDoubleSpinBox, QComboBox
 )
+from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 
 from nw.core import ToHtml, ToOdt, ToMarkdown
 from nw.enum import nwAlert, nwItemType, nwItemLayout, nwItemClass
@@ -55,14 +55,12 @@ logger = logging.getLogger(__name__)
 class GuiBuildNovel(QDialog):
 
     FMT_PDF    = 1  # Print to PDF
-
     FMT_ODT    = 2  # Open Document file
     FMT_FODT   = 3  # Flat Open Document file
     FMT_HTM    = 4  # HTML5
     FMT_NWD    = 5  # nW Markdown
     FMT_MD     = 6  # Standard Markdown
     FMT_GH     = 7  # GitHub Markdown
-
     FMT_JSON_H = 8  # HTML5 wrapped in JSON
     FMT_JSON_M = 9  # nW Markdown wrapped in JSON
 
@@ -560,8 +558,8 @@ class GuiBuildNovel(QDialog):
         """Load the previously generated document from cache.
         """
         if self._loadCache():
-            textFont    = self.textFont.text()
-            textSize    = self.textSize.value()
+            textFont = self.textFont.text()
+            textSize = self.textSize.value()
             justifyText = self.justifyText.isChecked()
             self.docView.setTextFont(textFont, textSize)
             self.docView.setJustify(justifyText)
@@ -596,14 +594,14 @@ class GuiBuildNovel(QDialog):
         """
         # Get Settings
         justifyText = self.justifyText.isChecked()
-        noStyling   = self.noStyling.isChecked()
-        textFont    = self.textFont.text()
-        textSize    = self.textSize.value()
+        noStyling = self.noStyling.isChecked()
+        textFont = self.textFont.text()
+        textSize = self.textSize.value()
         replaceTabs = self.replaceTabs.isChecked()
 
-        self.htmlText  = []
+        self.htmlText = []
         self.htmlStyle = []
-        self.htmlSize  = 0
+        self.htmlSize = 0
 
         # Build Preview
         # =============
@@ -672,7 +670,7 @@ class GuiBuildNovel(QDialog):
         textFixed = fontInfo.fixedPitch()
 
         isHtml = isinstance(bldObj, ToHtml)
-        isOdt  = isinstance(bldObj, ToOdt)
+        isOdt = isinstance(bldObj, ToOdt)
 
         bldObj.setTitleFormat(fmtTitle)
         bldObj.setChapterFormat(fmtChapter)
@@ -706,7 +704,7 @@ class GuiBuildNovel(QDialog):
 
         for nItt, tItem in enumerate(self.theProject.projTree):
 
-            noteRoot  = noteFiles
+            noteRoot = noteFiles
             noteRoot &= tItem.itemType == nwItemType.ROOT
             noteRoot &= tItem.itemClass != nwItemClass.NOVEL
             noteRoot &= tItem.itemClass != nwItemClass.ARCHIVE
@@ -848,12 +846,12 @@ class GuiBuildNovel(QDialog):
         # ==================
 
         cleanName = makeFileNameSafe(self.theProject.projName)
-        fileName  = "%s.%s" % (cleanName, fileExt)
-        saveDir   = self.mainConf.lastPath
+        fileName = "%s.%s" % (cleanName, fileExt)
+        saveDir = self.mainConf.lastPath
         if not os.path.isdir(saveDir):
             saveDir = os.path.expanduser("~")
 
-        savePath  = os.path.join(saveDir, fileName)
+        savePath = os.path.join(saveDir, fileName)
         savePath, _ = QFileDialog.getSaveFileName(
             self, self.tr("Save Document As"), savePath
         )
@@ -967,7 +965,7 @@ class GuiBuildNovel(QDialog):
                 }
 
             try:
-                with open(savePath, mode="w", encoding="utf8") as outFile:
+                with open(savePath, mode="w", encoding="utf-8") as outFile:
                     outFile.write(json.dumps(jsonData, indent=2))
                     wSuccess = True
             except Exception as e:
@@ -1045,10 +1043,9 @@ class GuiBuildNovel(QDialog):
         buildCache = os.path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
         dataCount = 0
         if os.path.isfile(buildCache):
-
             logger.debug("Loading build cache")
             try:
-                with open(buildCache, mode="r", encoding="utf8") as inFile:
+                with open(buildCache, mode="r", encoding="utf-8") as inFile:
                     theJson = inFile.read()
                 theData = json.loads(theJson)
             except Exception:
@@ -1071,10 +1068,9 @@ class GuiBuildNovel(QDialog):
         """Save the current data to cache.
         """
         buildCache = os.path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
-
         logger.debug("Saving build cache")
         try:
-            with open(buildCache, mode="w+", encoding="utf8") as outFile:
+            with open(buildCache, mode="w+", encoding="utf-8") as outFile:
                 outFile.write(json.dumps({
                     "buildTime": self.buildTime,
                     "htmlStyle": self.htmlStyle,
@@ -1311,10 +1307,10 @@ class GuiBuildNovelDocView(QTextBrowser):
         """Set the stylesheet for the preview document.
         """
         if not theStyles:
-            theStyles.append(r"h1, h2 {color: rgb(66, 113, 174);}")
-            theStyles.append(r"h3, h4 {color: rgb(50, 50, 50);}")
-            theStyles.append(r"a {color: rgb(66, 113, 174);}")
-            theStyles.append(r".tags {color: rgb(245, 135, 31); font-weight: bold;}")
+            theStyles.append("h1, h2 {color: rgb(66, 113, 174);}")
+            theStyles.append("h3, h4 {color: rgb(50, 50, 50);}")
+            theStyles.append("a {color: rgb(66, 113, 174);}")
+            theStyles.append(".tags {color: rgb(245, 135, 31); font-weight: bold;}")
 
         self.qDocument.setDefaultStyleSheet("\n".join(theStyles))
 
