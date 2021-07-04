@@ -75,6 +75,7 @@ In addition, novelWriter adds the following syntax used for its additional featu
   be used to make simple tables and lists. Note that for HTML exports, most browsers will treat a
   tab as a space, so it may not show up like expected. Open Document exports should produce the
   expected result.
+* Paragraph alignment and indendtation is supported by a set of tags using `>` and `<` markers.
 
 The core export formats of novelWriter are Open Document and HTML5. Open Document is an open
 standard for office type documents that is supported by most office applications. See
@@ -105,7 +106,7 @@ four can be used internally in each scene to create separate sections.
 
 Each novel file can be assigned a layout format, which shows up as a flag next to the item in the
 project tree. These are mostly to help the user track what they contain, but they also have some
-impact on the format of the exported document. See the
+impact on the layout of the exported document. See the
 [documentation](https://novelwriter.readthedocs.io) for further details.
 
 ### Project Notes
