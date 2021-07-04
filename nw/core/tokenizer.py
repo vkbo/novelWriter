@@ -459,28 +459,16 @@ class Tokenizer():
                 if aLine.startswith(">>"):
                     tagRight = True
                     aLine = aLine[2:].lstrip(" ")
-                elif aLine.startswith("&gt;&gt;"):
-                    tagRight = True
-                    aLine = aLine[8:].lstrip(" ")
                 elif aLine.startswith(">"):
                     indLeft = True
                     aLine = aLine[1:].lstrip(" ")
-                elif aLine.startswith("&gt;"):
-                    indLeft = True
-                    aLine = aLine[4:].lstrip(" ")
 
                 if aLine.endswith("<<"):
                     tagLeft = True
                     aLine = aLine[:-2].rstrip(" ")
-                elif aLine.endswith("&lt;&lt;"):
-                    tagLeft = True
-                    aLine = aLine[:-8].rstrip(" ")
                 elif aLine.endswith("<"):
                     indRight = True
                     aLine = aLine[:-1].rstrip(" ")
-                elif aLine.endswith("&lt;"):
-                    indRight = True
-                    aLine = aLine[:-4].rstrip(" ")
 
                 textAlign = defAlign
                 if tagLeft and tagRight:
