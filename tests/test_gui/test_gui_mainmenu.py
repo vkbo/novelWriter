@@ -26,6 +26,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor, QTextBlock
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
+from tools import writeFile
+
 from nw.gui.doceditor import GuiDocEditor
 from nw.enum import nwDocAction, nwDocInsert, nwWidget
 from nw.constants import nwKeyWords, nwUnicode
@@ -659,8 +661,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert not nwGUI.importDocument()
 
     # Create the file and try again, but with no target document open
-    with open(theFile, mode="w+", encoding="utf8") as outFile:
-        outFile.write("Foo")
+    writeFile(theFile, "Foo")
     assert not nwGUI.importDocument()
 
     # Open the document from before, and add some text to it

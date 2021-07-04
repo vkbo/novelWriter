@@ -54,7 +54,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     qtbot.mouseClick(nwGUI.projView, Qt.LeftButton)
 
     nwGUI.projView._loadHeaderState()
-    assert not nwGUI.projView.colHidden[nwOutline.CCOUNT]
+    assert not nwGUI.projView._colHidden[nwOutline.CCOUNT]
 
     # First Item
     nwGUI.rebuildOutline()

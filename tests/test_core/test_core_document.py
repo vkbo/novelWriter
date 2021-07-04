@@ -23,16 +23,17 @@ import os
 import pytest
 
 from mock import causeOSError
+from tools import readFile
 
 from nw.core import NWProject, NWDoc
 from nw.enum import nwItemClass, nwItemLayout
 
 
 @pytest.mark.core
-def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
+def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
     """Test loading and saving a document with the NWDoc class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     assert theProject.openProject(nwMinimal)
     assert theProject.projPath == nwMinimal
 
@@ -75,21 +76,18 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
 
     # Check file content
     docPath = os.path.join(nwMinimal, "content", xHandle+".nwd")
-    with open(docPath, mode="r", encoding="utf8") as inFile:
-        assert inFile.read() == (
-            "%%~name: New File\n"
-            f"%%~path: a508bb932959c/{xHandle}\n"
-            "%%~kind: NOVEL/SCENE\n"
-            "### Test File\n\n"
-            "Text ...\n\n"
-        )
+    assert readFile(docPath) == (
+        "%%~name: New File\n"
+        f"%%~path: a508bb932959c/{xHandle}\n"
+        "%%~kind: NOVEL/SCENE\n"
+        "### Test File\n\n"
+        "Text ...\n\n"
+    )
 
     # Force no meta data
     theDoc._theItem = None
     assert theDoc.writeDocument(theText)
-
-    with open(docPath, mode="r", encoding="utf8") as inFile:
-        assert inFile.read() == theText
+    assert readFile(docPath) == theText
 
     # Cause open() to fail while saving
     with monkeypatch.context() as mp:
@@ -122,10 +120,10 @@ def testCoreDocument_LoadSave(monkeypatch, dummyGUI, nwMinimal):
 
 
 @pytest.mark.core
-def testCoreDocument_Methods(dummyGUI, nwMinimal):
+def testCoreDocument_Methods(mockGUI, nwMinimal):
     """Test other methods of the NWDoc class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     assert theProject.openProject(nwMinimal)
     assert theProject.projPath == nwMinimal
 
@@ -151,15 +149,14 @@ def testCoreDocument_Methods(dummyGUI, nwMinimal):
 
     # Add meta data garbage
     assert theDoc.writeDocument("%%~ stuff\n### Test File\n\nText ...\n\n")
-    with open(docPath, mode="r", encoding="utf8") as inFile:
-        assert inFile.read() == (
-            "%%~name: New Scene\n"
-            f"%%~path: a6d311a93600a/{sHandle}\n"
-            "%%~kind: NOVEL/SCENE\n"
-            "%%~ stuff\n"
-            "### Test File\n\n"
-            "Text ...\n\n"
-        )
+    assert readFile(docPath) == (
+        "%%~name: New Scene\n"
+        f"%%~path: a6d311a93600a/{sHandle}\n"
+        "%%~kind: NOVEL/SCENE\n"
+        "%%~ stuff\n"
+        "### Test File\n\n"
+        "Text ...\n\n"
+    )
 
     assert theDoc.readDocument() == "### Test File\n\nText ...\n\n"
 

@@ -40,9 +40,9 @@ class ToHtml(Tokenizer):
     def __init__(self, theProject):
         Tokenizer.__init__(self, theProject)
 
-        self.genMode   = self.M_EXPORT
+        self.genMode = self.M_EXPORT
         self.cssStyles = True
-        self.fullHTML  = []
+        self.fullHTML = []
 
         # Internals
         self._trMap = {}
@@ -59,7 +59,7 @@ class ToHtml(Tokenizer):
         need to make a few changes to formatting, which is managed by
         these flags.
         """
-        self.genMode    = self.M_PREVIEW
+        self.genMode = self.M_PREVIEW
         self.doKeywords = True
         self.doComments = doComments
         self.doSynopsis = doSynopsis
@@ -268,7 +268,7 @@ class ToHtml(Tokenizer):
     def saveHTML5(self, savePath):
         """Save the data to an .html file.
         """
-        with open(savePath, mode="w", encoding="utf8") as outFile:
+        with open(savePath, mode="w", encoding="utf-8") as outFile:
             theStyle = self.getStyleSheet()
             theStyle.append("article {width: 800px; margin: 40px auto;}")
             bodyText = "".join(self.fullHTML)

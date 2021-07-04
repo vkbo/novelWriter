@@ -36,7 +36,7 @@ from nw.constants import nwFiles
 
 
 @pytest.mark.core
-def testCoreProject_NewMinimal(fncDir, outDir, refDir, dummyGUI):
+def testCoreProject_NewMinimal(fncDir, outDir, refDir, mockGUI):
     """Create a new project from a project wizard dictionary. With
     default setting, creating a Minimal project.
     """
@@ -44,7 +44,7 @@ def testCoreProject_NewMinimal(fncDir, outDir, refDir, dummyGUI):
     testFile = os.path.join(outDir, "coreProject_NewMinimal_nwProject.nwx")
     compFile = os.path.join(refDir, "coreProject_NewMinimal_nwProject.nwx")
 
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
 
     # Setting no data should fail
@@ -85,7 +85,7 @@ def testCoreProject_NewMinimal(fncDir, outDir, refDir, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreProject_NewCustomA(fncDir, outDir, refDir, dummyGUI):
+def testCoreProject_NewCustomA(fncDir, outDir, refDir, mockGUI):
     """Create a new project from a project wizard dictionary.
     Custom type with chapters and scenes.
     """
@@ -113,7 +113,7 @@ def testCoreProject_NewCustomA(fncDir, outDir, refDir, dummyGUI):
         "numScenes": 3,
         "chFolders": True,
     }
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
 
     assert theProject.newProject(projData)
@@ -127,7 +127,7 @@ def testCoreProject_NewCustomA(fncDir, outDir, refDir, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreProject_NewCustomB(fncDir, outDir, refDir, dummyGUI):
+def testCoreProject_NewCustomB(fncDir, outDir, refDir, mockGUI):
     """Create a new project from a project wizard dictionary.
     Custom type without chapters, but with scenes.
     """
@@ -155,7 +155,7 @@ def testCoreProject_NewCustomB(fncDir, outDir, refDir, dummyGUI):
         "numScenes": 6,
         "chFolders": True,
     }
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
 
     assert theProject.newProject(projData)
@@ -169,7 +169,7 @@ def testCoreProject_NewCustomB(fncDir, outDir, refDir, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreProject_NewSampleA(fncDir, tmpConf, dummyGUI, tmpDir):
+def testCoreProject_NewSampleA(fncDir, tmpConf, mockGUI, tmpDir):
     """Check that we can create a new project can be created from the
     provided sample project via a zip file.
     """
@@ -182,7 +182,7 @@ def testCoreProject_NewSampleA(fncDir, tmpConf, dummyGUI, tmpDir):
         "popMinimal": False,
         "popCustom": False,
     }
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
 
     # Sample set, but no path
@@ -218,7 +218,7 @@ def testCoreProject_NewSampleA(fncDir, tmpConf, dummyGUI, tmpDir):
 
 
 @pytest.mark.core
-def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, dummyGUI, tmpDir):
+def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, mockGUI, tmpDir):
     """Check that we can create a new project can be created from the
     provided sample project folder.
     """
@@ -231,7 +231,7 @@ def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, dummyGUI, tmpDir):
         "popMinimal": False,
         "popCustom": False,
     }
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
 
     # Make sure we do not pick up the nw/assets/sample.zip file
@@ -256,14 +256,14 @@ def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, dummyGUI, tmpDir):
 
 
 @pytest.mark.core
-def testCoreProject_NewRoot(fncDir, outDir, refDir, dummyGUI):
+def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI):
     """Check that new root folders can be added to the project.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
     testFile = os.path.join(outDir, "coreProject_NewRoot_nwProject.nwx")
     compFile = os.path.join(refDir, "coreProject_NewRoot_nwProject.nwx")
 
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
 
     assert theProject.newProject({"projPath": fncDir})
@@ -293,14 +293,14 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreProject_NewFile(fncDir, outDir, refDir, dummyGUI):
+def testCoreProject_NewFile(fncDir, outDir, refDir, mockGUI):
     """Check that new files can be added to the project.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
     testFile = os.path.join(outDir, "coreProject_NewFile_nwProject.nwx")
     compFile = os.path.join(refDir, "coreProject_NewFile_nwProject.nwx")
 
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
 
     assert theProject.newProject({"projPath": fncDir})
@@ -323,10 +323,10 @@ def testCoreProject_NewFile(fncDir, outDir, refDir, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreProject_Open(monkeypatch, nwMinimal, dummyGUI):
+def testCoreProject_Open(monkeypatch, nwMinimal, mockGUI):
     """Test opening a project.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
 
     # Rename the project file to check handling
     rName = os.path.join(nwMinimal, nwFiles.PROJ_FILE)
@@ -382,9 +382,9 @@ def testCoreProject_Open(monkeypatch, nwMinimal, dummyGUI):
         "timeStamp=\"2020-01-01 00:00:00\">\n"
         "</novelWriterXML>\n"
     ))
-    dummyGUI.askResponse = False
+    mockGUI.askResponse = False
     assert theProject.openProject(nwMinimal) is False
-    dummyGUI.undo()
+    mockGUI.undo()
 
     # Future file version
     writeFile(rName, (
@@ -408,9 +408,9 @@ def testCoreProject_Open(monkeypatch, nwMinimal, dummyGUI):
         "timeStamp=\"2020-01-01 00:00:00\">\n"
         "</novelWriterXML>\n"
     ))
-    dummyGUI.askResponse = False
+    mockGUI.askResponse = False
     assert theProject.openProject(nwMinimal) is False
-    dummyGUI.undo()
+    mockGUI.undo()
 
     # Test skipping XML entries
     writeFile(rName, (
@@ -436,19 +436,19 @@ def testCoreProject_Open(monkeypatch, nwMinimal, dummyGUI):
     writeFile(os.path.join(nwMinimal, "junk"), "stuff")
     os.mkdir(os.path.join(nwMinimal, "data_0"))
     writeFile(os.path.join(nwMinimal, "data_0", "junk"), "stuff")
-    dummyGUI.clear()
+    mockGUI.clear()
     assert theProject.openProject(nwMinimal) is True
-    assert "data_0" in dummyGUI.lastAlert
+    assert "data_0" in mockGUI.lastAlert
     assert theProject.closeProject()
 
 # END Test testCoreProject_Open
 
 
 @pytest.mark.core
-def testCoreProject_Save(monkeypatch, nwMinimal, dummyGUI, refDir):
+def testCoreProject_Save(monkeypatch, nwMinimal, mockGUI, refDir):
     """Test saving a project.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     testFile = os.path.join(nwMinimal, "nwProject.nwx")
     compFile = os.path.join(refDir, os.path.pardir, "minimal", "nwProject.nwx")
 
@@ -491,10 +491,10 @@ def testCoreProject_Save(monkeypatch, nwMinimal, dummyGUI, refDir):
 
 
 @pytest.mark.core
-def testCoreProject_LockFile(monkeypatch, fncDir, dummyGUI):
+def testCoreProject_LockFile(monkeypatch, fncDir, mockGUI):
     """Test lock file functions for the project folder.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
 
     lockFile = os.path.join(fncDir, nwFiles.PROJ_LOCK)
 
@@ -551,10 +551,10 @@ def testCoreProject_LockFile(monkeypatch, fncDir, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreProject_Helpers(monkeypatch, fncDir, dummyGUI):
+def testCoreProject_Helpers(monkeypatch, fncDir, mockGUI):
     """Test helper functions for the project folder.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
 
     # No path
     assert theProject.ensureFolderStructure() is False
@@ -595,10 +595,10 @@ def testCoreProject_Helpers(monkeypatch, fncDir, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreProject_AccessItems(nwMinimal, dummyGUI):
+def testCoreProject_AccessItems(nwMinimal, mockGUI):
     """Test helper functions for the project folder.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.openProject(nwMinimal)
 
     # Move Novel ROOT to after its files
@@ -655,10 +655,10 @@ def testCoreProject_AccessItems(nwMinimal, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
+def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
     """Test other project class methods and functions.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
     assert theProject.projPath == nwMinimal
@@ -906,13 +906,13 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, dummyGUI, tmpDir):
 
 
 @pytest.mark.core
-def testCoreProject_OrphanedFiles(dummyGUI, nwLipsum):
+def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
     """Check that files in the content folder that are not tracked in
     the project XML file are handled correctly by the orphaned files
     function. It should also restore as much meta data as possible from
     the meta line at the top of the document file.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
 
     assert theProject.openProject(nwLipsum)
     assert theProject.projTree["636b6aa9b697b"] is None
@@ -920,32 +920,29 @@ def testCoreProject_OrphanedFiles(dummyGUI, nwLipsum):
 
     # First Item with Meta Data
     orphPath = os.path.join(nwLipsum, "content", "636b6aa9b697b.nwd")
-    with open(orphPath, mode="w", encoding="utf8") as outFile:
-        outFile.write("%%~name:[Recovered] Mars\n")
-        outFile.write("%%~path:5eaea4e8cdee8/636b6aa9b697b\n")
-        outFile.write("%%~kind:WORLD/NOTE\n")
-        outFile.write("%%~invalid\n")
-        outFile.write("\n")
+    writeFile(orphPath, (
+        "%%~name:[Recovered] Mars\n"
+        "%%~path:5eaea4e8cdee8/636b6aa9b697b\n"
+        "%%~kind:WORLD/NOTE\n"
+        "%%~invalid\n"
+        "\n"
+    ))
 
     # Second Item without Meta Data
     orphPath = os.path.join(nwLipsum, "content", "736b6aa9b697b.nwd")
-    with open(orphPath, mode="w", encoding="utf8") as outFile:
-        outFile.write("\n")
+    writeFile(orphPath, "\n")
 
     # Invalid File Name
-    dummyPath = os.path.join(nwLipsum, "content", "636b6aa9b697b.txt")
-    with open(dummyPath, mode="w", encoding="utf8") as outFile:
-        outFile.write("\n")
+    tstPath = os.path.join(nwLipsum, "content", "636b6aa9b697b.txt")
+    writeFile(tstPath, "\n")
 
     # Invalid File Name
-    dummyPath = os.path.join(nwLipsum, "content", "636b6aa9b697bb.nwd")
-    with open(dummyPath, mode="w", encoding="utf8") as outFile:
-        outFile.write("\n")
+    tstPath = os.path.join(nwLipsum, "content", "636b6aa9b697bb.nwd")
+    writeFile(tstPath, "\n")
 
     # Invalid File Name
-    dummyPath = os.path.join(nwLipsum, "content", "abcdefghijklm.nwd")
-    with open(dummyPath, mode="w", encoding="utf8") as outFile:
-        outFile.write("\n")
+    tstPath = os.path.join(nwLipsum, "content", "abcdefghijklm.nwd")
+    writeFile(tstPath, "\n")
 
     assert theProject.openProject(nwLipsum)
     assert theProject.projPath is not None
@@ -983,13 +980,13 @@ def testCoreProject_OrphanedFiles(dummyGUI, nwLipsum):
 
 
 @pytest.mark.core
-def testCoreProject_OldFormat(dummyGUI, nwOldProj):
+def testCoreProject_OldFormat(mockGUI, nwOldProj):
     """Test that a project folder structure of version 1.0 can be
     converted to the latest folder structure. Version 1.0 split the
     documents into 'data_0' ... 'data_f' folders, which are now all
     contained in a single 'content' folder.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
 
     # Create mock files for known legacy files
     deleteFiles = [
@@ -1073,11 +1070,11 @@ def testCoreProject_OldFormat(dummyGUI, nwOldProj):
 
 
 @pytest.mark.core
-def testCoreProject_LegacyData(monkeypatch, dummyGUI, fncDir):
+def testCoreProject_LegacyData(monkeypatch, mockGUI, fncDir):
     """Test the functins that handle legacy data folders and structure
     with additional tests of failure handling.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.setProjectPath(fncDir)
 
     # assert theProject.newProject({"projPath": fncDir})
@@ -1179,21 +1176,21 @@ def testCoreProject_LegacyData(monkeypatch, dummyGUI, fncDir):
 
 
 @pytest.mark.core
-def testCoreProject_Backup(monkeypatch, dummyGUI, nwMinimal, tmpDir):
+def testCoreProject_Backup(monkeypatch, mockGUI, nwMinimal, tmpDir):
     """Test the automated backup feature of the project class. The test
     creates a backup of the Minimal test project, and then unzips the
     backupd file and checks that the project XML file is identical to
     the original file.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     assert theProject.openProject(nwMinimal)
 
     # Test faulty settings
 
     # No project
-    dummyGUI.hasProject = False
+    mockGUI.hasProject = False
     assert not theProject.zipIt(doNotify=False)
-    dummyGUI.hasProject = True
+    mockGUI.hasProject = True
 
     # Invalid path
     theProject.mainConf.backupPath = None

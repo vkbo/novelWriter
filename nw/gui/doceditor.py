@@ -1090,7 +1090,7 @@ class GuiDocEditor(QTextEdit):
         # Spell Checking
         # ==============
 
-        posCursor  = self.cursorForPosition(thePos)
+        posCursor = self.cursorForPosition(thePos)
         spellCheck = self._spellCheck
 
         if posCursor.block().text().startswith("@"):
@@ -1272,7 +1272,7 @@ class GuiDocEditor(QTextEdit):
             findOpt |= QTextDocument.FindWholeWords
 
         searchFor = self.docSearch.getSearchObject()
-        wasFound  = self.find(searchFor, findOpt)
+        wasFound = self.find(searchFor, findOpt)
         if not wasFound:
             if self.docSearch.doNextFile and not goBack:
                 self.theParent.openNextDocument(
@@ -1330,7 +1330,7 @@ class GuiDocEditor(QTextEdit):
             return
 
         searchFor = self.docSearch.getSearchText()
-        replWith  = self.docSearch.getReplaceText()
+        replWith = self.docSearch.getReplaceText()
 
         if self.docSearch.doMatchCap:
             replWith = transferCase(theCursor.selectedText(), replWith)
@@ -1376,7 +1376,7 @@ class GuiDocEditor(QTextEdit):
             theCursor = self.textCursor()
 
         theBlock = theCursor.block()
-        theText  = theBlock.text()
+        theText = theBlock.text()
 
         if len(theText) == 0:
             return False
@@ -1413,16 +1413,16 @@ class GuiDocEditor(QTextEdit):
         if not theBlock.isValid():
             return
 
-        theText   = theBlock.text()
+        theText = theBlock.text()
         theCursor = self.textCursor()
-        thePos    = theCursor.positionInBlock()
-        theLen    = len(theText)
+        thePos = theCursor.positionInBlock()
+        theLen = len(theText)
 
         if theLen < 1 or thePos-1 > theLen:
             return
 
-        theOne   = theText[thePos-1:thePos]
-        theTwo   = theText[thePos-2:thePos]
+        theOne = theText[thePos-1:thePos]
+        theTwo = theText[thePos-2:thePos]
         theThree = theText[thePos-3:thePos]
 
         if not theOne:  # Makes Neo sad
@@ -2028,7 +2028,7 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.searchOpt.setIconSize(QSize(tPx, tPx))
         self.searchOpt.setContentsMargins(0, 0, 0, 0)
-        self.searchOpt.setStyleSheet(r"QToolBar {padding: 0;}")
+        self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
 
         self.searchLabel = QLabel(self.tr("Search"))
         self.searchLabel.setFont(boxFont)
@@ -2100,7 +2100,7 @@ class GuiDocEditSearch(QFrame):
         self.showReplace.setArrowType(Qt.RightArrow)
         self.showReplace.setCheckable(True)
         self.showReplace.setToolTip(self.tr("Show/hide the replace text box"))
-        self.showReplace.setStyleSheet(r"QToolButton {border: none; background: transparent;}")
+        self.showReplace.setStyleSheet("QToolButton {border: none; background: transparent;}")
         self.showReplace.toggled.connect(self._doToggleReplace)
 
         self.searchButton = QPushButton(self.theTheme.getIcon("search"), "")
@@ -2139,9 +2139,9 @@ class GuiDocEditSearch(QFrame):
         # Construct Box Colours
         qPalette = self.searchBox.palette()
         baseCol = qPalette.base().color()
-        rCol = baseCol.redF()   + 0.1
+        rCol = baseCol.redF() + 0.1
         gCol = baseCol.greenF() - 0.1
-        bCol = baseCol.blueF()  - 0.1
+        bCol = baseCol.blueF() - 0.1
 
         mCol = max(rCol, gCol, bCol, 1.0)
         errCol = QColor()
@@ -2161,10 +2161,10 @@ class GuiDocEditSearch(QFrame):
     def closeSearch(self):
         """Close the search box.
         """
-        self.mainConf.searchCase     = self.isCaseSense
-        self.mainConf.searchWord     = self.isWholeWord
-        self.mainConf.searchRegEx    = self.isRegEx
-        self.mainConf.searchLoop     = self.doLoop
+        self.mainConf.searchCase = self.isCaseSense
+        self.mainConf.searchWord = self.isWholeWord
+        self.mainConf.searchRegEx = self.isRegEx
+        self.mainConf.searchLoop = self.doLoop
         self.mainConf.searchNextFile = self.doNextFile
         self.mainConf.searchMatchCap = self.doMatchCap
 
@@ -2367,7 +2367,8 @@ class GuiDocEditHeader(QWidget):
         self.theParent  = docEditor.theParent
         self.theProject = docEditor.theProject
         self.theTheme   = docEditor.theTheme
-        self._docHandle  = None
+
+        self._docHandle = None
 
         fPx = int(0.9*self.theTheme.fontPixelSize)
         hSp = self.mainConf.pxInt(6)
@@ -2591,8 +2592,9 @@ class GuiDocEditFooter(QWidget):
         self.theProject = docEditor.theProject
         self.theTheme   = docEditor.theTheme
         self.optState   = docEditor.theProject.optState
-        self._docHandle  = None
-        self.theItem    = None
+
+        self._theItem   = None
+        self._docHandle = None
 
         self.sPx = int(round(0.9*self.theTheme.baseIconSize))
         fPx = int(0.9*self.theTheme.fontPixelSize)
@@ -2708,9 +2710,9 @@ class GuiDocEditFooter(QWidget):
         self._docHandle = tHandle
         if self._docHandle is None:
             logger.verbose("No handle set, so clearing the editor footer")
-            self.theItem = None
+            self._theItem = None
         else:
-            self.theItem = self.theProject.projTree[self._docHandle]
+            self._theItem = self.theProject.projTree[self._docHandle]
 
         self.updateInfo()
         self.updateCounts()
@@ -2720,12 +2722,12 @@ class GuiDocEditFooter(QWidget):
     def updateInfo(self):
         """Update the content of text labels.
         """
-        if self.theItem is None:
+        if self._theItem is None:
             sIcon = QPixmap()
             sText = ""
         else:
-            iStatus = self.theItem.itemStatus
-            if self.theItem.itemClass == nwItemClass.NOVEL:
+            iStatus = self._theItem.itemStatus
+            if self._theItem.itemClass == nwItemClass.NOVEL:
                 iStatus = self.theProject.statusItems.checkEntry(iStatus)
                 theIcon = self.theParent.statusIcons[iStatus]
             else:
@@ -2733,9 +2735,9 @@ class GuiDocEditFooter(QWidget):
                 theIcon = self.theParent.importIcons[iStatus]
 
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            sClass = trConst(nwLabels.CLASS_NAME[self.theItem.itemClass])
-            sLayout = trConst(nwLabels.LAYOUT_NAME[self.theItem.itemLayout])
-            sText = f"{self.theItem.itemStatus} / {sClass} / {sLayout}"
+            sClass = trConst(nwLabels.CLASS_NAME[self._theItem.itemClass])
+            sLayout = trConst(nwLabels.LAYOUT_NAME[self._theItem.itemLayout])
+            sText = f"{self._theItem.itemStatus} / {sClass} / {sLayout}"
 
         self.statusIcon.setPixmap(sIcon)
         self.statusText.setText(sText)
@@ -2745,7 +2747,7 @@ class GuiDocEditFooter(QWidget):
     def updateLineCount(self):
         """Update the word count.
         """
-        if self.theItem is None:
+        if self._theItem is None:
             iLine = 0
             iDist = 0
         else:
@@ -2762,12 +2764,12 @@ class GuiDocEditFooter(QWidget):
     def updateCounts(self):
         """Update the word count.
         """
-        if self.theItem is None:
+        if self._theItem is None:
             wCount = 0
-            wDiff  = 0
+            wDiff = 0
         else:
-            wCount = self.theItem.wordCount
-            wDiff  = wCount - self.theItem.initCount
+            wCount = self._theItem.wordCount
+            wDiff = wCount - self._theItem.initCount
 
         self.wordsText.setText(
             self.tr("Words: {0} ({1})").format(f"{wCount:n}", f"{wDiff:+n}")

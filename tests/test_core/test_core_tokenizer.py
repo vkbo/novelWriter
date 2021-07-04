@@ -29,10 +29,10 @@ from nw.core.tokenizer import Tokenizer
 
 
 @pytest.mark.core
-def testCoreToken_Setters(dummyGUI):
+def testCoreToken_Setters(mockGUI):
     """Test all the setters for the Tokenizer class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theToken = Tokenizer(theProject)
 
     # Verify defaults
@@ -113,10 +113,10 @@ def testCoreToken_Setters(dummyGUI):
 
 
 @pytest.mark.core
-def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
+def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
     """Test handling files and text in the Tokenizer class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
     theProject.projLang = "en"
     theProject._loadProjectLocalisation()
@@ -196,10 +196,10 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreToken_Tokenize(dummyGUI):
+def testCoreToken_Tokenize(mockGUI):
     """Test the tokenization of the Tokenizer class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theToken = Tokenizer(theProject)
     theToken.setKeepMarkdown(True)
 
@@ -498,10 +498,10 @@ def testCoreToken_Tokenize(dummyGUI):
 
 
 @pytest.mark.core
-def testCoreToken_Headers(dummyGUI):
+def testCoreToken_Headers(mockGUI):
     """Test the header and page parser of the Tokenizer class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projLang = "en"
     theProject._loadProjectLocalisation()
     theToken = Tokenizer(theProject)

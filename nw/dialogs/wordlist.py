@@ -24,8 +24,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
 import os
+import logging
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -155,7 +155,7 @@ class GuiWordList(QDialog):
         tmpFile = dctFile + "~"
 
         try:
-            with open(tmpFile, mode="w", encoding="utf8") as outFile:
+            with open(tmpFile, mode="w", encoding="utf-8") as outFile:
                 for i in range(self.listBox.count()):
                     outFile.write(self.listBox.item(i).text() + "\n")
 
@@ -193,7 +193,7 @@ class GuiWordList(QDialog):
             logger.debug("No project dictionary file found")
             return False
 
-        with open(wordList, mode="r", encoding="utf8") as inFile:
+        with open(wordList, mode="r", encoding="utf-8") as inFile:
             for inLine in inFile:
                 theWord = inLine.strip()
                 if len(theWord) == 0:

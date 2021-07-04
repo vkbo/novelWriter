@@ -22,8 +22,12 @@ either `testing` or `dev` branch.
 ### What Branch to Use for Contributions
 
 * If your contribution is a fix for the latest stable release, branch from the `main` branch.
-* If your contribution is a fix for the latest testing release, branch from the `testing` branch.
 * If your contribution is a new feature, branch from the `dev` branch.
+* The `testing` branch is used infrequently. It is only used for pre-releases when new code is
+  being developed that is not a part of the current testing release.
+
+The current status of each branch is described in a pinned issue titled
+"[Development Flow & Status](https://github.com/vkbo/novelWriter/issues/707)".
 
 Please do not make your changes on a branch with the same name as any of the above mentioned
 branches. You should make a unique and descriptive branch name in your fork for your changes.

@@ -235,8 +235,7 @@ class FakeEnchant:
 class NWSpellSimple(NWSpellCheck):
     """Internal spell check tool that uses standard Python packages with
     no other external dependencies. This is the fallback spell checker
-    when no other is available. This method is fairly slow compared to
-    other implementations.
+    when no other is available. This method is slower than enchant.
     """
     theWords = set()
 
