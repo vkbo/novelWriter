@@ -457,11 +457,11 @@ def testCoreToHtml_Methods(dummyGUI):
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theMarkdown[-1] == (
-        "Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
+        "Text with <brackets> &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
     )
     theHtml.doPostProcessing()
     assert theHtml.theMarkdown[-1] == (
-        "Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
+        "Text with <brackets> &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
     )
 
     # Result Size
