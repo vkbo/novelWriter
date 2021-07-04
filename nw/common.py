@@ -208,7 +208,7 @@ def splitVersionNumber(vString):
     vMajor = 0
     vMinor = 0
     vPatch = 0
-    vInt   = 0
+    vInt = 0
 
     vBits = vString.split(".")
     nBits = len(vBits)

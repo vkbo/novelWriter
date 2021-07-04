@@ -143,7 +143,7 @@ def fncConf(fncDir):
 
 
 @pytest.fixture(scope="function")
-def dummyGUI(monkeypatch, tmpConf):
+def mockGUI(monkeypatch, tmpConf):
     """Create a mock instance of novelWriter's main GUI class.
     """
     monkeypatch.setattr("nw.CONFIG", tmpConf)

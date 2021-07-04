@@ -24,11 +24,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
 import os
+import logging
 
-from lxml import etree
 from time import time
+from lxml import etree
 from hashlib import sha256
 
 from nw.enum import nwItemType, nwItemClass, nwItemLayout
@@ -193,7 +193,7 @@ class NWTree():
         try:
             # Dump the text
             tocText = os.path.join(self.theProject.projPath, nwFiles.TOC_TXT)
-            with open(tocText, mode="w", encoding="utf8") as outFile:
+            with open(tocText, mode="w", encoding="utf-8") as outFile:
                 outFile.write("\n")
                 outFile.write("Table of Contents\n")
                 outFile.write("=================\n")

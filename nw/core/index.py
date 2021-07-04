@@ -144,13 +144,13 @@ class NWIndex():
     def loadIndex(self):
         """Load index from last session from the project meta folder.
         """
-        theData   = {}
+        theData = {}
         indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
 
         if os.path.isfile(indexFile):
             logger.debug("Loading index file")
             try:
-                with open(indexFile, mode="r", encoding="utf8") as inFile:
+                with open(indexFile, mode="r", encoding="utf-8") as inFile:
                     theData = json.load(inFile)
             except Exception:
                 logger.error("Failed to load index file")
@@ -158,10 +158,10 @@ class NWIndex():
                 self.indexBroken = True
                 return False
 
-            self._tagIndex   = theData.get("tagIndex", {})
-            self._refIndex   = theData.get("refIndex", {})
+            self._tagIndex = theData.get("tagIndex", {})
+            self._refIndex = theData.get("refIndex", {})
             self._novelIndex = theData.get("novelIndex", {})
-            self._noteIndex  = theData.get("noteIndex", {})
+            self._noteIndex = theData.get("noteIndex", {})
             self._textCounts = theData.get("textCounts", {})
 
             nowTime = round(time())
@@ -181,12 +181,12 @@ class NWIndex():
         indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
 
         try:
-            with open(indexFile, mode="w+", encoding="utf8") as outFile:
+            with open(indexFile, mode="w+", encoding="utf-8") as outFile:
                 json.dump({
-                    "tagIndex":   self._tagIndex,
-                    "refIndex":   self._refIndex,
+                    "tagIndex": self._tagIndex,
+                    "refIndex": self._refIndex,
                     "novelIndex": self._novelIndex,
-                    "noteIndex":  self._noteIndex,
+                    "noteIndex": self._noteIndex,
                     "textCounts": self._textCounts,
                 }, outFile, indent=2)
         except Exception:
@@ -292,12 +292,12 @@ class NWIndex():
         for aTag in clearTags:
             self._tagIndex.pop(aTag)
 
-        nLine  = 0
+        nLine = 0
         nTitle = 0
         theLines = theText.splitlines()
         for aLine in theLines:
             nLine += 1
-            nChar  = len(aLine.strip())
+            nChar = len(aLine.strip())
             if nChar == 0:
                 continue
 
@@ -352,16 +352,16 @@ class NWIndex():
         """
         if aLine.startswith("# "):
             hDepth = "H1"
-            hText  = aLine[2:].strip()
+            hText = aLine[2:].strip()
         elif aLine.startswith("## "):
             hDepth = "H2"
-            hText  = aLine[3:].strip()
+            hText = aLine[3:].strip()
         elif aLine.startswith("### "):
             hDepth = "H3"
-            hText  = aLine[4:].strip()
+            hText = aLine[4:].strip()
         elif aLine.startswith("#### "):
             hDepth = "H4"
-            hText  = aLine[5:].strip()
+            hText = aLine[5:].strip()
         else:
             return False
 

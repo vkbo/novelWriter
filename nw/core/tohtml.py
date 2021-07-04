@@ -40,9 +40,9 @@ class ToHtml(Tokenizer):
     def __init__(self, theProject):
         Tokenizer.__init__(self, theProject)
 
-        self.genMode   = self.M_EXPORT
+        self.genMode = self.M_EXPORT
         self.cssStyles = True
-        self.fullHTML  = []
+        self.fullHTML = []
 
         # Internals
         self._trMap = {}
@@ -59,7 +59,7 @@ class ToHtml(Tokenizer):
         need to make a few changes to formatting, which is managed by
         these flags.
         """
-        self.genMode    = self.M_PREVIEW
+        self.genMode = self.M_PREVIEW
         self.doKeywords = True
         self.doComments = doComments
         self.doSynopsis = doSynopsis
@@ -74,19 +74,13 @@ class ToHtml(Tokenizer):
         return
 
     def setReplaceUnicode(self, doReplace):
-        """Set the translation map to either minimal or full unicode to
+        """Set the translation map to either minimal or full unicode for
         html entities replacement.
         """
         # Control characters must always be replaced
-        # This affects alignment and indenting code, so the Tokenizer
-        # must take this into account when parsing for markup using
-        # angle brackets.
-        self._trMap = str.maketrans({
-            "<": "&lt;",
-            ">": "&gt;",
-            "&": "&amp;",
-        })
-
+        # Angle brackets are replaced later as they are also used in
+        # formatting codes
+        self._trMap = str.maketrans({"&": "&amp;"})
         if doReplace:
             # Extend to all relevant Unicode characters
             self._trMap.update(str.maketrans(nwHtmlUnicode.U_TO_H))
@@ -156,6 +150,9 @@ class ToHtml(Tokenizer):
         tmpResult = []
 
         for tType, tLine, tText, tFormat, tStyle in self.theTokens:
+
+            # Replace < and > before adding html tags
+            tText = tText.replace("<", "&lt;").replace(">", "&gt;")
 
             # Styles
             aStyle = []
@@ -268,7 +265,7 @@ class ToHtml(Tokenizer):
     def saveHTML5(self, savePath):
         """Save the data to an .html file.
         """
-        with open(savePath, mode="w", encoding="utf8") as outFile:
+        with open(savePath, mode="w", encoding="utf-8") as outFile:
             theStyle = self.getStyleSheet()
             theStyle.append("article {width: 800px; margin: 40px auto;}")
             bodyText = "".join(self.fullHTML)

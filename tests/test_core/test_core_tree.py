@@ -25,16 +25,18 @@ import pytest
 from lxml import etree
 from hashlib import sha256
 
+from tools import readFile
+
 from nw.core.project import NWProject, NWItem, NWTree
 from nw.enum import nwItemClass, nwItemType, nwItemLayout
 from nw.constants import nwFiles
 
 
 @pytest.fixture(scope="function")
-def dummyItems(dummyGUI):
+def dummyItems(mockGUI):
     """Create a list of mock items.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
 
     itemA = NWItem(theProject)
     itemA.itemName = "Novel"
@@ -108,10 +110,10 @@ def dummyItems(dummyGUI):
 
 
 @pytest.mark.core
-def testCoreTree_BuildTree(dummyGUI, dummyItems):
+def testCoreTree_BuildTree(mockGUI, dummyItems):
     """Test building a project tree from a list of items.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
     theTree.setSeed(42)
@@ -205,10 +207,10 @@ def testCoreTree_BuildTree(dummyGUI, dummyItems):
 
 
 @pytest.mark.core
-def testCoreTree_Methods(dummyGUI, dummyItems):
+def testCoreTree_Methods(mockGUI, dummyItems):
     """Test bvarious class methods.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
     for tHandle, pHandle, nwItem in dummyItems:
@@ -262,10 +264,10 @@ def testCoreTree_Methods(dummyGUI, dummyItems):
 
 
 @pytest.mark.core
-def testCoreTree_UpdateItemLayout(dummyGUI, dummyItems):
+def testCoreTree_UpdateItemLayout(mockGUI, dummyItems):
     """Test building a project tree from a list of items.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
     for tHandle, pHandle, nwItem in dummyItems:
@@ -388,10 +390,10 @@ def testCoreTree_UpdateItemLayout(dummyGUI, dummyItems):
 
 
 @pytest.mark.core
-def testCoreTree_MakeHandles(monkeypatch, dummyGUI):
+def testCoreTree_MakeHandles(monkeypatch, mockGUI):
     """Test generating item handles.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
     theTree.setSeed(42)
@@ -431,10 +433,10 @@ def testCoreTree_MakeHandles(monkeypatch, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreTree_Stats(dummyGUI, dummyItems):
+def testCoreTree_Stats(mockGUI, dummyItems):
     """Test project stats methods.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
     for tHandle, pHandle, nwItem in dummyItems:
@@ -458,10 +460,10 @@ def testCoreTree_Stats(dummyGUI, dummyItems):
 
 
 @pytest.mark.core
-def testCoreTree_Reorder(dummyGUI, dummyItems):
+def testCoreTree_Reorder(mockGUI, dummyItems):
     """Test changing tree order.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
     aHandle = []
@@ -490,10 +492,10 @@ def testCoreTree_Reorder(dummyGUI, dummyItems):
 
 
 @pytest.mark.core
-def testCoreTree_XMLPackUnpack(dummyGUI, dummyItems):
+def testCoreTree_XMLPackUnpack(mockGUI, dummyItems):
     """Test packing and unpacking the tree to and from XML.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
     for tHandle, pHandle, nwItem in dummyItems:
@@ -546,10 +548,10 @@ def testCoreTree_XMLPackUnpack(dummyGUI, dummyItems):
 
 
 @pytest.mark.core
-def testCoreTree_ToCFile(monkeypatch, dummyGUI, dummyItems, tmpDir):
+def testCoreTree_ToCFile(monkeypatch, mockGUI, dummyItems, tmpDir):
     """Test writing the ToC.txt file.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
     for tHandle, pHandle, nwItem in dummyItems:
@@ -579,17 +581,16 @@ def testCoreTree_ToCFile(monkeypatch, dummyGUI, dummyItems, tmpDir):
     pathB = os.path.join("content", "c000000000002.nwd")
     pathC = os.path.join("content", "b000000000002.nwd")
 
-    with open(os.path.join(tmpDir, nwFiles.TOC_TXT), mode="r", encoding="utf8") as inFile:
-        assert inFile.read() == (
-            "\n"
-            "Table of Contents\n"
-            "=================\n"
-            "\n"
-            "File Name                  Class      Layout      Document Label\n"
-            "-------------------------------------------------------------\n"
-            f"{pathA}  NOVEL      CHAPTER     Chapter One\n"
-            f"{pathB}  NOVEL      SCENE       Scene One\n"
-            f"{pathC}  CHARACTER  NOTE        Jane Doe\n"
-        )
+    assert readFile(os.path.join(tmpDir, nwFiles.TOC_TXT)) == (
+        "\n"
+        "Table of Contents\n"
+        "=================\n"
+        "\n"
+        "File Name                  Class      Layout      Document Label\n"
+        "-------------------------------------------------------------\n"
+        f"{pathA}  NOVEL      CHAPTER     Chapter One\n"
+        f"{pathB}  NOVEL      SCENE       Scene One\n"
+        f"{pathC}  CHARACTER  NOTE        Jane Doe\n"
+    )
 
 # END Test testCoreTree_ToCFile

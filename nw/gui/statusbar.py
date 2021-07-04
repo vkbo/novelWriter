@@ -51,8 +51,8 @@ class GuiMainStatus(QStatusBar):
         self.refTime   = None
         self.userIdle  = False
 
-        colNone  = QColor(*self.theTheme.statNone)
-        colTrue  = QColor(*self.theTheme.statUnsaved)
+        colNone = QColor(*self.theTheme.statNone)
+        colTrue = QColor(*self.theTheme.statUnsaved)
         colFalse = QColor(*self.theTheme.statSaved)
 
         iPx = self.theTheme.baseIconSize
@@ -243,8 +243,8 @@ class StatusLED(QAbstractButton):
 
         self._colNone = colNone
         self._colGood = colGood
-        self._colBad  = colBad
-        self._theCol  = colNone
+        self._colBad = colBad
+        self._theCol = colNone
 
         self.setFixedWidth(sW)
         self.setFixedHeight(sH)

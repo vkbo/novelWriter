@@ -311,9 +311,7 @@ class GuiDocViewer(QTextBrowser):
         return
 
     def updateDocMargins(self):
-        """Automatically adjust the margins so the text is centred if
-        Config.textFixedW is enabled or we're in Focus Mode. Otherwise,
-        just ensure the margins are set correctly.
+        """Automatically adjust the margins so the text is centred.
         """
         vBar = self.verticalScrollBar()
         sW = vBar.width() if vBar.isVisible() else 0
@@ -1151,7 +1149,6 @@ class GuiDocViewDetails(QScrollArea):
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.theTheme   = theParent.theTheme
-        self.currHandle = None
 
         self.refList = QLabel("")
         self.refList.setWordWrap(True)
@@ -1184,7 +1181,6 @@ class GuiDocViewDetails(QScrollArea):
         """Update the current list of document references from the
         project index.
         """
-        self.currHandle = tHandle
         if self.theParent.docViewer.stickyRef:
             return
 

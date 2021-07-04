@@ -24,6 +24,7 @@ import json
 import pytest
 
 from mock import causeOSError
+from tools import writeFile
 
 from nw.core import NWProject
 from nw.core.options import OptionState
@@ -31,28 +32,27 @@ from nw.constants import nwFiles
 
 
 @pytest.mark.core
-def testCoreOptions_LoadSave(monkeypatch, dummyGUI, tmpDir):
+def testCoreOptions_LoadSave(monkeypatch, mockGUI, tmpDir):
     """Test loading and saving from the OptionState class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theOpts = OptionState(theProject)
 
     # Write a test file
     optFile = os.path.join(tmpDir, nwFiles.OPTS_FILE)
-    with open(optFile, mode="w+", encoding="utf8") as outFile:
-        json.dump({
-            "GuiBuildNovel": {
-                "winWidth": 1000,
-                "winHeight": 700,
-                "addNovel": True,
-                "addNotes": False,
-                "textFont": "Cantarell",
-                "dummyItem": None,
-            },
-            "DummyGroup": {
-                "dummyItem": None,
-            },
-        }, outFile)
+    writeFile(optFile, json.dumps({
+        "GuiBuildNovel": {
+            "winWidth": 1000,
+            "winHeight": 700,
+            "addNovel": True,
+            "addNotes": False,
+            "textFont": "Cantarell",
+            "dummyItem": None,
+        },
+        "DummyGroup": {
+            "dummyItem": None,
+        },
+    }))
 
     # Load and save with no path set
     theProject.projMeta = None
@@ -102,10 +102,10 @@ def testCoreOptions_LoadSave(monkeypatch, dummyGUI, tmpDir):
 
 
 @pytest.mark.core
-def testCoreOptions_SetGet(dummyGUI):
+def testCoreOptions_SetGet(mockGUI):
     """Test setting and getting values from the OptionState class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theOpts = OptionState(theProject)
 
     # Set invalid values

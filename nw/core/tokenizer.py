@@ -24,8 +24,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
 import re
+import logging
 
 from operator import itemgetter
 from functools import partial
@@ -43,12 +43,12 @@ logger = logging.getLogger(__name__)
 class Tokenizer():
 
     # In-Text Format
-    FMT_B_B    = 1  # Begin bold
-    FMT_B_E    = 2  # End bold
-    FMT_I_B    = 3  # Begin italics
-    FMT_I_E    = 4  # End italics
-    FMT_D_B    = 5  # Begin strikeout
-    FMT_D_E    = 6  # End strikeout
+    FMT_B_B = 1  # Begin bold
+    FMT_B_E = 2  # End bold
+    FMT_I_B = 3  # Begin italics
+    FMT_I_E = 4  # End italics
+    FMT_D_B = 5  # Begin strikeout
+    FMT_D_E = 6  # End strikeout
 
     # Block Type
     T_EMPTY    = 1   # Empty line (new paragraph)
@@ -86,11 +86,11 @@ class Tokenizer():
         self.mainConf   = nw.CONFIG
 
         # Data Variables
-        self.theText     = ""    # The raw text to be tokenized
-        self.theHandle   = None  # The handle associated with the text
-        self.theItem     = None  # The NWItem associated with the handle
-        self.theTokens   = []    # The list of the processed tokens
-        self.theResult   = ""    # The result of the last document
+        self.theText   = ""    # The raw text to be tokenized
+        self.theHandle = None  # The handle associated with the text
+        self.theItem   = None  # The NWItem associated with the handle
+        self.theTokens = []    # The list of the processed tokens
+        self.theResult = ""    # The result of the last document
 
         self.keepMarkdown = False  # Whether to keep the markdown text
         self.theMarkdown  = []     # The result novelWriter markdown of all documents
@@ -117,11 +117,11 @@ class Tokenizer():
         self.marginMeta  = (0.000, 0.584)
 
         # Title Formats
-        self.fmtTitle    = "%title%"  # Formatting for titles
-        self.fmtChapter  = "%title%"  # Formatting for numbered chapters
-        self.fmtUnNum    = "%title%"  # Formatting for unnumbered chapters
-        self.fmtScene    = "%title%"  # Formatting for scenes
-        self.fmtSection  = "%title%"  # Formatting for sections
+        self.fmtTitle   = "%title%"  # Formatting for titles
+        self.fmtChapter = "%title%"  # Formatting for numbered chapters
+        self.fmtUnNum   = "%title%"  # Formatting for unnumbered chapters
+        self.fmtScene   = "%title%"  # Formatting for scenes
+        self.fmtSection = "%title%"  # Formatting for sections
 
         self.hideScene   = False  # Do not include scene headers
         self.hideSection = False  # Do not include section headers
@@ -320,7 +320,7 @@ class Tokenizer():
         return True
 
     def doPreProcessing(self):
-        """Reun trough the various replace doctionaries.
+        """Run trough the various replace doctionaries.
         """
         # Process the user's auto-replace dictionary
         if len(self.theProject.autoReplace) > 0:
@@ -459,28 +459,16 @@ class Tokenizer():
                 if aLine.startswith(">>"):
                     tagRight = True
                     aLine = aLine[2:].lstrip(" ")
-                elif aLine.startswith("&gt;&gt;"):
-                    tagRight = True
-                    aLine = aLine[8:].lstrip(" ")
                 elif aLine.startswith(">"):
                     indLeft = True
                     aLine = aLine[1:].lstrip(" ")
-                elif aLine.startswith("&gt;"):
-                    indLeft = True
-                    aLine = aLine[4:].lstrip(" ")
 
                 if aLine.endswith("<<"):
                     tagLeft = True
                     aLine = aLine[:-2].rstrip(" ")
-                elif aLine.endswith("&lt;&lt;"):
-                    tagLeft = True
-                    aLine = aLine[:-8].rstrip(" ")
                 elif aLine.endswith("<"):
                     indRight = True
                     aLine = aLine[:-1].rstrip(" ")
-                elif aLine.endswith("&lt;"):
-                    indRight = True
-                    aLine = aLine[:-4].rstrip(" ")
 
                 textAlign = defAlign
                 if tagLeft and tagRight:
@@ -701,7 +689,7 @@ class Tokenizer():
     def saveRawMarkdown(self, savePath):
         """Save the data to a plain text file.
         """
-        with open(savePath, mode="w", encoding="utf8") as outFile:
+        with open(savePath, mode="w", encoding="utf-8") as outFile:
             for nwdPage in self.theMarkdown:
                 outFile.write(nwdPage)
         return

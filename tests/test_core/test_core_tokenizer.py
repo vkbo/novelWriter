@@ -29,10 +29,10 @@ from nw.core.tokenizer import Tokenizer
 
 
 @pytest.mark.core
-def testCoreToken_Setters(dummyGUI):
+def testCoreToken_Setters(mockGUI):
     """Test all the setters for the Tokenizer class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theToken = Tokenizer(theProject)
 
     # Verify defaults
@@ -113,10 +113,10 @@ def testCoreToken_Setters(dummyGUI):
 
 
 @pytest.mark.core
-def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
+def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
     """Test handling files and text in the Tokenizer class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
     theProject.projLang = "en"
     theProject._loadProjectLocalisation()
@@ -196,10 +196,10 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreToken_Tokenize(dummyGUI):
+def testCoreToken_Tokenize(mockGUI):
     """Test the tokenization of the Tokenizer class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theToken = Tokenizer(theProject)
     theToken.setKeepMarkdown(True)
 
@@ -452,56 +452,14 @@ def testCoreToken_Tokenize(dummyGUI):
         "Right-indent, right-aligned\n\n\n"
     )
 
-    # Alignment w/HTML Codes
-    theToken.theText = (
-        "Some regular text\n\n"
-        "Some left-aligned text &lt;&lt;\n\n"
-        "&gt;&gt; Some right-aligned text\n\n"
-        "&gt;&gt; Some centered text &lt;&lt;\n\n"
-        "&gt; Left-indented block\n\n"
-        "Right-indented block &lt;\n\n"
-        "&gt; Double-indented block &lt;\n\n"
-        "&gt;&gt; Right-indent, right-aligned &lt;\n\n"
-    )
-    theToken.tokenizeText()
-    assert theToken.theTokens == [
-        (Tokenizer.T_TEXT,  1, "Some regular text", [], Tokenizer.A_NONE),
-        (Tokenizer.T_EMPTY, 2, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  3, "Some left-aligned text", [], Tokenizer.A_LEFT),
-        (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  5, "Some right-aligned text", [], Tokenizer.A_RIGHT),
-        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  7, "Some centered text", [], Tokenizer.A_CENTRE),
-        (Tokenizer.T_EMPTY, 8, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  9, "Left-indented block", [], Tokenizer.A_IND_L),
-        (Tokenizer.T_EMPTY, 10, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  11, "Right-indented block", [], Tokenizer.A_IND_R),
-        (Tokenizer.T_EMPTY, 12, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  13, "Double-indented block", [], dblIndent),
-        (Tokenizer.T_EMPTY, 14, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  15, "Right-indent, right-aligned", [], rIndAlign),
-        (Tokenizer.T_EMPTY, 16, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_EMPTY, 16, "", None, Tokenizer.A_NONE),
-    ]
-    assert theToken.theMarkdown[-1] == (
-        "Some regular text\n\n"
-        "Some left-aligned text\n\n"
-        "Some right-aligned text\n\n"
-        "Some centered text\n\n"
-        "Left-indented block\n\n"
-        "Right-indented block\n\n"
-        "Double-indented block\n\n"
-        "Right-indent, right-aligned\n\n\n"
-    )
-
 # END Test testCoreToken_Tokenize
 
 
 @pytest.mark.core
-def testCoreToken_Headers(dummyGUI):
+def testCoreToken_Headers(mockGUI):
     """Test the header and page parser of the Tokenizer class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projLang = "en"
     theProject._loadProjectLocalisation()
     theToken = Tokenizer(theProject)
