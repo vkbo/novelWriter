@@ -29,10 +29,10 @@ from nw.enum import nwItemClass, nwItemType, nwItemLayout
 
 
 @pytest.mark.core
-def testCoreItem_Setters(dummyGUI):
+def testCoreItem_Setters(mockGUI):
     """Test all the simple setters for the NWItem class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theItem = NWItem(theProject)
 
     # Name
@@ -167,11 +167,11 @@ def testCoreItem_Setters(dummyGUI):
 
 
 @pytest.mark.core
-def testCoreItem_TypeSetter(dummyGUI):
+def testCoreItem_TypeSetter(mockGUI):
     """Test the setter for all the nwItemType values for the NWItem
     class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theItem = NWItem(theProject)
 
     # Type
@@ -196,11 +196,11 @@ def testCoreItem_TypeSetter(dummyGUI):
 
 
 @pytest.mark.core
-def testCoreItem_ClassSetter(dummyGUI):
+def testCoreItem_ClassSetter(mockGUI):
     """Test the setter for all the nwItemClass values for the NWItem
     class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theItem = NWItem(theProject)
 
     # Class
@@ -237,11 +237,11 @@ def testCoreItem_ClassSetter(dummyGUI):
 
 
 @pytest.mark.core
-def testCoreItem_LayoutSetter(dummyGUI):
+def testCoreItem_LayoutSetter(mockGUI):
     """Test the setter for all the nwItemLayout values for the NWItem
     class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theItem = NWItem(theProject)
 
     # Layout
@@ -274,10 +274,10 @@ def testCoreItem_LayoutSetter(dummyGUI):
 
 
 @pytest.mark.core
-def testCoreItem_XMLPackUnpack(dummyGUI, caplog):
+def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     """Test packing and unpacking XML objects for the NWItem class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     nwXML = etree.Element("novelWriterXML")
 
     # File

@@ -32,13 +32,13 @@ def cmpFiles(fileOne, fileTwo, ignoreLines=None):
         ignoreLines = []
 
     try:
-        foOne = open(fileOne, mode="r", encoding="utf8")
+        foOne = open(fileOne, mode="r", encoding="utf-8")
     except Exception as e:
         print(str(e))
         return False
 
     try:
-        foTwo = open(fileTwo, mode="r", encoding="utf8")
+        foTwo = open(fileTwo, mode="r", encoding="utf-8")
     except Exception as e:
         print(str(e))
         return False
@@ -83,14 +83,14 @@ def getGuiItem(theName):
 def readFile(fileName):
     """Returns the content of a file as a string.
     """
-    with open(fileName, mode="r", encoding="utf8") as inFile:
+    with open(fileName, mode="r", encoding="utf-8") as inFile:
         return inFile.read()
 
 
 def writeFile(fileName, fileData):
     """Write the contents of a string to a file.
     """
-    with open(fileName, mode="w", encoding="utf8") as outFile:
+    with open(fileName, mode="w", encoding="utf-8") as outFile:
         outFile.write(fileData)
 
 

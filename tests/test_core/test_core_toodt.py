@@ -45,11 +45,11 @@ def xmlToText(xElem):
 
 
 @pytest.mark.core
-def testCoreToOdt_Convert(dummyGUI):
+def testCoreToOdt_Convert(mockGUI):
     """Test the converter of the ToHtml class.
     """
-    theProject = NWProject(dummyGUI)
-    dummyGUI.theIndex = NWIndex(theProject)
+    theProject = NWProject(mockGUI)
+    mockGUI.theIndex = NWIndex(theProject)
     theDoc = ToOdt(theProject, isFlat=True)
 
     # Export Mode
