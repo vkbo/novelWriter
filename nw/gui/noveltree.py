@@ -247,9 +247,9 @@ class GuiNovelTree(QTreeWidget):
         """
         self.clearTree()
 
-        currTitle   = None
+        currTitle = None
         currChapter = None
-        currScene   = None
+        currScene = None
 
         for tKey, tHandle, sTitle, novIdx in self.theIndex.novelStructure(skipExcluded=True):
 
@@ -259,9 +259,9 @@ class GuiNovelTree(QTreeWidget):
             tLevel = novIdx["level"]
             if tLevel == "H1":
                 self.addTopLevelItem(tItem)
-                currTitle   = tItem
+                currTitle = tItem
                 currChapter = None
-                currScene   = None
+                currScene = None
 
             elif tLevel == "H2":
                 if currTitle is None:
@@ -269,7 +269,7 @@ class GuiNovelTree(QTreeWidget):
                 else:
                     currTitle.addChild(tItem)
                 currChapter = tItem
-                currScene   = None
+                currScene = None
 
             elif tLevel == "H3":
                 if currChapter is None:

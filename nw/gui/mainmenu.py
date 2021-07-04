@@ -47,7 +47,7 @@ class GuiMainMenu(QMenuBar):
         self.theProject = theParent.theProject
 
         # Internals
-        self.assistProc = None
+        self._assistProc = None
 
         # Build Menu
         self._buildProjectMenu()
@@ -92,19 +92,19 @@ class GuiMainMenu(QMenuBar):
     def closeHelp(self):
         """Close the process used for the Qt Assistant, if it is open.
         """
-        if self.assistProc is None:
+        if self._assistProc is None:
             return
 
-        if self.assistProc.state() == QProcess.Starting:
-            if self.assistProc.waitForStarted(10000):
-                self.assistProc.terminate()
+        if self._assistProc.state() == QProcess.Starting:
+            if self._assistProc.waitForStarted(10000):
+                self._assistProc.terminate()
             else:
-                self.assistProc.kill()
+                self._assistProc.kill()
 
-        elif self.assistProc.state() == QProcess.Running:
-            self.assistProc.terminate()
-            if not self.assistProc.waitForFinished(10000):
-                self.assistProc.kill()
+        elif self._assistProc.state() == QProcess.Running:
+            self._assistProc.terminate()
+            if not self._assistProc.waitForFinished(10000):
+                self._assistProc.kill()
 
         return
 
@@ -134,7 +134,7 @@ class GuiMainMenu(QMenuBar):
     #  Slots
     ##
 
-    def _toggleSpellCheck(self, isChecked=False):
+    def _toggleSpellCheck(self):
         """Toggle spell checking. The active status of the spell check
         flag is handled by the document editor class, so we make no
         decision, just pass a None to the function and let it decide.
@@ -155,10 +155,10 @@ class GuiMainMenu(QMenuBar):
             self._openWebsite(nw.__docurl__)
             return False
 
-        self.assistProc = QProcess(self)
-        self.assistProc.start("assistant", ["-collectionFile", self.mainConf.helpPath])
+        self._assistProc = QProcess(self)
+        self._assistProc.start("assistant", ["-collectionFile", self.mainConf.helpPath])
 
-        if not self.assistProc.waitForStarted(10000):
+        if not self._assistProc.waitForStarted(10000):
             self._openWebsite(nw.__docurl__)
             return False
 
@@ -239,11 +239,9 @@ class GuiMainMenu(QMenuBar):
         self.rootItems[nwItemClass.ENTITY]    = QAction(self.tr("Entity Root"),    self.rootMenu)
         self.rootItems[nwItemClass.CUSTOM]    = QAction(self.tr("Custom Root"),    self.rootMenu)
         self.rootItems[nwItemClass.ARCHIVE]   = QAction(self.tr("Outtakes Root"),  self.rootMenu)
-        nCount = 0
-        for itemClass in self.rootItems.keys():
-            nCount += 1  # This forces the lambdas to be unique
+        for n, itemClass in enumerate(self.rootItems.keys()):
             self.rootItems[itemClass].triggered.connect(
-                lambda nCount, itemClass=itemClass: self._newTreeItem(nwItemType.ROOT, itemClass)
+                lambda n, itemClass=itemClass: self._newTreeItem(nwItemType.ROOT, itemClass)
             )
             self.rootMenu.addAction(self.rootItems[itemClass])
 

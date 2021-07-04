@@ -24,8 +24,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
 import math
+import logging
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont
@@ -66,10 +66,10 @@ class GuiProjectDetails(PagedDialog):
             self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "winHeight", wH))
         )
 
-        self.tabMain     = GuiProjectDetailsMain(self.theParent, self.theProject)
+        self.tabMain = GuiProjectDetailsMain(self.theParent, self.theProject)
         self.tabContents = GuiProjectDetailsContents(self.theParent, self.theProject)
 
-        self.addTab(self.tabMain,     self.tr("Overview"))
+        self.addTab(self.tabMain, self.tr("Overview"))
         self.addTab(self.tabContents, self.tr("Contents"))
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
@@ -413,8 +413,8 @@ class GuiProjectDetailsContents(QWidget):
         """Set the content of the chapter/page tree.
         """
         dblPages = self.dblValue.isChecked()
-        wpPage   = self.wpValue.value()
-        fstPage  = self.poValue.value() - 1
+        wpPage = self.wpValue.value()
+        fstPage = self.poValue.value() - 1
 
         pTotal = 0
         tPages = 1

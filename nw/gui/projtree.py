@@ -132,7 +132,7 @@ class GuiProjectTree(QTreeWidget):
         self.initTree()
 
         # Internal Function Mapping
-        self.makeAlert   = self.theParent.makeAlert
+        self.makeAlert = self.theParent.makeAlert
         self.askQuestion = self.theParent.askQuestion
 
         logger.debug("GuiProjectTree initialisation complete")
@@ -1167,7 +1167,7 @@ class GuiProjectTreeMenu(QMenu):
 
         inTrash = theItem.itemParent == trashHandle and trashHandle is not None
         isTrash = theItem.itemHandle == trashHandle and trashHandle is not None
-        isFile  = theItem.itemType == nwItemType.FILE
+        isFile = theItem.itemType == nwItemType.FILE
 
         allowNew = not (isTrash or inTrash)
 

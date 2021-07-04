@@ -25,9 +25,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
+import os
 import logging
 import configparser
-import os
 
 from math import ceil
 from functools import partial
@@ -421,7 +421,7 @@ class GuiTheme:
             return self.syntaxList
 
         confParser = configparser.ConfigParser()
-        syntaxDir  = os.path.join(self.mainConf.themeRoot, self.syntaxPath)
+        syntaxDir = os.path.join(self.mainConf.themeRoot, self.syntaxPath)
         for syntaxFile in os.listdir(syntaxDir):
             syntaxPath = os.path.join(syntaxDir, syntaxFile)
             if not os.path.isfile(syntaxPath):
