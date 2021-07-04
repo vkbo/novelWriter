@@ -35,12 +35,14 @@ logger = logging.getLogger(__name__)
 class NWStatus():
 
     def __init__(self):
-        self._theLabels  = []
+
+        self._theLabels = []
         self._theColours = []
-        self._theCounts  = []
-        self._theMap     = {}
-        self._theLength  = 0
-        self._theIndex   = 0
+        self._theCounts = []
+        self._theMap = {}
+        self._theLength = 0
+        self._theIndex = 0
+
         return
 
     def addEntry(self, theLabel, theColours):
@@ -87,12 +89,12 @@ class NWStatus():
         replaceMap = {}
 
         if newList is not None:
-            self._theLabels  = []
+            self._theLabels = []
             self._theColours = []
-            self._theCounts  = []
-            self._theMap     = {}
-            self._theLength  = 0
-            self._theIndex   = 0
+            self._theCounts = []
+            self._theMap = {}
+            self._theLength = 0
+            self._theIndex = 0
 
             for nName, nR, nG, nB, oName in newList:
                 self.addEntry(nName, (nR, nG, nB))

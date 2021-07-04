@@ -23,12 +23,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
+import sys
+import json
+import shutil
 import logging
 import configparser
-import shutil
-import json
-import sys
-import os
 
 from time import time
 
@@ -435,7 +435,7 @@ class Config:
         cnfParse = configparser.ConfigParser()
         cnfPath = os.path.join(self.confPath, self.confFile)
         try:
-            with open(cnfPath, mode="r", encoding="utf8") as inFile:
+            with open(cnfPath, mode="r", encoding="utf-8") as inFile:
                 cnfParse.read_file(inFile)
         except Exception as e:
             logger.error("Could not load config file")
@@ -807,7 +807,7 @@ class Config:
         # Write config file
         cnfPath = os.path.join(self.confPath, self.confFile)
         try:
-            with open(cnfPath, mode="w", encoding="utf8") as outFile:
+            with open(cnfPath, mode="w", encoding="utf-8") as outFile:
                 cnfParse.write(outFile)
             self.confChanged = False
         except Exception as e:
@@ -831,7 +831,7 @@ class Config:
 
         if os.path.isfile(cacheFile):
             try:
-                with open(cacheFile, mode="r", encoding="utf8") as inFile:
+                with open(cacheFile, mode="r", encoding="utf-8") as inFile:
                     theData = json.load(inFile)
 
                 for projPath in theData.keys():
@@ -869,7 +869,7 @@ class Config:
         cacheTemp = os.path.join(self.dataPath, nwFiles.RECENT_FILE+"~")
 
         try:
-            with open(cacheTemp, mode="w+", encoding="utf8") as outFile:
+            with open(cacheTemp, mode="w+", encoding="utf-8") as outFile:
                 json.dump(self.recentProj, outFile, indent=2)
         except Exception as e:
             self.hasError = True

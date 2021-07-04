@@ -24,11 +24,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
 import os
+import logging
 
-from datetime import datetime
 from time import time
+from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer, QSize, QThreadPool, pyqtSlot
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence, QCursor
@@ -720,7 +720,7 @@ class GuiMain(QMainWindow):
 
         theText = None
         try:
-            with open(loadFile, mode="rt", encoding="utf8") as inFile:
+            with open(loadFile, mode="rt", encoding="utf-8") as inFile:
                 theText = inFile.read()
             self.mainConf.setLastPath(loadFile)
         except Exception as e:
