@@ -24,8 +24,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
 import os
+import logging
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (

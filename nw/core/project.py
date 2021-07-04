@@ -355,7 +355,7 @@ class NWProject():
 
     def openProject(self, fileName, overrideLock=False):
         """Open the project file provided, or if doesn't exist, assume
-        it is a folder, and look for the file within it. If successful,
+        it is a folder and look for the file within it. If successful,
         parse the XML of the file and populate the project variables and
         build the tree of project items.
         """
@@ -483,10 +483,11 @@ class NWProject():
             msgYes = self.theParent.askQuestion(
                 self.tr("Version Conflict"),
                 self.tr(
-                    "This project was saved by a newer version of novelWriter, version "
-                    "{0}. This is version {1}. If you continue to open the project, "
-                    "some attributes and settings may not be preserved, but the "
-                    "overall project should be fine. Continue opening the project?"
+                    "This project was saved by a newer version of "
+                    "novelWriter, version {0}. This is version {1}. If you "
+                    "continue to open the project, some attributes and "
+                    "settings may not be preserved, but the overall project "
+                    "should be fine. Continue opening the project?"
                 ).format(appVersion, nw.__version__)
             )
             if not msgYes:
@@ -1219,7 +1220,7 @@ class NWProject():
             loadFile = chkFile2
 
         try:
-            with open(loadFile, mode="r", encoding="utf8") as inFile:
+            with open(loadFile, mode="r", encoding="utf-8") as inFile:
                 self.langData = json.load(inFile)
             logger.debug("Loaded project language file: %s", os.path.basename(loadFile))
 
@@ -1242,7 +1243,7 @@ class NWProject():
 
         theLines = []
         try:
-            with open(lockFile, mode="r", encoding="utf8") as inFile:
+            with open(lockFile, mode="r", encoding="utf-8") as inFile:
                 theData = inFile.read()
                 theLines = theData.splitlines()
                 if len(theLines) != 4:
@@ -1263,7 +1264,7 @@ class NWProject():
 
         lockFile = os.path.join(self.projPath, nwFiles.PROJ_LOCK)
         try:
-            with open(lockFile, mode="w+", encoding="utf8") as outFile:
+            with open(lockFile, mode="w+", encoding="utf-8") as outFile:
                 outFile.write("%s\n" % self.mainConf.hostName)
                 outFile.write("%s\n" % self.mainConf.osType)
                 outFile.write("%s\n" % self.mainConf.kernelVer)
@@ -1442,7 +1443,7 @@ class NWProject():
             return False
 
         try:
-            with open(sessionFile, mode="a+", encoding="utf8") as outFile:
+            with open(sessionFile, mode="a+", encoding="utf-8") as outFile:
                 if not isFile:
                     # It's a new file, so add a header
                     if self.lastWCount > 0:
@@ -1481,7 +1482,6 @@ class NWProject():
         logger.info("Old data folder %s found", theFolder)
 
         # Move Documents to Content
-        # =========================
         for dataItem in os.listdir(theData):
             theFile = os.path.join(theData, dataItem)
             if not os.path.isfile(theFile):
@@ -1517,7 +1517,6 @@ class NWProject():
                     errList.append(theErr)
 
         # Remove Data Folder
-        # ==================
         try:
             os.rmdir(theData)
             logger.info("Deleted folder: %s", theFolder)
@@ -1563,13 +1562,13 @@ class NWProject():
             os.path.join(self.projCache, "nwProject.nwx.7"),
             os.path.join(self.projCache, "nwProject.nwx.8"),
             os.path.join(self.projCache, "nwProject.nwx.9"),
-            os.path.join(self.projMeta,  "mainOptions.json"),
-            os.path.join(self.projMeta,  "exportOptions.json"),
-            os.path.join(self.projMeta,  "outlineOptions.json"),
-            os.path.join(self.projMeta,  "timelineOptions.json"),
-            os.path.join(self.projMeta,  "docMergeOptions.json"),
-            os.path.join(self.projMeta,  "sessionLogOptions.json"),
-            os.path.join(self.projPath,  "ToC.json"),
+            os.path.join(self.projMeta, "mainOptions.json"),
+            os.path.join(self.projMeta, "exportOptions.json"),
+            os.path.join(self.projMeta, "outlineOptions.json"),
+            os.path.join(self.projMeta, "timelineOptions.json"),
+            os.path.join(self.projMeta, "docMergeOptions.json"),
+            os.path.join(self.projMeta, "sessionLogOptions.json"),
+            os.path.join(self.projPath, "ToC.json"),
         ]
 
         for rmFile in rmList:

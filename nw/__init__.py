@@ -39,9 +39,9 @@ from nw.config import Config
 #  Generally follows PEP 440
 #  Hex Version:
 #  - Digit 1,2 : Major Version (01-ff)
-#  = Digit 3,4 : Minor Version (01-ff)
+#  - Digit 3,4 : Minor Version (01-ff)
 #  - Digit 5,6 : Patch Version (01-ff)
-#  = Digit 7   : Release Type (a: aplha, b: beta, c: candidate, f: final)
+#  - Digit 7   : Release Type (a: aplha, b: beta, c: candidate, f: final)
 #  - Digit 8   : Release Number (0-f)
 #
 #  Example    : Full        Short      Description
@@ -111,7 +111,7 @@ CONFIG = Config()
 
 
 def main(sysArgs=None):
-    """Parses command line, sets up logging, and launches main GUI.
+    """Parse command line, set up logging, and launches main GUI.
     """
     if sysArgs is None:
         sysArgs = sys.argv[1:]
@@ -155,13 +155,13 @@ def main(sysArgs=None):
     )
 
     # Defaults
-    logLevel  = logging.WARN
+    logLevel = logging.WARN
     logFormat = "{levelname:8}  {message:}"
-    confPath  = None
-    dataPath  = None
-    testMode  = False
-    qtStyle   = "Fusion"
-    cmdOpen   = None
+    confPath = None
+    dataPath = None
+    testMode = False
+    qtStyle = "Fusion"
+    cmdOpen = None
 
     # Parse Options
     try:

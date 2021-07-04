@@ -24,13 +24,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
 import os
+import logging
 
 from datetime import datetime
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QTabWidget,
     QTextBrowser, QLabel
@@ -229,7 +229,7 @@ class GuiAbout(QDialog):
         """
         docPath = os.path.join(self.mainConf.assetPath, "text", "release_notes.htm")
         if os.path.isfile(docPath):
-            with open(docPath, mode="r", encoding="utf8") as inFile:
+            with open(docPath, mode="r", encoding="utf-8") as inFile:
                 helpText = inFile.read()
             self.pageNotes.setHtml(helpText)
         else:
@@ -241,7 +241,7 @@ class GuiAbout(QDialog):
         """
         docPath = os.path.join(self.mainConf.assetPath, "text", "gplv3_en.htm")
         if os.path.isfile(docPath):
-            with open(docPath, mode="r", encoding="utf8") as inFile:
+            with open(docPath, mode="r", encoding="utf-8") as inFile:
                 helpText = inFile.read()
             self.pageLicense.setHtml(helpText)
         else:

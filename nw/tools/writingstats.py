@@ -24,14 +24,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
-import json
 import os
+import json
+import logging
 
 from datetime import datetime
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QCursor
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
     QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
@@ -132,7 +132,7 @@ class GuiWritingStats(QDialog):
         self.barImage.fill(self.palette().highlight().color())
 
         # Session Info
-        self.infoBox  = QGroupBox(self.tr("Sum Totals"), self)
+        self.infoBox = QGroupBox(self.tr("Sum Totals"), self)
         self.infoForm = QGridLayout(self)
         self.infoBox.setLayout(self.infoForm)
 
@@ -186,7 +186,7 @@ class GuiWritingStats(QDialog):
         # Filter Options
         sPx = self.theTheme.baseIconSize
 
-        self.filterBox  = QGroupBox(self.tr("Filters"), self)
+        self.filterBox = QGroupBox(self.tr("Filters"), self)
         self.filterForm = QGridLayout(self)
         self.filterBox.setLayout(self.filterForm)
 
@@ -382,7 +382,7 @@ class GuiWritingStats(QDialog):
         errMsg = ""
 
         try:
-            with open(savePath, mode="w", encoding="utf8") as outFile:
+            with open(savePath, mode="w", encoding="utf-8") as outFile:
                 if dataFmt == self.FMT_JSON:
                     jsonData = []
                     for _, sD, tT, wD, wA, wB, tI in self.filterData:
@@ -436,8 +436,8 @@ class GuiWritingStats(QDialog):
 
         ttNovel = 0
         ttNotes = 0
-        ttTime  = 0
-        ttIdle  = 0
+        ttTime = 0
+        ttIdle = 0
 
         logFile = os.path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
         if not os.path.isfile(logFile):
@@ -445,7 +445,7 @@ class GuiWritingStats(QDialog):
             return False
 
         try:
-            with open(logFile, mode="r", encoding="utf8") as inFile:
+            with open(logFile, mode="r", encoding="utf-8") as inFile:
                 for inLine in inFile:
                     if inLine.startswith("#"):
                         if inLine.startswith("# Offset"):

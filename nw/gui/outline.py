@@ -28,7 +28,7 @@ import logging
 
 from time import time
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QMenu, QAction, QAbstractItemView
 )
@@ -94,9 +94,6 @@ class GuiOutline(QTreeWidget):
         self.optState   = theParent.theProject.optState
         self.headerMenu = GuiOutlineHeaderMenu(self)
 
-        self.firstView = True
-        self.lastBuild = 0
-
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setExpandsOnDoubleClick(False)
@@ -113,16 +110,18 @@ class GuiOutline(QTreeWidget):
         self.treeHead.customContextMenuRequested.connect(self._headerRightClick)
         self.treeHead.sectionMoved.connect(self._columnMoved)
 
-        self.treeMap   = {}
-        self.treeOrder = []
-        self.colWidth  = {}
-        self.colHidden = {}
-        self.colIndex  = {}
-        self.treeNCols = 0
+        # Internals
+        self._treeOrder = []
+        self._colWidth  = {}
+        self._colHidden = {}
+        self._colIdx    = {}
+        self._treeNCols = 0
+        self._firstView = True
+        self._lastBuild = 0
 
         self.initOutline()
         self.clearOutline()
-        self.headerMenu.setHiddenState(self.colHidden)
+        self.headerMenu.setHiddenState(self._colHidden)
 
         logger.debug("GuiOutline initialisation complete")
 
@@ -152,18 +151,18 @@ class GuiOutline(QTreeWidget):
         self.setColumnCount(1)
         self.setHeaderLabel(trConst(nwLabels.OUTLINE_COLS[nwOutline.TITLE]))
 
-        self.treeOrder = []
-        self.colWidth  = {}
-        self.colHidden = {}
-        self.colIndex  = {}
-        self.treeNCols = 0
+        self._treeOrder = []
+        self._colWidth  = {}
+        self._colHidden = {}
+        self._colIdx    = {}
+        self._treeNCols = 0
 
-        for i, hItem in enumerate(nwOutline):
-            self.treeOrder.append(hItem)
-            self.colWidth[hItem] = self.DEF_WIDTH[hItem]
-            self.colHidden[hItem] = self.DEF_HIDDEN[hItem]
+        for hItem in nwOutline:
+            self._treeOrder.append(hItem)
+            self._colWidth[hItem] = self.DEF_WIDTH[hItem]
+            self._colHidden[hItem] = self.DEF_HIDDEN[hItem]
 
-        self.treeNCols = len(self.treeOrder)
+        self._treeNCols = len(self._treeOrder)
 
         return
 
@@ -173,15 +172,15 @@ class GuiOutline(QTreeWidget):
         tree.
         """
         # If it's the first time, we always build
-        if self.firstView or self.firstView and overRide:
+        if self._firstView or self._firstView and overRide:
             self._loadHeaderState()
             self._populateTree()
-            self.firstView = False
+            self._firstView = False
             return
 
         # If the novel index or novel tree has changed since the tree
         # was last built, we rebuild the tree from the updated index.
-        indexChanged = self.theIndex.novelChangedSince(self.lastBuild)
+        indexChanged = self.theIndex.novelChangedSince(self._lastBuild)
         doBuild = (novelChanged or indexChanged) and self.theProject.autoOutline
         if doBuild or overRide:
             logger.debug("Rebuilding Project Outline")
@@ -194,21 +193,22 @@ class GuiOutline(QTreeWidget):
         """
         self._saveHeaderState()
         self.clearOutline()
-        self.firstView = True
+        self._firstView = True
         return
 
     ##
     #  Slots
     ##
 
+    @pyqtSlot("QTreeWidgetItem*", int)
     def _treeDoubleClick(self, tItem, tCol):
         """Extract the handle and line number of the title double-
         clicked, and send it to the main gui class for opening in the
         document editor.
         """
-        tHandle = tItem.data(self.colIndex[nwOutline.TITLE], Qt.UserRole)
+        tHandle = tItem.data(self._colIdx[nwOutline.TITLE], Qt.UserRole)
         try:
-            tLine = int(tItem.text(self.colIndex[nwOutline.LINE]))
+            tLine = int(tItem.text(self._colIdx[nwOutline.LINE]))
         except Exception:
             tLine = 1
 
@@ -217,30 +217,33 @@ class GuiOutline(QTreeWidget):
 
         return
 
+    @pyqtSlot()
     def _itemSelected(self):
         """Extract the handle and line number of the currently selected
         title, and send it to the details panel.
         """
         selItems = self.selectedItems()
         if selItems:
-            tHandle = selItems[0].data(self.colIndex[nwOutline.TITLE], Qt.UserRole)
-            sTitle  = selItems[0].data(self.colIndex[nwOutline.LINE], Qt.UserRole)
+            tHandle = selItems[0].data(self._colIdx[nwOutline.TITLE], Qt.UserRole)
+            sTitle  = selItems[0].data(self._colIdx[nwOutline.LINE], Qt.UserRole)
             self.theParent.projMeta.showItem(tHandle, sTitle)
             self.theParent.treeView.setSelectedHandle(tHandle)
 
         return
 
+    @pyqtSlot("QPoint")
     def _headerRightClick(self, clickPos):
         """Show the header column menu.
         """
         self.headerMenu.exec_(self.mapToGlobal(clickPos))
         return
 
+    @pyqtSlot(int, int, int)
     def _columnMoved(self, logIdx, oldVisualIdx, newVisualIdx):
         """Make sure the order array is up to date with the actual order
         of the columns.
         """
-        self.treeOrder.insert(newVisualIdx, self.treeOrder.pop(oldVisualIdx))
+        self._treeOrder.insert(newVisualIdx, self._treeOrder.pop(oldVisualIdx))
         self._saveHeaderState()
         return
 
@@ -249,8 +252,8 @@ class GuiOutline(QTreeWidget):
         header context menu.
         """
         logger.verbose("User toggled Outline column '%s'", theItem.name)
-        if theItem in self.colIndex:
-            self.setColumnHidden(self.colIndex[theItem], not isChecked)
+        if theItem in self._colIdx:
+            self.setColumnHidden(self._colIdx[theItem], not isChecked)
             self._saveHeaderState()
 
         return
@@ -281,29 +284,29 @@ class GuiOutline(QTreeWidget):
 
         # Check that we now have a complete list, and only if so, save
         # the order loaded from file. Otherwise, we keep the default.
-        if len(treeOrder) == self.treeNCols:
-            self.treeOrder = treeOrder
+        if len(treeOrder) == self._treeNCols:
+            self._treeOrder = treeOrder
         else:
             logger.error("Failed to extract outline column order from previous session")
-            logger.error("Column count doesn't match %d != %d", len(treeOrder), self.treeNCols)
+            logger.error("Column count doesn't match %d != %d", len(treeOrder), self._treeNCols)
 
         # We load whatever column widths and hidden states we find in
         # the file, and leave the rest in their default state.
         tmpWidth = self.optState.getValue("GuiOutline", "columnWidth", {})
         for hName in tmpWidth:
             try:
-                self.colWidth[nwOutline[hName]] = self.mainConf.pxInt(tmpWidth[hName])
+                self._colWidth[nwOutline[hName]] = self.mainConf.pxInt(tmpWidth[hName])
             except Exception:
                 logger.warning("Ignored unknown outline column '%s'", str(hName))
 
         tmpHidden = self.optState.getValue("GuiOutline", "columnHidden", {})
         for hName in tmpHidden:
             try:
-                self.colHidden[nwOutline[hName]] = tmpHidden[hName]
+                self._colHidden[nwOutline[hName]] = tmpHidden[hName]
             except Exception:
                 logger.warning("Ignored unknown outline column '%s'", str(hName))
 
-        self.headerMenu.setHiddenState(self.colHidden)
+        self.headerMenu.setHiddenState(self._colHidden)
 
         return
 
@@ -314,19 +317,19 @@ class GuiOutline(QTreeWidget):
         the last known width in case they're unhidden again.
         """
         # If we haven't built the tree, there is nothing to save.
-        if self.lastBuild == 0:
+        if self._lastBuild == 0:
             return
 
         treeOrder = []
-        colWidth  = {}
+        colWidth = {}
         colHidden = {}
 
         for hItem in nwOutline:
-            colWidth[hItem.name] = self.mainConf.rpxInt(self.colWidth[hItem])
-            colHidden[hItem.name] = self.colHidden[hItem]
+            colWidth[hItem.name] = self.mainConf.rpxInt(self._colWidth[hItem])
+            colHidden[hItem.name] = self._colHidden[hItem]
 
         for iCol in range(self.columnCount()):
-            hName = self.treeOrder[iCol].name
+            hName = self._treeOrder[iCol].name
             treeOrder.append(hName)
 
             iLog = self.treeHead.logicalIndex(iCol)
@@ -353,41 +356,40 @@ class GuiOutline(QTreeWidget):
         """
         self.clear()
 
-        if self.firstView:
+        if self._firstView:
             theLabels = []
-            for i, hItem in enumerate(self.treeOrder):
+            for i, hItem in enumerate(self._treeOrder):
                 theLabels.append(trConst(nwLabels.OUTLINE_COLS[hItem]))
-                self.colIndex[hItem] = i
+                self._colIdx[hItem] = i
 
             self.setHeaderLabels(theLabels)
-            for hItem in self.treeOrder:
-                self.setColumnWidth(self.colIndex[hItem], self.colWidth[hItem])
-                self.setColumnHidden(self.colIndex[hItem], self.colHidden[hItem])
+            for hItem in self._treeOrder:
+                self.setColumnWidth(self._colIdx[hItem], self._colWidth[hItem])
+                self.setColumnHidden(self._colIdx[hItem], self._colHidden[hItem])
 
             # Make sure title column is always visible,
             # and handle column always hidden
-            self.setColumnHidden(self.colIndex[nwOutline.TITLE], False)
+            self.setColumnHidden(self._colIdx[nwOutline.TITLE], False)
 
             headItem = self.headerItem()
-            headItem.setTextAlignment(self.colIndex[nwOutline.CCOUNT], Qt.AlignRight)
-            headItem.setTextAlignment(self.colIndex[nwOutline.WCOUNT], Qt.AlignRight)
-            headItem.setTextAlignment(self.colIndex[nwOutline.PCOUNT], Qt.AlignRight)
+            headItem.setTextAlignment(self._colIdx[nwOutline.CCOUNT], Qt.AlignRight)
+            headItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], Qt.AlignRight)
+            headItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], Qt.AlignRight)
 
-        currTitle   = None
+        currTitle = None
         currChapter = None
-        currScene   = None
+        currScene = None
 
         for tKey, tHandle, sTitle, novIdx in self.theIndex.novelStructure(skipExcluded=True):
 
             tItem = self._createTreeItem(tHandle, sTitle, novIdx)
-            self.treeMap[tKey] = tItem
 
             tLevel = novIdx["level"]
             if tLevel == "H1":
                 self.addTopLevelItem(tItem)
-                currTitle   = tItem
+                currTitle = tItem
                 currChapter = None
-                currScene   = None
+                currScene = None
 
             elif tLevel == "H2":
                 if currTitle is None:
@@ -395,7 +397,7 @@ class GuiOutline(QTreeWidget):
                 else:
                     currTitle.addChild(tItem)
                 currChapter = tItem
-                currScene   = None
+                currScene = None
 
             elif tLevel == "H3":
                 if currChapter is None:
@@ -421,47 +423,47 @@ class GuiOutline(QTreeWidget):
 
             tItem.setExpanded(True)
 
-        self.lastBuild = time()
+        self._lastBuild = time()
 
         return
 
     def _createTreeItem(self, tHandle, sTitle, novIdx):
         """Populate a tree item with all the column values.
         """
-        nwItem  = self.theProject.projTree[tHandle]
+        nwItem = self.theProject.projTree[tHandle]
         newItem = QTreeWidgetItem()
-        hIcon   = "doc_%s" % novIdx["level"].lower()
+        hIcon = "doc_%s" % novIdx["level"].lower()
 
         cC = int(novIdx["cCount"])
         wC = int(novIdx["wCount"])
         pC = int(novIdx["pCount"])
 
-        newItem.setText(self.colIndex[nwOutline.TITLE],  novIdx["title"])
-        newItem.setData(self.colIndex[nwOutline.TITLE],  Qt.UserRole, tHandle)
-        newItem.setIcon(self.colIndex[nwOutline.TITLE],  self.theTheme.getIcon(hIcon))
-        newItem.setText(self.colIndex[nwOutline.LEVEL],  novIdx["level"])
-        newItem.setText(self.colIndex[nwOutline.LABEL],  nwItem.itemName)
-        newItem.setIcon(self.colIndex[nwOutline.LABEL],  self.theTheme.getIcon("proj_document"))
-        newItem.setText(self.colIndex[nwOutline.LINE],   sTitle[1:].lstrip("0"))
-        newItem.setData(self.colIndex[nwOutline.LINE],   Qt.UserRole, sTitle)
-        newItem.setText(self.colIndex[nwOutline.SYNOP],  novIdx["synopsis"])
-        newItem.setText(self.colIndex[nwOutline.CCOUNT], f"{cC:n}")
-        newItem.setText(self.colIndex[nwOutline.WCOUNT], f"{wC:n}")
-        newItem.setText(self.colIndex[nwOutline.PCOUNT], f"{pC:n}")
-        newItem.setTextAlignment(self.colIndex[nwOutline.CCOUNT], Qt.AlignRight)
-        newItem.setTextAlignment(self.colIndex[nwOutline.WCOUNT], Qt.AlignRight)
-        newItem.setTextAlignment(self.colIndex[nwOutline.PCOUNT], Qt.AlignRight)
+        newItem.setText(self._colIdx[nwOutline.TITLE],  novIdx["title"])
+        newItem.setData(self._colIdx[nwOutline.TITLE],  Qt.UserRole, tHandle)
+        newItem.setIcon(self._colIdx[nwOutline.TITLE],  self.theTheme.getIcon(hIcon))
+        newItem.setText(self._colIdx[nwOutline.LEVEL],  novIdx["level"])
+        newItem.setText(self._colIdx[nwOutline.LABEL],  nwItem.itemName)
+        newItem.setIcon(self._colIdx[nwOutline.LABEL],  self.theTheme.getIcon("proj_document"))
+        newItem.setText(self._colIdx[nwOutline.LINE],   sTitle[1:].lstrip("0"))
+        newItem.setData(self._colIdx[nwOutline.LINE],   Qt.UserRole, sTitle)
+        newItem.setText(self._colIdx[nwOutline.SYNOP],  novIdx["synopsis"])
+        newItem.setText(self._colIdx[nwOutline.CCOUNT], f"{cC:n}")
+        newItem.setText(self._colIdx[nwOutline.WCOUNT], f"{wC:n}")
+        newItem.setText(self._colIdx[nwOutline.PCOUNT], f"{pC:n}")
+        newItem.setTextAlignment(self._colIdx[nwOutline.CCOUNT], Qt.AlignRight)
+        newItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], Qt.AlignRight)
+        newItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], Qt.AlignRight)
 
         theRefs = self.theIndex.getReferences(tHandle, sTitle)
-        newItem.setText(self.colIndex[nwOutline.POV],    ", ".join(theRefs[nwKeyWords.POV_KEY]))
-        newItem.setText(self.colIndex[nwOutline.FOCUS],  ", ".join(theRefs[nwKeyWords.FOCUS_KEY]))
-        newItem.setText(self.colIndex[nwOutline.CHAR],   ", ".join(theRefs[nwKeyWords.CHAR_KEY]))
-        newItem.setText(self.colIndex[nwOutline.PLOT],   ", ".join(theRefs[nwKeyWords.PLOT_KEY]))
-        newItem.setText(self.colIndex[nwOutline.TIME],   ", ".join(theRefs[nwKeyWords.TIME_KEY]))
-        newItem.setText(self.colIndex[nwOutline.WORLD],  ", ".join(theRefs[nwKeyWords.WORLD_KEY]))
-        newItem.setText(self.colIndex[nwOutline.OBJECT], ", ".join(theRefs[nwKeyWords.OBJECT_KEY]))
-        newItem.setText(self.colIndex[nwOutline.ENTITY], ", ".join(theRefs[nwKeyWords.ENTITY_KEY]))
-        newItem.setText(self.colIndex[nwOutline.CUSTOM], ", ".join(theRefs[nwKeyWords.CUSTOM_KEY]))
+        newItem.setText(self._colIdx[nwOutline.POV],    ", ".join(theRefs[nwKeyWords.POV_KEY]))
+        newItem.setText(self._colIdx[nwOutline.FOCUS],  ", ".join(theRefs[nwKeyWords.FOCUS_KEY]))
+        newItem.setText(self._colIdx[nwOutline.CHAR],   ", ".join(theRefs[nwKeyWords.CHAR_KEY]))
+        newItem.setText(self._colIdx[nwOutline.PLOT],   ", ".join(theRefs[nwKeyWords.PLOT_KEY]))
+        newItem.setText(self._colIdx[nwOutline.TIME],   ", ".join(theRefs[nwKeyWords.TIME_KEY]))
+        newItem.setText(self._colIdx[nwOutline.WORLD],  ", ".join(theRefs[nwKeyWords.WORLD_KEY]))
+        newItem.setText(self._colIdx[nwOutline.OBJECT], ", ".join(theRefs[nwKeyWords.OBJECT_KEY]))
+        newItem.setText(self._colIdx[nwOutline.ENTITY], ", ".join(theRefs[nwKeyWords.ENTITY_KEY]))
+        newItem.setText(self._colIdx[nwOutline.CUSTOM], ", ".join(theRefs[nwKeyWords.CUSTOM_KEY]))
 
         return newItem
 

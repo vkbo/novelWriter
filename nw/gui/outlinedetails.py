@@ -191,7 +191,7 @@ class GuiOutlineDetails(QScrollArea):
 
         # Selected Item Tags
         self.tagsGroup = QGroupBox(self.tr("Reference Tags"), self)
-        self.tagsForm  = QGridLayout()
+        self.tagsForm = QGridLayout()
         self.tagsGroup.setLayout(self.tagsForm)
 
         self.tagsForm.addWidget(self.povKeyLabel, 0, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
@@ -279,8 +279,8 @@ class GuiOutlineDetails(QScrollArea):
         """Update the content of the tree with the given handle and line
         number pointing to a header.
         """
-        nwItem  = self.theProject.projTree[tHandle]
-        novIdx  = self.theIndex.getNovelData(tHandle, sTitle)
+        nwItem = self.theProject.projTree[tHandle]
+        novIdx = self.theIndex.getNovelData(tHandle, sTitle)
         theRefs = self.theIndex.getReferences(tHandle, sTitle)
         if nwItem is None or novIdx is None:
             return False

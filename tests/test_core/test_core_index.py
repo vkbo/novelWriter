@@ -34,7 +34,7 @@ from nw.enum import nwItemClass, nwItemLayout
 
 
 @pytest.mark.core
-def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, outDir, refDir):
+def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     """Test core functionality of scaning, saving, loading and checking
     the index cache file.
     """
@@ -42,7 +42,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, outDir, refDir):
     testFile = os.path.join(outDir, "coreIndex_LoadSave_tagsIndex.json")
     compFile = os.path.join(refDir, "coreIndex_LoadSave_tagsIndex.json")
 
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwLipsum)
 
@@ -126,10 +126,10 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, dummyGUI, outDir, refDir):
 
 
 @pytest.mark.core
-def testCoreIndex_ScanThis(nwMinimal, dummyGUI):
+def testCoreIndex_ScanThis(nwMinimal, mockGUI):
     """Test the tag scanner function scanThis.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
@@ -178,10 +178,10 @@ def testCoreIndex_ScanThis(nwMinimal, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_CheckThese(nwMinimal, dummyGUI):
+def testCoreIndex_CheckThese(nwMinimal, mockGUI):
     """Test the tag checker function checkThese.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
@@ -240,10 +240,10 @@ def testCoreIndex_CheckThese(nwMinimal, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_ScanText(nwMinimal, dummyGUI):
+def testCoreIndex_ScanText(nwMinimal, mockGUI):
     """Check the index text scanner.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
@@ -446,10 +446,10 @@ def testCoreIndex_ScanText(nwMinimal, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
+def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     """Check the index data extraction functions.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal)
 
@@ -679,10 +679,10 @@ def testCoreIndex_ExtractData(nwMinimal, dummyGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_CheckTagIndex(dummyGUI):
+def testCoreIndex_CheckTagIndex(mockGUI):
     """Test the tag index checker.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theIndex = NWIndex(theProject)
 
     # Valid Index
@@ -744,10 +744,10 @@ def testCoreIndex_CheckTagIndex(dummyGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_CheckRefIndex(dummyGUI):
+def testCoreIndex_CheckRefIndex(mockGUI):
     """Test the reference index checker.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theIndex = NWIndex(theProject)
 
     # Valid Index
@@ -867,10 +867,10 @@ def testCoreIndex_CheckRefIndex(dummyGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_CheckNovelNoteIndex(dummyGUI):
+def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     """Test the novel and note index checkers.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theIndex = NWIndex(theProject)
 
     # Valid Index
@@ -1126,10 +1126,10 @@ def testCoreIndex_CheckNovelNoteIndex(dummyGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_CheckTextCounts(dummyGUI):
+def testCoreIndex_CheckTextCounts(mockGUI):
     """Test the text counts checker.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theIndex = NWIndex(theProject)
 
     # Valid Index

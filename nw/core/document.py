@@ -82,7 +82,7 @@ class NWDoc():
         self._docMeta = {}
         if os.path.isfile(docPath):
             try:
-                with open(docPath, mode="r", encoding="utf8") as inFile:
+                with open(docPath, mode="r", encoding="utf-8") as inFile:
 
                     # Check the first <= 10 lines for metadata
                     for i in range(10):
@@ -136,7 +136,7 @@ class NWDoc():
             )
 
         try:
-            with open(docTemp, mode="w", encoding="utf8") as outFile:
+            with open(docTemp, mode="w", encoding="utf-8") as outFile:
                 outFile.write(docMeta)
                 outFile.write(docText)
         except Exception as e:
