@@ -24,11 +24,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
 import os
+import logging
 
-from PyQt5.QtCore import Qt, QLocale
 from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt, QLocale
 from PyQt5.QtWidgets import (
     QDialog, QWidget, QComboBox, QSpinBox, QPushButton, QDialogButtonBox,
     QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
@@ -127,7 +127,7 @@ class GuiPreferences(PagedDialog):
     def _saveWindowSize(self):
         """Save the dialog window size.
         """
-        winWidth  = self.mainConf.rpxInt(self.width())
+        winWidth = self.mainConf.rpxInt(self.width())
         winHeight = self.mainConf.rpxInt(self.height())
         self.mainConf.setPreferencesSize(winWidth, winHeight)
         return
@@ -272,12 +272,12 @@ class GuiPreferencesGeneral(QWidget):
     def saveValues(self):
         """Save the values set for this tab.
         """
-        guiLang      = self.guiLang.currentData()
-        guiTheme     = self.guiTheme.currentData()
-        guiIcons     = self.guiIcons.currentData()
-        guiDark      = self.guiDark.isChecked()
-        guiFont      = self.guiFont.text()
-        guiFontSize  = self.guiFontSize.value()
+        guiLang     = self.guiLang.currentData()
+        guiTheme    = self.guiTheme.currentData()
+        guiIcons    = self.guiIcons.currentData()
+        guiDark     = self.guiDark.isChecked()
+        guiFont     = self.guiFont.text()
+        guiFontSize = self.guiFontSize.value()
 
         # Check if restart is needed
         needsRestart = False
