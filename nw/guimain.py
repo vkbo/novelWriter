@@ -71,15 +71,12 @@ class GuiMain(QMainWindow):
         logger.info("OS: %s", self.mainConf.osType)
         logger.info("Kernel: %s", self.mainConf.kernelVer)
         logger.info("Host: %s", self.mainConf.hostName)
-        logger.info(
-            "Qt5 Version: %s (%d)", self.mainConf.verQtString, self.mainConf.verQtValue
-        )
-        logger.info(
-            "PyQt5 Version: %s (%d)", self.mainConf.verPyQtString, self.mainConf.verPyQtValue
-        )
-        logger.info(
-            "Python Version: %s (0x%x)", self.mainConf.verPyString, self.mainConf.verPyHexVal
-        )
+        logger.info("Qt5 Version: %s (%d)",
+                    self.mainConf.verQtString, self.mainConf.verQtValue)
+        logger.info("PyQt5 Version: %s (%d)",
+                    self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
+        logger.info("Python Version: %s (0x%x)",
+                    self.mainConf.verPyString, self.mainConf.verPyHexVal)
         logger.info("GUI Language: %s", self.mainConf.guiLang)
 
         # Core Classes
@@ -137,7 +134,7 @@ class GuiMain(QMainWindow):
         # Project Tree Tabs
         self.projTabs = QTabWidget()
         self.projTabs.setTabPosition(QTabWidget.South)
-        self.projTabs.setStyleSheet(r"QTabWidget::pane {border: 0;};")
+        self.projTabs.setStyleSheet("QTabWidget::pane {border: 0;};")
         self.projTabs.addTab(self.treeView, self.tr("Project"))
         self.projTabs.addTab(self.novelView, self.tr("Novel"))
         self.projTabs.currentChanged.connect(self._projTabsChanged)
@@ -152,7 +149,7 @@ class GuiMain(QMainWindow):
         self.treeButtons.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.treeButtons.setIconSize(QSize(btnSize, btnSize))
         self.treeButtons.setContentsMargins(0, 0, 0, 0)
-        self.treeButtons.setStyleSheet(r"QToolBar {padding: 0;}")
+        self.treeButtons.setStyleSheet("QToolBar {padding: 0;}")
         self.projTabs.setCornerWidget(self.treeButtons, Qt.BottomRightCorner)
 
         self.projDetailsBtn = QAction(self.tr("Project Details"))
@@ -199,7 +196,7 @@ class GuiMain(QMainWindow):
         # Main Tabs : Editor / Outline
         self.mainTabs = QTabWidget()
         self.mainTabs.setTabPosition(QTabWidget.East)
-        self.mainTabs.setStyleSheet(r"QTabWidget::pane {border: 0;}")
+        self.mainTabs.setStyleSheet("QTabWidget::pane {border: 0;}")
         self.mainTabs.addTab(self.splitDocs, self.tr("Editor"))
         self.mainTabs.addTab(self.splitOutline, self.tr("Outline"))
         self.mainTabs.currentChanged.connect(self._mainTabChanged)
@@ -415,7 +412,7 @@ class GuiMain(QMainWindow):
             self.saveDocument()
 
         if self.theProject.projAltered:
-            saveOK   = self.saveProject()
+            saveOK = self.saveProject()
             doBackup = False
             if self.theProject.doBackup and self.mainConf.backupOnClose:
                 doBackup = True
@@ -438,7 +435,7 @@ class GuiMain(QMainWindow):
 
             self.theProject.closeProject(self.idleTime)
             self.idleRefTime = time()
-            self.idleTime    = 0.0
+            self.idleTime = 0.0
 
             self.theIndex.clearIndex()
             self.clearGUI()
@@ -490,14 +487,16 @@ class GuiMain(QMainWindow):
                 self, self.tr("Project Locked"),
                 "%s<br><br>%s<br>%s" % (
                     self.tr(
-                        "The project is already open by another instance of novelWriter, and "
-                        "is therefore locked. Override lock and continue anyway?"
+                        "The project is already open by another instance of "
+                        "novelWriter, and is therefore locked. Override lock "
+                        "and continue anyway?"
                     ),
                     self.tr(
-                        "Note: If the program or the computer previously crashed, the lock "
-                        "can safely be overridden. If, however, another instance of "
-                        "novelWriter has the project open, overriding the lock may corrupt "
-                        "the project, and is not recommended."
+                        "Note: If the program or the computer previously "
+                        "crashed, the lock can safely be overridden. If, "
+                        "however, another instance of novelWriter has the "
+                        "project open, overriding the lock may corrupt the "
+                        "project, and is not recommended."
                     ),
                     lockDetails
                 ),
@@ -510,9 +509,9 @@ class GuiMain(QMainWindow):
                 return False
 
         # Project is loaded
-        self.hasProject  = True
+        self.hasProject = True
         self.idleRefTime = time()
-        self.idleTime    = 0.0
+        self.idleTime = 0.0
 
         # Load the tag index
         self.theIndex.loadIndex()
@@ -740,8 +739,8 @@ class GuiMain(QMainWindow):
             msgYes = self.askQuestion(
                 self.tr("Import Document"),
                 self.tr(
-                    "Importing the file will overwrite the current content of the document. "
-                    "Do you want to proceed?"
+                    "Importing the file will overwrite the current content of "
+                    "the document. Do you want to proceed?"
                 )
             )
             if not msgYes:

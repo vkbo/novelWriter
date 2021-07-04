@@ -433,7 +433,7 @@ class Config:
             return False
 
         cnfParse = configparser.ConfigParser()
-        cnfPath  = os.path.join(self.confPath, self.confFile)
+        cnfPath = os.path.join(self.confPath, self.confFile)
         try:
             with open(cnfPath, mode="r", encoding="utf8") as inFile:
                 cnfParse.read_file(inFile)
@@ -835,9 +835,9 @@ class Config:
                     theData = json.load(inFile)
 
                 for projPath in theData.keys():
-                    theEntry  = theData[projPath]
-                    theTitle  = ""
-                    lastTime  = 0
+                    theEntry = theData[projPath]
+                    theTitle = ""
+                    lastTime = 0
                     wordCount = 0
                     if "title" in theEntry.keys():
                         theTitle = theEntry["title"]
