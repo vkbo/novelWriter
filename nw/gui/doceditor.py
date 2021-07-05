@@ -1756,7 +1756,8 @@ class GuiDocEditor(QTextEdit):
         theTwo = theText[thePos-2:thePos]
         theThree = theText[thePos-3:thePos]
 
-        if not theOne:  # Makes Neo sad
+        if not theOne:
+            # Sorry, Neo and Zathras
             return
 
         nDelete = 0

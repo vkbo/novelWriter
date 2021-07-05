@@ -28,7 +28,7 @@ from PyQt5.QtGui import QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtWidgets import QAction, QMessageBox, qApp
 
 from nw.gui.doceditor import GuiDocEditor
-from nw.enum import nwDocAction, nwDocInsert, nwItemLayout
+from nw.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout
 from nw.constants import nwKeyWords, nwUnicode
 
 keyDelay = 2
@@ -88,8 +88,8 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
     """Test loading text into the editor.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
 
     # Open project
     sHandle = "8c659a11cd429"
@@ -150,8 +150,8 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
     """Test saving text from the editor.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
 
     # Open project
     sHandle = "8c659a11cd429"
@@ -201,8 +201,8 @@ def testGuiEditor_MetaData(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test extracting various meta data and other values.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
 
     # Open project
     sHandle = "8c659a11cd429"
@@ -262,8 +262,8 @@ def testGuiEditor_Actions(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     are tested.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
 
     # Open project
     sHandle = "8c659a11cd429"
@@ -445,6 +445,36 @@ def testGuiEditor_Actions(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_TXT) is True
     assert nwGUI.docEditor.getText() == "#### Scene Title\n\nScene text.\n\n"
 
+    # Align Left
+    assert nwGUI.docEditor.setCursorPosition(20) is True
+    assert nwGUI.docEditor.docAction(nwDocAction.ALIGN_L) is True
+    assert nwGUI.docEditor.getText() == "#### Scene Title\n\nScene text. <<\n\n"
+
+    # Align Right
+    assert nwGUI.docEditor.setCursorPosition(20) is True
+    assert nwGUI.docEditor.docAction(nwDocAction.ALIGN_R) is True
+    assert nwGUI.docEditor.getText() == "#### Scene Title\n\n>> Scene text.\n\n"
+
+    # Align Centre
+    assert nwGUI.docEditor.setCursorPosition(20) is True
+    assert nwGUI.docEditor.docAction(nwDocAction.ALIGN_C) is True
+    assert nwGUI.docEditor.getText() == "#### Scene Title\n\n>> Scene text. <<\n\n"
+
+    # Indent Left
+    assert nwGUI.docEditor.setCursorPosition(20) is True
+    assert nwGUI.docEditor.docAction(nwDocAction.INDENT_L) is True
+    assert nwGUI.docEditor.getText() == "#### Scene Title\n\n> Scene text.\n\n"
+
+    # Indent Right
+    assert nwGUI.docEditor.setCursorPosition(20) is True
+    assert nwGUI.docEditor.docAction(nwDocAction.INDENT_R) is True
+    assert nwGUI.docEditor.getText() == "#### Scene Title\n\n> Scene text. <\n\n"
+
+    # Text (Reset)
+    assert nwGUI.docEditor.setCursorPosition(20) is True
+    assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "#### Scene Title\n\nScene text.\n\n"
+
     # Invalid Actions
     # ===============
 
@@ -469,8 +499,8 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     """Test the document insert functions.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
 
     # Open project
     sHandle = "8c659a11cd429"
@@ -559,8 +589,8 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumTe
     """Test the text manipulation functions.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
 
     # Open project
     sHandle = "8c659a11cd429"
@@ -813,8 +843,8 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumTex
     assert nwGUI.docEditor.setCursorPosition(5) is True
     assert nwGUI.docEditor._formatBlock(nwDocAction.NO_ACTION) is False
 
-    # Block Stripping
-    # ===============
+    # Block Stripping : Left Side
+    # ===========================
 
     # Strip Comment w/Space
     assert nwGUI.docEditor.replaceText("% Comment\n\n") is True
@@ -865,43 +895,182 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumTex
     assert nwGUI.docEditor.getText() == "Generic text\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 5
 
+    # Strip Left Angle Brackets : Double w/Space
+    assert nwGUI.docEditor.replaceText(">> Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 2
+
+    # Strip Left Angle Brackets : Single w/Space
+    assert nwGUI.docEditor.replaceText("> Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 3
+
+    # Strip Left Angle Brackets : Double wo/Space
+    assert nwGUI.docEditor.replaceText(">>Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 3
+
+    # Strip Left Angle Brackets : Single wo/Space
+    assert nwGUI.docEditor.replaceText(">Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 4
+
+    # Block Stripping : Right Side
+    # ============================
+
+    # Strip Right Angle Brackets : Double w/Space
+    assert nwGUI.docEditor.replaceText("Some text <<\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 5
+
+    # Strip Right Angle Brackets : Single w/Space
+    assert nwGUI.docEditor.replaceText("Some text <\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 5
+
+    # Strip Right Angle Brackets : Double wo/Space
+    assert nwGUI.docEditor.replaceText("Some text<<\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 5
+
+    # Strip Right Angle Brackets : Single wo/Space
+    assert nwGUI.docEditor.replaceText("Some text<\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 5
+
+    # Block Stripping : Both Sides
+    # ============================
+
+    assert nwGUI.docEditor.replaceText(">> Some text <<\n\n") is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+
+    assert nwGUI.docEditor.replaceText(">Some text <<\n\n") is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+
+    assert nwGUI.docEditor.replaceText(">Some text<\n\n") is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+
     # New Formats
     # ===========
 
     # Comment
-    assert nwGUI.docEditor.replaceText("Some Text\n\n") is True
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
     assert nwGUI.docEditor.setCursorPosition(5) is True
     assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
-    assert nwGUI.docEditor.getText() == "% Some Text\n\n"
+    assert nwGUI.docEditor.getText() == "% Some text\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 7
 
+    # Toggle Comment w/Space
+    assert nwGUI.docEditor.replaceText("% Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 3
+
+    # Toggle Comment wo/Space
+    assert nwGUI.docEditor.replaceText("%Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 4
+
     # Header 1
-    assert nwGUI.docEditor.replaceText("Some Text\n\n") is True
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
     assert nwGUI.docEditor.setCursorPosition(5) is True
     assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_H1) is True
-    assert nwGUI.docEditor.getText() == "# Some Text\n\n"
+    assert nwGUI.docEditor.getText() == "# Some text\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 7
 
     # Header 2
-    assert nwGUI.docEditor.replaceText("Some Text\n\n") is True
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
     assert nwGUI.docEditor.setCursorPosition(5) is True
     assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_H2) is True
-    assert nwGUI.docEditor.getText() == "## Some Text\n\n"
+    assert nwGUI.docEditor.getText() == "## Some text\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 8
 
     # Header 3
-    assert nwGUI.docEditor.replaceText("Some Text\n\n") is True
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
     assert nwGUI.docEditor.setCursorPosition(5) is True
     assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_H3) is True
-    assert nwGUI.docEditor.getText() == "### Some Text\n\n"
+    assert nwGUI.docEditor.getText() == "### Some text\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 9
 
     # Header 4
-    assert nwGUI.docEditor.replaceText("Some Text\n\n") is True
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
     assert nwGUI.docEditor.setCursorPosition(5) is True
     assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_H4) is True
-    assert nwGUI.docEditor.getText() == "#### Some Text\n\n"
+    assert nwGUI.docEditor.getText() == "#### Some text\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 10
+
+    # Left Indent
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.INDENT_L) is True
+    assert nwGUI.docEditor.getText() == "> Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 7
+
+    # Right Indent
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.INDENT_R) is True
+    assert nwGUI.docEditor.getText() == "Some text <\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 5
+
+    # Right/Left Indent
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.INDENT_L) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.INDENT_R) is True
+    assert nwGUI.docEditor.getText() == "> Some text <\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 7
+
+    # Left Align
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.ALIGN_L) is True
+    assert nwGUI.docEditor.getText() == "Some text <<\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 5
+
+    # Right Align
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.ALIGN_R) is True
+    assert nwGUI.docEditor.getText() == ">> Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 8
+
+    # Centre Align
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.ALIGN_C) is True
+    assert nwGUI.docEditor.getText() == ">> Some text <<\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 8
+
+    # Left/Right Align (Overrides)
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.ALIGN_L) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.ALIGN_R) is True
+    assert nwGUI.docEditor.getText() == ">> Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 8
 
     # Other Checks
     # ============
@@ -923,6 +1092,72 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumTex
     # qtbot.stopForInteraction()
 
 # END Test testGuiEditor_BlockFormatting
+
+
+@pytest.mark.gui
+def testGuiEditor_Tags(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
+    """Test the document editor tags functionality.
+    """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
+
+    # Open project
+    sHandle = "8c659a11cd429"
+    assert nwGUI.openProject(nwMinimal) is True
+    assert nwGUI.openDocument(sHandle) is True
+    qtbot.wait(stepDelay)
+
+    # Create Scene
+    theText = "### A Scene\n\n@char: Jane, John\n\n" + ipsumText[0] + "\n\n"
+    assert nwGUI.docEditor.replaceText(theText) is True
+
+    # Create Character
+    theText = "### Jane Doe\n\n@tag: Jane\n\n" + ipsumText[1] + "\n\n"
+    cHandle = nwGUI.theProject.newFile("Jane Doe", nwItemClass.CHARACTER, "afb3043c7b2b3")
+    assert nwGUI.openDocument(cHandle) is True
+    assert nwGUI.docEditor.replaceText(theText) is True
+    assert nwGUI.saveDocument() is True
+    assert nwGUI.treeView.revealNewTreeItem(cHandle)
+    nwGUI.docEditor.updateTagHighLighting()
+
+    # Follow Tag
+    # ==========
+    assert nwGUI.openDocument(sHandle) is True
+
+    # Empty Block
+    assert nwGUI.docEditor.setCursorLine(1) is True
+    assert nwGUI.docEditor._followTag() is False
+
+    # Not On Tag
+    assert nwGUI.docEditor.setCursorLine(0) is True
+    assert nwGUI.docEditor._followTag() is False
+
+    # On Tag Keyword
+    assert nwGUI.docEditor.setCursorPosition(15) is True
+    assert nwGUI.docEditor._followTag() is False
+
+    # On Unknown Tag
+    assert nwGUI.docEditor.setCursorPosition(28) is True
+    assert nwGUI.docEditor._followTag() is True
+    assert nwGUI.docViewer._docHandle is None
+
+    # On Known Tag, No Follow
+    assert nwGUI.docEditor.setCursorPosition(22) is True
+    assert nwGUI.docEditor._followTag(loadTag=False) is True
+    assert nwGUI.docViewer._docHandle is None
+
+    # On Known Tag, Follow
+    assert nwGUI.docEditor.setCursorPosition(22) is True
+    assert nwGUI.docViewer._docHandle is None
+    assert nwGUI.docEditor._followTag(loadTag=True) is True
+    assert nwGUI.docViewer._docHandle == cHandle
+    assert nwGUI.closeDocViewer() is True
+    assert nwGUI.docViewer._docHandle is None
+
+    # qtbot.stopForInteraction()
+
+# END Test testGuiEditor_Tags
 
 
 @pytest.mark.gui
