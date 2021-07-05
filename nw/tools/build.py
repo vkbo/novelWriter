@@ -726,7 +726,7 @@ class GuiBuildNovel(QDialog):
                     bldObj.doPostProcessing()
 
             except Exception:
-                logger.error("Failed to build document '%s'" % tItem.itemHandle)
+                logger.error("Failed to build document '%s'", tItem.itemHandle)
                 nw.logException()
                 if isPreview:
                     self.docView.setText((
@@ -743,7 +743,7 @@ class GuiBuildNovel(QDialog):
             bldObj.closeDocument()
 
         tEnd = int(time())
-        logger.debug("Built project in %.3f ms" % (1000*(tEnd - tStart)))
+        logger.debug("Built project in %.3f ms", 1000*(tEnd - tStart))
 
         if bldObj.errData:
             self.theParent.makeAlert([

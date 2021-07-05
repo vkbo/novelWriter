@@ -402,7 +402,7 @@ def safeMakeDir(thePath):
     try:
         os.mkdir(thePath)
     except Exception:
-        logger.error("Could not create: %s" % str(thePath))
+        logger.error("Could not create: %s", str(thePath))
         nw.logException()
         return False
 
@@ -419,7 +419,7 @@ def safeUnlink(thePath):
         if os.path.isfile(thePath):
             os.unlink(thePath)
     except Exception:
-        logger.error("Could not unlink: %s" % str(thePath))
+        logger.error("Could not unlink: %s", str(thePath))
         nw.logException()
         return False
 
@@ -433,6 +433,6 @@ def safeFileRead(theFile, defaultVal=""):
         with open(theFile, mode="r", encoding="utf-8") as inFile:
             return inFile.read()
     except Exception:
-        logger.error("Could not read: %s" % str(theFile))
+        logger.error("Could not read: %s", str(theFile))
         nw.logException()
         return defaultVal

@@ -97,7 +97,7 @@ class NWDoc():
         docPath = os.path.join(docBase, docFile)
         self._fileLoc = docPath
 
-        logger.debug("Opening document: %s" % docFile)
+        logger.debug("Opening document: %s", docFile)
 
         theText = ""
         self._docMeta = {}
@@ -150,7 +150,7 @@ class NWDoc():
         docPath = os.path.join(docBase, docFile)
         docTemp = os.path.join(docBase, docFile+"~")
 
-        logger.debug("Saving document: %s" % docFile)
+        logger.debug("Saving document: %s", docFile)
 
         # DocMeta line
         if self._theItem is None:
@@ -279,7 +279,7 @@ class NWDoc():
             self.rebuildVersions()
             return theList
 
-        logger.debug("Found %d version(s) of document %s" % (len(theList), self._docHandle))
+        logger.debug("Found %d version(s) of document '%s'", len(theList), self._docHandle)
 
         return theList
 
@@ -322,7 +322,7 @@ class NWDoc():
         with open(dataFile, mode="w", encoding="utf-8") as outFile:
             outFile.write(versData)
 
-        logger.debug("Recreated %d records in %s/versions.dat" % (versCount, self._docHandle))
+        logger.debug("Recreated %d records in %s/versions.dat", versCount, self._docHandle)
 
         return True
 
@@ -334,7 +334,7 @@ class NWDoc():
             return False
 
         if self._theItem.sessionBak:
-            logger.verbose("Already made a session copy of %s" % self._docHandle)
+            logger.verbose("Already made a session copy of '%s'", self._docHandle)
             return True
 
         self.theProject.ensureFolderStructure()
@@ -351,7 +351,7 @@ class NWDoc():
         safeUnlink(bakPath)
         shutil.copy2(docPath, bakPath)
 
-        logger.debug("Created session copy: %s" % bakFile)
+        logger.debug("Created session copy: %s", bakFile)
 
         self._theItem.setSessionBackup(True)
 
@@ -400,10 +400,10 @@ class NWDoc():
                         outFile.write("%11s  %19s  %s\n" % (
                             versionSuffix, formatTimeStamp(metaTime), str(theMessage)
                         ))
-                    logger.debug("Saved version file for %s" % self._docHandle)
+                    logger.debug("Saved version file for '%s'", self._docHandle)
 
                 except Exception:
-                    logger.error("Failed to save version file: %s" % versFile)
+                    logger.error("Failed to save version file: %s", versFile)
                     nw.logException()
                     return False
 

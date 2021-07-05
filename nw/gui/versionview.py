@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Version Tree
 ==============================
@@ -40,6 +39,7 @@ from nw.core import NWDoc
 from nw.enum import nwAlert
 
 logger = logging.getLogger(__name__)
+
 
 class GuiVersionView(QWidget):
 
@@ -159,7 +159,7 @@ class GuiVersionView(QWidget):
     def doUpdateDocument(self, tHandle):
         """The editor's document handle has changed.
         """
-        logger.debug("Refreshing version widget with %s" % tHandle)
+        logger.debug("Refreshing version widget with '%s'", tHandle)
         self._updateDocument(tHandle)
         self.treeView.populateTree(tHandle)
         return
@@ -210,6 +210,7 @@ class GuiVersionView(QWidget):
         return
 
 # END Class GuiVersionView
+
 
 class GuiVersionTree(QTreeWidget):
 
@@ -389,7 +390,7 @@ class GuiVersionTree(QTreeWidget):
     def showVersionDocument(self, theVersion):
         """Open a version document in the main document viewer.
         """
-        logger.verbose("Viewing document version %s" % str(theVersion))
+        logger.verbose("Viewing document version %s", str(theVersion))
         self.theParent.viewDocument(self._docHandle, tVersion=theVersion)
         return
 
@@ -398,19 +399,19 @@ class GuiVersionTree(QTreeWidget):
         viewer. The diff is generated against the currently open
         document.
         """
-        logger.verbose("Diffing document version %s" % str(theVersion))
+        logger.verbose("Diffing document version %s", str(theVersion))
         return
 
     def restoreVersionDocument(self, theVersion):
         """Restore a previous version over the currently open document.
         """
-        logger.verbose("Restoring document version %s" % str(theVersion))
+        logger.verbose("Restoring document version %s", str(theVersion))
         return
 
     def deleteVersionDocument(self, theVersion):
         """Delete a version document.
         """
-        logger.verbose("Deleting document version %s" % str(theVersion))
+        logger.verbose("Deleting document version %s", str(theVersion))
         return
 
     ##
@@ -432,6 +433,7 @@ class GuiVersionTree(QTreeWidget):
         return
 
 # END Class GuiVersionTree
+
 
 class GuiVersionTreeMenu(QMenu):
 

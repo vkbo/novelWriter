@@ -757,7 +757,7 @@ class GuiDocEditor(QTextEdit):
             logger.error("Not a document action")
             return False
 
-        logger.verbose("Requesting action: %s" % theAction.name)
+        logger.verbose("Requesting action: %s", theAction.name)
 
         self._allowAutoReplace(False)
         if theAction == nwDocAction.UNDO:
@@ -1731,10 +1731,10 @@ class GuiDocEditor(QTextEdit):
                 return False
 
             if loadTag:
-                logger.verbose("Attempting to follow tag '%s'" % theWord)
+                logger.verbose("Attempting to follow tag '%s'", theWord)
                 self.theParent.docViewer.loadFromTag(theWord)
             else:
-                logger.verbose("Potential tag '%s'" % theWord)
+                logger.verbose("Potential tag '%s'", theWord)
 
             return True
 

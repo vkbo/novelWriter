@@ -1487,7 +1487,7 @@ class NWProject():
         """
         theEpoch = datetime.datetime(2000, 1, 1, tzinfo=datetime.timezone.utc).timestamp()
         self.sessionID = "%08x" % int(self.projOpened - theEpoch)
-        logger.verbose("Session ID is %s" % self.sessionID)
+        logger.verbose("Session ID is %s", self.sessionID)
         return
 
     ##
