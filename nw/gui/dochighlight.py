@@ -261,11 +261,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         """Loop through all blocks and rehighlight those of a given
         content type.
         """
-        qDocument = self.document()
-        nBlocks = qDocument.blockCount()
+        qDoc = self.document()
+        nBlocks = qDoc.blockCount()
         bfTime = time()
         for i in range(nBlocks):
-            theBlock = qDocument.findBlockByNumber(i)
+            theBlock = qDoc.findBlockByNumber(i)
             if theBlock.userState() & theType > 0:
                 self.rehighlightBlock(theBlock)
         afTime = time()

@@ -61,7 +61,6 @@ class GuiDocViewer(QTextBrowser):
 
         # Internal Variables
         self._docHandle = None
-        self._qDocument = self.document()
 
         # Settings
         self.setMinimumWidth(self.mainConf.pxInt(300))
@@ -106,7 +105,7 @@ class GuiDocViewer(QTextBrowser):
         theFont = QFont()
         if self.mainConf.textFont is None:
             # If none is defined, set the default back to config
-            self.mainConf.textFont = self._qDocument.defaultFont().family()
+            self.mainConf.textFont = self.document().defaultFont().family()
         theFont.setFamily(self.mainConf.textFont)
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
@@ -127,11 +126,11 @@ class GuiDocViewer(QTextBrowser):
         self.docFooter.matchColours()
 
         # Set default text margins
-        self._qDocument.setDocumentMargin(0)
+        self.document().setDocumentMargin(0)
         theOpt = QTextOption()
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
-        self._qDocument.setDefaultTextOption(theOpt)
+        self.document().setDefaultTextOption(theOpt)
 
         # Scroll bars
         if self.mainConf.hideVScroll:
@@ -234,7 +233,7 @@ class GuiDocViewer(QTextBrowser):
     def redrawText(self):
         """Redraw the text by marking the document content as "dirty".
         """
-        self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
+        self.document().markContentsDirty(0, self.document().characterCount())
         self.updateDocMargins()
         return
 
@@ -373,7 +372,7 @@ class GuiDocViewer(QTextBrowser):
         if not isinstance(theLine, int):
             return False
         if theLine >= 0:
-            theBlock = self._qDocument.findBlockByLineNumber(theLine)
+            theBlock = self.document().findBlockByLineNumber(theLine)
             if theBlock:
                 self.setCursorPosition(theBlock.position())
                 logger.verbose("Cursor moved to line %d", theLine)
@@ -563,7 +562,7 @@ class GuiDocViewer(QTextBrowser):
             mColG=self.theTheme.colMod[1],
             mColB=self.theTheme.colMod[2],
         )
-        self._qDocument.setDefaultStyleSheet(styleSheet)
+        self.document().setDefaultStyleSheet(styleSheet)
 
         return True
 
