@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Project Settings
 ==================================
@@ -27,8 +26,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import logging
 
-from PyQt5.QtCore import Qt, QLocale
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
+from PyQt5.QtCore import Qt, QLocale
 from PyQt5.QtWidgets import (
     QHBoxLayout, QVBoxLayout, QLineEdit, QPlainTextEdit, QLabel, QWidget,
     QDialogButtonBox, QPushButton, QColorDialog, QTreeWidget, QTreeWidgetItem,
@@ -39,6 +38,7 @@ from nw.enum import nwAlert
 from nw.gui.custom import QSwitch, PagedDialog, QConfigLayout
 
 logger = logging.getLogger(__name__)
+
 
 class GuiProjectSettings(PagedDialog):
 
@@ -156,6 +156,7 @@ class GuiProjectSettings(PagedDialog):
 
 # END Class GuiProjectSettings
 
+
 class GuiProjectEditMain(QWidget):
 
     def __init__(self, theParent, theProject):
@@ -238,6 +239,7 @@ class GuiProjectEditMain(QWidget):
         return
 
 # END Class GuiProjectEditMain
+
 
 class GuiProjectEditStatus(QWidget):
 
@@ -391,15 +393,15 @@ class GuiProjectEditStatus(QWidget):
         """
         selItem = self._getSelectedItem()
         if selItem is not None:
-            iRow   = self.listBox.indexOfTopLevelItem(selItem)
+            iRow = self.listBox.indexOfTopLevelItem(selItem)
             selIdx = selItem.data(self.COL_LABEL, Qt.UserRole)
             if self.colCounts[selIdx] == 0:
                 self.listBox.takeTopLevelItem(iRow)
                 self.colChanged = True
             else:
-                self.theParent.makeAlert(
-                    self.tr("Cannot delete a status item that is in use."), nwAlert.ERROR
-                )
+                self.theParent.makeAlert(self.tr(
+                    "Cannot delete a status item that is in use."
+                ), nwAlert.ERROR)
         return
 
     def _saveItem(self):
@@ -486,6 +488,7 @@ class GuiProjectEditStatus(QWidget):
             return self.tr("Used by {0} items").format(nUse)
 
 # END Class GuiProjectEditStatus
+
 
 class GuiProjectEditReplace(QWidget):
 
@@ -623,8 +626,8 @@ class GuiProjectEditReplace(QWidget):
         if selItem is None:
             return False
 
-        newKey  = self.editKey.text()
-        newVal  = self.editValue.text()
+        newKey = self.editKey.text()
+        newVal = self.editValue.text()
         saveKey = self._stripNotAllowed(newKey)
 
         if len(saveKey) > 0 and len(newVal) > 0:

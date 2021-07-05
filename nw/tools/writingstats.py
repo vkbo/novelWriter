@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Writing Statistics
 ====================================
@@ -25,14 +24,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
-import json
 import os
+import json
+import logging
 
 from datetime import datetime
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QCursor
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
     QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
@@ -44,6 +43,7 @@ from nw.constants import nwConst, nwFiles
 from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
+
 
 class GuiWritingStats(QDialog):
 
@@ -132,7 +132,7 @@ class GuiWritingStats(QDialog):
         self.barImage.fill(self.palette().highlight().color())
 
         # Session Info
-        self.infoBox  = QGroupBox(self.tr("Sum Totals"), self)
+        self.infoBox = QGroupBox(self.tr("Sum Totals"), self)
         self.infoForm = QGridLayout(self)
         self.infoBox.setLayout(self.infoForm)
 
@@ -186,7 +186,7 @@ class GuiWritingStats(QDialog):
         # Filter Options
         sPx = self.theTheme.baseIconSize
 
-        self.filterBox  = QGroupBox(self.tr("Filters"), self)
+        self.filterBox = QGroupBox(self.tr("Filters"), self)
         self.filterForm = QGridLayout(self)
         self.filterBox.setLayout(self.filterForm)
 
@@ -382,7 +382,7 @@ class GuiWritingStats(QDialog):
         errMsg = ""
 
         try:
-            with open(savePath, mode="w", encoding="utf8") as outFile:
+            with open(savePath, mode="w", encoding="utf-8") as outFile:
                 if dataFmt == self.FMT_JSON:
                     jsonData = []
                     for _, sD, tT, wD, wA, wB, tI in self.filterData:
@@ -412,17 +412,13 @@ class GuiWritingStats(QDialog):
 
         # Report to user
         if wSuccess:
-            self.theParent.makeAlert(
-                "%s file successfully written to:<br>%s" % (
-                    textFmt, savePath
-                ), nwAlert.INFO
-            )
+            self.theParent.makeAlert([
+                self.tr("{0} file successfully written to:").format(textFmt), savePath
+            ], nwAlert.INFO)
         else:
-            self.theParent.makeAlert(
-                "Failed to write %s file.<br>%s" % (
-                    textFmt, errMsg
-                ), nwAlert.ERROR
-            )
+            self.theParent.makeAlert([
+                self.tr("Failed to write {0} file.").format(textFmt), errMsg
+            ], nwAlert.ERROR)
 
         return wSuccess
 
@@ -440,8 +436,8 @@ class GuiWritingStats(QDialog):
 
         ttNovel = 0
         ttNotes = 0
-        ttTime  = 0
-        ttIdle  = 0
+        ttTime = 0
+        ttIdle = 0
 
         logFile = os.path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
         if not os.path.isfile(logFile):
@@ -449,7 +445,7 @@ class GuiWritingStats(QDialog):
             return False
 
         try:
-            with open(logFile, mode="r", encoding="utf8") as inFile:
+            with open(logFile, mode="r", encoding="utf-8") as inFile:
                 for inLine in inFile:
                     if inLine.startswith("#"):
                         if inLine.startswith("# Offset"):
@@ -487,9 +483,9 @@ class GuiWritingStats(QDialog):
                     self.logData.append((dStart, sDiff, wcNovel, wcNotes, sIdle))
 
         except Exception as e:
-            self.theParent.makeAlert(
-                [self.tr("Failed to read session log file."), str(e)], nwAlert.ERROR
-            )
+            self.theParent.makeAlert([
+                self.tr("Failed to read session log file."), str(e)
+            ], nwAlert.ERROR)
             return False
 
         ttWords = ttNovel + ttNotes
@@ -505,7 +501,7 @@ class GuiWritingStats(QDialog):
     #  Slots
     ##
 
-    def _updateListBox(self, dummyVar=None):
+    def _updateListBox(self):
         """Load/reload the content of the list box. The dummyVar
         variable captures the variable sent from the widgets connecting
         to it and discards it.
@@ -574,7 +570,7 @@ class GuiWritingStats(QDialog):
             if isFirst:
                 # Subtract the offset from the first list entry
                 dwTotal -= self.wordOffset
-                dwTotal = max(dwTotal, 1) # Don't go zero or negative
+                dwTotal = max(dwTotal, 1)  # Don't go zero or negative
                 isFirst = False
 
             if groupByDay:

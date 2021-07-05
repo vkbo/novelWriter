@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – HTML Text Converter
 =================================
@@ -31,18 +30,19 @@ from nw.constants import nwKeyWords, nwLabels, nwHtmlUnicode
 
 logger = logging.getLogger(__name__)
 
+
 class ToHtml(Tokenizer):
 
-    M_PREVIEW = 0 # Tweak output for the DocViewer
-    M_EXPORT  = 1 # Tweak output for saving to HTML or printing
-    M_EBOOK   = 2 # Tweak output for converting to epub
+    M_PREVIEW = 0  # Tweak output for the DocViewer
+    M_EXPORT  = 1  # Tweak output for saving to HTML or printing
+    M_EBOOK   = 2  # Tweak output for converting to epub
 
     def __init__(self, theProject):
         Tokenizer.__init__(self, theProject)
 
-        self.genMode   = self.M_EXPORT
+        self.genMode = self.M_EXPORT
         self.cssStyles = True
-        self.fullHTML  = []
+        self.fullHTML = []
 
         # Internals
         self._trMap = {}
@@ -59,7 +59,7 @@ class ToHtml(Tokenizer):
         need to make a few changes to formatting, which is managed by
         these flags.
         """
-        self.genMode    = self.M_PREVIEW
+        self.genMode = self.M_PREVIEW
         self.doKeywords = True
         self.doComments = doComments
         self.doSynopsis = doSynopsis
@@ -74,16 +74,13 @@ class ToHtml(Tokenizer):
         return
 
     def setReplaceUnicode(self, doReplace):
-        """Set the translation map to either minimal or full unicode to
+        """Set the translation map to either minimal or full unicode for
         html entities replacement.
         """
         # Control characters must always be replaced
-        self._trMap = str.maketrans({
-            "<" : "&lt;",
-            ">" : "&gt;",
-            "&" : "&amp;",
-        })
-
+        # Angle brackets are replaced later as they are also used in
+        # formatting codes
+        self._trMap = str.maketrans({"&": "&amp;"})
         if doReplace:
             # Extend to all relevant Unicode characters
             self._trMap.update(str.maketrans(nwHtmlUnicode.U_TO_H))
@@ -112,22 +109,22 @@ class ToHtml(Tokenizer):
         to theResult.
         """
         if self.genMode == self.M_PREVIEW:
-            htmlTags = {     # HTML4 + CSS2
-                self.FMT_B_B : "<b>",
-                self.FMT_B_E : "</b>",
-                self.FMT_I_B : "<i>",
-                self.FMT_I_E : "</i>",
-                self.FMT_D_B : "<span style='text-decoration: line-through;'>",
-                self.FMT_D_E : "</span>",
+            htmlTags = {  # HTML4 + CSS2
+                self.FMT_B_B: "<b>",
+                self.FMT_B_E: "</b>",
+                self.FMT_I_B: "<i>",
+                self.FMT_I_E: "</i>",
+                self.FMT_D_B: "<span style='text-decoration: line-through;'>",
+                self.FMT_D_E: "</span>",
             }
         else:
-            htmlTags = {     # HTML5
-                self.FMT_B_B : "<strong>",
-                self.FMT_B_E : "</strong>",
-                self.FMT_I_B : "<em>",
-                self.FMT_I_E : "</em>",
-                self.FMT_D_B : "<del>",
-                self.FMT_D_E : "</del>",
+            htmlTags = {  # HTML5
+                self.FMT_B_B: "<strong>",
+                self.FMT_B_E: "</strong>",
+                self.FMT_I_B: "<em>",
+                self.FMT_I_E: "</em>",
+                self.FMT_D_B: "<del>",
+                self.FMT_D_E: "</del>",
             }
 
         if self.isNovel and self.genMode != self.M_PREVIEW:
@@ -153,6 +150,9 @@ class ToHtml(Tokenizer):
         tmpResult = []
 
         for tType, tLine, tText, tFormat, tStyle in self.theTokens:
+
+            # Replace < and > before adding html tags
+            tText = tText.replace("<", "&lt;").replace(">", "&gt;")
 
             # Styles
             aStyle = []
@@ -180,6 +180,11 @@ class ToHtml(Tokenizer):
                     aStyle.append("margin-bottom: 0;")
                 if tStyle & self.A_Z_TOPMRG:
                     aStyle.append("margin-top: 0;")
+
+                if tStyle & self.A_IND_L:
+                    aStyle.append("margin-left: %dpx;" % self.mainConf.tabWidth)
+                if tStyle & self.A_IND_R:
+                    aStyle.append("margin-right: %dpx;" % self.mainConf.tabWidth)
 
             if len(aStyle) > 0:
                 hStyle = " style='%s'" % (" ".join(aStyle))
@@ -260,7 +265,7 @@ class ToHtml(Tokenizer):
     def saveHTML5(self, savePath):
         """Save the data to an .html file.
         """
-        with open(savePath, mode="w", encoding="utf8") as outFile:
+        with open(savePath, mode="w", encoding="utf-8") as outFile:
             theStyle = self.getStyleSheet()
             theStyle.append("article {width: 800px; margin: 40px auto;}")
             bodyText = "".join(self.fullHTML)
@@ -283,9 +288,9 @@ class ToHtml(Tokenizer):
                 "</body>\n"
                 "</html>\n"
             ).format(
-                projTitle = self.theProject.projName,
-                htmlStyle = "\n".join(theStyle),
-                bodyText = bodyText,
+                projTitle=self.theProject.projName,
+                htmlStyle="\n".join(theStyle),
+                bodyText=bodyText,
             )
             outFile.write(theHtml)
 

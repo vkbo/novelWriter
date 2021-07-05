@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Document Editor
 =================================
@@ -57,6 +56,7 @@ from nw.gui.dochighlight import GuiDocHighlighter
 
 logger = logging.getLogger(__name__)
 
+
 class GuiDocEditor(QTextEdit):
 
     MOVE_KEYS = (
@@ -86,24 +86,24 @@ class GuiDocEditor(QTextEdit):
         self._nwItem     = None
         self._docVers    = []
 
-        self._docChanged = False # Flag for changed status of document
-        self._docHandle  = None  # The handle of the open file
-        self._docHeaders = []    # Record of headers in the file
+        self._docChanged = False  # Flag for changed status of document
+        self._docHandle  = None   # The handle of the open file
+        self._docHeaders = []     # Record of headers in the file
 
-        self._spellCheck = False # Flag for spell checking enabled
-        self._theDict    = None  # The current spell check dictionary
-        self._nonWord    = "\"'" # Characters to not include in spell checking
+        self._spellCheck = False  # Flag for spell checking enabled
+        self._theDict    = None   # The current spell check dictionary
+        self._nonWord    = "\"'"  # Characters to not include in spell checking
 
         # Document Variables
-        self._charCount  = 0     # Character count
-        self._wordCount  = 0     # Word count
-        self._paraCount  = 0     # Paragraph count
-        self._lastEdit   = 0     # Time stamp of last edit
-        self._lastActive = 0     # Time stamp of last activity
-        self._lastFind   = None  # Position of the last found search word
-        self._bigDoc     = False # Flag for very large document size
-        self._doReplace  = False # Switch to temporarily disable auto-replace
-        self._queuePos   = None  # Used for delayed change of cursor position
+        self._charCount  = 0      # Character count
+        self._wordCount  = 0      # Word count
+        self._paraCount  = 0      # Paragraph count
+        self._lastEdit   = 0      # Time stamp of last edit
+        self._lastActive = 0      # Time stamp of last activity
+        self._lastFind   = None   # Position of the last found search word
+        self._bigDoc     = False  # Flag for very large document size
+        self._doReplace  = False  # Switch to temporarily disable auto-replace
+        self._queuePos   = None   # Used for delayed change of cursor position
 
         # Typography
         self._typDQOpen  = '"'
@@ -113,9 +113,9 @@ class GuiDocEditor(QTextEdit):
         self._typPadChar = " "
 
         # Core Elements and Signals
-        self._qDocument = self.document()
-        self._qDocument.contentsChange.connect(self._docChange)
-        self._qDocument.documentLayout().documentSizeChanged.connect(self._docSizeChanged)
+        qDoc = self.document()
+        qDoc.contentsChange.connect(self._docChange)
+        qDoc.documentLayout().documentSizeChanged.connect(self._docSizeChanged)
 
         # Document Title
         self.docHeader = GuiDocEditHeader(self)
@@ -123,7 +123,7 @@ class GuiDocEditor(QTextEdit):
         self.docSearch = GuiDocEditSearch(self)
 
         # Syntax
-        self.hLight = GuiDocHighlighter(self._qDocument, self.theParent)
+        self.hLight = GuiDocHighlighter(qDoc, self.theParent)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -223,9 +223,10 @@ class GuiDocEditor(QTextEdit):
 
         # Set font
         theFont = QFont()
+        qDoc = self.document()
         if self.mainConf.textFont is None:
             # If none is defined, set the default back to config
-            self.mainConf.textFont = self._qDocument.defaultFont().family()
+            self.mainConf.textFont = qDoc.defaultFont().family()
 
         theFont.setFamily(self.mainConf.textFont)
         theFont.setPointSize(self.mainConf.textSize)
@@ -248,7 +249,7 @@ class GuiDocEditor(QTextEdit):
 
         # Set default text margins
         cM = self.mainConf.getTextMargin()
-        self._qDocument.setDocumentMargin(0)
+        qDoc.setDocumentMargin(0)
         self.setViewportMargins(cM, cM, cM, cM)
 
         # Also set the document text options for the document text flow
@@ -261,7 +262,7 @@ class GuiDocEditor(QTextEdit):
         if self.mainConf.showLineEndings:
             theOpt.setFlags(theOpt.flags() | QTextOption.ShowLineAndParagraphSeparators)
 
-        self._qDocument.setDefaultTextOption(theOpt)
+        qDoc.setDefaultTextOption(theOpt)
 
         # Scroll bars
         if self.mainConf.hideVScroll:
@@ -277,7 +278,7 @@ class GuiDocEditor(QTextEdit):
         # Refresh the tab stops
         if self.mainConf.verQtValue >= 51000:
             self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:
+        else:  # pragma: no cover
             self.setTabStopWidth(self.mainConf.getTabWidth())
 
         # Initialise the syntax highlighter
@@ -317,17 +318,14 @@ class GuiDocEditor(QTextEdit):
 
         docSize = len(theDoc)
         if docSize > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert(
-                self.tr(
-                    "The document you are trying to open is too big. "
-                    "The document size is {0} MB. "
-                    "The maximum size allowed is {1} MB."
-                ).format(
-                    f"{docSize/1.0e6:.2f}",
-                    f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-                ),
-                nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "The document you are trying to open is too big. "
+                "The document size is {0} MB. "
+                "The maximum size allowed is {1} MB."
+            ).format(
+                f"{docSize/1.0e6:.2f}",
+                f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
+            ), nwAlert.ERROR)
             self.clearEditor()
             return False
 
@@ -352,7 +350,7 @@ class GuiDocEditor(QTextEdit):
 
         self._allowAutoReplace(True)
         afTime = time()
-        logger.debug("Document highlighted in %.3f ms" % (1000*(afTime-bfTime)))
+        logger.debug("Document highlighted in %.3f ms", 1000*(afTime-bfTime))
 
         self._lastEdit = time()
         self._lastActive = time()
@@ -379,7 +377,6 @@ class GuiDocEditor(QTextEdit):
             self.setCursorLine(tLine)
 
         self.docFooter.updateLineCount()
-        self.lengthLast = self._qDocument.characterCount()
         self._docHeaders = self.theIndex.getHandleHeaders(self._docHandle)
 
         qApp.processEvents()
@@ -387,7 +384,7 @@ class GuiDocEditor(QTextEdit):
         qApp.restoreOverrideCursor()
 
         # This is a hack to fix invisble cursor on an empty document
-        if self._qDocument.characterCount() <= 1:
+        if self.document().characterCount() <= 1:
             self.setPlainText("\n")
             self.setPlainText("")
             self.setCursorPosition(0)
@@ -403,7 +400,7 @@ class GuiDocEditor(QTextEdit):
 
         return True
 
-    def updateTagHighLighting(self, forceBigDoc=False):
+    def updateTagHighLighting(self):
         """Rerun the syntax highlighter on all meta data lines.
         """
         self.hLight.rehighlightByType(GuiDocHighlighter.BLOCK_META)
@@ -412,7 +409,7 @@ class GuiDocEditor(QTextEdit):
     def redrawText(self):
         """Redraw the text by marking the document content as "dirty".
         """
-        self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
+        self.document().markContentsDirty(0, self.document().characterCount())
         self.updateDocMargins()
         return
 
@@ -422,17 +419,14 @@ class GuiDocEditor(QTextEdit):
         """
         docSize = len(theText)
         if docSize > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert(
-                self.tr(
-                    "The text you are trying to add is too big. "
-                    "The text size is {0} MB. "
-                    "The maximum size allowed is {1} MB."
-                ).format(
-                    f"{docSize/1.0e6:.2f}",
-                    f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-                ),
-                nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "The text you are trying to add is too big. "
+                "The text size is {0} MB. "
+                "The maximum size allowed is {1} MB."
+            ).format(
+                f"{docSize/1.0e6:.2f}",
+                f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
+            ), nwAlert.ERROR)
             return False
 
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -453,9 +447,9 @@ class GuiDocEditor(QTextEdit):
 
         tHandle = self._nwItem.itemHandle
         if self._docHandle != tHandle:
-            logger.error("Editor handle %s and item handle %s do not match" % (
-                self._docHandle, tHandle
-            ))
+            logger.error(
+                "Editor handle '%s' and item handle '%s' do not match", self._docHandle, tHandle
+            )
             return False
 
         docText = self.getText()
@@ -547,9 +541,9 @@ class GuiDocEditor(QTextEdit):
 
         tmpDocChanged = self._docChanged
         if self.mainConf.scrollPastEnd:
-            docFrame = self._qDocument.rootFrame().frameFormat()
+            docFrame = self.document().rootFrame().frameFormat()
             docFrame.setBottomMargin(max(0, 0.9*(wH - uM - lM - 4*tB)))
-            self._qDocument.rootFrame().setFrameFormat(docFrame)
+            self.document().rootFrame().setFrameFormat(docFrame)
 
         # This is needed as the setFrameFormat function itself will
         # trigger the contetsChanged signal which sets _docChanged, so we
@@ -591,7 +585,7 @@ class GuiDocEditor(QTextEdit):
     def isEmpty(self):
         """Wrapper function to check if the current document is empty.
         """
-        return self._qDocument.isEmpty()
+        return self.document().isEmpty()
 
     def currentDictionary(self):
         """Return the current dictionary object.
@@ -611,9 +605,9 @@ class GuiDocEditor(QTextEdit):
         See: https://doc.qt.io/qt-5/qtextdocument.html#toPlainText
         """
         if self.mainConf.verQtValue >= 50900:
-            theText = self._qDocument.toRawText()
-            theText = theText.replace(nwUnicode.U_LSEP, "\n") # Line separators
-            theText = theText.replace(nwUnicode.U_PSEP, "\n") # Paragraph separators
+            theText = self.document().toRawText()
+            theText = theText.replace(nwUnicode.U_LSEP, "\n")  # Line separators
+            theText = theText.replace(nwUnicode.U_PSEP, "\n")  # Paragraph separators
         else:
             theText = self.toPlainText()
         return theText
@@ -643,7 +637,7 @@ class GuiDocEditor(QTextEdit):
         if not isinstance(thePosition, int):
             return False
 
-        nChars = self._qDocument.characterCount()
+        nChars = self.document().characterCount()
         if nChars > 1:
             theCursor = self.textCursor()
             theCursor.setPosition(min(max(thePosition, 0), nChars-1))
@@ -667,11 +661,11 @@ class GuiDocEditor(QTextEdit):
             return False
 
         if theLine >= 0:
-            theBlock = self._qDocument.findBlockByLineNumber(theLine)
+            theBlock = self.document().findBlockByLineNumber(theLine)
             if theBlock:
                 self.setCursorPosition(theBlock.position())
                 self.docFooter.updateLineCount()
-                logger.verbose("Cursor moved to line %d" % theLine)
+                logger.verbose("Cursor moved to line %d", theLine)
 
         return True
 
@@ -718,14 +712,15 @@ class GuiDocEditor(QTextEdit):
         if not self._bigDoc:
             self.spellCheckDocument()
 
-        logger.verbose("Spell check is set to %s" % str(theMode))
+        logger.verbose("Spell check is set to '%s'", str(theMode))
 
         return True
 
     def spellCheckDocument(self):
         """Rerun the highlighter to update spell checking status of the
         currently loaded text. The fastest way to do this, at least as
-        of Qt 5.13, is to clear the text and put it back.
+        of Qt 5.13, is to clear the text and put it back. This clears
+        the undo stack, so we only do it for big documents.
         """
         logger.verbose("Running spell checker")
         if self._spellCheck:
@@ -738,7 +733,7 @@ class GuiDocEditor(QTextEdit):
                 self.hLight.rehighlight()
             qApp.restoreOverrideCursor()
             afTime = time()
-            logger.debug("Document highlighted in %.3f ms" % (1000*(afTime-bfTime)))
+            logger.debug("Document highlighted in %.3f ms", 1000*(afTime-bfTime))
             self.theParent.statusBar.setStatus(self.tr("Spell check complete"))
 
         return True
@@ -754,10 +749,15 @@ class GuiDocEditor(QTextEdit):
         passed to it without having to consider the internal logic of
         this class when calling these actions from other classes.
         """
-        logger.verbose("Requesting action: %s" % theAction.name)
         if self._docHandle is None:
             logger.error("No document open")
             return False
+
+        if not isinstance(theAction, nwDocAction):
+            logger.error("Not a document action")
+            return False
+
+        logger.verbose("Requesting action: %s" % theAction.name)
 
         self._allowAutoReplace(False)
         if theAction == nwDocAction.UNDO:
@@ -802,8 +802,18 @@ class GuiDocEditor(QTextEdit):
             self._replaceQuotes("\"", self._typDQOpen, self._typDQClose)
         elif theAction == nwDocAction.RM_BREAKS:
             self._removeInParLineBreaks()
+        elif theAction == nwDocAction.ALIGN_L:
+            self._formatBlock(nwDocAction.ALIGN_L)
+        elif theAction == nwDocAction.ALIGN_C:
+            self._formatBlock(nwDocAction.ALIGN_C)
+        elif theAction == nwDocAction.ALIGN_R:
+            self._formatBlock(nwDocAction.ALIGN_R)
+        elif theAction == nwDocAction.INDENT_L:
+            self._formatBlock(nwDocAction.INDENT_L)
+        elif theAction == nwDocAction.INDENT_R:
+            self._formatBlock(nwDocAction.INDENT_R)
         else:
-            logger.debug("Unknown or unsupported document action %s" % str(theAction))
+            logger.debug("Unknown or unsupported document action '%s'", str(theAction))
             self._allowAutoReplace(True)
             return False
 
@@ -876,15 +886,15 @@ class GuiDocEditor(QTextEdit):
         If the insert line is not blank, a new line is started.
         """
         if keyWord not in nwKeyWords.VALID_KEYS:
-            logger.error("Invalid keyword '%s'" % keyWord)
+            logger.error("Invalid keyword '%s'", keyWord)
             return False
 
-        logger.verbose("Inserting keyword '%s'" % keyWord)
+        logger.verbose("Inserting keyword '%s'", keyWord)
 
         theCursor = self.textCursor()
         theBlock = theCursor.block()
         if not theBlock.isValid():
-            logger.error("Failed to insert keyword '%s'" % keyWord)
+            logger.error("Failed to insert keyword '%s'", keyWord)
             return False
 
         theCursor.beginEditBlock()
@@ -1017,16 +1027,13 @@ class GuiDocEditor(QTextEdit):
         self._lastEdit = time()
         self._lastFind = None
 
-        if self._qDocument.characterCount() > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert(
-                self.tr(
-                    "The document has grown too big and you cannot add more text to it. "
-                    "The maximum size of a single novelWriter document is {0} MB."
-                ).format(
-                    f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-                ),
-                nwAlert.ERROR
-            )
+        if self.document().characterCount() > nwConst.MAX_DOCSIZE:
+            self.theParent.makeAlert(self.tr(
+                "The document has grown too big and you cannot add more text to it. "
+                "The maximum size of a single novelWriter document is {0} MB."
+            ).format(
+                f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
+            ), nwAlert.ERROR)
             self.undo()
             return
 
@@ -1037,7 +1044,7 @@ class GuiDocEditor(QTextEdit):
             self.wcTimer.start()
 
         if self._doReplace and chrAdd == 1:
-            self._docAutoReplace(self._qDocument.findBlock(thePos))
+            self._docAutoReplace(self.document().findBlock(thePos))
 
         return
 
@@ -1098,7 +1105,7 @@ class GuiDocEditor(QTextEdit):
         # Spell Checking
         # ==============
 
-        posCursor  = self.cursorForPosition(thePos)
+        posCursor = self.cursorForPosition(thePos)
         spellCheck = self._spellCheck
 
         if posCursor.block().text().startswith("@"):
@@ -1110,7 +1117,7 @@ class GuiDocEditor(QTextEdit):
             spellCheck &= theWord != ""
 
         if spellCheck:
-            logger.verbose("Looking up '%s' in the dictionary" % theWord)
+            logger.verbose("Looking up '%s' in the dictionary", theWord)
             spellCheck &= not self._theDict.checkWord(theWord)
 
         if spellCheck:
@@ -1162,7 +1169,7 @@ class GuiDocEditor(QTextEdit):
         wants to add a word to the project dictionary.
         """
         theWord = theCursor.selectedText().strip().strip(self._nonWord)
-        logger.debug("Added '%s' to project dictionary" % theWord)
+        logger.debug("Added '%s' to project dictionary", theWord)
         self._theDict.addWord(theWord)
         self.hLight.setDict(self._theDict)
         self.hLight.rehighlightBlock(theCursor.block())
@@ -1206,7 +1213,7 @@ class GuiDocEditor(QTextEdit):
         # Must not be emitted if docHandle is None!
         self.docCountsChanged.emit(self._docHandle, cCount, wCount, pCount)
 
-        self._checkDocSize(self._qDocument.characterCount())
+        self._checkDocSize(self.document().characterCount())
         self.docFooter.updateCounts()
 
         return
@@ -1219,15 +1226,15 @@ class GuiDocEditor(QTextEdit):
         moved to has been drawn before the move is made.
         """
         if self._queuePos is not None:
-            thePos = self._qDocument.documentLayout().hitTest(
+            thePos = self.document().documentLayout().hitTest(
                 QPointF(theSize.width(), theSize.height()), Qt.FuzzyHit
             )
             if self._queuePos <= thePos:
-                logger.verbose("Allowed cursor move to %d <= %d" % (self._queuePos, thePos))
+                logger.verbose("Allowed cursor move to %d <= %d", self._queuePos, thePos)
                 self.setCursorPosition(self._queuePos)
                 self._queuePos = None
             else:
-                logger.verbose("Denied cursor move to %d > %d" % (self._queuePos, thePos))
+                logger.verbose("Denied cursor move to %d > %d", self._queuePos, thePos)
         return
 
     ##
@@ -1280,7 +1287,7 @@ class GuiDocEditor(QTextEdit):
             findOpt |= QTextDocument.FindWholeWords
 
         searchFor = self.docSearch.getSearchObject()
-        wasFound  = self.find(searchFor, findOpt)
+        wasFound = self.find(searchFor, findOpt)
         if not wasFound:
             if self.docSearch.doNextFile and not goBack:
                 self.theParent.openNextDocument(
@@ -1338,7 +1345,7 @@ class GuiDocEditor(QTextEdit):
             return
 
         searchFor = self.docSearch.getSearchText()
-        replWith  = self.docSearch.getReplaceText()
+        replWith = self.docSearch.getReplaceText()
 
         if self.docSearch.doMatchCap:
             replWith = transferCase(theCursor.selectedText(), replWith)
@@ -1358,15 +1365,341 @@ class GuiDocEditor(QTextEdit):
             theCursor.endEditBlock()
             theCursor.setPosition(theCursor.selectionEnd())
             self.setTextCursor(theCursor)
-            logger.verbose("Replaced occurrence of '%s' with '%s' on line %d" % (
+            logger.verbose(
+                "Replaced occurrence of '%s' with '%s' on line %d",
                 searchFor, replWith, theCursor.blockNumber()
-            ))
+            )
         else:
             logger.error("The selected text is not a search result, skipping replace")
 
         self.findNext()
 
         return
+
+    ##
+    #  Internal Functions : Text Manipulation
+    ##
+
+    def _toggleFormat(self, fLen, fChar):
+        """Toggle the formatting of a specific type for a piece of text.
+        If more than one block is selected, the formatting is applied to
+        the first block.
+        """
+        theCursor = self._autoSelect()
+        if not theCursor.hasSelection():
+            logger.warning("No selection made, nothing to do")
+            return False
+
+        posS = theCursor.selectionStart()
+        posE = theCursor.selectionEnd()
+
+        blockS = self.document().findBlock(posS)
+        blockE = self.document().findBlock(posE)
+
+        if blockS != blockE:
+            posE = blockS.position() + blockS.length() - 1
+            theCursor.clearSelection()
+            theCursor.setPosition(posS, QTextCursor.MoveAnchor)
+            theCursor.setPosition(posE, QTextCursor.KeepAnchor)
+            self.setTextCursor(theCursor)
+
+        numB = 0
+        for n in range(fLen):
+            if self.document().characterAt(posS-n-1) == fChar:
+                numB += 1
+            else:
+                break
+
+        numA = 0
+        for n in range(fLen):
+            if self.document().characterAt(posE+n) == fChar:
+                numA += 1
+            else:
+                break
+
+        if fLen == min(numA, numB):
+            self._clearSurrounding(theCursor, fLen)
+        else:
+            self._wrapSelection(fChar*fLen)
+
+        return True
+
+    def _clearSurrounding(self, theCursor, nChars):
+        """Clears n characters before and after the cursor.
+        """
+        if not theCursor.hasSelection():
+            logger.warning("No selection made, nothing to do")
+            return False
+
+        posS = theCursor.selectionStart()
+        posE = theCursor.selectionEnd()
+        theCursor.clearSelection()
+        theCursor.beginEditBlock()
+        theCursor.setPosition(posS)
+        for i in range(nChars):
+            theCursor.deletePreviousChar()
+        theCursor.setPosition(posE)
+        for i in range(nChars):
+            theCursor.deletePreviousChar()
+        theCursor.endEditBlock()
+        theCursor.clearSelection()
+
+        return True
+
+    def _wrapSelection(self, tBefore, tAfter=None):
+        """Wraps the selected text in whatever is in tBefore and tAfter.
+        If there is no selection, the autoSelect setting decides the
+        action. AutoSelect will select the word under the cursor before
+        wrapping it. If this feature is disabled, nothing is done.
+        """
+        if tAfter is None:
+            tAfter = tBefore
+
+        theCursor = self._autoSelect()
+        if not theCursor.hasSelection():
+            logger.warning("No selection made, nothing to do")
+            return False
+
+        posS = theCursor.selectionStart()
+        posE = theCursor.selectionEnd()
+
+        qDoc = self.document()
+        blockS = qDoc.findBlock(posS)
+        blockE = qDoc.findBlock(posE)
+        if blockS != blockE:
+            posE = blockS.position() + blockS.length() - 1
+
+        theCursor.clearSelection()
+        theCursor.beginEditBlock()
+        theCursor.setPosition(posE)
+        theCursor.insertText(tAfter)
+        theCursor.setPosition(posS)
+        theCursor.insertText(tBefore)
+        theCursor.endEditBlock()
+
+        theCursor.setPosition(posE + len(tBefore), QTextCursor.MoveAnchor)
+        theCursor.setPosition(posS + len(tBefore), QTextCursor.KeepAnchor)
+        self.setTextCursor(theCursor)
+
+        return True
+
+    def _replaceQuotes(self, sQuote, oQuote, cQuote):
+        """Replace all straight quotes in the selected text.
+        """
+        theCursor = self.textCursor()
+        if not theCursor.hasSelection():
+            self.theParent.makeAlert(self.tr(
+                "Please select some text before calling replace quotes."
+            ), nwAlert.ERROR)
+            return False
+
+        posS = theCursor.selectionStart()
+        posE = theCursor.selectionEnd()
+        closeCheck = (
+            " ", "\n", nwUnicode.U_LSEP, nwUnicode.U_PSEP
+        )
+
+        self._allowAutoReplace(False)
+        for posC in range(posS, posE+1):
+            theCursor.setPosition(posC)
+            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
+            selText = theCursor.selectedText()
+
+            nS = len(selText)
+            if nS == 2:
+                pC = selText[0]
+                cC = selText[1]
+            elif nS == 1:
+                pC = " "
+                cC = selText[0]
+            else:  # pragma: no cover
+                continue
+
+            if cC != sQuote:
+                continue
+
+            theCursor.clearSelection()
+            theCursor.setPosition(posC)
+            if pC in closeCheck:
+                theCursor.beginEditBlock()
+                theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
+                theCursor.insertText(oQuote)
+                theCursor.endEditBlock()
+            else:
+                theCursor.beginEditBlock()
+                theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
+                theCursor.insertText(cQuote)
+                theCursor.endEditBlock()
+
+        self._allowAutoReplace(True)
+
+        return True
+
+    def _formatBlock(self, docAction):
+        """Changes the block format of the block under the cursor.
+        """
+        theCursor = self.textCursor()
+        theBlock = theCursor.block()
+        if not theBlock.isValid():
+            logger.debug("Invalid block selected for action '%s'", str(docAction))
+            return False
+
+        theText = theBlock.text()
+        if len(theText.strip()) == 0:
+            logger.debug("Empty block selected for action '%s'", str(docAction))
+            return False
+
+        # Remove existing format first, if any
+        if theText.startswith("@"):
+            logger.error("Cannot apply block format to keyword/value line")
+            return False
+        elif theText.startswith("% "):
+            newText = theText[2:]
+            cOffset = 2
+            if docAction == nwDocAction.BLOCK_COM:
+                docAction = nwDocAction.BLOCK_TXT
+        elif theText.startswith("%"):
+            newText = theText[1:]
+            cOffset = 1
+            if docAction == nwDocAction.BLOCK_COM:
+                docAction = nwDocAction.BLOCK_TXT
+        elif theText.startswith("# "):
+            newText = theText[2:]
+            cOffset = 2
+        elif theText.startswith("## "):
+            newText = theText[3:]
+            cOffset = 3
+        elif theText.startswith("### "):
+            newText = theText[4:]
+            cOffset = 4
+        elif theText.startswith("#### "):
+            newText = theText[5:]
+            cOffset = 5
+        elif theText.startswith(">> "):
+            newText = theText[3:]
+            cOffset = 3
+        elif theText.startswith("> ") and docAction != nwDocAction.INDENT_R:
+            newText = theText[2:]
+            cOffset = 2
+        elif theText.startswith(">>"):
+            newText = theText[2:]
+            cOffset = 2
+        elif theText.startswith(">") and docAction != nwDocAction.INDENT_R:
+            newText = theText[1:]
+            cOffset = 1
+        else:
+            newText = theText
+            cOffset = 0
+
+        # Also remove formatting tags at the end
+        if theText.endswith(" <<"):
+            newText = newText[:-3]
+        elif theText.endswith(" <") and docAction != nwDocAction.INDENT_L:
+            newText = newText[:-2]
+        elif theText.endswith("<<"):
+            newText = newText[:-2]
+        elif theText.endswith("<") and docAction != nwDocAction.INDENT_L:
+            newText = newText[:-1]
+
+        # Apply new format
+        if docAction == nwDocAction.BLOCK_COM:
+            theText = "% "+newText
+            cOffset -= 2
+        elif docAction == nwDocAction.BLOCK_H1:
+            theText = "# "+newText
+            cOffset -= 2
+        elif docAction == nwDocAction.BLOCK_H2:
+            theText = "## "+newText
+            cOffset -= 3
+        elif docAction == nwDocAction.BLOCK_H3:
+            theText = "### "+newText
+            cOffset -= 4
+        elif docAction == nwDocAction.BLOCK_H4:
+            theText = "#### "+newText
+            cOffset -= 5
+        elif docAction == nwDocAction.ALIGN_L:
+            theText = newText+" <<"
+        elif docAction == nwDocAction.ALIGN_C:
+            theText = ">> "+newText+" <<"
+            cOffset -= 3
+        elif docAction == nwDocAction.ALIGN_R:
+            theText = ">> "+newText
+            cOffset -= 3
+        elif docAction == nwDocAction.INDENT_L:
+            theText = "> "+newText
+            cOffset -= 2
+        elif docAction == nwDocAction.INDENT_R:
+            theText = newText+" <"
+        elif docAction == nwDocAction.BLOCK_TXT:
+            theText = newText
+        else:
+            logger.error("Unknown or unsupported block format requested: '%s'", str(docAction))
+            return False
+
+        # Replace the block text
+        theCursor.beginEditBlock()
+        posO = theCursor.position()
+        theCursor.select(QTextCursor.BlockUnderCursor)
+        posS = theCursor.selectionStart()
+        theCursor.removeSelectedText()
+        theCursor.setPosition(posS)
+        if posS > 0:
+            theCursor.insertBlock()
+        theCursor.insertText(theText)
+        if posO - cOffset >= 0:
+            theCursor.setPosition(posO - cOffset)
+        theCursor.endEditBlock()
+        self.setTextCursor(theCursor)
+
+        return True
+
+    def _removeInParLineBreaks(self):
+        """Strip line breaks within paragraphs in the selected text.
+        """
+        theCursor = self.textCursor()
+        theDoc = self.document()
+
+        iS = 0
+        iE = theDoc.blockCount() - 1
+        rS = 0
+        rE = theDoc.characterCount()
+        if theCursor.hasSelection():
+            sBlock = theDoc.findBlock(theCursor.selectionStart())
+            eBlock = theDoc.findBlock(theCursor.selectionEnd())
+            iS = sBlock.blockNumber()
+            iE = eBlock.blockNumber()
+            rS = sBlock.position()
+            rE = eBlock.position() + eBlock.length()
+
+        # Clean up the text
+        currPar = []
+        cleanText = ""
+        for i in range(iS, iE+1):
+            cBlock = theDoc.findBlockByNumber(i)
+            cText = cBlock.text()
+            if cText.strip() == "":
+                if currPar:
+                    cleanText += " ".join(currPar) + "\n\n"
+                else:
+                    cleanText += "\n"
+                currPar = []
+            elif cText.startswith(("# ", "## ", "### ", "#### ", "@", "%")):
+                cleanText += cText + "\n"
+            else:
+                currPar.append(cText)
+
+        if currPar:
+            cleanText += " ".join(currPar) + "\n\n"
+
+        # Replace the text with the cleaned up text
+        theCursor.beginEditBlock()
+        theCursor.clearSelection()
+        theCursor.setPosition(rS)
+        theCursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, rE-rS)
+        theCursor.insertText(cleanText.rstrip() + "\n")
+        theCursor.endEditBlock()
+
+        return True
 
     ##
     #  Internal Functions
@@ -1383,7 +1716,7 @@ class GuiDocEditor(QTextEdit):
             theCursor = self.textCursor()
 
         theBlock = theCursor.block()
-        theText  = theBlock.text()
+        theText = theBlock.text()
 
         if len(theText) == 0:
             return False
@@ -1420,19 +1753,20 @@ class GuiDocEditor(QTextEdit):
         if not theBlock.isValid():
             return
 
-        theText   = theBlock.text()
+        theText = theBlock.text()
         theCursor = self.textCursor()
-        thePos    = theCursor.positionInBlock()
-        theLen    = len(theText)
+        thePos = theCursor.positionInBlock()
+        theLen = len(theText)
 
         if theLen < 1 or thePos-1 > theLen:
             return
 
-        theOne   = theText[thePos-1:thePos]
-        theTwo   = theText[thePos-2:thePos]
+        theOne = theText[thePos-1:thePos]
+        theTwo = theText[thePos-2:thePos]
         theThree = theText[thePos-3:thePos]
 
-        if not theOne: # Makes Neo sad
+        if not theOne:
+            # Sorry, Neo and Zathras
             return
 
         nDelete = 0
@@ -1515,64 +1849,11 @@ class GuiDocEditor(QTextEdit):
 
         return False
 
-    def _replaceQuotes(self, sQuote, oQuote, cQuote):
-        """Replace all straight quotes in the selected text.
-        """
-        theCursor = self.textCursor()
-        if theCursor.hasSelection():
-            posS = theCursor.selectionStart()
-            posE = theCursor.selectionEnd()
-            closeCheck = (
-                " ", "\n", nwUnicode.U_LSEP, nwUnicode.U_PSEP
-            )
-
-            self._allowAutoReplace(False)
-            for posC in range(posS, posE+1):
-                theCursor.setPosition(posC)
-                theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
-                selText = theCursor.selectedText()
-
-                nS = len(selText)
-                if nS == 2:
-                    pC = selText[0]
-                    cC = selText[1]
-                elif nS == 1:
-                    pC = " "
-                    cC = selText[0]
-                else:
-                    continue
-
-                if cC != sQuote:
-                    continue
-
-                theCursor.clearSelection()
-                theCursor.setPosition(posC)
-                if pC in closeCheck:
-                    theCursor.beginEditBlock()
-                    theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
-                    theCursor.insertText(oQuote)
-                    theCursor.endEditBlock()
-                else:
-                    theCursor.beginEditBlock()
-                    theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
-                    theCursor.insertText(cQuote)
-                    theCursor.endEditBlock()
-
-            self._allowAutoReplace(True)
-
-        else:
-            self.theParent.makeAlert(
-                self.tr("Please select some text before calling replace quotes."),
-                nwAlert.ERROR
-            )
-
-        return
-
     def _checkDocSize(self, theSize):
         """Check if document size crosses the big document limit set in
         config. If so, we will set the big document flag to True.
         """
-        bigLim = self.mainConf.bigDocLimit*1000
+        bigLim = round(self.mainConf.bigDocLimit*1000)
         newState = theSize > bigLim
 
         if newState != self._bigDoc:
@@ -1591,61 +1872,6 @@ class GuiDocEditor(QTextEdit):
 
         return
 
-    def _wrapSelection(self, tBefore, tAfter=None):
-        """Wraps the selected text in whatever is in tBefore and tAfter.
-        If there is no selection, the autoSelect setting decides the
-        action. AutoSelect will select the word under the cursor before
-        wrapping it. If this feature is disabled, nothing is done.
-        """
-        if tAfter is None:
-            tAfter = tBefore
-
-        theCursor = self._autoSelect()
-        if theCursor.hasSelection():
-            posS = theCursor.selectionStart()
-            posE = theCursor.selectionEnd()
-
-            blockS = self._qDocument.findBlock(posS)
-            blockE = self._qDocument.findBlock(posE)
-            if blockS != blockE:
-                posE = blockS.position() + blockS.length() - 1
-
-            theCursor.clearSelection()
-            theCursor.beginEditBlock()
-            theCursor.setPosition(posE)
-            theCursor.insertText(tAfter)
-            theCursor.setPosition(posS)
-            theCursor.insertText(tBefore)
-            theCursor.endEditBlock()
-
-            theCursor.setPosition(posE + len(tBefore), QTextCursor.MoveAnchor)
-            theCursor.setPosition(posS + len(tBefore), QTextCursor.KeepAnchor)
-            self.setTextCursor(theCursor)
-
-        else:
-            logger.warning("No selection made, nothing to do")
-        return
-
-    def _clearSurrounding(self, theCursor, nChars):
-        """Clears n characters before and after the cursor.
-        """
-        if theCursor.hasSelection():
-            posS = theCursor.selectionStart()
-            posE = theCursor.selectionEnd()
-            theCursor.clearSelection()
-            theCursor.beginEditBlock()
-            theCursor.setPosition(posS)
-            for i in range(nChars):
-                theCursor.deletePreviousChar()
-            theCursor.setPosition(posE)
-            for i in range(nChars):
-                theCursor.deletePreviousChar()
-            theCursor.endEditBlock()
-            theCursor.clearSelection()
-        else:
-            logger.warning("No selection made, nothing to do")
-        return
-
     def _autoSelect(self):
         """Returns a cursor which may or may not have a selection based
         on user settings and document action.
@@ -1659,10 +1885,11 @@ class GuiDocEditor(QTextEdit):
             # Underscore counts as a part of the word, so check that the
             # selection isn't wrapped in italics markers.
             reSelect = False
-            if self._qDocument.characterAt(posS) == "_":
+            qDoc = self.document()
+            if qDoc.characterAt(posS) == "_":
                 posS += 1
                 reSelect = True
-            if self._qDocument.characterAt(posE) == "_":
+            if qDoc.characterAt(posE) == "_":
                 posE -= 1
                 reSelect = True
             if reSelect:
@@ -1673,176 +1900,6 @@ class GuiDocEditor(QTextEdit):
             self.setTextCursor(theCursor)
 
         return theCursor
-
-    def _toggleFormat(self, fLen, fChar):
-        """Toggle the formatting of a specific type for a piece of text.
-        If more than one block is selected, the formatting is applied to
-        the first block.
-        """
-        theCursor = self._autoSelect()
-        if theCursor.hasSelection():
-            posS = theCursor.selectionStart()
-            posE = theCursor.selectionEnd()
-
-            blockS = self._qDocument.findBlock(posS)
-            blockE = self._qDocument.findBlock(posE)
-
-            if blockS != blockE:
-                posE = blockS.position() + blockS.length() - 1
-                theCursor.clearSelection()
-                theCursor.setPosition(posS, QTextCursor.MoveAnchor)
-                theCursor.setPosition(posE, QTextCursor.KeepAnchor)
-                self.setTextCursor(theCursor)
-
-            numB = 0
-            for n in range(fLen):
-                if self._qDocument.characterAt(posS-n-1) == fChar:
-                    numB += 1
-                else:
-                    break
-
-            numA = 0
-            for n in range(fLen):
-                if self._qDocument.characterAt(posE+n) == fChar:
-                    numA += 1
-                else:
-                    break
-
-            cLevel = min(numB, numA)
-            if cLevel == fLen:
-                self._clearSurrounding(theCursor, fLen)
-            else:
-                self._wrapSelection(fChar*fLen)
-
-        return
-
-    def _formatBlock(self, docAction):
-        """Changes the block format of the block under the cursor.
-        """
-        theCursor = self.textCursor()
-        theBlock = theCursor.block()
-        if not theBlock.isValid():
-            logger.debug("Invalid block selected for action %s" % str(docAction))
-            return False
-
-        theText = theBlock.text()
-        if len(theText.strip()) == 0:
-            logger.debug("Empty block selected for action %s" % str(docAction))
-            return False
-
-        # Remove existing format first, if any
-        if theText.startswith("@"):
-            logger.error("Cannot apply block format to keyword/value line")
-            return False
-        elif theText.startswith("% "):
-            newText = theText[2:]
-            cOffset = 2
-        elif theText.startswith("%"):
-            newText = theText[1:]
-            cOffset = 1
-        elif theText.startswith("# "):
-            newText = theText[2:]
-            cOffset = 2
-        elif theText.startswith("## "):
-            newText = theText[3:]
-            cOffset = 3
-        elif theText.startswith("### "):
-            newText = theText[4:]
-            cOffset = 4
-        elif theText.startswith("#### "):
-            newText = theText[5:]
-            cOffset = 5
-        else:
-            newText = theText
-            cOffset = 0
-
-        # Apply new format
-        if docAction == nwDocAction.BLOCK_COM:
-            theText = "% "+newText
-            cOffset -= 2
-        elif docAction == nwDocAction.BLOCK_H1:
-            theText = "# "+newText
-            cOffset -= 2
-        elif docAction == nwDocAction.BLOCK_H2:
-            theText = "## "+newText
-            cOffset -= 3
-        elif docAction == nwDocAction.BLOCK_H3:
-            theText = "### "+newText
-            cOffset -= 4
-        elif docAction == nwDocAction.BLOCK_H4:
-            theText = "#### "+newText
-            cOffset -= 5
-        elif docAction == nwDocAction.BLOCK_TXT:
-            theText = newText
-            cOffset -= 0
-        else:
-            logger.error("Unknown or unsupported block format requested: %s" % str(docAction))
-            return False
-
-        # Replace the block text
-        theCursor.beginEditBlock()
-        posO = theCursor.position()
-        theCursor.select(QTextCursor.BlockUnderCursor)
-        posS = theCursor.selectionStart()
-        theCursor.removeSelectedText()
-        theCursor.setPosition(posS)
-        if posS > 0:
-            theCursor.insertBlock()
-        theCursor.insertText(theText)
-        if posO - cOffset >= 0:
-            theCursor.setPosition(posO - cOffset)
-        theCursor.endEditBlock()
-        self.setTextCursor(theCursor)
-
-        return True
-
-    def _removeInParLineBreaks(self):
-        """Strip line breaks within paragraphs in the selected text.
-        """
-        theCursor = self.textCursor()
-        theDoc = self.document()
-
-        iS = 0
-        iE = theDoc.blockCount() - 1
-        rS = 0
-        rE = theDoc.characterCount()
-        if theCursor.hasSelection():
-            sBlock = theDoc.findBlock(theCursor.selectionStart())
-            eBlock = theDoc.findBlock(theCursor.selectionEnd())
-            iS = sBlock.blockNumber()
-            iE = eBlock.blockNumber()
-            rS = sBlock.position()
-            rE = eBlock.position() + eBlock.length()
-
-        # Clean up the text
-        currPar = []
-        cleanText = ""
-        for i in range(iS, iE+1):
-            cBlock = theDoc.findBlockByNumber(i)
-            cText = cBlock.text()
-            if cText.strip() == "":
-                if currPar:
-                    cleanText += " ".join(currPar) + "\n\n"
-                else:
-                    cleanText += "\n"
-                currPar = []
-            elif cText.startswith(("# ", "## ", "### ", "#### ", "@", "%")):
-                cleanText += cText + "\n"
-            else:
-                currPar.append(cText)
-
-        if currPar:
-            cleanText += " ".join(currPar) + "\n\n"
-
-        # Replace the text with the cleaned up text
-        theCursor.beginEditBlock()
-        theCursor.clearSelection()
-        theCursor.setPosition(rS)
-        theCursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, rE-rS)
-        theCursor.insertText(cleanText.rstrip() + "\n")
-        theCursor.endEditBlock()
-
-        return True
 
     def _makeSelection(self, selMode):
         """Wrapper function to select text based on a selection mode.
@@ -1902,6 +1959,7 @@ class GuiDocEditor(QTextEdit):
 
 # END Class GuiDocEditor
 
+
 # =============================================================================================== #
 #  The Off-GUI Thread Word Counter
 #  A runnable for the word counter to be run in the thread pool off the main GUI thread.
@@ -1931,7 +1989,8 @@ class BackgroundWordCounter(QRunnable):
         self._isRunning = False
         return
 
-## END Class BackgroundWordCounter
+# END Class BackgroundWordCounter
+
 
 class BackgroundWordCounterSignals(QObject):
     """The QRunnable cannot emit a signal, so we need a simple QObject
@@ -1940,6 +1999,7 @@ class BackgroundWordCounterSignals(QObject):
     countsReady = pyqtSignal(int, int, int)
 
 # END Class BackgroundWordCounterSignals
+
 
 # =============================================================================================== #
 #  The Embedded Document Search/Replace Feature
@@ -1995,7 +2055,7 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.searchOpt.setIconSize(QSize(tPx, tPx))
         self.searchOpt.setContentsMargins(0, 0, 0, 0)
-        self.searchOpt.setStyleSheet(r"QToolBar {padding: 0;}")
+        self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
 
         self.searchLabel = QLabel(self.tr("Search"))
         self.searchLabel.setFont(boxFont)
@@ -2067,7 +2127,7 @@ class GuiDocEditSearch(QFrame):
         self.showReplace.setArrowType(Qt.RightArrow)
         self.showReplace.setCheckable(True)
         self.showReplace.setToolTip(self.tr("Show/hide the replace text box"))
-        self.showReplace.setStyleSheet(r"QToolButton {border: none; background: transparent;}")
+        self.showReplace.setStyleSheet("QToolButton {border: none; background: transparent;}")
         self.showReplace.toggled.connect(self._doToggleReplace)
 
         self.searchButton = QPushButton(self.theTheme.getIcon("search"), "")
@@ -2106,9 +2166,9 @@ class GuiDocEditSearch(QFrame):
         # Construct Box Colours
         qPalette = self.searchBox.palette()
         baseCol = qPalette.base().color()
-        rCol = baseCol.redF()   + 0.1
+        rCol = baseCol.redF() + 0.1
         gCol = baseCol.greenF() - 0.1
-        bCol = baseCol.blueF()  - 0.1
+        bCol = baseCol.blueF() - 0.1
 
         mCol = max(rCol, gCol, bCol, 1.0)
         errCol = QColor()
@@ -2117,8 +2177,8 @@ class GuiDocEditSearch(QFrame):
         errCol.setBlueF(bCol/mCol)
 
         self.rxCol = {
-            True  : baseCol,
-            False : errCol
+            True: baseCol,
+            False: errCol
         }
 
         logger.debug("GuiDocEditSearch initialisation complete")
@@ -2128,10 +2188,10 @@ class GuiDocEditSearch(QFrame):
     def closeSearch(self):
         """Close the search box.
         """
-        self.mainConf.searchCase     = self.isCaseSense
-        self.mainConf.searchWord     = self.isWholeWord
-        self.mainConf.searchRegEx    = self.isRegEx
-        self.mainConf.searchLoop     = self.doLoop
+        self.mainConf.searchCase = self.isCaseSense
+        self.mainConf.searchWord = self.isWholeWord
+        self.mainConf.searchRegEx = self.isRegEx
+        self.mainConf.searchLoop = self.doLoop
         self.mainConf.searchNextFile = self.doNextFile
         self.mainConf.searchMatchCap = self.doMatchCap
 
@@ -2176,7 +2236,7 @@ class GuiDocEditSearch(QFrame):
         self.searchBox.selectAll()
         if self.isRegEx:
             self._alertSearchValid(True)
-        logger.verbose("Setting search text to '%s'" % theText)
+        logger.verbose("Setting search text to '%s'", theText)
         return True
 
     def setReplaceText(self, theText):
@@ -2204,7 +2264,7 @@ class GuiDocEditSearch(QFrame):
                 self._alertSearchValid(theRegEx.isValid())
                 return theRegEx
 
-            else: # >= 50300 to < 51300
+            else:  # >= 50300 to < 51300
                 if self.isCaseSense:
                     rxOpt = Qt.CaseSensitive
                 else:
@@ -2316,6 +2376,7 @@ class GuiDocEditSearch(QFrame):
 
 # END Class GuiDocEditSearch
 
+
 # =============================================================================================== #
 #  The Embedded Document Header
 #  Only used by DocEditor, and is at a fixed position in the QTextEdit's viewport
@@ -2333,7 +2394,8 @@ class GuiDocEditHeader(QWidget):
         self.theParent  = docEditor.theParent
         self.theProject = docEditor.theProject
         self.theTheme   = docEditor.theTheme
-        self._docHandle  = None
+
+        self._docHandle = None
 
         fPx = int(0.9*self.theTheme.fontPixelSize)
         hSp = self.mainConf.pxInt(6)
@@ -2538,6 +2600,7 @@ class GuiDocEditHeader(QWidget):
 
 # END Class GuiDocEditHeader
 
+
 # =============================================================================================== #
 #  The Embedded Document Footer
 #  Only used by DocEditor, and is at a fixed position in the QTextEdit's viewport
@@ -2556,8 +2619,9 @@ class GuiDocEditFooter(QWidget):
         self.theProject = docEditor.theProject
         self.theTheme   = docEditor.theTheme
         self.optState   = docEditor.theProject.optState
-        self._docHandle  = None
-        self.theItem    = None
+
+        self._theItem   = None
+        self._docHandle = None
 
         self.sPx = int(round(0.9*self.theTheme.baseIconSize))
         fPx = int(0.9*self.theTheme.fontPixelSize)
@@ -2673,9 +2737,9 @@ class GuiDocEditFooter(QWidget):
         self._docHandle = tHandle
         if self._docHandle is None:
             logger.verbose("No handle set, so clearing the editor footer")
-            self.theItem = None
+            self._theItem = None
         else:
-            self.theItem = self.theProject.projTree[self._docHandle]
+            self._theItem = self.theProject.projTree[self._docHandle]
 
         self.updateInfo()
         self.updateCounts()
@@ -2685,12 +2749,12 @@ class GuiDocEditFooter(QWidget):
     def updateInfo(self):
         """Update the content of text labels.
         """
-        if self.theItem is None:
+        if self._theItem is None:
             sIcon = QPixmap()
             sText = ""
         else:
-            iStatus = self.theItem.itemStatus
-            if self.theItem.itemClass == nwItemClass.NOVEL:
+            iStatus = self._theItem.itemStatus
+            if self._theItem.itemClass == nwItemClass.NOVEL:
                 iStatus = self.theProject.statusItems.checkEntry(iStatus)
                 theIcon = self.theParent.statusIcons[iStatus]
             else:
@@ -2698,9 +2762,9 @@ class GuiDocEditFooter(QWidget):
                 theIcon = self.theParent.importIcons[iStatus]
 
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            sClass = trConst(nwLabels.CLASS_NAME[self.theItem.itemClass])
-            sLayout = trConst(nwLabels.LAYOUT_NAME[self.theItem.itemLayout])
-            sText = f"{self.theItem.itemStatus} / {sClass} / {sLayout}"
+            sClass = trConst(nwLabels.CLASS_NAME[self._theItem.itemClass])
+            sLayout = trConst(nwLabels.LAYOUT_NAME[self._theItem.itemLayout])
+            sText = f"{self._theItem.itemStatus} / {sClass} / {sLayout}"
 
         self.statusIcon.setPixmap(sIcon)
         self.statusText.setText(sText)
@@ -2710,13 +2774,13 @@ class GuiDocEditFooter(QWidget):
     def updateLineCount(self):
         """Update the word count.
         """
-        if self.theItem is None:
+        if self._theItem is None:
             iLine = 0
             iDist = 0
         else:
             theCursor = self.docEditor.textCursor()
             iLine = theCursor.blockNumber() + 1
-            iDist = 100*iLine/self.docEditor._qDocument.blockCount()
+            iDist = 100*iLine/self.docEditor.document().blockCount()
 
         self.linesText.setText(
             self.tr("Line: {0} ({1})").format(f"{iLine:n}", f"{iDist:.0f} %")
@@ -2727,18 +2791,18 @@ class GuiDocEditFooter(QWidget):
     def updateCounts(self):
         """Update the word count.
         """
-        if self.theItem is None:
+        if self._theItem is None:
             wCount = 0
-            wDiff  = 0
+            wDiff = 0
         else:
-            wCount = self.theItem.wordCount
-            wDiff  = wCount - self.theItem.initCount
+            wCount = self._theItem.wordCount
+            wDiff = wCount - self._theItem.initCount
 
         self.wordsText.setText(
             self.tr("Words: {0} ({1})").format(f"{wCount:n}", f"{wDiff:+n}")
         )
 
-        byteSize = self.docEditor._qDocument.characterCount()
+        byteSize = self.docEditor.document().characterCount()
         self.wordsText.setToolTip(
             self.tr("Document size is {0} bytes").format(f"{byteSize:n}")
         )

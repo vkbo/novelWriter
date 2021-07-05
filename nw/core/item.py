@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Item Class
 ================================
@@ -35,6 +34,7 @@ from nw.common import (
 
 logger = logging.getLogger(__name__)
 
+
 class NWItem():
 
     def __init__(self, theProject):
@@ -53,11 +53,11 @@ class NWItem():
         self.isExported = True
 
         # Document Meta Data
-        self.charCount = 0 # Current character count
-        self.wordCount = 0 # Current word count
-        self.paraCount = 0 # Current paragraph count
-        self.initCount = 0 # Initial word count
-        self.cursorPos = 0 # Last cursor position
+        self.charCount = 0  # Current character count
+        self.wordCount = 0  # Current word count
+        self.paraCount = 0  # Current paragraph count
+        self.initCount = 0  # Initial word count
+        self.cursorPos = 0  # Last cursor position
 
         # Runtime Values (Not Saved)
         self.sessionBak = False # Whether a session copy has been made
@@ -72,9 +72,9 @@ class NWItem():
         """Packs all the data in the class instance into an XML object.
         """
         xPack = etree.SubElement(xParent, "item", attrib={
-            "handle" : str(self.itemHandle),
-            "order"  : str(self.itemOrder),
-            "parent" : str(self.itemParent),
+            "handle": str(self.itemHandle),
+            "order":  str(self.itemOrder),
+            "parent": str(self.itemParent),
         })
         self._subPack(xPack, "name",   text=str(self.itemName))
         self._subPack(xPack, "type",   text=str(self.itemType.name))
@@ -111,7 +111,6 @@ class NWItem():
         if "order" in xItem.attrib:
             self.setOrder(xItem.attrib["order"])
 
-        retStatus = True
         for xValue in xItem:
             if xValue.tag == "name":
                 self.setName(xValue.text)
@@ -136,10 +135,12 @@ class NWItem():
             elif xValue.tag == "cursorPos":
                 self.setCursorPos(xValue.text)
             else:
-                logger.error("Unknown tag '%s'" % xValue.tag)
-                retStatus = False
+                # Sliently skip as we may otherwise cause orphaned
+                # items if an otherwise valid file is opened by a
+                # version of novelWriter that doesn't know the tag.
+                logger.error("Unknown tag '%s'", xValue.tag)
 
-        return retStatus
+        return True
 
     @staticmethod
     def _subPack(xParent, name, attrib=None, text=None, none=True):
@@ -209,7 +210,7 @@ class NWItem():
         elif isItemType(theType):
             self.itemType = nwItemType[theType]
         else:
-            logger.error("Unrecognised item type '%s'" % theType)
+            logger.error("Unrecognised item type '%s'", theType)
             self.itemType = nwItemType.NO_TYPE
         return
 
@@ -222,7 +223,7 @@ class NWItem():
         elif isItemClass(theClass):
             self.itemClass = nwItemClass[theClass]
         else:
-            logger.error("Unrecognised item class '%s'" % theClass)
+            logger.error("Unrecognised item class '%s'", theClass)
             self.itemClass = nwItemClass.NO_CLASS
         return
 
@@ -235,7 +236,7 @@ class NWItem():
         elif isItemLayout(theLayout):
             self.itemLayout = nwItemLayout[theLayout]
         else:
-            logger.error("Unrecognised item layout '%s'" % theLayout)
+            logger.error("Unrecognised item layout '%s'", theLayout)
             self.itemLayout = nwItemLayout.NO_LAYOUT
         return
 
@@ -255,7 +256,7 @@ class NWItem():
         if isinstance(expState, str):
             self.isExpanded = (expState == str(True))
         else:
-            self.isExpanded = (expState == True) # noqa: E712
+            self.isExpanded = (expState == True)  # noqa: E712
         return
 
     def setExported(self, expState):
@@ -264,7 +265,7 @@ class NWItem():
         if isinstance(expState, str):
             self.isExported = (expState == str(True))
         else:
-            self.isExported = (expState == True) # noqa: E712
+            self.isExported = (expState == True)  # noqa: E712
         return
 
     ##

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Writing Stats Dialog Class Tester
 ===============================================
@@ -37,15 +36,16 @@ keyDelay = 2
 typeDelay = 1
 stepDelay = 20
 
+
 @pytest.mark.gui
 def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     """Test the full writing stats tool.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "warning", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
 
     # Create a project to work on
     assert nwGUI.newProject({"projPath": fncProj})
@@ -116,13 +116,13 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     sessLog.populateGUI()
 
     # Make the saving fail
-    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *args, **kwargs: ("", ""))
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: ("", ""))
     assert not sessLog._saveData(sessLog.FMT_CSV)
     assert not sessLog._saveData(sessLog.FMT_JSON)
     assert not sessLog._saveData(None)
 
     # Make the save succeed
-    monkeypatch.setattr("os.path.expanduser", lambda *args: fncDir)
+    monkeypatch.setattr("os.path.expanduser", lambda *a: fncDir)
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
 
     sessLog.listBox.sortByColumn(sessLog.C_TIME, 0)

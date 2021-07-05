@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Document Viewer
 =================================
@@ -46,6 +45,7 @@ from nw.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
 
+
 class GuiDocViewer(QTextBrowser):
 
     def __init__(self, theParent):
@@ -60,8 +60,7 @@ class GuiDocViewer(QTextBrowser):
         self.theProject = theParent.theProject
 
         # Internal Variables
-        self._docHandle  = None
-        self._qDocument = self.document()
+        self._docHandle = None
 
         # Settings
         self.setMinimumWidth(self.mainConf.pxInt(300))
@@ -106,7 +105,7 @@ class GuiDocViewer(QTextBrowser):
         theFont = QFont()
         if self.mainConf.textFont is None:
             # If none is defined, set the default back to config
-            self.mainConf.textFont = self._qDocument.defaultFont().family()
+            self.mainConf.textFont = self.document().defaultFont().family()
         theFont.setFamily(self.mainConf.textFont)
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
@@ -127,11 +126,11 @@ class GuiDocViewer(QTextBrowser):
         self.docFooter.matchColours()
 
         # Set default text margins
-        self._qDocument.setDocumentMargin(0)
+        self.document().setDocumentMargin(0)
         theOpt = QTextOption()
         if self.mainConf.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
-        self._qDocument.setDefaultTextOption(theOpt)
+        self.document().setDefaultTextOption(theOpt)
 
         # Scroll bars
         if self.mainConf.hideVScroll:
@@ -167,7 +166,7 @@ class GuiDocViewer(QTextBrowser):
         if tItem.itemType != nwItemType.FILE:
             return False
 
-        logger.debug("Generating preview for item %s" % tHandle)
+        logger.debug("Generating preview for item '%s'", tHandle)
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
 
         sPos = self.verticalScrollBar().value()
@@ -195,7 +194,7 @@ class GuiDocViewer(QTextBrowser):
             aDoc.doConvert()
             aDoc.doPostProcessing()
         except Exception:
-            logger.error("Failed to generate preview for document with handle '%s'" % tHandle)
+            logger.error("Failed to generate preview for document with handle '%s'", tHandle)
             nw.logException()
             self.setText(self.tr("An error occurred while generating the preview."))
 
@@ -244,7 +243,7 @@ class GuiDocViewer(QTextBrowser):
     def redrawText(self):
         """Redraw the text by marking the document content as "dirty".
         """
-        self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
+        self.document().markContentsDirty(0, self.document().characterCount())
         self.updateDocMargins()
         return
 
@@ -253,23 +252,22 @@ class GuiDocViewer(QTextBrowser):
         tag rather than a known handle. This function depends on the
         index being up to date.
         """
-        logger.debug("Loading document from tag '%s'" % theTag)
+        logger.debug("Loading document from tag '%s'", theTag)
         tHandle, _, sTitle = self.theParent.theIndex.getTagSource(theTag)
         if tHandle is None:
-            self.theParent.makeAlert(
-                self.tr(
-                    "Could not find the reference for tag '{0}'. It either doesn't "
-                    "exist, or the index is out of date. The index can be updated "
-                    "from the Tools menu, or by pressing {1}."
-                ).format(theTag, "F9"),
-                nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "Could not find the reference for tag '{0}'. It either doesn't "
+                "exist, or the index is out of date. The index can be updated "
+                "from the Tools menu, or by pressing {1}."
+            ).format(
+                theTag, "F9"
+            ), nwAlert.ERROR)
             return False
         else:
             # Let the parent handle the opening as it also ensures that
             # the doc view panel is visible in case this request comes
             # from outside this class.
-            logger.verbose("Tag points to %s#%s" % (tHandle, sTitle))
+            logger.verbose("Tag points to '%s#%s'", tHandle, sTitle)
             self.theParent.viewDocument(tHandle, "#%s" % sTitle)
         return True
 
@@ -277,7 +275,7 @@ class GuiDocViewer(QTextBrowser):
         """Wrapper function for various document actions on the current
         document.
         """
-        logger.verbose("Requesting action: %s" % theAction.name)
+        logger.verbose("Requesting action: '%s'", theAction.name)
         if self._docHandle is None:
             logger.error("No document open")
             return False
@@ -290,7 +288,7 @@ class GuiDocViewer(QTextBrowser):
         elif theAction == nwDocAction.SEL_PARA:
             self._makeSelection(QTextCursor.BlockUnderCursor)
         else:
-            logger.debug("Unknown or unsupported document action %s" % str(theAction))
+            logger.debug("Unknown or unsupported document action '%s'", str(theAction))
             return False
         return True
 
@@ -300,7 +298,7 @@ class GuiDocViewer(QTextBrowser):
         if not isinstance(tAnchor, str):
             return False
         if tAnchor.startswith("#"):
-            logger.verbose("Moving to anchor %s" % tAnchor)
+            logger.verbose("Moving to anchor '%s'", tAnchor)
             self.setSource(QUrl(tAnchor))
         return True
 
@@ -323,9 +321,7 @@ class GuiDocViewer(QTextBrowser):
         return
 
     def updateDocMargins(self):
-        """Automatically adjust the margins so the text is centred if
-        Config.textFixedW is enabled or we're in Focus Mode. Otherwise,
-        just ensure the margins are set correctly.
+        """Automatically adjust the margins so the text is centred.
         """
         vBar = self.verticalScrollBar()
         sW = vBar.width() if vBar.isVisible() else 0
@@ -386,10 +382,10 @@ class GuiDocViewer(QTextBrowser):
         if not isinstance(theLine, int):
             return False
         if theLine >= 0:
-            theBlock = self._qDocument.findBlockByLineNumber(theLine)
+            theBlock = self.document().findBlockByLineNumber(theLine)
             if theBlock:
                 self.setCursorPosition(theBlock.position())
-                logger.verbose("Cursor moved to line %d" % theLine)
+                logger.verbose("Cursor moved to line %d", theLine)
         return True
 
     def setScrollPosition(self, thePos):
@@ -421,7 +417,7 @@ class GuiDocViewer(QTextBrowser):
         """Slot for a link in the document being clicked.
         """
         theLink = theURL.url()
-        logger.verbose("Clicked link: '%s'" % theLink)
+        logger.verbose("Clicked link: '%s'", theLink)
         if len(theLink) > 0:
             theBits = theLink.split("=")
             if len(theBits) == 2:
@@ -554,33 +550,34 @@ class GuiDocViewer(QTextBrowser):
             "  color: rgb({mColR}, {mColG}, {mColB});"
             "}}\n"
         ).format(
-            tColR = self.theTheme.colText[0],
-            tColG = self.theTheme.colText[1],
-            tColB = self.theTheme.colText[2],
-            hColR = self.theTheme.colHead[0],
-            hColG = self.theTheme.colHead[1],
-            hColB = self.theTheme.colHead[2],
-            aColR = self.theTheme.colVal[0],
-            aColG = self.theTheme.colVal[1],
-            aColB = self.theTheme.colVal[2],
-            eColR = self.theTheme.colEmph[0],
-            eColG = self.theTheme.colEmph[1],
-            eColB = self.theTheme.colEmph[2],
-            kColR = self.theTheme.colKey[0],
-            kColG = self.theTheme.colKey[1],
-            kColB = self.theTheme.colKey[2],
-            cColR = self.theTheme.colHidden[0],
-            cColG = self.theTheme.colHidden[1],
-            cColB = self.theTheme.colHidden[2],
-            mColR = self.theTheme.colMod[0],
-            mColG = self.theTheme.colMod[1],
-            mColB = self.theTheme.colMod[2],
+            tColR=self.theTheme.colText[0],
+            tColG=self.theTheme.colText[1],
+            tColB=self.theTheme.colText[2],
+            hColR=self.theTheme.colHead[0],
+            hColG=self.theTheme.colHead[1],
+            hColB=self.theTheme.colHead[2],
+            aColR=self.theTheme.colVal[0],
+            aColG=self.theTheme.colVal[1],
+            aColB=self.theTheme.colVal[2],
+            eColR=self.theTheme.colEmph[0],
+            eColG=self.theTheme.colEmph[1],
+            eColB=self.theTheme.colEmph[2],
+            kColR=self.theTheme.colKey[0],
+            kColG=self.theTheme.colKey[1],
+            kColB=self.theTheme.colKey[2],
+            cColR=self.theTheme.colHidden[0],
+            cColG=self.theTheme.colHidden[1],
+            cColB=self.theTheme.colHidden[2],
+            mColR=self.theTheme.colMod[0],
+            mColG=self.theTheme.colMod[1],
+            mColB=self.theTheme.colMod[2],
         )
-        self._qDocument.setDefaultStyleSheet(styleSheet)
+        self.document().setDefaultStyleSheet(styleSheet)
 
         return True
 
 # END Class GuiDocViewer
+
 
 class GuiDocViewHistory():
 
@@ -627,7 +624,7 @@ class GuiDocViewHistory():
 
         self._dumpHistory()
 
-        logger.verbose("Added %s to view history" % tHandle)
+        logger.verbose("Added '%s' to view history", tHandle)
 
         return True
 
@@ -712,6 +709,7 @@ class GuiDocViewHistory():
         return
 
 # END Class GuiDocViewHistory
+
 
 # =============================================================================================== #
 #  The Embedded Document Header
@@ -919,6 +917,7 @@ class GuiDocViewHeader(QWidget):
 
 # END Class GuiDocViewHeader
 
+
 # =============================================================================================== #
 #  The Embedded Document Footer
 #  Only used by DocViewer, and is at a fixed position in the QTextBrowser's viewport
@@ -1122,7 +1121,7 @@ class GuiDocViewFooter(QWidget):
     def _doToggleSticky(self, theState):
         """Toggle the sticky flag for the reference panel.
         """
-        logger.verbose("Reference sticky is %s" % str(theState))
+        logger.verbose("Reference sticky is %s", str(theState))
         self.docViewer.stickyRef = theState
         if not theState and self.docViewer.docHandle() is not None:
             self.viewMeta.refreshReferences(self.docViewer.docHandle())
@@ -1144,6 +1143,7 @@ class GuiDocViewFooter(QWidget):
 
 # END Class GuiDocViewFooter
 
+
 # =============================================================================================== #
 #  The Document Back-Reference Panel
 #  Placed in a separate QSplitter position in the main GUI window
@@ -1159,7 +1159,6 @@ class GuiDocViewDetails(QScrollArea):
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.theTheme   = theParent.theTheme
-        self.currHandle = None
 
         self.refList = QLabel("")
         self.refList.setWordWrap(True)
@@ -1192,7 +1191,6 @@ class GuiDocViewDetails(QScrollArea):
         """Update the current list of document references from the
         project index.
         """
-        self.currHandle = tHandle
         if self.theParent.docViewer.stickyRef:
             return
 
@@ -1217,7 +1215,7 @@ class GuiDocViewDetails(QScrollArea):
         """Capture the link-click and forward it to the document viewer
         class for handling.
         """
-        logger.verbose("Clicked link: '%s'" % theLink)
+        logger.verbose("Clicked link: '%s'", theLink)
         if len(theLink) == 21:
             tHandle = theLink[:13]
             tAnchor = theLink[13:]

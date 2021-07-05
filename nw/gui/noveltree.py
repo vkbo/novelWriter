@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Novel Tree
 ============================
@@ -36,6 +35,7 @@ from nw.common import checkInt
 from nw.constants import nwKeyWords
 
 logger = logging.getLogger(__name__)
+
 
 class GuiNovelTree(QTreeWidget):
 
@@ -98,9 +98,6 @@ class GuiNovelTree(QTreeWidget):
         self.initTree()
 
         logger.debug("GuiNovelTree initialisation complete")
-
-        # Internal Mapping
-        self.makeAlert = self.theParent.makeAlert
 
         return
 
@@ -225,7 +222,7 @@ class GuiNovelTree(QTreeWidget):
         tHandle = theData[0]
         tLine = checkInt(theData[1], 1)
 
-        logger.verbose("User selected entry with handle %s on line %s" % (tHandle, tLine))
+        logger.verbose("User selected entry with handle '%s' on line %s", tHandle, tLine)
         self.theParent.openDocument(tHandle, tLine=tLine-1, doScroll=True)
 
         return
@@ -250,9 +247,9 @@ class GuiNovelTree(QTreeWidget):
         """
         self.clearTree()
 
-        currTitle   = None
+        currTitle = None
         currChapter = None
-        currScene   = None
+        currScene = None
 
         for tKey, tHandle, sTitle, novIdx in self.theIndex.novelStructure(skipExcluded=True):
 
@@ -262,9 +259,9 @@ class GuiNovelTree(QTreeWidget):
             tLevel = novIdx["level"]
             if tLevel == "H1":
                 self.addTopLevelItem(tItem)
-                currTitle   = tItem
+                currTitle = tItem
                 currChapter = None
-                currScene   = None
+                currScene = None
 
             elif tLevel == "H2":
                 if currTitle is None:
@@ -272,7 +269,7 @@ class GuiNovelTree(QTreeWidget):
                 else:
                     currTitle.addChild(tItem)
                 currChapter = tItem
-                currScene   = None
+                currScene = None
 
             elif tLevel == "H3":
                 if currChapter is None:

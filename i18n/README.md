@@ -3,8 +3,14 @@
 The `i18n` folder contains the translation files for the Qt5 GUI. There are two types of files
 involved: the `nw_XX.ts` and the `nw_XX.qm` files. The `nw_XX.ts` files are located in the `i18n`
 folder at the root of the repository, and the `nw_XX.qm` together with the `project_XX.json` files
-are located in `nw/assets/i18n`. The latter are JSON files translation maps for the novelWriter
-projects, used by the Build Novel Project tool.
+are located in `nw/assets/i18n`. The latter are JSON translation maps for the novelWriter projects,
+used by the Build Novel Project tool.
+
+**Note**
+
+When making a new translation, or updating an existing one, only commit the `nw_XX.ts` you have
+made changes to. The `qtlupdate` command mentioned below will likely modify all `nw_XX.ts`
+slightly, but please _don't_ commit those changes to the pull request.
 
 ## Qt GUI Localisation
 
@@ -33,8 +39,8 @@ When you're done editing, you can build the `nw/assets/i18n/nw_XX.qm` file and t
 novelWriter. The Preferences dialog should list the newly added language, and you can select it and
 test it.
 
-Please do not submit the `.qm` files to the repository. Only the `.ts` files in the `i18n` folder
-are needed.
+Please do not submit the `.qm` files to the repository. Only the `.ts` file you just added in the
+`i18n` folder is needed.
 
 **Note**
 
@@ -48,7 +54,7 @@ sudo apt install qttools5-dev-tools pyqt5-dev-tools
 
 ### Missing QtBase Translations
 
-The default Qt dialogs also have translations, for instance for standard buttons for "Yes", "No",
+The default Qt dialogs also have translations, for instance for standard buttons like "Yes", "No",
 "Ok", "Cancel", etc. Generally, these translations files are installed with the Qt libraries on
 your system, and novelWriter will collect those translations from there. However, these
 translations are missing for many languages.

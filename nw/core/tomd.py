@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Markdown Text Converter
 =====================================
@@ -31,10 +30,11 @@ from nw.core.tokenizer import Tokenizer
 
 logger = logging.getLogger(__name__)
 
+
 class ToMarkdown(Tokenizer):
 
-    M_STD = 0 # Standard Markdown
-    M_GH  = 1 # GitHub Markdown
+    M_STD = 0  # Standard Markdown
+    M_GH  = 1  # GitHub Markdown
 
     def __init__(self, theProject):
         Tokenizer.__init__(self, theProject)
@@ -72,16 +72,22 @@ class ToMarkdown(Tokenizer):
         if self.genMode == self.M_STD:
             # Standard
             mdTags = {
-                self.FMT_B_B : "**", self.FMT_B_E : "**",
-                self.FMT_I_B : "_",  self.FMT_I_E : "_",
-                self.FMT_D_B : "",   self.FMT_D_E : "",
+                self.FMT_B_B: "**",
+                self.FMT_B_E: "**",
+                self.FMT_I_B: "_",
+                self.FMT_I_E: "_",
+                self.FMT_D_B: "",
+                self.FMT_D_E: "",
             }
         else:
             # GitHub
             mdTags = {
-                self.FMT_B_B : "**", self.FMT_B_E : "**",
-                self.FMT_I_B : "_",  self.FMT_I_E : "_",
-                self.FMT_D_B : "~~", self.FMT_D_E : "~~",
+                self.FMT_B_B: "**",
+                self.FMT_B_E: "**",
+                self.FMT_I_B: "_",
+                self.FMT_I_E: "_",
+                self.FMT_D_B: "~~",
+                self.FMT_D_E: "~~",
             }
 
         self.theResult = ""
@@ -149,7 +155,7 @@ class ToMarkdown(Tokenizer):
     def saveMarkdown(self, savePath):
         """Save the data to a plain text file.
         """
-        with open(savePath, mode="w", encoding="utf8") as outFile:
+        with open(savePath, mode="w", encoding="utf-8") as outFile:
             theText = "".join(self.fullMD)
             outFile.write(theText)
 
@@ -173,7 +179,7 @@ class ToMarkdown(Tokenizer):
     def _formatKeywords(self, tText, tStyle):
         """Apply Markdown formatting to keywords.
         """
-        isValid, theBits, thePos = self.theParent.theIndex.scanThis("@"+tText)
+        isValid, theBits, _ = self.theParent.theIndex.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 

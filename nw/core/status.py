@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Item Status Class
 =======================================
@@ -32,15 +31,18 @@ from nw.common import checkInt
 
 logger = logging.getLogger(__name__)
 
+
 class NWStatus():
 
     def __init__(self):
-        self._theLabels  = []
+
+        self._theLabels = []
         self._theColours = []
-        self._theCounts  = []
-        self._theMap     = {}
-        self._theLength  = 0
-        self._theIndex   = 0
+        self._theCounts = []
+        self._theMap = {}
+        self._theLength = 0
+        self._theIndex = 0
+
         return
 
     def addEntry(self, theLabel, theColours):
@@ -87,12 +89,12 @@ class NWStatus():
         replaceMap = {}
 
         if newList is not None:
-            self._theLabels  = []
+            self._theLabels = []
             self._theColours = []
-            self._theCounts  = []
-            self._theMap     = {}
-            self._theLength  = 0
-            self._theIndex   = 0
+            self._theCounts = []
+            self._theMap = {}
+            self._theLength = 0
+            self._theIndex = 0
 
             for nName, nR, nG, nB, oName in newList:
                 self.addEntry(nName, (nR, nG, nB))
@@ -122,9 +124,9 @@ class NWStatus():
         """
         for n in range(self._theLength):
             xSub = etree.SubElement(xParent, "entry", attrib={
-                "blue"  : str(self._theColours[n][2]),
-                "green" : str(self._theColours[n][1]),
-                "red"   : str(self._theColours[n][0]),
+                "blue":  str(self._theColours[n][2]),
+                "green": str(self._theColours[n][1]),
+                "red":   str(self._theColours[n][0]),
             })
             xSub.text = self._theLabels[n]
         return True

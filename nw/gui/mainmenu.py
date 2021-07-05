@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Main Menu
 ===========================
@@ -36,6 +35,7 @@ from nw.constants import trConst, nwKeyWords, nwLabels, nwUnicode
 
 logger = logging.getLogger(__name__)
 
+
 class GuiMainMenu(QMenuBar):
 
     def __init__(self, theParent):
@@ -47,7 +47,7 @@ class GuiMainMenu(QMenuBar):
         self.theProject = theParent.theProject
 
         # Internals
-        self.assistProc = None
+        self._assistProc = None
 
         # Build Menu
         self._buildProjectMenu()
@@ -92,19 +92,19 @@ class GuiMainMenu(QMenuBar):
     def closeHelp(self):
         """Close the process used for the Qt Assistant, if it is open.
         """
-        if self.assistProc is None:
+        if self._assistProc is None:
             return
 
-        if self.assistProc.state() == QProcess.Starting:
-            if self.assistProc.waitForStarted(10000):
-                self.assistProc.terminate()
+        if self._assistProc.state() == QProcess.Starting:
+            if self._assistProc.waitForStarted(10000):
+                self._assistProc.terminate()
             else:
-                self.assistProc.kill()
+                self._assistProc.kill()
 
-        elif self.assistProc.state() == QProcess.Running:
-            self.assistProc.terminate()
-            if not self.assistProc.waitForFinished(10000):
-                self.assistProc.kill()
+        elif self._assistProc.state() == QProcess.Running:
+            self._assistProc.terminate()
+            if not self._assistProc.waitForFinished(10000):
+                self._assistProc.kill()
 
         return
 
@@ -134,7 +134,7 @@ class GuiMainMenu(QMenuBar):
     #  Slots
     ##
 
-    def _toggleSpellCheck(self, isChecked=False):
+    def _toggleSpellCheck(self):
         """Toggle spell checking. The active status of the spell check
         flag is handled by the document editor class, so we make no
         decision, just pass a None to the function and let it decide.
@@ -155,10 +155,10 @@ class GuiMainMenu(QMenuBar):
             self._openWebsite(nw.__docurl__)
             return False
 
-        self.assistProc = QProcess(self)
-        self.assistProc.start("assistant", ["-collectionFile", self.mainConf.helpPath])
+        self._assistProc = QProcess(self)
+        self._assistProc.start("assistant", ["-collectionFile", self.mainConf.helpPath])
 
-        if not self.assistProc.waitForStarted(10000):
+        if not self._assistProc.waitForStarted(10000):
             self._openWebsite(nw.__docurl__)
             return False
 
@@ -239,11 +239,9 @@ class GuiMainMenu(QMenuBar):
         self.rootItems[nwItemClass.ENTITY]    = QAction(self.tr("Entity Root"),    self.rootMenu)
         self.rootItems[nwItemClass.CUSTOM]    = QAction(self.tr("Custom Root"),    self.rootMenu)
         self.rootItems[nwItemClass.ARCHIVE]   = QAction(self.tr("Outtakes Root"),  self.rootMenu)
-        nCount = 0
-        for itemClass in self.rootItems.keys():
-            nCount += 1 # This forces the lambdas to be unique
+        for n, itemClass in enumerate(self.rootItems.keys()):
             self.rootItems[itemClass].triggered.connect(
-                lambda nCount, itemClass=itemClass: self._newTreeItem(nwItemType.ROOT, itemClass)
+                lambda n, itemClass=itemClass: self._newTreeItem(nwItemType.ROOT, itemClass)
             )
             self.rootMenu.addAction(self.rootItems[itemClass])
 
@@ -468,28 +466,40 @@ class GuiMainMenu(QMenuBar):
         # View > TreeView
         self.aFocusTree = QAction(self.tr("Focus Project Tree"), self)
         self.aFocusTree.setStatusTip(self.tr("Move focus to project tree"))
-        self.aFocusTree.setShortcut("Alt+1")
+        if self.mainConf.osWindows:
+            self.aFocusTree.setShortcut("Ctrl+Alt+1")
+        else:
+            self.aFocusTree.setShortcut("Alt+1")
         self.aFocusTree.triggered.connect(lambda: self.theParent.switchFocus(nwWidget.TREE))
         self.viewMenu.addAction(self.aFocusTree)
 
         # View > Document Pane 1
         self.aFocusEditor = QAction(self.tr("Focus Document Editor"), self)
         self.aFocusEditor.setStatusTip(self.tr("Move focus to left document pane"))
-        self.aFocusEditor.setShortcut("Alt+2")
+        if self.mainConf.osWindows:
+            self.aFocusEditor.setShortcut("Ctrl+Alt+2")
+        else:
+            self.aFocusEditor.setShortcut("Alt+2")
         self.aFocusEditor.triggered.connect(lambda: self.theParent.switchFocus(nwWidget.EDITOR))
         self.viewMenu.addAction(self.aFocusEditor)
 
         # View > Document Pane 2
         self.aFocusView = QAction(self.tr("Focus Document Viewer"), self)
         self.aFocusView.setStatusTip(self.tr("Move focus to right document pane"))
-        self.aFocusView.setShortcut("Alt+3")
+        if self.mainConf.osWindows:
+            self.aFocusView.setShortcut("Ctrl+Alt+3")
+        else:
+            self.aFocusView.setShortcut("Alt+3")
         self.aFocusView.triggered.connect(lambda: self.theParent.switchFocus(nwWidget.VIEWER))
         self.viewMenu.addAction(self.aFocusView)
 
         # View > Outline
         self.aFocusOutline = QAction(self.tr("Focus Outline"), self)
         self.aFocusOutline.setStatusTip(self.tr("Move focus to outline"))
-        self.aFocusOutline.setShortcut("Alt+4")
+        if self.mainConf.osWindows:
+            self.aFocusOutline.setShortcut("Ctrl+Alt+4")
+        else:
+            self.aFocusOutline.setShortcut("Alt+4")
         self.aFocusOutline.triggered.connect(lambda: self.theParent.switchFocus(nwWidget.OUTLINE))
         self.viewMenu.addAction(self.aFocusOutline)
 
@@ -818,6 +828,50 @@ class GuiMainMenu(QMenuBar):
         self.aFmtHead4.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H4))
         self.fmtMenu.addAction(self.aFmtHead4)
 
+        # Format > Separator
+        self.fmtMenu.addSeparator()
+
+        # Format > Align Left
+        self.aFmtAlignLeft = QAction(self.tr("Align Left"), self)
+        self.aFmtAlignLeft.setStatusTip(self.tr("Change the block alignment to left"))
+        self.aFmtAlignLeft.setShortcut("Ctrl+5")
+        self.aFmtAlignLeft.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_L))
+        self.fmtMenu.addAction(self.aFmtAlignLeft)
+
+        # Format > Align Centre
+        self.aFmtAlignCentre = QAction(self.tr("Align Centre"), self)
+        self.aFmtAlignCentre.setStatusTip(self.tr("Change the block alignment to centre"))
+        self.aFmtAlignCentre.setShortcut("Ctrl+6")
+        self.aFmtAlignCentre.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_C))
+        self.fmtMenu.addAction(self.aFmtAlignCentre)
+
+        # Format > Align Right
+        self.aFmtAlignRight = QAction(self.tr("Align Right"), self)
+        self.aFmtAlignRight.setStatusTip(self.tr("Change the block alignment to right"))
+        self.aFmtAlignRight.setShortcut("Ctrl+7")
+        self.aFmtAlignRight.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_R))
+        self.fmtMenu.addAction(self.aFmtAlignRight)
+
+        # Format > Separator
+        self.fmtMenu.addSeparator()
+
+        # Format > Indent Left
+        self.aFmtIndentLeft = QAction(self.tr("Indent Left"), self)
+        self.aFmtIndentLeft.setStatusTip(self.tr("Increase the block's left margin"))
+        self.aFmtIndentLeft.setShortcut("Ctrl+8")
+        self.aFmtIndentLeft.triggered.connect(lambda: self._docAction(nwDocAction.INDENT_L))
+        self.fmtMenu.addAction(self.aFmtIndentLeft)
+
+        # Format > Indent Right
+        self.aFmtIndentRight = QAction(self.tr("Indent Right"), self)
+        self.aFmtIndentRight.setStatusTip(self.tr("Increase the block's right margin"))
+        self.aFmtIndentRight.setShortcut("Ctrl+9")
+        self.aFmtIndentRight.triggered.connect(lambda: self._docAction(nwDocAction.INDENT_R))
+        self.fmtMenu.addAction(self.aFmtIndentRight)
+
+        # Format > Separator
+        self.fmtMenu.addSeparator()
+
         # Format > Comment
         self.aFmtComment = QAction(self.tr("Comment"), self)
         self.aFmtComment.setStatusTip(self.tr("Change the block format to comment"))
@@ -926,7 +980,7 @@ class GuiMainMenu(QMenuBar):
         self.aSpellCheck.setStatusTip(self.tr("Toggle check spelling"))
         self.aSpellCheck.setCheckable(True)
         self.aSpellCheck.setChecked(self.theProject.spellCheck)
-        self.aSpellCheck.triggered.connect(self._toggleSpellCheck) # triggered, not toggled!
+        self.aSpellCheck.triggered.connect(self._toggleSpellCheck)  # triggered, not toggled!
         self.aSpellCheck.setShortcut("Ctrl+F7")
         self.toolsMenu.addAction(self.aSpellCheck)
 

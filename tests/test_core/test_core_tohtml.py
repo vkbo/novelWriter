@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – ToHtml Class Tester
 =================================
@@ -27,12 +26,13 @@ from tools import readFile
 
 from nw.core import NWProject, NWIndex, ToHtml
 
+
 @pytest.mark.core
-def testCoreToHtml_Format(dummyGUI):
+def testCoreToHtml_Format(mockGUI):
     """Test all the formatters for the ToHtml class.
     """
-    theProject = NWProject(dummyGUI)
-    dummyGUI.theIndex = NWIndex(theProject)
+    theProject = NWProject(mockGUI)
+    mockGUI.theIndex = NWIndex(theProject)
     theHtml = ToHtml(theProject)
 
     # Export Mode
@@ -79,12 +79,13 @@ def testCoreToHtml_Format(dummyGUI):
 
 # END Test testCoreToHtml_Format
 
+
 @pytest.mark.core
-def testCoreToHtml_Convert(dummyGUI):
+def testCoreToHtml_Convert(mockGUI):
     """Test the converter of the ToHtml class.
     """
-    theProject = NWProject(dummyGUI)
-    dummyGUI.theIndex = NWIndex(theProject)
+    theProject = NWProject(mockGUI)
+    mockGUI.theIndex = NWIndex(theProject)
     theHtml = ToHtml(theProject)
 
     # Export Mode
@@ -344,10 +345,12 @@ def testCoreToHtml_Convert(dummyGUI):
 
 # END Test testCoreToHtml_Convert
 
-def testCoreToHtml_Complex(dummyGUI, fncDir):
+
+@pytest.mark.core
+def testCoreToHtml_Complex(mockGUI, fncDir):
     """Test the ave method of the ToHtml class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theHtml = ToHtml(theProject)
 
     # Build Project
@@ -406,8 +409,8 @@ def testCoreToHtml_Complex(dummyGUI, fncDir):
         "</body>\n"
         "</html>\n"
     ).format(
-        htmlStyle = "\n".join(theStyle),
-        bodyText = "".join(resText).rstrip()
+        htmlStyle="\n".join(theStyle),
+        bodyText="".join(resText).rstrip()
     )
 
     saveFile = os.path.join(fncDir, "outFile.htm")
@@ -416,11 +419,12 @@ def testCoreToHtml_Complex(dummyGUI, fncDir):
 
 # END Test testCoreToHtml_Save
 
+
 @pytest.mark.core
-def testCoreToHtml_Methods(dummyGUI):
+def testCoreToHtml_Methods(mockGUI):
     """Test all the other methods of the ToHtml class.
     """
-    theProject = NWProject(dummyGUI)
+    theProject = NWProject(mockGUI)
     theHtml = ToHtml(theProject)
     theHtml.setKeepMarkdown(True)
 
@@ -453,11 +457,11 @@ def testCoreToHtml_Methods(dummyGUI):
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theMarkdown[-1] == (
-        "Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
+        "Text with <brackets> &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
     )
     theHtml.doPostProcessing()
     assert theHtml.theMarkdown[-1] == (
-        "Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
+        "Text with <brackets> &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
     )
 
     # Result Size

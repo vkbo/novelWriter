@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 novelWriter – Main Setup Script
 ===============================
@@ -35,6 +34,7 @@ OS_LINUX  = 1
 OS_WIN    = 2
 OS_DARWIN = 3
 
+
 # =============================================================================================== #
 #  Utilities
 # =============================================================================================== #
@@ -50,14 +50,22 @@ def extractVersion():
     numVers = "Unknown"
     hexVers = "Unknown"
     initFile = os.path.join("nw", "__init__.py")
-    with open(initFile, mode="r") as inFile:
-        for aLine in inFile:
-            if aLine.startswith("__version__"):
-                numVers = getValue((aLine))
-            if aLine.startswith("__hexversion__"):
-                hexVers = getValue((aLine))
+    try:
+        with open(initFile, mode="r", encoding="utf-8") as inFile:
+            for aLine in inFile:
+                if aLine.startswith("__version__"):
+                    numVers = getValue((aLine))
+                if aLine.startswith("__hexversion__"):
+                    hexVers = getValue((aLine))
+    except Exception as e:
+        print("Could not read file: %s" % initFile)
+        print(str(e))
+
+    print("novelWriter version is: %s (%s)" % (numVers, hexVers))
+    print("")
 
     return numVers, hexVers
+
 
 # =============================================================================================== #
 #  General
@@ -94,6 +102,7 @@ def installPackages(hostOS):
             sys.exit(1)
 
     return
+
 
 ##
 #  Clean Build and Dist Folders (clean)
@@ -132,6 +141,7 @@ def cleanInstall():
     print("")
 
     return
+
 
 # =============================================================================================== #
 #  Additional Buiilds
@@ -210,6 +220,7 @@ def buildQtDocs():
 
     return
 
+
 ##
 #  Qt Linguist QM Builder (qtlrelease)
 ##
@@ -248,6 +259,7 @@ def buildQtI18n():
 
     return
 
+
 ##
 #  Qt Linguist TS Builder (qtlupdate)
 ##
@@ -270,6 +282,7 @@ def buildQtI18nTS():
     print("")
 
     return
+
 
 ##
 #  Sample Project ZIP File Builder (sample)
@@ -310,6 +323,7 @@ def buildSampleZip():
     print("")
 
     return
+
 
 # =============================================================================================== #
 #  Python Packaging
@@ -421,6 +435,7 @@ def makeMinimalPackage(targetOS):
     print("")
 
     return
+
 
 ##
 #  Make Simple Package (pack-pyz)
@@ -600,6 +615,7 @@ def makeSimplePackage(embedPython):
 
     return
 
+
 # =============================================================================================== #
 #  General Installers
 # =============================================================================================== #
@@ -669,15 +685,19 @@ def xdgInstall():
     with open("./novelwriter.desktop", mode="w+") as outFile:
         outFile.write(desktopData)
 
+    # Remove old desktop icon
+    exCode = subprocess.call(
+        ["xdg-desktop-icon", "uninstall", "novelwriter.desktop"]
+    )
+
+    # Install application launcher
     exCode = subprocess.call(
         ["xdg-desktop-menu", "install", "--novendor", "./novelwriter.desktop"]
     )
     if exCode == 0:
-        print("Installed menu desktop file")
+        print("Installed menu launcher file")
     else:
-        print(f"Error {exCode}: Could not install menu desktop file")
-
-    print("")
+        print(f"Error {exCode}: Could not install menu launcher file")
 
     # Install MimeType
     # ================
@@ -690,8 +710,6 @@ def xdgInstall():
         print("Installed mimetype")
     else:
         print(f"Error {exCode}: Could not install mimetype")
-
-    print("")
 
     # Install Icons
     # =============
@@ -745,6 +763,7 @@ def xdgInstall():
 
     return
 
+
 ##
 #  XDG Uninstallation (xdg-uninstall)
 ##
@@ -757,17 +776,28 @@ def xdgUninstall():
     print("=============")
     print("")
 
+    # Application Menu Icon
     exCode = subprocess.call(
         ["xdg-desktop-menu", "uninstall", "novelwriter.desktop"]
     )
     if exCode == 0:
-        print("Uninstalled menu desktop file")
+        print("Uninstalled menu launcher file")
     else:
-        print(f"Error {exCode}: Could not uninstall menu desktop file")
+        print(f"Error {exCode}: Could not uninstall menu launcher file")
+
+    # Desktop Icon
+    # (No longer installed)
+    exCode = subprocess.call(
+        ["xdg-desktop-icon", "uninstall", "novelwriter.desktop"]
+    )
+    if exCode == 0:
+        print("Uninstalled desktop launcher file")
+    else:
+        print(f"Error {exCode}: Could not uninstall desktop launcher file")
 
     sizeArr = ["16", "22", "24", "32", "48", "64", "96", "128", "256", "512"]
 
-    # App Icon
+    # App Icons
     for aSize in sizeArr:
         exCode = subprocess.call([
             "xdg-icon-resource", "uninstall", "--noupdate",
@@ -802,6 +832,7 @@ def xdgUninstall():
     print("")
 
     return
+
 
 ##
 #  WIN Installation (win-install)
@@ -927,6 +958,7 @@ def winInstall():
 
     return
 
+
 ##
 #  WIN Uninstallation (win-uninstall)
 ##
@@ -1013,6 +1045,7 @@ def winUninstall():
 
     return
 
+
 # =============================================================================================== #
 #  Windows Installers
 # =============================================================================================== #
@@ -1049,6 +1082,7 @@ def innoSetup():
         sys.exit(1)
 
     return
+
 
 # =============================================================================================== #
 #  Process Command Line
@@ -1260,7 +1294,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # Run the standard setup
-    import setuptools # noqa: F401
+    import setuptools  # noqa: F401
     setuptools.setup()
 
 # END Main

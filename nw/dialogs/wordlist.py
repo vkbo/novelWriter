@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI User Wordlist
 ===============================
@@ -25,8 +24,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
 import os
+import logging
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -38,6 +37,7 @@ from nw.enum import nwAlert
 from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
+
 
 class GuiWordList(QDialog):
 
@@ -122,14 +122,15 @@ class GuiWordList(QDialog):
         """
         newWord = self.newEntry.text().strip()
         if newWord == "":
-            self.theParent.makeAlert(self.tr("Cannot add a blank word."), nwAlert.ERROR)
+            self.theParent.makeAlert(self.tr(
+                "Cannot add a blank word."
+            ), nwAlert.ERROR)
             return False
 
         if self.listBox.findItems(newWord, Qt.MatchExactly):
-            self.theParent.makeAlert(
-                self.tr("The word '{0}' is already in the word list.").format(newWord),
-                nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "The word '{0}' is already in the word list."
+            ).format(newWord), nwAlert.ERROR)
             return False
 
         self.listBox.addItem(newWord)
@@ -154,7 +155,7 @@ class GuiWordList(QDialog):
         tmpFile = dctFile + "~"
 
         try:
-            with open(tmpFile, mode="w", encoding="utf8") as outFile:
+            with open(tmpFile, mode="w", encoding="utf-8") as outFile:
                 for i in range(self.listBox.count()):
                     outFile.write(self.listBox.item(i).text() + "\n")
 
@@ -192,7 +193,7 @@ class GuiWordList(QDialog):
             logger.debug("No project dictionary file found")
             return False
 
-        with open(wordList, mode="r", encoding="utf8") as inFile:
+        with open(wordList, mode="r", encoding="utf-8") as inFile:
             for inLine in inFile:
                 theWord = inLine.strip()
                 if len(theWord) == 0:

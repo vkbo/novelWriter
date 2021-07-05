@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Open Project
 ==============================
@@ -25,13 +24,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
 import os
+import logging
 
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QKeySequence
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QTreeWidget,
     QAbstractItemView, QTreeWidgetItem, QDialogButtonBox, QLabel, QShortcut,
@@ -42,6 +41,7 @@ from nw.common import formatInt
 from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
+
 
 class GuiProjectLoad(QDialog):
 
@@ -105,8 +105,8 @@ class GuiProjectLoad(QDialog):
         treeHead.setTextAlignment(self.C_TIME, Qt.AlignRight)
 
         self.lblRecent = QLabel("<b>%s</b>" % self.tr("Recently Opened Projects"))
-        self.lblPath   = QLabel("<b>%s</b>" % self.tr("Path"))
-        self.selPath   = QLineEdit("")
+        self.lblPath = QLabel("<b>%s</b>" % self.tr("Path"))
+        self.selPath = QLineEdit("")
         self.selPath.setReadOnly(True)
 
         self.browseButton = QPushButton("...")

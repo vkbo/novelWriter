@@ -1,5 +1,161 @@
 # novelWriter Changelog
 
+## Version 1.4 Beta 1 [2021-06-13]
+
+### Release Notes
+
+This is a preview release of novelWriter 1.4. It contains some new features and a lot of code
+refactoring. This release is a testing release, and may contain bugs. Please be careful when using
+this version to work on your projects.
+
+Below are the main feature changes of this release.
+
+#### Line Breaks
+
+The way line breaks inside paragraphs work has been changed. A single line break is now treated as
+a proper line break and will show up in the document viewer and exported documents. A single line
+break does not start a new paragraph, but forces a break inside the paragraph like a Shift + Enter
+does in most rich text editors. Two line breaks is still needed to start a new paragraph.
+
+The old syntax of adding two spaces to force a line break within a paragraph will still work as
+before, so there is no need to change your existing text if you've used this feature. However,
+there is a new highlighting feature that will show you where in the text you have redundant spaces.
+If you are used to having double spaces between sentences, you may want to switch off this
+highlighting feature in Preferences as it will also detect those.
+
+A helper function has been added to the Format menu that can look through a paragraph and remove
+line breaks in case you've been using line breaks inside your existing text under the assumption
+that the exporter and viewer will ignore them.
+
+I hope this change will not be too inconvenient. I believe the new behaviour will make more sense
+for most people. Especially considering some of the feedback I've gotten on how line breaks work.
+The original implementation was following the Markdown standard, but since novelWriter is not a
+proper Markdown editor and instead just borrows from Markdown, this behaviour always seemed a bit
+unnecessary.
+
+#### Text Alignment and Indentation
+
+The default text alignment is left or justified based on your preferences. For documents with the
+layout set to Title Page or Partitions, the default is centred. However, sometimes you may want to
+override this default. A new set of codes have therefore been added to allow specifying alignment
+as well as additional text margins on individual paragraphs.
+
+The logic of the syntax is as follows:
+
+A single angle bracket will push the text away from the edge it points away from. Therefore, a
+single `>` before the paragraph, or a single `<` after the paragraph, will add indentation on the
+respective side. It's perfectly valid to do this on both sides at the same time.
+
+A double set of angle brackets will push the text all the way towards the opposite aide. Therefore,
+a double set of `>>` before the paragraph will indicate right alignment, and a double set of `<<`
+after the paragraph will force left alignment. Also here both can be used at the same time, which
+results in the paragraph being centred.
+
+Format menu entries and keyboard shortcuts have been added so that you don't have to memorise these
+codes.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* A number of calls for the pop-up alert box were missing translation wrappers. That means they
+  could not be translated into other languages. The alerts have been fixed, but the PR does not add
+  the missing translations. PR #806.
+* A duplicate error message from the index class has been removed. PR #758.
+
+**Features**
+
+* Single line breaks are now treated as proper line breaks within paragraphs. Paragraphs are still
+  separated by two line breaks like before. This means that it is no longer necessary to leave two
+  spaces at the end of the line to force a line break. This is a rather obscure and little known
+  feature taken from Markdown, and it isn't very intuitive. Issue #785. PR #786.
+* It is now possible to specify text alignment and additional indentation on individual paragraphs
+  in the text. Both features use a similar syntax that I hope is fairly intuitive. Menu entries and
+  keyboard shortcuts have also been added to make it easier to use these features. Issues #595 and
+  #803. PR #804.
+
+**Code Improvements**
+
+* Class initialisation has been made consistent. All GUI classes now inherit the main window as its
+  parent class, and all other classes inherit the main project class as its parent. Since the
+  project class and the main window class have pointers to each other, all needed pointers are
+  available from their respective classes. PR #758.
+* The document class has been changed from a reusable class to a class that is intended to wrap a
+  single document via its handle. The class was originally written for the document editor where
+  the reusable approach made more sense. But it is much simple to create and destroy them in other
+  parts of the code when they are not reusable. PRs #758 and #760.
+* The document class no longer generates any pop-up alerts. Errors are recorded and retrieved and
+  displayed by the parent or caller class. PR #758.
+* Refactored the code of the editor class to make it more isolated by making most class variables
+  private. PR #779.
+* Made similar changes to the viewer class and item details class. PR #780.
+
+----
+
+## Version 1.3.3 [2021-06-13]
+
+### Release Notes
+
+This patch release fixes a potential file encoding issue when running setup on Windows, and a minor
+issue with the project word count not being updated immediately when a file is deleted. In
+addition, the keyboard shortcuts to change focus between the project tree, the editor, the viewer,
+and the outline panel, have been changed for Windows users. They keyboard shortcuts were
+interfering with the Alt codes used for special characters. The shortcuts are unchanged for Linux
+and macOS.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix an issue with file encoding when extracting version information from the source code during
+  setup on Windows. This seems to be a limited issue, but the changes make the relevant function
+  more fault tolerant. Issue #805. PR #807.
+* The project word count on the status bar was not always updated when a file was permanently
+  deleted from the project. This has now been resolved. Issue #799. PR #810.
+* The keyboard shortcuts to change focus will on Windows interfere with the alt key codes as the
+  focus shortcuts used `Alt+` to `Alt+4`. On Windows, these are now instead `Ctrl+Alt+1` to
+  `Ctrl+Alt+4`. Part of issue #740. PR #808.
+
+**Source Code**
+
+* Remove a redundant line in the source code. PR #802.
+* Make the XML parse for project items a little less panicky when encountering unexpected XML tags.
+  Generally, this shouldn't be a problem, but the XML parser should silently ignore unexpected tags
+  when parsing the project file. This may occur if a project is opened in an earlier version of
+  novelWriter. If so, a warning is issued anyway, so it is safe to disregard unrecognised tags as
+  the user has already actively selected to proceed and been sufficiently warned. PR #809.
+
+----
+
+## Version 1.3.2 [2021-05-30]
+
+### Release Notes
+
+This is a patch release that fixes some minor issues. One issue was with the split tool, which
+would drop the last line from the source document during a split if it was missing a final line
+break. A minor issue with the display of word counts on the details panel under the project tree
+has also been fixed. In addition, the setup script commands for Linux have been improved a bit.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* The details panel under the tree would sometimes show character, word and paragraph counts even
+  when there was no document selected. This has now been fixed. Issue #781. PR #782.
+* The split document tool would drop the last line of the source document. This is generally not a
+  problem if the last line has a line break after it, but if it doesn't, it is lost in the split.
+  This was caused by an offset error when calculating the split positions in the file and has been
+  resolved. Issue #795. PR #796.
+
+**Installation**
+
+* Due to an error in the setup script in the past, a desktop icon was created for novelWriter when
+  running the `xdg-install` command. This is no longer the case, but the old icon was still left on
+  some user's desktops. The setup script will now remove that icon if it exists when the
+  `xdg-install` or `xdg-uninstall` commands are run. PR #784.
+
+----
+
 ## Version 1.3.1 [2021-05-06]
 
 ### Release Notes

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Document
 ==============================
@@ -37,6 +36,7 @@ from nw.common import (
 
 logger = logging.getLogger(__name__)
 
+
 class NWDoc():
 
     def __init__(self, theProject, theHandle):
@@ -44,11 +44,11 @@ class NWDoc():
         self.theProject = theProject
 
         # Internal Variables
-        self._theItem   = None # The currently open item
-        self._docHandle = None # The handle of the currently open item
-        self._fileLoc   = None # The file location of the currently open item
-        self._docMeta   = {}   # The meta data of the currently open item
-        self._docError  = ""   # The latest encountered IO error
+        self._theItem   = None  # The currently open item
+        self._docHandle = None  # The handle of the currently open item
+        self._fileLoc   = None  # The file location of the currently open item
+        self._docMeta   = {}    # The meta data of the currently open item
+        self._docError  = ""    # The latest encountered IO error
 
         if isHandle(theHandle):
             self._docHandle = theHandle
@@ -103,7 +103,7 @@ class NWDoc():
         self._docMeta = {}
         if os.path.isfile(docPath):
             try:
-                with open(docPath, mode="r", encoding="utf8") as inFile:
+                with open(docPath, mode="r", encoding="utf-8") as inFile:
                     # Check the first <= 10 lines for metadata
                     for i in range(10):
                         inLine = inFile.readline()
@@ -168,7 +168,7 @@ class NWDoc():
                 )
 
         try:
-            with open(docTemp, mode="w", encoding="utf8") as outFile:
+            with open(docTemp, mode="w", encoding="utf-8") as outFile:
                 outFile.write(docMeta)
                 outFile.write(docText)
         except Exception as e:
@@ -200,7 +200,7 @@ class NWDoc():
             if os.path.isfile(chkFile):
                 try:
                     os.unlink(chkFile)
-                    logger.debug("Deleted: %s" % chkFile)
+                    logger.debug("Deleted: %s", chkFile)
                 except Exception as e:
                     self._docError = str(e)
                     return False
@@ -319,7 +319,7 @@ class NWDoc():
             )
             versCount += 1
 
-        with open(dataFile, mode="w", encoding="utf8") as outFile:
+        with open(dataFile, mode="w", encoding="utf-8") as outFile:
             outFile.write(versData)
 
         logger.debug("Recreated %d records in %s/versions.dat" % (versCount, self._docHandle))
@@ -343,6 +343,10 @@ class NWDoc():
         bakFile = "%s.bak" % self._docHandle
         docPath = os.path.join(self.theProject.projContent, docFile)
         bakPath = os.path.join(self.theProject.projVers, bakFile)
+
+        if not os.path.isfile(docPath):
+            logger.warning("Cannot make session copy as file does not exist")
+            return False
 
         safeUnlink(bakPath)
         shutil.copy2(docPath, bakPath)
@@ -392,7 +396,7 @@ class NWDoc():
             )
             if wrStatus:
                 try:
-                    with open(dataFile, mode="a+", encoding="utf8") as outFile:
+                    with open(dataFile, mode="a+", encoding="utf-8") as outFile:
                         outFile.write("%11s  %19s  %s\n" % (
                             versionSuffix, formatTimeStamp(metaTime), str(theMessage)
                         ))
@@ -446,7 +450,7 @@ class NWDoc():
             self._docMeta["versionNote"] = metaLine[8:].strip()
 
         else:
-            logger.debug("Ignoring meta data: '%s'" % metaLine.strip())
+            logger.debug("Ignoring meta data: '%s'", metaLine.strip())
 
         return
 

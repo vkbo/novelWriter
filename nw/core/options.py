@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Options Cache
 ===================================
@@ -33,6 +32,7 @@ import os
 from nw.constants import nwFiles
 
 logger = logging.getLogger(__name__)
+
 
 class OptionState():
 
@@ -125,12 +125,12 @@ class OptionState():
             return False
 
         stateFile = os.path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
-        theState  = {}
+        theState = {}
 
         if os.path.isfile(stateFile):
             logger.debug("Loading GUI options file")
             try:
-                with open(stateFile, mode="r", encoding="utf8") as inFile:
+                with open(stateFile, mode="r", encoding="utf-8") as inFile:
                     theState = json.load(inFile)
             except Exception:
                 logger.error("Failed to load GUI options file")
@@ -157,7 +157,7 @@ class OptionState():
         logger.debug("Saving GUI options file")
 
         try:
-            with open(stateFile, mode="w+", encoding="utf8") as outFile:
+            with open(stateFile, mode="w+", encoding="utf-8") as outFile:
                 json.dump(self.theState, outFile, indent=2)
         except Exception:
             logger.error("Failed to save GUI options file")
@@ -174,11 +174,11 @@ class OptionState():
         """Saves a value, with a given group and name.
         """
         if setGroup not in self.validMap:
-            logger.error("Unknown option group '%s'" % setGroup)
+            logger.error("Unknown option group '%s'", setGroup)
             return False
 
         if setName not in self.validMap[setGroup]:
-            logger.error("Unknown option name '%s'" % setName)
+            logger.error("Unknown option name '%s'", setName)
             return False
 
         if setGroup not in self.theState:

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Spell Check Classes
 =================================
@@ -30,6 +29,7 @@ import os
 import difflib
 
 logger = logging.getLogger(__name__)
+
 
 # =============================================================================================== #
 #  SpellChecking SuperClass
@@ -71,7 +71,7 @@ class NWSpellCheck():
                     outFile.write("%s\n" % newWord)
                 self.projDict.append(newWord)
             except Exception:
-                logger.error("Failed to add word to project word list %s" % str(self.projectDict))
+                logger.error("Failed to add word to project word list %s", str(self.projectDict))
                 nw.logException()
                 return False
             return True
@@ -111,7 +111,7 @@ class NWSpellCheck():
                     theLine = theLine.strip()
                     if len(theLine) > 0 and theLine not in self.projDict:
                         self.projDict.append(theLine)
-            logger.debug("Project word list contains %d words" % len(self.projDict))
+            logger.debug("Project word list contains %d words", len(self.projDict))
 
         except Exception:
             logger.error("Failed to load project word list")
@@ -121,6 +121,7 @@ class NWSpellCheck():
         return True
 
 # END Class NWSpellCheck
+
 
 # =============================================================================================== #
 #  Enchant Based SpellChecking
@@ -148,10 +149,10 @@ class NWSpellEnchant(NWSpellCheck):
             self.theBroker = enchant.Broker()
             self.theDict = self.theBroker.request_dict(theLang)
             self.spellLanguage = theLang
-            logger.debug("Enchant spell checking for language %s loaded" % theLang)
+            logger.debug("Enchant spell checking for language '%s' loaded", theLang)
 
         except Exception:
-            logger.error("Failed to load enchant spell checking for language %s" % theLang)
+            logger.error("Failed to load enchant spell checking for language '%s'", theLang)
             self.theDict = FakeEnchant()
             self.spellLanguage = None
 
@@ -208,6 +209,7 @@ class NWSpellEnchant(NWSpellCheck):
 
 # END Class NWSpellEnchant
 
+
 class FakeEnchant:
     """Fallback for when Enchant is selected, but not installed.
     """
@@ -225,6 +227,7 @@ class FakeEnchant:
 
 # END Class FakeEnchant
 
+
 # =============================================================================================== #
 #  Fallback SpellChecking Using difflib
 # =============================================================================================== #
@@ -232,8 +235,7 @@ class FakeEnchant:
 class NWSpellSimple(NWSpellCheck):
     """Internal spell check tool that uses standard Python packages with
     no other external dependencies. This is the fallback spell checker
-    when no other is available. This method is fairly slow compared to
-    other implementations.
+    when no other is available. This method is slower than enchant.
     """
     theWords = set()
 
@@ -256,12 +258,12 @@ class NWSpellSimple(NWSpellCheck):
                         continue
                     self.theWords.add(theLine.strip().lower())
 
-            logger.debug("Spell check dictionary for language %s loaded" % theLang)
-            logger.debug("Dictionary contains %d words" % len(self.theWords))
+            logger.debug("Spell check dictionary for language '%s' loaded", theLang)
+            logger.debug("Dictionary contains %d words", len(self.theWords))
             self.spellLanguage = theLang
 
         except Exception:
-            logger.error("Failed to load spell check word list for language %s" % theLang)
+            logger.error("Failed to load spell check word list for language '%s'", theLang)
             nw.logException()
             self.spellLanguage = None
 

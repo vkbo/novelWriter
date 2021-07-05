@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Doc Merge Tool
 ================================
@@ -38,6 +37,7 @@ from nw.enum import nwAlert, nwItemType
 from nw.gui.custom import QHelpLabel
 
 logger = logging.getLogger(__name__)
+
 
 class GuiDocMerge(QDialog):
 
@@ -102,9 +102,9 @@ class GuiDocMerge(QDialog):
             finalOrder.append(self.listBox.item(i).data(Qt.UserRole))
 
         if len(finalOrder) == 0:
-            self.theParent.makeAlert(
-                self.tr("No source documents found. Nothing to do."), nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "No source documents found. Nothing to do."
+            ), nwAlert.ERROR)
             return False
 
         theText = ""
@@ -113,16 +113,16 @@ class GuiDocMerge(QDialog):
             docText = inDoc.readDocument()
             docErr = inDoc.getError()
             if docText is None and docErr:
-                self.theParent.makeAlert(
-                    [self.tr("Failed to open document file."), docErr], nwAlert.ERROR
-                )
+                self.theParent.makeAlert([
+                    self.tr("Failed to open document file."), docErr
+                ], nwAlert.ERROR)
             if docText:
                 theText += docText.rstrip("\n")+"\n\n"
 
         if self.sourceItem is None:
-            self.theParent.makeAlert(
-                self.tr("No source folder selected. Nothing to do."), nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "No source folder selected. Nothing to do."
+            ), nwAlert.ERROR)
             return False
 
         srcItem = self.theProject.projTree[self.sourceItem]
@@ -136,9 +136,9 @@ class GuiDocMerge(QDialog):
 
         outDoc = NWDoc(self.theProject, nHandle)
         if not outDoc.writeDocument(theText):
-            self.theParent.makeAlert(
-                [self.tr("Could not save document."), outDoc.getError()], nwAlert.ERROR
-            )
+            self.theParent.makeAlert([
+                self.tr("Could not save document."), outDoc.getError()
+            ], nwAlert.ERROR)
             return False
 
         self.theParent.treeView.revealNewTreeItem(nHandle)
@@ -174,9 +174,9 @@ class GuiDocMerge(QDialog):
             return False
 
         if nwItem.itemType is not nwItemType.FOLDER:
-            self.theParent.makeAlert(
-                self.tr("Element selected in the project tree must be a folder."), nwAlert.ERROR
-            )
+            self.theParent.makeAlert(self.tr(
+                "Element selected in the project tree must be a folder."
+            ), nwAlert.ERROR)
             return False
 
         for sHandle in self.theParent.treeView.getTreeFromHandle(tHandle):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Common Functions
 ==============================
@@ -38,6 +37,7 @@ from nw.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
 
+
 # =========================================================================== #
 #  Checker Functions
 # =========================================================================== #
@@ -54,6 +54,7 @@ def checkString(value, default, allowNone=False):
         return str(value)
     return default
 
+
 def checkInt(value, default, allowNone=False):
     """Check if a variable is an integer or a none.
     """
@@ -66,6 +67,7 @@ def checkInt(value, default, allowNone=False):
         return int(value)
     except Exception:
         return default
+
 
 def checkBool(value, default, allowNone=False):
     """Check if a variable is a boolean or a none.
@@ -91,6 +93,7 @@ def checkBool(value, default, allowNone=False):
             return default
     return default
 
+
 def checkHandle(value, default, allowNone=False):
     """Check if a value is a handle.
     """
@@ -102,6 +105,7 @@ def checkHandle(value, default, allowNone=False):
     if isHandle(value):
         return str(value)
     return default
+
 
 # =========================================================================== #
 #  Validator Functions
@@ -120,6 +124,7 @@ def isHandle(theString):
             return False
     return True
 
+
 def isTitleTag(theString):
     """Check if a string is a valid title string.
     """
@@ -134,20 +139,24 @@ def isTitleTag(theString):
             return False
     return True
 
+
 def isItemClass(theString):
     """Check if an item is a calid nwItemClass identifier.
     """
     return theString in nwItemClass.__members__
+
 
 def isItemType(theString):
     """Check if an item is a calid nwItemType identifier.
     """
     return theString in nwItemType.__members__
 
+
 def isItemLayout(theString):
     """Check if an item is a calid nwItemLayout identifier.
     """
     return theString in nwItemLayout.__members__
+
 
 def hexToInt(value, default=0):
     """Convert a hex string to an integer.
@@ -158,6 +167,7 @@ def hexToInt(value, default=0):
         except Exception:
             return default
     return default
+
 
 # =========================================================================== #
 #  Formatting Functions
@@ -182,6 +192,7 @@ def formatInt(theInt):
 
     return str(theInt)
 
+
 def formatTimeStamp(theTime, fileSafe=False):
     """Take a number (on the format returned by time.time()) and convert
     it to a timestamp string.
@@ -190,6 +201,7 @@ def formatTimeStamp(theTime, fileSafe=False):
         return datetime.fromtimestamp(theTime).strftime(nwConst.FMT_FSTAMP)
     else:
         return datetime.fromtimestamp(theTime).strftime(nwConst.FMT_TSTAMP)
+
 
 def formatTime(tS):
     """Format a time in seconds in HH:MM:SS format or d-HH:MM:SS format
@@ -201,6 +213,7 @@ def formatTime(tS):
         else:
             return f"{tS//3600:02d}:{tS%3600//60:02d}:{tS%60:02d}"
     return "ERROR"
+
 
 def parseTimeStamp(theStamp, default, allowNone=False):
     """Parses a text representation of a time stamp and converts it into
@@ -214,6 +227,7 @@ def parseTimeStamp(theStamp, default, allowNone=False):
     except Exception:
         return default
 
+
 # =========================================================================== #
 #  String Functions
 # =========================================================================== #
@@ -225,7 +239,7 @@ def splitVersionNumber(vString):
     vMajor = 0
     vMinor = 0
     vPatch = 0
-    vInt   = 0
+    vInt = 0
 
     vBits = vString.split(".")
     nBits = len(vBits)
@@ -240,6 +254,7 @@ def splitVersionNumber(vString):
     vInt = vMajor*10000 + vMinor*100 + vPatch
 
     return [vMajor, vMinor, vPatch, vInt]
+
 
 def transferCase(theSource, theTarget):
     """Transfers the case of the source word to the target word. This
@@ -262,6 +277,7 @@ def transferCase(theSource, theTarget):
 
     return theResult
 
+
 def fuzzyTime(secDiff):
     """Converts a time difference in seconds into a fuzzy time string.
     """
@@ -277,43 +293,43 @@ def fuzzyTime(secDiff):
         return QCoreApplication.translate(
             "Common", "a minute ago"
         )
-    elif secDiff < 3300: # 55 minutes
+    elif secDiff < 3300:  # 55 minutes
         return QCoreApplication.translate(
             "Common", "{0} minutes ago"
         ).format(int(round(secDiff/60)))
-    elif secDiff < 5400: # 90 minutes
+    elif secDiff < 5400:  # 90 minutes
         return QCoreApplication.translate(
             "Common", "an hour ago"
         )
-    elif secDiff < 84600: # 23.5 hours
+    elif secDiff < 84600:  # 23.5 hours
         return QCoreApplication.translate(
             "Common", "{0} hours ago"
         ).format(int(round(secDiff/3600)))
-    elif secDiff < 129600: # 1.5 days
+    elif secDiff < 129600:  # 1.5 days
         return QCoreApplication.translate(
             "Common", "a day ago"
         )
-    elif secDiff < 561600: # 6.5 days
+    elif secDiff < 561600:  # 6.5 days
         return QCoreApplication.translate(
             "Common", "{0} days ago"
         ).format(int(round(secDiff/86400)))
-    elif secDiff < 907200: # 10.5 days
+    elif secDiff < 907200:  # 10.5 days
         return QCoreApplication.translate(
             "Common", "a week ago"
         )
-    elif secDiff < 2419200: # 28 days
+    elif secDiff < 2419200:  # 28 days
         return QCoreApplication.translate(
             "Common", "{0} weeks ago"
         ).format(int(round(secDiff/604800)))
-    elif secDiff < 3888000: # 45 days
+    elif secDiff < 3888000:  # 45 days
         return QCoreApplication.translate(
             "Common", "a month ago"
         )
-    elif secDiff < 29808000: # 345 days
+    elif secDiff < 29808000:  # 345 days
         return QCoreApplication.translate(
             "Common", "{0} months ago"
         ).format(int(round(secDiff/2592000)))
-    elif secDiff < 47336400: # 1.5 years
+    elif secDiff < 47336400:  # 1.5 years
         return QCoreApplication.translate(
             "Common", "a year ago"
         )
@@ -321,6 +337,7 @@ def fuzzyTime(secDiff):
         return QCoreApplication.translate(
             "Common", "{0} years ago"
         ).format(int(round(secDiff/31557600)))
+
 
 def numberToRoman(numVal, isLower=False):
     """Convert an integer to a roman number.
@@ -345,6 +362,7 @@ def numberToRoman(numVal, isLower=False):
 
     return romNum.lower() if isLower else romNum
 
+
 # =========================================================================== #
 #  Other Functions
 # =========================================================================== #
@@ -358,6 +376,7 @@ def makeFileNameSafe(theText):
             cleanName += c
     return cleanName
 
+
 def getGuiItem(theName):
     """Returns a QtWidget based on its objectName.
     """
@@ -365,6 +384,7 @@ def getGuiItem(theName):
         if qWidget.objectName() == theName:
             return qWidget
     return None
+
 
 # =========================================================================== #
 #  File I/O Functions
@@ -388,6 +408,7 @@ def safeMakeDir(thePath):
 
     return True
 
+
 def safeUnlink(thePath):
     """Delete a file, and capture any error.
     """
@@ -404,11 +425,12 @@ def safeUnlink(thePath):
 
     return True
 
+
 def safeFileRead(theFile, defaultVal=""):
     """Read a file and return all the content.
     """
     try:
-        with open(theFile, mode="r", encoding="utf8") as inFile:
+        with open(theFile, mode="r", encoding="utf-8") as inFile:
             return inFile.read()
     except Exception:
         logger.error("Could not read: %s" % str(theFile))

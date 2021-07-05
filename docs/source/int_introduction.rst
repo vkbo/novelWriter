@@ -44,7 +44,7 @@ The main window does not have a toolbar like many other applications do. This re
 since the documents are formatted with markdown tags, is more or less redundant. However, all
 formatting features supported are available through convenient keyboard shortcuts. They are also
 available in the main menu so you don't have to look up the syntax every time until you've
-memorised it. A full list of shortcuts can be found in the :ref:`a_ui_shortcuts` section.
+memorised it. A full list of shortcuts can be found in the :ref:`a_kb` section.
 
 In addition, novelWriter has a :guilabel:`Focus Mode` where all the user interface elements other
 than the document editor itself are hidden away.

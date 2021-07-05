@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Project Outline Details
 =========================================
@@ -37,13 +36,14 @@ from nw.constants import trConst, nwKeyWords, nwLabels
 
 logger = logging.getLogger(__name__)
 
+
 class GuiOutlineDetails(QScrollArea):
 
     LVL_MAP = {
-        "H1" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Title"),
-        "H2" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Chapter"),
-        "H3" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Scene"),
-        "H4" : QT_TRANSLATE_NOOP("GuiOutlineDetails", "Section"),
+        "H1": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Title"),
+        "H2": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Chapter"),
+        "H3": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Scene"),
+        "H4": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Section"),
     }
 
     def __init__(self, theParent):
@@ -191,7 +191,7 @@ class GuiOutlineDetails(QScrollArea):
 
         # Selected Item Tags
         self.tagsGroup = QGroupBox(self.tr("Reference Tags"), self)
-        self.tagsForm  = QGridLayout()
+        self.tagsForm = QGridLayout()
         self.tagsGroup.setLayout(self.tagsForm)
 
         self.tagsForm.addWidget(self.povKeyLabel, 0, 0, 1, 1, Qt.AlignTop | Qt.AlignLeft)
@@ -279,8 +279,8 @@ class GuiOutlineDetails(QScrollArea):
         """Update the content of the tree with the given handle and line
         number pointing to a header.
         """
-        nwItem  = self.theProject.projTree[tHandle]
-        novIdx  = self.theIndex.getNovelData(tHandle, sTitle)
+        nwItem = self.theProject.projTree[tHandle]
+        novIdx = self.theIndex.getNovelData(tHandle, sTitle)
         theRefs = self.theIndex.getReferences(tHandle, sTitle)
         if nwItem is None or novIdx is None:
             return False
@@ -323,7 +323,7 @@ class GuiOutlineDetails(QScrollArea):
     def _tagClicked(self, theLink):
         """Capture the click of a tag in the right-most column.
         """
-        logger.verbose("Clicked link: '%s'" % theLink)
+        logger.verbose("Clicked link: '%s'", theLink)
         if len(theLink) > 0:
             theBits = theLink.split("=")
             if len(theBits) == 2:

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Custom Widgets and Layouts
 ========================================
@@ -42,6 +41,7 @@ from PyQt5.QtWidgets import (
 from nw.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
+
 
 # =============================================================================================== #
 #  Config Form Layout
@@ -123,9 +123,9 @@ class QConfigLayout(QGridLayout):
         """Add a label and a widget as a new row of the grid.
         """
         thisEntry = {
-            "label"  : None,
-            "help"   : None,
-            "widget" : None,
+            "label": None,
+            "help": None,
+            "widget": None,
         }
 
         if isinstance(theLabel, QLabel):
@@ -198,6 +198,7 @@ class QConfigLayout(QGridLayout):
 
 # END Class QConfigLayout
 
+
 class QHelpLabel(QLabel):
 
     def __init__(self, theText, textCol, fontSize=0.9):
@@ -222,6 +223,7 @@ class QHelpLabel(QLabel):
         return
 
 # END Class QHelpLabel
+
 
 # =============================================================================================== #
 #  Switch Widget
@@ -309,13 +311,13 @@ class QSwitch(QAbstractButton):
         if self.isChecked():
             trackBrush = qPalette.highlight()
             thumbBrush = qPalette.highlightedText()
-            textColor  = qPalette.highlight().color()
-            thumbText  = nwUnicode.U_CHECK
+            textColor = qPalette.highlight().color()
+            thumbText = nwUnicode.U_CHECK
         else:
             trackBrush = qPalette.dark()
             thumbBrush = qPalette.light()
-            textColor  = qPalette.dark().color()
-            thumbText  = nwUnicode.U_CROSS
+            textColor = qPalette.dark().color()
+            thumbText = nwUnicode.U_CROSS
 
         if self.isEnabled():
             trackOpacity = 1.0
@@ -323,7 +325,7 @@ class QSwitch(QAbstractButton):
             trackOpacity = 0.6
             trackBrush = qPalette.shadow()
             thumbBrush = qPalette.mid()
-            textColor  = qPalette.shadow().color()
+            textColor = qPalette.shadow().color()
 
         qPaint.setBrush(trackBrush)
         qPaint.setOpacity(trackOpacity)
@@ -367,6 +369,7 @@ class QSwitch(QAbstractButton):
 
 # END Class QSwitch
 
+
 # =============================================================================================== #
 #  Paged Dialog w/Custom TabWidget
 # =============================================================================================== #
@@ -376,18 +379,18 @@ class PagedDialog(QDialog):
     def __init__(self, theParent=None):
         QDialog.__init__(self, parent=theParent)
 
-        self._outerBox  = QVBoxLayout()
-        self._buttonBox = QHBoxLayout()
-        self._tabBox    = QTabWidget()
-
         self._tabBar = VerticalTabBar(self)
-        self._tabBox.setTabBar(self._tabBar)
-        self._tabBox.setTabPosition(QTabWidget.West)
         self._tabBar.setExpanding(False)
 
+        self._tabBox = QTabWidget()
+        self._tabBox.setTabBar(self._tabBar)
+        self._tabBox.setTabPosition(QTabWidget.West)
+
+        self._buttonBox = QHBoxLayout()
+
+        self._outerBox = QVBoxLayout()
         self._outerBox.addWidget(self._tabBox)
         self._outerBox.addLayout(self._buttonBox)
-        self.setLayout(self._outerBox)
 
         # Default Margins
         qM = self._outerBox.contentsMargins()
@@ -396,10 +399,13 @@ class PagedDialog(QDialog):
         mT = qM.top()
         mB = qM.bottom()
 
+        # Set Margins
         self.setContentsMargins(0, 0, 0, 0)
         self._outerBox.setContentsMargins(0, 0, 0, mB)
         self._buttonBox.setContentsMargins(mL, 0, mR, 0)
         self._outerBox.setSpacing(mT)
+
+        self.setLayout(self._outerBox)
 
         return
 
@@ -416,6 +422,7 @@ class PagedDialog(QDialog):
         return
 
 # END Class PagedDialog
+
 
 class VerticalTabBar(QTabBar):
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – ToOdt Class Tester
 =================================
@@ -35,6 +34,7 @@ XML_NS = [
     ' xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"',
 ]
 
+
 def xmlToText(xElem):
     """Get the text content of an XML element.
     """
@@ -43,12 +43,13 @@ def xmlToText(xElem):
         rTxt = rTxt.replace(nSpace, "")
     return rTxt
 
+
 @pytest.mark.core
-def testCoreToOdt_Convert(dummyGUI):
+def testCoreToOdt_Convert(mockGUI):
     """Test the converter of the ToHtml class.
     """
-    theProject = NWProject(dummyGUI)
-    dummyGUI.theIndex = NWIndex(theProject)
+    theProject = NWProject(mockGUI)
+    mockGUI.theIndex = NWIndex(theProject)
     theDoc = ToOdt(theProject, isFlat=True)
 
     # Export Mode

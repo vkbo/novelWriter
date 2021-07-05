@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Test Suite Tools
 ==============================
@@ -25,6 +24,7 @@ import shutil
 
 from PyQt5.QtWidgets import qApp
 
+
 def cmpFiles(fileOne, fileTwo, ignoreLines=None):
     """Compare two files, but optionally ignore lines given by a list.
     """
@@ -32,13 +32,13 @@ def cmpFiles(fileOne, fileTwo, ignoreLines=None):
         ignoreLines = []
 
     try:
-        foOne = open(fileOne, mode="r", encoding="utf8")
+        foOne = open(fileOne, mode="r", encoding="utf-8")
     except Exception as e:
         print(str(e))
         return False
 
     try:
-        foTwo = open(fileTwo, mode="r", encoding="utf8")
+        foTwo = open(fileTwo, mode="r", encoding="utf-8")
     except Exception as e:
         print(str(e))
         return False
@@ -70,6 +70,7 @@ def cmpFiles(fileOne, fileTwo, ignoreLines=None):
 
     return not diffFound
 
+
 def getGuiItem(theName):
     """Returns a QtWidget based on its objectName.
     """
@@ -78,17 +79,20 @@ def getGuiItem(theName):
             return qWidget
     return None
 
+
 def readFile(fileName):
     """Returns the content of a file as a string.
     """
-    with open(fileName, mode="r", encoding="utf8") as inFile:
+    with open(fileName, mode="r", encoding="utf-8") as inFile:
         return inFile.read()
+
 
 def writeFile(fileName, fileData):
     """Write the contents of a string to a file.
     """
-    with open(fileName, mode="w", encoding="utf8") as outFile:
+    with open(fileName, mode="w", encoding="utf-8") as outFile:
         outFile.write(fileData)
+
 
 def cleanProject(projPath):
     """Delete all generated files in a project.

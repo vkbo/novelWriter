@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Item Editor
 =============================
@@ -38,6 +37,7 @@ from nw.constants import trConst, nwLists, nwLabels
 from nw.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
+
 
 class GuiItemEditor(QDialog):
 
@@ -137,7 +137,7 @@ class GuiItemEditor(QDialog):
         #  Assemble
         ##
 
-        nameLabel   = QLabel(self.tr("Label"))
+        nameLabel = QLabel(self.tr("Label"))
         statusLabel = QLabel(self.tr("Status"))
         layoutLabel = QLabel(self.tr("Layout"))
 
@@ -179,7 +179,7 @@ class GuiItemEditor(QDialog):
         """
         logger.verbose("ItemEditor save button clicked")
 
-        itemName   = self.editName.text()
+        itemName = self.editName.text()
         itemStatus = self.editStatus.currentData()
         itemLayout = self.editLayout.currentData()
         isExported = self.editExport.isChecked()

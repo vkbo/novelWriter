@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Main Window Status Bar
 ========================================
@@ -38,6 +37,7 @@ from nw.enum import nwState
 
 logger = logging.getLogger(__name__)
 
+
 class GuiMainStatus(QStatusBar):
 
     def __init__(self, theParent):
@@ -51,8 +51,8 @@ class GuiMainStatus(QStatusBar):
         self.refTime   = None
         self.userIdle  = False
 
-        colNone  = QColor(*self.theTheme.statNone)
-        colTrue  = QColor(*self.theTheme.statUnsaved)
+        colNone = QColor(*self.theTheme.statNone)
+        colTrue = QColor(*self.theTheme.statUnsaved)
         colFalse = QColor(*self.theTheme.statSaved)
 
         iPx = self.theTheme.baseIconSize
@@ -62,7 +62,7 @@ class GuiMainStatus(QStatusBar):
 
         xM = self.mainConf.pxInt(8)
 
-        ## The Spell Checker Language
+        # The Spell Checker Language
         self.langIcon = QLabel("")
         self.langText = QLabel(self.tr("None"))
         self.langIcon.setPixmap(self.theTheme.getPixmap("status_lang", (iPx, iPx)))
@@ -71,7 +71,7 @@ class GuiMainStatus(QStatusBar):
         self.addPermanentWidget(self.langIcon)
         self.addPermanentWidget(self.langText)
 
-        ## The Editor Status
+        # The Editor Status
         self.docIcon = StatusLED(colNone, colTrue, colFalse, iPx, iPx, self)
         self.docText = QLabel(self.tr("Editor"))
         self.docIcon.setContentsMargins(0, 0, 0, 0)
@@ -79,7 +79,7 @@ class GuiMainStatus(QStatusBar):
         self.addPermanentWidget(self.docIcon)
         self.addPermanentWidget(self.docText)
 
-        ## The Project Status
+        # The Project Status
         self.projIcon = StatusLED(colNone, colTrue, colFalse, iPx, iPx, self)
         self.projText = QLabel(self.tr("Project"))
         self.projIcon.setContentsMargins(0, 0, 0, 0)
@@ -87,7 +87,7 @@ class GuiMainStatus(QStatusBar):
         self.addPermanentWidget(self.projIcon)
         self.addPermanentWidget(self.projText)
 
-        ## The Project and Session Stats
+        # The Project and Session Stats
         self.statsIcon = QLabel()
         self.statsText = QLabel("")
         self.statsIcon.setPixmap(self.theTheme.getPixmap("status_stats", (iPx, iPx)))
@@ -96,8 +96,8 @@ class GuiMainStatus(QStatusBar):
         self.addPermanentWidget(self.statsIcon)
         self.addPermanentWidget(self.statsText)
 
-        ## The Session Clock
-        ### Set the mimimum width so the label doesn't rescale every second
+        # The Session Clock
+        # Set the mimimum width so the label doesn't rescale every second
         self.timePixmap = self.theTheme.getPixmap("status_time", (iPx, iPx))
         self.idlePixmap = self.theTheme.getPixmap("status_idle", (iPx, iPx))
 
@@ -235,6 +235,7 @@ class GuiMainStatus(QStatusBar):
 
 # END Class GuiMainStatus
 
+
 class StatusLED(QAbstractButton):
 
     def __init__(self, colNone, colGood, colBad, sW, sH, parent=None):
@@ -242,8 +243,8 @@ class StatusLED(QAbstractButton):
 
         self._colNone = colNone
         self._colGood = colGood
-        self._colBad  = colBad
-        self._theCol  = colNone
+        self._colBad = colBad
+        self._theCol = colNone
 
         self.setFixedWidth(sW)
         self.setFixedHeight(sH)

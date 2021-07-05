@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – GUI Main Window
 =============================
@@ -25,11 +24,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
 import os
+import logging
 
-from datetime import datetime
 from time import time
+from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer, QSize, QThreadPool, pyqtSlot
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence, QCursor
@@ -55,6 +54,7 @@ from nw.constants import nwLists
 
 logger = logging.getLogger(__name__)
 
+
 class GuiMain(QMainWindow):
 
     def __init__(self):
@@ -68,19 +68,16 @@ class GuiMain(QMainWindow):
         # System Info
         # ===========
 
-        logger.info("OS: %s" % self.mainConf.osType)
-        logger.info("Kernel: %s" % self.mainConf.kernelVer)
-        logger.info("Host: %s" % self.mainConf.hostName)
-        logger.info("Qt5 Version: %s (%d)" % (
-            self.mainConf.verQtString, self.mainConf.verQtValue)
-        )
-        logger.info("PyQt5 Version: %s (%d)" % (
-            self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
-        )
-        logger.info("Python Version: %s (0x%x)" % (
-            self.mainConf.verPyString, self.mainConf.verPyHexVal)
-        )
-        logger.info("GUI Language: %s" % self.mainConf.guiLang)
+        logger.info("OS: %s", self.mainConf.osType)
+        logger.info("Kernel: %s", self.mainConf.kernelVer)
+        logger.info("Host: %s", self.mainConf.hostName)
+        logger.info("Qt5 Version: %s (%d)",
+                    self.mainConf.verQtString, self.mainConf.verQtValue)
+        logger.info("PyQt5 Version: %s (%d)",
+                    self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
+        logger.info("Python Version: %s (0x%x)",
+                    self.mainConf.verPyString, self.mainConf.verPyHexVal)
+        logger.info("GUI Language: %s", self.mainConf.guiLang)
 
         # Core Classes
         # ============
@@ -139,7 +136,7 @@ class GuiMain(QMainWindow):
         # Project Tree Tabs
         self.projTabs = QTabWidget()
         self.projTabs.setTabPosition(QTabWidget.South)
-        self.projTabs.setStyleSheet(r"QTabWidget::pane {border: 0;};")
+        self.projTabs.setStyleSheet("QTabWidget::pane {border: 0;};")
         self.projTabs.addTab(self.treeView, self.tr("Project"))
         self.projTabs.addTab(self.novelView, self.tr("Novel"))
         self.projTabs.addTab(self.versView, self.tr("Versions"))
@@ -155,7 +152,7 @@ class GuiMain(QMainWindow):
         self.treeButtons.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.treeButtons.setIconSize(QSize(btnSize, btnSize))
         self.treeButtons.setContentsMargins(0, 0, 0, 0)
-        self.treeButtons.setStyleSheet(r"QToolBar {padding: 0;}")
+        self.treeButtons.setStyleSheet("QToolBar {padding: 0;}")
         self.projTabs.setCornerWidget(self.treeButtons, Qt.BottomRightCorner)
 
         self.projDetailsBtn = QAction(self.tr("Project Details"))
@@ -202,7 +199,7 @@ class GuiMain(QMainWindow):
         # Main Tabs : Editor / Outline
         self.mainTabs = QTabWidget()
         self.mainTabs.setTabPosition(QTabWidget.East)
-        self.mainTabs.setStyleSheet(r"QTabWidget::pane {border: 0;}")
+        self.mainTabs.setStyleSheet("QTabWidget::pane {border: 0;}")
         self.mainTabs.addTab(self.splitDocs, self.tr("Editor"))
         self.mainTabs.addTab(self.splitOutline, self.tr("Outline"))
         self.mainTabs.currentChanged.connect(self._mainTabChanged)
@@ -355,10 +352,9 @@ class GuiMain(QMainWindow):
         """
         if self.hasProject:
             if not self.closeProject():
-                self.makeAlert(
-                    self.tr("Cannot create new project when another project is open."),
-                    nwAlert.ERROR
-                )
+                self.makeAlert(self.tr(
+                    "Cannot create new project when another project is open."
+                ), nwAlert.ERROR)
                 return False
 
         if projData is None:
@@ -373,12 +369,10 @@ class GuiMain(QMainWindow):
             return False
 
         if os.path.isfile(os.path.join(projPath, self.theProject.projFile)):
-            self.makeAlert(
-                self.tr(
-                    "A project already exists in that location. "
-                    "Please choose another folder."
-                ), nwAlert.ERROR
-            )
+            self.makeAlert(self.tr(
+                "A project already exists in that location. "
+                "Please choose another folder."
+            ), nwAlert.ERROR)
             return False
 
         logger.info("Creating new project")
@@ -423,7 +417,7 @@ class GuiMain(QMainWindow):
             self.saveDocument()
 
         if self.theProject.projAltered:
-            saveOK   = self.saveProject()
+            saveOK = self.saveProject()
             doBackup = False
             if self.theProject.doBackup and self.mainConf.backupOnClose:
                 doBackup = True
@@ -446,7 +440,7 @@ class GuiMain(QMainWindow):
 
             self.theProject.closeProject(self.idleTime)
             self.idleRefTime = time()
-            self.idleTime    = 0.0
+            self.idleTime = 0.0
 
             self.theIndex.clearIndex()
             self.clearGUI()
@@ -498,14 +492,16 @@ class GuiMain(QMainWindow):
                 self, self.tr("Project Locked"),
                 "%s<br><br>%s<br>%s" % (
                     self.tr(
-                        "The project is already open by another instance of novelWriter, and "
-                        "is therefore locked. Override lock and continue anyway?"
+                        "The project is already open by another instance of "
+                        "novelWriter, and is therefore locked. Override lock "
+                        "and continue anyway?"
                     ),
                     self.tr(
-                        "Note: If the program or the computer previously crashed, the lock "
-                        "can safely be overridden. If, however, another instance of "
-                        "novelWriter has the project open, overriding the lock may corrupt "
-                        "the project, and is not recommended."
+                        "Note: If the program or the computer previously "
+                        "crashed, the lock can safely be overridden. If, "
+                        "however, another instance of novelWriter has the "
+                        "project open, overriding the lock may corrupt the "
+                        "project, and is not recommended."
                     ),
                     lockDetails
                 ),
@@ -518,9 +514,9 @@ class GuiMain(QMainWindow):
                 return False
 
         # Project is loaded
-        self.hasProject  = True
+        self.hasProject = True
         self.idleRefTime = time()
-        self.idleTime    = 0.0
+        self.idleTime = 0.0
 
         # Load the tag index
         self.theIndex.loadIndex()
@@ -543,10 +539,9 @@ class GuiMain(QMainWindow):
 
         # Check if we need to rebuild the index
         if self.theIndex.indexBroken:
-            self.makeAlert(
-                self.tr("The project index is outdated or broken. Rebuilding index."),
-                nwAlert.WARN
-            )
+            self.makeAlert(self.tr(
+                "The project index is outdated or broken. Rebuilding index."
+            ), nwAlert.WARN)
             self.rebuildIndex()
 
         # Make sure the changed status is set to false on all that was
@@ -622,9 +617,9 @@ class GuiMain(QMainWindow):
             return False
 
         self.treeView.flushTreeOrder()
-        nHandle = None  # The next handle after tHandle
-        fHandle = None  # The first file handle we encounter
-        foundIt = False # We've found tHandle, pick the next we see
+        nHandle = None   # The next handle after tHandle
+        fHandle = None   # The first file handle we encounter
+        foundIt = False  # We've found tHandle, pick the next we see
         for tItem in self.theProject.projTree:
             if tItem is None:
                 continue
@@ -689,7 +684,7 @@ class GuiMain(QMainWindow):
         # Make sure main tab is in Editor view
         self.mainTabs.setCurrentWidget(self.splitDocs)
 
-        logger.debug("Viewing document with handle %s" % tHandle)
+        logger.debug("Viewing document with handle '%s'", tHandle)
         if self.docViewer.loadText(tHandle, tVersion=tVersion):
             if not self.splitView.isVisible():
                 bPos = self.splitMain.sizes()
@@ -730,7 +725,7 @@ class GuiMain(QMainWindow):
 
         theText = None
         try:
-            with open(loadFile, mode="rt", encoding="utf8") as inFile:
+            with open(loadFile, mode="rt", encoding="utf-8") as inFile:
                 theText = inFile.read()
             self.mainConf.setLastPath(loadFile)
         except Exception as e:
@@ -740,18 +735,17 @@ class GuiMain(QMainWindow):
             return False
 
         if self.docEditor.docHandle() is None:
-            self.makeAlert(
-                self.tr("Please open a document to import the text file into."),
-                nwAlert.ERROR
-            )
+            self.makeAlert(self.tr(
+                "Please open a document to import the text file into."
+            ), nwAlert.ERROR)
             return False
 
         if not self.docEditor.isEmpty():
             msgYes = self.askQuestion(
                 self.tr("Import Document"),
                 self.tr(
-                    "Importing the file will overwrite the current content of the document. "
-                    "Do you want to proceed?"
+                    "Importing the file will overwrite the current content of "
+                    "the document. Do you want to proceed?"
                 )
             )
             if not msgYes:
@@ -815,13 +809,13 @@ class GuiMain(QMainWindow):
             logger.warning("No item selected")
             return False
 
-        logger.verbose("Opening item %s" % tHandle)
+        logger.verbose("Opening item '%s'", tHandle)
         nwItem = self.theProject.projTree[tHandle]
         if nwItem.itemType == nwItemType.FILE:
-            logger.verbose("Requested item %s is a file" % tHandle)
+            logger.verbose("Requested item '%s' is a file", tHandle)
             self.openDocument(tHandle, doScroll=False)
         else:
-            logger.verbose("Requested item %s is not a file" % tHandle)
+            logger.verbose("Requested item '%s' is not a file", tHandle)
 
         return True
 
@@ -848,7 +842,7 @@ class GuiMain(QMainWindow):
         if tItem.itemType not in nwLists.REG_TYPES:
             return
 
-        logger.verbose("Requesting change to item %s" % tHandle)
+        logger.verbose("Requesting change to item '%s'", tHandle)
         dlgProj = GuiItemEditor(self, tHandle)
         dlgProj.exec_()
         if dlgProj.result() == QDialog.Accepted:
@@ -898,7 +892,7 @@ class GuiMain(QMainWindow):
                 self.setStatus(self.tr("Indexing: '{0}'").format(self.tr("Unknown item")))
 
             if tItem is not None and tItem.itemType == nwItemType.FILE:
-                logger.verbose("Scanning: %s" % tItem.itemName)
+                logger.verbose("Scanning '%s'", tItem.itemName)
                 self.theIndex.reIndexHandle(tItem.itemHandle)
 
                 # Get Word Counts
@@ -917,9 +911,9 @@ class GuiMain(QMainWindow):
         qApp.restoreOverrideCursor()
 
         if not beQuiet:
-            self.makeAlert(
-                self.tr("The project index has been successfully rebuilt."), nwAlert.INFO
-            )
+            self.makeAlert(self.tr(
+                "The project index has been successfully rebuilt."
+            ), nwAlert.INFO)
 
         return True
 
@@ -1357,6 +1351,11 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aFmtHead2)
         self.addAction(self.mainMenu.aFmtHead3)
         self.addAction(self.mainMenu.aFmtHead4)
+        self.addAction(self.mainMenu.aFmtAlignLeft)
+        self.addAction(self.mainMenu.aFmtAlignCentre)
+        self.addAction(self.mainMenu.aFmtAlignRight)
+        self.addAction(self.mainMenu.aFmtIndentLeft)
+        self.addAction(self.mainMenu.aFmtIndentRight)
         self.addAction(self.mainMenu.aFmtComment)
         self.addAction(self.mainMenu.aFmtNoFormat)
 
@@ -1520,15 +1519,15 @@ class GuiMain(QMainWindow):
         we open it. Otherwise, we do nothing.
         """
         tHandle = tItem.data(self.treeView.C_NAME, Qt.UserRole)
-        logger.verbose("User double clicked tree item with handle %s" % tHandle)
+        logger.verbose("User double clicked tree item with handle '%s'", tHandle)
 
         nwItem = self.theProject.projTree[tHandle]
         if nwItem is not None:
             if nwItem.itemType == nwItemType.FILE:
-                logger.verbose("Requested item %s is a file" % tHandle)
+                logger.verbose("Requested item '%s' is a file", tHandle)
                 self.openDocument(tHandle, changeFocus=False, doScroll=False)
             else:
-                logger.verbose("Requested item %s is a folder" % tHandle)
+                logger.verbose("Requested item '%s' is a folder", tHandle)
 
         return
 
@@ -1552,15 +1551,15 @@ class GuiMain(QMainWindow):
         not change focus to the editor as double click does.
         """
         tHandle = self.treeView.getSelectedHandle()
-        logger.verbose("User pressed return on tree item with handle %s" % tHandle)
+        logger.verbose("User pressed return on tree item with handle '%s'", tHandle)
 
         nwItem = self.theProject.projTree[tHandle]
         if nwItem is not None:
             if nwItem.itemType == nwItemType.FILE:
-                logger.verbose("Requested item %s is a file" % tHandle)
+                logger.verbose("Requested item '%s' is a file", tHandle)
                 self.openDocument(tHandle, changeFocus=False, doScroll=False)
             else:
-                logger.verbose("Requested item %s is a folder" % tHandle)
+                logger.verbose("Requested item '%s' is a folder", tHandle)
 
         return
 

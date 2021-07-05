@@ -71,6 +71,7 @@ operating system for further details.
    :caption: Usage
 
    usage_interface
+   usage_shortcuts
    usage_projects
    usage_structure
    usage_notes

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Tree Class
 ================================
@@ -25,11 +24,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
-import logging
 import os
+import logging
 
-from lxml import etree
 from time import time
+from lxml import etree
 from hashlib import sha256
 
 from nw.enum import nwItemType, nwItemClass, nwItemLayout
@@ -62,22 +61,23 @@ LAYOUT_MAP = {
     },
 }
 
+
 class NWTree():
 
     def __init__(self, theProject):
 
         self.theProject = theProject
 
-        self._projTree    = {}    # Holds all the items of the project
-        self._treeOrder   = []    # The order of the tree items on the tree view
-        self._treeRoots   = []    # The root items of the tree
-        self._trashRoot   = None  # The handle of the trash root folder
-        self._archRoot    = None  # The handle of the archive root folder
-        self._theIndex    = 0     # The current iterator index
-        self._treeChanged = False # True if tree structure has changed
+        self._projTree    = {}     # Holds all the items of the project
+        self._treeOrder   = []     # The order of the tree items on the tree view
+        self._treeRoots   = []     # The root items of the tree
+        self._trashRoot   = None   # The handle of the trash root folder
+        self._archRoot    = None   # The handle of the archive root folder
+        self._theIndex    = 0      # The current iterator index
+        self._treeChanged = False  # True if tree structure has changed
 
-        self._handleSeed  = None  # Used for generating handles for testing
-        self._handleCount = 0     # A counter that is added to the handle generator
+        self._handleSeed  = None   # Used for generating handles for testing
+        self._handleCount = 0      # A counter that is added to the handle generator
 
         return
 
@@ -111,24 +111,24 @@ class NWTree():
             tHandle = self._makeHandle()
 
         if tHandle in self._projTree:
-            logger.warning("Duplicate handle %s detected, skipping" % tHandle)
+            logger.warning("Duplicate handle '%s' detected, skipping", tHandle)
             return False
 
-        logger.verbose("Adding item %s with parent %s" % (str(tHandle), str(pHandle)))
+        logger.verbose("Adding item '%s' with parent '%s'", str(tHandle), str(pHandle))
 
         nwItem.setHandle(tHandle)
         nwItem.setParent(pHandle)
 
         if nwItem.itemType == nwItemType.ROOT:
-            logger.verbose("Item %s is a root item" % str(tHandle))
+            logger.verbose("Item '%s' is a root item", str(tHandle))
             self._treeRoots.append(tHandle)
             if nwItem.itemClass == nwItemClass.ARCHIVE:
-                logger.verbose("Item %s is the archive folder" % str(tHandle))
+                logger.verbose("Item '%s' is the archive folder", str(tHandle))
                 self._archRoot = tHandle
 
         if nwItem.itemType == nwItemType.TRASH:
             if self._trashRoot is None:
-                logger.verbose("Item %s is the trash folder" % str(tHandle))
+                logger.verbose("Item '%s' is the trash folder", str(tHandle))
                 self._trashRoot = tHandle
             else:
                 logger.error("Only one trash folder allowed")
@@ -193,7 +193,7 @@ class NWTree():
         try:
             # Dump the text
             tocText = os.path.join(self.theProject.projPath, nwFiles.TOC_TXT)
-            with open(tocText, mode="w", encoding="utf8") as outFile:
+            with open(tocText, mode="w", encoding="utf-8") as outFile:
                 outFile.write("\n")
                 outFile.write("Table of Contents\n")
                 outFile.write("=================\n")
@@ -245,9 +245,10 @@ class NWTree():
         if iLayout in LAYOUT_MAP:
             if hLevel in LAYOUT_MAP[iLayout]:
                 tItem.itemLayout = LAYOUT_MAP[iLayout][hLevel]
-                logger.debug("Changed layout for %s from %s to %s" % (
+                logger.debug(
+                    "Changed layout for %s from %s to %s",
                     tHandle, iLayout.name, tItem.itemLayout.name
-                ))
+                )
                 return True
 
         return False
@@ -357,13 +358,13 @@ class NWTree():
             if tHandle in self._projTree:
                 tmpOrder.append(tHandle)
             else:
-                logger.error("Handle %s in new tree order is not in project tree" % tHandle)
+                logger.error("Handle '%s' in new tree order is not in project tree", tHandle)
 
         # Do a reverse lookup to check for items that will be lost
         # This is mainly for debugging purposes
         for tHandle in self._treeOrder:
             if tHandle not in tmpOrder:
-                logger.warning("Handle %s in old tree order is not in new tree order" % tHandle)
+                logger.warning("Handle '%s' in old tree order is not in new tree order", tHandle)
 
         # Save the temp list
         self._treeOrder = tmpOrder
@@ -387,7 +388,7 @@ class NWTree():
         if tItem is None:
             return False
         if tItem.itemType != nwItemType.FILE:
-            logger.error("Item %s is not a file" % tHandle)
+            logger.error("Item %s is not a file", tHandle)
             return False
         if not isinstance(itemLayout, nwItemLayout):
             return False
@@ -444,7 +445,7 @@ class NWTree():
         """
         if tHandle in self._projTree:
             return self._projTree[tHandle]
-        logger.error("No tree item with handle %s" % str(tHandle))
+        logger.error("No tree item with handle '%s'", str(tHandle))
         return None
 
     def __delitem__(self, tHandle):
@@ -454,7 +455,7 @@ class NWTree():
             self._treeOrder.remove(tHandle)
             del self._projTree[tHandle]
         else:
-            logger.warning("Failed to delete item %s: item not found" % tHandle)
+            logger.warning("Failed to delete item '%s': item not found", tHandle)
             return
 
         if tHandle in self._treeRoots:
@@ -523,7 +524,7 @@ class NWTree():
             newSeed = str(self._handleSeed)
             self._handleSeed += 1
 
-        logger.verbose("Generating handle with seed '%s'" % newSeed)
+        logger.verbose("Generating handle with seed '%s'", newSeed)
         itemHandle = sha256(newSeed.encode()).hexdigest()[0:13]
         if itemHandle in self._projTree:
             logger.warning("Duplicate handle encountered! Retrying ...")

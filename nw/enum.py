@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Enums
 ===================
@@ -26,6 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from enum import Enum
 
+
 class nwItemType(Enum):
 
     NO_TYPE = 0
@@ -35,6 +35,7 @@ class nwItemType(Enum):
     TRASH   = 4
 
 # END Enum nwItemType
+
 
 class nwItemClass(Enum):
 
@@ -52,6 +53,7 @@ class nwItemClass(Enum):
 
 # END Enum nwItemClass
 
+
 class nwItemLayout(Enum):
 
     NO_LAYOUT  = 0
@@ -65,6 +67,7 @@ class nwItemLayout(Enum):
     NOTE       = 8
 
 # END Enum nwItemLayout
+
 
 class nwDocAction(Enum):
 
@@ -90,18 +93,25 @@ class nwDocAction(Enum):
     REPL_SNG  = 19
     REPL_DBL  = 20
     RM_BREAKS = 21
+    ALIGN_L   = 22
+    ALIGN_C   = 23
+    ALIGN_R   = 24
+    INDENT_L  = 25
+    INDENT_R  = 26
 
 # END Enum nwDocAction
 
+
 class nwDocInsert(Enum):
 
-    NO_INSERT  = 0
-    QUOTE_LS   = 1
-    QUOTE_RS   = 2
-    QUOTE_LD   = 3
-    QUOTE_RD   = 4
+    NO_INSERT = 0
+    QUOTE_LS  = 1
+    QUOTE_RS  = 2
+    QUOTE_LD  = 3
+    QUOTE_RD  = 4
 
 # END Enum nwDocInsert
+
 
 class nwAlert(Enum):
 
@@ -112,6 +122,7 @@ class nwAlert(Enum):
 
 # END Enum nwAlert
 
+
 class nwState(Enum):
 
     NONE = 0
@@ -119,6 +130,7 @@ class nwState(Enum):
     GOOD = 2
 
 # END Enum nwState
+
 
 class nwWidget(Enum):
 
@@ -128,6 +140,7 @@ class nwWidget(Enum):
     OUTLINE = 4
 
 # END Enum nwWidget
+
 
 class nwOutline(Enum):
 

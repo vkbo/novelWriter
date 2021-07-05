@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Project Index
 ===========================
@@ -38,6 +37,7 @@ from nw.constants import nwFiles, nwKeyWords, nwUnicode
 from nw.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
+
 
 class NWIndex():
 
@@ -85,7 +85,7 @@ class NWIndex():
     def deleteHandle(self, tHandle):
         """Delete all entries of a given document handle.
         """
-        logger.debug("Removing item %s from the index" % tHandle)
+        logger.debug("Removing item '%s' from the index", tHandle)
 
         delTags = []
         for tTag in self._tagIndex:
@@ -107,7 +107,7 @@ class NWIndex():
         moved from the archive or trash folders back into the active
         project.
         """
-        logger.debug("Re-indexing item %s" % tHandle)
+        logger.debug("Re-indexing item '%s'", tHandle)
 
         tItem = self.theProject.projTree[tHandle]
         if tItem is None:
@@ -144,13 +144,13 @@ class NWIndex():
     def loadIndex(self):
         """Load index from last session from the project meta folder.
         """
-        theData   = {}
+        theData = {}
         indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
 
         if os.path.isfile(indexFile):
             logger.debug("Loading index file")
             try:
-                with open(indexFile, mode="r", encoding="utf8") as inFile:
+                with open(indexFile, mode="r", encoding="utf-8") as inFile:
                     theData = json.load(inFile)
             except Exception:
                 logger.error("Failed to load index file")
@@ -158,10 +158,10 @@ class NWIndex():
                 self.indexBroken = True
                 return False
 
-            self._tagIndex   = theData.get("tagIndex", {})
-            self._refIndex   = theData.get("refIndex", {})
+            self._tagIndex = theData.get("tagIndex", {})
+            self._refIndex = theData.get("refIndex", {})
             self._novelIndex = theData.get("novelIndex", {})
-            self._noteIndex  = theData.get("noteIndex", {})
+            self._noteIndex = theData.get("noteIndex", {})
             self._textCounts = theData.get("textCounts", {})
 
             nowTime = round(time())
@@ -181,13 +181,13 @@ class NWIndex():
         indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
 
         try:
-            with open(indexFile, mode="w+", encoding="utf8") as outFile:
+            with open(indexFile, mode="w+", encoding="utf-8") as outFile:
                 json.dump({
-                    "tagIndex"   : self._tagIndex,
-                    "refIndex"   : self._refIndex,
-                    "novelIndex" : self._novelIndex,
-                    "noteIndex"  : self._noteIndex,
-                    "textCounts" : self._textCounts,
+                    "tagIndex": self._tagIndex,
+                    "refIndex": self._refIndex,
+                    "novelIndex": self._novelIndex,
+                    "noteIndex": self._noteIndex,
+                    "textCounts": self._textCounts,
                 }, outFile, indent=2)
         except Exception:
             logger.error("Failed to save index file")
@@ -217,7 +217,7 @@ class NWIndex():
             self.indexBroken = True
 
         tEnd = time()
-        logger.debug("Index check took %.3f ms" % ((tEnd - tStart)*1000))
+        logger.debug("Index check took %.3f ms", (tEnd - tStart)*1000)
         logger.debug("Index check complete")
 
         if self.indexBroken:
@@ -239,16 +239,16 @@ class NWIndex():
         theRoot = self.theProject.projTree.getRootItem(tHandle)
 
         if theItem is None:
-            logger.info("Not indexing unknown item %s" % tHandle)
+            logger.info("Not indexing unknown item '%s'", tHandle)
             return False
         if theItem.itemType != nwItemType.FILE:
-            logger.info("Not indexing non-file item %s" % tHandle)
+            logger.info("Not indexing non-file item '%s'", tHandle)
             return False
         if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
-            logger.info("Not indexing no-layout item %s" % tHandle)
+            logger.info("Not indexing no-layout item '%s'", tHandle)
             return False
         if theItem.itemParent is None:
-            logger.info("Not indexing orphaned item %s" % tHandle)
+            logger.info("Not indexing orphaned item '%s'", tHandle)
             return False
 
         # Run word counter for the whole text
@@ -257,23 +257,23 @@ class NWIndex():
 
         # If the file is archived or trashed, we don't index the file itself
         if self.theProject.projTree.isTrashRoot(theItem.itemParent):
-            logger.info("Not indexing trash item %s" % tHandle)
+            logger.info("Not indexing trash item '%s'", tHandle)
             return False
         if theRoot.itemClass == nwItemClass.ARCHIVE:
-            logger.info("Not indexing archived item %s" % tHandle)
+            logger.info("Not indexing archived item '%s'", tHandle)
             return False
 
         itemClass  = theItem.itemClass
         itemLayout = theItem.itemLayout
 
-        logger.debug("Indexing item with handle %s" % tHandle)
+        logger.debug("Indexing item with handle '%s'", tHandle)
 
         # Check file type, and reset its old index
         # Also add a default entry T000000 in case the file has no title
         self._refIndex[tHandle] = {}
         self._refIndex[tHandle]["T000000"] = {
-            "tags"    : [],
-            "updated" : round(time()),
+            "tags": [],
+            "updated": round(time()),
         }
         if itemLayout == nwItemLayout.NOTE:
             self._novelIndex.pop(tHandle, None)
@@ -292,13 +292,12 @@ class NWIndex():
         for aTag in clearTags:
             self._tagIndex.pop(aTag)
 
-        nLine  = 0
+        nLine = 0
         nTitle = 0
         theLines = theText.splitlines()
         for aLine in theLines:
-            aLine  = aLine
             nLine += 1
-            nChar  = len(aLine.strip())
+            nChar = len(aLine.strip())
             if nChar == 0:
                 continue
 
@@ -353,33 +352,33 @@ class NWIndex():
         """
         if aLine.startswith("# "):
             hDepth = "H1"
-            hText  = aLine[2:].strip()
+            hText = aLine[2:].strip()
         elif aLine.startswith("## "):
             hDepth = "H2"
-            hText  = aLine[3:].strip()
+            hText = aLine[3:].strip()
         elif aLine.startswith("### "):
             hDepth = "H3"
-            hText  = aLine[4:].strip()
+            hText = aLine[4:].strip()
         elif aLine.startswith("#### "):
             hDepth = "H4"
-            hText  = aLine[5:].strip()
+            hText = aLine[5:].strip()
         else:
             return False
 
         sTitle = "T%06d" % nLine
         self._refIndex[tHandle][sTitle] = {
-            "tags"    : [],
-            "updated" : round(time()),
+            "tags": [],
+            "updated": round(time()),
         }
         theData = {
-            "level"    : hDepth,
-            "title"    : hText,
-            "layout"   : itemLayout.name,
-            "synopsis" : "",
-            "cCount"   : 0,
-            "wCount"   : 0,
-            "pCount"   : 0,
-            "updated"  : round(time()),
+            "level": hDepth,
+            "title": hText,
+            "layout": itemLayout.name,
+            "synopsis": "",
+            "cCount": 0,
+            "wCount": 0,
+            "pCount": 0,
+            "updated": round(time()),
         }
 
         if hText != "":
@@ -396,14 +395,14 @@ class NWIndex():
         """Index a page with no title.
         """
         theData = {
-            "level"    : "H0",
-            "title"    : "Untitled Page",
-            "layout"   : itemLayout.name,
-            "synopsis" : "",
-            "cCount"   : 0,
-            "wCount"   : 0,
-            "pCount"   : 0,
-            "updated"  : round(time()),
+            "level": "H0",
+            "title": "Untitled Page",
+            "layout": itemLayout.name,
+            "synopsis": "",
+            "cCount": 0,
+            "wCount": 0,
+            "pCount": 0,
+            "updated": round(time()),
         }
 
         if isNovel:
@@ -458,11 +457,11 @@ class NWIndex():
         """
         isValid, theBits, _ = self.scanThis(aLine)
         if not isValid or len(theBits) < 2:
-            logger.warning("Skipping keyword with %d value(s) in %s" % (len(theBits), tHandle))
+            logger.warning("Skipping keyword with %d value(s) in '%s'", len(theBits), tHandle)
             return
 
         if theBits[0] not in nwKeyWords.VALID_KEYS:
-            logger.warning("Skipping invalid keyword '%s' in %s" % (theBits[0], tHandle))
+            logger.warning("Skipping invalid keyword '%s' in '%s'", theBits[0], tHandle)
             return
 
         sTitle = "T%06d" % nTitle
@@ -483,10 +482,10 @@ class NWIndex():
         """Scan a line starting with @ to check that it's valid. Then
         split it up into its elements and positions as two arrays.
         """
-        theBits = [] # The elements of the string
-        thePos  = [] # The absolute position of each element
+        theBits = []  # The elements of the string
+        thePos  = []  # The absolute position of each element
 
-        aLine = aLine.rstrip() # Remove all trailing white spaces
+        aLine = aLine.rstrip()  # Remove all trailing white spaces
         nChar = len(aLine)
         if nChar < 2:
             return False, theBits, thePos
@@ -896,6 +895,7 @@ class NWIndex():
 
 # END Class NWIndex
 
+
 # =============================================================================================== #
 #  Simple Word Counter
 # =============================================================================================== #
@@ -909,6 +909,9 @@ def countWords(theText):
     paraCount = 0
     prevEmpty = True
 
+    if not isinstance(theText, str):
+        return charCount, wordCount, paraCount
+
     # We need to treat dashes as word separators for counting words.
     # The check+replace apprach is much faster that direct replace for
     # large texts, and a bit slower for small texts, but in the latter
@@ -921,33 +924,38 @@ def countWords(theText):
     for aLine in theText.splitlines():
 
         countPara = True
-        theLen    = len(aLine)
 
-        if theLen == 0:
+        if not aLine:
             prevEmpty = True
             continue
         if aLine[0] == "@" or aLine[0] == "%":
             continue
 
-        if aLine[0:5] == "#### ":
-            wordCount -= 1
-            charCount -= 5
-            countPara = False
-        elif aLine[0:4] == "### ":
-            wordCount -= 1
-            charCount -= 4
-            countPara = False
-        elif aLine[0:3] == "## ":
-            wordCount -= 1
-            charCount -= 3
-            countPara = False
-        elif aLine[0:2] == "# ":
-            wordCount -= 1
-            charCount -= 2
-            countPara = False
+        if aLine[0] == "#":
+            if aLine[:5] == "#### ":
+                aLine = aLine[5:]
+                countPara = False
+            elif aLine[:4] == "### ":
+                aLine = aLine[4:]
+                countPara = False
+            elif aLine[:3] == "## ":
+                aLine = aLine[3:]
+                countPara = False
+            elif aLine[:2] == "# ":
+                aLine = aLine[2:]
+                countPara = False
+        elif aLine[0] == ">" or aLine[-1] == "<":
+            if aLine[:2] == ">>":
+                aLine = aLine[2:].lstrip(" ")
+            elif aLine[:1] == ">":
+                aLine = aLine[1:].lstrip(" ")
+            if aLine[-2:] == "<<":
+                aLine = aLine[:-2].rstrip(" ")
+            elif aLine[-1:] == "<":
+                aLine = aLine[:-1].rstrip(" ")
 
         wordCount += len(aLine.split())
-        charCount += theLen
+        charCount += len(aLine)
         if countPara and prevEmpty:
             paraCount += 1
 

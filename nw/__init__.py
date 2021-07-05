@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 novelWriter – Init File
 =======================
@@ -40,9 +39,9 @@ from nw.config import Config
 #  Generally follows PEP 440
 #  Hex Version:
 #  - Digit 1,2 : Major Version (01-ff)
-#  = Digit 3,4 : Minor Version (01-ff)
+#  - Digit 3,4 : Minor Version (01-ff)
 #  - Digit 5,6 : Patch Version (01-ff)
-#  = Digit 7   : Release Type (a: aplha, b: beta, c: candidate, f: final)
+#  - Digit 7   : Release Type (a: aplha, b: beta, c: candidate, f: final)
 #  - Digit 8   : Release Number (0-f)
 #
 #  Example    : Full        Short      Description
@@ -62,9 +61,9 @@ __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "1.4a0"
-__hexversion__ = "0x010400a0"
-__date__       = "2021-04-01"
+__version__    = "1.4b1"
+__hexversion__ = "0x010400b1"
+__date__       = "2021-06-13"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 __url__        = "https://novelwriter.io"
@@ -90,14 +89,18 @@ __docurl__     = "https://novelwriter.readthedocs.io"
 # Add verbose logging level
 VERBOSE = 5
 logging.addLevelName(VERBOSE, "VERBOSE")
+
+
 def logVerbose(self, message, *args, **kws):
     if self.isEnabledFor(VERBOSE):
         self._log(VERBOSE, message, args, **kws)
+
 
 logging.Logger.verbose = logVerbose
 
 # Initiating logging
 logger = logging.getLogger(__name__)
+
 
 ##
 #  Main Program
@@ -106,8 +109,9 @@ logger = logging.getLogger(__name__)
 # Load the main config as a global object
 CONFIG = Config()
 
+
 def main(sysArgs=None):
-    """Parses command line, sets up logging, and launches main GUI.
+    """Parse command line, set up logging, and launches main GUI.
     """
     if sysArgs is None:
         sysArgs = sys.argv[1:]
@@ -145,19 +149,19 @@ def main(sysArgs=None):
         "     --config=  Alternative config file.\n"
         "     --data=    Alternative user data path.\n"
     ).format(
-        version   = __version__,
-        copyright = __copyright__,
-        date      = __date__,
+        version=__version__,
+        copyright=__copyright__,
+        date=__date__,
     )
 
     # Defaults
-    logLevel  = logging.WARN
+    logLevel = logging.WARN
     logFormat = "{levelname:8}  {message:}"
-    confPath  = None
-    dataPath  = None
-    testMode  = False
-    qtStyle   = "Fusion"
-    cmdOpen   = None
+    confPath = None
+    dataPath = None
+    testMode = False
+    qtStyle = "Fusion"
+    cmdOpen = None
 
     # Parse Options
     try:
@@ -205,9 +209,7 @@ def main(sysArgs=None):
     pkgLogger.addHandler(cHandle)
     pkgLogger.setLevel(logLevel)
 
-    logger.info("Starting novelWriter %s (%s) %s" % (
-        __version__, __hexversion__, __date__
-    ))
+    logger.info("Starting novelWriter %s (%s) %s", __version__, __hexversion__, __date__)
 
     # Check Packages and Versions
     errorData = []
@@ -229,7 +231,7 @@ def main(sysArgs=None):
         errorCode |= 16
 
     try:
-        import lxml # noqa: F401
+        import lxml  # noqa: F401
     except ImportError:
         errorData.append("Python module 'lxml' is missing.")
         errorCode |= 32
