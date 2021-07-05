@@ -60,7 +60,7 @@ class NWItem():
         self.cursorPos = 0  # Last cursor position
 
         # Runtime Values (Not Saved)
-        self.sessionBak = False # Whether a session copy has been made
+        self.sessionBak = False  # Whether a session copy has been made
 
         return
 

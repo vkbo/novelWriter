@@ -253,6 +253,7 @@ def testBaseCommon_ParseTimeStamp():
 
 # END Test testBaseCommon_ParseTimeStamp
 
+
 @pytest.mark.base
 def testBaseCommon_FormatInt():
     """Test the formatInt function.
@@ -359,6 +360,7 @@ def testBaseCommon_RomanNumbers():
 
 # END Test testBaseCommon_RomanNumbers
 
+
 @pytest.mark.core
 def testBaseCommon_SafeMakeDir(fncDir, monkeypatch):
     """Test the safe creation of a folder.
@@ -380,6 +382,7 @@ def testBaseCommon_SafeMakeDir(fncDir, monkeypatch):
 
 # END Test testBaseCommon_SafeMakeDir
 
+
 @pytest.mark.core
 def testBaseCommon_SafeUnlink(fncDir, monkeypatch):
     """Test the safe deletion of a file.
@@ -400,6 +403,7 @@ def testBaseCommon_SafeUnlink(fncDir, monkeypatch):
     assert not os.path.isfile(testFile)
 
 # END Test testBaseCommon_SafeUnlink
+
 
 @pytest.mark.core
 def testBaseCommon_SafeFileRead(fncDir, monkeypatch):
