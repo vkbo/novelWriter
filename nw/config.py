@@ -28,9 +28,9 @@ import sys
 import json
 import shutil
 import logging
-import configparser
 
 from time import time
+from configparser import ConfigParser
 
 from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import (
@@ -432,7 +432,7 @@ class Config:
         if self.confPath is None:
             return False
 
-        cnfParse = configparser.ConfigParser()
+        cnfParse = NWConfigParser()
         cnfPath = os.path.join(self.confPath, self.confFile)
         try:
             with open(cnfPath, mode="r", encoding="utf-8") as inFile:
@@ -447,237 +447,95 @@ class Config:
 
         # Main
         cnfSec = "Main"
-        self.guiTheme = self._parseLine(
-            cnfParse, cnfSec, "theme", self.CNF_STR, self.guiTheme
-        )
-        self.guiSyntax = self._parseLine(
-            cnfParse, cnfSec, "syntax", self.CNF_STR, self.guiSyntax
-        )
-        self.guiIcons = self._parseLine(
-            cnfParse, cnfSec, "icons", self.CNF_STR, self.guiIcons
-        )
-        self.guiDark = self._parseLine(
-            cnfParse, cnfSec, "guidark", self.CNF_BOOL, self.guiDark
-        )
-        self.guiFont = self._parseLine(
-            cnfParse, cnfSec, "guifont", self.CNF_STR, self.guiFont
-        )
-        self.guiFontSize = self._parseLine(
-            cnfParse, cnfSec, "guifontsize", self.CNF_INT, self.guiFontSize
-        )
-        self.lastNotes = self._parseLine(
-            cnfParse, cnfSec, "lastnotes", self.CNF_STR, self.lastNotes
-        )
-        self.guiLang = self._parseLine(
-            cnfParse, cnfSec, "guilang", self.CNF_STR, self.guiLang
-        )
+        self.guiTheme    = cnfParse.rdStr(cnfSec, "theme", self.guiTheme)
+        self.guiSyntax   = cnfParse.rdStr(cnfSec, "syntax", self.guiSyntax)
+        self.guiIcons    = cnfParse.rdStr(cnfSec, "icons", self.guiIcons)
+        self.guiDark     = cnfParse.rdBool(cnfSec, "guidark", self.guiDark)
+        self.guiFont     = cnfParse.rdStr(cnfSec, "guifont", self.guiFont)
+        self.guiFontSize = cnfParse.rdInt(cnfSec, "guifontsize", self.guiFontSize)
+        self.lastNotes   = cnfParse.rdStr(cnfSec, "lastnotes", self.lastNotes)
+        self.guiLang     = cnfParse.rdStr(cnfSec, "guilang", self.guiLang)
 
         # Sizes
         cnfSec = "Sizes"
-        self.winGeometry = self._parseLine(
-            cnfParse, cnfSec, "geometry", self.CNF_I_LST, self.winGeometry
-        )
-        self.prefGeometry = self._parseLine(
-            cnfParse, cnfSec, "preferences", self.CNF_I_LST, self.prefGeometry
-        )
-        self.treeColWidth = self._parseLine(
-            cnfParse, cnfSec, "treecols", self.CNF_I_LST, self.treeColWidth
-        )
-        self.novelColWidth = self._parseLine(
-            cnfParse, cnfSec, "novelcols", self.CNF_I_LST, self.novelColWidth
-        )
-        self.projColWidth = self._parseLine(
-            cnfParse, cnfSec, "projcols", self.CNF_I_LST, self.projColWidth
-        )
-        self.mainPanePos = self._parseLine(
-            cnfParse, cnfSec, "mainpane", self.CNF_I_LST, self.mainPanePos
-        )
-        self.docPanePos = self._parseLine(
-            cnfParse, cnfSec, "docpane", self.CNF_I_LST, self.docPanePos
-        )
-        self.viewPanePos = self._parseLine(
-            cnfParse, cnfSec, "viewpane", self.CNF_I_LST, self.viewPanePos
-        )
-        self.outlnPanePos = self._parseLine(
-            cnfParse, cnfSec, "outlinepane", self.CNF_I_LST, self.outlnPanePos
-        )
-        self.isFullScreen = self._parseLine(
-            cnfParse, cnfSec, "fullscreen", self.CNF_BOOL, self.isFullScreen
-        )
-        self.hideVScroll = self._parseLine(
-            cnfParse, cnfSec, "hidevscroll", self.CNF_BOOL, self.hideVScroll
-        )
-        self.hideHScroll = self._parseLine(
-            cnfParse, cnfSec, "hidehscroll", self.CNF_BOOL, self.hideHScroll
-        )
+        self.winGeometry   = cnfParse.rdIntList(cnfSec, "geometry", self.winGeometry)
+        self.prefGeometry  = cnfParse.rdIntList(cnfSec, "preferences", self.prefGeometry)
+        self.treeColWidth  = cnfParse.rdIntList(cnfSec, "treecols", self.treeColWidth)
+        self.novelColWidth = cnfParse.rdIntList(cnfSec, "novelcols", self.novelColWidth)
+        self.projColWidth  = cnfParse.rdIntList(cnfSec, "projcols", self.projColWidth)
+        self.mainPanePos   = cnfParse.rdIntList(cnfSec, "mainpane", self.mainPanePos)
+        self.docPanePos    = cnfParse.rdIntList(cnfSec, "docpane", self.docPanePos)
+        self.viewPanePos   = cnfParse.rdIntList(cnfSec, "viewpane", self.viewPanePos)
+        self.outlnPanePos  = cnfParse.rdIntList(cnfSec, "outlinepane", self.outlnPanePos)
+        self.isFullScreen  = cnfParse.rdBool(cnfSec, "fullscreen", self.isFullScreen)
+        self.hideVScroll   = cnfParse.rdBool(cnfSec, "hidevscroll", self.hideVScroll)
+        self.hideHScroll   = cnfParse.rdBool(cnfSec, "hidehscroll", self.hideHScroll)
 
         # Project
         cnfSec = "Project"
-        self.autoSaveProj = self._parseLine(
-            cnfParse, cnfSec, "autosaveproject", self.CNF_INT, self.autoSaveProj
-        )
-        self.autoSaveDoc = self._parseLine(
-            cnfParse, cnfSec, "autosavedoc", self.CNF_INT, self.autoSaveDoc
-        )
+        self.autoSaveProj = cnfParse.rdInt(cnfSec, "autosaveproject", self.autoSaveProj)
+        self.autoSaveDoc  = cnfParse.rdInt(cnfSec, "autosavedoc", self.autoSaveDoc)
 
         # Editor
         cnfSec = "Editor"
-        self.textFont = self._parseLine(
-            cnfParse, cnfSec, "textfont", self.CNF_STR, self.textFont
-        )
-        self.textSize = self._parseLine(
-            cnfParse, cnfSec, "textsize", self.CNF_INT, self.textSize
-        )
-        self.textFixedW = self._parseLine(
-            cnfParse, cnfSec, "fixedwidth", self.CNF_BOOL, self.textFixedW
-        )
-        self.textWidth = self._parseLine(
-            cnfParse, cnfSec, "width", self.CNF_INT, self.textWidth
-        )
-        self.textMargin = self._parseLine(
-            cnfParse, cnfSec, "margin", self.CNF_INT, self.textMargin
-        )
-        self.tabWidth = self._parseLine(
-            cnfParse, cnfSec, "tabwidth", self.CNF_INT, self.tabWidth
-        )
-        self.focusWidth = self._parseLine(
-            cnfParse, cnfSec, "focuswidth", self.CNF_INT, self.focusWidth
-        )
-        self.hideFocusFooter = self._parseLine(
-            cnfParse, cnfSec, "hidefocusfooter", self.CNF_BOOL, self.hideFocusFooter
-        )
-        self.doJustify = self._parseLine(
-            cnfParse, cnfSec, "justify", self.CNF_BOOL, self.doJustify
-        )
-        self.autoSelect = self._parseLine(
-            cnfParse, cnfSec, "autoselect", self.CNF_BOOL, self.autoSelect
-        )
-        self.doReplace = self._parseLine(
-            cnfParse, cnfSec, "autoreplace", self.CNF_BOOL, self.doReplace
-        )
-        self.doReplaceSQuote = self._parseLine(
-            cnfParse, cnfSec, "repsquotes", self.CNF_BOOL, self.doReplaceSQuote
-        )
-        self.doReplaceDQuote = self._parseLine(
-            cnfParse, cnfSec, "repdquotes", self.CNF_BOOL, self.doReplaceDQuote
-        )
-        self.doReplaceDash = self._parseLine(
-            cnfParse, cnfSec, "repdash", self.CNF_BOOL, self.doReplaceDash
-        )
-        self.doReplaceDots = self._parseLine(
-            cnfParse, cnfSec, "repdots", self.CNF_BOOL, self.doReplaceDots
-        )
-        self.scrollPastEnd = self._parseLine(
-            cnfParse, cnfSec, "scrollpastend", self.CNF_BOOL, self.scrollPastEnd
-        )
-        self.autoScroll = self._parseLine(
-            cnfParse, cnfSec, "autoscroll", self.CNF_BOOL, self.autoScroll
-        )
-        self.autoScrollPos = self._parseLine(
-            cnfParse, cnfSec, "autoscrollpos", self.CNF_INT, self.autoScrollPos
-        )
-        self.fmtSingleQuotes = self._parseLine(
-            cnfParse, cnfSec, "fmtsinglequote", self.CNF_S_LST, self.fmtSingleQuotes
-        )
-        self.fmtDoubleQuotes = self._parseLine(
-            cnfParse, cnfSec, "fmtdoublequote", self.CNF_S_LST, self.fmtDoubleQuotes
-        )
-        self.fmtPadBefore = self._parseLine(
-            cnfParse, cnfSec, "fmtpadbefore", self.CNF_STR, self.fmtPadBefore
-        )
-        self.fmtPadAfter = self._parseLine(
-            cnfParse, cnfSec, "fmtpadafter", self.CNF_STR, self.fmtPadAfter
-        )
-        self.fmtPadThin = self._parseLine(
-            cnfParse, cnfSec, "fmtpadthin", self.CNF_BOOL, self.fmtPadThin
-        )
-        self.spellTool = self._parseLine(
-            cnfParse, cnfSec, "spelltool", self.CNF_STR, self.spellTool
-        )
-        self.spellLanguage = self._parseLine(
-            cnfParse, cnfSec, "spellcheck", self.CNF_STR, self.spellLanguage
-        )
-        self.showTabsNSpaces = self._parseLine(
-            cnfParse, cnfSec, "showtabsnspaces", self.CNF_BOOL, self.showTabsNSpaces
-        )
-        self.showLineEndings = self._parseLine(
-            cnfParse, cnfSec, "showlineendings", self.CNF_BOOL, self.showLineEndings
-        )
-        self.showMultiSpaces = self._parseLine(
-            cnfParse, cnfSec, "showmultispaces", self.CNF_BOOL, self.showMultiSpaces
-        )
-        self.bigDocLimit = self._parseLine(
-            cnfParse, cnfSec, "bigdoclimit", self.CNF_INT, self.bigDocLimit
-        )
-        self.showFullPath = self._parseLine(
-            cnfParse, cnfSec, "showfullpath", self.CNF_BOOL, self.showFullPath
-        )
-        self.highlightQuotes = self._parseLine(
-            cnfParse, cnfSec, "highlightquotes", self.CNF_BOOL, self.highlightQuotes
-        )
-        self.allowOpenSQuote = self._parseLine(
-            cnfParse, cnfSec, "allowopensquote", self.CNF_BOOL, self.allowOpenSQuote
-        )
-        self.allowOpenDQuote = self._parseLine(
-            cnfParse, cnfSec, "allowopendquote", self.CNF_BOOL, self.allowOpenDQuote
-        )
-        self.highlightEmph = self._parseLine(
-            cnfParse, cnfSec, "highlightemph", self.CNF_BOOL, self.highlightEmph
-        )
-        self.stopWhenIdle = self._parseLine(
-            cnfParse, cnfSec, "stopwhenidle", self.CNF_BOOL, self.stopWhenIdle
-        )
-        self.userIdleTime = self._parseLine(
-            cnfParse, cnfSec, "useridletime", self.CNF_INT, self.userIdleTime
-        )
+        self.textFont        = cnfParse.rdStr(cnfSec, "textfont", self.textFont)
+        self.textSize        = cnfParse.rdInt(cnfSec, "textsize", self.textSize)
+        self.textFixedW      = cnfParse.rdBool(cnfSec, "fixedwidth", self.textFixedW)
+        self.textWidth       = cnfParse.rdInt(cnfSec, "width", self.textWidth)
+        self.textMargin      = cnfParse.rdInt(cnfSec, "margin", self.textMargin)
+        self.tabWidth        = cnfParse.rdInt(cnfSec, "tabwidth", self.tabWidth)
+        self.focusWidth      = cnfParse.rdInt(cnfSec, "focuswidth", self.focusWidth)
+        self.hideFocusFooter = cnfParse.rdBool(cnfSec, "hidefocusfooter", self.hideFocusFooter)
+        self.doJustify       = cnfParse.rdBool(cnfSec, "justify", self.doJustify)
+        self.autoSelect      = cnfParse.rdBool(cnfSec, "autoselect", self.autoSelect)
+        self.doReplace       = cnfParse.rdBool(cnfSec, "autoreplace", self.doReplace)
+        self.doReplaceSQuote = cnfParse.rdBool(cnfSec, "repsquotes", self.doReplaceSQuote)
+        self.doReplaceDQuote = cnfParse.rdBool(cnfSec, "repdquotes", self.doReplaceDQuote)
+        self.doReplaceDash   = cnfParse.rdBool(cnfSec, "repdash", self.doReplaceDash)
+        self.doReplaceDots   = cnfParse.rdBool(cnfSec, "repdots", self.doReplaceDots)
+        self.scrollPastEnd   = cnfParse.rdBool(cnfSec, "scrollpastend", self.scrollPastEnd)
+        self.autoScroll      = cnfParse.rdBool(cnfSec, "autoscroll", self.autoScroll)
+        self.autoScrollPos   = cnfParse.rdInt(cnfSec, "autoscrollpos", self.autoScrollPos)
+        self.fmtSingleQuotes = cnfParse.rdStrList(cnfSec, "fmtsinglequote", self.fmtSingleQuotes)
+        self.fmtDoubleQuotes = cnfParse.rdStrList(cnfSec, "fmtdoublequote", self.fmtDoubleQuotes)
+        self.fmtPadBefore    = cnfParse.rdStr(cnfSec, "fmtpadbefore", self.fmtPadBefore)
+        self.fmtPadAfter     = cnfParse.rdStr(cnfSec, "fmtpadafter", self.fmtPadAfter)
+        self.fmtPadThin      = cnfParse.rdBool(cnfSec, "fmtpadthin", self.fmtPadThin)
+        self.spellTool       = cnfParse.rdStr(cnfSec, "spelltool", self.spellTool)
+        self.spellLanguage   = cnfParse.rdStr(cnfSec, "spellcheck", self.spellLanguage)
+        self.showTabsNSpaces = cnfParse.rdBool(cnfSec, "showtabsnspaces", self.showTabsNSpaces)
+        self.showLineEndings = cnfParse.rdBool(cnfSec, "showlineendings", self.showLineEndings)
+        self.showMultiSpaces = cnfParse.rdBool(cnfSec, "showmultispaces", self.showMultiSpaces)
+        self.bigDocLimit     = cnfParse.rdInt(cnfSec, "bigdoclimit", self.bigDocLimit)
+        self.showFullPath    = cnfParse.rdBool(cnfSec, "showfullpath", self.showFullPath)
+        self.highlightQuotes = cnfParse.rdBool(cnfSec, "highlightquotes", self.highlightQuotes)
+        self.allowOpenSQuote = cnfParse.rdBool(cnfSec, "allowopensquote", self.allowOpenSQuote)
+        self.allowOpenDQuote = cnfParse.rdBool(cnfSec, "allowopendquote", self.allowOpenDQuote)
+        self.highlightEmph   = cnfParse.rdBool(cnfSec, "highlightemph", self.highlightEmph)
+        self.stopWhenIdle    = cnfParse.rdBool(cnfSec, "stopwhenidle", self.stopWhenIdle)
+        self.userIdleTime    = cnfParse.rdInt(cnfSec, "useridletime", self.userIdleTime)
 
         # Backup
         cnfSec = "Backup"
-        self.backupPath = self._parseLine(
-            cnfParse, cnfSec, "backuppath", self.CNF_STR, self.backupPath
-        )
-        self.backupOnClose = self._parseLine(
-            cnfParse, cnfSec, "backuponclose", self.CNF_BOOL, self.backupOnClose
-        )
-        self.askBeforeBackup = self._parseLine(
-            cnfParse, cnfSec, "askbeforebackup", self.CNF_BOOL, self.askBeforeBackup
-        )
+        self.backupPath      = cnfParse.rdStr(cnfSec, "backuppath", self.backupPath)
+        self.backupOnClose   = cnfParse.rdBool(cnfSec, "backuponclose", self.backupOnClose)
+        self.askBeforeBackup = cnfParse.rdBool(cnfSec, "askbeforebackup", self.askBeforeBackup)
 
         # State
         cnfSec = "State"
-        self.showRefPanel = self._parseLine(
-            cnfParse, cnfSec, "showrefpanel", self.CNF_BOOL, self.showRefPanel
-        )
-        self.viewComments = self._parseLine(
-            cnfParse, cnfSec, "viewcomments", self.CNF_BOOL, self.viewComments
-        )
-        self.viewSynopsis = self._parseLine(
-            cnfParse, cnfSec, "viewsynopsis", self.CNF_BOOL, self.viewSynopsis
-        )
-        self.searchCase = self._parseLine(
-            cnfParse, cnfSec, "searchcase", self.CNF_BOOL, self.searchCase
-        )
-        self.searchWord = self._parseLine(
-            cnfParse, cnfSec, "searchword", self.CNF_BOOL, self.searchWord
-        )
-        self.searchRegEx = self._parseLine(
-            cnfParse, cnfSec, "searchregex", self.CNF_BOOL, self.searchRegEx
-        )
-        self.searchLoop = self._parseLine(
-            cnfParse, cnfSec, "searchloop", self.CNF_BOOL, self.searchLoop
-        )
-        self.searchNextFile = self._parseLine(
-            cnfParse, cnfSec, "searchnextfile", self.CNF_BOOL, self.searchNextFile
-        )
-        self.searchMatchCap = self._parseLine(
-            cnfParse, cnfSec, "searchmatchcap", self.CNF_BOOL, self.searchMatchCap
-        )
+        self.showRefPanel   = cnfParse.rdBool(cnfSec, "showrefpanel", self.showRefPanel)
+        self.viewComments   = cnfParse.rdBool(cnfSec, "viewcomments", self.viewComments)
+        self.viewSynopsis   = cnfParse.rdBool(cnfSec, "viewsynopsis", self.viewSynopsis)
+        self.searchCase     = cnfParse.rdBool(cnfSec, "searchcase", self.searchCase)
+        self.searchWord     = cnfParse.rdBool(cnfSec, "searchword", self.searchWord)
+        self.searchRegEx    = cnfParse.rdBool(cnfSec, "searchregex", self.searchRegEx)
+        self.searchLoop     = cnfParse.rdBool(cnfSec, "searchloop", self.searchLoop)
+        self.searchNextFile = cnfParse.rdBool(cnfSec, "searchnextfile", self.searchNextFile)
+        self.searchMatchCap = cnfParse.rdBool(cnfSec, "searchmatchcap", self.searchMatchCap)
 
         # Path
         cnfSec = "Path"
-        self.lastPath = self._parseLine(
-            cnfParse, cnfSec, "lastpath", self.CNF_STR, self.lastPath
-        )
+        self.lastPath = cnfParse.rdStr(cnfSec, "lastpath", self.lastPath)
 
         # Check Certain Values for None
         self.spellLanguage = self._checkNone(self.spellLanguage)
@@ -700,7 +558,7 @@ class Config:
         if self.confPath is None:
             return False
 
-        cnfParse = configparser.ConfigParser()
+        cnfParse = NWConfigParser()
 
         # Set options
 
@@ -884,7 +742,7 @@ class Config:
         return True
 
     def updateRecentCache(self, projPath, projTitle, wordCount, saveTime):
-        """Add or update recent cache information o9n a given project.
+        """Add or update recent cache information on a given project.
         """
         self.recentProj[os.path.abspath(projPath)] = {
             "title": projTitle,
@@ -1060,52 +918,8 @@ class Config:
         """
         return ", ".join([str(inVal) for inVal in inData])
 
-    def _unpackList(self, inStr, listDefault, cnfType):
-        """Unpack a comma-separated string of items into a list.
-        """
-        inData = inStr.split(",")
-        outData = listDefault.copy()
-        for i in range(min(len(inData), len(listDefault))):
-            try:
-                if cnfType == self.CNF_S_LST:
-                    outData[i] = inData[i].strip()
-                elif cnfType == self.CNF_I_LST:
-                    outData[i] = int(inData[i].strip())
-                else:
-                    continue
-            except Exception:
-                continue
-        return outData
-
-    def _parseLine(self, cnfParse, cnfSec, cnfName, cnfType, cnfDefault):
-        """Parse a line and return the correct datatype.
-        """
-        if cnfParse.has_section(cnfSec):
-            if cnfParse.has_option(cnfSec, cnfName):
-                try:
-                    if cnfType == self.CNF_STR:
-                        return cnfParse.get(cnfSec, cnfName)
-                    elif cnfType == self.CNF_INT:
-                        return cnfParse.getint(cnfSec, cnfName)
-                    elif cnfType == self.CNF_BOOL:
-                        return cnfParse.getboolean(cnfSec, cnfName)
-                    elif cnfType == self.CNF_I_LST:
-                        return self._unpackList(
-                            cnfParse.get(cnfSec, cnfName), cnfDefault, self.CNF_I_LST
-                        )
-                    elif cnfType == self.CNF_S_LST:
-                        return self._unpackList(
-                            cnfParse.get(cnfSec, cnfName), cnfDefault, self.CNF_S_LST
-                        )
-                except ValueError:
-                    logger.error("Failed to load value from config file.")
-                    logException()
-                    return cnfDefault
-
-        return cnfDefault
-
     def _checkNone(self, checkVal):
-        """Return a NoneType if the value correspomds to None, otherwise
+        """Return a NoneType if the value corresponds to None, otherwise
         return the value unchanged.
         """
         if checkVal is None:
@@ -1136,3 +950,88 @@ class Config:
         return
 
 # END Class Config
+
+
+class NWConfigParser(ConfigParser):
+
+    def __init__(self):
+        super().__init__()
+
+    def rdStr(self, section, option, default):
+        """A safe way to parse a string from the config file.
+        """
+        if self.has_section(section):
+            if self.has_option(section, option):
+                return str(self.get(section, option))
+
+        return default
+
+    def rdBool(self, section, option, default):
+        """A safe way to parse a boolean from the config file.
+        """
+        if self.has_section(section):
+            if self.has_option(section, option):
+                try:
+                    return self.getboolean(section, option)
+                except Exception:
+                    logger.error("Failed to load value from config file.")
+                    logException()
+
+        return default
+
+    def rdInt(self, section, option, default):
+        """A safe way to parse an integer from the config file.
+        """
+        if self.has_section(section):
+            if self.has_option(section, option):
+                try:
+                    return self.getint(section, option)
+                except Exception:
+                    logger.error("Failed to load value from config file.")
+                    logException()
+
+        return default
+
+    def rdStrList(self, section, option, default):
+        """A safe way to parse a string list from the config file.
+        """
+        if self.has_section(section):
+            if self.has_option(section, option):
+                try:
+                    rawData = self.get(section, option)
+                    inData = rawData.split(",")
+                    outData = default.copy()
+
+                    for i in range(min(len(inData), len(default))):
+                        outData[i] = inData[i].strip()
+
+                    return outData
+
+                except Exception:
+                    logger.error("Failed to load value from config file.")
+                    logException()
+
+        return default
+
+    def rdIntList(self, section, option, default):
+        """A safe way to parse an integer list from the config file.
+        """
+        if self.has_section(section):
+            if self.has_option(section, option):
+                try:
+                    rawData = self.get(section, option)
+                    inData = rawData.split(",")
+                    outData = default.copy()
+
+                    for i in range(min(len(inData), len(default))):
+                        outData[i] = int(inData[i].strip())
+
+                    return outData
+
+                except Exception:
+                    logger.error("Failed to load value from config file.")
+                    logException()
+
+        return default
+
+# END Class NWConfigParser
