@@ -19,17 +19,16 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import pytest
-import sys
 import os
-import configparser
+import sys
+import pytest
 
 from shutil import copyfile
 
 from mock import causeOSError, MockApp
 from tools import cmpFiles, writeFile
 
-from nw.config import Config
+from nw.config import Config, NWConfigParser
 from nw.constants import nwConst, nwFiles
 
 
@@ -482,71 +481,13 @@ def testBaseConfig_Internal(monkeypatch, tmpConf):
     # Function _packList
     assert tmpConf._packList(["A", 1, 2.0, None, False]) == "A, 1, 2.0, None, False"
 
-    # Function _unpackList
-    assert tmpConf._unpackList("1, 2, 3", [0, 0, 0], tmpConf.CNF_I_LST) == [1, 2, 3]
-    assert tmpConf._unpackList("1, 2   ", [0, 0, 0], tmpConf.CNF_I_LST) == [1, 2, 0]
-    assert tmpConf._unpackList("A, B, C", [0, 0, 0], tmpConf.CNF_I_LST) == [0, 0, 0]
-    assert tmpConf._unpackList("1, 2, 3", ["X", "Y", "Z"], tmpConf.CNF_S_LST) == ["1", "2", "3"]
-    assert tmpConf._unpackList("A, B   ", ["X", "Y", "Z"], tmpConf.CNF_S_LST) == ["A", "B", "Z"]
-    assert tmpConf._unpackList("A, B, C", ["X", "Y", "Z"], tmpConf.CNF_S_LST) == ["A", "B", "C"]
-    assert tmpConf._unpackList("A, B, C", ["X", "Y", "Z"], tmpConf.CNF_STR) == ["X", "Y", "Z"]
-
-    # Function _parseLine
-    cnfParse = configparser.ConfigParser()
-    cnfParse.read_string(
-        "[Main]\n"
-        "val_string = stuff\n"
-        "val_int = 123\n"
-        "val_bool = True\n"
-        "val_list_string = A, B, C\n"
-        "val_list_int = 1, 2, 3\n"
-    )
-
-    assert tmpConf._parseLine(
-        cnfParse, "Main", "val_string", tmpConf.CNF_STR, "default"
-    ) == "stuff"
-    assert tmpConf._parseLine(
-        cnfParse, "Main", "nope", tmpConf.CNF_STR, "default"
-    ) == "default"
-
-    assert tmpConf._parseLine(
-        cnfParse, "Main", "val_int", tmpConf.CNF_INT, "0"
-    ) == 123
-    assert tmpConf._parseLine(
-        cnfParse, "Main", "nope", tmpConf.CNF_INT, 0
-    ) == 0
-    assert tmpConf._parseLine(
-        cnfParse, "Main", "val_string", tmpConf.CNF_INT, 0
-    ) == 0
-
-    assert tmpConf._parseLine(
-        cnfParse, "Main", "val_bool", tmpConf.CNF_BOOL, False
-    ) is True
-    assert tmpConf._parseLine(
-        cnfParse, "Main", "nope", tmpConf.CNF_BOOL, False
-    ) is False
-    assert tmpConf._parseLine(
-        cnfParse, "Main", "val_string", tmpConf.CNF_BOOL, False
-    ) is False
-
-    assert tmpConf._parseLine(
-        cnfParse, "Main", "val_list_string", tmpConf.CNF_S_LST, ["W", "X", "Y", "Z"]
-    ) == ["A", "B", "C", "Z"]
-    assert tmpConf._parseLine(
-        cnfParse, "Main", "nope", tmpConf.CNF_S_LST, ["W", "X", "Y", "Z"]
-    ) == ["W", "X", "Y", "Z"]
-
-    assert tmpConf._parseLine(
-        cnfParse, "Main", "val_list_int", tmpConf.CNF_I_LST, [6, 7, 8, 9]
-    ) == [1, 2, 3, 9]
-    assert tmpConf._parseLine(
-        cnfParse, "Main", "nope", tmpConf.CNF_S_LST, [6, 7, 8, 9]
-    ) == [6, 7, 8, 9]
-
     # Function _checkNone
     assert tmpConf._checkNone(None) is None
     assert tmpConf._checkNone("None") is None
-    assert tmpConf._checkNone("stuff") == "stuff"
+    assert tmpConf._checkNone("none") is None
+    assert tmpConf._checkNone("NONE") is None
+    assert tmpConf._checkNone("NoNe") is None
+    assert tmpConf._checkNone(123456) == 123456
 
     # Function _checkOptionalPackages
     # (Assumes enchant package exists ans is importable)
@@ -569,3 +510,80 @@ def testBaseConfig_Internal(monkeypatch, tmpConf):
         assert tmpConf.hasAssistant is False
 
 # END Test testBaseConfig_Internal
+
+
+@pytest.mark.base
+def testBaseConfig_NWConfigParser(fncDir):
+    """Test the NWConfigParser subclass.
+    """
+    tstConf = os.path.join(fncDir, "test.cfg")
+    writeFile(tstConf, (
+        "[main]\n"
+        "stropt = value\n"
+        "intopt1 = 42\n"
+        "intopt2 = 42.43\n"
+        "boolopt1 = true\n"
+        "boolopt2 = TRUE\n"
+        "boolopt3 = 1\n"
+        "boolopt4 = 0\n"
+        "list1 = a, b, c\n"
+        "list2 = 17, 18, 19\n"
+    ))
+
+    cfgParser = NWConfigParser()
+    cfgParser.read(tstConf)
+
+    # Read String
+    assert cfgParser.rdStr("main", "stropt",   "stuff") == "value"
+    assert cfgParser.rdStr("main", "boolopt1", "stuff") == "true"
+    assert cfgParser.rdStr("main", "intopt1",  "stuff") == "42"
+
+    assert cfgParser.rdStr("nope", "stropt",   "stuff") == "stuff"
+    assert cfgParser.rdStr("main", "blabla",   "stuff") == "stuff"
+
+    # Read Boolean
+    assert cfgParser.rdBool("main", "boolopt1", None) is True
+    assert cfgParser.rdBool("main", "boolopt2", None) is True
+    assert cfgParser.rdBool("main", "boolopt3", None) is True
+    assert cfgParser.rdBool("main", "boolopt4", None) is False
+    assert cfgParser.rdBool("main", "intopt1",  None) is None
+
+    assert cfgParser.rdBool("nope", "boolopt1", None) is None
+    assert cfgParser.rdBool("main", "blabla",   None) is None
+
+    # Read Integer
+    assert cfgParser.rdInt("main", "intopt1", 13) == 42
+    assert cfgParser.rdInt("main", "intopt2", 13) == 13
+    assert cfgParser.rdInt("main", "stropt",  13) == 13
+
+    assert cfgParser.rdInt("nope", "intopt1", 13) == 13
+    assert cfgParser.rdInt("main", "blabla",  13) == 13
+
+    # Read String List
+    assert cfgParser.rdStrList("main", "list1", []) == []
+    assert cfgParser.rdStrList("main", "list1", ["x"]) == ["a"]
+    assert cfgParser.rdStrList("main", "list1", ["x", "y"]) == ["a", "b"]
+    assert cfgParser.rdStrList("main", "list1", ["x", "y", "z"]) == ["a", "b", "c"]
+    assert cfgParser.rdStrList("main", "list1", ["x", "y", "z", "w"]) == ["a", "b", "c", "w"]
+
+    assert cfgParser.rdStrList("main", "stropt", ["x"]) == ["value"]
+    assert cfgParser.rdStrList("main", "intopt1", ["x"]) == ["42"]
+    assert cfgParser.rdStrList("main", "intopt1", None) is None
+
+    assert cfgParser.rdStrList("nope", "list1", ["x"]) == ["x"]
+    assert cfgParser.rdStrList("main", "blabla", ["x"]) == ["x"]
+
+    # Read Integer List
+    assert cfgParser.rdIntList("main", "list2", []) == []
+    assert cfgParser.rdIntList("main", "list2", [1]) == [17]
+    assert cfgParser.rdIntList("main", "list2", [1, 2]) == [17, 18]
+    assert cfgParser.rdIntList("main", "list2", [1, 2, 3]) == [17, 18, 19]
+    assert cfgParser.rdIntList("main", "list2", [1, 2, 3, 4]) == [17, 18, 19, 4]
+
+    assert cfgParser.rdIntList("main", "stropt", [1]) == [1]
+    assert cfgParser.rdIntList("main", "boolopt1", [1]) == [1]
+
+    assert cfgParser.rdIntList("nope", "list2", [1]) == [1]
+    assert cfgParser.rdIntList("main", "blabla", [1]) == [1]
+
+# END Test testBaseConfig_NWConfigParser

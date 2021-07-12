@@ -47,12 +47,6 @@ logger = logging.getLogger(__name__)
 
 class Config:
 
-    CNF_STR   = 0
-    CNF_INT   = 1
-    CNF_BOOL  = 2
-    CNF_S_LST = 3
-    CNF_I_LST = 4
-
     LANG_NW   = 1
     LANG_PROJ = 2
 
