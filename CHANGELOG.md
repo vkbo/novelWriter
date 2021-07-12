@@ -1,6 +1,6 @@
 # novelWriter Changelog
 
-## Version 1.4 Beta 1 [2021-06-13]
+## Version 1.4 RC 1 [2021-07-12]
 
 ### Release Notes
 
@@ -9,6 +9,10 @@ refactoring. This release is a testing release, and may contain bugs. Please be 
 this version to work on your projects.
 
 Below are the main feature changes of this release.
+
+#### Internationalisation
+
+Translation files have been added for Simplified Chinese by Qianzhi Long.
 
 #### Line Breaks
 
@@ -53,6 +57,32 @@ results in the paragraph being centred.
 
 Format menu entries and keyboard shortcuts have been added so that you don't have to memorise these
 codes.
+
+_These Release Notes also include the changes from 1.4 Beta 1._
+
+### Detailed Changelog
+
+**Internationalisation**
+
+* Translation files have been added for Simplified Chinese. The translation has been provided by
+  Qianzhi Long (@longqzh). PR #817.
+
+**Code Improvements**
+
+* Improve PEP8 compliance for the source code. PRs #816 and #820.
+* The way messages are written to the logging tool has been improved. PR #818.
+* Some improvements to parsing and encoding of HTML has been added. PR #821.
+* Test coverage of the document editor has been improved. PR #787.
+
+----
+
+## Version 1.4 Beta 1 [2021-06-13]
+
+### Release Notes
+
+This is a preview release of novelWriter 1.4. It contains some new features and a lot of code
+refactoring. This release is a testing release, and may contain bugs. Please be careful when using
+this version to work on your projects.
 
 ### Detailed Changelog
 
