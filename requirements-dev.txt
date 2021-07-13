@@ -2,4 +2,3 @@ pytest>=4.0.0
 pytest-timeout
 pytest-cov
 pytest-qt
-codecov
