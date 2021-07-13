@@ -49,34 +49,41 @@ Before contributing any code, please read the full
 Some key features of novelWriter are listed below. Consult the
 [documentation](https://novelwriter.readthedocs.io) for more information.
 
-### Markdown Flavour
+### Formatting Codes
 
-Note that novelWriter is _not_ a proper Markdown editor. It is a plain text editor that uses
-Markdown-like syntax to allow for a minimal set of formatting that is useful for the specific task
-of writing novels. The formatting is currently limited to:
+Although novelWriter is a plain text editor, it uses a Markdown-like syntax to allow for a minimal
+set of formatting that is useful for the specific task of writing novels.
 
-* Headings levels 1 to 4 using the `#` syntax only.
-* Emphasised and strongly emphasised text. These are rendered as italicised and bold text.
-* Strikethrough text.
+| Code       | Usage    | Description |
+|------------|----------|-------------|
+| `#`        | Prefix   | Headings level 1 to 4. |
+| `_`        | Wrapped  | Emphasised (italicised) text. |
+| `**`       | Wrapped  | Strongly emphasised (bold) text. |
+| `~~`       | Wrapped  | Strikethrough text. |
+| `%`        | Prefix   | A comment; does not count towards the word count.`*` |
+| `@`        | Prefix   | The following text is parsed as a keyword/value command for meta data. |
+| `>`        | Prefix   | The paragraph is indented one tab width from the left.`**` |
+| `<`        | Suffix   | The paragraph is indented one tab width from the right.`**` |
+| `>>`       | Prefix   | The paragraph is right-aligned.`**` |
+| `<<`       | Suffix   | The paragraph is left-aligned.`**` |
+| `>>`, `<<` | Wrapped  | The paragraph is centred.`**` |
 
-That is it. Features not supported in the editor are also not exported when using the export tool.
+`*` If the first word of the comment is `synopsis:`, the comment is indexed and treated as the
+synopsis for the section of text where it occurs. These synopsis comments can be used to build an
+outline and exported to external documents.
 
-In addition, novelWriter adds the following syntax used for its additional features:
+`**` The indent and alignment codes are available from version 1.4.
 
-* A line starting with `%` is treated as a comment and not rendered on exports unless requested.
-  Comments do not count towards word counts and other statistics.
-* If the first word of the comment is `synopsis:`, the comment is indexed and treated as the
-  synopsis for the section of text where it occurs. These synopsis comments can be used to build an
-  outline and exported to external documents.
-* A set of meta data keyword/values starting with the character `@`. These are used for tagging
-  and inter-linking documents, and can also be included when generating a project outline.
+In additions:
+
 * A variety of thin and non-breaking spaces are supported. Some of them depend on the system
   running at least Qt 5.9. Earlier versions of Qt will unfortunately strip them out when saving.
 * Tabs can be used in the text, and should be properly aligned in both editor and viewer. This can
   be used to make simple tables and lists. Note that for HTML exports, most browsers will treat a
   tab as a space, so it may not show up like expected. Open Document exports should produce the
   expected result.
-* Paragraph alignment and indendtation is supported by a set of tags using `>` and `<` markers.
+
+### Export Formats
 
 The core export formats of novelWriter are Open Document and HTML5. Open Document is an open
 standard for office type documents that is supported by most office applications. See
