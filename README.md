@@ -60,19 +60,19 @@ set of formatting that is useful for the specific task of writing novels.
 | `_`        | Wrapped  | Emphasised (italicised) text. |
 | `**`       | Wrapped  | Strongly emphasised (bold) text. |
 | `~~`       | Wrapped  | Strikethrough text. |
-| `%`        | Prefix   | A comment; does not count towards the word count.`*` |
+| `%`        | Prefix   | A comment; does not count towards the word count.<sup>1</sup> |
 | `@`        | Prefix   | The following text is parsed as a keyword/value command for meta data. |
-| `>`        | Prefix   | The paragraph is indented one tab width from the left.`**` |
-| `<`        | Suffix   | The paragraph is indented one tab width from the right.`**` |
-| `>>`       | Prefix   | The paragraph is right-aligned.`**` |
-| `<<`       | Suffix   | The paragraph is left-aligned.`**` |
-| `>>`, `<<` | Wrapped  | The paragraph is centred.`**` |
+| `>`        | Prefix   | The paragraph is indented one tab width from the left.<sup>2</sup> |
+| `<`        | Suffix   | The paragraph is indented one tab width from the right.<sup>2</sup> |
+| `>>`       | Prefix   | The paragraph is right-aligned.<sup>2</sup> |
+| `<<`       | Suffix   | The paragraph is left-aligned.<sup>2</sup> |
+| `>>`, `<<` | Wrapped  | The paragraph is centred.<sup>2</sup> |
 
-`*` If the first word of the comment is `synopsis:`, the comment is indexed and treated as the
+<sup>1</sup> If the first word of the comment is `synopsis:`, the comment is indexed and treated as the
 synopsis for the section of text where it occurs. These synopsis comments can be used to build an
 outline and exported to external documents.
 
-`**` The indent and alignment codes are available from version 1.4.
+<sup>2</sup> The indent and alignment codes are available from version 1.4.
 
 In additions:
 
