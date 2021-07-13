@@ -2,9 +2,11 @@ name: flake8
 
 on:
   push:
-    branches: [ main, testing, dev ]
+    branches: 
+      - main
   pull_request:
-    branches: [ main, testing, dev ]
+    branches:
+      - main
 
 jobs:
   checkSyntax:
