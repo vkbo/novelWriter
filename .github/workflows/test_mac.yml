@@ -2,9 +2,11 @@ name: macOS
 
 on:
   push:
-    branches: [ main, testing, dev ]
+    branches: 
+      - main
   pull_request:
-    branches: [ main, testing, dev ]
+    branches:
+      - main
 
 jobs:
   testMac:
@@ -24,11 +26,8 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
+          pip install -r requirements-dev.txt
           pip install pyobjc
-          pip install pytest-timeout
-          pip install pytest-cov
-          pip install pytest-qt
-          pip install codecov
       - name: Run Tests
         run: |
           export QT_QPA_PLATFORM=offscreen

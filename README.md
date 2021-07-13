@@ -32,8 +32,9 @@ met. It is regularly tested on Debian and Ubuntu Linux, Windows, and macOS.
 
 ## Project Contributions
 
-The project isn't taking feature contributions at the moment. If you have an idea, please make a
-feature request in the issue tracker. Fixes and patches are welcome. So are new translations.
+Please don't make feature pull requests without first having discussed them with the maintainer.
+You can make a feature request in the issue tracker, or if the idea isn't fully formed, start a
+discussion on the discussion page. Fixes and patches are welcome. So are new translations.
 Contributions related to packaging and installing novelWriter will also be appreciated.
 
 If you want to help translating novelWriter into another language, please see the
