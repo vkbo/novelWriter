@@ -455,4 +455,4 @@ def testBaseCommon_NWConfigParser(fncDir):
     cfgParser.set("test", "listd", "value")
     assert cfgParser.rdStrList("test", "listd", ["x", "y", "z"]) == ["value", "y", "z"]
 
-# END Test testBaseConfig_NWConfigParser
+# END Test testBaseCommon_NWConfigParser
