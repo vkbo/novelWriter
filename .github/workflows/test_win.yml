@@ -2,9 +2,11 @@ name: Windows
 
 on:
   push:
-    branches: [ main, testing, dev ]
+    branches: 
+      - main
   pull_request:
-    branches: [ main, testing, dev ]
+    branches:
+      - main
 
 jobs:
   testWin:
@@ -21,10 +23,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest-timeout
-          pip install pytest-cov
-          pip install pytest-qt
-          pip install codecov
+          pip install -r requirements-dev.txt
       - name: Run Tests
         run: |
           pytest -v --cov=nw --timeout=60

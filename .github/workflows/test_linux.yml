@@ -2,9 +2,11 @@ name: Linux
 
 on:
   push:
-    branches: [ main, testing, dev ]
+    branches: 
+      - main
   pull_request:
-    branches: [ main, testing, dev ]
+    branches:
+      - main
 
 jobs:
   testLinux:
@@ -21,17 +23,14 @@ jobs:
       - name: Install Packages (apt)
         run: |
           sudo apt update
-          sudo apt install libenchant-dev qt5-default qttools5-dev-tools
+          sudo apt install libenchant-dev qttools5-dev-tools
       - name: Checkout Source
         uses: actions/checkout@v2
       - name: Install Dependencies (pip)
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest-timeout
-          pip install pytest-cov
-          pip install pytest-qt
-          pip install codecov
+          pip install -r requirements-dev.txt
       - name: Run Build Commands
         run: python setup.py qtlrelease sample
       - name: Run Tests
