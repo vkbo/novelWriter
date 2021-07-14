@@ -160,6 +160,20 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
         assert tstConf.hasError is False
         assert tstConf.errData == []
 
+    # Check handling of novelWriter as a package
+    with monkeypatch.context() as mp:
+        tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
+        assert tstConf.confPath == tmpDir
+        assert tstConf.dataPath == tmpDir
+        appRoot = tstConf.appRoot
+
+        mp.setattr("os.path.isfile", lambda *a: True)
+        tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
+        assert tstConf.confPath == tmpDir
+        assert tstConf.dataPath == tmpDir
+        assert tstConf.appRoot == os.path.dirname(appRoot)
+        assert tstConf.appPath == os.path.dirname(appRoot)
+
     assert tstConf.loadConfig()
     assert tstConf.saveConfig()
 
@@ -186,19 +200,34 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     assert tstConf.saveConfig()
 
     # Localisation
+    # ============
+
     i18nDir = os.path.join(fncDir, "i18n")
     os.mkdir(i18nDir)
     os.mkdir(os.path.join(i18nDir, "stuff"))
     tstConf.nwLangPath = i18nDir
 
-    copyfile(os.path.join(filesDir, "nw_en_GB.qm"), os.path.join(fncDir, "nw_en_GB.qm"))
+    copyfile(os.path.join(filesDir, "nw_en_GB.qm"), os.path.join(i18nDir, "nw_en_GB.qm"))
     writeFile(os.path.join(i18nDir, "nw_en_GB.ts"), "")
     writeFile(os.path.join(i18nDir, "nw_abcd.qm"), "")
 
     tstApp = MockApp()
     tstConf.initLocalisation(tstApp)
+
+    # Check Lists
     theList = tstConf.listLanguages(tstConf.LANG_NW)
     assert theList == [("en_GB", "British English")]
+    theList = tstConf.listLanguages(tstConf.LANG_PROJ)
+    assert theList == [("en", "English")]
+    theList = tstConf.listLanguages(None)
+    assert theList == []
+
+    # Add Language
+    copyfile(os.path.join(filesDir, "nw_en_GB.qm"), os.path.join(i18nDir, "nw_fr.qm"))
+    writeFile(os.path.join(i18nDir, "nw_fr.ts"), "")
+
+    theList = tstConf.listLanguages(tstConf.LANG_NW)
+    assert theList == [("en_GB", "British English"), ("fr", "Français")]
 
     copyfile(confFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 9, 10])
@@ -310,6 +339,7 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
 
     # GUI Scaling
     # ===========
+
     tmpConf.guiScale = 1.0
     assert tmpConf.pxInt(10) == 10
     assert tmpConf.pxInt(13) == 13
@@ -341,6 +371,19 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     assert tmpConf.winGeometry == [70, 70]
 
     assert tmpConf.setWinSize(1200, 650)
+
+    # Preferences Size
+    tmpConf.guiScale = 2.0
+    assert tmpConf.setPreferencesSize(70, 70)
+    assert tmpConf.getPreferencesSize() == [70, 70]
+    assert tmpConf.prefGeometry == [35, 35]
+
+    tmpConf.guiScale = 1.0
+    assert tmpConf.setPreferencesSize(70, 70)
+    assert tmpConf.getPreferencesSize() == [70, 70]
+    assert tmpConf.prefGeometry == [70, 70]
+
+    assert tmpConf.setPreferencesSize(700, 615)
 
     # Project Tree Columns
     tmpConf.guiScale = 2.0
@@ -435,6 +478,7 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
 
     # Getters Only
     # ============
+
     tmpConf.guiScale = 1.0
     assert tmpConf.getTextWidth() == 600
     assert tmpConf.getTextMargin() == 40
@@ -449,6 +493,7 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
 
     # Flag Setters
     # ============
+
     assert not tmpConf.setShowRefPanel(False)
     assert not tmpConf.showRefPanel
     assert tmpConf.setShowRefPanel(True)
@@ -478,9 +523,6 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
 def testBaseConfig_Internal(monkeypatch, tmpConf):
     """Check internal functions.
     """
-    # Function _packList
-    assert tmpConf._packList(["A", 1, 2.0, None, False]) == "A, 1, 2.0, None, False"
-
     # Function _checkNone
     assert tmpConf._checkNone(None) is None
     assert tmpConf._checkNone("None") is None
@@ -500,12 +542,12 @@ def testBaseConfig_Internal(monkeypatch, tmpConf):
         assert tmpConf.hasEnchant is False
 
     with monkeypatch.context() as mp:
-        mp.setattr("shutil.which", lambda *args: "stuff")
+        mp.setattr("shutil.which", lambda *a: "stuff")
         tmpConf._checkOptionalPackages()
         assert tmpConf.hasAssistant is True
 
     with monkeypatch.context() as mp:
-        mp.setattr("shutil.which", lambda *args: None)
+        mp.setattr("shutil.which", lambda *a: None)
         tmpConf._checkOptionalPackages()
         assert tmpConf.hasAssistant is False
 
