@@ -4,8 +4,7 @@ novelWriter – Config Class
 Class holding the user preferences and handling the config file
 
 File History:
-Created: 2018-09-22 [0.0.1] Config
-Created: 2021-07-12 [1.5a0] NWConfigParser
+Created: 2018-09-22 [0.0.1]
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen
