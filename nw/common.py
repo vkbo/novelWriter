@@ -401,15 +401,14 @@ class NWConfigParser(ConfigParser):
     def __init__(self):
         super().__init__()
 
-    def setList(self, section, option, data):
-        """Pack a list of items into a comma-separated string.
+    def set(self, section, option, value):
+        """Overload the set function to also allow lists.
         """
-        if isinstance(data, list):
-            self.set(section, option, ", ".join([str(inVal) for inVal in data]))
+        if isinstance(value, list):
+            super().set(section, option, ", ".join([str(x) for x in value]))
         else:
-            logger.error("Value is not a list")
-            return False
-        return True
+            super().set(section, option, value)
+        return
 
     def rdStr(self, section, option, default):
         """Read string value.

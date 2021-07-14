@@ -91,10 +91,7 @@ def fncDir(tmpDir):
         shutil.rmtree(fncDir)
     if not os.path.isdir(fncDir):
         os.mkdir(fncDir)
-    yield fncDir
-    if os.path.isdir(fncDir):
-        shutil.rmtree(fncDir)
-    return
+    return fncDir
 
 
 @pytest.fixture(scope="function")

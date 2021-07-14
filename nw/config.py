@@ -572,15 +572,15 @@ class Config:
         # Sizes
         cnfSec = "Sizes"
         cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec, "geometry",    self._packList(self.winGeometry))
-        cnfParse.set(cnfSec, "preferences", self._packList(self.prefGeometry))
-        cnfParse.set(cnfSec, "treecols",    self._packList(self.treeColWidth))
-        cnfParse.set(cnfSec, "novelcols",   self._packList(self.novelColWidth))
-        cnfParse.set(cnfSec, "projcols",    self._packList(self.projColWidth))
-        cnfParse.set(cnfSec, "mainpane",    self._packList(self.mainPanePos))
-        cnfParse.set(cnfSec, "docpane",     self._packList(self.docPanePos))
-        cnfParse.set(cnfSec, "viewpane",    self._packList(self.viewPanePos))
-        cnfParse.set(cnfSec, "outlinepane", self._packList(self.outlnPanePos))
+        cnfParse.set(cnfSec, "geometry",    self.winGeometry)
+        cnfParse.set(cnfSec, "preferences", self.prefGeometry)
+        cnfParse.set(cnfSec, "treecols",    self.treeColWidth)
+        cnfParse.set(cnfSec, "novelcols",   self.novelColWidth)
+        cnfParse.set(cnfSec, "projcols",    self.projColWidth)
+        cnfParse.set(cnfSec, "mainpane",    self.mainPanePos)
+        cnfParse.set(cnfSec, "docpane",     self.docPanePos)
+        cnfParse.set(cnfSec, "viewpane",    self.viewPanePos)
+        cnfParse.set(cnfSec, "outlinepane", self.outlnPanePos)
         cnfParse.set(cnfSec, "fullscreen",  str(self.isFullScreen))
         cnfParse.set(cnfSec, "hidevscroll", str(self.hideVScroll))
         cnfParse.set(cnfSec, "hidehscroll", str(self.hideHScroll))
@@ -612,8 +612,8 @@ class Config:
         cnfParse.set(cnfSec, "scrollpastend",   str(self.scrollPastEnd))
         cnfParse.set(cnfSec, "autoscroll",      str(self.autoScroll))
         cnfParse.set(cnfSec, "autoscrollpos",   str(self.autoScrollPos))
-        cnfParse.set(cnfSec, "fmtsinglequote",  self._packList(self.fmtSingleQuotes))
-        cnfParse.set(cnfSec, "fmtdoublequote",  self._packList(self.fmtDoubleQuotes))
+        cnfParse.set(cnfSec, "fmtsinglequote",  self.fmtSingleQuotes)
+        cnfParse.set(cnfSec, "fmtdoublequote",  self.fmtDoubleQuotes)
         cnfParse.set(cnfSec, "fmtpadbefore",    str(self.fmtPadBefore))
         cnfParse.set(cnfSec, "fmtpadafter",     str(self.fmtPadAfter))
         cnfParse.set(cnfSec, "fmtpadthin",      str(self.fmtPadThin))
@@ -906,11 +906,6 @@ class Config:
     ##
     #  Internal Functions
     ##
-
-    def _packList(self, inData):
-        """Pack a list of items into a comma-separated string.
-        """
-        return ", ".join([str(inVal) for inVal in inData])
 
     def _checkNone(self, checkVal):
         """Return a NoneType if the value corresponds to None, otherwise

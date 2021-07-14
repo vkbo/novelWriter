@@ -442,14 +442,17 @@ def testBaseCommon_NWConfigParser(fncDir):
 
     # Set List
     cfgParser.add_section("test")
-    assert cfgParser.setList("test", "lista", ["a", "b", "c"]) is True
-    assert cfgParser.setList("test", "listb", [1, 2, 3]) is True
-    assert cfgParser.setList("test", "listc", [True, False, None]) is True
-    assert cfgParser.setList("test", "listd", None) is False
 
+    cfgParser.set("test", "lista", ["a", "b", "c"])
     assert cfgParser.rdStrList("test", "lista", ["x", "y", "z"]) == ["a", "b", "c"]
+
+    cfgParser.set("test", "listb", [1, 2, 3])
     assert cfgParser.rdStrList("test", "listb", ["x", "y", "z"]) == ["1", "2", "3"]
+
+    cfgParser.set("test", "listc", [True, False, None])
     assert cfgParser.rdStrList("test", "listc", ["x", "y", "z"]) == ["True", "False", "None"]
-    assert cfgParser.rdStrList("test", "listd", ["x", "y", "z"]) == ["x", "y", "z"]
+
+    cfgParser.set("test", "listd", "value")
+    assert cfgParser.rdStrList("test", "listd", ["x", "y", "z"]) == ["value", "y", "z"]
 
 # END Test testBaseConfig_NWConfigParser
