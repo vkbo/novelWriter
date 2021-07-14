@@ -19,14 +19,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
 import time
 import pytest
 
+from datetime import datetime
+
+from tools import writeFile
+
 from nw.common import (
-    checkString, checkBool, checkInt, formatInt, transferCase,
-    fuzzyTime, checkHandle, formatTimeStamp, formatTime, hexToInt,
+    checkString, checkBool, checkInt, formatInt, transferCase, fuzzyTime,
+    checkHandle, formatTimeStamp, parseTimeStamp, formatTime, hexToInt,
     makeFileNameSafe, isHandle, isTitleTag, isItemClass, isItemType,
-    isItemLayout, numberToRoman
+    isItemLayout, numberToRoman, NWConfigParser
 )
 
 
@@ -235,6 +240,21 @@ def testBaseCommon_FormatTime():
 
 
 @pytest.mark.base
+def testBaseCommon_ParseTimeStamp():
+    """Test the parseTimeStamp function.
+    """
+    localEpoch = datetime(2000, 1, 1).timestamp()
+    assert parseTimeStamp(None, 0.0, allowNone=True) is None
+    assert parseTimeStamp("None", 0.0, allowNone=True) is None
+    assert parseTimeStamp("None", 0.0) == 0.0
+    assert parseTimeStamp("2000-01-01 00:00:00", 123.0) == localEpoch
+    assert parseTimeStamp("2000-13-01 00:00:00", 123.0) == 123.0
+    assert parseTimeStamp("2000-01-32 00:00:00", 123.0) == 123.0
+
+# END Test testBaseCommon_ParseTimeStamp
+
+
+@pytest.mark.base
 def testBaseCommon_FormatInt():
     """Test the formatInt function.
     """
@@ -339,3 +359,97 @@ def testBaseCommon_RomanNumbers():
     assert numberToRoman(999, True) == "cmxcix"
 
 # END Test testBaseCommon_RomanNumbers
+
+
+@pytest.mark.base
+def testBaseCommon_NWConfigParser(fncDir):
+    """Test the NWConfigParser subclass.
+    """
+    tstConf = os.path.join(fncDir, "test.cfg")
+    writeFile(tstConf, (
+        "[main]\n"
+        "stropt = value\n"
+        "intopt1 = 42\n"
+        "intopt2 = 42.43\n"
+        "boolopt1 = true\n"
+        "boolopt2 = TRUE\n"
+        "boolopt3 = 1\n"
+        "boolopt4 = 0\n"
+        "list1 = a, b, c\n"
+        "list2 = 17, 18, 19\n"
+    ))
+
+    cfgParser = NWConfigParser()
+    cfgParser.read(tstConf)
+
+    # Readers
+    # =======
+
+    # Read String
+    assert cfgParser.rdStr("main", "stropt",   "stuff") == "value"
+    assert cfgParser.rdStr("main", "boolopt1", "stuff") == "true"
+    assert cfgParser.rdStr("main", "intopt1",  "stuff") == "42"
+
+    assert cfgParser.rdStr("nope", "stropt",   "stuff") == "stuff"
+    assert cfgParser.rdStr("main", "blabla",   "stuff") == "stuff"
+
+    # Read Boolean
+    assert cfgParser.rdBool("main", "boolopt1", None) is True
+    assert cfgParser.rdBool("main", "boolopt2", None) is True
+    assert cfgParser.rdBool("main", "boolopt3", None) is True
+    assert cfgParser.rdBool("main", "boolopt4", None) is False
+    assert cfgParser.rdBool("main", "intopt1",  None) is None
+
+    assert cfgParser.rdBool("nope", "boolopt1", None) is None
+    assert cfgParser.rdBool("main", "blabla",   None) is None
+
+    # Read Integer
+    assert cfgParser.rdInt("main", "intopt1", 13) == 42
+    assert cfgParser.rdInt("main", "intopt2", 13) == 13
+    assert cfgParser.rdInt("main", "stropt",  13) == 13
+
+    assert cfgParser.rdInt("nope", "intopt1", 13) == 13
+    assert cfgParser.rdInt("main", "blabla",  13) == 13
+
+    # Read String List
+    assert cfgParser.rdStrList("main", "list1", []) == []
+    assert cfgParser.rdStrList("main", "list1", ["x"]) == ["a"]
+    assert cfgParser.rdStrList("main", "list1", ["x", "y"]) == ["a", "b"]
+    assert cfgParser.rdStrList("main", "list1", ["x", "y", "z"]) == ["a", "b", "c"]
+    assert cfgParser.rdStrList("main", "list1", ["x", "y", "z", "w"]) == ["a", "b", "c", "w"]
+
+    assert cfgParser.rdStrList("main", "stropt", ["x"]) == ["value"]
+    assert cfgParser.rdStrList("main", "intopt1", ["x"]) == ["42"]
+
+    assert cfgParser.rdStrList("nope", "list1", ["x"]) == ["x"]
+    assert cfgParser.rdStrList("main", "blabla", ["x"]) == ["x"]
+
+    # Read Integer List
+    assert cfgParser.rdIntList("main", "list2", []) == []
+    assert cfgParser.rdIntList("main", "list2", [1]) == [17]
+    assert cfgParser.rdIntList("main", "list2", [1, 2]) == [17, 18]
+    assert cfgParser.rdIntList("main", "list2", [1, 2, 3]) == [17, 18, 19]
+    assert cfgParser.rdIntList("main", "list2", [1, 2, 3, 4]) == [17, 18, 19, 4]
+
+    assert cfgParser.rdIntList("main", "stropt", [1]) == [1]
+    assert cfgParser.rdIntList("main", "boolopt1", [1]) == [1]
+
+    assert cfgParser.rdIntList("nope", "list2", [1]) == [1]
+    assert cfgParser.rdIntList("main", "blabla", [1]) == [1]
+
+    # Setter
+    # ======
+
+    # Set List
+    cfgParser.add_section("test")
+    assert cfgParser.setList("test", "lista", ["a", "b", "c"]) is True
+    assert cfgParser.setList("test", "listb", [1, 2, 3]) is True
+    assert cfgParser.setList("test", "listc", [True, False, None]) is True
+    assert cfgParser.setList("test", "listd", None) is False
+
+    assert cfgParser.rdStrList("test", "lista", ["x", "y", "z"]) == ["a", "b", "c"]
+    assert cfgParser.rdStrList("test", "listb", ["x", "y", "z"]) == ["1", "2", "3"]
+    assert cfgParser.rdStrList("test", "listc", ["x", "y", "z"]) == ["True", "False", "None"]
+    assert cfgParser.rdStrList("test", "listd", ["x", "y", "z"]) == ["x", "y", "z"]
+
+# END Test testBaseConfig_NWConfigParser

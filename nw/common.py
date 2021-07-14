@@ -26,15 +26,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 
 from datetime import datetime
+from configparser import ConfigParser
 
 from PyQt5.QtWidgets import qApp
 from PyQt5.QtCore import QCoreApplication
 
 from nw.enum import nwItemClass, nwItemType, nwItemLayout
+from nw.error import logException
 from nw.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
 
+
+# =========================================================================== #
+#  Checker Functions
+# =========================================================================== #
 
 def checkString(value, default, allowNone=False):
     """Check if a variable is a string or a none.
@@ -101,6 +107,10 @@ def checkHandle(value, default, allowNone=False):
     return default
 
 
+# =========================================================================== #
+#  Validator Functions
+# =========================================================================== #
+
 def isHandle(theString):
     """Check if a string is a valid novelWriter handle.
     Note: This is case sensitive. Must be lower case!
@@ -159,6 +169,10 @@ def hexToInt(value, default=0):
     return default
 
 
+# =========================================================================== #
+#  Formatting Functions
+# =========================================================================== #
+
 def formatInt(theInt):
     """Formats an integer with k, M, G etc.
     """
@@ -200,6 +214,23 @@ def formatTime(tS):
             return f"{tS//3600:02d}:{tS%3600//60:02d}:{tS%60:02d}"
     return "ERROR"
 
+
+def parseTimeStamp(theStamp, default, allowNone=False):
+    """Parses a text representation of a time stamp and converts it into
+    a float. Note that negative timestamps cause an OSError on Windows.
+    See https://bugs.python.org/issue29097
+    """
+    if str(theStamp).lower() == "none" and allowNone:
+        return None
+    try:
+        return datetime.strptime(theStamp, nwConst.FMT_TSTAMP).timestamp()
+    except Exception:
+        return default
+
+
+# =========================================================================== #
+#  String Functions
+# =========================================================================== #
 
 def splitVersionNumber(vString):
     """ Splits a version string on the form aa.bb.cc into major, minor
@@ -308,25 +339,6 @@ def fuzzyTime(secDiff):
         ).format(int(round(secDiff/31557600)))
 
 
-def makeFileNameSafe(theText):
-    """Returns a filename safe version of the text.
-    """
-    cleanName = ""
-    for c in theText.strip():
-        if c.isalpha() or c.isdigit() or c == " ":
-            cleanName += c
-    return cleanName
-
-
-def getGuiItem(theName):
-    """Returns a QtWidget based on its objectName.
-    """
-    for qWidget in qApp.topLevelWidgets():
-        if qWidget.objectName() == theName:
-            return qWidget
-    return None
-
-
 def numberToRoman(numVal, isLower=False):
     """Convert an integer to a roman number.
     """
@@ -349,3 +361,121 @@ def numberToRoman(numVal, isLower=False):
             break
 
     return romNum.lower() if isLower else romNum
+
+
+# =========================================================================== #
+#  Other Functions
+# =========================================================================== #
+
+def makeFileNameSafe(theText):
+    """Returns a filename safe version of the text.
+    """
+    cleanName = ""
+    for c in theText.strip():
+        if c.isalpha() or c.isdigit() or c == " ":
+            cleanName += c
+    return cleanName
+
+
+def getGuiItem(theName):
+    """Returns a QtWidget based on its objectName.
+    """
+    for qWidget in qApp.topLevelWidgets():
+        if qWidget.objectName() == theName:
+            return qWidget
+    return None
+
+
+# =========================================================================== #
+#  Classes
+# =========================================================================== #
+
+class NWConfigParser(ConfigParser):
+
+    CNF_STR   = 0
+    CNF_INT   = 1
+    CNF_BOOL  = 2
+    CNF_S_LST = 3
+    CNF_I_LST = 4
+
+    def __init__(self):
+        super().__init__()
+
+    def setList(self, section, option, data):
+        """Pack a list of items into a comma-separated string.
+        """
+        if isinstance(data, list):
+            self.set(section, option, ", ".join([str(inVal) for inVal in data]))
+        else:
+            logger.error("Value is not a list")
+            return False
+        return True
+
+    def rdStr(self, section, option, default):
+        """Read string value.
+        """
+        return self._parseLine(section, option, default, self.CNF_STR)
+
+    def rdInt(self, section, option, default):
+        """Read integer value.
+        """
+        return self._parseLine(section, option, default, self.CNF_INT)
+
+    def rdBool(self, section, option, default):
+        """Read boolean value.
+        """
+        return self._parseLine(section, option, default, self.CNF_BOOL)
+
+    def rdStrList(self, section, option, default):
+        """Read string list.
+        """
+        return self._parseLine(section, option, default, self.CNF_S_LST)
+
+    def rdIntList(self, section, option, default):
+        """Read integer list.
+        """
+        return self._parseLine(section, option, default, self.CNF_I_LST)
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _unpackList(self, value, default, type):
+        """Unpack a comma-separated string of items into a list.
+        """
+        inList = value.split(",")
+        outList = []
+        if isinstance(default, list):
+            outList = default.copy()
+        for i in range(min(len(inList), len(default))):
+            try:
+                if type == self.CNF_S_LST:
+                    outList[i] = inList[i].strip()
+                elif type == self.CNF_I_LST:
+                    outList[i] = int(inList[i].strip())
+            except Exception:
+                continue
+        return outList
+
+    def _parseLine(self, section, option, default, type):
+        """Parse a line and return the correct datatype.
+        """
+        if self.has_section(section):
+            if self.has_option(section, option):
+                try:
+                    if type == self.CNF_STR:
+                        return self.get(section, option)
+                    elif type == self.CNF_INT:
+                        return self.getint(section, option)
+                    elif type == self.CNF_BOOL:
+                        return self.getboolean(section, option)
+                    elif type in (self.CNF_I_LST, self.CNF_S_LST):
+                        return self._unpackList(self.get(section, option), default, type)
+                except ValueError:
+                    logger.error("Failed to load value from config file.")
+                    logException()
+                    return default
+
+        return default
+
+# END Class NWConfigParser

@@ -31,7 +31,6 @@ import shutil
 import logging
 
 from time import time
-from configparser import ConfigParser
 
 from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import (
@@ -40,7 +39,7 @@ from PyQt5.QtCore import (
 )
 
 from nw.error import logException
-from nw.common import splitVersionNumber, formatTimeStamp
+from nw.common import splitVersionNumber, formatTimeStamp, NWConfigParser
 from nw.constants import nwConst, nwFiles, nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -945,88 +944,3 @@ class Config:
         return
 
 # END Class Config
-
-
-class NWConfigParser(ConfigParser):
-
-    def __init__(self):
-        super().__init__()
-
-    def rdStr(self, section, option, default):
-        """A safe way to parse a string from the config file.
-        """
-        if self.has_section(section):
-            if self.has_option(section, option):
-                return str(self.get(section, option))
-
-        return default
-
-    def rdBool(self, section, option, default):
-        """A safe way to parse a boolean from the config file.
-        """
-        if self.has_section(section):
-            if self.has_option(section, option):
-                try:
-                    return self.getboolean(section, option)
-                except Exception:
-                    logger.error("Failed to load value from config file.")
-                    logException()
-
-        return default
-
-    def rdInt(self, section, option, default):
-        """A safe way to parse an integer from the config file.
-        """
-        if self.has_section(section):
-            if self.has_option(section, option):
-                try:
-                    return self.getint(section, option)
-                except Exception:
-                    logger.error("Failed to load value from config file.")
-                    logException()
-
-        return default
-
-    def rdStrList(self, section, option, default):
-        """A safe way to parse a string list from the config file.
-        """
-        if self.has_section(section):
-            if self.has_option(section, option):
-                try:
-                    rawData = self.get(section, option)
-                    inData = rawData.split(",")
-                    outData = default.copy()
-
-                    for i in range(min(len(inData), len(default))):
-                        outData[i] = inData[i].strip()
-
-                    return outData
-
-                except Exception:
-                    logger.error("Failed to load value from config file.")
-                    logException()
-
-        return default
-
-    def rdIntList(self, section, option, default):
-        """A safe way to parse an integer list from the config file.
-        """
-        if self.has_section(section):
-            if self.has_option(section, option):
-                try:
-                    rawData = self.get(section, option)
-                    inData = rawData.split(",")
-                    outData = default.copy()
-
-                    for i in range(min(len(inData), len(default))):
-                        outData[i] = int(inData[i].strip())
-
-                    return outData
-
-                except Exception:
-                    logger.error("Failed to load value from config file.")
-                    logException()
-
-        return default
-
-# END Class NWConfigParser

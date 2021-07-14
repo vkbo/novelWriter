@@ -28,7 +28,7 @@ from shutil import copyfile
 from mock import causeOSError, MockApp
 from tools import cmpFiles, writeFile
 
-from nw.config import Config, NWConfigParser
+from nw.config import Config
 from nw.constants import nwConst, nwFiles
 
 
@@ -510,80 +510,3 @@ def testBaseConfig_Internal(monkeypatch, tmpConf):
         assert tmpConf.hasAssistant is False
 
 # END Test testBaseConfig_Internal
-
-
-@pytest.mark.base
-def testBaseConfig_NWConfigParser(fncDir):
-    """Test the NWConfigParser subclass.
-    """
-    tstConf = os.path.join(fncDir, "test.cfg")
-    writeFile(tstConf, (
-        "[main]\n"
-        "stropt = value\n"
-        "intopt1 = 42\n"
-        "intopt2 = 42.43\n"
-        "boolopt1 = true\n"
-        "boolopt2 = TRUE\n"
-        "boolopt3 = 1\n"
-        "boolopt4 = 0\n"
-        "list1 = a, b, c\n"
-        "list2 = 17, 18, 19\n"
-    ))
-
-    cfgParser = NWConfigParser()
-    cfgParser.read(tstConf)
-
-    # Read String
-    assert cfgParser.rdStr("main", "stropt",   "stuff") == "value"
-    assert cfgParser.rdStr("main", "boolopt1", "stuff") == "true"
-    assert cfgParser.rdStr("main", "intopt1",  "stuff") == "42"
-
-    assert cfgParser.rdStr("nope", "stropt",   "stuff") == "stuff"
-    assert cfgParser.rdStr("main", "blabla",   "stuff") == "stuff"
-
-    # Read Boolean
-    assert cfgParser.rdBool("main", "boolopt1", None) is True
-    assert cfgParser.rdBool("main", "boolopt2", None) is True
-    assert cfgParser.rdBool("main", "boolopt3", None) is True
-    assert cfgParser.rdBool("main", "boolopt4", None) is False
-    assert cfgParser.rdBool("main", "intopt1",  None) is None
-
-    assert cfgParser.rdBool("nope", "boolopt1", None) is None
-    assert cfgParser.rdBool("main", "blabla",   None) is None
-
-    # Read Integer
-    assert cfgParser.rdInt("main", "intopt1", 13) == 42
-    assert cfgParser.rdInt("main", "intopt2", 13) == 13
-    assert cfgParser.rdInt("main", "stropt",  13) == 13
-
-    assert cfgParser.rdInt("nope", "intopt1", 13) == 13
-    assert cfgParser.rdInt("main", "blabla",  13) == 13
-
-    # Read String List
-    assert cfgParser.rdStrList("main", "list1", []) == []
-    assert cfgParser.rdStrList("main", "list1", ["x"]) == ["a"]
-    assert cfgParser.rdStrList("main", "list1", ["x", "y"]) == ["a", "b"]
-    assert cfgParser.rdStrList("main", "list1", ["x", "y", "z"]) == ["a", "b", "c"]
-    assert cfgParser.rdStrList("main", "list1", ["x", "y", "z", "w"]) == ["a", "b", "c", "w"]
-
-    assert cfgParser.rdStrList("main", "stropt", ["x"]) == ["value"]
-    assert cfgParser.rdStrList("main", "intopt1", ["x"]) == ["42"]
-    assert cfgParser.rdStrList("main", "intopt1", None) is None
-
-    assert cfgParser.rdStrList("nope", "list1", ["x"]) == ["x"]
-    assert cfgParser.rdStrList("main", "blabla", ["x"]) == ["x"]
-
-    # Read Integer List
-    assert cfgParser.rdIntList("main", "list2", []) == []
-    assert cfgParser.rdIntList("main", "list2", [1]) == [17]
-    assert cfgParser.rdIntList("main", "list2", [1, 2]) == [17, 18]
-    assert cfgParser.rdIntList("main", "list2", [1, 2, 3]) == [17, 18, 19]
-    assert cfgParser.rdIntList("main", "list2", [1, 2, 3, 4]) == [17, 18, 19, 4]
-
-    assert cfgParser.rdIntList("main", "stropt", [1]) == [1]
-    assert cfgParser.rdIntList("main", "boolopt1", [1]) == [1]
-
-    assert cfgParser.rdIntList("nope", "list2", [1]) == [1]
-    assert cfgParser.rdIntList("main", "blabla", [1]) == [1]
-
-# END Test testBaseConfig_NWConfigParser
