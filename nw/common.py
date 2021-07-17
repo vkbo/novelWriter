@@ -34,7 +34,7 @@ from nw.enum import nwItemClass, nwItemType, nwItemLayout
 from nw.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
-noneType = { None, "None" }
+noneType = {None, "None"}
 
 
 def checkString(value, default, allowNone=False):
