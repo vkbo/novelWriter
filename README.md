@@ -34,10 +34,13 @@ met. It is regularly tested on Debian and Ubuntu Linux, Windows, and macOS.
 
 Please don't make feature pull requests without first having discussed them with the maintainer.
 You can make a feature request in the issue tracker, or if the idea isn't fully formed, start a
-discussion on the discussion page. Fixes and patches are welcome. So are new translations.
-Contributions related to packaging and installing novelWriter will also be appreciated.
+discussion on the discussion page. Please also don't make pull requests to reformat or rewrite
+existing code unless there is a very good reason for doing so.
 
-If you want to help translating novelWriter into another language, please see the
+Fixes and patches are welcome. Contributions related to packaging and installing novelWriter will
+also be appreciated, but please make an issue or a discussion topic first.
+
+New translations are always welcome. Please see the
 [README](https://github.com/vkbo/novelWriter/blob/main/i18n/README.md) in the `nw/assets/i18n`
 folder for further details.
 
