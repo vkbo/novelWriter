@@ -38,14 +38,11 @@ discussion on the discussion page. Please also don't make pull requests to refor
 existing code unless there is a very good reason for doing so.
 
 Fixes and patches are welcome. Contributions related to packaging and installing novelWriter will
-also be appreciated, but please make an issue or a discussion topic first.
+also be appreciated, but please make an issue or a discussion topic first. Before contributing any
+code, please read the full [Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md).
 
-New translations are always welcome. Please see the
-[README](https://github.com/vkbo/novelWriter/blob/main/i18n/README.md) in the `nw/assets/i18n`
-folder for further details.
-
-Before contributing any code, please read the full
-[Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md).
+New translations are always welcome. Please read the additional
+[instructions](https://github.com/vkbo/novelWriter/blob/main/i18n/README.md) for further details.
 
 ## Key Features
 
