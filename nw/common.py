@@ -34,16 +34,14 @@ from nw.enum import nwItemClass, nwItemType, nwItemLayout
 from nw.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
+noneType = { None, "None" }
 
 
 def checkString(value, default, allowNone=False):
     """Check if a variable is a string or a none.
     """
-    if allowNone:
-        if value is None:
-            return None
-        if value == "None":
-            return None
+    if allowNone and value in noneType:
+        return None
     if isinstance(value, str):
         return str(value)
     return default
@@ -52,11 +50,8 @@ def checkString(value, default, allowNone=False):
 def checkInt(value, default, allowNone=False):
     """Check if a variable is an integer or a none.
     """
-    if allowNone:
-        if value is None:
-            return None
-        if value == "None":
-            return None
+    if allowNone and value in noneType:
+        return None
     try:
         return int(value)
     except Exception:
@@ -66,11 +61,8 @@ def checkInt(value, default, allowNone=False):
 def checkBool(value, default, allowNone=False):
     """Check if a variable is a boolean or a none.
     """
-    if allowNone:
-        if value is None:
-            return None
-        if value == "None":
-            return None
+    if allowNone and value in noneType:
+        return None
     if isinstance(value, str):
         if value == "True":
             return True
@@ -91,11 +83,8 @@ def checkBool(value, default, allowNone=False):
 def checkHandle(value, default, allowNone=False):
     """Check if a value is a handle.
     """
-    if allowNone:
-        if value is None:
-            return None
-        if value == "None":
-            return None
+    if allowNone and value in noneType:
+        return None
     if isHandle(value):
         return str(value)
     return default
