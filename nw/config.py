@@ -425,11 +425,11 @@ class Config:
         if self.confPath is None:
             return False
 
-        cnfParse = NWConfigParser()
+        theConf = NWConfigParser()
         cnfPath = os.path.join(self.confPath, self.confFile)
         try:
             with open(cnfPath, mode="r", encoding="utf-8") as inFile:
-                cnfParse.read_file(inFile)
+                theConf.read_file(inFile)
         except Exception as e:
             logger.error("Could not load config file")
             logException()
@@ -440,95 +440,95 @@ class Config:
 
         # Main
         cnfSec = "Main"
-        self.guiTheme    = cnfParse.rdStr(cnfSec, "theme", self.guiTheme)
-        self.guiSyntax   = cnfParse.rdStr(cnfSec, "syntax", self.guiSyntax)
-        self.guiIcons    = cnfParse.rdStr(cnfSec, "icons", self.guiIcons)
-        self.guiDark     = cnfParse.rdBool(cnfSec, "guidark", self.guiDark)
-        self.guiFont     = cnfParse.rdStr(cnfSec, "guifont", self.guiFont)
-        self.guiFontSize = cnfParse.rdInt(cnfSec, "guifontsize", self.guiFontSize)
-        self.lastNotes   = cnfParse.rdStr(cnfSec, "lastnotes", self.lastNotes)
-        self.guiLang     = cnfParse.rdStr(cnfSec, "guilang", self.guiLang)
+        self.guiTheme    = theConf.rdStr(cnfSec, "theme", self.guiTheme)
+        self.guiSyntax   = theConf.rdStr(cnfSec, "syntax", self.guiSyntax)
+        self.guiIcons    = theConf.rdStr(cnfSec, "icons", self.guiIcons)
+        self.guiDark     = theConf.rdBool(cnfSec, "guidark", self.guiDark)
+        self.guiFont     = theConf.rdStr(cnfSec, "guifont", self.guiFont)
+        self.guiFontSize = theConf.rdInt(cnfSec, "guifontsize", self.guiFontSize)
+        self.lastNotes   = theConf.rdStr(cnfSec, "lastnotes", self.lastNotes)
+        self.guiLang     = theConf.rdStr(cnfSec, "guilang", self.guiLang)
 
         # Sizes
         cnfSec = "Sizes"
-        self.winGeometry   = cnfParse.rdIntList(cnfSec, "geometry", self.winGeometry)
-        self.prefGeometry  = cnfParse.rdIntList(cnfSec, "preferences", self.prefGeometry)
-        self.treeColWidth  = cnfParse.rdIntList(cnfSec, "treecols", self.treeColWidth)
-        self.novelColWidth = cnfParse.rdIntList(cnfSec, "novelcols", self.novelColWidth)
-        self.projColWidth  = cnfParse.rdIntList(cnfSec, "projcols", self.projColWidth)
-        self.mainPanePos   = cnfParse.rdIntList(cnfSec, "mainpane", self.mainPanePos)
-        self.docPanePos    = cnfParse.rdIntList(cnfSec, "docpane", self.docPanePos)
-        self.viewPanePos   = cnfParse.rdIntList(cnfSec, "viewpane", self.viewPanePos)
-        self.outlnPanePos  = cnfParse.rdIntList(cnfSec, "outlinepane", self.outlnPanePos)
-        self.isFullScreen  = cnfParse.rdBool(cnfSec, "fullscreen", self.isFullScreen)
-        self.hideVScroll   = cnfParse.rdBool(cnfSec, "hidevscroll", self.hideVScroll)
-        self.hideHScroll   = cnfParse.rdBool(cnfSec, "hidehscroll", self.hideHScroll)
+        self.winGeometry   = theConf.rdIntList(cnfSec, "geometry", self.winGeometry)
+        self.prefGeometry  = theConf.rdIntList(cnfSec, "preferences", self.prefGeometry)
+        self.treeColWidth  = theConf.rdIntList(cnfSec, "treecols", self.treeColWidth)
+        self.novelColWidth = theConf.rdIntList(cnfSec, "novelcols", self.novelColWidth)
+        self.projColWidth  = theConf.rdIntList(cnfSec, "projcols", self.projColWidth)
+        self.mainPanePos   = theConf.rdIntList(cnfSec, "mainpane", self.mainPanePos)
+        self.docPanePos    = theConf.rdIntList(cnfSec, "docpane", self.docPanePos)
+        self.viewPanePos   = theConf.rdIntList(cnfSec, "viewpane", self.viewPanePos)
+        self.outlnPanePos  = theConf.rdIntList(cnfSec, "outlinepane", self.outlnPanePos)
+        self.isFullScreen  = theConf.rdBool(cnfSec, "fullscreen", self.isFullScreen)
+        self.hideVScroll   = theConf.rdBool(cnfSec, "hidevscroll", self.hideVScroll)
+        self.hideHScroll   = theConf.rdBool(cnfSec, "hidehscroll", self.hideHScroll)
 
         # Project
         cnfSec = "Project"
-        self.autoSaveProj = cnfParse.rdInt(cnfSec, "autosaveproject", self.autoSaveProj)
-        self.autoSaveDoc  = cnfParse.rdInt(cnfSec, "autosavedoc", self.autoSaveDoc)
+        self.autoSaveProj = theConf.rdInt(cnfSec, "autosaveproject", self.autoSaveProj)
+        self.autoSaveDoc  = theConf.rdInt(cnfSec, "autosavedoc", self.autoSaveDoc)
 
         # Editor
         cnfSec = "Editor"
-        self.textFont        = cnfParse.rdStr(cnfSec, "textfont", self.textFont)
-        self.textSize        = cnfParse.rdInt(cnfSec, "textsize", self.textSize)
-        self.textFixedW      = cnfParse.rdBool(cnfSec, "fixedwidth", self.textFixedW)
-        self.textWidth       = cnfParse.rdInt(cnfSec, "width", self.textWidth)
-        self.textMargin      = cnfParse.rdInt(cnfSec, "margin", self.textMargin)
-        self.tabWidth        = cnfParse.rdInt(cnfSec, "tabwidth", self.tabWidth)
-        self.focusWidth      = cnfParse.rdInt(cnfSec, "focuswidth", self.focusWidth)
-        self.hideFocusFooter = cnfParse.rdBool(cnfSec, "hidefocusfooter", self.hideFocusFooter)
-        self.doJustify       = cnfParse.rdBool(cnfSec, "justify", self.doJustify)
-        self.autoSelect      = cnfParse.rdBool(cnfSec, "autoselect", self.autoSelect)
-        self.doReplace       = cnfParse.rdBool(cnfSec, "autoreplace", self.doReplace)
-        self.doReplaceSQuote = cnfParse.rdBool(cnfSec, "repsquotes", self.doReplaceSQuote)
-        self.doReplaceDQuote = cnfParse.rdBool(cnfSec, "repdquotes", self.doReplaceDQuote)
-        self.doReplaceDash   = cnfParse.rdBool(cnfSec, "repdash", self.doReplaceDash)
-        self.doReplaceDots   = cnfParse.rdBool(cnfSec, "repdots", self.doReplaceDots)
-        self.scrollPastEnd   = cnfParse.rdBool(cnfSec, "scrollpastend", self.scrollPastEnd)
-        self.autoScroll      = cnfParse.rdBool(cnfSec, "autoscroll", self.autoScroll)
-        self.autoScrollPos   = cnfParse.rdInt(cnfSec, "autoscrollpos", self.autoScrollPos)
-        self.fmtSingleQuotes = cnfParse.rdStrList(cnfSec, "fmtsinglequote", self.fmtSingleQuotes)
-        self.fmtDoubleQuotes = cnfParse.rdStrList(cnfSec, "fmtdoublequote", self.fmtDoubleQuotes)
-        self.fmtPadBefore    = cnfParse.rdStr(cnfSec, "fmtpadbefore", self.fmtPadBefore)
-        self.fmtPadAfter     = cnfParse.rdStr(cnfSec, "fmtpadafter", self.fmtPadAfter)
-        self.fmtPadThin      = cnfParse.rdBool(cnfSec, "fmtpadthin", self.fmtPadThin)
-        self.spellTool       = cnfParse.rdStr(cnfSec, "spelltool", self.spellTool)
-        self.spellLanguage   = cnfParse.rdStr(cnfSec, "spellcheck", self.spellLanguage)
-        self.showTabsNSpaces = cnfParse.rdBool(cnfSec, "showtabsnspaces", self.showTabsNSpaces)
-        self.showLineEndings = cnfParse.rdBool(cnfSec, "showlineendings", self.showLineEndings)
-        self.showMultiSpaces = cnfParse.rdBool(cnfSec, "showmultispaces", self.showMultiSpaces)
-        self.bigDocLimit     = cnfParse.rdInt(cnfSec, "bigdoclimit", self.bigDocLimit)
-        self.showFullPath    = cnfParse.rdBool(cnfSec, "showfullpath", self.showFullPath)
-        self.highlightQuotes = cnfParse.rdBool(cnfSec, "highlightquotes", self.highlightQuotes)
-        self.allowOpenSQuote = cnfParse.rdBool(cnfSec, "allowopensquote", self.allowOpenSQuote)
-        self.allowOpenDQuote = cnfParse.rdBool(cnfSec, "allowopendquote", self.allowOpenDQuote)
-        self.highlightEmph   = cnfParse.rdBool(cnfSec, "highlightemph", self.highlightEmph)
-        self.stopWhenIdle    = cnfParse.rdBool(cnfSec, "stopwhenidle", self.stopWhenIdle)
-        self.userIdleTime    = cnfParse.rdInt(cnfSec, "useridletime", self.userIdleTime)
+        self.textFont        = theConf.rdStr(cnfSec, "textfont", self.textFont)
+        self.textSize        = theConf.rdInt(cnfSec, "textsize", self.textSize)
+        self.textFixedW      = theConf.rdBool(cnfSec, "fixedwidth", self.textFixedW)
+        self.textWidth       = theConf.rdInt(cnfSec, "width", self.textWidth)
+        self.textMargin      = theConf.rdInt(cnfSec, "margin", self.textMargin)
+        self.tabWidth        = theConf.rdInt(cnfSec, "tabwidth", self.tabWidth)
+        self.focusWidth      = theConf.rdInt(cnfSec, "focuswidth", self.focusWidth)
+        self.hideFocusFooter = theConf.rdBool(cnfSec, "hidefocusfooter", self.hideFocusFooter)
+        self.doJustify       = theConf.rdBool(cnfSec, "justify", self.doJustify)
+        self.autoSelect      = theConf.rdBool(cnfSec, "autoselect", self.autoSelect)
+        self.doReplace       = theConf.rdBool(cnfSec, "autoreplace", self.doReplace)
+        self.doReplaceSQuote = theConf.rdBool(cnfSec, "repsquotes", self.doReplaceSQuote)
+        self.doReplaceDQuote = theConf.rdBool(cnfSec, "repdquotes", self.doReplaceDQuote)
+        self.doReplaceDash   = theConf.rdBool(cnfSec, "repdash", self.doReplaceDash)
+        self.doReplaceDots   = theConf.rdBool(cnfSec, "repdots", self.doReplaceDots)
+        self.scrollPastEnd   = theConf.rdBool(cnfSec, "scrollpastend", self.scrollPastEnd)
+        self.autoScroll      = theConf.rdBool(cnfSec, "autoscroll", self.autoScroll)
+        self.autoScrollPos   = theConf.rdInt(cnfSec, "autoscrollpos", self.autoScrollPos)
+        self.fmtSingleQuotes = theConf.rdStrList(cnfSec, "fmtsinglequote", self.fmtSingleQuotes)
+        self.fmtDoubleQuotes = theConf.rdStrList(cnfSec, "fmtdoublequote", self.fmtDoubleQuotes)
+        self.fmtPadBefore    = theConf.rdStr(cnfSec, "fmtpadbefore", self.fmtPadBefore)
+        self.fmtPadAfter     = theConf.rdStr(cnfSec, "fmtpadafter", self.fmtPadAfter)
+        self.fmtPadThin      = theConf.rdBool(cnfSec, "fmtpadthin", self.fmtPadThin)
+        self.spellTool       = theConf.rdStr(cnfSec, "spelltool", self.spellTool)
+        self.spellLanguage   = theConf.rdStr(cnfSec, "spellcheck", self.spellLanguage)
+        self.showTabsNSpaces = theConf.rdBool(cnfSec, "showtabsnspaces", self.showTabsNSpaces)
+        self.showLineEndings = theConf.rdBool(cnfSec, "showlineendings", self.showLineEndings)
+        self.showMultiSpaces = theConf.rdBool(cnfSec, "showmultispaces", self.showMultiSpaces)
+        self.bigDocLimit     = theConf.rdInt(cnfSec, "bigdoclimit", self.bigDocLimit)
+        self.showFullPath    = theConf.rdBool(cnfSec, "showfullpath", self.showFullPath)
+        self.highlightQuotes = theConf.rdBool(cnfSec, "highlightquotes", self.highlightQuotes)
+        self.allowOpenSQuote = theConf.rdBool(cnfSec, "allowopensquote", self.allowOpenSQuote)
+        self.allowOpenDQuote = theConf.rdBool(cnfSec, "allowopendquote", self.allowOpenDQuote)
+        self.highlightEmph   = theConf.rdBool(cnfSec, "highlightemph", self.highlightEmph)
+        self.stopWhenIdle    = theConf.rdBool(cnfSec, "stopwhenidle", self.stopWhenIdle)
+        self.userIdleTime    = theConf.rdInt(cnfSec, "useridletime", self.userIdleTime)
 
         # Backup
         cnfSec = "Backup"
-        self.backupPath      = cnfParse.rdStr(cnfSec, "backuppath", self.backupPath)
-        self.backupOnClose   = cnfParse.rdBool(cnfSec, "backuponclose", self.backupOnClose)
-        self.askBeforeBackup = cnfParse.rdBool(cnfSec, "askbeforebackup", self.askBeforeBackup)
+        self.backupPath      = theConf.rdStr(cnfSec, "backuppath", self.backupPath)
+        self.backupOnClose   = theConf.rdBool(cnfSec, "backuponclose", self.backupOnClose)
+        self.askBeforeBackup = theConf.rdBool(cnfSec, "askbeforebackup", self.askBeforeBackup)
 
         # State
         cnfSec = "State"
-        self.showRefPanel   = cnfParse.rdBool(cnfSec, "showrefpanel", self.showRefPanel)
-        self.viewComments   = cnfParse.rdBool(cnfSec, "viewcomments", self.viewComments)
-        self.viewSynopsis   = cnfParse.rdBool(cnfSec, "viewsynopsis", self.viewSynopsis)
-        self.searchCase     = cnfParse.rdBool(cnfSec, "searchcase", self.searchCase)
-        self.searchWord     = cnfParse.rdBool(cnfSec, "searchword", self.searchWord)
-        self.searchRegEx    = cnfParse.rdBool(cnfSec, "searchregex", self.searchRegEx)
-        self.searchLoop     = cnfParse.rdBool(cnfSec, "searchloop", self.searchLoop)
-        self.searchNextFile = cnfParse.rdBool(cnfSec, "searchnextfile", self.searchNextFile)
-        self.searchMatchCap = cnfParse.rdBool(cnfSec, "searchmatchcap", self.searchMatchCap)
+        self.showRefPanel   = theConf.rdBool(cnfSec, "showrefpanel", self.showRefPanel)
+        self.viewComments   = theConf.rdBool(cnfSec, "viewcomments", self.viewComments)
+        self.viewSynopsis   = theConf.rdBool(cnfSec, "viewsynopsis", self.viewSynopsis)
+        self.searchCase     = theConf.rdBool(cnfSec, "searchcase", self.searchCase)
+        self.searchWord     = theConf.rdBool(cnfSec, "searchword", self.searchWord)
+        self.searchRegEx    = theConf.rdBool(cnfSec, "searchregex", self.searchRegEx)
+        self.searchLoop     = theConf.rdBool(cnfSec, "searchloop", self.searchLoop)
+        self.searchNextFile = theConf.rdBool(cnfSec, "searchnextfile", self.searchNextFile)
+        self.searchMatchCap = theConf.rdBool(cnfSec, "searchmatchcap", self.searchMatchCap)
 
         # Path
         cnfSec = "Path"
-        self.lastPath = cnfParse.rdStr(cnfSec, "lastpath", self.lastPath)
+        self.lastPath = theConf.rdStr(cnfSec, "lastpath", self.lastPath)
 
         # Check Certain Values for None
         self.spellLanguage = self._checkNone(self.spellLanguage)
@@ -551,115 +551,106 @@ class Config:
         if self.confPath is None:
             return False
 
-        cnfParse = NWConfigParser()
+        theConf = NWConfigParser()
 
-        # Set options
+        theConf["Main"] = {
+            "timestamp":   formatTimeStamp(time()),
+            "theme":       str(self.guiTheme),
+            "syntax":      str(self.guiSyntax),
+            "icons":       str(self.guiIcons),
+            "guidark":     str(self.guiDark),
+            "guifont":     str(self.guiFont),
+            "guifontsize": str(self.guiFontSize),
+            "lastnotes":   str(self.lastNotes),
+            "guilang":     str(self.guiLang),
+        }
 
-        # Main
-        cnfSec = "Main"
-        cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec, "timestamp",   formatTimeStamp(time()))
-        cnfParse.set(cnfSec, "theme",       str(self.guiTheme))
-        cnfParse.set(cnfSec, "syntax",      str(self.guiSyntax))
-        cnfParse.set(cnfSec, "icons",       str(self.guiIcons))
-        cnfParse.set(cnfSec, "guidark",     str(self.guiDark))
-        cnfParse.set(cnfSec, "guifont",     str(self.guiFont))
-        cnfParse.set(cnfSec, "guifontsize", str(self.guiFontSize))
-        cnfParse.set(cnfSec, "lastnotes",   str(self.lastNotes))
-        cnfParse.set(cnfSec, "guilang",     str(self.guiLang))
+        theConf["Sizes"] = {
+            "geometry":    self._packList(self.winGeometry),
+            "preferences": self._packList(self.prefGeometry),
+            "treecols":    self._packList(self.treeColWidth),
+            "novelcols":   self._packList(self.novelColWidth),
+            "projcols":    self._packList(self.projColWidth),
+            "mainpane":    self._packList(self.mainPanePos),
+            "docpane":     self._packList(self.docPanePos),
+            "viewpane":    self._packList(self.viewPanePos),
+            "outlinepane": self._packList(self.outlnPanePos),
+            "fullscreen":  str(self.isFullScreen),
+            "hidevscroll": str(self.hideVScroll),
+            "hidehscroll": str(self.hideHScroll),
+        }
 
-        # Sizes
-        cnfSec = "Sizes"
-        cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec, "geometry",    self.winGeometry)
-        cnfParse.set(cnfSec, "preferences", self.prefGeometry)
-        cnfParse.set(cnfSec, "treecols",    self.treeColWidth)
-        cnfParse.set(cnfSec, "novelcols",   self.novelColWidth)
-        cnfParse.set(cnfSec, "projcols",    self.projColWidth)
-        cnfParse.set(cnfSec, "mainpane",    self.mainPanePos)
-        cnfParse.set(cnfSec, "docpane",     self.docPanePos)
-        cnfParse.set(cnfSec, "viewpane",    self.viewPanePos)
-        cnfParse.set(cnfSec, "outlinepane", self.outlnPanePos)
-        cnfParse.set(cnfSec, "fullscreen",  str(self.isFullScreen))
-        cnfParse.set(cnfSec, "hidevscroll", str(self.hideVScroll))
-        cnfParse.set(cnfSec, "hidehscroll", str(self.hideHScroll))
+        theConf["Project"] = {
+            "autosaveproject": str(self.autoSaveProj),
+            "autosavedoc":     str(self.autoSaveDoc),
+        }
 
-        # Project
-        cnfSec = "Project"
-        cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec, "autosaveproject", str(self.autoSaveProj))
-        cnfParse.set(cnfSec, "autosavedoc",     str(self.autoSaveDoc))
+        theConf["Editor"] = {
+            "textfont":        str(self.textFont),
+            "textsize":        str(self.textSize),
+            "fixedwidth":      str(self.textFixedW),
+            "width":           str(self.textWidth),
+            "margin":          str(self.textMargin),
+            "tabwidth":        str(self.tabWidth),
+            "focuswidth":      str(self.focusWidth),
+            "hidefocusfooter": str(self.hideFocusFooter),
+            "justify":         str(self.doJustify),
+            "autoselect":      str(self.autoSelect),
+            "autoreplace":     str(self.doReplace),
+            "repsquotes":      str(self.doReplaceSQuote),
+            "repdquotes":      str(self.doReplaceDQuote),
+            "repdash":         str(self.doReplaceDash),
+            "repdots":         str(self.doReplaceDots),
+            "scrollpastend":   str(self.scrollPastEnd),
+            "autoscroll":      str(self.autoScroll),
+            "autoscrollpos":   str(self.autoScrollPos),
+            "fmtsinglequote":  self._packList(self.fmtSingleQuotes),
+            "fmtdoublequote":  self._packList(self.fmtDoubleQuotes),
+            "fmtpadbefore":    str(self.fmtPadBefore),
+            "fmtpadafter":     str(self.fmtPadAfter),
+            "fmtpadthin":      str(self.fmtPadThin),
+            "spelltool":       str(self.spellTool),
+            "spellcheck":      str(self.spellLanguage),
+            "showtabsnspaces": str(self.showTabsNSpaces),
+            "showlineendings": str(self.showLineEndings),
+            "showmultispaces": str(self.showMultiSpaces),
+            "bigdoclimit":     str(self.bigDocLimit),
+            "showfullpath":    str(self.showFullPath),
+            "highlightquotes": str(self.highlightQuotes),
+            "allowopensquote": str(self.allowOpenSQuote),
+            "allowopendquote": str(self.allowOpenDQuote),
+            "highlightemph":   str(self.highlightEmph),
+            "stopwhenidle":    str(self.stopWhenIdle),
+            "useridletime":    str(self.userIdleTime),
+        }
 
-        # Editor
-        cnfSec = "Editor"
-        cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec, "textfont",        str(self.textFont))
-        cnfParse.set(cnfSec, "textsize",        str(self.textSize))
-        cnfParse.set(cnfSec, "fixedwidth",      str(self.textFixedW))
-        cnfParse.set(cnfSec, "width",           str(self.textWidth))
-        cnfParse.set(cnfSec, "margin",          str(self.textMargin))
-        cnfParse.set(cnfSec, "tabwidth",        str(self.tabWidth))
-        cnfParse.set(cnfSec, "focuswidth",      str(self.focusWidth))
-        cnfParse.set(cnfSec, "hidefocusfooter", str(self.hideFocusFooter))
-        cnfParse.set(cnfSec, "justify",         str(self.doJustify))
-        cnfParse.set(cnfSec, "autoselect",      str(self.autoSelect))
-        cnfParse.set(cnfSec, "autoreplace",     str(self.doReplace))
-        cnfParse.set(cnfSec, "repsquotes",      str(self.doReplaceSQuote))
-        cnfParse.set(cnfSec, "repdquotes",      str(self.doReplaceDQuote))
-        cnfParse.set(cnfSec, "repdash",         str(self.doReplaceDash))
-        cnfParse.set(cnfSec, "repdots",         str(self.doReplaceDots))
-        cnfParse.set(cnfSec, "scrollpastend",   str(self.scrollPastEnd))
-        cnfParse.set(cnfSec, "autoscroll",      str(self.autoScroll))
-        cnfParse.set(cnfSec, "autoscrollpos",   str(self.autoScrollPos))
-        cnfParse.set(cnfSec, "fmtsinglequote",  self.fmtSingleQuotes)
-        cnfParse.set(cnfSec, "fmtdoublequote",  self.fmtDoubleQuotes)
-        cnfParse.set(cnfSec, "fmtpadbefore",    str(self.fmtPadBefore))
-        cnfParse.set(cnfSec, "fmtpadafter",     str(self.fmtPadAfter))
-        cnfParse.set(cnfSec, "fmtpadthin",      str(self.fmtPadThin))
-        cnfParse.set(cnfSec, "spelltool",       str(self.spellTool))
-        cnfParse.set(cnfSec, "spellcheck",      str(self.spellLanguage))
-        cnfParse.set(cnfSec, "showtabsnspaces", str(self.showTabsNSpaces))
-        cnfParse.set(cnfSec, "showlineendings", str(self.showLineEndings))
-        cnfParse.set(cnfSec, "showmultispaces", str(self.showMultiSpaces))
-        cnfParse.set(cnfSec, "bigdoclimit",     str(self.bigDocLimit))
-        cnfParse.set(cnfSec, "showfullpath",    str(self.showFullPath))
-        cnfParse.set(cnfSec, "highlightquotes", str(self.highlightQuotes))
-        cnfParse.set(cnfSec, "allowopensquote", str(self.allowOpenSQuote))
-        cnfParse.set(cnfSec, "allowopendquote", str(self.allowOpenDQuote))
-        cnfParse.set(cnfSec, "highlightemph",   str(self.highlightEmph))
-        cnfParse.set(cnfSec, "stopwhenidle",    str(self.stopWhenIdle))
-        cnfParse.set(cnfSec, "useridletime",    str(self.userIdleTime))
+        theConf["Backup"] = {
+            "backuppath":      str(self.backupPath),
+            "backuponclose":   str(self.backupOnClose),
+            "askbeforebackup": str(self.askBeforeBackup),
+        }
 
-        # Backup
-        cnfSec = "Backup"
-        cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec, "backuppath",      str(self.backupPath))
-        cnfParse.set(cnfSec, "backuponclose",   str(self.backupOnClose))
-        cnfParse.set(cnfSec, "askbeforebackup", str(self.askBeforeBackup))
+        theConf["State"] = {
+            "showrefpanel":    str(self.showRefPanel),
+            "viewcomments":    str(self.viewComments),
+            "viewsynopsis":    str(self.viewSynopsis),
+            "searchcase":      str(self.searchCase),
+            "searchword":      str(self.searchWord),
+            "searchregex":     str(self.searchRegEx),
+            "searchloop":      str(self.searchLoop),
+            "searchnextfile":  str(self.searchNextFile),
+            "searchmatchcap":  str(self.searchMatchCap),
+        }
 
-        # State
-        cnfSec = "State"
-        cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec, "showrefpanel",    str(self.showRefPanel))
-        cnfParse.set(cnfSec, "viewcomments",    str(self.viewComments))
-        cnfParse.set(cnfSec, "viewsynopsis",    str(self.viewSynopsis))
-        cnfParse.set(cnfSec, "searchcase",      str(self.searchCase))
-        cnfParse.set(cnfSec, "searchword",      str(self.searchWord))
-        cnfParse.set(cnfSec, "searchregex",     str(self.searchRegEx))
-        cnfParse.set(cnfSec, "searchloop",      str(self.searchLoop))
-        cnfParse.set(cnfSec, "searchnextfile",  str(self.searchNextFile))
-        cnfParse.set(cnfSec, "searchmatchcap",  str(self.searchMatchCap))
-
-        # Path
-        cnfSec = "Path"
-        cnfParse.add_section(cnfSec)
-        cnfParse.set(cnfSec, "lastpath", str(self.lastPath))
+        theConf["Path"] = {
+            "lastpath": str(self.lastPath),
+        }
 
         # Write config file
         cnfPath = os.path.join(self.confPath, self.confFile)
         try:
             with open(cnfPath, mode="w", encoding="utf-8") as outFile:
-                cnfParse.write(outFile)
+                theConf.write(outFile)
             self.confChanged = False
         except Exception as e:
             logger.error("Could not save config file")
@@ -843,12 +834,6 @@ class Config:
         self.confChanged  = True
         return self.showRefPanel
 
-    def getErrData(self):
-        errMessage = "<br>".join(self.errData)
-        self.hasError = False
-        self.errData = []
-        return errMessage
-
     def setViewComments(self, viewState):
         self.viewComments = viewState
         self.confChanged  = True
@@ -902,9 +887,20 @@ class Config:
     def getFocusWidth(self):
         return self.pxInt(self.focusWidth)
 
+    def getErrData(self):
+        errMessage = "<br>".join(self.errData)
+        self.hasError = False
+        self.errData = []
+        return errMessage
+
     ##
     #  Internal Functions
     ##
+
+    def _packList(self, inData):
+        """Pack a list of items into a comma-separated string.
+        """
+        return ", ".join([str(inVal) for inVal in inData])
 
     def _checkNone(self, checkVal):
         """Return a NoneType if the value corresponds to None, otherwise

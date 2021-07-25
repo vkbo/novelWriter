@@ -523,6 +523,9 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
 def testBaseConfig_Internal(monkeypatch, tmpConf):
     """Check internal functions.
     """
+    # Function _packList
+    assert tmpConf._packList(["A", 1, 2.0, None, False]) == "A, 1, 2.0, None, False"
+
     # Function _checkNone
     assert tmpConf._checkNone(None) is None
     assert tmpConf._checkNone("None") is None
@@ -532,7 +535,7 @@ def testBaseConfig_Internal(monkeypatch, tmpConf):
     assert tmpConf._checkNone(123456) == 123456
 
     # Function _checkOptionalPackages
-    # (Assumes enchant package exists ans is importable)
+    # (Assumes enchant package exists and is importable)
     tmpConf._checkOptionalPackages()
     assert tmpConf.hasEnchant is True
 

@@ -251,7 +251,7 @@ class NWItem():
         if isinstance(expState, str):
             self.isExpanded = (expState == str(True))
         else:
-            self.isExpanded = (expState == True)  # noqa: E712
+            self.isExpanded = (expState is True)
         return
 
     def setExported(self, expState):
@@ -260,7 +260,7 @@ class NWItem():
         if isinstance(expState, str):
             self.isExported = (expState == str(True))
         else:
-            self.isExported = (expState == True)  # noqa: E712
+            self.isExported = (expState is True)
         return
 
     ##

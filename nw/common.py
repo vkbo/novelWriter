@@ -38,18 +38,15 @@ from nw.constants import nwConst, nwUnicode
 logger = logging.getLogger(__name__)
 
 
-# =========================================================================== #
+# =============================================================================================== #
 #  Checker Functions
-# =========================================================================== #
+# =============================================================================================== #
 
 def checkString(value, default, allowNone=False):
     """Check if a variable is a string or a none.
     """
-    if allowNone:
-        if value is None:
-            return None
-        if value == "None":
-            return None
+    if allowNone and (value is None or value == "None"):
+        return None
     if isinstance(value, str):
         return str(value)
     return default
@@ -58,11 +55,8 @@ def checkString(value, default, allowNone=False):
 def checkInt(value, default, allowNone=False):
     """Check if a variable is an integer or a none.
     """
-    if allowNone:
-        if value is None:
-            return None
-        if value == "None":
-            return None
+    if allowNone and (value is None or value == "None"):
+        return None
     try:
         return int(value)
     except Exception:
@@ -72,11 +66,9 @@ def checkInt(value, default, allowNone=False):
 def checkBool(value, default, allowNone=False):
     """Check if a variable is a boolean or a none.
     """
-    if allowNone:
-        if value is None:
-            return None
-        if value == "None":
-            return None
+    if allowNone and (value is None or value == "None"):
+        return None
+
     if isinstance(value, str):
         if value == "True":
             return True
@@ -84,6 +76,7 @@ def checkBool(value, default, allowNone=False):
             return False
         else:
             return default
+
     elif isinstance(value, int):
         if value == 1:
             return True
@@ -91,71 +84,69 @@ def checkBool(value, default, allowNone=False):
             return False
         else:
             return default
+
     return default
 
 
 def checkHandle(value, default, allowNone=False):
     """Check if a value is a handle.
     """
-    if allowNone:
-        if value is None:
-            return None
-        if value == "None":
-            return None
+    if allowNone and (value is None or value == "None"):
+        return None
     if isHandle(value):
         return str(value)
     return default
 
 
-# =========================================================================== #
+# =============================================================================================== #
 #  Validator Functions
-# =========================================================================== #
+# =============================================================================================== #
 
-def isHandle(theString):
+def isHandle(value):
     """Check if a string is a valid novelWriter handle.
     Note: This is case sensitive. Must be lower case!
     """
-    if not isinstance(theString, str):
+    if not isinstance(value, str):
         return False
-    if len(theString) != 13:
+    if len(value) != 13:
         return False
-    for c in theString:
+    for c in value:
         if c not in "0123456789abcdef":
             return False
     return True
 
 
-def isTitleTag(theString):
+def isTitleTag(value):
     """Check if a string is a valid title string.
     """
-    if not isinstance(theString, str):
+    if not isinstance(value, str):
         return False
-    if len(theString) != 7:
+    if len(value) != 7:
         return False
-    if not theString.startswith("T"):
+    if not value.startswith("T"):
         return False
-    for c in theString[1:]:
+    for c in value[1:]:
         if c not in "0123456789":
             return False
     return True
 
 
-def isItemClass(theString):
-    """Check if an item is a calid nwItemClass identifier.
+def isItemClass(value):
+    """Check if a string is a valid nwItemClass identifier.
     """
-    return theString in nwItemClass.__members__
+    return value in nwItemClass.__members__
 
 
-def isItemType(theString):
-    """Check if an item is a calid nwItemType identifier.
+def isItemType(value):
+    """Check if a string is a valid nwItemType identifier.
     """
-    return theString in nwItemType.__members__
+    return value in nwItemType.__members__
 
 
-def isItemLayout(theString):
-    """Check if an item is a calid nwItemLayout identifier.
+def isItemLayout(value):
+    """Check if a string is a valid nwItemLayout identifier.
     """
-    return theString in nwItemLayout.__members__
+    return value in nwItemLayout.__members__
 
 
 def hexToInt(value, default=0):
@@ -169,18 +160,19 @@ def hexToInt(value, default=0):
     return default
 
 
-# =========================================================================== #
+# =============================================================================================== #
 #  Formatting Functions
-# =========================================================================== #
+# =============================================================================================== #
 
-def formatInt(theInt):
+def formatInt(value):
     """Formats an integer with k, M, G etc.
     """
-    postFix = ["k", "M", "G", "T", "P", "E"]
-    theVal = float(theInt)
+    if not isinstance(value, int):
+        return "ERR"
 
+    theVal = float(value)
     if theVal > 1000.0:
-        for pF in postFix:
+        for pF in ["k", "M", "G", "T", "P", "E"]:
             theVal /= 1000.0
             if theVal < 1000.0:
                 if theVal < 10.0:
@@ -190,7 +182,7 @@ def formatInt(theInt):
                 else:
                     return f"{theVal:3.0f}{nwUnicode.U_THSP}{pF}"
 
-    return str(theInt)
+    return str(value)
 
 
 def formatTimeStamp(theTime, fileSafe=False):
@@ -228,9 +220,9 @@ def parseTimeStamp(theStamp, default, allowNone=False):
         return default
 
 
-# =========================================================================== #
+# =============================================================================================== #
 #  String Functions
-# =========================================================================== #
+# =============================================================================================== #
 
 def splitVersionNumber(vString):
     """ Splits a version string on the form aa.bb.cc into major, minor
@@ -340,7 +332,7 @@ def fuzzyTime(secDiff):
 
 
 def numberToRoman(numVal, isLower=False):
-    """Convert an integer to a roman number.
+    """Convert an integer to a Roman number.
     """
     if not isinstance(numVal, int):
         return "NAN"
@@ -363,9 +355,9 @@ def numberToRoman(numVal, isLower=False):
     return romNum.lower() if isLower else romNum
 
 
-# =========================================================================== #
+# =============================================================================================== #
 #  Other Functions
-# =========================================================================== #
+# =============================================================================================== #
 
 def makeFileNameSafe(theText):
     """Returns a filename safe version of the text.
@@ -386,9 +378,9 @@ def getGuiItem(theName):
     return None
 
 
-# =========================================================================== #
+# =============================================================================================== #
 #  Classes
-# =========================================================================== #
+# =============================================================================================== #
 
 class NWConfigParser(ConfigParser):
 
@@ -400,15 +392,6 @@ class NWConfigParser(ConfigParser):
 
     def __init__(self):
         super().__init__()
-
-    def set(self, section, option, value):
-        """Overload the set function to also allow lists.
-        """
-        if isinstance(value, list):
-            super().set(section, option, ", ".join([str(x) for x in value]))
-        else:
-            super().set(section, option, value)
-        return
 
     def rdStr(self, section, option, default):
         """Read string value.
@@ -446,7 +429,7 @@ class NWConfigParser(ConfigParser):
         outList = []
         if isinstance(default, list):
             outList = default.copy()
-        for i in range(min(len(inList), len(default))):
+        for i in range(min(len(inList), len(outList))):
             try:
                 if type == self.CNF_S_LST:
                     outList[i] = inList[i].strip()
@@ -459,21 +442,20 @@ class NWConfigParser(ConfigParser):
     def _parseLine(self, section, option, default, type):
         """Parse a line and return the correct datatype.
         """
-        if self.has_section(section):
-            if self.has_option(section, option):
-                try:
-                    if type == self.CNF_STR:
-                        return self.get(section, option)
-                    elif type == self.CNF_INT:
-                        return self.getint(section, option)
-                    elif type == self.CNF_BOOL:
-                        return self.getboolean(section, option)
-                    elif type in (self.CNF_I_LST, self.CNF_S_LST):
-                        return self._unpackList(self.get(section, option), default, type)
-                except ValueError:
-                    logger.error("Failed to load value from config file.")
-                    logException()
-                    return default
+        if self.has_option(section, option):
+            try:
+                if type == self.CNF_STR:
+                    return self.get(section, option)
+                elif type == self.CNF_INT:
+                    return self.getint(section, option)
+                elif type == self.CNF_BOOL:
+                    return self.getboolean(section, option)
+                elif type in (self.CNF_I_LST, self.CNF_S_LST):
+                    return self._unpackList(self.get(section, option), default, type)
+            except ValueError:
+                logger.error("Could not read '%s':'%s' from config", str(section), str(option))
+                logException()
+                return default
 
         return default
 
