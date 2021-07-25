@@ -24,6 +24,8 @@ JSON files.
 
 The full documentation is available on [readthedocs.io](https://novelwriter.readthedocs.io).
 
+The full credits are listed in [CREDITS.md](https://github.com/vkbo/novelWriter/blob/main/CREDITS.md).
+
 ## Implementation
 
 The application is written in Python 3 (3.6+) using Qt5 and PyQt5 (5.3+). It is developed on Linux,
@@ -190,7 +192,7 @@ PATH" during the installation.
 The script `windows_install.bat` in the `setup` folder can be used to create desktop and start menu
 icons for novelWriter. The script will also install dependencies for you from PyPi.
 
-## Internationalisation
+### Internationalisation
 
 If you install from source, you must build the translation files yourself if you want to switch to
 a different GUI language than British English. This requires that you have the Qt translation
@@ -209,25 +211,8 @@ This is Open Source software, and novelWriter is licensed under GPLv3. See the
 [GNU General Public License website](https://www.gnu.org/licenses/gpl-3.0.en.html) for more
 details, or consult the [LICENSE](https://github.com/vkbo/novelWriter/blob/main/LICENSE.md) file.
 
-Bundled assets have the following licenses:
-
-* The Typicons-based icon themes by Stephen Hutchings are licensed under
-  [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/). The icons have been altered in
-  size and colour for use with novelWriter, and some additional icons added. The original icon set
-  is available at
-  [stephenhutchings/typicons.font](https://github.com/stephenhutchings/typicons.font).
-* The Cantarell font by Dave Crossland is licensed under
-  [OPEN FONT LICENSE Version 1.1](http://scripts.sil.org/OFL).
-  It is available at [Google Fonts](https://fonts.google.com/specimen/Cantarell).
-* The Tomorrow syntax themes use colour schemes taken from Chris Kempson's collection of code
-  editor themes, licensed with the
-  [MIT License](https://github.com/chriskempson/tomorrow-theme/blob/master/LICENSE.md),
-  and the main repo is available at
-  [chriskempson/tomorrow-theme](https://github.com/chriskempson/tomorrow-theme).
-* Likewise, the Owl syntax themes use colours from Sarah Drasner's code editor themes, licensed
-  with the [MIT License](https://github.com/sdras/night-owl-vscode-theme/blob/master/LICENSE), and
-  the main repo is available at
-  [sdras/night-owl-vscode-theme](https://github.com/sdras/night-owl-vscode-theme).
+Bundled assets and their licenses are listed in
+[CREDITS](https://github.com/vkbo/novelWriter/blob/main/CREDITS.md).
 
 ## Screenshots
 
