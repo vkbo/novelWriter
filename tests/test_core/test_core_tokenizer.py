@@ -699,7 +699,7 @@ def testCoreToken_Headers(mockGUI):
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken.theTokens == [
-        (Tokenizer.T_TITLE, 1, "Novel Title", None, Tokenizer.A_PBB),
+        (Tokenizer.T_TITLE, 1, "Novel Title", None, Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 

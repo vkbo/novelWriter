@@ -71,13 +71,11 @@ class Tokenizer():
     A_CENTRE   = 0x0004  # Centred
     A_JUSTIFY  = 0x0008  # Justified
     A_PBB      = 0x0010  # Page break before always
-    A_PBB_AUT  = 0x0020  # Page break before auto
-    A_PBA      = 0x0040  # Page break after always
-    A_PBA_AUT  = 0x0080  # Page break after auto
-    A_Z_TOPMRG = 0x0100  # Zero top margin
-    A_Z_BTMMRG = 0x0200  # Zero bottom margin
-    A_IND_L    = 0x0400  # Left indentation
-    A_IND_R    = 0x0800  # Right indentation
+    A_PBA      = 0x0020  # Page break after always
+    A_Z_TOPMRG = 0x0040  # Zero top margin
+    A_Z_BTMMRG = 0x0080  # Zero bottom margin
+    A_IND_L    = 0x0100  # Left indentation
+    A_IND_R    = 0x0200  # Right indentation
 
     def __init__(self, theProject):
 
@@ -634,10 +632,9 @@ class Tokenizer():
         # any page breaks
         if self.isTitle:
             for n, tToken in enumerate(self.theTokens):
-                aStyle = tToken[4] ^ self.A_PBB
                 if tToken[0] == self.T_HEAD1:
                     self.theTokens[n] = (
-                        self.T_TITLE, tToken[1], tToken[2], tToken[3], aStyle
+                        self.T_TITLE, tToken[1], tToken[2], tToken[3], tToken[4] | self.A_CENTRE
                     )
 
         # A single page always starts on a fresh page, unless it is empty

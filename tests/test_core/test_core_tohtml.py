@@ -230,12 +230,12 @@ def testCoreToHtml_Convert(mockGUI):
 
     # Title
     theHtml.theTokens = [
-        (theHtml.T_TITLE, 1, "A Title", None, theHtml.A_PBB_AUT | theHtml.A_CENTRE),
+        (theHtml.T_TITLE, 1, "A Title", None, theHtml.A_PBB | theHtml.A_CENTRE),
         (theHtml.T_EMPTY, 1, "", None, theHtml.A_NONE),
     ]
     theHtml.doConvert()
     assert theHtml.theResult == (
-        "<h1 class='title' style='text-align: center; page-break-before: auto;'>"
+        "<h1 class='title' style='text-align: center; page-break-before: always;'>"
         "<a name='T000001'></a>A Title</h1>\n"
     )
 
@@ -316,16 +316,6 @@ def testCoreToHtml_Convert(mockGUI):
     assert theHtml.theResult == (
         "<h1 class='title' "
         "style='page-break-before: always; page-break-after: always;'>A Title</h1>\n"
-    )
-
-    # Page Break Auto
-    theHtml.theTokens = [
-        (theHtml.T_HEAD1, 1, "A Title", None, theHtml.A_PBB_AUT | theHtml.A_PBA_AUT),
-    ]
-    theHtml.doConvert()
-    assert theHtml.theResult == (
-        "<h1 class='title' "
-        "style='page-break-before: auto; page-break-after: auto;'>A Title</h1>\n"
     )
 
     # Preview Mode

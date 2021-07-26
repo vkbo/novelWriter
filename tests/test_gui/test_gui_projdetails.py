@@ -77,7 +77,7 @@ def testGuiProjDetails_Dialog(qtbot, monkeypatch, nwGUI, nwLipsum):
     tocTree = tocTab.tocTree
     assert tocTree.topLevelItemCount() == 7
     assert tocTree.topLevelItem(0).text(tocTab.C_TITLE) == "Lorem Ipsum"
-    assert tocTree.topLevelItem(2).text(tocTab.C_TITLE) == "Prologue"
+    assert tocTree.topLevelItem(2).text(tocTab.C_TITLE) == "*Prologue"
     assert tocTree.topLevelItem(3).text(tocTab.C_TITLE) == "Act One"
     assert tocTree.topLevelItem(4).text(tocTab.C_TITLE) == "Chapter One"
     assert tocTree.topLevelItem(5).text(tocTab.C_TITLE) == "Chapter Two"

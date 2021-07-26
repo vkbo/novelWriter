@@ -345,13 +345,9 @@ class ToOdt(Tokenizer):
 
                 if tStyle & self.A_PBB:
                     oStyle.setBreakBefore("page")
-                elif tStyle & self.A_PBB_AUT:
-                    oStyle.setBreakBefore("auto")
 
                 if tStyle & self.A_PBA:
                     oStyle.setBreakAfter("page")
-                elif tStyle & self.A_PBA_AUT:
-                    oStyle.setBreakAfter("auto")
 
                 if tStyle & self.A_Z_BTMMRG:
                     oStyle.setMarginBottom("0.000cm")

@@ -166,13 +166,9 @@ class ToHtml(Tokenizer):
 
                 if tStyle & self.A_PBB:
                     aStyle.append("page-break-before: always;")
-                elif tStyle & self.A_PBB_AUT:
-                    aStyle.append("page-break-before: auto;")
 
                 if tStyle & self.A_PBA:
                     aStyle.append("page-break-after: always;")
-                elif tStyle & self.A_PBA_AUT:
-                    aStyle.append("page-break-after: auto;")
 
                 if tStyle & self.A_Z_BTMMRG:
                     aStyle.append("margin-bottom: 0;")
