@@ -539,6 +539,9 @@ class GuiDocViewer(QTextBrowser):
             ".synopsis {{"
             "  color: rgb({mColR}, {mColG}, {mColB});"
             "}}\n"
+            ".title {{"
+            "  text-align: center;"
+            "}}\n"
         ).format(
             tColR=self.theTheme.colText[0],
             tColG=self.theTheme.colText[1],

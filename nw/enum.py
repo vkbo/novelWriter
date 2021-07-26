@@ -64,7 +64,8 @@ class nwItemLayout(Enum):
     UNNUMBERED = 5
     CHAPTER    = 6
     SCENE      = 7
-    NOTE       = 8
+    STORY      = 8
+    NOTE       = 9
 
 # END Enum nwItemLayout
 

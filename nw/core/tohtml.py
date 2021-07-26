@@ -127,10 +127,8 @@ class ToHtml(Tokenizer):
                 self.FMT_D_E: "</del>",
             }
 
-        if self.isNovel and self.genMode != self.M_PREVIEW:
-            # For novel files for export, we bump the titles one level
-            # up as this is more useful for printing and word processor
-            # imports.
+        if self.isStory:
+            # For story files, we bump the titles one level up
             h1Cl = " class='title'"
             h1 = "h1"
             h2 = "h1"

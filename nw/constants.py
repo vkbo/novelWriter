@@ -177,6 +177,7 @@ class nwLabels():
         nwItemLayout.UNNUMBERED: QT_TRANSLATE_NOOP("Constant", "Unnumbered"),
         nwItemLayout.CHAPTER:    QT_TRANSLATE_NOOP("Constant", "Chapter"),
         nwItemLayout.SCENE:      QT_TRANSLATE_NOOP("Constant", "Scene"),
+        nwItemLayout.STORY:      QT_TRANSLATE_NOOP("Constant", "Story"),
         nwItemLayout.NOTE:       QT_TRANSLATE_NOOP("Constant", "Note"),
     }
     LAYOUT_FLAG = {
@@ -188,6 +189,7 @@ class nwLabels():
         nwItemLayout.UNNUMBERED: "Un",
         nwItemLayout.CHAPTER:    "Ch",
         nwItemLayout.SCENE:      "Sc",
+        nwItemLayout.STORY:      "St",
         nwItemLayout.NOTE:       "Nt",
     }
     KEY_NAME = {
