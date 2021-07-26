@@ -230,6 +230,8 @@ class NWItem():
             self.itemLayout = theLayout
         elif isItemLayout(theLayout):
             self.itemLayout = nwItemLayout[theLayout]
+        elif theLayout in ("BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE"):
+            self.itemLayout = nwItemLayout.STORY
         else:
             logger.error("Unrecognised item layout '%s'", theLayout)
             self.itemLayout = nwItemLayout.NO_LAYOUT

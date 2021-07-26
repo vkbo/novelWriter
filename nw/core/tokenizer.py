@@ -304,8 +304,8 @@ class Tokenizer():
         self.isNone  = self.theItem.itemLayout == nwItemLayout.NO_LAYOUT
         self.isTitle = self.theItem.itemLayout == nwItemLayout.TITLE
         self.isPage  = self.theItem.itemLayout == nwItemLayout.PAGE
+        self.isStory = self.theItem.itemLayout == nwItemLayout.STORY
         self.isNote  = self.theItem.itemLayout == nwItemLayout.NOTE
-        self.isStory = not (self.isNote or self.isPage or self.isTitle)
 
         return True
 

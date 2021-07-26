@@ -196,16 +196,10 @@ class GuiDocSplit(QDialog):
         # Loop through, and create the files
         for wTitle, iStart, iEnd in finalOrder:
 
-            itemLayout = nwItemLayout.NOTE
             if srcItem.itemClass == nwItemClass.NOVEL:
-                if wTitle.startswith("# "):
-                    itemLayout = nwItemLayout.PARTITION
-                elif wTitle.startswith("## "):
-                    itemLayout = nwItemLayout.CHAPTER
-                elif wTitle.startswith("### "):
-                    itemLayout = nwItemLayout.SCENE
-                elif wTitle.startswith("#### "):
-                    itemLayout = nwItemLayout.SCENE
+                itemLayout = nwItemLayout.STORY
+            else:
+                itemLayout = nwItemLayout.NOTE
 
             wTitle = wTitle.lstrip("#")
             wTitle = wTitle.strip()

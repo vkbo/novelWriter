@@ -143,13 +143,13 @@ class NWProject():
 
     def newFile(self, fileName, fileClass, pHandle):
         """Add a new file with a given name and class, and set a default
-        layout based on the class. SCENE for NOVEL, and otherwise NOTE.
+        layout based on the class. STORY for NOVEL, and otherwise NOTE.
         """
         newItem = NWItem(self)
         newItem.setName(fileName)
         newItem.setType(nwItemType.FILE)
         if fileClass == nwItemClass.NOVEL:
-            newItem.setLayout(nwItemLayout.SCENE)
+            newItem.setLayout(nwItemLayout.STORY)
         else:
             newItem.setLayout(nwItemLayout.NOTE)
         newItem.setClass(fileClass)
@@ -279,7 +279,7 @@ class NWProject():
             xHandle[8] = self.newFile(self.tr("New Scene"),     nwItemClass.NOVEL, xHandle[6])
 
             self.projTree.setFileItemLayout(xHandle[5], nwItemLayout.TITLE)
-            self.projTree.setFileItemLayout(xHandle[7], nwItemLayout.CHAPTER)
+            self.projTree.setFileItemLayout(xHandle[7], nwItemLayout.STORY)
 
             aDoc = NWDoc(self, xHandle[5])
             aDoc.writeDocument(titlePage)
@@ -322,7 +322,7 @@ class NWProject():
                         pHandle = self.newFolder(chTitle, nwItemClass.NOVEL, nHandle)
 
                     cHandle = self.newFile(chTitle, nwItemClass.NOVEL, pHandle)
-                    self.projTree.setFileItemLayout(cHandle, nwItemLayout.CHAPTER)
+                    self.projTree.setFileItemLayout(cHandle, nwItemLayout.STORY)
 
                     aDoc = NWDoc(self, cHandle)
                     aDoc.writeDocument("## %s\n\n" % chTitle)
