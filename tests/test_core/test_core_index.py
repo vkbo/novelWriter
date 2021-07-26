@@ -260,7 +260,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert not theIndex.scanText(dHandle, "Hello World!")
     assert not theIndex.scanText(xHandle, "Hello World!")
 
-    xItem.setLayout(nwItemLayout.SCENE)
+    xItem.setLayout(nwItemLayout.STORY)
     xItem.setParent(None)
     assert not theIndex.scanText(xHandle, "Hello World!")
 
@@ -353,10 +353,10 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert theIndex._novelIndex[nHandle]["T000013"]["title"] == "Title Three"
     assert theIndex._novelIndex[nHandle]["T000019"]["title"] == "Title Four"
 
-    assert theIndex._novelIndex[nHandle]["T000001"]["layout"] == "SCENE"
-    assert theIndex._novelIndex[nHandle]["T000007"]["layout"] == "SCENE"
-    assert theIndex._novelIndex[nHandle]["T000013"]["layout"] == "SCENE"
-    assert theIndex._novelIndex[nHandle]["T000019"]["layout"] == "SCENE"
+    assert theIndex._novelIndex[nHandle]["T000001"]["layout"] == "STORY"
+    assert theIndex._novelIndex[nHandle]["T000007"]["layout"] == "STORY"
+    assert theIndex._novelIndex[nHandle]["T000013"]["layout"] == "STORY"
+    assert theIndex._novelIndex[nHandle]["T000019"]["layout"] == "STORY"
 
     assert theIndex._novelIndex[nHandle]["T000001"]["synopsis"] == "Synopsis One."
     assert theIndex._novelIndex[nHandle]["T000007"]["synopsis"] == "Synopsis Two."
@@ -613,9 +613,9 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     sHandle = theProject.newFile("Scene One", nwItemClass.NOVEL, "a508bb932959c")
     tHandle = theProject.newFile("Scene Two", nwItemClass.NOVEL, "a508bb932959c")
 
-    theProject.projTree[hHandle].itemLayout == nwItemLayout.CHAPTER
-    theProject.projTree[sHandle].itemLayout == nwItemLayout.SCENE
-    theProject.projTree[tHandle].itemLayout == nwItemLayout.SCENE
+    theProject.projTree[hHandle].itemLayout == nwItemLayout.STORY
+    theProject.projTree[sHandle].itemLayout == nwItemLayout.STORY
+    theProject.projTree[tHandle].itemLayout == nwItemLayout.STORY
 
     assert theIndex.scanText(hHandle, "## Chapter One\n\n")
     assert theIndex.scanText(sHandle, "### Scene One\n\n")

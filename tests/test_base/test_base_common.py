@@ -171,12 +171,8 @@ def testBaseCommon_IsItemLayout():
     """
     assert isItemLayout("NO_LAYOUT")
     assert isItemLayout("TITLE")
-    assert isItemLayout("BOOK")
     assert isItemLayout("PAGE")
-    assert isItemLayout("PARTITION")
-    assert isItemLayout("UNNUMBERED")
-    assert isItemLayout("CHAPTER")
-    assert isItemLayout("SCENE")
+    assert isItemLayout("STORY")
     assert isItemLayout("NOTE")
 
     assert not isItemLayout("None")

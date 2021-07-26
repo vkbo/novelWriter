@@ -33,7 +33,7 @@ from nw.constants import nwFiles
 
 
 @pytest.fixture(scope="function")
-def dummyItems(mockGUI):
+def mockItems(mockGUI):
     """Create a list of mock items.
     """
     theProject = NWProject(mockGUI)
@@ -54,7 +54,7 @@ def dummyItems(mockGUI):
     itemC.itemName = "Chapter One"
     itemC.itemType = nwItemType.FILE
     itemC.itemClass = nwItemClass.NOVEL
-    itemC.itemLayout = nwItemLayout.CHAPTER
+    itemC.itemLayout = nwItemLayout.STORY
     itemC.charCount = 300
     itemC.wordCount = 50
     itemC.paraCount = 2
@@ -63,7 +63,7 @@ def dummyItems(mockGUI):
     itemD.itemName = "Scene One"
     itemD.itemType = nwItemType.FILE
     itemD.itemClass = nwItemClass.NOVEL
-    itemD.itemLayout = nwItemLayout.SCENE
+    itemD.itemLayout = nwItemLayout.STORY
     itemD.charCount = 3000
     itemD.wordCount = 500
     itemD.paraCount = 20
@@ -110,7 +110,7 @@ def dummyItems(mockGUI):
 
 
 @pytest.mark.core
-def testCoreTree_BuildTree(mockGUI, dummyItems):
+def testCoreTree_BuildTree(mockGUI, mockItems):
     """Test building a project tree from a list of items.
     """
     theProject = NWProject(mockGUI)
@@ -128,7 +128,7 @@ def testCoreTree_BuildTree(mockGUI, dummyItems):
     assert not theTree.isTrashRoot("a000000000003")
 
     aHandles = []
-    for tHandle, pHandle, nwItem in dummyItems:
+    for tHandle, pHandle, nwItem in mockItems:
         aHandles.append(tHandle)
         assert theTree.append(tHandle, pHandle, nwItem)
 
@@ -138,7 +138,7 @@ def testCoreTree_BuildTree(mockGUI, dummyItems):
     assert theTree
 
     # Check the number of elements (calls __len__)
-    assert len(theTree) == len(dummyItems)
+    assert len(theTree) == len(mockItems)
 
     # Check that we have the correct handles
     assert theTree.handles() == aHandles
@@ -160,46 +160,46 @@ def testCoreTree_BuildTree(mockGUI, dummyItems):
     itemT.isExpanded = False
 
     assert not theTree.append("1234567890abc", None, itemT)
-    assert len(theTree) == len(dummyItems)
+    assert len(theTree) == len(mockItems)
 
     # Generate handle automatically
     itemT = NWItem(theProject)
     itemT.itemName = "New File"
     itemT.itemType = nwItemType.FILE
     itemT.itemClass = nwItemClass.NOVEL
-    itemT.itemLayout = nwItemLayout.SCENE
+    itemT.itemLayout = nwItemLayout.STORY
 
     assert theTree.append(None, None, itemT)
-    assert len(theTree) == len(dummyItems) + 1
+    assert len(theTree) == len(mockItems) + 1
 
     theList = theTree.handles()
     assert theList[-1] == "73475cb40a568"
 
     # Try to add existing handle
     assert not theTree.append("73475cb40a568", None, itemT)
-    assert len(theTree) == len(dummyItems) + 1
+    assert len(theTree) == len(mockItems) + 1
 
     # Delete a non-existing item
     del theTree["stuff"]
-    assert len(theTree) == len(dummyItems) + 1
+    assert len(theTree) == len(mockItems) + 1
 
     # Delete the last item
     del theTree["73475cb40a568"]
-    assert len(theTree) == len(dummyItems)
+    assert len(theTree) == len(mockItems)
     assert "73475cb40a568" not in theTree
 
     # Delete the Novel, Archive and Trash folders
     del theTree["a000000000001"]
-    assert len(theTree) == len(dummyItems) - 1
+    assert len(theTree) == len(mockItems) - 1
     assert "a000000000001" not in theTree
 
     del theTree["a000000000002"]
-    assert len(theTree) == len(dummyItems) - 2
+    assert len(theTree) == len(mockItems) - 2
     assert "a000000000002" not in theTree
     assert theTree.archiveRoot() is None
 
     del theTree["a000000000003"]
-    assert len(theTree) == len(dummyItems) - 3
+    assert len(theTree) == len(mockItems) - 3
     assert "a000000000003" not in theTree
     assert theTree.trashRoot() is None
 
@@ -207,16 +207,16 @@ def testCoreTree_BuildTree(mockGUI, dummyItems):
 
 
 @pytest.mark.core
-def testCoreTree_Methods(mockGUI, dummyItems):
+def testCoreTree_Methods(mockGUI, mockItems):
     """Test bvarious class methods.
     """
     theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
-    for tHandle, pHandle, nwItem in dummyItems:
+    for tHandle, pHandle, nwItem in mockItems:
         theTree.append(tHandle, pHandle, nwItem)
 
-    assert len(theTree) == len(dummyItems)
+    assert len(theTree) == len(mockItems)
 
     # Root item lookup
     theTree._treeRoots.append("stuff")
@@ -254,11 +254,11 @@ def testCoreTree_Methods(mockGUI, dummyItems):
     ]
 
     # Change file layout
-    assert not theTree.setFileItemLayout("stuff", nwItemLayout.UNNUMBERED)
-    assert not theTree.setFileItemLayout("b000000000001", nwItemLayout.UNNUMBERED)
+    assert not theTree.setFileItemLayout("stuff", nwItemLayout.PAGE)
+    assert not theTree.setFileItemLayout("b000000000001", nwItemLayout.PAGE)
     assert not theTree.setFileItemLayout("c000000000001", "stuff")
-    assert theTree.setFileItemLayout("c000000000001", nwItemLayout.UNNUMBERED)
-    assert theTree["c000000000001"].itemLayout == nwItemLayout.UNNUMBERED
+    assert theTree.setFileItemLayout("c000000000001", nwItemLayout.PAGE)
+    assert theTree["c000000000001"].itemLayout == nwItemLayout.PAGE
 
 # END Test testCoreTree_Methods
 
@@ -307,16 +307,16 @@ def testCoreTree_MakeHandles(monkeypatch, mockGUI):
 
 
 @pytest.mark.core
-def testCoreTree_Stats(mockGUI, dummyItems):
+def testCoreTree_Stats(mockGUI, mockItems):
     """Test project stats methods.
     """
     theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
-    for tHandle, pHandle, nwItem in dummyItems:
+    for tHandle, pHandle, nwItem in mockItems:
         theTree.append(tHandle, pHandle, nwItem)
 
-    assert len(theTree) == len(dummyItems)
+    assert len(theTree) == len(mockItems)
     theTree._treeOrder.append("stuff")
 
     # Count Words
@@ -334,18 +334,18 @@ def testCoreTree_Stats(mockGUI, dummyItems):
 
 
 @pytest.mark.core
-def testCoreTree_Reorder(mockGUI, dummyItems):
+def testCoreTree_Reorder(mockGUI, mockItems):
     """Test changing tree order.
     """
     theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
     aHandle = []
-    for tHandle, pHandle, nwItem in dummyItems:
+    for tHandle, pHandle, nwItem in mockItems:
         aHandle.append(tHandle)
         theTree.append(tHandle, pHandle, nwItem)
 
-    assert len(theTree) == len(dummyItems)
+    assert len(theTree) == len(mockItems)
 
     bHandle = aHandle.copy()
     bHandle[2], bHandle[3] = bHandle[3], bHandle[2]
@@ -366,16 +366,16 @@ def testCoreTree_Reorder(mockGUI, dummyItems):
 
 
 @pytest.mark.core
-def testCoreTree_XMLPackUnpack(mockGUI, dummyItems):
+def testCoreTree_XMLPackUnpack(mockGUI, mockItems):
     """Test packing and unpacking the tree to and from XML.
     """
     theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
-    for tHandle, pHandle, nwItem in dummyItems:
+    for tHandle, pHandle, nwItem in mockItems:
         theTree.append(tHandle, pHandle, nwItem)
 
-    assert len(theTree) == len(dummyItems)
+    assert len(theTree) == len(mockItems)
 
     nwXML = etree.Element("novelWriterXML")
     theTree.packXML(nwXML)
@@ -390,11 +390,11 @@ def testCoreTree_XMLPackUnpack(mockGUI, dummyItems):
         b"<expanded>True</expanded></item>"
         b"<item handle=\"c000000000001\" order=\"0\" parent=\"b000000000001\">"
         b"<name>Chapter One</name><type>FILE</type><class>NOVEL</class><status>None</status>"
-        b"<exported>True</exported><layout>CHAPTER</layout><charCount>300</charCount>"
+        b"<exported>True</exported><layout>STORY</layout><charCount>300</charCount>"
         b"<wordCount>50</wordCount><paraCount>2</paraCount><cursorPos>0</cursorPos></item>"
         b"<item handle=\"c000000000002\" order=\"0\" parent=\"b000000000001\">"
         b"<name>Scene One</name><type>FILE</type><class>NOVEL</class><status>None</status>"
-        b"<exported>True</exported><layout>SCENE</layout><charCount>3000</charCount>"
+        b"<exported>True</exported><layout>STORY</layout><charCount>3000</charCount>"
         b"<wordCount>500</wordCount><paraCount>20</paraCount><cursorPos>0</cursorPos></item>"
         b"<item handle=\"a000000000002\" order=\"0\" parent=\"None\">"
         b"<name>Outtakes</name><type>ROOT</type><class>ARCHIVE</class><status>None</status>"
@@ -416,22 +416,22 @@ def testCoreTree_XMLPackUnpack(mockGUI, dummyItems):
     assert len(theTree) == 0
     assert not theTree.unpackXML(nwXML)
     assert theTree.unpackXML(nwXML[0])
-    assert len(theTree) == len(dummyItems)
+    assert len(theTree) == len(mockItems)
 
 # END Test testCoreTree_XMLPackUnpack
 
 
 @pytest.mark.core
-def testCoreTree_ToCFile(monkeypatch, mockGUI, dummyItems, tmpDir):
+def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpDir):
     """Test writing the ToC.txt file.
     """
     theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
-    for tHandle, pHandle, nwItem in dummyItems:
+    for tHandle, pHandle, nwItem in mockItems:
         theTree.append(tHandle, pHandle, nwItem)
 
-    assert len(theTree) == len(dummyItems)
+    assert len(theTree) == len(mockItems)
     theTree._treeOrder.append("stuff")
 
     def dummyIsFile(fileName):
@@ -462,8 +462,8 @@ def testCoreTree_ToCFile(monkeypatch, mockGUI, dummyItems, tmpDir):
         "\n"
         "File Name                  Class      Layout      Document Label\n"
         "-------------------------------------------------------------\n"
-        f"{pathA}  NOVEL      CHAPTER     Chapter One\n"
-        f"{pathB}  NOVEL      SCENE       Scene One\n"
+        f"{pathA}  NOVEL      STORY       Chapter One\n"
+        f"{pathB}  NOVEL      STORY       Scene One\n"
         f"{pathC}  CHARACTER  NOTE        Jane Doe\n"
     )
 

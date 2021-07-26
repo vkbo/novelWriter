@@ -183,10 +183,10 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
         assert "Could not save document." in caplog.text
 
     # Change header level
-    assert nwGUI.theProject.projTree[sHandle].itemLayout == nwItemLayout.SCENE
+    assert nwGUI.theProject.projTree[sHandle].itemLayout == nwItemLayout.STORY
     nwGUI.docEditor.replaceText(longText[1:])
     assert nwGUI.docEditor.saveText() is True
-    assert nwGUI.theProject.projTree[sHandle].itemLayout == nwItemLayout.CHAPTER
+    assert nwGUI.theProject.projTree[sHandle].itemLayout == nwItemLayout.STORY
 
     # Regular save
     assert nwGUI.docEditor.saveText() is True

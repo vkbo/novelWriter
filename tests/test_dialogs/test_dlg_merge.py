@@ -142,7 +142,7 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj):
         assert readFile(mergedFile) == (
             "%%%%~name: New Chapter\n"
             "%%%%~path: 73475cb40a568/2858dcd1057d3\n"
-            "%%%%~kind: NOVEL/SCENE\n"
+            "%%%%~kind: NOVEL/STORY\n"
             "%s\n\n"
             "%s\n\n"
             "%s\n\n"

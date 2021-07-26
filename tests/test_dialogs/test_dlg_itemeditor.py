@@ -66,7 +66,7 @@ def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir)
 
     assert itemEdit.editName.text()          == "New Scene"
     assert itemEdit.editStatus.currentData() == "New"
-    assert itemEdit.editLayout.currentData() == nwItemLayout.SCENE
+    assert itemEdit.editLayout.currentData() == nwItemLayout.STORY
 
     for c in "Just a Page":
         qtbot.keyClick(itemEdit.editName, c, delay=typeDelay)
