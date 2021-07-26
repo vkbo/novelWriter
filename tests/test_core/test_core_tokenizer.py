@@ -169,14 +169,9 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
 
     assert theToken.isNone is False
     assert theToken.isTitle is False
-    assert theToken.isBook is False
     assert theToken.isPage is False
-    assert theToken.isPart is False
-    assert theToken.isUnNum is False
-    assert theToken.isChap is False
-    assert theToken.isScene is True
+    assert theToken.isStory is True
     assert theToken.isNote is False
-    assert theToken.isNovel is True
 
     # Pre Processing
     theToken.doPreProcessing()
@@ -476,21 +471,21 @@ def testCoreToken_Headers(mockGUI):
     theToken.isNote = False
 
     ##
-    #  Novel
+    #  Story FIles
     ##
 
-    theToken.isNovel = True
+    theToken.isStory = True
 
     # Titles
     # ======
 
     # H1: Title
-    theToken.theText = "# Novel Title\n"
+    theToken.theText = "# Part One\n"
     theToken.setTitleFormat(r"T: %title%")
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken.theTokens == [
-        (Tokenizer.T_HEAD1, 1, "T: Novel Title", None, Tokenizer.A_NONE),
+        (Tokenizer.T_HEAD1, 1, "T: Part One", None, Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
@@ -508,20 +503,8 @@ def testCoreToken_Headers(mockGUI):
     ]
 
     # H2: Unnumbered Chapter
-    theToken.theText = "## Chapter One\n"
-    theToken.setUnNumberedFormat(r"U: %title%")
-    theToken.isUnNum = True
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken.theTokens == [
-        (Tokenizer.T_HEAD2, 1, "U: Chapter One", None, Tokenizer.A_PBB),
-        (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
-    ]
-
-    # H2: Unnumbered Chapter with Star
     theToken.theText = "## *Prologue\n"
     theToken.setUnNumberedFormat(r"U: %title%")
-    theToken.isUnNum = False
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken.theTokens == [
@@ -704,42 +687,28 @@ def testCoreToken_Headers(mockGUI):
     assert theToken.firstScene is False
 
     ##
-    #  Title or Partition
+    #  Title Page
     ##
 
-    theToken.isNovel = False
+    theToken.isStory = False
+    theToken.isTitle = True
 
     # H1: Title
     theToken.theText = "# Novel Title\n"
     theToken.setTitleFormat(r"T: %title%")
-    theToken.isTitle = True
-    theToken.isPart = False
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken.theTokens == [
-        (Tokenizer.T_TITLE, 1, "Novel Title", None, Tokenizer.A_PBB_AUT | Tokenizer.A_CENTRE),
-        (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_PBA | Tokenizer.A_CENTRE),
-    ]
-
-    # H1: Partition
-    theToken.theText = "# Partition Title\n"
-    theToken.setTitleFormat(r"T: %title%")
-    theToken.isTitle = False
-    theToken.isPart = True
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken.theTokens == [
-        (Tokenizer.T_HEAD1, 1, "Partition Title", None, Tokenizer.A_PBB | Tokenizer.A_CENTRE),
-        (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_PBA | Tokenizer.A_CENTRE),
+        (Tokenizer.T_TITLE, 1, "Novel Title", None, Tokenizer.A_PBB),
+        (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     ##
     #  Page
     ##
 
-    theToken.isNovel = False
+    theToken.isStory = False
     theToken.isTitle = False
-    theToken.isPart = False
     theToken.isPage = True
 
     # Some Page Text

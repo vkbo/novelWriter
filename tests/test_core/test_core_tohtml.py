@@ -91,13 +91,13 @@ def testCoreToHtml_Convert(mockGUI):
     # Export Mode
     # ===========
 
-    theHtml.isNovel = True
+    theHtml.isStory = True
 
     # Header 1
-    theHtml.theText = "# Title\n"
+    theHtml.theText = "# Partition\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
-    assert theHtml.theResult == "<h1 class='title'>Title</h1>\n"
+    assert theHtml.theResult == "<h1 class='title'>Partition</h1>\n"
 
     # Header 2
     theHtml.theText = "## Chapter Title\n"
@@ -117,7 +117,7 @@ def testCoreToHtml_Convert(mockGUI):
     theHtml.doConvert()
     assert theHtml.theResult == "<h3>Section Title</h3>\n"
 
-    theHtml.isNovel = False
+    theHtml.isStory = False
     theHtml.setLinkHeaders(True)
 
     # Header 1
@@ -226,7 +226,7 @@ def testCoreToHtml_Convert(mockGUI):
     # Direct Tests
     # ============
 
-    theHtml.isNovel = True
+    theHtml.isStory = True
 
     # Title
     theHtml.theTokens = [
