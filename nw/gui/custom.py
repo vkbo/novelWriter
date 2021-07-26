@@ -393,11 +393,11 @@ class PagedDialog(QDialog):
         self._outerBox.addLayout(self._buttonBox)
 
         # Default Margins
-        qM = self._outerBox.contentsMargins()
-        mL = qM.left()
-        mR = qM.right()
-        mT = qM.top()
-        mB = qM.bottom()
+        thisStyle = self.style()
+        mL = thisStyle.pixelMetric(QStyle.PM_LayoutLeftMargin)
+        mR = thisStyle.pixelMetric(QStyle.PM_LayoutRightMargin)
+        mT = thisStyle.pixelMetric(QStyle.PM_LayoutLeftMargin)
+        mB = thisStyle.pixelMetric(QStyle.PM_LayoutBottomMargin)
 
         # Set Margins
         self.setContentsMargins(0, 0, 0, 0)
