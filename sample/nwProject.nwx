@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.4b1" hexVersion="0x010400b1" fileVersion="1.2" timeStamp="2021-06-13 19:55:59">
+<novelWriterXML appVersion="1.4rc1" hexVersion="0x010400c1" fileVersion="1.2" timeStamp="2021-07-27 00:07:58">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1108</saveCount>
-    <autoCount>189</autoCount>
-    <editTime>53069</editTime>
+    <saveCount>1109</saveCount>
+    <autoCount>190</autoCount>
+    <editTime>53132</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -86,7 +86,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>PARTITION</layout>
+      <layout>STORY</layout>
       <charCount>26</charCount>
       <wordCount>6</wordCount>
       <paraCount>1</paraCount>
@@ -105,7 +105,7 @@
       <class>NOVEL</class>
       <status>Notes</status>
       <exported>True</exported>
-      <layout>CHAPTER</layout>
+      <layout>STORY</layout>
       <charCount>75</charCount>
       <wordCount>14</wordCount>
       <paraCount>1</paraCount>
@@ -117,7 +117,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <exported>True</exported>
-      <layout>SCENE</layout>
+      <layout>STORY</layout>
       <charCount>2429</charCount>
       <wordCount>432</wordCount>
       <paraCount>14</paraCount>
@@ -129,7 +129,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <exported>True</exported>
-      <layout>SCENE</layout>
+      <layout>STORY</layout>
       <charCount>476</charCount>
       <wordCount>93</wordCount>
       <paraCount>3</paraCount>
@@ -141,11 +141,11 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>UNNUMBERED</layout>
-      <charCount>617</charCount>
+      <layout>STORY</layout>
+      <charCount>618</charCount>
       <wordCount>101</wordCount>
       <paraCount>3</paraCount>
-      <cursorPos>1137</cursorPos>
+      <cursorPos>4</cursorPos>
     </item>
     <item handle="96b68994dfa3d" order="4" parent="e7ded148d6e4a">
       <name>A Note on Structure</name>
@@ -165,7 +165,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <exported>True</exported>
-      <layout>CHAPTER</layout>
+      <layout>STORY</layout>
       <charCount>139</charCount>
       <wordCount>28</wordCount>
       <paraCount>1</paraCount>
@@ -177,7 +177,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <exported>True</exported>
-      <layout>SCENE</layout>
+      <layout>STORY</layout>
       <charCount>189</charCount>
       <wordCount>37</wordCount>
       <paraCount>1</paraCount>
@@ -284,7 +284,7 @@
       <class>NOVEL</class>
       <status>1st Draft</status>
       <exported>True</exported>
-      <layout>SCENE</layout>
+      <layout>STORY</layout>
       <charCount>315</charCount>
       <wordCount>55</wordCount>
       <paraCount>1</paraCount>
@@ -303,7 +303,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>SCENE</layout>
+      <layout>STORY</layout>
       <charCount>30</charCount>
       <wordCount>6</wordCount>
       <paraCount>1</paraCount>

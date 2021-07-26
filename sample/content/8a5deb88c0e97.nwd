@@ -1,6 +1,6 @@
 %%~name: Old File
 %%~path: ae9bf3c3ea159/8a5deb88c0e97
-%%~kind: NOVEL/SCENE
+%%~kind: NOVEL/STORY
 ### Discarded Scene
 
 If you have files you no longer want in your main project, you can move them to the “Outtakes” folder. This is equivalent to turning off the “Include when building project” switch, just that you also put the file away, although the switch can be ignored when building the project, this folder cannot.
