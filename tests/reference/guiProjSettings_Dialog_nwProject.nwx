@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.0rc1" hexVersion="0x010000c1" fileVersion="1.2" timeStamp="2020-12-12 15:22:16">
+<novelWriterXML appVersion="1.4rc1" hexVersion="0x010400c1" fileVersion="1.2" timeStamp="2021-07-26 23:19:04">
   <project>
     <name>Project Name</name>
     <title>Project Title</title>
     <author>Jane Doe</author>
     <author>John Doh</author>
-    <saveCount>1</saveCount>
+    <saveCount>2</saveCount>
     <autoCount>1</autoCount>
     <editTime>0</editTime>
   </project>
@@ -78,7 +78,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>CHAPTER</layout>
+      <layout>STORY</layout>
       <charCount>11</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>
@@ -90,7 +90,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>SCENE</layout>
+      <layout>STORY</layout>
       <charCount>9</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>

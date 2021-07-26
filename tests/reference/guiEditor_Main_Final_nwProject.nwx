@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.2a0" hexVersion="0x010200a0" fileVersion="1.2" timeStamp="2021-01-29 01:10:23">
+<novelWriterXML appVersion="1.4rc1" hexVersion="0x010400c1" fileVersion="1.2" timeStamp="2021-07-26 23:22:45">
   <project>
     <name>New Project</name>
     <title></title>
-    <saveCount>4</saveCount>
+    <saveCount>5</saveCount>
     <autoCount>2</autoCount>
-    <editTime>8</editTime>
+    <editTime>3</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
@@ -72,7 +72,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>CHAPTER</layout>
+      <layout>STORY</layout>
       <charCount>11</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>
@@ -84,7 +84,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>BOOK</layout>
+      <layout>STORY</layout>
       <charCount>482</charCount>
       <wordCount>83</wordCount>
       <paraCount>4</paraCount>

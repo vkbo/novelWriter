@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.0b5" hexVersion="0x010000b5" fileVersion="1.2" timeStamp="2020-10-24 18:55:14">
+<novelWriterXML appVersion="1.4rc1" hexVersion="0x010400c1" fileVersion="1.2" timeStamp="2021-07-26 23:13:14">
   <project>
     <name>Test Minimal</name>
     <title>Minimal</title>
     <author>Jane Doe</author>
     <author>John Doh</author>
-    <saveCount>3</saveCount>
+    <saveCount>6</saveCount>
     <autoCount>1</autoCount>
-    <editTime>33</editTime>
+    <editTime>80</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
@@ -47,7 +47,7 @@
       <type>ROOT</type>
       <class>NOVEL</class>
       <status>New</status>
-      <expanded>False</expanded>
+      <expanded>True</expanded>
     </item>
     <item handle="a35baf2e93843" order="0" parent="a508bb932959c">
       <name>Title Page</name>
@@ -66,7 +66,7 @@
       <type>FOLDER</type>
       <class>NOVEL</class>
       <status>New</status>
-      <expanded>False</expanded>
+      <expanded>True</expanded>
     </item>
     <item handle="f5ab3e30151e1" order="0" parent="a6d311a93600a">
       <name>New Chapter</name>
@@ -74,7 +74,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>CHAPTER</layout>
+      <layout>STORY</layout>
       <charCount>11</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>
@@ -86,7 +86,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>SCENE</layout>
+      <layout>STORY</layout>
       <charCount>9</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>

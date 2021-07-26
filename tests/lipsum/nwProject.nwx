@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.0b5" hexVersion="0x010000b5" fileVersion="1.2" timeStamp="2020-10-24 18:43:56">
+<novelWriterXML appVersion="1.4rc1" hexVersion="0x010400c1" fileVersion="1.2" timeStamp="2021-07-26 23:46:29">
   <project>
     <name>Lorem Ipsum</name>
     <title>Lorem Ipsum</title>
     <author>lipsum.com</author>
-    <saveCount>10</saveCount>
-    <autoCount>22</autoCount>
-    <editTime>1571</editTime>
+    <saveCount>14</saveCount>
+    <autoCount>23</autoCount>
+    <editTime>1676</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -14,7 +14,7 @@
     <spellCheck>False</spellCheck>
     <spellLang>None</spellLang>
     <autoOutline>True</autoOutline>
-    <lastEdited>04468803b92e1</lastEdited>
+    <lastEdited>7a992350f3eb6</lastEdited>
     <lastViewed>None</lastViewed>
     <lastWordCount>3847</lastWordCount>
     <novelWordCount>3109</novelWordCount>
@@ -61,7 +61,7 @@
       <charCount>230</charCount>
       <wordCount>40</wordCount>
       <paraCount>3</paraCount>
-      <cursorPos>239</cursorPos>
+      <cursorPos>148</cursorPos>
     </item>
     <item handle="8c58a65414c23" order="1" parent="b3643d0f92e32">
       <name>Front Matter</name>
@@ -81,11 +81,11 @@
       <class>NOVEL</class>
       <status>Draft</status>
       <exported>True</exported>
-      <layout>UNNUMBERED</layout>
-      <charCount>584</charCount>
+      <layout>STORY</layout>
+      <charCount>585</charCount>
       <wordCount>92</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>79</cursorPos>
+      <cursorPos>4</cursorPos>
     </item>
     <item handle="db7e733775d4d" order="3" parent="b3643d0f92e32">
       <name>Act One</name>
@@ -93,11 +93,11 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>PARTITION</layout>
+      <layout>STORY</layout>
       <charCount>35</charCount>
       <wordCount>6</wordCount>
       <paraCount>1</paraCount>
-      <cursorPos>39</cursorPos>
+      <cursorPos>42</cursorPos>
     </item>
     <item handle="45e6b01ca35c1" order="4" parent="b3643d0f92e32">
       <name>Chapter One</name>
@@ -112,7 +112,7 @@
       <class>NOVEL</class>
       <status>Draft</status>
       <exported>True</exported>
-      <layout>CHAPTER</layout>
+      <layout>STORY</layout>
       <charCount>419</charCount>
       <wordCount>67</wordCount>
       <paraCount>1</paraCount>
@@ -124,7 +124,7 @@
       <class>NOVEL</class>
       <status>Finished</status>
       <exported>True</exported>
-      <layout>SCENE</layout>
+      <layout>STORY</layout>
       <charCount>2758</charCount>
       <wordCount>404</wordCount>
       <paraCount>4</paraCount>
@@ -136,7 +136,7 @@
       <class>NOVEL</class>
       <status>Finished</status>
       <exported>True</exported>
-      <layout>SCENE</layout>
+      <layout>STORY</layout>
       <charCount>4043</charCount>
       <wordCount>600</wordCount>
       <paraCount>6</paraCount>
@@ -148,7 +148,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>False</exported>
-      <layout>BOOK</layout>
+      <layout>STORY</layout>
       <charCount>631</charCount>
       <wordCount>109</wordCount>
       <paraCount>3</paraCount>
@@ -167,7 +167,7 @@
       <class>NOVEL</class>
       <status>Draft</status>
       <exported>True</exported>
-      <layout>CHAPTER</layout>
+      <layout>STORY</layout>
       <charCount>477</charCount>
       <wordCount>70</wordCount>
       <paraCount>1</paraCount>
@@ -179,7 +179,7 @@
       <class>NOVEL</class>
       <status>Finished</status>
       <exported>True</exported>
-      <layout>SCENE</layout>
+      <layout>STORY</layout>
       <charCount>3006</charCount>
       <wordCount>439</wordCount>
       <paraCount>4</paraCount>
@@ -191,7 +191,7 @@
       <class>NOVEL</class>
       <status>Finished</status>
       <exported>True</exported>
-      <layout>SCENE</layout>
+      <layout>STORY</layout>
       <charCount>3839</charCount>
       <wordCount>563</wordCount>
       <paraCount>6</paraCount>
@@ -203,7 +203,7 @@
       <class>NOVEL</class>
       <status>Finished</status>
       <exported>True</exported>
-      <layout>SCENE</layout>
+      <layout>STORY</layout>
       <charCount>3644</charCount>
       <wordCount>543</wordCount>
       <paraCount>5</paraCount>

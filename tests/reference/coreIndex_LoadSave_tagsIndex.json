@@ -315,10 +315,10 @@
     "88d59a277361b": {
       "T000001": {
         "level": "H2",
-        "title": "Prologue",
-        "layout": "UNNUMBERED",
+        "title": "*Prologue",
+        "layout": "STORY",
         "synopsis": "Explanation from the lipsum.com website.",
-        "cCount": 584,
+        "cCount": 585,
         "wCount": 92,
         "pCount": 1,
         "updated": 123
@@ -328,7 +328,7 @@
       "T000001": {
         "level": "H1",
         "title": "Act One",
-        "layout": "PARTITION",
+        "layout": "STORY",
         "synopsis": "",
         "cCount": 35,
         "wCount": 6,
@@ -340,7 +340,7 @@
       "T000001": {
         "level": "H2",
         "title": "Chapter One",
-        "layout": "CHAPTER",
+        "layout": "STORY",
         "synopsis": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at aliquam quam.",
         "cCount": 419,
         "wCount": 67,
@@ -352,7 +352,7 @@
       "T000001": {
         "level": "H3",
         "title": "Scene One",
-        "layout": "SCENE",
+        "layout": "STORY",
         "synopsis": "Aenean ut placerat velit. Etiam laoreet ullamcorper risus, eget lobortis enim scelerisque non. Suspendisse id maximus nunc, et mollis sapien. Curabitur vel semper sapien, non pulvinar dolor. Etiam finibus nisi vel mi molestie consectetur.",
         "cCount": 1197,
         "wCount": 174,
@@ -362,7 +362,7 @@
       "T000013": {
         "level": "H4",
         "title": "Scene One, Section Two",
-        "layout": "SCENE",
+        "layout": "STORY",
         "synopsis": "",
         "cCount": 1561,
         "wCount": 230,
@@ -374,7 +374,7 @@
       "T000001": {
         "level": "H3",
         "title": "Scene Two",
-        "layout": "SCENE",
+        "layout": "STORY",
         "synopsis": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer sapien nulla, dictum at lacus a, dignissim consectetur dolor. Nunc vel eleifend lacus, eu dapibus orci.",
         "cCount": 2034,
         "wCount": 299,
@@ -384,7 +384,7 @@
       "T000015": {
         "level": "H4",
         "title": "Scene Two, Section Two",
-        "layout": "SCENE",
+        "layout": "STORY",
         "synopsis": "",
         "cCount": 2009,
         "wCount": 301,
@@ -396,7 +396,7 @@
       "T000001": {
         "level": "H2",
         "title": "Why do we use it?",
-        "layout": "BOOK",
+        "layout": "STORY",
         "synopsis": "",
         "cCount": 631,
         "wCount": 109,
@@ -408,7 +408,7 @@
       "T000001": {
         "level": "H2",
         "title": "Chapter Two",
-        "layout": "CHAPTER",
+        "layout": "STORY",
         "synopsis": "Curabitur a elit posuere, varius ex et, convallis neque. Phasellus sagittis pharetra sem vitae dapibus. Curabitur varius lorem non pulvinar congue.",
         "cCount": 477,
         "wCount": 70,
@@ -420,7 +420,7 @@
       "T000001": {
         "level": "H3",
         "title": "Scene Three",
-        "layout": "SCENE",
+        "layout": "STORY",
         "synopsis": "Aenean ut libero ut lectus porttitor rhoncus vel et massa. Nam pretium, nibh et varius vehicula, urna metus blandit eros, euismod pharetra diam diam et libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.",
         "cCount": 3006,
         "wCount": 439,
@@ -432,7 +432,7 @@
       "T000001": {
         "level": "H3",
         "title": "Scene Four",
-        "layout": "SCENE",
+        "layout": "STORY",
         "synopsis": "Nam tempor blandit magna laoreet aliquet. Vestibulum auctor posuere leo, ac gravida nisi rhoncus varius. Aenean posuere dolor vitae condimentum volutpat. Donec egestas volutpat risus, quis luctus justo.",
         "cCount": 3839,
         "wCount": 563,
@@ -444,7 +444,7 @@
       "T000001": {
         "level": "H3",
         "title": "Scene Five",
-        "layout": "SCENE",
+        "layout": "STORY",
         "synopsis": "Praesent eget est porta, dictum ante in, egestas risus. Mauris risus mauris, consequat aliquam mauris et, feugiat iaculis ipsum. Aliquam arcu ipsum, fermentum ut arcu sed, lobortis euismod sem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
         "cCount": 3644,
         "wCount": 543,
@@ -503,7 +503,7 @@
       2
     ],
     "88d59a277361b": [
-      584,
+      585,
       92,
       1
     ],
