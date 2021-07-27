@@ -19,11 +19,11 @@ a proper line break and will show up in the document viewer and exported documen
 break does not start a new paragraph, but forces a break inside the paragraph like a Shift + Enter
 does in most rich text editors. Two line breaks is still needed to start a new paragraph.
 
-The old syntax of adding two spaces to force a line break within a paragraph will still work as
-before, so there is no need to change your existing text if you've used this feature. However,
-there is a new highlighting feature that will show you where in the text you have redundant spaces.
-If you are used to having double spaces between sentences, you may want to switch off this
-highlighting feature in Preferences as it will also detect those.
+The old syntax of adding two spaces at the end of a line to force a line break within a paragraph
+will still work as before, so there is no need to change your existing text if you've used this
+feature. However, there is a new highlighting feature that will show you where in the text you have
+redundant spaces. If you are used to having double spaces between sentences, you may want to switch
+off this highlighting feature in Preferences as it will also detect those.
 
 A helper function has been added to the Format menu that can look through a paragraph and remove
 line breaks in case you've been using line breaks inside your existing text under the assumption
