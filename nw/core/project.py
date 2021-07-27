@@ -204,7 +204,7 @@ class NWProject():
         self.autoReplace = {}
         self.titleFormat = {
             "title":      "%title%",
-            "chapter":    self.tr("Chapter")+" %ch%: %title%",
+            "chapter":    "%title%",
             "unnumbered": "%title%",
             "scene":      "* * *",
             "section":    "",
@@ -263,7 +263,7 @@ class NWProject():
 
         titlePage = "# %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
         if self.bookAuthors:
-            titlePage = "%s%s %s\n" % (titlePage, self.tr("By"), self.getAuthors())
+            titlePage = "%s>> %s %s <<\n" % (titlePage, self.tr("By"), self.getAuthors())
 
         if popMinimal:
             # Creating a minimal project with a few root folders and a

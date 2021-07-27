@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.4rc1" hexVersion="0x010400c1" fileVersion="1.2" timeStamp="2021-07-26 23:16:31">
+<novelWriterXML appVersion="1.5-alpha0" hexVersion="0x010500a0" fileVersion="1.2" timeStamp="2021-07-28 00:33:09">
   <project>
     <name>New Project</name>
     <title></title>
@@ -21,7 +21,7 @@
     <autoReplace/>
     <titleFormat>
       <title>%title%</title>
-      <chapter>Chapter %ch%: %title%</chapter>
+      <chapter>%title%</chapter>
       <unnumbered>%title%</unnumbered>
       <scene>* * *</scene>
       <section></section>
