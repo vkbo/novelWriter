@@ -1,14 +1,30 @@
 # novelWriter Changelog
 
-## Version 1.4 RC 1 [2021-07-12]
+## Version 1.4.1 [2021-07-27]
 
 ### Release Notes
 
-This is a preview release of novelWriter 1.4. It contains some new features and a lot of code
-refactoring. This release is a testing release, and may contain bugs. Please be careful when using
-this version to work on your projects.
+This release fixes a couple of minor issue with some of the dialog boxes. The fix was accidentally
+left out of release 1.4.
 
-Below are the main feature changes of this release.
+### Detailed Changelog
+
+**Bugfixes**
+
+* The way margins are determined in the paged dialogs used many places, including Preferences, has
+  been improved. These margins would sometimes be set to zero when they shouldn't. PR #834.
+* Dialogs that are non-modal are no longer duplicated when opened multiple times. Instead, the
+  existing dialog is moved to the front. PR #834.
+
+----
+
+## Version 1.4 [2021-07-27]
+
+### Release Notes
+
+This release contains some new features and a lot of code refactoring. Among the main new features
+is paragraph alignment and indentation. Regular line breaks within paragraphs are now also
+supported. The changes are described in more detail below.
 
 #### Internationalisation
 
@@ -21,11 +37,11 @@ a proper line break and will show up in the document viewer and exported documen
 break does not start a new paragraph, but forces a break inside the paragraph like a Shift + Enter
 does in most rich text editors. Two line breaks is still needed to start a new paragraph.
 
-The old syntax of adding two spaces to force a line break within a paragraph will still work as
-before, so there is no need to change your existing text if you've used this feature. However,
-there is a new highlighting feature that will show you where in the text you have redundant spaces.
-If you are used to having double spaces between sentences, you may want to switch off this
-highlighting feature in Preferences as it will also detect those.
+The old syntax of adding two spaces at the end of a line to force a line break within a paragraph
+will still work as before, so there is no need to change your existing text if you've used this
+feature. However, there is a new highlighting feature that will show you where in the text you have
+redundant spaces. If you are used to having double spaces between sentences, you may want to switch
+off this highlighting feature in Preferences as it will also detect those.
 
 A helper function has been added to the Format menu that can look through a paragraph and remove
 line breaks in case you've been using line breaks inside your existing text under the assumption
@@ -50,7 +66,7 @@ A single angle bracket will push the text away from the edge it points away from
 single `>` before the paragraph, or a single `<` after the paragraph, will add indentation on the
 respective side. It's perfectly valid to do this on both sides at the same time.
 
-A double set of angle brackets will push the text all the way towards the opposite aide. Therefore,
+A double set of angle brackets will push the text all the way towards the opposite side. Therefore,
 a double set of `>>` before the paragraph will indicate right alignment, and a double set of `<<`
 after the paragraph will force left alignment. Also here both can be used at the same time, which
 results in the paragraph being centred.
@@ -58,7 +74,24 @@ results in the paragraph being centred.
 Format menu entries and keyboard shortcuts have been added so that you don't have to memorise these
 codes.
 
-_These Release Notes also include the changes from 1.4 Beta 1._
+_These Release Notes also include the changes from 1.4 Beta 1 and RC 1._
+
+### Detailed Changelog
+
+**Internationalisation**
+
+* US English and Norwegian translations have been updated by @vkbo. PR #825.
+* French translations have been updated by @jyhelle. PR #829.
+
+----
+
+## Version 1.4 RC 1 [2021-07-12]
+
+### Release Notes
+
+This is a preview release of novelWriter 1.4. It contains some new features and a lot of code
+refactoring. This release is a testing release, and may contain bugs. Please be careful when using
+this version to work on your projects.
 
 ### Detailed Changelog
 

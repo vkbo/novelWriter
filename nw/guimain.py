@@ -999,9 +999,13 @@ class GuiMain(QMainWindow):
 
         self.treeView.flushTreeOrder()
 
-        dlgDetails = GuiProjectDetails(self)
+        dlgDetails = getGuiItem("GuiProjectDetails")
+        if dlgDetails is None:
+            dlgDetails = GuiProjectDetails(self)
+
         dlgDetails.setModal(False)
         dlgDetails.show()
+        dlgDetails.raise_()
 
         return
 
@@ -1018,6 +1022,7 @@ class GuiMain(QMainWindow):
 
         dlgBuild.setModal(False)
         dlgBuild.show()
+        dlgBuild.raise_()
         qApp.processEvents()
         dlgBuild.viewCachedDoc()
 
@@ -1052,6 +1057,7 @@ class GuiMain(QMainWindow):
 
         dlgStats.setModal(False)
         dlgStats.show()
+        dlgStats.raise_()
         qApp.processEvents()
         dlgStats.populateGUI()
 
@@ -1060,9 +1066,13 @@ class GuiMain(QMainWindow):
     def showAboutNWDialog(self, showNotes=False):
         """Show the about dialog for novelWriter.
         """
-        dlgAbout = GuiAbout(self)
+        dlgAbout = getGuiItem("GuiAbout")
+        if dlgAbout is None:
+            dlgAbout = GuiAbout(self)
+
         dlgAbout.setModal(True)
         dlgAbout.show()
+        dlgAbout.raise_()
         qApp.processEvents()
         dlgAbout.populateGUI()
 
