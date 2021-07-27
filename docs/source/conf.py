@@ -28,7 +28,6 @@ version = "1.5"
 # The full version, including alpha/beta/rc tags
 release = "1.5-alpha0"
 
-
 # -- General configuration ---------------------------------------------------
 
 os.environ["TZ"] = "Europe/Oslo"

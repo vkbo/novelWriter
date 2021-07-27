@@ -257,10 +257,10 @@ class NWIndex():
 
         # If the file is archived or trashed, we don't index the file itself
         if self.theProject.projTree.isTrashRoot(theItem.itemParent):
-            logger.info("Not indexing trash item '%s'", tHandle)
+            logger.debug("Not indexing trash item '%s'", tHandle)
             return False
         if theRoot.itemClass == nwItemClass.ARCHIVE:
-            logger.info("Not indexing archived item '%s'", tHandle)
+            logger.debug("Not indexing archived item '%s'", tHandle)
             return False
 
         itemClass  = theItem.itemClass

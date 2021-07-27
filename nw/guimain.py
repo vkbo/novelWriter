@@ -71,12 +71,9 @@ class GuiMain(QMainWindow):
         logger.info("OS: %s", self.mainConf.osType)
         logger.info("Kernel: %s", self.mainConf.kernelVer)
         logger.info("Host: %s", self.mainConf.hostName)
-        logger.info("Qt5 Version: %s (%d)",
-                    self.mainConf.verQtString, self.mainConf.verQtValue)
-        logger.info("PyQt5 Version: %s (%d)",
-                    self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
-        logger.info("Python Version: %s (0x%x)",
-                    self.mainConf.verPyString, self.mainConf.verPyHexVal)
+        logger.info("Qt5: %s (%d)", self.mainConf.verQtString, self.mainConf.verQtValue)
+        logger.info("PyQt5: %s (%d)", self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
+        logger.info("Python: %s (0x%x)", self.mainConf.verPyString, self.mainConf.verPyHexVal)
         logger.info("GUI Language: %s", self.mainConf.guiLang)
 
         # Core Classes
@@ -297,7 +294,7 @@ class GuiMain(QMainWindow):
             logger.debug("Opening project from additional command line option")
             self.openProject(self.mainConf.cmdOpen)
 
-        logger.debug("novelWriter is ready ...")
+        logger.info("novelWriter is ready ...")
         self.setStatus(self.tr("novelWriter is ready ..."))
 
         return
@@ -872,7 +869,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        logger.debug("Rebuilding index ...")
+        logger.info("Rebuilding index ...")
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         tStart = time()
 

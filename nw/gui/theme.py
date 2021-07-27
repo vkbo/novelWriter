@@ -27,7 +27,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import os
 import logging
-import configparser
 
 from math import ceil
 from functools import partial
@@ -39,6 +38,7 @@ from PyQt5.QtGui import (
 )
 
 from nw.enum import nwAlert
+from nw.common import NWConfigParser
 
 logger = logging.getLogger(__name__)
 
@@ -280,7 +280,7 @@ class GuiTheme:
             return False
 
         # Config File
-        confParser = configparser.ConfigParser()
+        confParser = NWConfigParser()
         try:
             with open(self.confFile, mode="r", encoding="utf-8") as inFile:
                 confParser.read_file(inFile)
@@ -292,13 +292,13 @@ class GuiTheme:
         # Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
-            self.themeName        = self._parseLine(confParser, cnfSec, "name", "")
-            self.themeDescription = self._parseLine(confParser, cnfSec, "description", "N/A")
-            self.themeAuthor      = self._parseLine(confParser, cnfSec, "author", "N/A")
-            self.themeCredit      = self._parseLine(confParser, cnfSec, "credit", "N/A")
-            self.themeUrl         = self._parseLine(confParser, cnfSec, "url", "")
-            self.themeLicense     = self._parseLine(confParser, cnfSec, "license", "N/A")
-            self.themeLicenseUrl  = self._parseLine(confParser, cnfSec, "licenseurl", "")
+            self.themeName        = confParser.rdStr(cnfSec, "name", "")
+            self.themeDescription = confParser.rdStr(cnfSec, "description", "N/A")
+            self.themeAuthor      = confParser.rdStr(cnfSec, "author", "N/A")
+            self.themeCredit      = confParser.rdStr(cnfSec, "credit", "N/A")
+            self.themeUrl         = confParser.rdStr(cnfSec, "url", "")
+            self.themeLicense     = confParser.rdStr(cnfSec, "license", "N/A")
+            self.themeLicenseUrl  = confParser.rdStr(cnfSec, "licenseurl", "")
 
         # Palette
         cnfSec = "Palette"
@@ -338,7 +338,7 @@ class GuiTheme:
         """
         logger.debug("Loading syntax theme files")
 
-        confParser = configparser.ConfigParser()
+        confParser = NWConfigParser()
         try:
             with open(self.syntaxFile, mode="r", encoding="utf-8") as inFile:
                 confParser.read_file(inFile)
@@ -350,13 +350,13 @@ class GuiTheme:
         # Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
-            self.syntaxName        = self._parseLine(confParser, cnfSec, "name", "")
-            self.syntaxDescription = self._parseLine(confParser, cnfSec, "description", "")
-            self.syntaxAuthor      = self._parseLine(confParser, cnfSec, "author", "")
-            self.syntaxCredit      = self._parseLine(confParser, cnfSec, "credit", "")
-            self.syntaxUrl         = self._parseLine(confParser, cnfSec, "url", "")
-            self.syntaxLicense     = self._parseLine(confParser, cnfSec, "license", "")
-            self.syntaxLicenseUrl  = self._parseLine(confParser, cnfSec, "licenseurl", "")
+            self.syntaxName        = confParser.rdStr(cnfSec, "name", "")
+            self.syntaxDescription = confParser.rdStr(cnfSec, "description", "")
+            self.syntaxAuthor      = confParser.rdStr(cnfSec, "author", "")
+            self.syntaxCredit      = confParser.rdStr(cnfSec, "credit", "")
+            self.syntaxUrl         = confParser.rdStr(cnfSec, "url", "")
+            self.syntaxLicense     = confParser.rdStr(cnfSec, "license", "")
+            self.syntaxLicenseUrl  = confParser.rdStr(cnfSec, "licenseurl", "")
 
         # Syntax
         cnfSec = "Syntax"
@@ -388,7 +388,7 @@ class GuiTheme:
         if self.themeList:
             return self.themeList
 
-        confParser = configparser.ConfigParser()
+        confParser = NWConfigParser()
         for themeDir in os.listdir(os.path.join(self.mainConf.themeRoot, self.guiPath)):
             themeConf = os.path.join(
                 self.mainConf.themeRoot, self.guiPath, themeDir, self.confName
@@ -420,7 +420,7 @@ class GuiTheme:
         if self.syntaxList:
             return self.syntaxList
 
-        confParser = configparser.ConfigParser()
+        confParser = NWConfigParser()
         syntaxDir = os.path.join(self.mainConf.themeRoot, self.syntaxPath)
         for syntaxFile in os.listdir(syntaxDir):
             syntaxPath = os.path.join(syntaxDir, syntaxFile)
@@ -485,15 +485,6 @@ class GuiTheme:
         if len(readCol) == 3:
             self.guiPalette.setColor(paletteVal, QColor(*readCol))
         return
-
-    def _parseLine(self, confParser, cnfSec, cnfName, cnfDefault):
-        """Simple wrapper for the config parser to check that the entry
-        exists before attempting to load it.
-        """
-        if confParser.has_section(cnfSec):
-            if confParser.has_option(cnfSec, cnfName):
-                return confParser.get(cnfSec, cnfName)
-        return cnfDefault
 
 # End Class GuiTheme
 
@@ -644,7 +635,7 @@ class GuiIcons:
             return False
 
         # Config File
-        confParser = configparser.ConfigParser()
+        confParser = NWConfigParser()
         try:
             with open(self.confFile, mode="r", encoding="utf-8") as inFile:
                 confParser.read_file(inFile)
@@ -656,13 +647,13 @@ class GuiIcons:
         # Main
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
-            self.themeName        = self._parseLine(confParser, cnfSec, "name", "")
-            self.themeDescription = self._parseLine(confParser, cnfSec, "description", "")
-            self.themeAuthor      = self._parseLine(confParser, cnfSec, "author", "N/A")
-            self.themeCredit      = self._parseLine(confParser, cnfSec, "credit", "N/A")
-            self.themeUrl         = self._parseLine(confParser, cnfSec, "url", "")
-            self.themeLicense     = self._parseLine(confParser, cnfSec, "license", "N/A")
-            self.themeLicenseUrl  = self._parseLine(confParser, cnfSec, "licenseurl", "")
+            self.themeName        = confParser.rdStr(cnfSec, "name", "")
+            self.themeDescription = confParser.rdStr(cnfSec, "description", "")
+            self.themeAuthor      = confParser.rdStr(cnfSec, "author", "N/A")
+            self.themeCredit      = confParser.rdStr(cnfSec, "credit", "N/A")
+            self.themeUrl         = confParser.rdStr(cnfSec, "url", "")
+            self.themeLicense     = confParser.rdStr(cnfSec, "license", "N/A")
+            self.themeLicenseUrl  = confParser.rdStr(cnfSec, "licenseurl", "")
 
         # Palette
         cnfSec = "Map"
@@ -736,7 +727,7 @@ class GuiIcons:
         if self.themeList:
             return self.themeList
 
-        confParser = configparser.ConfigParser()
+        confParser = NWConfigParser()
         for themeDir in os.listdir(self.mainConf.iconPath):
             themePath = os.path.join(self.mainConf.iconPath, themeDir)
             if not os.path.isdir(themePath) or themeDir == self.fbackName:
@@ -817,14 +808,5 @@ class GuiIcons:
         logger.warning("Did not load an icon for '%s'", iconKey)
 
         return QIcon()
-
-    def _parseLine(self, confParser, cnfSec, cnfName, cnfDefault):
-        """Simple wrapper for the config parser to check that the entry
-        exists before attempting to load it.
-        """
-        if confParser.has_section(cnfSec):
-            if confParser.has_option(cnfSec, cnfName):
-                return confParser.get(cnfSec, cnfName)
-        return cnfDefault
 
 # END Class GuiIcons

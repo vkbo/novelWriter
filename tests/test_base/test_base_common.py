@@ -19,14 +19,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
 import time
 import pytest
 
+from datetime import datetime
+
+from tools import writeFile
+
 from nw.common import (
-    checkString, checkBool, checkInt, formatInt, transferCase,
-    fuzzyTime, checkHandle, formatTimeStamp, formatTime, hexToInt,
+    checkString, checkBool, checkInt, formatInt, transferCase, fuzzyTime,
+    checkHandle, formatTimeStamp, parseTimeStamp, formatTime, hexToInt,
     makeFileNameSafe, isHandle, isTitleTag, isItemClass, isItemType,
-    isItemLayout, numberToRoman
+    isItemLayout, numberToRoman, NWConfigParser
 )
 
 
@@ -65,11 +70,11 @@ def testBaseCommon_CheckBool():
     """
     assert checkBool(None, 3, True) is None
     assert checkBool("None", 3, True) is None
-    assert checkBool("True", False, False)
-    assert not checkBool("False", True, False)
+    assert checkBool("True", False, False) is True
+    assert checkBool("False", True, False) is False
     assert checkBool("Boo", None, False) is None
-    assert not checkBool(0, None, False)
-    assert checkBool(1, None, False)
+    assert checkBool(0, None, False) is False
+    assert checkBool(1, None, False) is True
     assert checkBool(2, None, False) is None
     assert checkBool(0.0, None, False) is None
     assert checkBool(1.0, None, False) is None
@@ -96,13 +101,12 @@ def testBaseCommon_CheckHandle():
 def testBaseCommon_IsHandle():
     """Test the isHandle function.
     """
-    assert isHandle("47666c91c7ccf")
-
-    assert not isHandle("47666C91C7CCF")
-    assert not isHandle("h7666c91c7ccf")
-    assert not isHandle("None")
-    assert not isHandle(None)
-    assert not isHandle("STUFF")
+    assert isHandle("47666c91c7ccf") is True
+    assert isHandle("47666C91C7CCF") is False
+    assert isHandle("h7666c91c7ccf") is False
+    assert isHandle("None") is False
+    assert isHandle(None) is False
+    assert isHandle("STUFF") is False
 
 # END Test testBaseCommon_IsHandle
 
@@ -111,16 +115,16 @@ def testBaseCommon_IsHandle():
 def testBaseCommon_IsTitleTag():
     """Test the isItemClass function.
     """
-    assert isTitleTag("T123456")
+    assert isTitleTag("T123456") is True
 
-    assert not isTitleTag("t123456")
-    assert not isTitleTag("S123456")
-    assert not isTitleTag("T12345A")
-    assert not isTitleTag("T1234567")
+    assert isTitleTag("t123456") is False
+    assert isTitleTag("S123456") is False
+    assert isTitleTag("T12345A") is False
+    assert isTitleTag("T1234567") is False
 
-    assert not isTitleTag("None")
-    assert not isTitleTag(None)
-    assert not isTitleTag("STUFF")
+    assert isTitleTag("None") is False
+    assert isTitleTag(None) is False
+    assert isTitleTag("STUFF") is False
 
 # END Test testBaseCommon_IsTitleTag
 
@@ -129,21 +133,21 @@ def testBaseCommon_IsTitleTag():
 def testBaseCommon_IsItemClass():
     """Test the isItemClass function.
     """
-    assert isItemClass("NO_CLASS")
-    assert isItemClass("NOVEL")
-    assert isItemClass("PLOT")
-    assert isItemClass("CHARACTER")
-    assert isItemClass("WORLD")
-    assert isItemClass("TIMELINE")
-    assert isItemClass("OBJECT")
-    assert isItemClass("ENTITY")
-    assert isItemClass("CUSTOM")
-    assert isItemClass("ARCHIVE")
-    assert isItemClass("TRASH")
+    assert isItemClass("NO_CLASS") is True
+    assert isItemClass("NOVEL") is True
+    assert isItemClass("PLOT") is True
+    assert isItemClass("CHARACTER") is True
+    assert isItemClass("WORLD") is True
+    assert isItemClass("TIMELINE") is True
+    assert isItemClass("OBJECT") is True
+    assert isItemClass("ENTITY") is True
+    assert isItemClass("CUSTOM") is True
+    assert isItemClass("ARCHIVE") is True
+    assert isItemClass("TRASH") is True
 
-    assert not isItemClass("None")
-    assert not isItemClass(None)
-    assert not isItemClass("STUFF")
+    assert isItemClass("None") is False
+    assert isItemClass(None) is False
+    assert isItemClass("STUFF") is False
 
 # END Test testBaseCommon_IsItemClass
 
@@ -152,15 +156,15 @@ def testBaseCommon_IsItemClass():
 def testBaseCommon_IsItemType():
     """Test the isItemType function.
     """
-    assert isItemType("NO_TYPE")
-    assert isItemType("ROOT")
-    assert isItemType("FOLDER")
-    assert isItemType("FILE")
-    assert isItemType("TRASH")
+    assert isItemType("NO_TYPE") is True
+    assert isItemType("ROOT") is True
+    assert isItemType("FOLDER") is True
+    assert isItemType("FILE") is True
+    assert isItemType("TRASH") is True
 
-    assert not isItemType("None")
-    assert not isItemType(None)
-    assert not isItemType("STUFF")
+    assert isItemType("None") is False
+    assert isItemType(None) is False
+    assert isItemType("STUFF") is False
 
 # END Test testBaseCommon_IsItemType
 
@@ -169,19 +173,19 @@ def testBaseCommon_IsItemType():
 def testBaseCommon_IsItemLayout():
     """Test the isItemLayout function.
     """
-    assert isItemLayout("NO_LAYOUT")
-    assert isItemLayout("TITLE")
-    assert isItemLayout("BOOK")
-    assert isItemLayout("PAGE")
-    assert isItemLayout("PARTITION")
-    assert isItemLayout("UNNUMBERED")
-    assert isItemLayout("CHAPTER")
-    assert isItemLayout("SCENE")
-    assert isItemLayout("NOTE")
+    assert isItemLayout("NO_LAYOUT") is True
+    assert isItemLayout("TITLE") is True
+    assert isItemLayout("BOOK") is True
+    assert isItemLayout("PAGE") is True
+    assert isItemLayout("PARTITION") is True
+    assert isItemLayout("UNNUMBERED") is True
+    assert isItemLayout("CHAPTER") is True
+    assert isItemLayout("SCENE") is True
+    assert isItemLayout("NOTE") is True
 
-    assert not isItemLayout("None")
-    assert not isItemLayout(None)
-    assert not isItemLayout("STUFF")
+    assert isItemLayout("None") is False
+    assert isItemLayout(None) is False
+    assert isItemLayout("STUFF") is False
 
 # END Test testBaseCommon_IsItemLayout
 
@@ -235,10 +239,28 @@ def testBaseCommon_FormatTime():
 
 
 @pytest.mark.base
+def testBaseCommon_ParseTimeStamp():
+    """Test the parseTimeStamp function.
+    """
+    localEpoch = datetime(2000, 1, 1).timestamp()
+    assert parseTimeStamp(None, 0.0, allowNone=True) is None
+    assert parseTimeStamp("None", 0.0, allowNone=True) is None
+    assert parseTimeStamp("None", 0.0) == 0.0
+    assert parseTimeStamp("2000-01-01 00:00:00", 123.0) == localEpoch
+    assert parseTimeStamp("2000-13-01 00:00:00", 123.0) == 123.0
+    assert parseTimeStamp("2000-01-32 00:00:00", 123.0) == 123.0
+
+# END Test testBaseCommon_ParseTimeStamp
+
+
+@pytest.mark.base
 def testBaseCommon_FormatInt():
     """Test the formatInt function.
     """
-    assert formatInt(1000) == "1000"
+    # Normal Cases
+    assert formatInt(1) == "1"
+    assert formatInt(12) == "12"
+    assert formatInt(123) == "123"
     assert formatInt(1234) == "1.23\u2009k"
     assert formatInt(12345) == "12.3\u2009k"
     assert formatInt(123456) == "123\u2009k"
@@ -246,6 +268,11 @@ def testBaseCommon_FormatInt():
     assert formatInt(12345678) == "12.3\u2009M"
     assert formatInt(123456789) == "123\u2009M"
     assert formatInt(1234567890) == "1.23\u2009G"
+
+    # Exceptions
+    assert formatInt(12.3) == "ERR"
+    assert formatInt(None) == "ERR"
+    assert formatInt("42") == "ERR"
 
 # END Test testBaseCommon_FormatInt
 
@@ -339,3 +366,87 @@ def testBaseCommon_RomanNumbers():
     assert numberToRoman(999, True) == "cmxcix"
 
 # END Test testBaseCommon_RomanNumbers
+
+
+@pytest.mark.base
+def testBaseCommon_NWConfigParser(fncDir):
+    """Test the NWConfigParser subclass.
+    """
+    tstConf = os.path.join(fncDir, "test.cfg")
+    writeFile(tstConf, (
+        "[main]\n"
+        "stropt = value\n"
+        "intopt1 = 42\n"
+        "intopt2 = 42.43\n"
+        "boolopt1 = true\n"
+        "boolopt2 = TRUE\n"
+        "boolopt3 = 1\n"
+        "boolopt4 = 0\n"
+        "list1 = a, b, c\n"
+        "list2 = 17, 18, 19\n"
+    ))
+
+    cfgParser = NWConfigParser()
+    cfgParser.read(tstConf)
+
+    # Readers
+    # =======
+
+    # Read String
+    assert cfgParser.rdStr("main", "stropt",   "stuff") == "value"
+    assert cfgParser.rdStr("main", "boolopt1", "stuff") == "true"
+    assert cfgParser.rdStr("main", "intopt1",  "stuff") == "42"
+
+    assert cfgParser.rdStr("nope", "stropt",   "stuff") == "stuff"
+    assert cfgParser.rdStr("main", "blabla",   "stuff") == "stuff"
+
+    # Read Boolean
+    assert cfgParser.rdBool("main", "boolopt1", None) is True
+    assert cfgParser.rdBool("main", "boolopt2", None) is True
+    assert cfgParser.rdBool("main", "boolopt3", None) is True
+    assert cfgParser.rdBool("main", "boolopt4", None) is False
+    assert cfgParser.rdBool("main", "intopt1",  None) is None
+
+    assert cfgParser.rdBool("nope", "boolopt1", None) is None
+    assert cfgParser.rdBool("main", "blabla",   None) is None
+
+    # Read Integer
+    assert cfgParser.rdInt("main", "intopt1", 13) == 42
+    assert cfgParser.rdInt("main", "intopt2", 13) == 13
+    assert cfgParser.rdInt("main", "stropt",  13) == 13
+
+    assert cfgParser.rdInt("nope", "intopt1", 13) == 13
+    assert cfgParser.rdInt("main", "blabla",  13) == 13
+
+    # Read String List
+    assert cfgParser.rdStrList("main", "list1", []) == []
+    assert cfgParser.rdStrList("main", "list1", ["x"]) == ["a"]
+    assert cfgParser.rdStrList("main", "list1", ["x", "y"]) == ["a", "b"]
+    assert cfgParser.rdStrList("main", "list1", ["x", "y", "z"]) == ["a", "b", "c"]
+    assert cfgParser.rdStrList("main", "list1", ["x", "y", "z", "w"]) == ["a", "b", "c", "w"]
+
+    assert cfgParser.rdStrList("main", "stropt", ["x"]) == ["value"]
+    assert cfgParser.rdStrList("main", "intopt1", ["x"]) == ["42"]
+
+    assert cfgParser.rdStrList("nope", "list1", ["x"]) == ["x"]
+    assert cfgParser.rdStrList("main", "blabla", ["x"]) == ["x"]
+
+    # Read Integer List
+    assert cfgParser.rdIntList("main", "list2", []) == []
+    assert cfgParser.rdIntList("main", "list2", [1]) == [17]
+    assert cfgParser.rdIntList("main", "list2", [1, 2]) == [17, 18]
+    assert cfgParser.rdIntList("main", "list2", [1, 2, 3]) == [17, 18, 19]
+    assert cfgParser.rdIntList("main", "list2", [1, 2, 3, 4]) == [17, 18, 19, 4]
+
+    assert cfgParser.rdIntList("main", "stropt", [1]) == [1]
+    assert cfgParser.rdIntList("main", "boolopt1", [1]) == [1]
+
+    assert cfgParser.rdIntList("nope", "list2", [1]) == [1]
+    assert cfgParser.rdIntList("main", "blabla", [1]) == [1]
+
+    # Internal
+    # ========
+
+    assert cfgParser._parseLine("main", "stropt", None, 999) is None
+
+# END Test testBaseCommon_NWConfigParser

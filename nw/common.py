@@ -26,24 +26,27 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 
 from datetime import datetime
+from configparser import ConfigParser
 
 from PyQt5.QtWidgets import qApp
 from PyQt5.QtCore import QCoreApplication
 
 from nw.enum import nwItemClass, nwItemType, nwItemLayout
+from nw.error import logException
 from nw.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
 
 
+# =============================================================================================== #
+#  Checker Functions
+# =============================================================================================== #
+
 def checkString(value, default, allowNone=False):
     """Check if a variable is a string or a none.
     """
-    if allowNone:
-        if value is None:
-            return None
-        if value == "None":
-            return None
+    if allowNone and (value is None or value == "None"):
+        return None
     if isinstance(value, str):
         return str(value)
     return default
@@ -52,11 +55,8 @@ def checkString(value, default, allowNone=False):
 def checkInt(value, default, allowNone=False):
     """Check if a variable is an integer or a none.
     """
-    if allowNone:
-        if value is None:
-            return None
-        if value == "None":
-            return None
+    if allowNone and (value is None or value == "None"):
+        return None
     try:
         return int(value)
     except Exception:
@@ -66,11 +66,9 @@ def checkInt(value, default, allowNone=False):
 def checkBool(value, default, allowNone=False):
     """Check if a variable is a boolean or a none.
     """
-    if allowNone:
-        if value is None:
-            return None
-        if value == "None":
-            return None
+    if allowNone and (value is None or value == "None"):
+        return None
+
     if isinstance(value, str):
         if value == "True":
             return True
@@ -78,6 +76,7 @@ def checkBool(value, default, allowNone=False):
             return False
         else:
             return default
+
     elif isinstance(value, int):
         if value == 1:
             return True
@@ -85,67 +84,69 @@ def checkBool(value, default, allowNone=False):
             return False
         else:
             return default
+
     return default
 
 
 def checkHandle(value, default, allowNone=False):
     """Check if a value is a handle.
     """
-    if allowNone:
-        if value is None:
-            return None
-        if value == "None":
-            return None
+    if allowNone and (value is None or value == "None"):
+        return None
     if isHandle(value):
         return str(value)
     return default
 
 
-def isHandle(theString):
+# =============================================================================================== #
+#  Validator Functions
+# =============================================================================================== #
+
+def isHandle(value):
     """Check if a string is a valid novelWriter handle.
     Note: This is case sensitive. Must be lower case!
     """
-    if not isinstance(theString, str):
+    if not isinstance(value, str):
         return False
-    if len(theString) != 13:
+    if len(value) != 13:
         return False
-    for c in theString:
+    for c in value:
         if c not in "0123456789abcdef":
             return False
     return True
 
 
-def isTitleTag(theString):
+def isTitleTag(value):
     """Check if a string is a valid title string.
     """
-    if not isinstance(theString, str):
+    if not isinstance(value, str):
         return False
-    if len(theString) != 7:
+    if len(value) != 7:
         return False
-    if not theString.startswith("T"):
+    if not value.startswith("T"):
         return False
-    for c in theString[1:]:
+    for c in value[1:]:
         if c not in "0123456789":
             return False
     return True
 
 
-def isItemClass(theString):
-    """Check if an item is a calid nwItemClass identifier.
+def isItemClass(value):
+    """Check if a string is a valid nwItemClass identifier.
     """
-    return theString in nwItemClass.__members__
+    return value in nwItemClass.__members__
 
 
-def isItemType(theString):
-    """Check if an item is a calid nwItemType identifier.
+def isItemType(value):
+    """Check if a string is a valid nwItemType identifier.
     """
-    return theString in nwItemType.__members__
+    return value in nwItemType.__members__
 
 
-def isItemLayout(theString):
-    """Check if an item is a calid nwItemLayout identifier.
+def isItemLayout(value):
+    """Check if a string is a valid nwItemLayout identifier.
     """
-    return theString in nwItemLayout.__members__
+    return value in nwItemLayout.__members__
 
 
 def hexToInt(value, default=0):
@@ -159,14 +160,19 @@ def hexToInt(value, default=0):
     return default
 
 
-def formatInt(theInt):
+# =============================================================================================== #
+#  Formatting Functions
+# =============================================================================================== #
+
+def formatInt(value):
     """Formats an integer with k, M, G etc.
     """
-    postFix = ["k", "M", "G", "T", "P", "E"]
-    theVal = float(theInt)
+    if not isinstance(value, int):
+        return "ERR"
 
+    theVal = float(value)
     if theVal > 1000.0:
-        for pF in postFix:
+        for pF in ["k", "M", "G", "T", "P", "E"]:
             theVal /= 1000.0
             if theVal < 1000.0:
                 if theVal < 10.0:
@@ -176,7 +182,7 @@ def formatInt(theInt):
                 else:
                     return f"{theVal:3.0f}{nwUnicode.U_THSP}{pF}"
 
-    return str(theInt)
+    return str(value)
 
 
 def formatTimeStamp(theTime, fileSafe=False):
@@ -200,6 +206,23 @@ def formatTime(tS):
             return f"{tS//3600:02d}:{tS%3600//60:02d}:{tS%60:02d}"
     return "ERROR"
 
+
+def parseTimeStamp(theStamp, default, allowNone=False):
+    """Parses a text representation of a time stamp and converts it into
+    a float. Note that negative timestamps cause an OSError on Windows.
+    See https://bugs.python.org/issue29097
+    """
+    if str(theStamp).lower() == "none" and allowNone:
+        return None
+    try:
+        return datetime.strptime(theStamp, nwConst.FMT_TSTAMP).timestamp()
+    except Exception:
+        return default
+
+
+# =============================================================================================== #
+#  String Functions
+# =============================================================================================== #
 
 def splitVersionNumber(vString):
     """ Splits a version string on the form aa.bb.cc into major, minor
@@ -308,27 +331,8 @@ def fuzzyTime(secDiff):
         ).format(int(round(secDiff/31557600)))
 
 
-def makeFileNameSafe(theText):
-    """Returns a filename safe version of the text.
-    """
-    cleanName = ""
-    for c in theText.strip():
-        if c.isalpha() or c.isdigit() or c == " ":
-            cleanName += c
-    return cleanName
-
-
-def getGuiItem(theName):
-    """Returns a QtWidget based on its objectName.
-    """
-    for qWidget in qApp.topLevelWidgets():
-        if qWidget.objectName() == theName:
-            return qWidget
-    return None
-
-
 def numberToRoman(numVal, isLower=False):
-    """Convert an integer to a roman number.
+    """Convert an integer to a Roman number.
     """
     if not isinstance(numVal, int):
         return "NAN"
@@ -349,3 +353,110 @@ def numberToRoman(numVal, isLower=False):
             break
 
     return romNum.lower() if isLower else romNum
+
+
+# =============================================================================================== #
+#  Other Functions
+# =============================================================================================== #
+
+def makeFileNameSafe(theText):
+    """Returns a filename safe version of the text.
+    """
+    cleanName = ""
+    for c in theText.strip():
+        if c.isalpha() or c.isdigit() or c == " ":
+            cleanName += c
+    return cleanName
+
+
+def getGuiItem(theName):
+    """Returns a QtWidget based on its objectName.
+    """
+    for qWidget in qApp.topLevelWidgets():
+        if qWidget.objectName() == theName:
+            return qWidget
+    return None
+
+
+# =============================================================================================== #
+#  Classes
+# =============================================================================================== #
+
+class NWConfigParser(ConfigParser):
+
+    CNF_STR   = 0
+    CNF_INT   = 1
+    CNF_BOOL  = 2
+    CNF_S_LST = 3
+    CNF_I_LST = 4
+
+    def __init__(self):
+        super().__init__()
+
+    def rdStr(self, section, option, default):
+        """Read string value.
+        """
+        return self._parseLine(section, option, default, self.CNF_STR)
+
+    def rdInt(self, section, option, default):
+        """Read integer value.
+        """
+        return self._parseLine(section, option, default, self.CNF_INT)
+
+    def rdBool(self, section, option, default):
+        """Read boolean value.
+        """
+        return self._parseLine(section, option, default, self.CNF_BOOL)
+
+    def rdStrList(self, section, option, default):
+        """Read string list.
+        """
+        return self._parseLine(section, option, default, self.CNF_S_LST)
+
+    def rdIntList(self, section, option, default):
+        """Read integer list.
+        """
+        return self._parseLine(section, option, default, self.CNF_I_LST)
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _unpackList(self, value, default, type):
+        """Unpack a comma-separated string of items into a list.
+        """
+        inList = value.split(",")
+        outList = []
+        if isinstance(default, list):
+            outList = default.copy()
+        for i in range(min(len(inList), len(outList))):
+            try:
+                if type == self.CNF_S_LST:
+                    outList[i] = inList[i].strip()
+                elif type == self.CNF_I_LST:
+                    outList[i] = int(inList[i].strip())
+            except Exception:
+                continue
+        return outList
+
+    def _parseLine(self, section, option, default, type):
+        """Parse a line and return the correct datatype.
+        """
+        if self.has_option(section, option):
+            try:
+                if type == self.CNF_STR:
+                    return self.get(section, option)
+                elif type == self.CNF_INT:
+                    return self.getint(section, option)
+                elif type == self.CNF_BOOL:
+                    return self.getboolean(section, option)
+                elif type in (self.CNF_I_LST, self.CNF_S_LST):
+                    return self._unpackList(self.get(section, option), default, type)
+            except ValueError:
+                logger.error("Could not read '%s':'%s' from config", str(section), str(option))
+                logException()
+                return default
+
+        return default
+
+# END Class NWConfigParser
