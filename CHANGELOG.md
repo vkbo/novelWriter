@@ -1,5 +1,23 @@
 # novelWriter Changelog
 
+## Version 1.4.1 [2021-07-27]
+
+### Release Notes
+
+This release fixes a couple of minor issue with some of the dialog boxes. The fix was accidentally
+left out of release 1.4.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* The way margins are determined in the paged dialogs used many places, including Preferences, has
+  been improved. These margins would sometimes be set to zero when they shouldn't. PR #834.
+* Dialogs that are non-modal are no longer duplicated when opened multiple times. Instead, the
+  existing dialog is moved to the front. PR #834.
+
+----
+
 ## Version 1.4 [2021-07-27]
 
 ### Release Notes
@@ -59,13 +77,6 @@ codes.
 _These Release Notes also include the changes from 1.4 Beta 1 and RC 1._
 
 ### Detailed Changelog
-
-**Bugfixes**
-
-* The way margins are determined in the paged dialogs used many places, including Preferences, has
-  been improved. These margins would sometimes be set to zero when they shouldn't. PR #834.
-* Dialogs that are non-modal are no longer duplicated when opened multiple times. Instead, the
-  existing dialog is moved to the front. PR #834.
 
 **Internationalisation**
 

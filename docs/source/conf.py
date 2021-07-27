@@ -24,9 +24,9 @@ copyright = "2018–2021, Veronica Berglyd Olsen"
 author = "Veronica Berglyd Olsen"
 
 # The short X.Y version
-version = "1.4"
+version = "1.4.1"
 # The full version, including alpha/beta/rc tags
-release = "1.4"
+release = "1.4.1"
 
 
 # -- General configuration ---------------------------------------------------
