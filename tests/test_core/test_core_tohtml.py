@@ -91,13 +91,15 @@ def testCoreToHtml_Convert(mockGUI):
     # Export Mode
     # ===========
 
+    # Story Files
     theHtml.isStory = True
+    theHtml.isNote = False
 
     # Header 1
     theHtml.theText = "# Partition\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
-    assert theHtml.theResult == "<h1 class='title'>Partition</h1>\n"
+    assert theHtml.theResult == "<h1 class='title' style='text-align: center;'>Partition</h1>\n"
 
     # Header 2
     theHtml.theText = "## Chapter Title\n"
@@ -117,7 +119,9 @@ def testCoreToHtml_Convert(mockGUI):
     theHtml.doConvert()
     assert theHtml.theResult == "<h3>Section Title</h3>\n"
 
+    # Note Files
     theHtml.isStory = False
+    theHtml.isNote = True
     theHtml.setLinkHeaders(True)
 
     # Header 1
@@ -356,7 +360,7 @@ def testCoreToHtml_Complex(mockGUI, fncDir):
         "#### A Section\n\n\tMore text in scene two.\n",
     ]
     resText = [
-        "<h1>My Novel</h1>\n<p><strong>By Jane Doh</strong></p>\n",
+        "<h1 style='text-align: center;'>My Novel</h1>\n<p><strong>By Jane Doh</strong></p>\n",
         "<h2>Chapter 1</h2>\n<p>The text of chapter one.</p>\n",
         "<h3>Scene 1</h3>\n<p>The text of scene one.</p>\n",
         "<h4>A Section</h4>\n<p>More text in scene one.</p>\n",

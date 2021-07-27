@@ -70,8 +70,8 @@ class Tokenizer():
     A_RIGHT    = 0x0002  # Right aligned
     A_CENTRE   = 0x0004  # Centred
     A_JUSTIFY  = 0x0008  # Justified
-    A_PBB      = 0x0010  # Page break before always
-    A_PBA      = 0x0020  # Page break after always
+    A_PBB      = 0x0010  # Page break before
+    A_PBA      = 0x0020  # Page break after
     A_Z_TOPMRG = 0x0040  # Zero top margin
     A_Z_BTMMRG = 0x0080  # Zero bottom margin
     A_IND_L    = 0x0100  # Left indentation
@@ -344,11 +344,11 @@ class Tokenizer():
     def tokenizeText(self):
         """Scan the text for either lines starting with specific
         characters that indicate headers, comments, commands etc, or
-        just contains plain text. in the case of plain text, apply the
+        just contain plain text. In the case of plain text, apply the
         same RegExes that the syntax highlighter uses and save the
         locations of these formatting tags into the token array.
 
-        The format of the token list is an entry with a four-tuple for
+        The format of the token list is an entry with a five-tuple for
         each line in the file. The tuple is as follows:
           1: The type of the block, self.T_*
           2: The line in file where this block occurred
@@ -401,8 +401,13 @@ class Tokenizer():
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:2] == "# ":
+                if self.isNote:
+                    textAlign = self.A_NONE
+                else:
+                    textAlign = self.A_CENTRE
+
                 self.theTokens.append((
-                    self.T_HEAD1, nLine, aLine[2:].strip(), None, self.A_NONE
+                    self.T_HEAD1, nLine, aLine[2:].strip(), None, textAlign
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
@@ -434,30 +439,30 @@ class Tokenizer():
                     continue
 
                 # Check Alignment and Indentation
-                tagLeft = False
-                tagRight = False
+                alnLeft = False
+                alnRight = False
                 indLeft = False
                 indRight = False
                 if aLine.startswith(">>"):
-                    tagRight = True
+                    alnRight = True
                     aLine = aLine[2:].lstrip(" ")
                 elif aLine.startswith(">"):
                     indLeft = True
                     aLine = aLine[1:].lstrip(" ")
 
                 if aLine.endswith("<<"):
-                    tagLeft = True
+                    alnLeft = True
                     aLine = aLine[:-2].rstrip(" ")
                 elif aLine.endswith("<"):
                     indRight = True
                     aLine = aLine[:-1].rstrip(" ")
 
                 textAlign = self.A_NONE
-                if tagLeft and tagRight:
+                if alnLeft and alnRight:
                     textAlign = self.A_CENTRE
-                elif tagLeft:
+                elif alnLeft:
                     textAlign = self.A_LEFT
-                elif tagRight:
+                elif alnRight:
                     textAlign = self.A_RIGHT
 
                 if indLeft:
@@ -486,7 +491,7 @@ class Tokenizer():
                 if self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
-        # Always add an empty line at the end
+        # Always add an empty line at the end of the file
         self.theTokens.append((
             self.T_EMPTY, nLine, "", None, self.A_NONE
         ))
@@ -526,13 +531,12 @@ class Tokenizer():
         """Apply formatting to the text headers according to document
         layout and user settings.
         """
-        # No special header formatting for notes and no-layout files
-        if self.isNone or self.isNote:
-            return False
-
-        # For novel files, we need to handle chapter numbering, scene
-        # numbering, and scene breaks
         if self.isStory:
+            # Story Files
+            # ===========
+            # For story files, we need to handle chapter numbering,
+            # scene numbering, and scene breaks
+
             for n, tToken in enumerate(self.theTokens):
 
                 # In case we see text before a scene, we reset the flag
@@ -540,8 +544,7 @@ class Tokenizer():
                     self.firstScene = False
 
                 elif tToken[0] == self.T_HEAD1:
-                    # Main Title
-                    # ==========
+                    # Partition
 
                     tTemp = self._formatHeading(self.fmtTitle, tToken[2])
                     self.theTokens[n] = (
@@ -549,8 +552,7 @@ class Tokenizer():
                     )
 
                 elif tToken[0] == self.T_HEAD2:
-                    # Novel Chapter
-                    # =============
+                    # Chapter
 
                     # Numbered or Unnumbered
                     if tToken[2].startswith("*"):
@@ -569,8 +571,7 @@ class Tokenizer():
                     self.numChScene = 0
 
                 elif tToken[0] == self.T_HEAD3:
-                    # Novel Scene
-                    # ===========
+                    # Scene
 
                     self.numChScene += 1
                     self.numAbsScene += 1
@@ -607,8 +608,7 @@ class Tokenizer():
                     self.firstScene = False
 
                 elif tToken[0] == self.T_HEAD4:
-                    # Novel Section
-                    # =============
+                    # Section
 
                     tTemp = self._formatHeading(self.fmtSection, tToken[2])
                     if tTemp == "" and self.hideSection:
@@ -628,21 +628,32 @@ class Tokenizer():
                             tToken[0], tToken[1], tTemp, None, self.A_NONE
                         )
 
-        # For title page we use a different title class, and we remove
-        # any page breaks
-        if self.isTitle:
+        elif self.isTitle:
+            # Title Page
+            # ==========
+            # For title pages we use a different title class, and we
+            # have no page breaks as we assume this is the first page
+
             for n, tToken in enumerate(self.theTokens):
                 if tToken[0] == self.T_HEAD1:
                     self.theTokens[n] = (
-                        self.T_TITLE, tToken[1], tToken[2], tToken[3], tToken[4] | self.A_CENTRE
+                        self.T_TITLE, tToken[1], tToken[2], tToken[3], tToken[4]
                     )
 
-        # A single page always starts on a fresh page, unless it is empty
-        if self.isPage and len(self.theTokens) > 0:
-            tToken = self.theTokens[0]
-            self.theTokens[0] = (
-                tToken[0], tToken[1], tToken[2], tToken[3], tToken[4] | self.A_PBB
-            )
+        elif self.isPage:
+            # Standalone Page
+            # ===============
+            # A non-empty page needs a page break before
+
+            if len(self.theTokens) > 0:
+                tToken = self.theTokens[0]
+                self.theTokens[0] = (
+                    tToken[0], tToken[1], tToken[2], tToken[3], tToken[4] | self.A_PBB
+                )
+
+        else:
+            # We ignore other layouts
+            return False
 
         return True
 

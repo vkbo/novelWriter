@@ -172,8 +172,8 @@ class nwLabels():
         nwItemLayout.NO_LAYOUT: QT_TRANSLATE_NOOP("Constant", "None"),
         nwItemLayout.TITLE:     QT_TRANSLATE_NOOP("Constant", "Title Page"),
         nwItemLayout.PAGE:      QT_TRANSLATE_NOOP("Constant", "Plain Page"),
-        nwItemLayout.STORY:     QT_TRANSLATE_NOOP("Constant", "Story"),
-        nwItemLayout.NOTE:      QT_TRANSLATE_NOOP("Constant", "Note"),
+        nwItemLayout.STORY:     QT_TRANSLATE_NOOP("Constant", "Story Document"),
+        nwItemLayout.NOTE:      QT_TRANSLATE_NOOP("Constant", "Project Note"),
     }
     LAYOUT_FLAG = {
         nwItemLayout.NO_LAYOUT: "Xo",

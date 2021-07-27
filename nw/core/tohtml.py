@@ -127,7 +127,7 @@ class ToHtml(Tokenizer):
                 self.FMT_D_E: "</del>",
             }
 
-        if self.isStory:
+        if self.isStory and self.genMode != self.M_PREVIEW:
             # For story files, we bump the titles one level up
             h1Cl = " class='title'"
             h1 = "h1"
@@ -200,7 +200,7 @@ class ToHtml(Tokenizer):
                     parClass = ""
                 if len(thisPar) > 0:
                     tTemp = "<br/>".join(thisPar)
-                    tmpResult.append("<p%s%s>%s</p>\n" % (parStyle, parClass, tTemp.rstrip()))
+                    tmpResult.append("<p%s%s>%s</p>\n" % (parClass, parStyle, tTemp.rstrip()))
                 thisPar = []
                 parStyle = None
 

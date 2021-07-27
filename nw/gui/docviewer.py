@@ -187,6 +187,7 @@ class GuiDocViewer(QTextBrowser):
             logger.error("Failed to generate preview for document with handle '%s'", tHandle)
             nw.logException()
             self.setText(self.tr("An error occurred while generating the preview."))
+            return False
 
         # Refresh the tab stops
         if self.mainConf.verQtValue >= 51000:
@@ -208,7 +209,9 @@ class GuiDocViewer(QTextBrowser):
             theCursor.insertText("\t")
 
         if self._docHandle == tHandle:
+            # This is a refresh, so we set the scrollbar back to where it was
             self.verticalScrollBar().setValue(sPos)
+
         self._docHandle = tHandle
         self.theProject.setLastViewed(tHandle)
         self.docHeader.setTitleFromHandle(self._docHandle)

@@ -45,6 +45,7 @@ def testCoreToken_Setters(mockGUI):
     assert theToken.textSize == 11
     assert theToken.textFixed is False
     assert theToken.lineHeight == 1.15
+    assert theToken.blockIndent == 4.0
     assert theToken.doJustify is False
     assert theToken.marginTitle == (1.000, 0.500)
     assert theToken.marginHead1 == (1.000, 0.500)
@@ -68,7 +69,8 @@ def testCoreToken_Setters(mockGUI):
     theToken.setSceneFormat("S: %title%", True)
     theToken.setSectionFormat("X: %title%", True)
     theToken.setFont("Monospace", 10, True)
-    theToken.setLineHeight(2)
+    theToken.setLineHeight(2.0)
+    theToken.setBlockIndent(6.0)
     theToken.setJustify(True)
     theToken.setTitleMargins(2.0, 2.0)
     theToken.setHead1Margins(2.0, 2.0)
@@ -93,6 +95,7 @@ def testCoreToken_Setters(mockGUI):
     assert theToken.textSize == 10
     assert theToken.textFixed is True
     assert theToken.lineHeight == 2.0
+    assert theToken.blockIndent == 6.0
     assert theToken.doJustify is True
     assert theToken.marginTitle == (2.0, 2.0)
     assert theToken.marginHead1 == (2.0, 2.0)
@@ -108,6 +111,17 @@ def testCoreToken_Setters(mockGUI):
     assert theToken.doSynopsis is True
     assert theToken.doComments is True
     assert theToken.doKeywords is True
+
+    # Check Limits
+    theToken.setLineHeight(0.0)
+    assert theToken.lineHeight == 0.5
+    theToken.setLineHeight(10.0)
+    assert theToken.lineHeight == 5.0
+
+    theToken.setBlockIndent(-6.0)
+    assert theToken.blockIndent == 0.0
+    theToken.setBlockIndent(60.0)
+    assert theToken.blockIndent == 10.0
 
 # END Test testCoreToken_Setters
 
@@ -202,7 +216,7 @@ def testCoreToken_Tokenize(mockGUI):
     theToken.theText = "# Novel Title\n"
     theToken.tokenizeText()
     assert theToken.theTokens == [
-        (Tokenizer.T_HEAD1, 1, "Novel Title", None, Tokenizer.A_NONE),
+        (Tokenizer.T_HEAD1, 1, "Novel Title", None, Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
     assert theToken.theMarkdown[-1] == "# Novel Title\n\n"
@@ -461,11 +475,11 @@ def testCoreToken_Headers(mockGUI):
 
     # Nothing
     theToken.theText = "Some text ...\n"
-    assert theToken.doHeaders() is True
+    assert theToken.doHeaders() is False
     theToken.isNone = True
     assert theToken.doHeaders() is False
     theToken.isNone = False
-    assert theToken.doHeaders() is True
+    assert theToken.doHeaders() is False
     theToken.isNote = True
     assert theToken.doHeaders() is False
     theToken.isNote = False
@@ -474,7 +488,11 @@ def testCoreToken_Headers(mockGUI):
     #  Story FIles
     ##
 
+    theToken.isNone  = False
+    theToken.isTitle = False
+    theToken.isPage  = False
     theToken.isStory = True
+    theToken.isNote  = False
 
     # Titles
     # ======
@@ -690,8 +708,11 @@ def testCoreToken_Headers(mockGUI):
     #  Title Page
     ##
 
-    theToken.isStory = False
+    theToken.isNone  = False
     theToken.isTitle = True
+    theToken.isPage  = False
+    theToken.isStory = False
+    theToken.isNote  = False
 
     # H1: Title
     theToken.theText = "# Novel Title\n"
@@ -707,9 +728,11 @@ def testCoreToken_Headers(mockGUI):
     #  Page
     ##
 
-    theToken.isStory = False
+    theToken.isNone  = False
     theToken.isTitle = False
-    theToken.isPage = True
+    theToken.isPage  = True
+    theToken.isStory = False
+    theToken.isNote  = False
 
     # Some Page Text
     theToken.theText = "Page text\n\nMore text\n"
