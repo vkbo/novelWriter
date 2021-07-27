@@ -369,7 +369,7 @@ class NWProject():
 
         self.clearProject()
         self.projPath = os.path.abspath(os.path.dirname(fileName))
-        logger.debug("Opening project: %s", self.projPath)
+        logger.info("Opening project: %s", self.projPath)
 
         # Standard Folders and Files
         # ==========================
@@ -611,7 +611,7 @@ class NWProject():
         if not self.ensureFolderStructure():
             return False
 
-        logger.debug("Saving project: %s", self.projPath)
+        logger.info("Saving project: %s", self.projPath)
 
         if autoSave:
             self.autoCount += 1
@@ -712,6 +712,7 @@ class NWProject():
     def closeProject(self, idleTime=0):
         """Close the current project and clear all meta data.
         """
+        logger.info("Closing project: %s", self.projPath)
         self.optState.saveSettings()
         self.projTree.writeToCFile()
         self._appendSessionStats(idleTime)
