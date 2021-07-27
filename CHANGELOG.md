@@ -1,14 +1,12 @@
 # novelWriter Changelog
 
-## Version 1.4 RC 1 [2021-07-12]
+## Version 1.4 [2021-07-27]
 
 ### Release Notes
 
-This is a preview release of novelWriter 1.4. It contains some new features and a lot of code
-refactoring. This release is a testing release, and may contain bugs. Please be careful when using
-this version to work on your projects.
-
-Below are the main feature changes of this release.
+This release contains some new features and a lot of code refactoring. Among the main new features
+is paragraph alignment and indentation. Regular line breaks within paragraphs are now also
+supported. The changes are described in more detail below.
 
 #### Internationalisation
 
@@ -50,7 +48,7 @@ A single angle bracket will push the text away from the edge it points away from
 single `>` before the paragraph, or a single `<` after the paragraph, will add indentation on the
 respective side. It's perfectly valid to do this on both sides at the same time.
 
-A double set of angle brackets will push the text all the way towards the opposite aide. Therefore,
+A double set of angle brackets will push the text all the way towards the opposite side. Therefore,
 a double set of `>>` before the paragraph will indicate right alignment, and a double set of `<<`
 after the paragraph will force left alignment. Also here both can be used at the same time, which
 results in the paragraph being centred.
@@ -58,7 +56,31 @@ results in the paragraph being centred.
 Format menu entries and keyboard shortcuts have been added so that you don't have to memorise these
 codes.
 
-_These Release Notes also include the changes from 1.4 Beta 1._
+_These Release Notes also include the changes from 1.4 Beta 1 and RC 1._
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* The way margins are determined in the paged dialogs used many places, including Preferences, has
+  been improved. These margins would sometimes be set to zero when they shouldn't. PR #834.
+* Dialogs that are non-modal are no longer duplicated when opened multiple times. Instead, the
+  existing dialog is moved to the front. PR #834.
+
+**Internationalisation**
+
+* US English and Norwegian translations have been updated by @vkbo. PR #825.
+* French translations have been updated by @jyhelle. PR #829.
+
+----
+
+## Version 1.4 RC 1 [2021-07-12]
+
+### Release Notes
+
+This is a preview release of novelWriter 1.4. It contains some new features and a lot of code
+refactoring. This release is a testing release, and may contain bugs. Please be careful when using
+this version to work on your projects.
 
 ### Detailed Changelog
 

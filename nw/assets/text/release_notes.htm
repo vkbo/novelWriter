@@ -2,13 +2,12 @@
 <html>
 <body>
 
-<h2>Release Notes for 1.4 RC 1</h2>
-<p><i>Released on 12 July 2021</i></p>
+<h2>Release Notes for 1.4</h2>
+<p><i>Released on 27 July 2021</i></p>
 
-<p>This is a preview release of novelWriter 1.4. It contains some new features and a lot of code
-refactoring. This release is a testing release, and may contain bugs. Please be careful when using
-this version to work on your projects.</p>
-<p>Below are the main feature changes of this release.</p>
+<p>This release contains some new features and a lot of code refactoring. Among the main new
+features is paragraph alignment and indentation. Regular line breaks within paragraphs are now also
+supported. The changes are described in more detail below.</p>
 
 <h3>Internationalisation</h3>
 <p>Translation files have been added for Simplified Chinese by Qianzhi Long.</p>
@@ -41,7 +40,7 @@ alignment as well as additional text margins on individual paragraphs.</p>
 <p>A single angle bracket will push the text away from the edge it points away from. Therefore, a
 single '&gt;' before the paragraph, or a single '&lt;' after the paragraph, will add indentation on
 the respective side. It's perfectly valid to do this on both sides at the same time.</p>
-<p>A double set of angle brackets will push the text all the way towards the opposite aide.
+<p>A double set of angle brackets will push the text all the way towards the opposite side.
 Therefore, a double set of '&gt;&gt;' before the paragraph will indicate right alignment, and a
 double set of '&lt;&lt;' after the paragraph will force left alignment. Also here both can be used
 at the same time, which results in the paragraph being centred.</p>
