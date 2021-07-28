@@ -554,6 +554,10 @@ class ToOdt(Tokenizer):
         pTag = "h" if isHead else "p"
         xElem = etree.SubElement(self._xText, _mkTag("text", pTag), attrib=tAttr)
 
+        # It's important to set the initial text field to empty, otherwise
+        # lxml will add a line break if the first subelement is a span.
+        xElem.text = ""
+
         if not theText:
             return
 
