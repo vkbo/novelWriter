@@ -530,23 +530,19 @@ class NWIndex():
         if not isGood[0] or nBits == 1:
             return isGood
 
-        # If we have a tag, only the first value is accepted, the rest
-        # is ignored
+        # For a tag, only the first value is accepted, the rest are ignored
         if theBits[0] == nwKeyWords.TAG_KEY and nBits > 1:
-            isGood[0] = True
             if theBits[1] in self._tagIndex:
-                if self._tagIndex[theBits[1]][1] == tItem.itemHandle:
-                    isGood[1] = True
-                else:
-                    isGood[1] = False
+                isGood[1] = self._tagIndex[theBits[1]][1] == tItem.itemHandle
             else:
                 isGood[1] = True
             return isGood
 
-        # If we're still here, we better check that the references exist
+        # If we're still here, we check that the references exist
+        theKey = nwKeyWords.KEY_CLASS[theBits[0]].name
         for n in range(1, nBits):
             if theBits[n] in self._tagIndex:
-                isGood[n] = nwKeyWords.KEY_CLASS[theBits[0]].name == self._tagIndex[theBits[n]][2]
+                isGood[n] = theKey == self._tagIndex[theBits[n]][2]
 
         return isGood
 

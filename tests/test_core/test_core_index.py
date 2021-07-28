@@ -224,15 +224,27 @@ def testCoreIndex_CheckThese(nwMinimal, mockGUI):
     assert theIndex.notesChangedSince(0)
     assert theIndex.indexChangedSince(0)
 
+    # Zero Items
     assert theIndex.checkThese([], cItem) == []
-    assert theIndex.checkThese(["@tag",  "Jane"], cItem) == [True, True]
-    assert theIndex.checkThese(["@tag",  "John"], cItem) == [True, True]
-    assert theIndex.checkThese(["@tag",  "Jane"], nItem) == [True, False]
-    assert theIndex.checkThese(["@tag",  "John"], nItem) == [True, True]
-    assert theIndex.checkThese(["@pov",  "John"], nItem) == [True, False]
-    assert theIndex.checkThese(["@pov",  "Jane"], nItem) == [True, True]
+
+    # One Item
+    assert theIndex.checkThese(["@tag"], cItem) == [True]
+    assert theIndex.checkThese(["@who"], cItem) == [False]
+
+    # Two Items
+    assert theIndex.checkThese(["@tag", "Jane"], cItem) == [True, True]
+    assert theIndex.checkThese(["@tag", "John"], cItem) == [True, True]
+    assert theIndex.checkThese(["@tag", "Jane"], nItem) == [True, False]
+    assert theIndex.checkThese(["@tag", "John"], nItem) == [True, True]
+    assert theIndex.checkThese(["@pov", "John"], nItem) == [True, False]
+    assert theIndex.checkThese(["@pov", "Jane"], nItem) == [True, True]
     assert theIndex.checkThese(["@ pov", "Jane"], nItem) == [False, False]
     assert theIndex.checkThese(["@what", "Jane"], nItem) == [False, False]
+
+    # Three Items
+    assert theIndex.checkThese(["@tag", "Jane", "John"], cItem) == [True, True, False]
+    assert theIndex.checkThese(["@who", "Jane", "John"], cItem) == [False, False, False]
+    assert theIndex.checkThese(["@pov", "Jane", "John"], nItem) == [True, True, False]
 
     assert theProject.closeProject()
 
