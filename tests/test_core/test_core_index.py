@@ -325,33 +325,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
         "##### Title Five\n\n"  # Not interpreted as a title, the hashes are counted as a word
         "Paragraph Five.\n\n"
     ))
-    assert theIndex._refIndex[nHandle].get("T000000", None) is not None  # Always there
-    assert theIndex._refIndex[nHandle].get("T000001", None) is not None  # Heading 1
-    assert theIndex._refIndex[nHandle].get("T000002", None) is None
-    assert theIndex._refIndex[nHandle].get("T000003", None) is None
-    assert theIndex._refIndex[nHandle].get("T000004", None) is None
-    assert theIndex._refIndex[nHandle].get("T000005", None) is None
-    assert theIndex._refIndex[nHandle].get("T000006", None) is None
-    assert theIndex._refIndex[nHandle].get("T000007", None) is not None  # Heading 2
-    assert theIndex._refIndex[nHandle].get("T000008", None) is None
-    assert theIndex._refIndex[nHandle].get("T000009", None) is None
-    assert theIndex._refIndex[nHandle].get("T000010", None) is None
-    assert theIndex._refIndex[nHandle].get("T000011", None) is None
-    assert theIndex._refIndex[nHandle].get("T000012", None) is None
-    assert theIndex._refIndex[nHandle].get("T000013", None) is not None  # Heading 3
-    assert theIndex._refIndex[nHandle].get("T000014", None) is None
-    assert theIndex._refIndex[nHandle].get("T000015", None) is None
-    assert theIndex._refIndex[nHandle].get("T000016", None) is None
-    assert theIndex._refIndex[nHandle].get("T000017", None) is None
-    assert theIndex._refIndex[nHandle].get("T000018", None) is None
-    assert theIndex._refIndex[nHandle].get("T000019", None) is not None  # Heading 4
-    assert theIndex._refIndex[nHandle].get("T000020", None) is None
-    assert theIndex._refIndex[nHandle].get("T000021", None) is None
-    assert theIndex._refIndex[nHandle].get("T000022", None) is None
-    assert theIndex._refIndex[nHandle].get("T000023", None) is None
-    assert theIndex._refIndex[nHandle].get("T000024", None) is None
-    assert theIndex._refIndex[nHandle].get("T000025", None) is None
-    assert theIndex._refIndex[nHandle].get("T000026", None) is None
+    assert cHandle not in theIndex._refIndex
 
     assert theIndex._novelIndex[nHandle]["T000001"]["level"] == "H1"
     assert theIndex._novelIndex[nHandle]["T000007"]["level"] == "H2"
@@ -394,14 +368,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
         "% synopsis: Synopsis One.\n\n"
         "Paragraph One.\n\n"
     ))
-    assert theIndex._refIndex[cHandle].get("T000000", None) is not None
-    assert theIndex._refIndex[cHandle].get("T000001", None) is not None
-    assert theIndex._refIndex[cHandle].get("T000002", None) is None
-    assert theIndex._refIndex[cHandle].get("T000003", None) is None
-    assert theIndex._refIndex[cHandle].get("T000004", None) is None
-    assert theIndex._refIndex[cHandle].get("T000005", None) is None
-    assert theIndex._refIndex[cHandle].get("T000006", None) is None
-    assert theIndex._refIndex[cHandle].get("T000007", None) is None
+    assert cHandle not in theIndex._refIndex
 
     assert theIndex._noteIndex[cHandle]["T000001"]["level"] == "H1"
     assert theIndex._noteIndex[cHandle]["T000001"]["title"] == "Title One"

@@ -279,8 +279,7 @@ class NWIndex():
 
         # Check file type, and reset its old index
         # Also add a default entry T000000 in case the file has no title
-        self._refIndex[tHandle] = {}
-        self._refIndex[tHandle]["T000000"] = []
+        self._refIndex.pop(tHandle, None)
         if itemLayout == nwItemLayout.NOTE:
             self._novelIndex.pop(tHandle, None)
             self._noteIndex[tHandle] = {}
@@ -372,7 +371,6 @@ class NWIndex():
             return False
 
         sTitle = "T%06d" % nLine
-        self._refIndex[tHandle][sTitle] = []
         theData = {
             "level": hDepth,
             "title": hText,
@@ -465,7 +463,11 @@ class NWIndex():
         if theBits[0] == nwKeyWords.TAG_KEY:
             self._tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name, sTitle]
 
-        elif sTitle in self._refIndex[tHandle]:
+        else:
+            if tHandle not in self._refIndex:
+                self._refIndex[tHandle] = {}
+            if sTitle not in self._refIndex[tHandle]:
+                self._refIndex[tHandle][sTitle] = []
             for aVal in theBits[1:]:
                 self._refIndex[tHandle][sTitle].append([nLine, theBits[0], aVal])
 
