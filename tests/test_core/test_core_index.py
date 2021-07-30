@@ -421,7 +421,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
         "% synopsis: Synopsis One.\n\n"
         "Paragraph One.\n\n"
     ))
-    assert theIndex._refIndex[sHandle]["T000001"]["tags"] == (
+    assert theIndex._refIndex[sHandle]["T000001"] == (
         [[3, "@pov", "One"], [5, "@char", "Two"]]
     )
 
@@ -765,10 +765,8 @@ def testCoreIndex_CheckRefIndex(mockGUI):
     # Valid Index
     theIndex._refIndex = {
         "6a2d6d5f4f401": {
-            "T000000": {"tags": [], "updated": 1611922868},
-            "T000001": {"tags": [
-                [3, "@pov", "Jane"], [4, "@location", "Earth"]
-            ], "updated": 1611922868}
+            "T000000": [],
+            "T000001": [[3, "@pov", "Jane"], [4, "@location", "Earth"]],
         }
     }
     assert theIndex._checkRefIndex() is None
@@ -776,10 +774,8 @@ def testCoreIndex_CheckRefIndex(mockGUI):
     # Invalid Handle
     theIndex._refIndex = {
         "Ha2d6d5f4f401": {
-            "T000000": {"tags": [], "updated": 1611922868},
-            "T000001": {"tags": [
-                [3, "@pov", "Jane"], [4, "@location", "Earth"]
-            ], "updated": 1611922868}
+            "T000000": [],
+            "T000001": [[3, "@pov", "Jane"], [4, "@location", "Earth"]],
         }
     }
     with pytest.raises(KeyError):
@@ -788,88 +784,48 @@ def testCoreIndex_CheckRefIndex(mockGUI):
     # Invalid Title
     theIndex._refIndex = {
         "6a2d6d5f4f401": {
-            "T000000": {"tags": [], "updated": 1611922868},
-            "INVALID": {"tags": [
-                [3, "@pov", "Jane"], [4, "@location", "Earth"]
-            ], "updated": 1611922868}
+            "T000000": [],
+            "INVALID": [[3, "@pov", "Jane"], [4, "@location", "Earth"]],
         }
     }
     with pytest.raises(KeyError):
         theIndex._checkRefIndex()
 
-    # Missing 'tags'
+    # Wrong Length
     theIndex._refIndex = {
         "6a2d6d5f4f401": {
-            "T000000": {"tags": [], "updated": 1611922868},
-            "T000001": {"updated": 1611922868}
-        }
-    }
-    with pytest.raises(KeyError):
-        theIndex._checkRefIndex()
-
-    # Wrong Length of 'tags'
-    theIndex._refIndex = {
-        "6a2d6d5f4f401": {
-            "T000000": {"tags": [], "updated": 1611922868},
-            "T000001": {"tags": [
-                [3, "@pov", "Jane"], [4, "@location", "Earth", "Stuff"]
-            ], "updated": 1611922868}
+            "T000000": [],
+            "T000001": [[3, "@pov", "Jane"], [4, "@location", "Earth", "Stuff"]],
         }
     }
     with pytest.raises(IndexError):
         theIndex._checkRefIndex()
 
-    # Wrong Type of 'tags' Entry 0
+    # Wrong Type of Entry 0
     theIndex._refIndex = {
         "6a2d6d5f4f401": {
-            "T000000": {"tags": [], "updated": 1611922868},
-            "T000001": {"tags": [
-                [3, "@pov", "Jane"], ["4", "@location", "Earth"]
-            ], "updated": 1611922868}
+            "T000000": [],
+            "T000001": [[3, "@pov", "Jane"], ["4", "@location", "Earth"]],
         }
     }
     with pytest.raises(ValueError):
         theIndex._checkRefIndex()
 
-    # Wrong Type of 'tags' Entry 1
+    # Wrong Type of Entry 1
     theIndex._refIndex = {
         "6a2d6d5f4f401": {
-            "T000000": {"tags": [], "updated": 1611922868},
-            "T000001": {"tags": [
-                [3, "@pov", "Jane"], [4, "@stuff", "Earth"]
-            ], "updated": 1611922868}
+            "T000000": [],
+            "T000001": [[3, "@pov", "Jane"], [4, "@stuff", "Earth"]],
         }
     }
     with pytest.raises(ValueError):
         theIndex._checkRefIndex()
 
-    # Wrong Type of 'tags' Entry 1
+    # Wrong Type of Entry 2
     theIndex._refIndex = {
         "6a2d6d5f4f401": {
-            "T000000": {"tags": [], "updated": 1611922868},
-            "T000001": {"tags": [
-                [3, "@pov", "Jane"], [4, "@location", 123456]
-            ], "updated": 1611922868}
-        }
-    }
-    with pytest.raises(ValueError):
-        theIndex._checkRefIndex()
-
-    # Missing 'updated'
-    theIndex._refIndex = {
-        "6a2d6d5f4f401": {
-            "T000000": {"tags": [], "updated": 1611922868},
-            "T000001": {"tags": []}
-        }
-    }
-    with pytest.raises(KeyError):
-        theIndex._checkRefIndex()
-
-    # Wrong Type of 'updated' Entry 1
-    theIndex._refIndex = {
-        "6a2d6d5f4f401": {
-            "T000000": {"tags": [], "updated": 1611922868},
-            "T000001": {"tags": [], "updated": "1611922868"}
+            "T000000": [],
+            "T000001": [[3, "@pov", "Jane"], [4, "@location", 123456]],
         }
     }
     with pytest.raises(ValueError):

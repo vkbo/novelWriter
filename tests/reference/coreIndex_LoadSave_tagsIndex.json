@@ -6,65 +6,65 @@
 },
 "refIndex": {
   "7a992350f3eb6": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [], "updated": 123}
+    "T000000": [],
+    "T000001": []
   },
   "8c58a65414c23": {
-    "T000000": {"tags": [], "updated": 123}
+    "T000000": []
   },
   "88d59a277361b": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [], "updated": 123}
+    "T000000": [],
+    "T000001": []
   },
   "db7e733775d4d": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [], "updated": 123}
+    "T000000": [],
+    "T000001": []
   },
   "fb609cd8319dc": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]], "updated": 123}
+    "T000000": [],
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]]
   },
   "88243afbe5ed8": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]], "updated": 123},
-    "T000013": {"tags": [], "updated": 123}
+    "T000000": [],
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]],
+    "T000013": []
   },
   "f96ec11c6a3da": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]], "updated": 123},
-    "T000015": {"tags": [], "updated": 123}
+    "T000000": [],
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]],
+    "T000015": []
   },
   "846352075de7d": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [], "updated": 123}
+    "T000000": [],
+    "T000001": []
   },
   "441420a886d82": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]], "updated": 123}
+    "T000000": [],
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]]
   },
   "eb103bc70c90c": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]], "updated": 123}
+    "T000000": [],
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]]
   },
   "f8c0562e50f1b": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]], "updated": 123}
+    "T000000": [],
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]]
   },
   "47666c91c7ccf": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]], "updated": 123}
+    "T000000": [],
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]]
   },
   "4c4f28287af27": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [], "updated": 123}
+    "T000000": [],
+    "T000001": []
   },
   "2426c6f0ca922": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [], "updated": 123}
+    "T000000": [],
+    "T000001": []
   },
   "04468803b92e1": {
-    "T000000": {"tags": [], "updated": 123},
-    "T000001": {"tags": [], "updated": 123}
+    "T000000": [],
+    "T000001": []
   }
 },
 "novelIndex": {

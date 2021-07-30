@@ -280,10 +280,7 @@ class NWIndex():
         # Check file type, and reset its old index
         # Also add a default entry T000000 in case the file has no title
         self._refIndex[tHandle] = {}
-        self._refIndex[tHandle]["T000000"] = {
-            "tags": [],
-            "updated": round(time()),
-        }
+        self._refIndex[tHandle]["T000000"] = []
         if itemLayout == nwItemLayout.NOTE:
             self._novelIndex.pop(tHandle, None)
             self._noteIndex[tHandle] = {}
@@ -375,10 +372,7 @@ class NWIndex():
             return False
 
         sTitle = "T%06d" % nLine
-        self._refIndex[tHandle][sTitle] = {
-            "tags": [],
-            "updated": round(time()),
-        }
+        self._refIndex[tHandle][sTitle] = []
         theData = {
             "level": hDepth,
             "title": hText,
@@ -479,7 +473,7 @@ class NWIndex():
 
         elif sTitle in self._refIndex[tHandle]:
             for aVal in theBits[1:]:
-                self._refIndex[tHandle][sTitle]["tags"].append([nLine, theBits[0], aVal])
+                self._refIndex[tHandle][sTitle].append([nLine, theBits[0], aVal])
 
         return
 
@@ -695,7 +689,7 @@ class NWIndex():
             return theRefs
 
         for refTitle in self._refIndex[tHandle]:
-            for aTag in self._refIndex[tHandle][refTitle].get("tags", []):
+            for aTag in self._refIndex[tHandle][refTitle]:
                 if len(aTag) == 3 and (sTitle is None or sTitle == refTitle):
                     if aTag[1] in theRefs:
                         theRefs[aTag[1]].append(aTag[2])
@@ -726,7 +720,7 @@ class NWIndex():
         if theTags:
             for tHandle in self._refIndex:
                 for sTitle in self._refIndex[tHandle]:
-                    for _, _, tTag in self._refIndex[tHandle][sTitle]["tags"]:
+                    for _, _, tTag in self._refIndex[tHandle][sTitle]:
                         if tTag in theTags and tHandle not in theRefs:
                             theRefs[tHandle] = sTitle
 
@@ -799,22 +793,15 @@ class NWIndex():
                     raise KeyError("refIndex[a] key is not a title tag")
 
                 sEntry = hEntry[sTitle]
-                if "tags" not in sEntry:
-                    raise KeyError("refIndex[a][b] has no 'tag' key")
-                for tEntry in sEntry["tags"]:
+                for tEntry in sEntry:
                     if len(tEntry) != 3:
-                        raise IndexError("refIndex[a][b][tags][i] expected 3 values")
+                        raise IndexError("refIndex[a][b][i] expected 3 values")
                     if not isinstance(tEntry[0], int):
-                        raise ValueError("refIndex[a][b][tags][i][0] is not an integer")
+                        raise ValueError("refIndex[a][b][i][0] is not an integer")
                     if not tEntry[1] in nwKeyWords.VALID_KEYS:
-                        raise ValueError("refIndex[a][b][tags][i][1] is not a keyword")
+                        raise ValueError("refIndex[a][b][i][1] is not a keyword")
                     if not isinstance(tEntry[2], str):
-                        raise ValueError("refIndex[a][b][tags][i][2] is not a string")
-
-                if "updated" not in sEntry:
-                    raise KeyError("refIndex[a][b] has no 'updated' key")
-                if not isinstance(sEntry["updated"], int):
-                    raise ValueError("%refIndex[a][b][updated] is not an integer")
+                        raise ValueError("refIndex[a][b][i][2] is not a string")
 
         return
 
