@@ -46,8 +46,6 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     theProject.projTree.setSeed(42)
     assert theProject.openProject(nwLipsum)
 
-    monkeypatch.setattr("nw.core.index.time", lambda: 123.4)
-
     theIndex = NWIndex(theProject)
     notIndexable = {
         "b3643d0f92e32": False,  # Novel ROOT
@@ -845,8 +843,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+                "level": "H1",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "cCount": 72,
+                "wCount": 15,
+                "pCount": 2,
+                "synopsis": "text",
             }
         }
     }
@@ -860,8 +863,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "H3b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+                "level": "H1",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "cCount": 72,
+                "wCount": 15,
+                "pCount": 2,
+                "synopsis": "text",
             }
         }
     }
@@ -872,8 +880,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "INVALID": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+                "level": "H1",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "cCount": 72,
+                "wCount": 15,
+                "pCount": 2,
+                "synopsis": "text",
             }
         }
     }
@@ -884,8 +897,14 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868, "stuff": None
+                "level": "H1",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "cCount": 72,
+                "wCount": 15,
+                "pCount": 2,
+                "synopsis": "text",
+                "stuff": None
             }
         }
     }
@@ -899,8 +918,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "stuff": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+                "stuff": "H1",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "cCount": 72,
+                "wCount": 15,
+                "pCount": 2,
+                "synopsis": "text",
             }
         }
     }
@@ -911,8 +935,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "stuff": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+                "level": "H1",
+                "stuff": "My Novel",
+                "layout": "TITLE",
+                "cCount": 72,
+                "wCount": 15,
+                "pCount": 2,
+                "synopsis": "text",
             }
         }
     }
@@ -923,20 +952,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": "My Novel", "stuff": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
-            }
-        }
-    }
-    with pytest.raises(KeyError):
-        theIndex._checkNovelNoteIndex("novelIndex")
-
-    # Missing 'synopsis'
-    theIndex._novelIndex = {
-        "53b69b83cdafc": {
-            "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "stuff": "text",
-                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+                "level": "H1",
+                "title": "My Novel",
+                "stuff": "TITLE",
+                "cCount": 72,
+                "wCount": 15,
+                "pCount": 2,
+                "synopsis": "text",
             }
         }
     }
@@ -947,8 +969,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "stuff": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+                "level": "H1",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "stuff": 72,
+                "wCount": 15,
+                "pCount": 2,
+                "synopsis": "text",
             }
         }
     }
@@ -959,8 +986,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "stuff": 15, "pCount": 2, "updated": 1611922868
+                "level": "H1",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "cCount": 72,
+                "stuff": 15,
+                "pCount": 2,
+                "synopsis": "text",
             }
         }
     }
@@ -971,20 +1003,30 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "stuff": 2, "updated": 1611922868
+                "level": "H1",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "cCount": 72,
+                "wCount": 15,
+                "stuff": 2,
+                "synopsis": "text",
             }
         }
     }
     with pytest.raises(KeyError):
         theIndex._checkNovelNoteIndex("novelIndex")
 
-    # Missing 'updated'
+    # Missing 'synopsis'
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "pCount": 2, "stuff": 1611922868
+                "level": "H1",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "cCount": 72,
+                "wCount": 15,
+                "pCount": 2,
+                "stuff": "text",
             }
         }
     }
@@ -998,8 +1040,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "XX", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+                "level": "XX",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "cCount": 72,
+                "wCount": 15,
+                "pCount": 2,
+                "synopsis": "text",
             }
         }
     }
@@ -1010,8 +1057,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": 12345678, "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+                "level": "H1",
+                "title": 12345678,
+                "layout": "TITLE",
+                "cCount": 72,
+                "wCount": 15,
+                "pCount": 2,
+                "synopsis": "text",
             }
         }
     }
@@ -1022,20 +1074,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "INVALID", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
-            }
-        }
-    }
-    with pytest.raises(ValueError):
-        theIndex._checkNovelNoteIndex("novelIndex")
-
-    # Wrong Type for 'synopsis'
-    theIndex._novelIndex = {
-        "53b69b83cdafc": {
-            "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": 123456,
-                "cCount": 72, "wCount": 15, "pCount": 2, "updated": 1611922868
+                "level": "H1",
+                "title": "My Novel",
+                "layout": "INVALID",
+                "cCount": 72,
+                "wCount": 15,
+                "pCount": 2,
+                "synopsis": "text",
             }
         }
     }
@@ -1046,8 +1091,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": "72", "wCount": 15, "pCount": 2, "updated": 1611922868
+                "level": "H1",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "cCount": "72",
+                "wCount": 15,
+                "pCount": 2,
+                "synopsis": "text",
             }
         }
     }
@@ -1058,8 +1108,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": "15", "pCount": 2, "updated": 1611922868
+                "level": "H1",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "cCount": 72,
+                "wCount": "15",
+                "pCount": 2,
+                "synopsis": "text",
             }
         }
     }
@@ -1070,20 +1125,30 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "pCount": "2", "updated": 1611922868
+                "level": "H1",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "cCount": 72,
+                "wCount": 15,
+                "pCount": "2",
+                "synopsis": "text",
             }
         }
     }
     with pytest.raises(ValueError):
         theIndex._checkNovelNoteIndex("novelIndex")
 
-    # Wrong Type for 'updated'
+    # Wrong Type for 'synopsis'
     theIndex._novelIndex = {
         "53b69b83cdafc": {
             "T000001": {
-                "level": "H1", "title": "My Novel", "layout": "TITLE", "synopsis": "text",
-                "cCount": 72, "wCount": 15, "pCount": 2, "updated": "1611922868"
+                "level": "H1",
+                "title": "My Novel",
+                "layout": "TITLE",
+                "cCount": 72,
+                "wCount": 15,
+                "pCount": 2,
+                "synopsis": 123456,
             }
         }
     }

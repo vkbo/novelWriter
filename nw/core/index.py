@@ -377,11 +377,10 @@ class NWIndex():
             "level": hDepth,
             "title": hText,
             "layout": itemLayout.name,
-            "synopsis": "",
             "cCount": 0,
             "wCount": 0,
             "pCount": 0,
-            "updated": round(time()),
+            "synopsis": "",
         }
 
         if hText != "":
@@ -401,11 +400,10 @@ class NWIndex():
             "level": "H0",
             "title": "Untitled Page",
             "layout": itemLayout.name,
-            "synopsis": "",
             "cCount": 0,
             "wCount": 0,
             "pCount": 0,
-            "updated": round(time()),
+            "synopsis": "",
         }
 
         if isNovel:
@@ -428,14 +426,12 @@ class NWIndex():
                     self._novelIndex[tHandle][sTitle]["cCount"] = cC
                     self._novelIndex[tHandle][sTitle]["wCount"] = wC
                     self._novelIndex[tHandle][sTitle]["pCount"] = pC
-                    self._novelIndex[tHandle][sTitle]["updated"] = round(time())
         else:
             if tHandle in self._noteIndex:
                 if sTitle in self._noteIndex[tHandle]:
                     self._noteIndex[tHandle][sTitle]["cCount"] = cC
                     self._noteIndex[tHandle][sTitle]["wCount"] = wC
                     self._noteIndex[tHandle][sTitle]["pCount"] = pC
-                    self._noteIndex[tHandle][sTitle]["updated"] = round(time())
         return
 
     def _indexSynopsis(self, tHandle, isNovel, theText, nTitle):
@@ -446,12 +442,10 @@ class NWIndex():
             if tHandle in self._novelIndex:
                 if sTitle in self._novelIndex[tHandle]:
                     self._novelIndex[tHandle][sTitle]["synopsis"] = theText
-                    self._novelIndex[tHandle][sTitle]["updated"] = round(time())
         else:
             if tHandle in self._noteIndex:
                 if sTitle in self._noteIndex[tHandle]:
                     self._noteIndex[tHandle][sTitle]["synopsis"] = theText
-                    self._noteIndex[tHandle][sTitle]["updated"] = round(time())
         return
 
     def _indexKeyword(self, tHandle, aLine, nLine, nTitle, itemClass):
@@ -826,8 +820,8 @@ class NWIndex():
                     raise KeyError("%s[a] key is not a title tag" % idxName)
 
                 sEntry = hEntry[sTitle]
-                if len(sEntry) != 8:
-                    raise IndexError("%s[a][b] expected 8 values" % idxName)
+                if len(sEntry) != 7:
+                    raise IndexError("%s[a][b] expected 7 values" % idxName)
 
                 if "level" not in sEntry:
                     raise KeyError("%s[a][b] has no 'level' key" % idxName)
@@ -835,16 +829,14 @@ class NWIndex():
                     raise KeyError("%s[a][b] has no 'title' key" % idxName)
                 if "layout" not in sEntry:
                     raise KeyError("%s[a][b] has no 'layout' key" % idxName)
-                if "synopsis" not in sEntry:
-                    raise KeyError("%s[a][b] has no 'synopsis' key" % idxName)
                 if "cCount" not in sEntry:
                     raise KeyError("%s[a][b] has no 'cCount' key" % idxName)
                 if "wCount" not in sEntry:
                     raise KeyError("%s[a][b] has no 'wCount' key" % idxName)
                 if "pCount" not in sEntry:
                     raise KeyError("%s[a][b] has no 'pCount' key" % idxName)
-                if "updated" not in sEntry:
-                    raise KeyError("%s[a][b] has no 'updated' key" % idxName)
+                if "synopsis" not in sEntry:
+                    raise KeyError("%s[a][b] has no 'synopsis' key" % idxName)
 
                 if not sEntry["level"] in self.H_VALID:
                     raise ValueError("%s[a][b][level] is not a header level" % idxName)
@@ -852,16 +844,14 @@ class NWIndex():
                     raise ValueError("%s[a][b][title] is not a string" % idxName)
                 if not isItemLayout(sEntry["layout"]):
                     raise ValueError("%s[a][b][layout] is not an nwItemLayout" % idxName)
-                if not isinstance(sEntry["synopsis"], str):
-                    raise ValueError("%s[a][b][synopsis] is not a string" % idxName)
                 if not isinstance(sEntry["cCount"], int):
                     raise ValueError("%s[a][b][cCount] is not an integer" % idxName)
                 if not isinstance(sEntry["wCount"], int):
                     raise ValueError("%s[a][b][wCount] is not an integer" % idxName)
                 if not isinstance(sEntry["pCount"], int):
                     raise ValueError("%s[a][b][pCount] is not an integer" % idxName)
-                if not isinstance(sEntry["updated"], int):
-                    raise ValueError("%s[a][b][updated] is not an integer" % idxName)
+                if not isinstance(sEntry["synopsis"], str):
+                    raise ValueError("%s[a][b][synopsis] is not a string" % idxName)
 
         return
 
