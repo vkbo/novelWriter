@@ -64,7 +64,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
 
     # Make the save fail
     with monkeypatch.context() as mp:
-        mp.setattr(json, "dump", causeException)
+        mp.setattr("builtins.open", causeException)
         assert not theIndex.saveIndex()
 
     # Make the save pass

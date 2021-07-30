@@ -32,9 +32,11 @@ import os
 from time import time
 
 from nw.enum import nwItemType, nwItemClass, nwItemLayout
-from nw.common import isHandle, isTitleTag, isItemClass, isItemLayout
 from nw.constants import nwFiles, nwKeyWords, nwUnicode
 from nw.core.document import NWDoc
+from nw.common import (
+    isHandle, isTitleTag, isItemClass, isItemLayout, jsonEncode
+)
 
 logger = logging.getLogger(__name__)
 
@@ -146,12 +148,14 @@ class NWIndex():
         """
         theData = {}
         indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
+        tStart = time()
 
         if os.path.isfile(indexFile):
             logger.debug("Loading index file")
             try:
                 with open(indexFile, mode="r", encoding="utf-8") as inFile:
                     theData = json.load(inFile)
+
             except Exception:
                 logger.error("Failed to load index file")
                 nw.logException()
@@ -169,6 +173,8 @@ class NWIndex():
             self._timeNotes = nowTime
             self._timeIndex = nowTime
 
+        logger.verbose("Index loaded in %.3f ms", (time() - tStart)*1000)
+
         self.checkIndex()
 
         return True
@@ -179,20 +185,24 @@ class NWIndex():
         """
         logger.debug("Saving index file")
         indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
+        tStart = time()
 
         try:
             with open(indexFile, mode="w+", encoding="utf-8") as outFile:
-                json.dump({
-                    "tagIndex": self._tagIndex,
-                    "refIndex": self._refIndex,
-                    "novelIndex": self._novelIndex,
-                    "noteIndex": self._noteIndex,
-                    "textCounts": self._textCounts,
-                }, outFile, indent=2)
+                outFile.write("{\n")
+                outFile.write(f'"tagIndex": {jsonEncode(self._tagIndex, nmax=1)},\n')
+                outFile.write(f'"refIndex": {jsonEncode(self._refIndex, nmax=2)},\n')
+                outFile.write(f'"novelIndex": {jsonEncode(self._novelIndex, nmax=2)},\n')
+                outFile.write(f'"noteIndex": {jsonEncode(self._noteIndex, nmax=2)},\n')
+                outFile.write(f'"textCounts": {jsonEncode(self._textCounts, nmax=1)}\n')
+                outFile.write("}\n")
+
         except Exception:
             logger.error("Failed to save index file")
             nw.logException()
             return False
+
+        logger.verbose("Index saved in %.3f ms", (time() - tStart)*1000)
 
         return True
 
@@ -216,8 +226,7 @@ class NWIndex():
             nw.logException()
             self.indexBroken = True
 
-        tEnd = time()
-        logger.debug("Index check took %.3f ms", (tEnd - tStart)*1000)
+        logger.verbose("Index check took %.3f ms", (time() - tStart)*1000)
         logger.debug("Index check complete")
 
         if self.indexBroken:
@@ -756,7 +765,7 @@ class NWIndex():
 
     def _checkTagIndex(self):
         """Scan the tag index for errors.
-        Waring: This function raises exceptions.
+        Warning: This function raises exceptions.
         """
         for tTag in self._tagIndex:
             if not isinstance(tTag, str):
@@ -778,7 +787,7 @@ class NWIndex():
 
     def _checkRefIndex(self):
         """Scan the reference index for errors.
-        Waring: This function raises exceptions.
+        Warning: This function raises exceptions.
         """
         for tHandle in self._refIndex:
             if not isHandle(tHandle):
@@ -811,7 +820,7 @@ class NWIndex():
 
     def _checkNovelNoteIndex(self, idxName):
         """Scan the novel or note index for errors.
-        Waring: This function raises exceptions.
+        Warning: This function raises exceptions.
         """
         if idxName == "novelIndex":
             theIndex = self._novelIndex
@@ -871,7 +880,7 @@ class NWIndex():
 
     def _checkTextCounts(self):
         """Scan the text counts index for errors.
-        Waring: This function raises exceptions.
+        Warning: This function raises exceptions.
         """
         for tHandle in self._textCounts:
             if not isHandle(tHandle):
