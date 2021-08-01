@@ -63,7 +63,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     # Make the save fail
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeException)
-        assert not theIndex.saveIndex()
+        assert theIndex.saveIndex() is False
 
     # Make the save pass
     assert theIndex.saveIndex() is True
@@ -71,51 +71,48 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     # Take a copy of the index
     tagIndex = str(theIndex._tagIndex)
     refIndex = str(theIndex._refIndex)
-    novelIndex = str(theIndex._novelIndex)
-    noteIndex = str(theIndex._noteIndex)
+    fileIndex = str(theIndex._fileIndex)
     textCounts = str(theIndex._textCounts)
 
     # Delete a handle
     assert theIndex._tagIndex.get("Bod", None) is not None
     assert theIndex._refIndex.get("4c4f28287af27", None) is not None
-    assert theIndex._noteIndex.get("4c4f28287af27", None) is not None
+    assert theIndex._fileIndex.get("4c4f28287af27", None) is not None
     assert theIndex._textCounts.get("4c4f28287af27", None) is not None
     theIndex.deleteHandle("4c4f28287af27")
     assert theIndex._tagIndex.get("Bod", None) is None
     assert theIndex._refIndex.get("4c4f28287af27", None) is None
-    assert theIndex._noteIndex.get("4c4f28287af27", None) is None
+    assert theIndex._fileIndex.get("4c4f28287af27", None) is None
     assert theIndex._textCounts.get("4c4f28287af27", None) is None
 
     # Clear the index
     theIndex.clearIndex()
-    assert not theIndex._tagIndex
-    assert not theIndex._refIndex
-    assert not theIndex._novelIndex
-    assert not theIndex._noteIndex
-    assert not theIndex._textCounts
+    assert theIndex._tagIndex == {}
+    assert theIndex._refIndex == {}
+    assert theIndex._fileIndex == {}
+    assert theIndex._textCounts == {}
 
     # Make the load fail
     with monkeypatch.context() as mp:
         mp.setattr(json, "load", causeException)
-        assert not theIndex.loadIndex()
+        assert theIndex.loadIndex() is False
 
     # Make the load pass
-    assert theIndex.loadIndex()
+    assert theIndex.loadIndex() is True
 
     assert str(theIndex._tagIndex) == tagIndex
     assert str(theIndex._refIndex) == refIndex
-    assert str(theIndex._novelIndex) == novelIndex
-    assert str(theIndex._noteIndex) == noteIndex
+    assert str(theIndex._fileIndex) == fileIndex
     assert str(theIndex._textCounts) == textCounts
 
     # Break the index and check that we notice
-    assert not theIndex.indexBroken
+    assert theIndex.indexBroken is False
     theIndex._tagIndex["Bod"].append("Stuff")
     theIndex.checkIndex()
-    assert theIndex.indexBroken
+    assert theIndex.indexBroken is True
 
     # Finalise
-    assert theProject.closeProject()
+    assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
@@ -129,48 +126,48 @@ def testCoreIndex_ScanThis(nwMinimal, mockGUI):
     """
     theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
-    assert theProject.openProject(nwMinimal)
+    assert theProject.openProject(nwMinimal) is True
 
     theIndex = NWIndex(theProject)
 
     isValid, theBits, thePos = theIndex.scanThis("tag: this, and this")
-    assert not isValid
+    assert isValid is False
 
     isValid, theBits, thePos = theIndex.scanThis("@")
-    assert not isValid
+    assert isValid is False
 
     isValid, theBits, thePos = theIndex.scanThis("@:")
-    assert not isValid
+    assert isValid is False
 
     isValid, theBits, thePos = theIndex.scanThis(" @a: b")
-    assert not isValid
+    assert isValid is False
 
     isValid, theBits, thePos = theIndex.scanThis("@a:")
-    assert isValid
+    assert isValid is True
     assert theBits == ["@a"]
     assert thePos  == [0]
 
     isValid, theBits, thePos = theIndex.scanThis("@a:b")
-    assert isValid
+    assert isValid is True
     assert theBits == ["@a", "b"]
     assert thePos  == [0, 3]
 
     isValid, theBits, thePos = theIndex.scanThis("@a:b,c,d")
-    assert isValid
+    assert isValid is True
     assert theBits == ["@a", "b", "c", "d"]
     assert thePos  == [0, 3, 5, 7]
 
     isValid, theBits, thePos = theIndex.scanThis("@a : b , c , d")
-    assert isValid
+    assert isValid is True
     assert theBits == ["@a", "b", "c", "d"]
     assert thePos  == [0, 5, 9, 13]
 
     isValid, theBits, thePos = theIndex.scanThis("@tag: this, and this")
-    assert isValid
+    assert isValid is True
     assert theBits == ["@tag", "this", "and this"]
     assert thePos  == [0, 6, 12]
 
-    assert theProject.closeProject()
+    assert theProject.closeProject() is True
 
 # END Test testCoreIndex_ScanThis
 
@@ -181,7 +178,7 @@ def testCoreIndex_CheckThese(nwMinimal, mockGUI):
     """
     theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
-    assert theProject.openProject(nwMinimal)
+    assert theProject.openProject(nwMinimal) is True
 
     theIndex = NWIndex(theProject)
     nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
@@ -189,9 +186,9 @@ def testCoreIndex_CheckThese(nwMinimal, mockGUI):
     nItem = theProject.projTree[nHandle]
     cItem = theProject.projTree[cHandle]
 
-    assert not theIndex.novelChangedSince(0)
-    assert not theIndex.notesChangedSince(0)
-    assert not theIndex.indexChangedSince(0)
+    assert theIndex.novelChangedSince(0) is False
+    assert theIndex.notesChangedSince(0) is False
+    assert theIndex.indexChangedSince(0) is False
 
     assert theIndex.scanText(cHandle, (
         "# Jane Smith\n"
@@ -218,9 +215,9 @@ def testCoreIndex_CheckThese(nwMinimal, mockGUI):
         "@time": []
     }
 
-    assert theIndex.novelChangedSince(0)
-    assert theIndex.notesChangedSince(0)
-    assert theIndex.indexChangedSince(0)
+    assert theIndex.novelChangedSince(0) is True
+    assert theIndex.notesChangedSince(0) is True
+    assert theIndex.indexChangedSince(0) is True
 
     # Zero Items
     assert theIndex.checkThese([], cItem) == []
@@ -244,7 +241,7 @@ def testCoreIndex_CheckThese(nwMinimal, mockGUI):
     assert theIndex.checkThese(["@who", "Jane", "John"], cItem) == [False, False, False]
     assert theIndex.checkThese(["@pov", "Jane", "John"], nItem) == [True, True, False]
 
-    assert theProject.closeProject()
+    assert theProject.closeProject() is True
 
 # END Test testCoreIndex_CheckThese
 
@@ -255,7 +252,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     """
     theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
-    assert theProject.openProject(nwMinimal)
+    assert theProject.openProject(nwMinimal) is True
 
     theIndex = NWIndex(theProject)
 
@@ -266,25 +263,25 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     xItem.setLayout(nwItemLayout.NO_LAYOUT)
 
     # Check invalid data
-    assert not theIndex.scanText(None, "Hello World!")
-    assert not theIndex.scanText(dHandle, "Hello World!")
-    assert not theIndex.scanText(xHandle, "Hello World!")
+    assert theIndex.scanText(None, "Hello World!") is False
+    assert theIndex.scanText(dHandle, "Hello World!") is False
+    assert theIndex.scanText(xHandle, "Hello World!") is False
 
     xItem.setLayout(nwItemLayout.SCENE)
     xItem.setParent(None)
-    assert not theIndex.scanText(xHandle, "Hello World!")
+    assert theIndex.scanText(xHandle, "Hello World!") is False
 
     # Create the trash folder
     tHandle = theProject.trashFolder()
     assert theProject.projTree[tHandle] is not None
     xItem.setParent(tHandle)
-    assert not theIndex.scanText(xHandle, "Hello World!")
+    assert theIndex.scanText(xHandle, "Hello World!") is False
 
     # Create the archive root
     aHandle = theProject.newRoot("Outtakes", nwItemClass.ARCHIVE)
     assert theProject.projTree[aHandle] is not None
     xItem.setParent(aHandle)
-    assert not theIndex.scanText(xHandle, "Hello World!")
+    assert theIndex.scanText(xHandle, "Hello World!") is False
 
     # Make some usable items
     pHandle = theProject.newFile("Page",  nwItemClass.NOVEL, "a508bb932959c")
@@ -327,40 +324,40 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     ))
     assert cHandle not in theIndex._refIndex
 
-    assert theIndex._novelIndex[nHandle]["T000001"]["level"] == "H1"
-    assert theIndex._novelIndex[nHandle]["T000007"]["level"] == "H2"
-    assert theIndex._novelIndex[nHandle]["T000013"]["level"] == "H3"
-    assert theIndex._novelIndex[nHandle]["T000019"]["level"] == "H4"
+    assert theIndex._fileIndex[nHandle]["T000001"]["level"] == "H1"
+    assert theIndex._fileIndex[nHandle]["T000007"]["level"] == "H2"
+    assert theIndex._fileIndex[nHandle]["T000013"]["level"] == "H3"
+    assert theIndex._fileIndex[nHandle]["T000019"]["level"] == "H4"
 
-    assert theIndex._novelIndex[nHandle]["T000001"]["title"] == "Title One"
-    assert theIndex._novelIndex[nHandle]["T000007"]["title"] == "Title Two"
-    assert theIndex._novelIndex[nHandle]["T000013"]["title"] == "Title Three"
-    assert theIndex._novelIndex[nHandle]["T000019"]["title"] == "Title Four"
+    assert theIndex._fileIndex[nHandle]["T000001"]["title"] == "Title One"
+    assert theIndex._fileIndex[nHandle]["T000007"]["title"] == "Title Two"
+    assert theIndex._fileIndex[nHandle]["T000013"]["title"] == "Title Three"
+    assert theIndex._fileIndex[nHandle]["T000019"]["title"] == "Title Four"
 
-    assert theIndex._novelIndex[nHandle]["T000001"]["layout"] == "SCENE"
-    assert theIndex._novelIndex[nHandle]["T000007"]["layout"] == "SCENE"
-    assert theIndex._novelIndex[nHandle]["T000013"]["layout"] == "SCENE"
-    assert theIndex._novelIndex[nHandle]["T000019"]["layout"] == "SCENE"
+    assert theIndex._fileIndex[nHandle]["T000001"]["layout"] == "SCENE"
+    assert theIndex._fileIndex[nHandle]["T000007"]["layout"] == "SCENE"
+    assert theIndex._fileIndex[nHandle]["T000013"]["layout"] == "SCENE"
+    assert theIndex._fileIndex[nHandle]["T000019"]["layout"] == "SCENE"
 
-    assert theIndex._novelIndex[nHandle]["T000001"]["synopsis"] == "Synopsis One."
-    assert theIndex._novelIndex[nHandle]["T000007"]["synopsis"] == "Synopsis Two."
-    assert theIndex._novelIndex[nHandle]["T000013"]["synopsis"] == "Synopsis Three."
-    assert theIndex._novelIndex[nHandle]["T000019"]["synopsis"] == "Synopsis Four."
+    assert theIndex._fileIndex[nHandle]["T000001"]["cCount"] == 23
+    assert theIndex._fileIndex[nHandle]["T000007"]["cCount"] == 23
+    assert theIndex._fileIndex[nHandle]["T000013"]["cCount"] == 27
+    assert theIndex._fileIndex[nHandle]["T000019"]["cCount"] == 56
 
-    assert theIndex._novelIndex[nHandle]["T000001"]["cCount"] == 23
-    assert theIndex._novelIndex[nHandle]["T000007"]["cCount"] == 23
-    assert theIndex._novelIndex[nHandle]["T000013"]["cCount"] == 27
-    assert theIndex._novelIndex[nHandle]["T000019"]["cCount"] == 56
+    assert theIndex._fileIndex[nHandle]["T000001"]["wCount"] == 4
+    assert theIndex._fileIndex[nHandle]["T000007"]["wCount"] == 4
+    assert theIndex._fileIndex[nHandle]["T000013"]["wCount"] == 4
+    assert theIndex._fileIndex[nHandle]["T000019"]["wCount"] == 9
 
-    assert theIndex._novelIndex[nHandle]["T000001"]["wCount"] == 4
-    assert theIndex._novelIndex[nHandle]["T000007"]["wCount"] == 4
-    assert theIndex._novelIndex[nHandle]["T000013"]["wCount"] == 4
-    assert theIndex._novelIndex[nHandle]["T000019"]["wCount"] == 9
+    assert theIndex._fileIndex[nHandle]["T000001"]["pCount"] == 1
+    assert theIndex._fileIndex[nHandle]["T000007"]["pCount"] == 1
+    assert theIndex._fileIndex[nHandle]["T000013"]["pCount"] == 1
+    assert theIndex._fileIndex[nHandle]["T000019"]["pCount"] == 3
 
-    assert theIndex._novelIndex[nHandle]["T000001"]["pCount"] == 1
-    assert theIndex._novelIndex[nHandle]["T000007"]["pCount"] == 1
-    assert theIndex._novelIndex[nHandle]["T000013"]["pCount"] == 1
-    assert theIndex._novelIndex[nHandle]["T000019"]["pCount"] == 3
+    assert theIndex._fileIndex[nHandle]["T000001"]["synopsis"] == "Synopsis One."
+    assert theIndex._fileIndex[nHandle]["T000007"]["synopsis"] == "Synopsis Two."
+    assert theIndex._fileIndex[nHandle]["T000013"]["synopsis"] == "Synopsis Three."
+    assert theIndex._fileIndex[nHandle]["T000019"]["synopsis"] == "Synopsis Four."
 
     assert theIndex.scanText(cHandle, (
         "# Title One\n\n"
@@ -370,13 +367,13 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     ))
     assert cHandle not in theIndex._refIndex
 
-    assert theIndex._noteIndex[cHandle]["T000001"]["level"] == "H1"
-    assert theIndex._noteIndex[cHandle]["T000001"]["title"] == "Title One"
-    assert theIndex._noteIndex[cHandle]["T000001"]["layout"] == "NOTE"
-    assert theIndex._noteIndex[cHandle]["T000001"]["synopsis"] == "Synopsis One."
-    assert theIndex._noteIndex[cHandle]["T000001"]["cCount"] == 23
-    assert theIndex._noteIndex[cHandle]["T000001"]["wCount"] == 4
-    assert theIndex._noteIndex[cHandle]["T000001"]["pCount"] == 1
+    assert theIndex._fileIndex[cHandle]["T000001"]["level"] == "H1"
+    assert theIndex._fileIndex[cHandle]["T000001"]["title"] == "Title One"
+    assert theIndex._fileIndex[cHandle]["T000001"]["layout"] == "NOTE"
+    assert theIndex._fileIndex[cHandle]["T000001"]["cCount"] == 23
+    assert theIndex._fileIndex[cHandle]["T000001"]["wCount"] == 4
+    assert theIndex._fileIndex[cHandle]["T000001"]["pCount"] == 1
+    assert theIndex._fileIndex[cHandle]["T000001"]["synopsis"] == "Synopsis One."
 
     assert theIndex.scanText(sHandle, (
         "# Title One\n\n"
@@ -395,29 +392,29 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))
-    assert theIndex._novelIndex[pHandle]["T000000"]["level"] == "H0"
-    assert theIndex._novelIndex[pHandle]["T000000"]["title"] == "Untitled Page"
-    assert theIndex._novelIndex[pHandle]["T000000"]["layout"] == "PAGE"
-    assert theIndex._novelIndex[pHandle]["T000000"]["synopsis"] == ""
-    assert theIndex._novelIndex[pHandle]["T000000"]["cCount"] == 36
-    assert theIndex._novelIndex[pHandle]["T000000"]["wCount"] == 9
-    assert theIndex._novelIndex[pHandle]["T000000"]["pCount"] == 1
-    assert pHandle not in theIndex._noteIndex
+    assert pHandle in theIndex._fileIndex
+    assert theIndex._fileIndex[pHandle]["T000000"]["level"] == "H0"
+    assert theIndex._fileIndex[pHandle]["T000000"]["title"] == ""
+    assert theIndex._fileIndex[pHandle]["T000000"]["layout"] == "PAGE"
+    assert theIndex._fileIndex[pHandle]["T000000"]["cCount"] == 36
+    assert theIndex._fileIndex[pHandle]["T000000"]["wCount"] == 9
+    assert theIndex._fileIndex[pHandle]["T000000"]["pCount"] == 1
+    assert theIndex._fileIndex[pHandle]["T000000"]["synopsis"] == ""
 
     theProject.projTree[pHandle].itemLayout = nwItemLayout.NOTE
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))
-    assert theIndex._noteIndex[pHandle]["T000000"]["level"] == "H0"
-    assert theIndex._noteIndex[pHandle]["T000000"]["title"] == "Untitled Page"
-    assert theIndex._noteIndex[pHandle]["T000000"]["layout"] == "NOTE"
-    assert theIndex._noteIndex[pHandle]["T000000"]["synopsis"] == ""
-    assert theIndex._noteIndex[pHandle]["T000000"]["cCount"] == 36
-    assert theIndex._noteIndex[pHandle]["T000000"]["wCount"] == 9
-    assert theIndex._noteIndex[pHandle]["T000000"]["pCount"] == 1
-    assert pHandle not in theIndex._novelIndex
+    assert pHandle in theIndex._fileIndex
+    assert theIndex._fileIndex[pHandle]["T000000"]["level"] == "H0"
+    assert theIndex._fileIndex[pHandle]["T000000"]["title"] == ""
+    assert theIndex._fileIndex[pHandle]["T000000"]["layout"] == "NOTE"
+    assert theIndex._fileIndex[pHandle]["T000000"]["cCount"] == 36
+    assert theIndex._fileIndex[pHandle]["T000000"]["wCount"] == 9
+    assert theIndex._fileIndex[pHandle]["T000000"]["pCount"] == 1
+    assert theIndex._fileIndex[pHandle]["T000000"]["synopsis"] == ""
 
-    assert theProject.closeProject()
+    assert theProject.closeProject() is True
 
 # END Test testCoreIndex_ScanText
 
@@ -428,7 +425,7 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     """
     theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
-    assert theProject.openProject(nwMinimal)
+    assert theProject.openProject(nwMinimal) is True
 
     theIndex = NWIndex(theProject)
     nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
@@ -807,7 +804,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     theIndex = NWIndex(theProject)
 
     # Valid Index
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -820,14 +817,11 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             }
         }
     }
-    theIndex._noteIndex = theIndex._novelIndex.copy()
-    assert theIndex._checkNovelNoteIndex("novelIndex") is None
-    assert theIndex._checkNovelNoteIndex("noteIndex") is None
-    with pytest.raises(IndexError):
-        theIndex._checkNovelNoteIndex("notAnIndex")
+    theIndex._fileIndex = theIndex._fileIndex.copy()
+    assert theIndex._checkFileIndex() is None
 
     # Invalid Handle
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "H3b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -841,10 +835,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(KeyError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Invalid Title
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "INVALID": {
                 "level": "H1",
@@ -858,10 +852,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(KeyError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Wrong Length
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -876,13 +870,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(IndexError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Missing Keys
     # ============
 
     # Missing 'level'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "stuff": "H1",
@@ -896,10 +890,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(KeyError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Missing 'title'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -913,10 +907,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(KeyError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Missing 'layout'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -930,10 +924,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(KeyError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Missing 'cCount'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -947,10 +941,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(KeyError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Missing 'wCount'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -964,10 +958,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(KeyError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Missing 'pCount'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -981,10 +975,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(KeyError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Missing 'synopsis'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -998,13 +992,13 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(KeyError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Wrong Types
     # ===========
 
     # Wrong Type for 'level'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "XX",
@@ -1018,10 +1012,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(ValueError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Wrong Type for 'title'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -1035,10 +1029,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(ValueError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Wrong Type for 'layout'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -1052,10 +1046,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(ValueError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Wrong Type for 'cCount'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -1069,10 +1063,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(ValueError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Wrong Type for 'wCount'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -1086,10 +1080,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(ValueError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Wrong Type for 'pCount'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -1103,10 +1097,10 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(ValueError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
     # Wrong Type for 'synopsis'
-    theIndex._novelIndex = {
+    theIndex._fileIndex = {
         "53b69b83cdafc": {
             "T000001": {
                 "level": "H1",
@@ -1120,7 +1114,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
         }
     }
     with pytest.raises(ValueError):
-        theIndex._checkNovelNoteIndex("novelIndex")
+        theIndex._checkFileIndex()
 
 # END Test testCoreIndex_CheckNovelNoteIndex
 

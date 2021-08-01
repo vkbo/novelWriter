@@ -30,12 +30,12 @@
     "T000001": [[4, "@plot", "Main"]]
   }
 },
-"novelIndex": {
+"fileIndex": {
   "7a992350f3eb6": {
     "T000001": {"level": "H1", "title": "Lorem Ipsum", "layout": "TITLE", "cCount": 230, "wCount": 40, "pCount": 3, "synopsis": ""}
   },
   "8c58a65414c23": {
-    "T000000": {"level": "H0", "title": "Untitled Page", "layout": "PAGE", "cCount": 1058, "wCount": 176, "pCount": 2, "synopsis": ""}
+    "T000000": {"level": "H0", "title": "", "layout": "PAGE", "cCount": 1058, "wCount": 176, "pCount": 2, "synopsis": ""}
   },
   "88d59a277361b": {
     "T000001": {"level": "H2", "title": "Prologue", "layout": "UNNUMBERED", "cCount": 584, "wCount": 92, "pCount": 1, "synopsis": "Explanation from the lipsum.com website."}
@@ -68,9 +68,7 @@
   },
   "47666c91c7ccf": {
     "T000001": {"level": "H3", "title": "Scene Five", "layout": "SCENE", "cCount": 3644, "wCount": 543, "pCount": 5, "synopsis": "Praesent eget est porta, dictum ante in, egestas risus. Mauris risus mauris, consequat aliquam mauris et, feugiat iaculis ipsum. Aliquam arcu ipsum, fermentum ut arcu sed, lobortis euismod sem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."}
-  }
-},
-"noteIndex": {
+  },
   "4c4f28287af27": {
     "T000001": {"level": "H1", "title": "Nobody Owens", "layout": "NOTE", "cCount": 1864, "wCount": 284, "pCount": 3, "synopsis": ""}
   },

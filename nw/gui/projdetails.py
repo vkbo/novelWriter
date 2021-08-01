@@ -443,6 +443,9 @@ class GuiProjectDetailsContents(QWidget):
                 progPage = f"{cPage:n}"
                 progText = f"{pgProg:.1f}{nwUnicode.U_THSP}%"
 
+            if tTitle.strip() == "":
+                tTitle = self.tr("Untitled")
+
             newItem.setIcon(self.C_TITLE, self.theTheme.getIcon("doc_h%d" % tLevel))
             newItem.setText(self.C_TITLE, tTitle)
             newItem.setText(self.C_WORDS, f"{wCount:n}")
