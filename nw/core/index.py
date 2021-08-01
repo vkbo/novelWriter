@@ -40,11 +40,11 @@ from nw.common import (
 
 logger = logging.getLogger(__name__)
 
+H_VALID = ("H0", "H1", "H2", "H3", "H4")
+H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
+
 
 class NWIndex():
-
-    H_VALID = ("H0", "H1", "H2", "H3", "H4")
-    H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
 
     def __init__(self, theProject):
 
@@ -278,7 +278,6 @@ class NWIndex():
         logger.debug("Indexing item with handle '%s'", tHandle)
 
         # Check file type, and reset its old index
-        # Also add a default entry T000000 in case the file has no title
         self._refIndex.pop(tHandle, None)
         if itemLayout == nwItemLayout.NOTE:
             self._novelIndex.pop(tHandle, None)
@@ -576,7 +575,7 @@ class NWIndex():
         for tHandle in self._listNovelHandles(skipExcluded):
             for sTitle in self._novelIndex[tHandle]:
                 theData = self._novelIndex[tHandle][sTitle]
-                iLevel = self.H_LEVEL.get(theData["level"], 0)
+                iLevel = H_LEVEL.get(theData["level"], 0)
                 hCount[iLevel] += 1
 
         return hCount
@@ -621,7 +620,7 @@ class NWIndex():
             for sTitle in sorted(self._novelIndex[tHandle]):
                 tKey = "%s:%s" % (tHandle, sTitle)
                 theData = self._novelIndex[tHandle][sTitle]
-                iLevel = self.H_LEVEL.get(theData["level"], 0)
+                iLevel = H_LEVEL.get(theData["level"], 0)
                 if iLevel > maxDepth:
                     if pKey in tData:
                         theData["wCount"]
@@ -840,7 +839,7 @@ class NWIndex():
                 if "synopsis" not in sEntry:
                     raise KeyError("%s[a][b] has no 'synopsis' key" % idxName)
 
-                if not sEntry["level"] in self.H_VALID:
+                if not sEntry["level"] in H_VALID:
                     raise ValueError("%s[a][b][level] is not a header level" % idxName)
                 if not isinstance(sEntry["title"], str):
                     raise ValueError("%s[a][b][title] is not a string" % idxName)

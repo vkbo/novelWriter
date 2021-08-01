@@ -58,7 +58,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     for tItem in theProject.projTree:
         assert theIndex.reIndexHandle(tItem.itemHandle) is notIndexable.get(tItem.itemHandle, True)
 
-    assert not theIndex.reIndexHandle(None)
+    assert theIndex.reIndexHandle(None) is False
 
     # Make the save fail
     with monkeypatch.context() as mp:
@@ -66,7 +66,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
         assert not theIndex.saveIndex()
 
     # Make the save pass
-    assert theIndex.saveIndex()
+    assert theIndex.saveIndex() is True
 
     # Take a copy of the index
     tagIndex = str(theIndex._tagIndex)
