@@ -23,6 +23,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import json
 import logging
 
 from datetime import datetime
@@ -224,16 +225,19 @@ def parseTimeStamp(theStamp, default, allowNone=False):
 #  String Functions
 # =============================================================================================== #
 
-def splitVersionNumber(vString):
-    """ Splits a version string on the form aa.bb.cc into major, minor
+def splitVersionNumber(value):
+    """Splits a version string on the form aa.bb.cc into major, minor
     and patch, and computes an integer value aabbcc.
     """
+    if not isinstance(value, str):
+        return [0, 0, 0, 0]
+
     vMajor = 0
     vMinor = 0
     vPatch = 0
     vInt = 0
 
-    vBits = vString.split(".")
+    vBits = value.split(".")
     nBits = len(vBits)
 
     if nBits > 0:
@@ -353,6 +357,57 @@ def numberToRoman(numVal, isLower=False):
             break
 
     return romNum.lower() if isLower else romNum
+
+
+# =============================================================================================== #
+#  Encoder Functions
+# =============================================================================================== #
+
+def jsonEncode(data, n=0, nmax=0):
+    """Encode a dictionary, list or tuple as a json object or array, and
+    indent from level n up to a max level nmax if nmax is larger than 0.
+    """
+    if not isinstance(data, (dict, list, tuple)):
+        return "[]"
+
+    buffer = []
+    indent = ""
+
+    for chunk in json.JSONEncoder().iterencode(data):
+        if chunk == "":  # pragma: no cover
+            # Just a precaution
+            continue
+
+        first = chunk[0]
+        if chunk in ("{}", "[]"):
+            buffer.append(chunk)
+
+        elif first in ("{", "["):
+            n += 1
+            indent = "\n"+"  "*n
+            if n > nmax and nmax > 0:
+                buffer.append(chunk)
+            else:
+                buffer.append(chunk[0] + indent + chunk[1:])
+
+        elif first in ("}", "]"):
+            n -= 1
+            indent = "\n"+"  "*n
+            if n >= nmax and nmax > 0:
+                buffer.append(chunk)
+            else:
+                buffer.append(indent + chunk)
+
+        elif first == ",":
+            if n > nmax and nmax > 0:
+                buffer.append(chunk)
+            else:
+                buffer.append(chunk[0] + indent + chunk[1:].lstrip())
+
+        else:
+            buffer.append(chunk)
+
+    return "".join(buffer)
 
 
 # =============================================================================================== #

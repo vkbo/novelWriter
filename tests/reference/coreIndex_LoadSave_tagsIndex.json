@@ -1,571 +1,99 @@
 {
-  "tagIndex": {
-    "Bod": [
-      3,
-      "4c4f28287af27",
-      "CHARACTER",
-      "T000001"
-    ],
-    "Main": [
-      3,
-      "2426c6f0ca922",
-      "PLOT",
-      "T000001"
-    ],
-    "Europe": [
-      3,
-      "04468803b92e1",
-      "WORLD",
-      "T000001"
-    ]
+"tagIndex": {
+  "Bod": [3, "4c4f28287af27", "CHARACTER", "T000001"],
+  "Main": [3, "2426c6f0ca922", "PLOT", "T000001"],
+  "Europe": [3, "04468803b92e1", "WORLD", "T000001"]
+},
+"refIndex": {
+  "fb609cd8319dc": {
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]]
   },
-  "refIndex": {
-    "7a992350f3eb6": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [],
-        "updated": 123
-      }
-    },
-    "8c58a65414c23": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      }
-    },
-    "88d59a277361b": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [],
-        "updated": 123
-      }
-    },
-    "db7e733775d4d": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [],
-        "updated": 123
-      }
-    },
-    "fb609cd8319dc": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [
-          [
-            3,
-            "@pov",
-            "Bod"
-          ],
-          [
-            4,
-            "@plot",
-            "Main"
-          ],
-          [
-            5,
-            "@location",
-            "Europe"
-          ]
-        ],
-        "updated": 123
-      }
-    },
-    "88243afbe5ed8": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [
-          [
-            3,
-            "@pov",
-            "Bod"
-          ],
-          [
-            4,
-            "@plot",
-            "Main"
-          ],
-          [
-            5,
-            "@location",
-            "Europe"
-          ]
-        ],
-        "updated": 123
-      },
-      "T000013": {
-        "tags": [],
-        "updated": 123
-      }
-    },
-    "f96ec11c6a3da": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [
-          [
-            3,
-            "@pov",
-            "Bod"
-          ],
-          [
-            4,
-            "@plot",
-            "Main"
-          ],
-          [
-            5,
-            "@location",
-            "Europe"
-          ]
-        ],
-        "updated": 123
-      },
-      "T000015": {
-        "tags": [],
-        "updated": 123
-      }
-    },
-    "846352075de7d": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [],
-        "updated": 123
-      }
-    },
-    "441420a886d82": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [
-          [
-            3,
-            "@pov",
-            "Bod"
-          ],
-          [
-            4,
-            "@plot",
-            "Main"
-          ],
-          [
-            5,
-            "@location",
-            "Europe"
-          ]
-        ],
-        "updated": 123
-      }
-    },
-    "eb103bc70c90c": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [
-          [
-            3,
-            "@pov",
-            "Bod"
-          ],
-          [
-            4,
-            "@plot",
-            "Main"
-          ],
-          [
-            5,
-            "@location",
-            "Europe"
-          ]
-        ],
-        "updated": 123
-      }
-    },
-    "f8c0562e50f1b": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [
-          [
-            3,
-            "@pov",
-            "Bod"
-          ],
-          [
-            4,
-            "@plot",
-            "Main"
-          ],
-          [
-            5,
-            "@location",
-            "Europe"
-          ]
-        ],
-        "updated": 123
-      }
-    },
-    "47666c91c7ccf": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [
-          [
-            3,
-            "@pov",
-            "Bod"
-          ],
-          [
-            4,
-            "@plot",
-            "Main"
-          ],
-          [
-            5,
-            "@location",
-            "Europe"
-          ]
-        ],
-        "updated": 123
-      }
-    },
-    "4c4f28287af27": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [],
-        "updated": 123
-      }
-    },
-    "2426c6f0ca922": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [],
-        "updated": 123
-      }
-    },
-    "04468803b92e1": {
-      "T000000": {
-        "tags": [],
-        "updated": 123
-      },
-      "T000001": {
-        "tags": [],
-        "updated": 123
-      }
-    }
+  "88243afbe5ed8": {
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]]
   },
-  "novelIndex": {
-    "7a992350f3eb6": {
-      "T000001": {
-        "level": "H1",
-        "title": "Lorem Ipsum",
-        "layout": "TITLE",
-        "synopsis": "",
-        "cCount": 230,
-        "wCount": 40,
-        "pCount": 3,
-        "updated": 123
-      }
-    },
-    "8c58a65414c23": {
-      "T000000": {
-        "level": "H0",
-        "title": "Untitled Page",
-        "layout": "PAGE",
-        "synopsis": "",
-        "cCount": 1058,
-        "wCount": 176,
-        "pCount": 2,
-        "updated": 123
-      }
-    },
-    "88d59a277361b": {
-      "T000001": {
-        "level": "H2",
-        "title": "Prologue",
-        "layout": "UNNUMBERED",
-        "synopsis": "Explanation from the lipsum.com website.",
-        "cCount": 584,
-        "wCount": 92,
-        "pCount": 1,
-        "updated": 123
-      }
-    },
-    "db7e733775d4d": {
-      "T000001": {
-        "level": "H1",
-        "title": "Act One",
-        "layout": "PARTITION",
-        "synopsis": "",
-        "cCount": 35,
-        "wCount": 6,
-        "pCount": 1,
-        "updated": 123
-      }
-    },
-    "fb609cd8319dc": {
-      "T000001": {
-        "level": "H2",
-        "title": "Chapter One",
-        "layout": "CHAPTER",
-        "synopsis": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at aliquam quam.",
-        "cCount": 419,
-        "wCount": 67,
-        "pCount": 1,
-        "updated": 123
-      }
-    },
-    "88243afbe5ed8": {
-      "T000001": {
-        "level": "H3",
-        "title": "Scene One",
-        "layout": "SCENE",
-        "synopsis": "Aenean ut placerat velit. Etiam laoreet ullamcorper risus, eget lobortis enim scelerisque non. Suspendisse id maximus nunc, et mollis sapien. Curabitur vel semper sapien, non pulvinar dolor. Etiam finibus nisi vel mi molestie consectetur.",
-        "cCount": 1197,
-        "wCount": 174,
-        "pCount": 2,
-        "updated": 123
-      },
-      "T000013": {
-        "level": "H4",
-        "title": "Scene One, Section Two",
-        "layout": "SCENE",
-        "synopsis": "",
-        "cCount": 1561,
-        "wCount": 230,
-        "pCount": 2,
-        "updated": 123
-      }
-    },
-    "f96ec11c6a3da": {
-      "T000001": {
-        "level": "H3",
-        "title": "Scene Two",
-        "layout": "SCENE",
-        "synopsis": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer sapien nulla, dictum at lacus a, dignissim consectetur dolor. Nunc vel eleifend lacus, eu dapibus orci.",
-        "cCount": 2034,
-        "wCount": 299,
-        "pCount": 3,
-        "updated": 123
-      },
-      "T000015": {
-        "level": "H4",
-        "title": "Scene Two, Section Two",
-        "layout": "SCENE",
-        "synopsis": "",
-        "cCount": 2009,
-        "wCount": 301,
-        "pCount": 3,
-        "updated": 123
-      }
-    },
-    "846352075de7d": {
-      "T000001": {
-        "level": "H2",
-        "title": "Why do we use it?",
-        "layout": "BOOK",
-        "synopsis": "",
-        "cCount": 631,
-        "wCount": 109,
-        "pCount": 3,
-        "updated": 123
-      }
-    },
-    "441420a886d82": {
-      "T000001": {
-        "level": "H2",
-        "title": "Chapter Two",
-        "layout": "CHAPTER",
-        "synopsis": "Curabitur a elit posuere, varius ex et, convallis neque. Phasellus sagittis pharetra sem vitae dapibus. Curabitur varius lorem non pulvinar congue.",
-        "cCount": 477,
-        "wCount": 70,
-        "pCount": 1,
-        "updated": 123
-      }
-    },
-    "eb103bc70c90c": {
-      "T000001": {
-        "level": "H3",
-        "title": "Scene Three",
-        "layout": "SCENE",
-        "synopsis": "Aenean ut libero ut lectus porttitor rhoncus vel et massa. Nam pretium, nibh et varius vehicula, urna metus blandit eros, euismod pharetra diam diam et libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.",
-        "cCount": 3006,
-        "wCount": 439,
-        "pCount": 4,
-        "updated": 123
-      }
-    },
-    "f8c0562e50f1b": {
-      "T000001": {
-        "level": "H3",
-        "title": "Scene Four",
-        "layout": "SCENE",
-        "synopsis": "Nam tempor blandit magna laoreet aliquet. Vestibulum auctor posuere leo, ac gravida nisi rhoncus varius. Aenean posuere dolor vitae condimentum volutpat. Donec egestas volutpat risus, quis luctus justo.",
-        "cCount": 3839,
-        "wCount": 563,
-        "pCount": 6,
-        "updated": 123
-      }
-    },
-    "47666c91c7ccf": {
-      "T000001": {
-        "level": "H3",
-        "title": "Scene Five",
-        "layout": "SCENE",
-        "synopsis": "Praesent eget est porta, dictum ante in, egestas risus. Mauris risus mauris, consequat aliquam mauris et, feugiat iaculis ipsum. Aliquam arcu ipsum, fermentum ut arcu sed, lobortis euismod sem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
-        "cCount": 3644,
-        "wCount": 543,
-        "pCount": 5,
-        "updated": 123
-      }
-    }
+  "f96ec11c6a3da": {
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]]
   },
-  "noteIndex": {
-    "4c4f28287af27": {
-      "T000001": {
-        "level": "H1",
-        "title": "Nobody Owens",
-        "layout": "NOTE",
-        "synopsis": "",
-        "cCount": 1864,
-        "wCount": 284,
-        "pCount": 3,
-        "updated": 123
-      }
-    },
-    "2426c6f0ca922": {
-      "T000001": {
-        "level": "H1",
-        "title": "Main Plot",
-        "layout": "NOTE",
-        "synopsis": "",
-        "cCount": 1369,
-        "wCount": 195,
-        "pCount": 2,
-        "updated": 123
-      }
-    },
-    "04468803b92e1": {
-      "T000001": {
-        "level": "H1",
-        "title": "Ancient Europe",
-        "layout": "NOTE",
-        "synopsis": "",
-        "cCount": 1770,
-        "wCount": 259,
-        "pCount": 3,
-        "updated": 123
-      }
-    }
+  "441420a886d82": {
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]]
   },
-  "textCounts": {
-    "7a992350f3eb6": [
-      230,
-      40,
-      3
-    ],
-    "8c58a65414c23": [
-      1058,
-      176,
-      2
-    ],
-    "88d59a277361b": [
-      584,
-      92,
-      1
-    ],
-    "db7e733775d4d": [
-      35,
-      6,
-      1
-    ],
-    "fb609cd8319dc": [
-      419,
-      67,
-      1
-    ],
-    "88243afbe5ed8": [
-      2758,
-      404,
-      4
-    ],
-    "f96ec11c6a3da": [
-      4043,
-      600,
-      6
-    ],
-    "846352075de7d": [
-      631,
-      109,
-      3
-    ],
-    "441420a886d82": [
-      477,
-      70,
-      1
-    ],
-    "eb103bc70c90c": [
-      3006,
-      439,
-      4
-    ],
-    "f8c0562e50f1b": [
-      3839,
-      563,
-      6
-    ],
-    "47666c91c7ccf": [
-      3644,
-      543,
-      5
-    ],
-    "4c4f28287af27": [
-      1864,
-      284,
-      3
-    ],
-    "2426c6f0ca922": [
-      1369,
-      195,
-      2
-    ],
-    "04468803b92e1": [
-      1770,
-      259,
-      3
-    ]
+  "eb103bc70c90c": {
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]]
+  },
+  "f8c0562e50f1b": {
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]]
+  },
+  "47666c91c7ccf": {
+    "T000001": [[3, "@pov", "Bod"], [4, "@plot", "Main"], [5, "@location", "Europe"]]
+  },
+  "4c4f28287af27": {
+    "T000001": [[4, "@plot", "Main"]]
   }
+},
+"fileIndex": {
+  "7a992350f3eb6": {
+    "T000001": {"level": "H1", "title": "Lorem Ipsum", "layout": "TITLE", "cCount": 230, "wCount": 40, "pCount": 3, "synopsis": ""}
+  },
+  "8c58a65414c23": {
+    "T000000": {"level": "H0", "title": "", "layout": "PAGE", "cCount": 1058, "wCount": 176, "pCount": 2, "synopsis": ""}
+  },
+  "88d59a277361b": {
+    "T000001": {"level": "H2", "title": "Prologue", "layout": "UNNUMBERED", "cCount": 584, "wCount": 92, "pCount": 1, "synopsis": "Explanation from the lipsum.com website."}
+  },
+  "db7e733775d4d": {
+    "T000001": {"level": "H1", "title": "Act One", "layout": "PARTITION", "cCount": 35, "wCount": 6, "pCount": 1, "synopsis": ""}
+  },
+  "fb609cd8319dc": {
+    "T000001": {"level": "H2", "title": "Chapter One", "layout": "CHAPTER", "cCount": 419, "wCount": 67, "pCount": 1, "synopsis": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at aliquam quam."}
+  },
+  "88243afbe5ed8": {
+    "T000001": {"level": "H3", "title": "Scene One", "layout": "SCENE", "cCount": 1197, "wCount": 174, "pCount": 2, "synopsis": "Aenean ut placerat velit. Etiam laoreet ullamcorper risus, eget lobortis enim scelerisque non. Suspendisse id maximus nunc, et mollis sapien. Curabitur vel semper sapien, non pulvinar dolor. Etiam finibus nisi vel mi molestie consectetur."},
+    "T000013": {"level": "H4", "title": "Scene One, Section Two", "layout": "SCENE", "cCount": 1561, "wCount": 230, "pCount": 2, "synopsis": ""}
+  },
+  "f96ec11c6a3da": {
+    "T000001": {"level": "H3", "title": "Scene Two", "layout": "SCENE", "cCount": 2034, "wCount": 299, "pCount": 3, "synopsis": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer sapien nulla, dictum at lacus a, dignissim consectetur dolor. Nunc vel eleifend lacus, eu dapibus orci."},
+    "T000015": {"level": "H4", "title": "Scene Two, Section Two", "layout": "SCENE", "cCount": 2009, "wCount": 301, "pCount": 3, "synopsis": ""}
+  },
+  "846352075de7d": {
+    "T000001": {"level": "H2", "title": "Why do we use it?", "layout": "BOOK", "cCount": 631, "wCount": 109, "pCount": 3, "synopsis": ""}
+  },
+  "441420a886d82": {
+    "T000001": {"level": "H2", "title": "Chapter Two", "layout": "CHAPTER", "cCount": 477, "wCount": 70, "pCount": 1, "synopsis": "Curabitur a elit posuere, varius ex et, convallis neque. Phasellus sagittis pharetra sem vitae dapibus. Curabitur varius lorem non pulvinar congue."}
+  },
+  "eb103bc70c90c": {
+    "T000001": {"level": "H3", "title": "Scene Three", "layout": "SCENE", "cCount": 3006, "wCount": 439, "pCount": 4, "synopsis": "Aenean ut libero ut lectus porttitor rhoncus vel et massa. Nam pretium, nibh et varius vehicula, urna metus blandit eros, euismod pharetra diam diam et libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos."}
+  },
+  "f8c0562e50f1b": {
+    "T000001": {"level": "H3", "title": "Scene Four", "layout": "SCENE", "cCount": 3839, "wCount": 563, "pCount": 6, "synopsis": "Nam tempor blandit magna laoreet aliquet. Vestibulum auctor posuere leo, ac gravida nisi rhoncus varius. Aenean posuere dolor vitae condimentum volutpat. Donec egestas volutpat risus, quis luctus justo."}
+  },
+  "47666c91c7ccf": {
+    "T000001": {"level": "H3", "title": "Scene Five", "layout": "SCENE", "cCount": 3644, "wCount": 543, "pCount": 5, "synopsis": "Praesent eget est porta, dictum ante in, egestas risus. Mauris risus mauris, consequat aliquam mauris et, feugiat iaculis ipsum. Aliquam arcu ipsum, fermentum ut arcu sed, lobortis euismod sem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."}
+  },
+  "4c4f28287af27": {
+    "T000001": {"level": "H1", "title": "Nobody Owens", "layout": "NOTE", "cCount": 1864, "wCount": 284, "pCount": 3, "synopsis": ""}
+  },
+  "2426c6f0ca922": {
+    "T000001": {"level": "H1", "title": "Main Plot", "layout": "NOTE", "cCount": 1369, "wCount": 195, "pCount": 2, "synopsis": ""}
+  },
+  "04468803b92e1": {
+    "T000001": {"level": "H1", "title": "Ancient Europe", "layout": "NOTE", "cCount": 1770, "wCount": 259, "pCount": 3, "synopsis": ""}
+  }
+},
+"textCounts": {
+  "7a992350f3eb6": [230, 40, 3],
+  "8c58a65414c23": [1058, 176, 2],
+  "88d59a277361b": [584, 92, 1],
+  "db7e733775d4d": [35, 6, 1],
+  "fb609cd8319dc": [419, 67, 1],
+  "88243afbe5ed8": [2758, 404, 4],
+  "f96ec11c6a3da": [4043, 600, 6],
+  "846352075de7d": [631, 109, 3],
+  "441420a886d82": [477, 70, 1],
+  "eb103bc70c90c": [3006, 439, 4],
+  "f8c0562e50f1b": [3839, 563, 6],
+  "47666c91c7ccf": [3644, 543, 5],
+  "4c4f28287af27": [1864, 284, 3],
+  "2426c6f0ca922": [1369, 195, 2],
+  "04468803b92e1": [1770, 259, 3]
+}
 }
