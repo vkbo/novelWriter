@@ -33,7 +33,7 @@ from functools import partial
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from nw.enum import nwItemLayout, nwItemType
-from nw.common import numberToRoman
+from nw.common import numberToRoman, checkInt
 from nw.constants import nwConst, nwRegEx, nwUnicode
 from nw.core.document import NWDoc
 
@@ -366,69 +366,99 @@ class Tokenizer():
         self.theTokens = []
         tmpMarkdown = []
         nLine = 0
+        breakNext = False
         for aLine in self.theText.splitlines():
             nLine += 1
+            sLine = aLine.strip()
 
-            # Tag lines starting with specific characters
-            if len(aLine.strip()) == 0:
+            # Check for blank lines
+            if len(sLine) == 0:
                 self.theTokens.append((
                     self.T_EMPTY, nLine, "", None, self.A_NONE
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("\n")
 
+                continue
+
+            if breakNext:
+                sAlign = self.A_PBB
+                breakNext = False
+            else:
+                sAlign = self.A_NONE
+
+            # Check Line Format
+            # =================
+
+            if aLine[0] == "[":
+                # Parse special formatting line
+
+                if sLine in ("[NEWPAGE]", "[NEW PAGE]"):
+                    breakNext = True
+                    continue
+
+                elif sLine == "[VSPACE]":
+                    self.theTokens.append(
+                        (self.T_SKIP, nLine, "", None, self.A_NONE)
+                    )
+                    continue
+
+                elif sLine.startswith("[VSPACE:") and sLine.endswith("]"):
+                    self.theTokens += checkInt(sLine[8:-1], 0) * [
+                        (self.T_SKIP, nLine, "", None, self.A_NONE)
+                    ]
+                    continue
+
             elif aLine[0] == "%":
                 cLine = aLine[1:].lstrip()
                 synTag = cLine[:9].lower()
                 if synTag == "synopsis:":
                     self.theTokens.append((
-                        self.T_SYNOPSIS, nLine, cLine[9:].strip(), None, self.A_NONE
+                        self.T_SYNOPSIS, nLine, cLine[9:].strip(), None, sAlign
                     ))
                     if self.doSynopsis and self.keepMarkdown:
                         tmpMarkdown.append("%s\n" % aLine)
                 else:
                     self.theTokens.append((
-                        self.T_COMMENT, nLine, aLine[1:].strip(), None, self.A_NONE
+                        self.T_COMMENT, nLine, aLine[1:].strip(), None, sAlign
                     ))
                     if self.doComments and self.keepMarkdown:
                         tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[0] == "@":
                 self.theTokens.append((
-                    self.T_KEYWORD, nLine, aLine[1:].strip(), None, self.A_NONE
+                    self.T_KEYWORD, nLine, aLine[1:].strip(), None, sAlign
                 ))
                 if self.doKeywords and self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:2] == "# ":
-                if self.isNote:
-                    textAlign = self.A_NONE
-                else:
-                    textAlign = self.A_CENTRE
+                if not self.isNote:
+                    sAlign |= self.A_CENTRE
 
                 self.theTokens.append((
-                    self.T_HEAD1, nLine, aLine[2:].strip(), None, textAlign
+                    self.T_HEAD1, nLine, aLine[2:].strip(), None, sAlign
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:3] == "## ":
                 self.theTokens.append((
-                    self.T_HEAD2, nLine, aLine[3:].strip(), None, self.A_NONE
+                    self.T_HEAD2, nLine, aLine[3:].strip(), None, sAlign
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:4] == "### ":
                 self.theTokens.append((
-                    self.T_HEAD3, nLine, aLine[4:].strip(), None, self.A_NONE
+                    self.T_HEAD3, nLine, aLine[4:].strip(), None, sAlign
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:5] == "#### ":
                 self.theTokens.append((
-                    self.T_HEAD4, nLine, aLine[5:].strip(), None, self.A_NONE
+                    self.T_HEAD4, nLine, aLine[5:].strip(), None, sAlign
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
@@ -457,18 +487,17 @@ class Tokenizer():
                     indRight = True
                     aLine = aLine[:-1].rstrip(" ")
 
-                textAlign = self.A_NONE
                 if alnLeft and alnRight:
-                    textAlign = self.A_CENTRE
+                    sAlign |= self.A_CENTRE
                 elif alnLeft:
-                    textAlign = self.A_LEFT
+                    sAlign |= self.A_LEFT
                 elif alnRight:
-                    textAlign = self.A_RIGHT
+                    sAlign |= self.A_RIGHT
 
                 if indLeft:
-                    textAlign |= self.A_IND_L
+                    sAlign |= self.A_IND_L
                 if indRight:
-                    textAlign |= self.A_IND_R
+                    sAlign |= self.A_IND_R
 
                 # Otherwise we use RegEx to find formatting tags within a line of text
                 fmtPos = []
@@ -486,7 +515,7 @@ class Tokenizer():
                 # sorted by position
                 fmtPos = sorted(fmtPos, key=itemgetter(0))
                 self.theTokens.append((
-                    self.T_TEXT, nLine, aLine, fmtPos, textAlign
+                    self.T_TEXT, nLine, aLine, fmtPos, sAlign
                 ))
                 if self.keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)

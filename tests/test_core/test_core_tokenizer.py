@@ -205,8 +205,8 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_Tokenize(mockGUI):
-    """Test the tokenization of the Tokenizer class.
+def testCoreToken_BlockFormat(mockGUI):
+    """Test the tokenization of block formats in the Tokenizer class.
     """
     theProject = NWProject(mockGUI)
     theToken = Tokenizer(theProject)
@@ -305,6 +305,61 @@ def testCoreToken_Tokenize(mockGUI):
         (Tokenizer.T_EMPTY, 3, "", None, Tokenizer.A_NONE),
     ]
     assert theToken.theMarkdown[-1] == "@pov: Bod\n@plot: Main\n@location: Europe\n\n"
+
+    # Alignment and Indentation
+    dblIndent = Tokenizer.A_IND_L | Tokenizer.A_IND_R
+    rIndAlign = Tokenizer.A_RIGHT | Tokenizer.A_IND_R
+    theToken.theText = (
+        "Some regular text\n\n"
+        "Some left-aligned text <<\n\n"
+        ">> Some right-aligned text\n\n"
+        ">> Some centered text <<\n\n"
+        "> Left-indented block\n\n"
+        "Right-indented block <\n\n"
+        "> Double-indented block <\n\n"
+        ">> Right-indent, right-aligned <\n\n"
+    )
+    theToken.tokenizeText()
+    assert theToken.theTokens == [
+        (Tokenizer.T_TEXT,  1, "Some regular text", [], Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 2, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  3, "Some left-aligned text", [], Tokenizer.A_LEFT),
+        (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  5, "Some right-aligned text", [], Tokenizer.A_RIGHT),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  7, "Some centered text", [], Tokenizer.A_CENTRE),
+        (Tokenizer.T_EMPTY, 8, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  9, "Left-indented block", [], Tokenizer.A_IND_L),
+        (Tokenizer.T_EMPTY, 10, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  11, "Right-indented block", [], Tokenizer.A_IND_R),
+        (Tokenizer.T_EMPTY, 12, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  13, "Double-indented block", [], dblIndent),
+        (Tokenizer.T_EMPTY, 14, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  15, "Right-indent, right-aligned", [], rIndAlign),
+        (Tokenizer.T_EMPTY, 16, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 16, "", None, Tokenizer.A_NONE),
+    ]
+    assert theToken.theMarkdown[-1] == (
+        "Some regular text\n\n"
+        "Some left-aligned text\n\n"
+        "Some right-aligned text\n\n"
+        "Some centered text\n\n"
+        "Left-indented block\n\n"
+        "Right-indented block\n\n"
+        "Double-indented block\n\n"
+        "Right-indent, right-aligned\n\n\n"
+    )
+
+# END Test testCoreToken_BlockFormat
+
+
+@pytest.mark.core
+def testCoreToken_TextFormat(mockGUI):
+    """Test the tokenization of text formats in the Tokenizer class.
+    """
+    theProject = NWProject(mockGUI)
+    theToken = Tokenizer(theProject)
+    theToken.setKeepMarkdown(True)
 
     # Text
     theToken.theText = "Some plain text\non two lines\n\n\n"
@@ -417,51 +472,148 @@ def testCoreToken_Tokenize(mockGUI):
         "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
     )
 
-    # Alignment and Indentation
-    dblIndent = Tokenizer.A_IND_L | Tokenizer.A_IND_R
-    rIndAlign = Tokenizer.A_RIGHT | Tokenizer.A_IND_R
+# END Test testCoreToken_TextFormat
+
+
+@pytest.mark.core
+def testCoreToken_SpecialFormat(mockGUI):
+    """Test the tokenization of special formats in the Tokenizer class.
+    """
+    theProject = NWProject(mockGUI)
+    theToken = Tokenizer(theProject)
+
+    theToken.isStory = True
+
+    # New Page
+    # ========
+
+    correctResp = [
+        (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_CENTRE),
+        (Tokenizer.T_EMPTY, 2, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_HEAD1, 5, "Title Two", None, Tokenizer.A_CENTRE | Tokenizer.A_PBB),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
+    ]
+
+    # Command wo/Space
     theToken.theText = (
-        "Some regular text\n\n"
-        "Some left-aligned text <<\n\n"
-        ">> Some right-aligned text\n\n"
-        ">> Some centered text <<\n\n"
-        "> Left-indented block\n\n"
-        "Right-indented block <\n\n"
-        "> Double-indented block <\n\n"
-        ">> Right-indent, right-aligned <\n\n"
+        "# Title One\n\n"
+        "[NEWPAGE]\n\n"
+        "# Title Two\n\n"
+    )
+    theToken.tokenizeText()
+    assert theToken.theTokens == correctResp
+
+    # Command w/Space
+    theToken.theText = (
+        "# Title One\n\n"
+        "[NEW PAGE]\n\n"
+        "# Title Two\n\n"
+    )
+    theToken.tokenizeText()
+    assert theToken.theTokens == correctResp
+
+    # Trailing Spaces
+    theToken.theText = (
+        "# Title One\n\n"
+        "[NEW PAGE]   \t\n\n"
+        "# Title Two\n\n"
+    )
+    theToken.tokenizeText()
+    assert theToken.theTokens == correctResp
+
+    # Single Empty Paragraph
+    # ======================
+
+    theToken.theText = (
+        "# Title One\n\n"
+        "[VSPACE] \n\n"
+        "Some text to go here ...\n\n"
     )
     theToken.tokenizeText()
     assert theToken.theTokens == [
-        (Tokenizer.T_TEXT,  1, "Some regular text", [], Tokenizer.A_NONE),
+        (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 2, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  3, "Some left-aligned text", [], Tokenizer.A_LEFT),
+        (Tokenizer.T_SKIP,  3, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  5, "Some right-aligned text", [], Tokenizer.A_RIGHT),
+        (Tokenizer.T_TEXT,  5, "Some text to go here ...", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  7, "Some centered text", [], Tokenizer.A_CENTRE),
-        (Tokenizer.T_EMPTY, 8, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  9, "Left-indented block", [], Tokenizer.A_IND_L),
-        (Tokenizer.T_EMPTY, 10, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  11, "Right-indented block", [], Tokenizer.A_IND_R),
-        (Tokenizer.T_EMPTY, 12, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  13, "Double-indented block", [], dblIndent),
-        (Tokenizer.T_EMPTY, 14, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  15, "Right-indent, right-aligned", [], rIndAlign),
-        (Tokenizer.T_EMPTY, 16, "", None, Tokenizer.A_NONE),
-        (Tokenizer.T_EMPTY, 16, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == (
-        "Some regular text\n\n"
-        "Some left-aligned text\n\n"
-        "Some right-aligned text\n\n"
-        "Some centered text\n\n"
-        "Left-indented block\n\n"
-        "Right-indented block\n\n"
-        "Double-indented block\n\n"
-        "Right-indent, right-aligned\n\n\n"
-    )
 
-# END Test testCoreToken_Tokenize
+    # Multiple Empty Paragraphs
+    # =========================
+
+    # One Skip
+    theToken.theText = (
+        "# Title One\n\n"
+        "[VSPACE:1] \n\n"
+        "Some text to go here ...\n\n"
+    )
+    theToken.tokenizeText()
+    assert theToken.theTokens == [
+        (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_CENTRE),
+        (Tokenizer.T_EMPTY, 2, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_SKIP,  3, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  5, "Some text to go here ...", [], Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
+    ]
+
+    # Three Skips
+    theToken.theText = (
+        "# Title One\n\n"
+        "[VSPACE:3] \n\n"
+        "Some text to go here ...\n\n"
+    )
+    theToken.tokenizeText()
+    assert theToken.theTokens == [
+        (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_CENTRE),
+        (Tokenizer.T_EMPTY, 2, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_SKIP,  3, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_SKIP,  3, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_SKIP,  3, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  5, "Some text to go here ...", [], Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
+    ]
+
+    # Malformed Command, Case 1
+    theToken.theText = (
+        "# Title One\n\n"
+        "[VSPACE:3xa] \n\n"
+        "Some text to go here ...\n\n"
+    )
+    theToken.tokenizeText()
+    assert theToken.theTokens == [
+        (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_CENTRE),
+        (Tokenizer.T_EMPTY, 2, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  5, "Some text to go here ...", [], Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
+    ]
+
+    # Malformed Command, Case 2
+    theToken.theText = (
+        "# Title One\n\n"
+        "[VSPACE:3.5]\n\n"
+        "Some text to go here ...\n\n"
+    )
+    theToken.tokenizeText()
+    assert theToken.theTokens == [
+        (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_CENTRE),
+        (Tokenizer.T_EMPTY, 2, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 4, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  5, "Some text to go here ...", [], Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 6, "", None, Tokenizer.A_NONE),
+    ]
+
+# END Test testCoreToken_SpecialFormat
 
 
 @pytest.mark.core
