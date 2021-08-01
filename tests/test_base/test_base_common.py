@@ -28,10 +28,11 @@ from datetime import datetime
 from tools import writeFile
 
 from nw.common import (
-    checkString, checkBool, checkInt, formatInt, transferCase, fuzzyTime,
-    checkHandle, formatTimeStamp, parseTimeStamp, formatTime, hexToInt,
-    makeFileNameSafe, isHandle, isTitleTag, isItemClass, isItemType,
-    isItemLayout, numberToRoman, NWConfigParser
+    checkString, checkInt, checkBool, checkHandle, isHandle, isTitleTag,
+    isItemClass, isItemType, isItemLayout, hexToInt, formatInt,
+    formatTimeStamp, formatTime, parseTimeStamp, splitVersionNumber,
+    transferCase, fuzzyTime, numberToRoman, jsonEncode, makeFileNameSafe,
+    NWConfigParser
 )
 
 
@@ -250,6 +251,25 @@ def testBaseCommon_ParseTimeStamp():
 
 
 @pytest.mark.base
+def testBaseCommon_SplitVersionNumber():
+    """Test the splitVersionNumber function.
+    """
+    # OK Values
+    assert splitVersionNumber("1") == [1, 0, 0, 10000]
+    assert splitVersionNumber("1.2") == [1, 2, 0, 10200]
+    assert splitVersionNumber("1.2.3") == [1, 2, 3, 10203]
+    assert splitVersionNumber("1.2.3.4") == [1, 2, 3, 10203]
+    assert splitVersionNumber("99.99.99") == [99, 99, 99, 999999]
+
+    # Failed Values
+    assert splitVersionNumber(None) == [0, 0, 0, 0]
+    assert splitVersionNumber(1234) == [0, 0, 0, 0]
+    assert splitVersionNumber("1.2abc") == [1, 0, 0, 10000]
+
+# END Test testBaseCommon_SplitVersionNumber
+
+
+@pytest.mark.base
 def testBaseCommon_FormatInt():
     """Test the formatInt function.
     """
@@ -362,6 +382,90 @@ def testBaseCommon_RomanNumbers():
     assert numberToRoman(999, True) == "cmxcix"
 
 # END Test testBaseCommon_RomanNumbers
+
+
+@pytest.mark.base
+def testBaseCommon_JsonEncode():
+    """Test the jsonEncode function.
+    """
+    # Wrong type
+    assert jsonEncode(None) == "[]"
+
+    # Correct types
+    assert jsonEncode([1, 2]) == "[\n  1,\n  2\n]"
+    assert jsonEncode((1, 2)) == "[\n  1,\n  2\n]"
+    assert jsonEncode({1: 2}) == "{\n  \"1\": 2\n}"
+
+    tstDict = {
+        "null": None,
+        "one": 1,
+        "two": "2",
+        "three": 3.0,
+        "four": False,
+        "five": (1, 2),
+        "six": {"a": 1, "b": 2},
+        "seven": [],
+        "eight": {},
+    }
+
+    # Complex Structure
+    assert jsonEncode(tstDict) == (
+        '{\n'
+        '  "null": null,\n'
+        '  "one": 1,\n'
+        '  "two": "2",\n'
+        '  "three": 3.0,\n'
+        '  "four": false,\n'
+        '  "five": [\n'
+        '    1,\n'
+        '    2\n'
+        '  ],\n'
+        '  "six": {\n'
+        '    "a": 1,\n'
+        '    "b": 2\n'
+        '  },\n'
+        '  "seven": [],\n'
+        '  "eight": {}\n'
+        '}'
+    )
+
+    # Additional Indent
+    assert jsonEncode(tstDict, n=2) == (
+        '{\n'
+        '      "null": null,\n'
+        '      "one": 1,\n'
+        '      "two": "2",\n'
+        '      "three": 3.0,\n'
+        '      "four": false,\n'
+        '      "five": [\n'
+        '        1,\n'
+        '        2\n'
+        '      ],\n'
+        '      "six": {\n'
+        '        "a": 1,\n'
+        '        "b": 2\n'
+        '      },\n'
+        '      "seven": [],\n'
+        '      "eight": {}\n'
+        '    }'
+    )
+
+    # Max Indent
+    assert jsonEncode(tstDict, n=0, nmax=1) == (
+        '{\n'
+        '  "null": null,\n'
+        '  "one": 1,\n'
+        '  "two": "2",\n'
+        '  "three": 3.0,\n'
+        '  "four": false,\n'
+        '  "five": [1, 2],\n'
+        '  "six": {"a": 1, "b": 2},\n'
+        '  "seven": [],\n'
+        '  "eight": {}\n'
+        '}'
+    )
+
+# END Test testBaseCommon_JsonEncode
 
 
 @pytest.mark.base
