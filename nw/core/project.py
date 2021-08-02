@@ -49,10 +49,10 @@ from nw.constants import trConst, nwFiles, nwLabels
 
 logger = logging.getLogger(__name__)
 
-FILE_VERSION = "1.3"
-
 
 class NWProject():
+
+    FILE_VERSION = "1.3"
 
     def __init__(self, theParent):
 
@@ -478,7 +478,7 @@ class NWProject():
             self.clearProject()
             return False
 
-        if fileVersion != FILE_VERSION:
+        if fileVersion != self.FILE_VERSION:
             msgYes = self.theParent.askQuestion(
                 self.tr("File Version"),
                 self.tr(
@@ -638,7 +638,7 @@ class NWProject():
         nwXML = etree.Element("novelWriterXML", attrib={
             "appVersion":  str(nw.__version__),
             "hexVersion":  str(nw.__hexversion__),
-            "fileVersion": FILE_VERSION,
+            "fileVersion": self.FILE_VERSION,
             "timeStamp":   formatTimeStamp(saveTime),
         })
 

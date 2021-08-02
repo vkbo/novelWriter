@@ -284,10 +284,14 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert theIndex.scanText(xHandle, "Hello World!") is False
 
     # Make some usable items
+    tHandle = theProject.newFile("Title", nwItemClass.NOVEL, "a508bb932959c")
     pHandle = theProject.newFile("Page",  nwItemClass.NOVEL, "a508bb932959c")
     nHandle = theProject.newFile("Hello", nwItemClass.NOVEL, "a508bb932959c")
     cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
     sHandle = theProject.newFile("Scene", nwItemClass.NOVEL, "a508bb932959c")
+
+    # Text Indexing
+    # =============
 
     # Index correct text
     assert theIndex.scanText(cHandle, (
@@ -305,7 +309,10 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert theIndex._tagIndex == {"Jane": [2, cHandle, "CHARACTER", "T000001"]}
     assert theIndex.getNovelData(nHandle, "T000001")["title"] == "Hello World!"
 
-    # Check that title sections are indexed properly
+    # Title Indexing
+    # ==============
+
+    # Document File
     assert theIndex.scanText(nHandle, (
         "# Title One\n\n"
         "% synopsis: Synopsis One.\n\n"
@@ -322,7 +329,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
         "##### Title Five\n\n"  # Not interpreted as a title, the hashes are counted as a word
         "Paragraph Five.\n\n"
     ))
-    assert cHandle not in theIndex._refIndex
+    assert nHandle not in theIndex._refIndex
 
     assert theIndex._fileIndex[nHandle]["T000001"]["level"] == "H1"
     assert theIndex._fileIndex[nHandle]["T000007"]["level"] == "H2"
@@ -359,6 +366,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert theIndex._fileIndex[nHandle]["T000013"]["synopsis"] == "Synopsis Three."
     assert theIndex._fileIndex[nHandle]["T000019"]["synopsis"] == "Synopsis Four."
 
+    # Note File
     assert theIndex.scanText(cHandle, (
         "# Title One\n\n"
         "@tag: One\n\n"
@@ -375,6 +383,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert theIndex._fileIndex[cHandle]["T000001"]["pCount"] == 1
     assert theIndex._fileIndex[cHandle]["T000001"]["synopsis"] == "Synopsis One."
 
+    # Valid and Invalid References
     assert theIndex.scanText(sHandle, (
         "# Title One\n\n"
         "@pov: One\n\n"  # Valid
@@ -387,7 +396,40 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
         [[3, "@pov", "One"], [5, "@char", "Two"]]
     )
 
+    # Special Titles
+    # ==============
+
+    assert theIndex.scanText(tHandle, (
+        "#! My Project\n\n"
+        ">> By Jane Doe <<\n\n"
+    ))
+    assert tHandle not in theIndex._refIndex
+
+    assert theIndex._fileIndex[tHandle]["T000001"]["level"] == "H1"
+    assert theIndex._fileIndex[tHandle]["T000001"]["title"] == "My Project"
+    assert theIndex._fileIndex[tHandle]["T000001"]["layout"] == "DOCUMENT"
+    assert theIndex._fileIndex[tHandle]["T000001"]["cCount"] == 21
+    assert theIndex._fileIndex[tHandle]["T000001"]["wCount"] == 5
+    assert theIndex._fileIndex[tHandle]["T000001"]["pCount"] == 1
+    assert theIndex._fileIndex[tHandle]["T000001"]["synopsis"] == ""
+
+    assert theIndex.scanText(tHandle, (
+        "##! Prologue\n\n"
+        "In the beginning there was time ...\n\n"
+    ))
+    assert tHandle not in theIndex._refIndex
+
+    assert theIndex._fileIndex[tHandle]["T000001"]["level"] == "H2"
+    assert theIndex._fileIndex[tHandle]["T000001"]["title"] == "Prologue"
+    assert theIndex._fileIndex[tHandle]["T000001"]["layout"] == "DOCUMENT"
+    assert theIndex._fileIndex[tHandle]["T000001"]["cCount"] == 43
+    assert theIndex._fileIndex[tHandle]["T000001"]["wCount"] == 8
+    assert theIndex._fileIndex[tHandle]["T000001"]["pCount"] == 1
+    assert theIndex._fileIndex[tHandle]["T000001"]["synopsis"] == ""
+
     # Page wo/Title
+    # =============
+
     theProject.projTree[pHandle].itemLayout = nwItemLayout.DOCUMENT
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
@@ -797,8 +839,8 @@ def testCoreIndex_CheckRefIndex(mockGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_CheckNovelNoteIndex(mockGUI):
-    """Test the novel and note index checkers.
+def testCoreIndex_CheckFileIndex(mockGUI):
+    """Test the file index checker.
     """
     theProject = NWProject(mockGUI)
     theIndex = NWIndex(theProject)
@@ -1054,7 +1096,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": "72",
                 "wCount": 15,
                 "pCount": 2,
@@ -1116,7 +1158,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
     with pytest.raises(ValueError):
         theIndex._checkFileIndex()
 
-# END Test testCoreIndex_CheckNovelNoteIndex
+# END Test testCoreIndex_CheckFileIndex
 
 
 @pytest.mark.core
@@ -1234,5 +1276,21 @@ def testCoreIndex_CountWords():
     assert cC == 59
     assert wC == 9
     assert pC == 4
+
+    # Formatting Codes
+    cC, wC, pC = countWords((
+        "Some text\n\n"
+        "[NEWPAGE]\n\n"
+        "more text\n\n"
+        "[NEW PAGE]]\n\n"
+        "even more text\n\n"
+        "[VSPACE]\n\n"
+        "and some final text\n\n"
+        "[VSPACE:4]\n\n"
+        "THE END\n\n"
+    ))
+    assert cC == 58
+    assert wC == 13
+    assert pC == 5
 
 # END Test testCoreIndex_CountWords

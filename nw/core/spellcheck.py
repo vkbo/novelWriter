@@ -143,7 +143,7 @@ class NWSpellEnchant(NWSpellCheck):
         try:
             import enchant
             if self.theBroker is not None:
-                logger.verbose("Deleting old pyenchant broker")
+                logger.debug("Deleting old pyenchant broker")
                 del self.theBroker
 
             self.theBroker = enchant.Broker()

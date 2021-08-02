@@ -159,13 +159,25 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
 
     assert theProject.saveProject()
 
-    # Root heading
+    # Root Heading
     assert theToken.addRootHeading("stuff") is False
     assert theToken.addRootHeading(sHandle) is False
+
+    # First Page
     assert theToken.addRootHeading("7695ce551d265") is True
     assert theToken.theMarkdown[-1] == "# Notes: Plot\n\n"
+    assert theToken.theTokens[-1] == (
+        Tokenizer.T_TITLE, 0, "Notes: Plot", None, Tokenizer.A_CENTRE
+    )
 
-    # Set text
+    # Not First Page
+    assert theToken.addRootHeading("7695ce551d265") is True
+    assert theToken.theMarkdown[-1] == "# Notes: Plot\n\n"
+    assert theToken.theTokens[-1] == (
+        Tokenizer.T_TITLE, 0, "Notes: Plot", None, Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    )
+
+    # Set Text
     assert theToken.setText("stuff") is False
     assert theToken.setText(sHandle) is True
     assert theToken.theText == docText
@@ -197,7 +209,10 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
     # Save File
     savePath = os.path.join(nwMinimal, "dump.nwd")
     theToken.saveRawMarkdown(savePath)
-    assert readFile(savePath) == "# Notes: Plot\n\n"
+    assert readFile(savePath) == (
+        "# Notes: Plot\n\n"
+        "# Notes: Plot\n\n"
+    )
 
 # END Test testCoreToken_TextOps
 
@@ -348,6 +363,60 @@ def testCoreToken_HeaderFormat(mockGUI):
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
     assert theToken.theMarkdown[-1] == "#### Heading 4\n\n"
+
+    # Title
+    # =====
+
+    # Story File
+    theToken.isNovel = True
+    theToken.isNote  = False
+    theToken.theText = "#! Title\n"
+
+    theToken.tokenizeText()
+    assert theToken.theTokens == [
+        (Tokenizer.T_TITLE, 1, "Title", None, Tokenizer.A_CENTRE | Tokenizer.A_PBB),
+        (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
+    ]
+    assert theToken.theMarkdown[-1] == "#! Title\n\n"
+
+    # Note File
+    theToken.isNovel = False
+    theToken.isNote  = True
+    theToken.theText = "#! Title\n"
+
+    theToken.tokenizeText()
+    assert theToken.theTokens == [
+        (Tokenizer.T_HEAD1, 1, "Title", None, Tokenizer.A_CENTRE),
+        (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
+    ]
+    assert theToken.theMarkdown[-1] == "#! Title\n\n"
+
+    # Unnumbered
+    # ==========
+
+    # Story File
+    theToken.isNovel = True
+    theToken.isNote  = False
+    theToken.theText = "##! Prologue\n"
+
+    theToken.tokenizeText()
+    assert theToken.theTokens == [
+        (Tokenizer.T_UNNUM, 1, "Prologue", None, Tokenizer.A_PBB),
+        (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
+    ]
+    assert theToken.theMarkdown[-1] == "##! Prologue\n\n"
+
+    # Note File
+    theToken.isNovel = False
+    theToken.isNote  = True
+    theToken.theText = "##! Prologue\n"
+
+    theToken.tokenizeText()
+    assert theToken.theTokens == [
+        (Tokenizer.T_HEAD2, 1, "Prologue", None, Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
+    ]
+    assert theToken.theMarkdown[-1] == "##! Prologue\n\n"
 
 # END Test testCoreToken_HeaderFormat
 

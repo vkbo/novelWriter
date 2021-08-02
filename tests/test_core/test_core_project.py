@@ -398,7 +398,7 @@ def testCoreProject_Open(monkeypatch, nwMinimal, mockGUI):
     ))
     assert theProject.openProject(nwMinimal) is False
 
-    # Larger hex version
+    # Update file version
     writeFile(rName, (
         "<?xml version='1.0' encoding='utf-8'?>\n"
         "<novelWriterXML "
@@ -410,6 +410,22 @@ def testCoreProject_Open(monkeypatch, nwMinimal, mockGUI):
     ))
     mockGUI.askResponse = False
     assert theProject.openProject(nwMinimal) is False
+    assert mockGUI.lastQuestion[0] == "File Version"
+    mockGUI.undo()
+
+    # Larger hex version
+    writeFile(rName, (
+        "<?xml version='1.0' encoding='utf-8'?>\n"
+        "<novelWriterXML "
+        "appVersion=\"1.0\" "
+        "hexVersion=\"0xffffffff\" "
+        "fileVersion=\"%s\" "
+        "timeStamp=\"2020-01-01 00:00:00\">\n"
+        "</novelWriterXML>\n"
+    ) % theProject.FILE_VERSION)
+    mockGUI.askResponse = False
+    assert theProject.openProject(nwMinimal) is False
+    assert mockGUI.lastQuestion[0] == "Version Conflict"
     mockGUI.undo()
 
     # Test skipping XML entries
@@ -672,12 +688,12 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
     assert theProject.projPath == os.path.expanduser("~")
 
     # Create a new folder and populate it
-    projPath = os.path.join(nwMinimal, "dummy1")
+    projPath = os.path.join(nwMinimal, "mock1")
     assert theProject.setProjectPath(projPath, newProject=True)
 
     # Make os.mkdir fail
     monkeypatch.setattr("os.mkdir", causeOSError)
-    projPath = os.path.join(nwMinimal, "dummy2")
+    projPath = os.path.join(nwMinimal, "mock2")
     assert not theProject.setProjectPath(projPath, newProject=True)
 
     # Set back
@@ -752,6 +768,14 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
     assert theProject.setSpellLang("en_GB")
     assert theProject.projSpell == "en_GB"
     assert theProject.projChanged
+
+    # Project Language
+    theProject.projChanged = False
+    theProject.projLang = "en"
+    assert theProject.setProjectLang(None) is True
+    assert theProject.projLang is None
+    assert theProject.setProjectLang("en_GB") is True
+    assert theProject.projLang == "en_GB"
 
     # Automatic outline update
     theProject.projChanged = False
