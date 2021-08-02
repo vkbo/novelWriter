@@ -40,8 +40,7 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
-    qtbot.waitForWindowShown(nwGUI)
-    qtbot.wait(500)
+    qtbot.wait(stepDelay)
 
     # Change Settings
     assert nw.CONFIG.confPath == nwMinimal
@@ -64,8 +63,7 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert nwGUI.mainConf.confPath == nwMinimal
     qtbot.addWidget(nwGUI)
     nwGUI.show()
-    qtbot.waitForWindowShown(nwGUI)
-    qtbot.wait(500)
+    qtbot.wait(stepDelay)
 
     assert nw.CONFIG.guiTheme == "default_dark"
     assert nw.CONFIG.guiSyntax == "tomorrow_night_eighties"

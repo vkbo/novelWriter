@@ -157,7 +157,6 @@ def nwGUI(qtbot, monkeypatch, fncDir, fncConf):
     nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
-    qtbot.waitForWindowShown(nwGUI)
     qtbot.wait(20)
 
     nwGUI.mainConf.lastPath = fncDir

@@ -92,15 +92,10 @@ def testCoreSpell_Enchant(monkeypatch, tmpDir):
         assert spChk.listDictionaries() == []
         assert spChk.describeDict() == ("", "")
 
-    # Load the proper enchant package
+    # Load the proper enchant package (twice)
     spChk = NWSpellEnchant()
     spChk.setLanguage("en", wList)
-    idBrk = id(spChk.theBroker)
-
-    # Load it again and check that the broker is reloaded
     spChk.setLanguage("en", wList)
-    spChk.setLanguage("en", wList)
-    assert id(spChk.theBroker) != idBrk
 
     # Check words
     assert spChk.checkWord("a_word") is True
