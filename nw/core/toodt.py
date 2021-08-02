@@ -380,6 +380,10 @@ class ToOdt(Tokenizer):
                 tHead = tText.replace(r"\\", "\n")
                 self._addTextPar("Title", oStyle, tHead, isHead=True)
 
+            elif tType == self.T_UNNUM:
+                tHead = tText.replace(r"\\", "\n")
+                self._addTextPar("Heading_2", oStyle, tHead, isHead=True, oLevel="2")
+
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "\n")
                 self._addTextPar("Heading_1", oStyle, tHead, isHead=True, oLevel="1")

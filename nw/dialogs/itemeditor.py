@@ -90,7 +90,7 @@ class GuiItemEditor(QDialog):
         validLayouts = []
         if self.theItem.itemType == nwItemType.FILE:
             if self.theItem.itemClass in nwLists.CLS_NOVEL:
-                validLayouts.append(nwItemLayout.STORY)
+                validLayouts.append(nwItemLayout.DOCUMENT)
             validLayouts.append(nwItemLayout.NOTE)
         else:
             validLayouts.append(nwItemLayout.NO_LAYOUT)

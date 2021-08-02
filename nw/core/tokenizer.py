@@ -135,7 +135,7 @@ class Tokenizer():
 
         # This File
         self.isNone  = False
-        self.isStory = False
+        self.isNovel = False
         self.isNote  = False
         self.isFirst = True
 
@@ -306,7 +306,7 @@ class Tokenizer():
             self.errData.append(errVal)
 
         self.isNone  = self.theItem.itemLayout == nwItemLayout.NO_LAYOUT
-        self.isStory = self.theItem.itemLayout == nwItemLayout.STORY
+        self.isNovel = self.theItem.itemLayout == nwItemLayout.DOCUMENT
         self.isNote  = self.theItem.itemLayout == nwItemLayout.NOTE
 
         return True
@@ -443,10 +443,10 @@ class Tokenizer():
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:2] == "# ":
-                if self.isStory:
+                if self.isNovel:
                     sAlign |= self.A_CENTRE
 
-                if self.isStory and not self.isFirst:
+                if self.isNovel and not self.isFirst:
                     sAlign |= self.A_PBB
 
                 self.theTokens.append((
@@ -456,7 +456,7 @@ class Tokenizer():
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:3] == "## ":
-                if self.isStory and not self.isFirst:
+                if self.isNovel and not self.isFirst:
                     sAlign |= self.A_PBB
 
                 self.theTokens.append((
@@ -480,12 +480,12 @@ class Tokenizer():
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:3] == "#! ":
-                if self.isStory:
+                if self.isNovel:
                     tStyle = self.T_TITLE
                 else:
                     tStyle = self.T_HEAD1
 
-                if self.isStory and not self.isFirst:
+                if self.isNovel and not self.isFirst:
                     sAlign |= self.A_PBB
 
                 self.theTokens.append((
@@ -495,10 +495,13 @@ class Tokenizer():
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:4] == "##! ":
-                if self.isStory:
+                if self.isNovel:
                     tStyle = self.T_UNNUM
                 else:
                     tStyle = self.T_HEAD2
+
+                if self.isNovel and not self.isFirst:
+                    sAlign |= self.A_PBB
 
                 self.theTokens.append((
                     tStyle, nLine, aLine[4:].strip(), None, sAlign
@@ -607,7 +610,7 @@ class Tokenizer():
         """Apply formatting to the text headers for novel files. This
         also applies chapter and scene numbering.
         """
-        if not self.isStory:
+        if not self.isNovel:
             return False
 
         for n, tToken in enumerate(self.theTokens):
@@ -628,8 +631,10 @@ class Tokenizer():
                 # Chapter
 
                 # Numbered or Unnumbered
-                if tToken[2].startswith("*") or tToken[0] == self.T_UNNUM:
+                if tToken[2].startswith("*"):
                     tTemp = self._formatHeading(self.fmtUnNum, tToken[2][1:].lstrip())
+                elif tToken[0] == self.T_UNNUM:
+                    tTemp = self._formatHeading(self.fmtUnNum, tToken[2])
                 else:
                     self.numChapter += 1
                     tTemp = self._formatHeading(self.fmtChapter, tToken[2])

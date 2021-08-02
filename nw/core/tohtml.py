@@ -127,7 +127,7 @@ class ToHtml(Tokenizer):
                 self.FMT_D_E: "</del>",
             }
 
-        if self.isStory and self.genMode != self.M_PREVIEW:
+        if self.isNovel and self.genMode != self.M_PREVIEW:
             # For story files, we bump the titles one level up
             h1Cl = " class='title'"
             h1 = "h1"
@@ -207,6 +207,10 @@ class ToHtml(Tokenizer):
             elif tType == self.T_TITLE:
                 tHead = tText.replace(r"\\", "<br/>")
                 tmpResult.append("<h1 class='title'%s>%s%s</h1>\n" % (hStyle, aNm, tHead))
+
+            elif tType == self.T_UNNUM:
+                tHead = tText.replace(r"\\", "<br/>")
+                tmpResult.append("<%s%s>%s%s</%s>\n" % (h2, hStyle, aNm, tHead, h2))
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "<br/>")

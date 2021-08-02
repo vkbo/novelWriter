@@ -232,7 +232,7 @@ class NWItem():
         elif isItemLayout(theLayout):
             self.itemLayout = nwItemLayout[theLayout]
         elif theLayout in nwLists.DEP_LAYOUT:
-            self.itemLayout = nwItemLayout.STORY
+            self.itemLayout = nwItemLayout.DOCUMENT
         else:
             logger.error("Unrecognised item layout '%s'", theLayout)
             self.itemLayout = nwItemLayout.NO_LAYOUT

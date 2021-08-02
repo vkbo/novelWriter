@@ -66,7 +66,7 @@ class nwLists():
     FREE_CLASS = {nwItemClass.ARCHIVE, nwItemClass.TRASH}
 
     # Deprecated nwItemLayout entries
-    DEP_LAYOUT = ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE")
+    DEP_LAYOUT = ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE", "STORY")
 
 # END Class nwLists
 
@@ -173,12 +173,12 @@ class nwLabels():
     }
     LAYOUT_NAME = {
         nwItemLayout.NO_LAYOUT: QT_TRANSLATE_NOOP("Constant", "None"),
-        nwItemLayout.STORY:     QT_TRANSLATE_NOOP("Constant", "Story Document"),
+        nwItemLayout.DOCUMENT:  QT_TRANSLATE_NOOP("Constant", "Novel Document"),
         nwItemLayout.NOTE:      QT_TRANSLATE_NOOP("Constant", "Project Note"),
     }
     LAYOUT_FLAG = {
         nwItemLayout.NO_LAYOUT: "Xo",
-        nwItemLayout.STORY:     "St",
+        nwItemLayout.DOCUMENT:  "Dc",
         nwItemLayout.NOTE:      "Nt",
     }
     KEY_NAME = {

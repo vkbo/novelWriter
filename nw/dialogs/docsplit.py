@@ -197,7 +197,7 @@ class GuiDocSplit(QDialog):
         for wTitle, iStart, iEnd in finalOrder:
 
             if srcItem.itemClass == nwItemClass.NOVEL:
-                itemLayout = nwItemLayout.STORY
+                itemLayout = nwItemLayout.DOCUMENT
             else:
                 itemLayout = nwItemLayout.NOTE
 
