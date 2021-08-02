@@ -5,7 +5,7 @@
     "authors": [
       "lipsum.com"
     ],
-    "buildTime": 1612954696
+    "buildTime": 1627336583
   },
   "text": {
     "css": [
@@ -25,7 +25,7 @@
     ],
     "html": [
       [
-        "<h1 class='title' style='text-align: center; page-break-before: auto;'>Lorem Ipsum</h1>"
+        "<h1 class='title' style='text-align: center;'>Lorem Ipsum</h1>"
       ],
       [
         ""
@@ -35,7 +35,7 @@
         "<p class='synopsis'><strong>Synopsis:</strong> Explanation from the lipsum.com website.</p>"
       ],
       [
-        "<h1 style='text-align: center; page-break-before: always;'>Act One</h1>"
+        "<h1 class='title' style='text-align: center; page-break-before: always;'>Act One</h1>"
       ],
       [
         "<h1 style='page-break-before: always;'>Chapter One: Chapter One</h1>",

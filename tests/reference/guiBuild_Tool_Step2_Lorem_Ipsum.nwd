@@ -1,4 +1,4 @@
-# Lorem Ipsum
+#! Lorem Ipsum
 
 **By lipsum.com**
 
@@ -6,13 +6,14 @@
 
 “There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain…”
 
+
 % Exctracted from the lipsum.com website.
 
 Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of “de Finibus Bonorum et Malorum” (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, “Lorem ipsum dolor sit amet..”, comes from a line in section 1.10.32.
 
 The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from “de Finibus Bonorum et Malorum” by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
 
-## Prologue
+##! Prologue
 
 % Synopsis:Explanation from the lipsum.com website.
 
@@ -72,7 +73,7 @@ Vivamus ut venenatis lectus. Phasellus nec elit id sem dictum ornare. Quisque fe
 
 Ut et consequat enim, quis ornare nibh. In lectus neque, mollis et suscipit et, vestibulum vitae augue. Praesent id ante sit amet odio venenatis placerat a at erat. Sed sed metus sed nisi dictum varius. Integer tincidunt fermentum purus ac porta. Fusce porttitor non risus eget tristique. Donec augue nunc, maximus at fermentum vel, varius et neque. Ut sed consectetur mauris. Quisque ipsum enim, porttitor vitae imperdiet sit amet, tempor et mauris. Aliquam malesuada tincidunt lectus quis blandit. Sed commodo orci felis, quis ultrices tellus facilisis sed. Nunc vel varius est. Duis ullamcorper eu metus in pulvinar. Morbi at sapien dictum, rutrum mauris eget, interdum tellus.
 
-## Why do we use it?
+##! Why do we use it?
 
 % Exctracted from the lipsum.com website.
 
@@ -151,6 +152,7 @@ Integer egestas maximus leo eu facilisis. Nunc rhoncus dignissim lectus eu lacin
 # Nobody Owens
 
 @tag: Bod
+@plot: Main
 
 Pellentesque nec erat ut nulla posuere commodo. Curabitur nisi augue, imperdiet et porta imperdiet, efficitur id leo. Cras finibus arcu at nibh commodo congue. Proin suscipit placerat condimentum. Aenean ante enim, cursus id lorem a, blandit venenatis nibh. Maecenas suscipit porta elit, sit amet porta felis porttitor eu. Sed a dui nibh. Phasellus sed faucibus dui. Pellentesque felis nulla, ultrices non efficitur quis, rutrum id mi. Mauris tempus auctor nisl, in bibendum enim pellentesque sit amet. Proin nunc lacus, imperdiet nec posuere ac, interdum non lectus.
 

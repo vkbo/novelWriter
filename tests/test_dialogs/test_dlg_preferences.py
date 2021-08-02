@@ -62,8 +62,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
-    qtbot.waitForWindowShown(nwGUI)
-    qtbot.wait(20)
+    qtbot.wait(stepDelay)
 
     theConf = nwGUI.mainConf
     assert theConf.confPath == fncDir

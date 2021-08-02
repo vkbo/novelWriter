@@ -178,49 +178,49 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj):
         assert readFile(os.path.join(contentDir, hPartition+".nwd")) == (
             "%%%%~name: Nantucket\n"
             "%%%%~path: 031b4af5197ec/%s\n"
-            "%%%%~kind: NOVEL/PARTITION\n"
+            "%%%%~kind: NOVEL/DOCUMENT\n"
             "%s\n\n"
         ) % (hPartition, tPartition)
 
         assert readFile(os.path.join(contentDir, hChapterOne+".nwd")) == (
             "%%%%~name: Chapter One\n"
             "%%%%~path: 031b4af5197ec/%s\n"
-            "%%%%~kind: NOVEL/CHAPTER\n"
+            "%%%%~kind: NOVEL/DOCUMENT\n"
             "%s\n\n"
         ) % (hChapterOne, tChapterOne)
 
         assert readFile(os.path.join(contentDir, hSceneOne+".nwd")) == (
             "%%%%~name: Scene One\n"
             "%%%%~path: 031b4af5197ec/%s\n"
-            "%%%%~kind: NOVEL/SCENE\n"
+            "%%%%~kind: NOVEL/DOCUMENT\n"
             "%s\n\n"
         ) % (hSceneOne, tSceneOne)
 
         assert readFile(os.path.join(contentDir, hSceneTwo+".nwd")) == (
             "%%%%~name: Scene Two\n"
             "%%%%~path: 031b4af5197ec/%s\n"
-            "%%%%~kind: NOVEL/SCENE\n"
+            "%%%%~kind: NOVEL/DOCUMENT\n"
             "%s\n\n"
         ) % (hSceneTwo, tSceneTwo)
 
         assert readFile(os.path.join(contentDir, hSceneThree+".nwd")) == (
             "%%%%~name: Scene Three\n"
             "%%%%~path: 031b4af5197ec/%s\n"
-            "%%%%~kind: NOVEL/SCENE\n"
+            "%%%%~kind: NOVEL/DOCUMENT\n"
             "%s\n\n"
         ) % (hSceneThree, tSceneThree)
 
         assert readFile(os.path.join(contentDir, hSceneFour+".nwd")) == (
             "%%%%~name: Scene Four\n"
             "%%%%~path: 031b4af5197ec/%s\n"
-            "%%%%~kind: NOVEL/SCENE\n"
+            "%%%%~kind: NOVEL/DOCUMENT\n"
             "%s\n\n"
         ) % (hSceneFour, tSceneFour)
 
         assert readFile(os.path.join(contentDir, hSceneFive+".nwd")) == (
             "%%%%~name: The End\n"
             "%%%%~path: 031b4af5197ec/%s\n"
-            "%%%%~kind: NOVEL/SCENE\n"
+            "%%%%~kind: NOVEL/DOCUMENT\n"
             "%s\n\n"
         ) % (hSceneFive, tSceneFive)
 

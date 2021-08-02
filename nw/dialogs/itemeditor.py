@@ -90,13 +90,7 @@ class GuiItemEditor(QDialog):
         validLayouts = []
         if self.theItem.itemType == nwItemType.FILE:
             if self.theItem.itemClass in nwLists.CLS_NOVEL:
-                validLayouts.append(nwItemLayout.TITLE)
-                validLayouts.append(nwItemLayout.BOOK)
-                validLayouts.append(nwItemLayout.PAGE)
-                validLayouts.append(nwItemLayout.PARTITION)
-                validLayouts.append(nwItemLayout.UNNUMBERED)
-                validLayouts.append(nwItemLayout.CHAPTER)
-                validLayouts.append(nwItemLayout.SCENE)
+                validLayouts.append(nwItemLayout.DOCUMENT)
             validLayouts.append(nwItemLayout.NOTE)
         else:
             validLayouts.append(nwItemLayout.NO_LAYOUT)

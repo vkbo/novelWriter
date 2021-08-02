@@ -468,14 +468,14 @@ class GuiDocEditor(QTextEdit):
         else:
             self.theParent.novelView.updateWordCounts(tHandle)
 
-        hLevel = "H0"
-        if self._docHeaders:
-            hLevel = self._docHeaders[0][1]
+        # hLevel = "H0"
+        # if self._docHeaders:
+        #     hLevel = self._docHeaders[0][1]
 
-        if self.theProject.projTree.updateItemLayout(tHandle, hLevel):
-            self.theParent.treeView.setTreeItemValues(tHandle)
-            self._nwDocument.writeDocument(docText)
-            self.docFooter.updateInfo()
+        # if self.theProject.projTree.updateItemLayout(tHandle, hLevel):
+        #     self.theParent.treeView.setTreeItemValues(tHandle)
+        #     self._nwDocument.writeDocument(docText)
+        #     self.docFooter.updateInfo()
 
         # Update the status bar
         self.theParent.setStatus(

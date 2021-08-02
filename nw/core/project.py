@@ -52,6 +52,8 @@ logger = logging.getLogger(__name__)
 
 class NWProject():
 
+    FILE_VERSION = "1.3"
+
     def __init__(self, theParent):
 
         # Internal
@@ -142,14 +144,14 @@ class NWProject():
         return newItem.itemHandle
 
     def newFile(self, fileName, fileClass, pHandle):
-        """Add a new file with a given name and class, and set a default
-        layout based on the class. SCENE for NOVEL, and otherwise NOTE.
+        """Add a new file with a given name and class, and set a layout
+        based on the class. DOCUMENT for NOVEL, otherwise NOTE.
         """
         newItem = NWItem(self)
         newItem.setName(fileName)
         newItem.setType(nwItemType.FILE)
         if fileClass == nwItemClass.NOVEL:
-            newItem.setLayout(nwItemLayout.SCENE)
+            newItem.setLayout(nwItemLayout.DOCUMENT)
         else:
             newItem.setLayout(nwItemLayout.NOTE)
         newItem.setClass(fileClass)
@@ -204,7 +206,7 @@ class NWProject():
         self.autoReplace = {}
         self.titleFormat = {
             "title":      "%title%",
-            "chapter":    self.tr("Chapter")+" %ch%: %title%",
+            "chapter":    "%title%",
             "unnumbered": "%title%",
             "scene":      "* * *",
             "section":    "",
@@ -261,9 +263,9 @@ class NWProject():
         self.setBookTitle(projTitle)
         self.setBookAuthors(projAuthors)
 
-        titlePage = "# %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
+        titlePage = "#! %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
         if self.bookAuthors:
-            titlePage = "%s%s %s\n" % (titlePage, self.tr("By"), self.getAuthors())
+            titlePage = "%s>> %s %s <<\n" % (titlePage, self.tr("By"), self.getAuthors())
 
         if popMinimal:
             # Creating a minimal project with a few root folders and a
@@ -277,9 +279,6 @@ class NWProject():
             xHandle[6] = self.newFolder(self.tr("New Chapter"), nwItemClass.NOVEL, xHandle[1])
             xHandle[7] = self.newFile(self.tr("New Chapter"),   nwItemClass.NOVEL, xHandle[6])
             xHandle[8] = self.newFile(self.tr("New Scene"),     nwItemClass.NOVEL, xHandle[6])
-
-            self.projTree.setFileItemLayout(xHandle[5], nwItemLayout.TITLE)
-            self.projTree.setFileItemLayout(xHandle[7], nwItemLayout.CHAPTER)
 
             aDoc = NWDoc(self, xHandle[5])
             aDoc.writeDocument(titlePage)
@@ -303,7 +302,7 @@ class NWProject():
 
             # Create a title page
             tHandle = self.newFile(self.tr("Title Page"), nwItemClass.NOVEL, nHandle)
-            self.projTree.setFileItemLayout(tHandle, nwItemLayout.TITLE)
+            self.projTree.setFileItemLayout(tHandle, nwItemLayout.DOCUMENT)
 
             aDoc = NWDoc(self, tHandle)
             aDoc.writeDocument(titlePage)
@@ -322,7 +321,7 @@ class NWProject():
                         pHandle = self.newFolder(chTitle, nwItemClass.NOVEL, nHandle)
 
                     cHandle = self.newFile(chTitle, nwItemClass.NOVEL, pHandle)
-                    self.projTree.setFileItemLayout(cHandle, nwItemLayout.CHAPTER)
+                    self.projTree.setFileItemLayout(cHandle, nwItemLayout.DOCUMENT)
 
                     aDoc = NWDoc(self, cHandle)
                     aDoc.writeDocument("## %s\n\n" % chTitle)
@@ -466,8 +465,11 @@ class NWProject():
         # 1.2 : Changes the way autoReplace entries are stored. The 1.1
         #       parser will lose the autoReplace settings if allowed to
         #       read the file. Introduced in version 0.10.
+        # 1.3 : Reduces the number of layouts to onlye two. One for
+        #       novel documents and one for notes. Introduced in version
+        #       1.5.
 
-        if fileVersion not in ("1.0", "1.1", "1.2"):
+        if fileVersion not in ("1.0", "1.1", "1.2", "1.3"):
             self.makeAlert(self.tr(
                 "Unknown or unsupported novelWriter project file format. "
                 "The project cannot be opened by this version of novelWriter. "
@@ -475,6 +477,19 @@ class NWProject():
             ).format(appVersion), nwAlert.ERROR)
             self.clearProject()
             return False
+
+        if fileVersion != self.FILE_VERSION:
+            msgYes = self.theParent.askQuestion(
+                self.tr("File Version"),
+                self.tr(
+                    "The file format of your project is about to be updated. "
+                    "If you proceed, this project can no longer be opened by "
+                    "an older version of novelWriter. Continue?"
+                ).format(appVersion, nw.__version__)
+            )
+            if not msgYes:
+                self.clearProject()
+                return False
 
         # Check novelWriter Version
         # =========================
@@ -621,10 +636,10 @@ class NWProject():
         # Root element and project details
         logger.debug("Writing project meta")
         nwXML = etree.Element("novelWriterXML", attrib={
-            "appVersion": str(nw.__version__),
-            "hexVersion": str(nw.__hexversion__),
-            "fileVersion": "1.2",
-            "timeStamp": formatTimeStamp(saveTime),
+            "appVersion":  str(nw.__version__),
+            "hexVersion":  str(nw.__hexversion__),
+            "fileVersion": self.FILE_VERSION,
+            "timeStamp":   formatTimeStamp(saveTime),
         })
 
         editTime = int(self.editTime + saveTime - self.projOpened)
@@ -728,13 +743,13 @@ class NWProject():
         if self.projPath is None or self.projPath == "":
             return False
 
-        if self.projPath == os.path.expanduser("~"):
-            # Don't make a mess in the user's home folder
-            return False
-
         self.projMeta    = os.path.join(self.projPath, "meta")
         self.projCache   = os.path.join(self.projPath, "cache")
         self.projContent = os.path.join(self.projPath, "content")
+
+        if self.projPath == os.path.expanduser("~"):
+            # Don't make a mess in the user's home folder
+            return False
 
         if not self._checkFolder(self.projMeta):
             return False

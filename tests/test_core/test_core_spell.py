@@ -51,6 +51,8 @@ def testCoreSpell_Super(monkeypatch, tmpDir):
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         assert spChk._readProjectDictionary(wList) is False
+
+    assert spChk._readProjectDictionary(None) is False
     assert spChk._readProjectDictionary(wList) is True
     assert spChk.projectDict == wList
 
@@ -85,22 +87,24 @@ def testCoreSpell_Enchant(monkeypatch, tmpDir):
 
         spChk.setLanguage("en", wList)
         assert spChk.setLanguage("", "") is None
-        assert spChk.checkWord("")
+        assert spChk.checkWord("") is True
         assert spChk.suggestWords("") == []
         assert spChk.listDictionaries() == []
         assert spChk.describeDict() == ("", "")
 
-    # Load the proper enchant package
+    # Load the proper enchant package (twice)
     spChk = NWSpellEnchant()
     spChk.setLanguage("en", wList)
+    spChk.setLanguage("en", wList)
 
-    assert spChk.checkWord("a_word")
-    assert spChk.checkWord("b_word")
-    assert spChk.checkWord("c_word")
-    assert not spChk.checkWord("d_word")
+    # Check words
+    assert spChk.checkWord("a_word") is True
+    assert spChk.checkWord("b_word") is True
+    assert spChk.checkWord("c_word") is True
+    assert spChk.checkWord("d_word") is False
 
     spChk.addWord("d_word")
-    assert spChk.checkWord("d_word")
+    assert spChk.checkWord("d_word") is True
 
     wSuggest = spChk.suggestWords("wrod")
     assert len(wSuggest) > 0

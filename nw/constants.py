@@ -65,6 +65,9 @@ class nwLists():
     # Item classes which do not require items to have same class
     FREE_CLASS = {nwItemClass.ARCHIVE, nwItemClass.TRASH}
 
+    # Deprecated nwItemLayout entries
+    DEP_LAYOUT = ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE", "STORY")
+
 # END Class nwLists
 
 
@@ -169,26 +172,14 @@ class nwLabels():
         nwItemClass.TRASH:     "cls_trash",
     }
     LAYOUT_NAME = {
-        nwItemLayout.NO_LAYOUT:  QT_TRANSLATE_NOOP("Constant", "None"),
-        nwItemLayout.TITLE:      QT_TRANSLATE_NOOP("Constant", "Title Page"),
-        nwItemLayout.BOOK:       QT_TRANSLATE_NOOP("Constant", "Book"),
-        nwItemLayout.PAGE:       QT_TRANSLATE_NOOP("Constant", "Plain Page"),
-        nwItemLayout.PARTITION:  QT_TRANSLATE_NOOP("Constant", "Partition"),
-        nwItemLayout.UNNUMBERED: QT_TRANSLATE_NOOP("Constant", "Unnumbered"),
-        nwItemLayout.CHAPTER:    QT_TRANSLATE_NOOP("Constant", "Chapter"),
-        nwItemLayout.SCENE:      QT_TRANSLATE_NOOP("Constant", "Scene"),
-        nwItemLayout.NOTE:       QT_TRANSLATE_NOOP("Constant", "Note"),
+        nwItemLayout.NO_LAYOUT: QT_TRANSLATE_NOOP("Constant", "None"),
+        nwItemLayout.DOCUMENT:  QT_TRANSLATE_NOOP("Constant", "Novel Document"),
+        nwItemLayout.NOTE:      QT_TRANSLATE_NOOP("Constant", "Project Note"),
     }
     LAYOUT_FLAG = {
-        nwItemLayout.NO_LAYOUT:  "Xo",
-        nwItemLayout.TITLE:      "Tt",
-        nwItemLayout.BOOK:       "Bk",
-        nwItemLayout.PAGE:       "Pg",
-        nwItemLayout.PARTITION:  "Pt",
-        nwItemLayout.UNNUMBERED: "Un",
-        nwItemLayout.CHAPTER:    "Ch",
-        nwItemLayout.SCENE:      "Sc",
-        nwItemLayout.NOTE:       "Nt",
+        nwItemLayout.NO_LAYOUT: "Xo",
+        nwItemLayout.DOCUMENT:  "Dc",
+        nwItemLayout.NOTE:      "Nt",
     }
     KEY_NAME = {
         nwKeyWords.TAG_KEY:    QT_TRANSLATE_NOOP("Constant", "Tag"),

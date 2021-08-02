@@ -65,7 +65,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.closeDocument()
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_1" text:outline-level="1">Title</text:h>'
+        '<text:h text:style-name="P1" text:outline-level="1">Title</text:h>'
         '</office:text>'
     )
 
@@ -77,7 +77,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.closeDocument()
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_2" text:outline-level="2">Chapter Title</text:h>'
+        '<text:h text:style-name="P2" text:outline-level="2">Chapter Title</text:h>'
         '</office:text>'
     )
 
