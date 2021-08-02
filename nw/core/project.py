@@ -261,7 +261,7 @@ class NWProject():
         self.setBookTitle(projTitle)
         self.setBookAuthors(projAuthors)
 
-        titlePage = "# %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
+        titlePage = "#! %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
         if self.bookAuthors:
             titlePage = "%s>> %s %s <<\n" % (titlePage, self.tr("By"), self.getAuthors())
 
@@ -278,7 +278,7 @@ class NWProject():
             xHandle[7] = self.newFile(self.tr("New Chapter"),   nwItemClass.NOVEL, xHandle[6])
             xHandle[8] = self.newFile(self.tr("New Scene"),     nwItemClass.NOVEL, xHandle[6])
 
-            self.projTree.setFileItemLayout(xHandle[5], nwItemLayout.TITLE)
+            self.projTree.setFileItemLayout(xHandle[5], nwItemLayout.STORY)
             self.projTree.setFileItemLayout(xHandle[7], nwItemLayout.STORY)
 
             aDoc = NWDoc(self, xHandle[5])
@@ -303,7 +303,7 @@ class NWProject():
 
             # Create a title page
             tHandle = self.newFile(self.tr("Title Page"), nwItemClass.NOVEL, nHandle)
-            self.projTree.setFileItemLayout(tHandle, nwItemLayout.TITLE)
+            self.projTree.setFileItemLayout(tHandle, nwItemLayout.STORY)
 
             aDoc = NWDoc(self, tHandle)
             aDoc.writeDocument(titlePage)

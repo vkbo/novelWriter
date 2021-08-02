@@ -65,6 +65,9 @@ class nwLists():
     # Item classes which do not require items to have same class
     FREE_CLASS = {nwItemClass.ARCHIVE, nwItemClass.TRASH}
 
+    # Deprecated nwItemLayout entries
+    DEP_LAYOUT = ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE")
+
 # END Class nwLists
 
 
@@ -170,15 +173,11 @@ class nwLabels():
     }
     LAYOUT_NAME = {
         nwItemLayout.NO_LAYOUT: QT_TRANSLATE_NOOP("Constant", "None"),
-        nwItemLayout.TITLE:     QT_TRANSLATE_NOOP("Constant", "Title Page"),
-        nwItemLayout.PAGE:      QT_TRANSLATE_NOOP("Constant", "Plain Page"),
         nwItemLayout.STORY:     QT_TRANSLATE_NOOP("Constant", "Story Document"),
         nwItemLayout.NOTE:      QT_TRANSLATE_NOOP("Constant", "Project Note"),
     }
     LAYOUT_FLAG = {
         nwItemLayout.NO_LAYOUT: "Xo",
-        nwItemLayout.TITLE:     "Tt",
-        nwItemLayout.PAGE:      "Pg",
         nwItemLayout.STORY:     "St",
         nwItemLayout.NOTE:      "Nt",
     }

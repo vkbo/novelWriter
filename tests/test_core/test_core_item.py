@@ -253,16 +253,16 @@ def testCoreItem_LayoutSetter(mockGUI):
     # Current Layouts
     theItem.setLayout("NO_LAYOUT")
     assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
-    theItem.setLayout("TITLE")
-    assert theItem.itemLayout == nwItemLayout.TITLE
-    theItem.setLayout("PAGE")
-    assert theItem.itemLayout == nwItemLayout.PAGE
     theItem.setLayout("STORY")
     assert theItem.itemLayout == nwItemLayout.STORY
     theItem.setLayout("NOTE")
     assert theItem.itemLayout == nwItemLayout.NOTE
 
     # Deprecated Layouts
+    theItem.setLayout("TITLE")
+    assert theItem.itemLayout == nwItemLayout.STORY
+    theItem.setLayout("PAGE")
+    assert theItem.itemLayout == nwItemLayout.STORY
     theItem.setLayout("BOOK")
     assert theItem.itemLayout == nwItemLayout.STORY
     theItem.setLayout("PARTITION")

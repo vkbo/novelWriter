@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.4.1" hexVersion="0x010401f0" fileVersion="1.2" timeStamp="2021-07-27 23:46:07">
+<novelWriterXML appVersion="1.5-alpha0" hexVersion="0x010500a0" fileVersion="1.2" timeStamp="2021-08-02 02:10:26">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1110</saveCount>
-    <autoCount>189</autoCount>
-    <editTime>53279</editTime>
+    <saveCount>1133</saveCount>
+    <autoCount>194</autoCount>
+    <editTime>54454</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -17,8 +17,8 @@
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
-    <lastWordCount>1193</lastWordCount>
-    <novelWordCount>817</novelWordCount>
+    <lastWordCount>137542</lastWordCount>
+    <novelWordCount>137166</novelWordCount>
     <notesWordCount>376</notesWordCount>
     <autoReplace>
       <entry key="A">B</entry>
@@ -48,7 +48,7 @@
       <entry blue="175" green="0" red="117">Main</entry>
     </importance>
   </settings>
-  <content count="25">
+  <content count="26">
     <item handle="7031beac91f75" order="0" parent="None">
       <name>Novel</name>
       <type>ROOT</type>
@@ -62,11 +62,11 @@
       <class>NOVEL</class>
       <status>Started</status>
       <exported>True</exported>
-      <layout>TITLE</layout>
-      <charCount>93</charCount>
-      <wordCount>19</wordCount>
-      <paraCount>2</paraCount>
-      <cursorPos>64</cursorPos>
+      <layout>STORY</layout>
+      <charCount>96</charCount>
+      <wordCount>20</wordCount>
+      <paraCount>3</paraCount>
+      <cursorPos>2</cursorPos>
     </item>
     <item handle="974e400180a99" order="1" parent="7031beac91f75">
       <name>Page</name>
@@ -74,11 +74,11 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>PAGE</layout>
-      <charCount>125</charCount>
-      <wordCount>26</wordCount>
-      <paraCount>2</paraCount>
-      <cursorPos>127</cursorPos>
+      <layout>STORY</layout>
+      <charCount>206</charCount>
+      <wordCount>42</wordCount>
+      <paraCount>3</paraCount>
+      <cursorPos>21</cursorPos>
     </item>
     <item handle="edca4be2fcaf8" order="2" parent="7031beac91f75">
       <name>Part One</name>
@@ -121,7 +121,7 @@
       <charCount>2429</charCount>
       <wordCount>432</wordCount>
       <paraCount>14</paraCount>
-      <cursorPos>1329</cursorPos>
+      <cursorPos>813</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>Another Scene</name>
@@ -182,6 +182,18 @@
       <wordCount>37</wordCount>
       <paraCount>1</paraCount>
       <cursorPos>224</cursorPos>
+    </item>
+    <item handle="a423303a03271" order="7" parent="e7ded148d6e4a">
+      <name>New File</name>
+      <type>FILE</type>
+      <class>NOVEL</class>
+      <status>New</status>
+      <exported>False</exported>
+      <layout>STORY</layout>
+      <charCount>747818</charCount>
+      <wordCount>136332</wordCount>
+      <paraCount>3271</paraCount>
+      <cursorPos>412</cursorPos>
     </item>
     <item handle="f6622b4617424" order="1" parent="None">
       <name>Characters</name>

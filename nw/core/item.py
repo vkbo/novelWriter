@@ -29,6 +29,7 @@ from lxml import etree
 
 from nw.enum import nwItemType, nwItemClass, nwItemLayout
 from nw.common import checkInt, isHandle, isItemClass, isItemLayout, isItemType
+from nw.constants import nwLists
 
 logger = logging.getLogger(__name__)
 
@@ -230,7 +231,7 @@ class NWItem():
             self.itemLayout = theLayout
         elif isItemLayout(theLayout):
             self.itemLayout = nwItemLayout[theLayout]
-        elif theLayout in ("BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE"):
+        elif theLayout in nwLists.DEP_LAYOUT:
             self.itemLayout = nwItemLayout.STORY
         else:
             logger.error("Unrecognised item layout '%s'", theLayout)

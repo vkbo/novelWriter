@@ -208,7 +208,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
 
 @pytest.mark.core
 def testCoreTree_Methods(mockGUI, mockItems):
-    """Test bvarious class methods.
+    """Test various class methods.
     """
     theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
@@ -254,11 +254,11 @@ def testCoreTree_Methods(mockGUI, mockItems):
     ]
 
     # Change file layout
-    assert not theTree.setFileItemLayout("stuff", nwItemLayout.PAGE)
-    assert not theTree.setFileItemLayout("b000000000001", nwItemLayout.PAGE)
-    assert not theTree.setFileItemLayout("c000000000001", "stuff")
-    assert theTree.setFileItemLayout("c000000000001", nwItemLayout.PAGE)
-    assert theTree["c000000000001"].itemLayout == nwItemLayout.PAGE
+    assert theTree.setFileItemLayout("stuff", nwItemLayout.STORY) is False
+    assert theTree.setFileItemLayout("b000000000001", nwItemLayout.STORY) is False
+    assert theTree.setFileItemLayout("c000000000001", "stuff") is False
+    assert theTree.setFileItemLayout("c000000000001", nwItemLayout.NOTE) is True
+    assert theTree["c000000000001"].itemLayout == nwItemLayout.NOTE
 
 # END Test testCoreTree_Methods
 

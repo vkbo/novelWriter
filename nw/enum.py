@@ -57,10 +57,8 @@ class nwItemClass(Enum):
 class nwItemLayout(Enum):
 
     NO_LAYOUT = 0
-    TITLE     = 1
-    PAGE      = 2
-    STORY     = 3
-    NOTE      = 4
+    STORY     = 1
+    NOTE      = 2
 
 # END Enum nwItemLayout
 

@@ -1,6 +1,9 @@
 %%~name: Page
 %%~path: 7031beac91f75/974e400180a99
-%%~kind: NOVEL/PAGE
+%%~kind: NOVEL/STORY
+[NEW PAGE]
+[VSPACE:2]
+
 This is a plain page with some text on it.
 
-Text on plain pages will always start on a fresh page when the project is exported.
+If you want the text to start on a fresh page, add the [NEW PAGE] code above the text. You can also add empty paragraphs with the ]VSPACE] code.

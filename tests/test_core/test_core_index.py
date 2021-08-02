@@ -388,14 +388,14 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     )
 
     # Page wo/Title
-    theProject.projTree[pHandle].itemLayout = nwItemLayout.PAGE
+    theProject.projTree[pHandle].itemLayout = nwItemLayout.STORY
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))
     assert pHandle in theIndex._fileIndex
     assert theIndex._fileIndex[pHandle]["T000000"]["level"] == "H0"
     assert theIndex._fileIndex[pHandle]["T000000"]["title"] == ""
-    assert theIndex._fileIndex[pHandle]["T000000"]["layout"] == "PAGE"
+    assert theIndex._fileIndex[pHandle]["T000000"]["layout"] == "STORY"
     assert theIndex._fileIndex[pHandle]["T000000"]["cCount"] == 36
     assert theIndex._fileIndex[pHandle]["T000000"]["wCount"] == 9
     assert theIndex._fileIndex[pHandle]["T000000"]["pCount"] == 1
