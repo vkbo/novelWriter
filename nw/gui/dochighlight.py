@@ -34,6 +34,7 @@ from PyQt5.QtGui import (
 )
 
 from nw.constants import nwRegEx, nwUnicode
+from nw.common import checkInt
 
 logger = logging.getLogger(__name__)
 
@@ -127,6 +128,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "keyword":   self._makeFormat(self.colKey),
             "modifier":  self._makeFormat(self.colMod),
             "value":     self._makeFormat(self.colVal, "underline"),
+            "codevalue": self._makeFormat(self.colVal),
+            "codeinval": self._makeFormat(None, "errline"),
         }
 
         self.hRules = []
@@ -312,25 +315,32 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             # so we force a return here
             return
 
-        elif theText.startswith("# "):  # Header 1
+        elif theText.startswith(("# ", "#! ", "## ", "##! ", "### ", "#### ")):
             self.setCurrentBlockState(self.BLOCK_TITLE)
-            self.setFormat(0, 1, self.hStyles["header1h"])
-            self.setFormat(1, len(theText), self.hStyles["header1"])
 
-        elif theText.startswith("## "):  # Header 2
-            self.setCurrentBlockState(self.BLOCK_TITLE)
-            self.setFormat(0, 2, self.hStyles["header2h"])
-            self.setFormat(2, len(theText), self.hStyles["header2"])
+            if theText.startswith("# "):  # Header 1
+                self.setFormat(0, 1, self.hStyles["header1h"])
+                self.setFormat(1, len(theText), self.hStyles["header1"])
 
-        elif theText.startswith("### "):  # Header 3
-            self.setCurrentBlockState(self.BLOCK_TITLE)
-            self.setFormat(0, 3, self.hStyles["header3h"])
-            self.setFormat(3, len(theText), self.hStyles["header3"])
+            elif theText.startswith("## "):  # Header 2
+                self.setFormat(0, 2, self.hStyles["header2h"])
+                self.setFormat(2, len(theText), self.hStyles["header2"])
 
-        elif theText.startswith("#### "):  # Header 4
-            self.setCurrentBlockState(self.BLOCK_TITLE)
-            self.setFormat(0, 4, self.hStyles["header4h"])
-            self.setFormat(4, len(theText), self.hStyles["header4"])
+            elif theText.startswith("### "):  # Header 3
+                self.setFormat(0, 3, self.hStyles["header3h"])
+                self.setFormat(3, len(theText), self.hStyles["header3"])
+
+            elif theText.startswith("#### "):  # Header 4
+                self.setFormat(0, 4, self.hStyles["header4h"])
+                self.setFormat(4, len(theText), self.hStyles["header4"])
+
+            if theText.startswith("#! "):  # Title
+                self.setFormat(0, 2, self.hStyles["header1h"])
+                self.setFormat(2, len(theText), self.hStyles["header1"])
+
+            elif theText.startswith("##! "):  # Unnumbered
+                self.setFormat(0, 3, self.hStyles["header2h"])
+                self.setFormat(3, len(theText), self.hStyles["header2"])
 
         elif theText.startswith("%"):  # Comments
             self.setCurrentBlockState(self.BLOCK_TEXT)
@@ -346,6 +356,25 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(0, tLen, self.hStyles["hidden"])
 
         else:  # Text Paragraph
+
+            if theText.startswith("["):  # Special Command
+                sText = theText.rstrip()
+                if sText in ("[NEWPAGE]", "[NEW PAGE]", "[VSPACE]"):
+                    self.setFormat(0, len(theText), self.hStyles["keyword"])
+                    return
+
+                elif sText.startswith("[VSPACE:") and sText.endswith("]"):
+                    tLen = len(sText)
+                    tVal = checkInt(sText[8:-1], 0)
+                    self.setFormat(0, 8, self.hStyles["keyword"])
+                    if tVal > 0:
+                        self.setFormat(8, tLen-9, self.hStyles["codevalue"])
+                    else:
+                        self.setFormat(8, tLen-9, self.hStyles["codeinval"])
+                    self.setFormat(tLen-1, tLen, self.hStyles["keyword"])
+                    return
+
+            # Regular text
             self.setCurrentBlockState(self.BLOCK_TEXT)
             for rX, xFmt in self.rxRules:
                 rxItt = rX.globalMatch(theText, 0)

@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.2a0" hexVersion="0x010200a0" fileVersion="1.2" timeStamp="2021-01-29 01:10:23">
+<novelWriterXML appVersion="1.5-alpha0" hexVersion="0x010500a0" fileVersion="1.2" timeStamp="2021-08-02 02:50:31">
   <project>
     <name>New Project</name>
     <title></title>
-    <saveCount>4</saveCount>
+    <saveCount>5</saveCount>
     <autoCount>2</autoCount>
-    <editTime>8</editTime>
+    <editTime>3</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
@@ -21,7 +21,7 @@
     <autoReplace/>
     <titleFormat>
       <title>%title%</title>
-      <chapter>Chapter %ch%: %title%</chapter>
+      <chapter>%title%</chapter>
       <unnumbered>%title%</unnumbered>
       <scene>* * *</scene>
       <section></section>
@@ -53,7 +53,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>TITLE</layout>
+      <layout>DOCUMENT</layout>
       <charCount>11</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>
@@ -72,7 +72,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>CHAPTER</layout>
+      <layout>DOCUMENT</layout>
       <charCount>11</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>
@@ -84,7 +84,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>BOOK</layout>
+      <layout>DOCUMENT</layout>
       <charCount>482</charCount>
       <wordCount>83</wordCount>
       <paraCount>4</paraCount>

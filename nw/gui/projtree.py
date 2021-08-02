@@ -292,11 +292,7 @@ class GuiProjectTree(QTreeWidget):
             curTxt = ""
 
         if curTxt == "":
-            if nwItem.itemLayout == nwItemLayout.CHAPTER:
-                newText = f"## {nwItem.itemName}\n\n"
-            elif nwItem.itemLayout == nwItemLayout.UNNUMBERED:
-                newText = f"## {nwItem.itemName}\n\n"
-            elif nwItem.itemLayout == nwItemLayout.SCENE:
+            if nwItem.itemLayout == nwItemLayout.DOCUMENT:
                 newText = f"### {nwItem.itemName}\n\n"
             else:
                 newText = f"# {nwItem.itemName}\n\n"

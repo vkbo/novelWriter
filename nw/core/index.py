@@ -354,6 +354,12 @@ class NWIndex():
         elif aLine.startswith("#### "):
             hDepth = "H4"
             hText = aLine[5:].strip()
+        elif aLine.startswith("#! "):
+            hDepth = "H1"
+            hText = aLine[2:].strip()
+        elif aLine.startswith("##! "):
+            hDepth = "H2"
+            hText = aLine[4:].strip()
         else:
             return False
 
@@ -861,7 +867,13 @@ def countWords(theText):
         if aLine[0] == "@" or aLine[0] == "%":
             continue
 
-        if aLine[0] == "#":
+        if aLine[0] == "[":
+            if aLine.startswith(("[NEWPAGE]", "[NEW PAGE]", "[VSPACE]")):
+                continue
+            elif aLine.startswith("[VSPACE:") and aLine.endswith("]"):
+                continue
+
+        elif aLine[0] == "#":
             if aLine[:5] == "#### ":
                 aLine = aLine[5:]
                 countPara = False
@@ -874,6 +886,13 @@ def countWords(theText):
             elif aLine[:2] == "# ":
                 aLine = aLine[2:]
                 countPara = False
+            elif aLine[:3] == "#! ":
+                aLine = aLine[3:]
+                countPara = False
+            elif aLine[:4] == "##! ":
+                aLine = aLine[4:]
+                countPara = False
+
         elif aLine[0] == ">" or aLine[-1] == "<":
             if aLine[:2] == ">>":
                 aLine = aLine[2:].lstrip(" ")

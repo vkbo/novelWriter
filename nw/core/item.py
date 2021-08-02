@@ -29,6 +29,7 @@ from lxml import etree
 
 from nw.enum import nwItemType, nwItemClass, nwItemLayout
 from nw.common import checkInt, isHandle, isItemClass, isItemLayout, isItemType
+from nw.constants import nwLists
 
 logger = logging.getLogger(__name__)
 
@@ -230,6 +231,8 @@ class NWItem():
             self.itemLayout = theLayout
         elif isItemLayout(theLayout):
             self.itemLayout = nwItemLayout[theLayout]
+        elif theLayout in nwLists.DEP_LAYOUT:
+            self.itemLayout = nwItemLayout.DOCUMENT
         else:
             logger.error("Unrecognised item layout '%s'", theLayout)
             self.itemLayout = nwItemLayout.NO_LAYOUT
@@ -239,7 +242,7 @@ class NWItem():
         """Set the item status by looking it up in the valid status
         items of the current project.
         """
-        if self.itemClass == nwItemClass.NOVEL:
+        if self.itemClass in nwLists.CLS_NOVEL:
             self.itemStatus = self.theProject.statusItems.checkEntry(theStatus)
         else:
             self.itemStatus = self.theProject.importItems.checkEntry(theStatus)

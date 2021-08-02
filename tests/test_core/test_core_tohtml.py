@@ -81,29 +81,35 @@ def testCoreToHtml_Format(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToHtml_Convert(mockGUI):
-    """Test the converter of the ToHtml class.
+def testCoreToHtml_ConvertFormat(mockGUI):
+    """Test the tokenizer and converter chain using the ToHtml class.
     """
     theProject = NWProject(mockGUI)
     mockGUI.theIndex = NWIndex(theProject)
     theHtml = ToHtml(theProject)
 
-    # Export Mode
-    # ===========
+    # Novel Files Headers
+    # ===================
 
     theHtml.isNovel = True
+    theHtml.isNote = False
+    theHtml.isFirst = True
 
     # Header 1
-    theHtml.theText = "# Title\n"
+    theHtml.theText = "# Partition\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
-    assert theHtml.theResult == "<h1 class='title'>Title</h1>\n"
+    assert theHtml.theResult == (
+        "<h1 class='title' style='text-align: center;'>Partition</h1>\n"
+    )
 
     # Header 2
     theHtml.theText = "## Chapter Title\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
-    assert theHtml.theResult == "<h1>Chapter Title</h1>\n"
+    assert theHtml.theResult == (
+        "<h1 style='page-break-before: always;'>Chapter Title</h1>\n"
+    )
 
     # Header 3
     theHtml.theText = "### Scene Title\n"
@@ -117,7 +123,26 @@ def testCoreToHtml_Convert(mockGUI):
     theHtml.doConvert()
     assert theHtml.theResult == "<h3>Section Title</h3>\n"
 
+    # Title
+    theHtml.theText = "#! Title\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<h1 class='title' style='text-align: center; page-break-before: always;'>Title</h1>\n"
+    )
+
+    # Unnumbered
+    theHtml.theText = "##! Prologue\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == "<h1 style='page-break-before: always;'>Prologue</h1>\n"
+
+    # Note Files Headers
+    # ==================
+
     theHtml.isNovel = False
+    theHtml.isNote = True
+    theHtml.isFirst = True
     theHtml.setLinkHeaders(True)
 
     # Header 1
@@ -143,6 +168,23 @@ def testCoreToHtml_Convert(mockGUI):
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == "<h4><a name='T000001'></a>Heading Four</h4>\n"
+
+    # Title
+    theHtml.theText = "#! Heading One\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<h1 style='text-align: center;'><a name='T000001'></a>Heading One</h1>\n"
+    )
+
+    # Unnumbered
+    theHtml.theText = "##! Heading Two\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == "<h2><a name='T000001'></a>Heading Two</h2>\n"
+
+    # Paragraphs
+    # ==========
 
     # Text
     theHtml.theText = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
@@ -223,21 +265,63 @@ def testCoreToHtml_Convert(mockGUI):
         "</p>\n"
     )
 
-    # Direct Tests
+    # Preview Mode
     # ============
 
+    theHtml.setPreview(True, True)
+
+    # Text (HTML4)
+    theHtml.theText = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<p>Some <b>nested bold and <i>italic</i> and "
+        "<span style='text-decoration: line-through;'>strikethrough</span> "
+        "text</b> here</p>\n"
+    )
+
+# END Test testCoreToHtml_ConvertFormat
+
+
+@pytest.mark.core
+def testCoreToHtml_ConvertDirect(mockGUI):
+    """Test the converter directly using the ToHtml class.
+    """
+    theProject = NWProject(mockGUI)
+    mockGUI.theIndex = NWIndex(theProject)
+    theHtml = ToHtml(theProject)
+
     theHtml.isNovel = True
+    theHtml.isNote = False
+    theHtml.setLinkHeaders(True)
+
+    # Special Titles
+    # ==============
 
     # Title
     theHtml.theTokens = [
-        (theHtml.T_TITLE, 1, "A Title", None, theHtml.A_PBB_AUT | theHtml.A_CENTRE),
+        (theHtml.T_TITLE, 1, "A Title", None, theHtml.A_PBB | theHtml.A_CENTRE),
         (theHtml.T_EMPTY, 1, "", None, theHtml.A_NONE),
     ]
     theHtml.doConvert()
     assert theHtml.theResult == (
-        "<h1 class='title' style='text-align: center; page-break-before: auto;'>"
+        "<h1 class='title' style='text-align: center; page-break-before: always;'>"
         "<a name='T000001'></a>A Title</h1>\n"
     )
+
+    # Unnumbered
+    theHtml.theTokens = [
+        (theHtml.T_UNNUM, 1, "Prologue", None, theHtml.A_PBB),
+        (theHtml.T_EMPTY, 1, "", None, theHtml.A_NONE),
+    ]
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<h1 style='page-break-before: always;'>"
+        "<a name='T000001'></a>Prologue</h1>\n"
+    )
+
+    # Separators
+    # ==========
 
     # Separator
     theHtml.theTokens = [
@@ -255,8 +339,8 @@ def testCoreToHtml_Convert(mockGUI):
     theHtml.doConvert()
     assert theHtml.theResult == "<p class='skip'>&nbsp;</p>\n"
 
-    # Styles
-    # ======
+    # Alignment
+    # =========
 
     theHtml.setLinkHeaders(False)
 
@@ -308,6 +392,9 @@ def testCoreToHtml_Convert(mockGUI):
         "<h1 class='title' style='text-align: justify;'>A Title</h1>\n"
     )
 
+    # Page Break
+    # ==========
+
     # Page Break Always
     theHtml.theTokens = [
         (theHtml.T_HEAD1, 1, "A Title", None, theHtml.A_PBB | theHtml.A_PBA),
@@ -318,32 +405,30 @@ def testCoreToHtml_Convert(mockGUI):
         "style='page-break-before: always; page-break-after: always;'>A Title</h1>\n"
     )
 
-    # Page Break Auto
+    # Indent
+    # ======
+
+    # Indent Left
     theHtml.theTokens = [
-        (theHtml.T_HEAD1, 1, "A Title", None, theHtml.A_PBB_AUT | theHtml.A_PBA_AUT),
+        (theHtml.T_TEXT,  1, "Some text ...", [], theHtml.A_IND_L),
+        (theHtml.T_EMPTY, 2, "", None, theHtml.A_NONE),
     ]
     theHtml.doConvert()
     assert theHtml.theResult == (
-        "<h1 class='title' "
-        "style='page-break-before: auto; page-break-after: auto;'>A Title</h1>\n"
+        "<p style='margin-left: 40px;'>Some text ...</p>\n"
     )
 
-    # Preview Mode
-    # ============
-
-    theHtml.setPreview(True, True)
-
-    # Text (HTML4)
-    theHtml.theText = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
-    theHtml.tokenizeText()
+    # Indent Right
+    theHtml.theTokens = [
+        (theHtml.T_TEXT,  1, "Some text ...", [], theHtml.A_IND_R),
+        (theHtml.T_EMPTY, 2, "", None, theHtml.A_NONE),
+    ]
     theHtml.doConvert()
     assert theHtml.theResult == (
-        "<p>Some <b>nested bold and <i>italic</i> and "
-        "<span style='text-decoration: line-through;'>strikethrough</span> "
-        "text</b> here</p>\n"
+        "<p style='margin-right: 40px;'>Some text ...</p>\n"
     )
 
-# END Test testCoreToHtml_Convert
+# END Test testCoreToHtml_ConvertDirect
 
 
 @pytest.mark.core
@@ -352,6 +437,7 @@ def testCoreToHtml_Complex(mockGUI, fncDir):
     """
     theProject = NWProject(mockGUI)
     theHtml = ToHtml(theProject)
+    theHtml.isNovel = True
 
     # Build Project
     # =============
@@ -366,13 +452,34 @@ def testCoreToHtml_Complex(mockGUI, fncDir):
         "#### A Section\n\n\tMore text in scene two.\n",
     ]
     resText = [
-        "<h1>My Novel</h1>\n<p><strong>By Jane Doh</strong></p>\n",
-        "<h2>Chapter 1</h2>\n<p>The text of chapter one.</p>\n",
-        "<h3>Scene 1</h3>\n<p>The text of scene one.</p>\n",
-        "<h4>A Section</h4>\n<p>More text in scene one.</p>\n",
-        "<h2>Chapter 2</h2>\n<p>The text of chapter two.</p>\n",
-        "<h3>Scene 2</h3>\n<p>The text of scene two.</p>\n",
-        "<h4>A Section</h4>\n<p>\tMore text in scene two.</p>\n",
+        (
+            "<h1 class='title' style='text-align: center;'>My Novel</h1>\n"
+            "<p><strong>By Jane Doh</strong></p>\n"
+        ),
+        (
+            "<h1 style='page-break-before: always;'>Chapter 1</h1>\n"
+            "<p>The text of chapter one.</p>\n"
+        ),
+        (
+            "<h2>Scene 1</h2>\n"
+            "<p>The text of scene one.</p>\n"
+        ),
+        (
+            "<h3>A Section</h3>\n"
+            "<p>More text in scene one.</p>\n"
+        ),
+        (
+            "<h1 style='page-break-before: always;'>Chapter 2</h1>\n"
+            "<p>The text of chapter two.</p>\n"
+        ),
+        (
+            "<h2>Scene 2</h2>\n"
+            "<p>The text of scene two.</p>\n"
+        ),
+        (
+            "<h3>A Section</h3>\n"
+            "<p>\tMore text in scene two.</p>\n"
+        ),
     ]
 
     for i in range(len(docText)):
@@ -385,7 +492,7 @@ def testCoreToHtml_Complex(mockGUI, fncDir):
     assert theHtml.fullHTML == resText
 
     theHtml.replaceTabs(nSpaces=2, spaceChar="&nbsp;")
-    resText[6] = "<h4>A Section</h4>\n<p>&nbsp;&nbsp;More text in scene two.</p>\n"
+    resText[6] = "<h3>A Section</h3>\n<p>&nbsp;&nbsp;More text in scene two.</p>\n"
 
     # Check File
     # ==========

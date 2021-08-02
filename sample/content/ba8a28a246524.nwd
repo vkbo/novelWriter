@@ -1,7 +1,7 @@
 %%~name: Interlude
 %%~path: e7ded148d6e4a/ba8a28a246524
-%%~kind: NOVEL/UNNUMBERED
-## Interlude
+%%~kind: NOVEL/DOCUMENT
+##! Interlude
 
 % Notice that this is a file with the flag ‘N.Un’. The ‘N’ means it’s a novel file, and the ‘Un’ means it’s an unnumbered chapter. Unnumbered chapters can be treated separately from numbered chapters during export. Perfect for when you want to add an interlude, or for a prologue or epilogue.
 

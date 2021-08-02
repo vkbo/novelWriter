@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.0b1" hexVersion="0x010000b1" fileVersion="1.2" timeStamp="2020-09-05 17:31:39">
+<novelWriterXML appVersion="1.5-alpha0" hexVersion="0x010500a0" fileVersion="1.2" timeStamp="2021-08-02 02:49:51">
   <project>
     <name>New Project</name>
     <title></title>
-    <saveCount>2</saveCount>
+    <saveCount>3</saveCount>
     <autoCount>1</autoCount>
     <editTime>0</editTime>
   </project>
@@ -21,7 +21,7 @@
     <autoReplace/>
     <titleFormat>
       <title>%title%</title>
-      <chapter>Chapter %ch%: %title%</chapter>
+      <chapter>%title%</chapter>
       <unnumbered>%title%</unnumbered>
       <scene>* * *</scene>
       <section></section>
@@ -53,7 +53,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>TITLE</layout>
+      <layout>DOCUMENT</layout>
       <charCount>11</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>
@@ -72,7 +72,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>CHAPTER</layout>
+      <layout>DOCUMENT</layout>
       <charCount>11</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>
@@ -84,7 +84,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>SCENE</layout>
+      <layout>DOCUMENT</layout>
       <charCount>9</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>

@@ -345,13 +345,9 @@ class ToOdt(Tokenizer):
 
                 if tStyle & self.A_PBB:
                     oStyle.setBreakBefore("page")
-                elif tStyle & self.A_PBB_AUT:
-                    oStyle.setBreakBefore("auto")
 
                 if tStyle & self.A_PBA:
                     oStyle.setBreakAfter("page")
-                elif tStyle & self.A_PBA_AUT:
-                    oStyle.setBreakAfter("auto")
 
                 if tStyle & self.A_Z_BTMMRG:
                     oStyle.setMarginBottom("0.000cm")
@@ -383,6 +379,10 @@ class ToOdt(Tokenizer):
             elif tType == self.T_TITLE:
                 tHead = tText.replace(r"\\", "\n")
                 self._addTextPar("Title", oStyle, tHead, isHead=True)
+
+            elif tType == self.T_UNNUM:
+                tHead = tText.replace(r"\\", "\n")
+                self._addTextPar("Heading_2", oStyle, tHead, isHead=True, oLevel="2")
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "\n")

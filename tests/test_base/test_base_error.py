@@ -37,7 +37,7 @@ def testBaseError_Dialog(qtbot, monkeypatch, fncDir, tmpDir):
     nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
-    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(20)
 
     nwErr = NWErrorMessage(nwGUI)
     qtbot.addWidget(nwErr)
@@ -82,7 +82,7 @@ def testBaseError_Handler(qtbot, monkeypatch, fncDir, tmpDir):
     nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
-    qtbot.waitForWindowShown(nwGUI)
+    qtbot.wait(20)
 
     # Normal shutdown
     with monkeypatch.context() as mp:

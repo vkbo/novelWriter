@@ -73,7 +73,7 @@ def testCoreItem_Setters(mockGUI):
     theItem.setOrder(1)
     assert theItem.itemOrder == 1
 
-    # Status
+    # Importance
     theItem.setStatus("Nonsense")
     assert theItem.itemStatus == "New"
     theItem.setStatus("New")
@@ -85,7 +85,7 @@ def testCoreItem_Setters(mockGUI):
     theItem.setStatus("Main")
     assert theItem.itemStatus == "Main"
 
-    # Importance
+    # Status
     theItem.itemClass = nwItemClass.NOVEL
     theItem.setStatus("Nonsense")
     assert theItem.itemStatus == "New"
@@ -244,29 +244,37 @@ def testCoreItem_LayoutSetter(mockGUI):
     theProject = NWProject(mockGUI)
     theItem = NWItem(theProject)
 
-    # Layout
+    # Faulty Layouts
     theItem.setLayout(None)
     assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
     theItem.setLayout("NONSENSE")
     assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
+
+    # Current Layouts
     theItem.setLayout("NO_LAYOUT")
     assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
-    theItem.setLayout("TITLE")
-    assert theItem.itemLayout == nwItemLayout.TITLE
-    theItem.setLayout("BOOK")
-    assert theItem.itemLayout == nwItemLayout.BOOK
-    theItem.setLayout("PAGE")
-    assert theItem.itemLayout == nwItemLayout.PAGE
-    theItem.setLayout("PARTITION")
-    assert theItem.itemLayout == nwItemLayout.PARTITION
-    theItem.setLayout("UNNUMBERED")
-    assert theItem.itemLayout == nwItemLayout.UNNUMBERED
-    theItem.setLayout("CHAPTER")
-    assert theItem.itemLayout == nwItemLayout.CHAPTER
-    theItem.setLayout("SCENE")
-    assert theItem.itemLayout == nwItemLayout.SCENE
+    theItem.setLayout("DOCUMENT")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
     theItem.setLayout("NOTE")
     assert theItem.itemLayout == nwItemLayout.NOTE
+
+    # Deprecated Layouts
+    theItem.setLayout("TITLE")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    theItem.setLayout("PAGE")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    theItem.setLayout("BOOK")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    theItem.setLayout("PARTITION")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    theItem.setLayout("UNNUMBERED")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    theItem.setLayout("CHAPTER")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    theItem.setLayout("SCENE")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+
+    # Alternatives
     theItem.setLayout(nwItemLayout.NOTE)
     assert theItem.itemLayout == nwItemLayout.NOTE
 

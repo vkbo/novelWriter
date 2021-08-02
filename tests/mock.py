@@ -36,6 +36,7 @@ class MockGuiMain():
         # Test Variables
         self.askResponse = True
         self.lastAlert = ""
+        self.lastQuestion = ("", "")
 
         return
 
@@ -50,6 +51,7 @@ class MockGuiMain():
 
     def askQuestion(self, theTitle, theQustion):
         print("Question: %s" % theQustion)
+        self.lastQuestion = (theTitle, theQustion)
         return self.askResponse
 
     def setStatus(self, theMessage):

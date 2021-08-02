@@ -108,6 +108,10 @@ class ToMarkdown(Tokenizer):
                 tHead = tText.replace(r"\\", "\n")
                 tmpResult.append("# %s\n\n" % tHead)
 
+            elif tType == self.T_UNNUM:
+                tHead = tText.replace(r"\\", "\n")
+                tmpResult.append("## %s\n\n" % tHead)
+
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "\n")
                 tmpResult.append("# %s\n\n" % tHead)
