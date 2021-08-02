@@ -66,12 +66,12 @@ def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir)
 
     assert itemEdit.editName.text() == "New Scene"
     assert itemEdit.editStatus.currentData() == "New"
-    assert itemEdit.editLayout.currentData() == nwItemLayout.STORY
+    assert itemEdit.editLayout.currentData() == nwItemLayout.DOCUMENT
 
     for c in "Just a Page":
         qtbot.keyClick(itemEdit.editName, c, delay=typeDelay)
     itemEdit.editStatus.setCurrentIndex(1)
-    layoutIdx = itemEdit.editLayout.findData(nwItemLayout.STORY)
+    layoutIdx = itemEdit.editLayout.findData(nwItemLayout.DOCUMENT)
     itemEdit.editLayout.setCurrentIndex(layoutIdx)
 
     itemEdit.editExport.setChecked(False)
@@ -88,7 +88,7 @@ def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir)
     qtbot.addWidget(itemEdit)
     assert itemEdit.editName.text() == "Just a Page"
     assert itemEdit.editStatus.currentData() == "Note"
-    assert itemEdit.editLayout.currentData() == nwItemLayout.STORY
+    assert itemEdit.editLayout.currentData() == nwItemLayout.DOCUMENT
     itemEdit._doClose()
 
     # Check that the header is updated

@@ -867,7 +867,13 @@ def countWords(theText):
         if aLine[0] == "@" or aLine[0] == "%":
             continue
 
-        if aLine[0] == "#":
+        if aLine[0] == "[":
+            if aLine.startswith(("[NEWPAGE]", "[NEW PAGE]", "[VSPACE]")):
+                continue
+            elif aLine.startswith("[VSPACE:") and aLine.endswith("]"):
+                continue
+
+        elif aLine[0] == "#":
             if aLine[:5] == "#### ":
                 aLine = aLine[5:]
                 countPara = False

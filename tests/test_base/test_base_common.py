@@ -175,9 +175,7 @@ def testBaseCommon_IsItemLayout():
     """Test the isItemLayout function.
     """
     assert isItemLayout("NO_LAYOUT") is True
-    assert isItemLayout("TITLE") is True
-    assert isItemLayout("PAGE") is True
-    assert isItemLayout("STORY") is True
+    assert isItemLayout("DOCUMENT") is True
     assert isItemLayout("NOTE") is True
 
     assert isItemLayout("None") is False

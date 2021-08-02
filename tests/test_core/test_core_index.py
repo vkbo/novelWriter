@@ -267,7 +267,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert theIndex.scanText(dHandle, "Hello World!") is False
     assert theIndex.scanText(xHandle, "Hello World!") is False
 
-    xItem.setLayout(nwItemLayout.STORY)
+    xItem.setLayout(nwItemLayout.DOCUMENT)
     xItem.setParent(None)
     assert theIndex.scanText(xHandle, "Hello World!") is False
 
@@ -334,10 +334,10 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert theIndex._fileIndex[nHandle]["T000013"]["title"] == "Title Three"
     assert theIndex._fileIndex[nHandle]["T000019"]["title"] == "Title Four"
 
-    assert theIndex._fileIndex[nHandle]["T000001"]["layout"] == "STORY"
-    assert theIndex._fileIndex[nHandle]["T000007"]["layout"] == "STORY"
-    assert theIndex._fileIndex[nHandle]["T000013"]["layout"] == "STORY"
-    assert theIndex._fileIndex[nHandle]["T000019"]["layout"] == "STORY"
+    assert theIndex._fileIndex[nHandle]["T000001"]["layout"] == "DOCUMENT"
+    assert theIndex._fileIndex[nHandle]["T000007"]["layout"] == "DOCUMENT"
+    assert theIndex._fileIndex[nHandle]["T000013"]["layout"] == "DOCUMENT"
+    assert theIndex._fileIndex[nHandle]["T000019"]["layout"] == "DOCUMENT"
 
     assert theIndex._fileIndex[nHandle]["T000001"]["cCount"] == 23
     assert theIndex._fileIndex[nHandle]["T000007"]["cCount"] == 23
@@ -388,14 +388,14 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     )
 
     # Page wo/Title
-    theProject.projTree[pHandle].itemLayout = nwItemLayout.STORY
+    theProject.projTree[pHandle].itemLayout = nwItemLayout.DOCUMENT
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))
     assert pHandle in theIndex._fileIndex
     assert theIndex._fileIndex[pHandle]["T000000"]["level"] == "H0"
     assert theIndex._fileIndex[pHandle]["T000000"]["title"] == ""
-    assert theIndex._fileIndex[pHandle]["T000000"]["layout"] == "STORY"
+    assert theIndex._fileIndex[pHandle]["T000000"]["layout"] == "DOCUMENT"
     assert theIndex._fileIndex[pHandle]["T000000"]["cCount"] == 36
     assert theIndex._fileIndex[pHandle]["T000000"]["wCount"] == 9
     assert theIndex._fileIndex[pHandle]["T000000"]["pCount"] == 1
@@ -587,9 +587,9 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     sHandle = theProject.newFile("Scene One", nwItemClass.NOVEL, "a508bb932959c")
     tHandle = theProject.newFile("Scene Two", nwItemClass.NOVEL, "a508bb932959c")
 
-    theProject.projTree[hHandle].itemLayout == nwItemLayout.STORY
-    theProject.projTree[sHandle].itemLayout == nwItemLayout.STORY
-    theProject.projTree[tHandle].itemLayout == nwItemLayout.STORY
+    theProject.projTree[hHandle].itemLayout == nwItemLayout.DOCUMENT
+    theProject.projTree[sHandle].itemLayout == nwItemLayout.DOCUMENT
+    theProject.projTree[tHandle].itemLayout == nwItemLayout.DOCUMENT
 
     assert theIndex.scanText(hHandle, "## Chapter One\n\n")
     assert theIndex.scanText(sHandle, "### Scene One\n\n")
@@ -809,7 +809,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "wCount": 15,
                 "pCount": 2,
@@ -826,7 +826,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "wCount": 15,
                 "pCount": 2,
@@ -843,7 +843,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "INVALID": {
                 "level": "H1",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "wCount": 15,
                 "pCount": 2,
@@ -860,7 +860,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "wCount": 15,
                 "pCount": 2,
@@ -881,7 +881,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "stuff": "H1",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "wCount": 15,
                 "pCount": 2,
@@ -898,7 +898,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "stuff": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "wCount": 15,
                 "pCount": 2,
@@ -915,7 +915,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "title": "My Novel",
-                "stuff": "TITLE",
+                "stuff": "DOCUMENT",
                 "cCount": 72,
                 "wCount": 15,
                 "pCount": 2,
@@ -932,7 +932,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "stuff": 72,
                 "wCount": 15,
                 "pCount": 2,
@@ -949,7 +949,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "stuff": 15,
                 "pCount": 2,
@@ -966,7 +966,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "wCount": 15,
                 "stuff": 2,
@@ -983,7 +983,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "wCount": 15,
                 "pCount": 2,
@@ -1003,7 +1003,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "XX",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "wCount": 15,
                 "pCount": 2,
@@ -1020,7 +1020,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "title": 12345678,
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "wCount": 15,
                 "pCount": 2,
@@ -1071,7 +1071,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "wCount": "15",
                 "pCount": 2,
@@ -1088,7 +1088,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "wCount": 15,
                 "pCount": "2",
@@ -1105,7 +1105,7 @@ def testCoreIndex_CheckNovelNoteIndex(mockGUI):
             "T000001": {
                 "level": "H1",
                 "title": "My Novel",
-                "layout": "TITLE",
+                "layout": "DOCUMENT",
                 "cCount": 72,
                 "wCount": 15,
                 "pCount": 2,

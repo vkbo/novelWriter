@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.4rc1" hexVersion="0x010400c1" fileVersion="1.2" timeStamp="2021-07-26 23:13:14">
+<novelWriterXML appVersion="1.5-alpha0" hexVersion="0x010500a0" fileVersion="1.2" timeStamp="2021-08-02 03:12:57">
   <project>
     <name>Test Minimal</name>
     <title>Minimal</title>
     <author>Jane Doe</author>
     <author>John Doh</author>
-    <saveCount>6</saveCount>
-    <autoCount>1</autoCount>
-    <editTime>80</editTime>
+    <saveCount>8</saveCount>
+    <autoCount>2</autoCount>
+    <editTime>111</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
@@ -55,7 +55,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>TITLE</layout>
+      <layout>DOCUMENT</layout>
       <charCount>28</charCount>
       <wordCount>6</wordCount>
       <paraCount>1</paraCount>
@@ -74,7 +74,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>11</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>
@@ -86,7 +86,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>9</charCount>
       <wordCount>2</wordCount>
       <paraCount>0</paraCount>

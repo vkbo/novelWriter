@@ -182,7 +182,7 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
     assert theToken.theText == docText
 
     assert theToken.isNone is False
-    assert theToken.isStory is True
+    assert theToken.isNovel is True
     assert theToken.isNote is False
 
     # Pre Processing
@@ -214,7 +214,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     # =====
 
     # Story File
-    theToken.isStory = True
+    theToken.isNovel = True
     theToken.isNote  = False
     theToken.isFirst = True
     theToken.theText = "#! Novel Title\n"
@@ -227,7 +227,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     assert theToken.theMarkdown[-1] == "#! Novel Title\n\n"
 
     # Note File
-    theToken.isStory = False
+    theToken.isNovel = False
     theToken.isNote  = True
     theToken.isFirst = True
     theToken.theText = "#! Note Title\n"
@@ -243,7 +243,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     # ========
 
     # Story File
-    theToken.isStory = True
+    theToken.isNovel = True
     theToken.isNote  = False
     theToken.isFirst = True
     theToken.theText = "# Novel Title\n"
@@ -256,7 +256,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     assert theToken.theMarkdown[-1] == "# Novel Title\n\n"
 
     # Note File
-    theToken.isStory = False
+    theToken.isNovel = False
     theToken.isNote  = True
     theToken.isFirst = True
     theToken.theText = "# Note Title\n"
@@ -272,7 +272,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     # ========
 
     # Story File
-    theToken.isStory = True
+    theToken.isNovel = True
     theToken.isNote  = False
     theToken.theText = "## Chapter One\n"
 
@@ -284,7 +284,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     assert theToken.theMarkdown[-1] == "## Chapter One\n\n"
 
     # Note File
-    theToken.isStory = False
+    theToken.isNovel = False
     theToken.isNote  = True
     theToken.theText = "## Heading 2\n"
 
@@ -299,7 +299,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     # ========
 
     # Story File
-    theToken.isStory = True
+    theToken.isNovel = True
     theToken.isNote  = False
     theToken.theText = "### Scene One\n"
 
@@ -311,7 +311,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     assert theToken.theMarkdown[-1] == "### Scene One\n\n"
 
     # Note File
-    theToken.isStory = False
+    theToken.isNovel = False
     theToken.isNote  = True
     theToken.theText = "### Heading 3\n"
 
@@ -326,7 +326,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     # ========
 
     # Story File
-    theToken.isStory = True
+    theToken.isNovel = True
     theToken.isNote  = False
     theToken.theText = "#### A Section\n"
 
@@ -338,7 +338,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     assert theToken.theMarkdown[-1] == "#### A Section\n\n"
 
     # Note File
-    theToken.isStory = False
+    theToken.isNovel = False
     theToken.isNote  = True
     theToken.theText = "#### Heading 4\n"
 
@@ -605,7 +605,7 @@ def testCoreToken_SpecialFormat(mockGUI):
     theProject = NWProject(mockGUI)
     theToken = Tokenizer(theProject)
 
-    theToken.isStory = True
+    theToken.isNovel = True
 
     # New Page
     # ========
@@ -827,7 +827,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     theToken.isNone  = False
     theToken.isNote  = False
-    theToken.isStory = True
+    theToken.isNovel = True
 
     # Titles
     # ======

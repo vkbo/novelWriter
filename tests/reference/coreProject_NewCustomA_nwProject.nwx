@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.5-alpha0" hexVersion="0x010500a0" fileVersion="1.2" timeStamp="2021-07-28 00:33:09">
+<novelWriterXML appVersion="1.5-alpha0" hexVersion="0x010500a0" fileVersion="1.2" timeStamp="2021-08-02 02:30:49">
   <project>
     <name>Test Custom</name>
     <title>Test Novel</title>
@@ -97,7 +97,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>TITLE</layout>
+      <layout>DOCUMENT</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -116,7 +116,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -128,7 +128,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -140,7 +140,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -152,7 +152,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -171,7 +171,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -183,7 +183,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -195,7 +195,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -207,7 +207,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -226,7 +226,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -238,7 +238,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -250,7 +250,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>
@@ -262,7 +262,7 @@
       <class>NOVEL</class>
       <status>New</status>
       <exported>True</exported>
-      <layout>STORY</layout>
+      <layout>DOCUMENT</layout>
       <charCount>0</charCount>
       <wordCount>0</wordCount>
       <paraCount>0</paraCount>

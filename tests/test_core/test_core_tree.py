@@ -54,7 +54,7 @@ def mockItems(mockGUI):
     itemC.itemName = "Chapter One"
     itemC.itemType = nwItemType.FILE
     itemC.itemClass = nwItemClass.NOVEL
-    itemC.itemLayout = nwItemLayout.STORY
+    itemC.itemLayout = nwItemLayout.DOCUMENT
     itemC.charCount = 300
     itemC.wordCount = 50
     itemC.paraCount = 2
@@ -63,7 +63,7 @@ def mockItems(mockGUI):
     itemD.itemName = "Scene One"
     itemD.itemType = nwItemType.FILE
     itemD.itemClass = nwItemClass.NOVEL
-    itemD.itemLayout = nwItemLayout.STORY
+    itemD.itemLayout = nwItemLayout.DOCUMENT
     itemD.charCount = 3000
     itemD.wordCount = 500
     itemD.paraCount = 20
@@ -167,7 +167,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     itemT.itemName = "New File"
     itemT.itemType = nwItemType.FILE
     itemT.itemClass = nwItemClass.NOVEL
-    itemT.itemLayout = nwItemLayout.STORY
+    itemT.itemLayout = nwItemLayout.DOCUMENT
 
     assert theTree.append(None, None, itemT)
     assert len(theTree) == len(mockItems) + 1
@@ -254,8 +254,8 @@ def testCoreTree_Methods(mockGUI, mockItems):
     ]
 
     # Change file layout
-    assert theTree.setFileItemLayout("stuff", nwItemLayout.STORY) is False
-    assert theTree.setFileItemLayout("b000000000001", nwItemLayout.STORY) is False
+    assert theTree.setFileItemLayout("stuff", nwItemLayout.DOCUMENT) is False
+    assert theTree.setFileItemLayout("b000000000001", nwItemLayout.DOCUMENT) is False
     assert theTree.setFileItemLayout("c000000000001", "stuff") is False
     assert theTree.setFileItemLayout("c000000000001", nwItemLayout.NOTE) is True
     assert theTree["c000000000001"].itemLayout == nwItemLayout.NOTE
@@ -390,11 +390,11 @@ def testCoreTree_XMLPackUnpack(mockGUI, mockItems):
         b"<expanded>True</expanded></item>"
         b"<item handle=\"c000000000001\" order=\"0\" parent=\"b000000000001\">"
         b"<name>Chapter One</name><type>FILE</type><class>NOVEL</class><status>None</status>"
-        b"<exported>True</exported><layout>STORY</layout><charCount>300</charCount>"
+        b"<exported>True</exported><layout>DOCUMENT</layout><charCount>300</charCount>"
         b"<wordCount>50</wordCount><paraCount>2</paraCount><cursorPos>0</cursorPos></item>"
         b"<item handle=\"c000000000002\" order=\"0\" parent=\"b000000000001\">"
         b"<name>Scene One</name><type>FILE</type><class>NOVEL</class><status>None</status>"
-        b"<exported>True</exported><layout>STORY</layout><charCount>3000</charCount>"
+        b"<exported>True</exported><layout>DOCUMENT</layout><charCount>3000</charCount>"
         b"<wordCount>500</wordCount><paraCount>20</paraCount><cursorPos>0</cursorPos></item>"
         b"<item handle=\"a000000000002\" order=\"0\" parent=\"None\">"
         b"<name>Outtakes</name><type>ROOT</type><class>ARCHIVE</class><status>None</status>"
@@ -462,8 +462,8 @@ def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpDir):
         "\n"
         "File Name                  Class      Layout      Document Label\n"
         "-------------------------------------------------------------\n"
-        f"{pathA}  NOVEL      STORY       Chapter One\n"
-        f"{pathB}  NOVEL      STORY       Scene One\n"
+        f"{pathA}  NOVEL      DOCUMENT    Chapter One\n"
+        f"{pathB}  NOVEL      DOCUMENT    Scene One\n"
         f"{pathC}  CHARACTER  NOTE        Jane Doe\n"
     )
 

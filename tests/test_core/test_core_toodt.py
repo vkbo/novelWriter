@@ -55,7 +55,7 @@ def testCoreToOdt_Convert(mockGUI):
     # Export Mode
     # ===========
 
-    theDoc.isStory = True
+    theDoc.isNovel = True
 
     # Header 1
     theDoc.theText = "# Title\n"
@@ -77,7 +77,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.closeDocument()
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_2" text:outline-level="2">Chapter Title</text:h>'
+        '<text:h text:style-name="P2" text:outline-level="2">Chapter Title</text:h>'
         '</office:text>'
     )
 

@@ -79,7 +79,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
     assert readFile(docPath) == (
         "%%~name: New File\n"
         f"%%~path: a508bb932959c/{xHandle}\n"
-        "%%~kind: NOVEL/STORY\n"
+        "%%~kind: NOVEL/DOCUMENT\n"
         "### Test File\n\n"
         "Text ...\n\n"
     )
@@ -145,14 +145,14 @@ def testCoreDocument_Methods(mockGUI, nwMinimal):
     assert theName == "New Scene"
     assert theParent == "a6d311a93600a"
     assert theClass == nwItemClass.NOVEL
-    assert theLayout == nwItemLayout.STORY
+    assert theLayout == nwItemLayout.DOCUMENT
 
     # Add meta data garbage
     assert theDoc.writeDocument("%%~ stuff\n### Test File\n\nText ...\n\n")
     assert readFile(docPath) == (
         "%%~name: New Scene\n"
         f"%%~path: a6d311a93600a/{sHandle}\n"
-        "%%~kind: NOVEL/STORY\n"
+        "%%~kind: NOVEL/DOCUMENT\n"
         "%%~ stuff\n"
         "### Test File\n\n"
         "Text ...\n\n"

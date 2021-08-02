@@ -92,7 +92,7 @@ def testCoreToHtml_Convert(mockGUI):
     # ===========
 
     # Story Files
-    theHtml.isStory = True
+    theHtml.isNovel = True
     theHtml.isNote = False
 
     # Header 1
@@ -105,7 +105,7 @@ def testCoreToHtml_Convert(mockGUI):
     theHtml.theText = "## Chapter Title\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
-    assert theHtml.theResult == "<h1>Chapter Title</h1>\n"
+    assert theHtml.theResult == "<h1 style='page-break-before: always;'>Chapter Title</h1>\n"
 
     # Header 3
     theHtml.theText = "### Scene Title\n"
@@ -120,7 +120,7 @@ def testCoreToHtml_Convert(mockGUI):
     assert theHtml.theResult == "<h3>Section Title</h3>\n"
 
     # Note Files
-    theHtml.isStory = False
+    theHtml.isNovel = False
     theHtml.isNote = True
     theHtml.setLinkHeaders(True)
 
@@ -230,7 +230,7 @@ def testCoreToHtml_Convert(mockGUI):
     # Direct Tests
     # ============
 
-    theHtml.isStory = True
+    theHtml.isNovel = True
 
     # Title
     theHtml.theTokens = [
@@ -346,6 +346,7 @@ def testCoreToHtml_Complex(mockGUI, fncDir):
     """
     theProject = NWProject(mockGUI)
     theHtml = ToHtml(theProject)
+    theHtml.isNovel = True
 
     # Build Project
     # =============
@@ -360,13 +361,34 @@ def testCoreToHtml_Complex(mockGUI, fncDir):
         "#### A Section\n\n\tMore text in scene two.\n",
     ]
     resText = [
-        "<h1 style='text-align: center;'>My Novel</h1>\n<p><strong>By Jane Doh</strong></p>\n",
-        "<h2>Chapter 1</h2>\n<p>The text of chapter one.</p>\n",
-        "<h3>Scene 1</h3>\n<p>The text of scene one.</p>\n",
-        "<h4>A Section</h4>\n<p>More text in scene one.</p>\n",
-        "<h2>Chapter 2</h2>\n<p>The text of chapter two.</p>\n",
-        "<h3>Scene 2</h3>\n<p>The text of scene two.</p>\n",
-        "<h4>A Section</h4>\n<p>\tMore text in scene two.</p>\n",
+        (
+            "<h1 class='title' style='text-align: center;'>My Novel</h1>\n"
+            "<p><strong>By Jane Doh</strong></p>\n"
+        ),
+        (
+            "<h1 style='page-break-before: always;'>Chapter 1</h1>\n"
+            "<p>The text of chapter one.</p>\n"
+        ),
+        (
+            "<h2>Scene 1</h2>\n"
+            "<p>The text of scene one.</p>\n"
+        ),
+        (
+            "<h3>A Section</h3>\n"
+            "<p>More text in scene one.</p>\n"
+        ),
+        (
+            "<h1 style='page-break-before: always;'>Chapter 2</h1>\n"
+            "<p>The text of chapter two.</p>\n"
+        ),
+        (
+            "<h2>Scene 2</h2>\n"
+            "<p>The text of scene two.</p>\n"
+        ),
+        (
+            "<h3>A Section</h3>\n"
+            "<p>\tMore text in scene two.</p>\n"
+        ),
     ]
 
     for i in range(len(docText)):
@@ -379,7 +401,7 @@ def testCoreToHtml_Complex(mockGUI, fncDir):
     assert theHtml.fullHTML == resText
 
     theHtml.replaceTabs(nSpaces=2, spaceChar="&nbsp;")
-    resText[6] = "<h4>A Section</h4>\n<p>&nbsp;&nbsp;More text in scene two.</p>\n"
+    resText[6] = "<h3>A Section</h3>\n<p>&nbsp;&nbsp;More text in scene two.</p>\n"
 
     # Check File
     # ==========

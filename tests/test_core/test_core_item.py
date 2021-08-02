@@ -253,26 +253,26 @@ def testCoreItem_LayoutSetter(mockGUI):
     # Current Layouts
     theItem.setLayout("NO_LAYOUT")
     assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
-    theItem.setLayout("STORY")
-    assert theItem.itemLayout == nwItemLayout.STORY
+    theItem.setLayout("DOCUMENT")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
     theItem.setLayout("NOTE")
     assert theItem.itemLayout == nwItemLayout.NOTE
 
     # Deprecated Layouts
     theItem.setLayout("TITLE")
-    assert theItem.itemLayout == nwItemLayout.STORY
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
     theItem.setLayout("PAGE")
-    assert theItem.itemLayout == nwItemLayout.STORY
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
     theItem.setLayout("BOOK")
-    assert theItem.itemLayout == nwItemLayout.STORY
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
     theItem.setLayout("PARTITION")
-    assert theItem.itemLayout == nwItemLayout.STORY
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
     theItem.setLayout("UNNUMBERED")
-    assert theItem.itemLayout == nwItemLayout.STORY
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
     theItem.setLayout("CHAPTER")
-    assert theItem.itemLayout == nwItemLayout.STORY
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
     theItem.setLayout("SCENE")
-    assert theItem.itemLayout == nwItemLayout.STORY
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
 
     # Alternatives
     theItem.setLayout(nwItemLayout.NOTE)
