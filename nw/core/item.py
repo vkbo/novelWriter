@@ -242,7 +242,7 @@ class NWItem():
         """Set the item status by looking it up in the valid status
         items of the current project.
         """
-        if self.itemClass == nwItemClass.NOVEL:
+        if self.itemClass in nwLists.CLS_NOVEL:
             self.itemStatus = self.theProject.statusItems.checkEntry(theStatus)
         else:
             self.itemStatus = self.theProject.importItems.checkEntry(theStatus)

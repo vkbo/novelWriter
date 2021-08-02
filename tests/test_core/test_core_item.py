@@ -73,7 +73,7 @@ def testCoreItem_Setters(mockGUI):
     theItem.setOrder(1)
     assert theItem.itemOrder == 1
 
-    # Status
+    # Importance
     theItem.setStatus("Nonsense")
     assert theItem.itemStatus == "New"
     theItem.setStatus("New")
@@ -85,7 +85,7 @@ def testCoreItem_Setters(mockGUI):
     theItem.setStatus("Main")
     assert theItem.itemStatus == "Main"
 
-    # Importance
+    # Status
     theItem.itemClass = nwItemClass.NOVEL
     theItem.setStatus("Nonsense")
     assert theItem.itemStatus == "New"
