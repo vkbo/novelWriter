@@ -52,6 +52,7 @@ X_VERS = "1.2"
 
 # Text Formatting Tags
 TAG_BR   = "{%s}line-break" % XML_NS["text"]
+TAG_SPC  = "{%s}s" % XML_NS["text"]
 TAG_TAB  = "{%s}tab" % XML_NS["text"]
 TAG_SPAN = "{%s}span" % XML_NS["text"]
 TAG_STNM = "{%s}style-name" % XML_NS["text"]
@@ -62,6 +63,7 @@ X_ITA = 0x02  # Italic format
 X_DEL = 0x04  # Strikethrough format
 X_BRK = 0x08  # Line break
 X_TAB = 0x10  # Tab
+X_SPC = 0x20  # Repeated Space
 
 # Formatting Masks
 M_BLD = ~X_BLD
@@ -69,6 +71,7 @@ M_ITA = ~X_ITA
 M_DEL = ~X_DEL
 M_BRK = ~X_BRK
 M_TAB = ~X_TAB
+M_SPC = ~X_SPC
 
 
 class ToOdt(Tokenizer):
@@ -602,6 +605,7 @@ class ToOdt(Tokenizer):
         tTemp = ""
         xFmt = 0x00
         pFmt = 0x00
+        pSpc = False
 
         for i, c in enumerate(theText):
 
@@ -619,6 +623,14 @@ class ToOdt(Tokenizer):
                 xFmt |= X_DEL
             elif theFmt[i] == "s":
                 xFmt &= M_DEL
+
+            if c == " ":
+                if pSpc:
+                    xFmt |= X_SPC
+                    c = ""
+                pSpc = True
+            else:
+                pSpc = False
 
             if c == "\n":
                 xFmt |= X_BRK
@@ -645,6 +657,10 @@ class ToOdt(Tokenizer):
                 if xFmt & X_TAB:
                     xTail = etree.SubElement(xElem, TAG_TAB)
                     xFmt &= M_TAB
+
+                if xFmt & X_SPC:
+                    xTail = etree.SubElement(xElem, TAG_SPC)
+                    xFmt &= M_SPC
 
             pFmt = xFmt
 

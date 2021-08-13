@@ -358,6 +358,26 @@ def testCoreToOdt_Convert(mockGUI):
         '</office:text>'
     )
 
+    # Multiple Spaces
+    theDoc.theText = (
+        "### Scene\n\n"
+        "Hello World\n\n"
+        "Hello  World\n\n"
+        "Hello   World\n\n"
+    )
+    theDoc.tokenizeText()
+    theDoc.initDocument()
+    theDoc.doConvert()
+    theDoc.closeDocument()
+    assert xmlToText(theDoc._xText) == (
+        '<office:text>'
+        '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
+        '<text:p text:style-name="Text_Body">Hello World</text:p>'
+        '<text:p text:style-name="Text_Body">Hello <text:s/>World</text:p>'
+        '<text:p text:style-name="Text_Body">Hello <text:s/><text:s/>World</text:p>'
+        '</office:text>'
+    )
+
     # Synopsis, Comment, Keywords
     theDoc.theText = (
         "### Scene\n\n"
