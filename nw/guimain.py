@@ -289,6 +289,13 @@ class GuiMain(QMainWindow):
 
         logger.debug("GUI initialisation complete")
 
+        if nw.__hexversion__[-2] == "a":
+            self.makeAlert(self.tr(
+                "You are running an untested development version of novelWriter. "
+                "Please be careful when working on a live project "
+                "and make sure you take regular backups."
+            ), nwAlert.WARN)
+
         # If a project path was provided at command line, open it
         if self.mainConf.cmdOpen is not None:
             logger.debug("Opening project from additional command line option")

@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import nw
 import pytest
 
-from PyQt5.QtWidgets import qApp
+from PyQt5.QtWidgets import QMessageBox, qApp
 
 from mock import causeException
 
@@ -33,6 +33,9 @@ from nw.error import NWErrorMessage, exceptionHandler
 def testBaseError_Dialog(qtbot, monkeypatch, fncDir, tmpDir):
     """Test the error dialog.
     """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
+
     qApp.closeAllWindows()
     nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
@@ -52,7 +55,7 @@ def testBaseError_Dialog(qtbot, monkeypatch, fncDir, tmpDir):
         mp.setattr("PyQt5.QtCore.QSysInfo.kernelVersion", lambda: "1.2.3")
         nwErr.setMessage(Exception, "Fine Error", None)
         theMessage = nwErr.msgBody.toPlainText()
-        assert theMessage
+        assert theMessage != ""
         assert "Fine Error" in theMessage
         assert "Exception" in theMessage
         assert "(1.2.3)" in theMessage
@@ -62,7 +65,7 @@ def testBaseError_Dialog(qtbot, monkeypatch, fncDir, tmpDir):
         mp.setattr("PyQt5.QtCore.QSysInfo.kernelVersion", causeException)
         nwErr.setMessage(Exception, "Almost Fine Error", None)
         theMessage = nwErr.msgBody.toPlainText()
-        assert theMessage
+        assert theMessage != ""
         assert "(Unknown)" in theMessage
 
     nwErr._doClose()
