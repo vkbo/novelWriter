@@ -317,7 +317,7 @@ def testCoreToOdt_Convert(mockGUI):
     # ==========
 
     # Nested Text
-    theDoc.theText = "Some ~~nested **bold** and _italics_ text~~ text.\nNo format\n"
+    theDoc.theText = "Some ~~nested **bold** and _italics_ text~~ text."
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -329,13 +329,12 @@ def testCoreToOdt_Convert(mockGUI):
         '<text:span text:style-name="T2">bold</text:span>'
         '<text:span text:style-name="T1"> and </text:span>'
         '<text:span text:style-name="T3">italics</text:span>'
-        '<text:span text:style-name="T1"> text</text:span> text.'
-        '<text:line-break/>No format</text:p>'
+        '<text:span text:style-name="T1"> text</text:span> text.</text:p>'
         '</office:text>'
     )
 
     # Hard Break
-    theDoc.theText = "Some text.  \nNext line\n"
+    theDoc.theText = "Some text.\nNext line\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -355,6 +354,19 @@ def testCoreToOdt_Convert(mockGUI):
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="Text_Body"><text:tab/>Item 1<text:tab/>Item 2</text:p>'
+        '</office:text>'
+    )
+
+    # Tab in Format
+    theDoc.theText = "Some **bold\ttext**"
+    theDoc.tokenizeText()
+    theDoc.initDocument()
+    theDoc.doConvert()
+    theDoc.closeDocument()
+    assert xmlToText(theDoc._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="Text_Body">Some <text:span text:style-name="T4">bold</text:span>'
+        '<text:tab/><text:span text:style-name="T4">text</text:span></text:p>'
         '</office:text>'
     )
 
