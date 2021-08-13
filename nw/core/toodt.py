@@ -56,14 +56,22 @@ TAG_TAB  = "{%s}tab" % XML_NS["text"]
 TAG_SPAN = "{%s}span" % XML_NS["text"]
 TAG_STNM = "{%s}style-name" % XML_NS["text"]
 
+# Formatting Codes
+X_BLD = 0x01  # Bold format
+X_ITA = 0x02  # Italic format
+X_DEL = 0x04  # Strikethrough format
+X_BRK = 0x08  # Line break
+X_TAB = 0x10  # Tab
+
+# Formatting Masks
+M_BLD = ~X_BLD
+M_ITA = ~X_ITA
+M_DEL = ~X_DEL
+M_BRK = ~X_BRK
+M_TAB = ~X_TAB
+
 
 class ToOdt(Tokenizer):
-
-    X_BLD = 0x01  # Bold format
-    X_ITA = 0x02  # Italic format
-    X_DEL = 0x04  # Strikethrough format
-    X_BRK = 0x08  # Line break
-    X_TAB = 0x10  # Tab
 
     def __init__(self, theProject, isFlat):
         Tokenizer.__init__(self, theProject)
@@ -78,8 +86,11 @@ class ToOdt(Tokenizer):
         self._dStyl = None  # ODT styles.xml root
 
         self._xMeta = None  # Office meta root
+        self._xFont = None  # Office font face declaration
+        self._xFnt2 = None  # Office font face declaration, extra
         self._xStyl = None  # Office styles root
         self._xAuto = None  # Office auto-styles root
+        self._xAut1 = None  # Office auto-styles root, extra
         self._xMast = None  # Office master-styles root
         self._xBody = None  # Office body root
         self._xText = None  # Office text root
@@ -95,7 +106,6 @@ class ToOdt(Tokenizer):
         self.textSize   = 12
         self.textFixed  = False
         self.colourHead = False
-        self.addHeader  = True
         self.headerText = ""
 
         # Internal
@@ -275,7 +285,7 @@ class ToOdt(Tokenizer):
 
             # content.xml
             self._dCont = etree.Element(tCont, attrib=tAttr, nsmap=XML_NS)
-            self._xFnt1 = etree.SubElement(self._dCont, _mkTag("office", "font-face-decls"))
+            self._xFont = etree.SubElement(self._dCont, _mkTag("office", "font-face-decls"))
             self._xAuto = etree.SubElement(self._dCont, _mkTag("office", "automatic-styles"))
             self._xBody = etree.SubElement(self._dCont, _mkTag("office", "body"))
 
@@ -290,7 +300,7 @@ class ToOdt(Tokenizer):
             self._xAut2 = etree.SubElement(self._dStyl, _mkTag("office", "automatic-styles"))
             self._xMast = etree.SubElement(self._dStyl, _mkTag("office", "master-styles"))
 
-            etree.SubElement(self._xFnt1, _mkTag("style", "font-face"), attrib=fAttr)
+            etree.SubElement(self._xFont, _mkTag("style", "font-face"), attrib=fAttr)
             etree.SubElement(self._xFnt2, _mkTag("style", "font-face"), attrib=fAttr)
 
         # Finalise
@@ -598,23 +608,23 @@ class ToOdt(Tokenizer):
             if theFmt[i] == "_":
                 continue
             elif theFmt[i] == "B":
-                xFmt |= self.X_BLD
+                xFmt |= X_BLD
             elif theFmt[i] == "b":
-                xFmt ^= self.X_BLD
+                xFmt &= M_BLD
             elif theFmt[i] == "I":
-                xFmt |= self.X_ITA
+                xFmt |= X_ITA
             elif theFmt[i] == "i":
-                xFmt ^= self.X_ITA
+                xFmt &= M_ITA
             elif theFmt[i] == "S":
-                xFmt |= self.X_DEL
+                xFmt |= X_DEL
             elif theFmt[i] == "s":
-                xFmt ^= self.X_DEL
+                xFmt &= M_DEL
 
             if c == "\n":
-                xFmt |= self.X_BRK
+                xFmt |= X_BRK
                 c = ""
             elif c == "\t":
-                xFmt |= self.X_TAB
+                xFmt |= X_TAB
                 c = ""
 
             if theFmt[i] == " ":
@@ -628,18 +638,21 @@ class ToOdt(Tokenizer):
                     appendSpan(tTemp, pFmt)
                     tTemp = ""
 
-                if xFmt & self.X_BRK:
+                if xFmt & X_BRK:
                     xTail = etree.SubElement(xElem, TAG_BR)
-                    xFmt ^= self.X_BRK
+                    xFmt &= M_BRK
 
-                if xFmt & self.X_TAB:
+                if xFmt & X_TAB:
                     xTail = etree.SubElement(xElem, TAG_TAB)
-                    xFmt ^= self.X_TAB
+                    xFmt &= M_TAB
 
             pFmt = xFmt
 
         # Save what remains in the buffer
-        appendText(tTemp)
+        if pFmt == 0x00:
+            appendText(tTemp)
+        else:
+            appendSpan(tTemp, pFmt)
 
         return
 
@@ -672,11 +685,11 @@ class ToOdt(Tokenizer):
 
         newName = "T%d" % (len(self._autoText) + 1)
         newStyle = ODTTextStyle()
-        if styleCode & self.X_BLD:
+        if styleCode & X_BLD:
             newStyle.setFontWeight("bold")
-        if styleCode & self.X_ITA:
+        if styleCode & X_ITA:
             newStyle.setFontStyle("italic")
-        if styleCode & self.X_DEL:
+        if styleCode & X_DEL:
             newStyle.setStrikeStyle("solid")
             newStyle.setStrikeType("single")
 
@@ -785,9 +798,6 @@ class ToOdt(Tokenizer):
 
         # Add Header and Footer Styles
         # ============================
-        if not self.addHeader:
-            return
-
         theAttr = {}
         theAttr[_mkTag("style", "name")]              = "Header_and_Footer"
         theAttr[_mkTag("style", "display-name")]      = "Header and Footer"
@@ -943,9 +953,6 @@ class ToOdt(Tokenizer):
 
         # Add Header Style
         # ================
-        if not self.addHeader:
-            return
-
         oStyle = ODTParagraphStyle()
         oStyle.setDisplayName("Header")
         oStyle.setParentStyleName("Header_and_Footer")
@@ -959,9 +966,6 @@ class ToOdt(Tokenizer):
     def _writeHeader(self):
         """Write the header elements.
         """
-        if not self.addHeader:
-            return
-
         theAttr = {}
         theAttr[_mkTag("style", "name")]             = "Standard"
         theAttr[_mkTag("style", "page-layout-name")] = "PM1"
@@ -1059,11 +1063,15 @@ class ODTParagraphStyle():
     def setOutlineLevel(self, theValue):
         if theValue in self.VALID_LEVEL:
             self._mAttr["default-outline-level"][1] = str(theValue)
+        else:
+            self._mAttr["default-outline-level"][1] = None
         return
 
     def setClass(self, theValue):
         if theValue in self.VALID_CLASS:
             self._mAttr["class"][1] = str(theValue)
+        else:
+            self._mAttr["class"][1] = None
         return
 
     ##
@@ -1093,16 +1101,22 @@ class ODTParagraphStyle():
     def setTextAlign(self, theValue):
         if theValue in self.VALID_ALIGN:
             self._pAttr["text-align"][1] = str(theValue)
+        else:
+            self._pAttr["text-align"][1] = None
         return
 
     def setBreakBefore(self, theValue):
         if theValue in self.VALID_BREAK:
             self._pAttr["break-before"][1] = str(theValue)
+        else:
+            self._pAttr["break-before"][1] = None
         return
 
     def setBreakAfter(self, theValue):
         if theValue in self.VALID_BREAK:
             self._pAttr["break-after"][1] = str(theValue)
+        else:
+            self._pAttr["break-after"][1] = None
         return
 
     ##
@@ -1124,6 +1138,8 @@ class ODTParagraphStyle():
     def setFontWeight(self, theValue):
         if theValue in self.VALID_WEIGHT:
             self._tAttr["font-weight"][1] = str(theValue)
+        else:
+            self._tAttr["font-weight"][1] = None
         return
 
     def setColor(self, theValue):
@@ -1133,28 +1149,6 @@ class ODTParagraphStyle():
     def setOpacity(self, theValue):
         self._tAttr["opacity"][1] = str(theValue)
         return
-
-    ##
-    #  Getters
-    ##
-
-    def getAttr(self, attrName):
-        """Look through the dictionaries for the value, and return it if
-        we can find it, If not, return None.
-        """
-        retVal = self._mAttr.get(attrName, None)
-        if retVal is not None:
-            return retVal
-
-        retVal = self._pAttr.get(attrName, None)
-        if retVal is not None:
-            return retVal
-
-        retVal = self._tAttr.get(attrName, None)
-        if retVal is not None:
-            return retVal
-
-        return None
 
     ##
     #  Methods
@@ -1247,21 +1241,29 @@ class ODTTextStyle():
     def setFontWeight(self, theValue):
         if theValue in self.VALID_WEIGHT:
             self._tAttr["font-weight"][1] = str(theValue)
+        else:
+            self._tAttr["font-weight"][1] = None
         return
 
     def setFontStyle(self, theValue):
         if theValue in self.VALID_STYLE:
             self._tAttr["font-style"][1] = str(theValue)
+        else:
+            self._tAttr["font-style"][1] = None
         return
 
     def setStrikeStyle(self, theValue):
         if theValue in self.VALID_LSTYLE:
             self._tAttr["text-line-through-style"][1] = str(theValue)
+        else:
+            self._tAttr["text-line-through-style"][1] = None
         return
 
     def setStrikeType(self, theValue):
         if theValue in self.VALID_LTYPE:
             self._tAttr["text-line-through-type"][1] = str(theValue)
+        else:
+            self._tAttr["text-line-through-type"][1] = None
         return
 
     ##
