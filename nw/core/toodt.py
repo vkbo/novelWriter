@@ -53,6 +53,7 @@ X_VERS = "1.2"
 # Text Formatting Tags
 TAG_BR   = "{%s}line-break" % XML_NS["text"]
 TAG_SPC  = "{%s}s" % XML_NS["text"]
+TAG_NSPC = "{%s}c" % XML_NS["text"]
 TAG_TAB  = "{%s}tab" % XML_NS["text"]
 TAG_SPAN = "{%s}span" % XML_NS["text"]
 TAG_STNM = "{%s}style-name" % XML_NS["text"]
@@ -61,17 +62,11 @@ TAG_STNM = "{%s}style-name" % XML_NS["text"]
 X_BLD = 0x01  # Bold format
 X_ITA = 0x02  # Italic format
 X_DEL = 0x04  # Strikethrough format
-X_BRK = 0x08  # Line break
-X_TAB = 0x10  # Tab
-X_SPC = 0x20  # Repeated Space
 
 # Formatting Masks
 M_BLD = ~X_BLD
 M_ITA = ~X_ITA
 M_DEL = ~X_DEL
-M_BRK = ~X_BRK
-M_TAB = ~X_TAB
-M_SPC = ~X_SPC
 
 
 class ToOdt(Tokenizer):
@@ -582,30 +577,12 @@ class ToOdt(Tokenizer):
             # Generate an empty format if there isn't any or it doesn't match
             theFmt = " "*len(theText)
 
-        # XML functions
-        xTail = None
-
-        def appendText(tText):
-            nonlocal xElem, xTail
-            if tText:
-                if xTail is None:
-                    xElem.text = tText
-                else:
-                    xTail.tail = tText
-
-        def appendSpan(tText, tFmt):
-            nonlocal xElem, xTail
-            if tText:
-                xTail = etree.SubElement(xElem, TAG_SPAN, attrib={
-                    TAG_STNM: self._textStyle(tFmt)
-                })
-                xTail.text = tText
-
         # The formatting loop
         tTemp = ""
         xFmt = 0x00
         pFmt = 0x00
-        pSpc = False
+
+        parProc = XMLParagraph(xElem)
 
         for i, c in enumerate(theText):
 
@@ -624,51 +601,24 @@ class ToOdt(Tokenizer):
             elif theFmt[i] == "s":
                 xFmt &= M_DEL
 
-            if c == " ":
-                if pSpc:
-                    xFmt |= X_SPC
-                    c = ""
-                pSpc = True
-            else:
-                pSpc = False
-
-            if c == "\n":
-                xFmt |= X_BRK
-                c = ""
-            elif c == "\t":
-                xFmt |= X_TAB
-                c = ""
-
             if theFmt[i] == " ":
                 tTemp += c
 
             if xFmt != pFmt:
                 if pFmt == 0x00:
-                    appendText(tTemp)
+                    parProc.appendText(tTemp)
                     tTemp = ""
                 else:
-                    appendSpan(tTemp, pFmt)
+                    parProc.appendSpan(tTemp, self._textStyle(pFmt))
                     tTemp = ""
-
-                if xFmt & X_BRK:
-                    xTail = etree.SubElement(xElem, TAG_BR)
-                    xFmt &= M_BRK
-
-                if xFmt & X_TAB:
-                    xTail = etree.SubElement(xElem, TAG_TAB)
-                    xFmt &= M_TAB
-
-                if xFmt & X_SPC:
-                    xTail = etree.SubElement(xElem, TAG_SPC)
-                    xFmt &= M_SPC
 
             pFmt = xFmt
 
         # Save what remains in the buffer
         if pFmt == 0x00:
-            appendText(tTemp)
+            parProc.appendText(tTemp)
         else:
-            appendSpan(tTemp, pFmt)
+            parProc.appendSpan(tTemp, self._textStyle(pFmt))
 
         return
 
@@ -1305,6 +1255,165 @@ class ODTTextStyle():
         return
 
 # END Class ODTTextStyle
+
+
+# =============================================================================================== #
+#  XML Helper Class
+# =============================================================================================== #
+
+class XMLParagraph():
+
+    X_ROOT_TEXT = 0
+    X_ROOT_TAIL = 1
+    X_SPAN_TEXT = 2
+    X_SPAN_SING = 3
+
+    def __init__(self, xRoot):
+
+        self._xRoot = xRoot
+        self._xTail = None
+        self._xSing = None
+
+        self._nState = self.X_ROOT_TEXT
+
+        return
+
+    def appendText(self, tText):
+        """Append text to the XML element.
+        """
+        nSpaces = 0
+        for c in tText:
+            if c == " ":
+                nSpaces += 1
+
+            elif c == "\n":
+                if nSpaces > 0:
+                    self._processSpaces(nSpaces)
+                    nSpaces = 0
+
+                if self._nState in (self.X_ROOT_TEXT, self.X_ROOT_TAIL):
+                    self._xTail = etree.SubElement(self._xRoot, TAG_BR)
+                    self._nState = self.X_ROOT_TAIL
+                elif self._nState in (self.X_SPAN_TEXT, self.X_SPAN_SING):
+                    self._xSing = etree.SubElement(self._xTail, TAG_BR)
+                    self._nState = self.X_SPAN_SING
+
+            elif c == "\t":
+                if nSpaces > 0:
+                    self._processSpaces(nSpaces)
+                    nSpaces = 0
+
+                if self._nState in (self.X_ROOT_TEXT, self.X_ROOT_TAIL):
+                    self._xTail = etree.SubElement(self._xRoot, TAG_TAB)
+                    self._nState = self.X_ROOT_TAIL
+                elif self._nState in (self.X_SPAN_TEXT, self.X_SPAN_SING):
+                    self._xSing = etree.SubElement(self._xTail, TAG_TAB)
+                    self._nState = self.X_SPAN_SING
+
+            else:
+                if nSpaces > 0:
+                    self._processSpaces(nSpaces)
+                    nSpaces = 0
+
+                if self._nState == self.X_ROOT_TEXT:
+                    if self._xRoot.text is None:
+                        self._xRoot.text = c
+                    else:
+                        self._xRoot.text += c
+
+                elif self._nState == self.X_ROOT_TAIL:
+                    if self._xTail.tail is None:
+                        self._xTail.tail = c
+                    else:
+                        self._xTail.tail += c
+
+                elif self._nState == self.X_SPAN_TEXT:
+                    if self._xTail.text is None:
+                        self._xTail.text = c
+                    else:
+                        self._xTail.text += c
+
+                elif self._nState == self.X_SPAN_SING:
+                    if self._xSing.tail is None:
+                        self._xSing.tail = c
+                    else:
+                        self._xSing.tail += c
+
+        if nSpaces > 0:
+            self._processSpaces(nSpaces)
+
+        return
+
+    def appendSpan(self, tText, tFmt):
+        """Append a text span to the XML element.
+        """
+        self._xTail = etree.SubElement(self._xRoot, TAG_SPAN, attrib={
+            TAG_STNM: tFmt
+        })
+        self._nState = self.X_SPAN_TEXT
+        self.appendText(tText)
+        self._nState = self.X_ROOT_TAIL
+
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _processSpaces(self, nSpaces):
+        """Add spaces to paragraph. The first space is always written
+        as-is. The second space uses the dedicated tag for spaces, and
+        from the third space and on, a counter is added to the tag.
+
+        See: http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html
+        Sections: 6.1.2, 6.1.3, and 19.763
+        """
+        if nSpaces > 0:
+            if self._nState == self.X_ROOT_TEXT:
+                if self._xRoot.text is None:
+                    self._xRoot.text = " "
+                else:
+                    self._xRoot.text += " "
+
+            elif self._nState == self.X_ROOT_TAIL:
+                if self._xTail.tail is None:
+                    self._xTail.tail = " "
+                else:
+                    self._xTail.tail += " "
+
+            elif self._nState == self.X_SPAN_TEXT:
+                if self._xTail.text is None:
+                    self._xTail.text = " "
+                else:
+                    self._xTail.text += " "
+
+            elif self._nState == self.X_SPAN_SING:
+                if self._xSing.tail is None:
+                    self._xSing.tail = " "
+                else:
+                    self._xSing.tail += " "
+
+        if nSpaces == 2:
+            if self._nState in (self.X_ROOT_TEXT, self.X_ROOT_TAIL):
+                self._xTail = etree.SubElement(self._xRoot, TAG_SPC)
+                self._nState = self.X_ROOT_TAIL
+            elif self._nState in (self.X_SPAN_TEXT, self.X_SPAN_SING):
+                self._xSing = etree.SubElement(self._xTail, TAG_SPC)
+                self._nState = self.X_SPAN_SING
+
+        elif nSpaces > 2:
+            if self._nState in (self.X_ROOT_TEXT, self.X_ROOT_TAIL):
+                self._xTail = etree.SubElement(self._xRoot, TAG_SPC, attrib={
+                    TAG_NSPC: str(nSpaces - 1)
+                })
+                self._nState = self.X_ROOT_TAIL
+            elif self._nState in (self.X_SPAN_TEXT, self.X_SPAN_SING):
+                self._xSing = etree.SubElement(self._xTail, TAG_SPC, attrib={
+                    TAG_NSPC: str(nSpaces - 1)
+                })
+                self._nState = self.X_SPAN_SING
+
+        return
 
 
 # =============================================================================================== #

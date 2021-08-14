@@ -29,7 +29,7 @@ from shutil import copyfile
 from tools import cmpFiles
 
 from nw.core import NWProject, NWIndex, ToOdt
-from nw.core.toodt import ODTParagraphStyle, ODTTextStyle
+from nw.core.toodt import ODTParagraphStyle, ODTTextStyle, XMLParagraph, _mkTag
 
 XML_NS = [
     ' xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"',
@@ -365,8 +365,8 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.closeDocument()
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_Body">Some <text:span text:style-name="T4">bold</text:span>'
-        '<text:tab/><text:span text:style-name="T4">text</text:span></text:p>'
+        '<text:p text:style-name="Text_Body">Some <text:span text:style-name="T4">'
+        'bold<text:tab/>text</text:span></text:p>'
         '</office:text>'
     )
 
@@ -386,7 +386,7 @@ def testCoreToOdt_Convert(mockGUI):
         '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
         '<text:p text:style-name="Text_Body">Hello World</text:p>'
         '<text:p text:style-name="Text_Body">Hello <text:s/>World</text:p>'
-        '<text:p text:style-name="Text_Body">Hello <text:s/><text:s/>World</text:p>'
+        '<text:p text:style-name="Text_Body">Hello <text:s text:c="2"/>World</text:p>'
         '</office:text>'
     )
 
@@ -947,3 +947,187 @@ def testCoreToOdt_ODTTextStyle():
     )
 
 # END Test testCoreToOdt_ODTTextStyle
+
+
+@pytest.mark.core
+def testCoreToOdt_XMLParagraph():
+    """Test XML encoding of paragraph.
+    """
+    nsMap = {
+        "office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
+        "style":  "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
+        "loext":  "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
+        "text":   "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
+        "meta":   "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
+        "fo":     "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
+    }
+
+    # Stage 1 : Text
+    # ==============
+    xRoot = etree.Element("root", nsmap=nsMap)
+    xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
+    xmlPar = XMLParagraph(xElem)
+
+    # Plain Text
+    xmlPar.appendText("Hello World")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p>Hello World</text:p>'
+        '</root>'
+    )
+
+    # Text Span
+    xmlPar.appendSpan("spanned text", "T1")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p>Hello World'
+        '<text:span text:style-name="T1">spanned text</text:span>'
+        '</text:p>'
+        '</root>'
+    )
+
+    # Tail Text
+    xmlPar.appendText("more text")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p>Hello World'
+        '<text:span text:style-name="T1">spanned text</text:span>'
+        'more text</text:p>'
+        '</root>'
+    )
+
+    # Stage 2 : Line Breaks
+    # =====================
+    xRoot = etree.Element("root", nsmap=nsMap)
+    xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
+    xmlPar = XMLParagraph(xElem)
+
+    # Plain Text w/Line Break
+    xmlPar.appendText("Hello\nWorld\n!!")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p>Hello<text:line-break/>World<text:line-break/>!!</text:p>'
+        '</root>'
+    )
+
+    # Text Span w/Line Break
+    xmlPar.appendSpan("spanned\ntext", "T1")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p>Hello<text:line-break/>World<text:line-break/>!!'
+        '<text:span text:style-name="T1">spanned<text:line-break/>text</text:span></text:p>'
+        '</root>'
+    )
+
+    # Tail Text w/Line Break
+    xmlPar.appendText("more\ntext")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p>Hello<text:line-break/>World<text:line-break/>!!'
+        '<text:span text:style-name="T1">spanned<text:line-break/>text</text:span>'
+        'more<text:line-break/>text</text:p>'
+        '</root>'
+    )
+
+    # Stage 3 : Tabs
+    # ==============
+    xRoot = etree.Element("root", nsmap=nsMap)
+    xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
+    xmlPar = XMLParagraph(xElem)
+
+    # Plain Text w/Line Break
+    xmlPar.appendText("Hello\tWorld\t!!")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p>Hello<text:tab/>World<text:tab/>!!</text:p>'
+        '</root>'
+    )
+
+    # Text Span w/Line Break
+    xmlPar.appendSpan("spanned\ttext", "T1")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p>Hello<text:tab/>World<text:tab/>!!'
+        '<text:span text:style-name="T1">spanned<text:tab/>text</text:span></text:p>'
+        '</root>'
+    )
+
+    # Tail Text w/Line Break
+    xmlPar.appendText("more\ttext")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p>Hello<text:tab/>World<text:tab/>!!'
+        '<text:span text:style-name="T1">spanned<text:tab/>text</text:span>'
+        'more<text:tab/>text</text:p>'
+        '</root>'
+    )
+
+    # Stage 4 : Spaces
+    # ================
+    xRoot = etree.Element("root", nsmap=nsMap)
+    xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
+    xmlPar = XMLParagraph(xElem)
+
+    # Plain Text w/Spaces
+    xmlPar.appendText("Hello  World   !!")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p>Hello <text:s/>World <text:s text:c="2"/>!!</text:p>'
+        '</root>'
+    )
+
+    # Text Span w/Spaces
+    xmlPar.appendSpan("spanned    text", "T1")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p>Hello <text:s/>World <text:s text:c="2"/>!!'
+        '<text:span text:style-name="T1">spanned <text:s text:c="3"/>text</text:span></text:p>'
+        '</root>'
+    )
+
+    # Tail Text w/Spaces
+    xmlPar.appendText("more     text")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p>Hello <text:s/>World <text:s text:c="2"/>!!'
+        '<text:span text:style-name="T1">spanned <text:s text:c="3"/>text</text:span>'
+        'more <text:s text:c="4"/>text</text:p>'
+        '</root>'
+    )
+
+    # Stage 5 : Lots of Spaces
+    # ========================
+    xRoot = etree.Element("root", nsmap=nsMap)
+    xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
+    xmlPar = XMLParagraph(xElem)
+
+    # Plain Text w/Many Spaces
+    xmlPar.appendText("  \t A \n  B  ")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p> <text:s/><text:tab/> A <text:line-break/> <text:s/>B <text:s/></text:p>'
+        '</root>'
+    )
+
+    # Text Span w/Many Spaces
+    xmlPar.appendSpan("  C  \t  D \n E ", "T1")
+    assert xmlToText(xRoot) == (
+        '<root>'
+        '<text:p> <text:s/><text:tab/> A <text:line-break/> <text:s/>B <text:s/>'
+        '<text:span text:style-name="T1"> <text:s/>C <text:s/><text:tab/> <text:s/>D '
+        '<text:line-break/> E </text:span></text:p>'
+        '</root>'
+    )
+
+# END Test testCoreToOdt_XMLParagraph
+
+
+@pytest.mark.core
+def testCoreToOdt_MkTag():
+    """Test the tag maker function.
+    """
+    assert _mkTag("office", "text") == "{urn:oasis:names:tc:opendocument:xmlns:office:1.0}text"
+    assert _mkTag("style", "text") == "{urn:oasis:names:tc:opendocument:xmlns:style:1.0}text"
+    assert _mkTag("blabla", "text") == "text"
+
+# END Test testCoreToOdt_MkTag
