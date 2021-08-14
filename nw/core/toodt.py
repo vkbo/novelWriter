@@ -1258,15 +1258,36 @@ class ODTTextStyle():
 
 
 # =============================================================================================== #
-#  XML Helper Class
+#  XML Complex Element Helper Class
 # =============================================================================================== #
 
-class XMLParagraph():
+X_ROOT_TEXT = 0
+X_ROOT_TAIL = 1
+X_SPAN_TEXT = 2
+X_SPAN_SING = 3
 
-    X_ROOT_TEXT = 0
-    X_ROOT_TAIL = 1
-    X_SPAN_TEXT = 2
-    X_SPAN_SING = 3
+
+class XMLParagraph():
+    """This is a helper class to manage the text content of a single
+    XML element using mixed content tags.
+
+    See: https://lxml.de/tutorial.html#the-element-class
+
+    Rules:
+     * The root tag can only have text set, never tail.
+     * Any span must be under root, and the text in the span is set in
+       one pass. The span then becomes the new base element using tail
+       for further added text, permanently replacing root.
+     * Any single special tags like tabs, line breaks or multi-spaces,
+       should never have text set. After insertion, they become the next
+       tail tag if on root level, or if in a span, only exists within
+       the lifetime of the span. In this case, the span becomes the new
+       tail.
+
+    The four constants associated with this class represent the only
+    allowed states the class can exist in, which dictates which XML
+    object and attribute is written to,
+    """
 
     def __init__(self, xRoot):
 
@@ -1274,12 +1295,16 @@ class XMLParagraph():
         self._xTail = None
         self._xSing = None
 
-        self._nState = self.X_ROOT_TEXT
+        self._nState = X_ROOT_TEXT
+        self._xRoot.text = ""
 
         return
 
     def appendText(self, tText):
-        """Append text to the XML element.
+        """Append text to the XML element. We do this one character at
+        the time in order to be able to process line breaks, tabs and
+        spaces separately. Multiple spaces above one are concatenated
+        into a single tag, and must therefore be processed separately.
         """
         nSpaces = 0
         for c in tText:
@@ -1291,53 +1316,44 @@ class XMLParagraph():
                     self._processSpaces(nSpaces)
                     nSpaces = 0
 
-                if self._nState in (self.X_ROOT_TEXT, self.X_ROOT_TAIL):
+                if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
                     self._xTail = etree.SubElement(self._xRoot, TAG_BR)
-                    self._nState = self.X_ROOT_TAIL
-                elif self._nState in (self.X_SPAN_TEXT, self.X_SPAN_SING):
+                    self._xTail.tail = ""
+                    self._nState = X_ROOT_TAIL
+
+                elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                     self._xSing = etree.SubElement(self._xTail, TAG_BR)
-                    self._nState = self.X_SPAN_SING
+                    self._xSing.tail = ""
+                    self._nState = X_SPAN_SING
 
             elif c == "\t":
                 if nSpaces > 0:
                     self._processSpaces(nSpaces)
                     nSpaces = 0
 
-                if self._nState in (self.X_ROOT_TEXT, self.X_ROOT_TAIL):
+                if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
                     self._xTail = etree.SubElement(self._xRoot, TAG_TAB)
-                    self._nState = self.X_ROOT_TAIL
-                elif self._nState in (self.X_SPAN_TEXT, self.X_SPAN_SING):
+                    self._xTail.tail = ""
+                    self._nState = X_ROOT_TAIL
+
+                elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                     self._xSing = etree.SubElement(self._xTail, TAG_TAB)
-                    self._nState = self.X_SPAN_SING
+                    self._xSing.tail = ""
+                    self._nState = X_SPAN_SING
 
             else:
                 if nSpaces > 0:
                     self._processSpaces(nSpaces)
                     nSpaces = 0
 
-                if self._nState == self.X_ROOT_TEXT:
-                    if self._xRoot.text is None:
-                        self._xRoot.text = c
-                    else:
-                        self._xRoot.text += c
-
-                elif self._nState == self.X_ROOT_TAIL:
-                    if self._xTail.tail is None:
-                        self._xTail.tail = c
-                    else:
-                        self._xTail.tail += c
-
-                elif self._nState == self.X_SPAN_TEXT:
-                    if self._xTail.text is None:
-                        self._xTail.text = c
-                    else:
-                        self._xTail.text += c
-
-                elif self._nState == self.X_SPAN_SING:
-                    if self._xSing.tail is None:
-                        self._xSing.tail = c
-                    else:
-                        self._xSing.tail += c
+                if self._nState == X_ROOT_TEXT:
+                    self._xRoot.text += c
+                elif self._nState == X_ROOT_TAIL:
+                    self._xTail.tail += c
+                elif self._nState == X_SPAN_TEXT:
+                    self._xTail.text += c
+                elif self._nState == X_SPAN_SING:
+                    self._xSing.tail += c
 
         if nSpaces > 0:
             self._processSpaces(nSpaces)
@@ -1345,14 +1361,19 @@ class XMLParagraph():
         return
 
     def appendSpan(self, tText, tFmt):
-        """Append a text span to the XML element.
+        """Append a text span to the XML element. The span is always
+        closed since we do not allow nested spans (like Libre Office).
+        Therefore we return to the root element level when we're done
+        processing the text of the span.
         """
         self._xTail = etree.SubElement(self._xRoot, TAG_SPAN, attrib={
             TAG_STNM: tFmt
         })
-        self._nState = self.X_SPAN_TEXT
+        self._xTail.text = ""  # Defaults to None
+        self._xTail.tail = ""  # Defaults to None
+        self._nState = X_SPAN_TEXT
         self.appendText(tText)
-        self._nState = self.X_ROOT_TAIL
+        self._nState = X_ROOT_TAIL
 
         return
 
@@ -1369,49 +1390,40 @@ class XMLParagraph():
         Sections: 6.1.2, 6.1.3, and 19.763
         """
         if nSpaces > 0:
-            if self._nState == self.X_ROOT_TEXT:
-                if self._xRoot.text is None:
-                    self._xRoot.text = " "
-                else:
-                    self._xRoot.text += " "
-
-            elif self._nState == self.X_ROOT_TAIL:
-                if self._xTail.tail is None:
-                    self._xTail.tail = " "
-                else:
-                    self._xTail.tail += " "
-
-            elif self._nState == self.X_SPAN_TEXT:
-                if self._xTail.text is None:
-                    self._xTail.text = " "
-                else:
-                    self._xTail.text += " "
-
-            elif self._nState == self.X_SPAN_SING:
-                if self._xSing.tail is None:
-                    self._xSing.tail = " "
-                else:
-                    self._xSing.tail += " "
+            if self._nState == X_ROOT_TEXT:
+                self._xRoot.text += " "
+            elif self._nState == X_ROOT_TAIL:
+                self._xTail.tail += " "
+            elif self._nState == X_SPAN_TEXT:
+                self._xTail.text += " "
+            elif self._nState == X_SPAN_SING:
+                self._xSing.tail += " "
 
         if nSpaces == 2:
-            if self._nState in (self.X_ROOT_TEXT, self.X_ROOT_TAIL):
+            if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
                 self._xTail = etree.SubElement(self._xRoot, TAG_SPC)
-                self._nState = self.X_ROOT_TAIL
-            elif self._nState in (self.X_SPAN_TEXT, self.X_SPAN_SING):
+                self._xTail.tail = ""
+                self._nState = X_ROOT_TAIL
+
+            elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                 self._xSing = etree.SubElement(self._xTail, TAG_SPC)
-                self._nState = self.X_SPAN_SING
+                self._xSing.tail = ""
+                self._nState = X_SPAN_SING
 
         elif nSpaces > 2:
-            if self._nState in (self.X_ROOT_TEXT, self.X_ROOT_TAIL):
+            if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
                 self._xTail = etree.SubElement(self._xRoot, TAG_SPC, attrib={
                     TAG_NSPC: str(nSpaces - 1)
                 })
-                self._nState = self.X_ROOT_TAIL
-            elif self._nState in (self.X_SPAN_TEXT, self.X_SPAN_SING):
+                self._xTail.tail = ""
+                self._nState = X_ROOT_TAIL
+
+            elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                 self._xSing = etree.SubElement(self._xTail, TAG_SPC, attrib={
                     TAG_NSPC: str(nSpaces - 1)
                 })
-                self._nState = self.X_SPAN_SING
+                self._xSing.tail = ""
+                self._nState = X_SPAN_SING
 
         return
 
