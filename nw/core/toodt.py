@@ -85,15 +85,13 @@ class ToOdt(Tokenizer):
 
         self._xMeta = None  # Office meta root
         self._xFont = None  # Office font face declaration
-        self._xFnt2 = None  # Office font face declaration, extra
+        self._xFnt2 = None  # Office font face declaration, secondary
         self._xStyl = None  # Office styles root
         self._xAuto = None  # Office auto-styles root
-        self._xAut1 = None  # Office auto-styles root, extra
+        self._xAut2 = None  # Office auto-styles root, secondary
         self._xMast = None  # Office master-styles root
         self._xBody = None  # Office body root
         self._xText = None  # Office text root
-
-        self._xAut2 = None  # Page layout auto-styles for ODT file
 
         self._mainPara = {}  # User-accessible paragraph styles
         self._autoPara = {}  # Auto-generated paragraph styles
