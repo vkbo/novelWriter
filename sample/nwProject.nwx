@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.5-alpha0" hexVersion="0x010500a0" fileVersion="1.3" timeStamp="2021-08-02 17:47:45">
+<novelWriterXML appVersion="1.5-alpha0" hexVersion="0x010500a0" fileVersion="1.3" timeStamp="2021-08-14 12:32:51">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1136</saveCount>
-    <autoCount>194</autoCount>
-    <editTime>54509</editTime>
+    <saveCount>1141</saveCount>
+    <autoCount>195</autoCount>
+    <editTime>54687</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -17,8 +17,8 @@
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
-    <lastWordCount>1209</lastWordCount>
-    <novelWordCount>833</novelWordCount>
+    <lastWordCount>1206</lastWordCount>
+    <novelWordCount>830</novelWordCount>
     <notesWordCount>376</notesWordCount>
     <autoReplace>
       <entry key="A">B</entry>
@@ -75,10 +75,10 @@
       <status>New</status>
       <exported>True</exported>
       <layout>DOCUMENT</layout>
-      <charCount>206</charCount>
-      <wordCount>42</wordCount>
-      <paraCount>3</paraCount>
-      <cursorPos>21</cursorPos>
+      <charCount>186</charCount>
+      <wordCount>39</wordCount>
+      <paraCount>2</paraCount>
+      <cursorPos>212</cursorPos>
     </item>
     <item handle="edca4be2fcaf8" order="2" parent="7031beac91f75">
       <name>Part One</name>
@@ -121,7 +121,7 @@
       <charCount>2429</charCount>
       <wordCount>432</wordCount>
       <paraCount>14</paraCount>
-      <cursorPos>813</cursorPos>
+      <cursorPos>61</cursorPos>
     </item>
     <item handle="bc0cbd2a407f3" order="2" parent="e7ded148d6e4a">
       <name>Another Scene</name>

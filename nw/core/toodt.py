@@ -52,18 +52,24 @@ X_VERS = "1.2"
 
 # Text Formatting Tags
 TAG_BR   = "{%s}line-break" % XML_NS["text"]
+TAG_SPC  = "{%s}s" % XML_NS["text"]
+TAG_NSPC = "{%s}c" % XML_NS["text"]
 TAG_TAB  = "{%s}tab" % XML_NS["text"]
 TAG_SPAN = "{%s}span" % XML_NS["text"]
 TAG_STNM = "{%s}style-name" % XML_NS["text"]
 
+# Formatting Codes
+X_BLD = 0x01  # Bold format
+X_ITA = 0x02  # Italic format
+X_DEL = 0x04  # Strikethrough format
+
+# Formatting Masks
+M_BLD = ~X_BLD
+M_ITA = ~X_ITA
+M_DEL = ~X_DEL
+
 
 class ToOdt(Tokenizer):
-
-    X_BLD = 0x01  # Bold format
-    X_ITA = 0x02  # Italic format
-    X_DEL = 0x04  # Strikethrough format
-    X_BRK = 0x08  # Line break
-    X_TAB = 0x10  # Tab
 
     def __init__(self, theProject, isFlat):
         Tokenizer.__init__(self, theProject)
@@ -78,24 +84,26 @@ class ToOdt(Tokenizer):
         self._dStyl = None  # ODT styles.xml root
 
         self._xMeta = None  # Office meta root
+        self._xFont = None  # Office font face declaration
+        self._xFnt2 = None  # Office font face declaration, secondary
         self._xStyl = None  # Office styles root
         self._xAuto = None  # Office auto-styles root
+        self._xAut2 = None  # Office auto-styles root, secondary
         self._xMast = None  # Office master-styles root
         self._xBody = None  # Office body root
         self._xText = None  # Office text root
 
-        self._xAut2 = None  # Page layout auto-styles for ODT file
-
         self._mainPara = {}  # User-accessible paragraph styles
         self._autoPara = {}  # Auto-generated paragraph styles
         self._autoText = {}  # Auto-generated text styles
+
+        self._errData = []  # List of errors encountered
 
         # Properties
         self.textFont   = "Liberation Serif"
         self.textSize   = 12
         self.textFixed  = False
         self.colourHead = False
-        self.addHeader  = True
         self.headerText = ""
 
         # Internal
@@ -175,6 +183,10 @@ class ToOdt(Tokenizer):
     ##
     #  Class Methods
     ##
+
+    def getErrors(self):
+        """Return the list of errors."""
+        return self._errData
 
     def initDocument(self):
         """Initialises a new open document XML tree.
@@ -275,7 +287,7 @@ class ToOdt(Tokenizer):
 
             # content.xml
             self._dCont = etree.Element(tCont, attrib=tAttr, nsmap=XML_NS)
-            self._xFnt1 = etree.SubElement(self._dCont, _mkTag("office", "font-face-decls"))
+            self._xFont = etree.SubElement(self._dCont, _mkTag("office", "font-face-decls"))
             self._xAuto = etree.SubElement(self._dCont, _mkTag("office", "automatic-styles"))
             self._xBody = etree.SubElement(self._dCont, _mkTag("office", "body"))
 
@@ -290,7 +302,7 @@ class ToOdt(Tokenizer):
             self._xAut2 = etree.SubElement(self._dStyl, _mkTag("office", "automatic-styles"))
             self._xMast = etree.SubElement(self._dStyl, _mkTag("office", "master-styles"))
 
-            etree.SubElement(self._xFnt1, _mkTag("style", "font-face"), attrib=fAttr)
+            etree.SubElement(self._xFont, _mkTag("style", "font-face"), attrib=fAttr)
             etree.SubElement(self._xFnt2, _mkTag("style", "font-face"), attrib=fAttr)
 
         # Finalise
@@ -554,6 +566,10 @@ class ToOdt(Tokenizer):
         pTag = "h" if isHead else "p"
         xElem = etree.SubElement(self._xText, _mkTag("text", pTag), attrib=tAttr)
 
+        # It's important to set the initial text field to empty, otherwise
+        # lxml will add a line break if the first subelement is a span.
+        xElem.text = ""
+
         if not theText:
             return
 
@@ -565,77 +581,53 @@ class ToOdt(Tokenizer):
             # Generate an empty format if there isn't any or it doesn't match
             theFmt = " "*len(theText)
 
-        # XML functions
-        xTail = None
-
-        def appendText(tText):
-            nonlocal xElem, xTail
-            if tText:
-                if xTail is None:
-                    xElem.text = tText
-                else:
-                    xTail.tail = tText
-
-        def appendSpan(tText, tFmt):
-            nonlocal xElem, xTail
-            if tText:
-                xTail = etree.SubElement(xElem, TAG_SPAN, attrib={
-                    TAG_STNM: self._textStyle(tFmt)
-                })
-                xTail.text = tText
-
         # The formatting loop
         tTemp = ""
         xFmt = 0x00
         pFmt = 0x00
+
+        parProc = XMLParagraph(xElem)
 
         for i, c in enumerate(theText):
 
             if theFmt[i] == "_":
                 continue
             elif theFmt[i] == "B":
-                xFmt |= self.X_BLD
+                xFmt |= X_BLD
             elif theFmt[i] == "b":
-                xFmt ^= self.X_BLD
+                xFmt &= M_BLD
             elif theFmt[i] == "I":
-                xFmt |= self.X_ITA
+                xFmt |= X_ITA
             elif theFmt[i] == "i":
-                xFmt ^= self.X_ITA
+                xFmt &= M_ITA
             elif theFmt[i] == "S":
-                xFmt |= self.X_DEL
+                xFmt |= X_DEL
             elif theFmt[i] == "s":
-                xFmt ^= self.X_DEL
-
-            if c == "\n":
-                xFmt |= self.X_BRK
-                c = ""
-            elif c == "\t":
-                xFmt |= self.X_TAB
-                c = ""
+                xFmt &= M_DEL
 
             if theFmt[i] == " ":
                 tTemp += c
 
             if xFmt != pFmt:
                 if pFmt == 0x00:
-                    appendText(tTemp)
+                    parProc.appendText(tTemp)
                     tTemp = ""
                 else:
-                    appendSpan(tTemp, pFmt)
+                    parProc.appendSpan(tTemp, self._textStyle(pFmt))
                     tTemp = ""
-
-                if xFmt & self.X_BRK:
-                    xTail = etree.SubElement(xElem, TAG_BR)
-                    xFmt ^= self.X_BRK
-
-                if xFmt & self.X_TAB:
-                    xTail = etree.SubElement(xElem, TAG_TAB)
-                    xFmt ^= self.X_TAB
 
             pFmt = xFmt
 
         # Save what remains in the buffer
-        appendText(tTemp)
+        if pFmt == 0x00:
+            parProc.appendText(tTemp)
+        else:
+            parProc.appendSpan(tTemp, self._textStyle(pFmt))
+
+        nErr, errMsg = parProc.checkError()
+        if nErr > 0:  # pragma: no cover
+            # This one should only capture bugs
+            self._errData.append(errMsg)
 
         return
 
@@ -668,11 +660,11 @@ class ToOdt(Tokenizer):
 
         newName = "T%d" % (len(self._autoText) + 1)
         newStyle = ODTTextStyle()
-        if styleCode & self.X_BLD:
+        if styleCode & X_BLD:
             newStyle.setFontWeight("bold")
-        if styleCode & self.X_ITA:
+        if styleCode & X_ITA:
             newStyle.setFontStyle("italic")
-        if styleCode & self.X_DEL:
+        if styleCode & X_DEL:
             newStyle.setStrikeStyle("solid")
             newStyle.setStrikeType("single")
 
@@ -781,9 +773,6 @@ class ToOdt(Tokenizer):
 
         # Add Header and Footer Styles
         # ============================
-        if not self.addHeader:
-            return
-
         theAttr = {}
         theAttr[_mkTag("style", "name")]              = "Header_and_Footer"
         theAttr[_mkTag("style", "display-name")]      = "Header and Footer"
@@ -939,9 +928,6 @@ class ToOdt(Tokenizer):
 
         # Add Header Style
         # ================
-        if not self.addHeader:
-            return
-
         oStyle = ODTParagraphStyle()
         oStyle.setDisplayName("Header")
         oStyle.setParentStyleName("Header_and_Footer")
@@ -955,9 +941,6 @@ class ToOdt(Tokenizer):
     def _writeHeader(self):
         """Write the header elements.
         """
-        if not self.addHeader:
-            return
-
         theAttr = {}
         theAttr[_mkTag("style", "name")]             = "Standard"
         theAttr[_mkTag("style", "page-layout-name")] = "PM1"
@@ -1055,11 +1038,15 @@ class ODTParagraphStyle():
     def setOutlineLevel(self, theValue):
         if theValue in self.VALID_LEVEL:
             self._mAttr["default-outline-level"][1] = str(theValue)
+        else:
+            self._mAttr["default-outline-level"][1] = None
         return
 
     def setClass(self, theValue):
         if theValue in self.VALID_CLASS:
             self._mAttr["class"][1] = str(theValue)
+        else:
+            self._mAttr["class"][1] = None
         return
 
     ##
@@ -1089,16 +1076,22 @@ class ODTParagraphStyle():
     def setTextAlign(self, theValue):
         if theValue in self.VALID_ALIGN:
             self._pAttr["text-align"][1] = str(theValue)
+        else:
+            self._pAttr["text-align"][1] = None
         return
 
     def setBreakBefore(self, theValue):
         if theValue in self.VALID_BREAK:
             self._pAttr["break-before"][1] = str(theValue)
+        else:
+            self._pAttr["break-before"][1] = None
         return
 
     def setBreakAfter(self, theValue):
         if theValue in self.VALID_BREAK:
             self._pAttr["break-after"][1] = str(theValue)
+        else:
+            self._pAttr["break-after"][1] = None
         return
 
     ##
@@ -1120,6 +1113,8 @@ class ODTParagraphStyle():
     def setFontWeight(self, theValue):
         if theValue in self.VALID_WEIGHT:
             self._tAttr["font-weight"][1] = str(theValue)
+        else:
+            self._tAttr["font-weight"][1] = None
         return
 
     def setColor(self, theValue):
@@ -1129,28 +1124,6 @@ class ODTParagraphStyle():
     def setOpacity(self, theValue):
         self._tAttr["opacity"][1] = str(theValue)
         return
-
-    ##
-    #  Getters
-    ##
-
-    def getAttr(self, attrName):
-        """Look through the dictionaries for the value, and return it if
-        we can find it, If not, return None.
-        """
-        retVal = self._mAttr.get(attrName, None)
-        if retVal is not None:
-            return retVal
-
-        retVal = self._pAttr.get(attrName, None)
-        if retVal is not None:
-            return retVal
-
-        retVal = self._tAttr.get(attrName, None)
-        if retVal is not None:
-            return retVal
-
-        return None
 
     ##
     #  Methods
@@ -1243,21 +1216,29 @@ class ODTTextStyle():
     def setFontWeight(self, theValue):
         if theValue in self.VALID_WEIGHT:
             self._tAttr["font-weight"][1] = str(theValue)
+        else:
+            self._tAttr["font-weight"][1] = None
         return
 
     def setFontStyle(self, theValue):
         if theValue in self.VALID_STYLE:
             self._tAttr["font-style"][1] = str(theValue)
+        else:
+            self._tAttr["font-style"][1] = None
         return
 
     def setStrikeStyle(self, theValue):
         if theValue in self.VALID_LSTYLE:
             self._tAttr["text-line-through-style"][1] = str(theValue)
+        else:
+            self._tAttr["text-line-through-style"][1] = None
         return
 
     def setStrikeType(self, theValue):
         if theValue in self.VALID_LTYPE:
             self._tAttr["text-line-through-type"][1] = str(theValue)
+        else:
+            self._tAttr["text-line-through-type"][1] = None
         return
 
     ##
@@ -1283,6 +1264,203 @@ class ODTTextStyle():
         return
 
 # END Class ODTTextStyle
+
+
+# =============================================================================================== #
+#  XML Complex Element Helper Class
+# =============================================================================================== #
+
+X_ROOT_TEXT = 0
+X_ROOT_TAIL = 1
+X_SPAN_TEXT = 2
+X_SPAN_SING = 3
+
+
+class XMLParagraph():
+    """This is a helper class to manage the text content of a single
+    XML element using mixed content tags.
+
+    See: https://lxml.de/tutorial.html#the-element-class
+
+    Rules:
+     * The root tag can only have text set, never tail.
+     * Any span must be under root, and the text in the span is set in
+       one pass. The span then becomes the new base element using tail
+       for further added text, permanently replacing root.
+     * Any single special tags like tabs, line breaks or multi-spaces,
+       should never have text set. After insertion, they become the next
+       tail tag if on root level, or if in a span, only exists within
+       the lifetime of the span. In this case, the span becomes the new
+       tail.
+
+    The four constants associated with this class represent the only
+    allowed states the class can exist in, which dictates which XML
+    object and attribute is written to,
+    """
+
+    def __init__(self, xRoot):
+
+        self._xRoot = xRoot
+        self._xTail = None
+        self._xSing = None
+
+        self._nState = X_ROOT_TEXT
+        self._chrPos = 0
+        self._rawTxt = ""
+        self._xRoot.text = ""
+
+        return
+
+    def appendText(self, tText):
+        """Append text to the XML element. We do this one character at
+        the time in order to be able to process line breaks, tabs and
+        spaces separately. Multiple spaces above one are concatenated
+        into a single tag, and must therefore be processed separately.
+        """
+        nSpaces = 0
+        self._rawTxt += tText
+
+        for c in tText:
+            if c == " ":
+                nSpaces += 1
+                continue
+
+            elif nSpaces > 0:
+                self._processSpaces(nSpaces)
+                nSpaces = 0
+
+            if c == "\n":
+                if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
+                    self._xTail = etree.SubElement(self._xRoot, TAG_BR)
+                    self._xTail.tail = ""
+                    self._nState = X_ROOT_TAIL
+                    self._chrPos += 1
+
+                elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
+                    self._xSing = etree.SubElement(self._xTail, TAG_BR)
+                    self._xSing.tail = ""
+                    self._nState = X_SPAN_SING
+                    self._chrPos += 1
+
+            elif c == "\t":
+                if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
+                    self._xTail = etree.SubElement(self._xRoot, TAG_TAB)
+                    self._xTail.tail = ""
+                    self._nState = X_ROOT_TAIL
+                    self._chrPos += 1
+
+                elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
+                    self._xSing = etree.SubElement(self._xTail, TAG_TAB)
+                    self._xSing.tail = ""
+                    self._chrPos += 1
+                    self._nState = X_SPAN_SING
+
+            else:
+                if self._nState == X_ROOT_TEXT:
+                    self._xRoot.text += c
+                    self._chrPos += 1
+                elif self._nState == X_ROOT_TAIL:
+                    self._xTail.tail += c
+                    self._chrPos += 1
+                elif self._nState == X_SPAN_TEXT:
+                    self._xTail.text += c
+                    self._chrPos += 1
+                elif self._nState == X_SPAN_SING:
+                    self._xSing.tail += c
+                    self._chrPos += 1
+
+        if nSpaces > 0:
+            self._processSpaces(nSpaces)
+
+        return
+
+    def appendSpan(self, tText, tFmt):
+        """Append a text span to the XML element. The span is always
+        closed since we do not allow nested spans (like Libre Office).
+        Therefore we return to the root element level when we're done
+        processing the text of the span.
+        """
+        self._xTail = etree.SubElement(self._xRoot, TAG_SPAN, attrib={
+            TAG_STNM: tFmt
+        })
+        self._xTail.text = ""  # Defaults to None
+        self._xTail.tail = ""  # Defaults to None
+        self._nState = X_SPAN_TEXT
+        self.appendText(tText)
+        self._nState = X_ROOT_TAIL
+
+        return
+
+    def checkError(self):
+        """Check that the number of characters written matches the
+        number of characters received."""
+        errMsg = ""
+        nMissed = len(self._rawTxt) - self._chrPos
+        if nMissed != 0:
+            errMsg = "%d char(s) were not written: '%s'" % (nMissed, self._rawTxt)
+        return nMissed, errMsg
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _processSpaces(self, nSpaces):
+        """Add spaces to paragraph. The first space is always written
+        as-is (unless it's the first character of the paragraph). The
+        second space uses the dedicated tag for spaces, and from the
+        third space and on, a counter is added to the tag.
+
+        See: http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html
+        Sections: 6.1.2, 6.1.3, and 19.763
+        """
+        if nSpaces > 0:
+            if self._chrPos > 0:
+                if self._nState == X_ROOT_TEXT:
+                    self._xRoot.text += " "
+                    self._chrPos += 1
+                elif self._nState == X_ROOT_TAIL:
+                    self._xTail.tail += " "
+                    self._chrPos += 1
+                elif self._nState == X_SPAN_TEXT:
+                    self._xTail.text += " "
+                    self._chrPos += 1
+                elif self._nState == X_SPAN_SING:
+                    self._xSing.tail += " "
+                    self._chrPos += 1
+            else:
+                nSpaces += 1
+
+        if nSpaces == 2:
+            if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
+                self._xTail = etree.SubElement(self._xRoot, TAG_SPC)
+                self._xTail.tail = ""
+                self._nState = X_ROOT_TAIL
+                self._chrPos += nSpaces - 1
+
+            elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
+                self._xSing = etree.SubElement(self._xTail, TAG_SPC)
+                self._xSing.tail = ""
+                self._nState = X_SPAN_SING
+                self._chrPos += nSpaces - 1
+
+        elif nSpaces > 2:
+            if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
+                self._xTail = etree.SubElement(self._xRoot, TAG_SPC, attrib={
+                    TAG_NSPC: str(nSpaces - 1)
+                })
+                self._xTail.tail = ""
+                self._nState = X_ROOT_TAIL
+                self._chrPos += nSpaces - 1
+
+            elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
+                self._xSing = etree.SubElement(self._xTail, TAG_SPC, attrib={
+                    TAG_NSPC: str(nSpaces - 1)
+                })
+                self._xSing.tail = ""
+                self._nState = X_SPAN_SING
+                self._chrPos += nSpaces - 1
+
+        return
 
 
 # =============================================================================================== #

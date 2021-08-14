@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.2" office:mimetype="application/vnd.oasis.opendocument.text">
   <office:meta>
-    <meta:creation-date>2021-07-26T23:47:22</meta:creation-date>
-    <meta:generator>novelWriter/1.4rc1</meta:generator>
+    <meta:creation-date>2021-08-02T23:47:45</meta:creation-date>
+    <meta:generator>novelWriter/1.5-alpha0</meta:generator>
   </office:meta>
   <office:font-face-decls>
     <style:font-face style:name="DejaVu Sans" style:font-pitch="variable"/>
@@ -88,9 +88,7 @@
   <office:body>
     <office:text>
       <text:h text:style-name="Title">Lorem Ipsum</text:h>
-      <text:p text:style-name="P1">
-        <text:span text:style-name="T1">By lipsum.com</text:span>
-      </text:p>
+      <text:p text:style-name="P1"><text:span text:style-name="T1">By lipsum.com</text:span></text:p>
       <text:p text:style-name="P1">“Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit…”</text:p>
       <text:p text:style-name="P1">“There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain…”</text:p>
       <text:p text:style-name="Text_Body">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of “de Finibus Bonorum et Malorum” (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, “Lorem ipsum dolor sit amet..”, comes from a line in section 1.10.32.</text:p>

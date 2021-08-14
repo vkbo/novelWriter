@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.2" office:mimetype="application/vnd.oasis.opendocument.text">
   <office:meta>
-    <meta:creation-date>2021-08-02T03:25:21</meta:creation-date>
+    <meta:creation-date>2021-08-02T23:48:26</meta:creation-date>
     <meta:generator>novelWriter/1.5-alpha0</meta:generator>
   </office:meta>
   <office:font-face-decls>
@@ -100,9 +100,7 @@
   <office:body>
     <office:text>
       <text:h text:style-name="Title">Lorem Ipsum</text:h>
-      <text:p text:style-name="P1">
-        <text:span text:style-name="T1">By lipsum.com</text:span>
-      </text:p>
+      <text:p text:style-name="P1"><text:span text:style-name="T1">By lipsum.com</text:span></text:p>
       <text:p text:style-name="P1">“Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit…”</text:p>
       <text:p text:style-name="P1">“There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain…”</text:p>
       <text:p text:style-name="P2"><text:span text:style-name="T1">Comment:</text:span> Exctracted from the lipsum.com website.</text:p>
