@@ -99,6 +99,8 @@ class ToOdt(Tokenizer):
         self._autoPara = {}  # Auto-generated paragraph styles
         self._autoText = {}  # Auto-generated text styles
 
+        self._errData = []  # List of errors encountered
+
         # Properties
         self.textFont   = "Liberation Serif"
         self.textSize   = 12
@@ -183,6 +185,10 @@ class ToOdt(Tokenizer):
     ##
     #  Class Methods
     ##
+
+    def getErrors(self):
+        """Return the list of errors."""
+        return self._errData
 
     def initDocument(self):
         """Initialises a new open document XML tree.
@@ -619,6 +625,11 @@ class ToOdt(Tokenizer):
             parProc.appendText(tTemp)
         else:
             parProc.appendSpan(tTemp, self._textStyle(pFmt))
+
+        nErr, errMsg = parProc.checkError()
+        if nErr > 0:  # pragma: no cover
+            # This one should only capture bugs
+            self._errData.append(errMsg)
 
         return
 
@@ -1296,6 +1307,8 @@ class XMLParagraph():
         self._xSing = None
 
         self._nState = X_ROOT_TEXT
+        self._chrPos = 0
+        self._rawTxt = ""
         self._xRoot.text = ""
 
         return
@@ -1307,53 +1320,56 @@ class XMLParagraph():
         into a single tag, and must therefore be processed separately.
         """
         nSpaces = 0
+        self._rawTxt += tText
+
         for c in tText:
             if c == " ":
                 nSpaces += 1
+                continue
 
-            elif c == "\n":
-                if nSpaces > 0:
-                    self._processSpaces(nSpaces)
-                    nSpaces = 0
+            elif nSpaces > 0:
+                self._processSpaces(nSpaces)
+                nSpaces = 0
 
+            if c == "\n":
                 if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
                     self._xTail = etree.SubElement(self._xRoot, TAG_BR)
                     self._xTail.tail = ""
                     self._nState = X_ROOT_TAIL
+                    self._chrPos += 1
 
                 elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                     self._xSing = etree.SubElement(self._xTail, TAG_BR)
                     self._xSing.tail = ""
                     self._nState = X_SPAN_SING
+                    self._chrPos += 1
 
             elif c == "\t":
-                if nSpaces > 0:
-                    self._processSpaces(nSpaces)
-                    nSpaces = 0
-
                 if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
                     self._xTail = etree.SubElement(self._xRoot, TAG_TAB)
                     self._xTail.tail = ""
                     self._nState = X_ROOT_TAIL
+                    self._chrPos += 1
 
                 elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                     self._xSing = etree.SubElement(self._xTail, TAG_TAB)
                     self._xSing.tail = ""
+                    self._chrPos += 1
                     self._nState = X_SPAN_SING
 
             else:
-                if nSpaces > 0:
-                    self._processSpaces(nSpaces)
-                    nSpaces = 0
-
                 if self._nState == X_ROOT_TEXT:
                     self._xRoot.text += c
+                    self._chrPos += 1
                 elif self._nState == X_ROOT_TAIL:
                     self._xTail.tail += c
+                    self._chrPos += 1
                 elif self._nState == X_SPAN_TEXT:
                     self._xTail.text += c
+                    self._chrPos += 1
                 elif self._nState == X_SPAN_SING:
                     self._xSing.tail += c
+                    self._chrPos += 1
 
         if nSpaces > 0:
             self._processSpaces(nSpaces)
@@ -1377,38 +1393,57 @@ class XMLParagraph():
 
         return
 
+    def checkError(self):
+        """Check that the number of characters written matches the
+        number of characters received."""
+        errMsg = ""
+        nMissed = len(self._rawTxt) - self._chrPos
+        if nMissed != 0:
+            errMsg = "%d char(s) were not written: '%s'" % (nMissed, self._rawTxt)
+        return nMissed, errMsg
+
     ##
     #  Internal Functions
     ##
 
     def _processSpaces(self, nSpaces):
         """Add spaces to paragraph. The first space is always written
-        as-is. The second space uses the dedicated tag for spaces, and
-        from the third space and on, a counter is added to the tag.
+        as-is (unless it's the first character of the paragraph). The
+        second space uses the dedicated tag for spaces, and from the
+        third space and on, a counter is added to the tag.
 
         See: http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html
         Sections: 6.1.2, 6.1.3, and 19.763
         """
         if nSpaces > 0:
-            if self._nState == X_ROOT_TEXT:
-                self._xRoot.text += " "
-            elif self._nState == X_ROOT_TAIL:
-                self._xTail.tail += " "
-            elif self._nState == X_SPAN_TEXT:
-                self._xTail.text += " "
-            elif self._nState == X_SPAN_SING:
-                self._xSing.tail += " "
+            if self._chrPos > 0:
+                if self._nState == X_ROOT_TEXT:
+                    self._xRoot.text += " "
+                    self._chrPos += 1
+                elif self._nState == X_ROOT_TAIL:
+                    self._xTail.tail += " "
+                    self._chrPos += 1
+                elif self._nState == X_SPAN_TEXT:
+                    self._xTail.text += " "
+                    self._chrPos += 1
+                elif self._nState == X_SPAN_SING:
+                    self._xSing.tail += " "
+                    self._chrPos += 1
+            else:
+                nSpaces += 1
 
         if nSpaces == 2:
             if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
                 self._xTail = etree.SubElement(self._xRoot, TAG_SPC)
                 self._xTail.tail = ""
                 self._nState = X_ROOT_TAIL
+                self._chrPos += nSpaces - 1
 
             elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                 self._xSing = etree.SubElement(self._xTail, TAG_SPC)
                 self._xSing.tail = ""
                 self._nState = X_SPAN_SING
+                self._chrPos += nSpaces - 1
 
         elif nSpaces > 2:
             if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
@@ -1417,6 +1452,7 @@ class XMLParagraph():
                 })
                 self._xTail.tail = ""
                 self._nState = X_ROOT_TAIL
+                self._chrPos += nSpaces - 1
 
             elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                 self._xSing = etree.SubElement(self._xTail, TAG_SPC, attrib={
@@ -1424,6 +1460,7 @@ class XMLParagraph():
                 })
                 self._xSing.tail = ""
                 self._nState = X_SPAN_SING
+                self._chrPos += nSpaces - 1
 
         return
 

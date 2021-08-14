@@ -156,6 +156,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
     # No Format
     theDoc.initDocument()
     theDoc._addTextPar("Standard", oStyle, "Hello World")
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:p text:style-name=\"Standard\">Hello World</text:p>"
@@ -165,6 +166,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
     # Heading Level None
     theDoc.initDocument()
     theDoc._addTextPar("Standard", oStyle, "Hello World", isHead=True)
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:h text:style-name=\"Standard\">Hello World</text:h>"
@@ -174,6 +176,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
     # Heading Level 1
     theDoc.initDocument()
     theDoc._addTextPar("Standard", oStyle, "Hello World", isHead=True, oLevel="1")
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:h text:style-name=\"Standard\" text:outline-level=\"1\">Hello World</text:h>"
@@ -185,6 +188,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theTxt = "A **few** _words_ from ~~our~~ sponsor"
     theFmt = "  _B   b_ I     i      _S   s_        "
     theDoc._addTextPar("Standard", oStyle, theTxt, theFmt=theFmt)
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:p text:style-name=\"Standard\">A <text:span text:style-name=\"T1\">few</text:span> "
@@ -198,6 +202,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theTxt = "A **few** _words"
     theFmt = "  _b   b_ I     "
     theDoc._addTextPar("Standard", oStyle, theTxt, theFmt=theFmt)
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:p text:style-name=\"Standard\">"
@@ -211,6 +216,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theTxt = "Hello\n\tWorld"
     theFmt = "            "
     theDoc._addTextPar("Standard", oStyle, theTxt, theFmt=theFmt)
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:p text:style-name=\"Standard\">Hello<text:line-break/><text:tab/>World</text:p>"
@@ -247,6 +253,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="P1" text:outline-level="1">Title</text:h>'
@@ -259,6 +266,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="P2" text:outline-level="2">Chapter</text:h>'
@@ -271,6 +279,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
@@ -283,6 +292,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_4" text:outline-level="4">Section</text:h>'
@@ -295,6 +305,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="P3">Title</text:h>'
@@ -307,6 +318,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="P2" text:outline-level="2">Prologue</text:h>'
@@ -322,6 +334,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="Text_Body">Some '
@@ -339,6 +352,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="Text_Body">Some text.<text:line-break/>Next line</text:p>'
@@ -351,6 +365,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="Text_Body"><text:tab/>Item 1<text:tab/>Item 2</text:p>'
@@ -363,6 +378,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="Text_Body">Some <text:span text:style-name="T4">'
@@ -381,6 +397,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
@@ -404,6 +421,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
@@ -424,6 +442,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="P4">* * *</text:p>'
@@ -441,6 +460,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="Text_Body"></text:p>'
@@ -467,6 +487,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
@@ -503,6 +524,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
@@ -524,6 +546,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
+    assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="P2" text:outline-level="2">Chapter One</text:h>'
@@ -964,6 +987,7 @@ def testCoreToOdt_XMLParagraph():
 
     # Stage 1 : Text
     # ==============
+
     xRoot = etree.Element("root", nsmap=nsMap)
     xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
     xmlPar = XMLParagraph(xElem)
@@ -996,8 +1020,11 @@ def testCoreToOdt_XMLParagraph():
         '</root>'
     )
 
+    assert xmlPar.checkError() == (0, "")
+
     # Stage 2 : Line Breaks
     # =====================
+
     xRoot = etree.Element("root", nsmap=nsMap)
     xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
     xmlPar = XMLParagraph(xElem)
@@ -1029,8 +1056,11 @@ def testCoreToOdt_XMLParagraph():
         '</root>'
     )
 
+    assert xmlPar.checkError() == (0, "")
+
     # Stage 3 : Tabs
     # ==============
+
     xRoot = etree.Element("root", nsmap=nsMap)
     xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
     xmlPar = XMLParagraph(xElem)
@@ -1062,8 +1092,11 @@ def testCoreToOdt_XMLParagraph():
         '</root>'
     )
 
+    assert xmlPar.checkError() == (0, "")
+
     # Stage 4 : Spaces
     # ================
+
     xRoot = etree.Element("root", nsmap=nsMap)
     xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
     xmlPar = XMLParagraph(xElem)
@@ -1095,17 +1128,20 @@ def testCoreToOdt_XMLParagraph():
         '</root>'
     )
 
+    assert xmlPar.checkError() == (0, "")
+
     # Stage 5 : Lots of Spaces
     # ========================
+
     xRoot = etree.Element("root", nsmap=nsMap)
     xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
     xmlPar = XMLParagraph(xElem)
 
     # Plain Text w/Many Spaces
-    xmlPar.appendText("  \t A \n  B  ")
+    xmlPar.appendText("  \t A \n  B ")
     assert xmlToText(xRoot) == (
         '<root>'
-        '<text:p> <text:s/><text:tab/> A <text:line-break/> <text:s/>B <text:s/></text:p>'
+        '<text:p><text:s text:c="2"/><text:tab/> A <text:line-break/> <text:s/>B </text:p>'
         '</root>'
     )
 
@@ -1113,11 +1149,26 @@ def testCoreToOdt_XMLParagraph():
     xmlPar.appendSpan("  C  \t  D \n E ", "T1")
     assert xmlToText(xRoot) == (
         '<root>'
-        '<text:p> <text:s/><text:tab/> A <text:line-break/> <text:s/>B <text:s/>'
+        '<text:p><text:s text:c="2"/><text:tab/> A <text:line-break/> <text:s/>B '
         '<text:span text:style-name="T1"> <text:s/>C <text:s/><text:tab/> <text:s/>D '
         '<text:line-break/> E </text:span></text:p>'
         '</root>'
     )
+
+    assert xmlPar.checkError() == (0, "")
+
+    # Check Error
+    # ===========
+
+    xRoot = etree.Element("root", nsmap=nsMap)
+    xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
+    xmlPar = XMLParagraph(xElem)
+
+    xmlPar.appendText("A")
+    xmlPar._nState = 5
+    xmlPar.appendText("B")
+
+    assert xmlPar.checkError() == (1, "1 char(s) were not written: 'AB'")
 
 # END Test testCoreToOdt_XMLParagraph
 
