@@ -51,7 +51,7 @@ from PyQt5.QtWidgets import (
 from nw.core import NWDoc, NWSpellSimple, countWords
 from nw.enum import nwAlert, nwDocAction, nwDocInsert, nwItemClass
 from nw.common import transferCase
-from nw.constants import nwConst, trConst, nwKeyWords, nwLabels, nwUnicode
+from nw.constants import nwConst, nwKeyWords, nwUnicode
 from nw.gui.dochighlight import GuiDocHighlighter
 
 logger = logging.getLogger(__name__)
@@ -461,21 +461,19 @@ class GuiDocEditor(QTextEdit):
 
         self.setDocumentChanged(False)
 
+        oldHeader = self.theIndex.getHandleHeaderLevel(tHandle)
         self.theIndex.scanText(tHandle, docText)
+        newHeader = self.theIndex.getHandleHeaderLevel(tHandle)
 
         if self._updateHeaders(checkLevel=True):
             self.theParent.requestNovelTreeRefresh()
         else:
             self.theParent.novelView.updateWordCounts(tHandle)
 
-        # hLevel = "H0"
-        # if self._docHeaders:
-        #     hLevel = self._docHeaders[0][1]
-
-        # if self.theProject.projTree.updateItemLayout(tHandle, hLevel):
-        #     self.theParent.treeView.setTreeItemValues(tHandle)
-        #     self._nwDocument.writeDocument(docText)
-        #     self.docFooter.updateInfo()
+        if oldHeader != newHeader:
+            self.theParent.treeView.setTreeItemValues(tHandle)
+            self.theParent.treeMeta.updateViewBox(tHandle)
+            self.docFooter.updateInfo()
 
         # Update the status bar
         self.theParent.setStatus(
@@ -2753,9 +2751,8 @@ class GuiDocEditFooter(QWidget):
                 theIcon = self.theParent.importIcons[iStatus]
 
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            sClass = trConst(nwLabels.CLASS_NAME[self._theItem.itemClass])
-            sLayout = trConst(nwLabels.LAYOUT_NAME[self._theItem.itemLayout])
-            sText = f"{self._theItem.itemStatus} / {sClass} / {sLayout}"
+            hLevel = self.theParent.theIndex.getHandleHeaderLevel(self._docHandle)
+            sText = f"{self._theItem.itemStatus} / {self._theItem.describeMe(hLevel)}"
 
         self.statusIcon.setPixmap(sIcon)
         self.statusText.setText(sText)

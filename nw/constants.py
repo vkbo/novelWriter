@@ -145,19 +145,6 @@ class nwLabels():
         nwItemClass.ARCHIVE:   QT_TRANSLATE_NOOP("Constant", "Outtakes"),
         nwItemClass.TRASH:     QT_TRANSLATE_NOOP("Constant", "Trash"),
     }
-    CLASS_FLAG = {
-        nwItemClass.NO_CLASS:  "0",
-        nwItemClass.NOVEL:     "N",
-        nwItemClass.PLOT:      "P",
-        nwItemClass.CHARACTER: "C",
-        nwItemClass.WORLD:     "L",
-        nwItemClass.TIMELINE:  "T",
-        nwItemClass.OBJECT:    "O",
-        nwItemClass.ENTITY:    "E",
-        nwItemClass.CUSTOM:    "X",
-        nwItemClass.ARCHIVE:   "U",
-        nwItemClass.TRASH:     "R",
-    }
     CLASS_ICON = {
         nwItemClass.NO_CLASS:  "cls_none",
         nwItemClass.NOVEL:     "cls_novel",
@@ -176,10 +163,15 @@ class nwLabels():
         nwItemLayout.DOCUMENT:  QT_TRANSLATE_NOOP("Constant", "Novel Document"),
         nwItemLayout.NOTE:      QT_TRANSLATE_NOOP("Constant", "Project Note"),
     }
-    LAYOUT_FLAG = {
-        nwItemLayout.NO_LAYOUT: "Xo",
-        nwItemLayout.DOCUMENT:  "Dc",
-        nwItemLayout.NOTE:      "Nt",
+    ITEM_DESCRIPTION = {
+        "none":     QT_TRANSLATE_NOOP("Constant", "None"),
+        "root":     QT_TRANSLATE_NOOP("Constant", "Root Folder"),
+        "folder":   QT_TRANSLATE_NOOP("Constant", "Folder"),
+        "document": QT_TRANSLATE_NOOP("Constant", "Novel Document"),
+        "doc_h1":   QT_TRANSLATE_NOOP("Constant", "Novel Title Page"),
+        "doc_h2":   QT_TRANSLATE_NOOP("Constant", "Novel Chapter"),
+        "doc_h3":   QT_TRANSLATE_NOOP("Constant", "Novel Scene"),
+        "note":     QT_TRANSLATE_NOOP("Constant", "Project Note"),
     }
     KEY_NAME = {
         nwKeyWords.TAG_KEY:    QT_TRANSLATE_NOOP("Constant", "Tag"),

@@ -29,7 +29,7 @@ from lxml import etree
 
 from nw.enum import nwItemType, nwItemClass, nwItemLayout
 from nw.common import checkInt, isHandle, isItemClass, isItemLayout, isItemType
-from nw.constants import nwLists
+from nw.constants import nwLabels, nwLists, trConst
 
 logger = logging.getLogger(__name__)
 
@@ -150,6 +150,33 @@ class NWItem():
             xSub.text = text
 
         return
+
+    ##
+    #  Methods
+    ##
+
+    def describeMe(self, hLevel=None):
+        """Return a string description of the item.
+        """
+        descKey = "none"
+        if self.itemType == nwItemType.ROOT:
+            descKey = "root"
+        elif self.itemType == nwItemType.FOLDER:
+            descKey = "folder"
+        elif self.itemType == nwItemType.FILE:
+            if self.itemLayout == nwItemLayout.DOCUMENT:
+                if hLevel == "H1":
+                    descKey = "doc_h1"
+                elif hLevel == "H2":
+                    descKey = "doc_h2"
+                elif hLevel == "H3":
+                    descKey = "doc_h3"
+                else:
+                    descKey = "document"
+            elif self.itemLayout == nwItemLayout.NOTE:
+                descKey = "note"
+
+        return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
 
     ##
     #  Set Item Values

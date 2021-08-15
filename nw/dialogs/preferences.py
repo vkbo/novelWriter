@@ -243,6 +243,14 @@ class GuiPreferencesGeneral(QWidget):
         # ============
         self.mainForm.addGroupLabel(self.tr("GUI Settings"))
 
+        self.fullStatus = QSwitch()
+        self.fullStatus.setChecked(self.mainConf.fullStatus)
+        self.mainForm.addRow(
+            self.tr("Show status text in project tree"),
+            self.fullStatus,
+            self.tr("Changing this requires restarting novelWriter."),
+        )
+
         self.showFullPath = QSwitch()
         self.showFullPath.setChecked(self.mainConf.showFullPath)
         self.mainForm.addRow(
@@ -278,6 +286,7 @@ class GuiPreferencesGeneral(QWidget):
         guiDark     = self.guiDark.isChecked()
         guiFont     = self.guiFont.text()
         guiFontSize = self.guiFontSize.value()
+        fullStatus  = self.fullStatus.isChecked()
 
         # Check if restart is needed
         needsRestart = False
@@ -287,6 +296,7 @@ class GuiPreferencesGeneral(QWidget):
         needsRestart |= self.mainConf.guiDark != guiDark
         needsRestart |= self.mainConf.guiFont != guiFont
         needsRestart |= self.mainConf.guiFontSize != guiFontSize
+        needsRestart |= self.mainConf.fullStatus != fullStatus
 
         self.mainConf.guiLang      = guiLang
         self.mainConf.guiTheme     = guiTheme
@@ -294,6 +304,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainConf.guiDark      = guiDark
         self.mainConf.guiFont      = guiFont
         self.mainConf.guiFontSize  = guiFontSize
+        self.mainConf.fullStatus   = fullStatus
         self.mainConf.showFullPath = self.showFullPath.isChecked()
         self.mainConf.hideVScroll  = self.hideVScroll.isChecked()
         self.mainConf.hideHScroll  = self.hideHScroll.isChecked()

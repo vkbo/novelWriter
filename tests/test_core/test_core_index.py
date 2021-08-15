@@ -72,25 +72,25 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     tagIndex = str(theIndex._tagIndex)
     refIndex = str(theIndex._refIndex)
     fileIndex = str(theIndex._fileIndex)
-    textCounts = str(theIndex._textCounts)
+    textCounts = str(theIndex._fileMeta)
 
     # Delete a handle
     assert theIndex._tagIndex.get("Bod", None) is not None
     assert theIndex._refIndex.get("4c4f28287af27", None) is not None
     assert theIndex._fileIndex.get("4c4f28287af27", None) is not None
-    assert theIndex._textCounts.get("4c4f28287af27", None) is not None
+    assert theIndex._fileMeta.get("4c4f28287af27", None) is not None
     theIndex.deleteHandle("4c4f28287af27")
     assert theIndex._tagIndex.get("Bod", None) is None
     assert theIndex._refIndex.get("4c4f28287af27", None) is None
     assert theIndex._fileIndex.get("4c4f28287af27", None) is None
-    assert theIndex._textCounts.get("4c4f28287af27", None) is None
+    assert theIndex._fileMeta.get("4c4f28287af27", None) is None
 
     # Clear the index
     theIndex.clearIndex()
     assert theIndex._tagIndex == {}
     assert theIndex._refIndex == {}
     assert theIndex._fileIndex == {}
-    assert theIndex._textCounts == {}
+    assert theIndex._fileMeta == {}
 
     # Make the load fail
     with monkeypatch.context() as mp:
@@ -103,7 +103,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     assert str(theIndex._tagIndex) == tagIndex
     assert str(theIndex._refIndex) == refIndex
     assert str(theIndex._fileIndex) == fileIndex
-    assert str(theIndex._textCounts) == textCounts
+    assert str(theIndex._fileMeta) == textCounts
 
     # Break the index and check that we notice
     assert theIndex.indexBroken is False
@@ -1162,58 +1162,66 @@ def testCoreIndex_CheckFileIndex(mockGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_CheckTextCounts(mockGUI):
-    """Test the text counts checker.
+def testCoreIndex_CheckFileMeta(mockGUI):
+    """Test the file meta checker.
     """
     theProject = NWProject(mockGUI)
     theIndex = NWIndex(theProject)
 
     # Valid Index
-    theIndex._textCounts = {
-        "53b69b83cdafc": [72, 15, 2],
-        "974e400180a99": [210, 40, 2],
+    theIndex._fileMeta = {
+        "53b69b83cdafc": ["H0", 72, 15, 2],
+        "974e400180a99": ["H0", 210, 40, 2],
     }
-    assert theIndex._checkTextCounts() is None
+    assert theIndex._checkFileMeta() is None
 
     # Invalid Handle
-    theIndex._textCounts = {
-        "53b69b83cdafc": [72, 15, 2],
-        "h74e400180a99": [210, 40, 2],
+    theIndex._fileMeta = {
+        "53b69b83cdafc": ["H0", 72, 15, 2],
+        "h74e400180a99": ["H0", 210, 40, 2],
     }
     with pytest.raises(KeyError):
-        theIndex._checkTextCounts()
+        theIndex._checkFileMeta()
 
     # Wrong Length
-    theIndex._textCounts = {
-        "53b69b83cdafc": [72, 15, 2],
-        "974e400180a99": [210, 40, 2, 8],
+    theIndex._fileMeta = {
+        "53b69b83cdafc": ["H0", 72, 15, 2],
+        "974e400180a99": ["H0", 210, 40, 2, 8],
     }
     with pytest.raises(IndexError):
-        theIndex._checkTextCounts()
+        theIndex._checkFileMeta()
 
-    # Type of Entry 0
-    theIndex._textCounts = {
-        "53b69b83cdafc": [72, 15, 2],
-        "974e400180a99": ["210", 40, 2],
+    # Content of Entry 0
+    theIndex._fileMeta = {
+        "53b69b83cdafc": ["H0", 72, 15, 2],
+        "974e400180a99": ["XXX", 210, 40, 2],
     }
     with pytest.raises(ValueError):
-        theIndex._checkTextCounts()
+        theIndex._checkFileMeta()
 
     # Type of Entry 1
-    theIndex._textCounts = {
-        "53b69b83cdafc": [72, 15, 2],
-        "974e400180a99": [210, "40", 2],
+    theIndex._fileMeta = {
+        "53b69b83cdafc": ["H0", 72, 15, 2],
+        "974e400180a99": ["H0", "210", 40, 2],
     }
     with pytest.raises(ValueError):
-        theIndex._checkTextCounts()
+        theIndex._checkFileMeta()
 
     # Type of Entry 2
-    theIndex._textCounts = {
-        "53b69b83cdafc": [72, 15, 2],
-        "974e400180a99": [210, 40, "2"],
+    theIndex._fileMeta = {
+        "53b69b83cdafc": ["H0", 72, 15, 2],
+        "974e400180a99": ["H0", 210, "40", 2],
     }
     with pytest.raises(ValueError):
-        theIndex._checkTextCounts()
+        theIndex._checkFileMeta()
+
+    # Type of Entry 3
+    theIndex._fileMeta = {
+        "53b69b83cdafc": ["H0", 72, 15, 2],
+        "974e400180a99": ["H0", 210, 40, "2"],
+    }
+    with pytest.raises(ValueError):
+        theIndex._checkFileMeta()
 
 # END Test testCoreIndex_CheckTextCounts
 

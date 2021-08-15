@@ -30,7 +30,7 @@ from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 
-from nw.enum import nwItemClass, nwItemType, nwItemLayout
+from nw.enum import nwItemClass, nwItemType
 from nw.constants import trConst, nwLabels
 
 logger = logging.getLogger(__name__)
@@ -98,8 +98,7 @@ class GuiItemDetails(QWidget):
         self.className.setAlignment(Qt.AlignLeft)
 
         self.classFlag = QLabel("")
-        self.classFlag.setFont(fntValue)
-        self.classFlag.setAlignment(Qt.AlignRight)
+        self.classFlag.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.classData = QLabel("")
         self.classData.setFont(fntValue)
@@ -111,8 +110,7 @@ class GuiItemDetails(QWidget):
         self.layoutName.setAlignment(Qt.AlignLeft)
 
         self.layoutFlag = QLabel("")
-        self.layoutFlag.setFont(fntValue)
-        self.layoutFlag.setAlignment(Qt.AlignRight)
+        self.layoutFlag.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.layoutData = QLabel("")
         self.layoutData.setFont(fntValue)
@@ -229,17 +227,14 @@ class GuiItemDetails(QWidget):
             return
 
         self._itemHandle = tHandle
+        iPx = int(round(0.8*self.theTheme.baseIconSize))
+
+        # Label
+        # =====
+
         theLabel = nwItem.itemName
         if len(theLabel) > 100:
             theLabel = theLabel[:96].rstrip()+" ..."
-
-        itStatus = nwItem.itemStatus
-        if nwItem.itemClass == nwItemClass.NOVEL:
-            itStatus = self.theProject.statusItems.checkEntry(itStatus)  # Make sure it's valid
-            flagIcon = self.theParent.statusIcons[itStatus]
-        else:
-            itStatus = self.theProject.importItems.checkEntry(itStatus)  # Make sure it's valid
-            flagIcon = self.theParent.importIcons[itStatus]
 
         if nwItem.itemType == nwItemType.FILE:
             if nwItem.isExported:
@@ -249,19 +244,41 @@ class GuiItemDetails(QWidget):
         else:
             self.labelFlag.setPixmap(QPixmap(1, 1))
 
-        iPx = int(round(0.8*self.theTheme.baseIconSize))
-        self.statusFlag.setPixmap(flagIcon.pixmap(iPx, iPx))
-        self.classFlag.setText(nwLabels.CLASS_FLAG[nwItem.itemClass])  # NO-I18N
-
-        if nwItem.itemLayout == nwItemLayout.NO_LAYOUT:
-            self.layoutFlag.setText("-")
-        else:
-            self.layoutFlag.setText(nwLabels.LAYOUT_FLAG[nwItem.itemLayout])  # NO-I18N
-
         self.labelData.setText(theLabel)
+
+        # Status
+        # ======
+
+        itStatus = nwItem.itemStatus
+        if nwItem.itemClass == nwItemClass.NOVEL:
+            itStatus = self.theProject.statusItems.checkEntry(itStatus)  # Make sure it's valid
+            flagIcon = self.theParent.statusIcons[itStatus]
+        else:
+            itStatus = self.theProject.importItems.checkEntry(itStatus)  # Make sure it's valid
+            flagIcon = self.theParent.importIcons[itStatus]
+
+        self.statusFlag.setPixmap(flagIcon.pixmap(iPx, iPx))
         self.statusData.setText(nwItem.itemStatus)
+
+        # Class
+        # =====
+
+        classIcon = self.theTheme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass])
+        self.classFlag.setPixmap(classIcon.pixmap(iPx, iPx))
         self.classData.setText(trConst(nwLabels.CLASS_NAME[nwItem.itemClass]))
-        self.layoutData.setText(trConst(nwLabels.LAYOUT_NAME[nwItem.itemLayout]))
+
+        # Layout
+        # ======
+
+        hLevel = self.theParent.theIndex.getHandleHeaderLevel(tHandle)
+        layoutIcon = self.theTheme.getItemIcon(
+            nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
+        )
+        self.layoutFlag.setPixmap(layoutIcon.pixmap(iPx, iPx))
+        self.layoutData.setText(nwItem.describeMe(hLevel))
+
+        # Counts
+        # ======
 
         if nwItem.itemType == nwItemType.FILE:
             self.cCountData.setText(f"{nwItem.charCount:n}")
