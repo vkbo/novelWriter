@@ -194,9 +194,10 @@ Settings` dialog where the document label and various other settings can be chan
 can also be opened again later from either the :guilabel:`Project` menu, selecting :guilabel:`Edit
 Project Item`, or by pressing :kbd:`Ctrl`:kbd:`E` or :kbd:`F2` with the item selected.
 
-The layout of the document is also defined here. For Novel documents, the full list of layout
-options are available. For non-Novel documents, only :guilabel:`Note` is available. See
-:ref:`a_struct_layout` for more details.
+The layout of the document is also defined here. The two options available are :guilabel:`Novel
+Document` and :guilabel:`Project Note`. These behave slightly differently when the project is
+built. A project note is never treated as part of the novel, no matter where in the project it is
+located. See :ref:`a_struct_layout` for more details.
 
 You can also select whether the document is by default included when building the project. This
 setting can be overridden in the :guilabel:`Build Novel Project` tool if you wish to include them
@@ -214,7 +215,7 @@ of a document following a header. The word count, and change of words in the cur
 displayed in the footer of any document open in the editor, and all stats are shown in the details
 panel below the project tree for any document selected in the project or novel tree.
 
-The word counts are not updated in real time, but run in the background every five seconds for as
+The word counts are not updated in real time, but run in the background every few seconds for as
 long as the document is being actively edited.
 
 A total project word count is displayed in the status bar. The total count depends on the sum of

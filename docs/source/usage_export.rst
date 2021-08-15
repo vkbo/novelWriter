@@ -23,10 +23,9 @@ a series of keyword–replace steps. They are all on the format ``%keyword%``.
 
 ``%ch%``
    This will be replaced by a chapter number. The number is incremented by one each time the build
-   tool sees a new heading of level two in a document with layout :guilabel:`Chapter`. If the
-   document has layout :guilabel:`Unnumbered`, the counter is *not* incremented. The latter is
-   useful for for instance Prologue and Epilogue chapters. Adding an asterisk (``*``) in front of
-   the title text of a level two heading will also disable the chapter counter for that heading.
+   tool sees a new heading of level two in a document, unless the heading formatting code has the
+   added ``!``. In the latter case, the counter is *not* incremented. This is useful for for
+   instance Prologue and Epilogue chapters.
 
 ``%chw%``
    Behaves like ``%ch%``, but the number is represented as a number word.
@@ -97,9 +96,8 @@ exclude the body text itself.
 If you need to exclude specific documents from your exports, like draft documents or documents you
 want to take out of your manuscript, but don't want to delete, you can un-check the
 :guilabel:`Include when building project` option for each document in the project tree. An included
-document has a checkmark after the status icon in the :guilabel:`Flags` column. The
-:guilabel:`Build Novel Project` tool has a switch to ignore this flag if you need to collectively
-override these settings.
+document has a checkmark after in the third column of the project tree. The :guilabel:`Build Novel
+Project` tool has a switch to ignore this flag if you need to collectively override these settings.
 
 
 .. _a_export_print:

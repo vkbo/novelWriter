@@ -888,6 +888,20 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumTex
     assert nwGUI.docEditor.getText() == "Title\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 0
 
+    # Strip Novel Title
+    assert nwGUI.docEditor.replaceText("#! Title\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Title\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 2
+
+    # Strip Unnumbered CHapter
+    assert nwGUI.docEditor.replaceText("##! Title\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Title\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 1
+
     # Strip Text
     assert nwGUI.docEditor.replaceText("Generic text\n\n") is True
     assert nwGUI.docEditor.setCursorPosition(5) is True
@@ -1020,6 +1034,20 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumTex
     assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_H4) is True
     assert nwGUI.docEditor.getText() == "#### Some text\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 10
+
+    # Novel Title
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TTL) is True
+    assert nwGUI.docEditor.getText() == "#! Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 8
+
+    # Unnumbered Chapter
+    assert nwGUI.docEditor.replaceText("Some text\n\n") is True
+    assert nwGUI.docEditor.setCursorPosition(5) is True
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_UNN) is True
+    assert nwGUI.docEditor.getText() == "##! Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 9
 
     # Left Indent
     assert nwGUI.docEditor.replaceText("Some text\n\n") is True

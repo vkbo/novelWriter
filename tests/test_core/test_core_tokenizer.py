@@ -937,12 +937,12 @@ def testCoreToken_ProcessHeaders(mockGUI):
     ]
 
     # H2: Unnumbered Chapter
-    theToken.theText = "## *Prologue\n"
+    theToken.theText = "##! Prologue\n"
     theToken.setUnNumberedFormat(r"U: %title%")
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken.theTokens == [
-        (Tokenizer.T_HEAD2, 1, "U: Prologue", None, Tokenizer.A_PBB),
+        (Tokenizer.T_UNNUM, 1, "U: Prologue", None, Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
