@@ -176,6 +176,16 @@ class nwLabels():
         nwItemLayout.DOCUMENT:  QT_TRANSLATE_NOOP("Constant", "Novel Document"),
         nwItemLayout.NOTE:      QT_TRANSLATE_NOOP("Constant", "Project Note"),
     }
+    ITEM_DESCRIPTION = {
+        "none":     QT_TRANSLATE_NOOP("Constant", "None"),
+        "root":     QT_TRANSLATE_NOOP("Constant", "Root Folder"),
+        "folder":   QT_TRANSLATE_NOOP("Constant", "Folder"),
+        "document": QT_TRANSLATE_NOOP("Constant", "Novel Document"),
+        "doc_h1":   QT_TRANSLATE_NOOP("Constant", "Novel Title Page"),
+        "doc_h2":   QT_TRANSLATE_NOOP("Constant", "Novel Chapter"),
+        "doc_h3":   QT_TRANSLATE_NOOP("Constant", "Novel Scene"),
+        "note":     QT_TRANSLATE_NOOP("Constant", "Project Note"),
+    }
     LAYOUT_FLAG = {
         nwItemLayout.NO_LAYOUT: "Xo",
         nwItemLayout.DOCUMENT:  "Dc",
