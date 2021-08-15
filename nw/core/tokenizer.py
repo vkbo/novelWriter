@@ -631,9 +631,7 @@ class Tokenizer():
                 # Chapter
 
                 # Numbered or Unnumbered
-                if tToken[2].startswith("*"):
-                    tTemp = self._formatHeading(self.fmtUnNum, tToken[2][1:].lstrip())
-                elif tToken[0] == self.T_UNNUM:
+                if tToken[0] == self.T_UNNUM:
                     tTemp = self._formatHeading(self.fmtUnNum, tToken[2])
                 else:
                     self.numChapter += 1
