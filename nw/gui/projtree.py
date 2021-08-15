@@ -47,7 +47,7 @@ class GuiProjectTree(QTreeWidget):
     C_NAME   = 0
     C_COUNT  = 1
     C_EXPORT = 2
-    C_FLAGS  = 3
+    C_STATUS = 3
 
     novelItemChanged = pyqtSignal()
     noteItemChanged = pyqtSignal()
@@ -86,10 +86,8 @@ class GuiProjectTree(QTreeWidget):
         self.setIndentation(iPx)
         self.setColumnCount(4)
         self.setHeaderLabels([
-            self.tr("Label"),
-            self.tr("Words"),
-            self.tr("Inc"),
-            self.tr("Flags")
+            self.tr("Label"), self.tr("Words"), "",
+            self.tr("Status") if self.mainConf.fullStatus else ""
         ])
 
         treeHeadItem = self.headerItem()
@@ -97,7 +95,7 @@ class GuiProjectTree(QTreeWidget):
         treeHeadItem.setToolTip(self.C_NAME, self.tr("Item label"))
         treeHeadItem.setToolTip(self.C_COUNT, self.tr("Word count"))
         treeHeadItem.setToolTip(self.C_EXPORT, self.tr("Include in build"))
-        treeHeadItem.setToolTip(self.C_FLAGS, self.tr("Status, class, and layout flags"))
+        treeHeadItem.setToolTip(self.C_STATUS, self.tr("Item status"))
 
         # Let the last column stretch, and set the minimum size to the
         # size of the icon as the default Qt font metrics approach fails
@@ -126,7 +124,7 @@ class GuiProjectTree(QTreeWidget):
                 self.setColumnWidth(colN, colW)
 
         # The last column should just auto-scale
-        self.resizeColumnToContents(self.C_FLAGS)
+        self.resizeColumnToContents(self.C_STATUS)
 
         # Set custom settings
         self.initTree()
@@ -607,9 +605,7 @@ class GuiProjectTree(QTreeWidget):
         nwItem = self.theProject.projTree[tHandle]
 
         expIcon = QIcon()
-        stFlags = nwLabels.CLASS_FLAG[nwItem.itemClass]
         if nwItem.itemType == nwItemType.FILE:
-            stFlags += "."+nwLabels.LAYOUT_FLAG[nwItem.itemLayout]
             if nwItem.isExported:
                 expIcon = self.theTheme.getIcon("check")
             else:
@@ -618,15 +614,25 @@ class GuiProjectTree(QTreeWidget):
         iStatus = nwItem.itemStatus
         if nwItem.itemClass == nwItemClass.NOVEL:
             iStatus = self.theProject.statusItems.checkEntry(iStatus)  # Make sure it's valid
-            flagIcon = self.theParent.statusIcons[iStatus]
+            statIcon = self.theParent.statusIcons[iStatus]
         else:
             iStatus = self.theProject.importItems.checkEntry(iStatus)  # Make sure it's valid
-            flagIcon = self.theParent.importIcons[iStatus]
+            statIcon = self.theParent.importIcons[iStatus]
 
+        hLevel = self.theIndex.getHandleHeaderLevel(tHandle)
+        itemIcon = self.theTheme.getItemIcon(
+            nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
+        )
+
+        trItem.setIcon(self.C_NAME, itemIcon)
         trItem.setText(self.C_NAME, nwItem.itemName)
         trItem.setIcon(self.C_EXPORT, expIcon)
-        trItem.setIcon(self.C_FLAGS, flagIcon)
-        trItem.setText(self.C_FLAGS, stFlags)
+        trItem.setIcon(self.C_STATUS, statIcon)
+
+        if self.mainConf.fullStatus:
+            trItem.setText(self.C_STATUS, nwItem.itemStatus)
+        else:
+            trItem.setToolTip(self.C_STATUS, nwItem.itemStatus)
 
         return
 
@@ -962,30 +968,27 @@ class GuiProjectTree(QTreeWidget):
         """
         tHandle = nwItem.itemHandle
         pHandle = nwItem.itemParent
-        tClass  = nwItem.itemClass
-        tType   = nwItem.itemType
-        tLayout = nwItem.itemLayout
         newItem = QTreeWidgetItem([""]*4)
 
         newItem.setText(self.C_NAME, "")
         newItem.setText(self.C_COUNT, "0")
         newItem.setText(self.C_EXPORT, "")
-        newItem.setText(self.C_FLAGS, "")
+        newItem.setText(self.C_STATUS, "")
 
         newItem.setTextAlignment(self.C_NAME, Qt.AlignLeft)
         newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
         newItem.setTextAlignment(self.C_EXPORT, Qt.AlignLeft)
-        newItem.setTextAlignment(self.C_FLAGS, Qt.AlignLeft)
+        newItem.setTextAlignment(self.C_STATUS, Qt.AlignLeft)
 
         newItem.setData(self.C_NAME, Qt.UserRole, tHandle)
         newItem.setData(self.C_COUNT, Qt.UserRole, 0)
 
         self._treeMap[tHandle] = newItem
         if pHandle is None:
-            if tType == nwItemType.ROOT:
+            if nwItem.itemType == nwItemType.ROOT:
                 self.addTopLevelItem(newItem)
                 self.theParent.mainMenu.setAvailableRoot()
-            elif tType == nwItemType.TRASH:
+            elif nwItem.itemType == nwItemType.TRASH:
                 self.addTopLevelItem(newItem)
             else:
                 self.makeAlert(self.tr(
@@ -1009,9 +1012,6 @@ class GuiProjectTree(QTreeWidget):
 
         self.setTreeItemValues(tHandle)
         newItem.setExpanded(nwItem.isExpanded)
-
-        hLevel = self.theIndex.getHandleHeaderLevel(tHandle)
-        newItem.setIcon(self.C_NAME, self.theTheme.getItemIcon(tType, tClass, tLayout, hLevel))
 
         self._setTreeChanged(True)
 

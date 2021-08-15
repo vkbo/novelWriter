@@ -110,6 +110,7 @@ class Config:
         # Features
         self.hideVScroll = False  # Hide vertical scroll bars on main widgets
         self.hideHScroll = False  # Hide horizontal scroll bars on main widgets
+        self.fullStatus  = True   # Show the full status text in the project tree
 
         # Project
         self.autoSaveProj = 60  # Interval for auto-saving project in seconds
@@ -448,6 +449,9 @@ class Config:
         self.guiFontSize = theConf.rdInt(cnfSec, "guifontsize", self.guiFontSize)
         self.lastNotes   = theConf.rdStr(cnfSec, "lastnotes", self.lastNotes)
         self.guiLang     = theConf.rdStr(cnfSec, "guilang", self.guiLang)
+        self.hideVScroll = theConf.rdBool(cnfSec, "hidevscroll", self.hideVScroll)
+        self.hideHScroll = theConf.rdBool(cnfSec, "hidehscroll", self.hideHScroll)
+        self.fullStatus  = theConf.rdBool(cnfSec, "fullstatus", self.fullStatus)
 
         # Sizes
         cnfSec = "Sizes"
@@ -461,8 +465,6 @@ class Config:
         self.viewPanePos   = theConf.rdIntList(cnfSec, "viewpane", self.viewPanePos)
         self.outlnPanePos  = theConf.rdIntList(cnfSec, "outlinepane", self.outlnPanePos)
         self.isFullScreen  = theConf.rdBool(cnfSec, "fullscreen", self.isFullScreen)
-        self.hideVScroll   = theConf.rdBool(cnfSec, "hidevscroll", self.hideVScroll)
-        self.hideHScroll   = theConf.rdBool(cnfSec, "hidehscroll", self.hideHScroll)
 
         # Project
         cnfSec = "Project"
@@ -563,6 +565,9 @@ class Config:
             "guifontsize": str(self.guiFontSize),
             "lastnotes":   str(self.lastNotes),
             "guilang":     str(self.guiLang),
+            "hidevscroll": str(self.hideVScroll),
+            "hidehscroll": str(self.hideHScroll),
+            "fullstatus":  str(self.fullStatus),
         }
 
         theConf["Sizes"] = {
@@ -576,8 +581,6 @@ class Config:
             "viewpane":    self._packList(self.viewPanePos),
             "outlinepane": self._packList(self.outlnPanePos),
             "fullscreen":  str(self.isFullScreen),
-            "hidevscroll": str(self.hideVScroll),
-            "hidehscroll": str(self.hideHScroll),
         }
 
         theConf["Project"] = {
