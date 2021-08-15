@@ -963,6 +963,8 @@ class GuiProjectTree(QTreeWidget):
         tHandle = nwItem.itemHandle
         pHandle = nwItem.itemParent
         tClass  = nwItem.itemClass
+        tType   = nwItem.itemType
+        tLayout = nwItem.itemLayout
         newItem = QTreeWidgetItem([""]*4)
 
         newItem.setText(self.C_NAME, "")
@@ -980,10 +982,10 @@ class GuiProjectTree(QTreeWidget):
 
         self._treeMap[tHandle] = newItem
         if pHandle is None:
-            if nwItem.itemType == nwItemType.ROOT:
+            if tType == nwItemType.ROOT:
                 self.addTopLevelItem(newItem)
                 self.theParent.mainMenu.setAvailableRoot()
-            elif nwItem.itemType == nwItemType.TRASH:
+            elif tType == nwItemType.TRASH:
                 self.addTopLevelItem(newItem)
             else:
                 self.makeAlert(self.tr(
@@ -1008,14 +1010,8 @@ class GuiProjectTree(QTreeWidget):
         self.setTreeItemValues(tHandle)
         newItem.setExpanded(nwItem.isExpanded)
 
-        if nwItem.itemType == nwItemType.ROOT:
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon(nwLabels.CLASS_ICON[tClass]))
-        elif nwItem.itemType == nwItemType.FOLDER:
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("proj_folder"))
-        elif nwItem.itemType == nwItemType.FILE:
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon("proj_document"))
-        elif nwItem.itemType == nwItemType.TRASH:
-            newItem.setIcon(self.C_NAME, self.theTheme.getIcon(nwLabels.CLASS_ICON[tClass]))
+        hLevel = self.theIndex.getHandleHeaderLevel(tHandle)
+        newItem.setIcon(self.C_NAME, self.theTheme.getItemIcon(tType, tClass, tLayout, hLevel))
 
         self._setTreeChanged(True)
 
