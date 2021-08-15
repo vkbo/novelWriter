@@ -97,9 +97,8 @@ exclude the body text itself.
 If you need to exclude specific documents from your exports, like draft documents or documents you
 want to take out of your manuscript, but don't want to delete, you can un-check the
 :guilabel:`Include when building project` option for each document in the project tree. An included
-document has a checkmark after the status icon in the :guilabel:`Flags` column. The
-:guilabel:`Build Novel Project` tool has a switch to ignore this flag if you need to collectively
-override these settings.
+document has a checkmark after in the third column of the project tree. The :guilabel:`Build Novel
+Project` tool has a switch to ignore this flag if you need to collectively override these settings.
 
 
 .. _a_export_print:
