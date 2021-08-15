@@ -31,6 +31,8 @@ sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), os.pa
 
 import nw  # noqa: E402
 
+from PyQt5.QtWidgets import QMessageBox  # noqa: E402
+
 from nw.config import Config  # noqa: E402
 
 
@@ -153,6 +155,7 @@ def mockGUI(monkeypatch, tmpConf):
 def nwGUI(qtbot, monkeypatch, fncDir, fncConf):
     """Create an instance of the novelWriter GUI.
     """
+    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr("nw.CONFIG", fncConf)
     nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
     qtbot.addWidget(nwGUI)

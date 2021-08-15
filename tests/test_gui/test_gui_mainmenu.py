@@ -464,7 +464,8 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     """Test the Insert menu.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
 
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": fncProj})
@@ -638,6 +639,24 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     with monkeypatch.context() as mp:
         mp.setattr(QTextBlock, "isValid", lambda *args, **kwards: False)
         assert not nwGUI.docEditor.insertKeyWord(nwKeyWords.TAG_KEY)
+
+    nwGUI.docEditor.clear()
+
+    ##
+    #  Insert Break or Space
+    ##
+
+    nwGUI.docEditor.setText("### Stuff\n")
+    nwGUI.mainMenu.aInsNewPage.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "[NEW PAGE]\n### Stuff\n"
+
+    nwGUI.docEditor.setText("### Stuff\n")
+    nwGUI.mainMenu.aInsVSpaceS.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "[VSPACE]\n### Stuff\n"
+
+    nwGUI.docEditor.setText("### Stuff\n")
+    nwGUI.mainMenu.aInsVSpaceM.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "[VSPACE:2]\n### Stuff\n"
 
     nwGUI.docEditor.clear()
 
