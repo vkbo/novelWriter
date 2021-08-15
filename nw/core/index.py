@@ -54,10 +54,10 @@ class NWIndex():
         self.indexBroken = False
 
         # Indices
-        self._tagIndex   = {}
-        self._refIndex   = {}
-        self._fileIndex  = {}
-        self._textCounts = {}
+        self._tagIndex  = {}
+        self._refIndex  = {}
+        self._fileIndex = {}
+        self._fileMeta  = {}
 
         # TimeStamps
         self._timeNovel = 0
@@ -73,13 +73,13 @@ class NWIndex():
     def clearIndex(self):
         """Clear the index dictionaries and time stamps.
         """
-        self._tagIndex   = {}
-        self._refIndex   = {}
-        self._fileIndex  = {}
-        self._textCounts = {}
-        self._timeNovel  = 0
-        self._timeNotes  = 0
-        self._timeIndex  = 0
+        self._tagIndex  = {}
+        self._refIndex  = {}
+        self._fileIndex = {}
+        self._fileMeta  = {}
+        self._timeNovel = 0
+        self._timeNotes = 0
+        self._timeIndex = 0
         return
 
     def deleteHandle(self, tHandle):
@@ -97,7 +97,7 @@ class NWIndex():
 
         self._refIndex.pop(tHandle, None)
         self._fileIndex.pop(tHandle, None)
-        self._textCounts.pop(tHandle, None)
+        self._fileMeta.pop(tHandle, None)
 
         return
 
@@ -162,7 +162,7 @@ class NWIndex():
             self._tagIndex = theData.get("tagIndex", {})
             self._refIndex = theData.get("refIndex", {})
             self._fileIndex = theData.get("fileIndex", {})
-            self._textCounts = theData.get("textCounts", {})
+            self._fileMeta = theData.get("fileMeta", {})
 
             nowTime = round(time())
             self._timeNovel = nowTime
@@ -189,7 +189,7 @@ class NWIndex():
                 outFile.write(f'"tagIndex": {jsonEncode(self._tagIndex, nmax=1)},\n')
                 outFile.write(f'"refIndex": {jsonEncode(self._refIndex, nmax=2)},\n')
                 outFile.write(f'"fileIndex": {jsonEncode(self._fileIndex, nmax=2)},\n')
-                outFile.write(f'"textCounts": {jsonEncode(self._textCounts, nmax=1)}\n')
+                outFile.write(f'"fileMeta": {jsonEncode(self._fileMeta, nmax=1)}\n')
                 outFile.write("}\n")
 
         except Exception:
@@ -212,7 +212,7 @@ class NWIndex():
             self._checkTagIndex()
             self._checkRefIndex()
             self._checkFileIndex()
-            self._checkTextCounts()
+            self._checkFileMeta()
             self.indexBroken = False
 
         except Exception:
@@ -256,7 +256,7 @@ class NWIndex():
 
         # Run word counter for the whole text
         cC, wC, pC = countWords(theText)
-        self._textCounts[tHandle] = [cC, wC, pC]
+        self._fileMeta[tHandle] = ["H0", cC, wC, pC]
 
         # If the file is archived or trashed, we don't index the file itself
         if self.theProject.projTree.isTrashRoot(theItem.itemParent):
@@ -373,6 +373,9 @@ class NWIndex():
             "pCount": 0,
             "synopsis": "",
         }
+
+        if self._fileMeta[tHandle][0] == "H0":
+            self._fileMeta[tHandle][0] = hDepth
 
         return True
 
@@ -573,6 +576,13 @@ class NWIndex():
 
         return theHeaders
 
+    def getHandleHeaderLevel(self, tHandle):
+        """Get the header level of the first header of a handle.
+        """
+        if tHandle in self._fileMeta:
+            return self._fileMeta[tHandle][0]
+        return "H0"
+
     def getTableOfContents(self, maxDepth, skipExcluded=True):
         """Generate a table of contents up to a maxiumum depth.
         """
@@ -617,10 +627,10 @@ class NWIndex():
         pC = 0
 
         if sTitle is None:
-            if tHandle in self._textCounts:
-                cC = self._textCounts[tHandle][0]
-                wC = self._textCounts[tHandle][1]
-                pC = self._textCounts[tHandle][2]
+            if tHandle in self._fileMeta:
+                cC = self._fileMeta[tHandle][1]
+                wC = self._fileMeta[tHandle][2]
+                pC = self._fileMeta[tHandle][3]
         else:
             if tHandle in self._fileIndex:
                 if sTitle in self._fileIndex[tHandle]:
@@ -809,23 +819,25 @@ class NWIndex():
 
         return
 
-    def _checkTextCounts(self):
+    def _checkFileMeta(self):
         """Scan the text counts index for errors.
         Warning: This function raises exceptions.
         """
-        for tHandle in self._textCounts:
+        for tHandle in self._fileMeta:
             if not isHandle(tHandle):
-                raise KeyError("textCounts key is not a handle")
+                raise KeyError("fileMeta key is not a handle")
 
-            tEntry = self._textCounts[tHandle]
-            if len(tEntry) != 3:
-                raise IndexError("textCounts[a] expected 3 values")
-            if not isinstance(tEntry[0], int):
-                raise ValueError("textCounts[a][0] is not an integer")
+            tEntry = self._fileMeta[tHandle]
+            if len(tEntry) != 4:
+                raise IndexError("fileMeta[a] expected 4 values")
+            if not tEntry[0] in H_VALID:
+                raise ValueError("fileMeta[a][0] is not a header level")
             if not isinstance(tEntry[1], int):
-                raise ValueError("textCounts[a][1] is not an integer")
+                raise ValueError("fileMeta[a][1] is not an integer")
             if not isinstance(tEntry[2], int):
-                raise ValueError("textCounts[a][2] is not an integer")
+                raise ValueError("fileMeta[a][2] is not an integer")
+            if not isinstance(tEntry[3], int):
+                raise ValueError("fileMeta[a][3] is not an integer")
 
         return
 
