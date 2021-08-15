@@ -167,6 +167,39 @@ def testCoreItem_Setters(mockGUI):
 
 
 @pytest.mark.core
+def testCoreItem_Methods(mockGUI):
+    """Test the simple methods of the NWItem class.
+    """
+    theProject = NWProject(mockGUI)
+    theItem = NWItem(theProject)
+
+    # Describe Me
+    # ===========
+
+    assert theItem.describeMe() == "None"
+
+    theItem.setType("ROOT")
+    assert theItem.describeMe() == "Root Folder"
+
+    theItem.setType("FOLDER")
+    assert theItem.describeMe() == "Folder"
+
+    theItem.setType("FILE")
+    theItem.setLayout("DOCUMENT")
+    assert theItem.describeMe() == "Novel Document"
+    assert theItem.describeMe("H0") == "Novel Document"
+    assert theItem.describeMe("H1") == "Novel Title Page"
+    assert theItem.describeMe("H2") == "Novel Chapter"
+    assert theItem.describeMe("H3") == "Novel Scene"
+    assert theItem.describeMe("H4") == "Novel Document"
+
+    theItem.setLayout("NOTE")
+    assert theItem.describeMe() == "Project Note"
+
+# END Test testCoreItem_Methods
+
+
+@pytest.mark.core
 def testCoreItem_TypeSetter(mockGUI):
     """Test the setter for all the nwItemType values for the NWItem
     class.
