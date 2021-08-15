@@ -785,6 +785,10 @@ class GuiDocEditor(QTextEdit):
             self._formatBlock(nwDocAction.BLOCK_COM)
         elif theAction == nwDocAction.BLOCK_TXT:
             self._formatBlock(nwDocAction.BLOCK_TXT)
+        elif theAction == nwDocAction.BLOCK_TTL:
+            self._formatBlock(nwDocAction.BLOCK_TTL)
+        elif theAction == nwDocAction.BLOCK_UNN:
+            self._formatBlock(nwDocAction.BLOCK_UNN)
         elif theAction == nwDocAction.REPL_SNG:
             self._replaceQuotes("'", self._typSQOpen, self._typSQClose)
         elif theAction == nwDocAction.REPL_DBL:
@@ -1593,6 +1597,12 @@ class GuiDocEditor(QTextEdit):
         elif theText.startswith("#### "):
             newText = theText[5:]
             cOffset = 5
+        elif theText.startswith("#! "):
+            newText = theText[3:]
+            cOffset = 3
+        elif theText.startswith("##! "):
+            newText = theText[4:]
+            cOffset = 4
         elif theText.startswith(">> "):
             newText = theText[3:]
             cOffset = 3
@@ -1635,6 +1645,12 @@ class GuiDocEditor(QTextEdit):
         elif docAction == nwDocAction.BLOCK_H4:
             theText = "#### "+newText
             cOffset -= 5
+        elif docAction == nwDocAction.BLOCK_TTL:
+            theText = "#! "+newText
+            cOffset -= 3
+        elif docAction == nwDocAction.BLOCK_UNN:
+            theText = "##! "+newText
+            cOffset -= 4
         elif docAction == nwDocAction.ALIGN_L:
             theText = newText+" <<"
         elif docAction == nwDocAction.ALIGN_C:

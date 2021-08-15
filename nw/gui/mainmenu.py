@@ -849,6 +849,21 @@ class GuiMainMenu(QMenuBar):
         # Format > Separator
         self.fmtMenu.addSeparator()
 
+        # Format > Novel Title
+        self.aFmtTitle = QAction(self.tr("Novel Title"), self)
+        self.aFmtTitle.setStatusTip(self.tr("Change the block format to Novel Title"))
+        self.aFmtTitle.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_TTL))
+        self.fmtMenu.addAction(self.aFmtTitle)
+
+        # Format > Unnumbered Chapter
+        self.aFmtUnNum = QAction(self.tr("Unnumbered Chapter"), self)
+        self.aFmtUnNum.setStatusTip(self.tr("Change the block format to Unnumbered Chapter"))
+        self.aFmtUnNum.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_UNN))
+        self.fmtMenu.addAction(self.aFmtUnNum)
+
+        # Format > Separator
+        self.fmtMenu.addSeparator()
+
         # Format > Align Left
         self.aFmtAlignLeft = QAction(self.tr("Align Left"), self)
         self.aFmtAlignLeft.setStatusTip(self.tr("Change the block alignment to left"))
