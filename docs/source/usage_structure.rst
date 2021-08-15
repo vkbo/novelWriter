@@ -31,9 +31,8 @@ The different header levels are interpreted as specific section types of the nov
 way:
 
 ``# Header1``
-   Header level one signifies that the text refers to either the novel title or the name of a top
-   level partition. The latter is useful when you want to split the manuscript up into books,
-   parts, or acts.
+   Header level one signifies that the text refers to a top level partition. This is useful when
+   you want to split the manuscript up into books, parts, or acts.
 
 ``## Header2``
    Header level two signifies a chapter level partition. Each time you want to start a new chapter,
@@ -60,26 +59,38 @@ way:
    them in a draft manuscript. See the :ref:`a_export` page for more details.
 
 
+.. _a_struct_heads_title:
+
+Novel Title and Front Matter
+----------------------------
+
+It is recommended that you add a document at the very top of your project with the novel title as
+the first line. You should modify the header format code with an ``!`` in order to render it as a
+document title that is excluded from any automatic Table of Content in an exported document, like
+so:
+
+``#! My Novel``
+
+The title is by default centred on the page. You can add more text to the page as you wish.
+
+If you want an additional page inserted after the title page, starting on a fresh page, you can add
+``[NEW PAGE]`` on a line by itself, and continue the text after it. This will insert a page break
+when the project is exported.
+
+
 .. _a_struct_heads_unnum:
 
 Unnumbered Chapter Headings
 ---------------------------
 
-If you use layout types for your documents, the automatic numbering feature for your chapters is
-controlled by whether you use the :guilabel:`Chapter` or :guilabel:`Unnumbered` layout type for
-your document. However, if you have a different document layout where this isn't practical, you can
-also switch off chapter numbering for a chapter by making the first character of the chapter title
-an asterisk (``*``). Like so:
+If you use the automatic numbering feature for your chapters, but you want to keep some special
+chapters separate from this, you cam add a ``!`` to the header formatting code to tell the build
+tool to skip these chapters.
 
-``## *Unnumbered Chapter Title``
+``##! Unnumbered Chapter Title``
 
-The leading asterisk is only considered by the :guilabel:`Build Novel Project` tool, and will be
-removed before the title is inserted at the location of the ``%title%`` label. See the
-:ref:`a_export` page for more details.
-
-.. note::
-   If you need the first character of the title to be an actual asterisk, you must escape it:
-   ``\*``.
+There is a separate formatting feature for such chapters in the :guilabel:`Build Novel Project`
+tool as well. See the :ref:`a_export` page for more details.
 
 
 .. _a_struct_tags:
@@ -147,104 +158,24 @@ the index for a document is regenerated when it is saved, so this shouldn't norm
 
 .. _a_struct_layout:
 
-Novel Document Layout
-=====================
+Document Layout
+===============
 
-All documents in the project can have a layout format set. These layouts are important when the
-project is exported as they indicate how to treat the content in terms of text formatting,
-headings, and page breaks. The layout for each document is indicated as the last set of characters
-in the :guilabel:`Flags` column of the project tree.
+All documents in the project can have a layout format set. Previously, there were multiple layouts
+available to change how the documents where formatted on export. These have now been reduced to
+just two layouts: :guilabel:`Novel Document` and :guilabel:`Project Note`.
 
-Not all layout types are actually treated differently, they also help to indicate what each
-document is intended for in your project. The :guilabel:`Book` layout is a generic novel document
-layout that is formatted identically to :guilabel:`Chapter` and :guilabel:`Scene` layout documents,
-but may help to indicate what each document does in your project.
+Novel documents can only live in the :guilabel:`Novel` root folder. You can also move them to
+:guilabel:`Outtakes` and :guilabel:`Trash` of course. Project notes can be added anywhere in the
+project.
 
-You can for instance lay out your project using :guilabel:`Book` documents for each act, and then
-later split those into chapter or scene documents by using the :guilabel:`Split Document` tool.
-Scenes can also be contained within :guilabel:`Chapter` type documents, but you lose the drag and
-drop feature that comes with having them in separate documents if you organise them this way.
-
-Some layouts *do* have implications on how the project is exported. Documents with layout
-:guilabel:`Title Page` and :guilabel:`Partition` have all headings and text centred, while the
-:guilabel:`Unnumbered` layout disables the automatic chapter numbering feature for everything
-contained within it. The latter is convenient for Prologue and Epilogue type chapters.
-
-The above layout formats are only usable in the Novel root folder. Documents that are not a part of
-the novel itself should have the :guilabel:`Note` layout. These documents are not getting any
-special formatting, and it is possible to collectively filter them out during export. Notes can be
-used anywhere in the project, also in the :guilabel:`Novel` root folder.
-
-Below is an overview of all available layout formats.
-
-:guilabel:`Title Page`
-   The title page layout. The title should be formatted as a heading level one. All text is centred
-   on export.
-
-:guilabel:`Plain Page`
-   A plain page layout useful for instance for front matter pages. Heading levels are ignored for
-   this layout format, and so are formatting options like :guilabel:`Justify Text`. The page is
-   exported with a page break before it.
-
-:guilabel:`Book`
-   This is the generic novel format that in principle can be used for all novel documents. Since
-   the internal structure of the novel is controlled by the heading levels, this layout will
-   produce the same result as a collection of :guilabel:`Partition`, :guilabel:`Chapter` and
-   :guilabel:`Scene` layout documents. However, it does not provide the functionality of the
-   :guilabel:`Unnumbered` layout format by default, but this can still be achieved by prefixing the
-   chapter title with an asterisk (``*``). See :ref:`a_struct_heads_unnum` for more details.
-
-:guilabel:`Partition`
-   A partition can be used to split the novel into parts. Partition titles are indicated with a
-   level one heading. You can also add text and meta data to the page. The :guilabel:`Partition`
-   layout will in addition force a page break before the heading, and centre all content on the
-   page.
-
-:guilabel:`Chapter`
-   Signifies the start of a new chapter. If the text itself is contained in scene documents, these
-   documents should only contain the title, comments, synopsis, and tag references for characters,
-   plot, etc. The heading for chapters should be level two. If you need an opening text, like a
-   quote or other leading text before the first scene, this is also where you'd want to add this
-   text.
-
-:guilabel:`Unnumbered`
-   Same as :guilabel:`Chapter`, but when exporting the project, and automatic chapter numbering is
-   enabled, documents with this layout will not increment and apply a chapter number. It also has a
-   separate title formatting setting. This makes the layout suitable for Prologue and Epilogue type
-   chapters.
-
-:guilabel:`Scene`
-   Used for scenes. This document should have a header of level three. Further sections can have
-   headers of level four, but there are no layout specifically for sections.
-
-:guilabel:`Note`
-   A generic document that is optionally ignored when the novel project is exported. Use this
-   layout for descriptions of content in the supporting root folders. Notes can also be added to
-   the :guilabel:`Novel` root folder if you need to insert notes there. Note headers receive no
-   special formatting when building the project. They are always exported as-is.
-
-.. note::
-   The layout granularity is entirely optional. In principle, you can write the entire novel in a
-   single document with layout :guilabel:`Book`. You can also have a single document per chapter if
-   that suits you better. The :guilabel:`Outline` will show your structure of chapters and scenes
-   regardless of how your documents are organised. So will the novel tree.
+Depending on which icon theme you're using, the project tree can distinguish between the different
+layouts and header levels of the documents to help indicate which are project notes and which are
+novel documents containing a partition, chapter, or scene. If the icon theme you've selected
+doesn't show a difference, you can still see the layout description in the details panel below the
+project tree.
 
 .. tip::
-   You can always start writing with a coarse layout with one or a few documents, and then later
-   use the split tool to automatically split the documents into separate chapter and scene
-   documents. The split tool will try to select the correct layout for each of the new documents.
-
-
-.. _a_struct_layout_auto:
-
-Novel Layout Automation
------------------------
-
-When a document is saved from the document editor, novelWriter will check if the level of the first
-header of the document matches the selected document layout. If the header level is inconsistent
-with the layout, the layout will automatically be corrected if it can be unambiguously determined.
-
-This means that for instance saving a document with header level three, when the layout is set to
-:guilabel:`Chapter`, the layout will automatically be changed to :guilabel:`Scene`. If, however,
-the layout was set to :guilabel:`Book`, no change will be made because the :guilabel:`Book` layout
-is not associated with a specific header level.
+   You can always start writing with a coarse setup with one or a few documents, and then later use
+   the split tool to automatically split the documents into separate chapter and scene documents.
+   You can split a document on any of the four header levels.
