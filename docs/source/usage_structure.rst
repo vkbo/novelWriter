@@ -92,6 +92,11 @@ tool to skip these chapters.
 There is a separate formatting feature for such chapters in the :guilabel:`Build Novel Project`
 tool as well. See the :ref:`a_export` page for more details.
 
+.. Note::
+   Previously, you could also disable the automatic numbering of a chapter by adding an ``*`` as
+   the first character if the chapter title itself. This feature has been dropped in favour of the
+   current format. Please update your chapter headings if you've used this syntax.
+
 
 .. _a_struct_tags:
 

@@ -23,10 +23,9 @@ a series of keyword–replace steps. They are all on the format ``%keyword%``.
 
 ``%ch%``
    This will be replaced by a chapter number. The number is incremented by one each time the build
-   tool sees a new heading of level two in a document with layout :guilabel:`Chapter`. If the
-   document has layout :guilabel:`Unnumbered`, the counter is *not* incremented. The latter is
-   useful for for instance Prologue and Epilogue chapters. Adding an asterisk (``*``) in front of
-   the title text of a level two heading will also disable the chapter counter for that heading.
+   tool sees a new heading of level two in a document, unless the heading formatting code has the
+   added ``!``. In the latter case, the counter is *not* incremented. This is useful for for
+   instance Prologue and Epilogue chapters.
 
 ``%chw%``
    Behaves like ``%ch%``, but the number is represented as a number word.
