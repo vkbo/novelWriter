@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+import shutil
 
 import pytest
 import os
@@ -80,6 +81,7 @@ def testCoreProject_NewMinimal(fncDir, outDir, refDir, mockGUI):
     assert theProject.closeProject()
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    shutil.rmtree(fncDir)
 
 # END Test testCoreProject_NewMinimal
 
