@@ -81,6 +81,8 @@ def testBaseError_Handler(qtbot, monkeypatch, fncDir, tmpDir):
     checks that the error handler handles potential exceptions. The test
     will fail if excpetions are not handled.
     """
+    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
+
     qApp.closeAllWindows()
     nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
