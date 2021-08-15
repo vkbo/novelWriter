@@ -847,6 +847,8 @@ class GuiDocEditor(QTextEdit):
             logger.error("No document open")
             return False
 
+        newBlock = False
+
         if isinstance(theInsert, str):
             theText = theInsert
         elif isinstance(theInsert, nwDocInsert):
@@ -858,15 +860,58 @@ class GuiDocEditor(QTextEdit):
                 theText = self._typDQOpen
             elif theInsert == nwDocInsert.QUOTE_RD:
                 theText = self._typDQClose
+            elif theInsert == nwDocInsert.NEW_PAGE:
+                theText = "[NEW PAGE]"
+                newBlock = True
+            elif theInsert == nwDocInsert.VSPACE_S:
+                theText = "[VSPACE]"
+                newBlock = True
+            elif theInsert == nwDocInsert.VSPACE_M:
+                theText = "[VSPACE:2]"
+                newBlock = True
             else:
                 return False
         else:
             return False
 
+        if newBlock:
+            self.insertNewBlock(theText, defaultAfter=False)
+        else:
+            theCursor = self.textCursor()
+            theCursor.beginEditBlock()
+            theCursor.insertText(theText)
+            theCursor.endEditBlock()
+
+        return True
+
+    def insertNewBlock(self, theText, defaultAfter=True):
+        """Inserts a piece of text on a blank line.
+        """
         theCursor = self.textCursor()
+        theBlock = theCursor.block()
+        if not theBlock.isValid():
+            logger.error("Not a valid text block")
+            return False
+
+        sPos = theBlock.position()
+        sLen = theBlock.length()
+
         theCursor.beginEditBlock()
+
+        if sLen > 1 and defaultAfter:
+            theCursor.setPosition(sPos + sLen - 1)
+            theCursor.insertText("\n")
+        else:
+            theCursor.setPosition(sPos)
+
         theCursor.insertText(theText)
+
+        if sLen > 1 and not defaultAfter:
+            theCursor.insertText("\n")
+
         theCursor.endEditBlock()
+
+        self.setTextCursor(theCursor)
 
         return True
 
@@ -879,25 +924,9 @@ class GuiDocEditor(QTextEdit):
             return False
 
         logger.verbose("Inserting keyword '%s'", keyWord)
+        theState = self.insertNewBlock("%s: " % keyWord)
 
-        theCursor = self.textCursor()
-        theBlock = theCursor.block()
-        if not theBlock.isValid():
-            logger.error("Failed to insert keyword '%s'", keyWord)
-            return False
-
-        theCursor.beginEditBlock()
-
-        if theBlock.length() > 1:
-            theCursor.setPosition(theBlock.position() + theBlock.length() - 1)
-            theCursor.insertText("\n")
-
-        theCursor.insertText("%s: " % keyWord)
-        theCursor.endEditBlock()
-
-        self.setTextCursor(theCursor)
-
-        return True
+        return theState
 
     def closeSearch(self):
         """Close the search box.

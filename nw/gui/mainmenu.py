@@ -645,28 +645,28 @@ class GuiMainMenu(QMenuBar):
         self.mInsPunct.addAction(self.aInsDPrime)
 
         # Insert > White Spaces
-        self.mInsBreaks = self.insertMenu.addMenu(self.tr("White Spaces"))
+        self.mInsSpace = self.insertMenu.addMenu(self.tr("White Spaces"))
 
         # Insert > Non-Breaking Space
         self.aInsNBSpace = QAction(self.tr("Non-Breaking Space"), self)
         self.aInsNBSpace.setStatusTip(self.tr("Insert a non-breaking space"))
         self.aInsNBSpace.setShortcut("Ctrl+K, Space")
         self.aInsNBSpace.triggered.connect(lambda: self._docInsert(nwUnicode.U_NBSP))
-        self.mInsBreaks.addAction(self.aInsNBSpace)
+        self.mInsSpace.addAction(self.aInsNBSpace)
 
         # Insert > Thin Space
         self.aInsThinSpace = QAction(self.tr("Thin Space"), self)
         self.aInsThinSpace.setStatusTip(self.tr("Insert a thin space"))
         self.aInsThinSpace.setShortcut("Ctrl+K, Shift+Space")
         self.aInsThinSpace.triggered.connect(lambda: self._docInsert(nwUnicode.U_THSP))
-        self.mInsBreaks.addAction(self.aInsThinSpace)
+        self.mInsSpace.addAction(self.aInsThinSpace)
 
         # Insert > Thin Non-Breaking Space
         self.aInsThinNBSpace = QAction(self.tr("Thin Non-Breaking Space"), self)
         self.aInsThinNBSpace.setStatusTip(self.tr("Insert a thin non-breaking space"))
         self.aInsThinNBSpace.setShortcut("Ctrl+K, Ctrl+Space")
         self.aInsThinNBSpace.triggered.connect(lambda: self._docInsert(nwUnicode.U_THNBSP))
-        self.mInsBreaks.addAction(self.aInsThinNBSpace)
+        self.mInsSpace.addAction(self.aInsThinNBSpace)
 
         # Insert > Symbols
         self.mInsSymbol = self.insertMenu.addMenu(self.tr("Other Symbols"))
@@ -727,9 +727,6 @@ class GuiMainMenu(QMenuBar):
         self.aInsDivide.triggered.connect(lambda: self._docInsert(nwUnicode.U_DIVIDE))
         self.mInsSymbol.addAction(self.aInsDivide)
 
-        # Insert > Separator
-        self.insertMenu.addSeparator()
-
         # Insert > Tags and References
         self.mInsKeywords = self.insertMenu.addMenu(self.tr("Tags and References"))
         self.mInsKWItems = {}
@@ -750,6 +747,27 @@ class GuiMainMenu(QMenuBar):
                 lambda n, keyWord=keyWord: self._insertKeyWord(keyWord)
             )
             self.mInsKeywords.addAction(self.mInsKWItems[keyWord][0])
+
+        # Insert > Symbols
+        self.mInsBreaks = self.insertMenu.addMenu(self.tr("Page Break and Space"))
+
+        # Insert > New Page
+        self.aInsNewPage = QAction(self.tr("Page Break"), self)
+        self.aInsNewPage.setStatusTip(self.tr("Insert a page break command"))
+        self.aInsNewPage.triggered.connect(lambda: self._docInsert(nwDocInsert.NEW_PAGE))
+        self.mInsBreaks.addAction(self.aInsNewPage)
+
+        # Insert > Vertical Space (Single)
+        self.aInsVSpaceS = QAction(self.tr("Vertical Space (Single)"), self)
+        self.aInsVSpaceS.setStatusTip(self.tr("Insert a vertical space equal to one pragraph"))
+        self.aInsVSpaceS.triggered.connect(lambda: self._docInsert(nwDocInsert.VSPACE_S))
+        self.mInsBreaks.addAction(self.aInsVSpaceS)
+
+        # Insert > Vertical Space (Multi)
+        self.aInsVSpaceM = QAction(self.tr("Vertical Space (Multi)"), self)
+        self.aInsVSpaceM.setStatusTip(self.tr("Insert a vertical space equal to n pragraphs"))
+        self.aInsVSpaceM.triggered.connect(lambda: self._docInsert(nwDocInsert.VSPACE_M))
+        self.mInsBreaks.addAction(self.aInsVSpaceM)
 
         return
 
