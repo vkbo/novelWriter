@@ -11,16 +11,16 @@ projects are structured is covered in :ref:`a_struct`.
 
 In addition, the project can contain notes on the various plot elements, characters, locations,
 etc, that make up the story. These notes are organised in a set of category-specific top-level
-folders referred to as "root" folders, and each entry can be tagged and cross-referenced from
+folders referred to as "root folders", and each entry can be tagged and cross-referenced from
 within the novel documents and notes. These tags make it possible to inter-link documents, and
 generate an overview of the entire novel project and how the various documents and plot elements
 are interconnected. The tag and reference syntax is covered in :ref:`a_proj` and :ref:`a_notes`.
 
-These additional features are not standard in markdown, but are available through special meta
-keywords described in :ref:`a_struct_tags`. Syntax highlighting is provided to make it easier to
-verify that the markdown tags are used correctly.
+These features are available through special meta keywords described in :ref:`a_struct_tags`.
+Syntax highlighting is provided to make it easier to verify that the markdown tags are used
+correctly.
 
-An overview of the supported markdown syntax is covered in :ref:`a_ui`.
+An overview of the supported formatting syntax is covered in :ref:`a_ui`.
 
 
 .. _a_intro_design:
@@ -34,32 +34,32 @@ at the same time provide a complete set of features needed for writing a novel.
 .. note::
    novelWriter is not intended to be a full office type word processor. It doesn't support images,
    links, tables, and other complex structures and objects often needed for such documents.
-   Formatting is limited to headers, and bold, italicised and strikethrough text.
+   Formatting is limited to headers, emphasis, text alignment, and a few other simple features.
 
 .. tip::
    If you do need to align information in rows and columns in your notes, you can achieve this with
    tabs and line breaks. The tab stop width can be specified in :guilabel:`Preferences`.
 
 The main window does not have a toolbar like many other applications do. This reduces clutter, and
-since the documents are formatted with markdown tags, is more or less redundant. However, all
+since the documents are formatted with style tags, is more or less redundant. However, all
 formatting features supported are available through convenient keyboard shortcuts. They are also
-available in the main menu so you don't have to look up the syntax every time until you've
-memorised it. A full list of shortcuts can be found in the :ref:`a_kb` section.
+available in the main menu so you don't have to look up formatting codes every time you need them,
+before you've memorised them. A full list of shortcuts can be found in the :ref:`a_kb` section.
 
 In addition, novelWriter has a :guilabel:`Focus Mode` where all the user interface elements other
 than the document editor itself are hidden away.
 
-The colour scheme of the user interface defaults to that of the host operating system. In addition,
-other light and dark themes are provided, and can be enabled in :guilabel:`Preferences` from the
+The colour scheme of the user interface defaults to that of the host operating system. Some other
+light and dark colour themes are provided, and can be enabled in :guilabel:`Preferences` from the
 :guilabel:`Tools` menu. A number of syntax highlighting themes are also available in
 :guilabel:`Preferences`. A set of icon themes in colour and greyscale are also offered. The icons
 are based on the Typicons_ icon set designed by Stephen Hutchings.
 
 The main window is split in two, or optionally three, panels. The left-most panel contains the
-project tree and all the documents in your project. The second panel is the document editor, and
-the optional third panel is a document viewer which can view any document in your project
-independently of the document editor. It is not intended as a preview window, although you can use
-it for this, but for viewing your notes next to your editor while you're writing.
+project tree and all the documents in your project. The second panel is the document editor. An
+optional third panel is a document viewer which can view any document in your project independently
+of the document editor. It is not intended as a preview window, although you can use it for this,
+but for viewing your notes next to your editor while you're writing.
 
 A second tab is also available on the main window. This is the :guilabel:`Outline` tab where the
 entire novel structure can be displayed, with all the tags and references listed. Depending on how
