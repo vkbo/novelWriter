@@ -603,6 +603,8 @@ class GuiProjectTree(QTreeWidget):
         """
         trItem = self._getTreeItem(tHandle)
         nwItem = self.theProject.projTree[tHandle]
+        if trItem is None or nwItem is None:
+            return
 
         expIcon = QIcon()
         if nwItem.itemType == nwItemType.FILE:
