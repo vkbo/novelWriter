@@ -900,6 +900,7 @@ class GuiMain(QMainWindow):
                 tItem.setWordCount(wC)
                 tItem.setParaCount(pC)
                 self.treeView.propagateCount(tItem.itemHandle, wC)
+                self.treeView.setTreeItemValues(tItem.itemHandle)
                 self.treeView.projectWordCount()
 
         tEnd = time()
