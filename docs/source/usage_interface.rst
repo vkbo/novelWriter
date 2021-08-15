@@ -16,29 +16,28 @@ The Project Tree
 The main window contains a project tree in the left-most panel. It shows the entire structure of
 the project. It has four columns:
 
-:guilabel:`Label`
+**Column 1**
    The first column shows the item icon and its label. The labels can be edited from the
    :guilabel:`Project` menu, or by pressing :kbd:`F2` or :kbd:`Ctrl`:kbd:`E`. The label is not the
    same as the title you set inside the document, but it will appear in the header above the
    document text itself.
 
-:guilabel:`Words`
+**Column 2**
    The second column shows the word count of the document, or the sum of words of the child items
-   if it is a folder. If the counts seem incorrect, they can be updated by rebuilding the project
-   index from the :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
+   for folders. If the counts seem incorrect, they can be updated by rebuilding the project index
+   from the :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
 
-:guilabel:`Inc`
+**Column 3**
    The third column indicates whether the document is included in the final project build or not.
    You may want to filter out documents that you no longer want to keep in the final manuscript,
    but want to keep in the project for reference.
 
-:guilabel:`Flags`
-   The fourth column shows various meta data flags for the item. The first is an icon indicating
-   the importance or status of the document. These are colour coded status levels that you control
-   and define yourself. They can be changed in :guilabel:`Project Settings` from the
-   :guilabel:`Project` menu. The first character after the icon indicates the class of the item,
-   that is ``N`` for **Novel**, ``C`` for **Character**, etc (see :ref:`a_struct_tags`). The
-   characters after the dot indicate the document layout type (see :ref:`a_proj_roots`).
+**Column 4**
+   The fourth column shows the user-defined status or importance labels you've assigned to each
+   project item. By default, both the icon and the label text is shown, but you can turn off the
+   text label from :guilabel:`Preferences`. If the text label is off, the text will instead appear
+   in a tooltip when you hover your mouse over the icon. They status and importance values can be
+   changed in :guilabel:`Project Settings`.
 
 Right-clicking an item in the project tree will open a context menu under the cursor, displaying
 a selection of actions that can be performed on the selected item.
@@ -112,9 +111,9 @@ Editing and Viewing Documents
 
 To edit a document, double-click it in the project tree, or press the :kbd:`Return` key while
 having it selected. This will open the document in the document editor. The editor uses a
-simplified markdown format. The format is described in the :ref:`a_ui_md` section below. The editor
-has a maximise button (toggles the :guilabel:`Focus Mode`) and a close button in the top-right
-corner.
+markdown-like syntax for some features, and a novelWriter-specific syntax for others. The syntax
+format is described in the :ref:`a_ui_md` section below. The editor has a maximise button (toggles
+the :guilabel:`Focus Mode`) and a close button in the top-right corner.
 
 Any document in the project tree can also be viewed in parallel in a right hand side document
 viewer. To view a document, press :kbd:`Ctrl`:kbd:`R`, or select :guilabel:`View Document` in the
@@ -214,7 +213,8 @@ Markdown editor. It supports basic formatting like emphasis (italic), strong imp
 and strikethrough text, as well as four levels of headings.
 
 In addition to formatting codes, novelWriter allows for comments, a synopsis tag, and a set of
-keyword and value sets used for tags and references.
+keyword and value sets used for tags and references. There are also some codes that apply two whole
+paragraphs. See :ref:`a_ui_md_text` below for more details.
 
 
 .. _a_ui_md_head:
@@ -222,36 +222,43 @@ keyword and value sets used for tags and references.
 Headings
 --------
 
-Four levels of headings are allowed. For documents of layout ``Note``, they are free to be used as
-you see fit, but for all other layouts used for the novel text itself, they indicate the structural
-level of the novel. See :ref:`a_struct_heads` for more details.
+Four levels of headings are allowed. For project notes they are free to be used as you see fit.
+However, for novel documents they indicate the structural level of the novel. See
+:ref:`a_struct_heads` for more details.
 
-``# Title``
+``# Title Text``
    Heading level one. If the document is a novel file, the header level indicates the start of a
-   new partition. This heading level can also be used for the title page's novel title.
+   new partition.
 
-``## Title``
+``## Title Text``
    Heading level two. If the document is a novel file, the header level indicates the start of a
    new chapter. Chapter numbers can be inserted automatically when exporting the manuscript.
 
-``### Title``
+``### Title Text``
    Heading level three. If the document is a novel file, the header level indicates the start of a
    new scene. Scene numbers or scene separators can be inserted automatically when exporting the
    manuscript, so you can use the title field as a working title for your scenes if you wish.
 
-``#### Title``
+``#### Title Text``
    Heading level four. If the document is a novel file, the header level indicates the start of a
    new section. Section titles can be replaced by separators or removed when exporting the
    manuscript, so you can use the title field as a working title for your sections if you wish.
 
-.. note::
-   The space after the ``#`` characters is mandatory. The syntax highlighter will change colour and
-   font size when the heading is correctly formatted.
+For header level one and two, adding a ``!`` modifies the behaviour of the heading slightly:
 
-.. tip::
-   If you do use the automatic numbering feature for exports, you can tell the export tool to skip
-   assigning a number to a specific chapter by adding a ``*`` as the first character of the title
-   itself. See :ref:`a_struct_heads_unnum` for more details.
+``#! Title Text``
+   This tells the build tool that the level one heading is intended to be used for the novel's
+   main title, like for instance on the front page. When exporting, this will use a different
+   styling and will exclude the title from for instance a Table of Contents in Libre Office.
+
+``##! Title Text``
+   This tells the build tool to not assign a chapter number to this chapter title if automatic
+   chapter numbers are being used. Such titles are useful for a prologue for instance. See
+   :ref:`a_struct_heads_unnum` for more details.
+
+.. note::
+   The space after the ``#`` or ``!`` characters is mandatory. The syntax highlighter will change
+   colour and font size when the heading is correctly formatted.
 
 
 .. _a_ui_md_text:
@@ -281,13 +288,32 @@ background, depending on the selected theme.
    it prevents the line wrapping algorithms from adding line breaks where it shouldn't.
 
 
+.. _a_ui_md_break:
+
+Vertical Space and Page Breaks
+------------------------------
+
+Adding more than one line break between paragraphs will *not* increase the space between those
+paragraphs when exporting the project. To add additional space between paragraphs, add the text
+``[VSPACE]`` on a line of its own, and the build tool will insert a blank paragraph in its place.
+
+If you need multiple blank paragraphs just add a number. For instance, writing ``[VSPACE:3]`` will
+insert three blank paragraphs.
+
+Normally, the build tool will insert a page break before all headers of level one and for all
+headers of level two for novel documents, i.e. chapters, but not for project notes.
+
+If you need to add a page break somewhere else, put the text ``[NEW PAGE]`` on a line by itself
+before the text you wish to start on a new page.
+
+
 .. _a_ui_md_align:
 
 Paragraphs Alignment and Indentation
 ------------------------------------
 
-Aside from Title Page and Partition which by default have its text centred, all document layouts
-have the text by default aligned to the left ot justified, depending on your Preferences.
+All documents have the text by default aligned to the left or justified, depending on your
+Preferences.
 
 You can override the default text alignment on individual paragraphs by specifying alignment tags.
 These tags are double angle brackets. Either ``>>`` or ``<<``. You put them either before or after
