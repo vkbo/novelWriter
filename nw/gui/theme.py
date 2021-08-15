@@ -37,8 +37,9 @@ from PyQt5.QtGui import (
     QPalette, QColor, QIcon, QFont, QFontMetrics, QFontDatabase, QPixmap
 )
 
-from nw.enum import nwAlert
+from nw.enum import nwAlert, nwItemLayout, nwItemType
 from nw.common import NWConfigParser
+from nw.constants import nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -126,8 +127,10 @@ class GuiTheme:
         self.updateTheme()
         self.theIcons.updateTheme()
 
+        # Icon Functions
         self.getIcon = self.theIcons.getIcon
         self.getPixmap = self.theIcons.getPixmap
+        self.getItemIcon = self.theIcons.getItemIcon
         self.loadDecoration = self.theIcons.loadDecoration
 
         # Extract Other Info
@@ -533,6 +536,10 @@ class GuiIcons:
         "cls_archive":     (QStyle.SP_DriveHDIcon, "drive-harddisk"),
         "cls_trash":       (QStyle.SP_DriveHDIcon, "drive-harddisk"),
         "proj_document":   (QStyle.SP_FileIcon,    "x-office-document"),
+        "proj_title":      (QStyle.SP_FileIcon,    "x-office-document"),
+        "proj_chapter":    (QStyle.SP_FileIcon,    "x-office-document"),
+        "proj_scene":      (QStyle.SP_FileIcon,    "x-office-document"),
+        "proj_note":       (QStyle.SP_FileIcon,    "x-office-document"),
         "proj_folder":     (QStyle.SP_DirIcon,     "folder"),
         "proj_nwx":        (None, None),
         "status_lang":     (None, None),
@@ -720,6 +727,34 @@ class GuiIcons:
         """
         qIcon = self.getIcon(iconKey)
         return qIcon.pixmap(iconSize[0], iconSize[1], QIcon.Normal)
+
+    def getItemIcon(self, tType, tClass, tLayout, hLevel="H0"):
+        """Get the correct icon for a project item based on type, class
+        and header level
+        """
+        iconName = None
+        if tType == nwItemType.ROOT:
+            iconName = nwLabels.CLASS_ICON[tClass]
+        elif tType == nwItemType.FOLDER:
+            iconName = "proj_folder"
+        elif tType == nwItemType.FILE:
+            iconName = "proj_document"
+            if tLayout == nwItemLayout.DOCUMENT:
+                if hLevel == "H1":
+                    iconName = "proj_title"
+                elif hLevel == "H2":
+                    iconName = "proj_chapter"
+                elif hLevel == "H3":
+                    iconName = "proj_scene"
+            elif tLayout == nwItemLayout.NOTE:
+                iconName = "proj_note"
+        elif tType == nwItemType.TRASH:
+            iconName = nwLabels.CLASS_ICON[tClass]
+
+        if iconName is None:
+            return QIcon()
+
+        return self.getIcon(iconName)
 
     def listThemes(self):
         """Scan the icons themes folder and list all themes.
