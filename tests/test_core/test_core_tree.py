@@ -434,7 +434,7 @@ def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpDir):
     assert len(theTree) == len(mockItems)
     theTree._treeOrder.append("stuff")
 
-    def dummyIsFile(fileName):
+    def mockIsFile(fileName):
         """Return True for items that are files in novelWriter and
         should thus also be files in the project folder structure.
         """
@@ -442,7 +442,7 @@ def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpDir):
         assert dItem is not None
         return dItem.itemType == nwItemType.FILE
 
-    monkeypatch.setattr("os.path.isfile", dummyIsFile)
+    monkeypatch.setattr("os.path.isfile", mockIsFile)
 
     theProject.projContent = "content"
     theProject.projPath = None
@@ -460,11 +460,11 @@ def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpDir):
         "Table of Contents\n"
         "=================\n"
         "\n"
-        "File Name                  Class      Layout      Document Label\n"
-        "-------------------------------------------------------------\n"
-        f"{pathA}  NOVEL      DOCUMENT    Chapter One\n"
-        f"{pathB}  NOVEL      DOCUMENT    Scene One\n"
-        f"{pathC}  CHARACTER  NOTE        Jane Doe\n"
+        "File Name                  Class      Layout    Document Label\n"
+        "-----------------------------------------------------------\n"
+        f"{pathA}  NOVEL      DOCUMENT  Chapter One\n"
+        f"{pathB}  NOVEL      DOCUMENT  Scene One\n"
+        f"{pathC}  CHARACTER  NOTE      Jane Doe\n"
     )
 
 # END Test testCoreTree_ToCFile
