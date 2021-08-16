@@ -107,6 +107,7 @@ class NWItem():
         if "order" in xItem.attrib:
             self.setOrder(xItem.attrib["order"])
 
+        tmpStatus = ""
         for xValue in xItem:
             if xValue.tag == "name":
                 self.setName(xValue.text)
@@ -117,7 +118,7 @@ class NWItem():
             elif xValue.tag == "layout":
                 self.setLayout(xValue.text)
             elif xValue.tag == "status":
-                self.setStatus(xValue.text)
+                tmpStatus = xValue.text
             elif xValue.tag == "expanded":
                 self.setExpanded(xValue.text)
             elif xValue.tag == "exported":
@@ -135,6 +136,9 @@ class NWItem():
                 # items if an otherwise valid file is opened by a
                 # version of novelWriter that doesn't know the tag.
                 logger.error("Unknown tag '%s'", xValue.tag)
+
+        # Guarantees that <status> is parsed after <class>
+        self.setStatus(tmpStatus)
 
         return True
 
