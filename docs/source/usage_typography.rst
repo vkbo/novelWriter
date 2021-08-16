@@ -29,8 +29,8 @@ always be reverted with the undo command :kbd:`Ctrl`:kbd:`Z`, reverting the text
 before the automatic replacement occurred.
 
 In addition, "Figure Dash" is available. The Figure Dash is a dash that has the same width as the
-numbers of the same font, for most fonts. It helps to align numbers align nicely in columns when
-you need to use a dash in them.
+numbers of the same font, for most fonts. It helps to align numbers nicely in columns when you need
+to use a dash in them.
 
 
 Single and Double Quotes
@@ -44,10 +44,10 @@ Ordinarily, text wrapped in quotes are highlighted by the editor. This is meant 
 for highlighting dialogue between characters. This feature can be disabled in
 :guilabel:`Preferences` if this feature isn't wanted.
 
-The editor distinguishes between text wrapped in regular straight quotes and with the user-selected
-double quote symbols. This is to help the writer recognise which parts of the text are not using
-the chosen quote symbols. Two convenience functions in the :guilabel:`Format` menu can be used to
-re-format a selected section of text with the correct quote symbols.
+The editor distinguishes between text wrapped in regular straight double quotes and the
+user-selected double quote symbols. This is to help the writer recognise which parts of the text
+are not using the chosen quote symbols. Two convenience functions in the :guilabel:`Format` menu
+can be used to re-format a selected section of text with the correct quote symbols.
 
 .. _Quotation Mark: https://en.wikipedia.org/wiki/Quotation_mark
 

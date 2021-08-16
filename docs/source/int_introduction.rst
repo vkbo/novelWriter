@@ -4,17 +4,35 @@
 Introduction
 ************
 
-novelWriter is a simple, multi-document plain text editor using a modified markdown syntax to apply
-simple formatting to the text. It is designed for writing novels, and allows for the component
-documents to be ordered freely to create the desired structure of the novel. More details about how
-projects are structured is covered in :ref:`a_struct`.
+novelWriter is a simple, multi-document plain text editor using a markup syntax inspired by
+markdown to apply simple formatting to the text. It is designed for writing novels, so the
+formatting features are limited.
 
-In addition, the project can contain notes on the various plot elements, characters, locations,
-etc, that make up the story. These notes are organised in a set of category-specific top-level
-folders referred to as "root folders", and each entry can be tagged and cross-referenced from
-within the novel documents and notes. These tags make it possible to inter-link documents, and
-generate an overview of the entire novel project and how the various documents and plot elements
-are interconnected. The tag and reference syntax is covered in :ref:`a_proj` and :ref:`a_notes`.
+The idea is to let the user focus on writing instead of spending time messing with the formatting
+of headers and text. Therefore you cannot change the look of the text in the editor window.
+Instead, you provide formatting tags where they're needed, like for instance which text is a
+header, where you want text bolded or italicised, and what alignment you want for paragraphs. The
+actual formatting is then added to the text when you run the :guilabel:`Build Novel Project` tool.
+
+A document viewer to the right of the editor can also show a renderred version of any document if
+you want to inspect the result, or just want to keep a second document open for reference when
+you're writing.
+
+You can split your novel project up into as many individual files as you want to. The files are
+glued together when you build the project, in the top-to-bottom order in which they appear in the
+project tree. Splitting the project up into chapter and scene files means you can easily reorder
+them using the drag and drop feature. More details about how projects are structured is covered in
+:ref:`a_struct`.
+
+In addition to novel text documents, the project can contain notes on the various plot elements,
+characters, locations, etc, that make up the story. These notes are organised in a set of
+category-specific top-level folders referred to as *Root Folders*. Each note can be assigned one or
+more tags (one tag is allowed for each heading in the note), and these tags can be referenced from
+within the novel documents and other notes.
+
+These tags make it possible to inter-link documents, and you can also generate an overview of the
+entire novel project and how the various documents and plot elements are interconnected. The tag
+and reference syntax is covered in :ref:`a_proj` and :ref:`a_notes`.
 
 These features are available through special meta keywords described in :ref:`a_struct_tags`.
 Syntax highlighting is provided to make it easier to verify that the markdown tags are used
@@ -41,10 +59,10 @@ at the same time provide a complete set of features needed for writing a novel.
    tabs and line breaks. The tab stop width can be specified in :guilabel:`Preferences`.
 
 The main window does not have a toolbar like many other applications do. This reduces clutter, and
-since the documents are formatted with style tags, is more or less redundant. However, all
+since the documents are formatted with style tags, is more or less redundant. However, most
 formatting features supported are available through convenient keyboard shortcuts. They are also
-available in the main menu so you don't have to look up formatting codes every time you need them,
-before you've memorised them. A full list of shortcuts can be found in the :ref:`a_kb` section.
+available in the main menu so you don't have to look up formatting codes every time you need them.
+A full list of shortcuts can be found in the :ref:`a_kb` section.
 
 In addition, novelWriter has a :guilabel:`Focus Mode` where all the user interface elements other
 than the document editor itself are hidden away.
@@ -58,14 +76,15 @@ are based on the Typicons_ icon set designed by Stephen Hutchings.
 The main window is split in two, or optionally three, panels. The left-most panel contains the
 project tree and all the documents in your project. The second panel is the document editor. An
 optional third panel is a document viewer which can view any document in your project independently
-of the document editor. It is not intended as a preview window, although you can use it for this,
-but for viewing your notes next to your editor while you're writing.
+of what is open in the document editor. It is not intended as a preview window, although you can
+use it for this. The main purpose of the viewer is for viewing your notes next to your editor
+while you're writing.
 
 A second tab is also available on the main window. This is the :guilabel:`Outline` tab where the
 entire novel structure can be displayed, with all the tags and references listed. Depending on how
 you structure your novel documents, this outline can be quite different from your project tree.
 Your project tree lists individual documents, your Outline tree lists the structure of the novel
-itself in terms of partitions, chapters and scenes as it appears in the text of the documents.
+itself in terms of partitions, chapters and scenes as it appears in the text of those documents.
 
 .. _Typicons: https://github.com/stephenhutchings/typicons.font
 
@@ -105,11 +124,13 @@ The HTML5 export format is suitable for conversion by a number of other tools li
 importing into word processors if the Open Document format isn't suitable. In addition, printing
 and printing to PDF is also possible. 
 
-It is also possible to export the content of the project to a JSON file. This is useful if you want
-to write your own processing script in for instance Python as the entire novel can be read into a
-Python dictionary with a couple of lines of code.
+You can also export the content of the project to a JSON file. This is useful if you want to write
+your own processing script in for instance Python as the entire novel can be read into a Python
+dictionary with a couple of lines of code. The JSON file can be populated either with HTML
+formatted text, or with the raw text as typed into the novel documents. See :ref:`a_export_options`
+for more details.
 
-A number of filter options can be applied to the produced document, allowing you to export a draft
+A number of filter options can be applied to the Build tool, allowing you to export a draft
 manuscript, a reference document of notes, an outline based on chapter and scene titles with a
 synopsis each, and so on. See :ref:`a_export` for more details on export features and formats.
 
