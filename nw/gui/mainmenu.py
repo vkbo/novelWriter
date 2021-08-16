@@ -818,29 +818,29 @@ class GuiMainMenu(QMenuBar):
         # Format > Separator
         self.fmtMenu.addSeparator()
 
-        # Format > Header 1
-        self.aFmtHead1 = QAction(self.tr("Header 1"), self)
+        # Format > Header 1 (Partition)
+        self.aFmtHead1 = QAction(self.tr("Header 1 (Partition)"), self)
         self.aFmtHead1.setStatusTip(self.tr("Change the block format to Header 1"))
         self.aFmtHead1.setShortcut("Ctrl+1")
         self.aFmtHead1.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H1))
         self.fmtMenu.addAction(self.aFmtHead1)
 
-        # Format > Header 2
-        self.aFmtHead2 = QAction(self.tr("Header 2"), self)
+        # Format > Header 2 (Chapter)
+        self.aFmtHead2 = QAction(self.tr("Header 2 (Chapter)"), self)
         self.aFmtHead2.setStatusTip(self.tr("Change the block format to Header 2"))
         self.aFmtHead2.setShortcut("Ctrl+2")
         self.aFmtHead2.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H2))
         self.fmtMenu.addAction(self.aFmtHead2)
 
-        # Format > Header 3
-        self.aFmtHead3 = QAction(self.tr("Header 3"), self)
+        # Format > Header 3 (Scene)
+        self.aFmtHead3 = QAction(self.tr("Header 3 (Scene)"), self)
         self.aFmtHead3.setStatusTip(self.tr("Change the block format to Header 3"))
         self.aFmtHead3.setShortcut("Ctrl+3")
         self.aFmtHead3.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H3))
         self.fmtMenu.addAction(self.aFmtHead3)
 
-        # Format > Header 4
-        self.aFmtHead4 = QAction(self.tr("Header 4"), self)
+        # Format > Header 4 (Section)
+        self.aFmtHead4 = QAction(self.tr("Header 4 (Section)"), self)
         self.aFmtHead4.setStatusTip(self.tr("Change the block format to Header 4"))
         self.aFmtHead4.setShortcut("Ctrl+4")
         self.aFmtHead4.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H4))
