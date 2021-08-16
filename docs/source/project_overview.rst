@@ -4,11 +4,11 @@
 Novel Projects
 **************
 
-A new project can be created from the :guilabel:`Project` menu by selecting
-:guilabel:`New Project`. This will open the :guilabel:`New Project Wizard` that will assist you in
-creating a barebone project suited to your needs. A novelWriter project requires a dedicated folder
-for storing its files on the local file system. See :ref:`a_tech` for further details on how files
-are organised.
+New projects can be created from the :guilabel:`Project` menu by selecting :guilabel:`New Project`.
+This will open the :guilabel:`New Project Wizard` that will assist you in creating a barebone
+project suited to your needs. A novelWriter project requires a dedicated folder for storing its
+files on the local file system. See :ref:`a_storage` for further details on how files are
+organised.
 
 A list of recently opened projects is maintained, and displayed in the :guilabel:`Open Project`
 dialog. A project can be removed from this list by selecting it and pressing the :kbd:`Del` key or
@@ -25,18 +25,20 @@ including word counts, and a table of contents with word and page counts, is ava
 Project Roots
 =============
 
-Projects are structured into a set of top level folders called *root folders*. They are visible in
+Projects are structured into a set of top level folders called "Root Folders". They are visible in
 the project tree at the left side of the main window.
 
-The core novel documents go into a root folder of type :guilabel:`Novel`. Other supporting
-documents go into the other root folders. These other root folder types are intended for your notes
-on the various elements of your story. Using them is of course entirely optional.
+The novel documents go into a root folder of type :guilabel:`Novel`. Project notes go into the
+other root folders. These other root folder types are intended for your notes on the various
+elements of your story. Using them is of course entirely optional.
 
 A new project may not have all of the root folders present, but you can add the ones you want from
 :guilabel:`Create Root Folder` in the :guilabel:`Project` menu.
 
-The root folders are intended for the following use, but aside from the :guilabel:`Novel` folder,
-no restrictions are enforced by the application. You can use them however you want.
+Each root folder has one or more reference keyword associated with it that can be used to reference
+content in your notes from other documents and notes. The intended usage of each type of root
+folder is listed below. However, aside from the :guilabel:`Novel` folder, no restrictions are
+applied by the application. You can use them however you want.
 
 :guilabel:`Novel`
    This is the root folder of all text that goes into the final novel. This class of documents have
@@ -45,7 +47,7 @@ no restrictions are enforced by the application. You can use them however you wa
 
 :guilabel:`Plot`
    This is the root folder where main plots can be outlined. It is optional, but adding at least
-   dummy notes can be useful in order to tag plot elements for the Outline view. Tags in this
+   brief notes can be useful in order to tag plot elements for the Outline view. Tags in this
    folder can be references using the ``@plot`` keyword.
 
 :guilabel:`Characters`
@@ -81,9 +83,8 @@ The root folders correspond to the categories of tags that can be used to refere
 information about the tags listed, see :ref:`a_struct_tags`.
 
 .. tip::
-   You can rename root folders to whatever you want. The first character in the :guilabel:`Flags`
-   column in the project tree will still indicate what type they are, and so will the icon if you
-   are using one of the optional icon sets.
+   You can rename root folders to whatever you want. However, this doesn't change the reference
+   keyword.
 
 
 .. _a_proj_roots_del:
@@ -127,7 +128,7 @@ file synchronisation tool that runs out of sync, there may be files in the proje
 aren't tracked in the core project file. These files, when discovered, are recovered and added back
 into the project if possible.
 
-The discovered files are scanned for meta information that gives clues as to where the document may
+The discovered files are scanned for meta information that give clues as to where the document may
 previously have been located in the project. The project loading routines will try to put them back
 as close as possible to this location, if it still exists. Generally, it will be appended to the
 end of the folder where it previously was located. If that folder doesn't exist, it will try to add
@@ -180,7 +181,7 @@ documents.
 .. tip::
    You can use folders to sort your scene documents into chapters. You will still need to add a
    chapter document as the first item of your chapter folder, and the scene documents as the
-   following items. Another way to use folders is to make a folder for each act.
+   following items. Other ways to use folders is to make a folder for each act or part.
 
 
 .. _a_proj_files:
@@ -192,12 +193,12 @@ New documents can be created from the :guilabel:`Document` menu, or by pressing 
 while in the project tree. This will create a new, empty document, and open the :guilabel:`Item
 Settings` dialog where the document label and various other settings can be changed. This dialog
 can also be opened again later from either the :guilabel:`Project` menu, selecting :guilabel:`Edit
-Project Item`, or by pressing :kbd:`Ctrl`:kbd:`E` or :kbd:`F2` with the item selected.
+Project Item`, or by pressing :kbd:`F2` with the item selected.
 
 The layout of the document is also defined here. The two options available are :guilabel:`Novel
-Document` and :guilabel:`Project Note`. These behave slightly differently when the project is
-built. A project note is never treated as part of the novel, no matter where in the project it is
-located. See :ref:`a_struct_layout` for more details.
+Document` and :guilabel:`Project Note`. These behave differently when the project is built. A
+project note is never treated as part of the novel, no matter where in the project it is located.
+See :ref:`a_struct_layout` for more details.
 
 You can also select whether the document is by default included when building the project. This
 setting can be overridden in the :guilabel:`Build Novel Project` tool if you wish to include them
@@ -245,8 +246,8 @@ Title` should remain unchanged throughout the project, otherwise the name of exp
 backup files may change too.
 
 The :guilabel:`Book Title` and :guilabel:`Book Authors` settings are currently not used for
-anything, so setting then is just for the benefit of the author. Future features may be using them,
-and they are exported on some export formats in the :guilabel:`Build Novel Project` tool.
+anything, so setting them is just for the benefit of the author. Future features may use them, and
+they are exported on some export formats in the :guilabel:`Build Novel Project` tool.
 
 If your project is in a different language than your main spell checking is set to, you can
 override the default spell checking language here. You can also override the automatic backup
@@ -304,7 +305,7 @@ are stored in a subfolder of the backup path. The subfolder will have the same n
 :guilabel:`Working Title` set in :ref:`a_proj_settings`.
 
 The backup feature, when configured, can also be run manually from the :guilabel:`Tools` menu.
-It is also possible to disable automated backup for a given project in :guilabel:`Project
+It is also possible to disable automated backups for a given project in :guilabel:`Project
 Settings`.
 
 .. note::
@@ -326,11 +327,11 @@ file in the ``meta`` folder in the directory where you saved your project. The f
 A tool to view the content of this file is available in the :guilabel:`Tools` menu under
 :guilabel:`Writing Statistics`. You can also launch it by pressing :kbd:`F6`.
 
-The tool will show a list of all your sessions, and a set of filters to apply to it. You can also
-export the filtered data to a JSON file or to a CSV file that can be opened by a spreadsheet
+The tool will show a list of all your sessions, and a set of filters to apply to the data. You can
+also export the filtered data to a JSON file or to a CSV file that can be opened by a spreadsheet
 application like for instance Libre Office Calc.
 
 As of version 1.2, the log file also stores how much of the session time was spent idle. The
-definition of idle here is that the novelWriter main window loses focus, and the user hasn't made
+definition of idle here is that the novelWriter main window loses focus, or the user hasn't made
 any changes to the currently open document in five minutes. The number of minutes can be altered in
 :guilabel:`Preferences`.

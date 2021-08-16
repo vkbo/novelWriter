@@ -19,7 +19,7 @@ Subfolders under root folders have no impact on the structure of the novel itsel
 instead dictated by the heading level of the headers within the documents.
 
 Four levels of headings are supported, signified by the number of hashes (``#``) preceding the
-title. See also the :ref:`a_ui_md` section for more details about the markdown syntax.
+title. See also the :ref:`a_fmt` section for more details about the markdown syntax.
 
 .. note::
    The header levels are not only important when generating the exported novel file, they are also
@@ -27,28 +27,30 @@ title. See also the :ref:`a_ui_md` section for more details about the markdown s
    :guilabel:`Novel` tab of the project tree. Each heading also starts a new region where new
    references and tags can be defined.
 
-The different header levels are interpreted as specific section types of the novel in the following
-way:
+The syntax for the four basic header types, and the two special header types, is listed in section
+:ref:`a_fmt_head`. The meaning of the four levels for the structure of your novel is as follows:
 
-``# Header1``
-   Header level one signifies that the text refers to a top level partition. This is useful when
-   you want to split the manuscript up into books, parts, or acts.
+**Header Level 1**
+   This header level signifies that the text refers to a top level partition. This is useful when
+   you want to split the manuscript up into books, parts, or acts. These headings are not required.
+   The novel title itself should use the special header level one code explained in
+   :ref:`a_fmt_head`.
 
-``## Header2``
-   Header level two signifies a chapter level partition. Each time you want to start a new chapter,
-   you must add such a heading. If you choose to split your manuscript up into one document per
-   scene, you need a single chapter document with just the heading. You can of course also add a
-   synopsis and reference keywords to the chapter document. If you want to open the chapter with a
-   quote or other introductory text that isn't part of a scene, this is also where you'd put that
-   text.
+**Header Level 2**
+   This header level signifies a chapter level partition. Each time you want to start a new
+   chapter, you must add such a heading. If you choose to split your manuscript up into one
+   document per scene, you need a single chapter document with just the heading. You can of course
+   also add a synopsis and reference keywords to the chapter document. If you want to open the
+   chapter with a quote or other introductory text that isn't part of a scene, this is also where
+   you'd put that text.
 
-``### Header3``
-   Header level three signifies a scene level partition. You must provide a title text, but the
+**Header Level 3**
+   This header level signifies a scene level partition. You must provide a title text, but the
    title text can be replaced with a scene separator or just skipped entirely when you export your
    manuscript.
 
-``#### Header4``
-   Header level four signifies a sub-scene level partition, usually called a "section" in the
+**Header Level 4**
+   This header level signifies a sub-scene level partition, usually called a "section" in the
    documentation and the user interface. These can be useful if you want to change tag references
    mid-scene, like if you change the point-of-view character. You are free to use sections as you
    wish, and can filter them out of the final manuscript just like with scene titles.
@@ -65,13 +67,14 @@ Novel Title and Front Matter
 ----------------------------
 
 It is recommended that you add a document at the very top of your project with the novel title as
-the first line. You should modify the header format code with an ``!`` in order to render it as a
-document title that is excluded from any automatic Table of Content in an exported document, like
-so:
+the first line. You should modify the level 1 header format code with an ``!`` in order to render
+it as a document title that is excluded from any automatic Table of Content in an exported
+document, like so:
 
 ``#! My Novel``
 
-The title is by default centred on the page. You can add more text to the page as you wish.
+The title is by default centred on the page when exported. You can add more text to the page as you
+wish, like for instance the author's name and details.
 
 If you want an additional page inserted after the title page, starting on a fresh page, you can add
 ``[NEW PAGE]`` on a line by itself, and continue the text after it. This will insert a page break
@@ -84,8 +87,8 @@ Unnumbered Chapter Headings
 ---------------------------
 
 If you use the automatic numbering feature for your chapters, but you want to keep some special
-chapters separate from this, you cam add a ``!`` to the header formatting code to tell the build
-tool to skip these chapters.
+chapters separate from this, you cam add a ``!`` to the level 2 header formatting code to tell the
+build tool to skip these chapters.
 
 ``##! Unnumbered Chapter Title``
 
@@ -94,8 +97,9 @@ tool as well. See the :ref:`a_export` page for more details.
 
 .. Note::
    Previously, you could also disable the automatic numbering of a chapter by adding an ``*`` as
-   the first character if the chapter title itself. This feature has been dropped in favour of the
-   current format. Please update your chapter headings if you've used this syntax.
+   the first character of the chapter title itself. This feature has been dropped in favour of the
+   current format in order to keep level 1 and 2 headers consistent. Please update your chapter
+   headings if you've used this syntax.
 
 
 .. _a_struct_tags:
@@ -151,7 +155,8 @@ allow multiple values.
 
 ``@custom``
    Custom references in the current section. The target must be a note tag in a :guilabel:`Custom`
-   type root folder.
+   type root folder. You can add more than one Custom folder, but they all use the same reference
+   keyword.
 
 The syntax highlighter will alert the user that the tags and references are used correctly, and
 that the tags referenced exist.

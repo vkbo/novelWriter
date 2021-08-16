@@ -28,21 +28,25 @@ novelWriter |release|
 
 **Last Updated:** |today|
 
-novelWriter is a markdown-like text editor designed for writing novels and larger projects of many
-smaller plain text documents. It uses its own flavour of markdown that supports a meta data syntax
-for comments, synopsis and cross-referencing between documents. The idea is to have a simple text
-editor which allows for easy organisation of text documents and notes, built on a plain text file
-project repository for robustness.
+novelWriter is a plain text editor designed for writing novels assembled from many smaller text
+documents. It uses a minimal formatting syntax inspired by Markdown, and adds a meta data syntax
+for comments, synopsis, and cross-referencing. It is designed to be a simple text editor that
+allows for easy organisation of text and notes, using human readable text files as storage for
+robustness.
 
-The plain text storage is suitable for version control software, and also well suited for file
-synchronisation tools. The core project structure is stored in a single project XML file. Other
-meta data is primarily saved as JSON files.
+The project storage is suitable for version control software, and also well suited for file
+synchronisation tools. All text is saved as plain text files with a meta data header. The core
+project structure is stored in a single project XML file. Other meta data is primarily saved as
+JSON files. See also the :ref:`a_storage` section for more details.
 
 Any operating system that can run Python 3 and has the Qt 5 libraries should be able to run
 novelWriter. It runs fine on Linux, Windows and macOS, and users have tested it on other platforms
-too. novelWriter can be run directly from the Python source, or installed from the pip tool or via
-the provided setup script. See :ref:`a_started`, or one or the setup instructions for your
-operating system for further details.
+too. novelWriter can be run directly from the Python source, installed from the pip tool.
+
+You can also download a minimal archive package of novelWriter tailored for your operating system.
+This package can be extracted anywhere on your computer, and a setup script can be run to create
+the necessary icons and file associations. See :ref:`a_started`, or one or the setup instructions
+for your operating system for further details.
 
 **Useful Links**
 
@@ -68,15 +72,22 @@ operating system for further details.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Usage
+   :caption: Using novelWriter
 
    usage_interface
+   usage_format
    usage_shortcuts
-   usage_projects
-   usage_structure
-   usage_notes
-   usage_export
    usage_typography
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Organising Your Project
+
+   project_overview
+   project_structure
+   project_notes
+   project_export
 
 
 .. toctree::

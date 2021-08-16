@@ -28,13 +28,14 @@ a series of keyword–replace steps. They are all on the format ``%keyword%``.
    instance Prologue and Epilogue chapters.
 
 ``%chw%``
-   Behaves like ``%ch%``, but the number is represented as a number word.
+   Behaves like ``%ch%``, but the number is represented as a number word. You can select between a
+   number of different languages.
 
 ``%chi%``
-   Begaves like ``%ch%``, but the number is represented as a lower case Roman number.
+   Begaves like ``%ch%``, but represented as a lower case Roman number from 1 to 4999.
 
 ``%chI%``
-   Behaves like ``%ch%``, but the number is represented as an upper case Roman number.
+   Behaves like ``%ch%``, but represented as an upper case Roman number from 1 to 4999.
 
 ``%sc%``
    This is the number counter equivalent for scenes. These are incremented each time a heading of
@@ -49,9 +50,7 @@ a series of keyword–replace steps. They are all on the format ``%keyword%``.
    This inserts a line break within the title.
 
 .. note::
-   Header formatting only applies to novel documents. Headings in notes will be left as-is on
-   export. However, heading levels 1 through 4 are converted to the correct heading level in the
-   respective output formats.
+   Header formatting only applies to novel documents. Headings in notes will be left as-is.
 
 **Example**
 
@@ -67,7 +66,7 @@ Scene Separators
 
 If you don't want any titles for your scenes (or for your sections if you have them), you can leave
 the formatting boxes empty. If so, an empty paragraph will be inserted between the scenes or
-sections instead.
+sections instead resulting in a gap in the text.
 
 Alternatively, if you want a separator between them, like the common ``* * *``, you can enter the
 desired separator text in the formatting box. In fact, if the format is a piece of static text, it
@@ -80,10 +79,9 @@ File Selection
 ==============
 
 Which documents and notes are selected for export can be controlled from the options on the left
-side of the dialog window. The switch for :guilabel:`Include novel files` will select any document
-that isn't classified as a note. The switch for :guilabel:`Include note files` will select any
-document that *is* a note. This allows for exporting just the novel, just your notes, or both, as
-you see fit.
+side of the dialog window. The switch for :guilabel:`Include novel files` will enable or disable
+inclusion of novel documents, and the switch for :guilabel:`Include note files` will do the same
+for project notes. This allows for exporting just the novel, just your notes, or both, as you wish.
 
 In addition, you can select to export the synopsis comments, regular comments, keywords, and even
 exclude the body text itself.
@@ -95,9 +93,10 @@ exclude the body text itself.
 
 If you need to exclude specific documents from your exports, like draft documents or documents you
 want to take out of your manuscript, but don't want to delete, you can un-check the
-:guilabel:`Include when building project` option for each document in the project tree. An included
-document has a checkmark after in the third column of the project tree. The :guilabel:`Build Novel
-Project` tool has a switch to ignore this flag if you need to collectively override these settings.
+:guilabel:`Include when building project` option for each such document in the project tree. An
+included document has a checkmark after in the third column of the project tree. The
+:guilabel:`Build Novel Project` tool has a switch to ignore this flag if you need to collectively
+override these settings.
 
 
 .. _a_export_print:
@@ -106,8 +105,8 @@ Printing
 ========
 
 The print button allows you to print the content in the preview window. You can either print to one
-of your system's printers, or print directly to file. You can also print to file from the regular
-print dialog. The direct to file option is just a shortcut.
+of your system's printers, or print directly to a file as PDF. You can also print to file from the
+regular print dialog. The direct to file option is just a shortcut.
 
 
 .. _a_export_formats:
@@ -119,7 +118,8 @@ Currently, six formats are supported for exporting.
 
 Open Document Format
    The Build tool can produce either an ``.odt`` file, or an ``.fodt`` file. The latter is just a
-   flat version of the document format as a single XML file.
+   flat version of the document format as a single XML file. Most rich text editors support the
+   former, and a few the latter.
 
 novelWriter HTML
    The HTML export format writes a single ``.htm`` file with minimal style formatting. The exported
@@ -134,7 +134,7 @@ novelWriter Markdown
 
 Standard/GitHub Markdown
    The Markdown export format comes in both Standard and GitHub flavour. The *only* difference in
-   terms of novelWriter functionality is the support of strikethrough text, which is not supported
+   terms of novelWriter functionality is the support for strikethrough text, which is not supported
    by the Standard flavour, but *is* supported by the GitHub flavour.
 
 
