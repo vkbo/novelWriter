@@ -54,6 +54,10 @@ back to using the internal ``difflib`` of Python to check spelling. This is a sl
 sophisticated spell checker than the full spell checking libaries. The spell check library must be
 at least 3.0 to work with Windows. On Linux, 2.0 also works fine.
 
+If you do use the internal spell checker, you also have to provide a text file with a list of all
+words correctly spelled. One word on each line. Dictionary files for English is included with
+novelWriter. For other languages, you will need to add more files yourself.
+
 If you install from PyPi, these dependencies should be installed automatically. If you install from
 source, dependencies can still be installed from PyPi with:
 
@@ -64,16 +68,18 @@ source, dependencies can still be installed from PyPi with:
 
 .. _a_started_install:
 
-Installing via PyPi
-===================
+Installing from Source or PyPi
+==============================
 
-The application is written in Python 3 using Qt5 via PyQt5. It is developed on Linux, but it should
-in principle work fine on other operating systems as long as dependencies are met.
+You can download the latest version of novelWriter from the source repository on GitHub_. You can
+also install novelWriter from PyPi_.
 
-You can download the latest version of novelWriter from the source repository on GitHub_.
-novelWriter is also hosted on PyPi_, and can be installed on all operating systems that support Qt5
-and Python 3. It is regularly tested on Linux, Windows and macOS. The latest version of novelWriter
-is |release|.
+If you're running novelWriter from source, the main setup script has a number of options that may
+be useful to you. You can list them by running:
+
+.. code-block:: console
+
+   python setup.py --help
 
 To install from PyPi you must first have the ``python`` and ``pip`` commands available on your
 system. If you don't, see specific instructions for your operating system in this documentation.
@@ -120,8 +126,8 @@ needed package is called `qttools5-dev-tools`.
 
 .. note::
    If you want to improve novelWriter with translation files for another language, or update an
-   existing translation, instructions for how to contribute can be found in the README file in the
-   ``i18n`` folder of the source code.
+   existing translation, instructions for how to contribute can be found in the README.md file in
+   the ``i18n`` folder of the source code.
 
 
 .. _a_started_docs:
@@ -129,7 +135,7 @@ needed package is called `qttools5-dev-tools`.
 Building the Documentation
 ==========================
 
-If you installed novelWriter from a package, the documentation should be bre-built and included. If
+If you installed novelWriter from a package, the documentation should be pre-built and included. If
 you're running novelWriter from the source code, a local copy of this documentation can be
 generated. It requires the following Python packages on Debian and Ubuntu.
 

@@ -46,8 +46,8 @@ You can install novelWriter to the default location for Python packages using ``
 step is optional as you can also just put the novelWriter program folder wherever you like
 yourself. For instance in ``/opt/novelWriter``, and then run Step 3 to set up icons and launcher.
 
-To install novelWriter to the default location, it requires that you have ``setuptools`` installed
-on your system. If you don't have it installed, it can usually be installed from your distro's
+To install novelWriter to the default location requires that you have ``setuptools`` installed on
+your system. If you don't have it installed, it can usually be installed from your distro's
 repository. For Debian and Ubuntu this is achieved with:
 
 .. code-block:: console
