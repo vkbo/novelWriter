@@ -7,8 +7,8 @@ How Data is Stored
 This section contains details of how novelWriter stores and handles the project data.
 
 
-How Project Data is Stored
-==========================
+Project Structure
+=================
 
 All novelWriter files are written with utf-8 encoding. Since Python automatically converts Unix
 line endings to Windows line endings on Windows systems, novelWriter does not make any adaptations
@@ -41,7 +41,7 @@ meta data entries incremented, on each save.
 
 
 Project Documents
------------------
+=================
 
 All the project documents are saved in a folder in the main project folder named ``content``. Each
 document has a file handle taken from the first 13 characters of a SHA256 hash of the system time

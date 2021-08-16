@@ -94,7 +94,7 @@ for your operating system for further details.
    :maxdepth: 2
    :caption: Under the Hood
 
-   tech_technical
+   tech_storage
 
 
 Indices and Tables

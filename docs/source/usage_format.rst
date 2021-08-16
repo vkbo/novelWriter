@@ -167,8 +167,8 @@ also be inserted at the cursor position in the editor via the :guilabel:`Insert`
 
 .. _a_fmt_align:
 
-Paragraphs Alignment and Indentation
-====================================
+Paragraph Alignment and Indentation
+===================================
 
 All documents have the text by default aligned to the left or justified, depending on your
 Preferences.
