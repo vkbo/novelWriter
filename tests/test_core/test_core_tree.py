@@ -461,7 +461,7 @@ def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpDir):
         "=================\n"
         "\n"
         "File Name                  Class      Layout    Document Label\n"
-        "-----------------------------------------------------------\n"
+        "--------------------------------------------------------------\n"
         f"{pathA}  NOVEL      DOCUMENT  Chapter One\n"
         f"{pathB}  NOVEL      DOCUMENT  Scene One\n"
         f"{pathC}  CHARACTER  NOTE      Jane Doe\n"

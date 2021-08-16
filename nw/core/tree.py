@@ -178,7 +178,7 @@ class NWTree():
                 outFile.write("%-25s  %-9s  %-8s  %s\n" % (
                     "File Name", "Class", "Layout", "Document Label"
                 ))
-                outFile.write("-"*tocLen + "\n")
+                outFile.write("-"*max(tocLen, 62) + "\n")
                 outFile.write("\n".join(tocList))
                 outFile.write("\n")
 
