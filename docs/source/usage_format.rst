@@ -54,7 +54,7 @@ For headers level one and two, adding a ``!`` modifies the behaviour of the head
    :ref:`a_struct_heads_unnum` for more details.
 
 .. note::
-   The space after the ``#`` or ``!`` characters is mandatory. The syntax highlighter will change
+   The space after the ``#`` or ``!`` character is mandatory. The syntax highlighter will change
    colour and font size when the heading is correctly formatted.
 
 
