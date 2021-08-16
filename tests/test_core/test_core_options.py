@@ -47,10 +47,10 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, tmpDir):
             "addNovel": True,
             "addNotes": False,
             "textFont": "Cantarell",
-            "dummyItem": None,
+            "mockItem": None,
         },
-        "DummyGroup": {
-            "dummyItem": None,
+        "MockGroup": {
+            "mockItem": None,
         },
     }))
 
@@ -109,8 +109,8 @@ def testCoreOptions_SetGet(mockGUI):
     theOpts = OptionState(theProject)
 
     # Set invalid values
-    assert not theOpts.setValue("DummyGroup", "dummyItem", None)
-    assert not theOpts.setValue("GuiBuildNovel", "dummyItem", None)
+    assert not theOpts.setValue("MockGroup", "mockItem", None)
+    assert not theOpts.setValue("GuiBuildNovel", "mockItem", None)
 
     # Set valid value
     assert theOpts.setValue("GuiBuildNovel", "winWidth", 100)
@@ -126,19 +126,19 @@ def testCoreOptions_SetGet(mockGUI):
     assert theOpts.getValue("GuiBuildNovel", "winHeight", None) == 12.34
     assert theOpts.getValue("GuiBuildNovel", "addNovel", None) is True
     assert theOpts.getValue("GuiBuildNovel", "textFont", None) == "Cantarell"
-    assert theOpts.getValue("GuiBuildNovel", "dummyItem", None) is None
+    assert theOpts.getValue("GuiBuildNovel", "mockItem", None) is None
 
     # Get type-specific
     assert theOpts.getString("GuiBuildNovel", "winWidth", None) == "100"
-    assert theOpts.getString("GuiBuildNovel", "dummyItem", None) is None
+    assert theOpts.getString("GuiBuildNovel", "mockItem", None) is None
     assert theOpts.getInt("GuiBuildNovel", "winWidth", None) == 100
     assert theOpts.getInt("GuiBuildNovel", "textFont", None) is None
-    assert theOpts.getInt("GuiBuildNovel", "dummyItem", None) is None
+    assert theOpts.getInt("GuiBuildNovel", "mockItem", None) is None
     assert theOpts.getFloat("GuiBuildNovel", "winWidth", None) == 100.0
     assert theOpts.getFloat("GuiBuildNovel", "textFont", None) is None
-    assert theOpts.getFloat("GuiBuildNovel", "dummyItem", None) is None
+    assert theOpts.getFloat("GuiBuildNovel", "mockItem", None) is None
     assert theOpts.getBool("GuiBuildNovel", "addNovel", None) is True
-    assert theOpts.getBool("GuiBuildNovel", "dummyItem", None) is None
+    assert theOpts.getBool("GuiBuildNovel", "mockItem", None) is None
 
     # Check integer validators
     assert theOpts.validIntRange(5, 0, 9, 3) == 5
