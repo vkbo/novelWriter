@@ -1,14 +1,14 @@
-.. _a_tech:
+.. _a_storage:
 
-*********************
-Technical Information
-*********************
+******************
+How Data is Stored
+******************
 
 This section contains details of how novelWriter stores and handles the project data.
 
 
-How Project Data is Stored
-==========================
+Project Structure
+=================
 
 All novelWriter files are written with utf-8 encoding. Since Python automatically converts Unix
 line endings to Windows line endings on Windows systems, novelWriter does not make any adaptations
@@ -31,22 +31,22 @@ your own backup solution.
 
 .. tip::
    The novelWriter project folder is structured so that it can easily be added to a version control
-   system like git. If so, you may want to add a `.gitignore` file to exclude files with the
+   system like git. If you do so, you may want to add a `.gitignore` file to exclude files with the
    extensions `.json` as JSON files are used to cache the index and various run-time settings and
    are generally large files that change often. You'd also want to exclude the ``cache`` folder.
 
 The project XML file is indent-formatted, suitable for diff tools and version control since most of
-the file will stay static, although a timesetamp is set in the meta section on line 2 each time the
-file is saved, and various meta data entries are incremented on each save.
+the file will stay static, although a timesetamp is set in the meta section on line 2, and various
+meta data entries incremented, on each save.
 
 
 Project Documents
------------------
+=================
 
 All the project documents are saved in a folder in the main project folder named ``content``. Each
 document has a file handle taken from the first 13 characters of a SHA256 hash of the system time
-when the document was first created. The documents are saved with a filename assembled from this
-hash and the file extension ``.nwd``.
+plus an incremented number when the document was first created. The documents are saved with a
+filename assembled from this hash and the file extension ``.nwd``.
 
 If you wish to find the file system location of a document in the project, you can either look it
 up in the project XML file, select :guilabel:`Show File Details` from the :guilabel:`Document` menu
@@ -63,6 +63,11 @@ principle be edited in any text editor, and is suitable for diffing and version 
 desired. Just make sure the file remains in utf-8 encoding, otherwise unicode chatracters may
 become mangled when the file is opened in novelWriter again.
 
+Editing these files is generally not recommended outside of special circumstances, whatever they
+may be. The reason for this is that the index will not be automatically updated when doing so,
+which means novelWriter doesn't know you've altered the file. If you do edit a file in this manner,
+you should rebuild the index when you next open the project in novelWriter.
+
 The first lines of the file may contain some meta data starting with the characters ``%%~``. These
 lines are mainly there to restore some information if it is lost from the project file, and the
 information may be helpful if you do open the file in an external editor as it contains the
@@ -75,7 +80,7 @@ The File Saving Process
 -----------------------
 
 When saving the project file, or any of the documents, the data is first saved to a temporary file.
-If successful, the old data file is removed, and the temporary file becomes the new file. This
+If successful, the old data file is then removed, and the temporary file becomes the new file. This
 ensures that the previously saved data is only replaced when the new data has been successfully
 saved to the storage medium.
 
