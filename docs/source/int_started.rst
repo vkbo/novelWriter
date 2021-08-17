@@ -141,13 +141,12 @@ generated. It requires the following Python packages on Debian and Ubuntu.
 
 * ``python3-sphinx``
 * ``python3-sphinx-rtd-theme``
-* ``python3-sphinxcontrib.qthelp``
 
 Or from PyPi:
 
 .. code-block:: console
 
-   pip install sphinx sphinx-rtd-theme sphinxcontrib-qthelp
+   pip install sphinx sphinx-rtd-theme
 
 The documentation can then be built from the ``docs`` folder in the source code by running:
 
@@ -158,19 +157,13 @@ The documentation can then be built from the ``docs`` folder in the source code 
 If successful, the documentation should be available in the ``docs/build/html`` folder and you can
 open the ``index.html`` file in your browser.
 
-The documentation can also be built for the Qt Assistant. To build the help packages from the
-documentation source, run the following from the root source folder:
+You can also build the documentation by using the setup script:
 
 .. code-block:: console
 
-   python setup.py qthelp
+   python setup.py docs
 
-The setup script will copy the generated files into the ``nw/assets/help`` folder, and novelWriter
-will detect the presence of the files and redirect the menu help entry to open help locally instead
-of sending the user to the website. Pressing the :kbd:`F1` key will in any case try to open help
-locally first, then send you to the website as a fallback.
-
-.. note::
-   In order for the local version of help to work, the Qt Assistant must be installed on the local
-   computer. If it isn't available, or novelWriter cannot find it, the help feature will fall back
-   to redirecting you to the documentation website.
+This does the same as the ``make help`` command, but in addition it copies the documentation into
+novelWriter's assets folder. This will make it possible to open the documentation from inside of
+novelWriter by pressing :kbd:`F1` even without an internet connection, as it will instead open the
+local copy.

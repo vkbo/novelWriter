@@ -23,10 +23,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
 import nw
 import logging
 
-from PyQt5.QtCore import QUrl, QProcess
+from http.client import HTTPSConnection
+from urllib.parse import urljoin
+from urllib.request import pathname2url
+
+from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction
 
@@ -45,9 +50,6 @@ class GuiMainMenu(QMenuBar):
         self.mainConf   = nw.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
-
-        # Internals
-        self._assistProc = None
 
         # Build Menu
         self._buildProjectMenu()
@@ -87,25 +89,6 @@ class GuiMainMenu(QMenuBar):
             self.rootItems[itemClass].setEnabled(
                 self.theProject.projTree.checkRootUnique(itemClass)
             )
-        return
-
-    def closeHelp(self):
-        """Close the process used for the Qt Assistant, if it is open.
-        """
-        if self._assistProc is None:
-            return
-
-        if self._assistProc.state() == QProcess.Starting:
-            if self._assistProc.waitForStarted(10000):
-                self._assistProc.terminate()
-            else:
-                self._assistProc.kill()
-
-        elif self._assistProc.state() == QProcess.Running:
-            self._assistProc.terminate()
-            if not self._assistProc.waitForFinished(10000):
-                self._assistProc.kill()
-
         return
 
     ##
@@ -148,27 +131,37 @@ class GuiMainMenu(QMenuBar):
         self.theProject.setAutoOutline(theMode)
         return True
 
-    def _openAssistant(self, isChecked=False):
-        """Open the documentation in Qt Assistant.
-        """
-        if not self.mainConf.hasHelp:
-            self._openWebsite(nw.__docurl__)
-            return False
-
-        self._assistProc = QProcess(self)
-        self._assistProc.start("assistant", ["-collectionFile", self.mainConf.helpPath])
-
-        if not self._assistProc.waitForStarted(10000):
-            self._openWebsite(nw.__docurl__)
-            return False
-
-        return True
-
     def _openWebsite(self, theUrl):
         """Open a URL in the system's default browser.
         """
         QDesktopServices.openUrl(QUrl(theUrl))
         return True
+
+    def _openDocumentation(self):
+        """Open the documentation, and select whether it should be the
+        stable or latest version. If no internet connection, open
+        local.
+        """
+        if nw.__hexversion__[-2] == "f":
+            docsPath = "/en/stable/"
+        else:
+            docsPath = "/en/latest/"
+
+        try:
+            conn = HTTPSConnection(nw.__docurl__.replace("https://", ""))
+            conn.request("HEAD", docsPath)
+            resp = conn.getresponse()
+            hasAccess = resp.code == 200
+        except Exception:
+            hasAccess = False
+
+        docsFile = os.path.join(self.mainConf.assetPath, "help", "html", "index.html")
+        if hasAccess or not os.path.isfile(docsFile):
+            self._openWebsite(nw.__docurl__ + docsPath)
+        else:
+            self._openWebsite(urljoin("file:", pathname2url(docsFile)))
+
+        return
 
     ##
     #  Menu Builders
@@ -1113,24 +1106,12 @@ class GuiMainMenu(QMenuBar):
         # Help > Separator
         self.helpMenu.addSeparator()
 
-        # Document > Documentation
-        if self.mainConf.hasHelp and self.mainConf.hasAssistant:
-            self.aHelpLoc = QAction(self.tr("Documentation (Local)"), self)
-            self.aHelpLoc.setStatusTip(self.tr("View local documentation with Qt Assistant"))
-            self.aHelpLoc.triggered.connect(self._openAssistant)
-            self.aHelpLoc.setShortcut("F1")
-            self.helpMenu.addAction(self.aHelpLoc)
-
-        self.aHelpWeb = QAction(self.tr("Documentation (Online)"), self)
-        self.aHelpWeb.setStatusTip(
-            self.tr("View online documentation at {0}").format(nw.__docurl__)
-        )
-        self.aHelpWeb.triggered.connect(lambda: self._openWebsite(nw.__docurl__))
-        if self.mainConf.hasHelp and self.mainConf.hasAssistant:
-            self.aHelpWeb.setShortcut("Shift+F1")
-        else:
-            self.aHelpWeb.setShortcuts(["F1", "Shift+F1"])
-        self.helpMenu.addAction(self.aHelpWeb)
+        # Help > Documentation
+        self.aHelpDocs = QAction(self.tr("Documentation"), self)
+        self.aHelpDocs.setStatusTip(self.tr("Open documentation in browser"))
+        self.aHelpDocs.triggered.connect(self._openDocumentation)
+        self.aHelpDocs.setShortcut("F1")
+        self.helpMenu.addAction(self.aHelpDocs)
 
         # Help > Separator
         self.helpMenu.addSeparator()

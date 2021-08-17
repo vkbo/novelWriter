@@ -17,6 +17,7 @@ i18n/*.qph
 
 # Documentation
 /docs/build/
+/nw/assets/help/html/
 *.qch
 *.qhc
 

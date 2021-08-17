@@ -544,14 +544,4 @@ def testBaseConfig_Internal(monkeypatch, tmpConf):
         tmpConf._checkOptionalPackages()
         assert tmpConf.hasEnchant is False
 
-    with monkeypatch.context() as mp:
-        mp.setattr("shutil.which", lambda *a: "stuff")
-        tmpConf._checkOptionalPackages()
-        assert tmpConf.hasAssistant is True
-
-    with monkeypatch.context() as mp:
-        mp.setattr("shutil.which", lambda *a: None)
-        tmpConf._checkOptionalPackages()
-        assert tmpConf.hasAssistant is False
-
 # END Test testBaseConfig_Internal
