@@ -85,7 +85,10 @@ class GuiProjectTree(QTreeWidget):
         self.setExpandsOnDoubleClick(True)
         self.setIndentation(iPx)
         self.setColumnCount(4)
-        self.setHeaderLabels([self.tr("Project Tree"), self.tr("Words"), "", ""])
+        self.setHeaderLabels([
+            self.tr("Project Tree"), self.tr("Words"), "",
+            self.tr("Status") if self.mainConf.fullStatus else ""
+        ])
 
         treeHeadItem = self.headerItem()
         treeHeadItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
@@ -698,6 +701,11 @@ class GuiProjectTree(QTreeWidget):
         """
         logger.debug("Building the project tree ...")
         self.clearTree()
+
+        self.setHeaderLabels([
+            self.tr("Project Tree"), self.tr("Words"), "",
+            self.tr("Status") if self.mainConf.fullStatus else ""
+        ])
 
         iCount = 0
         for nwItem in self.theProject.getProjectItems():
