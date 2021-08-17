@@ -64,7 +64,7 @@ class GuiNovelTree(QTreeWidget):
         self.setIndentation(iPx)
         self.setColumnCount(3)
         self.setHeaderLabels([
-            self.tr("Title"),
+            self.tr("Novel Outline"),
             self.tr("Words"),
             self.tr("POV")
         ])
