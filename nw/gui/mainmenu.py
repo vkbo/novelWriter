@@ -143,13 +143,13 @@ class GuiMainMenu(QMenuBar):
         local.
         """
         if nw.__hexversion__[-2] == "f":
-            docsUrl = "/en/stable/"
+            docsPath = "/en/stable/"
         else:
-            docsUrl = "/en/latest/"
+            docsPath = "/en/latest/"
 
         try:
             conn = HTTPSConnection(nw.__docurl__.replace("https://", ""))
-            conn.request("HEAD", docsUrl)
+            conn.request("HEAD", docsPath)
             resp = conn.getresponse()
             hasAccess = resp.code == 200
         except Exception:
@@ -157,7 +157,7 @@ class GuiMainMenu(QMenuBar):
 
         docsFile = os.path.join(self.mainConf.assetPath, "help", "html", "index.html")
         if hasAccess or not os.path.isfile(docsFile):
-            self._openWebsite(nw.__docurl__ + docsUrl)
+            self._openWebsite(nw.__docurl__ + docsPath)
         else:
             self._openWebsite(urljoin("file:", pathname2url(docsFile)))
 
