@@ -85,10 +85,7 @@ class GuiProjectTree(QTreeWidget):
         self.setExpandsOnDoubleClick(True)
         self.setIndentation(iPx)
         self.setColumnCount(4)
-        self.setHeaderLabels([
-            self.tr("Label"), self.tr("Words"), "",
-            self.tr("Status") if self.mainConf.fullStatus else ""
-        ])
+        self.setHeaderLabels([self.tr("Project Tree"), self.tr("Words"), "", ""])
 
         treeHeadItem = self.headerItem()
         treeHeadItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
@@ -635,6 +632,13 @@ class GuiProjectTree(QTreeWidget):
             trItem.setText(self.C_STATUS, nwItem.itemStatus)
         else:
             trItem.setToolTip(self.C_STATUS, nwItem.itemStatus)
+
+        if self.mainConf.emphLabels and nwItem.itemLayout == nwItemLayout.DOCUMENT:
+            if hLevel in ("H1", "H2"):
+                trFont = trItem.font(self.C_NAME)
+                trFont.setBold(True)
+                trFont.setUnderline(True)
+                trItem.setFont(self.C_NAME, trFont)
 
         return
 

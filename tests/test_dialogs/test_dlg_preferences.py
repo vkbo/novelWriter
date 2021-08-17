@@ -249,7 +249,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     testFile = os.path.join(outDir, "guiPreferences_novelwriter.conf")
     compFile = os.path.join(refDir, "guiPreferences_novelwriter.conf")
     copyfile(projFile, testFile)
-    ignoreLines = [2, 7, 9, 10, 16, 17, 18, 19, 20, 21, 22, 23, 24, 32, 33]
+    ignoreLines = [2, 7, 9, 10, 17, 18, 19, 20, 21, 22, 23, 24, 25, 33, 34]
     assert cmpFiles(testFile, compFile, ignoreLines)
 
     # Clean up
