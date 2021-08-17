@@ -1190,7 +1190,6 @@ class GuiMain(QMainWindow):
 
         self.mainConf.saveConfig()
         self.reportConfErr()
-        self.mainMenu.closeHelp()
 
         qApp.quit()
 
@@ -1373,9 +1372,7 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aPreferences)
 
         # Help
-        if self.mainConf.hasHelp and self.mainConf.hasAssistant:
-            self.addAction(self.mainMenu.aHelpLoc)
-        self.addAction(self.mainMenu.aHelpWeb)
+        self.addAction(self.mainMenu.aHelpDocs)
 
         return True
 
