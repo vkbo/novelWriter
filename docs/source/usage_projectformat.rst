@@ -1,8 +1,8 @@
-.. _a_filefmt:
+.. _a_prjfmt:
 
-*******************
-File Format Changes
-*******************
+**********************
+Project Format Changes
+**********************
 
 Most of the changes to the file format over the history of novelWriter have no impact on the
 user-side of things. The project files are updated automatically. However, some of the changes
@@ -11,10 +11,10 @@ require minor actions from the user.
 The key changes in the file formats are listed below, as well as the user actions.
 
 
-.. _a_filefmt_1_3:
+.. _a_prjfmt_1_3:
 
-File Format 1.3
-===============
+Format 1.3 Changes
+==================
 
 This project format vas introduces in novelWriter version 1.5.
 
@@ -49,10 +49,10 @@ should be used only a few palces in a project. These are as follows:
   set anywhere in the text with the ``[NEW PAGE]`` code. See :ref:`a_fmt_break`.
 
 
-.. _a_filefmt_1_2:
+.. _a_prjfmt_1_2:
 
-File Format 1.2
-===============
+Format 1.2 Changes
+==================
 
 This project format was introduces in novelWriter version 0.10.
 
@@ -64,10 +64,10 @@ Format 1.2 projects can be opened without loss of information up until version 1
 auto-replace is not being used, can still be opened in novelWriter as of version |release|.
 
 
-.. _a_filefmt_1_1:
+.. _a_prjfmt_1_1:
 
-File Format 1.1
-===============
+Format 1.1 Changes
+==================
 
 This project format was introduces in novelWriter version 0.7.
 
@@ -81,10 +81,10 @@ Format 1.1 projects can be opened without loss of information up until version 1
 auto-replace is not being used, can still be opened in novelWriter as of version |release|.
 
 
-.. _a_filefmt_1_0:
+.. _a_prjfmt_1_0:
 
-File Format 1.0
-===============
+Format 1.0 Changes
+==================
 
 This is the original file format and project structure. It was in use up to version 0.6.3.
 
