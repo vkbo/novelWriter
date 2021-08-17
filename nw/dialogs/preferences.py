@@ -94,7 +94,7 @@ class GuiPreferences(PagedDialog):
         """
         logger.debug("Saving new preferences")
 
-        needsRestart = self.tabGeneral.saveValues()
+        needsRestart, refreshTree = self.tabGeneral.saveValues()
 
         self.tabProjects.saveValues()
         self.tabDocs.saveValues()
@@ -107,6 +107,9 @@ class GuiPreferences(PagedDialog):
             self.theParent.makeAlert(self.tr(
                 "Some changes will not be applied until novelWriter has been restarted."
             ), nwAlert.INFO)
+
+        if refreshTree:
+            self.theParent.treeView.buildTree()
 
         self._saveWindowSize()
         self.accept()
@@ -248,7 +251,15 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Show status text in project tree"),
             self.fullStatus,
-            self.tr("Changing this requires restarting novelWriter."),
+            self.tr("If disabled, only the icon is shown."),
+        )
+
+        self.emphLabels = QSwitch()
+        self.emphLabels.setChecked(self.mainConf.emphLabels)
+        self.mainForm.addRow(
+            self.tr("Emphasise partition and chapter labels"),
+            self.emphLabels,
+            self.tr("The novel document labels will be bold and underlined."),
         )
 
         self.showFullPath = QSwitch()
@@ -287,6 +298,7 @@ class GuiPreferencesGeneral(QWidget):
         guiFont     = self.guiFont.text()
         guiFontSize = self.guiFontSize.value()
         fullStatus  = self.fullStatus.isChecked()
+        emphLabels  = self.emphLabels.isChecked()
 
         # Check if restart is needed
         needsRestart = False
@@ -296,7 +308,11 @@ class GuiPreferencesGeneral(QWidget):
         needsRestart |= self.mainConf.guiDark != guiDark
         needsRestart |= self.mainConf.guiFont != guiFont
         needsRestart |= self.mainConf.guiFontSize != guiFontSize
-        needsRestart |= self.mainConf.fullStatus != fullStatus
+
+        # Check if refreshing project tree is needed
+        refreshTree = False
+        refreshTree |= self.mainConf.fullStatus != fullStatus
+        refreshTree |= self.mainConf.emphLabels != emphLabels
 
         self.mainConf.guiLang      = guiLang
         self.mainConf.guiTheme     = guiTheme
@@ -305,13 +321,14 @@ class GuiPreferencesGeneral(QWidget):
         self.mainConf.guiFont      = guiFont
         self.mainConf.guiFontSize  = guiFontSize
         self.mainConf.fullStatus   = fullStatus
+        self.mainConf.emphLabels   = emphLabels
         self.mainConf.showFullPath = self.showFullPath.isChecked()
         self.mainConf.hideVScroll  = self.hideVScroll.isChecked()
         self.mainConf.hideHScroll  = self.hideHScroll.isChecked()
 
         self.mainConf.confChanged = True
 
-        return needsRestart
+        return needsRestart, refreshTree
 
     ##
     #  Slots

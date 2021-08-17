@@ -72,8 +72,8 @@ class GuiItemDetails(QWidget):
         self.labelName.setFont(fntLabel)
         self.labelName.setAlignment(Qt.AlignLeft | Qt.AlignBaseline)
 
-        self.labelFlag = QLabel("")
-        self.labelFlag.setAlignment(Qt.AlignRight | Qt.AlignBaseline)
+        self.labelIcon = QLabel("")
+        self.labelIcon.setAlignment(Qt.AlignRight | Qt.AlignBaseline)
 
         self.labelData = QLabel("")
         self.labelData.setFont(fntValue)
@@ -85,8 +85,8 @@ class GuiItemDetails(QWidget):
         self.statusName.setFont(fntLabel)
         self.statusName.setAlignment(Qt.AlignLeft)
 
-        self.statusFlag = QLabel("")
-        self.statusFlag.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.statusIcon = QLabel("")
+        self.statusIcon.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.statusData = QLabel("")
         self.statusData.setFont(fntValue)
@@ -97,24 +97,24 @@ class GuiItemDetails(QWidget):
         self.className.setFont(fntLabel)
         self.className.setAlignment(Qt.AlignLeft)
 
-        self.classFlag = QLabel("")
-        self.classFlag.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.classIcon = QLabel("")
+        self.classIcon.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.classData = QLabel("")
         self.classData.setFont(fntValue)
         self.classData.setAlignment(Qt.AlignLeft)
 
         # Layout
-        self.layoutName = QLabel(self.tr("Layout"))
-        self.layoutName.setFont(fntLabel)
-        self.layoutName.setAlignment(Qt.AlignLeft)
+        self.usageName = QLabel(self.tr("Usage"))
+        self.usageName.setFont(fntLabel)
+        self.usageName.setAlignment(Qt.AlignLeft)
 
-        self.layoutFlag = QLabel("")
-        self.layoutFlag.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.usageIcon = QLabel("")
+        self.usageIcon.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
-        self.layoutData = QLabel("")
-        self.layoutData.setFont(fntValue)
-        self.layoutData.setAlignment(Qt.AlignLeft)
+        self.usageData = QLabel("")
+        self.usageData.setFont(fntValue)
+        self.usageData.setAlignment(Qt.AlignLeft)
 
         # Character Count
         self.cCountName = QLabel("  "+self.tr("Characters"))
@@ -146,24 +146,24 @@ class GuiItemDetails(QWidget):
         # Assemble
         self.mainBox = QGridLayout(self)
         self.mainBox.addWidget(self.labelName,  0, 0, 1, 1)
-        self.mainBox.addWidget(self.labelFlag,  0, 1, 1, 1)
+        self.mainBox.addWidget(self.labelIcon,  0, 1, 1, 1)
         self.mainBox.addWidget(self.labelData,  0, 2, 1, 3)
 
         self.mainBox.addWidget(self.statusName, 1, 0, 1, 1)
-        self.mainBox.addWidget(self.statusFlag, 1, 1, 1, 1)
+        self.mainBox.addWidget(self.statusIcon, 1, 1, 1, 1)
         self.mainBox.addWidget(self.statusData, 1, 2, 1, 1)
         self.mainBox.addWidget(self.cCountName, 1, 3, 1, 1)
         self.mainBox.addWidget(self.cCountData, 1, 4, 1, 1)
 
         self.mainBox.addWidget(self.className,  2, 0, 1, 1)
-        self.mainBox.addWidget(self.classFlag,  2, 1, 1, 1)
+        self.mainBox.addWidget(self.classIcon,  2, 1, 1, 1)
         self.mainBox.addWidget(self.classData,  2, 2, 1, 1)
         self.mainBox.addWidget(self.wCountName, 2, 3, 1, 1)
         self.mainBox.addWidget(self.wCountData, 2, 4, 1, 1)
 
-        self.mainBox.addWidget(self.layoutName, 3, 0, 1, 1)
-        self.mainBox.addWidget(self.layoutFlag, 3, 1, 1, 1)
-        self.mainBox.addWidget(self.layoutData, 3, 2, 1, 1)
+        self.mainBox.addWidget(self.usageName,  3, 0, 1, 1)
+        self.mainBox.addWidget(self.usageIcon,  3, 1, 1, 1)
+        self.mainBox.addWidget(self.usageData,  3, 2, 1, 1)
         self.mainBox.addWidget(self.pCountName, 3, 3, 1, 1)
         self.mainBox.addWidget(self.pCountData, 3, 4, 1, 1)
 
@@ -198,15 +198,15 @@ class GuiItemDetails(QWidget):
         """
         self._itemHandle = None
 
-        self.labelFlag.setPixmap(QPixmap(1, 1))
-        self.statusFlag.setPixmap(QPixmap(1, 1))
-        self.classFlag.setText("")
-        self.layoutFlag.setText("")
+        self.labelIcon.setPixmap(QPixmap(1, 1))
+        self.statusIcon.setPixmap(QPixmap(1, 1))
+        self.classIcon.setText("")
+        self.usageIcon.setText("")
 
         self.labelData.setText("–")
         self.statusData.setText("–")
         self.classData.setText("–")
-        self.layoutData.setText("–")
+        self.usageData.setText("–")
 
         self.cCountData.setText("–")
         self.wCountData.setText("–")
@@ -238,11 +238,11 @@ class GuiItemDetails(QWidget):
 
         if nwItem.itemType == nwItemType.FILE:
             if nwItem.isExported:
-                self.labelFlag.setPixmap(self._expCheck)
+                self.labelIcon.setPixmap(self._expCheck)
             else:
-                self.labelFlag.setPixmap(self._expCross)
+                self.labelIcon.setPixmap(self._expCross)
         else:
-            self.labelFlag.setPixmap(QPixmap(1, 1))
+            self.labelIcon.setPixmap(QPixmap(1, 1))
 
         self.labelData.setText(theLabel)
 
@@ -257,25 +257,25 @@ class GuiItemDetails(QWidget):
             itStatus = self.theProject.importItems.checkEntry(itStatus)  # Make sure it's valid
             flagIcon = self.theParent.importIcons[itStatus]
 
-        self.statusFlag.setPixmap(flagIcon.pixmap(iPx, iPx))
+        self.statusIcon.setPixmap(flagIcon.pixmap(iPx, iPx))
         self.statusData.setText(nwItem.itemStatus)
 
         # Class
         # =====
 
         classIcon = self.theTheme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass])
-        self.classFlag.setPixmap(classIcon.pixmap(iPx, iPx))
+        self.classIcon.setPixmap(classIcon.pixmap(iPx, iPx))
         self.classData.setText(trConst(nwLabels.CLASS_NAME[nwItem.itemClass]))
 
         # Layout
         # ======
 
         hLevel = self.theParent.theIndex.getHandleHeaderLevel(tHandle)
-        layoutIcon = self.theTheme.getItemIcon(
+        usageIcon = self.theTheme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
         )
-        self.layoutFlag.setPixmap(layoutIcon.pixmap(iPx, iPx))
-        self.layoutData.setText(nwItem.describeMe(hLevel))
+        self.usageIcon.setPixmap(usageIcon.pixmap(iPx, iPx))
+        self.usageData.setText(nwItem.describeMe(hLevel))
 
         # Counts
         # ======

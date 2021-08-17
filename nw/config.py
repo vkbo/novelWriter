@@ -111,6 +111,7 @@ class Config:
         self.hideVScroll = False  # Hide vertical scroll bars on main widgets
         self.hideHScroll = False  # Hide horizontal scroll bars on main widgets
         self.fullStatus  = True   # Show the full status text in the project tree
+        self.emphLabels  = True   # Add emphasis to H1 and H2 item labels
 
         # Project
         self.autoSaveProj = 60  # Interval for auto-saving project in seconds
@@ -451,7 +452,6 @@ class Config:
         self.guiLang     = theConf.rdStr(cnfSec, "guilang", self.guiLang)
         self.hideVScroll = theConf.rdBool(cnfSec, "hidevscroll", self.hideVScroll)
         self.hideHScroll = theConf.rdBool(cnfSec, "hidehscroll", self.hideHScroll)
-        self.fullStatus  = theConf.rdBool(cnfSec, "fullstatus", self.fullStatus)
 
         # Sizes
         cnfSec = "Sizes"
@@ -470,6 +470,8 @@ class Config:
         cnfSec = "Project"
         self.autoSaveProj = theConf.rdInt(cnfSec, "autosaveproject", self.autoSaveProj)
         self.autoSaveDoc  = theConf.rdInt(cnfSec, "autosavedoc", self.autoSaveDoc)
+        self.fullStatus   = theConf.rdBool(cnfSec, "fullstatus", self.fullStatus)
+        self.emphLabels   = theConf.rdBool(cnfSec, "emphlabels", self.emphLabels)
 
         # Editor
         cnfSec = "Editor"
@@ -567,7 +569,6 @@ class Config:
             "guilang":     str(self.guiLang),
             "hidevscroll": str(self.hideVScroll),
             "hidehscroll": str(self.hideHScroll),
-            "fullstatus":  str(self.fullStatus),
         }
 
         theConf["Sizes"] = {
@@ -586,6 +587,8 @@ class Config:
         theConf["Project"] = {
             "autosaveproject": str(self.autoSaveProj),
             "autosavedoc":     str(self.autoSaveDoc),
+            "fullstatus":      str(self.fullStatus),
+            "emphlabels":      str(self.emphLabels),
         }
 
         theConf["Editor"] = {

@@ -86,7 +86,7 @@ class GuiProjectTree(QTreeWidget):
         self.setIndentation(iPx)
         self.setColumnCount(4)
         self.setHeaderLabels([
-            self.tr("Label"), self.tr("Words"), "",
+            self.tr("Project Tree"), self.tr("Words"), "",
             self.tr("Status") if self.mainConf.fullStatus else ""
         ])
 
@@ -636,6 +636,13 @@ class GuiProjectTree(QTreeWidget):
         else:
             trItem.setToolTip(self.C_STATUS, nwItem.itemStatus)
 
+        if self.mainConf.emphLabels and nwItem.itemLayout == nwItemLayout.DOCUMENT:
+            if hLevel in ("H1", "H2"):
+                trFont = trItem.font(self.C_NAME)
+                trFont.setBold(True)
+                trFont.setUnderline(True)
+                trItem.setFont(self.C_NAME, trFont)
+
         return
 
     def propagateCount(self, tHandle, theCount, nDepth=0):
@@ -694,6 +701,11 @@ class GuiProjectTree(QTreeWidget):
         """
         logger.debug("Building the project tree ...")
         self.clearTree()
+
+        self.setHeaderLabels([
+            self.tr("Project Tree"), self.tr("Words"), "",
+            self.tr("Status") if self.mainConf.fullStatus else ""
+        ])
 
         iCount = 0
         for nwItem in self.theProject.getProjectItems():

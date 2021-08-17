@@ -158,7 +158,7 @@ class NWTree():
                 continue
             tFile = tHandle+".nwd"
             if os.path.isfile(os.path.join(self.theProject.projContent, tFile)):
-                tocLine = "%-25s  %-9s  %-10s  %s" % (
+                tocLine = "%-25s  %-9s  %-8s  %s" % (
                     os.path.join("content", tFile),
                     tItem.itemClass.name,
                     tItem.itemLayout.name,
@@ -175,10 +175,10 @@ class NWTree():
                 outFile.write("Table of Contents\n")
                 outFile.write("=================\n")
                 outFile.write("\n")
-                outFile.write("%-25s  %-9s  %-10s  %s\n" % (
+                outFile.write("%-25s  %-9s  %-8s  %s\n" % (
                     "File Name", "Class", "Layout", "Document Label"
                 ))
-                outFile.write("-"*tocLen + "\n")
+                outFile.write("-"*max(tocLen, 62) + "\n")
                 outFile.write("\n".join(tocList))
                 outFile.write("\n")
 

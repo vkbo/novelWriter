@@ -178,7 +178,7 @@ def exceptionHandler(exType, exValue, exTrace):
         errMsg.exec_()
 
         try:
-            # Try a controlled shudown
+            # Try a controlled shutdown
             nwGUI.closeProject(isYes=True)
             nwGUI.closeMain()
             logger.info("Emergency shutdown successful")
