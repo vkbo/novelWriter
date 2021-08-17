@@ -1121,11 +1121,16 @@ class GuiMainMenu(QMenuBar):
             self.aHelpLoc.setShortcut("F1")
             self.helpMenu.addAction(self.aHelpLoc)
 
+        if nw.__hexversion__[-2] == "f":
+            docsUrl = nw.__docurl__+"/en/stable"
+        else:
+            docsUrl = nw.__docurl__+"/en/latest"
+
         self.aHelpWeb = QAction(self.tr("Documentation (Online)"), self)
         self.aHelpWeb.setStatusTip(
-            self.tr("View online documentation at {0}").format(nw.__docurl__)
+            self.tr("View online documentation at {0}").format(docsUrl)
         )
-        self.aHelpWeb.triggered.connect(lambda: self._openWebsite(nw.__docurl__))
+        self.aHelpWeb.triggered.connect(lambda: self._openWebsite(docsUrl))
         if self.mainConf.hasHelp and self.mainConf.hasAssistant:
             self.aHelpWeb.setShortcut("Shift+F1")
         else:
