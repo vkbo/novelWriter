@@ -1793,7 +1793,7 @@ planned by GitHub. See their [notes](https://github.com/github/renaming) for mor
 
 ----
 
-## Version 0.10.0 [2020-06-30]
+## Version 0.10 [2020-06-30]
 
 **Note:** If the project file is opened by this version of novelWriter, the project file can no
 longer be read by an earlier version due to the change of how autoReplace settings are stored.

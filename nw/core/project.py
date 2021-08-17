@@ -491,6 +491,16 @@ class NWProject():
                 self.clearProject()
                 return False
 
+            if fileVersion in ("1.0", "1.1", "1.2"):
+                self.makeAlert(self.tr(
+                    "The format of your project will now be updated. You may "
+                    "also have to make a few minor changes to your title page "
+                    "and unnumbered chapters. Please check the 'Project "
+                    "Format Changes > File Format 1.3' section of the "
+                    "documentation for more information. It is avialable from "
+                    "the Help menu."
+                ).format(appVersion), nwAlert.INFO)
+
         # Check novelWriter Version
         # =========================
 
