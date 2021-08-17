@@ -222,6 +222,56 @@ def buildQtDocs():
 
 
 ##
+#  Html Documentation Builder (docs)
+##
+
+def buildHtmlDocs():
+    """This function will build the Sphinx HTML documentation. The files
+    are then copied into the nw/assets/help/html directory and can be
+    included in builds.
+    """
+    buildDir = os.path.join("docs", "build", "html")
+    helpDir  = os.path.join("nw", "assets", "help", "html")
+
+    print("")
+    print("Building Documentation")
+    print("======================")
+    print("")
+
+    buildFail = False
+    try:
+        subprocess.call(["make", "-C", "docs", "clean"])
+        subprocess.call(["make", "-C", "docs", "html"])
+    except Exception as e:
+        print("Docs Build Error:")
+        print(str(e))
+        buildFail = True
+
+    try:
+        if os.path.isdir(helpDir):
+            shutil.rmtree(helpDir)
+        shutil.copytree(buildDir, helpDir)
+    except Exception as e:
+        print("Docs Build Error:")
+        print(str(e))
+        buildFail = True
+
+    print("")
+    if buildFail:
+        print("Documentation build: FAILED")
+        print("")
+        print("Dependencies:")
+        print(" * pip install sphinx")
+        print(" * pip install sphinx-rtd-theme")
+        sys.exit(1)
+    else:
+        print("Documentation build: OK")
+    print("")
+
+    return
+
+
+##
 #  Qt Linguist QM Builder (qtlrelease)
 ##
 
@@ -344,6 +394,14 @@ def makeMinimalPackage(targetOS):
     # Make sample.zip first
     try:
         buildSampleZip()
+    except Exception as e:
+        print("Failed with error:")
+        print(str(e))
+        sys.exit(1)
+
+    # Build docs
+    try:
+        buildHtmlDocs()
     except Exception as e:
         print("Failed with error:")
         print(str(e))
@@ -1137,6 +1195,7 @@ if __name__ == "__main__":
         "",
         "Additional Builds:",
         "",
+        "    docs           Build the help documentation as HTML."
         "    qthelp         Build the help documentation for use with the Qt Assistant.",
         "    qtlupdate      Update the translation files for internationalisation.",
         "    qtlrelease     Build the language files for internationalisation.",
@@ -1202,6 +1261,10 @@ if __name__ == "__main__":
 
     # Additional Builds
     # =================
+
+    if "docs" in sys.argv:
+        sys.argv.remove("docs")
+        buildHtmlDocs()
 
     if "qthelp" in sys.argv:
         sys.argv.remove("qthelp")
