@@ -48,6 +48,11 @@ This package can be extracted anywhere on your computer, and a setup script can 
 the necessary icons and file associations. See :ref:`a_started`, or one or the setup instructions
 for your operating system for further details.
 
+.. note::
+   Version 1.5 introduces a few changes that will require you to make a few minor modifications to
+   some of the headings in your project. It should be fairly quick and straightforward. Please see
+   the :ref:`a_prjfmt_1_3` section for more details.
+
 **Useful Links**
 
 * Website: https://novelwriter.io
@@ -78,6 +83,7 @@ for your operating system for further details.
    usage_format
    usage_shortcuts
    usage_typography
+   usage_projectformat
 
 
 .. toctree::
