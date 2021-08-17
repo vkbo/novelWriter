@@ -78,6 +78,7 @@ for your operating system for further details.
    usage_format
    usage_shortcuts
    usage_typography
+   usage_fileformat
 
 
 .. toctree::
