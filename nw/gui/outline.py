@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QMenu, QAction, QAbstractItemView
 )
 
-from nw.enum import nwOutline
+from nw.enum import nwItemLayout, nwItemType, nwOutline
 from nw.constants import trConst, nwKeyWords, nwLabels
 
 logger = logging.getLogger(__name__)
@@ -434,6 +434,9 @@ class GuiOutline(QTreeWidget):
         newItem = QTreeWidgetItem()
         hIcon = "doc_%s" % novIdx["level"].lower()
 
+        hLevel = self.theIndex.getHandleHeaderLevel(tHandle)
+        dIcon = self.theTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, hLevel)
+
         cC = int(novIdx["cCount"])
         wC = int(novIdx["wCount"])
         pC = int(novIdx["pCount"])
@@ -443,7 +446,7 @@ class GuiOutline(QTreeWidget):
         newItem.setIcon(self._colIdx[nwOutline.TITLE],  self.theTheme.getIcon(hIcon))
         newItem.setText(self._colIdx[nwOutline.LEVEL],  novIdx["level"])
         newItem.setText(self._colIdx[nwOutline.LABEL],  nwItem.itemName)
-        newItem.setIcon(self._colIdx[nwOutline.LABEL],  self.theTheme.getIcon("proj_document"))
+        newItem.setIcon(self._colIdx[nwOutline.LABEL],  dIcon)
         newItem.setText(self._colIdx[nwOutline.LINE],   sTitle[1:].lstrip("0"))
         newItem.setData(self._colIdx[nwOutline.LINE],   Qt.UserRole, sTitle)
         newItem.setText(self._colIdx[nwOutline.SYNOP],  novIdx["synopsis"])
