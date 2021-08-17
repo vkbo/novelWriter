@@ -452,8 +452,6 @@ class Config:
         self.guiLang     = theConf.rdStr(cnfSec, "guilang", self.guiLang)
         self.hideVScroll = theConf.rdBool(cnfSec, "hidevscroll", self.hideVScroll)
         self.hideHScroll = theConf.rdBool(cnfSec, "hidehscroll", self.hideHScroll)
-        self.fullStatus  = theConf.rdBool(cnfSec, "fullstatus", self.fullStatus)
-        self.emphLabels  = theConf.rdBool(cnfSec, "emphlabels", self.emphLabels)
 
         # Sizes
         cnfSec = "Sizes"
@@ -472,6 +470,8 @@ class Config:
         cnfSec = "Project"
         self.autoSaveProj = theConf.rdInt(cnfSec, "autosaveproject", self.autoSaveProj)
         self.autoSaveDoc  = theConf.rdInt(cnfSec, "autosavedoc", self.autoSaveDoc)
+        self.fullStatus   = theConf.rdBool(cnfSec, "fullstatus", self.fullStatus)
+        self.emphLabels   = theConf.rdBool(cnfSec, "emphlabels", self.emphLabels)
 
         # Editor
         cnfSec = "Editor"
@@ -569,8 +569,6 @@ class Config:
             "guilang":     str(self.guiLang),
             "hidevscroll": str(self.hideVScroll),
             "hidehscroll": str(self.hideHScroll),
-            "fullstatus":  str(self.fullStatus),
-            "emphlabels":  str(self.emphLabels),
         }
 
         theConf["Sizes"] = {
@@ -589,6 +587,8 @@ class Config:
         theConf["Project"] = {
             "autosaveproject": str(self.autoSaveProj),
             "autosavedoc":     str(self.autoSaveDoc),
+            "fullstatus":      str(self.fullStatus),
+            "emphlabels":      str(self.emphLabels),
         }
 
         theConf["Editor"] = {
