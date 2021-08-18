@@ -2,60 +2,81 @@
 <html>
 <body>
 
-<h2>Release Notes for 1.4.1</h2>
-<p><i>Released on 27 July 2021</i></p>
+<h2>Release Notes for 1.5 Beta 1</h2>
+<p><i>Released on 22 August 2021</i></p>
 
-<p>This release fixes a couple of minor issue with some of the dialog boxes. The fix was
-accidentally left out of release 1.4.</p>
+<h3>Release Notes</h3>
+<p>This is a beta release of the next release version, and is intended for testing purposes. Please
+be careful when using this version on live writing projects, and make sure you take frequent
+backups.</p>
+
+<h4>Layout Changes</h4>
+<p>The main change in this release is the significant simplification of document layouts.
+Previously, there were seven different layouts available for novel documents, in addition to the
+one layout for project notes. The intention of the layouts were in part to define some default
+formatting behaviour when exporting your project, and partially a way to indicate whether a
+specific document was a chapter or scene.</p>
+<p>All the seven layouts for novel documents have now been merged into a single layout called
+simply "Novel Document". The other layout for "Project Note" remains unchanged. The functionality
+provided by the various novel layouts have been implemented in other ways. They are as follows:</p>
+
+<ul>
+  <li>The distinction between Partition, Chapter, Scene and Unnumbered Chapter is displayed in a
+  new way depending on your chosen user preferences.
+    <ul>
+      <li>If you use one of the coloured icon themes, the icon for Partition, Chapter and Scene
+      files have a dedicated colour header in their icons. They are green, red and blue,
+      respectively. Project notes have a yellow header.</li>
+      <li>In addition, all novel documents starting with a level one or two header will have the
+      document label indicated with bold and underline emphasis in the project tree. You can
+      optionally disable this in Preferences.</li>
+    </ul>
+  <li>The last column of the project tree now only shows item status or importance. The class and
+  layout codes that used to follow the status icon has been dropped. The status label is shown
+  instead, but the label text can be switched off in Preferences if you just want a clean column
+  with only the coloured status icon.</li>
+</ul>
+
+<p>Due to the removal of layouts that dictate some elements of the formatting of exported projects,
+you will need to make some minor modifications to some of your project files. The changes you need
+to make are the following:</p>
+
+<ul>
+  <li>For the previous "Title Page" documents, you must change the header from "# Novel Title" to
+  "#! Novel Title" in order to preserve the previous functionality. Also text paragraphs are no
+  longer automatically centred. You can instead achieve this with paragraph formatting codes. These
+  are available from the Format menu.</li>
+  <li>For the previous "Plain Page" documents, which were used to force a page break in the
+  generated output, you must instead use the new page break code to achieve the same effect. This
+  is available from the Insert menu, but all you need to do is to add a line with "[NEW PAGE]"
+  where you want the new page to start.</li>
+  <li>For the previous "Unnumbered Chapter" documents you must change the header from "## Chapter
+  Name" to "##! Chapter Name" to indicate you want the automatic numbering disabled. The
+  alternative "## *Chapter Name" syntax has also been dropped.</li>
+</ul>
+
+<p>In any given project there should only be a handful of places where you  will need to make these
+modifications. Hopefully it won't be too much of an inconvenience. The benefit of these changes is
+that these formatting codes can be used anywhere in any document, no matter how you want to lay out
+your file structure.</p>
+<p>You will also find these changes described in the documentation.</p>
+
+<h4>Other Changes</h4>
+<p>Several improvements have been made to the project index, which means the index will be
+automatically rebuilt when you open a project for the first time in the new version. You will get a
+notification about this. This is expected.</p>
+<p>The ODT export tool has also been improved. The code that writes out text paragraphs has been
+rewritten and now conforms more closely to the open document standard. Most of these improvements
+will not be noticeable to you as a user, but you may notice that the exported document will now
+allow multiple consecutive spaces. Previously, adding two spaces, for instance, would be
+concatenated into a single space in the exported document.</p>
+
+<h4>GUI Changes</h4>
+<p>Due to the above changes, the GUI has been altered a bit. The main changes are in the project
+tree. These changes are also reflected in the details panel below the project tree, and to a lesser
+extent in the Outline tab.</p>
 
 <p><i>See also the <a href="https://github.com/vkbo/novelWriter/releases">Releases</a> page.</i></p>
-
-<hr/>
-
-<h2>Release Notes for 1.4</h2>
-<p><i>Released on 27 July 2021</i></p>
-
-<p>This release contains some new features and a lot of code refactoring. Among the main new
-features is paragraph alignment and indentation. Regular line breaks within paragraphs are now also
-supported. The changes are described in more detail below.</p>
-
-<h3>Internationalisation</h3>
-<p>Translation files have been added for Simplified Chinese by Qianzhi Long.</p>
-
-<h3>Line Breaks</h3>
-<p>The way line breaks inside paragraphs work has been changed. A single line break is now treated
-as a proper line break and will show up in the document viewer and exported documents. A single
-line break does not start a new paragraph, but forces a break inside the paragraph like a Shift +
-Enter does in most rich text editors. Two line breaks is still needed to start a new paragraph.</p>
-<p>The old syntax of adding two spaces at the end of a line to force a line break within a
-paragraph will still work as before, so there is no need to change your existing text if you've
-used this feature. However, there is a new highlighting feature that will show you where in the
-text you have redundant spaces. If you are used to having double spaces between sentences, you may
-want to switch off this highlighting feature in Preferences as it will also detect those.</p>
-<p>A helper function has been added to the Format menu that can look through a paragraph and remove
-line breaks in case you've been using line breaks inside your existing text under the assumption
-that the exporter and viewer will ignore them.</p>
-<p>I hope this change will not be too inconvenient. I believe the new behaviour will make more
-sense for most people. Especially considering some of the feedback I've gotten on how line breaks
-work. The original implementation was following the Markdown standard, but since novelWriter is not
-a proper Markdown editor and instead just borrows from Markdown, this behaviour always seemed a bit
-unnecessary.</p>
-
-<h3>Text Alignment and Indentation</h3>
-<p>The default text alignment is left or justified based on your preferences. For documents with
-the layout set to Title Page or Partitions, the default is centred. However, sometimes you may
-want to override this default. A new set of codes have therefore been added to allow specifying
-alignment as well as additional text margins on individual paragraphs.</p>
-<p>The logic of the syntax is as follows:</p>
-<p>A single angle bracket will push the text away from the edge it points away from. Therefore, a
-single '&gt;' before the paragraph, or a single '&lt;' after the paragraph, will add indentation on
-the respective side. It's perfectly valid to do this on both sides at the same time.</p>
-<p>A double set of angle brackets will push the text all the way towards the opposite side.
-Therefore, a double set of '&gt;&gt;' before the paragraph will indicate right alignment, and a
-double set of '&lt;&lt;' after the paragraph will force left alignment. Also here both can be used
-at the same time, which results in the paragraph being centred.</p>
-<p>Format menu entries and keyboard shortcuts have been added so that you don't have to memorise
-these codes.</p>
 
 </body>
 </html>

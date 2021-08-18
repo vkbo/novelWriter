@@ -1,5 +1,147 @@
 # novelWriter Changelog
 
+## Version 1.5 Beta 1 [2021-08-22]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+#### Layout Changes
+
+The main change in this release is the significant simplification of document layouts. Previously,
+there were seven different layouts available for novel documents, in addition to the one layout for
+project notes. The intention of the layouts were in part to define some default formatting
+behaviour when exporting your project, and partially a way to indicate whether a specific document
+was a chapter or scene.
+
+All the seven layouts for novel documents have now been merged into a single layout called simply
+"Novel Document". The other layout for "Project Note" remains unchanged. The functionality provided
+by the various novel layouts have been implemented in other ways. They are as follows:
+
+* The distinction between Partition, Chapter, Scene and Unnumbered Chapter is displayed in a new
+  way depending on your chosen user preferences,
+  * If you use one of the coloured icon themes, the icon for Partition, Chapter and Scene files
+    have a dedicated colour header in their icons. They are green, red and blue, respectively.
+    Project notes have a yellow header.
+  * In addition, all novel documents starting with a level one or two header will have the
+    document label indicated with bold and underline emphasis in the project tree. You can
+    optionally disable this in Preferences.
+* The last column of the project tree now only shows item status or importance. The class and
+  layout codes that used to follow the status icon has been dropped. The status label is shown
+  instead, but the label text can be switched off in Preferences if you just want a clean column
+  with only the coloured status icon.
+
+Due to the removal of layouts that dictate some elements of the formatting of exported projects,
+you will need to make some minor modifications to some of your project files. The changes you need
+to make are the following:
+
+* For the previous "Title Page" documents, you must change the header from `# Novel Title` to
+  `#! Novel Title` in order to preserve the previous functionality. Also text paragraphs are no
+  longer automatically centred. You can instead achieve this with paragraph formatting codes. These
+  are available from the Format menu.
+* For the previous "Plain Page" documents, which were used to force a page break in the generated
+  output, you must instead use the new page break code to achieve the same effect. This is
+  available from the Insert menu, but all you need to do is to add a line with `[NEW PAGE]` where
+  you want the new page to start.
+* For the previous "Unnumbered Chapter" documents you must change the header from `## Chapter Name`
+  to `##! Chapter Name` to indicate you want the automatic numbering disabled. The alternative
+  `## *Chapter Name` syntax has also been dropped.
+
+In any given project there should only be a handful of places where you  will need to make these
+modifications. Hopefully it won't be too much of an inconvenience. The benefit of these changes is
+that these formatting codes can be used anywhere in any document, no matter how you want to lay out
+your file structure.
+
+You will also find these changes described in the documentation.
+
+#### Other Changes
+
+Several improvements have been made to the project index, which means the index will be
+automatically rebuilt when you open a project for the first time in the new version. You will get a
+notification about this. This is expected.
+
+The ODT export tool has also been improved. The code that writes out text paragraphs has been
+rewritten and now conforms more closely to the open document standard. Most of these improvements
+will not be noticeable to you as a user, but you may notice that the exported document will now
+allow multiple consecutive spaces. Previously, adding two spaces, for instance, would be
+concatenated into a single space in the exported document.
+
+#### GUI Changes
+
+Due to the above changes, the GUI has been altered a bit. The main changes are in the project tree.
+These changes are also reflected in the details panel below the project tree, and to a lesser
+extent in the Outline tab.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix an inconsistency on the minimum required version of Qt and PyQt between the config files and
+  the code. PR #846.
+* Ensure that an item's status setting is parsed after its class when parsing the main project
+  XML. This is just a precaution as the XML writing function always writes the class setting first.
+  PR #852.
+
+**Open Document Exports**
+
+* The ODT file writer class has been improved, and the code that writes out paragraphs and header
+  section to the XML has been completely rewritten. The new algorithm is more robust and follows
+  the open document standard more closely. It still diverts from the standard in a few cases, but
+  these are the same points where Open Office and Libre Office diverts. Issue #783. PR #843.
+* The previous exporter class would sometimes insert additional line breaks in the generated XML
+  for paragraphs. This does not break with the open document standard, but it was unintentional and
+  trivial to fix. PR #843.
+
+**Novel Layouts**
+
+* All novel layouts, that is "TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER" and
+  "SCENE" have been merged into a single layout "DOCUMENT". The "NOTE" layout remains unchanged.
+  The special formatting of level one header on the title page and chapter headers for unnumbered
+  chapters is now handled by a modified header formatting code. Issue #835. PR #837.
+* A formatting code for manually inserting page breaks in the text has been added. In the process,
+  similar codes were added to insert vertical spaces in the text. Issue #835. PRs #837 and #848.
+* Dropping the layouts also triggered several changes to how project items are now displayed. The
+  difference between document types is now indicated with a combination of icons and item label
+  emphasis. The last column in the project tree also now only shows the item status or importance,
+  not item class and layout. The Item Details panel below the tree has also been updated to show
+  a usage description instead of layout as the last entry. Issue #835. PRs #847, #849 and #852.
+
+**Other Features**
+
+* A warning will pop up when you launch an alpha version of novelWriter. Since the main branch is
+  now also the development branch, people may run novelWriter directly from source without checking
+  out a release version. Alpha versions are not considered stable. PR #844.
+* Two new settings have been added to Preferences. One to control how much information is shown in
+  the last column of the project tree, and one to control whether emphasis is used to indicate
+  which novel documents contain a level one or two header. PRs #847 and #852.
+* The label on the first column of the project and novel trees have been renamed to "Project Tree"
+  and "Novel Outline", respectively. PR #852.
+* The Help > Documentation menu entry now always sends you to the online documentation if you have
+  an active internet connection. If you do not, novelWriter will try to open a local copy of the
+  documentation in your browser, if it is available. The local copy will be shipped with the
+  downloadable packages. For users running novelWriter from source, the steps needed are covered
+  in the documentation. PR #856.
+
+**Documentation**
+
+* The documentation has been updated and extended to cover the new layout behaviour and to provide
+  information and instruction on how to update the project with the new formats. PRs #850, #851 and
+  #855.
+
+**Code Improvements**
+
+* The loading and saving of user preferences in the config class has been improved a bit and the
+  code modernised to the current recommended practice for the ConfigParser module. PR #826.
+* The index class has been improved. Some data fields that were not being used have been dropped.
+  In addition, a new function has been added that provides a custom indentation scheme for JSON
+  files. The default indentation inserts far too many line breaks. The new function only indents up
+  to a certain level. Indenting the JSON files is useful for people who use version control
+  software on their projects. The limited indentation scheme reduces the number of diff lines as
+  well as reduces the overall file size. PR #840.
+
+----
+
 ## Version 1.4.1 [2021-07-27]
 
 ### Release Notes
