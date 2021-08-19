@@ -5,73 +5,75 @@
 ### Release Notes
 
 This is a beta release of the next release version, and is intended for testing purposes. Please be
-careful when using this version on live writing projects, and make sure you take frequent backups.
+careful when using this version on live writing projects, and make sure you make frequent backups.
 
-#### Layout Changes
+This release introduces a new project file format, which has been given a file format version 1.3.
+The project file and index is updated automatically when you open the project, which means you can
+no longer open it in an older version of novelWriter.
+
+You may also have to make a handful of changes in your novel documents as these are not updated
+automatically. However, the changes are minimal and in any case only affects the way your
+manuscript looks like when exported via the Build Novel Project tool. The details are described
+below.
+
+#### Novel Document Layouts
 
 The main change in this release is the significant simplification of document layouts. Previously,
 there were seven different layouts available for novel documents, in addition to the one layout for
-project notes. The intention of the layouts were in part to define some default formatting
-behaviour when exporting your project, and partially a way to indicate whether a specific document
-was a chapter or scene.
+project notes. The original intention of these layouts were partially to define some default
+formatting behaviour when exporting your project, and partially a way to indicate whether a
+specific document was a partition, chapter or scene.
 
-All the seven layouts for novel documents have now been merged into a single layout called simply
-"Novel Document". The other layout for "Project Note" remains unchanged. The functionality provided
-by the various novel layouts have been implemented in other ways. They are as follows:
+With this release, all the seven layouts for novel documents have been merged into a single layout
+called simply "Novel Document". The other layout for "Project Note" remains unchanged. The
+functionality provided by the various novel layouts have been implemented in other ways, and a few
+new formatting codes have been added to accommodate the formatting functionality lost with the
+removal of the layouts. They are all available in the Format and Insert menu.
 
-* The distinction between Partition, Chapter, Scene and Unnumbered Chapter is displayed in a new
-  way depending on your chosen user preferences,
-  * If you use one of the coloured icon themes, the icon for Partition, Chapter and Scene files
-    have a dedicated colour header in their icons. They are green, red and blue, respectively.
-    Project notes have a yellow header.
-  * In addition, all novel documents starting with a level one or two header will have the
-    document label indicated with bold and underline emphasis in the project tree. You can
-    optionally disable this in Preferences.
-* The last column of the project tree now only shows item status or importance. The class and
-  layout codes that used to follow the status icon has been dropped. The status label is shown
-  instead, but the label text can be switched off in Preferences if you just want a clean column
-  with only the coloured status icon.
+The changes you need to make to your project should be limited to altering a handful of titles and
+maybe insert a page break code here and there. The only title formats you need to update are those
+for the main novel title and for your unnumbered chapters, if you have any.
 
-Due to the removal of layouts that dictate some elements of the formatting of exported projects,
-you will need to make some minor modifications to some of your project files. The changes you need
-to make are the following:
+Novel titles need to be altered from `# Novel Title` to `#! Novel Title` and unnumbered chapters
+from `## Chapter Name` or `## *Chapter Name` to `##! Chapter Name`. That is all. For inserting page
+breaks, you can add a single line with the command `[NEW PAGE]` where you want the break to be
+inserted. As before, page breaks are automatically inserted in front of all partition and chapter
+titles.
 
-* For the previous "Title Page" documents, you must change the header from `# Novel Title` to
-  `#! Novel Title` in order to preserve the previous functionality. Also text paragraphs are no
-  longer automatically centred. You can instead achieve this with paragraph formatting codes. These
-  are available from the Format menu.
-* For the previous "Plain Page" documents, which were used to force a page break in the generated
-  output, you must instead use the new page break code to achieve the same effect. This is
-  available from the Insert menu, but all you need to do is to add a line with `[NEW PAGE]` where
-  you want the new page to start.
-* For the previous "Unnumbered Chapter" documents you must change the header from `## Chapter Name`
-  to `##! Chapter Name` to indicate you want the automatic numbering disabled. The alternative
-  `## *Chapter Name` syntax has also been dropped.
-
-In any given project there should only be a handful of places where you  will need to make these
-modifications. Hopefully it won't be too much of an inconvenience. The benefit of these changes is
-that these formatting codes can be used anywhere in any document, no matter how you want to lay out
-your file structure.
-
-You will also find these changes described in the documentation.
-
-#### Other Changes
-
-Several improvements have been made to the project index, which means the index will be
-automatically rebuilt when you open a project for the first time in the new version. You will get a
-notification about this. This is expected.
-
-The ODT export tool has also been improved. The code that writes out text paragraphs has been
-rewritten and now conforms more closely to the open document standard. Most of these improvements
-will not be noticeable to you as a user, but you may notice that the exported document will now
-allow multiple consecutive spaces. Previously, adding two spaces, for instance, would be
-concatenated into a single space in the exported document.
+You will find these changes described in more detail the documentation in the
+"[Format 1.3 Changes](https://novelwriter.readthedocs.io/en/latest/usage_projectformat.html#a-prjfmt-1-3)"
+section.
 
 #### GUI Changes
 
 Due to the above changes, the GUI has been altered a bit. The main changes are in the project tree.
 These changes are also reflected in the details panel below the project tree, and to a lesser
 extent in the Outline tab.
+
+The layouts were previously a way to indicate the purpose of a specific novel document, like
+whether it was a chapter or scene. With these layouts gone, the distinction is instead indicated by
+other visual means.
+
+The project index will now record the level of the first header of your document, and select a
+different icon for documents with a partition, chapter or scene header. These are colour coded as
+green, red and blue respectively. This only works for the coloured icon themes. The project notes
+have also received a new icon, with a yellow colour code.
+
+In addition, novel documents with a partition or chapter header will have the document label viewed
+as bold and underlined. This feature can be disabled in Preferences if you want a cleaner look in
+the project tree.
+
+#### Other Changes
+
+Several improvements have been made to the project index, which means the index will be
+automatically rebuilt when you open a project for the first time in the new version. You will get a
+notification about this.
+
+The ODT export tool has also been improved. The code that writes out text paragraphs has been
+rewritten and now conforms more closely to the Open Document standard. Most of these improvements
+will not be noticeable to you as a user, but you may notice that the exported document will now
+allow multiple consecutive spaces. Previously, two spaces, or more, would be concatenated into a
+single space in the exported document.
 
 ### Detailed Changelog
 
