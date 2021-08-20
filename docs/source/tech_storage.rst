@@ -35,9 +35,9 @@ your own backup solution.
    extensions `.json` as JSON files are used to cache the index and various run-time settings and
    are generally large files that change often. You'd also want to exclude the ``cache`` folder.
 
-The project XML file is indent-formatted, suitable for diff tools and version control since most of
-the file will stay static, although a timesetamp is set in the meta section on line 2, and various
-meta data entries incremented, on each save.
+The project XML file is indent-formatted, and is suitable for diff tools and version control since
+most of the file will stay static, although a timesetamp is set in the meta section on line 2, and
+various meta data entries incremented, on each save.
 
 
 Project Documents
@@ -45,7 +45,7 @@ Project Documents
 
 All the project documents are saved in a folder in the main project folder named ``content``. Each
 document has a file handle taken from the first 13 characters of a SHA256 hash of the system time
-plus an incremented number when the document was first created. The documents are saved with a
+when the document was first created, plus an incremented number. The documents are saved with a
 filename assembled from this hash and the file extension ``.nwd``.
 
 If you wish to find the file system location of a document in the project, you can either look it
@@ -60,7 +60,7 @@ what the user names the document within the project, or changes it to.
 
 Each document file contains a plain text version of the text from the editor. The file can in
 principle be edited in any text editor, and is suitable for diffing and version control if so
-desired. Just make sure the file remains in utf-8 encoding, otherwise unicode chatracters may
+desired. Just make sure the file remains in utf-8 encoding, otherwise unicode characters may
 become mangled when the file is opened in novelWriter again.
 
 Editing these files is generally not recommended outside of special circumstances, whatever they
@@ -115,7 +115,7 @@ project, and the word counts within each header section.
 
 The integrity of the index is checked when the file is loaded. It is possible to corrupt the index
 if the file is manually edited and manipulated, so the check is important to avoid sudden crashes
-of novelWriter. if the file contains errors, novelWriter will automatically build it anew. If the
+of novelWriter. If the file contains errors, novelWriter will automatically build it anew. If the
 check somehow fails and novelWriter keeps crashing, you can delete the file manually and rebuild
 the index. If this too fails, you have likely encountered a bug.
 

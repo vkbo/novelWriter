@@ -23,11 +23,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import nw
 import logging
 
-from http.client import HTTPSConnection
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 
@@ -137,31 +135,13 @@ class GuiMainMenu(QMenuBar):
         QDesktopServices.openUrl(QUrl(theUrl))
         return True
 
-    def _openDocumentation(self):
-        """Open the documentation, and select whether it should be the
-        stable or latest version. If no internet connection, open
-        local.
+    def _openUserManualFile(self):
+        """Open the documentation in PDF format.
         """
-        if nw.__hexversion__[-2] == "f":
-            docsPath = "/en/stable/"
-        else:
-            docsPath = "/en/latest/"
-
-        try:
-            conn = HTTPSConnection(nw.__docurl__.replace("https://", ""))
-            conn.request("HEAD", docsPath)
-            resp = conn.getresponse()
-            hasAccess = resp.code == 200
-        except Exception:
-            hasAccess = False
-
-        docsFile = os.path.join(self.mainConf.assetPath, "help", "html", "index.html")
-        if hasAccess or not os.path.isfile(docsFile):
-            self._openWebsite(nw.__docurl__ + docsPath)
-        else:
-            self._openWebsite(urljoin("file:", pathname2url(docsFile)))
-
-        return
+        if self.mainConf.pdfDocs is None:
+            return False
+        QDesktopServices.openUrl(QUrl(urljoin("file:", pathname2url(self.mainConf.pdfDocs))))
+        return True
 
     ##
     #  Menu Builders
@@ -1106,12 +1086,20 @@ class GuiMainMenu(QMenuBar):
         # Help > Separator
         self.helpMenu.addSeparator()
 
-        # Help > Documentation
-        self.aHelpDocs = QAction(self.tr("Documentation"), self)
+        # Help > User Manual (Online)
+        self.aHelpDocs = QAction(self.tr("User Manual (Online)"), self)
         self.aHelpDocs.setStatusTip(self.tr("Open documentation in browser"))
-        self.aHelpDocs.triggered.connect(self._openDocumentation)
         self.aHelpDocs.setShortcut("F1")
+        self.aHelpDocs.triggered.connect(lambda: self._openWebsite(nw.__docurl__))
         self.helpMenu.addAction(self.aHelpDocs)
+
+        # Help > User Manual (PDF)
+        if self.mainConf.pdfDocs is not None:
+            self.aPdfDocs = QAction(self.tr("User Manual (PDF)"), self)
+            self.aPdfDocs.setStatusTip(self.tr("Open PDF documentation"))
+            self.aPdfDocs.setShortcut("Shift+F1")
+            self.aPdfDocs.triggered.connect(self._openUserManualFile)
+            self.helpMenu.addAction(self.aPdfDocs)
 
         # Help > Separator
         self.helpMenu.addSeparator()

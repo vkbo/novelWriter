@@ -157,13 +157,15 @@ The documentation can then be built from the ``docs`` folder in the source code 
 If successful, the documentation should be available in the ``docs/build/html`` folder and you can
 open the ``index.html`` file in your browser.
 
-You can also build the documentation by using the setup script:
+You can also build the PDF documentation locally using the setup script:
 
 .. code-block:: console
 
-   python setup.py docs
+   python setup.py pdfdocs
 
-This does the same as the ``make help`` command, but in addition it copies the documentation into
-novelWriter's assets folder. This will make it possible to open the documentation from inside of
-novelWriter by pressing :kbd:`F1` even without an internet connection, as it will instead open the
-local copy.
+This will build the documentation as a PDF using LaTeX. The file will then be copied into the
+assets folder and made available in the :guilabel:`Help` menu in novelWriter. The Sphinx build
+system has a few extra dependencies when building the PDF. Please check the `Sphinx Docs`_ if you
+have any issues.
+
+.. _Sphinx Docs: https://www.sphinx-doc.org/
