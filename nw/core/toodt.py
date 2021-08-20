@@ -107,7 +107,7 @@ class ToOdt(Tokenizer):
         self.headerText = ""
 
         # Internal
-        self._fontFamily  = "&apos;Liberation Sans&apos;"
+        self._fontFamily  = "&apos;Liberation Serif&apos;"
         self._fontPitch   = "variable"
         self._fSizeTitle  = "30pt"
         self._fSizeHead1  = "24pt"
@@ -238,6 +238,9 @@ class ToOdt(Tokenizer):
         self._lineHeight  = f"{round(100 * self.lineHeight):d}%"
         self._blockIndent = self._emToCm(self.blockIndent)
         self._textAlign   = "justify" if self.doJustify else "left"
+
+        # Clear Errors
+        self._errData = []
 
         # Document Header
         # ===============
@@ -546,8 +549,8 @@ class ToOdt(Tokenizer):
             rFmt += "_B%s b_ " % (" "*len(tText))
             if len(theBits) > 1:
                 if theBits[0] == nwKeyWords.TAG_KEY:
-                    rTxt += "%s" % theBits[1]
-                    rFmt += "%s" % (" "*len(theBits[1]))
+                    rTxt += theBits[1]
+                    rFmt += " "*len(theBits[1])
                 else:
                     tTags = ", ".join(theBits[1:])
                     rTxt += tTags
@@ -585,12 +588,15 @@ class ToOdt(Tokenizer):
         tTemp = ""
         xFmt = 0x00
         pFmt = 0x00
+        pErr = 0
 
         parProc = XMLParagraph(xElem)
 
         for i, c in enumerate(theText):
 
-            if theFmt[i] == "_":
+            if theFmt[i] == " ":
+                tTemp += c
+            elif theFmt[i] == "_":
                 continue
             elif theFmt[i] == "B":
                 xFmt |= X_BLD
@@ -604,9 +610,8 @@ class ToOdt(Tokenizer):
                 xFmt |= X_DEL
             elif theFmt[i] == "s":
                 xFmt &= M_DEL
-
-            if theFmt[i] == " ":
-                tTemp += c
+            else:
+                pErr += 1
 
             if xFmt != pFmt:
                 if pFmt == 0x00:
@@ -623,6 +628,9 @@ class ToOdt(Tokenizer):
             parProc.appendText(tTemp)
         else:
             parProc.appendSpan(tTemp, self._textStyle(pFmt))
+
+        if pErr > 0:
+            self._errData.append("Unknown format tag encountered")
 
         nErr, errMsg = parProc.checkError()
         if nErr > 0:  # pragma: no cover
@@ -652,23 +660,23 @@ class ToOdt(Tokenizer):
 
         return newName
 
-    def _textStyle(self, styleCode):
+    def _textStyle(self, tFmt):
         """Return a text style for a given style code.
         """
-        if styleCode in self._autoText:
-            return self._autoText[styleCode][0]
+        if tFmt in self._autoText:
+            return self._autoText[tFmt][0]
 
         newName = "T%d" % (len(self._autoText) + 1)
         newStyle = ODTTextStyle()
-        if styleCode & X_BLD:
+        if tFmt & X_BLD:
             newStyle.setFontWeight("bold")
-        if styleCode & X_ITA:
+        if tFmt & X_ITA:
             newStyle.setFontStyle("italic")
-        if styleCode & X_DEL:
+        if tFmt & X_DEL:
             newStyle.setStrikeStyle("solid")
             newStyle.setStrikeType("single")
 
-        self._autoText[styleCode] = (newName, newStyle)
+        self._autoText[tFmt] = (newName, newStyle)
 
         return newName
 
