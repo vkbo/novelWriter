@@ -71,6 +71,7 @@ class Config:
         self.themeRoot = None   # The full path to the nw/assets/themes folder
         self.dictPath  = None   # The full path to the nw/assets/dict folder
         self.iconPath  = None   # The full path to the nw/assets/icons folder
+        self.pdfDocs   = None   # The location of the PDF manual, if it exists
 
         # Runtime Settings and Variables
         self.confChanged = False  # True whenever the config has chenged, false after save
@@ -355,6 +356,16 @@ class Config:
             self.spellTool = nwConst.SP_INTERNAL
         if self.spellLanguage is None:
             self.spellLanguage = "en"
+
+        # Look for a PDF version of the manual
+        lookIn = [
+            os.path.join(self.appRoot, "UserManual.pdf"),
+            os.path.join(self.assetPath, "help", "manual.pdf"),
+        ]
+        for pdfDocs in lookIn:
+            if os.path.isfile(pdfDocs):
+                self.pdfDocs = pdfDocs
+                break
 
         logger.debug("Config initialisation complete")
 

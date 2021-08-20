@@ -1373,6 +1373,8 @@ class GuiMain(QMainWindow):
 
         # Help
         self.addAction(self.mainMenu.aHelpDocs)
+        if self.mainConf.pdfDocs is not None:
+            self.addAction(self.mainMenu.aPdfDocs)
 
         return True
 
