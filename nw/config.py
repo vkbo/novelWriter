@@ -359,8 +359,8 @@ class Config:
 
         # Look for a PDF version of the manual
         lookIn = [
-            os.path.join(self.appRoot, "UserManual.pdf"),
             os.path.join(self.assetPath, "help", "manual.pdf"),
+            os.path.join(self.appRoot, "UserManual.pdf"),
         ]
         for pdfDocs in lookIn:
             if os.path.isfile(pdfDocs):
