@@ -18,6 +18,8 @@ i18n/*.qph
 # Documentation
 /docs/build/
 /nw/assets/help/html/
+/nw/assets/help/manual.pdf
+/UserManual.pdf
 *.qch
 *.qhc
 

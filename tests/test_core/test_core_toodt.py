@@ -199,10 +199,10 @@ def testCoreToOdt_TextFormatting(mockGUI):
 
     # Incorrectly Formatted Text
     theDoc.initDocument()
-    theTxt = "A **few** _words"
-    theFmt = "  _b   b_ I     "
+    theTxt = "A **few** _wordsXXX"
+    theFmt = "  _b   b_ I     XXX"
     theDoc._addTextPar("Standard", oStyle, theTxt, theFmt=theFmt)
-    assert theDoc.getErrors() == []
+    assert theDoc.getErrors() == ["Unknown format tag encountered"]
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:p text:style-name=\"Standard\">"

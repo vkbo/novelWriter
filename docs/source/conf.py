@@ -4,20 +4,15 @@
 # This file does only contain a selection of the most common options. For a
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
-
-# -- Path setup --------------------------------------------------------------
-
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import sys
-# sys.path.insert(0, os.path.abspath("."))
+
+# -- Imports -----------------------------------------------------------------
+
 import os
 import time
-import sphinx_rtd_theme # noqa: F401
+import sphinx_rtd_theme  # noqa: F401
 
-# -- Project information -----------------------------------------------------
+# -- Project Information -----------------------------------------------------
 
 project = "novelWriter"
 copyright = "2018–2021, Veronica Berglyd Olsen"
@@ -28,7 +23,7 @@ version = "1.5"
 # The full version, including alpha/beta/rc tags
 release = "1.5-beta1"
 
-# -- General configuration ---------------------------------------------------
+# -- General Configuration ---------------------------------------------------
 
 os.environ["TZ"] = "Europe/Oslo"
 time.tzset()
@@ -45,7 +40,7 @@ language = None
 exclude_patterns = []
 pygments_style = None
 
-# -- Options for HTML output -------------------------------------------------
+# -- Options for HTML Output -------------------------------------------------
 
 html_theme = "sphinx_rtd_theme"
 html_logo = "images/novelwriter.png"
@@ -64,48 +59,32 @@ html_css_files = [
     "css/custom.css",
 ]
 
-# Custom sidebar templates, must be a dictionary that maps document names
-# to template names.
-# The default sidebars (for documents that don"t match any pattern) are
-# defined by theme itself.  Builtin themes are using these templates by
-# default: ``["localtoc.html", "relations.html", "sourcelink.html",
-# "searchbox.html"]``.
-# html_sidebars = {}
-
-# -- Options for HTMLHelp output ---------------------------------------------
+# -- Options for HTMLHelp Output ---------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "novelWriterDoc"
 
-# -- Options for LaTeX output ------------------------------------------------
+# -- Options for LaTeX Output ------------------------------------------------
 
 latex_elements = {
-    # The paper size ("letterpaper" or "a4paper").
-    #
-    # "papersize": "letterpaper",
-
-    # The font size ("10pt", "11pt" or "12pt").
-    #
-    # "pointsize": "10pt",
-
-    # Additional stuff for the LaTeX preamble.
-    #
-    # "preamble": "",
-
-    # Latex figure (float) alignment
-    #
-    # "figure_align": "htbp",
+    "papersize": "a4paper",
+    "pointsize": "11pt",
+    "preamble": (
+        "\\usepackage[utf8]{inputenc}\n"
+        "\\DeclareUnicodeCharacter{2212}{\\textendash}\n"
+    ),
+    "figure_align": "htbp",
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [(
-    master_doc, "novelWriter.tex", "novelWriter Documentation",
+    master_doc, "manual.tex", "novelWriter Documentation",
     author, "manual"
 )]
 
-# -- Options for manual page output ------------------------------------------
+# -- Options for Man Page Output ---------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
@@ -113,7 +92,7 @@ man_pages = [(
     master_doc, "novelwriter", "novelWriter Documentation", [author], 1
 )]
 
-# -- Options for Texinfo output ----------------------------------------------
+# -- Options for Texinfo Output ----------------------------------------------
 
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
@@ -123,7 +102,7 @@ texinfo_documents = [(
     "novelWriter", "Markdown-like editor for novels.", "Miscellaneous"
 )]
 
-# -- Options for Epub output -------------------------------------------------
+# -- Options for EPub Output -------------------------------------------------
 
 # Bibliographic Dublin Core info.
 epub_title = project

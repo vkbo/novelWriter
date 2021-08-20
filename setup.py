@@ -222,35 +222,51 @@ def buildQtDocs():
 
 
 ##
-#  Html Documentation Builder (docs)
+#  Html or PDF Documentation Builder (docs, docs_pdf)
 ##
 
-def buildHtmlDocs():
-    """This function will build the Sphinx HTML documentation. The files
-    are then copied into the nw/assets/help/html directory and can be
-    included in builds.
+def buildLocalDocs(bldFmt="HTML"):
+    """This function will build the Sphinx HTML or PDF documentation.
+    For HTML, the files are then copied into the nw/assets/help/html
+    directory and can be included in builds.
     """
-    buildDir = os.path.join("docs", "build", "html")
-    helpDir  = os.path.join("nw", "assets", "help", "html")
-
     print("")
     print("Building Documentation")
     print("======================")
+    print("Format: %s" % bldFmt)
     print("")
+
+    if bldFmt == "HTML":
+        buildDir = os.path.join("docs", "build", "html")
+    elif bldFmt == "PDF":
+        buildDir = os.path.join("docs", "build", "latex")
+    else:
+        print("Docs Build Error:")
+        return
 
     buildFail = False
     try:
         subprocess.call(["make", "-C", "docs", "clean"])
-        subprocess.call(["make", "-C", "docs", "html"])
+        if bldFmt == "HTML":
+            subprocess.call(["make", "-C", "docs", "html"])
+        elif bldFmt == "PDF":
+            subprocess.call(["make", "-C", "docs", "latexpdf"])
     except Exception as e:
         print("Docs Build Error:")
         print(str(e))
         buildFail = True
 
     try:
-        if os.path.isdir(helpDir):
-            shutil.rmtree(helpDir)
-        shutil.copytree(buildDir, helpDir)
+        if bldFmt == "HTML":
+            helpDir = os.path.join("nw", "assets", "help", "html")
+            if os.path.isdir(helpDir):
+                shutil.rmtree(helpDir)
+            shutil.copytree(buildDir, helpDir)
+        elif bldFmt == "PDF":
+            os.rename(
+                os.path.join(buildDir, "manual.pdf"),
+                os.path.join("nw", "assets", "help", "manual.pdf")
+            )
     except Exception as e:
         print("Docs Build Error:")
         print(str(e))
@@ -262,7 +278,11 @@ def buildHtmlDocs():
         print("")
         print("Dependencies:")
         print(" * pip install sphinx")
-        print(" * pip install sphinx-rtd-theme")
+        if bldFmt == "HTML":
+            print(" * pip install sphinx-rtd-theme")
+        elif bldFmt == "PDF":
+            print(" * Package latexmk")
+            print(" * LaTeX build system")
         sys.exit(1)
     else:
         print("Documentation build: OK")
@@ -401,7 +421,7 @@ def makeMinimalPackage(targetOS):
 
     # Build docs
     try:
-        buildHtmlDocs()
+        buildLocalDocs(bldFmt="PDF")
     except Exception as e:
         print("Failed with error:")
         print(str(e))
@@ -440,7 +460,19 @@ def makeMinimalPackage(targetOS):
     if os.path.isfile(outFile):
         os.unlink(outFile)
 
-    rootFiles = ["LICENSE.md", "README.md", "CHANGELOG.md", "requirements.txt", "setup.py"]
+    # Add the manual also to the root
+    pdfDocs = os.path.join("nw", "assets", "help", "manual.pdf")
+    if os.path.isfile(pdfDocs):
+        os.rename(pdfDocs, "UserManual.pdf")
+
+    rootFiles = [
+        "CHANGELOG.md",
+        "LICENSE.md",
+        "README.md",
+        "requirements.txt",
+        "setup.py",
+        "UserManual.pdf",
+    ]
 
     with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=9) as zipObj:
 
@@ -1195,7 +1227,8 @@ if __name__ == "__main__":
         "",
         "Additional Builds:",
         "",
-        "    docs           Build the help documentation as HTML."
+        "    htmldocs       Build the help documentation as HTML.",
+        "    pdfdocs        Build the help documentation as PDF (requires LaTeX).",
         "    qthelp         Build the help documentation for use with the Qt Assistant.",
         "    qtlupdate      Update the translation files for internationalisation.",
         "    qtlrelease     Build the language files for internationalisation.",
@@ -1262,9 +1295,13 @@ if __name__ == "__main__":
     # Additional Builds
     # =================
 
-    if "docs" in sys.argv:
-        sys.argv.remove("docs")
-        buildHtmlDocs()
+    if "htmldocs" in sys.argv:
+        sys.argv.remove("htmldocs")
+        buildLocalDocs(bldFmt="HTML")
+
+    if "pdfdocs" in sys.argv:
+        sys.argv.remove("pdfdocs")
+        buildLocalDocs(bldFmt="PDF")
 
     if "qthelp" in sys.argv:
         sys.argv.remove("qthelp")

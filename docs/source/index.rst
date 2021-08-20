@@ -2,29 +2,31 @@
 novelWriter |release|
 #####################
 
-.. image:: https://github.com/vkbo/novelWriter/workflows/python%203.8/badge.svg?branch=main
-   :target: https://github.com/vkbo/novelWriter/actions
-   :alt: Python Tests
+.. only:: html
 
-.. image:: https://codecov.io/gh/vkbo/novelWriter/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/vkbo/novelWriter
-   :alt: Code Coverage
+   .. image:: https://github.com/vkbo/novelWriter/workflows/python%203.8/badge.svg?branch=main
+      :target: https://github.com/vkbo/novelWriter/actions
+      :alt: Python Tests
 
-.. image:: https://readthedocs.org/projects/novelwriter/badge/?version=latest
-   :target: https://novelwriter.readthedocs.io/en/latest/?badge=latest
-   :alt: Documentation
+   .. image:: https://codecov.io/gh/vkbo/novelWriter/branch/main/graph/badge.svg
+      :target: https://codecov.io/gh/vkbo/novelWriter
+      :alt: Code Coverage
 
-.. image:: https://img.shields.io/github/v/release/vkbo/novelwriter
-   :target: https://github.com/vkbo/novelWriter/releases
-   :alt: GitHub Release
+   .. image:: https://readthedocs.org/projects/novelwriter/badge/?version=latest
+      :target: https://novelwriter.readthedocs.io/en/latest/?badge=latest
+      :alt: Documentation
 
-.. image:: https://img.shields.io/pypi/v/novelwriter
-   :target: https://pypi.org/project/novelWriter/
-   :alt: PyPI
+   .. image:: https://img.shields.io/github/v/release/vkbo/novelwriter
+      :target: https://github.com/vkbo/novelWriter/releases
+      :alt: GitHub Release
 
-.. image:: https://img.shields.io/pypi/pyversions/novelwriter
-   :target: https://pypi.org/project/novelWriter/
-   :alt: Python Version
+   .. image:: https://img.shields.io/pypi/v/novelwriter
+      :target: https://pypi.org/project/novelWriter/
+      :alt: PyPI
+
+   .. image:: https://img.shields.io/pypi/pyversions/novelwriter
+      :target: https://pypi.org/project/novelWriter/
+      :alt: Python Version
 
 **Last Updated:** |today|
 
@@ -101,6 +103,7 @@ for your operating system for further details.
    :caption: Under the Hood
 
    tech_storage
+   tech_tests
 
 
 Indices and Tables
