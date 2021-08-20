@@ -94,6 +94,7 @@ single space in the exported document.
 * The previous exporter class would sometimes insert additional line breaks in the generated XML
   for paragraphs. This does not break with the open document standard, but it was unintentional and
   trivial to fix. PR #843.
+* Some final clean-up was included in PR #859.
 
 **Novel Layouts**
 
@@ -119,17 +120,17 @@ single space in the exported document.
   which novel documents contain a level one or two header. PRs #847 and #852.
 * The label on the first column of the project and novel trees have been renamed to "Project Tree"
   and "Novel Outline", respectively. PR #852.
-* The Help > Documentation menu entry now always sends you to the online documentation if you have
-  an active internet connection. If you do not, novelWriter will try to open a local copy of the
-  documentation in your browser, if it is available. The local copy will be shipped with the
-  downloadable packages. For users running novelWriter from source, the steps needed are covered
-  in the documentation. PR #856.
+* The Help > User Manual (Online) menu entry sends you to the online documentation, and the local
+  documentation is handled by Help > User Manual (PDF), replacing the old Qt Assistant
+  implementation. PRs #856 and #859.
 
 **Documentation**
 
 * The documentation has been updated and extended to cover the new layout behaviour and to provide
   information and instruction on how to update the project with the new formats. PRs #850, #851 and
   #855.
+* The technical section of the documentation has been updated, and information on how to run tests
+  has been added. PR #859.
 
 **Code Improvements**
 
