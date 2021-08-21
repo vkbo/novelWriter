@@ -33,49 +33,44 @@ def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
     """
     monkeypatch.setattr("nw.guimain.GuiMain", MockGuiMain)
 
-    # Testmode launch
-    nwGUI = nw.main(
-        ["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
-    )
+    # TestMode Launch
+    nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
     assert isinstance(nwGUI, MockGuiMain)
 
-    # Darwin launch
+    # Darwin Launch
+    caplog.clear()
+    osDarwin = nw.CONFIG.osDarwin
+    nw.CONFIG.osDarwin = True
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "Foundation", None)
-        caplog.clear()
-        osDarwin = nw.CONFIG.osDarwin
-        nw.CONFIG.osDarwin = True
-        nwGUI = nw.main(
-            ["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
-        )
+        nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
         assert isinstance(nwGUI, MockGuiMain)
         assert "Foundation" in caplog.text
-        nw.CONFIG.osDarwin = osDarwin
+
+    nw.CONFIG.osDarwin = osDarwin
 
     # Windows Launch
+    caplog.clear()
+    osWindows = nw.CONFIG.osWindows
+    nw.CONFIG.osWindows = True
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "ctypes", None)
-        caplog.clear()
-        osWindows = nw.CONFIG.osWindows
-        nw.CONFIG.osWindows = True
-        nwGUI = nw.main(
-            ["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
-        )
+        nwGUI = nw.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
         assert isinstance(nwGUI, MockGuiMain)
         assert "ctypes" in caplog.text
-        nw.CONFIG.osWindows = osWindows
 
-    # Normal launch
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.__init__", lambda *args: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setApplicationName", lambda *args: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setApplicationVersion", lambda *args: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setWindowIcon", lambda *args: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setOrganizationDomain", lambda *args: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.exec_", lambda *args: 0)
+    nw.CONFIG.osWindows = osWindows
+
+    # Normal Launch
+    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.__init__", lambda *a: None)
+    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setApplicationName", lambda *a: None)
+    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setApplicationVersion", lambda *a: None)
+    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setWindowIcon", lambda *a: None)
+    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setOrganizationDomain", lambda *a: None)
+    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.exec_", lambda *a: 0)
     with pytest.raises(SystemExit) as ex:
         nw.main(["--config=%s" % tmpDir, "--data=%s" % tmpDir])
-
-    assert ex.value.code == 0
+        assert ex.value.code == 0
 
 # END Test testBaseInit_Launch
 
