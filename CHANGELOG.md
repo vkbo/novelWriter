@@ -124,7 +124,7 @@ single space in the exported document.
   and "Novel Outline", respectively. PR #852.
 * The Help > User Manual (Online) menu entry sends you to the online documentation, and the local
   documentation is handled by Help > User Manual (PDF), replacing the old Qt Assistant
-  implementation. PRs #856 and #859.
+  implementation. PRs #856, #859 and #862.
 
 **Documentation**
 
