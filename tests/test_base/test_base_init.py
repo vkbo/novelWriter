@@ -40,6 +40,7 @@ def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
     assert isinstance(nwGUI, MockGuiMain)
 
     # Darwin launch
+    caplog.clear()
     monkeypatch.setitem(sys.modules, "Foundation", None)
     osDarwin = nw.CONFIG.osDarwin
     nw.CONFIG.osDarwin = True
@@ -47,8 +48,20 @@ def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
         ["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
     )
     assert isinstance(nwGUI, MockGuiMain)
-    assert "Foundation" in caplog.messages[1]
+    assert "Foundation" in caplog.text
     nw.CONFIG.osDarwin = osDarwin
+
+    # Widnows Launch
+    caplog.clear()
+    monkeypatch.setitem(sys.modules, "ctypes", None)
+    osWindows = nw.CONFIG.osWindows
+    nw.CONFIG.osWindows = True
+    nwGUI = nw.main(
+        ["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
+    )
+    assert isinstance(nwGUI, MockGuiMain)
+    assert "ctypes" in caplog.text
+    nw.CONFIG.osWindows = osWindows
 
     # Normal launch
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.__init__", lambda *args: None)
