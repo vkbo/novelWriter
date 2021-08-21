@@ -262,7 +262,16 @@ def main(sysArgs=None):
             bundle = NSBundle.mainBundle()
             info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
             info["CFBundleName"] = "novelWriter"
-        except ImportError:
+        except Exception:
+            logger.error("Failed to set application name")
+            logException()
+
+    elif CONFIG.osWindows:
+        try:
+            import ctypes
+            appID = "io.novelwriter.%s" % __version__
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)
+        except Exception:
             logger.error("Failed to set application name")
             logException()
 
