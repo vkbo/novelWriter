@@ -262,7 +262,7 @@ def main(sysArgs=None):
             bundle = NSBundle.mainBundle()
             info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
             info["CFBundleName"] = "novelWriter"
-        except ImportError:
+        except (ImportError, AttributeError):
             logger.error("Failed to set application name")
             logException()
 
@@ -271,8 +271,8 @@ def main(sysArgs=None):
             import ctypes
             appID = "io.novelwriter.%s" % __version__
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)
-        except ImportError:
-            logger.error("Failed to set application process id")
+        except (ImportError, AttributeError):
+            logger.error("Failed to set application name")
             logException()
 
     # Import GUI (after dependency checks), and launch
