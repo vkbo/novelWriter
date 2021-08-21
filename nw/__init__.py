@@ -266,6 +266,15 @@ def main(sysArgs=None):
             logger.error("Failed to set application name")
             logException()
 
+    elif CONFIG.osWindows:
+        try:
+            import ctypes
+            appID = "io.novelwriter.%s" % __version__
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)
+        except ImportError:
+            logger.error("Failed to set application process id")
+            logException()
+
     # Import GUI (after dependency checks), and launch
     from nw.guimain import GuiMain
     if testMode:
