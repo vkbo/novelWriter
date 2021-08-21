@@ -24,15 +24,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import nw
+import json
 import logging
 
 from datetime import datetime
+from urllib.request import Request, urlopen
 
 from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QGridLayout, qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QLabel
 )
+
+from nw.common import logException
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +111,23 @@ class GuiUpdates(QDialog):
         """Check for latest release.
         """
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+
+        urlReq = Request("https://api.github.com/repos/vkbo/novelwriter/releases/latest")
+        urlReq.add_header("User-Agent", "Mozilla/5.0 (compatible; novelWriter (Python))")
+        urlReq.add_header("Accept", "application/vnd.github.v3+json")
+
+        try:
+            urlData = urlopen(urlReq, timeout=10)
+            rawData = json.loads(urlData.read().decode())
+        except Exception:
+            logger.error("Failed to contact GitHub API")
+            logException()
+
+        latestVersion = rawData.get("tag_name", "Unknown")
+        self.latestValue.setText(latestVersion)
+
         qApp.restoreOverrideCursor()
+
         return
 
     ##
