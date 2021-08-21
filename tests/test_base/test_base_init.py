@@ -54,6 +54,7 @@ def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
 
     # Windows Launch
     with monkeypatch.context() as mp:
+        mp.setitem(sys.modules, "ctypes", None)
         caplog.clear()
         osWindows = nw.CONFIG.osWindows
         nw.CONFIG.osWindows = True
