@@ -1136,6 +1136,12 @@ class GuiMainMenu(QMenuBar):
         self.aWebsite.triggered.connect(lambda: self._openWebsite(nw.__url__))
         self.helpMenu.addAction(self.aWebsite)
 
+        # Document > Check for Updates
+        self.aUpdates = QAction(self.tr("Check for Updates"), self)
+        self.aUpdates.setStatusTip(self.tr("Check for latest release of novelWriter"))
+        self.aUpdates.triggered.connect(lambda: self.theParent.showUpdatesDialog())
+        self.helpMenu.addAction(self.aUpdates)
+
         return
 
 # END Class GuiMainMenu

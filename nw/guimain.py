@@ -44,7 +44,7 @@ from nw.gui import (
 )
 from nw.dialogs import (
     GuiAbout, GuiDocMerge, GuiDocSplit, GuiItemEditor, GuiPreferences,
-    GuiProjectLoad, GuiProjectSettings, GuiWordList
+    GuiProjectLoad, GuiProjectSettings, GuiUpdates, GuiWordList
 )
 from nw.tools import GuiBuildNovel, GuiProjectWizard, GuiWritingStats
 from nw.core import NWProject, NWIndex
@@ -1086,6 +1086,21 @@ class GuiMain(QMainWindow):
 
         if showNotes:
             dlgAbout.showReleaseNotes()
+
+        return
+
+    def showUpdatesDialog(self):
+        """Show the updates dialog for novelWriter.
+        """
+        dlgUpdate = getGuiItem("GuiUpdates")
+        if dlgUpdate is None:
+            dlgUpdate = GuiUpdates(self)
+
+        dlgUpdate.setModal(True)
+        dlgUpdate.show()
+        dlgUpdate.raise_()
+        qApp.processEvents()
+        dlgUpdate.checkLatest()
 
         return
 
