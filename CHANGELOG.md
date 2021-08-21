@@ -84,6 +84,8 @@ single space in the exported document.
 * Ensure that an item's status setting is parsed after its class when parsing the main project
   XML. This is just a precaution as the XML writing function always writes the class setting first.
   PR #852.
+* On Windows, the Python icon is shown on the task bar when novelWriter is run directly from code.
+  This has now been fixed by setting a unique application ID. Issue #860. PR #861.
 
 **Open Document Exports**
 
