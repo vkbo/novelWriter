@@ -268,6 +268,9 @@ class GuiAbout(QDialog):
             "a {{"
             "  color: rgb({hColR},{hColG},{hColB});"
             "}}\n"
+            ".alt {{"
+            "  color: rgb({kColR},{kColG},{kColB});"
+            "}}\n"
             "td {{"
             "  padding-right: 0.8em;"
             "}}\n"
@@ -275,6 +278,9 @@ class GuiAbout(QDialog):
             hColR=self.theParent.theTheme.colHead[0],
             hColG=self.theParent.theTheme.colHead[1],
             hColB=self.theParent.theTheme.colHead[2],
+            kColR=self.theTheme.colKey[0],
+            kColG=self.theTheme.colKey[1],
+            kColB=self.theTheme.colKey[2],
         )
         self.pageAbout.document().setDefaultStyleSheet(styleSheet)
         self.pageNotes.document().setDefaultStyleSheet(styleSheet)

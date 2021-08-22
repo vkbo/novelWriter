@@ -1,0 +1,61 @@
+<!DOCTYPE html public "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<body>
+
+<h2>Release Notes for 1.4.1</h2>
+<p><i>Released on 27 July 2021</i></p>
+
+<p>This release fixes a couple of minor issue with some of the dialog boxes. The fix was
+accidentally left out of release 1.4.</p>
+
+<p><i>See also the <a href="https://github.com/vkbo/novelWriter/releases">Releases</a> page.</i></p>
+
+<hr/>
+
+<h2>Release Notes for 1.4</h2>
+<p><i>Released on 27 July 2021</i></p>
+
+<p>This release contains some new features and a lot of code refactoring. Among the main new
+features is paragraph alignment and indentation. Regular line breaks within paragraphs are now also
+supported. The changes are described in more detail below.</p>
+
+<h3>Internationalisation</h3>
+<p>Translation files have been added for Simplified Chinese by Qianzhi Long.</p>
+
+<h3>Line Breaks</h3>
+<p>The way line breaks inside paragraphs work has been changed. A single line break is now treated
+as a proper line break and will show up in the document viewer and exported documents. A single
+line break does not start a new paragraph, but forces a break inside the paragraph like a Shift +
+Enter does in most rich text editors. Two line breaks is still needed to start a new paragraph.</p>
+<p>The old syntax of adding two spaces at the end of a line to force a line break within a
+paragraph will still work as before, so there is no need to change your existing text if you've
+used this feature. However, there is a new highlighting feature that will show you where in the
+text you have redundant spaces. If you are used to having double spaces between sentences, you may
+want to switch off this highlighting feature in Preferences as it will also detect those.</p>
+<p>A helper function has been added to the Format menu that can look through a paragraph and remove
+line breaks in case you've been using line breaks inside your existing text under the assumption
+that the exporter and viewer will ignore them.</p>
+<p>I hope this change will not be too inconvenient. I believe the new behaviour will make more
+sense for most people. Especially considering some of the feedback I've gotten on how line breaks
+work. The original implementation was following the Markdown standard, but since novelWriter is not
+a proper Markdown editor and instead just borrows from Markdown, this behaviour always seemed a bit
+unnecessary.</p>
+
+<h3>Text Alignment and Indentation</h3>
+<p>The default text alignment is left or justified based on your preferences. For documents with
+the layout set to Title Page or Partitions, the default is centred. However, sometimes you may
+want to override this default. A new set of codes have therefore been added to allow specifying
+alignment as well as additional text margins on individual paragraphs.</p>
+<p>The logic of the syntax is as follows:</p>
+<p>A single angle bracket will push the text away from the edge it points away from. Therefore, a
+single '&gt;' before the paragraph, or a single '&lt;' after the paragraph, will add indentation on
+the respective side. It's perfectly valid to do this on both sides at the same time.</p>
+<p>A double set of angle brackets will push the text all the way towards the opposite side.
+Therefore, a double set of '&gt;&gt;' before the paragraph will indicate right alignment, and a
+double set of '&lt;&lt;' after the paragraph will force left alignment. Also here both can be used
+at the same time, which results in the paragraph being centred.</p>
+<p>Format menu entries and keyboard shortcuts have been added so that you don't have to memorise
+these codes.</p>
+
+</body>
+</html>
