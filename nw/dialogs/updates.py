@@ -33,7 +33,7 @@ from urllib.request import Request, urlopen
 from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QGridLayout, qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QLabel
+    qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QLabel
 )
 
 from nw.common import logException
@@ -53,40 +53,47 @@ class GuiUpdates(QDialog):
         self.theParent = theParent
 
         self.setWindowTitle(self.tr("Check for Updates"))
-        # self.setMinimumWidth(self.mainConf.pxInt(650))
-        # self.setMinimumHeight(self.mainConf.pxInt(600))
+
+        nPx = self.mainConf.pxInt(96)
+        sPx = self.mainConf.pxInt(8)
+        mPx = self.mainConf.pxInt(4)
 
         # Left Box
-        nPx = self.mainConf.pxInt(96)
         self.nwIcon = QLabel()
         self.nwIcon.setPixmap(self.theParent.theTheme.getPixmap("novelwriter", (nPx, nPx)))
-        self.lblName = QLabel("<b>novelWriter</b>")
-        self.lblVers = QLabel("v%s" % nw.__version__)
-        self.lblDate = QLabel(datetime.strptime(nw.__date__, "%Y-%m-%d").strftime("%x"))
 
         self.leftBox = QVBoxLayout()
-        self.leftBox.setSpacing(self.mainConf.pxInt(4))
-        self.leftBox.addWidget(self.nwIcon,  0, Qt.AlignCenter)
-        self.leftBox.addWidget(self.lblName, 0, Qt.AlignCenter)
-        self.leftBox.addWidget(self.lblVers, 0, Qt.AlignCenter)
-        self.leftBox.addWidget(self.lblDate, 0, Qt.AlignCenter)
+        self.leftBox.addWidget(self.nwIcon)
         self.leftBox.addStretch(1)
 
         # Right Box
         self.currentLabel = QLabel(self.tr("Current Release"))
-        self.currentValue = QLabel("v%s" % nw.__version__)
+        self.currentValue = QLabel(self.tr(
+            "novelWriter {0}, released on {1}."
+        ).format(
+            "v%s" % nw.__version__,
+            datetime.strptime(nw.__date__, "%Y-%m-%d").strftime("%x"))
+        )
 
         self.latestLabel = QLabel(self.tr("Latest Release"))
-        self.latestValue = QLabel("")
+        self.latestValue = QLabel(self.tr("Checking ..."))
+        self.latestLink = QLabel("")
+        self.latestLink.setOpenExternalLinks(True)
 
-        self.rightBox = QGridLayout()
-        self.rightBox.addWidget(self.currentLabel, 0, 0, Qt.AlignLeft)
-        self.rightBox.addWidget(self.currentValue, 0, 1, Qt.AlignLeft)
-        self.rightBox.addWidget(self.latestLabel,  1, 0, Qt.AlignLeft)
-        self.rightBox.addWidget(self.latestValue,  1, 1, Qt.AlignLeft)
-        self.rightBox.setRowStretch(2, 1)
-        self.rightBox.setVerticalSpacing(self.mainConf.pxInt(4))
-        self.rightBox.setHorizontalSpacing(self.mainConf.pxInt(16))
+        self.rightBox = QVBoxLayout()
+        self.rightBox.addWidget(self.currentLabel)
+        self.rightBox.addWidget(self.currentValue)
+        self.rightBox.addSpacing(sPx)
+        self.rightBox.addWidget(self.latestLabel)
+        self.rightBox.addWidget(self.latestValue)
+        self.rightBox.addSpacing(sPx)
+        self.rightBox.addWidget(self.latestLink)
+        self.rightBox.setSpacing(mPx)
+
+        hFont = self.currentLabel.font()
+        hFont.setBold(True)
+        self.currentLabel.setFont(hFont)
+        self.latestLabel.setFont(hFont)
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
@@ -96,11 +103,13 @@ class GuiUpdates(QDialog):
         self.innerBox = QHBoxLayout()
         self.innerBox.addLayout(self.leftBox)
         self.innerBox.addLayout(self.rightBox)
-        self.innerBox.setSpacing(self.mainConf.pxInt(16))
+        self.innerBox.setSpacing(sPx)
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.innerBox)
         self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.setSpacing(sPx)
+
         self.setLayout(self.outerBox)
 
         logger.debug("GuiUpdates initialisation complete")
@@ -116,6 +125,7 @@ class GuiUpdates(QDialog):
         urlReq.add_header("User-Agent", "Mozilla/5.0 (compatible; novelWriter (Python))")
         urlReq.add_header("Accept", "application/vnd.github.v3+json")
 
+        rawData = {}
         try:
             urlData = urlopen(urlReq, timeout=10)
             rawData = json.loads(urlData.read().decode())
@@ -123,8 +133,26 @@ class GuiUpdates(QDialog):
             logger.error("Failed to contact GitHub API")
             logException()
 
-        latestVersion = rawData.get("tag_name", "Unknown")
-        self.latestValue.setText(latestVersion)
+        relVersion = rawData.get("tag_name", "Unknown")
+        relDate = rawData.get("created_at", None)
+
+        try:
+            relDate = datetime.strptime(relDate[:10], "%Y-%m-%d").strftime("%x")
+        except Exception:
+            relDate = "Unknown"
+            logException()
+
+        self.latestValue.setText(self.tr(
+            "novelWriter {0}, released on {1}."
+        ).format(
+            relVersion, relDate
+        ))
+
+        self.latestLink.setText(self.tr(
+            "Download: {0}"
+        ).format(
+            f'<a href="{nw.__url__}">{nw.__url__}</a>'
+        ))
 
         qApp.restoreOverrideCursor()
 
