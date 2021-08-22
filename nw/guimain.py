@@ -289,7 +289,7 @@ class GuiMain(QMainWindow):
 
         logger.debug("GUI initialisation complete")
 
-        if nw.__hexversion__[-2] == "a":
+        if nw.__hexversion__[-2] == "a" and logger.getEffectiveLevel() > logging.DEBUG:
             self.makeAlert(self.tr(
                 "You are running an untested development version of novelWriter. "
                 "Please be careful when working on a live project "
@@ -1089,6 +1089,13 @@ class GuiMain(QMainWindow):
 
         return
 
+    def showAboutQtDialog(self):
+        """Show the about dialog for Qt.
+        """
+        msgBox = QMessageBox()
+        msgBox.aboutQt(self, "About Qt")
+        return
+
     def showUpdatesDialog(self):
         """Show the updates dialog for novelWriter.
         """
@@ -1102,13 +1109,6 @@ class GuiMain(QMainWindow):
         qApp.processEvents()
         dlgUpdate.checkLatest()
 
-        return
-
-    def showAboutQtDialog(self):
-        """Show the about dialog for Qt.
-        """
-        msgBox = QMessageBox()
-        msgBox.aboutQt(self, "About Qt")
         return
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):

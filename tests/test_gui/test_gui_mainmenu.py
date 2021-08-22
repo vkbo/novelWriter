@@ -379,7 +379,7 @@ def testGuiMenu_ContextMenus(qtbot, monkeypatch, nwGUI, nwLipsum):
     """Test the context menus.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.openProject(nwLipsum)
@@ -637,7 +637,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # Faulty Keyword Inserts
     assert not nwGUI.docEditor.insertKeyWord("blabla")
     with monkeypatch.context() as mp:
-        mp.setattr(QTextBlock, "isValid", lambda *args, **kwards: False)
+        mp.setattr(QTextBlock, "isValid", lambda *a, **k: False)
         assert not nwGUI.docEditor.insertKeyWord(nwKeyWords.TAG_KEY)
 
     nwGUI.docEditor.clear()
@@ -667,16 +667,16 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     nwGUI.closeDocument()
 
     # First, with no path
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: ("", ""))
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: ("", ""))
     assert not nwGUI.importDocument()
 
     # Then with a path, but an invalid one
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: (" ", ""))
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (" ", ""))
     assert not nwGUI.importDocument()
 
     # Then a valid path, but bot a file that exists
     theFile = os.path.join(fncDir, "import.txt")
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args, **kwards: (theFile, ""))
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (theFile, ""))
     assert not nwGUI.importDocument()
 
     # Create the file and try again, but with no target document open
@@ -689,12 +689,12 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert nwGUI.docEditor.getText() == "Bar"
 
     # The document isn't empty, so the message box should pop
-    monkeypatch.setattr(QMessageBox, "question", lambda *args, **kwargs: QMessageBox.No)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a, **k: QMessageBox.No)
     assert not nwGUI.importDocument()
     assert nwGUI.docEditor.getText() == "Bar"
 
     # Finally, accept the replaced text, this time we use the menu entry to trigger it
-    monkeypatch.setattr(QMessageBox, "question", lambda *args, **kwargs: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a, **k: QMessageBox.Yes)
     nwGUI.mainMenu.aImportFile.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == "Foo"
 
