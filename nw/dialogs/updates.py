@@ -55,7 +55,8 @@ class GuiUpdates(QDialog):
         self.setWindowTitle(self.tr("Check for Updates"))
 
         nPx = self.mainConf.pxInt(96)
-        sPx = self.mainConf.pxInt(8)
+        sPx = self.mainConf.pxInt(16)
+        tPx = self.mainConf.pxInt(8)
         mPx = self.mainConf.pxInt(4)
 
         # Left Box
@@ -69,7 +70,7 @@ class GuiUpdates(QDialog):
         # Right Box
         self.currentLabel = QLabel(self.tr("Current Release"))
         self.currentValue = QLabel(self.tr(
-            "novelWriter {0}, released on {1}."
+            "novelWriter {0} released on {1}"
         ).format(
             "v%s" % nw.__version__,
             datetime.strptime(nw.__date__, "%Y-%m-%d").strftime("%x"))
@@ -83,10 +84,10 @@ class GuiUpdates(QDialog):
         self.rightBox = QVBoxLayout()
         self.rightBox.addWidget(self.currentLabel)
         self.rightBox.addWidget(self.currentValue)
-        self.rightBox.addSpacing(sPx)
+        self.rightBox.addSpacing(tPx)
         self.rightBox.addWidget(self.latestLabel)
         self.rightBox.addWidget(self.latestValue)
-        self.rightBox.addSpacing(sPx)
+        self.rightBox.addSpacing(tPx)
         self.rightBox.addWidget(self.latestLink)
         self.rightBox.setSpacing(mPx)
 
@@ -143,7 +144,7 @@ class GuiUpdates(QDialog):
             logException()
 
         self.latestValue.setText(self.tr(
-            "novelWriter {0}, released on {1}."
+            "novelWriter {0} released on {1}"
         ).format(
             relVersion, relDate
         ))
