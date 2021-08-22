@@ -1087,10 +1087,15 @@ class GuiMainMenu(QMenuBar):
         self.helpMenu.addSeparator()
 
         # Help > User Manual (Online)
+        if nw.__version__[-2] == "f":
+            docUrl = f"{nw.__docurl__}/en/stable/"
+        else:
+            docUrl = f"{nw.__docurl__}/en/latest/"
+
         self.aHelpDocs = QAction(self.tr("User Manual (Online)"), self)
         self.aHelpDocs.setStatusTip(self.tr("Open documentation in browser"))
         self.aHelpDocs.setShortcut("F1")
-        self.aHelpDocs.triggered.connect(lambda: self._openWebsite(nw.__docurl__))
+        self.aHelpDocs.triggered.connect(lambda: self._openWebsite(docUrl))
         self.helpMenu.addAction(self.aHelpDocs)
 
         # Help > User Manual (PDF)

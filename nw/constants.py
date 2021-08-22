@@ -66,7 +66,7 @@ class nwLists():
     FREE_CLASS = {nwItemClass.ARCHIVE, nwItemClass.TRASH}
 
     # Deprecated nwItemLayout entries
-    DEP_LAYOUT = ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE", "STORY")
+    DEP_LAYOUT = ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE")
 
 # END Class nwLists
 
