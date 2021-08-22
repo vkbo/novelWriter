@@ -27,6 +27,7 @@ from nw.dialogs.preferences import GuiPreferences
 from nw.dialogs.projload import GuiProjectLoad
 from nw.dialogs.projsettings import GuiProjectSettings
 from nw.dialogs.quotes import GuiQuoteSelect
+from nw.dialogs.updates import GuiUpdates
 from nw.dialogs.wordlist import GuiWordList
 
 __all__ = [
@@ -38,5 +39,6 @@ __all__ = [
     "GuiProjectLoad",
     "GuiProjectSettings",
     "GuiQuoteSelect",
+    "GuiUpdates",
     "GuiWordList",
 ]

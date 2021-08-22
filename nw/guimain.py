@@ -44,7 +44,7 @@ from nw.gui import (
 )
 from nw.dialogs import (
     GuiAbout, GuiDocMerge, GuiDocSplit, GuiItemEditor, GuiPreferences,
-    GuiProjectLoad, GuiProjectSettings, GuiWordList
+    GuiProjectLoad, GuiProjectSettings, GuiUpdates, GuiWordList
 )
 from nw.tools import GuiBuildNovel, GuiProjectWizard, GuiWritingStats
 from nw.core import NWProject, NWIndex
@@ -289,7 +289,7 @@ class GuiMain(QMainWindow):
 
         logger.debug("GUI initialisation complete")
 
-        if nw.__hexversion__[-2] == "a":
+        if nw.__hexversion__[-2] == "a" and logger.getEffectiveLevel() > logging.DEBUG:
             self.makeAlert(self.tr(
                 "You are running an untested development version of novelWriter. "
                 "Please be careful when working on a live project "
@@ -1094,6 +1094,21 @@ class GuiMain(QMainWindow):
         """
         msgBox = QMessageBox()
         msgBox.aboutQt(self, "About Qt")
+        return
+
+    def showUpdatesDialog(self):
+        """Show the updates dialog for novelWriter.
+        """
+        dlgUpdate = getGuiItem("GuiUpdates")
+        if dlgUpdate is None:
+            dlgUpdate = GuiUpdates(self)
+
+        dlgUpdate.setModal(True)
+        dlgUpdate.show()
+        dlgUpdate.raise_()
+        qApp.processEvents()
+        dlgUpdate.checkLatest()
+
         return
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):

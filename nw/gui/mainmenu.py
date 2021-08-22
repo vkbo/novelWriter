@@ -1125,14 +1125,6 @@ class GuiMainMenu(QMenuBar):
         self.aQuestion.triggered.connect(lambda: self._openWebsite(nw.__helpurl__))
         self.helpMenu.addAction(self.aQuestion)
 
-        # Document > Latest Release
-        self.aRelease = QAction(self.tr("Latest Release (GitHub)"), self)
-        self.aRelease.setStatusTip(
-            self.tr("Open the Releases page on GitHub at {0}").format(nw.__releaseurl__)
-        )
-        self.aRelease.triggered.connect(lambda: self._openWebsite(nw.__releaseurl__))
-        self.helpMenu.addAction(self.aRelease)
-
         # Document > Main Website
         self.aWebsite = QAction(self.tr("The novelWriter Website"), self)
         self.aWebsite.setStatusTip(
@@ -1140,6 +1132,15 @@ class GuiMainMenu(QMenuBar):
         )
         self.aWebsite.triggered.connect(lambda: self._openWebsite(nw.__url__))
         self.helpMenu.addAction(self.aWebsite)
+
+        # Help > Separator
+        self.helpMenu.addSeparator()
+
+        # Document > Check for Updates
+        self.aUpdates = QAction(self.tr("Check for New Release"), self)
+        self.aUpdates.setStatusTip(self.tr("Check for latest release of novelWriter"))
+        self.aUpdates.triggered.connect(lambda: self.theParent.showUpdatesDialog())
+        self.helpMenu.addAction(self.aUpdates)
 
         return
 

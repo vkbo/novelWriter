@@ -22,9 +22,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import pytest
 
 from PyQt5.QtCore import QItemSelectionModel
-from PyQt5.QtWidgets import QListWidgetItem, QDialog, QMessageBox
+from PyQt5.QtWidgets import QAction, QListWidgetItem, QDialog, QMessageBox
 
-from nw.dialogs import GuiQuoteSelect
+from nw.dialogs import GuiQuoteSelect, GuiUpdates
 
 keyDelay = 2
 typeDelay = 1
@@ -32,7 +32,7 @@ stepDelay = 20
 
 
 @pytest.mark.gui
-def testDlgOther_QuoteSelect(monkeypatch, nwGUI):
+def testDlgOther_QuoteSelect(qtbot, monkeypatch, nwGUI):
     """Test the quote symbols dialog.
     """
     # Block message box
@@ -59,3 +59,45 @@ def testDlgOther_QuoteSelect(monkeypatch, nwGUI):
     nwQuot.close()
 
 # END Test testDlgOther_QuoteSelect
+
+
+@pytest.mark.gui
+def testDlgOther_Updates(qtbot, monkeypatch, nwGUI):
+    """Test the check for updates dialog.
+    """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+
+    nwUpdate = GuiUpdates(nwGUI)
+    nwUpdate.show()
+
+    class mockData:
+        def decode(self):
+            return '{"tag_name": "v1.0", "created_at": "2021-01-01T12:00:00Z"}'
+
+    class mockPayload:
+        def read(self):
+            return mockData()
+
+    def mockUrlopenA(*a, **k):
+        return None
+
+    def mockUrlopenB(*a, **k):
+        return mockPayload()
+
+    # Faulty Return
+    monkeypatch.setattr("nw.dialogs.updates.urlopen", mockUrlopenA)
+    nwUpdate.checkLatest()
+
+    # Valid Return
+    monkeypatch.setattr("nw.dialogs.updates.urlopen", mockUrlopenB)
+    nwUpdate.checkLatest()
+    assert nwUpdate.latestValue.text().startswith("novelWriter v1.0")
+
+    # Trigger from Menu
+    nwGUI.mainMenu.aUpdates.activate(QAction.Trigger)
+
+    # qtbot.stopForInteraction()
+    nwUpdate._doClose()
+
+# END Test testDlgOther_Updates
