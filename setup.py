@@ -67,6 +67,14 @@ def extractVersion():
     return numVers, hexVers
 
 
+def sysCall(callArgs):
+    """Wrapper function for system calls.
+    """
+    sysP = subprocess.Popen(callArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    stdOut, stdErr = sysP.communicate()
+    return stdOut.decode("utf-8"), stdErr.decode("utf-8"), sysP.returncode
+
+
 # =============================================================================================== #
 #  General
 # =============================================================================================== #
@@ -250,22 +258,31 @@ def buildLocalDocs(bldFmt="HTML"):
         if bldFmt == "HTML":
             subprocess.call(["make", "-C", "docs", "html"])
         elif bldFmt == "PDF":
-            subprocess.call(["make", "-C", "docs", "latexpdf"])
+            _, stdErr, exCode = sysCall(["make -C docs latexpdf"])
+            if exCode == 0:
+                print("Sphinx LaTeX PDF build OK")
+            else:
+                raise Exception(stdErr)
+
     except Exception as e:
         print("Docs Build Error:")
         print(str(e))
         buildFail = True
 
     try:
+        helpDir = os.path.join("novelwriter", "assets", "help")
+        if not os.path.isdir(helpDir):
+            os.mkdir(helpDir)
+
         if bldFmt == "HTML":
-            helpDir = os.path.join("novelwriter", "assets", "help", "html")
-            if os.path.isdir(helpDir):
-                shutil.rmtree(helpDir)
-            shutil.copytree(buildDir, helpDir)
+            htmlDir = os.path.join(helpDir, "html")
+            if os.path.isdir(htmlDir):
+                shutil.rmtree(htmlDir)
+            shutil.copytree(buildDir, htmlDir)
         elif bldFmt == "PDF":
             os.rename(
                 os.path.join(buildDir, "manual.pdf"),
-                os.path.join("novelwriter", "assets", "help", "manual.pdf")
+                os.path.join(helpDir, "manual.pdf")
             )
     except Exception as e:
         print("Docs Build Error:")
