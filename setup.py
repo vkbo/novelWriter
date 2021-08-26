@@ -233,76 +233,42 @@ def buildQtDocs():
 #  Html or PDF Documentation Builder (docs, docs_pdf)
 ##
 
-def buildLocalDocs(bldFmt="HTML"):
-    """This function will build the Sphinx HTML or PDF documentation.
-    For HTML, the files are copied into the novelwriter/assets/help/html
-    directory and can be included in builds.
+def buildPdfManual():
+    """This function will build the documentation as manual.pdf.
     """
     print("")
-    print("Building Documentation")
-    print("======================")
-    print("Format: %s" % bldFmt)
+    print("Building PDF Manual")
+    print("===================")
     print("")
 
-    if bldFmt == "HTML":
-        buildDir = os.path.join("docs", "build", "html")
-    elif bldFmt == "PDF":
-        buildDir = os.path.join("docs", "build", "latex")
-    else:
-        print("Docs Build Error:")
-        return
+    buildFile = os.path.join("docs", "build", "latex", "manual.pdf")
+    finalFile = os.path.join("novelwriter", "assets", "manual.pdf")
 
-    buildFail = False
     try:
         subprocess.call(["make", "-C", "docs", "clean"])
-        if bldFmt == "HTML":
-            subprocess.call(["make", "-C", "docs", "html"])
-        elif bldFmt == "PDF":
-            _, stdErr, exCode = sysCall(["make -C docs latexpdf"])
-            if exCode == 0:
-                print("Sphinx LaTeX PDF build OK")
-            else:
-                raise Exception(stdErr)
+        _, stdErr, exCode = sysCall(["make -C docs latexpdf"])
+        if exCode == 0:
+            if os.path.isfile(finalFile):
+                os.unlink(finalFile)
+            os.rename(buildFile, finalFile)
+        else:
+            raise Exception(stdErr)
+
+        print("")
+        print("PDF manual build: OK")
 
     except Exception as e:
-        print("Docs Build Error:")
+        print("")
         print(str(e))
-        buildFail = True
-
-    try:
-        helpDir = os.path.join("novelwriter", "assets", "help")
-        if not os.path.isdir(helpDir):
-            os.mkdir(helpDir)
-
-        if bldFmt == "HTML":
-            htmlDir = os.path.join(helpDir, "html")
-            if os.path.isdir(htmlDir):
-                shutil.rmtree(htmlDir)
-            shutil.copytree(buildDir, htmlDir)
-        elif bldFmt == "PDF":
-            os.rename(
-                os.path.join(buildDir, "manual.pdf"),
-                os.path.join(helpDir, "manual.pdf")
-            )
-    except Exception as e:
-        print("Docs Build Error:")
-        print(str(e))
-        buildFail = True
-
-    print("")
-    if buildFail:
+        print("")
         print("Documentation build: FAILED")
         print("")
         print("Dependencies:")
         print(" * pip install sphinx")
-        if bldFmt == "HTML":
-            print(" * pip install sphinx-rtd-theme")
-        elif bldFmt == "PDF":
-            print(" * Package latexmk")
-            print(" * LaTeX build system")
+        print(" * Package latexmk")
+        print(" * LaTeX build system")
         sys.exit(1)
-    else:
-        print("Documentation build: OK")
+
     print("")
 
     return
@@ -438,7 +404,7 @@ def makeMinimalPackage(targetOS):
 
     # Build docs
     try:
-        buildLocalDocs(bldFmt="PDF")
+        buildPdfManual()
     except Exception as e:
         print("Failed with error:")
         print(str(e))
@@ -477,18 +443,12 @@ def makeMinimalPackage(targetOS):
     if os.path.isfile(outFile):
         os.unlink(outFile)
 
-    # Add the manual also to the root
-    pdfDocs = os.path.join("novelwriter", "assets", "help", "manual.pdf")
-    if os.path.isfile(pdfDocs):
-        os.rename(pdfDocs, "UserManual.pdf")
-
     rootFiles = [
         "CHANGELOG.md",
         "LICENSE.md",
         "README.md",
         "requirements.txt",
         "setup.py",
-        "UserManual.pdf",
     ]
 
     with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=9) as zipObj:
@@ -526,6 +486,9 @@ def makeMinimalPackage(targetOS):
         for aFile in rootFiles:
             print("Adding File: %s" % aFile)
             zipObj.write(aFile)
+
+        zipObj.write(os.path.join("novelwriter", "assets", "manual.pdf"), "UserManual.pdf")
+        print("Adding File: UserManual.pdf")
 
     print("")
     print("Created File: %s" % outFile)
@@ -1246,8 +1209,7 @@ if __name__ == "__main__":
         "",
         "Additional Builds:",
         "",
-        "    htmldocs       Build the help documentation as HTML.",
-        "    pdfdocs        Build the help documentation as PDF (requires LaTeX).",
+        "    manual         Build the help documentation as PDF (requires LaTeX).",
         "    qthelp         Build the help documentation for use with the Qt Assistant.",
         "    qtlupdate      Update the translation files for internationalisation.",
         "    qtlrelease     Build the language files for internationalisation.",
@@ -1314,13 +1276,9 @@ if __name__ == "__main__":
     # Additional Builds
     # =================
 
-    if "htmldocs" in sys.argv:
-        sys.argv.remove("htmldocs")
-        buildLocalDocs(bldFmt="HTML")
-
-    if "pdfdocs" in sys.argv:
-        sys.argv.remove("pdfdocs")
-        buildLocalDocs(bldFmt="PDF")
+    if "manual" in sys.argv:
+        sys.argv.remove("manual")
+        buildPdfManual()
 
     if "qthelp" in sys.argv:
         sys.argv.remove("qthelp")
