@@ -25,7 +25,7 @@ from tools import getGuiItem
 
 from PyQt5.QtWidgets import QAction, QMessageBox
 
-from nw.dialogs import GuiAbout
+from novelwriter.dialogs import GuiAbout
 
 keyDelay = 2
 typeDelay = 1

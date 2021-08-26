@@ -28,8 +28,8 @@ from tools import getGuiItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFileDialog, QWizard, QMessageBox
 
-from nw.enum import nwItemClass
-from nw.tools.projwizard import (
+from novelwriter.enum import nwItemClass
+from novelwriter.tools.projwizard import (
     GuiProjectWizard, ProjWizardIntroPage, ProjWizardFolderPage,
     ProjWizardPopulatePage, ProjWizardCustomPage, ProjWizardFinalPage
 )

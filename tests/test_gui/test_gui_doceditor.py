@@ -27,9 +27,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtWidgets import QAction, QMessageBox, qApp
 
-from nw.gui.doceditor import GuiDocEditor
-from nw.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout
-from nw.constants import nwKeyWords, nwUnicode
+from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout
+from novelwriter.constants import nwKeyWords, nwUnicode
 
 keyDelay = 2
 typeDelay = 1
@@ -110,7 +110,7 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
 
     # Document too big
     with monkeypatch.context() as mp:
-        mp.setattr("nw.constants.nwConst.MAX_DOCSIZE", 100)
+        mp.setattr("novelwriter.constants.nwConst.MAX_DOCSIZE", 100)
         assert nwGUI.docEditor.loadText(sHandle) is False
         assert "The document you are trying to open is too big." in caplog.text
 
@@ -120,7 +120,7 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
 
     # Reload too big text
     with monkeypatch.context() as mp:
-        mp.setattr("nw.constants.nwConst.MAX_DOCSIZE", 100)
+        mp.setattr("novelwriter.constants.nwConst.MAX_DOCSIZE", 100)
         assert nwGUI.docEditor.replaceText(longText) is False
         assert "The document you are trying to open is too big." in caplog.text
 

@@ -51,7 +51,7 @@ You can also add coverage report generation. For instance to HTML:
 
 .. code-block:: console
 
-   xvfb-run pytest -v --cov=nw --cov-report=html
+   xvfb-run pytest -v --cov=novelwriter --cov-report=html
 
 Other useful report formats are ``xml``, and ``term`` for terminal output.
 
@@ -60,7 +60,7 @@ subpackage groups are ``base``, ``core``, and ``gui``. Consider for instance:
 
 .. code-block:: console
 
-   xvfb-run pytest -v --cov=nw --cov-report=html -m core
+   xvfb-run pytest -v --cov=novelwriter --cov-report=html -m core
 
 This will only run the tests of the "core" package, that is, all the classes that deal with the
 project data of a novelWriter project. The "gui" tests, likewise, will run the tests for the GUI
@@ -71,7 +71,7 @@ You can also filter the tests with the ``-k`` switch. The following will do the 
 
 .. code-block:: console
 
-   xvfb-run pytest -v --cov=nw --cov-report=html -k testCore
+   xvfb-run pytest -v --cov=novelwriter --cov-report=html -k testCore
 
 All tests are named in such a way that you can filter them by adding more bits of the test names.
 They all start with the word "test". Then comes the group: "Core", "Base", "Dlg", "Tool", or "Gui".
@@ -80,6 +80,6 @@ file. For instance, running the following will run all tests for the document ed
 
 .. code-block:: console
 
-   xvfb-run pytest -v --cov=nw --cov-report=html -k testGuiEditor
+   xvfb-run pytest -v --cov=novelwriter --cov-report=html -k testGuiEditor
 
 To run a single test, simply add the full test name to the ``-k`` switch.

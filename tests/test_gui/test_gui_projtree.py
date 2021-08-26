@@ -27,9 +27,9 @@ from tools import writeFile
 from PyQt5.QtCore import QItemSelectionModel
 from PyQt5.QtWidgets import QAction, QMessageBox
 
-from nw.guimain import GuiMain
-from nw.gui.projtree import GuiProjectTree
-from nw.enum import nwItemType, nwItemClass
+from novelwriter.guimain import GuiMain
+from novelwriter.gui.projtree import GuiProjectTree
+from novelwriter.enum import nwItemType, nwItemClass
 
 
 @pytest.mark.gui
@@ -86,7 +86,7 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     assert nwTree.newTreeItem(nwItemType.ROOT, nwItemClass.CUSTOM)     # Valid
 
     # Change max depth and try to add a subfolder that is too deep
-    monkeypatch.setattr("nw.constants.nwConst.MAX_DEPTH", 2)
+    monkeypatch.setattr("novelwriter.constants.nwConst.MAX_DEPTH", 2)
     chItem = nwTree._getTreeItem("71ee45a3c0db9")
     nwTree.setCurrentItem(chItem, QItemSelectionModel.Current)
     assert not nwTree.newTreeItem(nwItemType.FOLDER, None)
@@ -228,7 +228,7 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     nwTree.clearSelection()
 
     # Add a file with no parent, and fail to find a suitable parent item
-    monkeypatch.setattr("nw.core.tree.NWTree.findRoot", lambda *a: None)
+    monkeypatch.setattr("novelwriter.core.tree.NWTree.findRoot", lambda *a: None)
 
     assert not nwTree.newTreeItem(nwItemType.FILE, nwItemClass.NOVEL)
     assert not nwTree.newTreeItem(nwItemType.FOLDER, nwItemClass.NOVEL)

@@ -19,14 +19,14 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import pytest
+import novelwriter
 
 from PyQt5.QtWidgets import QMessageBox, qApp
 
 from mock import causeException
 
-from nw.error import NWErrorMessage, exceptionHandler
+from novelwriter.error import NWErrorMessage, exceptionHandler
 
 
 @pytest.mark.base
@@ -37,7 +37,7 @@ def testBaseError_Dialog(qtbot, monkeypatch, fncDir, tmpDir):
     monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
 
     qApp.closeAllWindows()
-    nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % tmpDir])
+    nwGUI = novelwriter.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.wait(20)
@@ -84,7 +84,7 @@ def testBaseError_Handler(qtbot, monkeypatch, fncDir, tmpDir):
     monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
 
     qApp.closeAllWindows()
-    nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % tmpDir])
+    nwGUI = novelwriter.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % tmpDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.wait(20)

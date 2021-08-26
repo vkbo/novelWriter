@@ -24,8 +24,8 @@ import pytest
 
 from tools import readFile
 
-from nw.core import NWProject, NWDoc
-from nw.core.tokenizer import Tokenizer
+from novelwriter.core import NWProject, NWDoc
+from novelwriter.core.tokenizer import Tokenizer
 
 
 @pytest.mark.core
@@ -183,7 +183,7 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
     assert theToken.theText == docText
 
     with monkeypatch.context() as mp:
-        mp.setattr("nw.constants.nwConst.MAX_DOCSIZE", 100)
+        mp.setattr("novelwriter.constants.nwConst.MAX_DOCSIZE", 100)
         assert theToken.setText(sHandle, docText) is True
         assert theToken.theText == (
             "# ERROR\n\n"

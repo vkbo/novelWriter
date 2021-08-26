@@ -19,9 +19,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
-import pytest
 import os
+import pytest
+import novelwriter
 
 from shutil import copyfile
 from tools import cmpFiles, getGuiItem
@@ -31,9 +31,9 @@ from PyQt5.QtWidgets import (
     QDialogButtonBox, QDialog, QAction, QFileDialog, QFontDialog, QMessageBox
 )
 
-from nw.config import Config
-from nw.dialogs import GuiPreferences, GuiQuoteSelect
-from nw.constants import nwConst
+from novelwriter.config import Config
+from novelwriter.dialogs import GuiPreferences, GuiQuoteSelect
+from novelwriter.constants import nwConst
 
 keyDelay = 2
 typeDelay = 1
@@ -50,17 +50,17 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
 
     # Must create a clean config and GUI object as the test-wide
-    # nw.CONFIG object is created on import an can be tainted by other tests
+    # novelwriter.CONFIG object is created on import an can be tainted by other tests
     confFile = os.path.join(fncDir, "novelwriter.conf")
     if os.path.isfile(confFile):
         os.unlink(confFile)
     theConf = Config()
     theConf.initConfig(fncDir, fncDir)
     theConf.setLastPath("")
-    origConf = nw.CONFIG
-    nw.CONFIG = theConf
+    origConf = novelwriter.CONFIG
+    novelwriter.CONFIG = theConf
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
+    nwGUI = novelwriter.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.wait(stepDelay)
@@ -253,7 +253,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     assert cmpFiles(testFile, compFile, ignoreLines)
 
     # Clean up
-    nw.CONFIG = origConf
+    novelwriter.CONFIG = origConf
     nwGUI.closeMain()
 
     # qtbot.stopForInteraction()

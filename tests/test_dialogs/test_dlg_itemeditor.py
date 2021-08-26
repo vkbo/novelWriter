@@ -27,9 +27,9 @@ from tools import cmpFiles, getGuiItem
 
 from PyQt5.QtWidgets import QAction, QMessageBox
 
-from nw.gui import GuiProjectTree
-from nw.enum import nwItemLayout
-from nw.dialogs import GuiItemEditor
+from novelwriter.gui import GuiProjectTree
+from novelwriter.enum import nwItemLayout
+from novelwriter.dialogs import GuiItemEditor
 
 keyDelay = 2
 typeDelay = 1

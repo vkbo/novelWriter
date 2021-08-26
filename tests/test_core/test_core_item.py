@@ -23,9 +23,9 @@ import pytest
 
 from lxml import etree
 
-from nw.core import NWProject
-from nw.core.item import NWItem
-from nw.enum import nwItemClass, nwItemType, nwItemLayout
+from novelwriter.core import NWProject
+from novelwriter.core.item import NWItem
+from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 
 
 @pytest.mark.core

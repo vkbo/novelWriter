@@ -49,7 +49,7 @@ def extractVersion():
 
     numVers = "Unknown"
     hexVers = "Unknown"
-    initFile = os.path.join("nw", "__init__.py")
+    initFile = os.path.join("novelwriter", "__init__.py")
     try:
         with open(initFile, mode="r", encoding="utf-8") as inFile:
             for aLine in inFile:
@@ -65,6 +65,14 @@ def extractVersion():
     print("")
 
     return numVers, hexVers
+
+
+def sysCall(callArgs):
+    """Wrapper function for system calls.
+    """
+    sysP = subprocess.Popen(callArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    stdOut, stdErr = sysP.communicate()
+    return stdOut.decode("utf-8"), stdErr.decode("utf-8"), sysP.returncode
 
 
 # =============================================================================================== #
@@ -153,11 +161,11 @@ def cleanInstall():
 
 def buildQtDocs():
     """This function will build the documentation as a Qt help file. The
-    file is then copied into the nw/assets/help directory and can be
-    included in builds.
+    file is then copied into the novelwriter/assets/help directory and
+    can be included in builds.
     """
     buildDir = os.path.join("docs", "build", "qthelp")
-    helpDir  = os.path.join("nw", "assets", "help")
+    helpDir  = os.path.join("novelwriter", "assets", "help")
 
     inFile  = "novelWriter.qhcp"
     outFile = "novelWriter.qhc"
@@ -227,7 +235,7 @@ def buildQtDocs():
 
 def buildLocalDocs(bldFmt="HTML"):
     """This function will build the Sphinx HTML or PDF documentation.
-    For HTML, the files are then copied into the nw/assets/help/html
+    For HTML, the files are copied into the novelwriter/assets/help/html
     directory and can be included in builds.
     """
     print("")
@@ -250,22 +258,31 @@ def buildLocalDocs(bldFmt="HTML"):
         if bldFmt == "HTML":
             subprocess.call(["make", "-C", "docs", "html"])
         elif bldFmt == "PDF":
-            subprocess.call(["make", "-C", "docs", "latexpdf"])
+            _, stdErr, exCode = sysCall(["make -C docs latexpdf"])
+            if exCode == 0:
+                print("Sphinx LaTeX PDF build OK")
+            else:
+                raise Exception(stdErr)
+
     except Exception as e:
         print("Docs Build Error:")
         print(str(e))
         buildFail = True
 
     try:
+        helpDir = os.path.join("novelwriter", "assets", "help")
+        if not os.path.isdir(helpDir):
+            os.mkdir(helpDir)
+
         if bldFmt == "HTML":
-            helpDir = os.path.join("nw", "assets", "help", "html")
-            if os.path.isdir(helpDir):
-                shutil.rmtree(helpDir)
-            shutil.copytree(buildDir, helpDir)
+            htmlDir = os.path.join(helpDir, "html")
+            if os.path.isdir(htmlDir):
+                shutil.rmtree(htmlDir)
+            shutil.copytree(buildDir, htmlDir)
         elif bldFmt == "PDF":
             os.rename(
                 os.path.join(buildDir, "manual.pdf"),
-                os.path.join("nw", "assets", "help", "manual.pdf")
+                os.path.join(helpDir, "manual.pdf")
             )
     except Exception as e:
         print("Docs Build Error:")
@@ -314,7 +331,7 @@ def buildQtI18n():
     print("Moving QM Files to Assets")
     print("")
 
-    langDir = os.path.join("nw", "assets", "i18n")
+    langDir = os.path.join("novelwriter", "assets", "i18n")
     for langFile in os.listdir("i18n"):
         langPath = os.path.join("i18n", langFile)
         if not os.path.isfile(langPath):
@@ -360,7 +377,7 @@ def buildQtI18nTS():
 
 def buildSampleZip():
     """Bundle the sample project into a single zip file to be saved into
-    the nw/assets folder for further bundling into builds.
+    the novelwriter/assets folder for further bundling into builds.
     """
     print("")
     print("Building Sample ZIP File")
@@ -368,7 +385,7 @@ def buildSampleZip():
     print("")
 
     srcSample = "sample"
-    dstSample = os.path.join("nw", "assets", "sample.zip")
+    dstSample = os.path.join("novelwriter", "assets", "sample.zip")
 
     if os.path.isdir(srcSample):
         if os.path.isfile(dstSample):
@@ -461,7 +478,7 @@ def makeMinimalPackage(targetOS):
         os.unlink(outFile)
 
     # Add the manual also to the root
-    pdfDocs = os.path.join("nw", "assets", "help", "manual.pdf")
+    pdfDocs = os.path.join("novelwriter", "assets", "help", "manual.pdf")
     if os.path.isfile(pdfDocs):
         os.rename(pdfDocs, "UserManual.pdf")
 
@@ -477,13 +494,13 @@ def makeMinimalPackage(targetOS):
     with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=9) as zipObj:
 
         if targetOS != OS_WIN:
-            # Not needed for Windows as the icons are in nw/assets/icons
+            # Not needed for Windows as the icons are in novelwriter/assets/icons
             for nRoot, _, nFiles in os.walk("setup"):
                 print("Adding Folder: %s [%d files]" % (nRoot, len(nFiles)))
                 for aFile in nFiles:
                     zipObj.write(os.path.join(nRoot, aFile))
 
-        for nRoot, _, nFiles in os.walk("nw"):
+        for nRoot, _, nFiles in os.walk("novelwriter"):
             if nRoot.endswith("__pycache__"):
                 print("Skipping Folder: %s" % nRoot)
                 continue
@@ -602,8 +619,8 @@ def makeSimplePackage(embedPython):
     iconList = ["novelwriter.ico", "x-novelwriter-project.ico"]
     cpIgnore = shutil.ignore_patterns("__pycache__")
 
-    print("Copying: nw")
-    shutil.copytree("nw", os.path.join(zipDir, "nw"), ignore=cpIgnore)
+    print("Copying: novelwriter")
+    shutil.copytree("novelwriter", os.path.join(zipDir, "novelwriter"), ignore=cpIgnore)
     for copyFile in copyList:
         print("Copying: %s" % copyFile)
         shutil.copy2(copyFile, os.path.join(outDir, copyFile))
@@ -613,7 +630,7 @@ def makeSimplePackage(embedPython):
 
     # Move assets to outDir as it should not be packed with the rest
     print("Copying: assets")
-    os.rename(os.path.join(zipDir, "nw", "assets"), os.path.join(outDir, "assets"))
+    os.rename(os.path.join(zipDir, "novelwriter", "assets"), os.path.join(outDir, "assets"))
 
     print("Writing: __main__.py")
     with open(os.path.join(zipDir, "__main__.py"), mode="w") as outFile:
@@ -629,8 +646,8 @@ def makeSimplePackage(embedPython):
             "    )\n"
             ")\n\n"
             "if __name__ == \"__main__\":\n"
-            "    import nw\n"
-            "    nw.main()\n"
+            "    import novelwriter\n"
+            "    novelwriter.main()\n"
         )
     print("")
 
@@ -968,7 +985,7 @@ def winInstall():
 
     targetDir = os.path.abspath(os.path.dirname(__file__))
     targetPy = os.path.join(targetDir, "novelWriter.pyw")
-    targetIcon = os.path.join(targetDir, "nw", "assets", "icons", "novelwriter.ico")
+    targetIcon = os.path.join(targetDir, "novelwriter", "assets", "icons", "novelwriter.ico")
 
     if not os.path.isfile(targetPy):
         shutil.copy2(os.path.join(targetDir, "novelWriter.py"), targetPy)
@@ -1029,7 +1046,9 @@ def winInstall():
         winreg.SetValueEx(regKey, kName, 0, winreg.REG_SZ, kVal)
         winreg.CloseKey(regKey)
 
-    mimeIcon = os.path.join(targetDir, "nw", "assets", "icons", "x-novelwriter-project.ico")
+    mimeIcon = os.path.join(
+        targetDir, "novelwriter", "assets", "icons", "x-novelwriter-project.ico"
+    )
     mimeExec = '"%s" "%s" "%%1"' % (pythonExe, targetPy)
 
     try:

@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import (
     QMessageBox
 )
 
-from nw.dialogs import GuiProjectLoad
+from novelwriter.dialogs import GuiProjectLoad
 
 keyDelay = 2
 typeDelay = 1

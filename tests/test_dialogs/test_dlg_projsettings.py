@@ -31,7 +31,7 @@ from PyQt5.QtWidgets import (
     QDialog, QAction, QMessageBox, QColorDialog, QTreeWidgetItem
 )
 
-from nw.dialogs import GuiProjectSettings
+from novelwriter.dialogs import GuiProjectSettings
 
 keyDelay = 2
 typeDelay = 1

@@ -29,8 +29,8 @@ from mock import causeOSError
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
-from nw.tools import GuiWritingStats
-from nw.constants import nwFiles
+from novelwriter.tools import GuiWritingStats
+from novelwriter.constants import nwFiles
 
 keyDelay = 2
 typeDelay = 1

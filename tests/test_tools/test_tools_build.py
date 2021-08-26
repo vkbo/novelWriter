@@ -28,7 +28,7 @@ from tools import cmpFiles, getGuiItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QMessageBox, QFileDialog
 
-from nw.tools import GuiBuildNovel
+from novelwriter.tools import GuiBuildNovel
 
 keyDelay = 2
 typeDelay = 1
