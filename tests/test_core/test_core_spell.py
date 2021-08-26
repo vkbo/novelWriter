@@ -26,7 +26,9 @@ import pytest
 from mock import causeOSError
 from tools import readFile, writeFile
 
-from nw.core.spellcheck import NWSpellCheck, NWSpellEnchant, NWSpellSimple
+from novelwriter.core.spellcheck import (
+    NWSpellCheck, NWSpellEnchant, NWSpellSimple
+)
 
 
 @pytest.mark.core

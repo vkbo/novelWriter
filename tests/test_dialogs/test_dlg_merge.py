@@ -27,9 +27,9 @@ from mock import causeOSError
 
 from PyQt5.QtWidgets import QAction, QMessageBox, QDialog
 
-from nw.dialogs import GuiDocMerge, GuiItemEditor
-from nw.enum import nwItemType, nwWidget
-from nw.core.tree import NWTree
+from novelwriter.dialogs import GuiDocMerge, GuiItemEditor
+from novelwriter.enum import nwItemType, nwWidget
+from novelwriter.core.tree import NWTree
 
 keyDelay = 2
 typeDelay = 1

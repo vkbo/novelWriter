@@ -29,10 +29,10 @@ from lxml import etree
 from tools import cmpFiles, writeFile, readFile
 from mock import causeOSError
 
-from nw.core.project import NWProject
-from nw.enum import nwItemClass, nwItemType, nwItemLayout
-from nw.common import formatTimeStamp
-from nw.constants import nwFiles
+from novelwriter.core.project import NWProject
+from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
+from novelwriter.common import formatTimeStamp
+from novelwriter.constants import nwFiles
 
 
 @pytest.mark.core
@@ -234,7 +234,7 @@ def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, mockGUI, tmpDir):
     theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
 
-    # Make sure we do not pick up the nw/assets/sample.zip file
+    # Make sure we do not pick up the novelwriter/assets/sample.zip file
     tmpConf.assetPath = tmpDir
 
     # Set a fake project file name
@@ -531,7 +531,7 @@ def testCoreProject_LockFile(monkeypatch, fncDir, mockGUI):
 
     # Write lock file
     with monkeypatch.context() as mp:
-        mp.setattr("nw.core.project.time", lambda: 123.4)
+        mp.setattr("novelwriter.core.project.time", lambda: 123.4)
         assert theProject._writeLockFile() is True
     assert readFile(lockFile) == "TestHost\nTestOS\n1.0\n123\n"
 
@@ -730,7 +730,7 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
     theProject.editTime = 1234
     theProject.projOpened = 1600000000
     with monkeypatch.context() as mp:
-        mp.setattr("nw.core.project.time", lambda: 1600005600)
+        mp.setattr("novelwriter.core.project.time", lambda: 1600005600)
         assert theProject.getCurrentEditTime() == 6834
 
     # Trash folder
@@ -892,7 +892,7 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
     theProject.notesWCount = 100
 
     with monkeypatch.context() as mp:
-        mp.setattr("nw.core.project.time", lambda: 1600005600)
+        mp.setattr("novelwriter.core.project.time", lambda: 1600005600)
         assert theProject._appendSessionStats(idleTime=99)
 
     assert readFile(statsFile) == (

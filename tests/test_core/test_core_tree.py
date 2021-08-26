@@ -27,9 +27,9 @@ from hashlib import sha256
 
 from tools import readFile
 
-from nw.core.project import NWProject, NWItem, NWTree
-from nw.enum import nwItemClass, nwItemType, nwItemLayout
-from nw.constants import nwFiles
+from novelwriter.core.project import NWProject, NWItem, NWTree
+from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
+from novelwriter.constants import nwFiles
 
 
 @pytest.fixture(scope="function")
@@ -283,7 +283,7 @@ def testCoreTree_MakeHandles(monkeypatch, mockGUI):
     # Fix the time() function and force a handle collission
     theTree.setSeed(None)
     theTree._handleCount = 0
-    monkeypatch.setattr("nw.core.tree.time", lambda: 123.4)
+    monkeypatch.setattr("novelwriter.core.tree.time", lambda: 123.4)
 
     tHandle = theTree._makeHandle()
     theTree._projTree[tHandle] = None

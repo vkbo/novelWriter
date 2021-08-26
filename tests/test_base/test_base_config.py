@@ -28,8 +28,8 @@ from shutil import copyfile
 from mock import causeOSError, MockApp
 from tools import cmpFiles, writeFile
 
-from nw.config import Config
-from nw.constants import nwConst, nwFiles
+from novelwriter.config import Config
+from novelwriter.constants import nwConst, nwFiles
 
 
 @pytest.mark.base

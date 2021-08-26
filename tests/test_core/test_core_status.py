@@ -23,7 +23,7 @@ import pytest
 
 from lxml import etree
 
-from nw.core.status import NWStatus
+from novelwriter.core.status import NWStatus
 
 
 @pytest.mark.core

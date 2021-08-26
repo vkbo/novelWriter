@@ -24,7 +24,7 @@ import pytest
 from PyQt5.QtCore import QItemSelectionModel
 from PyQt5.QtWidgets import QAction, QListWidgetItem, QDialog, QMessageBox
 
-from nw.dialogs import GuiQuoteSelect, GuiUpdates
+from novelwriter.dialogs import GuiQuoteSelect, GuiUpdates
 
 keyDelay = 2
 typeDelay = 1
@@ -86,11 +86,11 @@ def testDlgOther_Updates(qtbot, monkeypatch, nwGUI):
         return mockPayload()
 
     # Faulty Return
-    monkeypatch.setattr("nw.dialogs.updates.urlopen", mockUrlopenA)
+    monkeypatch.setattr("novelwriter.dialogs.updates.urlopen", mockUrlopenA)
     nwUpdate.checkLatest()
 
     # Valid Return
-    monkeypatch.setattr("nw.dialogs.updates.urlopen", mockUrlopenB)
+    monkeypatch.setattr("novelwriter.dialogs.updates.urlopen", mockUrlopenB)
     nwUpdate.checkLatest()
     assert nwUpdate.latestValue.text().startswith("novelWriter v1.0")
 

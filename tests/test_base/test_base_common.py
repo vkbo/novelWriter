@@ -27,7 +27,7 @@ from datetime import datetime
 
 from tools import writeFile
 
-from nw.common import (
+from novelwriter.common import (
     checkString, checkInt, checkBool, checkHandle, isHandle, isTitleTag,
     isItemClass, isItemType, isItemLayout, hexToInt, formatInt,
     formatTimeStamp, formatTime, parseTimeStamp, splitVersionNumber,

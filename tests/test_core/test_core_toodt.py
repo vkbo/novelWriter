@@ -28,8 +28,8 @@ from shutil import copyfile
 
 from tools import cmpFiles
 
-from nw.core import NWProject, NWIndex, ToOdt
-from nw.core.toodt import ODTParagraphStyle, ODTTextStyle, XMLParagraph, _mkTag
+from novelwriter.core import NWProject, NWIndex, ToOdt
+from novelwriter.core.toodt import ODTParagraphStyle, ODTTextStyle, XMLParagraph, _mkTag
 
 XML_NS = [
     ' xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"',

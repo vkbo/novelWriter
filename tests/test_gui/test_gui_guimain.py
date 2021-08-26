@@ -28,10 +28,10 @@ from tools import cmpFiles
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QDialog
 
-from nw.dialogs.itemeditor import GuiItemEditor
-from nw.gui.doceditor import GuiDocEditor
-from nw.gui.projtree import GuiProjectTree
-from nw.enum import nwItemType, nwWidget
+from novelwriter.dialogs.itemeditor import GuiItemEditor
+from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.gui.projtree import GuiProjectTree
+from novelwriter.enum import nwItemType, nwWidget
 
 keyDelay = 2
 typeDelay = 1
@@ -43,12 +43,12 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     """Test the document editor.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *args: QMessageBox.Yes)
-    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *args: None)
-    monkeypatch.setattr(GuiItemEditor, "result", lambda *args: QDialog.Accepted)
-    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *args: True)
-    monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *args: True)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiItemEditor, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
+    monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
     # Create new, save, close project
     nwGUI.theProject.projTree.setSeed(42)

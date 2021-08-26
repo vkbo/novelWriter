@@ -19,8 +19,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import pytest
+import novelwriter
 
 from PyQt5.QtGui import QColor, QPixmap, QIcon
 from PyQt5.QtWidgets import QStyle, QMessageBox
@@ -38,40 +38,44 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
 
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal])
+    nwGUI = novelwriter.main(
+        ["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal]
+    )
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.wait(stepDelay)
 
     # Change Settings
-    assert nw.CONFIG.confPath == nwMinimal
-    nw.CONFIG.guiTheme = "default_dark"
-    nw.CONFIG.guiSyntax = "tomorrow_night_eighties"
-    nw.CONFIG.guiIcons = "typicons_colour_dark"
-    nw.CONFIG.guiDark = True
-    nw.CONFIG.guiFont = "Cantarell"
-    nw.CONFIG.guiFontSize = 11
-    nw.CONFIG.confChanged = True
-    assert nw.CONFIG.saveConfig()
+    assert novelwriter.CONFIG.confPath == nwMinimal
+    novelwriter.CONFIG.guiTheme = "default_dark"
+    novelwriter.CONFIG.guiSyntax = "tomorrow_night_eighties"
+    novelwriter.CONFIG.guiIcons = "typicons_colour_dark"
+    novelwriter.CONFIG.guiDark = True
+    novelwriter.CONFIG.guiFont = "Cantarell"
+    novelwriter.CONFIG.guiFontSize = 11
+    novelwriter.CONFIG.confChanged = True
+    assert novelwriter.CONFIG.saveConfig()
 
     nwGUI.closeMain()
     nwGUI.close()
     del nwGUI
 
     # Re-open
-    assert nw.CONFIG.confPath == nwMinimal
-    nwGUI = nw.main(["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal])
+    assert novelwriter.CONFIG.confPath == nwMinimal
+    nwGUI = novelwriter.main(
+        ["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal]
+    )
     assert nwGUI.mainConf.confPath == nwMinimal
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.wait(stepDelay)
 
-    assert nw.CONFIG.guiTheme == "default_dark"
-    assert nw.CONFIG.guiSyntax == "tomorrow_night_eighties"
-    assert nw.CONFIG.guiIcons == "typicons_colour_dark"
-    assert nw.CONFIG.guiDark is True
-    assert nw.CONFIG.guiFont == "Cantarell"
-    assert nw.CONFIG.guiFontSize == 11
+    assert novelwriter.CONFIG.guiTheme == "default_dark"
+    assert novelwriter.CONFIG.guiSyntax == "tomorrow_night_eighties"
+    assert novelwriter.CONFIG.guiIcons == "typicons_colour_dark"
+    assert novelwriter.CONFIG.guiDark is True
+    assert novelwriter.CONFIG.guiFont == "Cantarell"
+    assert novelwriter.CONFIG.guiFontSize == 11
 
     # Check GUI Colours
     thePalette = nwGUI.palette()
@@ -114,9 +118,9 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
 
     # Test Icon class
     theIcons = nwGUI.theTheme.theIcons
-    nw.CONFIG.guiIcons = "invalid"
+    novelwriter.CONFIG.guiIcons = "invalid"
     assert not theIcons.updateTheme()
-    nw.CONFIG.guiIcons = "typicons_colour_dark"
+    novelwriter.CONFIG.guiIcons = "typicons_colour_dark"
     assert theIcons.updateTheme()
 
     # Ask for a non-existent key
