@@ -9,6 +9,7 @@ SOURCES += \
     novelwriter/dialogs/preferences.py \
     novelwriter/dialogs/projload.py \
     novelwriter/dialogs/projsettings.py \
+    novelwriter/dialogs/updates.py \
     novelwriter/dialogs/wordlist.py \
     novelwriter/gui/custom.py \
     novelwriter/gui/doceditor.py \

@@ -732,13 +732,13 @@ class GuiMainMenu(QMenuBar):
 
         # Insert > Vertical Space (Single)
         self.aInsVSpaceS = QAction(self.tr("Vertical Space (Single)"), self)
-        self.aInsVSpaceS.setStatusTip(self.tr("Insert a vertical space equal to one pragraph"))
+        self.aInsVSpaceS.setStatusTip(self.tr("Insert a vertical space equal to one paragraph"))
         self.aInsVSpaceS.triggered.connect(lambda: self._docInsert(nwDocInsert.VSPACE_S))
         self.mInsBreaks.addAction(self.aInsVSpaceS)
 
         # Insert > Vertical Space (Multi)
         self.aInsVSpaceM = QAction(self.tr("Vertical Space (Multi)"), self)
-        self.aInsVSpaceM.setStatusTip(self.tr("Insert a vertical space equal to n pragraphs"))
+        self.aInsVSpaceM.setStatusTip(self.tr("Insert a vertical space equal to n paragraphs"))
         self.aInsVSpaceM.triggered.connect(lambda: self._docInsert(nwDocInsert.VSPACE_M))
         self.mInsBreaks.addAction(self.aInsVSpaceM)
 
