@@ -29,8 +29,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from time import time
 
@@ -48,11 +48,11 @@ from PyQt5.QtWidgets import (
     QFrame
 )
 
-from nw.core import NWDoc, NWSpellSimple, countWords
-from nw.enum import nwAlert, nwDocAction, nwDocInsert, nwItemClass
-from nw.common import transferCase
-from nw.constants import nwConst, nwKeyWords, nwUnicode
-from nw.gui.dochighlight import GuiDocHighlighter
+from novelwriter.core import NWDoc, NWSpellSimple, countWords
+from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwItemClass
+from novelwriter.common import transferCase
+from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
+from novelwriter.gui.dochighlight import GuiDocHighlighter
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ class GuiDocEditor(QTextEdit):
         logger.debug("Initialising GuiDocEditor ...")
 
         # Class Variables
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theIndex   = theParent.theIndex
@@ -1973,7 +1973,7 @@ class GuiDocEditor(QTextEdit):
         setting in config.
         """
         if self.mainConf.spellTool == nwConst.SP_ENCHANT:
-            from nw.core.spellcheck import NWSpellEnchant
+            from novelwriter.core.spellcheck import NWSpellEnchant
             self._theDict = NWSpellEnchant()
         else:
             self._theDict = NWSpellSimple()
@@ -2047,7 +2047,7 @@ class GuiDocEditSearch(QFrame):
 
         logger.debug("Initialising GuiDocEditSearch ...")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.docEditor  = docEditor
         self.theParent  = docEditor.theParent
         self.theProject = docEditor.theProject
@@ -2423,7 +2423,7 @@ class GuiDocEditHeader(QWidget):
 
         logger.debug("Initialising GuiDocEditHeader ...")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.docEditor  = docEditor
         self.theParent  = docEditor.theParent
         self.theProject = docEditor.theProject
@@ -2647,7 +2647,7 @@ class GuiDocEditFooter(QWidget):
 
         logger.debug("Initialising GuiDocEditFooter ...")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.docEditor  = docEditor
         self.theParent  = docEditor.theParent
         self.theProject = docEditor.theProject

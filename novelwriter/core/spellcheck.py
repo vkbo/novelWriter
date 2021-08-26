@@ -23,10 +23,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
-import logging
 import os
 import difflib
+import logging
+import novelwriter
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ class NWSpellCheck():
     projDict = []
 
     def __init__(self):
-        self.mainConf = nw.CONFIG
+        self.mainConf = novelwriter.CONFIG
         self.projectDict = None
         self.spellLanguage = None
         return
@@ -72,7 +72,7 @@ class NWSpellCheck():
                 self.projDict.append(newWord)
             except Exception:
                 logger.error("Failed to add word to project word list %s", str(self.projectDict))
-                nw.logException()
+                novelwriter.logException()
                 return False
             return True
         return False
@@ -115,7 +115,7 @@ class NWSpellCheck():
 
         except Exception:
             logger.error("Failed to load project word list")
-            nw.logException()
+            novelwriter.logException()
             return False
 
         return True
@@ -201,7 +201,7 @@ class NWSpellEnchant(NWSpellCheck):
             spName = self.theDict.provider.name
         except Exception:
             logger.error("Failed to extract information about the dictionary")
-            nw.logException()
+            novelwriter.logException()
             spTag = ""
             spName = ""
 
@@ -264,7 +264,7 @@ class NWSpellSimple(NWSpellCheck):
 
         except Exception:
             logger.error("Failed to load spell check word list for language '%s'", theLang)
-            nw.logException()
+            novelwriter.logException()
             self.spellLanguage = None
 
         self._readProjectDictionary(projectDict)

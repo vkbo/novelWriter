@@ -25,8 +25,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from PyQt5.QtGui import QColor, QPalette, QPainter
 from PyQt5.QtCore import (
@@ -38,7 +38,7 @@ from PyQt5.QtWidgets import (
     QStyleOptionTab, QLineEdit
 )
 
-from nw.constants import nwUnicode
+from novelwriter.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class QConfigLayout(QGridLayout):
 
         self._itemMap = {}
 
-        wSp = nw.CONFIG.pxInt(8)
+        wSp = novelwriter.CONFIG.pxInt(8)
         self.setHorizontalSpacing(wSp)
         self.setVerticalSpacing(wSp)
         self.setColumnStretch(0, 1)
@@ -108,7 +108,7 @@ class QConfigLayout(QGridLayout):
             qLabel = None
             raise ValueError("theLabel must be a QLabel")
 
-        hM = nw.CONFIG.pxInt(4)
+        hM = novelwriter.CONFIG.pxInt(4)
         qLabel.setContentsMargins(0, hM, 0, hM)
         self.addWidget(qLabel, self._nextRow, 0, 1, 2, Qt.AlignLeft)
 
@@ -142,7 +142,7 @@ class QConfigLayout(QGridLayout):
             qWidget = None
             raise ValueError("theWidget must be a QWidget")
 
-        wSp = nw.CONFIG.pxInt(8)
+        wSp = novelwriter.CONFIG.pxInt(8)
         qLabel.setIndent(wSp)
         if helpText is not None:
             qHelp = QHelpLabel(str(helpText), self._helpCol, self._fontScale)
@@ -235,18 +235,18 @@ class QSwitch(QAbstractButton):
         super().__init__(parent=parent)
 
         if width is None:
-            self._xW = nw.CONFIG.pxInt(40)
+            self._xW = novelwriter.CONFIG.pxInt(40)
         else:
             self._xW = width
 
         if height is None:
-            self._xH = nw.CONFIG.pxInt(20)
+            self._xH = novelwriter.CONFIG.pxInt(20)
         else:
             self._xH = height
 
         self._xR = int(self._xH*0.5)
         self._xT = int(self._xH*0.6)
-        self._rB = int(nw.CONFIG.guiScale*2)
+        self._rB = int(novelwriter.CONFIG.guiScale*2)
         self._rH = self._xH - 2*self._rB
         self._rR = self._xR - self._rB
 
@@ -428,7 +428,7 @@ class VerticalTabBar(QTabBar):
 
     def __init__(self, theParent=None):
         QTabBar.__init__(self, parent=theParent)
-        self._mW = nw.CONFIG.pxInt(150)
+        self._mW = novelwriter.CONFIG.pxInt(150)
         return
 
     def tabSizeHint(self, theIndex):

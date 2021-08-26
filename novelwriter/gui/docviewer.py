@@ -27,8 +27,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from PyQt5.QtCore import Qt, QUrl, QSize, pyqtSlot
 from PyQt5.QtGui import (
@@ -39,9 +39,9 @@ from PyQt5.QtWidgets import (
     QAction, QMenu
 )
 
-from nw.core import ToHtml
-from nw.enum import nwAlert, nwItemType, nwDocAction
-from nw.constants import nwUnicode
+from novelwriter.core import ToHtml
+from novelwriter.enum import nwAlert, nwItemType, nwDocAction
+from novelwriter.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class GuiDocViewer(QTextBrowser):
         logger.debug("Initialising GuiDocViewer ...")
 
         # Class Variables
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theParent.theProject
@@ -185,7 +185,7 @@ class GuiDocViewer(QTextBrowser):
             aDoc.doPostProcessing()
         except Exception:
             logger.error("Failed to generate preview for document with handle '%s'", tHandle)
-            nw.logException()
+            novelwriter.logException()
             self.setText(self.tr("An error occurred while generating the preview."))
             return False
 
@@ -719,7 +719,7 @@ class GuiDocViewHeader(QWidget):
 
         logger.debug("Initialising GuiDocViewHeader ...")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.docViewer  = docViewer
         self.theParent  = docViewer.theParent
         self.theProject = docViewer.theProject
@@ -926,7 +926,7 @@ class GuiDocViewFooter(QWidget):
 
         logger.debug("Initialising GuiDocViewFooter ...")
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.docViewer = docViewer
         self.theParent = docViewer.theParent
         self.theTheme  = docViewer.theTheme
@@ -1151,7 +1151,7 @@ class GuiDocViewDetails(QScrollArea):
         QScrollArea.__init__(self, theParent)
 
         logger.debug("Initialising GuiDocViewDetails ...")
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.theTheme   = theParent.theTheme

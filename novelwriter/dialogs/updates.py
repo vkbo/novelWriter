@@ -23,9 +23,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import json
 import logging
+import novelwriter
 
 from datetime import datetime
 from urllib.request import Request, urlopen
@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import (
     qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QLabel
 )
 
-from nw.common import logException
+from novelwriter.common import logException
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class GuiUpdates(QDialog):
         logger.debug("Initialising GuiUpdates ...")
         self.setObjectName("GuiUpdates")
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
 
         self.setWindowTitle(self.tr("Check for Updates"))
@@ -72,8 +72,8 @@ class GuiUpdates(QDialog):
         self.currentValue = QLabel(self.tr(
             "novelWriter {0} released on {1}"
         ).format(
-            "v%s" % nw.__version__,
-            datetime.strptime(nw.__date__, "%Y-%m-%d").strftime("%x"))
+            "v%s" % novelwriter.__version__,
+            datetime.strptime(novelwriter.__date__, "%Y-%m-%d").strftime("%x"))
         )
 
         self.latestLabel = QLabel(self.tr("Latest Release"))
@@ -152,7 +152,7 @@ class GuiUpdates(QDialog):
         self.latestLink.setText(self.tr(
             "Download: {0}"
         ).format(
-            f'<a href="{nw.__url__}">{nw.__url__}</a>'
+            f'<a href="{novelwriter.__url__}">{novelwriter.__url__}</a>'
         ))
 
         qApp.restoreOverrideCursor()

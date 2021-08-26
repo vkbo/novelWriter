@@ -23,10 +23,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import os
 import json
 import logging
+import novelwriter
 
 from time import time
 from datetime import datetime
@@ -43,11 +43,11 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 
-from nw.core import ToHtml, ToOdt, ToMarkdown
-from nw.enum import nwAlert, nwItemType, nwItemLayout, nwItemClass
-from nw.common import fuzzyTime, makeFileNameSafe
-from nw.constants import nwConst, nwFiles
-from nw.gui.custom import QSwitch
+from novelwriter.core import ToHtml, ToOdt, ToMarkdown
+from novelwriter.enum import nwAlert, nwItemType, nwItemLayout, nwItemClass
+from novelwriter.common import fuzzyTime, makeFileNameSafe
+from novelwriter.constants import nwConst, nwFiles
+from novelwriter.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +70,7 @@ class GuiBuildNovel(QDialog):
         logger.debug("Initialising GuiBuildNovel ...")
         self.setObjectName("GuiBuildNovel")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theParent.theProject
@@ -727,7 +727,7 @@ class GuiBuildNovel(QDialog):
 
             except Exception:
                 logger.error("Failed to build document '%s'", tItem.itemHandle)
-                nw.logException()
+                novelwriter.logException()
                 if isPreview:
                     self.docView.setText((
                         "Failed to generate preview. "
@@ -1050,7 +1050,7 @@ class GuiBuildNovel(QDialog):
                 theData = json.loads(theJson)
             except Exception:
                 logger.error("Failed to load build cache")
-                nw.logException()
+                novelwriter.logException()
                 return False
 
             if "buildTime" in theData.keys():
@@ -1078,7 +1078,7 @@ class GuiBuildNovel(QDialog):
                 }, indent=2))
         except Exception:
             logger.error("Failed to save build cache")
-            nw.logException()
+            novelwriter.logException()
             return False
 
         return True
@@ -1186,7 +1186,7 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         logger.debug("Initialising GuiBuildNovelDocView ...")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theProject = theProject
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme

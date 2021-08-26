@@ -23,8 +23,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from time import time
 
@@ -32,8 +32,8 @@ from PyQt5.QtCore import QLocale, pyqtSlot
 from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
-from nw.common import formatTime
-from nw.enum import nwState
+from novelwriter.common import formatTime
+from novelwriter.enum import nwState
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class GuiMainStatus(QStatusBar):
 
         logger.debug("Initialising GuiMainStatus ...")
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
         self.refTime   = None

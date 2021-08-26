@@ -23,9 +23,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import math
 import logging
+import novelwriter
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont
@@ -34,9 +34,9 @@ from PyQt5.QtWidgets import (
     QLabel, QSpinBox, QGridLayout, QHBoxLayout, QLineEdit, QAbstractItemView
 )
 
-from nw.common import numberToRoman
-from nw.constants import nwUnicode
-from nw.gui.custom import PagedDialog, QSwitch
+from novelwriter.common import numberToRoman
+from novelwriter.constants import nwUnicode
+from novelwriter.gui.custom import PagedDialog, QSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class GuiProjectDetails(PagedDialog):
         logger.debug("Initialising GuiProjectDetails ...")
         self.setObjectName("GuiProjectDetails")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.optState   = theParent.theProject.optState
@@ -134,7 +134,7 @@ class GuiProjectDetailsMain(QWidget):
     def __init__(self, theParent, theProject):
         QWidget.__init__(self, theParent)
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
         self.theTheme   = theParent.theTheme
@@ -254,7 +254,7 @@ class GuiProjectDetailsContents(QWidget):
     def __init__(self, theParent, theProject):
         QWidget.__init__(self, theParent)
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
         self.theTheme   = theParent.theTheme

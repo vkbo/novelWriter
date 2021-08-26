@@ -30,8 +30,8 @@ import logging
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
-from nw.error import exceptionHandler, logException
-from nw.config import Config
+from novelwriter.error import exceptionHandler, logException
+from novelwriter.config import Config
 
 ##
 #  Version Scheme
@@ -55,7 +55,7 @@ from nw.config import Config
 #  0x010201f0 : 1.2.1       1.2.1      Patch release
 ##
 
-__package__    = "nw"
+__package__    = "novelwriter"
 __copyright__  = "Copyright 2018–2021, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
@@ -185,10 +185,10 @@ def main(sysArgs=None):
             logLevel = logging.INFO
         elif inOpt == "--debug":
             logLevel = logging.DEBUG
-            logFormat  = "[{asctime:}] {name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
+            logFormat  = "[{asctime:}]  {filename:>17}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--verbose":
             logLevel = VERBOSE
-            logFormat  = "[{asctime:}] {name:>22}:{lineno:<4d}  {levelname:8}  {message:}"
+            logFormat  = "[{asctime:}]  {filename:>17}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--style":
             qtStyle = inArg
         elif inOpt == "--config":
@@ -276,7 +276,7 @@ def main(sysArgs=None):
             logException()
 
     # Import GUI (after dependency checks), and launch
-    from nw.guimain import GuiMain
+    from novelwriter.guimain import GuiMain
     if testMode:
         nwGUI = GuiMain()
         return nwGUI

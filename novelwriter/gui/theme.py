@@ -24,9 +24,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import os
 import logging
+import novelwriter
 
 from math import ceil
 from functools import partial
@@ -37,9 +37,9 @@ from PyQt5.QtGui import (
     QPalette, QColor, QIcon, QFont, QFontMetrics, QFontDatabase, QPixmap
 )
 
-from nw.enum import nwAlert, nwItemLayout, nwItemType
-from nw.common import NWConfigParser
-from nw.constants import nwLabels
+from novelwriter.enum import nwAlert, nwItemLayout, nwItemType
+from novelwriter.common import NWConfigParser
+from novelwriter.constants import nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,7 @@ class GuiTheme:
 
     def __init__(self, theParent):
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theIcons   = GuiIcons(self.theParent)
         self.guiPalette = QPalette()
@@ -279,7 +279,7 @@ class GuiTheme:
                     cssData = inFile.read()
         except Exception:
             logger.error("Could not load theme css file")
-            nw.logException()
+            novelwriter.logException()
             return False
 
         # Config File
@@ -289,7 +289,7 @@ class GuiTheme:
                 confParser.read_file(inFile)
         except Exception:
             logger.error("Could not load theme settings from: %s", self.confFile)
-            nw.logException()
+            novelwriter.logException()
             return False
 
         # Main
@@ -347,7 +347,7 @@ class GuiTheme:
                 confParser.read_file(inFile)
         except Exception:
             logger.error("Could not load syntax colours from: %s", self.syntaxFile)
-            nw.logException()
+            novelwriter.logException()
             return False
 
         # Main
@@ -596,7 +596,7 @@ class GuiIcons:
 
     def __init__(self, theParent):
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
 
         # Storage
@@ -648,7 +648,7 @@ class GuiIcons:
                 confParser.read_file(inFile)
         except Exception:
             logger.error("Could not load icon theme settings from: %s", self.confFile)
-            nw.logException()
+            novelwriter.logException()
             return False
 
         # Main

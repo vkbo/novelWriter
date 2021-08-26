@@ -23,10 +23,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import os
 import json
 import logging
+import novelwriter
 
 from datetime import datetime
 
@@ -37,10 +37,10 @@ from PyQt5.QtWidgets import (
     QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
 )
 
-from nw.enum import nwAlert
-from nw.common import formatTime, checkInt
-from nw.constants import nwConst, nwFiles
-from nw.gui.custom import QSwitch
+from novelwriter.enum import nwAlert
+from novelwriter.common import formatTime, checkInt
+from novelwriter.constants import nwConst, nwFiles
+from novelwriter.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ class GuiWritingStats(QDialog):
         logger.debug("Initialising GuiWritingStats ...")
         self.setObjectName("GuiWritingStats")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theParent.theProject

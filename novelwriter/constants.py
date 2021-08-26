@@ -25,7 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
-from nw.enum import nwItemClass, nwItemLayout, nwItemType, nwOutline
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwOutline
 
 
 def trConst(tString):

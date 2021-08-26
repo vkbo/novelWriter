@@ -23,18 +23,18 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import os
 import logging
+import novelwriter
 
 from time import time
 from lxml import etree
 from hashlib import sha256
 
-from nw.enum import nwItemType, nwItemClass, nwItemLayout
-from nw.common import checkHandle
-from nw.constants import nwConst, nwFiles
-from nw.core.item import NWItem
+from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
+from novelwriter.common import checkHandle
+from novelwriter.constants import nwConst, nwFiles
+from novelwriter.core.item import NWItem
 
 logger = logging.getLogger(__name__)
 
@@ -184,7 +184,7 @@ class NWTree():
 
         except Exception:
             logger.error("Could not write ToC file")
-            nw.logException()
+            novelwriter.logException()
             return False
 
         return True

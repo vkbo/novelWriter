@@ -23,16 +23,16 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from time import time
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView
 
-from nw.common import checkInt
-from nw.constants import nwKeyWords
+from novelwriter.common import checkInt
+from novelwriter.constants import nwKeyWords
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ class GuiNovelTree(QTreeWidget):
 
         logger.debug("Initialising GuiNovelTree ...")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theParent.theProject

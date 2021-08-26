@@ -27,9 +27,11 @@ import logging
 
 from lxml import etree
 
-from nw.enum import nwItemType, nwItemClass, nwItemLayout
-from nw.common import checkInt, isHandle, isItemClass, isItemLayout, isItemType
-from nw.constants import nwLabels, nwLists, trConst
+from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
+from novelwriter.common import (
+    checkInt, isHandle, isItemClass, isItemLayout, isItemType
+)
+from novelwriter.constants import nwLabels, nwLists, trConst
 
 logger = logging.getLogger(__name__)
 

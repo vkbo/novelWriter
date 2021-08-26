@@ -93,7 +93,7 @@ class NWErrorMessage(QDialog):
         error traceback.
         """
         from traceback import format_tb
-        from nw import __issuesurl__, __version__
+        from novelwriter import __issuesurl__, __version__
         from PyQt5.Qt import PYQT_VERSION_STR
         from PyQt5.QtCore import QT_VERSION_STR, QSysInfo
 

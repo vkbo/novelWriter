@@ -23,29 +23,29 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
-import logging
 import os
 import json
 import shutil
+import logging
+import novelwriter
 
-from lxml import etree
 from time import time
+from lxml import etree
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication
 
-from nw.core.tree import NWTree
-from nw.core.item import NWItem
-from nw.core.document import NWDoc
-from nw.core.status import NWStatus
-from nw.core.options import OptionState
-from nw.common import (
+from novelwriter.core.tree import NWTree
+from novelwriter.core.item import NWItem
+from novelwriter.core.document import NWDoc
+from novelwriter.core.status import NWStatus
+from novelwriter.core.options import OptionState
+from novelwriter.common import (
     checkString, checkBool, checkInt, isHandle, formatTimeStamp,
     makeFileNameSafe, hexToInt
 )
-from nw.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from nw.constants import trConst, nwFiles, nwLabels
+from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from novelwriter.constants import trConst, nwFiles, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class NWProject():
 
         # Internal
         self.theParent = theParent
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
 
         # Core Elements
         self.optState = OptionState(self)  # Project-specific GUI options
@@ -485,7 +485,7 @@ class NWProject():
                     "The file format of your project is about to be updated. "
                     "If you proceed, this project can no longer be opened by "
                     "an older version of novelWriter. Continue?"
-                ).format(appVersion, nw.__version__)
+                ).format(appVersion, novelwriter.__version__)
             )
             if not msgYes:
                 self.clearProject()
@@ -504,7 +504,7 @@ class NWProject():
         # Check novelWriter Version
         # =========================
 
-        if hexToInt(hexVersion) > hexToInt(nw.__hexversion__):
+        if hexToInt(hexVersion) > hexToInt(novelwriter.__hexversion__):
             msgYes = self.theParent.askQuestion(
                 self.tr("Version Conflict"),
                 self.tr(
@@ -513,7 +513,7 @@ class NWProject():
                     "continue to open the project, some attributes and "
                     "settings may not be preserved, but the overall project "
                     "should be fine. Continue opening the project?"
-                ).format(appVersion, nw.__version__)
+                ).format(appVersion, novelwriter.__version__)
             )
             if not msgYes:
                 self.clearProject()
@@ -646,8 +646,8 @@ class NWProject():
         # Root element and project details
         logger.debug("Writing project meta")
         nwXML = etree.Element("novelWriterXML", attrib={
-            "appVersion":  str(nw.__version__),
-            "hexVersion":  str(nw.__hexversion__),
+            "appVersion":  str(novelwriter.__version__),
+            "hexVersion":  str(novelwriter.__hexversion__),
             "fileVersion": self.FILE_VERSION,
             "timeStamp":   formatTimeStamp(saveTime),
         })
@@ -1252,7 +1252,7 @@ class NWProject():
 
         except Exception:
             logger.error("Failed to project language file")
-            nw.logException()
+            novelwriter.logException()
             return False
 
         return True
@@ -1277,7 +1277,7 @@ class NWProject():
 
         except Exception:
             logger.error("Failed to read project lockfile")
-            nw.logException()
+            novelwriter.logException()
             return ["ERROR"]
 
         return theLines
@@ -1298,7 +1298,7 @@ class NWProject():
 
         except Exception:
             logger.error("Failed to write project lockfile")
-            nw.logException()
+            novelwriter.logException()
             return False
 
         return True
@@ -1315,7 +1315,7 @@ class NWProject():
                 os.unlink(lockFile)
             except Exception:
                 logger.error("Failed to remove project lockfile")
-                nw.logException()
+                novelwriter.logException()
                 return False
 
         return True
@@ -1488,7 +1488,7 @@ class NWProject():
 
         except Exception:
             logger.error("Failed to write session stats file")
-            nw.logException()
+            novelwriter.logException()
             return False
 
         return True
@@ -1526,7 +1526,7 @@ class NWProject():
                 except Exception:
                     errList.append(self.tr("Could not move: {0}").format(theFile))
                     logger.error("Could not move: %s", theFile)
-                    nw.logException()
+                    novelwriter.logException()
 
             elif len(dataItem) == 21 and dataItem.endswith("_main.bak"):
                 try:
@@ -1535,7 +1535,7 @@ class NWProject():
                 except Exception:
                     errList.append(self.tr("Could not delete: {0}").format(theFile))
                     logger.error("Could not delete: %s", theFile)
-                    nw.logException()
+                    novelwriter.logException()
 
             else:
                 theErr = self._moveUnknownItem(theData, dataItem)
@@ -1549,7 +1549,7 @@ class NWProject():
         except Exception:
             errList.append(self.tr("Could not delete: {0}").format(theFolder))
             logger.error("Could not delete: %s", theFolder)
-            nw.logException()
+            novelwriter.logException()
 
         return errList
 
@@ -1569,7 +1569,7 @@ class NWProject():
             logger.info("Moved to junk: %s", theSrc)
         except Exception:
             logger.error("Could not move item %s to junk", theSrc)
-            nw.logException()
+            novelwriter.logException()
             return self.tr("Could not move item {0} to {1}.").format(theSrc, theJunk)
 
         return ""
@@ -1604,7 +1604,7 @@ class NWProject():
                     os.unlink(rmFile)
                 except Exception:
                     logger.error("Could not delete: %s", rmFile)
-                    nw.logException()
+                    novelwriter.logException()
                     return False
 
         return True

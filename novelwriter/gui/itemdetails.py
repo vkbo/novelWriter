@@ -23,15 +23,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 
-from nw.enum import nwItemClass, nwItemType
-from nw.constants import trConst, nwLabels
+from novelwriter.enum import nwItemClass, nwItemType
+from novelwriter.constants import trConst, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class GuiItemDetails(QWidget):
         QWidget.__init__(self, theParent)
 
         logger.debug("Initialising GuiItemDetails ...")
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.theTheme   = theParent.theTheme

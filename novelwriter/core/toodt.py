@@ -23,16 +23,16 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from lxml import etree
 from hashlib import sha256
 from zipfile import ZipFile
 from datetime import datetime
 
-from nw.constants import nwKeyWords, nwLabels
-from nw.core.tokenizer import Tokenizer
+from novelwriter.constants import nwKeyWords, nwLabels
+from novelwriter.core.tokenizer import Tokenizer
 
 logger = logging.getLogger(__name__)
 
@@ -73,8 +73,6 @@ class ToOdt(Tokenizer):
 
     def __init__(self, theProject, isFlat):
         Tokenizer.__init__(self, theProject)
-
-        self.mainConf = nw.CONFIG
 
         self._isFlat = isFlat  # Flat: .fodt, otherwise .odt
 
@@ -318,7 +316,7 @@ class ToOdt(Tokenizer):
         xMeta.text = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "generator"))
-        xMeta.text = f"novelWriter/{nw.__version__}"
+        xMeta.text = f"novelWriter/{novelwriter.__version__}"
 
         self._pageStyles()
         self._defaultStyles()

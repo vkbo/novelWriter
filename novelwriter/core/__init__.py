@@ -19,13 +19,13 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from nw.core.document import NWDoc
-from nw.core.index import NWIndex, countWords
-from nw.core.project import NWProject
-from nw.core.spellcheck import NWSpellCheck, NWSpellEnchant, NWSpellSimple
-from nw.core.tohtml import ToHtml
-from nw.core.toodt import ToOdt
-from nw.core.tomd import ToMarkdown
+from novelwriter.core.document import NWDoc
+from novelwriter.core.index import NWIndex, countWords
+from novelwriter.core.project import NWProject
+from novelwriter.core.spellcheck import NWSpellCheck, NWSpellEnchant, NWSpellSimple
+from novelwriter.core.tohtml import ToHtml
+from novelwriter.core.toodt import ToOdt
+from novelwriter.core.tomd import ToMarkdown
 
 __all__ = [
     "countWords",

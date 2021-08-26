@@ -23,9 +23,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import os
 import logging
+import novelwriter
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, QLocale
@@ -34,11 +34,11 @@ from PyQt5.QtWidgets import (
     QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
 )
 
-from nw.core import NWSpellSimple, NWSpellEnchant
-from nw.enum import nwAlert
-from nw.constants import nwConst
-from nw.gui.custom import QSwitch, QConfigLayout, PagedDialog
-from nw.dialogs.quotes import GuiQuoteSelect
+from novelwriter.core import NWSpellSimple, NWSpellEnchant
+from novelwriter.enum import nwAlert
+from novelwriter.constants import nwConst
+from novelwriter.gui.custom import QSwitch, QConfigLayout, PagedDialog
+from novelwriter.dialogs.quotes import GuiQuoteSelect
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class GuiPreferences(PagedDialog):
         logger.debug("Initialising GuiPreferences ...")
         self.setObjectName("GuiPreferences")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
 
@@ -143,7 +143,7 @@ class GuiPreferencesGeneral(QWidget):
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
 
@@ -354,7 +354,7 @@ class GuiPreferencesProjects(QWidget):
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
 
@@ -515,7 +515,7 @@ class GuiPreferencesDocuments(QWidget):
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
 
@@ -686,7 +686,7 @@ class GuiPreferencesEditor(QWidget):
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
 
@@ -887,7 +887,7 @@ class GuiPreferencesSyntax(QWidget):
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
 
@@ -1012,7 +1012,7 @@ class GuiPreferencesAutomation(QWidget):
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
 
@@ -1169,7 +1169,7 @@ class GuiPreferencesQuotes(QWidget):
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
 

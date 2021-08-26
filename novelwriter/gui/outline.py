@@ -23,8 +23,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from time import time
 
@@ -33,8 +33,8 @@ from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QMenu, QAction, QAbstractItemView
 )
 
-from nw.enum import nwItemLayout, nwItemType, nwOutline
-from nw.constants import trConst, nwKeyWords, nwLabels
+from novelwriter.enum import nwItemLayout, nwItemType, nwOutline
+from novelwriter.constants import trConst, nwKeyWords, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class GuiOutline(QTreeWidget):
 
         logger.debug("Initialising GuiOutline ...")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.theTheme   = theParent.theTheme

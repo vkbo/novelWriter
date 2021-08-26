@@ -23,8 +23,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -32,10 +32,10 @@ from PyQt5.QtWidgets import (
     QListWidgetItem, QDialogButtonBox, QLabel
 )
 
-from nw.core import NWDoc
-from nw.enum import nwAlert, nwItemType, nwItemClass, nwItemLayout
-from nw.constants import nwConst
-from nw.gui.custom import QHelpLabel
+from novelwriter.core import NWDoc
+from novelwriter.enum import nwAlert, nwItemType, nwItemClass, nwItemLayout
+from novelwriter.constants import nwConst
+from novelwriter.gui.custom import QHelpLabel
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ class GuiDocSplit(QDialog):
         logger.debug("Initialising GuiDocSplit ...")
         self.setObjectName("GuiDocSplit")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.optState   = theParent.theProject.optState

@@ -23,8 +23,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from urllib.parse import urljoin
 from urllib.request import pathname2url
@@ -33,8 +33,8 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction
 
-from nw.enum import nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwWidget
-from nw.constants import trConst, nwKeyWords, nwLabels, nwUnicode
+from novelwriter.enum import nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwWidget
+from novelwriter.constants import trConst, nwKeyWords, nwLabels, nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class GuiMainMenu(QMenuBar):
         QMenuBar.__init__(self, theParent)
 
         logger.debug("Initialising GuiMainMenu ...")
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
 
@@ -1087,10 +1087,10 @@ class GuiMainMenu(QMenuBar):
         self.helpMenu.addSeparator()
 
         # Help > User Manual (Online)
-        if nw.__version__[-2] == "f":
-            docUrl = f"{nw.__docurl__}/en/stable/"
+        if novelwriter.__version__[-2] == "f":
+            docUrl = f"{novelwriter.__docurl__}/en/stable/"
         else:
-            docUrl = f"{nw.__docurl__}/en/latest/"
+            docUrl = f"{novelwriter.__docurl__}/en/latest/"
 
         self.aHelpDocs = QAction(self.tr("User Manual (Online)"), self)
         self.aHelpDocs.setStatusTip(self.tr("Open documentation in browser"))
@@ -1112,25 +1112,25 @@ class GuiMainMenu(QMenuBar):
         # Document > Report an Issue
         self.aIssue = QAction(self.tr("Report an Issue (GitHub)"), self)
         self.aIssue.setStatusTip(
-            self.tr("Report a bug or issue on GitHub at {0}").format(nw.__issuesurl__)
+            self.tr("Report a bug or issue on GitHub at {0}").format(novelwriter.__issuesurl__)
         )
-        self.aIssue.triggered.connect(lambda: self._openWebsite(nw.__issuesurl__))
+        self.aIssue.triggered.connect(lambda: self._openWebsite(novelwriter.__issuesurl__))
         self.helpMenu.addAction(self.aIssue)
 
         # Document > Ask a Question
         self.aQuestion = QAction(self.tr("Ask a Question (GitHub)"), self)
         self.aQuestion.setStatusTip(
-            self.tr("Ask a question on GitHub at {0}").format(nw.__helpurl__)
+            self.tr("Ask a question on GitHub at {0}").format(novelwriter.__helpurl__)
         )
-        self.aQuestion.triggered.connect(lambda: self._openWebsite(nw.__helpurl__))
+        self.aQuestion.triggered.connect(lambda: self._openWebsite(novelwriter.__helpurl__))
         self.helpMenu.addAction(self.aQuestion)
 
         # Document > Main Website
         self.aWebsite = QAction(self.tr("The novelWriter Website"), self)
         self.aWebsite.setStatusTip(
-            self.tr("Open the novelWriter website at {0}").format(nw.__url__)
+            self.tr("Open the novelWriter website at {0}").format(novelwriter.__url__)
         )
-        self.aWebsite.triggered.connect(lambda: self._openWebsite(nw.__url__))
+        self.aWebsite.triggered.connect(lambda: self._openWebsite(novelwriter.__url__))
         self.helpMenu.addAction(self.aWebsite)
 
         # Help > Separator

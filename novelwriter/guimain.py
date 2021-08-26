@@ -23,9 +23,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import os
 import logging
+import novelwriter
 
 from time import time
 from datetime import datetime
@@ -37,20 +37,22 @@ from PyQt5.QtWidgets import (
     QMessageBox, QDialog, QTabWidget, QToolBar, QAction
 )
 
-from nw.gui import (
+from novelwriter.gui import (
     GuiDocEditor, GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiMainMenu,
     GuiMainStatus, GuiNovelTree, GuiOutline, GuiOutlineDetails,
     GuiProjectDetails, GuiProjectTree, GuiTheme
 )
-from nw.dialogs import (
+from novelwriter.dialogs import (
     GuiAbout, GuiDocMerge, GuiDocSplit, GuiItemEditor, GuiPreferences,
     GuiProjectLoad, GuiProjectSettings, GuiUpdates, GuiWordList
 )
-from nw.tools import GuiBuildNovel, GuiProjectWizard, GuiWritingStats
-from nw.core import NWProject, NWIndex
-from nw.enum import nwItemType, nwItemClass, nwAlert, nwWidget, nwState
-from nw.common import getGuiItem, hexToInt
-from nw.constants import nwLists
+from novelwriter.tools import GuiBuildNovel, GuiProjectWizard, GuiWritingStats
+from novelwriter.core import NWProject, NWIndex
+from novelwriter.enum import (
+    nwItemType, nwItemClass, nwAlert, nwWidget, nwState
+)
+from novelwriter.common import getGuiItem, hexToInt
+from novelwriter.constants import nwLists
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +64,7 @@ class GuiMain(QMainWindow):
 
         logger.debug("Initialising GUI ...")
         self.setObjectName("GuiMain")
-        self.mainConf = nw.CONFIG
+        self.mainConf = novelwriter.CONFIG
         self.threadPool = QThreadPool()
 
         # System Info
@@ -289,7 +291,7 @@ class GuiMain(QMainWindow):
 
         logger.debug("GUI initialisation complete")
 
-        if nw.__hexversion__[-2] == "a" and logger.getEffectiveLevel() > logging.DEBUG:
+        if novelwriter.__hexversion__[-2] == "a" and logger.getEffectiveLevel() > logging.DEBUG:
             self.makeAlert(self.tr(
                 "You are running an untested development version of novelWriter. "
                 "Please be careful when working on a live project "
@@ -337,8 +339,8 @@ class GuiMain(QMainWindow):
         """Determine whether release notes need to be shown, and show
         them by calling the About dialog.
         """
-        if hexToInt(self.mainConf.lastNotes) < hexToInt(nw.__hexversion__):
-            self.mainConf.lastNotes = nw.__hexversion__
+        if hexToInt(self.mainConf.lastNotes) < hexToInt(novelwriter.__hexversion__):
+            self.mainConf.lastNotes = novelwriter.__hexversion__
             self.showAboutNWDialog(showNotes=True)
         return
 

@@ -36,9 +36,9 @@ from PyQt5.QtCore import (
     QTranslator
 )
 
-from nw.error import logException
-from nw.common import splitVersionNumber, formatTimeStamp, NWConfigParser
-from nw.constants import nwConst, nwFiles, nwUnicode
+from novelwriter.error import logException
+from novelwriter.common import splitVersionNumber, formatTimeStamp, NWConfigParser
+from novelwriter.constants import nwConst, nwFiles, nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -67,10 +67,10 @@ class Config:
         self.appPath   = None   # The full path to the novelwriter package folder
         self.appRoot   = None   # The full path to the novelwriter root folder
         self.appIcon   = None   # The full path to the novelwriter icon file
-        self.assetPath = None   # The full path to the nw/assets folder
-        self.themeRoot = None   # The full path to the nw/assets/themes folder
-        self.dictPath  = None   # The full path to the nw/assets/dict folder
-        self.iconPath  = None   # The full path to the nw/assets/icons folder
+        self.assetPath = None   # The full path to the novelwriter/assets folder
+        self.themeRoot = None   # The full path to the novelwriter/assets/themes folder
+        self.dictPath  = None   # The full path to the novelwriter/assets/dict folder
+        self.iconPath  = None   # The full path to the novelwriter/assets/icons folder
         self.pdfDocs   = None   # The location of the PDF manual, if it exists
 
         # Runtime Settings and Variables

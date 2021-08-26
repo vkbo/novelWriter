@@ -23,9 +23,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import os
 import logging
+import novelwriter
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -33,8 +33,8 @@ from PyQt5.QtWidgets import (
     QAbstractItemView, QPushButton, QLineEdit, QLabel
 )
 
-from nw.enum import nwAlert
-from nw.constants import nwFiles
+from novelwriter.enum import nwAlert
+from novelwriter.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class GuiWordList(QDialog):
         logger.debug("Initialising GuiWordList ...")
         self.setObjectName("GuiWordList")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theParent.theProject
@@ -161,7 +161,7 @@ class GuiWordList(QDialog):
 
         except Exception:
             logger.error("Could not save new word list")
-            nw.logException()
+            novelwriter.logException()
             self.reject()
             return False
 

@@ -19,9 +19,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from nw.tools.build import GuiBuildNovel
-from nw.tools.projwizard import GuiProjectWizard
-from nw.tools.writingstats import GuiWritingStats
+from novelwriter.tools.build import GuiBuildNovel
+from novelwriter.tools.projwizard import GuiProjectWizard
+from novelwriter.tools.writingstats import GuiWritingStats
 
 __all__ = [
     "GuiBuildNovel",

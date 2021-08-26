@@ -23,9 +23,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import os
 import logging
+import novelwriter
 
 from datetime import datetime
 
@@ -47,7 +47,7 @@ class GuiAbout(QDialog):
         logger.debug("Initialising GuiAbout ...")
         self.setObjectName("GuiAbout")
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
 
@@ -63,8 +63,8 @@ class GuiAbout(QDialog):
         self.nwIcon = QLabel()
         self.nwIcon.setPixmap(self.theParent.theTheme.getPixmap("novelwriter", (nPx, nPx)))
         self.lblName = QLabel("<b>novelWriter</b>")
-        self.lblVers = QLabel("v%s" % nw.__version__)
-        self.lblDate = QLabel(datetime.strptime(nw.__date__, "%Y-%m-%d").strftime("%x"))
+        self.lblVers = QLabel("v%s" % novelwriter.__version__)
+        self.lblDate = QLabel(datetime.strptime(novelwriter.__date__, "%Y-%m-%d").strftime("%x"))
 
         self.leftBox = QVBoxLayout()
         self.leftBox.setSpacing(self.mainConf.pxInt(4))
@@ -143,8 +143,10 @@ class GuiAbout(QDialog):
             "<p>{credits}</p>"
         ).format(
             title1=self.tr("About novelWriter"),
-            copy=nw.__copyright__,
-            link=self.tr("Website: {0}").format(f"<a href='{nw.__url__}'>{nw.__domain__}</a>"),
+            copy=novelwriter.__copyright__,
+            link=self.tr("Website: {0}").format(
+                f"<a href='{novelwriter.__url__}'>{novelwriter.__domain__}</a>"
+            ),
             title2=self.tr("Credits"),
             credits=self._wrapTable([
                 (self.tr("Developer"), "Veronica Berglyd Olsen"),

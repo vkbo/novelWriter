@@ -23,9 +23,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import os
 import logging
+import novelwriter
 
 from datetime import datetime
 
@@ -37,8 +37,8 @@ from PyQt5.QtWidgets import (
     QFileDialog, QLineEdit
 )
 
-from nw.common import formatInt
-from nw.constants import nwFiles
+from novelwriter.common import formatInt
+from novelwriter.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +59,7 @@ class GuiProjectLoad(QDialog):
         logger.debug("Initialising GuiProjectLoad ...")
         self.setObjectName("GuiProjectLoad")
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
         self.openState = self.NONE_STATE

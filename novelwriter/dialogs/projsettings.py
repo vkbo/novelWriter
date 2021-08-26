@@ -23,8 +23,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
 from PyQt5.QtCore import Qt, QLocale
@@ -34,8 +34,8 @@ from PyQt5.QtWidgets import (
     QComboBox
 )
 
-from nw.enum import nwAlert
-from nw.gui.custom import QSwitch, PagedDialog, QConfigLayout
+from novelwriter.enum import nwAlert
+from novelwriter.gui.custom import QSwitch, PagedDialog, QConfigLayout
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ class GuiProjectSettings(PagedDialog):
         logger.debug("Initialising GuiProjectSettings ...")
         self.setObjectName("GuiProjectSettings")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.optState   = theParent.theProject.optState
@@ -162,7 +162,7 @@ class GuiProjectEditMain(QWidget):
     def __init__(self, theParent, theProject):
         QWidget.__init__(self, theParent)
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
 
@@ -249,7 +249,7 @@ class GuiProjectEditStatus(QWidget):
     def __init__(self, theParent, theProject, isStatus):
         QWidget.__init__(self, theParent)
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
         self.optState   = theProject.optState
@@ -498,7 +498,7 @@ class GuiProjectEditReplace(QWidget):
     def __init__(self, theParent, theProject):
         QWidget.__init__(self, theParent)
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theProject

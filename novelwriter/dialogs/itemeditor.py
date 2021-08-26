@@ -23,8 +23,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import (
@@ -32,9 +32,9 @@ from PyQt5.QtWidgets import (
     QDialogButtonBox
 )
 
-from nw.enum import nwItemLayout, nwItemType
-from nw.constants import trConst, nwLists, nwLabels
-from nw.gui.custom import QSwitch
+from novelwriter.enum import nwItemLayout, nwItemType
+from novelwriter.constants import trConst, nwLists, nwLabels
+from novelwriter.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class GuiItemEditor(QDialog):
         logger.debug("Initialising GuiItemEditor ...")
         self.setObjectName("GuiItemEditor")
 
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
 

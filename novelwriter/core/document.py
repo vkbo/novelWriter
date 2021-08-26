@@ -23,11 +23,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import os
+import logging
 
-from nw.enum import nwItemLayout, nwItemClass
-from nw.common import isHandle
+from novelwriter.enum import nwItemLayout, nwItemClass
+from novelwriter.common import isHandle
 
 logger = logging.getLogger(__name__)
 

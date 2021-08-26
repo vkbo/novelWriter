@@ -19,16 +19,16 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from nw.dialogs.about import GuiAbout
-from nw.dialogs.docmerge import GuiDocMerge
-from nw.dialogs.docsplit import GuiDocSplit
-from nw.dialogs.itemeditor import GuiItemEditor
-from nw.dialogs.preferences import GuiPreferences
-from nw.dialogs.projload import GuiProjectLoad
-from nw.dialogs.projsettings import GuiProjectSettings
-from nw.dialogs.quotes import GuiQuoteSelect
-from nw.dialogs.updates import GuiUpdates
-from nw.dialogs.wordlist import GuiWordList
+from novelwriter.dialogs.about import GuiAbout
+from novelwriter.dialogs.docmerge import GuiDocMerge
+from novelwriter.dialogs.docsplit import GuiDocSplit
+from novelwriter.dialogs.itemeditor import GuiItemEditor
+from novelwriter.dialogs.preferences import GuiPreferences
+from novelwriter.dialogs.projload import GuiProjectLoad
+from novelwriter.dialogs.projsettings import GuiProjectSettings
+from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.dialogs.updates import GuiUpdates
+from novelwriter.dialogs.wordlist import GuiWordList
 
 __all__ = [
     "GuiAbout",

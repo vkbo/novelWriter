@@ -23,9 +23,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import os
 import logging
+import novelwriter
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -34,10 +34,10 @@ from PyQt5.QtWidgets import (
     QGroupBox, QGridLayout, QSpinBox
 )
 
-from nw.enum import nwItemClass
-from nw.common import makeFileNameSafe
-from nw.constants import trConst, nwLabels
-from nw.gui.custom import QSwitch
+from novelwriter.enum import nwItemClass
+from novelwriter.common import makeFileNameSafe
+from novelwriter.constants import trConst, nwLabels
+from novelwriter.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class GuiProjectWizard(QWizard):
         logger.debug("Initialising GuiProjectWizard ...")
         self.setObjectName("GuiProjectWizard")
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
         self.theTheme  = theParent.theTheme
 
@@ -92,7 +92,7 @@ class ProjWizardIntroPage(QWizardPage):
     def __init__(self, theWizard):
         QWizardPage.__init__(self)
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
         self.theTheme  = theWizard.theTheme
 
@@ -162,7 +162,7 @@ class ProjWizardFolderPage(QWizardPage):
     def __init__(self, theWizard):
         QWizardPage.__init__(self)
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
         self.theTheme  = theWizard.theTheme
 
@@ -235,7 +235,7 @@ class ProjWizardPopulatePage(QWizardPage):
     def __init__(self, theWizard):
         QWizardPage.__init__(self)
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
 
         self.setTitle(self.tr("Populate Project"))
@@ -291,7 +291,7 @@ class ProjWizardCustomPage(QWizardPage):
     def __init__(self, theWizard):
         QWizardPage.__init__(self)
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
 
         self.setTitle(self.tr("Custom Project Options"))
@@ -410,7 +410,7 @@ class ProjWizardFinalPage(QWizardPage):
     def __init__(self, theWizard):
         QWizardPage.__init__(self)
 
-        self.mainConf  = nw.CONFIG
+        self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
 
         self.setTitle(self.tr("Finished"))

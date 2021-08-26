@@ -24,17 +24,17 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
-import logging
-import json
 import os
+import json
+import logging
+import novelwriter
 
 from time import time
 
-from nw.enum import nwItemType, nwItemClass, nwItemLayout
-from nw.constants import nwFiles, nwKeyWords, nwUnicode
-from nw.core.document import NWDoc
-from nw.common import (
+from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
+from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode
+from novelwriter.core.document import NWDoc
+from novelwriter.common import (
     isHandle, isTitleTag, isItemClass, isItemLayout, jsonEncode
 )
 
@@ -49,7 +49,7 @@ class NWIndex():
     def __init__(self, theProject):
 
         # Internal
-        self.mainConf    = nw.CONFIG
+        self.mainConf    = novelwriter.CONFIG
         self.theProject  = theProject
         self.indexBroken = False
 
@@ -155,7 +155,7 @@ class NWIndex():
 
             except Exception:
                 logger.error("Failed to load index file")
-                nw.logException()
+                novelwriter.logException()
                 self.indexBroken = True
                 return False
 
@@ -194,7 +194,7 @@ class NWIndex():
 
         except Exception:
             logger.error("Failed to save index file")
-            nw.logException()
+            novelwriter.logException()
             return False
 
         logger.verbose("Index saved in %.3f ms", (time() - tStart)*1000)
@@ -217,7 +217,7 @@ class NWIndex():
 
         except Exception:
             logger.error("Error while checking index")
-            nw.logException()
+            novelwriter.logException()
             self.indexBroken = True
 
         logger.verbose("Index check took %.3f ms", (time() - tStart)*1000)

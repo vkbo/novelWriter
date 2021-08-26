@@ -32,9 +32,9 @@ from configparser import ConfigParser
 from PyQt5.QtWidgets import qApp
 from PyQt5.QtCore import QCoreApplication
 
-from nw.enum import nwItemClass, nwItemType, nwItemLayout
-from nw.error import logException
-from nw.constants import nwConst, nwUnicode
+from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
+from novelwriter.error import logException
+from novelwriter.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
 

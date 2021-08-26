@@ -23,8 +23,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from time import time
 
@@ -33,8 +33,8 @@ from PyQt5.QtGui import (
     QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
 )
 
-from nw.constants import nwRegEx, nwUnicode
-from nw.common import checkInt
+from novelwriter.constants import nwRegEx, nwUnicode
+from novelwriter.common import checkInt
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         QSyntaxHighlighter.__init__(self, theDoc)
 
         logger.debug("Initialising GuiDocHighlighter ...")
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
         self.theDoc     = theDoc
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme

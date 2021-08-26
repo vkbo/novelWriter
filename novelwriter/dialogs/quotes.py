@@ -23,8 +23,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import logging
+import novelwriter
 
 from PyQt5.QtGui import QFontMetrics
 from PyQt5.QtCore import Qt, QSize
@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import (
     QListWidget, QListWidgetItem, QFrame
 )
 
-from nw.constants import trConst, nwQuotes
+from novelwriter.constants import trConst, nwQuotes
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class GuiQuoteSelect(QDialog):
     def __init__(self, theParent=None, currentQuote='"'):
         QDialog.__init__(self, parent=theParent)
 
-        self.mainConf = nw.CONFIG
+        self.mainConf = novelwriter.CONFIG
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()

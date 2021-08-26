@@ -23,19 +23,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
 import re
 import logging
+import novelwriter
 
 from operator import itemgetter
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
-from nw.enum import nwItemLayout, nwItemType
-from nw.common import numberToRoman, checkInt
-from nw.constants import nwConst, nwRegEx, nwUnicode
-from nw.core.document import NWDoc
+from novelwriter.enum import nwItemLayout, nwItemType
+from novelwriter.common import numberToRoman, checkInt
+from novelwriter.constants import nwConst, nwRegEx, nwUnicode
+from novelwriter.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,7 @@ class Tokenizer():
 
         self.theProject = theProject
         self.theParent  = theProject.theParent
-        self.mainConf   = nw.CONFIG
+        self.mainConf   = novelwriter.CONFIG
 
         # Data Variables
         self.theText   = ""    # The raw text to be tokenized

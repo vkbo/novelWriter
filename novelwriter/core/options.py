@@ -24,12 +24,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import nw
-import logging
-import json
 import os
+import json
+import logging
+import novelwriter
 
-from nw.constants import nwFiles
+from novelwriter.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -134,7 +134,7 @@ class OptionState():
                     theState = json.load(inFile)
             except Exception:
                 logger.error("Failed to load GUI options file")
-                nw.logException()
+                novelwriter.logException()
                 return False
 
         # Filter out unused variables
@@ -161,7 +161,7 @@ class OptionState():
                 json.dump(self.theState, outFile, indent=2)
         except Exception:
             logger.error("Failed to save GUI options file")
-            nw.logException()
+            novelwriter.logException()
             return False
 
         return True

@@ -27,7 +27,7 @@ import logging
 
 from lxml import etree
 
-from nw.common import checkInt
+from novelwriter.common import checkInt
 
 logger = logging.getLogger(__name__)
 

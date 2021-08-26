@@ -19,17 +19,17 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from nw.gui.doceditor import GuiDocEditor
-from nw.gui.docviewer import GuiDocViewer, GuiDocViewDetails
-from nw.gui.itemdetails import GuiItemDetails
-from nw.gui.mainmenu import GuiMainMenu
-from nw.gui.noveltree import GuiNovelTree
-from nw.gui.outline import GuiOutline
-from nw.gui.outlinedetails import GuiOutlineDetails
-from nw.gui.projdetails import GuiProjectDetails
-from nw.gui.projtree import GuiProjectTree
-from nw.gui.statusbar import GuiMainStatus
-from nw.gui.theme import GuiTheme
+from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.gui.docviewer import GuiDocViewer, GuiDocViewDetails
+from novelwriter.gui.itemdetails import GuiItemDetails
+from novelwriter.gui.mainmenu import GuiMainMenu
+from novelwriter.gui.noveltree import GuiNovelTree
+from novelwriter.gui.outline import GuiOutline
+from novelwriter.gui.outlinedetails import GuiOutlineDetails
+from novelwriter.gui.projdetails import GuiProjectDetails
+from novelwriter.gui.projtree import GuiProjectTree
+from novelwriter.gui.statusbar import GuiMainStatus
+from novelwriter.gui.theme import GuiTheme
 
 __all__ = [
     "GuiDocEditor",
