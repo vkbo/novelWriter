@@ -10,15 +10,15 @@ novelwriter.desktop
 novelWriter.pyw
 
 # Translations
-/nw/assets/i18n/*.qm
+/novelwriter/assets/i18n/*.qm
 .qmake.stash
 i18n/*.qm
 i18n/*.qph
 
 # Documentation
 /docs/build/
-/nw/assets/help/html/
-/nw/assets/help/manual.pdf
+/novelwriter/assets/help/html/
+/novelwriter/assets/help/manual.pdf
 /UserManual.pdf
 *.qch
 *.qhc
@@ -28,7 +28,7 @@ __pycache__
 *.pyc
 
 # Sample Project
-/nw/assets/sample.zip
+/novelwriter/assets/sample.zip
 /sample/cache
 /sample/meta
 /sample/versions

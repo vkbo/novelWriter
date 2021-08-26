@@ -26,6 +26,6 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Run Tests
         run: |
-          pytest -v --cov=nw --timeout=60
+          pytest -v --cov=novelwriter --timeout=60
       - name: Upload to Codecov
         uses: codecov/codecov-action@v1

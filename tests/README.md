@@ -37,7 +37,7 @@ xvfb-run pytest-3 -v
 
 To add test coverage, run the following:
 ```bash
-pytest-3 -v --cov=nw --cov-report=html
+pytest-3 -v --cov=novelwriter --cov-report=html
 ```
 
 The `--cov-report` switch generates an html report, omit it to print a coverage summary to the
@@ -52,9 +52,9 @@ pytest-3 -v -m core
 
 Available markers are:
 
-* `base` for unit tests covering the non-gui classes of the `nw` folder..
-* `core` for unit tests covering the classes in the `nw/core` folder.
-* `gui` for unit and integrations tests covering the classes in the `nw/gui` folder.
+* `base` for unit tests covering the non-gui classes of the `novelwriter` folder..
+* `core` for unit tests covering the classes in the `novelwriter/core` folder.
+* `gui` for unit and integrations tests covering the classes in the `novelwriter/gui` folder.
 
 
 You can filter tests further with the `-k` switch, all the way down to a single test. You can for

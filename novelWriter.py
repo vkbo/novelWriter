@@ -17,5 +17,5 @@ except Exception:
 os.curdir = os.path.abspath(os.path.dirname(__file__))
 
 if __name__ == "__main__":
-    import nw
-    nw.main(sys.argv[1:])
+    import novelwriter
+    novelwriter.main(sys.argv[1:])
