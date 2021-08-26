@@ -79,7 +79,7 @@ class Config:
         # General
         self.guiTheme    = "default"
         self.guiSyntax   = "default_light"
-        self.guiIcons    = "typicons_colour_light"
+        self.guiIcons    = "typicons_light"
         self.guiDark     = False  # Load icons for dark backgrounds, if available
         self.guiFont     = ""     # Defaults to system default font
         self.guiFontSize = 11     # Is overridden if system default is loaded
@@ -547,6 +547,12 @@ class Config:
         if self.fmtDoubleQuotes == ["\"", "\""] and self.doReplaceDQuote:
             logger.info("Using straight double quotes, so disabling auto-replace")
             self.doReplaceDQuote = False
+
+        # Check deprecated settings
+        if self.guiIcons in ("typicons_colour_dark", "typicons_grey_dark"):
+            self.guiIcons = "typicons_dark"
+        elif self.guiIcons in ("typicons_colour_light", "typicons_grey_light"):
+            self.guiIcons = "typicons_light"
 
         return True
 

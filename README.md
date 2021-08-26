@@ -114,10 +114,7 @@ to. Headings of level one signify a book or partition title. Headings of level t
 start of a new chapter. Headings of level three signify the start of a new scene. Headings of level
 four can be used internally in each scene to create separate sections.
 
-Each novel file can be assigned a layout format, which shows up as a flag next to the item in the
-project tree. These are mostly to help the user track what they contain, but they also have some
-impact on the layout of the exported document. See the
-[documentation](https://novelwriter.readthedocs.io) for further details.
+See the [documentation](https://novelwriter.readthedocs.io) for further details.
 
 ### Project Notes
 

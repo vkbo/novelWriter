@@ -72,7 +72,7 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
 
     assert novelwriter.CONFIG.guiTheme == "default_dark"
     assert novelwriter.CONFIG.guiSyntax == "tomorrow_night_eighties"
-    assert novelwriter.CONFIG.guiIcons == "typicons_colour_dark"
+    assert novelwriter.CONFIG.guiIcons == "typicons_dark"
     assert novelwriter.CONFIG.guiDark is True
     assert novelwriter.CONFIG.guiFont == "Cantarell"
     assert novelwriter.CONFIG.guiFontSize == 11
@@ -120,7 +120,7 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     theIcons = nwGUI.theTheme.theIcons
     novelwriter.CONFIG.guiIcons = "invalid"
     assert not theIcons.updateTheme()
-    novelwriter.CONFIG.guiIcons = "typicons_colour_dark"
+    novelwriter.CONFIG.guiIcons = "typicons_dark"
     assert theIcons.updateTheme()
 
     # Ask for a non-existent key

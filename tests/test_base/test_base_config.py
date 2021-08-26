@@ -126,8 +126,8 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
 
     # Test load/save with no path
     tstConf.confPath = None
-    assert not tstConf.loadConfig()
-    assert not tstConf.saveConfig()
+    assert tstConf.loadConfig() is False
+    assert tstConf.saveConfig() is False
 
     # Run again and set the paths directly and correctly
     # This should create a config file as well
@@ -174,8 +174,8 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
         assert tstConf.appRoot == os.path.dirname(appRoot)
         assert tstConf.appPath == os.path.dirname(appRoot)
 
-    assert tstConf.loadConfig()
-    assert tstConf.saveConfig()
+    assert tstConf.loadConfig() is True
+    assert tstConf.saveConfig() is True
 
     # Test Correcting Quote Settings
     origDbl = tstConf.fmtDoubleQuotes
@@ -187,16 +187,42 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     tstConf.fmtSingleQuotes = ["'", "'"]
     tstConf.doReplaceDQuote = True
     tstConf.doReplaceSQuote = True
-    assert tstConf.saveConfig()
+    assert tstConf.saveConfig() is True
 
-    assert tstConf.loadConfig()
-    assert not tstConf.doReplaceDQuote
-    assert not tstConf.doReplaceSQuote
+    assert tstConf.loadConfig() is True
+    assert tstConf.doReplaceDQuote is False
+    assert tstConf.doReplaceSQuote is False
 
     tstConf.fmtDoubleQuotes = origDbl
     tstConf.fmtSingleQuotes = origSng
     tstConf.doReplaceDQuote = orDoDbl
     tstConf.doReplaceSQuote = orDoSng
+    assert tstConf.saveConfig() is True
+
+    # Test Correcting icon theme
+    origIcons = tstConf.guiIcons
+
+    tstConf.guiIcons = "typicons_colour_dark"
+    assert tstConf.saveConfig() is True
+    assert tstConf.loadConfig() is True
+    assert tstConf.guiIcons == "typicons_dark"
+
+    tstConf.guiIcons = "typicons_grey_dark"
+    assert tstConf.saveConfig() is True
+    assert tstConf.loadConfig() is True
+    assert tstConf.guiIcons == "typicons_dark"
+
+    tstConf.guiIcons = "typicons_colour_light"
+    assert tstConf.saveConfig() is True
+    assert tstConf.loadConfig() is True
+    assert tstConf.guiIcons == "typicons_light"
+
+    tstConf.guiIcons = "typicons_grey_light"
+    assert tstConf.saveConfig() is True
+    assert tstConf.loadConfig() is True
+    assert tstConf.guiIcons == "typicons_light"
+
+    tstConf.guiIcons = origIcons
     assert tstConf.saveConfig()
 
     # Localisation
