@@ -1,13 +1,13 @@
 # novelWriter Changelog
 
-## Version 1.5 Beta 1 [2021-08-22]
+## Version 1.5 Beta 2 [2021-08-26]
 
 ### Release Notes
 
 This is a beta release of the next release version, and is intended for testing purposes. Please be
 careful when using this version on live writing projects, and make sure you make frequent backups.
 
-This release introduces a new project file format, which has been given a file format version 1.3.
+Release 1.5 introduces a new project file format, which has been given a file format version 1.3.
 The project file and index is updated automatically when you open the project, which means you can
 no longer open it in an older version of novelWriter.
 
@@ -56,8 +56,8 @@ other visual means.
 
 The project index will now record the level of the first header of your document, and select a
 different icon for documents with a partition, chapter or scene header. These are colour coded as
-green, red and blue respectively. This only works for the coloured icon themes. The project notes
-have also received a new icon, with a yellow colour code.
+green, red and blue respectively. The project notes have also received a new icon, with a yellow
+colour code. Due to this change, the grey icon themes have been removed.
 
 In addition, novel documents with a partition or chapter header will have the document label viewed
 as bold and underlined. This feature can be disabled in Preferences if you want a cleaner look in
@@ -74,6 +74,45 @@ rewritten and now conforms more closely to the Open Document standard. Most of t
 will not be noticeable to you as a user, but you may notice that the exported document will now
 allow multiple consecutive spaces. Previously, two spaces, or more, would be concatenated into a
 single space in the exported document.
+
+_These Release Notes also include the changes from 1.4 Beta 1._
+
+### Detailed Changelog
+
+**Features**
+
+* A new dialog has been added to the Help menu for checking for new updates. It will only check for
+  full releases, not pre-releases. The updates are not installed automatically, but a link to the
+  website is provided. PR #863.
+
+**Other Changes**
+
+* The grey Typicons themes have been removed. The Typicons colour themes have also been renamed.
+  The user configuration will update the theme setting to replace the grey icon theme for dark or
+  light background automatically. PR #869.
+
+**Internationalisation**
+
+* The US English and Nowregian translation files have been updated. PR #870.
+
+**Documentation**
+
+* The Windows Setup section of the documentation has been updated and simplified. PR #865.
+
+**Code Improvements**
+
+* The novelWriter main package folder has been renamed from `nw` to `novelwriter`. This will make
+  it easier to create packages for novelWriter at a later stage. Especially packages which will
+  require adding the main source files to the Python install location. PR #868.
+
+----
+
+## Version 1.5 Beta 1 [2021-08-22]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you make frequent backups.
 
 ### Detailed Changelog
 
