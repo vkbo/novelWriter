@@ -302,6 +302,7 @@ class Config:
         # Internationalisation
         self.nwLangPath = os.path.join(self.assetPath, "i18n")
 
+        logger.debug("Assets: %s", self.assetPath)
         logger.verbose("App path: %s", self.appPath)
         logger.verbose("Last path: %s", self.lastPath)
 
@@ -358,14 +359,10 @@ class Config:
             self.spellLanguage = "en"
 
         # Look for a PDF version of the manual
-        lookIn = [
-            os.path.join(self.assetPath, "help", "manual.pdf"),
-            os.path.join(self.appRoot, "UserManual.pdf"),
-        ]
-        for pdfDocs in lookIn:
-            if os.path.isfile(pdfDocs):
-                self.pdfDocs = pdfDocs
-                break
+        pdfDocs = os.path.join(self.assetPath, "manual.pdf")
+        if os.path.isfile(pdfDocs):
+            logger.debug("Found manual: %s", pdfDocs)
+            self.pdfDocs = pdfDocs
 
         logger.debug("Config initialisation complete")
 

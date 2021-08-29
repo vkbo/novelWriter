@@ -17,9 +17,8 @@ i18n/*.qph
 
 # Documentation
 /docs/build/
-/novelwriter/assets/help/html/
-/novelwriter/assets/help/manual.pdf
-/UserManual.pdf
+/novelwriter/assets/help/
+/novelwriter/assets/manual.pdf
 *.qch
 *.qhc
 
