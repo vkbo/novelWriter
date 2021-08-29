@@ -27,7 +27,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import sys
 import shutil
+import datetime
 import subprocess
+import email.utils
 
 OS_NONE   = 0
 OS_LINUX  = 1
@@ -49,6 +51,7 @@ def extractVersion():
 
     numVers = "Unknown"
     hexVers = "Unknown"
+    relDate = "Unknown"
     initFile = os.path.join("novelwriter", "__init__.py")
     try:
         with open(initFile, mode="r", encoding="utf-8") as inFile:
@@ -57,14 +60,24 @@ def extractVersion():
                     numVers = getValue((aLine))
                 if aLine.startswith("__hexversion__"):
                     hexVers = getValue((aLine))
+                if aLine.startswith("__date__"):
+                    relDate = getValue((aLine))
     except Exception as e:
         print("Could not read file: %s" % initFile)
         print(str(e))
 
-    print("novelWriter version is: %s (%s)" % (numVers, hexVers))
+    print("novelWriter version is: %s (%s) at %s" % (numVers, hexVers, relDate))
     print("")
 
-    return numVers, hexVers
+    return numVers, hexVers, relDate
+
+
+def compactVersion(numVers):
+    """Make the version number more compact."""
+    numVers = numVers.replace("-alpha", "a")
+    numVers = numVers.replace("-beta", "b")
+    numVers = numVers.replace("-rc", "rc")
+    return numVers
 
 
 def sysCall(callArgs):
@@ -390,7 +403,7 @@ def makeMinimalPackage(targetOS):
     from zipfile import ZipFile, ZIP_DEFLATED
 
     # Get the version
-    numVers, _ = extractVersion()
+    numVers, _, _ = extractVersion()
 
     # Make sample.zip first
     try:
@@ -501,6 +514,149 @@ def makeMinimalPackage(targetOS):
         print(str(e))
 
     print("")
+
+    return
+
+
+##
+#  Make Debian Package (pack-deb)
+##
+
+def makeDebianPackage():
+    """Make a Debian package.
+    """
+    print("")
+    print("Make Debian Package")
+    print("===================")
+    print("")
+
+    # Version Info
+    # ============
+
+    numVers, _, relDate = extractVersion()
+    pkgVers = compactVersion(numVers)
+    relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
+    pkgDate = email.utils.format_datetime(relDate.replace(hour=12, tzinfo=None))
+
+    # Set Up Folder
+    # =============
+
+    bldDir = "dist_deb"
+    pkgDir = f"novelWriter-{pkgVers}"
+    outDir = os.path.join(bldDir, pkgDir)
+    debDir = os.path.join(outDir, "debian")
+
+    if not os.path.isdir(bldDir):
+        os.mkdir(bldDir)
+
+    if os.path.isdir(outDir):
+        shutil.rmtree(outDir)
+
+    os.mkdir(outDir)
+
+    # Build Additional Assets
+    # =======================
+
+    buildQtI18n()
+    buildSampleZip()
+    buildPdfManual()
+
+    # Copy novelWriter Source
+    # =======================
+
+    print("Copying novelWriter Source")
+    print("")
+
+    for nPath, _, nFiles in os.walk("novelwriter"):
+        if nPath.endswith("__pycache__"):
+            print("Skipped: %s" % nPath)
+            continue
+
+        pPath = os.path.join(outDir, nPath)
+        if not os.path.isdir(pPath):
+            os.mkdir(pPath)
+
+        fCount = 0
+        for fFile in nFiles:
+            nFile = os.path.join(nPath, fFile)
+            pFile = os.path.join(pPath, fFile)
+
+            if fFile.endswith(".pyc"):
+                print("Skipped: %s" % nFile)
+                continue
+
+            shutil.copyfile(nFile, pFile)
+            fCount += 1
+
+        print("Copied: %s/*  [N: %d]" % (nPath, fCount))
+
+    print("")
+    print("Generating Files")
+    print("")
+
+    dataDir = os.path.join(outDir, "data")
+    os.mkdir(dataDir)
+
+    shutil.copytree(os.path.join("setup", "debian"), debDir)
+    print("Copied: debian/*")
+
+    copyFiles = [
+        "setup.cfg",
+        "pyproject.toml",
+        "LICENSE.md",
+        "CREDITS.md",
+        "CHANGELOG.md",
+    ]
+    for copyFile in copyFiles:
+        shutil.copyfile(copyFile, os.path.join(outDir, copyFile))
+        print("Copied: %s" % copyFile)
+
+    shutil.copyfile(
+        os.path.join("setup", "icons", "scaled", "icon-novelwriter-256.png"),
+        os.path.join(dataDir, "novelwriter.png")
+    )
+    print("Copied: data/novelwriter.png")
+
+    with open(os.path.join(debDir, "changelog"), mode="w") as outFile:
+        outFile.write(
+            f"novelwriter ({pkgVers}) unstable; urgency=medium\n\n"
+            f"  * Update to version {pkgVers}\n\n"
+            f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
+        )
+        print("Generated: debian/changelog")
+
+    with open(os.path.join(outDir, "MANIFEST.in"), mode="w") as outFile:
+        outFile.write(
+            "include LICENSE.md\n"
+            "include CREDITS.md\n"
+            "include CHANGELOG.md\n"
+            "include data/*\n"
+            "recursive-include novelwriter/assets *\n"
+        )
+        print("Generated: MANIFEST.in")
+
+    with open(os.path.join(outDir, "setup.py"), mode="w") as outFile:
+        outFile.write(
+            "import setuptools\n"
+            "setuptools.setup()\n"
+        )
+        print("Generated: MANIFEST.in")
+
+    desktopData = ""
+    with open(os.path.join("setup", "novelwriter.desktop"), mode="r") as inFile:
+        desktopData = inFile.read()
+
+    desktopData = desktopData.replace("%%exec%%", "novelwriter")
+    with open(os.path.join(dataDir, "novelwriter.desktop"), mode="w+") as outFile:
+        outFile.write(desktopData)
+        print("Generated: data/novelwriter.desktop")
+
+    print("")
+
+    currDir = os.curdir
+    os.chdir(outDir)
+    subprocess.call(["dpkg-buildpackage", "-us", "-ui", "-uc"])
+    os.chdir(currDir)
 
     return
 
@@ -925,7 +1081,7 @@ def winInstall():
     print("===============")
     print("")
 
-    numVers, hexVers = extractVersion()
+    numVers, hexVers, _ = extractVersion()
     nwTesting = not hexVers[-2] == "f"
     wShell = win32com.client.Dispatch("WScript.Shell")
 
@@ -1051,7 +1207,7 @@ def winUninstall():
     print("=================")
     print("")
 
-    numVers, hexVers = extractVersion()
+    numVers, hexVers, _ = extractVersion()
     nwTesting = not hexVers[-2] == "f"
     wShell = win32com.client.Dispatch("WScript.Shell")
 
@@ -1137,7 +1293,7 @@ def innoSetup():
     with open(os.path.join("setup", "win_setup_pyz.iss"), mode="r") as inFile:
         issData = inFile.read()
 
-    numVers, _ = extractVersion()
+    numVers, _, _ = extractVersion()
     issData = issData.replace(r"%%version%%", numVers)
     issData = issData.replace(r"%%dir%%", os.getcwd())
 
@@ -1219,6 +1375,7 @@ if __name__ == "__main__":
         "                   all the other source files. Defaults to tailor the zip file",
         "                   for the current OS, but accepts a target OS flag to build",
         "                   for another OS.",
+        "    pack-deb       Creates a .deb package for Debian and Ubuntu.",
         "    pack-pyz       Creates a .pyz package in a folder with all dependencies",
         "                   using the zipapp tool. On Windows, python embeddable is",
         "                   added to the folder.",
@@ -1258,7 +1415,7 @@ if __name__ == "__main__":
 
     if "version" in sys.argv:
         sys.argv.remove("version")
-        numVers, hexVers = extractVersion()
+        numVers, hexVers, _ = extractVersion()
         print("Semantic Version: %s" % numVers)
         print("Hexadecimal Version: %s" % hexVers)
         sys.exit(0)
@@ -1306,6 +1463,10 @@ if __name__ == "__main__":
         simplePack = True
         if hostOS == OS_WIN:
             embedPython = True
+
+    if "pack-deb" in sys.argv:
+        sys.argv.remove("pack-deb")
+        makeDebianPackage()
 
     # General Installers
     # ==================
