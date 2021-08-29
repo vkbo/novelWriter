@@ -75,7 +75,7 @@ will not be noticeable to you as a user, but you may notice that the exported do
 allow multiple consecutive spaces. Previously, two spaces, or more, would be concatenated into a
 single space in the exported document.
 
-_These Release Notes also include the changes from 1.4 Beta 1._
+_These Release Notes also include the changes from 1.5 Beta 1._
 
 ### Detailed Changelog
 

@@ -254,22 +254,20 @@ def buildPdfManual():
         else:
             raise Exception(stdErr)
 
-        print("")
         print("PDF manual build: OK")
+        print("")
 
     except Exception as e:
+        print("PDF manual build: FAILED")
         print("")
         print(str(e))
-        print("")
-        print("Documentation build: FAILED")
         print("")
         print("Dependencies:")
         print(" * pip install sphinx")
         print(" * Package latexmk")
         print(" * LaTeX build system")
+        print("")
         sys.exit(1)
-
-    print("")
 
     return
 
