@@ -1,8 +1,9 @@
 # Setup/Install
 /MANIFEST
-/dist/
 /build/
 /deploy/
+/dist/
+/dist_deb/
 *.spec
 *.egg-info
 setup.iss
