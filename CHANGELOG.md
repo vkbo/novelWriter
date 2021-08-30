@@ -186,6 +186,22 @@ careful when using this version on live writing projects, and make sure you make
 
 ----
 
+## Version 1.4.2 [2021-08-30]
+
+### Release Notes
+
+This is a patch release fixing an issue with the auto-replace feature for single and double quotes.
+The issue appears when using the new indent and text alignment codes followed by a quote symbol,
+and quotes following a tab or non-breaking space.
+
+**Bugfixes**
+
+* Any single or double straight quote following a whitespace other than a regular space, or a left
+  indent or right align set of angle bracket codes without a space following them, would be
+  erroneously replaced by a closing quote instead of an opening quote. Issue #874.
+
+----
+
 ## Version 1.4.1 [2021-07-27]
 
 ### Release Notes

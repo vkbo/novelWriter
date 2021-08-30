@@ -286,6 +286,36 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
+    for c in "\t\"Tab-indented text\"":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    for c in ">\"Paragraph-indented text\"":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    for c in ">>\"Right-aligned text\"":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    for c in "\t'Tab-indented text'":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    for c in ">'Paragraph-indented text'":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    for c in ">>'Right-aligned text'":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
     qtbot.wait(stepDelay)
     nwGUI.docEditor.wCounter.run()
     qtbot.wait(stepDelay)
