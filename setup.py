@@ -88,6 +88,20 @@ def sysCall(callArgs):
     return stdOut.decode("utf-8"), stdErr.decode("utf-8"), sysP.returncode
 
 
+def createLauncher(execName, writePath):
+    """Generate a novelwriter.desktop file with a given exec name.
+    """
+    desktopData = ""
+    with open(os.path.join("setup", "novelwriter.desktop"), mode="r") as inFile:
+        desktopData = inFile.read()
+
+    desktopData = desktopData.replace("%%exec%%", execName)
+    with open(os.path.join(writePath, "novelwriter.desktop"), mode="w+") as outFile:
+        outFile.write(desktopData)
+
+    return
+
+
 # =============================================================================================== #
 #  General
 # =============================================================================================== #
@@ -519,15 +533,15 @@ def makeMinimalPackage(targetOS):
 
 
 ##
-#  Make Debian Package (pack-deb)
+#  Make Debian Package (build-deb)
 ##
 
 def makeDebianPackage():
-    """Make a Debian package.
+    """Build a Debian package.
     """
     print("")
-    print("Make Debian Package")
-    print("===================")
+    print("Build Debian Package")
+    print("====================")
     print("")
 
     # Version Info
@@ -543,13 +557,15 @@ def makeDebianPackage():
 
     bldDir = "dist_deb"
     pkgDir = f"novelWriter-{pkgVers}"
-    outDir = os.path.join(bldDir, pkgDir)
-    debDir = os.path.join(outDir, "debian")
+    outDir = f"{bldDir}/{pkgDir}"
+    debDir = f"{outDir}/debian"
 
     if not os.path.isdir(bldDir):
         os.mkdir(bldDir)
 
     if os.path.isdir(outDir):
+        print("Removing old build files ...")
+        print("")
         shutil.rmtree(outDir)
 
     os.mkdir(outDir)
@@ -564,7 +580,7 @@ def makeDebianPackage():
     # Copy novelWriter Source
     # =======================
 
-    print("Copying novelWriter Source")
+    print("Copying novelWriter source ...")
     print("")
 
     for nPath, _, nFiles in os.walk("novelwriter"):
@@ -572,14 +588,14 @@ def makeDebianPackage():
             print("Skipped: %s" % nPath)
             continue
 
-        pPath = os.path.join(outDir, nPath)
+        pPath = f"{outDir}/{nPath}"
         if not os.path.isdir(pPath):
             os.mkdir(pPath)
 
         fCount = 0
         for fFile in nFiles:
-            nFile = os.path.join(nPath, fFile)
-            pFile = os.path.join(pPath, fFile)
+            nFile = f"{nPath}/{fFile}"
+            pFile = f"{pPath}/{fFile}"
 
             if fFile.endswith(".pyc"):
                 print("Skipped: %s" % nFile)
@@ -588,17 +604,13 @@ def makeDebianPackage():
             shutil.copyfile(nFile, pFile)
             fCount += 1
 
-        print("Copied: %s/*  [N: %d]" % (nPath, fCount))
+        print("Copied: %s/*  [Files: %d]" % (nPath, fCount))
 
     print("")
-    print("Generating Files")
+    print("Copying or generating additional files ...")
     print("")
 
-    dataDir = os.path.join(outDir, "data")
-    os.mkdir(dataDir)
-
-    shutil.copytree(os.path.join("setup", "debian"), debDir)
-    print("Copied: debian/*")
+    # Root Files
 
     copyFiles = [
         "setup.cfg",
@@ -608,24 +620,10 @@ def makeDebianPackage():
         "CHANGELOG.md",
     ]
     for copyFile in copyFiles:
-        shutil.copyfile(copyFile, os.path.join(outDir, copyFile))
+        shutil.copyfile(copyFile, f"{outDir}/{copyFile}")
         print("Copied: %s" % copyFile)
 
-    shutil.copyfile(
-        os.path.join("setup", "icons", "scaled", "icon-novelwriter-256.png"),
-        os.path.join(dataDir, "novelwriter.png")
-    )
-    print("Copied: data/novelwriter.png")
-
-    with open(os.path.join(debDir, "changelog"), mode="w") as outFile:
-        outFile.write(
-            f"novelwriter ({pkgVers}) unstable; urgency=medium\n\n"
-            f"  * Update to version {pkgVers}\n\n"
-            f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
-        )
-        print("Generated: debian/changelog")
-
-    with open(os.path.join(outDir, "MANIFEST.in"), mode="w") as outFile:
+    with open(f"{outDir}/MANIFEST.in", mode="w") as outFile:
         outFile.write(
             "include LICENSE.md\n"
             "include CREDITS.md\n"
@@ -633,24 +631,104 @@ def makeDebianPackage():
             "include data/*\n"
             "recursive-include novelwriter/assets *\n"
         )
-        print("Generated: MANIFEST.in")
+        print("Wrote:  MANIFEST.in")
 
-    with open(os.path.join(outDir, "setup.py"), mode="w") as outFile:
+    with open(f"{outDir}/setup.py", mode="w") as outFile:
         outFile.write(
             "import setuptools\n"
             "setuptools.setup()\n"
         )
-        print("Generated: MANIFEST.in")
+        print("Wrote:  setup.py")
 
-    desktopData = ""
-    with open(os.path.join("setup", "novelwriter.desktop"), mode="r") as inFile:
-        desktopData = inFile.read()
+    # Debian Folder
 
-    desktopData = desktopData.replace("%%exec%%", "novelwriter")
-    with open(os.path.join(dataDir, "novelwriter.desktop"), mode="w+") as outFile:
-        outFile.write(desktopData)
-        print("Generated: data/novelwriter.desktop")
+    shutil.copytree("setup/debian", debDir)
+    print("Copied: debian/*")
 
+    with open(f"{debDir}/changelog", mode="w") as outFile:
+        outFile.write(
+            f"novelwriter ({pkgVers}) unstable; urgency=medium\n\n"
+            f"  * Update to version {pkgVers}\n\n"
+            f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
+        )
+        print("Wrote:  debian/changelog")
+
+    # Data Files
+
+    installData = []
+    dataDir = f"{outDir}/data"
+    os.makedirs(dataDir, exist_ok=True)
+
+    # Launcher
+
+    createLauncher("novelwriter", dataDir)
+    dstFile = "data/novelwriter.desktop"
+    installData.append((dstFile, "usr/share/applications"))
+    print("Copied: %s" % dstFile)
+
+    # Scaled and Scalable Icons
+
+    sizeArr = ["16", "24", "32", "48", "64", "128", "256"]
+    for aSize in sizeArr:
+        appsDir = f"data/hicolor/{aSize}x{aSize}/apps"
+        mimeDir = f"data/hicolor/{aSize}x{aSize}/mimetypes"
+
+        os.makedirs(f"{outDir}/{appsDir}", exist_ok=True)
+        os.makedirs(f"{outDir}/{mimeDir}", exist_ok=True)
+
+        srcFile = f"setup/icons/scaled/icon-novelwriter-{aSize}.png"
+        dstFile = f"{appsDir}/novelwriter.png"
+        shutil.copyfile(srcFile, f"{outDir}/{dstFile}")
+        print("Copied: %s" % dstFile)
+
+        srcFile = f"setup/icons/scaled/mime-novelwriter-{aSize}.png"
+        dstFile = f"{mimeDir}/application-x-novelwriter-project.png"
+        shutil.copyfile(srcFile, f"{outDir}/{dstFile}")
+        print("Copied: %s" % dstFile)
+
+    appsDir = "data/hicolor/scalable/apps"
+    mimeDir = "data/hicolor/scalable/mimetypes"
+
+    os.makedirs(f"{outDir}/{appsDir}", exist_ok=True)
+    os.makedirs(f"{outDir}/{mimeDir}", exist_ok=True)
+
+    srcFile = "setup/icons/novelwriter.svg"
+    dstFile = f"{appsDir}/novelwriter.svg"
+    shutil.copyfile(srcFile, f"{outDir}/{dstFile}")
+    print("Copied: %s" % dstFile)
+
+    srcFile = "setup/icons/x-novelwriter-project.svg"
+    dstFile = f"{mimeDir}/x-novelwriter-project.svg"
+    shutil.copyfile(srcFile, f"{outDir}/{dstFile}")
+    print("Copied: %s" % dstFile)
+
+    installData.append(("data/hicolor", "usr/share/icons"))
+
+    # Pixmap Icon
+
+    srcFile = "setup/icons/scaled/icon-novelwriter-48.png"
+    dstFile = "data/novelwriter.png"
+    shutil.copyfile(srcFile, f"{outDir}/{dstFile}")
+    print("Copied: %s" % dstFile)
+    installData.append((dstFile, "usr/share/pixmaps"))
+
+    # Mime Type
+
+    srcFile = "setup/mime/x-novelwriter-project.xml"
+    dstFile = "data/x-novelwriter-project.xml"
+    shutil.copyfile(srcFile, f"{outDir}/{dstFile}")
+    print("Copied: %s" % dstFile)
+    installData.append((dstFile, "usr/share/mime/packages"))
+
+    # Create Install File
+
+    with open(f"{debDir}/install", mode="w") as outFile:
+        for srcFile, dstFile in installData:
+            outFile.write(f"{srcFile} {dstFile}\n")
+        print("Wrote:  debian/install")
+
+    print("")
+    print("Running dpkg-buildpackage ...")
     print("")
 
     currDir = os.curdir
@@ -658,11 +736,15 @@ def makeDebianPackage():
     subprocess.call(["dpkg-buildpackage", "-us", "-ui", "-uc"])
     os.chdir(currDir)
 
+    print("")
+    print("Done!")
+    print("")
+
     return
 
 
 ##
-#  Make Simple Package (pack-pyz)
+#  Make Simple Package (build-pyz)
 ##
 
 def makeSimplePackage(embedPython):
@@ -901,13 +983,8 @@ def xdgInstall():
     # Create and Install Launcher
     # ===========================
 
-    desktopData = ""
-    with open("./setup/novelwriter.desktop", mode="r") as inFile:
-        desktopData = inFile.read()
-
-    desktopData = desktopData.replace(r"%%exec%%", useExec)
-    with open("./novelwriter.desktop", mode="w+") as outFile:
-        outFile.write(desktopData)
+    # Generate launcher
+    createLauncher(useExec, ".")
 
     # Remove old desktop icon
     exCode = subprocess.call(
@@ -938,7 +1015,7 @@ def xdgInstall():
     # Install Icons
     # =============
 
-    sizeArr = ["16", "22", "24", "32", "48", "64", "96", "128", "256", "512"]
+    sizeArr = ["16", "24", "32", "48", "64", "128", "256"]
 
     # App Icon
     for aSize in sizeArr:
@@ -1375,12 +1452,12 @@ if __name__ == "__main__":
         "                   all the other source files. Defaults to tailor the zip file",
         "                   for the current OS, but accepts a target OS flag to build",
         "                   for another OS.",
-        "    pack-deb       Creates a .deb package for Debian and Ubuntu.",
-        "    pack-pyz       Creates a .pyz package in a folder with all dependencies",
+        "    build-deb      Buiild a .deb package for Debian and Ubuntu.",
+        "    build-pyz      Buiild a .pyz package in a folder with all dependencies",
         "                   using the zipapp tool. On Windows, python embeddable is",
         "                   added to the folder.",
         "    setup-pyz      Build a Windows executable installer from a zipapp package",
-        "                   using Inno Setup. Must run 'pack-pyz' first.",
+        "                   using Inno Setup. Must run 'build-pyz' first.",
         "",
         "System Install:",
         "",
@@ -1458,15 +1535,19 @@ if __name__ == "__main__":
         sys.argv.remove("minimal-zip")
         makeMinimalPackage(targetOS)
 
-    if "pack-pyz" in sys.argv:
-        sys.argv.remove("pack-pyz")
+    if "build-deb" in sys.argv:
+        sys.argv.remove("build-deb")
+        if hostOS == OS_LINUX:
+            makeDebianPackage()
+        else:
+            print("ERROR: Command 'build-deb' can only be used on Linux")
+            sys.exit(1)
+
+    if "build-pyz" in sys.argv:
+        sys.argv.remove("build-pyz")
         simplePack = True
         if hostOS == OS_WIN:
             embedPython = True
-
-    if "pack-deb" in sys.argv:
-        sys.argv.remove("pack-deb")
-        makeDebianPackage()
 
     # General Installers
     # ==================
