@@ -34,9 +34,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
 )
 
-from novelwriter.core import NWSpellEnchant
 from novelwriter.enum import nwAlert
-from novelwriter.constants import nwConst
 from novelwriter.gui.custom import QSwitch, QConfigLayout, PagedDialog
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 
@@ -702,32 +700,30 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.addGroupLabel(self.tr("Spell Checking"))
 
         # Spell Check Provider and Language
-        self.spellLangList = QComboBox(self)
-        self.spellLangList.setMaximumWidth(mW)
+        self.spellLanguage = QComboBox(self)
+        self.spellLanguage.setMaximumWidth(mW)
 
-        self.spellToolList = QComboBox(self)
-        self.spellToolList.setMaximumWidth(mW)
-        self.spellToolList.addItem("%s (difflib)" % self.tr("Internal"), nwConst.SP_INTERNAL)
-        self.spellToolList.addItem("Spell Enchant (pyenchant)", nwConst.SP_ENCHANT)
+        langAvail = self.theParent.docEditor.spEnchant.listDictionaries()
+        if self.mainConf.hasEnchant:
+            if langAvail:
+                for spTag, spProv in langAvail:
+                    qLocal = QLocale(spTag)
+                    spLang = qLocal.nativeLanguageName().title()
+                    self.spellLanguage.addItem("%s [%s]" % (spLang, spProv), spTag)
+            else:
+                self.spellLanguage.addItem(self.tr("None"), "")
+                self.spellLanguage.setEnabled(False)
+        else:
+            self.spellLanguage.addItem(self.tr("Not installed"), "")
+            self.spellLanguage.setEnabled(False)
 
-        theModel  = self.spellToolList.model()
-        idEnchant = self.spellToolList.findData(nwConst.SP_ENCHANT)
-        theModel.item(idEnchant).setEnabled(self.mainConf.hasEnchant)
-
-        self.spellToolList.currentIndexChanged.connect(self._doUpdateSpellTool)
-        toolIdx = self.spellToolList.findData(self.mainConf.spellTool)
-        if toolIdx != -1:
-            self.spellToolList.setCurrentIndex(toolIdx)
-        self._doUpdateSpellTool(0)
+        spellIdx = self.spellLanguage.findData(self.mainConf.spellLanguage)
+        if spellIdx != -1:
+            self.spellLanguage.setCurrentIndex(spellIdx)
 
         self.mainForm.addRow(
-            self.tr("Spell check provider"),
-            self.spellToolList,
-            self.tr("Note that the internal spell check tool is quite slow.")
-        )
-        self.mainForm.addRow(
-            self.tr("Spell check language"),
-            self.spellLangList,
+            self.tr("Spell check language (requires pyenchant)"),
+            self.spellLanguage,
             self.tr("Available languages are determined by your system.")
         )
 
@@ -825,8 +821,7 @@ class GuiPreferencesEditor(QWidget):
         """Save the values set for this tab.
         """
         # Spell Checking
-        self.mainConf.spellTool     = self.spellToolList.currentData()
-        self.mainConf.spellLanguage = self.spellLangList.currentData()
+        self.mainConf.spellLanguage = self.spellLanguage.currentData()
         self.mainConf.bigDocLimit   = self.bigDocLimit.value()
 
         # Word Count
@@ -842,37 +837,6 @@ class GuiPreferencesEditor(QWidget):
         self.mainConf.autoScrollPos = self.autoScrollPos.value()
 
         self.mainConf.confChanged = True
-
-        return
-
-    ##
-    #  Internal Functions
-    ##
-
-    def _doUpdateSpellTool(self, currIdx):
-        """Update the list of dictionaries based on spell tool selected.
-        """
-        spellTool = self.spellToolList.currentData()
-        self._updateLanguageList(spellTool)
-        return
-
-    def _updateLanguageList(self, spellTool):
-        """Updates the list of available spell checking dictionaries
-        available for the selected spell check tool. It will try to
-        preserve the language choice, if the language exists in the
-        updated list.
-        """
-        theDict = NWSpellEnchant()
-
-        self.spellLangList.clear()
-        for spTag, spProv in theDict.listDictionaries():
-            qLocal = QLocale(spTag)
-            spLang = qLocal.nativeLanguageName().title()
-            self.spellLangList.addItem("%s [%s]" % (spLang, spProv), spTag)
-
-        spellIdx = self.spellLangList.findData(self.mainConf.spellLanguage)
-        if spellIdx != -1:
-            self.spellLangList.setCurrentIndex(spellIdx)
 
         return
 

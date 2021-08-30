@@ -208,13 +208,12 @@ class GuiProjectEditMain(QWidget):
 
         self.spellLang = QComboBox(self)
         self.spellLang.setMaximumWidth(xW)
-        theDict = self.theParent.docEditor.currentDictionary()
         self.spellLang.addItem(self.tr("Default"), "None")
-        if theDict is not None:
-            for spTag, spProv in theDict.listDictionaries():
-                qLocal = QLocale(spTag)
-                spLang = qLocal.nativeLanguageName().title()
-                self.spellLang.addItem("%s [%s]" % (spLang, spProv), spTag)
+        langAvail = self.theParent.docEditor.spEnchant.listDictionaries()
+        for spTag, spProv in langAvail:
+            qLocal = QLocale(spTag)
+            spLang = qLocal.nativeLanguageName().title()
+            self.spellLang.addItem("%s [%s]" % (spLang, spProv), spTag)
 
         self.mainForm.addRow(
             self.tr("Spell check language"),

@@ -46,16 +46,16 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     BLOCK_META  = 2
     BLOCK_TITLE = 4
 
-    def __init__(self, theDoc, theParent):
+    def __init__(self, theDoc, theParent, spEnchant):
         QSyntaxHighlighter.__init__(self, theDoc)
 
         logger.debug("Initialising GuiDocHighlighter ...")
         self.mainConf   = novelwriter.CONFIG
         self.theDoc     = theDoc
+        self.spEnchant  = spEnchant
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theIndex   = theParent.theIndex
-        self.theDict    = None
         self.theHandle  = None
         self.spellCheck = False
         self.spellRx    = None
@@ -237,12 +237,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     #  Setters
     ##
 
-    def setDict(self, theDict):
-        """Set the dictionary object for spell check underlines lookup.
-        """
-        self.theDict = theDict
-        return True
-
     def setSpellCheck(self, theMode):
         """Enable/disable the real time spell checker.
         """
@@ -389,13 +383,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                                 spFmt.merge(xFmt[xM])
                                 self.setFormat(x, 1, spFmt)
 
-        if self.theDict is None or not self.spellCheck:
+        if not self.spellCheck:
             return
 
         rxSpell = self.spellRx.globalMatch(theText, 0)
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
-            if not self.theDict.checkWord(rxMatch.captured(0)):
+            if not self.spEnchant.checkWord(rxMatch.captured(0)):
                 if rxMatch.captured(0).isupper() or rxMatch.captured(0).isnumeric():
                     continue
                 xPos = rxMatch.capturedStart(0)
