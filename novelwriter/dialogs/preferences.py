@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
 )
 
-from novelwriter.core import NWSpellSimple, NWSpellEnchant
+from novelwriter.core import NWSpellEnchant
 from novelwriter.enum import nwAlert
 from novelwriter.constants import nwConst
 from novelwriter.gui.custom import QSwitch, QConfigLayout, PagedDialog
@@ -862,10 +862,7 @@ class GuiPreferencesEditor(QWidget):
         preserve the language choice, if the language exists in the
         updated list.
         """
-        if spellTool == nwConst.SP_ENCHANT:
-            theDict = NWSpellEnchant()
-        else:
-            theDict = NWSpellSimple()
+        theDict = NWSpellEnchant()
 
         self.spellLangList.clear()
         for spTag, spProv in theDict.listDictionaries():

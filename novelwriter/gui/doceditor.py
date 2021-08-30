@@ -48,7 +48,7 @@ from PyQt5.QtWidgets import (
     QFrame
 )
 
-from novelwriter.core import NWDoc, NWSpellSimple, countWords
+from novelwriter.core import NWDoc, NWSpellEnchant, countWords
 from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwItemClass
 from novelwriter.common import transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
@@ -1972,12 +1972,7 @@ class GuiDocEditor(QTextEdit):
         """Create the spell checking object based on the spellTool
         setting in config.
         """
-        if self.mainConf.spellTool == nwConst.SP_ENCHANT:
-            from novelwriter.core.spellcheck import NWSpellEnchant
-            self._theDict = NWSpellEnchant()
-        else:
-            self._theDict = NWSpellSimple()
-
+        self._theDict = NWSpellEnchant()
         self.hLight.setDict(self._theDict)
 
         return
