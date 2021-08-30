@@ -32,12 +32,11 @@ logger = logging.getLogger(__name__)
 
 class NWSpellEnchant():
 
-    theDict = None
-    projDict = []
-
     def __init__(self):
 
         self.mainConf = novelwriter.CONFIG
+        self.theDict = None
+        self.projDict = set()
         self.projectDict = None
         self.spellLanguage = None
         self.theBroker = None
@@ -93,7 +92,7 @@ class NWSpellEnchant():
             try:
                 with open(self.projectDict, mode="a+", encoding="utf-8") as outFile:
                     outFile.write("%s\n" % newWord)
-                self.projDict.append(newWord)
+                self.projDict.add(newWord)
             except Exception:
                 logger.error("Failed to add word to project word list %s", str(self.projectDict))
                 novelwriter.logException()
@@ -138,7 +137,7 @@ class NWSpellEnchant():
         """Read the content of the project dictionary, and add it to the
         lookup lists.
         """
-        self.projDict = []
+        self.projDict = set()
         self.projectDict = projectDict
 
         if projectDict is None:
@@ -153,7 +152,7 @@ class NWSpellEnchant():
                 for theLine in wordsFile:
                     theLine = theLine.strip()
                     if len(theLine) > 0 and theLine not in self.projDict:
-                        self.projDict.append(theLine)
+                        self.projDict.add(theLine)
             logger.debug("Project word list contains %d words", len(self.projDict))
 
         except Exception:
