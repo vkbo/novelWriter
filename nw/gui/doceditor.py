@@ -1763,7 +1763,7 @@ class GuiDocEditor(QTextEdit):
         nDelete = 0
         tInsert = theOne
 
-        if self.mainConf.doReplaceDQuote and theTwo == ' "':
+        if self.mainConf.doReplaceDQuote and theTwo[:1].isspace() and theTwo.endswith('"'):
             nDelete = 1
             tInsert = self._typDQOpen
 
@@ -1771,16 +1771,24 @@ class GuiDocEditor(QTextEdit):
             nDelete = 1
             if thePos == 1:
                 tInsert = self._typDQOpen
+            elif thePos == 2 and theTwo == '>"':
+                tInsert = self._typDQOpen
+            elif thePos == 3 and theThree == '>>"':
+                tInsert = self._typDQOpen
             else:
                 tInsert = self._typDQClose
 
-        elif self.mainConf.doReplaceSQuote and theTwo == " '":
+        elif self.mainConf.doReplaceSQuote and theTwo[:1].isspace() and theTwo.endswith("'"):
             nDelete = 1
             tInsert = self._typSQOpen
 
         elif self.mainConf.doReplaceSQuote and theOne == "'":
             nDelete = 1
             if thePos == 1:
+                tInsert = self._typSQOpen
+            elif thePos == 2 and theTwo == ">'":
+                tInsert = self._typSQOpen
+            elif thePos == 3 and theThree == ">>'":
                 tInsert = self._typSQOpen
             else:
                 tInsert = self._typSQClose

@@ -27,3 +27,15 @@ This is another paragraph of much longer nonsense text. It is in fact 1 very ver
 
 ‘Full line single quoted text.’
 
+	“Tab-indented text”
+
+>“Paragraph-indented text”
+
+>>“Right-aligned text”
+
+	‘Tab-indented text’
+
+>‘Paragraph-indented text’
+
+>>‘Right-aligned text’
+
