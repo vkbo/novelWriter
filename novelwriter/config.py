@@ -38,7 +38,7 @@ from PyQt5.QtCore import (
 
 from novelwriter.error import logException
 from novelwriter.common import splitVersionNumber, formatTimeStamp, NWConfigParser
-from novelwriter.constants import nwConst, nwFiles, nwUnicode
+from novelwriter.constants import nwFiles, nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -163,7 +163,6 @@ class Config:
         self.fmtPadThin      = False
 
         # Spell Checking
-        self.spellTool     = None
         self.spellLanguage = None
 
         # Search Bar Switches
@@ -353,8 +352,6 @@ class Config:
         # Check the availability of optional packages
         self._checkOptionalPackages()
 
-        if self.spellTool is None:
-            self.spellTool = nwConst.SP_INTERNAL
         if self.spellLanguage is None:
             self.spellLanguage = "en"
 
@@ -497,7 +494,6 @@ class Config:
         self.fmtPadBefore    = theConf.rdStr(cnfSec, "fmtpadbefore", self.fmtPadBefore)
         self.fmtPadAfter     = theConf.rdStr(cnfSec, "fmtpadafter", self.fmtPadAfter)
         self.fmtPadThin      = theConf.rdBool(cnfSec, "fmtpadthin", self.fmtPadThin)
-        self.spellTool       = theConf.rdStr(cnfSec, "spelltool", self.spellTool)
         self.spellLanguage   = theConf.rdStr(cnfSec, "spellcheck", self.spellLanguage)
         self.showTabsNSpaces = theConf.rdBool(cnfSec, "showtabsnspaces", self.showTabsNSpaces)
         self.showLineEndings = theConf.rdBool(cnfSec, "showlineendings", self.showLineEndings)
@@ -620,7 +616,6 @@ class Config:
             "fmtpadbefore":    str(self.fmtPadBefore),
             "fmtpadafter":     str(self.fmtPadAfter),
             "fmtpadthin":      str(self.fmtPadThin),
-            "spelltool":       str(self.spellTool),
             "spellcheck":      str(self.spellLanguage),
             "showtabsnspaces": str(self.showTabsNSpaces),
             "showlineendings": str(self.showLineEndings),

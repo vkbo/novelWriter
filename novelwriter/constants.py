@@ -46,10 +46,6 @@ class nwConst():
     MAX_DOCSIZE   = 5000000   # Maxium size of a single document
     MAX_BUILDSIZE = 10000000  # Maxium size of a project build
 
-    # Spell Check Providers
-    SP_INTERNAL = "internal"
-    SP_ENCHANT  = "enchant"
-
 # END Class nwConst
 
 

@@ -39,24 +39,17 @@ format of the main project file. Everything else is handled with standard Python
 
 The following Python packages are needed to run novelWriter:
 
-* ``pyqt5`` – needed for connecting with the Qt5 libraries.
+* ``PyQt5`` – needed for connecting with the Qt5 libraries.
 * ``lxml`` – needed for full XML support.
-* ``pyenchant`` – needed for efficient spell checking (optional).
+* ``PyEnchant`` – needed for efficient spell checking (optional).
 
 PyQt/Qt should be at least 5.3, but ideally 5.10 or higher for nearly all features to work. For
 instance, searching using regular expressions with full Unicode support requires 5.13. There is no
 known minimum version requirement for package ``lxml``, but the code was originally written with
 4.2, which is therefore set as the minimum. It may work on lower versions. You have to test it.
 
-Optionally, a package can be installed to interface with the Enchant spell checking libaries, but
-this isn't strictly required. If no external spell checking library is available, novelWriter falls
-back to using the internal ``difflib`` of Python to check spelling. This is a slower and less
-sophisticated spell checker than the full spell checking libaries. The spell check library must be
-at least 3.0 to work with Windows. On Linux, 2.0 also works fine.
-
-If you do use the internal spell checker, you also have to provide a text file with a list of all
-words correctly spelled. One word on each line. Dictionary files for English is included with
-novelWriter. For other languages, you will need to add more files yourself.
+If you want spell checking, you must install the ``PyEnchant`` package. The spell check library
+must be at least 3.0 to work with Windows. On Linux, 2.0 also works fine.
 
 If you install from PyPi, these dependencies should be installed automatically. If you install from
 source, dependencies can still be installed from PyPi with:

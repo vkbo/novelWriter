@@ -101,7 +101,7 @@ containing either the minimal package, or the extracted full source package.
 
 The first command will install the three main dependencies of novelWriter using the
 `Python Package Index`_ install tool. The packages are ``PyQt5`` for the GUI, ``lxml`` for handling
-XML data files, and ``PyEncant`` for spell checking.
+XML data files, and ``PyEnchant`` for spell checking.
 
 The second command installs a Python tool for Windows that assists the setup script in installing
 icons and setting a few registry keys.

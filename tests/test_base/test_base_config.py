@@ -29,7 +29,7 @@ from mock import causeOSError, MockApp
 from tools import cmpFiles, writeFile
 
 from novelwriter.config import Config
-from novelwriter.constants import nwConst, nwFiles
+from novelwriter.constants import nwFiles
 
 
 @pytest.mark.base
@@ -133,7 +133,6 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     # This should create a config file as well
     with monkeypatch.context() as mp:
         mp.setattr("os.path.expanduser", lambda *a: "")
-        tstConf.spellTool = nwConst.SP_INTERNAL
         tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
         assert tstConf.confPath == tmpDir
         assert tstConf.dataPath == tmpDir
