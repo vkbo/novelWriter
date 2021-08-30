@@ -1,6 +1,6 @@
 Source: novelwriter
 Maintainer: Veronica Berglyd Olsen <code@vkbo.net>
-Section: utils
+Section: text
 Priority: optional
 Build-Depends: dh-python, python3-setuptools, python3-all, debhelper (>= 9)
 Standards-Version: 4.5.1
