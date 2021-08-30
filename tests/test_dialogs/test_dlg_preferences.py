@@ -33,7 +33,6 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.config import Config
 from novelwriter.dialogs import GuiPreferences, GuiQuoteSelect
-from novelwriter.constants import nwConst
 
 keyDelay = 2
 typeDelay = 1
@@ -67,7 +66,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
 
     theConf = nwGUI.mainConf
     assert theConf.confPath == fncDir
-    theConf.spellTool = nwConst.SP_INTERNAL
 
     monkeypatch.setattr(GuiPreferences, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiPreferences, "result", lambda *a: QDialog.Accepted)

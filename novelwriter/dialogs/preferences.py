@@ -722,7 +722,7 @@ class GuiPreferencesEditor(QWidget):
             self.spellLanguage.setCurrentIndex(spellIdx)
 
         self.mainForm.addRow(
-            self.tr("Spell check language (requires pyenchant)"),
+            self.tr("Spell check language ({0})").format("PyEnchant"),
             self.spellLanguage,
             self.tr("Available languages are determined by your system.")
         )

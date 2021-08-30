@@ -229,7 +229,6 @@ def testGuiEditor_MetaData(qtbot, monkeypatch, nwGUI, nwMinimal):
     assert nwGUI.docEditor.docHandle() == sHandle
     assert nwGUI.docEditor.lastActive() > 0.0
     assert nwGUI.docEditor.isEmpty() is False
-    assert nwGUI.docEditor.currentDictionary() is not None
 
     # Cursor Position
     assert nwGUI.docEditor.setCursorPosition(None) is False
