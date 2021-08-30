@@ -66,6 +66,8 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
     # Get the dialog object
     monkeypatch.setattr(GuiProjectSettings, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
+
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiProjectSettings") is not None, timeout=1000)
 

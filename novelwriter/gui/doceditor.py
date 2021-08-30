@@ -48,7 +48,7 @@ from PyQt5.QtWidgets import (
     QFrame
 )
 
-from novelwriter.core import NWDoc, NWSpellSimple, countWords
+from novelwriter.core import NWDoc, NWSpellEnchant, countWords
 from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwItemClass
 from novelwriter.common import transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
@@ -89,7 +89,6 @@ class GuiDocEditor(QTextEdit):
         self._docHeaders = []     # Record of headers in the file
 
         self._spellCheck = False  # Flag for spell checking enabled
-        self._theDict    = None   # The current spell check dictionary
         self._nonWord    = "\"'"  # Characters to not include in spell checking
 
         # Document Variables
@@ -121,7 +120,8 @@ class GuiDocEditor(QTextEdit):
         self.docSearch = GuiDocEditSearch(self)
 
         # Syntax
-        self.hLight = GuiDocHighlighter(qDoc, self.theParent)
+        self.spEnchant = NWSpellEnchant()
+        self.highLight = GuiDocHighlighter(qDoc, self.theParent, self.spEnchant)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -216,7 +216,6 @@ class GuiDocEditor(QTextEdit):
         self._typSQClose = self.mainConf.fmtSingleQuotes[1]
 
         # Reload spell check and dictionaries
-        self._setupSpellChecking()
         self.setDictionaries()
 
         # Set font
@@ -280,7 +279,7 @@ class GuiDocEditor(QTextEdit):
             self.setTabStopWidth(self.mainConf.getTabWidth())
 
         # Initialise the syntax highlighter
-        self.hLight.initHighlighter()
+        self.highLight.initHighlighter()
 
         # Configure word count timer
         self.wcInterval = self.mainConf.wordCountTimer
@@ -328,14 +327,14 @@ class GuiDocEditor(QTextEdit):
             return False
 
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
-        self.hLight.setHandle(tHandle)
+        self.highLight.setHandle(tHandle)
 
         # Check that the document is not too big for full, initial spell
         # checking. If it is too big, we switch to only check as we type
         self._checkDocSize(docSize)
-        spTemp = self.hLight.spellCheck
+        spTemp = self.highLight.spellCheck
         if self._bigDoc:
-            self.hLight.spellCheck = False
+            self.highLight.spellCheck = False
 
         bfTime = time()
         self._allowAutoReplace(False)
@@ -356,7 +355,7 @@ class GuiDocEditor(QTextEdit):
         self.docHeader.setTitleFromHandle(self._docHandle)
         self.docFooter.setHandle(self._docHandle)
         self.updateDocMargins()
-        self.hLight.spellCheck = spTemp
+        self.highLight.spellCheck = spTemp
 
         if tLine is None and self._nwItem is not None:
             # For large documents we queue the repositioning until the
@@ -394,7 +393,7 @@ class GuiDocEditor(QTextEdit):
     def updateTagHighLighting(self):
         """Rerun the syntax highlighter on all meta data lines.
         """
-        self.hLight.rehighlightByType(GuiDocHighlighter.BLOCK_META)
+        self.highLight.rehighlightByType(GuiDocHighlighter.BLOCK_META)
         return
 
     def redrawText(self):
@@ -576,11 +575,6 @@ class GuiDocEditor(QTextEdit):
         """
         return self.document().isEmpty()
 
-    def currentDictionary(self):
-        """Return the current dictionary object.
-        """
-        return self._theDict
-
     ##
     #  Getters
     ##
@@ -672,8 +666,8 @@ class GuiDocEditor(QTextEdit):
         else:
             theLang = self.theProject.projSpell
 
-        self._theDict.setLanguage(theLang, self.theProject.projDict)
-        _, theProvider = self._theDict.describeDict()
+        self.spEnchant.setLanguage(theLang, self.theProject.projDict)
+        _, theProvider = self.spEnchant.describeDict()
 
         self.spellDictionaryChanged.emit(str(theLang), str(theProvider))
 
@@ -682,7 +676,7 @@ class GuiDocEditor(QTextEdit):
 
         return True
 
-    def setSpellCheck(self, theMode):
+    def toggleSpellCheck(self, theMode):
         """This is the master spell check setting function, and this one
         should call all other setSpellCheck functions in other classes.
         If the spell check mode (theMode) is not defined (None), then
@@ -691,13 +685,21 @@ class GuiDocEditor(QTextEdit):
         if theMode is None:
             theMode = not self._spellCheck
 
-        if self._theDict.spellLanguage is None:
+        if not self.mainConf.hasEnchant:
+            if theMode:
+                self.theParent.makeAlert(self.tr(
+                    "Spell checking requires the package PyEncant. "
+                    "It does not appear to be installed."
+                ), nwAlert.INFO)
+            theMode = False
+
+        if self.spEnchant.spellLanguage is None:
             theMode = False
 
         self._spellCheck = theMode
         self.theParent.mainMenu.setSpellCheck(theMode)
         self.theProject.setSpellCheck(theMode)
-        self.hLight.setSpellCheck(theMode)
+        self.highLight.setSpellCheck(theMode)
         if not self._bigDoc:
             self.spellCheckDocument()
 
@@ -719,7 +721,7 @@ class GuiDocEditor(QTextEdit):
                 theText = self.getText()
                 self.setPlainText(theText)
             else:
-                self.hLight.rehighlight()
+                self.highLight.rehighlight()
             qApp.restoreOverrideCursor()
             afTime = time()
             logger.debug("Document highlighted in %.3f ms", 1000*(afTime-bfTime))
@@ -1140,14 +1142,14 @@ class GuiDocEditor(QTextEdit):
 
         if spellCheck:
             logger.verbose("Looking up '%s' in the dictionary", theWord)
-            spellCheck &= not self._theDict.checkWord(theWord)
+            spellCheck &= not self.spEnchant.checkWord(theWord)
 
         if spellCheck:
             mnuContext.addSeparator()
             mnuHead = QAction(self.tr("Spelling Suggestion(s)"), mnuContext)
             mnuContext.addAction(mnuHead)
 
-            theSuggest = self._theDict.suggestWords(theWord)[:15]
+            theSuggest = self.spEnchant.suggestWords(theWord)[:15]
             if len(theSuggest) > 0:
                 for aWord in theSuggest:
                     mnuWord = QAction("%s %s" % (nwUnicode.U_ENDASH, aWord), mnuContext)
@@ -1192,9 +1194,8 @@ class GuiDocEditor(QTextEdit):
         """
         theWord = theCursor.selectedText().strip().strip(self._nonWord)
         logger.debug("Added '%s' to project dictionary", theWord)
-        self._theDict.addWord(theWord)
-        self.hLight.setDict(self._theDict)
-        self.hLight.rehighlightBlock(theCursor.block())
+        self.spEnchant.addWord(theWord)
+        self.highLight.rehighlightBlock(theCursor.block())
         return
 
     @pyqtSlot()
@@ -1966,20 +1967,6 @@ class GuiDocEditor(QTextEdit):
         theCursor = self.cursorForPosition(thePos)
         self.setTextCursor(theCursor)
         self._makeSelection(selMode)
-        return
-
-    def _setupSpellChecking(self):
-        """Create the spell checking object based on the spellTool
-        setting in config.
-        """
-        if self.mainConf.spellTool == nwConst.SP_ENCHANT:
-            from novelwriter.core.spellcheck import NWSpellEnchant
-            self._theDict = NWSpellEnchant()
-        else:
-            self._theDict = NWSpellSimple()
-
-        self.hLight.setDict(self._theDict)
-
         return
 
     def _allowAutoReplace(self, theState):

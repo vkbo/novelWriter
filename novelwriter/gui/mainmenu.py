@@ -120,7 +120,7 @@ class GuiMainMenu(QMenuBar):
         flag is handled by the document editor class, so we make no
         decision, just pass a None to the function and let it decide.
         """
-        self.theParent.docEditor.setSpellCheck(None)
+        self.theParent.docEditor.toggleSpellCheck(None)
         return True
 
     def _toggleAutoOutline(self, theMode):
