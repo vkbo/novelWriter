@@ -115,7 +115,7 @@ The above steps can be reverted by running:
 .. code-block:: console
 
    python setup.py win-uninstall
-   pip uninstall -r pywin32
+   pip uninstall pywin32
    pip uninstall -r requirements.txt
 
 .. _Python Package Index: https://pypi.org/
