@@ -69,6 +69,8 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
 
     monkeypatch.setattr(GuiPreferences, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiPreferences, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
+
     nwGUI.mainMenu.aPreferences.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiPreferences") is not None, timeout=1000)
 
