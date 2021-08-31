@@ -641,7 +641,7 @@ def makeDebianPackage():
         )
         print("Wrote:  setup.py")
 
-    # Cop Debian and Data Folder
+    # Copy Debian and Data Folders
 
     shutil.copytree("setup/debian", debDir)
     print("Copied: debian/*")
