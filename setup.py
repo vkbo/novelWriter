@@ -27,7 +27,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import sys
 import shutil
+import datetime
 import subprocess
+import email.utils
 
 OS_NONE   = 0
 OS_LINUX  = 1
@@ -49,6 +51,7 @@ def extractVersion():
 
     numVers = "Unknown"
     hexVers = "Unknown"
+    relDate = "Unknown"
     initFile = os.path.join("novelwriter", "__init__.py")
     try:
         with open(initFile, mode="r", encoding="utf-8") as inFile:
@@ -57,14 +60,24 @@ def extractVersion():
                     numVers = getValue((aLine))
                 if aLine.startswith("__hexversion__"):
                     hexVers = getValue((aLine))
+                if aLine.startswith("__date__"):
+                    relDate = getValue((aLine))
     except Exception as e:
         print("Could not read file: %s" % initFile)
         print(str(e))
 
-    print("novelWriter version is: %s (%s)" % (numVers, hexVers))
+    print("novelWriter version is: %s (%s) at %s" % (numVers, hexVers, relDate))
     print("")
 
-    return numVers, hexVers
+    return numVers, hexVers, relDate
+
+
+def compactVersion(numVers):
+    """Make the version number more compact."""
+    numVers = numVers.replace("-alpha", "a")
+    numVers = numVers.replace("-beta", "b")
+    numVers = numVers.replace("-rc", "rc")
+    return numVers
 
 
 def sysCall(callArgs):
@@ -73,6 +86,20 @@ def sysCall(callArgs):
     sysP = subprocess.Popen(callArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     stdOut, stdErr = sysP.communicate()
     return stdOut.decode("utf-8"), stdErr.decode("utf-8"), sysP.returncode
+
+
+def createLauncher(execName, writePath):
+    """Generate a novelwriter.desktop file with a given exec name.
+    """
+    desktopData = ""
+    with open(os.path.join("setup", "data", "novelwriter.desktop"), mode="r") as inFile:
+        desktopData = inFile.read()
+
+    desktopData = desktopData.replace("Exec=novelwriter", f"Exec={execName}")
+    with open(os.path.join(writePath, "novelwriter.desktop"), mode="w+") as outFile:
+        outFile.write(desktopData)
+
+    return
 
 
 # =============================================================================================== #
@@ -390,7 +417,7 @@ def makeMinimalPackage(targetOS):
     from zipfile import ZipFile, ZIP_DEFLATED
 
     # Get the version
-    numVers, _ = extractVersion()
+    numVers, _, _ = extractVersion()
 
     # Make sample.zip first
     try:
@@ -506,7 +533,151 @@ def makeMinimalPackage(targetOS):
 
 
 ##
-#  Make Simple Package (pack-pyz)
+#  Make Debian Package (build-deb)
+##
+
+def makeDebianPackage():
+    """Build a Debian package.
+    """
+    print("")
+    print("Build Debian Package")
+    print("====================")
+    print("")
+
+    # Version Info
+    # ============
+
+    numVers, _, relDate = extractVersion()
+    pkgVers = compactVersion(numVers)
+    relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
+    pkgDate = email.utils.format_datetime(relDate.replace(hour=12, tzinfo=None))
+
+    # Set Up Folder
+    # =============
+
+    bldDir = "dist_deb"
+    pkgDir = f"novelWriter-{pkgVers}"
+    outDir = f"{bldDir}/{pkgDir}"
+    debDir = f"{outDir}/debian"
+    datDir = f"{outDir}/data"
+
+    if not os.path.isdir(bldDir):
+        os.mkdir(bldDir)
+
+    if os.path.isdir(outDir):
+        print("Removing old build files ...")
+        print("")
+        shutil.rmtree(outDir)
+
+    os.mkdir(outDir)
+
+    # Build Additional Assets
+    # =======================
+
+    buildQtI18n()
+    buildSampleZip()
+    buildPdfManual()
+
+    # Copy novelWriter Source
+    # =======================
+
+    print("Copying novelWriter source ...")
+    print("")
+
+    for nPath, _, nFiles in os.walk("novelwriter"):
+        if nPath.endswith("__pycache__"):
+            print("Skipped: %s" % nPath)
+            continue
+
+        pPath = f"{outDir}/{nPath}"
+        if not os.path.isdir(pPath):
+            os.mkdir(pPath)
+
+        fCount = 0
+        for fFile in nFiles:
+            nFile = f"{nPath}/{fFile}"
+            pFile = f"{pPath}/{fFile}"
+
+            if fFile.endswith(".pyc"):
+                print("Skipped: %s" % nFile)
+                continue
+
+            shutil.copyfile(nFile, pFile)
+            fCount += 1
+
+        print("Copied: %s/*  [Files: %d]" % (nPath, fCount))
+
+    print("")
+    print("Copying or generating additional files ...")
+    print("")
+
+    # Root Files
+
+    copyFiles = [
+        "setup.cfg",
+        "pyproject.toml",
+        "LICENSE.md",
+        "CREDITS.md",
+        "CHANGELOG.md",
+    ]
+    for copyFile in copyFiles:
+        shutil.copyfile(copyFile, f"{outDir}/{copyFile}")
+        print("Copied: %s" % copyFile)
+
+    with open(f"{outDir}/MANIFEST.in", mode="w") as outFile:
+        outFile.write(
+            "include LICENSE.md\n"
+            "include CREDITS.md\n"
+            "include CHANGELOG.md\n"
+            "include data/*\n"
+            "recursive-include novelwriter/assets *\n"
+        )
+        print("Wrote:  MANIFEST.in")
+
+    with open(f"{outDir}/setup.py", mode="w") as outFile:
+        outFile.write(
+            "import setuptools\n"
+            "setuptools.setup()\n"
+        )
+        print("Wrote:  setup.py")
+
+    # Copy Debian and Data Folders
+
+    shutil.copytree("setup/debian", debDir)
+    print("Copied: debian/*")
+    shutil.copytree("setup/data", datDir)
+    print("Copied: data/*")
+
+    # Generate debian/changelog File
+
+    with open(f"{debDir}/changelog", mode="w") as outFile:
+        outFile.write(
+            f"novelwriter ({pkgVers}) unstable; urgency=medium\n\n"
+            f"  * Update to version {pkgVers}\n\n"
+            f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
+        )
+        print("Wrote:  debian/changelog")
+
+    # Build Package
+
+    print("")
+    print("Running dpkg-buildpackage ...")
+    print("")
+
+    currDir = os.curdir
+    os.chdir(outDir)
+    subprocess.call(["dpkg-buildpackage", "-us", "-ui", "-uc"])
+    os.chdir(currDir)
+
+    print("")
+    print("Done!")
+    print("")
+
+    return
+
+
+##
+#  Make Simple Package (build-pyz)
 ##
 
 def makeSimplePackage(embedPython):
@@ -745,13 +916,8 @@ def xdgInstall():
     # Create and Install Launcher
     # ===========================
 
-    desktopData = ""
-    with open("./setup/novelwriter.desktop", mode="r") as inFile:
-        desktopData = inFile.read()
-
-    desktopData = desktopData.replace(r"%%exec%%", useExec)
-    with open("./novelwriter.desktop", mode="w+") as outFile:
-        outFile.write(desktopData)
+    # Generate launcher
+    createLauncher(useExec, ".")
 
     # Remove old desktop icon
     exCode = subprocess.call(
@@ -760,7 +926,7 @@ def xdgInstall():
 
     # Install application launcher
     exCode = subprocess.call(
-        ["xdg-desktop-menu", "install", "--novendor", "./novelwriter.desktop"]
+        ["xdg-desktop-menu", "install", "--novendor", "novelwriter.desktop"]
     )
     if exCode == 0:
         print("Installed menu launcher file")
@@ -771,8 +937,7 @@ def xdgInstall():
     # ================
 
     exCode = subprocess.call([
-        "xdg-mime", "install",
-        "./setup/mime/x-novelwriter-project.xml"
+        "xdg-mime", "install", "setup/data/x-novelwriter-project.xml"
     ])
     if exCode == 0:
         print("Installed mimetype")
@@ -782,16 +947,15 @@ def xdgInstall():
     # Install Icons
     # =============
 
-    sizeArr = ["16", "22", "24", "32", "48", "64", "96", "128", "256", "512"]
+    iconRoot = "setup/data/hicolor"
+    sizeArr = ["16", "24", "32", "48", "64", "128", "256"]
 
     # App Icon
     for aSize in sizeArr:
         exCode = subprocess.call([
-            "xdg-icon-resource", "install",
-            "--novendor", "--noupdate",
-            "--context", "apps",
-            "--size", aSize,
-            f"./setup/icons/scaled/icon-novelwriter-{aSize}.png",
+            "xdg-icon-resource", "install", "--novendor", "--noupdate",
+            "--context", "apps", "--size", aSize,
+            f"{iconRoot}/{aSize}x{aSize}/apps/novelwriter.png",
             "novelwriter"
         ])
         if exCode == 0:
@@ -802,11 +966,9 @@ def xdgInstall():
     # Mimetype
     for aSize in sizeArr:
         exCode = subprocess.call([
-            "xdg-icon-resource", "install",
-            "--noupdate",
-            "--context", "mimetypes",
-            "--size", aSize,
-            f"./setup/icons/scaled/mime-novelwriter-{aSize}.png",
+            "xdg-icon-resource", "install", "--noupdate",
+            "--context", "mimetypes", "--size", aSize,
+            f"{iconRoot}/{aSize}x{aSize}/mimetypes/application-x-novelwriter-project.png",
             "application-x-novelwriter-project"
         ])
         if exCode == 0:
@@ -863,6 +1025,7 @@ def xdgUninstall():
     else:
         print(f"Error {exCode}: Could not uninstall desktop launcher file")
 
+    # Also include no longer used sizes
     sizeArr = ["16", "22", "24", "32", "48", "64", "96", "128", "256", "512"]
 
     # App Icons
@@ -925,7 +1088,7 @@ def winInstall():
     print("===============")
     print("")
 
-    numVers, hexVers = extractVersion()
+    numVers, hexVers, _ = extractVersion()
     nwTesting = not hexVers[-2] == "f"
     wShell = win32com.client.Dispatch("WScript.Shell")
 
@@ -1051,7 +1214,7 @@ def winUninstall():
     print("=================")
     print("")
 
-    numVers, hexVers = extractVersion()
+    numVers, hexVers, _ = extractVersion()
     nwTesting = not hexVers[-2] == "f"
     wShell = win32com.client.Dispatch("WScript.Shell")
 
@@ -1137,7 +1300,7 @@ def innoSetup():
     with open(os.path.join("setup", "win_setup_pyz.iss"), mode="r") as inFile:
         issData = inFile.read()
 
-    numVers, _ = extractVersion()
+    numVers, _, _ = extractVersion()
     issData = issData.replace(r"%%version%%", numVers)
     issData = issData.replace(r"%%dir%%", os.getcwd())
 
@@ -1219,11 +1382,12 @@ if __name__ == "__main__":
         "                   all the other source files. Defaults to tailor the zip file",
         "                   for the current OS, but accepts a target OS flag to build",
         "                   for another OS.",
-        "    pack-pyz       Creates a .pyz package in a folder with all dependencies",
+        "    build-deb      Buiild a .deb package for Debian and Ubuntu.",
+        "    build-pyz      Buiild a .pyz package in a folder with all dependencies",
         "                   using the zipapp tool. On Windows, python embeddable is",
         "                   added to the folder.",
         "    setup-pyz      Build a Windows executable installer from a zipapp package",
-        "                   using Inno Setup. Must run 'pack-pyz' first.",
+        "                   using Inno Setup. Must run 'build-pyz' first.",
         "",
         "System Install:",
         "",
@@ -1258,7 +1422,7 @@ if __name__ == "__main__":
 
     if "version" in sys.argv:
         sys.argv.remove("version")
-        numVers, hexVers = extractVersion()
+        numVers, hexVers, _ = extractVersion()
         print("Semantic Version: %s" % numVers)
         print("Hexadecimal Version: %s" % hexVers)
         sys.exit(0)
@@ -1301,8 +1465,16 @@ if __name__ == "__main__":
         sys.argv.remove("minimal-zip")
         makeMinimalPackage(targetOS)
 
-    if "pack-pyz" in sys.argv:
-        sys.argv.remove("pack-pyz")
+    if "build-deb" in sys.argv:
+        sys.argv.remove("build-deb")
+        if hostOS == OS_LINUX:
+            makeDebianPackage()
+        else:
+            print("ERROR: Command 'build-deb' can only be used on Linux")
+            sys.exit(1)
+
+    if "build-pyz" in sys.argv:
+        sys.argv.remove("build-pyz")
         simplePack = True
         if hostOS == OS_WIN:
             embedPython = True

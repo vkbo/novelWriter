@@ -1,0 +1,16 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: novelWriter
+Upstream-Contact: Veronica Berglyd Olsen <code@vkbo.net>
+Source: https://github.com/vkbo/novelWriter
+
+Files: novelwriter/assets/fonts/Cantarell/*
+Copyright: 2009-2010, Understanding Limited
+License: OFL-1.1
+
+Files: novelwriter/assets/icons/typicons_*.svg
+Copyright: 2019, Stephen Hutchings
+License: CC-BY-SA-4.0
+
+Files: novelwriter/*
+Copyright: 2018-2021, Veronica Berglyd Olsen
+License: GPL-3.0-or-later
