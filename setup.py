@@ -92,10 +92,10 @@ def createLauncher(execName, writePath):
     """Generate a novelwriter.desktop file with a given exec name.
     """
     desktopData = ""
-    with open(os.path.join("setup", "novelwriter.desktop"), mode="r") as inFile:
+    with open(os.path.join("setup", "data", "novelwriter.desktop"), mode="r") as inFile:
         desktopData = inFile.read()
 
-    desktopData = desktopData.replace("%%exec%%", execName)
+    desktopData = desktopData.replace("Exec=novelwriter", f"Exec={execName}")
     with open(os.path.join(writePath, "novelwriter.desktop"), mode="w+") as outFile:
         outFile.write(desktopData)
 
@@ -926,7 +926,7 @@ def xdgInstall():
 
     # Install application launcher
     exCode = subprocess.call(
-        ["xdg-desktop-menu", "install", "--novendor", "./novelwriter.desktop"]
+        ["xdg-desktop-menu", "install", "--novendor", "novelwriter.desktop"]
     )
     if exCode == 0:
         print("Installed menu launcher file")
@@ -937,8 +937,7 @@ def xdgInstall():
     # ================
 
     exCode = subprocess.call([
-        "xdg-mime", "install",
-        "./setup/mime/x-novelwriter-project.xml"
+        "xdg-mime", "install", "setup/data/x-novelwriter-project.xml"
     ])
     if exCode == 0:
         print("Installed mimetype")
@@ -948,16 +947,15 @@ def xdgInstall():
     # Install Icons
     # =============
 
+    iconRoot = "setup/data/hicolor"
     sizeArr = ["16", "24", "32", "48", "64", "128", "256"]
 
     # App Icon
     for aSize in sizeArr:
         exCode = subprocess.call([
-            "xdg-icon-resource", "install",
-            "--novendor", "--noupdate",
-            "--context", "apps",
-            "--size", aSize,
-            f"./setup/icons/scaled/icon-novelwriter-{aSize}.png",
+            "xdg-icon-resource", "install", "--novendor", "--noupdate",
+            "--context", "apps", "--size", aSize,
+            f"{iconRoot}/{aSize}x{aSize}/apps/novelwriter.png",
             "novelwriter"
         ])
         if exCode == 0:
@@ -968,11 +966,9 @@ def xdgInstall():
     # Mimetype
     for aSize in sizeArr:
         exCode = subprocess.call([
-            "xdg-icon-resource", "install",
-            "--noupdate",
-            "--context", "mimetypes",
-            "--size", aSize,
-            f"./setup/icons/scaled/mime-novelwriter-{aSize}.png",
+            "xdg-icon-resource", "install", "--noupdate",
+            "--context", "mimetypes", "--size", aSize,
+            f"{iconRoot}/{aSize}x{aSize}/mimetypes/application-x-novelwriter-project.png",
             "application-x-novelwriter-project"
         ])
         if exCode == 0:
@@ -1029,6 +1025,7 @@ def xdgUninstall():
     else:
         print(f"Error {exCode}: Could not uninstall desktop launcher file")
 
+    # Also include no longer used sizes
     sizeArr = ["16", "22", "24", "32", "48", "64", "96", "128", "256", "512"]
 
     # App Icons
