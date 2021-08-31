@@ -559,6 +559,7 @@ def makeDebianPackage():
     pkgDir = f"novelWriter-{pkgVers}"
     outDir = f"{bldDir}/{pkgDir}"
     debDir = f"{outDir}/debian"
+    datDir = f"{outDir}/data"
 
     if not os.path.isdir(bldDir):
         os.mkdir(bldDir)
@@ -640,10 +641,14 @@ def makeDebianPackage():
         )
         print("Wrote:  setup.py")
 
-    # Debian Folder
+    # Cop Debian and Data Folder
 
     shutil.copytree("setup/debian", debDir)
     print("Copied: debian/*")
+    shutil.copytree("setup/data", datDir)
+    print("Copied: data/*")
+
+    # Generate debian/changelog File
 
     with open(f"{debDir}/changelog", mode="w") as outFile:
         outFile.write(
@@ -653,79 +658,7 @@ def makeDebianPackage():
         )
         print("Wrote:  debian/changelog")
 
-    # Data Files
-
-    installData = []
-    dataDir = f"{outDir}/data"
-    os.makedirs(dataDir, exist_ok=True)
-
-    # Launcher
-
-    createLauncher("novelwriter", dataDir)
-    dstFile = "data/novelwriter.desktop"
-    installData.append((dstFile, "usr/share/applications"))
-    print("Copied: %s" % dstFile)
-
-    # Scaled and Scalable Icons
-
-    sizeArr = ["16", "24", "32", "48", "64", "128", "256"]
-    for aSize in sizeArr:
-        appsDir = f"data/hicolor/{aSize}x{aSize}/apps"
-        mimeDir = f"data/hicolor/{aSize}x{aSize}/mimetypes"
-
-        os.makedirs(f"{outDir}/{appsDir}", exist_ok=True)
-        os.makedirs(f"{outDir}/{mimeDir}", exist_ok=True)
-
-        srcFile = f"setup/icons/scaled/icon-novelwriter-{aSize}.png"
-        dstFile = f"{appsDir}/novelwriter.png"
-        shutil.copyfile(srcFile, f"{outDir}/{dstFile}")
-        print("Copied: %s" % dstFile)
-
-        srcFile = f"setup/icons/scaled/mime-novelwriter-{aSize}.png"
-        dstFile = f"{mimeDir}/application-x-novelwriter-project.png"
-        shutil.copyfile(srcFile, f"{outDir}/{dstFile}")
-        print("Copied: %s" % dstFile)
-
-    appsDir = "data/hicolor/scalable/apps"
-    mimeDir = "data/hicolor/scalable/mimetypes"
-
-    os.makedirs(f"{outDir}/{appsDir}", exist_ok=True)
-    os.makedirs(f"{outDir}/{mimeDir}", exist_ok=True)
-
-    srcFile = "setup/icons/novelwriter.svg"
-    dstFile = f"{appsDir}/novelwriter.svg"
-    shutil.copyfile(srcFile, f"{outDir}/{dstFile}")
-    print("Copied: %s" % dstFile)
-
-    srcFile = "setup/icons/x-novelwriter-project.svg"
-    dstFile = f"{mimeDir}/x-novelwriter-project.svg"
-    shutil.copyfile(srcFile, f"{outDir}/{dstFile}")
-    print("Copied: %s" % dstFile)
-
-    installData.append(("data/hicolor", "usr/share/icons"))
-
-    # Pixmap Icon
-
-    srcFile = "setup/icons/scaled/icon-novelwriter-48.png"
-    dstFile = "data/novelwriter.png"
-    shutil.copyfile(srcFile, f"{outDir}/{dstFile}")
-    print("Copied: %s" % dstFile)
-    installData.append((dstFile, "usr/share/pixmaps"))
-
-    # Mime Type
-
-    srcFile = "setup/mime/x-novelwriter-project.xml"
-    dstFile = "data/x-novelwriter-project.xml"
-    shutil.copyfile(srcFile, f"{outDir}/{dstFile}")
-    print("Copied: %s" % dstFile)
-    installData.append((dstFile, "usr/share/mime/packages"))
-
-    # Create Install File
-
-    with open(f"{debDir}/install", mode="w") as outFile:
-        for srcFile, dstFile in installData:
-            outFile.write(f"{srcFile} {dstFile}\n")
-        print("Wrote:  debian/install")
+    # Build Package
 
     print("")
     print("Running dpkg-buildpackage ...")

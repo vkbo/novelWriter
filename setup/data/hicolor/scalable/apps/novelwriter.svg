@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 270.93333 270.93334"
+   height="1024"
+   width="1024">
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient1470">
+      <stop
+         style="stop-color:#7a9cb8;stop-opacity:1"
+         offset="0"
+         id="stop1466" />
+      <stop
+         style="stop-color:#5978a6;stop-opacity:1"
+         offset="1"
+         id="stop1468" />
+    </linearGradient>
+    <rect
+       x="60.484347"
+       y="205.79962"
+       width="130.57787"
+       height="65.785888"
+       id="rect852" />
+    <rect
+       id="rect1474"
+       height="28.631245"
+       width="177.70083"
+       y="18.019813"
+       x="13.463703" />
+    <rect
+       id="rect852-7"
+       height="65.785889"
+       width="130.57787"
+       y="205.79962"
+       x="60.484348" />
+    <rect
+       id="rect1544"
+       height="65.785889"
+       width="130.57787"
+       y="205.79962"
+       x="60.484348" />
+    <rect
+       x="60.484348"
+       y="205.79962"
+       width="130.57787"
+       height="65.785889"
+       id="rect1570" />
+    <rect
+       x="13.463703"
+       y="18.019813"
+       width="177.70083"
+       height="28.631245"
+       id="rect1587" />
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       id="filter1444">
+      <feFlood
+         flood-opacity="0.498039"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood1434" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite1436" />
+      <feGaussianBlur
+         in="composite1"
+         stdDeviation="3"
+         result="blur"
+         id="feGaussianBlur1438" />
+      <feOffset
+         dx="6"
+         dy="6"
+         result="offset"
+         id="feOffset1440" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite1442" />
+    </filter>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       id="filter1456">
+      <feFlood
+         flood-opacity="0.498039"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood1446" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite1448" />
+      <feGaussianBlur
+         in="composite1"
+         stdDeviation="3"
+         result="blur"
+         id="feGaussianBlur1450" />
+      <feOffset
+         dx="6"
+         dy="6"
+         result="offset"
+         id="feOffset1452" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite1454" />
+    </filter>
+    <radialGradient
+       xlink:href="#linearGradient1470"
+       id="radialGradient1474"
+       cx="111.19364"
+       cy="67.111206"
+       fx="111.19364"
+       fy="67.111206"
+       r="130.96873"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.2584252,1.5089457,-0.74487144,1.1148423,-169.6027,-163.93817)" />
+  </defs>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     style="display:inline"
+     id="layer1">
+    <rect
+       ry="21.166666"
+       rx="21.166666"
+       y="5.8208332"
+       x="5.8208332"
+       height="259.29166"
+       width="259.29166"
+       id="rect1467"
+       style="display:inline;fill:url(#radialGradient1474);fill-opacity:1;stroke:#517995;stroke-width:2.64583;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+  <g
+     id="layer2"
+     style="display:inline">
+    <path
+       id="rect1406"
+       style="fill:#a11212;fill-opacity:1;stroke:#7e1b1b;stroke-width:9.99999;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter1444)"
+       d="m 312,200 c -44.32,0 -80,35.68 -80,80 v 199.99805 a 279.99999,279.99999 0 0 0 0,0.002 279.99999,279.99999 0 0 0 0,0.0195 v 199.98242 c 0,44.31999 35.68,80 80,80 44.32,0 80,-35.68001 80,-80 v -200 a 120,120 0 0 1 120,-120 120,120 0 0 1 120,120 V 762.83789 H 792 V 480.00195 a 279.99999,279.99999 0 0 0 -280,-280 279.99999,279.99999 0 0 0 -0.81055,0 279.99999,279.99999 0 0 0 -133.46484,34.29688 C 363.30011,213.54621 339.29632,200 312,200 Z m 231.46094,563.22656 c -0.62174,0.0972 -1.2172,0.22317 -1.7793,0.37696 0.5621,-0.15379 1.15756,-0.27973 1.7793,-0.37696 z m -1.7793,0.37696 c -0.5621,0.15378 -1.09071,0.33534 -1.58008,0.53906 0.48937,-0.20372 1.01798,-0.38528 1.58008,-0.53906 z m 338.85742,-0.37696 c 0.62174,0.0972 1.2172,0.22317 1.7793,0.37696 -0.5621,-0.15379 -1.15756,-0.27973 -1.7793,-0.37696 z m 1.7793,0.37696 c 0.5621,0.15378 1.09071,0.33534 1.58008,0.53906 -0.48938,-0.20372 -1.01798,-0.38528 -1.58008,-0.53906 z"
+       transform="scale(0.26458333)" />
+    <path
+       id="path897"
+       style="display:inline;fill:#730d0d;fill-opacity:1;stroke:#590d0d;stroke-width:9.99999;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter1456)"
+       d="m 632,762.83789 v 0.16406 h -85.58398 c -5.49302,0 -9.91602,2.2329 -9.91602,5.00586 0,0.52294 0.15913,1.02696 0.45117,1.5 h -0.44531 c 0.30916,2.03607 1.24102,3.99791 2.81641,5.57227 l 165.59961,165.49414 c 3.92061,3.91808 10.23371,3.91812 14.15429,0 L 884.67773,775.08008 c 1.57569,-1.57463 2.50725,-3.53578 2.81641,-5.57227 h -0.44531 c 0.29216,-0.47304 0.45117,-0.97706 0.45117,-1.5 0,-2.77296 -4.42304,-5.00586 -9.91602,-5.00586 H 792 v -0.16406 z"
+       transform="scale(0.26458333)" />
+    <rect
+       style="fill:#c32222;fill-opacity:1;stroke:none;stroke-width:2.64583;stroke-linejoin:round;stroke-opacity:1"
+       id="rect914"
+       width="10.583333"
+       height="119.0625"
+       x="69.849998"
+       y="67.997917"
+       rx="5.2916665"
+       ry="5.2916665" />
+  </g>
+</svg>
