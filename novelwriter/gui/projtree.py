@@ -86,8 +86,7 @@ class GuiProjectTree(QTreeWidget):
         self.setIndentation(iPx)
         self.setColumnCount(4)
         self.setHeaderLabels([
-            self.tr("Project Tree"), self.tr("Words"), "",
-            self.tr("Status") if self.mainConf.fullStatus else ""
+            self.tr("Project Tree"), self.tr("Words"), "", ""
         ])
 
         treeHeadItem = self.headerItem()
@@ -630,11 +629,7 @@ class GuiProjectTree(QTreeWidget):
         trItem.setText(self.C_NAME, nwItem.itemName)
         trItem.setIcon(self.C_EXPORT, expIcon)
         trItem.setIcon(self.C_STATUS, statIcon)
-
-        if self.mainConf.fullStatus:
-            trItem.setText(self.C_STATUS, nwItem.itemStatus)
-        else:
-            trItem.setToolTip(self.C_STATUS, nwItem.itemStatus)
+        trItem.setToolTip(self.C_STATUS, nwItem.itemStatus)
 
         if self.mainConf.emphLabels and nwItem.itemLayout == nwItemLayout.DOCUMENT:
             if hLevel in ("H1", "H2"):
@@ -701,11 +696,6 @@ class GuiProjectTree(QTreeWidget):
         """
         logger.debug("Building the project tree ...")
         self.clearTree()
-
-        self.setHeaderLabels([
-            self.tr("Project Tree"), self.tr("Words"), "",
-            self.tr("Status") if self.mainConf.fullStatus else ""
-        ])
 
         iCount = 0
         for nwItem in self.theProject.getProjectItems():

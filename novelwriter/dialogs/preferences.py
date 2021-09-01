@@ -244,14 +244,6 @@ class GuiPreferencesGeneral(QWidget):
         # ============
         self.mainForm.addGroupLabel(self.tr("GUI Settings"))
 
-        self.fullStatus = QSwitch()
-        self.fullStatus.setChecked(self.mainConf.fullStatus)
-        self.mainForm.addRow(
-            self.tr("Show status text in project tree"),
-            self.fullStatus,
-            self.tr("If disabled, only the icon is shown."),
-        )
-
         self.emphLabels = QSwitch()
         self.emphLabels.setChecked(self.mainConf.emphLabels)
         self.mainForm.addRow(
@@ -295,7 +287,6 @@ class GuiPreferencesGeneral(QWidget):
         guiDark     = self.guiDark.isChecked()
         guiFont     = self.guiFont.text()
         guiFontSize = self.guiFontSize.value()
-        fullStatus  = self.fullStatus.isChecked()
         emphLabels  = self.emphLabels.isChecked()
 
         # Check if restart is needed
@@ -309,7 +300,6 @@ class GuiPreferencesGeneral(QWidget):
 
         # Check if refreshing project tree is needed
         refreshTree = False
-        refreshTree |= self.mainConf.fullStatus != fullStatus
         refreshTree |= self.mainConf.emphLabels != emphLabels
 
         self.mainConf.guiLang      = guiLang
@@ -318,7 +308,6 @@ class GuiPreferencesGeneral(QWidget):
         self.mainConf.guiDark      = guiDark
         self.mainConf.guiFont      = guiFont
         self.mainConf.guiFontSize  = guiFontSize
-        self.mainConf.fullStatus   = fullStatus
         self.mainConf.emphLabels   = emphLabels
         self.mainConf.showFullPath = self.showFullPath.isChecked()
         self.mainConf.hideVScroll  = self.hideVScroll.isChecked()
