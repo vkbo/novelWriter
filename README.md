@@ -10,7 +10,7 @@
 [![pypi](https://img.shields.io/pypi/v/novelwriter)](https://pypi.org/project/novelWriter)
 [![python](https://img.shields.io/pypi/pyversions/novelwriter)](https://pypi.org/project/novelWriter)
 
-<img align="left" style="margin: 0 16px 4px 0;" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/icons/scaled/icon-novelwriter-96.png">
+<img align="left" style="margin: 0 16px 4px 0;" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/novelwriter.png">
 
 novelWriter is a plain text editor designed for writing novels assembled from many smaller text
 documents. It uses a minimal formatting syntax inspired by Markdown, and adds a meta data syntax
