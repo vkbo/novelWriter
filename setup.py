@@ -148,30 +148,22 @@ def cleanInstall():
     """
     print("")
     print("Cleaning up build environment ...")
+    print("")
 
-    buildDir = os.path.join(os.getcwd(), "build")
-    if os.path.isdir(buildDir):
-        try:
-            shutil.rmtree(buildDir)
-            print("Deleted folder 'build'")
-        except Exception as e:
-            print("Error: Cannot delete 'build' folder.")
-            print(str(e))
-            sys.exit(1)
-    else:
-        print("Folder 'build' not found")
+    def removeFolder(rmDir):
+        if os.path.isdir(rmDir):
+            try:
+                shutil.rmtree(rmDir)
+                print("Deleted: %s" % rmDir)
+            except OSError:
+                pass
+        else:
+            print("Missing: %s" % rmDir)
 
-    distDir = os.path.join(os.getcwd(), "dist")
-    if os.path.isdir(distDir):
-        try:
-            shutil.rmtree(distDir)
-            print("Deleted folder 'dist'")
-        except Exception as e:
-            print("Error: Cannot delete 'dist' folder.")
-            print(str(e))
-            sys.exit(1)
-    else:
-        print("Folder 'dist' not found")
+    removeFolder("build")
+    removeFolder("dist")
+    removeFolder("dist_deb")
+    removeFolder("novelWriter.egg-info")
 
     print("")
 
