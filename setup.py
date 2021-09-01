@@ -379,16 +379,11 @@ def makeMinimalPackage(targetOS):
         "CHANGELOG.md",
         "requirements.txt",
         "setup.py",
+        "setup.cfg",
+        "pyproject.toml",
     ]
 
     with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=9) as zipObj:
-
-        if targetOS != OS_WIN:
-            # Not needed for Windows as the icons are in novelwriter/assets/icons
-            for nRoot, _, nFiles in os.walk("setup"):
-                print("Adding Folder: %s [%d files]" % (nRoot, len(nFiles)))
-                for aFile in nFiles:
-                    zipObj.write(os.path.join(nRoot, aFile))
 
         for nRoot, _, nFiles in os.walk("novelwriter"):
             if nRoot.endswith("__pycache__"):
@@ -409,7 +404,17 @@ def makeMinimalPackage(targetOS):
             print("Adding File: windows_install.bat")
             zipObj.write(os.path.join("setup", "windows_uninstall.bat"), "windows_uninstall.bat")
             print("Adding File: windows_uninstall.bat")
-        else:
+
+        else:  # Linux and Mac
+            # Add icons
+            for nRoot, _, nFiles in os.walk(os.path.join("setup", "data")):
+                print("Adding Folder: %s [%d files]" % (nRoot, len(nFiles)))
+                for aFile in nFiles:
+                    zipObj.write(os.path.join(nRoot, aFile))
+
+            zipObj.write(os.path.join("setup", "description_pypi.md"))
+            print("Adding File: setup/description_pypi.md")
+
             zipObj.write("novelWriter.py")
             print("Adding File: novelWriter.py")
 
@@ -519,7 +524,8 @@ def makeDebianPackage():
     print("Copying or generating additional files ...")
     print("")
 
-    # Root Files
+    # Copy/Write Root Files
+    # =====================
 
     copyFiles = ["CREDITS.md", "CHANGELOG.md", "LICENSE.md", "pyproject.toml"]
     for copyFile in copyFiles:
@@ -547,7 +553,8 @@ def makeDebianPackage():
     writeFile(f"{outDir}/setup.cfg", setupCfg)
     print("Wrote:  setup.cfg")
 
-    # Debian Files
+    # Copy/Write Debian Files
+    # =======================
 
     shutil.copytree("setup/debian", debDir)
     print("Copied: debian/*")
@@ -559,7 +566,8 @@ def makeDebianPackage():
     ))
     print("Wrote:  debian/changelog")
 
-    # Data Files
+    # Copy/Write Data Files
+    # =====================
 
     shutil.copytree("setup/data", datDir)
     print("Copied: data/*")
@@ -568,6 +576,7 @@ def makeDebianPackage():
     print("Copied: data/description_short.txt")
 
     # Build Package
+    # =============
 
     print("")
     print("Running dpkg-buildpackage ...")
