@@ -163,6 +163,7 @@ def cleanInstall():
     removeFolder("build")
     removeFolder("dist")
     removeFolder("dist_deb")
+    removeFolder("dist_minimal")
     removeFolder("novelWriter.egg-info")
 
     print("")
@@ -175,81 +176,7 @@ def cleanInstall():
 # =============================================================================================== #
 
 ##
-#  Qt Assistant Documentation Builder (qthelp)
-##
-
-def buildQtDocs():
-    """This function will build the documentation as a Qt help file. The
-    file is then copied into the novelwriter/assets/help directory and
-    can be included in builds.
-    """
-    buildDir = os.path.join("docs", "build", "qthelp")
-    helpDir  = os.path.join("novelwriter", "assets", "help")
-
-    inFile  = "novelWriter.qhcp"
-    outFile = "novelWriter.qhc"
-    datFile = "novelWriter.qch"
-
-    print("")
-    print("Building Documentation")
-    print("======================")
-    print("")
-
-    buildFail = False
-    try:
-        subprocess.call(["make", "-C", "docs", "qthelp"])
-    except Exception as e:
-        print("QtHelp Build Error:")
-        print(str(e))
-        buildFail = True
-
-    try:
-        subprocess.call(["qhelpgenerator", os.path.join(buildDir, inFile)])
-    except Exception as e:
-        print("QtHelp Build Error:")
-        print(str(e))
-        buildFail = True
-
-    if not os.path.isdir(helpDir):
-        try:
-            os.mkdir(helpDir)
-        except Exception as e:
-            print("QtHelp Build Error:")
-            print(str(e))
-            buildFail = True
-
-    try:
-        if os.path.isfile(os.path.join(helpDir, outFile)):
-            os.unlink(os.path.join(helpDir, outFile))
-        if os.path.isfile(os.path.join(helpDir, datFile)):
-            os.unlink(os.path.join(helpDir, datFile))
-        os.rename(os.path.join(buildDir, outFile), os.path.join(helpDir, outFile))
-        os.rename(os.path.join(buildDir, datFile), os.path.join(helpDir, datFile))
-    except Exception as e:
-        print("QtHelp Build Error:")
-        print(str(e))
-        buildFail = True
-
-    print("")
-    if buildFail:
-        print("Documentation build: FAILED")
-        print("")
-        print("Dependencies:")
-        print(" * pip install sphinx")
-        print(" * pip install sphinx-rtd-theme")
-        print(" * pip install sphinxcontrib-qthelp")
-        print("")
-        print("It also requires the qhelpgenerator to be available on the system.")
-        sys.exit(1)
-    else:
-        print("Documentation build: OK")
-    print("")
-
-    return
-
-
-##
-#  Html or PDF Documentation Builder (docs, docs_pdf)
+#  Build PDF Manual (manual)
 ##
 
 def buildPdfManual():
@@ -408,39 +335,13 @@ def makeMinimalPackage(targetOS):
     """
     from zipfile import ZipFile, ZIP_DEFLATED
 
-    # Get the version
-    numVers, _, _ = extractVersion()
-
-    # Make sample.zip first
-    try:
-        buildSampleZip()
-    except Exception as e:
-        print("Failed with error:")
-        print(str(e))
-        sys.exit(1)
-
-    # Build docs
-    try:
-        buildPdfManual()
-    except Exception as e:
-        print("Failed with error:")
-        print(str(e))
-        sys.exit(1)
-
-    # Make translation files
-    try:
-        buildQtI18n()
-    except Exception as e:
-        print("Failed with error:")
-        print(str(e))
-        sys.exit(1)
-
     print("")
     print("Building Minimal ZIP File")
     print("=========================")
 
-    if not os.path.isdir("dist"):
-        os.mkdir("dist")
+    bldDir = "dist_minimal"
+    if not os.path.isdir(bldDir):
+        os.mkdir(bldDir)
 
     if targetOS == OS_LINUX:
         targName = "-linux"
@@ -455,15 +356,27 @@ def makeMinimalPackage(targetOS):
         targName = ""
     print("")
 
+    # Build Additional Assets
+    # =======================
+
+    buildQtI18n()
+    buildSampleZip()
+    buildPdfManual()
+
+    # Build Minimal Zip
+    # =================
+
+    numVers, _, _ = extractVersion()
     zipFile = f"novelWriter-{numVers}-minimal{targName}.zip"
-    outFile = os.path.join("dist", zipFile)
+    outFile = os.path.join(bldDir, zipFile)
     if os.path.isfile(outFile):
         os.unlink(outFile)
 
     rootFiles = [
-        "CHANGELOG.md",
-        "LICENSE.md",
         "README.md",
+        "LICENSE.md",
+        "CREDITS.md",
+        "CHANGELOG.md",
         "requirements.txt",
         "setup.py",
     ]
@@ -510,9 +423,12 @@ def makeMinimalPackage(targetOS):
     print("")
     print("Created File: %s" % outFile)
 
+    # Create Checksum File
+    # ====================
+
     try:
         shaFile = open(outFile+".sha256", mode="w")
-        subprocess.call(["sha256sum", zipFile], stdout=shaFile, cwd="dist")
+        subprocess.call(["sha256sum", zipFile], stdout=shaFile, cwd=bldDir)
         shaFile.close()
         print("SHA256 Sum:   %s" % (outFile+".sha256"))
     except Exception as e:
@@ -721,15 +637,12 @@ def makeSimplePackage(embedPython):
         print("Done")
         print("")
 
-    # Make sample.zip
-    # ===============
+    # Build Additional Assets
+    # =======================
 
-    try:
-        buildSampleZip()
-    except Exception as e:
-        print("Failed with error:")
-        print(str(e))
-        sys.exit(1)
+    buildQtI18n()
+    buildSampleZip()
+    buildPdfManual()
 
     # Copy Package Files
     # ==================
@@ -739,7 +652,7 @@ def makeSimplePackage(embedPython):
     print("# =====================")
     print("")
 
-    copyList = ["CHANGELOG.md", "LICENSE.md", "requirements.txt"]
+    copyList = ["CREDITS.md", "CHANGELOG.md", "LICENSE.md", "requirements.txt"]
     iconList = ["novelwriter.ico", "x-novelwriter-project.ico"]
     cpIgnore = shutil.ignore_patterns("__pycache__")
 
@@ -1363,7 +1276,6 @@ if __name__ == "__main__":
         "Additional Builds:",
         "",
         "    manual         Build the help documentation as PDF (requires LaTeX).",
-        "    qthelp         Build the help documentation for use with the Qt Assistant.",
         "    qtlupdate      Update the translation files for internationalisation.",
         "    qtlrelease     Build the language files for internationalisation.",
         "    sample         Build the sample project zip file and add it to assets.",
@@ -1414,9 +1326,8 @@ if __name__ == "__main__":
 
     if "version" in sys.argv:
         sys.argv.remove("version")
-        numVers, hexVers, _ = extractVersion()
-        print("Semantic Version: %s" % numVers)
-        print("Hexadecimal Version: %s" % hexVers)
+        print("Checking source version info ...")
+        extractVersion()
         sys.exit(0)
 
     if "pip" in sys.argv:
@@ -1433,10 +1344,6 @@ if __name__ == "__main__":
     if "manual" in sys.argv:
         sys.argv.remove("manual")
         buildPdfManual()
-
-    if "qthelp" in sys.argv:
-        sys.argv.remove("qthelp")
-        buildQtDocs()
 
     if "qtlrelease" in sys.argv:
         sys.argv.remove("qtlrelease")
