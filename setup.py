@@ -88,18 +88,18 @@ def sysCall(callArgs):
     return stdOut.decode("utf-8"), stdErr.decode("utf-8"), sysP.returncode
 
 
-def createLauncher(execName, writePath):
-    """Generate a novelwriter.desktop file with a given exec name.
+def readFile(fileName):
+    """Read an entire file return as a string.
     """
-    desktopData = ""
-    with open(os.path.join("setup", "data", "novelwriter.desktop"), mode="r") as inFile:
-        desktopData = inFile.read()
+    with open(fileName, mode="r") as inFile:
+        return inFile.read()
 
-    desktopData = desktopData.replace("Exec=novelwriter", f"Exec={execName}")
-    with open(os.path.join(writePath, "novelwriter.desktop"), mode="w+") as outFile:
-        outFile.write(desktopData)
 
-    return
+def writeFile(fileName, writeText):
+    """Write string to file
+    """
+    with open(fileName, mode="w+") as outFile:
+        outFile.write(writeText)
 
 
 # =============================================================================================== #
@@ -521,50 +521,51 @@ def makeDebianPackage():
 
     # Root Files
 
-    copyFiles = [
-        "setup.cfg",
-        "pyproject.toml",
-        "LICENSE.md",
-        "CREDITS.md",
-        "CHANGELOG.md",
-    ]
+    copyFiles = ["CREDITS.md", "CHANGELOG.md", "LICENSE.md", "pyproject.toml"]
     for copyFile in copyFiles:
         shutil.copyfile(copyFile, f"{outDir}/{copyFile}")
         print("Copied: %s" % copyFile)
 
-    with open(f"{outDir}/MANIFEST.in", mode="w") as outFile:
-        outFile.write(
-            "include LICENSE.md\n"
-            "include CREDITS.md\n"
-            "include CHANGELOG.md\n"
-            "include data/*\n"
-            "recursive-include novelwriter/assets *\n"
-        )
-        print("Wrote:  MANIFEST.in")
+    writeFile(f"{outDir}/MANIFEST.in", (
+        "include LICENSE.md\n"
+        "include CREDITS.md\n"
+        "include CHANGELOG.md\n"
+        "include data/*\n"
+        "recursive-include novelwriter/assets *\n"
+    ))
+    print("Wrote:  MANIFEST.in")
 
-    with open(f"{outDir}/setup.py", mode="w") as outFile:
-        outFile.write(
-            "import setuptools\n"
-            "setuptools.setup()\n"
-        )
-        print("Wrote:  setup.py")
+    writeFile(f"{outDir}/setup.py", (
+        "import setuptools\n"
+        "setuptools.setup()\n"
+    ))
+    print("Wrote:  setup.py")
 
-    # Copy Debian and Data Folders
+    setupCfg = readFile("setup.cfg").replace(
+        "file: setup/description_pypi.md", "file: data/description_short.txt"
+    )
+    writeFile(f"{outDir}/setup.cfg", setupCfg)
+    print("Wrote:  setup.cfg")
+
+    # Debian Files
 
     shutil.copytree("setup/debian", debDir)
     print("Copied: debian/*")
+
+    writeFile(f"{debDir}/changelog", (
+        f"novelwriter ({pkgVers}) unstable; urgency=medium\n\n"
+        f"  * Update to version {pkgVers}\n\n"
+        f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
+    ))
+    print("Wrote:  debian/changelog")
+
+    # Data Files
+
     shutil.copytree("setup/data", datDir)
     print("Copied: data/*")
 
-    # Generate debian/changelog File
-
-    with open(f"{debDir}/changelog", mode="w") as outFile:
-        outFile.write(
-            f"novelwriter ({pkgVers}) unstable; urgency=medium\n\n"
-            f"  * Update to version {pkgVers}\n\n"
-            f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
-        )
-        print("Wrote:  debian/changelog")
+    shutil.copyfile("setup/description_short.txt", f"{outDir}/data/description_short.txt")
+    print("Copied: data/description_short.txt")
 
     # Build Package
 
@@ -670,22 +671,21 @@ def makeSimplePackage(embedPython):
     os.rename(os.path.join(zipDir, "novelwriter", "assets"), os.path.join(outDir, "assets"))
 
     print("Writing: __main__.py")
-    with open(os.path.join(zipDir, "__main__.py"), mode="w") as outFile:
-        outFile.write(
-            "#!/usr/bin/env python3\n"
-            "\n"
-            "import os\n"
-            "import sys\n"
-            "\n"
-            "sys.path.insert(\n"
-            "    0, os.path.abspath(\n"
-            "        os.path.join(os.path.dirname(__file__), os.path.pardir, \"lib\")\n"
-            "    )\n"
-            ")\n\n"
-            "if __name__ == \"__main__\":\n"
-            "    import novelwriter\n"
-            "    novelwriter.main()\n"
-        )
+    writeFile(os.path.join(zipDir, "__main__.py"), (
+        "#!/usr/bin/env python3\n"
+        "\n"
+        "import os\n"
+        "import sys\n"
+        "\n"
+        "sys.path.insert(\n"
+        "    0, os.path.abspath(\n"
+        "        os.path.join(os.path.dirname(__file__), os.path.pardir, \"lib\")\n"
+        "    )\n"
+        ")\n\n"
+        "if __name__ == \"__main__\":\n"
+        "    import novelwriter\n"
+        "    novelwriter.main()\n"
+    ))
     print("")
 
     pyzFile = os.path.join(outDir, "novelWriter.pyz")
@@ -822,7 +822,9 @@ def xdgInstall():
     # ===========================
 
     # Generate launcher
-    createLauncher(useExec, ".")
+    desktopData = readFile(os.path.join("setup", "data", "novelwriter.desktop"))
+    desktopData = desktopData.replace("Exec=novelwriter", f"Exec={useExec}")
+    writeFile("novelwriter.desktop", desktopData)
 
     # Remove old desktop icon
     exCode = subprocess.call(
@@ -1189,7 +1191,7 @@ def winUninstall():
 # =============================================================================================== #
 
 ##
-#  Inno Setup Builder (setup-exe, setup-pyz)
+#  Inno Setup Builder (setup-pyz)
 ##
 
 def innoSetup():
@@ -1201,16 +1203,11 @@ def innoSetup():
     print("")
 
     # Read the iss template
-    issData = ""
-    with open(os.path.join("setup", "win_setup_pyz.iss"), mode="r") as inFile:
-        issData = inFile.read()
-
     numVers, _, _ = extractVersion()
+    issData = readFile(os.path.join("setup", "win_setup_pyz.iss"))
     issData = issData.replace(r"%%version%%", numVers)
     issData = issData.replace(r"%%dir%%", os.getcwd())
-
-    with open("setup.iss", mode="w+") as outFile:
-        outFile.write(issData)
+    writeFile("setup.iss", issData)
 
     try:
         subprocess.call(["iscc", "setup.iss"])

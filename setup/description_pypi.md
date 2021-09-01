@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/novelwriter.png">
+<img src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/novelwriter_text.png">
 
 novelWriter is a plain text editor designed for writing novels assembled from many smaller text
 documents. It uses a minimal formatting syntax inspired by Markdown, and adds a meta data syntax
