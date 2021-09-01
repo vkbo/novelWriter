@@ -3,7 +3,7 @@
 /build/
 /deploy/
 /dist/
-/dist_deb/
+/dist_*/
 *.spec
 *.egg-info
 setup.iss

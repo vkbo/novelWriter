@@ -88,18 +88,18 @@ def sysCall(callArgs):
     return stdOut.decode("utf-8"), stdErr.decode("utf-8"), sysP.returncode
 
 
-def createLauncher(execName, writePath):
-    """Generate a novelwriter.desktop file with a given exec name.
+def readFile(fileName):
+    """Read an entire file return as a string.
     """
-    desktopData = ""
-    with open(os.path.join("setup", "data", "novelwriter.desktop"), mode="r") as inFile:
-        desktopData = inFile.read()
+    with open(fileName, mode="r") as inFile:
+        return inFile.read()
 
-    desktopData = desktopData.replace("Exec=novelwriter", f"Exec={execName}")
-    with open(os.path.join(writePath, "novelwriter.desktop"), mode="w+") as outFile:
-        outFile.write(desktopData)
 
-    return
+def writeFile(fileName, writeText):
+    """Write string to file
+    """
+    with open(fileName, mode="w+") as outFile:
+        outFile.write(writeText)
 
 
 # =============================================================================================== #
@@ -148,30 +148,23 @@ def cleanInstall():
     """
     print("")
     print("Cleaning up build environment ...")
+    print("")
 
-    buildDir = os.path.join(os.getcwd(), "build")
-    if os.path.isdir(buildDir):
-        try:
-            shutil.rmtree(buildDir)
-            print("Deleted folder 'build'")
-        except Exception as e:
-            print("Error: Cannot delete 'build' folder.")
-            print(str(e))
-            sys.exit(1)
-    else:
-        print("Folder 'build' not found")
+    def removeFolder(rmDir):
+        if os.path.isdir(rmDir):
+            try:
+                shutil.rmtree(rmDir)
+                print("Deleted: %s" % rmDir)
+            except OSError:
+                pass
+        else:
+            print("Missing: %s" % rmDir)
 
-    distDir = os.path.join(os.getcwd(), "dist")
-    if os.path.isdir(distDir):
-        try:
-            shutil.rmtree(distDir)
-            print("Deleted folder 'dist'")
-        except Exception as e:
-            print("Error: Cannot delete 'dist' folder.")
-            print(str(e))
-            sys.exit(1)
-    else:
-        print("Folder 'dist' not found")
+    removeFolder("build")
+    removeFolder("dist")
+    removeFolder("dist_deb")
+    removeFolder("dist_minimal")
+    removeFolder("novelWriter.egg-info")
 
     print("")
 
@@ -183,81 +176,7 @@ def cleanInstall():
 # =============================================================================================== #
 
 ##
-#  Qt Assistant Documentation Builder (qthelp)
-##
-
-def buildQtDocs():
-    """This function will build the documentation as a Qt help file. The
-    file is then copied into the novelwriter/assets/help directory and
-    can be included in builds.
-    """
-    buildDir = os.path.join("docs", "build", "qthelp")
-    helpDir  = os.path.join("novelwriter", "assets", "help")
-
-    inFile  = "novelWriter.qhcp"
-    outFile = "novelWriter.qhc"
-    datFile = "novelWriter.qch"
-
-    print("")
-    print("Building Documentation")
-    print("======================")
-    print("")
-
-    buildFail = False
-    try:
-        subprocess.call(["make", "-C", "docs", "qthelp"])
-    except Exception as e:
-        print("QtHelp Build Error:")
-        print(str(e))
-        buildFail = True
-
-    try:
-        subprocess.call(["qhelpgenerator", os.path.join(buildDir, inFile)])
-    except Exception as e:
-        print("QtHelp Build Error:")
-        print(str(e))
-        buildFail = True
-
-    if not os.path.isdir(helpDir):
-        try:
-            os.mkdir(helpDir)
-        except Exception as e:
-            print("QtHelp Build Error:")
-            print(str(e))
-            buildFail = True
-
-    try:
-        if os.path.isfile(os.path.join(helpDir, outFile)):
-            os.unlink(os.path.join(helpDir, outFile))
-        if os.path.isfile(os.path.join(helpDir, datFile)):
-            os.unlink(os.path.join(helpDir, datFile))
-        os.rename(os.path.join(buildDir, outFile), os.path.join(helpDir, outFile))
-        os.rename(os.path.join(buildDir, datFile), os.path.join(helpDir, datFile))
-    except Exception as e:
-        print("QtHelp Build Error:")
-        print(str(e))
-        buildFail = True
-
-    print("")
-    if buildFail:
-        print("Documentation build: FAILED")
-        print("")
-        print("Dependencies:")
-        print(" * pip install sphinx")
-        print(" * pip install sphinx-rtd-theme")
-        print(" * pip install sphinxcontrib-qthelp")
-        print("")
-        print("It also requires the qhelpgenerator to be available on the system.")
-        sys.exit(1)
-    else:
-        print("Documentation build: OK")
-    print("")
-
-    return
-
-
-##
-#  Html or PDF Documentation Builder (docs, docs_pdf)
+#  Build PDF Manual (manual)
 ##
 
 def buildPdfManual():
@@ -416,39 +335,13 @@ def makeMinimalPackage(targetOS):
     """
     from zipfile import ZipFile, ZIP_DEFLATED
 
-    # Get the version
-    numVers, _, _ = extractVersion()
-
-    # Make sample.zip first
-    try:
-        buildSampleZip()
-    except Exception as e:
-        print("Failed with error:")
-        print(str(e))
-        sys.exit(1)
-
-    # Build docs
-    try:
-        buildPdfManual()
-    except Exception as e:
-        print("Failed with error:")
-        print(str(e))
-        sys.exit(1)
-
-    # Make translation files
-    try:
-        buildQtI18n()
-    except Exception as e:
-        print("Failed with error:")
-        print(str(e))
-        sys.exit(1)
-
     print("")
     print("Building Minimal ZIP File")
     print("=========================")
 
-    if not os.path.isdir("dist"):
-        os.mkdir("dist")
+    bldDir = "dist_minimal"
+    if not os.path.isdir(bldDir):
+        os.mkdir(bldDir)
 
     if targetOS == OS_LINUX:
         targName = "-linux"
@@ -463,27 +356,34 @@ def makeMinimalPackage(targetOS):
         targName = ""
     print("")
 
+    # Build Additional Assets
+    # =======================
+
+    buildQtI18n()
+    buildSampleZip()
+    buildPdfManual()
+
+    # Build Minimal Zip
+    # =================
+
+    numVers, _, _ = extractVersion()
     zipFile = f"novelWriter-{numVers}-minimal{targName}.zip"
-    outFile = os.path.join("dist", zipFile)
+    outFile = os.path.join(bldDir, zipFile)
     if os.path.isfile(outFile):
         os.unlink(outFile)
 
     rootFiles = [
-        "CHANGELOG.md",
-        "LICENSE.md",
         "README.md",
+        "LICENSE.md",
+        "CREDITS.md",
+        "CHANGELOG.md",
         "requirements.txt",
         "setup.py",
+        "setup.cfg",
+        "pyproject.toml",
     ]
 
     with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=9) as zipObj:
-
-        if targetOS != OS_WIN:
-            # Not needed for Windows as the icons are in novelwriter/assets/icons
-            for nRoot, _, nFiles in os.walk("setup"):
-                print("Adding Folder: %s [%d files]" % (nRoot, len(nFiles)))
-                for aFile in nFiles:
-                    zipObj.write(os.path.join(nRoot, aFile))
 
         for nRoot, _, nFiles in os.walk("novelwriter"):
             if nRoot.endswith("__pycache__"):
@@ -504,7 +404,17 @@ def makeMinimalPackage(targetOS):
             print("Adding File: windows_install.bat")
             zipObj.write(os.path.join("setup", "windows_uninstall.bat"), "windows_uninstall.bat")
             print("Adding File: windows_uninstall.bat")
-        else:
+
+        else:  # Linux and Mac
+            # Add icons
+            for nRoot, _, nFiles in os.walk(os.path.join("setup", "data")):
+                print("Adding Folder: %s [%d files]" % (nRoot, len(nFiles)))
+                for aFile in nFiles:
+                    zipObj.write(os.path.join(nRoot, aFile))
+
+            zipObj.write(os.path.join("setup", "description_pypi.md"))
+            print("Adding File: setup/description_pypi.md")
+
             zipObj.write("novelWriter.py")
             print("Adding File: novelWriter.py")
 
@@ -518,9 +428,12 @@ def makeMinimalPackage(targetOS):
     print("")
     print("Created File: %s" % outFile)
 
+    # Create Checksum File
+    # ====================
+
     try:
         shaFile = open(outFile+".sha256", mode="w")
-        subprocess.call(["sha256sum", zipFile], stdout=shaFile, cwd="dist")
+        subprocess.call(["sha256sum", zipFile], stdout=shaFile, cwd=bldDir)
         shaFile.close()
         print("SHA256 Sum:   %s" % (outFile+".sha256"))
     except Exception as e:
@@ -611,54 +524,59 @@ def makeDebianPackage():
     print("Copying or generating additional files ...")
     print("")
 
-    # Root Files
+    # Copy/Write Root Files
+    # =====================
 
-    copyFiles = [
-        "setup.cfg",
-        "pyproject.toml",
-        "LICENSE.md",
-        "CREDITS.md",
-        "CHANGELOG.md",
-    ]
+    copyFiles = ["CREDITS.md", "CHANGELOG.md", "LICENSE.md", "pyproject.toml"]
     for copyFile in copyFiles:
         shutil.copyfile(copyFile, f"{outDir}/{copyFile}")
         print("Copied: %s" % copyFile)
 
-    with open(f"{outDir}/MANIFEST.in", mode="w") as outFile:
-        outFile.write(
-            "include LICENSE.md\n"
-            "include CREDITS.md\n"
-            "include CHANGELOG.md\n"
-            "include data/*\n"
-            "recursive-include novelwriter/assets *\n"
-        )
-        print("Wrote:  MANIFEST.in")
+    writeFile(f"{outDir}/MANIFEST.in", (
+        "include LICENSE.md\n"
+        "include CREDITS.md\n"
+        "include CHANGELOG.md\n"
+        "include data/*\n"
+        "recursive-include novelwriter/assets *\n"
+    ))
+    print("Wrote:  MANIFEST.in")
 
-    with open(f"{outDir}/setup.py", mode="w") as outFile:
-        outFile.write(
-            "import setuptools\n"
-            "setuptools.setup()\n"
-        )
-        print("Wrote:  setup.py")
+    writeFile(f"{outDir}/setup.py", (
+        "import setuptools\n"
+        "setuptools.setup()\n"
+    ))
+    print("Wrote:  setup.py")
 
-    # Copy Debian and Data Folders
+    setupCfg = readFile("setup.cfg").replace(
+        "file: setup/description_pypi.md", "file: data/description_short.txt"
+    )
+    writeFile(f"{outDir}/setup.cfg", setupCfg)
+    print("Wrote:  setup.cfg")
+
+    # Copy/Write Debian Files
+    # =======================
 
     shutil.copytree("setup/debian", debDir)
     print("Copied: debian/*")
+
+    writeFile(f"{debDir}/changelog", (
+        f"novelwriter ({pkgVers}) unstable; urgency=medium\n\n"
+        f"  * Update to version {pkgVers}\n\n"
+        f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
+    ))
+    print("Wrote:  debian/changelog")
+
+    # Copy/Write Data Files
+    # =====================
+
     shutil.copytree("setup/data", datDir)
     print("Copied: data/*")
 
-    # Generate debian/changelog File
-
-    with open(f"{debDir}/changelog", mode="w") as outFile:
-        outFile.write(
-            f"novelwriter ({pkgVers}) unstable; urgency=medium\n\n"
-            f"  * Update to version {pkgVers}\n\n"
-            f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
-        )
-        print("Wrote:  debian/changelog")
+    shutil.copyfile("setup/description_short.txt", f"{outDir}/data/description_short.txt")
+    print("Copied: data/description_short.txt")
 
     # Build Package
+    # =============
 
     print("")
     print("Running dpkg-buildpackage ...")
@@ -729,15 +647,12 @@ def makeSimplePackage(embedPython):
         print("Done")
         print("")
 
-    # Make sample.zip
-    # ===============
+    # Build Additional Assets
+    # =======================
 
-    try:
-        buildSampleZip()
-    except Exception as e:
-        print("Failed with error:")
-        print(str(e))
-        sys.exit(1)
+    buildQtI18n()
+    buildSampleZip()
+    buildPdfManual()
 
     # Copy Package Files
     # ==================
@@ -747,7 +662,7 @@ def makeSimplePackage(embedPython):
     print("# =====================")
     print("")
 
-    copyList = ["CHANGELOG.md", "LICENSE.md", "requirements.txt"]
+    copyList = ["CREDITS.md", "CHANGELOG.md", "LICENSE.md", "requirements.txt"]
     iconList = ["novelwriter.ico", "x-novelwriter-project.ico"]
     cpIgnore = shutil.ignore_patterns("__pycache__")
 
@@ -765,22 +680,21 @@ def makeSimplePackage(embedPython):
     os.rename(os.path.join(zipDir, "novelwriter", "assets"), os.path.join(outDir, "assets"))
 
     print("Writing: __main__.py")
-    with open(os.path.join(zipDir, "__main__.py"), mode="w") as outFile:
-        outFile.write(
-            "#!/usr/bin/env python3\n"
-            "\n"
-            "import os\n"
-            "import sys\n"
-            "\n"
-            "sys.path.insert(\n"
-            "    0, os.path.abspath(\n"
-            "        os.path.join(os.path.dirname(__file__), os.path.pardir, \"lib\")\n"
-            "    )\n"
-            ")\n\n"
-            "if __name__ == \"__main__\":\n"
-            "    import novelwriter\n"
-            "    novelwriter.main()\n"
-        )
+    writeFile(os.path.join(zipDir, "__main__.py"), (
+        "#!/usr/bin/env python3\n"
+        "\n"
+        "import os\n"
+        "import sys\n"
+        "\n"
+        "sys.path.insert(\n"
+        "    0, os.path.abspath(\n"
+        "        os.path.join(os.path.dirname(__file__), os.path.pardir, \"lib\")\n"
+        "    )\n"
+        ")\n\n"
+        "if __name__ == \"__main__\":\n"
+        "    import novelwriter\n"
+        "    novelwriter.main()\n"
+    ))
     print("")
 
     pyzFile = os.path.join(outDir, "novelWriter.pyz")
@@ -917,7 +831,9 @@ def xdgInstall():
     # ===========================
 
     # Generate launcher
-    createLauncher(useExec, ".")
+    desktopData = readFile(os.path.join("setup", "data", "novelwriter.desktop"))
+    desktopData = desktopData.replace("Exec=novelwriter", f"Exec={useExec}")
+    writeFile("novelwriter.desktop", desktopData)
 
     # Remove old desktop icon
     exCode = subprocess.call(
@@ -1284,7 +1200,7 @@ def winUninstall():
 # =============================================================================================== #
 
 ##
-#  Inno Setup Builder (setup-exe, setup-pyz)
+#  Inno Setup Builder (setup-pyz)
 ##
 
 def innoSetup():
@@ -1296,16 +1212,11 @@ def innoSetup():
     print("")
 
     # Read the iss template
-    issData = ""
-    with open(os.path.join("setup", "win_setup_pyz.iss"), mode="r") as inFile:
-        issData = inFile.read()
-
     numVers, _, _ = extractVersion()
+    issData = readFile(os.path.join("setup", "win_setup_pyz.iss"))
     issData = issData.replace(r"%%version%%", numVers)
     issData = issData.replace(r"%%dir%%", os.getcwd())
-
-    with open("setup.iss", mode="w+") as outFile:
-        outFile.write(issData)
+    writeFile("setup.iss", issData)
 
     try:
         subprocess.call(["iscc", "setup.iss"])
@@ -1371,7 +1282,6 @@ if __name__ == "__main__":
         "Additional Builds:",
         "",
         "    manual         Build the help documentation as PDF (requires LaTeX).",
-        "    qthelp         Build the help documentation for use with the Qt Assistant.",
         "    qtlupdate      Update the translation files for internationalisation.",
         "    qtlrelease     Build the language files for internationalisation.",
         "    sample         Build the sample project zip file and add it to assets.",
@@ -1422,9 +1332,8 @@ if __name__ == "__main__":
 
     if "version" in sys.argv:
         sys.argv.remove("version")
-        numVers, hexVers, _ = extractVersion()
-        print("Semantic Version: %s" % numVers)
-        print("Hexadecimal Version: %s" % hexVers)
+        print("Checking source version info ...")
+        extractVersion()
         sys.exit(0)
 
     if "pip" in sys.argv:
@@ -1441,10 +1350,6 @@ if __name__ == "__main__":
     if "manual" in sys.argv:
         sys.argv.remove("manual")
         buildPdfManual()
-
-    if "qthelp" in sys.argv:
-        sys.argv.remove("qthelp")
-        buildQtDocs()
 
     if "qtlrelease" in sys.argv:
         sys.argv.remove("qtlrelease")
