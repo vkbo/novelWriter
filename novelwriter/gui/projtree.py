@@ -5,7 +5,7 @@ GUI classes for the main window project tree
 
 File History:
 Created: 2018-09-29 [0.0.1] GuiProjectTree
-Created: 2020-06-04 [0.7.0] GuiProjectTreeMenu
+Created: 2020-06-04 [0.7]   GuiProjectTreeMenu
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen

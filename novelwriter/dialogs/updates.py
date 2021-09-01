@@ -4,7 +4,7 @@ novelWriter – GUI Updates
 A dialog box for checking for latest updates
 
 File History:
-Created: 2021-08-21 [1.5-alpah0]
+Created: 2021-08-21 [1.5a0]
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen
