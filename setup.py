@@ -66,8 +66,7 @@ def extractVersion():
         print("Could not read file: %s" % initFile)
         print(str(e))
 
-    print("novelWriter version is: %s (%s) at %s" % (numVers, hexVers, relDate))
-    print("")
+    print("novelWriter version: %s (%s) at %s" % (numVers, hexVers, relDate))
 
     return numVers, hexVers, relDate
 
@@ -80,23 +79,26 @@ def compactVersion(numVers):
     return numVers
 
 
-def sysCall(callArgs):
+def sysCall(callArgs, cwd=None):
     """Wrapper function for system calls.
     """
-    sysP = subprocess.Popen(callArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    sysP = subprocess.Popen(
+        callArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        shell=True, cwd=cwd
+    )
     stdOut, stdErr = sysP.communicate()
     return stdOut.decode("utf-8"), stdErr.decode("utf-8"), sysP.returncode
 
 
 def readFile(fileName):
-    """Read an entire file return as a string.
+    """Read an entire file and return as a string.
     """
     with open(fileName, mode="r") as inFile:
         return inFile.read()
 
 
 def writeFile(fileName, writeText):
-    """Write string to file
+    """Write string to file.
     """
     with open(fileName, mode="w+") as outFile:
         outFile.write(writeText)
@@ -156,7 +158,7 @@ def cleanInstall():
                 shutil.rmtree(rmDir)
                 print("Deleted: %s" % rmDir)
             except OSError:
-                pass
+                print("Failed:  %s" % rmDir)
         else:
             print("Missing: %s" % rmDir)
 
@@ -191,11 +193,19 @@ def buildPdfManual():
     finalFile = os.path.join("novelwriter", "assets", "manual.pdf")
 
     try:
-        subprocess.call(["make", "-C", "docs", "clean"])
-        _, stdErr, exCode = sysCall(["make -C docs latexpdf"])
+        subprocess.call(["make", "clean"], cwd="docs")
+        stdOut, stdErr, exCode = sysCall(["make latexpdf"], cwd="docs")
         if exCode == 0:
             if os.path.isfile(finalFile):
                 os.unlink(finalFile)
+            outLines = stdOut.splitlines()
+            for aLine in outLines:
+                if aLine.startswith("processing manual.tex..."):
+                    break
+                print(aLine)
+            print("\n[LaTeX output truncated ...]\n")
+            print("\n".join(outLines[-6:]))
+            print("")
             os.rename(buildFile, finalFile)
         else:
             raise Exception(stdErr)
@@ -371,6 +381,7 @@ def makeMinimalPackage(targetOS):
     outFile = os.path.join(bldDir, zipFile)
     if os.path.isfile(outFile):
         os.unlink(outFile)
+    print("")
 
     rootFiles = [
         "README.md",
@@ -387,10 +398,10 @@ def makeMinimalPackage(targetOS):
 
         for nRoot, _, nFiles in os.walk("novelwriter"):
             if nRoot.endswith("__pycache__"):
-                print("Skipping Folder: %s" % nRoot)
+                print("Skipped: %s" % nRoot)
                 continue
 
-            print("Adding Folder: %s [%d files]" % (nRoot, len(nFiles)))
+            print("Added: %s/* [Files: %d]" % (nRoot, len(nFiles)))
             for aFile in nFiles:
                 if aFile.endswith(".pyc"):
                     print("Skipping File: %s" % aFile)
@@ -399,31 +410,31 @@ def makeMinimalPackage(targetOS):
 
         if targetOS == OS_WIN:
             zipObj.write("novelWriter.py", "novelWriter.pyw")
-            print("Adding File: novelWriter.pyw")
+            print("Added: novelWriter.pyw")
             zipObj.write(os.path.join("setup", "windows_install.bat"), "windows_install.bat")
-            print("Adding File: windows_install.bat")
+            print("Added: windows_install.bat")
             zipObj.write(os.path.join("setup", "windows_uninstall.bat"), "windows_uninstall.bat")
-            print("Adding File: windows_uninstall.bat")
+            print("Added: windows_uninstall.bat")
 
         else:  # Linux and Mac
             # Add icons
             for nRoot, _, nFiles in os.walk(os.path.join("setup", "data")):
-                print("Adding Folder: %s [%d files]" % (nRoot, len(nFiles)))
+                print("Added: %s/* [Files: %d]" % (nRoot, len(nFiles)))
                 for aFile in nFiles:
                     zipObj.write(os.path.join(nRoot, aFile))
 
             zipObj.write(os.path.join("setup", "description_pypi.md"))
-            print("Adding File: setup/description_pypi.md")
+            print("Added: setup/description_pypi.md")
 
             zipObj.write("novelWriter.py")
-            print("Adding File: novelWriter.py")
+            print("Added: novelWriter.py")
 
         for aFile in rootFiles:
-            print("Adding File: %s" % aFile)
+            print("Added: %s" % aFile)
             zipObj.write(aFile)
 
         zipObj.write(os.path.join("novelwriter", "assets", "manual.pdf"), "UserManual.pdf")
-        print("Adding File: UserManual.pdf")
+        print("Added: UserManual.pdf")
 
     print("")
     print("Created File: %s" % outFile)
@@ -464,6 +475,7 @@ def makeDebianPackage():
     pkgVers = compactVersion(numVers)
     relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
     pkgDate = email.utils.format_datetime(relDate.replace(hour=12, tzinfo=None))
+    print("")
 
     # Set Up Folder
     # =============
@@ -527,7 +539,7 @@ def makeDebianPackage():
     # Copy/Write Root Files
     # =====================
 
-    copyFiles = ["CREDITS.md", "CHANGELOG.md", "LICENSE.md", "pyproject.toml"]
+    copyFiles = ["LICENSE.md", "CREDITS.md", "CHANGELOG.md", "pyproject.toml"]
     for copyFile in copyFiles:
         shutil.copyfile(copyFile, f"{outDir}/{copyFile}")
         print("Copied: %s" % copyFile)
@@ -582,10 +594,7 @@ def makeDebianPackage():
     print("Running dpkg-buildpackage ...")
     print("")
 
-    currDir = os.curdir
-    os.chdir(outDir)
-    subprocess.call(["dpkg-buildpackage", "-us", "-ui", "-uc"])
-    os.chdir(currDir)
+    subprocess.call(["dpkg-buildpackage", "-us", "-ui", "-uc"], cwd=outDir)
 
     print("")
     print("Done!")
@@ -1030,6 +1039,7 @@ def winInstall():
     if not os.path.isfile(targetPy):
         shutil.copy2(os.path.join(targetDir, "novelWriter.py"), targetPy)
 
+    print("")
     print("Collecting Info ...")
     print("Desktop Folder:    %s" % desktopDir)
     print("Start Menu Folder: %s" % startMenuDir)
@@ -1146,6 +1156,7 @@ def winUninstall():
     startMenuProg = os.path.join(startMenuDir, "Programs", "novelWriter")
     startMenuIcon = os.path.join(startMenuProg, linkName)
 
+    print("")
     print("Deleting Links ...")
     if os.path.isfile(desktopIcon):
         os.unlink(desktopIcon)
@@ -1217,6 +1228,7 @@ def innoSetup():
     issData = issData.replace(r"%%version%%", numVers)
     issData = issData.replace(r"%%dir%%", os.getcwd())
     writeFile("setup.iss", issData)
+    print("")
 
     try:
         subprocess.call(["iscc", "setup.iss"])
