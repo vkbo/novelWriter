@@ -142,10 +142,10 @@ def installPackages(hostOS):
 
 
 ##
-#  Clean Build and Dist Folders (clean)
+#  Clean Build and Dist Folders (build-clean)
 ##
 
-def cleanInstall():
+def cleanBuildDirs():
     """Recursively delete the 'build' and 'dist' folders.
     """
     print("")
@@ -244,6 +244,7 @@ def buildQtI18n():
         subprocess.call(["lrelease", "-verbose", "novelWriter.pro"])
     except Exception as e:
         print("Qt5 Linguist tools seem to be missing")
+        print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
         print(str(e))
         sys.exit(1)
 
@@ -283,6 +284,7 @@ def buildQtI18nTS():
         subprocess.call(["pylupdate5", "-verbose", "-noobsolete", "novelWriter.pro"])
     except Exception as e:
         print("PyQt5 Linguist tools seem to be missing")
+        print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
         print(str(e))
         sys.exit(1)
 
@@ -460,7 +462,7 @@ def makeMinimalPackage(targetOS):
 #  Make Debian Package (build-deb)
 ##
 
-def makeDebianPackage(forUbuntu):
+def makeDebianPackage(forUbuntu=False, distName="", buildNum=""):
     """Build a Debian package.
     """
     print("")
@@ -471,16 +473,14 @@ def makeDebianPackage(forUbuntu):
     # Version Info
     # ============
 
-    numVers, _, relDate = extractVersion()
+    numVers, hexVers, relDate = extractVersion()
     pkgVers = compactVersion(numVers)
     relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
     pkgDate = email.utils.format_datetime(relDate.replace(hour=12, tzinfo=None))
     print("")
 
-    if forUbuntu:
-        bldNum = input("Build number: ")
-        if bldNum:
-            pkgVers = f"{pkgVers}~ubuntu{bldNum}"
+    if buildNum:
+        pkgVers = f"{pkgVers}~{buildNum}"
 
     # Set Up Folder
     # =============
@@ -577,7 +577,7 @@ def makeDebianPackage(forUbuntu):
     print("Copied: debian/*")
 
     if forUbuntu:
-        targetDistro = "focal"
+        targetDistro = distName
     else:
         targetDistro = "unstable"
 
@@ -609,17 +609,55 @@ def makeDebianPackage(forUbuntu):
     else:
         subprocess.call(["dpkg-buildpackage", "-us", "-uc", "-Zgzip"], cwd=outDir)
 
-    # os.rename(f"{bldDir}/{bldPkg}.tar.gz", f"{bldDir}/{bldPkg}.debian.tar.gz")
-
     print("")
     print("Done!")
     print("")
 
     if forUbuntu:
-        print("Launchpad Upload:")
-        print(f"Stable:  dput novelwriter {bldDir}/{bldPkg}_source.changes")
-        print(f"Testing: dput novelwriter-pre {bldDir}/{bldPkg}_source.changes")
-        print("")
+        if hexVers[-2] == "f":
+            ppaName = "novelwriter"
+        else:
+            ppaName = "novelwriter-pre"
+
+        return f"dput {ppaName}/{distName} {bldDir}/{bldPkg}_source.changes"
+
+    return ""
+
+
+##
+#  Make Launchpad Package (build-ubuntu)
+##
+
+def makeForLaunchpad():
+    """Wrapper for building debian packages for launcpad.
+    """
+    print("")
+    print("Launchpad Packages")
+    print("==================")
+    print("")
+
+    bldNum = input("Build number [0]: ")
+    if bldNum == "":
+        bldNum = "0"
+
+    distLoop = [
+        ("18.04", "bionic"),
+        ("20.04", "focal"),
+        ("21.04", "hirsute"),
+        ("21.10", "impish"),
+    ]
+
+    dputCmd = []
+    for distNum, codeName in distLoop:
+        dCmd = makeDebianPackage(True, codeName, f"ubuntu{distNum}.{bldNum}")
+        dputCmd.append(dCmd)
+
+    print("Packages Built")
+    print("==============")
+    print("")
+    for dCmd in dputCmd:
+        print(f" > {dCmd}")
+    print("")
 
     return
 
@@ -1293,13 +1331,6 @@ if __name__ == "__main__":
     else:
         targetOS = hostOS
 
-    # Build target
-    if "--ubuntu" in sys.argv:
-        sys.argv.remove("--ubuntu")
-        forUbuntu = True
-    else:
-        forUbuntu = False
-
     helpMsg = [
         "",
         "novelWriter Setup Tool",
@@ -1332,8 +1363,8 @@ if __name__ == "__main__":
         "                   all the other source files. Defaults to tailor the zip file",
         "                   for the current OS, but accepts a target OS flag to build",
         "                   for another OS.",
-        "    build-deb      Build a .deb package for Debian and Ubuntu. Add --ubuntu ",
-        "                   to build for ubuntu.",
+        "    build-deb      Build a .deb package for Debian and Ubuntu.",
+        "    build-ubuntu   Build a .deb packages Launchpad.",
         "    build-pyz      Build a .pyz package in a folder with all dependencies",
         "                   using the zipapp tool. On Windows, python embeddable is",
         "                   added to the folder.",
@@ -1381,9 +1412,9 @@ if __name__ == "__main__":
         sys.argv.remove("pip")
         installPackages(hostOS)
 
-    if "clean" in sys.argv:
-        sys.argv.remove("clean")
-        cleanInstall()
+    if "build-clean" in sys.argv:
+        sys.argv.remove("build-clean")
+        cleanBuildDirs()
 
     # Additional Builds
     # =================
@@ -1414,9 +1445,17 @@ if __name__ == "__main__":
     if "build-deb" in sys.argv:
         sys.argv.remove("build-deb")
         if hostOS == OS_LINUX:
-            makeDebianPackage(forUbuntu)
+            makeDebianPackage()
         else:
             print("ERROR: Command 'build-deb' can only be used on Linux")
+            sys.exit(1)
+
+    if "build-ubuntu" in sys.argv:
+        sys.argv.remove("build-ubuntu")
+        if hostOS == OS_LINUX:
+            makeForLaunchpad()
+        else:
+            print("ERROR: Command 'build-ubuntu' can only be used on Linux")
             sys.exit(1)
 
     if "build-pyz" in sys.argv:
