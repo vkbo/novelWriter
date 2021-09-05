@@ -6,11 +6,69 @@ Setup on Linux
 
 .. _GitHub: https://github.com/vkbo/novelWriter/releases
 .. _main website: https://novelwriter.io
+.. _PPA: https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter
+.. _Pre-Release PPA: https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter-pre
 
-This is a brief guide to how you can get novelWriter running on a Linux computer. There are
-currently no install package of novelWriter for Linux, so it is recommended that you download
-either the full source or minimal package and extract it to a practical location on your system and
-run the ``setup.py`` script.
+This is a brief guide to how you can get novelWriter running on a Linux computer.
+
+There are currently install packages available for Ubuntu and Debian. For other distros it is
+recommended that you download either the full source or minimal package and extract it to a
+practical location on your system and run the ``setup.py`` script.
+
+
+Debian or Ubuntu
+================
+
+A general Debian package can be downloaded from the `main website`_. This package should work on
+both Debian and Ubuntu.
+
+If you prefer, you can also add the novelWriter repository on Launchpad to your package manager.
+See below for instructions.
+
+
+Ubuntu
+------
+
+You can add the Ubuntu PPA_ and install novelWriter with the following commands.
+
+.. code-block:: console
+
+   sudo add-apt-repository ppa:vkbo/novelwriter
+   sudo apt update
+   sudo apt install novelwriter
+
+
+Debian
+------
+
+If you're on Debian, the above command may not manage to find a suiteable Ubuntu version to add.
+You can then instead add the PPA manually, and pick an Ubuntu version yourself. Below is an example
+using ``focal`` (Ubuntu 20.04).
+
+Add the following two lines to your ``/etc/apt/sources.list`` file.
+
+.. code-block:: console
+
+   deb http://ppa.launchpad.net/vkbo/novelwriter-pre/ubuntu focal main 
+   deb-src http://ppa.launchpad.net/vkbo/novelwriter-pre/ubuntu focal main 
+
+You then need to import the sign key by running
+
+.. code-block:: console
+
+   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F19F1FCE50043114
+
+
+Pre-Releases
+------------
+
+There is also a `Pre-Release PPA`_ available beta releases and release candidates.
+
+.. code-block:: console
+
+   sudo add-apt-repository ppa:vkbo/novelwriter-pre
+   sudo apt update
+   sudo apt install novelwriter
 
 
 Running from Source

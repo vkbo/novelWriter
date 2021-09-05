@@ -129,7 +129,18 @@ scene connects to the plot, and which characters, etc. occur in them. In additio
 themselves are clickable in the document view pane, and control-clickable in the editor. They make
 it possible to quickly navigate between the documents while writing.
 
-## Standard Installation
+## Install Instructions
+
+### Ubuntu and Debian
+
+The Releases page has a `.deb` package (from version 1.5rc1 and on) that should install on both
+Debian and Ubuntu.
+
+You can also use the novelWriter [PPA](https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter).
+For more details, check the [Linux](https://novelwriter.readthedocs.io/en/latest/setup_linux.html)
+setup chapter in the documentation.
+
+### Other Operating Systems
 
 For a regular installation, it is recommended that you download one of the minimal zip files from
 the [Releases](https://github.com/vkbo/novelWriter/releases) page or the
