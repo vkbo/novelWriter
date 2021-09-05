@@ -460,7 +460,7 @@ def makeMinimalPackage(targetOS):
 #  Make Debian Package (build-deb)
 ##
 
-def makeDebianPackage():
+def makeDebianPackage(forUbuntu):
     """Build a Debian package.
     """
     print("")
@@ -477,12 +477,17 @@ def makeDebianPackage():
     pkgDate = email.utils.format_datetime(relDate.replace(hour=12, tzinfo=None))
     print("")
 
+    if forUbuntu:
+        bldNum = input("Build number: ")
+        if bldNum:
+            pkgVers = f"{pkgVers}~ubuntu{bldNum}"
+
     # Set Up Folder
     # =============
 
     bldDir = "dist_deb"
-    pkgDir = f"novelWriter-{pkgVers}"
-    outDir = f"{bldDir}/{pkgDir}"
+    bldPkg = f"novelwriter_{pkgVers}"
+    outDir = f"{bldDir}/{bldPkg}"
     debDir = f"{outDir}/debian"
     datDir = f"{outDir}/data"
 
@@ -571,8 +576,13 @@ def makeDebianPackage():
     shutil.copytree("setup/debian", debDir)
     print("Copied: debian/*")
 
+    if forUbuntu:
+        targetDistro = "focal"
+    else:
+        targetDistro = "unstable"
+
     writeFile(f"{debDir}/changelog", (
-        f"novelwriter ({pkgVers}) unstable; urgency=medium\n\n"
+        f"novelwriter ({pkgVers}) {targetDistro}; urgency=medium\n\n"
         f"  * Update to version {pkgVers}\n\n"
         f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
     ))
@@ -594,11 +604,22 @@ def makeDebianPackage():
     print("Running dpkg-buildpackage ...")
     print("")
 
-    subprocess.call(["dpkg-buildpackage", "-us", "-ui", "-uc"], cwd=outDir)
+    if forUbuntu:
+        subprocess.call(["debuild", "-S"], cwd=outDir)
+    else:
+        subprocess.call(["dpkg-buildpackage", "-us", "-uc", "-Zgzip"], cwd=outDir)
+
+    # os.rename(f"{bldDir}/{bldPkg}.tar.gz", f"{bldDir}/{bldPkg}.debian.tar.gz")
 
     print("")
     print("Done!")
     print("")
+
+    if forUbuntu:
+        print("Launchpad Upload:")
+        print(f"Stable:  dput novelwriter {bldDir}/{bldPkg}_source.changes")
+        print(f"Testing: dput novelwriter-pre {bldDir}/{bldPkg}_source.changes")
+        print("")
 
     return
 
@@ -1272,6 +1293,13 @@ if __name__ == "__main__":
     else:
         targetOS = hostOS
 
+    # Build target
+    if "--ubuntu" in sys.argv:
+        sys.argv.remove("--ubuntu")
+        forUbuntu = True
+    else:
+        forUbuntu = False
+
     helpMsg = [
         "",
         "novelWriter Setup Tool",
@@ -1304,8 +1332,9 @@ if __name__ == "__main__":
         "                   all the other source files. Defaults to tailor the zip file",
         "                   for the current OS, but accepts a target OS flag to build",
         "                   for another OS.",
-        "    build-deb      Buiild a .deb package for Debian and Ubuntu.",
-        "    build-pyz      Buiild a .pyz package in a folder with all dependencies",
+        "    build-deb      Build a .deb package for Debian and Ubuntu. Add --ubuntu ",
+        "                   to build for ubuntu.",
+        "    build-pyz      Build a .pyz package in a folder with all dependencies",
         "                   using the zipapp tool. On Windows, python embeddable is",
         "                   added to the folder.",
         "    setup-pyz      Build a Windows executable installer from a zipapp package",
@@ -1385,7 +1414,7 @@ if __name__ == "__main__":
     if "build-deb" in sys.argv:
         sys.argv.remove("build-deb")
         if hostOS == OS_LINUX:
-            makeDebianPackage()
+            makeDebianPackage(forUbuntu)
         else:
             print("ERROR: Command 'build-deb' can only be used on Linux")
             sys.exit(1)
