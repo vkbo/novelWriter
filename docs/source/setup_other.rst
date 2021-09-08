@@ -1,25 +1,16 @@
-.. _a_started:
+.. _a_other:
 
-***************
-Getting Started
-***************
+*******************
+Other Setup Methods
+*******************
 
 .. _main website: https://novelwriter.io
 .. _GitHub: https://github.com/vkbo/novelWriter/releases
 .. _PyPi: https://pypi.org/project/novelWriter/
+.. _Sphinx Docs: https://www.sphinx-doc.org/
 
-This section contains brief guides to how you can get novelWriter running on your computer. These
-are the methods currently supported by the developer. Packages may also be available in other
-package managers, but those are not managed by the developer. No installers are provided at this
-time, but it is fairly straightforward to set up novelWriter with the provided install scripts.
-
-As novelWriter matures, more options for how to install it and get it running will be added. For
-non-Windows users the install process is at the present time best suited for people used to working
-with the command line. But even if you're not, the install process is fairly straightforward.
-
-The next pages have specific install instructions for the various operating systems novelWriter can
-run on. The instructions below are supplementary information, instructions for alterbative methods,
-and additional build options.
+This section describes various other setup methods, and instructions for building needed files
+when running novelWriter from the source code directly.
 
 .. note::
    The text below assumes the command ``python`` corresponds to a Python 3 executable. Python 2 is
@@ -28,7 +19,7 @@ and additional build options.
    without the ``python`` command. Likewise, ``pip`` may need to be replaced with ``pip3``.
 
 
-.. _a_started_depend:
+.. _a_other_depend:
 
 Dependencies
 ============
@@ -41,7 +32,7 @@ The following Python packages are needed to run novelWriter:
 
 * ``PyQt5`` – needed for connecting with the Qt5 libraries.
 * ``lxml`` – needed for full XML support.
-* ``PyEnchant`` – needed for efficient spell checking (optional).
+* ``PyEnchant`` – needed for spell checking (optional).
 
 PyQt/Qt should be at least 5.3, but ideally 5.10 or higher for nearly all features to work. For
 instance, searching using regular expressions with full Unicode support requires 5.13. There is no
@@ -59,23 +50,17 @@ source, dependencies can still be installed from PyPi with:
    pip install -r requirements.txt
 
 
-.. _a_started_install:
+.. _a_other_pip:
 
-Installing from Source or PyPi
-==============================
+Installing from PyPi
+====================
 
-You can download the latest version of novelWriter from the source repository on GitHub_. You can
-also install novelWriter from PyPi_.
-
-If you're running novelWriter from source, the main setup script has a number of options that may
-be useful to you. You can list them by running:
-
-.. code-block:: console
-
-   python setup.py --help
+novelWriter is available on the Python Package Index, or PyPi_.
 
 To install from PyPi you must first have the ``python`` and ``pip`` commands available on your
-system. If you don't, see specific instructions for your operating system in this documentation.
+system. If you don't, see specific instructions for your operating system in this documentation on
+how to get the Python environment set up.
+
 To install novelWriter from PyPi, use the following command:
 
 .. code-block:: console
@@ -98,7 +83,42 @@ Make sure the install location for pip is in your PATH variable. This is not alw
 default.
 
 
-.. _a_started_i18n:
+.. _a_other_source:
+
+Installing from Source
+======================
+
+You can download the latest version of novelWriter from the source repository on GitHub_ and run
+the setup manually. It is equivalent to what the ``pip install`` command does, and it installs
+novelWriter to the default location for Python packages.
+
+This step requires that you have ``setuptools`` installed on your system. If you don't have it
+installed, it can usually be installed from your distro's repository. For Debian and Ubuntu this is
+achieved with:
+
+.. code-block:: console
+
+   sudo apt install python3-setuptools
+
+The package is also available from PyPi:
+
+.. code-block:: console
+
+   pip install --user setuptools
+
+With ``setuptools`` in place, novelWriter can be installed to the user space with:
+
+.. code-block:: console
+
+   python setup.py install --user
+
+.. tip::
+
+   The main setup script has a number of options that may be useful to you. You can list them by
+   running ``python setup.py --help``.
+
+
+.. _a_other_i18n:
 
 Building the Translation Files
 ==============================
@@ -112,7 +132,7 @@ You can build the ``.qm`` files with:
 
 .. code-block:: console
 
-   python3 setup.py qtlrelease
+   python setup.py qtlrelease
 
 This requires that the Qt Linguist tool is installed on your system. On Ubuntu and Debian, the
 needed package is called `qttools5-dev-tools`.
@@ -123,14 +143,13 @@ needed package is called `qttools5-dev-tools`.
    the ``i18n`` folder of the source code.
 
 
-.. _a_started_docs:
+.. _a_other_docs:
 
 Building the Documentation
 ==========================
 
-If you installed novelWriter from a package, the documentation should be pre-built and included. If
-you're running novelWriter from the source code, a local copy of this documentation can be
-generated. It requires the following Python packages on Debian and Ubuntu.
+A local copy of this documentation can be generated as HTML. This requires the following Python
+packages on Debian and Ubuntu.
 
 * ``python3-sphinx``
 * ``python3-sphinx-rtd-theme``
@@ -150,15 +169,13 @@ The documentation can then be built from the ``docs`` folder in the source code 
 If successful, the documentation should be available in the ``docs/build/html`` folder and you can
 open the ``index.html`` file in your browser.
 
-You can also build the PDF documentation locally using the setup script:
+You can also build a PDF manual from the documentation using the setup script:
 
 .. code-block:: console
 
-   python setup.py pdfdocs
+   python setup.py manual
 
 This will build the documentation as a PDF using LaTeX. The file will then be copied into the
 assets folder and made available in the :guilabel:`Help` menu in novelWriter. The Sphinx build
-system has a few extra dependencies when building the PDF. Please check the `Sphinx Docs`_ if you
-have any issues.
-
-.. _Sphinx Docs: https://www.sphinx-doc.org/
+system has a few extra dependencies when building the PDF. Please check the `Sphinx Docs`_ for more
+details.
