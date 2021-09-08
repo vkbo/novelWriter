@@ -3,14 +3,54 @@ Upstream-Name: novelWriter
 Upstream-Contact: Veronica Berglyd Olsen <code@vkbo.net>
 Source: https://github.com/vkbo/novelWriter
 
+Files: *
+Copyright: 2018-2021, Veronica Berglyd Olsen
+License: GPL-3.0-or-later
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
+
 Files: novelwriter/assets/fonts/Cantarell/*
 Copyright: 2009-2010, Understanding Limited
 License: OFL-1.1
+ This Font Software is licensed under the SIL Open Font License, Version 1.1.
+ This license is available with a FAQ at: http://scripts.sil.org/OFL
 
 Files: novelwriter/assets/icons/typicons_*.svg
 Copyright: 2019, Stephen Hutchings
 License: CC-BY-SA-4.0
-
-Files: novelwriter/*
-Copyright: 2018-2021, Veronica Berglyd Olsen
-License: GPL-3.0-or-later
+ This work is licensed under the Creative Commons Attribution-ShareAlike 4.0
+ International License. To view a copy of this license, visit
+ http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative
+ Commons, PO Box 1866, Mountain View, CA 94042, USA.
+ .
+ Share — copy and redistribute the material in any medium or format
+ .
+ Adapt — remix, transform, and build upon the material for any purpose, even
+ commercially. This license is acceptable for Free Cultural Works. The licensor
+ cannot revoke these freedoms as long as you follow the license terms.
+ .
+ Attribution — You must give appropriate credit, provide a link to the license,
+ and indicate if changes were made. You may do so in any reasonable manner, but
+ not in any way that suggests the licensor endorses you or your use.
+ .
+ ShareAlike — If you remix, transform, or build upon the material, you must
+ distribute your contributions under the same license as the original.
+ No additional restrictions — You may not apply legal terms or technological
+ measures that legally restrict others from doing anything the license permits.
+ .
+ Notices: You do not have to comply with the license for elements of the
+ material in the public domain or where your use is permitted by an applicable
+ exception or limitation. No warranties are given. The license may not give you
+ all of the permissions necessary for your intended use. For example, other
+ rights such as publicity, privacy, or moral rights may limit how you use the
+ material.

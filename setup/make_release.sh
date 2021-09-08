@@ -18,4 +18,5 @@ echo ""
 echo " Building Linux Packages"
 echo "================================================================================"
 echo ""
-python3 setup.py build-deb
+python3 setup.py build-deb --sign
+python3 setup.py build-ubuntu --sign --first
