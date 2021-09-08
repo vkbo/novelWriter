@@ -12,7 +12,7 @@ Setup on Linux
 This is a brief guide to how you can get novelWriter running on a Linux computer.
 
 There are currently install packages available for Ubuntu and Debian. For other distros it is
-recommended that you download either the full source or minimal package and extract it to a
+recommended that you download either the full source or the minimal package and extract it to a
 practical location on your system and run the ``setup.py`` script.
 
 
@@ -51,7 +51,7 @@ Instead, run the following commands to add the repository and key:
    sudo gpg --no-default-keyring --keyring /usr/local/share/novelwriter-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F19F1FCE50043114
    echo "deb [signed-by=/usr/local/share/keyrings/novelwriter-keyring.gpg] http://ppa.launchpad.net/vkbo/novelwriter/ubuntu focal main" | sudo tee /etc/apt/sources.list.d/novelwriter.list
 
-Then run the update and install command:
+Then run the update and install commands as for Ubuntu:
 
 .. code-block:: console
 
@@ -62,7 +62,8 @@ Then run the update and install command:
 Pre-Releases
 ------------
 
-There is also a `Pre-Release PPA`_ available beta releases and release candidates.
+There is also a `Pre-Release PPA`_ available with beta releases and release candidates of
+novelWriter. For Ubuntu, run the following commands:
 
 .. code-block:: console
 
@@ -75,8 +76,9 @@ Minimal Zip File
 ================
 
 A minimal zip file is provided for Linux. You can download the latest zip file from the release
-page on GitHub_, or from the `main website`_. This zip file contains only the main files needed to
-run novelWriter. You can extract the file to wherever you want, and run the steps below.
+page on GitHub_, or from the `main website`_. This zip file contains only the files actually needed
+to run novelWriter, and none of the additional source files for tests and documentation. You can
+extract the file to wherever you want, and run the steps below.
 
 
 Step 1: Installing Dependencies
