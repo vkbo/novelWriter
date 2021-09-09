@@ -26,7 +26,6 @@ from novelwriter.gui.mainmenu import GuiMainMenu
 from novelwriter.gui.noveltree import GuiNovelTree
 from novelwriter.gui.outline import GuiOutline
 from novelwriter.gui.outlinedetails import GuiOutlineDetails
-from novelwriter.gui.projdetails import GuiProjectDetails
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.gui.statusbar import GuiMainStatus
 from novelwriter.gui.theme import GuiTheme
@@ -41,7 +40,6 @@ __all__ = [
     "GuiNovelTree",
     "GuiOutline",
     "GuiOutlineDetails",
-    "GuiProjectDetails",
     "GuiProjectTree",
     "GuiTheme",
 ]

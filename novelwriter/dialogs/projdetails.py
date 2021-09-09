@@ -81,6 +81,13 @@ class GuiProjectDetails(PagedDialog):
 
         return
 
+    def updateValues(self):
+        """Set all the values of the pages.
+        """
+        self.tabMain.updateValues()
+        self.tabContents.updateValues()
+        return
+
     ##
     #  Slots
     ##
@@ -176,24 +183,20 @@ class GuiProjectDetailsMain(QWidget):
         # Stats
         # =====
 
-        hCounts = self.theIndex.getNovelTitleCounts()
-        nwCount = self.theIndex.getNovelWordCount()
-
         self.wordCountLbl = QLabel("<b>%s:</b>" % self.tr("Words"))
-        self.wordCountVal = QLabel(f"{nwCount:n}")
+        self.wordCountVal = QLabel("")
 
         self.chapCountLbl = QLabel("<b>%s:</b>" % self.tr("Chapters"))
-        self.chapCountVal = QLabel(f"{hCounts[2]:n}")
+        self.chapCountVal = QLabel("")
 
         self.sceneCountLbl = QLabel("<b>%s:</b>" % self.tr("Scenes"))
-        self.sceneCountVal = QLabel(f"{hCounts[3]:n}")
+        self.sceneCountVal = QLabel("")
 
         self.revCountLbl = QLabel("<b>%s:</b>" % self.tr("Revisions"))
-        self.revCountVal = QLabel(f"{self.theProject.saveCount:n}")
+        self.revCountVal = QLabel("")
 
-        edTime = self.theProject.getCurrentEditTime()
         self.editTimeLbl = QLabel("<b>%s:</b>" % self.tr("Editing Time"))
-        self.editTimeVal = QLabel(f"{edTime//3600:02d}:{edTime%3600//60:02d}")
+        self.editTimeVal = QLabel("")
 
         self.statsGrid = QGridLayout()
         self.statsGrid.addWidget(self.wordCountLbl,  0, 0, 1, 1, Qt.AlignRight)
@@ -214,7 +217,6 @@ class GuiProjectDetailsMain(QWidget):
 
         self.projPathLbl = QLabel("<b>%s:</b>" % self.tr("Path"))
         self.projPathVal = QLineEdit()
-        self.projPathVal.setText(self.theProject.projPath)
         self.projPathVal.setReadOnly(True)
 
         self.projPathBox = QHBoxLayout()
@@ -237,6 +239,23 @@ class GuiProjectDetailsMain(QWidget):
         self.outerBox.addLayout(self.projPathBox)
 
         self.setLayout(self.outerBox)
+
+        return
+
+    def updateValues(self):
+        """Set all the values.
+        """
+        hCounts = self.theIndex.getNovelTitleCounts()
+        nwCount = self.theIndex.getNovelWordCount()
+        edTime = self.theProject.getCurrentEditTime()
+
+        self.wordCountVal.setText(f"{nwCount:n}")
+        self.chapCountVal.setText(f"{hCounts[2]:n}")
+        self.sceneCountVal.setText(f"{hCounts[3]:n}")
+        self.revCountVal.setText(f"{self.theProject.saveCount:n}")
+        self.editTimeVal.setText(f"{edTime//3600:02d}:{edTime%3600//60:02d}")
+
+        self.projPathVal.setText(self.theProject.projPath)
 
         return
 
@@ -376,9 +395,6 @@ class GuiProjectDetailsContents(QWidget):
 
         self.setLayout(self.outerBox)
 
-        self._prepareData()
-        self._populateTree()
-
         return
 
     def getColumnSizes(self):
@@ -392,6 +408,13 @@ class GuiProjectDetailsContents(QWidget):
             self.tocTree.columnWidth(4),
         ]
         return retVals
+
+    def updateValues(self):
+        """Populate the tree.
+        """
+        self._prepareData()
+        self._populateTree()
+        return
 
     ##
     #  Internal Functions

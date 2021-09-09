@@ -39,12 +39,13 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.gui import (
     GuiDocEditor, GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiMainMenu,
-    GuiMainStatus, GuiNovelTree, GuiOutline, GuiOutlineDetails,
-    GuiProjectDetails, GuiProjectTree, GuiTheme
+    GuiMainStatus, GuiNovelTree, GuiOutline, GuiOutlineDetails, GuiProjectTree,
+    GuiTheme
 )
 from novelwriter.dialogs import (
     GuiAbout, GuiDocMerge, GuiDocSplit, GuiItemEditor, GuiPreferences,
-    GuiProjectLoad, GuiProjectSettings, GuiUpdates, GuiWordList
+    GuiProjectDetails, GuiProjectLoad, GuiProjectSettings, GuiUpdates,
+    GuiWordList
 )
 from novelwriter.tools import GuiBuildNovel, GuiProjectWizard, GuiWritingStats
 from novelwriter.core import NWProject, NWIndex
@@ -1017,6 +1018,7 @@ class GuiMain(QMainWindow):
         dlgDetails.setModal(False)
         dlgDetails.show()
         dlgDetails.raise_()
+        dlgDetails.updateValues()
 
         return
 

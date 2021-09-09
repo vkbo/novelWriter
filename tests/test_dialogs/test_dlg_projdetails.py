@@ -25,7 +25,7 @@ from tools import getGuiItem
 
 from PyQt5.QtWidgets import QAction, QMessageBox
 
-from novelwriter.gui import GuiProjectDetails
+from novelwriter.dialogs import GuiProjectDetails
 
 keyDelay = 2
 typeDelay = 1
@@ -33,7 +33,7 @@ stepDelay = 20
 
 
 @pytest.mark.gui
-def testGuiProjDetails_Dialog(qtbot, monkeypatch, nwGUI, nwLipsum):
+def testDlgProjDetails_Dialog(qtbot, monkeypatch, nwGUI, nwLipsum):
     """Test the project details dialog.
     """
     # Block message box
@@ -111,4 +111,4 @@ def testGuiProjDetails_Dialog(qtbot, monkeypatch, nwGUI, nwLipsum):
     projDet._doClose()
     nwGUI.closeMain()
 
-# END Test testGuiProjDetails_Dialog
+# END Test testDlgProjDetails_Dialog
