@@ -1018,6 +1018,7 @@ class GuiMain(QMainWindow):
         dlgDetails.setModal(False)
         dlgDetails.show()
         dlgDetails.raise_()
+        dlgDetails.updateValues()
 
         return
 
