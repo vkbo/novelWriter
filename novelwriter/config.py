@@ -108,7 +108,6 @@ class Config:
         # Features
         self.hideVScroll = False  # Hide vertical scroll bars on main widgets
         self.hideHScroll = False  # Hide horizontal scroll bars on main widgets
-        self.fullStatus  = True   # Show the full status text in the project tree
         self.emphLabels  = True   # Add emphasis to H1 and H2 item labels
 
         # Project
@@ -145,6 +144,7 @@ class Config:
 
         self.wordCountTimer  = 5.0    # Interval for word count update in seconds
         self.bigDocLimit     = 800    # Size threshold for heavy editor features in kilobytes
+        self.incNotesWCount  = True   # The status bar word count includes notes
 
         self.highlightQuotes = True   # Highlight text in quotes
         self.allowOpenSQuote = False  # Allow open-ended single quotes
@@ -179,9 +179,9 @@ class Config:
         self.askBeforeBackup = True
 
         # State
-        self.showRefPanel = True
-        self.viewComments = True
-        self.viewSynopsis = True
+        self.showRefPanel = True  # The reference panel for the viewer is visible
+        self.viewComments = True  # Comments are shown in the viewer
+        self.viewSynopsis = True  # Synopsis is shown in the viewer
 
         # Check Qt5 Versions
         verQt = splitVersionNumber(QT_VERSION_STR)
@@ -466,7 +466,6 @@ class Config:
         cnfSec = "Project"
         self.autoSaveProj = theConf.rdInt(cnfSec, "autosaveproject", self.autoSaveProj)
         self.autoSaveDoc  = theConf.rdInt(cnfSec, "autosavedoc", self.autoSaveDoc)
-        self.fullStatus   = theConf.rdBool(cnfSec, "fullstatus", self.fullStatus)
         self.emphLabels   = theConf.rdBool(cnfSec, "emphlabels", self.emphLabels)
 
         # Editor
@@ -498,7 +497,9 @@ class Config:
         self.showTabsNSpaces = theConf.rdBool(cnfSec, "showtabsnspaces", self.showTabsNSpaces)
         self.showLineEndings = theConf.rdBool(cnfSec, "showlineendings", self.showLineEndings)
         self.showMultiSpaces = theConf.rdBool(cnfSec, "showmultispaces", self.showMultiSpaces)
+        self.wordCountTimer  = theConf.rdFlt(cnfSec, "wordcounttimer", self.wordCountTimer)
         self.bigDocLimit     = theConf.rdInt(cnfSec, "bigdoclimit", self.bigDocLimit)
+        self.incNotesWCount  = theConf.rdBool(cnfSec, "incnoteswcount", self.incNotesWCount)
         self.showFullPath    = theConf.rdBool(cnfSec, "showfullpath", self.showFullPath)
         self.highlightQuotes = theConf.rdBool(cnfSec, "highlightquotes", self.highlightQuotes)
         self.allowOpenSQuote = theConf.rdBool(cnfSec, "allowopensquote", self.allowOpenSQuote)
@@ -588,7 +589,6 @@ class Config:
         theConf["Project"] = {
             "autosaveproject": str(self.autoSaveProj),
             "autosavedoc":     str(self.autoSaveDoc),
-            "fullstatus":      str(self.fullStatus),
             "emphlabels":      str(self.emphLabels),
         }
 
@@ -620,7 +620,9 @@ class Config:
             "showtabsnspaces": str(self.showTabsNSpaces),
             "showlineendings": str(self.showLineEndings),
             "showmultispaces": str(self.showMultiSpaces),
+            "wordcounttimer":  str(self.wordCountTimer),
             "bigdoclimit":     str(self.bigDocLimit),
+            "incnoteswcount":  str(self.incNotesWCount),
             "showfullpath":    str(self.showFullPath),
             "highlightquotes": str(self.highlightQuotes),
             "allowopensquote": str(self.allowOpenSQuote),
@@ -821,7 +823,7 @@ class Config:
         return True
 
     def setDocPanePos(self, panePos):
-        self.docPanePos  = [int(x/self.guiScale) for x in panePos]
+        self.docPanePos = [int(x/self.guiScale) for x in panePos]
         self.confChanged = True
         return True
 
@@ -832,22 +834,22 @@ class Config:
 
     def setOutlinePanePos(self, panePos):
         self.outlnPanePos = [int(x/self.guiScale) for x in panePos]
-        self.confChanged  = True
+        self.confChanged = True
         return True
 
     def setShowRefPanel(self, checkState):
         self.showRefPanel = checkState
-        self.confChanged  = True
+        self.confChanged = True
         return self.showRefPanel
 
     def setViewComments(self, viewState):
         self.viewComments = viewState
-        self.confChanged  = True
+        self.confChanged = True
         return self.viewComments
 
     def setViewSynopsis(self, viewState):
         self.viewSynopsis = viewState
-        self.confChanged  = True
+        self.confChanged = True
         return self.viewSynopsis
 
     ##

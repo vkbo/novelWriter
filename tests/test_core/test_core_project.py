@@ -868,12 +868,9 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
     assert theProject.statusItems._theCounts == [1, 1, 1, 2, 0]
     assert theProject.importItems._theCounts == [3, 0, 0, 1, 0]
 
-    # Check word counts
+    # Session stats
     theProject.currWCount = 200
     theProject.lastWCount = 100
-    assert theProject.getSessionWordCount() == 100
-
-    # Session stats
     with monkeypatch.context() as mp:
         mp.setattr("os.path.isdir", lambda *a, **k: False)
         assert not theProject._appendSessionStats(idleTime=0)
@@ -888,8 +885,8 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
     statsFile = os.path.join(theProject.projMeta, nwFiles.SESS_STATS)
 
     theProject.projOpened = 1600002000
-    theProject.novelWCount = 200
-    theProject.notesWCount = 100
+    theProject.currNovelWC = 200
+    theProject.currNotesWC = 100
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.project.time", lambda: 1600005600)

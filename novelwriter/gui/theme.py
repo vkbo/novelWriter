@@ -5,7 +5,7 @@ Classes managing and caching themes and icons
 
 File History:
 Created: 2019-05-18 [0.1.3] GuiTheme
-Created: 2019-11-08 [0.4.0] GuiIcons
+Created: 2019-11-08 [0.4]   GuiIcons
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen

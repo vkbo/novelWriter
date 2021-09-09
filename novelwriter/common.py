@@ -4,7 +4,7 @@ novelWriter – Common Functions
 Various common functions
 
 File History:
-Created: 2019-05-12 [0.1.0]
+Created: 2019-05-12 [0.1]
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen
@@ -441,9 +441,10 @@ class NWConfigParser(ConfigParser):
 
     CNF_STR   = 0
     CNF_INT   = 1
-    CNF_BOOL  = 2
-    CNF_S_LST = 3
-    CNF_I_LST = 4
+    CNF_FLOAT = 2
+    CNF_BOOL  = 3
+    CNF_S_LST = 4
+    CNF_I_LST = 5
 
     def __init__(self):
         super().__init__()
@@ -457,6 +458,11 @@ class NWConfigParser(ConfigParser):
         """Read integer value.
         """
         return self._parseLine(section, option, default, self.CNF_INT)
+
+    def rdFlt(self, section, option, default):
+        """Read float value.
+        """
+        return self._parseLine(section, option, default, self.CNF_FLOAT)
 
     def rdBool(self, section, option, default):
         """Read boolean value.
@@ -503,6 +509,8 @@ class NWConfigParser(ConfigParser):
                     return self.get(section, option)
                 elif type == self.CNF_INT:
                     return self.getint(section, option)
+                elif type == self.CNF_FLOAT:
+                    return self.getfloat(section, option)
                 elif type == self.CNF_BOOL:
                     return self.getboolean(section, option)
                 elif type in (self.CNF_I_LST, self.CNF_S_LST):

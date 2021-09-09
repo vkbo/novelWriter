@@ -5,7 +5,7 @@ GUI classes for the main window project tree
 
 File History:
 Created: 2018-09-29 [0.0.1] GuiProjectTree
-Created: 2020-06-04 [0.7.0] GuiProjectTreeMenu
+Created: 2020-06-04 [0.7]   GuiProjectTreeMenu
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen
@@ -51,7 +51,7 @@ class GuiProjectTree(QTreeWidget):
 
     novelItemChanged = pyqtSignal()
     noteItemChanged = pyqtSignal()
-    projectWordCountChanged = pyqtSignal(int, int)
+    wordCountsChanged = pyqtSignal()
 
     def __init__(self, theParent):
         QTreeWidget.__init__(self, theParent)
@@ -86,8 +86,7 @@ class GuiProjectTree(QTreeWidget):
         self.setIndentation(iPx)
         self.setColumnCount(4)
         self.setHeaderLabels([
-            self.tr("Project Tree"), self.tr("Words"), "",
-            self.tr("Status") if self.mainConf.fullStatus else ""
+            self.tr("Project Tree"), self.tr("Words"), "", ""
         ])
 
         treeHeadItem = self.headerItem()
@@ -305,7 +304,7 @@ class GuiProjectTree(QTreeWidget):
             nwItem.setWordCount(wC)
             nwItem.setParaCount(pC)
             self.propagateCount(tHandle, wC)
-            self.projectWordCount()
+            self.wordCountsChanged.emit()
 
         return True
 
@@ -533,7 +532,7 @@ class GuiProjectTree(QTreeWidget):
                     self.theIndex.deleteHandle(tHandle)
                     self._deleteTreeItem(tHandle)
                     self._setTreeChanged(True)
-                    self.projectWordCount()
+                    self.wordCountsChanged.emit()
 
             else:
                 # The file is not already in the trash folder, so we
@@ -630,11 +629,7 @@ class GuiProjectTree(QTreeWidget):
         trItem.setText(self.C_NAME, nwItem.itemName)
         trItem.setIcon(self.C_EXPORT, expIcon)
         trItem.setIcon(self.C_STATUS, statIcon)
-
-        if self.mainConf.fullStatus:
-            trItem.setText(self.C_STATUS, nwItem.itemStatus)
-        else:
-            trItem.setToolTip(self.C_STATUS, nwItem.itemStatus)
+        trItem.setToolTip(self.C_STATUS, nwItem.itemStatus)
 
         if self.mainConf.emphLabels and nwItem.itemLayout == nwItemLayout.DOCUMENT:
             if hLevel in ("H1", "H2"):
@@ -674,25 +669,6 @@ class GuiProjectTree(QTreeWidget):
 
         return
 
-    def projectWordCount(self):
-        """Sum up the word counts for all root items and set the
-        relevant values in the project and on the status bar. This call
-        is a fast way of getting this number, and depends on the
-        propagateCount function being called when it should to maintain
-        the correct count.
-        """
-        nWords = 0
-        for n in range(self.topLevelItemCount()):
-            tItem = self.topLevelItem(n)
-            nWords += int(tItem.data(self.C_COUNT, Qt.UserRole))
-
-        self.theProject.setProjectWordCount(nWords)
-        sWords = self.theProject.getSessionWordCount()
-
-        self.projectWordCountChanged.emit(nWords, sWords)
-
-        return
-
     def buildTree(self):
         """Build the entire project tree from scratch. This depends on
         the save project item iterator in the project class which will
@@ -701,11 +677,6 @@ class GuiProjectTree(QTreeWidget):
         """
         logger.debug("Building the project tree ...")
         self.clearTree()
-
-        self.setHeaderLabels([
-            self.tr("Project Tree"), self.tr("Words"), "",
-            self.tr("Status") if self.mainConf.fullStatus else ""
-        ])
 
         iCount = 0
         for nwItem in self.theProject.getProjectItems():
@@ -819,7 +790,7 @@ class GuiProjectTree(QTreeWidget):
         """Slot for updating the word count of a specific item.
         """
         self.propagateCount(tHandle, wCount)
-        self.projectWordCount()
+        self.wordCountsChanged.emit()
         return
 
     ##

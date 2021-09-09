@@ -4,7 +4,8 @@ novelWriter – GUI Main Window Status Bar
 GUI class for the main window status bar
 
 File History:
-Created: 2019-04-20 [0.0.1]
+Created: 2019-04-20 [0.0.1] GuiMainStatus
+Created: 2020-05-17 [0.5.1] StatusLED
 
 This file is a part of novelWriter
 Copyright 2018–2021, Veronica Berglyd Olsen
@@ -28,7 +29,7 @@ import novelwriter
 
 from time import time
 
-from PyQt5.QtCore import QLocale, pyqtSlot
+from PyQt5.QtCore import pyqtSlot, QLocale
 from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
@@ -125,7 +126,7 @@ class GuiMainStatus(QStatusBar):
         """
         self.setRefTime(None)
         self.setLanguage(None, "")
-        self.doUpdateProjectStats(0, 0)
+        self.setProjectStats(0, 0)
         self.setProjectStatus(nwState.NONE)
         self.setDocumentStatus(nwState.NONE)
         self.updateTime()
@@ -176,6 +177,16 @@ class GuiMainStatus(QStatusBar):
 
         return
 
+    def setProjectStats(self, pWC, sWC):
+        """Update the current project statistics.
+        """
+        self.statsText.setText(self.tr("Words: {0} ({1})").format(f"{pWC:n}", f"{sWC:+n}"))
+        if self.mainConf.incNotesWCount:
+            self.statsText.setToolTip(self.tr("Project word count (session change)"))
+        else:
+            self.statsText.setToolTip(self.tr("Novel word count (session change)"))
+        return
+
     def updateTime(self, idleTime=0.0):
         """Update the session clock.
         """
@@ -209,14 +220,6 @@ class GuiMainStatus(QStatusBar):
             else:
                 self.langText.setToolTip(theLanguage)
 
-        return
-
-    @pyqtSlot(int, int)
-    def doUpdateProjectStats(self, pWC, sWC):
-        """Update the current project statistics.
-        """
-        self.statsText.setText(self.tr("Words: {0} ({1})").format(f"{pWC:n}", f"{sWC:+n}"))
-        self.statsText.setToolTip(self.tr("Project word count (session change)"))
         return
 
     @pyqtSlot(bool)

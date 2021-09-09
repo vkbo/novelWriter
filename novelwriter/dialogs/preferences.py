@@ -244,14 +244,6 @@ class GuiPreferencesGeneral(QWidget):
         # ============
         self.mainForm.addGroupLabel(self.tr("GUI Settings"))
 
-        self.fullStatus = QSwitch()
-        self.fullStatus.setChecked(self.mainConf.fullStatus)
-        self.mainForm.addRow(
-            self.tr("Show status text in project tree"),
-            self.fullStatus,
-            self.tr("If disabled, only the icon is shown."),
-        )
-
         self.emphLabels = QSwitch()
         self.emphLabels.setChecked(self.mainConf.emphLabels)
         self.mainForm.addRow(
@@ -295,7 +287,6 @@ class GuiPreferencesGeneral(QWidget):
         guiDark     = self.guiDark.isChecked()
         guiFont     = self.guiFont.text()
         guiFontSize = self.guiFontSize.value()
-        fullStatus  = self.fullStatus.isChecked()
         emphLabels  = self.emphLabels.isChecked()
 
         # Check if restart is needed
@@ -309,7 +300,6 @@ class GuiPreferencesGeneral(QWidget):
 
         # Check if refreshing project tree is needed
         refreshTree = False
-        refreshTree |= self.mainConf.fullStatus != fullStatus
         refreshTree |= self.mainConf.emphLabels != emphLabels
 
         self.mainConf.guiLang      = guiLang
@@ -318,7 +308,6 @@ class GuiPreferencesGeneral(QWidget):
         self.mainConf.guiDark      = guiDark
         self.mainConf.guiFont      = guiFont
         self.mainConf.guiFontSize  = guiFontSize
-        self.mainConf.fullStatus   = fullStatus
         self.mainConf.emphLabels   = emphLabels
         self.mainConf.showFullPath = self.showFullPath.isChecked()
         self.mainConf.hideVScroll  = self.hideVScroll.isChecked()
@@ -758,6 +747,15 @@ class GuiPreferencesEditor(QWidget):
             theUnit=self.tr("seconds")
         )
 
+        # Include Notes in Word Count
+        self.incNotesWCount = QSwitch()
+        self.incNotesWCount.setChecked(self.mainConf.incNotesWCount)
+        self.mainForm.addRow(
+            self.tr("Include project notes in total word count"),
+            self.incNotesWCount,
+            self.tr("Affects the word count shown on the status bar.")
+        )
+
         # Writing Guides
         # ==============
         self.mainForm.addGroupLabel(self.tr("Writing Guides"))
@@ -826,6 +824,7 @@ class GuiPreferencesEditor(QWidget):
 
         # Word Count
         self.mainConf.wordCountTimer = self.wordCountTimer.value()
+        self.mainConf.incNotesWCount = self.incNotesWCount.isChecked()
 
         # Writing Guides
         self.mainConf.showTabsNSpaces = self.showTabsNSpaces.isChecked()
