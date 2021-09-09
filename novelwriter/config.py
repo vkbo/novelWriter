@@ -144,6 +144,7 @@ class Config:
 
         self.wordCountTimer  = 5.0    # Interval for word count update in seconds
         self.bigDocLimit     = 800    # Size threshold for heavy editor features in kilobytes
+        self.incNotesWCount  = True   # The status bar word count includes notes
 
         self.highlightQuotes = True   # Highlight text in quotes
         self.allowOpenSQuote = False  # Allow open-ended single quotes
@@ -178,10 +179,9 @@ class Config:
         self.askBeforeBackup = True
 
         # State
-        self.showRefPanel   = True  # The reference panel for the viewer is visible
-        self.viewComments   = True  # Comments are shown in the viewer
-        self.viewSynopsis   = True  # Synopsis is shown in the viewer
-        self.incNotesWCount = True  # The status bar word count includes notes
+        self.showRefPanel = True  # The reference panel for the viewer is visible
+        self.viewComments = True  # Comments are shown in the viewer
+        self.viewSynopsis = True  # Synopsis is shown in the viewer
 
         # Check Qt5 Versions
         verQt = splitVersionNumber(QT_VERSION_STR)
@@ -498,6 +498,7 @@ class Config:
         self.showLineEndings = theConf.rdBool(cnfSec, "showlineendings", self.showLineEndings)
         self.showMultiSpaces = theConf.rdBool(cnfSec, "showmultispaces", self.showMultiSpaces)
         self.bigDocLimit     = theConf.rdInt(cnfSec, "bigdoclimit", self.bigDocLimit)
+        self.incNotesWCount  = theConf.rdBool(cnfSec, "incnoteswcount", self.incNotesWCount)
         self.showFullPath    = theConf.rdBool(cnfSec, "showfullpath", self.showFullPath)
         self.highlightQuotes = theConf.rdBool(cnfSec, "highlightquotes", self.highlightQuotes)
         self.allowOpenSQuote = theConf.rdBool(cnfSec, "allowopensquote", self.allowOpenSQuote)
@@ -517,7 +518,6 @@ class Config:
         self.showRefPanel   = theConf.rdBool(cnfSec, "showrefpanel", self.showRefPanel)
         self.viewComments   = theConf.rdBool(cnfSec, "viewcomments", self.viewComments)
         self.viewSynopsis   = theConf.rdBool(cnfSec, "viewsynopsis", self.viewSynopsis)
-        self.incNotesWCount = theConf.rdBool(cnfSec, "incnoteswcount", self.incNotesWCount)
         self.searchCase     = theConf.rdBool(cnfSec, "searchcase", self.searchCase)
         self.searchWord     = theConf.rdBool(cnfSec, "searchword", self.searchWord)
         self.searchRegEx    = theConf.rdBool(cnfSec, "searchregex", self.searchRegEx)
@@ -620,6 +620,7 @@ class Config:
             "showlineendings": str(self.showLineEndings),
             "showmultispaces": str(self.showMultiSpaces),
             "bigdoclimit":     str(self.bigDocLimit),
+            "incnoteswcount":  str(self.incNotesWCount),
             "showfullpath":    str(self.showFullPath),
             "highlightquotes": str(self.highlightQuotes),
             "allowopensquote": str(self.allowOpenSQuote),
@@ -639,7 +640,6 @@ class Config:
             "showrefpanel":    str(self.showRefPanel),
             "viewcomments":    str(self.viewComments),
             "viewsynopsis":    str(self.viewSynopsis),
-            "incnoteswcount":  str(self.incNotesWCount),
             "searchcase":      str(self.searchCase),
             "searchword":      str(self.searchWord),
             "searchregex":     str(self.searchRegEx),

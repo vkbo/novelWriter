@@ -747,6 +747,15 @@ class GuiPreferencesEditor(QWidget):
             theUnit=self.tr("seconds")
         )
 
+        # Include Notes in Word Count
+        self.incNotesWCount = QSwitch()
+        self.incNotesWCount.setChecked(self.mainConf.incNotesWCount)
+        self.mainForm.addRow(
+            self.tr("Include project notes in total word count"),
+            self.incNotesWCount,
+            self.tr("Affects the word count shown on the status bar.")
+        )
+
         # Writing Guides
         # ==============
         self.mainForm.addGroupLabel(self.tr("Writing Guides"))
@@ -815,6 +824,7 @@ class GuiPreferencesEditor(QWidget):
 
         # Word Count
         self.mainConf.wordCountTimer = self.wordCountTimer.value()
+        self.mainConf.incNotesWCount = self.incNotesWCount.isChecked()
 
         # Writing Guides
         self.mainConf.showTabsNSpaces = self.showTabsNSpaces.isChecked()

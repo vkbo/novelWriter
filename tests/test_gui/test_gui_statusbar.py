@@ -22,8 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import time
 import pytest
 
-from PyQt5.QtCore import QPoint
-from PyQt5.QtWidgets import QMessageBox, QMenu
+from PyQt5.QtWidgets import QMessageBox
 
 from novelwriter.core import NWDoc
 from novelwriter.enum import nwItemClass, nwState
@@ -89,17 +88,12 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, fncProj):
     assert nwGUI.statusBar.langText.text() == "American English"
 
     # Project Stats
-    nwGUI.statusBar.mainConf.incNotesWCount = True
-    nwGUI.statusBar._doToggleIncludeNotes(None)
+    nwGUI.statusBar.mainConf.incNotesWCount = False
+    nwGUI._updateStatusWordCount()
     assert nwGUI.statusBar.statsText.text() == "Words: 6 (+6)"
-    nwGUI.statusBar._doToggleIncludeNotes(None)
+    nwGUI.statusBar.mainConf.incNotesWCount = True
+    nwGUI._updateStatusWordCount()
     assert nwGUI.statusBar.statsText.text() == "Words: 8 (+8)"
-
-    # Context Menu
-    with monkeypatch.context() as mp:
-        # Only checks that nothing crashes
-        mp.setattr(QMenu, "exec_", lambda *a: None)
-        nwGUI.statusBar._openWordCountMenu(QPoint(1, 1))
 
     # qtbot.stopForInteraction()
 

@@ -29,9 +29,9 @@ import novelwriter
 
 from time import time
 
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QLocale
+from PyQt5.QtCore import pyqtSlot, QLocale
 from PyQt5.QtGui import QColor, QPainter
-from PyQt5.QtWidgets import qApp, QAction, QMenu, QStatusBar, QLabel, QAbstractButton
+from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
 from novelwriter.common import formatTime
 from novelwriter.enum import nwState
@@ -40,8 +40,6 @@ logger = logging.getLogger(__name__)
 
 
 class GuiMainStatus(QStatusBar):
-
-    wordCountSettingChanged = pyqtSignal()
 
     def __init__(self, theParent):
         QStatusBar.__init__(self, theParent)
@@ -96,8 +94,6 @@ class GuiMainStatus(QStatusBar):
         self.statsIcon.setPixmap(self.theTheme.getPixmap("status_stats", (iPx, iPx)))
         self.statsIcon.setContentsMargins(0, 0, 0, 0)
         self.statsText.setContentsMargins(0, 0, xM, 0)
-        self.statsText.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.statsText.customContextMenuRequested.connect(self._openWordCountMenu)
         self.addPermanentWidget(self.statsIcon)
         self.addPermanentWidget(self.statsText)
 
@@ -238,28 +234,6 @@ class GuiMainStatus(QStatusBar):
         """Slot for updating the document status.
         """
         self.setDocumentStatus(nwState.GOOD if isChanged else nwState.BAD)
-        return
-
-    @pyqtSlot("QPoint")
-    def _openWordCountMenu(self, clickPos):
-        """Open the word count context menu in-place.
-        """
-        ctxMenu = QMenu(self)
-        toggleNotes = QAction(self.tr("Include project notes in word count"), self)
-        toggleNotes.setCheckable(True)
-        toggleNotes.setChecked(self.mainConf.incNotesWCount)
-        toggleNotes.triggered.connect(self._doToggleIncludeNotes)
-        ctxMenu.addAction(toggleNotes)
-        ctxMenu.exec_(self.statsText.mapToGlobal(clickPos))
-
-        return
-
-    @pyqtSlot(bool)
-    def _doToggleIncludeNotes(self, isChecked):
-        """Process the toggle request for the word count context menu.
-        """
-        self.mainConf.setIncludeNotesWCount(not self.mainConf.incNotesWCount)
-        self.wordCountSettingChanged.emit()
         return
 
 # END Class GuiMainStatus
