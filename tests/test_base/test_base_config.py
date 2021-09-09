@@ -519,24 +519,28 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     # Flag Setters
     # ============
 
-    assert not tmpConf.setShowRefPanel(False)
-    assert not tmpConf.showRefPanel
-    assert tmpConf.setShowRefPanel(True)
+    assert tmpConf.setShowRefPanel(False) is False
+    assert tmpConf.showRefPanel is False
+    assert tmpConf.setShowRefPanel(True) is True
 
-    assert not tmpConf.setViewComments(False)
-    assert not tmpConf.viewComments
-    assert tmpConf.setViewComments(True)
+    assert tmpConf.setViewComments(False) is False
+    assert tmpConf.viewComments is False
+    assert tmpConf.setViewComments(True) is True
 
-    assert not tmpConf.setViewSynopsis(False)
-    assert not tmpConf.viewSynopsis
-    assert tmpConf.setViewSynopsis(True)
+    assert tmpConf.setViewSynopsis(False) is False
+    assert tmpConf.viewSynopsis is False
+    assert tmpConf.setViewSynopsis(True) is True
+
+    assert tmpConf.setIncludeNotesWCount(False) is False
+    assert tmpConf.incNotesWCount is False
+    assert tmpConf.setIncludeNotesWCount(True) is True
 
     # Check Final File
     # ================
 
-    assert tmpConf.confChanged
-    assert tmpConf.saveConfig()
-    assert not tmpConf.confChanged
+    assert tmpConf.confChanged is True
+    assert tmpConf.saveConfig() is True
+    assert tmpConf.confChanged is False
 
     copyfile(confFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 9, 10])
