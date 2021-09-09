@@ -24,6 +24,7 @@ from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.itemeditor import GuiItemEditor
 from novelwriter.dialogs.preferences import GuiPreferences
+from novelwriter.dialogs.projdetails import GuiProjectDetails
 from novelwriter.dialogs.projload import GuiProjectLoad
 from novelwriter.dialogs.projsettings import GuiProjectSettings
 from novelwriter.dialogs.quotes import GuiQuoteSelect
@@ -36,6 +37,7 @@ __all__ = [
     "GuiDocSplit",
     "GuiItemEditor",
     "GuiPreferences",
+    "GuiProjectDetails",
     "GuiProjectLoad",
     "GuiProjectSettings",
     "GuiQuoteSelect",
