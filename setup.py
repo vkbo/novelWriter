@@ -66,8 +66,7 @@ def extractVersion():
         print("Could not read file: %s" % initFile)
         print(str(e))
 
-    print("novelWriter version is: %s (%s) at %s" % (numVers, hexVers, relDate))
-    print("")
+    print("novelWriter version: %s (%s) at %s" % (numVers, hexVers, relDate))
 
     return numVers, hexVers, relDate
 
@@ -80,26 +79,41 @@ def compactVersion(numVers):
     return numVers
 
 
-def sysCall(callArgs):
+def sysCall(callArgs, cwd=None):
     """Wrapper function for system calls.
     """
-    sysP = subprocess.Popen(callArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    sysP = subprocess.Popen(
+        callArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        shell=True, cwd=cwd
+    )
     stdOut, stdErr = sysP.communicate()
     return stdOut.decode("utf-8"), stdErr.decode("utf-8"), sysP.returncode
 
 
 def readFile(fileName):
-    """Read an entire file return as a string.
+    """Read an entire file and return as a string.
     """
     with open(fileName, mode="r") as inFile:
         return inFile.read()
 
 
 def writeFile(fileName, writeText):
-    """Write string to file
+    """Write string to file.
     """
     with open(fileName, mode="w+") as outFile:
         outFile.write(writeText)
+
+
+def toUpload(srcPath, dstName=None):
+    """Copy a file produced by one of the build functions to the uplaod
+    directory. The file can optionally be given a new name."""
+    uplDir = "dist_upload"
+    if not os.path.isdir(uplDir):
+        os.mkdir(uplDir)
+    if dstName is None:
+        dstName = os.path.basename(srcPath)
+    shutil.copyfile(srcPath, os.path.join(uplDir, dstName))
+    return
 
 
 # =============================================================================================== #
@@ -140,10 +154,10 @@ def installPackages(hostOS):
 
 
 ##
-#  Clean Build and Dist Folders (clean)
+#  Clean Build and Dist Folders (build-clean)
 ##
 
-def cleanInstall():
+def cleanBuildDirs():
     """Recursively delete the 'build' and 'dist' folders.
     """
     print("")
@@ -156,7 +170,7 @@ def cleanInstall():
                 shutil.rmtree(rmDir)
                 print("Deleted: %s" % rmDir)
             except OSError:
-                pass
+                print("Failed:  %s" % rmDir)
         else:
             print("Missing: %s" % rmDir)
 
@@ -191,11 +205,19 @@ def buildPdfManual():
     finalFile = os.path.join("novelwriter", "assets", "manual.pdf")
 
     try:
-        subprocess.call(["make", "-C", "docs", "clean"])
-        _, stdErr, exCode = sysCall(["make -C docs latexpdf"])
+        subprocess.call(["make", "clean"], cwd="docs")
+        stdOut, stdErr, exCode = sysCall(["make latexpdf"], cwd="docs")
         if exCode == 0:
             if os.path.isfile(finalFile):
                 os.unlink(finalFile)
+            outLines = stdOut.splitlines()
+            for aLine in outLines:
+                if aLine.startswith("processing manual.tex..."):
+                    break
+                print(aLine)
+            print("\n[LaTeX output truncated ...]\n")
+            print("\n".join(outLines[-6:]))
+            print("")
             os.rename(buildFile, finalFile)
         else:
             raise Exception(stdErr)
@@ -234,6 +256,7 @@ def buildQtI18n():
         subprocess.call(["lrelease", "-verbose", "novelWriter.pro"])
     except Exception as e:
         print("Qt5 Linguist tools seem to be missing")
+        print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
         print(str(e))
         sys.exit(1)
 
@@ -273,6 +296,7 @@ def buildQtI18nTS():
         subprocess.call(["pylupdate5", "-verbose", "-noobsolete", "novelWriter.pro"])
     except Exception as e:
         print("PyQt5 Linguist tools seem to be missing")
+        print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
         print(str(e))
         sys.exit(1)
 
@@ -367,10 +391,12 @@ def makeMinimalPackage(targetOS):
     # =================
 
     numVers, _, _ = extractVersion()
-    zipFile = f"novelWriter-{numVers}-minimal{targName}.zip"
+    pkgVers = compactVersion(numVers)
+    zipFile = f"novelWriter-{pkgVers}-minimal{targName}.zip"
     outFile = os.path.join(bldDir, zipFile)
     if os.path.isfile(outFile):
         os.unlink(outFile)
+    print("")
 
     rootFiles = [
         "README.md",
@@ -387,10 +413,10 @@ def makeMinimalPackage(targetOS):
 
         for nRoot, _, nFiles in os.walk("novelwriter"):
             if nRoot.endswith("__pycache__"):
-                print("Skipping Folder: %s" % nRoot)
+                print("Skipped: %s" % nRoot)
                 continue
 
-            print("Adding Folder: %s [%d files]" % (nRoot, len(nFiles)))
+            print("Added: %s/* [Files: %d]" % (nRoot, len(nFiles)))
             for aFile in nFiles:
                 if aFile.endswith(".pyc"):
                     print("Skipping File: %s" % aFile)
@@ -399,31 +425,31 @@ def makeMinimalPackage(targetOS):
 
         if targetOS == OS_WIN:
             zipObj.write("novelWriter.py", "novelWriter.pyw")
-            print("Adding File: novelWriter.pyw")
+            print("Added: novelWriter.pyw")
             zipObj.write(os.path.join("setup", "windows_install.bat"), "windows_install.bat")
-            print("Adding File: windows_install.bat")
+            print("Added: windows_install.bat")
             zipObj.write(os.path.join("setup", "windows_uninstall.bat"), "windows_uninstall.bat")
-            print("Adding File: windows_uninstall.bat")
+            print("Added: windows_uninstall.bat")
 
         else:  # Linux and Mac
             # Add icons
             for nRoot, _, nFiles in os.walk(os.path.join("setup", "data")):
-                print("Adding Folder: %s [%d files]" % (nRoot, len(nFiles)))
+                print("Added: %s/* [Files: %d]" % (nRoot, len(nFiles)))
                 for aFile in nFiles:
                     zipObj.write(os.path.join(nRoot, aFile))
 
             zipObj.write(os.path.join("setup", "description_pypi.md"))
-            print("Adding File: setup/description_pypi.md")
+            print("Added: setup/description_pypi.md")
 
             zipObj.write("novelWriter.py")
-            print("Adding File: novelWriter.py")
+            print("Added: novelWriter.py")
 
         for aFile in rootFiles:
-            print("Adding File: %s" % aFile)
+            print("Added: %s" % aFile)
             zipObj.write(aFile)
 
         zipObj.write(os.path.join("novelwriter", "assets", "manual.pdf"), "UserManual.pdf")
-        print("Adding File: UserManual.pdf")
+        print("Added: UserManual.pdf")
 
     print("")
     print("Created File: %s" % outFile)
@@ -432,13 +458,16 @@ def makeMinimalPackage(targetOS):
     # ====================
 
     try:
-        shaFile = open(outFile+".sha256", mode="w")
-        subprocess.call(["sha256sum", zipFile], stdout=shaFile, cwd=bldDir)
-        shaFile.close()
-        print("SHA256 Sum:   %s" % (outFile+".sha256"))
+        shaFile = outFile+".sha256"
+        with open(shaFile, mode="w") as fOut:
+            subprocess.call(["sha256sum", zipFile], stdout=fOut, cwd=bldDir)
+        print("SHA256 Sum:   %s" % shaFile)
     except Exception as e:
         print("Could not generate sha256 file")
         print(str(e))
+
+    toUpload(outFile)
+    toUpload(shaFile)
 
     print("")
 
@@ -449,7 +478,7 @@ def makeMinimalPackage(targetOS):
 #  Make Debian Package (build-deb)
 ##
 
-def makeDebianPackage():
+def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buildName=""):
     """Build a Debian package.
     """
     print("")
@@ -460,17 +489,21 @@ def makeDebianPackage():
     # Version Info
     # ============
 
-    numVers, _, relDate = extractVersion()
+    numVers, hexVers, relDate = extractVersion()
     pkgVers = compactVersion(numVers)
     relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
     pkgDate = email.utils.format_datetime(relDate.replace(hour=12, tzinfo=None))
+    print("")
+
+    if buildName:
+        pkgVers = f"{pkgVers}~{buildName}"
 
     # Set Up Folder
     # =============
 
     bldDir = "dist_deb"
-    pkgDir = f"novelWriter-{pkgVers}"
-    outDir = f"{bldDir}/{pkgDir}"
+    bldPkg = f"novelwriter_{pkgVers}"
+    outDir = f"{bldDir}/{bldPkg}"
     debDir = f"{outDir}/debian"
     datDir = f"{outDir}/data"
 
@@ -527,7 +560,7 @@ def makeDebianPackage():
     # Copy/Write Root Files
     # =====================
 
-    copyFiles = ["CREDITS.md", "CHANGELOG.md", "LICENSE.md", "pyproject.toml"]
+    copyFiles = ["LICENSE.md", "CREDITS.md", "CHANGELOG.md", "pyproject.toml"]
     for copyFile in copyFiles:
         shutil.copyfile(copyFile, f"{outDir}/{copyFile}")
         print("Copied: %s" % copyFile)
@@ -560,7 +593,7 @@ def makeDebianPackage():
     print("Copied: debian/*")
 
     writeFile(f"{debDir}/changelog", (
-        f"novelwriter ({pkgVers}) unstable; urgency=medium\n\n"
+        f"novelwriter ({pkgVers}) {distName}; urgency=low\n\n"
         f"  * Update to version {pkgVers}\n\n"
         f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
     ))
@@ -582,13 +615,99 @@ def makeDebianPackage():
     print("Running dpkg-buildpackage ...")
     print("")
 
-    currDir = os.curdir
-    os.chdir(outDir)
-    subprocess.call(["dpkg-buildpackage", "-us", "-ui", "-uc"])
-    os.chdir(currDir)
+    if signKey is None:
+        signArgs = ["-us", "-uc"]
+    else:
+        signArgs = [f"-k{signKey}"]
+
+    if sourceBuild:
+        subprocess.call(["debuild", "-S"] + signArgs, cwd=outDir)
+        toUpload(f"{bldDir}/{bldPkg}.tar.xz")
+    else:
+        subprocess.call(["dpkg-buildpackage"] + signArgs, cwd=outDir)
+        toUpload(f"{bldDir}/{bldPkg}.tar.xz", f"{bldPkg}.debian.tar.xz")
+        toUpload(f"{bldDir}/{bldPkg}_all.deb")
 
     print("")
     print("Done!")
+    print("")
+
+    if sourceBuild:
+        if hexVers[-2] == "f":
+            ppaName = "novelwriter"
+        else:
+            ppaName = "novelwriter-pre"
+
+        return f"dput {ppaName}/{distName} {bldDir}/{bldPkg}_source.changes"
+
+    return ""
+
+
+##
+#  Make Launchpad Package (build-ubuntu)
+##
+
+def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
+    """Wrapper for building debian packages for launcpad.
+    """
+    print("")
+    print("Launchpad Packages")
+    print("==================")
+    print("")
+
+    if isFirst or isSnapshot:
+        bldNum = "0"
+    else:
+        bldNum = input("Build number [0]: ")
+        if bldNum == "":
+            bldNum = "0"
+
+    distLoop = [
+        ("18.04", "bionic"),
+        ("20.04", "focal"),
+        ("21.04", "hirsute"),
+        ("21.10", "impish"),
+    ]
+
+    tStamp = datetime.datetime.now().strftime("%Y%m%d~%H%M%S")
+    if isSnapshot:
+        print(f"Building Ununtu SNAPSHOT~{tStamp} for:")
+        print("")
+    else:
+        print("Building Ubuntu packages for:")
+        print("")
+    for distNum, codeName in distLoop:
+        print(f" * Ubuntu {distNum} {codeName.title()}")
+    print("")
+
+    if doSign:
+        signKey = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
+    else:
+        signKey = None
+
+    print(f"Sign Key: {str(signKey)}")
+    print("")
+
+    dputCmd = []
+    for distNum, codeName in distLoop:
+        if isSnapshot:
+            buildName = f"SNAPSHOT~{tStamp}~ubuntu{distNum}.0"
+        else:
+            buildName = f"ubuntu{distNum}.{bldNum}"
+
+        dCmd = makeDebianPackage(
+            signKey=signKey,
+            sourceBuild=True,
+            distName=codeName,
+            buildName=buildName
+        )
+        dputCmd.append(dCmd)
+
+    print("Packages Built")
+    print("==============")
+    print("")
+    for dCmd in dputCmd:
+        print(f" > {dCmd}")
     print("")
 
     return
@@ -1030,6 +1149,7 @@ def winInstall():
     if not os.path.isfile(targetPy):
         shutil.copy2(os.path.join(targetDir, "novelWriter.py"), targetPy)
 
+    print("")
     print("Collecting Info ...")
     print("Desktop Folder:    %s" % desktopDir)
     print("Start Menu Folder: %s" % startMenuDir)
@@ -1146,6 +1266,7 @@ def winUninstall():
     startMenuProg = os.path.join(startMenuDir, "Programs", "novelWriter")
     startMenuIcon = os.path.join(startMenuProg, linkName)
 
+    print("")
     print("Deleting Links ...")
     if os.path.isfile(desktopIcon):
         os.unlink(desktopIcon)
@@ -1217,6 +1338,7 @@ def innoSetup():
     issData = issData.replace(r"%%version%%", numVers)
     issData = issData.replace(r"%%dir%%", os.getcwd())
     writeFile("setup.iss", issData)
+    print("")
 
     try:
         subprocess.call(["iscc", "setup.iss"])
@@ -1260,6 +1382,27 @@ if __name__ == "__main__":
     else:
         targetOS = hostOS
 
+    # Sign package
+    if "--sign" in sys.argv:
+        sys.argv.remove("--sign")
+        doSign = True
+    else:
+        doSign = False
+
+    # First build
+    if "--first" in sys.argv:
+        sys.argv.remove("--first")
+        isFirstBuild = True
+    else:
+        isFirstBuild = False
+
+    # Build snapshot
+    if "--snapshot" in sys.argv:
+        sys.argv.remove("--snapshot")
+        isSnapshot = True
+    else:
+        isSnapshot = False
+
     helpMsg = [
         "",
         "novelWriter Setup Tool",
@@ -1292,8 +1435,12 @@ if __name__ == "__main__":
         "                   all the other source files. Defaults to tailor the zip file",
         "                   for the current OS, but accepts a target OS flag to build",
         "                   for another OS.",
-        "    build-deb      Buiild a .deb package for Debian and Ubuntu.",
-        "    build-pyz      Buiild a .pyz package in a folder with all dependencies",
+        "    build-deb      Build a .deb package for Debian and Ubuntu. Add --sign to ",
+        "                   sign package.",
+        "    build-ubuntu   Build a .deb packages Launchpad. Add --sign to ",
+        "                   sign package. Add --first to set build number to 0.",
+        "                   Add --snapshot to make a snapshot package."
+        "    build-pyz      Build a .pyz package in a folder with all dependencies",
         "                   using the zipapp tool. On Windows, python embeddable is",
         "                   added to the folder.",
         "    setup-pyz      Build a Windows executable installer from a zipapp package",
@@ -1340,9 +1487,9 @@ if __name__ == "__main__":
         sys.argv.remove("pip")
         installPackages(hostOS)
 
-    if "clean" in sys.argv:
-        sys.argv.remove("clean")
-        cleanInstall()
+    if "build-clean" in sys.argv:
+        sys.argv.remove("build-clean")
+        cleanBuildDirs()
 
     # Additional Builds
     # =================
@@ -1373,9 +1520,21 @@ if __name__ == "__main__":
     if "build-deb" in sys.argv:
         sys.argv.remove("build-deb")
         if hostOS == OS_LINUX:
-            makeDebianPackage()
+            if doSign:
+                signKey = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
+            else:
+                signKey = None
+            makeDebianPackage(signKey=signKey)
         else:
             print("ERROR: Command 'build-deb' can only be used on Linux")
+            sys.exit(1)
+
+    if "build-ubuntu" in sys.argv:
+        sys.argv.remove("build-ubuntu")
+        if hostOS == OS_LINUX:
+            makeForLaunchpad(doSign=doSign, isFirst=isFirstBuild, isSnapshot=isSnapshot)
+        else:
+            print("ERROR: Command 'build-ubuntu' can only be used on Linux")
             sys.exit(1)
 
     if "build-pyz" in sys.argv:

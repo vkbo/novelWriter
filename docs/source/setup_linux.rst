@@ -6,19 +6,79 @@ Setup on Linux
 
 .. _GitHub: https://github.com/vkbo/novelWriter/releases
 .. _main website: https://novelwriter.io
+.. _PPA: https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter
+.. _Pre-Release PPA: https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter-pre
 
-This is a brief guide to how you can get novelWriter running on a Linux computer. There are
-currently no install package of novelWriter for Linux, so it is recommended that you download
-either the full source or minimal package and extract it to a practical location on your system and
-run the ``setup.py`` script.
+This is a brief guide to how you can get novelWriter running on a Linux computer.
+
+There are currently install packages available for Ubuntu and Debian. For other distros it is
+recommended that you download either the full source or the minimal package and extract it to a
+practical location on your system and run the ``setup.py`` script.
 
 
-Running from Source
-===================
+Debian or Ubuntu
+================
 
-To run novelWriter from source, download the latest source package from the release page on
-GitHub_ or the `main website`_, or if you have git running on your computer, you can also clone the
-repository.
+A general Debian package can be downloaded from the `main website`_. This package should work on
+both Debian and Ubuntu.
+
+If you prefer, you can also add the novelWriter repository on Launchpad to your package manager.
+
+
+Ubuntu
+------
+
+You can add the Ubuntu PPA_ and install novelWriter with the following commands.
+
+.. code-block:: console
+
+   sudo add-apt-repository ppa:vkbo/novelwriter
+   sudo apt update
+   sudo apt install novelwriter
+
+
+Debian
+------
+
+Since this is a pure Python package, the Launchpad PPA can in principle also be used on Debian.
+However, the above command will fail to add the signing key.
+
+Instead, run the following commands to add the repository and key:
+
+.. code-block:: console
+
+   sudo mkdir -p /usr/local/share/keyrings/
+   sudo gpg --no-default-keyring --keyring /usr/local/share/novelwriter-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F19F1FCE50043114
+   echo "deb [signed-by=/usr/local/share/keyrings/novelwriter-keyring.gpg] http://ppa.launchpad.net/vkbo/novelwriter/ubuntu focal main" | sudo tee /etc/apt/sources.list.d/novelwriter.list
+
+Then run the update and install commands as for Ubuntu:
+
+.. code-block:: console
+
+   sudo apt update
+   sudo apt install novelwriter
+
+
+Pre-Releases
+------------
+
+There is also a `Pre-Release PPA`_ available with beta releases and release candidates of
+novelWriter. For Ubuntu, run the following commands:
+
+.. code-block:: console
+
+   sudo add-apt-repository ppa:vkbo/novelwriter-pre
+   sudo apt update
+   sudo apt install novelwriter
+
+
+Minimal Zip File
+================
+
+A minimal zip file is provided for Linux. You can download the latest zip file from the release
+page on GitHub_, or from the `main website`_. This zip file contains only the files actually needed
+to run novelWriter, and none of the additional source files for tests and documentation. You can
+extract the file to wherever you want, and run the steps below.
 
 
 Step 1: Installing Dependencies
@@ -39,72 +99,35 @@ can install them with:
    pip3 install --user -r requirements.txt
 
 
-Step 2: Install Package (Optional)
-----------------------------------
-
-You can install novelWriter to the default location for Python packages using ``setuptools``. This
-step is optional as you can also just put the novelWriter program folder wherever you like
-yourself. For instance in ``/opt/novelWriter``, and then run Step 3 to set up icons and launcher.
-
-To install novelWriter to the default location requires that you have ``setuptools`` installed on
-your system. If you don't have it installed, it can usually be installed from your distro's
-repository. For Debian and Ubuntu this is achieved with:
-
-.. code-block:: console
-
-   sudo apt install python3-setuptools
-
-The package is also available from PyPi:
-
-.. code-block:: console
-
-   pip3 install --user setuptools
-
-With ``setuptools`` in place, novelWriter can be installed to the user space with:
-
-.. code-block:: console
-
-   ./setup.py install --user
-
-This should install novelWriter as ``~/.local/bin/novelWriter``. If you instead want to install for
-all users, i.e. as ``/usr/local/bin/novelWriter``, run:
-
-.. code-block:: console
-
-   sudo ./setup.py install
-
-This is equivalent to what the ``pip`` installer does. It puts novelWriter in the location on your
-system where Python packages are usually kept. This is not really the best suited location for a
-GUI application like novelWriter, so you may instead copy the entire source to a suiteable location
-yourself.
-
-
-Step 3: Create Launcher Icons
+Step 2: Create Launcher Icons
 -----------------------------
 
-Regardless of where you extract or install the source files, you can set up a standard icon and a
-launcher. To set up this desktop launcher, the needed icons, and the project file association,
-run the following from inside the novelWriter folder at the installed or final location:
+A standard desktop launcher can be installed via the main setup script. It will create the needed
+desktop file and add it to the Applications menu. The necessary icons will also be installed, and a
+file association with ``.nwx`` files added.
+
+To set this up, run the following from inside the novelWriter folder at the final location:
 
 .. code-block:: console
 
-   ./setup.py xdg-install
+   python3 setup.py xdg-install
 
-By default, this command installs the launcher and icons for the current user only. To install for
-all users, run the script with the ``sudo`` command.
+This will only install the launcher and icons for the current user. To set up novelWriter for all
+users, run:
 
-.. tip::
-   All options of the setup script can be listed with: ``./setup.py help``.
+.. code-block:: console
+
+   sudo python3 setup.py xdg-install
 
 
 Uninstalling Icons
-==================
+------------------
 
 The steps taken by the ``xdg-install`` step can be reversed by running:
 
 .. code-block:: console
 
-   ./setup.py xdg-uninstall
+   python3 setup.py xdg-uninstall
 
 This will remove the desktop launcher and icons from the system. As above, whether this is done on
 the current user, or system wide, depends on whether this command is called with ``sudo`` or not.

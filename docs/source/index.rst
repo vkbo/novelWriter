@@ -4,17 +4,13 @@ novelWriter |release|
 
 .. only:: html
 
-   .. image:: https://github.com/vkbo/novelWriter/workflows/python%203.8/badge.svg?branch=main
+   .. image:: https://github.com/vkbo/novelWriter/actions/workflows/test_linux.yml/badge.svg?branch=main
       :target: https://github.com/vkbo/novelWriter/actions
       :alt: Python Tests
 
    .. image:: https://codecov.io/gh/vkbo/novelWriter/branch/main/graph/badge.svg
       :target: https://codecov.io/gh/vkbo/novelWriter
       :alt: Code Coverage
-
-   .. image:: https://readthedocs.org/projects/novelwriter/badge/?version=latest
-      :target: https://novelwriter.readthedocs.io/en/latest/?badge=latest
-      :alt: Documentation
 
    .. image:: https://img.shields.io/github/v/release/vkbo/novelwriter
       :target: https://github.com/vkbo/novelWriter/releases
@@ -47,8 +43,8 @@ too. novelWriter can be run directly from the Python source, installed from the 
 
 You can also download a minimal archive package of novelWriter tailored for your operating system.
 This package can be extracted anywhere on your computer, and a setup script can be run to create
-the necessary icons and file associations. See :ref:`a_started`, or one or the setup instructions
-for your operating system for further details.
+the necessary icons and file associations. See the setup instructions for your operating system for
+further details.
 
 .. note::
    Version 1.5 introduces a few changes that will require you to make a few minor modifications to
@@ -71,10 +67,10 @@ for your operating system for further details.
    :caption: Introduction
 
    int_introduction
-   int_started
    setup_linux
    setup_mac
    setup_windows
+   setup_other
 
 
 .. toctree::
