@@ -852,11 +852,6 @@ class Config:
         self.confChanged = True
         return self.viewSynopsis
 
-    def setIncludeNotesWCount(self, viewState):
-        self.incNotesWCount = viewState
-        self.confChanged = True
-        return self.incNotesWCount
-
     ##
     #  Getters
     ##

@@ -531,10 +531,6 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     assert tmpConf.viewSynopsis is False
     assert tmpConf.setViewSynopsis(True) is True
 
-    assert tmpConf.setIncludeNotesWCount(False) is False
-    assert tmpConf.incNotesWCount is False
-    assert tmpConf.setIncludeNotesWCount(True) is True
-
     # Check Final File
     # ================
 
