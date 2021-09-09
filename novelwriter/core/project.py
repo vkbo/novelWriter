@@ -99,9 +99,11 @@ class NWProject():
         self.lastEdited  = None   # The handle of the last file to be edited
         self.lastViewed  = None   # The handle of the last file to be viewed
         self.lastWCount  = 0      # The project word count from last session
+        self.lastNovelWC = 0      # The novel files word count from last session
+        self.lastNotesWC = 0      # The note files word count from last session
         self.currWCount  = 0      # The project word count in current session
-        self.novelWCount = 0      # Total number of words in novel files
-        self.notesWCount = 0      # Total number of words in note files
+        self.currNovelWC = 0      # The novel files word count in cutrent session
+        self.currNotesWC = 0      # The note files word count in cutrent session
         self.doBackup    = True   # Run project backup on exit
 
         # Internal Mapping
@@ -226,9 +228,11 @@ class NWProject():
         self.lastEdited = None
         self.lastViewed = None
         self.lastWCount = 0
+        self.lastNovelWC = 0
+        self.lastNotesWC = 0
         self.currWCount = 0
-        self.novelWCount = 0
-        self.notesWCount = 0
+        self.currNovelWC = 0
+        self.currNotesWC = 0
 
         return
 
@@ -566,9 +570,9 @@ class NWProject():
                     elif xItem.tag == "lastWordCount":
                         self.lastWCount = checkInt(xItem.text, 0, False)
                     elif xItem.tag == "novelWordCount":
-                        self.novelWCount = checkInt(xItem.text, 0, False)
+                        self.lastNovelWC = checkInt(xItem.text, 0, False)
                     elif xItem.tag == "notesWordCount":
-                        self.notesWCount = checkInt(xItem.text, 0, False)
+                        self.lastNotesWC = checkInt(xItem.text, 0, False)
                     elif xItem.tag == "status":
                         self.statusItems.unpackXML(xItem)
                     elif xItem.tag == "importance":
@@ -610,8 +614,8 @@ class NWProject():
 
         self._scanProjectFolder()
         self._loadProjectLocalisation()
+        self.updateWordCounts()
 
-        self.currWCount = self.lastWCount
         self.projOpened = time()
         self.projAltered = False
 
@@ -652,11 +656,8 @@ class NWProject():
             "timeStamp":   formatTimeStamp(saveTime),
         })
 
+        self.updateWordCounts()
         editTime = int(self.editTime + saveTime - self.projOpened)
-        wcNovel, wcNotes = self.projTree.sumWords()
-        self.novelWCount = wcNovel
-        self.notesWCount = wcNotes
-        self.setProjectWordCount(wcNovel + wcNotes)
 
         # Save Project Meta
         xProject = etree.SubElement(nwXML, "project")
@@ -677,8 +678,8 @@ class NWProject():
         self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
         self._packProjectValue(xSettings, "lastViewed", self.lastViewed)
         self._packProjectValue(xSettings, "lastWordCount", self.currWCount)
-        self._packProjectValue(xSettings, "novelWordCount", wcNovel)
-        self._packProjectValue(xSettings, "notesWordCount", wcNotes)
+        self._packProjectValue(xSettings, "novelWordCount", self.currNovelWC)
+        self._packProjectValue(xSettings, "notesWordCount", self.currNotesWC)
         self._packProjectKeyValue(xSettings, "autoReplace", self.autoReplace)
 
         xTitleFmt = etree.SubElement(xSettings, "titleFormat")
@@ -1067,14 +1068,6 @@ class NWProject():
             self.setProjectChanged(True)
         return True
 
-    def setProjectWordCount(self, theCount):
-        """Set the current project word count.
-        """
-        if self.currWCount != theCount:
-            self.currWCount = theCount
-            self.setProjectChanged(True)
-        return True
-
     def setStatusColours(self, newCols):
         """Update the list of novel file status flags. Also iterate
         through the project and replace keys that have been renamed.
@@ -1145,11 +1138,6 @@ class NWProject():
 
         return authString
 
-    def getSessionWordCount(self):
-        """Returns the number of words added or removed this session.
-        """
-        return self.currWCount - self.lastWCount
-
     def getCurrentEditTime(self):
         """Get the total project edit time, including the time spent in
         the current session.
@@ -1201,6 +1189,18 @@ class NWProject():
     ##
     #  Class Methods
     ##
+
+    def updateWordCounts(self):
+        """Update the total word count values.
+        """
+        wcNovel, wcNotes = self.projTree.sumWords()
+        wcTotal = wcNovel + wcNotes
+        if wcTotal != self.currWCount:
+            self.currNovelWC = wcNovel
+            self.currNotesWC = wcNotes
+            self.currWCount  = wcTotal
+            self.setProjectChanged(True)
+        return
 
     def countStatus(self):
         """Count how many times the various status flags are used in the
@@ -1460,7 +1460,7 @@ class NWProject():
         isFile = os.path.isfile(sessionFile)
 
         nowTime = time()
-        sessDiff = self.getSessionWordCount()
+        sessDiff = self.currWCount - self.lastWCount
         sessTime = nowTime - self.projOpened
 
         logger.info("The session lasted %d sec and added %d words", int(sessTime), sessDiff)
@@ -1481,8 +1481,8 @@ class NWProject():
                 outFile.write("%-19s  %-19s  %8d  %8d  %8d\n" % (
                     formatTimeStamp(self.projOpened),
                     formatTimeStamp(nowTime),
-                    self.novelWCount,
-                    self.notesWCount,
+                    self.currNovelWC,
+                    self.currNotesWC,
                     int(idleTime),
                 ))
 

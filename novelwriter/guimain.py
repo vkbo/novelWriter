@@ -124,7 +124,7 @@ class GuiMain(QMainWindow):
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
-        self.treeView.projectWordCountChanged.connect(self.statusBar.doUpdateProjectStats)
+        self.treeView.wordCountsChanged.connect(self._updateStatusWordCount)
 
         # Minor GUI Elements
         self.statusIcons = []
@@ -529,7 +529,7 @@ class GuiMain(QMainWindow):
         self.docEditor.toggleSpellCheck(self.theProject.spellCheck)
         self.mainMenu.setAutoOutline(self.theProject.autoOutline)
         self.statusBar.setRefTime(self.theProject.projOpened)
-        self.statusBar.doUpdateProjectStats(self.theProject.currWCount, 0)
+        self._updateStatusWordCount()
 
         # Restore previously open documents, if any
         if self.theProject.lastEdited is not None:
@@ -903,13 +903,13 @@ class GuiMain(QMainWindow):
                 tItem.setParaCount(pC)
                 self.treeView.propagateCount(tItem.itemHandle, wC)
                 self.treeView.setTreeItemValues(tItem.itemHandle)
-                self.treeView.projectWordCount()
 
         tEnd = time()
         self.setStatus(
             self.tr("Indexing completed in {0} ms").format(f"{(tEnd - tStart)*1000.0:.1f}")
         )
         self.docEditor.updateTagHighLighting()
+        self._updateStatusWordCount()
         qApp.restoreOverrideCursor()
 
         if not beQuiet:
@@ -1524,6 +1524,26 @@ class GuiMain(QMainWindow):
 
         self.idleRefTime = currTime
         self.statusBar.updateTime(idleTime=self.idleTime)
+
+        return
+
+    @pyqtSlot()
+    def _updateStatusWordCount(self):
+        """Update the word count on the status bar.
+        """
+        if not self.hasProject:
+            self.statusBar.setProjectStats(0, 0)
+
+        logger.verbose("Updating total word count")
+        self.theProject.updateWordCounts()
+        if self.mainConf.incNotesWCount:
+            currWords = self.theProject.currWCount
+            diffWords = currWords - self.theProject.lastWCount
+        else:
+            currWords = self.theProject.currNovelWC
+            diffWords = currWords - self.theProject.lastNovelWC
+
+        self.statusBar.setProjectStats(currWords, diffWords)
 
         return
 

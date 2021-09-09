@@ -178,9 +178,10 @@ class Config:
         self.askBeforeBackup = True
 
         # State
-        self.showRefPanel = True
-        self.viewComments = True
-        self.viewSynopsis = True
+        self.showRefPanel   = True  # The reference panel for the viewer is visible
+        self.viewComments   = True  # Comments are shown in the viewer
+        self.viewSynopsis   = True  # Synopsis is shown in the viewer
+        self.incNotesWCount = True  # The status bar word count includes notes
 
         # Check Qt5 Versions
         verQt = splitVersionNumber(QT_VERSION_STR)
@@ -516,6 +517,7 @@ class Config:
         self.showRefPanel   = theConf.rdBool(cnfSec, "showrefpanel", self.showRefPanel)
         self.viewComments   = theConf.rdBool(cnfSec, "viewcomments", self.viewComments)
         self.viewSynopsis   = theConf.rdBool(cnfSec, "viewsynopsis", self.viewSynopsis)
+        self.incNotesWCount = theConf.rdBool(cnfSec, "incnoteswcount", self.incNotesWCount)
         self.searchCase     = theConf.rdBool(cnfSec, "searchcase", self.searchCase)
         self.searchWord     = theConf.rdBool(cnfSec, "searchword", self.searchWord)
         self.searchRegEx    = theConf.rdBool(cnfSec, "searchregex", self.searchRegEx)
@@ -637,6 +639,7 @@ class Config:
             "showrefpanel":    str(self.showRefPanel),
             "viewcomments":    str(self.viewComments),
             "viewsynopsis":    str(self.viewSynopsis),
+            "incnoteswcount":  str(self.incNotesWCount),
             "searchcase":      str(self.searchCase),
             "searchword":      str(self.searchWord),
             "searchregex":     str(self.searchRegEx),
@@ -818,7 +821,7 @@ class Config:
         return True
 
     def setDocPanePos(self, panePos):
-        self.docPanePos  = [int(x/self.guiScale) for x in panePos]
+        self.docPanePos = [int(x/self.guiScale) for x in panePos]
         self.confChanged = True
         return True
 
@@ -829,23 +832,28 @@ class Config:
 
     def setOutlinePanePos(self, panePos):
         self.outlnPanePos = [int(x/self.guiScale) for x in panePos]
-        self.confChanged  = True
+        self.confChanged = True
         return True
 
     def setShowRefPanel(self, checkState):
         self.showRefPanel = checkState
-        self.confChanged  = True
+        self.confChanged = True
         return self.showRefPanel
 
     def setViewComments(self, viewState):
         self.viewComments = viewState
-        self.confChanged  = True
+        self.confChanged = True
         return self.viewComments
 
     def setViewSynopsis(self, viewState):
         self.viewSynopsis = viewState
-        self.confChanged  = True
+        self.confChanged = True
         return self.viewSynopsis
+
+    def setIncludeNotesWCount(self, viewState):
+        self.incNotesWCount = viewState
+        self.confChanged = True
+        return self.incNotesWCount
 
     ##
     #  Getters

@@ -190,7 +190,7 @@ class NWTree():
         return True
 
     def sumWords(self):
-        """Loops over all entries and adds up the word counts.
+        """Loop over all entries and add up the word counts.
         """
         noteWords = 0
         novelWords = 0

@@ -125,7 +125,7 @@ class GuiMainStatus(QStatusBar):
         """
         self.setRefTime(None)
         self.setLanguage(None, "")
-        self.doUpdateProjectStats(0, 0)
+        self.setProjectStats(0, 0)
         self.setProjectStatus(nwState.NONE)
         self.setDocumentStatus(nwState.NONE)
         self.updateTime()
@@ -176,6 +176,16 @@ class GuiMainStatus(QStatusBar):
 
         return
 
+    def setProjectStats(self, pWC, sWC):
+        """Update the current project statistics.
+        """
+        self.statsText.setText(self.tr("Words: {0} ({1})").format(f"{pWC:n}", f"{sWC:+n}"))
+        if self.mainConf.incNotesWCount:
+            self.statsText.setToolTip(self.tr("Project word count (session change)"))
+        else:
+            self.statsText.setToolTip(self.tr("Novel word count (session change)"))
+        return
+
     def updateTime(self, idleTime=0.0):
         """Update the session clock.
         """
@@ -209,14 +219,6 @@ class GuiMainStatus(QStatusBar):
             else:
                 self.langText.setToolTip(theLanguage)
 
-        return
-
-    @pyqtSlot(int, int)
-    def doUpdateProjectStats(self, pWC, sWC):
-        """Update the current project statistics.
-        """
-        self.statsText.setText(self.tr("Words: {0} ({1})").format(f"{pWC:n}", f"{sWC:+n}"))
-        self.statsText.setToolTip(self.tr("Project word count (session change)"))
         return
 
     @pyqtSlot(bool)
