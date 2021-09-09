@@ -126,6 +126,8 @@ class GuiMain(QMainWindow):
         self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
         self.treeView.wordCountsChanged.connect(self._updateStatusWordCount)
 
+        self.statusBar.wordCountSettingChanged.connect(self._updateStatusWordCount)
+
         # Minor GUI Elements
         self.statusIcons = []
         self.importIcons = []
