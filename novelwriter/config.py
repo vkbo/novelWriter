@@ -497,6 +497,7 @@ class Config:
         self.showTabsNSpaces = theConf.rdBool(cnfSec, "showtabsnspaces", self.showTabsNSpaces)
         self.showLineEndings = theConf.rdBool(cnfSec, "showlineendings", self.showLineEndings)
         self.showMultiSpaces = theConf.rdBool(cnfSec, "showmultispaces", self.showMultiSpaces)
+        self.wordCountTimer  = theConf.rdFlt(cnfSec, "wordcounttimer", self.wordCountTimer)
         self.bigDocLimit     = theConf.rdInt(cnfSec, "bigdoclimit", self.bigDocLimit)
         self.incNotesWCount  = theConf.rdBool(cnfSec, "incnoteswcount", self.incNotesWCount)
         self.showFullPath    = theConf.rdBool(cnfSec, "showfullpath", self.showFullPath)
@@ -619,6 +620,7 @@ class Config:
             "showtabsnspaces": str(self.showTabsNSpaces),
             "showlineendings": str(self.showLineEndings),
             "showmultispaces": str(self.showMultiSpaces),
+            "wordcounttimer":  str(self.wordCountTimer),
             "bigdoclimit":     str(self.bigDocLimit),
             "incnoteswcount":  str(self.incNotesWCount),
             "showfullpath":    str(self.showFullPath),

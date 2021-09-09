@@ -482,6 +482,7 @@ def testBaseCommon_NWConfigParser(fncDir):
         "boolopt4 = 0\n"
         "list1 = a, b, c\n"
         "list2 = 17, 18, 19\n"
+        "float1 = 4.2\n"
     ))
 
     cfgParser = NWConfigParser()
@@ -515,6 +516,14 @@ def testBaseCommon_NWConfigParser(fncDir):
 
     assert cfgParser.rdInt("nope", "intopt1", 13) == 13
     assert cfgParser.rdInt("main", "blabla",  13) == 13
+
+    # Read Float
+    assert cfgParser.rdFlt("main", "intopt1", 13.0) == 42.0
+    assert cfgParser.rdFlt("main", "float1",  13.0) == 4.2
+    assert cfgParser.rdInt("main", "stropt",  13.0) == 13.0
+
+    assert cfgParser.rdInt("nope", "intopt1", 13.0) == 13.0
+    assert cfgParser.rdInt("main", "blabla",  13.0) == 13.0
 
     # Read String List
     assert cfgParser.rdStrList("main", "list1", []) == []
