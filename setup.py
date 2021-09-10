@@ -116,6 +116,24 @@ def toUpload(srcPath, dstName=None):
     return
 
 
+def makeCheckSum(sumFile, cwd=None):
+    """Create a SHA256 checkcusm file.
+    """
+    try:
+        if cwd is None:
+            shaFile = sumFile+".sha256"
+        else:
+            shaFile = os.path.join(cwd, sumFile+".sha256")
+        with open(shaFile, mode="w") as fOut:
+            subprocess.call(["sha256sum", sumFile], stdout=fOut, cwd=cwd)
+        print("SHA256 Sum: %s" % shaFile)
+    except Exception as e:
+        print("Could not generate sha256 file")
+        print(str(e))
+
+    return shaFile
+
+
 # =============================================================================================== #
 #  General
 # =============================================================================================== #
@@ -457,14 +475,7 @@ def makeMinimalPackage(targetOS):
     # Create Checksum File
     # ====================
 
-    try:
-        shaFile = outFile+".sha256"
-        with open(shaFile, mode="w") as fOut:
-            subprocess.call(["sha256sum", zipFile], stdout=fOut, cwd=bldDir)
-        print("SHA256 Sum:   %s" % shaFile)
-    except Exception as e:
-        print("Could not generate sha256 file")
-        print(str(e))
+    shaFile = makeCheckSum(zipFile, cwd=bldDir)
 
     toUpload(outFile)
     toUpload(shaFile)
@@ -627,6 +638,9 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
         subprocess.call(["dpkg-buildpackage"] + signArgs, cwd=outDir)
         toUpload(f"{bldDir}/{bldPkg}.tar.xz", f"{bldPkg}.debian.tar.xz")
         toUpload(f"{bldDir}/{bldPkg}_all.deb")
+
+        toUpload(makeCheckSum(f"{bldPkg}.debian.tar.xz", cwd=bldDir))
+        toUpload(makeCheckSum(f"{bldPkg}_all.deb", cwd=bldDir))
 
     print("")
     print("Done!")
