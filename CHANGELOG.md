@@ -1,31 +1,36 @@
 # novelWriter Changelog
 
-## Version 1.5 Beta 2 [2021-08-26]
+## Version 1.5 RC 1 [2021-09-10]
 
 ### Release Notes
 
-This is a beta release of the next release version, and is intended for testing purposes. Please be
-careful when using this version on live writing projects, and make sure you make frequent backups.
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you make frequent
+backups.
+
+From this release on, Debian packages will be provided for Ubuntu and Debian users. A new
+[PPA](https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter) has also been created. Adding this
+will allow users to install and update novelWriter automatically on Ubuntu and Debian.
 
 Release 1.5 introduces a new project file format, which has been given a file format version 1.3.
 The project file and index is updated automatically when you open the project, which means you can
 no longer open it in an older version of novelWriter.
 
-You may also have to make a handful of changes in your novel documents as these are not updated
-automatically. However, the changes are minimal and in any case only affects the way your
-manuscript looks like when exported via the Build Novel Project tool. The details are described
-below.
+You may also have to make a handful of changes in your novel documents as novelWriter will not make
+any automated changes to your actual text. However, the changes are minimal and in any case only
+affects the way your manuscript looks like when exported via the Build Novel Project tool. The
+details are described below.
 
 #### Novel Document Layouts
 
 The main change in this release is the significant simplification of document layouts. Previously,
 there were seven different layouts available for novel documents, in addition to the one layout for
 project notes. The original intention of these layouts were partially to define some default
-formatting behaviour when exporting your project, and partially a way to indicate whether a
+formatting behaviour when exporting your project, and partially as a way to indicate whether a
 specific document was a partition, chapter or scene.
 
 With this release, all the seven layouts for novel documents have been merged into a single layout
-called simply "Novel Document". The other layout for "Project Note" remains unchanged. The
+called simply "Novel Document". The other layout, "Project Note", remains unchanged. The
 functionality provided by the various novel layouts have been implemented in other ways, and a few
 new formatting codes have been added to accommodate the formatting functionality lost with the
 removal of the layouts. They are all available in the Format and Insert menu.
@@ -40,7 +45,7 @@ breaks, you can add a single line with the command `[NEW PAGE]` where you want t
 inserted. As before, page breaks are automatically inserted in front of all partition and chapter
 titles.
 
-You will find these changes described in more detail the documentation in the
+You will find these changes described in more detail in the documentation in the
 "[Format 1.3 Changes](https://novelwriter.readthedocs.io/en/latest/usage_projectformat.html#a-prjfmt-1-3)"
 section.
 
@@ -56,7 +61,7 @@ other visual means.
 
 The project index will now record the level of the first header of your document, and select a
 different icon for documents with a partition, chapter or scene header. These are colour coded as
-green, red and blue respectively. The project notes have also received a new icon, with a yellow
+green, red, and blue respectively. The project notes have also received a new icon, with a yellow
 colour code. Due to this change, the grey icon themes have been removed.
 
 In addition, novel documents with a partition or chapter header will have the document label viewed
@@ -75,7 +80,67 @@ will not be noticeable to you as a user, but you may notice that the exported do
 allow multiple consecutive spaces. Previously, two spaces, or more, would be concatenated into a
 single space in the exported document.
 
-_These Release Notes also include the changes from 1.5 Beta 1._
+The internal spell check tool has been removed. If you want spell checking, you must install the
+Spell Enchant tool. The internal spell checker was only ever added because the Python package for
+Spell Enchant was not available on 64-bit Windows. This was corrected over a year ago. The main
+issue with the internal spell checker was that it only included English, and the large dictionary
+files had to be shipped with novelWriter.
+
+Finally, a PDF version of the documentation should now be shipped with your install package. If it
+is available, a "User Manual (PDF)" option should be visible in the Help menu. This should give you
+access to the documentation also when you don't have an active internet connection.
+
+_These Release Notes also include the changes from 1.5 Beta 1 and Beta 2._
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed a bug where the setting for how often the word counter is run was not saved between
+  sessions. PR #882.
+* Fix an issue where the information on the Project Details dialog would not be updated if the Qt
+  library had cached the dialog since last time it was opened. Issue #842. PR #883.
+
+**Features**
+
+* The internal spell checker has been removed. It was only ever added for use on Windows as the
+  PyEnchant tool was no longer maintained and not available for 64-bit Windows. This is no longer
+  the case. Having two alternative spell checkers complicated the code a great deal, and the
+  internal spell checker also required full word lists to be distributed with novelWriter. PR #875.
+* Added a setting in Preferences to change how the word count on the status bar is calculated. The
+  new setting allows the project notes to be filetred out, leaving only the word count for novel
+  files. Feature request #857. PR #882.
+
+**Installation and Packaging**
+
+* The command line command for starting novelWriter after running the standard setup has been made
+  lower case. PR #873.
+* A PDF version of the documentation can now be built from the main setup script and is by default
+  distributed with the install packages. The PDF manual can be opened from the Help menu. This is
+  a more accessible solution to looking up the documentation without an internet connection. The
+  old method depended on the Qt Assistant being installed. PRs #873 and #879.
+* The setup script can now build standard `.deb` packages for Debian and Ubuntu. Issue #866. PRs
+  #876 and #879.
+* The icons for novelWriter have been updated and rearranged, and the installation of these
+  simplified a bit. PR #879.
+* The setup script can now build packages for deployment on the Ubuntu PPA (Launchpad). PR #880.
+
+**Internationalisation**
+
+* The US English and Nowregian translation files have been updated. PR #884.
+
+**Documentation**
+
+* The documentation on how to setup and install novelWriter has been updated. PRs #880 and #881.
+
+----
+
+## Version 1.5 Beta 2 [2021-08-26]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you make frequent backups.
 
 ### Detailed Changelog
 
