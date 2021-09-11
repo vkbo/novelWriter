@@ -507,7 +507,7 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
     print("")
 
     if buildName:
-        pkgVers = f"{pkgVers}~{buildName}"
+        pkgVers = f"{pkgVers}{buildName}"
 
     # Set Up Folder
     # =============
@@ -705,9 +705,9 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
     dputCmd = []
     for distNum, codeName in distLoop:
         if isSnapshot:
-            buildName = f"SNAPSHOT~{tStamp}~ubuntu{distNum}.0"
+            buildName = f"+SNAPSHOT~{tStamp}~ubuntu{distNum}.0"
         else:
-            buildName = f"ubuntu{distNum}.{bldNum}"
+            buildName = f"~ubuntu{distNum}.{bldNum}"
 
         dCmd = makeDebianPackage(
             signKey=signKey,
