@@ -6,4 +6,5 @@ if [ ! -f setup.py ]; then
     exit 1
 fi
 
-python3 setup.py clean
+rm -rfv dist_upload
+python3 setup.py build-clean
