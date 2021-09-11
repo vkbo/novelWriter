@@ -456,7 +456,7 @@ class GuiDocEditor(QTextEdit):
             saveOk = False
             if self._nwDocument._currHash != self._nwDocument._prevHash:
                 msgYes = self.theParent.askQuestion(
-                    self.tr("File Changed"),
+                    self.tr("File Changed on Disk"),
                     self.tr(
                         "This document has been changed outside of novelWriter "
                         "while it was open. Overvrite the file on disk?"
