@@ -489,7 +489,7 @@ class NWProject():
                     "The file format of your project is about to be updated. "
                     "If you proceed, this project can no longer be opened by "
                     "an older version of novelWriter. Continue?"
-                ).format(appVersion, novelwriter.__version__)
+                )
             )
             if not msgYes:
                 self.clearProject()
@@ -503,7 +503,7 @@ class NWProject():
                     "Format Changes > File Format 1.3' section of the "
                     "documentation for more information. It is avialable from "
                     "the Help menu."
-                ).format(appVersion), nwAlert.INFO)
+                ), nwAlert.INFO)
 
         # Check novelWriter Version
         # =========================
