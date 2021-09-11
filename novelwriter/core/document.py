@@ -82,13 +82,9 @@ class NWDoc():
 
         theText = ""
         self._docMeta = {}
-        if os.path.isfile(docPath):
-            try:
-                self._prevHash = sha256sum(docPath)
-            except Exception as e:
-                logger.error("Could not read sha256sum of: %s", docPath)
-                self._docError = str(e)
+        self._prevHash = sha256sum(docPath)
 
+        if os.path.isfile(docPath):
             try:
                 with open(docPath, mode="r", encoding="utf-8") as inFile:
 
@@ -134,12 +130,8 @@ class NWDoc():
         docTemp = os.path.join(self.theProject.projContent, docFile+"~")
 
         if self._prevHash is not None and not forceWrite:
-            try:
-                self._currHash = sha256sum(docPath)
-            except Exception as e:
-                logger.error("Could not read sha256sum of: %s", docPath)
-                self._docError = str(e)
-            if self._currHash != self._prevHash:
+            self._currHash = sha256sum(docPath)
+            if self._currHash is not None and self._currHash != self._prevHash:
                 logger.error("File has been altered on disk since opened")
                 return False
 
@@ -167,12 +159,8 @@ class NWDoc():
             os.unlink(docPath)
         os.rename(docTemp, docPath)
 
-        try:
-            self._prevHash = sha256sum(docPath)
-            self._currHash = self._prevHash
-        except Exception as e:
-            logger.error("Could not read sha256sum of: %s", docPath)
-            self._docError = str(e)
+        self._prevHash = sha256sum(docPath)
+        self._currHash = self._prevHash
 
         return True
 

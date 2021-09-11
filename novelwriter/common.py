@@ -432,9 +432,15 @@ def sha256sum(filePath):
     hDigest = hashlib.sha256()
     bData = bytearray(65536)
     mData = memoryview(bData)
-    with open(filePath, mode="rb", buffering=0) as inFile:
-        for n in iter(lambda: inFile.readinto(mData), 0):
-            hDigest.update(mData[:n])
+    try:
+        with open(filePath, mode="rb", buffering=0) as inFile:
+            for n in iter(lambda: inFile.readinto(mData), 0):
+                hDigest.update(mData[:n])
+    except Exception:
+        logger.error("Could not read sha256sum of: %s", filePath)
+        logException()
+        return None
+
     return hDigest.hexdigest()
 
 
