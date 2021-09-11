@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import hashlib
 import os
 import time
 import pytest
@@ -32,7 +33,7 @@ from novelwriter.common import (
     isItemClass, isItemType, isItemLayout, hexToInt, formatInt,
     formatTimeStamp, formatTime, parseTimeStamp, splitVersionNumber,
     transferCase, fuzzyTime, numberToRoman, jsonEncode, makeFileNameSafe,
-    NWConfigParser
+    sha256sum, NWConfigParser
 )
 
 
@@ -342,18 +343,6 @@ def testBaseCommon_FuzzyTime():
 # END Test testBaseCommon_FuzzyTime
 
 
-@pytest.mark.base
-def testBaseCommon_MakeFileNameSafe():
-    """Test the fuzzyTime function.
-    """
-    assert makeFileNameSafe(" aaaa ") == "aaaa"
-    assert makeFileNameSafe("aaaa,bbbb") == "aaaabbbb"
-    assert makeFileNameSafe("aaaa\tbbbb") == "aaaabbbb"
-    assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
-
-# END Test testBaseCommon_MakeFileNameSafe
-
-
 @pytest.mark.core
 def testBaseCommon_RomanNumbers():
     """Test conversion of integers to Roman numbers.
@@ -464,6 +453,37 @@ def testBaseCommon_JsonEncode():
     )
 
 # END Test testBaseCommon_JsonEncode
+
+
+@pytest.mark.base
+def testBaseCommon_MakeFileNameSafe():
+    """Test the makeFileNameSafe function.
+    """
+    assert makeFileNameSafe(" aaaa ") == "aaaa"
+    assert makeFileNameSafe("aaaa,bbbb") == "aaaabbbb"
+    assert makeFileNameSafe("aaaa\tbbbb") == "aaaabbbb"
+    assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
+
+# END Test testBaseCommon_MakeFileNameSafe
+
+
+@pytest.mark.base
+def testBaseCommon_Sha256Sum(fncDir, ipsumText):
+    """Test the sha256sum function.
+    """
+    testData = 50*(" ".join(ipsumText) + " ")
+    assert len(testData) == 175650
+
+    testFile = os.path.join(fncDir, "hash_me.txt")
+    writeFile(testFile, testData)
+
+    # Taken with sha256sum tests/temp/f_temp/hash_me.txt
+    realHash = "9b22aee35660da4fae204acbe96aec7f563022746ca2b7a3831f5e44544765eb"
+
+    assert sha256sum(testFile) == realHash
+    assert hashlib.sha256(testData.encode("utf-8")).hexdigest() == realHash
+
+# END Test testBaseCommon_Sha256Sum
 
 
 @pytest.mark.base
