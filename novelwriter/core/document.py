@@ -27,7 +27,7 @@ import os
 import logging
 
 from novelwriter.enum import nwItemLayout, nwItemClass
-from novelwriter.common import isHandle
+from novelwriter.common import isHandle, sha256sum
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +44,8 @@ class NWDoc():
         self._fileLoc   = None  # The file location of the currently open item
         self._docMeta   = {}    # The meta data of the currently open item
         self._docError  = ""    # The latest encountered IO error
+        self._prevHash  = None  # Previous sha256sum of the document file
+        self._currHash  = None  # Latest sha256sum of the document file
 
         if isHandle(theHandle):
             self._docHandle = theHandle
@@ -82,6 +84,12 @@ class NWDoc():
         self._docMeta = {}
         if os.path.isfile(docPath):
             try:
+                self._prevHash = sha256sum(docPath)
+            except Exception as e:
+                logger.error("Could not read sha256sum of: %s", docPath)
+                self._docError = str(e)
+
+            try:
                 with open(docPath, mode="r", encoding="utf-8") as inFile:
 
                     # Check the first <= 10 lines for metadata
@@ -108,7 +116,7 @@ class NWDoc():
 
         return theText
 
-    def writeDocument(self, docText):
+    def writeDocument(self, docText, forceWrite=False):
         """Write the document. The file is saved via a temp file in case
         of save failure. Returns True if successful, False if not.
         """
@@ -125,7 +133,17 @@ class NWDoc():
         docPath = os.path.join(self.theProject.projContent, docFile)
         docTemp = os.path.join(self.theProject.projContent, docFile+"~")
 
-        # DocMeta line
+        if self._prevHash is not None and not forceWrite:
+            try:
+                self._currHash = sha256sum(docPath)
+            except Exception as e:
+                logger.error("Could not read sha256sum of: %s", docPath)
+                self._docError = str(e)
+            if self._currHash != self._prevHash:
+                logger.error("File has been altered on disk since opened")
+                return False
+
+        # DocMeta Line
         if self._theItem is None:
             docMeta = ""
         else:
@@ -148,6 +166,13 @@ class NWDoc():
         if os.path.isfile(docPath):
             os.unlink(docPath)
         os.rename(docTemp, docPath)
+
+        try:
+            self._prevHash = sha256sum(docPath)
+            self._currHash = self._prevHash
+        except Exception as e:
+            logger.error("Could not read sha256sum of: %s", docPath)
+            self._docError = str(e)
 
         return True
 
