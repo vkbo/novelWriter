@@ -1,6 +1,6 @@
 # novelWriter Changelog
 
-## Version 1.5 RC 1 [2021-09-10]
+## Version 1.5 [2021-09-19]
 
 ### Release Notes
 
@@ -90,7 +90,19 @@ Finally, a PDF version of the documentation should now be shipped with your inst
 is available, a "User Manual (PDF)" option should be visible in the Help menu. This should give you
 access to the documentation also when you don't have an active internet connection.
 
-_These Release Notes also include the changes from 1.5 Beta 1 and Beta 2._
+_These Release Notes also include the changes from 1.5 Beta 1, Beta 2, and RC 1._
+
+### Detailed Changelog
+
+----
+
+## Version 1.5 RC 1 [2021-09-10]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you make frequent
+backups.
 
 ### Detailed Changelog
 
