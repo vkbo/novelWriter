@@ -128,10 +128,6 @@ class GuiProjectTree(QTreeWidget):
         # Set custom settings
         self.initTree()
 
-        # Internal Function Mapping
-        self.makeAlert = self.theParent.makeAlert
-        self.askQuestion = self.theParent.askQuestion
-
         logger.debug("GuiProjectTree initialisation complete")
 
         return
@@ -194,11 +190,11 @@ class GuiProjectTree(QTreeWidget):
         # If class is still not set, alert the user and exit
         if itemClass is None:
             if itemType == nwItemType.FILE:
-                self.makeAlert(self.tr(
+                self.theParent.makeAlert(self.tr(
                     "Please select a valid location in the tree to add the document."
                 ), nwAlert.ERROR)
             else:
-                self.makeAlert(self.tr(
+                self.theParent.makeAlert(self.tr(
                     "Please select a valid location in the tree to add the folder."
                 ), nwAlert.ERROR)
             return False
@@ -223,7 +219,7 @@ class GuiProjectTree(QTreeWidget):
 
             # If still nothing, give up
             if pHandle is None:
-                self.makeAlert(self.tr(
+                self.theParent.makeAlert(self.tr(
                     "Did not find anywhere to add the file or folder!"
                 ), nwAlert.ERROR)
                 return False
@@ -237,13 +233,13 @@ class GuiProjectTree(QTreeWidget):
 
             # If we again have no home, give up
             if pHandle is None:
-                self.makeAlert(self.tr(
+                self.theParent.makeAlert(self.tr(
                     "Did not find anywhere to add the file or folder!"
                 ), nwAlert.ERROR)
                 return False
 
             if self.theProject.projTree.isTrashRoot(pHandle):
-                self.makeAlert(self.tr(
+                self.theParent.makeAlert(self.tr(
                     "Cannot add new files or folders to the Trash folder."
                 ), nwAlert.ERROR)
                 return False
@@ -258,7 +254,7 @@ class GuiProjectTree(QTreeWidget):
                 if len(parTree) >= nwConst.MAX_DEPTH - 1:
                     # Folders cannot be deeper than MAX_DEPTH - 1, leaving room
                     # for one more level of files.
-                    self.makeAlert(self.tr(
+                    self.theParent.makeAlert(self.tr(
                         "Cannot add new folder to this item. "
                         "Maximum folder depth has been reached."
                     ), nwAlert.ERROR)
@@ -425,7 +421,7 @@ class GuiProjectTree(QTreeWidget):
 
         logger.debug("Emptying Trash folder")
         if trashHandle is None:
-            self.makeAlert(self.tr(
+            self.theParent.makeAlert(self.tr(
                 "There is currently no Trash folder in this project."
             ), nwAlert.INFO)
             return False
@@ -436,12 +432,12 @@ class GuiProjectTree(QTreeWidget):
 
         nTrash = len(theTrash)
         if nTrash == 0:
-            self.makeAlert(self.tr(
+            self.theParent.makeAlert(self.tr(
                 "The Trash folder is already empty."
             ), nwAlert.INFO)
             return False
 
-        msgYes = self.askQuestion(
+        msgYes = self.theParent.askQuestion(
             self.tr("Empty Trash"),
             self.tr("Permanently delete {0} file(s) from Trash?").format(nTrash)
         )
@@ -503,7 +499,7 @@ class GuiProjectTree(QTreeWidget):
                 # user if they want to permanently delete the file.
                 doPermanent = False
                 if not alreadyAsked:
-                    msgYes = self.askQuestion(
+                    msgYes = self.theParent.askQuestion(
                         self.tr("Delete File"),
                         self.tr("Permanently delete file '{0}'?").format(nwItemS.itemName)
                     )
@@ -524,7 +520,7 @@ class GuiProjectTree(QTreeWidget):
 
                     delDoc = NWDoc(self.theProject, tHandle)
                     if not delDoc.deleteDocument():
-                        self.makeAlert([
+                        self.theParent.makeAlert([
                             self.tr("Could not delete document file."), delDoc.getError()
                         ], nwAlert.ERROR)
                         return False
@@ -537,7 +533,7 @@ class GuiProjectTree(QTreeWidget):
             else:
                 # The file is not already in the trash folder, so we
                 # move it there.
-                msgYes = self.askQuestion(
+                msgYes = self.theParent.askQuestion(
                     self.tr("Delete File"),
                     self.tr("Move file '{0}' to Trash?").format(nwItemS.itemName),
                 )
@@ -570,7 +566,7 @@ class GuiProjectTree(QTreeWidget):
                 self._deleteTreeItem(tHandle)
                 self._setTreeChanged(True)
             else:
-                self.makeAlert(self.tr(
+                self.theParent.makeAlert(self.tr(
                     "Cannot delete folder. It is not empty. "
                     "Recursive deletion is not supported. "
                     "Please delete the content first."
@@ -586,7 +582,7 @@ class GuiProjectTree(QTreeWidget):
                 self.theParent.mainMenu.setAvailableRoot()
                 self._setTreeChanged(True)
             else:
-                self.makeAlert(self.tr(
+                self.theParent.makeAlert(self.tr(
                     "Cannot delete root folder. It is not empty. "
                     "Recursive deletion is not supported. "
                     "Please delete the content first."
@@ -844,7 +840,7 @@ class GuiProjectTree(QTreeWidget):
         snItem = self.theProject.projTree[sHandle]
         dnItem = self.theProject.projTree[dHandle]
         if dnItem is None:
-            self.makeAlert(self.tr(
+            self.theParent.makeAlert(self.tr(
                 "The item cannot be moved to that location."
             ), nwAlert.ERROR)
             return
@@ -877,7 +873,7 @@ class GuiProjectTree(QTreeWidget):
         else:
             theEvent.ignore()
             logger.debug("Drag'n'drop of item '%s' not accepted", sHandle)
-            self.makeAlert(self.tr(
+            self.theParent.makeAlert(self.tr(
                 "The item cannot be moved to that location."
             ), nwAlert.ERROR)
 
@@ -976,7 +972,7 @@ class GuiProjectTree(QTreeWidget):
             elif nwItem.itemType == nwItemType.TRASH:
                 self.addTopLevelItem(newItem)
             else:
-                self.makeAlert(self.tr(
+                self.theParent.makeAlert(self.tr(
                     "There is nowhere to add item with name '{0}'."
                 ).format(nwItem.itemName), nwAlert.ERROR)
                 del self._treeMap[tHandle]

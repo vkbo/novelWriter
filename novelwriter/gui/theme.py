@@ -163,7 +163,6 @@ class GuiTheme:
         logger.verbose("Text 'N' Width: %d", self.textNWidth)
 
         # Internal Mapping
-        self.makeAlert = self.theParent.makeAlert
         self.tr = partial(QCoreApplication.translate, "GuiTheme")
 
         return
@@ -401,7 +400,7 @@ class GuiTheme:
                 with open(themeConf, mode="r", encoding="utf-8") as inFile:
                     confParser.read_file(inFile)
             except Exception as e:
-                self.makeAlert([
+                self.theParent.makeAlert([
                     self.tr("Could not load theme config file."), str(e)
                 ], nwAlert.ERROR)
                 continue
@@ -434,7 +433,7 @@ class GuiTheme:
                 with open(syntaxPath, mode="r", encoding="utf-8") as inFile:
                     confParser.read_file(inFile)
             except Exception as e:
-                self.makeAlert([
+                self.theParent.makeAlert([
                     self.tr("Could not load syntax file."), str(e)
                 ], nwAlert.ERROR)
                 return []
@@ -773,7 +772,7 @@ class GuiIcons:
                 with open(themeConf, mode="r", encoding="utf-8") as inFile:
                     confParser.read_file(inFile)
             except Exception as e:
-                self.makeAlert([
+                self.theParent.makeAlert([
                     self.tr("Could not load theme config file."), str(e)
                 ], nwAlert.ERROR)
                 continue
