@@ -26,6 +26,7 @@ import pytest
 
 from datetime import datetime
 
+from mock import causeOSError
 from tools import writeFile
 
 from novelwriter.common import (
@@ -468,7 +469,7 @@ def testBaseCommon_MakeFileNameSafe():
 
 
 @pytest.mark.base
-def testBaseCommon_Sha256Sum(fncDir, ipsumText):
+def testBaseCommon_Sha256Sum(monkeypatch, fncDir, ipsumText):
     """Test the sha256sum function.
     """
     longText = 50*(" ".join(ipsumText) + " ")
@@ -497,6 +498,12 @@ def testBaseCommon_Sha256Sum(fncDir, ipsumText):
     assert hashlib.sha256(longText.encode("utf-8")).hexdigest() == longHash
     assert hashlib.sha256(shortText.encode("utf-8")).hexdigest() == shortHash
     assert hashlib.sha256(noneText.encode("utf-8")).hexdigest() == noneHash
+
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert sha256sum(longFile) is None
+        assert sha256sum(shortFile) is None
+        assert sha256sum(noneFile) is None
 
 # END Test testBaseCommon_Sha256Sum
 
