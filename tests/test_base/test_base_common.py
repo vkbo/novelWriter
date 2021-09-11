@@ -471,17 +471,32 @@ def testBaseCommon_MakeFileNameSafe():
 def testBaseCommon_Sha256Sum(fncDir, ipsumText):
     """Test the sha256sum function.
     """
-    testData = 50*(" ".join(ipsumText) + " ")
-    assert len(testData) == 175650
+    longText = 50*(" ".join(ipsumText) + " ")
+    shortText = "This is a short file"
+    noneText = ""
 
-    testFile = os.path.join(fncDir, "hash_me.txt")
-    writeFile(testFile, testData)
+    assert len(longText) == 175650
 
-    # Taken with sha256sum tests/temp/f_temp/hash_me.txt
-    realHash = "9b22aee35660da4fae204acbe96aec7f563022746ca2b7a3831f5e44544765eb"
+    longFile = os.path.join(fncDir, "long_file.txt")
+    shortFile = os.path.join(fncDir, "short_file.txt")
+    noneFile = os.path.join(fncDir, "none_file.txt")
 
-    assert sha256sum(testFile) == realHash
-    assert hashlib.sha256(testData.encode("utf-8")).hexdigest() == realHash
+    writeFile(longFile, longText)
+    writeFile(shortFile, shortText)
+    writeFile(noneFile, noneText)
+
+    # Taken with sha256sum command on command line
+    longHash = "9b22aee35660da4fae204acbe96aec7f563022746ca2b7a3831f5e44544765eb"
+    shortHash = "6d7c9b2722364c471b8a8666bcb35d18500272d05b23b3427288e2e34c6618f0"
+    noneHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+    assert sha256sum(longFile) == longHash
+    assert sha256sum(shortFile) == shortHash
+    assert sha256sum(noneFile) == noneHash
+
+    assert hashlib.sha256(longText.encode("utf-8")).hexdigest() == longHash
+    assert hashlib.sha256(shortText.encode("utf-8")).hexdigest() == shortHash
+    assert hashlib.sha256(noneText.encode("utf-8")).hexdigest() == noneHash
 
 # END Test testBaseCommon_Sha256Sum
 
