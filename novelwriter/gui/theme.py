@@ -56,11 +56,6 @@ class GuiTheme:
         self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theIcons   = GuiIcons(self.theParent)
-        self.guiPalette = QPalette()
-        self.guiPath    = "gui"
-        self.syntaxPath = "syntax"
-        self.themeList  = []
-        self.syntaxList = []
 
         # Loaded Theme Settings
         # =====================
@@ -113,7 +108,6 @@ class GuiTheme:
         # Changeable Settings
         self.guiTheme   = None
         self.guiSyntax  = None
-        self.themeRoot  = None
         self.syntaxFile = None
         self.confFile   = None
         self.cssFile    = None
@@ -122,6 +116,9 @@ class GuiTheme:
         # Class Setup
         # ===========
 
+        self._guiPalette  = QPalette()
+        self._themeList   = []
+        self._syntaxList  = []
         self._availThemes = {}
         self._availSyntax = {}
 
@@ -215,9 +212,8 @@ class GuiTheme:
     def updateTheme(self):
         """Update the GUI theme from theme files.
         """
-        self.guiTheme   = self.mainConf.guiTheme
-        self.guiSyntax  = self.mainConf.guiSyntax
-        self.themeRoot  = os.path.join(self.mainConf.assetPath, "themes")
+        self.guiTheme  = self.mainConf.guiTheme
+        self.guiSyntax = self.mainConf.guiSyntax
 
         self.themeFile = self._availThemes.get(self.guiTheme, None)
         if self.themeFile is None:
@@ -306,7 +302,7 @@ class GuiTheme:
             qApp.setStyleSheet(cssData)
 
         # Apply Styles
-        qApp.setPalette(self.guiPalette)
+        qApp.setPalette(self._guiPalette)
 
         logger.info("Loaded theme '%s'", self.guiTheme)
 
@@ -364,36 +360,36 @@ class GuiTheme:
     def listThemes(self):
         """Scan the GUI themes folder and list all themes.
         """
-        if self.themeList:
-            return self.themeList
+        if self._themeList:
+            return self._themeList
 
         confParser = NWConfigParser()
         for themeKey, themePath in self._availThemes.items():
             logger.verbose("Checking theme config for '%s'", themeKey)
             themeName = self._getConfInternalName(confParser, themePath)
             if themeName:
-                self.themeList.append((themeKey, themeName))
+                self._themeList.append((themeKey, themeName))
 
-        self.themeList = sorted(self.themeList, key=lambda x: x[1])
+        self._themeList = sorted(self._themeList, key=lambda x: x[1])
 
-        return self.themeList
+        return self._themeList
 
     def listSyntax(self):
         """Scan the syntax themes folder and list all themes.
         """
-        if self.syntaxList:
-            return self.syntaxList
+        if self._syntaxList:
+            return self._syntaxList
 
         confParser = NWConfigParser()
         for syntaxKey, syntaxPath in self._availSyntax.items():
             logger.verbose("Checking theme syntax for '%s'", syntaxKey)
             syntaxName = self._getConfInternalName(confParser, syntaxPath)
             if syntaxName:
-                self.syntaxList.append((syntaxKey, syntaxName))
+                self._syntaxList.append((syntaxKey, syntaxName))
 
-        self.syntaxList = sorted(self.syntaxList, key=lambda x: x[1])
+        self._syntaxList = sorted(self._syntaxList, key=lambda x: x[1])
 
-        return self.syntaxList
+        return self._syntaxList
 
     ##
     #  Internal Functions
@@ -457,7 +453,7 @@ class GuiTheme:
                 logger.error("Could not load theme colours for '%s' from config file", cnfName)
                 return
         if len(readCol) == 3:
-            self.guiPalette.setColor(paletteVal, QColor(*readCol))
+            self._guiPalette.setColor(paletteVal, QColor(*readCol))
         return
 
 # End Class GuiTheme
