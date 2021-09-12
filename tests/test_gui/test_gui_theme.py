@@ -74,7 +74,7 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert novelwriter.CONFIG.guiSyntax == "tomorrow_night_eighties"
     assert novelwriter.CONFIG.guiIcons == "typicons_dark"
     assert novelwriter.CONFIG.guiDark is True
-    assert novelwriter.CONFIG.guiFont == "Cantarell"
+    assert novelwriter.CONFIG.guiFont != ""
     assert novelwriter.CONFIG.guiFontSize == 11
 
     # Check GUI Colours
