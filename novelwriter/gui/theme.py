@@ -29,15 +29,14 @@ import logging
 import novelwriter
 
 from math import ceil
-from functools import partial
 
-from PyQt5.QtCore import QCoreApplication, Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QStyle, qApp
 from PyQt5.QtGui import (
     QPalette, QColor, QIcon, QFont, QFontMetrics, QFontDatabase, QPixmap
 )
 
-from novelwriter.enum import nwAlert, nwItemLayout, nwItemType
+from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.common import NWConfigParser, readTextFile
 from novelwriter.constants import nwLabels
 
@@ -51,11 +50,10 @@ logger = logging.getLogger(__name__)
 
 class GuiTheme:
 
-    def __init__(self, theParent):
+    def __init__(self):
 
-        self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theIcons   = GuiIcons(self.theParent)
+        self.mainConf = novelwriter.CONFIG
+        self.theIcons = GuiIcons(self)
 
         # Loaded Theme Settings
         # =====================
@@ -109,7 +107,6 @@ class GuiTheme:
         self.guiTheme   = None
         self.guiSyntax  = None
         self.syntaxFile = None
-        self.confFile   = None
         self.cssFile    = None
         self.guiFontDB  = QFontDatabase()
 
@@ -165,9 +162,6 @@ class GuiTheme:
         logger.verbose("GUI Base Icon Size: %d", self.baseIconSize)
         logger.verbose("Text 'N' Height: %d", self.textNHeight)
         logger.verbose("Text 'N' Width: %d", self.textNWidth)
-
-        # Internal Mapping
-        self.tr = partial(QCoreApplication.translate, "GuiTheme")
 
         return
 
@@ -366,7 +360,7 @@ class GuiTheme:
         confParser = NWConfigParser()
         for themeKey, themePath in self._availThemes.items():
             logger.verbose("Checking theme config for '%s'", themeKey)
-            themeName = self._getConfInternalName(confParser, themePath)
+            themeName = _loadInternalName(confParser, themePath)
             if themeName:
                 self._themeList.append((themeKey, themeName))
 
@@ -383,7 +377,7 @@ class GuiTheme:
         confParser = NWConfigParser()
         for syntaxKey, syntaxPath in self._availSyntax.items():
             logger.verbose("Checking theme syntax for '%s'", syntaxKey)
-            syntaxName = self._getConfInternalName(confParser, syntaxPath)
+            syntaxName = _loadInternalName(confParser, syntaxPath)
             if syntaxName:
                 self._syntaxList.append((syntaxKey, syntaxName))
 
@@ -407,19 +401,6 @@ class GuiTheme:
                 targetDict[checkFile[:-5]] = confPath
 
         return
-
-    def _getConfInternalName(self, confParser, confFile):
-        """Open a conf file and read the 'name' setting.
-        """
-        try:
-            with open(confFile, mode="r", encoding="utf-8") as inFile:
-                confParser.read_file(inFile)
-        except Exception:
-            logger.error("Could not load file: %s", confFile)
-            novelwriter.logException()
-            return ""
-
-        return confParser.rdStr("Main", "name", "")
 
     def _loadColour(self, confParser, cnfSec, cnfName):
         """Load a colour value from a config string.
@@ -561,21 +542,21 @@ class GuiIcons:
         "wiz-back": "wizard-back.jpg",
     }
 
-    def __init__(self, theParent):
+    def __init__(self, theTheme):
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
+        self.mainConf = novelwriter.CONFIG
+        self.theTheme = theTheme
 
         # Storage
-        self.qIcons    = {}
-        self.themeMap  = {}
-        self.themeList = []
-        self.fbackName = "fallback"
-        self.confName  = "icons.conf"
+        self._qIcons    = {}
+        self._themeMap  = {}
+        self._themeList = []
+        self._fbackName = "fallback"
+        self._confName  = "icons.conf"
 
         # Icon Theme Path
-        self.iconPath = None
-        self.confFile = None
+        self._iconPath  = os.path.join(self.mainConf.assetPath, "icons")
+        self._themePath = os.path.join(self._iconPath, "system")
 
         # Icon Theme Meta
         self.themeName        = ""
@@ -599,22 +580,23 @@ class GuiIcons:
         """
         logger.debug("Loading icon theme files")
 
-        self.themeMap = {}
-        checkPath = os.path.join(self.mainConf.iconPath, self.mainConf.guiIcons)
-        if os.path.isdir(checkPath):
+        self._themeMap = {}
+        themeConf = None
+        themePath = os.path.join(self.mainConf.assetPath, "icons", self.mainConf.guiIcons)
+        if os.path.isdir(themePath):
             logger.debug("Loading icon theme '%s'", self.mainConf.guiIcons)
-            self.iconPath = checkPath
-            self.confFile = os.path.join(checkPath, self.confName)
+            self._themePath = themePath
+            themeConf = os.path.join(themePath, self._confName)
         else:
             return False
 
         # Config File
         confParser = NWConfigParser()
         try:
-            with open(self.confFile, mode="r", encoding="utf-8") as inFile:
+            with open(themeConf, mode="r", encoding="utf-8") as inFile:
                 confParser.read_file(inFile)
         except Exception:
-            logger.error("Could not load icon theme settings from: %s", self.confFile)
+            logger.error("Could not load icon theme settings from: %s", themeConf)
             novelwriter.logException()
             return False
 
@@ -636,9 +618,9 @@ class GuiIcons:
                 if iconName not in self.ICON_MAP:
                     logger.error("Unknown icon name '%s' in config file", iconName)
                 else:
-                    iconPath = os.path.join(self.iconPath, iconFile)
+                    iconPath = os.path.join(self._themePath, iconFile)
                     if os.path.isfile(iconPath):
-                        self.themeMap[iconName] = iconPath
+                        self._themeMap[iconName] = iconPath
                         logger.verbose("Icon slot '%s' using file '%s'", iconName, iconFile)
                     else:
                         logger.error("Icon file '%s' not in theme folder", iconFile)
@@ -681,11 +663,11 @@ class GuiIcons:
         return, load it, and if it still doesn't exist, return an empty
         icon.
         """
-        if iconKey in self.qIcons:
-            return self.qIcons[iconKey]
+        if iconKey in self._qIcons:
+            return self._qIcons[iconKey]
         else:
             qIcon = self._loadIcon(iconKey)
-            self.qIcons[iconKey] = qIcon
+            self._qIcons[iconKey] = qIcon
             return qIcon
 
     def getPixmap(self, iconKey, iconSize):
@@ -726,35 +708,24 @@ class GuiIcons:
     def listThemes(self):
         """Scan the icons themes folder and list all themes.
         """
-        if self.themeList:
-            return self.themeList
+        if self._themeList:
+            return self._themeList
 
         confParser = NWConfigParser()
-        for themeDir in os.listdir(self.mainConf.iconPath):
-            themePath = os.path.join(self.mainConf.iconPath, themeDir)
-            if not os.path.isdir(themePath) or themeDir == self.fbackName:
+        for themeDir in os.listdir(self._iconPath):
+            themePath = os.path.join(self._iconPath, themeDir)
+            if not os.path.isdir(themePath) or themeDir == self._fbackName:
                 continue
-            themeConf = os.path.join(themePath, self.confName)
+
             logger.verbose("Checking icon theme config for '%s'", themeDir)
-            try:
-                with open(themeConf, mode="r", encoding="utf-8") as inFile:
-                    confParser.read_file(inFile)
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Could not load theme config file."), str(e)
-                ], nwAlert.ERROR)
-                continue
-            themeName = ""
-            if confParser.has_section("Main"):
-                if confParser.has_option("Main", "name"):
-                    themeName = confParser.get("Main", "name")
-                    logger.verbose("Theme name is '%s'", themeName)
-            if themeName != "":
-                self.themeList.append((themeDir, themeName))
+            themeConf = os.path.join(themePath, self._confName)
+            themeName = _loadInternalName(confParser, themeConf)
+            if themeName:
+                self._themeList.append((themeDir, themeName))
 
-        self.themeList = sorted(self.themeList, key=lambda x: x[1])
+        self._themeList = sorted(self._themeList, key=lambda x: x[1])
 
-        return self.themeList
+        return self._themeList
 
     ##
     #  Internal Functions
@@ -772,14 +743,14 @@ class GuiIcons:
 
         # If we just want the app icon, return it right away
         if iconKey == "novelwriter":
-            return QIcon(os.path.join(self.mainConf.iconPath, "novelwriter.svg"))
+            return QIcon(os.path.join(self._iconPath, "novelwriter.svg"))
 
         # Otherwise, we start looking for it
         # First in the theme folder
-        if iconKey in self.themeMap:
-            relPath = os.path.relpath(self.themeMap[iconKey], self.mainConf.iconPath)
+        if iconKey in self._themeMap:
+            relPath = os.path.relpath(self._themeMap[iconKey], self._iconPath)
             logger.verbose("Loading: %s", relPath)
-            return QIcon(self.themeMap[iconKey])
+            return QIcon(self._themeMap[iconKey])
 
         # Next, we try to load the Qt style icons
         if self.ICON_MAP[iconKey][0] is not None:
@@ -795,13 +766,13 @@ class GuiIcons:
         # Finally. we check if we have a fallback icon
         if self.mainConf.guiDark:
             fbackIcon = os.path.join(
-                self.mainConf.iconPath, self.fbackName, "%s-dark.svg" % iconKey
+                self._iconPath, self._fbackName, "%s-dark.svg" % iconKey
             )
             if os.path.isfile(fbackIcon):
                 logger.verbose("Loading icon '%s' from fallback theme (dark mode)", iconKey)
                 return QIcon(fbackIcon)
 
-        fbackIcon = os.path.join(self.mainConf.iconPath, self.fbackName, "%s.svg" % iconKey)
+        fbackIcon = os.path.join(self._iconPath, self._fbackName, "%s.svg" % iconKey)
         if os.path.isfile(fbackIcon):
             logger.verbose("Loading icon '%s' from fallback theme (light mode)", iconKey)
             return QIcon(fbackIcon)
@@ -812,3 +783,21 @@ class GuiIcons:
         return QIcon()
 
 # END Class GuiIcons
+
+
+# =============================================================================================== #
+#  Module Functions
+# =============================================================================================== #
+
+def _loadInternalName(confParser, confFile):
+    """Open a conf file and read the 'name' setting.
+    """
+    try:
+        with open(confFile, mode="r", encoding="utf-8") as inFile:
+            confParser.read_file(inFile)
+    except Exception:
+        logger.error("Could not load file: %s", confFile)
+        novelwriter.logException()
+        return ""
+
+    return confParser.rdStr("Main", "name", "")

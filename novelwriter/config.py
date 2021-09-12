@@ -68,7 +68,6 @@ class Config:
         self.appRoot   = None   # The full path to the novelwriter root folder
         self.appIcon   = None   # The full path to the novelwriter icon file
         self.assetPath = None   # The full path to the novelwriter/assets folder
-        self.iconPath  = None   # The full path to the novelwriter/assets/icons folder
         self.pdfDocs   = None   # The location of the PDF manual, if it exists
 
         # Runtime Settings and Variables
@@ -291,8 +290,7 @@ class Config:
 
         # Assets
         self.assetPath = os.path.join(self.appPath, "assets")
-        self.iconPath  = os.path.join(self.assetPath, "icons")
-        self.appIcon   = os.path.join(self.iconPath, "novelwriter.svg")
+        self.appIcon   = os.path.join(self.assetPath, "icons", "novelwriter.svg")
 
         # Internationalisation
         self.nwLangPath = os.path.join(self.assetPath, "i18n")
