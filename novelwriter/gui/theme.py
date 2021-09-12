@@ -119,7 +119,6 @@ class GuiTheme:
         self.cssFile    = None
         self.guiFontDB  = QFontDatabase()
 
-        self.loadFonts()
         self.updateFont()
         self.updateTheme()
         self.theIcons.updateTheme()
@@ -181,43 +180,14 @@ class GuiTheme:
     #  Actions
     ##
 
-    def loadFonts(self):
-        """Add the fonts in the assets fonts folder to the app.
-        """
-        logger.debug("Loading additional fonts")
-
-        ttfList = []
-        fontAssets = os.path.join(self.mainConf.assetPath, self.fontPath)
-        for fontFam in os.listdir(fontAssets):
-            fontDir = os.path.join(fontAssets, fontFam)
-            if os.path.isdir(fontDir):
-                logger.verbose("Found font: %s", fontFam)
-                if fontFam not in self.guiFontDB.families():
-                    for fontFile in os.listdir(fontDir):
-                        ttfFile = os.path.join(fontDir, fontFile)
-                        if os.path.isfile(ttfFile) and fontFile.endswith(".ttf"):
-                            ttfList.append(ttfFile)
-
-        for ttfFile in ttfList:
-            relPath = os.path.relpath(ttfFile, fontAssets)
-            logger.verbose("Adding font: %s", relPath)
-            fontID = self.guiFontDB.addApplicationFont(ttfFile)
-            if fontID < 0:
-                logger.error("Failed to add font: %s", relPath)
-
-        return
-
     def updateFont(self):
         """Update the GUI's font style from settings.
         """
         theFont = QFont()
         if self.mainConf.guiFont not in self.guiFontDB.families():
-            if self.mainConf.osWindows:
-                if "Arial" in self.guiFontDB.families():
-                    theFont.setFamily("Arial")
-                else:
-                    # On Windows, fall back to Cantarell provided by novelWriter
-                    theFont.setFamily("Cantarell")
+            if self.mainConf.osWindows and "Arial" in self.guiFontDB.families():
+                # On Windows we default to Arial if possible
+                theFont.setFamily("Arial")
                 theFont.setPointSize(10)
             else:
                 theFont = self.guiFontDB.systemFont(QFontDatabase.GeneralFont)
@@ -411,7 +381,7 @@ class GuiTheme:
                     themeName = confParser.get("Main", "name")
                     logger.verbose("Theme name is '%s'", themeName)
             if themeName != "":
-                self.themeList.append((themeDir, themeName))
+                self.themeList.append((themeFile[:-5], themeName))
 
         self.themeList = sorted(self.themeList, key=lambda x: x[1])
 

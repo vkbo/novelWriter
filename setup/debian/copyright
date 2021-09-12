@@ -19,12 +19,6 @@ License: GPL-3.0-or-later
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-Files: novelwriter/assets/fonts/Cantarell/*
-Copyright: 2009-2010, Understanding Limited
-License: OFL-1.1
- This Font Software is licensed under the SIL Open Font License, Version 1.1.
- This license is available with a FAQ at: http://scripts.sil.org/OFL
-
 Files: novelwriter/assets/icons/typicons_*.svg
 Copyright: 2019, Stephen Hutchings
 License: CC-BY-SA-4.0
