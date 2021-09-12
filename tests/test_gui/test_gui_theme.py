@@ -75,7 +75,7 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert novelwriter.CONFIG.guiIcons == "typicons_dark"
     assert novelwriter.CONFIG.guiDark is True
     assert novelwriter.CONFIG.guiFont != ""
-    assert novelwriter.CONFIG.guiFontSize == 11
+    assert novelwriter.CONFIG.guiFontSize > 0
 
     # Check GUI Colours
     thePalette = nwGUI.palette()
