@@ -38,7 +38,7 @@ from PyQt5.QtGui import (
 )
 
 from novelwriter.enum import nwAlert, nwItemLayout, nwItemType
-from novelwriter.common import NWConfigParser
+from novelwriter.common import NWConfigParser, readTextFile
 from novelwriter.constants import nwLabels
 
 logger = logging.getLogger(__name__)
@@ -58,7 +58,6 @@ class GuiTheme:
         self.theIcons   = GuiIcons(self.theParent)
         self.guiPalette = QPalette()
         self.guiPath    = "gui"
-        self.fontPath   = "fonts"
         self.syntaxPath = "syntax"
         self.themeList  = []
         self.syntaxList = []
@@ -82,6 +81,7 @@ class GuiTheme:
         self.helpText    = [0, 0, 0]
 
         # Loaded Syntax Settings
+        # ======================
 
         # Main
         self.syntaxName        = ""
@@ -118,6 +118,17 @@ class GuiTheme:
         self.confFile   = None
         self.cssFile    = None
         self.guiFontDB  = QFontDatabase()
+
+        # Class Setup
+        # ===========
+
+        self._availThemes = {}
+        self._availSyntax = {}
+
+        self._listConf(self._availSyntax, os.path.join(self.mainConf.dataPath, "syntax"))
+        self._listConf(self._availSyntax, os.path.join(self.mainConf.assetPath, "syntax"))
+        self._listConf(self._availThemes, os.path.join(self.mainConf.dataPath, "themes"))
+        self._listConf(self._availThemes, os.path.join(self.mainConf.assetPath, "themes"))
 
         self.updateFont()
         self.updateTheme()
@@ -206,13 +217,20 @@ class GuiTheme:
         """
         self.guiTheme   = self.mainConf.guiTheme
         self.guiSyntax  = self.mainConf.guiSyntax
-        self.themeRoot  = self.mainConf.themeRoot
-        self.syntaxFile = os.path.join(self.themeRoot, self.syntaxPath, self.guiSyntax+".conf")
-        self.confFile   = os.path.join(self.themeRoot, self.guiPath, self.guiTheme+".conf")
-        self.cssFile    = os.path.join(self.themeRoot, self.guiPath, self.guiTheme+".css")
+        self.themeRoot  = os.path.join(self.mainConf.assetPath, "themes")
 
-        self.loadTheme()
-        self.loadSyntax()
+        self.themeFile = self._availThemes.get(self.guiTheme, None)
+        if self.themeFile is None:
+            logger.error("Could not find theme %s", self.guiTheme)
+        else:
+            self.cssFile = self.themeFile[:-5]+".css"
+            self.loadTheme()
+
+        self.syntaxFile = self._availSyntax.get(self.guiSyntax, None)
+        if self.syntaxFile is None:
+            logger.error("Could not find syntax theme %s", self.guiSyntax)
+        else:
+            self.loadSyntax()
 
         # Update dependant colours
         backCol = qApp.palette().window().color()
@@ -233,27 +251,16 @@ class GuiTheme:
     def loadTheme(self):
         """Load the currently specified GUI theme.
         """
-        logger.debug("Loading theme files")
+        logger.debug("Loading GUI theme")
         logger.debug("System icon theme is '%s'", str(QIcon.themeName()))
-
-        # CSS File
-        cssData = ""
-        try:
-            if os.path.isfile(self.cssFile):
-                with open(self.cssFile, mode="r", encoding="utf-8") as inFile:
-                    cssData = inFile.read()
-        except Exception:
-            logger.error("Could not load theme css file")
-            novelwriter.logException()
-            return False
 
         # Config File
         confParser = NWConfigParser()
         try:
-            with open(self.confFile, mode="r", encoding="utf-8") as inFile:
+            with open(self.themeFile, mode="r", encoding="utf-8") as inFile:
                 confParser.read_file(inFile)
         except Exception:
-            logger.error("Could not load theme settings from: %s", self.confFile)
+            logger.error("Could not load theme settings from: %s", self.themeFile)
             novelwriter.logException()
             return False
 
@@ -293,8 +300,12 @@ class GuiTheme:
             self.statUnsaved = self._loadColour(confParser, cnfSec, "statusunsaved")
             self.statSaved   = self._loadColour(confParser, cnfSec, "statussaved")
 
+        # CSS File
+        cssData = readTextFile(self.cssFile)
+        if cssData:
+            qApp.setStyleSheet(cssData)
+
         # Apply Styles
-        qApp.setStyleSheet(cssData)
         qApp.setPalette(self.guiPalette)
 
         logger.info("Loaded theme '%s'", self.guiTheme)
@@ -304,7 +315,7 @@ class GuiTheme:
     def loadSyntax(self):
         """Load the currently specified syntax highlighter theme.
         """
-        logger.debug("Loading syntax theme files")
+        logger.debug("Loading syntax theme")
 
         confParser = NWConfigParser()
         try:
@@ -357,31 +368,11 @@ class GuiTheme:
             return self.themeList
 
         confParser = NWConfigParser()
-        themeDir = os.path.join(self.mainConf.themeRoot, self.guiPath)
-        for themeFile in os.listdir(themeDir):
-            themePath = os.path.join(themeDir, themeFile)
-            if not os.path.isfile(themePath):
-                continue
-            if not themePath.endswith(".conf"):
-                continue
-
-            logger.verbose("Checking theme config for '%s'", themeFile)
-            try:
-                with open(themePath, mode="r", encoding="utf-8") as inFile:
-                    confParser.read_file(inFile)
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Could not load theme config file."), str(e)
-                ], nwAlert.ERROR)
-                continue
-
-            themeName = ""
-            if confParser.has_section("Main"):
-                if confParser.has_option("Main", "name"):
-                    themeName = confParser.get("Main", "name")
-                    logger.verbose("Theme name is '%s'", themeName)
-            if themeName != "":
-                self.themeList.append((themeFile[:-5], themeName))
+        for themeKey, themePath in self._availThemes.items():
+            logger.verbose("Checking theme config for '%s'", themeKey)
+            themeName = self._getConfInternalName(confParser, themePath)
+            if themeName:
+                self.themeList.append((themeKey, themeName))
 
         self.themeList = sorted(self.themeList, key=lambda x: x[1])
 
@@ -394,31 +385,11 @@ class GuiTheme:
             return self.syntaxList
 
         confParser = NWConfigParser()
-        syntaxDir = os.path.join(self.mainConf.themeRoot, self.syntaxPath)
-        for syntaxFile in os.listdir(syntaxDir):
-            syntaxPath = os.path.join(syntaxDir, syntaxFile)
-            if not os.path.isfile(syntaxPath):
-                continue
-            if not syntaxPath.endswith(".conf"):
-                continue
-
-            logger.verbose("Checking theme syntax for '%s'", syntaxFile)
-            try:
-                with open(syntaxPath, mode="r", encoding="utf-8") as inFile:
-                    confParser.read_file(inFile)
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Could not load syntax file."), str(e)
-                ], nwAlert.ERROR)
-                return []
-
-            syntaxName = ""
-            if confParser.has_section("Main"):
-                if confParser.has_option("Main", "name"):
-                    syntaxName = confParser.get("Main", "name")
-            if len(syntaxFile) > 5 and syntaxName != "":
-                self.syntaxList.append((syntaxFile[:-5], syntaxName))
-                logger.verbose("Syntax name is '%s'", syntaxName)
+        for syntaxKey, syntaxPath in self._availSyntax.items():
+            logger.verbose("Checking theme syntax for '%s'", syntaxKey)
+            syntaxName = self._getConfInternalName(confParser, syntaxPath)
+            if syntaxName:
+                self.syntaxList.append((syntaxKey, syntaxName))
 
         self.syntaxList = sorted(self.syntaxList, key=lambda x: x[1])
 
@@ -427,6 +398,32 @@ class GuiTheme:
     ##
     #  Internal Functions
     ##
+
+    def _listConf(self, targetDict, checkDir):
+        """Scan for syntax and gui themes and populate the dictionary.
+        """
+        if not os.path.isdir(checkDir):
+            return
+
+        for checkFile in os.listdir(checkDir):
+            confPath = os.path.join(checkDir, checkFile)
+            if os.path.isfile(confPath) and confPath.endswith(".conf"):
+                targetDict[checkFile[:-5]] = confPath
+
+        return
+
+    def _getConfInternalName(self, confParser, confFile):
+        """Open a conf file and read the 'name' setting.
+        """
+        try:
+            with open(confFile, mode="r", encoding="utf-8") as inFile:
+                confParser.read_file(inFile)
+        except Exception:
+            logger.error("Could not load file: %s", confFile)
+            novelwriter.logException()
+            return ""
+
+        return confParser.rdStr("Main", "name", "")
 
     def _loadColour(self, confParser, cnfSec, cnfName):
         """Load a colour value from a config string.
