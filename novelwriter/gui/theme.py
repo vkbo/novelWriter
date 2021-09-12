@@ -60,8 +60,6 @@ class GuiTheme:
         self.guiPath    = "gui"
         self.fontPath   = "fonts"
         self.syntaxPath = "syntax"
-        self.cssName    = "style.qss"
-        self.confName   = "theme.conf"
         self.themeList  = []
         self.syntaxList = []
 
@@ -116,7 +114,6 @@ class GuiTheme:
         self.guiTheme   = None
         self.guiSyntax  = None
         self.themeRoot  = None
-        self.themePath  = None
         self.syntaxFile = None
         self.confFile   = None
         self.cssFile    = None
@@ -240,10 +237,9 @@ class GuiTheme:
         self.guiTheme   = self.mainConf.guiTheme
         self.guiSyntax  = self.mainConf.guiSyntax
         self.themeRoot  = self.mainConf.themeRoot
-        self.themePath  = os.path.join(self.mainConf.themeRoot, self.guiPath, self.guiTheme)
         self.syntaxFile = os.path.join(self.themeRoot, self.syntaxPath, self.guiSyntax+".conf")
-        self.confFile   = os.path.join(self.themePath, self.confName)
-        self.cssFile    = os.path.join(self.themePath, self.cssName)
+        self.confFile   = os.path.join(self.themeRoot, self.guiPath, self.guiTheme+".conf")
+        self.cssFile    = os.path.join(self.themeRoot, self.guiPath, self.guiTheme+".css")
 
         self.loadTheme()
         self.loadSyntax()
@@ -391,19 +387,24 @@ class GuiTheme:
             return self.themeList
 
         confParser = NWConfigParser()
-        for themeDir in os.listdir(os.path.join(self.mainConf.themeRoot, self.guiPath)):
-            themeConf = os.path.join(
-                self.mainConf.themeRoot, self.guiPath, themeDir, self.confName
-            )
-            logger.verbose("Checking theme config for '%s'", themeDir)
+        themeDir = os.path.join(self.mainConf.themeRoot, self.guiPath)
+        for themeFile in os.listdir(themeDir):
+            themePath = os.path.join(themeDir, themeFile)
+            if not os.path.isfile(themePath):
+                continue
+            if not themePath.endswith(".conf"):
+                continue
+
+            logger.verbose("Checking theme config for '%s'", themeFile)
             try:
-                with open(themeConf, mode="r", encoding="utf-8") as inFile:
+                with open(themePath, mode="r", encoding="utf-8") as inFile:
                     confParser.read_file(inFile)
             except Exception as e:
                 self.theParent.makeAlert([
                     self.tr("Could not load theme config file."), str(e)
                 ], nwAlert.ERROR)
                 continue
+
             themeName = ""
             if confParser.has_section("Main"):
                 if confParser.has_option("Main", "name"):
@@ -428,6 +429,9 @@ class GuiTheme:
             syntaxPath = os.path.join(syntaxDir, syntaxFile)
             if not os.path.isfile(syntaxPath):
                 continue
+            if not syntaxPath.endswith(".conf"):
+                continue
+
             logger.verbose("Checking theme syntax for '%s'", syntaxFile)
             try:
                 with open(syntaxPath, mode="r", encoding="utf-8") as inFile:
@@ -437,6 +441,7 @@ class GuiTheme:
                     self.tr("Could not load syntax file."), str(e)
                 ], nwAlert.ERROR)
                 return []
+
             syntaxName = ""
             if confParser.has_section("Main"):
                 if confParser.has_option("Main", "name"):
