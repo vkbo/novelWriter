@@ -26,13 +26,14 @@ import pytest
 from datetime import datetime
 
 from tools import writeFile
+from mock import causeOSError
 
 from novelwriter.common import (
     checkString, checkInt, checkBool, checkHandle, isHandle, isTitleTag,
     isItemClass, isItemType, isItemLayout, hexToInt, formatInt,
     formatTimeStamp, formatTime, parseTimeStamp, splitVersionNumber,
-    transferCase, fuzzyTime, numberToRoman, jsonEncode, makeFileNameSafe,
-    NWConfigParser
+    transferCase, fuzzyTime, numberToRoman, jsonEncode, readTextFile,
+    makeFileNameSafe, NWConfigParser
 )
 
 
@@ -342,18 +343,6 @@ def testBaseCommon_FuzzyTime():
 # END Test testBaseCommon_FuzzyTime
 
 
-@pytest.mark.base
-def testBaseCommon_MakeFileNameSafe():
-    """Test the fuzzyTime function.
-    """
-    assert makeFileNameSafe(" aaaa ") == "aaaa"
-    assert makeFileNameSafe("aaaa,bbbb") == "aaaabbbb"
-    assert makeFileNameSafe("aaaa\tbbbb") == "aaaabbbb"
-    assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
-
-# END Test testBaseCommon_MakeFileNameSafe
-
-
 @pytest.mark.core
 def testBaseCommon_RomanNumbers():
     """Test conversion of integers to Roman numbers.
@@ -464,6 +453,36 @@ def testBaseCommon_JsonEncode():
     )
 
 # END Test testBaseCommon_JsonEncode
+
+
+@pytest.mark.base
+def testBaseCommon_ReadTextFile(monkeypatch, fncDir, ipsumText):
+    """Test the readTextFile function.
+    """
+    testText = "\n\n".join(ipsumText) + "\n"
+    testFile = os.path.join(fncDir, "ipsum.txt")
+    writeFile(testFile, testText)
+
+    assert readTextFile(os.path.join(fncDir, "not_a_file.txt")) == ""
+    assert readTextFile(testFile) == testText
+
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert readTextFile(testFile) == ""
+
+# END Test testBaseCommon_ReadTextFile
+
+
+@pytest.mark.base
+def testBaseCommon_MakeFileNameSafe():
+    """Test the makeFileNameSafe function.
+    """
+    assert makeFileNameSafe(" aaaa ") == "aaaa"
+    assert makeFileNameSafe("aaaa,bbbb") == "aaaabbbb"
+    assert makeFileNameSafe("aaaa\tbbbb") == "aaaabbbb"
+    assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
+
+# END Test testBaseCommon_MakeFileNameSafe
 
 
 @pytest.mark.base

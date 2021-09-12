@@ -36,6 +36,8 @@ from PyQt5.QtWidgets import (
     QTextBrowser, QLabel
 )
 
+from novelwriter.common import readTextFile
+
 logger = logging.getLogger(__name__)
 
 
@@ -230,10 +232,9 @@ class GuiAbout(QDialog):
         """Load the content for the Release Notes page.
         """
         docPath = os.path.join(self.mainConf.assetPath, "text", "release_notes.htm")
-        if os.path.isfile(docPath):
-            with open(docPath, mode="r", encoding="utf-8") as inFile:
-                helpText = inFile.read()
-            self.pageNotes.setHtml(helpText)
+        docText = readTextFile(docPath)
+        if docText:
+            self.pageNotes.setHtml(docText)
         else:
             self.pageNotes.setHtml("Error loading release notes text ...")
         return
@@ -242,10 +243,9 @@ class GuiAbout(QDialog):
         """Load the content for the Licence page.
         """
         docPath = os.path.join(self.mainConf.assetPath, "text", "gplv3_en.htm")
-        if os.path.isfile(docPath):
-            with open(docPath, mode="r", encoding="utf-8") as inFile:
-                helpText = inFile.read()
-            self.pageLicense.setHtml(helpText)
+        docText = readTextFile(docPath)
+        if docText:
+            self.pageLicense.setHtml(docText)
         else:
             self.pageLicense.setHtml("Error loading licence text ...")
         return

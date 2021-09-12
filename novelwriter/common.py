@@ -23,6 +23,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
 import json
 import logging
 
@@ -413,6 +414,24 @@ def jsonEncode(data, n=0, nmax=0):
 # =============================================================================================== #
 #  Other Functions
 # =============================================================================================== #
+
+def readTextFile(filePath):
+    """Read the content of a text file in a robust manner.
+    """
+    if not os.path.isfile(filePath):
+        return ""
+
+    fileText = ""
+    try:
+        with open(filePath, mode="r", encoding="utf-8") as inFile:
+            fileText = inFile.read()
+    except Exception:
+        logger.error("Could not read file: %s", filePath)
+        logException()
+        return ""
+
+    return fileText
+
 
 def makeFileNameSafe(theText):
     """Returns a filename safe version of the text.
