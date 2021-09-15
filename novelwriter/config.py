@@ -74,14 +74,13 @@ class Config:
         self.confChanged = False  # True whenever the config has chenged, false after save
 
         # General
-        self.guiTheme    = "default"
-        self.guiSyntax   = "default_light"
-        self.guiIcons    = "typicons_light"
-        self.guiDark     = False  # Load icons for dark backgrounds, if available
-        self.guiFont     = ""     # Defaults to system default font
-        self.guiFontSize = 11     # Is overridden if system default is loaded
-        self.guiScale    = 1.0    # Set automatically by Theme class
-        self.lastNotes   = "0x0"  # The latest release notes that have been shown
+        self.guiTheme    = "default"         # GUI theme
+        self.guiSyntax   = "default_light"   # Syntax theme
+        self.guiIcons    = "typicons_light"  # Icon theme
+        self.guiFont     = ""                # Defaults to system default font
+        self.guiFontSize = 11                # Is overridden if system default is loaded
+        self.guiScale    = 1.0               # Set automatically by Theme class
+        self.lastNotes   = "0x0"             # The latest release notes that have been shown
 
         # Localisation
         self.qLocal     = QLocale.system()
@@ -435,7 +434,6 @@ class Config:
         self.guiTheme    = theConf.rdStr(cnfSec, "theme", self.guiTheme)
         self.guiSyntax   = theConf.rdStr(cnfSec, "syntax", self.guiSyntax)
         self.guiIcons    = theConf.rdStr(cnfSec, "icons", self.guiIcons)
-        self.guiDark     = theConf.rdBool(cnfSec, "guidark", self.guiDark)
         self.guiFont     = theConf.rdStr(cnfSec, "guifont", self.guiFont)
         self.guiFontSize = theConf.rdInt(cnfSec, "guifontsize", self.guiFontSize)
         self.lastNotes   = theConf.rdStr(cnfSec, "lastnotes", self.lastNotes)
@@ -558,7 +556,6 @@ class Config:
             "theme":       str(self.guiTheme),
             "syntax":      str(self.guiSyntax),
             "icons":       str(self.guiIcons),
-            "guidark":     str(self.guiDark),
             "guifont":     str(self.guiFont),
             "guifontsize": str(self.guiFontSize),
             "lastnotes":   str(self.lastNotes),
