@@ -1,4 +1,4 @@
-## Typicons
+## Typicons for Dark Backgrounds
 
 Copyright: Stephen Hutchings  
 Source: https://github.com/stephenhutchings/typicons.font  
