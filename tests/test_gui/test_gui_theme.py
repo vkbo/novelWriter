@@ -23,7 +23,7 @@ import pytest
 import novelwriter
 
 from PyQt5.QtGui import QColor, QPixmap, QIcon
-from PyQt5.QtWidgets import QStyle, QMessageBox
+from PyQt5.QtWidgets import QMessageBox
 
 keyDelay = 2
 typeDelay = 1
@@ -50,7 +50,6 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     novelwriter.CONFIG.guiTheme = "default_dark"
     novelwriter.CONFIG.guiSyntax = "tomorrow_night_eighties"
     novelwriter.CONFIG.guiIcons = "typicons_colour_dark"
-    novelwriter.CONFIG.guiDark = True
     novelwriter.CONFIG.guiFont = "Cantarell"
     novelwriter.CONFIG.guiFontSize = 11
     novelwriter.CONFIG.confChanged = True
@@ -73,7 +72,6 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert novelwriter.CONFIG.guiTheme == "default_dark"
     assert novelwriter.CONFIG.guiSyntax == "tomorrow_night_eighties"
     assert novelwriter.CONFIG.guiIcons == "typicons_dark"
-    assert novelwriter.CONFIG.guiDark is True
     assert novelwriter.CONFIG.guiFont != ""
     assert novelwriter.CONFIG.guiFontSize > 0
 
@@ -168,17 +166,8 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert isinstance(anIcon, QIcon)
     assert not anIcon.isNull()
 
-    # Add test icons and test alternative load paths
-    theIcons.ICON_MAP["testicon1"] = (QStyle.SP_DriveHDIcon, None)
-    anIcon = theIcons.getIcon("testicon1")
-    assert isinstance(anIcon, QIcon)
-    assert not anIcon.isNull()
-
-    theIcons.ICON_MAP["testicon2"] = (None, "folder")
-    anIcon = theIcons.getIcon("testicon2")
-    assert isinstance(anIcon, QIcon)
-
-    theIcons.ICON_MAP["testicon3"] = (None, None)
+    # Check return empty icon if file not found
+    theIcons.ICON_KEYS.add("testicon3")
     anIcon = theIcons.getIcon("testicon3")
     assert isinstance(anIcon, QIcon)
     assert anIcon.isNull()
