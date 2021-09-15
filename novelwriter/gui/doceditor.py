@@ -2164,7 +2164,7 @@ class GuiDocEditSearch(QFrame):
         self.searchButton.setToolTip(self.tr("Find in current document"))
         self.searchButton.clicked.connect(self._doSearch)
 
-        self.replaceButton = QPushButton(self.theTheme.getIcon("search-replace"), "")
+        self.replaceButton = QPushButton(self.theTheme.getIcon("search_replace"), "")
         self.replaceButton.setFixedSize(QSize(bPx, bPx))
         self.replaceButton.setToolTip(self.tr("Find and replace in current document"))
         self.replaceButton.clicked.connect(self._doReplace)
