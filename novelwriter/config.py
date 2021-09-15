@@ -74,13 +74,17 @@ class Config:
         self.confChanged = False  # True whenever the config has chenged, false after save
 
         # General
-        self.guiTheme    = "default"         # GUI theme
-        self.guiSyntax   = "default_light"   # Syntax theme
-        self.guiIcons    = "typicons_light"  # Icon theme
-        self.guiFont     = ""                # Defaults to system default font
-        self.guiFontSize = 11                # Is overridden if system default is loaded
-        self.guiScale    = 1.0               # Set automatically by Theme class
-        self.lastNotes   = "0x0"             # The latest release notes that have been shown
+        self.guiTheme    = ""     # GUI theme
+        self.guiSyntax   = ""     # Syntax theme
+        self.guiIcons    = ""     # Icon theme
+        self.guiFont     = ""     # Defaults to system default font
+        self.guiFontSize = 11     # Is overridden if system default is loaded
+        self.guiScale    = 1.0    # Set automatically by Theme class
+        self.lastNotes   = "0x0"  # The latest release notes that have been shown
+
+        self.setDefaultGuiTheme()
+        self.setDefaultSyntaxTheme()
+        self.setDefaultIconTheme()
 
         # Localisation
         self.qLocal     = QLocale.system()
@@ -842,6 +846,19 @@ class Config:
         self.viewSynopsis = viewState
         self.confChanged = True
         return self.viewSynopsis
+
+    ##
+    #  Default Setters
+    ##
+
+    def setDefaultGuiTheme(self):
+        self.guiTheme = "default"
+
+    def setDefaultSyntaxTheme(self):
+        self.guiSyntax = "default_light"
+
+    def setDefaultIconTheme(self):
+        self.guiIcons = "typicons_light"
 
     ##
     #  Getters

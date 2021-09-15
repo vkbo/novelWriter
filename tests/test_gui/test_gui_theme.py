@@ -117,9 +117,8 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     # Test Icon class
     theIcons = nwGUI.theTheme.theIcons
     novelwriter.CONFIG.guiIcons = "invalid"
-    assert not theIcons.updateTheme()
-    novelwriter.CONFIG.guiIcons = "typicons_dark"
-    assert theIcons.updateTheme()
+    assert theIcons.updateTheme() is True
+    assert novelwriter.CONFIG.guiIcons == "typicons_light"
 
     # Ask for a non-existent key
     anImg = theIcons.loadDecoration("nonsense", 20, 20)
