@@ -155,22 +155,22 @@ class GuiDocEditor(QTextEdit):
 
         # Set Up Document Word Counter
         self.wcTimerDoc = QTimer()
-        self.wcTimerDoc.timeout.connect(self._runCounterDoc)
+        self.wcTimerDoc.timeout.connect(self._runDocCounter)
 
         self.wCounterDoc = BackgroundWordCounter(self)
         self.wCounterDoc.setAutoDelete(False)
-        self.wCounterDoc.signals.countsReady.connect(self._updateCountsDoc)
+        self.wCounterDoc.signals.countsReady.connect(self._updateDocCounts)
 
         self.wcInterval = self.mainConf.wordCountTimer
 
         # Set Up Selection Word Counter
         self.wcTimerSel = QTimer()
-        self.wcTimerSel.timeout.connect(self._runCounterSel)
+        self.wcTimerSel.timeout.connect(self._runSelCounter)
         self.wcTimerSel.setInterval(500)
 
         self.wCounterSel = BackgroundWordCounter(self, forSelection=True)
         self.wCounterSel.setAutoDelete(False)
-        self.wCounterSel.signals.countsReady.connect(self._updateCountsSel)
+        self.wCounterSel.signals.countsReady.connect(self._updateSelCounts)
 
         # Finalise
         self.initEditor()
@@ -359,7 +359,7 @@ class GuiDocEditor(QTextEdit):
 
         self._lastEdit = time()
         self._lastActive = time()
-        self._runCounterDoc()
+        self._runDocCounter()
         self.wcTimerDoc.start()
         self._docHandle = tHandle
 
@@ -457,7 +457,7 @@ class GuiDocEditor(QTextEdit):
         docText = self.getText()
 
         cC, wC, pC = countWords(docText)
-        self._updateCountsDoc(cC, wC, pC)
+        self._updateDocCounts(cC, wC, pC)
 
         self._nwItem.setCharCount(self._charCount)
         self._nwItem.setWordCount(self._wordCount)
@@ -1211,7 +1211,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     @pyqtSlot()
-    def _runCounterDoc(self):
+    def _runDocCounter(self):
         """Decide whether to run the word counter, or not due to
         inactivity.
         """
@@ -1229,7 +1229,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     @pyqtSlot(int, int, int)
-    def _updateCountsDoc(self, cCount, wCount, pCount):
+    def _updateDocCounts(self, cCount, wCount, pCount):
         """Slot for the word counter's finished signal
         """
         if self._docHandle is None or self._nwItem is None:
@@ -1271,7 +1271,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     @pyqtSlot()
-    def _runCounterSel(self):
+    def _runSelCounter(self):
         """Update the selection word count.
         """
         if self._docHandle is None:
@@ -1286,7 +1286,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     @pyqtSlot(int, int, int)
-    def _updateCountsSel(self, cCount, wCount, pCount):
+    def _updateSelCounts(self, cCount, wCount, pCount):
         """Slot for the word counter's finished signal
         """
         if self._docHandle is None or self._nwItem is None:

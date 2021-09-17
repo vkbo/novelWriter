@@ -1213,14 +1213,14 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ips
     assert nwGUI.openProject(nwMinimal) is True
 
     # Run on an empty document
-    nwGUI.docEditor._runCounterDoc()
+    nwGUI.docEditor._runDocCounter()
     assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
-    nwGUI.docEditor._updateCountsDoc(0, 0, 0)
+    nwGUI.docEditor._updateDocCounts(0, 0, 0)
     assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
-    nwGUI.docEditor._runCounterSel()
+    nwGUI.docEditor._runSelCounter()
     assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
-    nwGUI.docEditor._updateCountsSel(0, 0, 0)
+    nwGUI.docEditor._updateSelCounts(0, 0, 0)
     assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     # Open a document and populate it
@@ -1237,20 +1237,20 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ips
     # Check that a busy counter is blocked
     with monkeypatch.context() as mp:
         mp.setattr(nwGUI.docEditor.wCounterDoc, "isRunning", lambda *a: True)
-        nwGUI.docEditor._runCounterDoc()
+        nwGUI.docEditor._runDocCounter()
         assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     with monkeypatch.context() as mp:
         mp.setattr(nwGUI.docEditor.wCounterSel, "isRunning", lambda *a: True)
-        nwGUI.docEditor._runCounterSel()
+        nwGUI.docEditor._runSelCounter()
         assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     # Run the full word counter
-    nwGUI.docEditor._runCounterDoc()
+    nwGUI.docEditor._runDocCounter()
     assert nwGUI.threadPool.objectID() == id(nwGUI.docEditor.wCounterDoc)
 
     nwGUI.docEditor.wCounterDoc.run()
-    # nwGUI.docEditor._updateCountsDoc(cC, wC, pC)
+    # nwGUI.docEditor._updateDocCounts(cC, wC, pC)
     qtbot.wait(stepDelay)
     assert nwGUI.theProject.projTree[sHandle].charCount == cC
     assert nwGUI.theProject.projTree[sHandle].wordCount == wC
@@ -1264,11 +1264,11 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ips
     assert nwGUI.docEditor.docFooter._docSelection is True
 
     # Run the selection word counter
-    nwGUI.docEditor._runCounterSel()
+    nwGUI.docEditor._runSelCounter()
     assert nwGUI.threadPool.objectID() == id(nwGUI.docEditor.wCounterSel)
 
     nwGUI.docEditor.wCounterSel.run()
-    # nwGUI.docEditor._updateCountsSel(cC, wC, pC)
+    # nwGUI.docEditor._updateSelCounts(cC, wC, pC)
     qtbot.wait(stepDelay)
     assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} selected"
 
