@@ -28,6 +28,7 @@ from PyQt5.QtGui import QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtWidgets import QAction, QMessageBox, qApp
 
 from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.core import countWords
 from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout
 from novelwriter.constants import nwKeyWords, nwUnicode
 
@@ -1185,6 +1186,95 @@ def testGuiEditor_Tags(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     # qtbot.stopForInteraction()
 
 # END Test testGuiEditor_Tags
+
+
+@pytest.mark.gui
+def testGuiEditor_WordCounters(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumText):
+    """Test saving text from the editor.
+    """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
+
+    class MockThreadPool:
+
+        def __init__(self):
+            self._objID = None
+
+        def start(self, runObj):
+            self._objID = id(runObj)
+
+        def objectID(self):
+            return self._objID
+
+    nwGUI.threadPool = MockThreadPool()
+    nwGUI.docEditor.wcTimerDoc.blockSignals(True)
+    nwGUI.docEditor.wcTimerSel.blockSignals(True)
+    assert nwGUI.openProject(nwMinimal) is True
+
+    # Run on an empty document
+    nwGUI.docEditor._runCounterDoc()
+    assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+    nwGUI.docEditor._updateCountsDoc(0, 0, 0)
+    assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+
+    nwGUI.docEditor._runCounterSel()
+    assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+    nwGUI.docEditor._updateCountsSel(0, 0, 0)
+    assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+
+    # Open a document and populate it
+    sHandle = "8c659a11cd429"
+    nwGUI.theProject.projTree[sHandle].initCount = 0  # Clear item's count
+    nwGUI.theProject.projTree[sHandle].wordCount = 0  # Clear item's count
+    assert nwGUI.openDocument(sHandle) is True
+    qtbot.wait(stepDelay)
+
+    theText = "\n\n".join(ipsumText)
+    cC, wC, pC = countWords(theText)
+    assert nwGUI.docEditor.replaceText(theText) is True
+
+    # Check that a busy counter is blocked
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor.wCounterDoc, "isRunning", lambda *a: True)
+        nwGUI.docEditor._runCounterDoc()
+        assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor.wCounterSel, "isRunning", lambda *a: True)
+        nwGUI.docEditor._runCounterSel()
+        assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+
+    # Run the full word counter
+    nwGUI.docEditor._runCounterDoc()
+    assert nwGUI.threadPool.objectID() == id(nwGUI.docEditor.wCounterDoc)
+
+    nwGUI.docEditor.wCounterDoc.run()
+    # nwGUI.docEditor._updateCountsDoc(cC, wC, pC)
+    qtbot.wait(stepDelay)
+    assert nwGUI.theProject.projTree[sHandle].charCount == cC
+    assert nwGUI.theProject.projTree[sHandle].wordCount == wC
+    assert nwGUI.theProject.projTree[sHandle].paraCount == pC
+    assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} (+{wC})"
+
+    # Select all text
+    assert nwGUI.docEditor.docFooter._docSelection is False
+    nwGUI.docEditor.docAction(nwDocAction.SEL_ALL)
+    qtbot.wait(stepDelay)
+    assert nwGUI.docEditor.docFooter._docSelection is True
+
+    # Run the selection word counter
+    nwGUI.docEditor._runCounterSel()
+    assert nwGUI.threadPool.objectID() == id(nwGUI.docEditor.wCounterSel)
+
+    nwGUI.docEditor.wCounterSel.run()
+    # nwGUI.docEditor._updateCountsSel(cC, wC, pC)
+    qtbot.wait(stepDelay)
+    assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} selected"
+
+    # qtbot.stopForInteraction()
+
+# END Test testGuiEditor_WordCounters
 
 
 @pytest.mark.gui

@@ -317,7 +317,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
     qtbot.wait(stepDelay)
-    nwGUI.docEditor.wCounter.run()
+    nwGUI.docEditor.wCounterDoc.run()
     qtbot.wait(stepDelay)
 
     # Save the document
