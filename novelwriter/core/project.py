@@ -500,7 +500,7 @@ class NWProject():
                     "also have to make a few minor changes to your title page "
                     "and unnumbered chapters. Please check the 'Project "
                     "Format Changes > File Format 1.3' section of the "
-                    "documentation for more information. It is avialable from "
+                    "documentation for more information. It is available from "
                     "the Help menu."
                 ), nwAlert.INFO)
 

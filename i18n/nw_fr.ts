@@ -1034,7 +1034,7 @@
     </message>
     <message>
         <location filename="../novelwriter/gui/doceditor.py" line="690"/>
-        <source>Spell checking requires the package PyEncant. It does not appear to be installed.</source>
+        <source>Spell checking requires the package PyEnchant. It does not appear to be installed.</source>
         <translation>La vérification orthographique nécessite PyEnchant qui ne semble pas installé ici.</translation>
     </message>
 </context>
@@ -4621,7 +4621,7 @@
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="499"/>
-        <source>The format of your project will now be updated. You may also have to make a few minor changes to your title page and unnumbered chapters. Please check the &apos;Project Format Changes &gt; File Format 1.3&apos; section of the documentation for more information. It is avialable from the Help menu.</source>
+        <source>The format of your project will now be updated. You may also have to make a few minor changes to your title page and unnumbered chapters. Please check the &apos;Project Format Changes &gt; File Format 1.3&apos; section of the documentation for more information. It is available from the Help menu.</source>
         <translation>Le format des fichiers de votre projet va maintenant être mis à jour. Vous aurez peut-être aussi à effectuer quelques petits ajustements dans votre page de titre et les chapitres sans numéro. Pour plus de détails, reportez-vous à la section &apos;Project Format Changes &gt; File Format 1.3&apos; de la documentation, accessible depuis le menu d&apos;aide.</translation>
     </message>
 </context>
