@@ -4,22 +4,21 @@
 
 ### Release Notes
 
-This is a release candidate of the next release version, and is intended for testing purposes.
-Please be careful when using this version on live writing projects, and make sure you make frequent
-backups.
+This release reduces the number of document layouts from eight to two. The full list of changes is
+described in the "Novel Document Layouts" section below.
 
-From this release on, Debian packages will be provided for Ubuntu and Debian users. A new
-[PPA](https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter) has also been created. Adding this
-will allow users to install and update novelWriter automatically on Ubuntu and Debian.
-
-Release 1.5 introduces a new project file format, which has been given a file format version 1.3.
-The project file and index is updated automatically when you open the project, which means you can
-no longer open it in an older version of novelWriter.
+Due to this change, the main project file for your projects will need to be updated when you first
+open them in novelWriter 1.5. This is done automatically. The index is updated as well. When this
+conversion is done, you can no longer open the project in an older version of novelWriter.
 
 You may also have to make a handful of changes in your novel documents as novelWriter will not make
 any automated changes to your actual text. However, the changes are minimal and in any case only
-affects the way your manuscript looks like when exported via the Build Novel Project tool. The
-details are described below.
+affects the way your manuscript looks like when exported via the Build Novel Project tool. These
+details are also described below.
+
+From this release on, Debian packages will be provided for Mint, Ubuntu and Debian users. A new
+[PPA](https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter) has also been created. This allows
+users to install and update novelWriter automatically on these Linux distros.
 
 #### Novel Document Layouts
 
@@ -33,7 +32,7 @@ With this release, all the seven layouts for novel documents have been merged in
 called simply "Novel Document". The other layout, "Project Note", remains unchanged. The
 functionality provided by the various novel layouts have been implemented in other ways, and a few
 new formatting codes have been added to accommodate the formatting functionality lost with the
-removal of the layouts. They are all available in the Format and Insert menu.
+removal of the layouts. They are all available in the Format and Insert menus.
 
 The changes you need to make to your project should be limited to altering a handful of titles and
 maybe insert a page break code here and there. The only title formats you need to update are those
@@ -93,6 +92,20 @@ access to the documentation also when you don't have an active internet connecti
 _These Release Notes also include the changes from 1.5 Beta 1, Beta 2, and RC 1._
 
 ### Detailed Changelog
+
+**Installation and Packaging**
+
+* Most packages built by the setup script have a sha256sum file generated alongside it. PR #886.
+* Snapshot packages version numbers have been fixed so they work properly with the PPA. PR #887.
+
+**Internationalisation**
+
+* The French translation has been updated by @jyhelle. PR #901.
+
+**Code Improvements**
+
+* Removed some redundant and leftover code in the project class associated with dialog boxes during
+  conversion and checking of project file formats. PR #889.
 
 ----
 
