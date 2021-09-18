@@ -688,7 +688,7 @@ class GuiDocEditor(QTextEdit):
         if not self.mainConf.hasEnchant:
             if theMode:
                 self.theParent.makeAlert(self.tr(
-                    "Spell checking requires the package PyEncant. "
+                    "Spell checking requires the package PyEnchant. "
                     "It does not appear to be installed."
                 ), nwAlert.INFO)
             theMode = False
