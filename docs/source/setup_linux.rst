@@ -16,17 +16,17 @@ recommended that you download either the full source or the minimal package and 
 practical location on your system and run the ``setup.py`` script.
 
 
-Debian or Ubuntu
-================
+Debian-Based Distros
+====================
 
 A general Debian package can be downloaded from the `main website`_. This package should work on
-both Debian and Ubuntu.
+both Debian, Ubuntu and Linux Mint.
 
 If you prefer, you can also add the novelWriter repository on Launchpad to your package manager.
 
 
-Ubuntu
-------
+Ubuntu and Mint
+---------------
 
 You can add the Ubuntu PPA_ and install novelWriter with the following commands.
 
