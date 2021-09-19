@@ -1121,6 +1121,7 @@ class GuiMain(QMainWindow):
         can be either a string or an array of strings.
         """
         if isinstance(theMessage, list):
+            theMessage = list(filter(None, theMessage))
             popMsg = "<br>".join(theMessage)
             logMsg = theMessage
         else:

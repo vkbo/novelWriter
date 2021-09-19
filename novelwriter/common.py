@@ -25,6 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import os
 import json
+import hashlib
 import logging
 
 from datetime import datetime
@@ -412,7 +413,7 @@ def jsonEncode(data, n=0, nmax=0):
 
 
 # =============================================================================================== #
-#  Other Functions
+#  File and File System Functions
 # =============================================================================================== #
 
 def readTextFile(filePath):
@@ -442,6 +443,29 @@ def makeFileNameSafe(theText):
             cleanName += c
     return cleanName
 
+
+def sha256sum(filePath):
+    """Make a shasum of a file using a buffer.
+    Based on: https://stackoverflow.com/a/44873382/5825851
+    """
+    hDigest = hashlib.sha256()
+    bData = bytearray(65536)
+    mData = memoryview(bData)
+    try:
+        with open(filePath, mode="rb", buffering=0) as inFile:
+            for n in iter(lambda: inFile.readinto(mData), 0):
+                hDigest.update(mData[:n])
+    except Exception:
+        logger.error("Could not read sha256sum of: %s", filePath)
+        logException()
+        return None
+
+    return hDigest.hexdigest()
+
+
+# =============================================================================================== #
+#  Other Functions
+# =============================================================================================== #
 
 def getGuiItem(theName):
     """Returns a QtWidget based on its objectName.

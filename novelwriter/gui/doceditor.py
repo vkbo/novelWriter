@@ -113,6 +113,7 @@ class GuiDocEditor(QTextEdit):
         qDoc = self.document()
         qDoc.contentsChange.connect(self._docChange)
         qDoc.documentLayout().documentSizeChanged.connect(self._docSizeChanged)
+        self.selectionChanged.connect(self._updateSelectedStatus)
 
         # Document Title
         self.docHeader = GuiDocEditHeader(self)
@@ -152,16 +153,26 @@ class GuiDocEditor(QTextEdit):
             activated=self._followTag
         )
 
-        # Set Up Word Counter
-        self.wcTimer = QTimer()
-        self.wcTimer.timeout.connect(self._runCounter)
+        # Set Up Document Word Counter
+        self.wcTimerDoc = QTimer()
+        self.wcTimerDoc.timeout.connect(self._runDocCounter)
 
-        self.wCounter = BackgroundWordCounter(self)
-        self.wCounter.setAutoDelete(False)
-        self.wCounter.signals.countsReady.connect(self._updateCounts)
+        self.wCounterDoc = BackgroundWordCounter(self)
+        self.wCounterDoc.setAutoDelete(False)
+        self.wCounterDoc.signals.countsReady.connect(self._updateDocCounts)
 
         self.wcInterval = self.mainConf.wordCountTimer
 
+        # Set Up Selection Word Counter
+        self.wcTimerSel = QTimer()
+        self.wcTimerSel.timeout.connect(self._runSelCounter)
+        self.wcTimerSel.setInterval(500)
+
+        self.wCounterSel = BackgroundWordCounter(self, forSelection=True)
+        self.wCounterSel.setAutoDelete(False)
+        self.wCounterSel.signals.countsReady.connect(self._updateSelCounts)
+
+        # Finalise
         self.initEditor()
 
         logger.debug("GuiDocEditor initialisation complete")
@@ -175,7 +186,8 @@ class GuiDocEditor(QTextEdit):
         self._nwDocument = None
         self.setReadOnly(True)
         self.clear()
-        self.wcTimer.stop()
+        self.wcTimerDoc.stop()
+        self.wcTimerSel.stop()
 
         self._docHandle  = None
         self._charCount  = 0
@@ -283,7 +295,7 @@ class GuiDocEditor(QTextEdit):
 
         # Configure word count timer
         self.wcInterval = self.mainConf.wordCountTimer
-        self.wcTimer.setInterval(int(self.wcInterval*1000))
+        self.wcTimerDoc.setInterval(int(self.wcInterval*1000))
 
         # If we have a document open, we should reload it in case the
         # font changed, otherwise we just clear the editor entirely,
@@ -347,8 +359,8 @@ class GuiDocEditor(QTextEdit):
 
         self._lastEdit = time()
         self._lastActive = time()
-        self._runCounter()
-        self.wcTimer.start()
+        self._runDocCounter()
+        self.wcTimerDoc.start()
         self._docHandle = tHandle
 
         self.setReadOnly(False)
@@ -445,7 +457,7 @@ class GuiDocEditor(QTextEdit):
         docText = self.getText()
 
         cC, wC, pC = countWords(docText)
-        self._updateCounts(cC, wC, pC)
+        self._updateDocCounts(cC, wC, pC)
 
         self._nwItem.setCharCount(self._charCount)
         self._nwItem.setWordCount(self._wordCount)
@@ -453,9 +465,23 @@ class GuiDocEditor(QTextEdit):
 
         self.saveCursorPosition()
         if not self._nwDocument.writeDocument(docText):
-            self.theParent.makeAlert([
-                self.tr("Could not save document."), self._nwDocument.getError()
-            ], nwAlert.ERROR)
+            saveOk = False
+            if self._nwDocument._currHash != self._nwDocument._prevHash:
+                msgYes = self.theParent.askQuestion(
+                    self.tr("File Changed on Disk"),
+                    self.tr(
+                        "This document has been changed outside of novelWriter "
+                        "while it was open. Overvrite the file on disk?"
+                    )
+                )
+                if msgYes:
+                    saveOk = self._nwDocument.writeDocument(docText, forceWrite=True)
+
+            if not saveOk:
+                self.theParent.makeAlert([
+                    self.tr("Could not save document."), self._nwDocument.getError()
+                ], nwAlert.ERROR)
+
             return False
 
         self.setDocumentChanged(False)
@@ -688,7 +714,7 @@ class GuiDocEditor(QTextEdit):
         if not self.mainConf.hasEnchant:
             if theMode:
                 self.theParent.makeAlert(self.tr(
-                    "Spell checking requires the package PyEncant. "
+                    "Spell checking requires the package PyEnchant. "
                     "It does not appear to be installed."
                 ), nwAlert.INFO)
             theMode = False
@@ -1064,8 +1090,8 @@ class GuiDocEditor(QTextEdit):
         if not self._docChanged:
             self.setDocumentChanged(chrRem != 0 or chrAdd != 0)
 
-        if not self.wcTimer.isActive():
-            self.wcTimer.start()
+        if not self.wcTimerDoc.isActive():
+            self.wcTimerDoc.start()
 
         if self._doReplace and chrAdd == 1:
             self._docAutoReplace(self.document().findBlock(thePos))
@@ -1199,25 +1225,25 @@ class GuiDocEditor(QTextEdit):
         return
 
     @pyqtSlot()
-    def _runCounter(self):
+    def _runDocCounter(self):
         """Decide whether to run the word counter, or not due to
         inactivity.
         """
         if self._docHandle is None:
             return
 
-        if self.wCounter.isRunning():
+        if self.wCounterDoc.isRunning():
             logger.verbose("Word counter is busy")
             return
 
         if time() - self._lastEdit < 5 * self.wcInterval:
             logger.verbose("Running word counter")
-            self.theParent.threadPool.start(self.wCounter)
+            self.theParent.threadPool.start(self.wCounterDoc)
 
         return
 
     @pyqtSlot(int, int, int)
-    def _updateCounts(self, cCount, wCount, pCount):
+    def _updateDocCounts(self, cCount, wCount, pCount):
         """Slot for the word counter's finished signal
         """
         if self._docHandle is None or self._nwItem is None:
@@ -1238,6 +1264,51 @@ class GuiDocEditor(QTextEdit):
 
         self._checkDocSize(self.document().characterCount())
         self.docFooter.updateCounts()
+
+        return
+
+    @pyqtSlot()
+    def _updateSelectedStatus(self):
+        """The user made a change in text selection. Forward this
+        information to the footer, and start the selection word counter.
+        """
+        if self.textCursor().hasSelection():
+            if not self.wcTimerSel.isActive():
+                self.wcTimerSel.start()
+            self.docFooter.setHasSelection(True)
+
+        else:
+            self.wcTimerSel.stop()
+            self.docFooter.setHasSelection(False)
+            self.docFooter.updateCounts()
+
+        return
+
+    @pyqtSlot()
+    def _runSelCounter(self):
+        """Update the selection word count.
+        """
+        if self._docHandle is None:
+            return
+
+        if self.wCounterSel.isRunning():
+            logger.verbose("Selection word counter is busy")
+            return
+
+        self.theParent.threadPool.start(self.wCounterSel)
+
+        return
+
+    @pyqtSlot(int, int, int)
+    def _updateSelCounts(self, cCount, wCount, pCount):
+        """Slot for the word counter's finished signal
+        """
+        if self._docHandle is None or self._nwItem is None:
+            return
+
+        logger.verbose("User selectee %d words", wCount)
+        self.docFooter.updateCounts(wCount=wCount, cCount=cCount)
+        self.wcTimerSel.stop()
 
         return
 
@@ -1996,11 +2067,15 @@ class GuiDocEditor(QTextEdit):
 
 class BackgroundWordCounter(QRunnable):
 
-    def __init__(self, docEditor):
+    def __init__(self, docEditor, forSelection=False):
         QRunnable.__init__(self)
-        self.docEditor = docEditor
-        self.signals = BackgroundWordCounterSignals()
+
+        self._docEditor = docEditor
+        self._forSelection = forSelection
         self._isRunning = False
+
+        self.signals = BackgroundWordCounterSignals()
+
         return
 
     def isRunning(self):
@@ -2012,10 +2087,15 @@ class BackgroundWordCounter(QRunnable):
         call to the function that does the actual counting.
         """
         self._isRunning = True
-        theText = self.docEditor.getText()
+        if self._forSelection:
+            theText = self._docEditor.textCursor().selectedText()
+        else:
+            theText = self._docEditor.getText()
+
         cC, wC, pC = countWords(theText)
         self.signals.countsReady.emit(cC, wC, pC)
         self._isRunning = False
+
         return
 
 # END Class BackgroundWordCounter
@@ -2652,6 +2732,8 @@ class GuiDocEditFooter(QWidget):
         self._theItem   = None
         self._docHandle = None
 
+        self._docSelection = False
+
         self.sPx = int(round(0.9*self.theTheme.baseIconSize))
         fPx = int(0.9*self.theTheme.fontPixelSize)
         bSp = self.mainConf.pxInt(4)
@@ -2770,9 +2852,17 @@ class GuiDocEditFooter(QWidget):
         else:
             self._theItem = self.theProject.projTree[self._docHandle]
 
+        self.setHasSelection(False)
         self.updateInfo()
         self.updateCounts()
 
+        return
+
+    def setHasSelection(self, hasSelection):
+        """Toggle the word counter mode between full count and selection
+        count mode.
+        """
+        self._docSelection = hasSelection
         return
 
     def updateInfo(self):
@@ -2800,7 +2890,7 @@ class GuiDocEditFooter(QWidget):
         return
 
     def updateLineCount(self):
-        """Update the word count.
+        """Update the line counter.
         """
         if self._theItem is None:
             iLine = 0
@@ -2816,8 +2906,21 @@ class GuiDocEditFooter(QWidget):
 
         return
 
-    def updateCounts(self):
-        """Update the word count.
+    def updateCounts(self, wCount=None, cCount=None):
+        """Select which word count display mode to use.
+        """
+        if self._docSelection:
+            self._updateSelectionWordCounts(wCount, cCount)
+        else:
+            self._updateWordCounts()
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _updateWordCounts(self):
+        """Update the word count for the whole document.
         """
         if self._theItem is None:
             wCount = 0
@@ -2833,6 +2936,21 @@ class GuiDocEditFooter(QWidget):
         byteSize = self.docEditor.document().characterCount()
         self.wordsText.setToolTip(
             self.tr("Document size is {0} bytes").format(f"{byteSize:n}")
+        )
+
+        return
+
+    def _updateSelectionWordCounts(self, wCount, cCount):
+        """Update the word count for a selection.
+        """
+        if wCount is None or cCount is None:
+            return
+
+        self.wordsText.setText(
+            self.tr("Words: {0} selected").format(f"{wCount:n}")
+        )
+        self.wordsText.setToolTip(
+            self.tr("Character count: {0}").format(f"{cCount:n}")
         )
 
         return
