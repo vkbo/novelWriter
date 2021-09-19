@@ -29,12 +29,13 @@ from datetime import datetime
 from mock import causeOSError
 from tools import writeFile
 
+from novelwriter.guimain import GuiMain
 from novelwriter.common import (
     checkString, checkInt, checkBool, checkHandle, isHandle, isTitleTag,
     isItemClass, isItemType, isItemLayout, hexToInt, formatInt,
     formatTimeStamp, formatTime, parseTimeStamp, splitVersionNumber,
     transferCase, fuzzyTime, numberToRoman, jsonEncode, readTextFile,
-    makeFileNameSafe, sha256sum, NWConfigParser
+    makeFileNameSafe, sha256sum, getGuiItem, NWConfigParser
 )
 
 
@@ -524,6 +525,16 @@ def testBaseCommon_Sha256Sum(monkeypatch, fncDir, ipsumText):
         assert sha256sum(noneFile) is None
 
 # END Test testBaseCommon_Sha256Sum
+
+
+@pytest.mark.base
+def testBaseCommon_GetGuiItem(nwGUI):
+    """Check the GUI item function.
+    """
+    assert getGuiItem("gibberish") is None
+    assert isinstance(getGuiItem("GuiMain"), GuiMain)
+
+# END Test testBaseCommon_GetGuiItem
 
 
 @pytest.mark.base
