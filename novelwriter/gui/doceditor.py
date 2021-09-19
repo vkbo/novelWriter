@@ -465,9 +465,23 @@ class GuiDocEditor(QTextEdit):
 
         self.saveCursorPosition()
         if not self._nwDocument.writeDocument(docText):
-            self.theParent.makeAlert([
-                self.tr("Could not save document."), self._nwDocument.getError()
-            ], nwAlert.ERROR)
+            saveOk = False
+            if self._nwDocument._currHash != self._nwDocument._prevHash:
+                msgYes = self.theParent.askQuestion(
+                    self.tr("File Changed on Disk"),
+                    self.tr(
+                        "This document has been changed outside of novelWriter "
+                        "while it was open. Overvrite the file on disk?"
+                    )
+                )
+                if msgYes:
+                    saveOk = self._nwDocument.writeDocument(docText, forceWrite=True)
+
+            if not saveOk:
+                self.theParent.makeAlert([
+                    self.tr("Could not save document."), self._nwDocument.getError()
+                ], nwAlert.ERROR)
+
             return False
 
         self.setDocumentChanged(False)
@@ -700,7 +714,7 @@ class GuiDocEditor(QTextEdit):
         if not self.mainConf.hasEnchant:
             if theMode:
                 self.theParent.makeAlert(self.tr(
-                    "Spell checking requires the package PyEncant. "
+                    "Spell checking requires the package PyEnchant. "
                     "It does not appear to be installed."
                 ), nwAlert.INFO)
             theMode = False

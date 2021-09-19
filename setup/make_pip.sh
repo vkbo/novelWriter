@@ -10,6 +10,7 @@ echo ""
 echo " Building Packages"
 echo "================================================================================"
 echo ""
+python3 setup.py qtlrelease manual sample
 python3 setup.py sdist bdist_wheel
 mkdir -pv dist_upload
 cp -v dist/novelWriter-*.whl dist_upload/
