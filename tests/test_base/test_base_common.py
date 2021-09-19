@@ -19,12 +19,14 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import hashlib
 import os
 import time
 import pytest
 
 from datetime import datetime
 
+from mock import causeOSError
 from tools import writeFile
 
 from novelwriter.common import (
@@ -32,7 +34,7 @@ from novelwriter.common import (
     isItemClass, isItemType, isItemLayout, hexToInt, formatInt,
     formatTimeStamp, formatTime, parseTimeStamp, splitVersionNumber,
     transferCase, fuzzyTime, numberToRoman, jsonEncode, makeFileNameSafe,
-    NWConfigParser
+    sha256sum, NWConfigParser
 )
 
 
@@ -342,18 +344,6 @@ def testBaseCommon_FuzzyTime():
 # END Test testBaseCommon_FuzzyTime
 
 
-@pytest.mark.base
-def testBaseCommon_MakeFileNameSafe():
-    """Test the fuzzyTime function.
-    """
-    assert makeFileNameSafe(" aaaa ") == "aaaa"
-    assert makeFileNameSafe("aaaa,bbbb") == "aaaabbbb"
-    assert makeFileNameSafe("aaaa\tbbbb") == "aaaabbbb"
-    assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
-
-# END Test testBaseCommon_MakeFileNameSafe
-
-
 @pytest.mark.core
 def testBaseCommon_RomanNumbers():
     """Test conversion of integers to Roman numbers.
@@ -464,6 +454,58 @@ def testBaseCommon_JsonEncode():
     )
 
 # END Test testBaseCommon_JsonEncode
+
+
+@pytest.mark.base
+def testBaseCommon_MakeFileNameSafe():
+    """Test the makeFileNameSafe function.
+    """
+    assert makeFileNameSafe(" aaaa ") == "aaaa"
+    assert makeFileNameSafe("aaaa,bbbb") == "aaaabbbb"
+    assert makeFileNameSafe("aaaa\tbbbb") == "aaaabbbb"
+    assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
+
+# END Test testBaseCommon_MakeFileNameSafe
+
+
+@pytest.mark.base
+def testBaseCommon_Sha256Sum(monkeypatch, fncDir, ipsumText):
+    """Test the sha256sum function.
+    """
+    longText = 50*(" ".join(ipsumText) + " ")
+    shortText = "This is a short file"
+    noneText = ""
+
+    assert len(longText) == 175650
+
+    longFile = os.path.join(fncDir, "long_file.txt")
+    shortFile = os.path.join(fncDir, "short_file.txt")
+    noneFile = os.path.join(fncDir, "none_file.txt")
+
+    writeFile(longFile, longText)
+    writeFile(shortFile, shortText)
+    writeFile(noneFile, noneText)
+
+    # Taken with sha256sum command on command line
+    longHash = "9b22aee35660da4fae204acbe96aec7f563022746ca2b7a3831f5e44544765eb"
+    shortHash = "6d7c9b2722364c471b8a8666bcb35d18500272d05b23b3427288e2e34c6618f0"
+    noneHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+    assert sha256sum(longFile) == longHash
+    assert sha256sum(shortFile) == shortHash
+    assert sha256sum(noneFile) == noneHash
+
+    assert hashlib.sha256(longText.encode("utf-8")).hexdigest() == longHash
+    assert hashlib.sha256(shortText.encode("utf-8")).hexdigest() == shortHash
+    assert hashlib.sha256(noneText.encode("utf-8")).hexdigest() == noneHash
+
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert sha256sum(longFile) is None
+        assert sha256sum(shortFile) is None
+        assert sha256sum(noneFile) is None
+
+# END Test testBaseCommon_Sha256Sum
 
 
 @pytest.mark.base
