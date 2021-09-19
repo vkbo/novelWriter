@@ -636,7 +636,8 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
         toUpload(f"{bldDir}/{bldPkg}.tar.xz")
     else:
         subprocess.call(["dpkg-buildpackage"] + signArgs, cwd=outDir)
-        toUpload(f"{bldDir}/{bldPkg}.tar.xz", f"{bldPkg}.debian.tar.xz")
+        shutil.copyfile(f"{bldDir}/{bldPkg}.tar.xz", f"{bldDir}/{bldPkg}.debian.tar.xz")
+        toUpload(f"{bldDir}/{bldPkg}.debian.tar.xz")
         toUpload(f"{bldDir}/{bldPkg}_all.deb")
 
         toUpload(makeCheckSum(f"{bldPkg}.debian.tar.xz", cwd=bldDir))
