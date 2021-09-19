@@ -50,7 +50,7 @@ from novelwriter.config import Config
 #  0x010200a1 : 1.2-alpha1  1.2a1      First alpha release
 #  0x010200b1 : 1.2-beta1   1.2b1      First beta release
 #  0x010200c1 : 1.2-rc1     1.2rc1     First release candidate
-#  0x010200f0 : 1.2         1.2        Final release
+#  0x010200f0 : 1.2.0       1.2        Final release
 #  0x010200f1 : 1.2-post1   1.2.post1  Post release, but not a code patch!
 #  0x010201f0 : 1.2.1       1.2.1      Patch release
 ##
@@ -61,8 +61,8 @@ __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "1.5.0"
-__hexversion__ = "0x010500f0"
+__version__    = "1.6a0"
+__hexversion__ = "0x010600a0"
 __date__       = "2021-09-19"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
