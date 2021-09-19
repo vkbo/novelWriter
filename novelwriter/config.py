@@ -68,23 +68,23 @@ class Config:
         self.appRoot   = None   # The full path to the novelwriter root folder
         self.appIcon   = None   # The full path to the novelwriter icon file
         self.assetPath = None   # The full path to the novelwriter/assets folder
-        self.themeRoot = None   # The full path to the novelwriter/assets/themes folder
-        self.dictPath  = None   # The full path to the novelwriter/assets/dict folder
-        self.iconPath  = None   # The full path to the novelwriter/assets/icons folder
         self.pdfDocs   = None   # The location of the PDF manual, if it exists
 
         # Runtime Settings and Variables
         self.confChanged = False  # True whenever the config has chenged, false after save
 
         # General
-        self.guiTheme    = "default"
-        self.guiSyntax   = "default_light"
-        self.guiIcons    = "typicons_light"
-        self.guiDark     = False  # Load icons for dark backgrounds, if available
+        self.guiTheme    = ""     # GUI theme
+        self.guiSyntax   = ""     # Syntax theme
+        self.guiIcons    = ""     # Icon theme
         self.guiFont     = ""     # Defaults to system default font
         self.guiFontSize = 11     # Is overridden if system default is loaded
         self.guiScale    = 1.0    # Set automatically by Theme class
         self.lastNotes   = "0x0"  # The latest release notes that have been shown
+
+        self.setDefaultGuiTheme()
+        self.setDefaultSyntaxTheme()
+        self.setDefaultIconTheme()
 
         # Localisation
         self.qLocal     = QLocale.system()
@@ -293,10 +293,7 @@ class Config:
 
         # Assets
         self.assetPath = os.path.join(self.appPath, "assets")
-        self.themeRoot = os.path.join(self.assetPath, "themes")
-        self.dictPath  = os.path.join(self.assetPath, "dict")
-        self.iconPath  = os.path.join(self.assetPath, "icons")
-        self.appIcon   = os.path.join(self.iconPath, "novelwriter.svg")
+        self.appIcon   = os.path.join(self.assetPath, "icons", "novelwriter.svg")
 
         # Internationalisation
         self.nwLangPath = os.path.join(self.assetPath, "i18n")
@@ -441,7 +438,6 @@ class Config:
         self.guiTheme    = theConf.rdStr(cnfSec, "theme", self.guiTheme)
         self.guiSyntax   = theConf.rdStr(cnfSec, "syntax", self.guiSyntax)
         self.guiIcons    = theConf.rdStr(cnfSec, "icons", self.guiIcons)
-        self.guiDark     = theConf.rdBool(cnfSec, "guidark", self.guiDark)
         self.guiFont     = theConf.rdStr(cnfSec, "guifont", self.guiFont)
         self.guiFontSize = theConf.rdInt(cnfSec, "guifontsize", self.guiFontSize)
         self.lastNotes   = theConf.rdStr(cnfSec, "lastnotes", self.lastNotes)
@@ -564,7 +560,6 @@ class Config:
             "theme":       str(self.guiTheme),
             "syntax":      str(self.guiSyntax),
             "icons":       str(self.guiIcons),
-            "guidark":     str(self.guiDark),
             "guifont":     str(self.guiFont),
             "guifontsize": str(self.guiFontSize),
             "lastnotes":   str(self.lastNotes),
@@ -851,6 +846,19 @@ class Config:
         self.viewSynopsis = viewState
         self.confChanged = True
         return self.viewSynopsis
+
+    ##
+    #  Default Setters
+    ##
+
+    def setDefaultGuiTheme(self):
+        self.guiTheme = "default"
+
+    def setDefaultSyntaxTheme(self):
+        self.guiSyntax = "default_light"
+
+    def setDefaultIconTheme(self):
+        self.guiIcons = "typicons_light"
 
     ##
     #  Getters

@@ -83,7 +83,7 @@ class GuiMain(QMainWindow):
         # ============
 
         # Core Classes and Settings
-        self.theTheme    = GuiTheme(self)
+        self.theTheme    = GuiTheme()
         self.theProject  = NWProject(self)
         self.theIndex    = NWIndex(self.theProject)
         self.hasProject  = False

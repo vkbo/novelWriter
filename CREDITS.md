@@ -31,7 +31,6 @@ The following libraries are dependencies of novelWriter:
 Some of the assets bundled with novelWriter were adapted from the following sources:
 
 * Typicons icons by Stephen Hutchings (CC BY-SA 4.0)
-* Cantarell font by Dave Crossland (OPEN FONT LICENSE Version 1.1)
 * Tomorrow syntax themes by Chris Kempson (MIT License)
 * Owl syntax themes by Sarah Drasner (MIT License)
 * Solarized themes by Ethan Schoonover, added by @nullbasis (MIT License)

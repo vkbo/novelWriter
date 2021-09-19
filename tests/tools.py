@@ -25,7 +25,7 @@ import shutil
 from PyQt5.QtWidgets import qApp
 
 
-def cmpFiles(fileOne, fileTwo, ignoreLines=None):
+def cmpFiles(fileOne, fileTwo, ignoreLines=None, ignoreStart=None):
     """Compare two files, but optionally ignore lines given by a list.
     """
     if ignoreLines is None:
@@ -58,6 +58,11 @@ def cmpFiles(fileOne, fileTwo, ignoreLines=None):
         if n+1 in ignoreLines:
             print("Ignoring line %d" % (n+1))
             continue
+
+        if ignoreStart is not None:
+            if lnOne.startswith(ignoreStart):
+                print("Ignoring line %d" % (n+1))
+                continue
 
         if lnOne != lnTwo:
             print("Diff on line %d:" % (n+1))

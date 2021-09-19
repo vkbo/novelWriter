@@ -22,7 +22,6 @@ SOURCES += \
     novelwriter/gui/projdetails.py \
     novelwriter/gui/projtree.py \
     novelwriter/gui/statusbar.py \
-    novelwriter/gui/theme.py \
     novelwriter/tools/build.py \
     novelwriter/tools/projwizard.py \
     novelwriter/tools/writingstats.py \
