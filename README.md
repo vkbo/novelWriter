@@ -22,9 +22,11 @@ synchronisation tools. All text is saved as plain text files with a meta data he
 project structure is stored in a single project XML file. Other meta data is primarily saved as
 JSON files.
 
-The full documentation is available on [readthedocs.io](https://novelwriter.readthedocs.io).
+The full documentation is available at
+[novelwriter.readthedocs.io](https://novelwriter.readthedocs.io).
 
-The full credits are listed in [CREDITS.md](https://github.com/vkbo/novelWriter/blob/main/CREDITS.md).
+The full credits are listed in
+[CREDITS.md](https://github.com/vkbo/novelWriter/blob/main/CREDITS.md).
 
 ## Implementation
 
@@ -34,10 +36,9 @@ met. It is regularly tested on Debian and Ubuntu Linux, Windows, and macOS.
 
 ## Installation
 
-### Ubuntu and Debian
+### Linux Mint, Ubuntu and Debian
 
-The Releases page has a `.deb` package (from version 1.5rc1 and on) that should install on both
-Debian and Ubuntu.
+The Releases page has a `.deb` package that should install on Mint, Ubuntu and Debian.
 
 You can also use the novelWriter [PPA](https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter).
 For more details, check the [Linux](https://novelwriter.readthedocs.io/en/latest/setup_linux.html)
@@ -63,7 +64,8 @@ existing code unless there is a very good reason for doing so.
 
 Fixes and patches are welcome. Contributions related to packaging and installing novelWriter will
 also be appreciated, but please make an issue or a discussion topic first. Before contributing any
-code, please read the full [Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md).
+code, please also read the full
+[Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md).
 
 New translations are always welcome. Please read the additional
 [instructions](https://github.com/vkbo/novelWriter/blob/main/i18n/README.md) for further details.
@@ -92,18 +94,9 @@ set of formatting that is useful for the specific task of writing novels.
 | `<<`       | Suffix   | The paragraph is left-aligned. |
 | `>>`, `<<` | Wrapped  | The paragraph is centred. |
 
-<sup>1</sup> If the first word of the comment is `synopsis:`, the comment is indexed and treated as the
-synopsis for the section of text where it occurs. These synopsis comments can be used to build an
-outline and exported to external documents.
-
-In addition:
-
-* A variety of thin and non-breaking spaces are supported. Some of them depend on the system
-  running at least Qt 5.9. Earlier versions of Qt will unfortunately strip them out when saving.
-* Tabs can be used in the text, and should be properly aligned in both editor and viewer. This can
-  be used to make simple tables and lists. Note that for HTML exports, most browsers will treat a
-  tab as a space, so it may not show up like expected. Open Document exports should produce the
-  expected result.
+<sup>1</sup> If the first word of the comment is `synopsis:`, the comment is indexed and treated as
+the synopsis for the section of text where it occurs. These synopsis comments can be used to build
+an outline and exported to external documents.
 
 ### Export Formats
 
@@ -112,7 +105,7 @@ standard for office type documents that is supported by most office applications
 [Open Document > Application Support](https://en.wikipedia.org/wiki/OpenDocument#Application_support)
 for more details.
 
-You can also export the entire project as a single novelWriter-flavour document. These can later be
+You can also export the entire project as a single novelWriter-markup document. These can later be
 imported again into novelWriter. In addition, printing and export to PDF is offered through the Qt
 library, although with limitations to formatting.
 
@@ -159,6 +152,8 @@ Dependencies can generally be installed from PyPi with:
 pip install -r requirements.txt
 ```
 
+On Linux, the dependencies are generally available in the standard package repository.
+
 For more details on running or installing from source, see
 [Other Setup Methods](https://novelwriter.readthedocs.io/en/latest/setup_other.html).
 
@@ -168,13 +163,13 @@ If you need to debug novelWriter, you must run it from the command line. It take
 which can be listed with the switch `--help`. The `--info`, `--debug` or `--verbose` flags are
 particularly useful for increasing logging output for debugging.
 
-## Licenses
+## Licence
 
-This is Open Source software, and novelWriter is licensed under GPLv3. See the
+This is Open Source software, and novelWriter is licenced under GPLv3. See the
 [GNU General Public License website](https://www.gnu.org/licenses/gpl-3.0.en.html) for more
 details, or consult the [LICENSE](https://github.com/vkbo/novelWriter/blob/main/LICENSE.md) file.
 
-Bundled assets and their licenses are listed in
+Bundled assets and their licences are listed in
 [CREDITS](https://github.com/vkbo/novelWriter/blob/main/CREDITS.md).
 
 ## Screenshots
