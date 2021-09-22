@@ -31,8 +31,8 @@ from tools import writeFile
 
 from novelwriter.guimain import GuiMain
 from novelwriter.common import (
-    checkString, checkInt, checkBool, checkHandle, isHandle, isTitleTag,
-    isItemClass, isItemType, isItemLayout, hexToInt, formatInt,
+    checkString, checkInt, checkFloat, checkBool, checkHandle, isHandle,
+    isTitleTag, isItemClass, isItemType, isItemLayout, hexToInt, formatInt,
     formatTimeStamp, formatTime, parseTimeStamp, splitVersionNumber,
     transferCase, fuzzyTime, numberToRoman, jsonEncode, readTextFile,
     makeFileNameSafe, sha256sum, getGuiItem, NWConfigParser
@@ -64,6 +64,20 @@ def testBaseCommon_CheckInt():
     assert checkInt(1, 3, False) == 1
     assert checkInt(1.0, 3, False) == 1
     assert checkInt(True, 3, False) == 1
+
+# END Test testBaseCommon_CheckInt
+
+
+@pytest.mark.base
+def testBaseCommon_CheckFloat():
+    """Test the checkFloat function.
+    """
+    assert checkFloat(None, 3.0, True) is None
+    assert checkFloat("None", 3.0, True) is None
+    assert checkFloat(None, 3.0, False) == 3.0
+    assert checkFloat(1, 3.0, False) == 1.0
+    assert checkFloat(1.0, 3.0, False) == 1.0
+    assert checkFloat(True, 3.0, False) == 1.0
 
 # END Test testBaseCommon_CheckInt
 

@@ -73,7 +73,7 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, tmpDir):
     assert theOpts.loadSettings()
 
     # Check that unwanted items have been removed
-    assert theOpts.theState == {
+    assert theOpts._theState == {
         "GuiBuildNovel": {
             "winWidth": 1000,
             "winHeight": 700,
@@ -88,7 +88,7 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, tmpDir):
 
     # Load again to check we get the values back
     assert theOpts.loadSettings()
-    assert theOpts.theState == {
+    assert theOpts._theState == {
         "GuiBuildNovel": {
             "winWidth": 1000,
             "winHeight": 700,
@@ -129,7 +129,7 @@ def testCoreOptions_SetGet(mockGUI):
     assert theOpts.getValue("GuiBuildNovel", "mockItem", None) is None
 
     # Get type-specific
-    assert theOpts.getString("GuiBuildNovel", "winWidth", None) == "100"
+    assert theOpts.getString("GuiBuildNovel", "winWidth", None) is None
     assert theOpts.getString("GuiBuildNovel", "mockItem", None) is None
     assert theOpts.getInt("GuiBuildNovel", "winWidth", None) == 100
     assert theOpts.getInt("GuiBuildNovel", "textFont", None) is None

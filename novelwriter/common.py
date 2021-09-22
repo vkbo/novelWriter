@@ -66,6 +66,17 @@ def checkInt(value, default, allowNone=False):
         return default
 
 
+def checkFloat(value, default, allowNone=False):
+    """Check if a variable is a float or a None.
+    """
+    if allowNone and (value is None or value == "None"):
+        return None
+    try:
+        return float(value)
+    except Exception:
+        return default
+
+
 def checkBool(value, default, allowNone=False):
     """Check if a variable is a boolean or a None.
     """
