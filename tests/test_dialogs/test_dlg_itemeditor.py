@@ -30,10 +30,6 @@ from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.dialogs import GuiItemEditor
 from novelwriter.core.tree import NWTree
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
-
 
 @pytest.mark.gui
 def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj):
@@ -41,7 +37,6 @@ def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj):
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
     # Block Dialog exec_
     monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: None)

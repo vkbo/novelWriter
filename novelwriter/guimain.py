@@ -1092,14 +1092,14 @@ class GuiMain(QMainWindow):
         if showNotes:
             dlgAbout.showReleaseNotes()
 
-        return
+        return True
 
     def showAboutQtDialog(self):
         """Show the about dialog for Qt.
         """
         msgBox = QMessageBox()
         msgBox.aboutQt(self, "About Qt")
-        return
+        return True
 
     def showUpdatesDialog(self):
         """Show the check for updates dialog.
