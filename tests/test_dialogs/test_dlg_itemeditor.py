@@ -23,11 +23,12 @@ import pytest
 
 from tools import getGuiItem
 
-from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt5.QtWidgets import QAction, QDialog, QMessageBox
 
 from novelwriter.gui import GuiProjectTree
 from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.dialogs import GuiItemEditor
+from novelwriter.core.tree import NWTree
 
 keyDelay = 2
 typeDelay = 1
@@ -36,26 +37,57 @@ stepDelay = 20
 
 @pytest.mark.gui
 def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj):
-    """Test launching the item editor dialog.
+    """Test launching the item editor dialog from GuiMain.
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
+    # Block Dialog exec_
+    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: None)
+
+    # Open Editor wo/Project
+    assert nwGUI.editItem() is False
+
     # Create and Open Project
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": fncProj})
+
+    # No Selection
+    nwGUI.treeView.clearSelection()
+    assert nwGUI.editItem() is False
+
+    # Force opening from editor
     assert nwGUI.openDocument("0e17daca5f3e1")
-    assert nwGUI.treeView.setSelectedHandle("0e17daca5f3e1", doScroll=True)
+    nwGUI.isFocusMode = True
 
-    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: None)
-    nwGUI.mainMenu.aEditItem.activate(QAction.Trigger)
+    # Block Tree Lookup
+    with monkeypatch.context() as mp:
+        mp.setattr(NWTree, "__getitem__", lambda *a: None)
+        assert nwGUI.editItem() is False
+
+    # Invalid Type
+    nwGUI.theProject.projTree["0e17daca5f3e1"].itemType = nwItemType.NO_TYPE
+    assert nwGUI.editItem() is False
+    nwGUI.theProject.projTree["0e17daca5f3e1"].itemType = nwItemType.FILE
+
+    # Open Properly
+    assert nwGUI.editItem() is True
     qtbot.waitUntil(lambda: getGuiItem("GuiItemEditor") is not None, timeout=1000)
-
     itemEdit = getGuiItem("GuiItemEditor")
-    assert isinstance(itemEdit, GuiItemEditor)
-    itemEdit.show()
+    assert itemEdit is not None
     itemEdit.close()
+
+    # Open Via Menu
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiItemEditor, "result", lambda *a: QDialog.Accepted)
+        nwGUI.mainMenu.aEditItem.activate(QAction.Trigger)
+        qtbot.waitUntil(lambda: getGuiItem("GuiItemEditor") is not None, timeout=1000)
+        itemEdit = getGuiItem("GuiItemEditor")
+        assert itemEdit is not None
+        itemEdit.close()
+
+    nwGUI.isFocusMode = False
 
 # END Test testDlgItemEditor_Dialog
 
@@ -76,7 +108,7 @@ def testDlgItemEditor_Novel(qtbot, monkeypatch, nwGUI, fncProj):
     # Check that an invalid handle is managed
     itemEdit = GuiItemEditor(nwGUI, "whatever")
     itemEdit.show()
-    itemEdit.close()
+    itemEdit._doClose()
 
     # Edit a Document
     itemEdit = GuiItemEditor(nwGUI, "0e17daca5f3e1")

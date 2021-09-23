@@ -836,13 +836,13 @@ class GuiMain(QMainWindow):
 
         if tHandle is None:
             logger.warning("No item selected")
-            return
+            return False
 
         tItem = self.theProject.projTree[tHandle]
         if tItem is None:
-            return
+            return False
         if tItem.itemType not in nwLists.REG_TYPES:
-            return
+            return False
 
         logger.verbose("Requesting change to item '%s'", tHandle)
         dlgProj = GuiItemEditor(self, tHandle)
@@ -853,7 +853,7 @@ class GuiMain(QMainWindow):
             self.docEditor.updateDocInfo(tHandle)
             self.docViewer.updateDocInfo(tHandle)
 
-        return
+        return True
 
     def rebuildTrees(self):
         """Rebuild the project tree.
