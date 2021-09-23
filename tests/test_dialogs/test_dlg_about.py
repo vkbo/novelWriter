@@ -38,6 +38,8 @@ def testDlgAbout_Dialog(qtbot, monkeypatch, nwGUI):
     """
     # NW About
     monkeypatch.setattr(GuiAbout, "exec_", lambda *a: None)
+    nwGUI.theTheme.themeName = "A Theme"
+    nwGUI.theTheme.themeAuthor = "An Author"
     nwGUI.mainMenu.aAboutNW.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiAbout") is not None, timeout=1000)
 

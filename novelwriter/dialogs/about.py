@@ -65,7 +65,7 @@ class GuiAbout(QDialog):
         self.nwIcon = QLabel()
         self.nwIcon.setPixmap(self.theParent.theTheme.getPixmap("novelwriter", (nPx, nPx)))
         self.lblName = QLabel("<b>novelWriter</b>")
-        self.lblVers = QLabel("v%s" % novelwriter.__version__)
+        self.lblVers = QLabel(f"v{novelwriter.__version__}")
         self.lblDate = QLabel(datetime.strptime(novelwriter.__date__, "%Y-%m-%d").strftime("%x"))
 
         self.leftBox = QVBoxLayout()
@@ -178,7 +178,7 @@ class GuiAbout(QDialog):
             ),
         )
 
-        aboutMsg += "<h4>%s</h4><p>%s</p>" % (
+        aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
             self.tr("Translations"),
             self._wrapTable([
                 ("English", "Veronica Berglyd Olsen"),
@@ -193,7 +193,7 @@ class GuiAbout(QDialog):
         theIcons = self.theParent.theTheme.theIcons
         if theTheme.themeName and theTheme.themeAuthor != "N/A":
             licURL = f"<a href='{theTheme.themeLicenseUrl}'>{theTheme.themeLicense}</a>"
-            aboutMsg += "<h4>%s</h4><p>%s</p>" % (
+            aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
                 self.tr("Theme: {0}").format(theTheme.themeName),
                 self._wrapTable([
                     (self.tr("Author"), theTheme.themeAuthor),
@@ -204,7 +204,7 @@ class GuiAbout(QDialog):
 
         if theIcons.themeName:
             licURL = f"<a href='{theIcons.themeLicenseUrl}'>{theIcons.themeLicense}</a>"
-            aboutMsg += "<h4>%s</h4><p>%s</p>" % (
+            aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
                 self.tr("Icons: {0}").format(theIcons.themeName),
                 self._wrapTable([
                     (self.tr("Author"), theIcons.themeAuthor),
@@ -215,7 +215,7 @@ class GuiAbout(QDialog):
 
         if theTheme.syntaxName:
             licURL = f"<a href='{theTheme.syntaxLicenseUrl}'>{theTheme.syntaxLicense}</a>"
-            aboutMsg += "<h4>%s</h4><p>%s</p>" % (
+            aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
                 self.tr("Syntax: {0}").format(theTheme.syntaxName),
                 self._wrapTable([
                     (self.tr("Author"), theTheme.syntaxAuthor),
@@ -258,7 +258,7 @@ class GuiAbout(QDialog):
             theTable.append(
                 f"<tr><td><b>{aLabel}:</b></td><td>{aValue}</td></tr>"
             )
-        return "<table>%s</table>" % "".join(theTable)
+        return "<table>{0}</table>".format("".join(theTable))
 
     def _setStyleSheet(self):
         """Set stylesheet for all browser tabs

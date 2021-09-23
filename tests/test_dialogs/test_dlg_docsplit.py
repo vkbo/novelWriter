@@ -253,7 +253,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj):
     nwSplit.sourceItem = None
     assert nwSplit._doSplit() is False
 
-    # Close up
+    # Close
     nwSplit._doClose()
 
     # qtbot.stopForInteraction()
