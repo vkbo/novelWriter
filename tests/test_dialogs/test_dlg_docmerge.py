@@ -31,10 +31,6 @@ from novelwriter.dialogs import GuiDocMerge, GuiItemEditor
 from novelwriter.enum import nwItemType, nwWidget
 from novelwriter.core.tree import NWTree
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
-
 
 @pytest.mark.gui
 def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj):
@@ -96,7 +92,7 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj):
     nwMerge = getGuiItem("GuiDocMerge")
     assert isinstance(nwMerge, GuiDocMerge)
     nwMerge.show()
-    qtbot.wait(stepDelay)
+    qtbot.wait(50)
 
     # Populate List
     # =============

@@ -32,10 +32,6 @@ from novelwriter.enum import nwItemType, nwWidget
 from novelwriter.core.document import NWDoc
 from novelwriter.core.tree import NWTree
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
-
 
 @pytest.mark.gui
 def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj):
@@ -103,7 +99,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj):
     nwSplit = getGuiItem("GuiDocSplit")
     assert isinstance(nwSplit, GuiDocSplit)
     nwSplit.show()
-    qtbot.wait(stepDelay)
+    qtbot.wait(50)
 
     # Populate List
     # =============
