@@ -158,7 +158,7 @@ class NWTree():
                 continue
             tFile = tHandle+".nwd"
             if os.path.isfile(os.path.join(self.theProject.projContent, tFile)):
-                tocLine = "%-25s  %-9s  %-8s  %s" % (
+                tocLine = "{0:<25s}  {1:<9s}  {2:<8s}  {3:s}".format(
                     os.path.join("content", tFile),
                     tItem.itemClass.name,
                     tItem.itemLayout.name,
@@ -175,7 +175,7 @@ class NWTree():
                 outFile.write("Table of Contents\n")
                 outFile.write("=================\n")
                 outFile.write("\n")
-                outFile.write("%-25s  %-9s  %-8s  %s\n" % (
+                outFile.write("{0:<25s}  {1:<9s}  {2:<8s}  {3:s}\n".format(
                     "File Name", "Class", "Layout", "Document Label"
                 ))
                 outFile.write("-"*max(tocLen, 62) + "\n")
@@ -285,12 +285,12 @@ class NWTree():
         tItem = self.__getitem__(tHandle)
         if tItem is not None:
             tTree.append(tHandle)
-            for i in range(nwConst.MAX_DEPTH + 1):
+            for _ in range(nwConst.MAX_DEPTH + 1):
                 if tItem.itemParent is None:
                     return tTree
                 else:
                     tHandle = tItem.itemParent
-                    tItem   = self.__getitem__(tHandle)
+                    tItem = self.__getitem__(tHandle)
                     if tItem is None:
                         return tTree
                     else:
@@ -341,7 +341,7 @@ class NWTree():
         if tItem is None:
             return False
         if tItem.itemType != nwItemType.FILE:
-            logger.error("Item %s is not a file", tHandle)
+            logger.error("Item '%s' is not a file", tHandle)
             return False
         if not isinstance(itemLayout, nwItemLayout):
             return False

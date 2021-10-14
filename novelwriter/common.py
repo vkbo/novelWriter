@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 # =============================================================================================== #
 
 def checkString(value, default, allowNone=False):
-    """Check if a variable is a string or a none.
+    """Check if a variable is a string or a None.
     """
     if allowNone and (value is None or value == "None"):
         return None
@@ -56,7 +56,7 @@ def checkString(value, default, allowNone=False):
 
 
 def checkInt(value, default, allowNone=False):
-    """Check if a variable is an integer or a none.
+    """Check if a variable is an integer or a None.
     """
     if allowNone and (value is None or value == "None"):
         return None
@@ -66,8 +66,19 @@ def checkInt(value, default, allowNone=False):
         return default
 
 
+def checkFloat(value, default, allowNone=False):
+    """Check if a variable is a float or a None.
+    """
+    if allowNone and (value is None or value == "None"):
+        return None
+    try:
+        return float(value)
+    except Exception:
+        return default
+
+
 def checkBool(value, default, allowNone=False):
-    """Check if a variable is a boolean or a none.
+    """Check if a variable is a boolean or a None.
     """
     if allowNone and (value is None or value == "None"):
         return None
@@ -211,7 +222,7 @@ def formatTime(tS):
 
 
 def parseTimeStamp(theStamp, default, allowNone=False):
-    """Parses a text representation of a time stamp and converts it into
+    """Parses a text representation of a timestamp and converts it into
     a float. Note that negative timestamps cause an OSError on Windows.
     See https://bugs.python.org/issue29097
     """
@@ -228,7 +239,7 @@ def parseTimeStamp(theStamp, default, allowNone=False):
 # =============================================================================================== #
 
 def splitVersionNumber(value):
-    """Splits a version string on the form aa.bb.cc into major, minor
+    """Split a version string on the form aa.bb.cc into major, minor
     and patch, and computes an integer value aabbcc.
     """
     if not isinstance(value, str):
@@ -337,7 +348,7 @@ def fuzzyTime(secDiff):
         ).format(int(round(secDiff/31557600)))
 
 
-def numberToRoman(numVal, isLower=False):
+def numberToRoman(numVal, toLower=False):
     """Convert an integer to a Roman number.
     """
     if not isinstance(numVal, int):
@@ -358,7 +369,7 @@ def numberToRoman(numVal, isLower=False):
         if numVal <= 0:
             break
 
-    return romNum.lower() if isLower else romNum
+    return romNum.lower() if toLower else romNum
 
 
 # =============================================================================================== #
@@ -434,11 +445,11 @@ def readTextFile(filePath):
     return fileText
 
 
-def makeFileNameSafe(theText):
-    """Returns a filename safe version of the text.
+def makeFileNameSafe(value):
+    """Returns a filename safe string of the value.
     """
     cleanName = ""
-    for c in theText.strip():
+    for c in str(value).strip():
         if c.isalpha() or c.isdigit() or c == " ":
             cleanName += c
     return cleanName
@@ -456,7 +467,7 @@ def sha256sum(filePath):
             for n in iter(lambda: inFile.readinto(mData), 0):
                 hDigest.update(mData[:n])
     except Exception:
-        logger.error("Could not read sha256sum of: %s", filePath)
+        logger.error("Could not create sha256sum of: %s", filePath)
         logException()
         return None
 
@@ -467,11 +478,11 @@ def sha256sum(filePath):
 #  Other Functions
 # =============================================================================================== #
 
-def getGuiItem(theName):
+def getGuiItem(objName):
     """Returns a QtWidget based on its objectName.
     """
     for qWidget in qApp.topLevelWidgets():
-        if qWidget.objectName() == theName:
+        if qWidget.objectName() == objName:
             return qWidget
     return None
 

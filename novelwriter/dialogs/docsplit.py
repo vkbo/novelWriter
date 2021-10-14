@@ -59,7 +59,7 @@ class GuiDocSplit(QDialog):
         self.outerBox = QVBoxLayout()
         self.setWindowTitle(self.tr("Split Document"))
 
-        self.headLabel = QLabel("<b>%s</b>" % self.tr("Document Headers"))
+        self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headers")))
         self.helpLabel = QHelpLabel(
             self.tr("Select the maximum level to split into files."),
             self.theParent.theTheme.helpText
@@ -174,7 +174,7 @@ class GuiDocSplit(QDialog):
 
         msgYes = self.theParent.askQuestion(
             self.tr("Split Document"),
-            "%s<br><br>%s" % (
+            "{0}<br><br>{1}".format(
                 self.tr(
                     "The document will be split into {0} file(s) in a new folder. "
                     "The original document will remain intact.").format(nFiles),
@@ -196,10 +196,8 @@ class GuiDocSplit(QDialog):
         # Loop through, and create the files
         for wTitle, iStart, iEnd in finalOrder:
 
-            if srcItem.itemClass == nwItemClass.NOVEL:
-                itemLayout = nwItemLayout.DOCUMENT
-            else:
-                itemLayout = nwItemLayout.NOTE
+            isNovel = srcItem.itemClass == nwItemClass.NOVEL
+            itemLayout = nwItemLayout.DOCUMENT if isNovel else nwItemLayout.NOTE
 
             wTitle = wTitle.lstrip("#")
             wTitle = wTitle.strip()
@@ -209,9 +207,8 @@ class GuiDocSplit(QDialog):
             newItem.setLayout(itemLayout)
             newItem.setStatus(srcItem.itemStatus)
             logger.verbose(
-                "Creating new document %s with text from line %d to %d" % (
-                    nHandle, iStart+1, iEnd
-                )
+                "Creating new document '%s' with text from line %d to %d",
+                nHandle, iStart+1, iEnd
             )
 
             theText = "\n".join(self.sourceText[iStart:iEnd])
@@ -273,7 +270,8 @@ class GuiDocSplit(QDialog):
         spLevel = self.splitLevel.currentData()
         self.optState.setValue("GuiDocSplit", "spLevel", spLevel)
         logger.debug(
-            "Scanning document %s for headings level <= %d" % (self.sourceItem, spLevel)
+            "Scanning document '%s' for headings level <= %d",
+            self.sourceItem, spLevel
         )
 
         self.sourceText = theText.splitlines()

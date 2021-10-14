@@ -560,6 +560,62 @@ def testCoreToOdt_Convert(mockGUI):
 
 
 @pytest.mark.core
+def testCoreToOdt_ConvertDirect(mockGUI):
+    """Test the converter directly using the ToOdt class to reach some
+    otherwise hard to reach conditions.
+    """
+    theProject = NWProject(mockGUI)
+    mockGUI.theIndex = NWIndex(theProject)
+    theDoc = ToOdt(theProject, isFlat=True)
+
+    theDoc.isNovel = True
+
+    # Justified
+    theDoc = ToOdt(theProject, isFlat=True)
+    theDoc.theTokens = [
+        (theDoc.T_TEXT, 1, "This is a paragraph", [], theDoc.A_JUSTIFY),
+        (theDoc.T_EMPTY, 1, "", None, theDoc.A_NONE),
+    ]
+    theDoc.initDocument()
+    theDoc.doConvert()
+    theDoc.closeDocument()
+    assert (
+        '<style:style style:name="P1" style:family="paragraph" '
+        'style:parent-style-name="Text_Body">'
+        '<style:paragraph-properties fo:text-align="justify"/>'
+        '</style:style>'
+    ) in xmlToText(theDoc._xAuto)
+    assert xmlToText(theDoc._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="P1">This is a paragraph</text:p>'
+        '</office:text>'
+    )
+
+    # Page Break After
+    theDoc = ToOdt(theProject, isFlat=True)
+    theDoc.theTokens = [
+        (theDoc.T_TEXT, 1, "This is a paragraph", [], theDoc.A_PBA),
+        (theDoc.T_EMPTY, 1, "", None, theDoc.A_NONE),
+    ]
+    theDoc.initDocument()
+    theDoc.doConvert()
+    theDoc.closeDocument()
+    assert (
+        '<style:style style:name="P1" style:family="paragraph" '
+        'style:parent-style-name="Text_Body">'
+        '<style:paragraph-properties fo:break-after="page"/>'
+        '</style:style>'
+    ) in xmlToText(theDoc._xAuto)
+    assert xmlToText(theDoc._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="P1">This is a paragraph</text:p>'
+        '</office:text>'
+    )
+
+# END Test testCoreToOdt_ConvertDirect
+
+
+@pytest.mark.core
 def testCoreToOdt_SaveFlat(mockGUI, fncDir, outDir, refDir):
     """Test the document save functions.
     """
@@ -674,6 +730,36 @@ def testCoreToOdt_SaveFull(mockGUI, fncDir, outDir, refDir):
     assert cmpFiles(stylFile, stylComp)
 
 # END Test testCoreToOdt_SaveFull
+
+
+@pytest.mark.core
+def testCoreToOdt_Format(mockGUI):
+    """Test the formatters for the ToOdt class.
+    """
+    theProject = NWProject(mockGUI)
+    mockGUI.theIndex = NWIndex(theProject)
+    theDoc = ToOdt(theProject, isFlat=True)
+
+    assert theDoc._formatSynopsis("synopsis text") == (
+        "**Synopsis:** synopsis text",
+        "_B         b_              "
+    )
+    assert theDoc._formatComments("comment text") == (
+        "**Comment:** comment text",
+        "_B        b_             "
+    )
+
+    assert theDoc._formatKeywords("") == ""
+    assert theDoc._formatKeywords("tag: Jane") == (
+        "**Tag:** Jane",
+        "_B    b_     "
+    )
+    assert theDoc._formatKeywords("char: Bod, Jane") == (
+        "**Characters:** Bod, Jane",
+        "_B           b_          "
+    )
+
+# END Test testCoreToOdt_Format
 
 
 @pytest.mark.core

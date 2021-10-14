@@ -784,7 +784,7 @@ class GuiMain(QMainWindow):
     def passDocumentAction(self, theAction):
         """Pass on document action to the document viewer if it has
         focus, or pass it to the document editor if it or any of
-        its clid widgets have focus. If neither has focus, ignore the
+        its child widgets have focus. If neither has focus, ignore the
         action.
         """
         if self.docViewer.hasFocus():
@@ -836,13 +836,13 @@ class GuiMain(QMainWindow):
 
         if tHandle is None:
             logger.warning("No item selected")
-            return
+            return False
 
         tItem = self.theProject.projTree[tHandle]
         if tItem is None:
-            return
+            return False
         if tItem.itemType not in nwLists.REG_TYPES:
-            return
+            return False
 
         logger.verbose("Requesting change to item '%s'", tHandle)
         dlgProj = GuiItemEditor(self, tHandle)
@@ -853,7 +853,7 @@ class GuiMain(QMainWindow):
             self.docEditor.updateDocInfo(tHandle)
             self.docViewer.updateDocInfo(tHandle)
 
-        return
+        return True
 
     def rebuildTrees(self):
         """Rebuild the project tree.
@@ -938,7 +938,7 @@ class GuiMain(QMainWindow):
     ##
 
     def showProjectLoadDialog(self):
-        """Opens the projects dialog for selecting either existing
+        """Open the projects dialog for selecting either existing
         projects from a cache of recently opened projects, or provide a
         browse button for projects not yet cached. Selecting to create a
         new project is forwarded to the new project wizard.
@@ -1058,7 +1058,7 @@ class GuiMain(QMainWindow):
         return
 
     def showWritingStatsDialog(self):
-        """Open the session log dialog.
+        """Open the session stats dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
@@ -1092,17 +1092,17 @@ class GuiMain(QMainWindow):
         if showNotes:
             dlgAbout.showReleaseNotes()
 
-        return
+        return True
 
     def showAboutQtDialog(self):
         """Show the about dialog for Qt.
         """
         msgBox = QMessageBox()
         msgBox.aboutQt(self, "About Qt")
-        return
+        return True
 
     def showUpdatesDialog(self):
-        """Show the updates dialog for novelWriter.
+        """Show the check for updates dialog.
         """
         dlgUpdate = getGuiItem("GuiUpdates")
         if dlgUpdate is None:
@@ -1117,11 +1117,11 @@ class GuiMain(QMainWindow):
         return
 
     def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
-        """Alert both the user and the logger at the same time. Message
-        can be either a string or an array of strings.
+        """Alert both the user and the logger at the same time. The
+        message can be either a string or a list of strings.
         """
         if isinstance(theMessage, list):
-            theMessage = list(filter(None, theMessage))
+            theMessage = list(filter(None, theMessage))  # Strip empty strings
             popMsg = "<br>".join(theMessage)
             logMsg = theMessage
         else:
@@ -1246,13 +1246,11 @@ class GuiMain(QMainWindow):
         self.theProject.setLastViewed(None)
         bPos = self.splitMain.sizes()
         self.splitView.setVisible(False)
-        vPos = [bPos[1], 0]
-        self.splitDocs.setSizes(vPos)
+        self.splitDocs.setSizes([bPos[1], 0])
         return not self.splitView.isVisible()
 
     def toggleFocusMode(self):
-        """Main GUI Focus Mode hides tree, view pane and optionally also
-        statusbar and menu.
+        """Main GUI Focus Mode hides tree, view, statusbar and menu.
         """
         if self.docEditor.docHandle() is None:
             logger.error("No document open, so not activating Focus Mode")
@@ -1409,7 +1407,7 @@ class GuiMain(QMainWindow):
         return True
 
     def _autoSaveProject(self):
-        """Triggered by the auto-save project timer to save the project.
+        """Triggered by the autosave project timer to save the project.
         """
         doSave  = self.hasProject
         doSave &= self.theProject.projChanged
@@ -1422,7 +1420,7 @@ class GuiMain(QMainWindow):
         return
 
     def _autoSaveDocument(self):
-        """Triggered by the auto-save document timer to save the
+        """Triggered by the autosave document timer to save the
         document.
         """
         if self.hasProject and self.docEditor.docChanged():
@@ -1511,7 +1509,7 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot()
     def _timeTick(self):
-        """Triggered on every tick of the timer.
+        """Triggered on every tick of the main timer.
         """
         if not self.hasProject:
             return

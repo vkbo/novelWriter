@@ -117,7 +117,7 @@ def main(sysArgs=None):
 
     # Valid Input Options
     shortOpt = "hv"
-    longOpt  = [
+    longOpt = [
         "help",
         "version",
         "info",
@@ -215,31 +215,31 @@ def main(sysArgs=None):
     errorCode = 0
     if sys.hexversion < 0x030600f0:
         errorData.append(
-            "At least Python 3.6.0 is required, found %s." % CONFIG.verPyString
+            "At least Python 3.6.0 is required, found %s" % CONFIG.verPyString
         )
         errorCode |= 4
     if CONFIG.verQtValue < 50300:
         errorData.append(
-            "At least Qt5 version 5.3 is required, found %s." % CONFIG.verQtString
+            "At least Qt5 version 5.3 is required, found %s" % CONFIG.verQtString
         )
         errorCode |= 8
     if CONFIG.verPyQtValue < 50300:
         errorData.append(
-            "At least PyQt5 version 5.3 is required, found %s." % CONFIG.verPyQtString
+            "At least PyQt5 version 5.3 is required, found %s" % CONFIG.verPyQtString
         )
         errorCode |= 16
 
     try:
         import lxml  # noqa: F401
     except ImportError:
-        errorData.append("Python module 'lxml' is missing.")
+        errorData.append("Python module 'lxml' is missing")
         errorCode |= 32
 
     if errorData:
         errApp = QApplication([])
-        errMsg = QErrorMessage()
-        errMsg.resize(500, 300)
-        errMsg.showMessage((
+        errDlg = QErrorMessage()
+        errDlg.resize(500, 300)
+        errDlg.showMessage((
             "<h3>A critical error has been encountered</h3>"
             "<p>novelWriter cannot start due to the following issues:<p>"
             "<p>&nbsp;-&nbsp;%s</p>"
@@ -247,8 +247,8 @@ def main(sysArgs=None):
         ) % (
             "<br>&nbsp;-&nbsp;".join(errorData)
         ))
-        for errMsg in errorData:
-            logger.critical(errMsg)
+        for errLine in errorData:
+            logger.critical(errLine)
         errApp.exec_()
         sys.exit(errorCode)
 

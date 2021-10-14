@@ -125,6 +125,7 @@ class NWProject():
         if not self.projTree.checkRootUnique(rootClass):
             self.theParent.makeAlert(self.tr("Duplicate root item detected."), nwAlert.ERROR)
             return None
+
         newItem = NWItem(self)
         newItem.setName(rootName)
         newItem.setType(nwItemType.ROOT)
@@ -356,7 +357,7 @@ class NWProject():
         return True
 
     def openProject(self, fileName, overrideLock=False):
-        """Open the project file provided, or if doesn't exist, assume
+        """Open the project file provided. If it doesn't exist, assume
         it is a folder and look for the file within it. If successful,
         parse the XML of the file and populate the project variables and
         build the tree of project items.
@@ -469,8 +470,8 @@ class NWProject():
         #       parser will lose the autoReplace settings if allowed to
         #       read the file. Introduced in version 0.10.
         # 1.3 : Reduces the number of layouts to onlye two. One for
-        #       novel documents and one for notes. Introduced in version
-        #       1.5.
+        #       novel documents and one for project notes. Introduced in
+        #       version 1.5.
 
         if fileVersion not in ("1.0", "1.1", "1.2", "1.3"):
             self.theParent.makeAlert(self.tr(
@@ -973,7 +974,7 @@ class NWProject():
             return False
 
         self.bookAuthors = []
-        for bookAuthor in bookAuthors.split("\n"):
+        for bookAuthor in bookAuthors.splitlines():
             bookAuthor = bookAuthor.strip()
             if bookAuthor == "":
                 continue
@@ -1074,7 +1075,7 @@ class NWProject():
         replaceMap = self.statusItems.setNewEntries(newCols)
         for nwItem in self.projTree:
             if nwItem.itemClass == nwItemClass.NOVEL:
-                if nwItem.itemStatus in replaceMap.keys():
+                if nwItem.itemStatus in replaceMap:
                     nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
         return True
@@ -1086,7 +1087,7 @@ class NWProject():
         replaceMap = self.importItems.setNewEntries(newCols)
         for nwItem in self.projTree:
             if nwItem.itemClass != nwItemClass.NOVEL:
-                if nwItem.itemStatus in replaceMap.keys():
+                if nwItem.itemStatus in replaceMap:
                     nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
         return True
@@ -1104,7 +1105,7 @@ class NWProject():
         """
         for valKey, valEntry in titleFormat.items():
             if valKey in self.titleFormat:
-                self.titleFormat[valKey] = checkString(valEntry, self.titleFormat[valKey], False)
+                self.titleFormat[valKey] = checkString(valEntry, self.titleFormat[valKey])
         return True
 
     def setProjectChanged(self, bValue):
@@ -1346,7 +1347,7 @@ class NWProject():
         return
 
     def _packProjectKeyValue(self, xParent, theName, theDict):
-        """Pack the entries in the auto-replace dictionary.
+        """Pack the entries of a dictionary into an xml element.
         """
         xAutoRep = etree.SubElement(xParent, theName)
         for aKey, aValue in theDict.items():
