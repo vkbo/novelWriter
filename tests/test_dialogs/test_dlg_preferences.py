@@ -85,11 +85,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     nwPrefs._tabBox.setCurrentWidget(tabGeneral)
 
     qtbot.wait(keyDelay)
-    assert not tabGeneral.guiDark.isChecked()
-    qtbot.mouseClick(tabGeneral.guiDark, Qt.LeftButton)
-    assert tabGeneral.guiDark.isChecked()
-
-    qtbot.wait(keyDelay)
     assert tabGeneral.showFullPath.isChecked()
     qtbot.mouseClick(tabGeneral.showFullPath, Qt.LeftButton)
     assert not tabGeneral.showFullPath.isChecked()
@@ -249,8 +244,12 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     testFile = os.path.join(outDir, "guiPreferences_novelwriter.conf")
     compFile = os.path.join(refDir, "guiPreferences_novelwriter.conf")
     copyfile(projFile, testFile)
-    ignoreLines = [2, 7, 9, 10, 15, 16, 17, 18, 19, 20, 21, 22, 23, 32, 33]
-    assert cmpFiles(testFile, compFile, ignoreLines)
+    ignTuple = (
+        "timestamp", "guifont", "lastnotes", "guilang", "geometry",
+        "preferences", "treecols", "novelcols", "projcols", "mainpane",
+        "docpane", "viewpane", "outlinepane", "textfont", "textsize"
+    )
+    assert cmpFiles(testFile, compFile, ignoreStart=ignTuple)
 
     # Clean up
     novelwriter.CONFIG = origConf

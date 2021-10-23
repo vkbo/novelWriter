@@ -44,15 +44,14 @@ from novelwriter.config import Config
 #  - Digit 7   : Release Type (a: aplha, b: beta, c: candidate, f: final)
 #  - Digit 8   : Release Number (0-f)
 #
-#  Example    : Full        Short      Description
-# -------------------------------------------------------------------------
-#  0x010200a0 : 1.2-alpha0  1.2a0      Use while developing next release
-#  0x010200a1 : 1.2-alpha1  1.2a1      First alpha release
-#  0x010200b1 : 1.2-beta1   1.2b1      First beta release
-#  0x010200c1 : 1.2-rc1     1.2rc1     First release candidate
-#  0x010200f0 : 1.2         1.2        Final release
-#  0x010200f1 : 1.2-post1   1.2.post1  Post release, but not a code patch!
-#  0x010201f0 : 1.2.1       1.2.1      Patch release
+#  Example    : Full        Short   Description
+# --------------------------------------------------------------------
+#  0x010200a0 : 1.2-alpha0  1.2a0   Use while developing next release
+#  0x010200a1 : 1.2-alpha1  1.2a1   First alpha release
+#  0x010200b1 : 1.2-beta1   1.2b1   First beta release
+#  0x010200c1 : 1.2-rc1     1.2rc1  First release candidate
+#  0x010200f0 : 1.2.0       1.2.0   Final release
+#  0x010201f0 : 1.2.1       1.2.1   Patch release
 ##
 
 __package__    = "novelwriter"
@@ -61,9 +60,9 @@ __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "1.5.1"
-__hexversion__ = "0x010501f0"
-__date__       = "2021-10-23"
+__version__    = "1.6-alpha0"
+__hexversion__ = "0x010600a0"
+__date__       = "2021-09-19"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 __url__        = "https://novelwriter.io"
@@ -118,7 +117,7 @@ def main(sysArgs=None):
 
     # Valid Input Options
     shortOpt = "hv"
-    longOpt  = [
+    longOpt = [
         "help",
         "version",
         "info",
@@ -216,31 +215,31 @@ def main(sysArgs=None):
     errorCode = 0
     if sys.hexversion < 0x030600f0:
         errorData.append(
-            "At least Python 3.6.0 is required, found %s." % CONFIG.verPyString
+            "At least Python 3.6.0 is required, found %s" % CONFIG.verPyString
         )
         errorCode |= 4
     if CONFIG.verQtValue < 50300:
         errorData.append(
-            "At least Qt5 version 5.3 is required, found %s." % CONFIG.verQtString
+            "At least Qt5 version 5.3 is required, found %s" % CONFIG.verQtString
         )
         errorCode |= 8
     if CONFIG.verPyQtValue < 50300:
         errorData.append(
-            "At least PyQt5 version 5.3 is required, found %s." % CONFIG.verPyQtString
+            "At least PyQt5 version 5.3 is required, found %s" % CONFIG.verPyQtString
         )
         errorCode |= 16
 
     try:
         import lxml  # noqa: F401
     except ImportError:
-        errorData.append("Python module 'lxml' is missing.")
+        errorData.append("Python module 'lxml' is missing")
         errorCode |= 32
 
     if errorData:
         errApp = QApplication([])
-        errMsg = QErrorMessage()
-        errMsg.resize(500, 300)
-        errMsg.showMessage((
+        errDlg = QErrorMessage()
+        errDlg.resize(500, 300)
+        errDlg.showMessage((
             "<h3>A critical error has been encountered</h3>"
             "<p>novelWriter cannot start due to the following issues:<p>"
             "<p>&nbsp;-&nbsp;%s</p>"
@@ -248,8 +247,8 @@ def main(sysArgs=None):
         ) % (
             "<br>&nbsp;-&nbsp;".join(errorData)
         ))
-        for errMsg in errorData:
-            logger.critical(errMsg)
+        for errLine in errorData:
+            logger.critical(errLine)
         errApp.exec_()
         sys.exit(errorCode)
 

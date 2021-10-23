@@ -61,7 +61,7 @@ def testCoreSpell_Enchant(monkeypatch, tmpDir):
 
     assert spChk._readProjectDictionary(None) is False
     assert spChk._readProjectDictionary(wList) is True
-    assert spChk.projectDict == wList
+    assert spChk._projectDict == wList
 
     # Cannot write to file
     with monkeypatch.context() as mp:

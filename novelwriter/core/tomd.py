@@ -100,33 +100,33 @@ class ToMarkdown(Tokenizer):
             # Process Text Type
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
-                    tTemp = "  \n".join(thisPar)
-                    tmpResult.append("%s\n\n" % tTemp.rstrip(" "))
+                    tTemp = ("  \n".join(thisPar)).rstrip(" ")
+                    tmpResult.append(f"{tTemp}\n\n")
                 thisPar = []
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("# %s\n\n" % tHead)
+                tmpResult.append(f"# {tHead}\n\n")
 
             elif tType == self.T_UNNUM:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("## %s\n\n" % tHead)
+                tmpResult.append(f"## {tHead}\n\n")
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("# %s\n\n" % tHead)
+                tmpResult.append(f"# {tHead}\n\n")
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("## %s\n\n" % tHead)
+                tmpResult.append(f"## {tHead}\n\n")
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("### %s\n\n" % tHead)
+                tmpResult.append(f"### {tHead}\n\n")
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("#### %s\n\n" % tHead)
+                tmpResult.append(f"#### {tHead}\n\n")
 
             elif tType == self.T_SEP:
                 tmpResult.append("%s\n\n" % tText)
@@ -141,10 +141,12 @@ class ToMarkdown(Tokenizer):
                 thisPar.append(tTemp.rstrip())
 
             elif tType == self.T_SYNOPSIS and self.doSynopsis:
-                tmpResult.append("**%s:** %s\n\n" % (self._localLookup("Synopsis"), tText))
+                locName = self._localLookup("Synopsis")
+                tmpResult.append(f"**{locName}:** {tText}\n\n")
 
             elif tType == self.T_COMMENT and self.doComments:
-                tmpResult.append("**%s:** %s\n\n" % (self._localLookup("Comment"), tText))
+                locName = self._localLookup("Comment")
+                tmpResult.append(f"**{locName}:** {tText}\n\n")
 
             elif tType == self.T_KEYWORD and self.doKeywords:
                 tmpResult.append(self._formatKeywords(tText, tStyle))
@@ -189,7 +191,7 @@ class ToMarkdown(Tokenizer):
 
         retText = ""
         if theBits[0] in nwLabels.KEY_NAME:
-            retText += "**%s:** " % nwLabels.KEY_NAME[theBits[0]]
+            retText += f"**{nwLabels.KEY_NAME[theBits[0]]}:** "
 
             if len(theBits) > 1:
                 retText += ", ".join(theBits[1:])

@@ -267,13 +267,14 @@ class Tokenizer():
         else:
             textAlign = self.A_PBB | self.A_CENTRE
 
-        theTitle = "%s: %s" % (self._localLookup("Notes"), theItem.itemName)
+        locNotes = self._localLookup("Notes")
+        theTitle = f"{locNotes}: {theItem.itemName}"
         self.theTokens = []
         self.theTokens.append((
             self.T_TITLE, 0, theTitle, None, textAlign
         ))
         if self.keepMarkdown:
-            self.theMarkdown.append("# %s\n\n" % theTitle)
+            self.theMarkdown.append(f"# {theTitle}\n\n")
 
         return True
 
@@ -302,7 +303,7 @@ class Tokenizer():
             errVal = self.tr("Document '{0}' is too big ({1} MB). Skipping.").format(
                 self.theItem.itemName, f"{docSize/1.0e6:.2f}"
             )
-            self.theText = "# %s\n\n%s\n\n" % (self.tr("ERROR"), errVal)
+            self.theText = "# {0}\n\n{1}\n\n".format(self.tr("ERROR"), errVal)
             self.errData.append(errVal)
 
         self.isNone  = self.theItem.itemLayout == nwItemLayout.NO_LAYOUT
@@ -318,7 +319,7 @@ class Tokenizer():
         if len(self.theProject.autoReplace) > 0:
             repDict = {}
             for aKey, aVal in self.theProject.autoReplace.items():
-                repDict["<%s>" % aKey] = aVal
+                repDict[f"<{aKey}>"] = aVal
             xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
             self.theText = xRep.sub(lambda x: repDict[x.group(0)], self.theText)
 

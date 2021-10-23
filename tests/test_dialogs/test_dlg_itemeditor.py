@@ -20,93 +20,213 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import pytest
-import os
 
-from shutil import copyfile
-from tools import cmpFiles, getGuiItem
+from tools import getGuiItem
 
-from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt5.QtWidgets import QAction, QDialog, QMessageBox
 
 from novelwriter.gui import GuiProjectTree
-from novelwriter.enum import nwItemLayout
+from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.dialogs import GuiItemEditor
-
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
+from novelwriter.core.tree import NWTree
 
 
 @pytest.mark.gui
-def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
-    """Test the full item editor dialog.
+def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj):
+    """Test launching the item editor dialog from GuiMain.
     """
-    projFile = os.path.join(fncProj, "nwProject.nwx")
-    testFile = os.path.join(outDir, "guiItemEditor_Dialog_nwProject.nwx")
-    compFile = os.path.join(refDir, "guiItemEditor_Dialog_nwProject.nwx")
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
+    # Block Dialog exec_
+    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: None)
+
+    # Open Editor wo/Project
+    assert nwGUI.editItem() is False
+
+    # Create and Open Project
+    nwGUI.theProject.projTree.setSeed(42)
+    assert nwGUI.newProject({"projPath": fncProj})
+
+    # No Selection
+    nwGUI.treeView.clearSelection()
+    assert nwGUI.editItem() is False
+
+    # Force opening from editor
+    assert nwGUI.openDocument("0e17daca5f3e1")
+    nwGUI.isFocusMode = True
+
+    # Block Tree Lookup
+    with monkeypatch.context() as mp:
+        mp.setattr(NWTree, "__getitem__", lambda *a: None)
+        assert nwGUI.editItem() is False
+
+    # Invalid Type
+    nwGUI.theProject.projTree["0e17daca5f3e1"].itemType = nwItemType.NO_TYPE
+    assert nwGUI.editItem() is False
+    nwGUI.theProject.projTree["0e17daca5f3e1"].itemType = nwItemType.FILE
+
+    # Open Properly
+    assert nwGUI.editItem() is True
+    qtbot.waitUntil(lambda: getGuiItem("GuiItemEditor") is not None, timeout=1000)
+    itemEdit = getGuiItem("GuiItemEditor")
+    assert itemEdit is not None
+    itemEdit.close()
+
+    # Open Via Menu
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiItemEditor, "result", lambda *a: QDialog.Accepted)
+        nwGUI.mainMenu.aEditItem.activate(QAction.Trigger)
+        qtbot.waitUntil(lambda: getGuiItem("GuiItemEditor") is not None, timeout=1000)
+        itemEdit = getGuiItem("GuiItemEditor")
+        assert itemEdit is not None
+        itemEdit.close()
+
+    nwGUI.isFocusMode = False
+
+# END Test testDlgItemEditor_Dialog
+
+
+@pytest.mark.gui
+def testDlgItemEditor_Novel(qtbot, monkeypatch, nwGUI, fncProj):
+    """Test the item editor dialog for a novel document.
+    """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
-    # Create new, save, open project
+    # Create Project and Open Document
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": fncProj})
     assert nwGUI.openDocument("0e17daca5f3e1")
-    assert nwGUI.treeView.setSelectedHandle("0e17daca5f3e1", doScroll=True)
 
-    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: None)
-    nwGUI.mainMenu.aEditItem.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiItemEditor") is not None, timeout=1000)
+    # Check that an invalid handle is managed
+    itemEdit = GuiItemEditor(nwGUI, "whatever")
+    itemEdit.show()
+    itemEdit._doClose()
 
-    itemEdit = getGuiItem("GuiItemEditor")
-    assert isinstance(itemEdit, GuiItemEditor)
+    # Edit a Document
+    itemEdit = GuiItemEditor(nwGUI, "0e17daca5f3e1")
     itemEdit.show()
 
-    qtbot.addWidget(itemEdit)
-
+    # Check Existing Settings
     assert itemEdit.editName.text() == "New Scene"
     assert itemEdit.editStatus.currentData() == "New"
     assert itemEdit.editLayout.currentData() == nwItemLayout.DOCUMENT
+    assert itemEdit.editExport.isChecked() is True
 
-    for c in "Just a Page":
-        qtbot.keyClick(itemEdit.editName, c, delay=typeDelay)
+    # Change Settings
+    layoutIdx = itemEdit.editLayout.findData(nwItemLayout.NOTE)
+    itemEdit.editName.setText("Great Scene")
     itemEdit.editStatus.setCurrentIndex(1)
-    layoutIdx = itemEdit.editLayout.findData(nwItemLayout.DOCUMENT)
     itemEdit.editLayout.setCurrentIndex(layoutIdx)
-
     itemEdit.editExport.setChecked(False)
-    assert not itemEdit.editExport.isChecked()
+
+    # Check New Settings
     itemEdit._doSave()
+    assert itemEdit.theItem.itemName == "Great Scene"
+    assert itemEdit.theItem.itemStatus == "Note"
+    assert itemEdit.theItem.itemLayout == nwItemLayout.NOTE
+    assert itemEdit.theItem.isExported is False
 
-    nwGUI.mainMenu.aEditItem.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiItemEditor") is not None, timeout=1000)
-
-    itemEdit = getGuiItem("GuiItemEditor")
-    assert isinstance(itemEdit, GuiItemEditor)
-    itemEdit.show()
-
-    qtbot.addWidget(itemEdit)
-    assert itemEdit.editName.text() == "Just a Page"
-    assert itemEdit.editStatus.currentData() == "Note"
-    assert itemEdit.editLayout.currentData() == nwItemLayout.DOCUMENT
-    itemEdit._doClose()
-
-    # Check that the header is updated
+    # Check that the editor header is updated
     nwGUI.docEditor.updateDocInfo("0e17daca5f3e1")
-    assert nwGUI.docEditor.docHeader.theTitle.text() == "Novel  ›  New Chapter  ›  Just a Page"
-    assert not nwGUI.docEditor.setCursorLine("where?")
-    assert nwGUI.docEditor.setCursorLine(2)
-    qtbot.wait(stepDelay)
-    assert nwGUI.docEditor.getCursorPosition() == 15
+    assert nwGUI.docEditor.docHeader.theTitle.text() == "Novel  ›  New Chapter  ›  Great Scene"
 
-    qtbot.wait(stepDelay)
-    assert nwGUI.saveProject()
-    qtbot.wait(stepDelay)
-
-    # Check the files
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile,  [2, 6, 7, 8])
-
+    itemEdit.close()
+    del itemEdit
     # qtbot.stopForInteraction()
 
 # END Test testDlgItemEditor_Dialog
+
+
+@pytest.mark.gui
+def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj):
+    """Test the item editor dialog for a project note.
+    """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
+
+    # Create Project and Open Document
+    nwGUI.theProject.projTree.setSeed(42)
+    assert nwGUI.newProject({"projPath": fncProj})
+
+    # Create Note
+    nwGUI.treeView.clearSelection()
+    nwGUI.treeView._getTreeItem("71ee45a3c0db9").setSelected(True)
+    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
+
+    # Open Note
+    assert nwGUI.openDocument("1a6562590ef19")
+
+    # Edit a Document
+    itemEdit = GuiItemEditor(nwGUI, "1a6562590ef19")
+    itemEdit.show()
+
+    # Check Existing Settings
+    assert itemEdit.editName.text() == "New File"
+    assert itemEdit.editStatus.currentData() == "New"
+    assert itemEdit.editLayout.currentData() == nwItemLayout.NOTE
+    assert itemEdit.editExport.isChecked() is True
+
+    # Change Settings
+    itemEdit.editName.setText("New Character")
+    itemEdit.editStatus.setCurrentIndex(1)
+    itemEdit.editExport.setChecked(False)
+
+    # Check New Settings
+    itemEdit._doSave()
+    assert itemEdit.theItem.itemName == "New Character"
+    assert itemEdit.theItem.itemStatus == "Minor"
+    assert itemEdit.theItem.itemLayout == nwItemLayout.NOTE
+    assert itemEdit.theItem.isExported is False
+
+    itemEdit.close()
+    del itemEdit
+    # qtbot.stopForInteraction()
+
+# END Test testDlgItemEditor_Note
+
+
+@pytest.mark.gui
+def testDlgItemEditor_Folder(qtbot, monkeypatch, nwGUI, fncProj):
+    """Test the item editor dialog for a folder.
+    """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
+
+    # Create Project and Open Document
+    nwGUI.theProject.projTree.setSeed(42)
+    assert nwGUI.newProject({"projPath": fncProj})
+
+    # Edit a Folder
+    itemEdit = GuiItemEditor(nwGUI, "31489056e0916")
+    itemEdit.show()
+
+    # Check Existing Settings
+    assert itemEdit.editName.text() == "New Chapter"
+    assert itemEdit.editStatus.currentData() == "New"
+    assert itemEdit.editLayout.currentData() == nwItemLayout.NO_LAYOUT
+    assert itemEdit.editExport.isChecked() is False
+
+    assert itemEdit.editLayout.isEnabled() is False
+    assert itemEdit.editExport.isEnabled() is False
+
+    # Change Settings
+    itemEdit.editName.setText("Chapter One")
+    itemEdit.editStatus.setCurrentIndex(1)
+
+    # Check New Settings
+    itemEdit._doSave()
+    assert itemEdit.theItem.itemName == "Chapter One"
+    assert itemEdit.theItem.itemStatus == "Note"
+    assert itemEdit.theItem.itemLayout == nwItemLayout.NO_LAYOUT
+    assert itemEdit.theItem.isExported is False
+
+    itemEdit.close()
+    del itemEdit
+    # qtbot.stopForInteraction()
+
+# END Test testDlgItemEditor_Folder

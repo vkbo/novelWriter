@@ -45,18 +45,35 @@ XML_NS = {
     "meta":   "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
     "fo":     "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
 }
+MANI_NS = {
+    "manifest": "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
+}
+OFFICE_NS = {
+    "office": XML_NS["office"]
+}
+
+
+def _mkTag(nsName, tagName, nsMap=XML_NS):
+    """Assemble namespace and tag name.
+    """
+    theNS = nsMap.get(nsName, "")
+    if theNS:
+        return f"{{{theNS}}}{tagName}"
+    logger.warning("Missing xml namespace '%s'", nsName)
+    return tagName
+
 
 # Mimetype and Version
 X_MIME = "application/vnd.oasis.opendocument.text"
 X_VERS = "1.2"
 
 # Text Formatting Tags
-TAG_BR   = "{%s}line-break" % XML_NS["text"]
-TAG_SPC  = "{%s}s" % XML_NS["text"]
-TAG_NSPC = "{%s}c" % XML_NS["text"]
-TAG_TAB  = "{%s}tab" % XML_NS["text"]
-TAG_SPAN = "{%s}span" % XML_NS["text"]
-TAG_STNM = "{%s}style-name" % XML_NS["text"]
+TAG_BR   = _mkTag("text", "line-break")
+TAG_SPC  = _mkTag("text", "s")
+TAG_NSPC = _mkTag("text", "c")
+TAG_TAB  = _mkTag("text", "tab")
+TAG_SPAN = _mkTag("text", "span")
+TAG_STNM = _mkTag("text", "style-name")
 
 # Formatting Codes
 X_BLD = 0x01  # Bold format
@@ -313,7 +330,7 @@ class ToOdt(Tokenizer):
 
         # Meta Data
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "creation-date"))
-        xMeta.text = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+        xMeta.text = datetime.now().strftime(r"%Y-%m-%dT%H:%M:%S")
 
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "generator"))
         xMeta.text = f"novelWriter/{novelwriter.__version__}"
@@ -472,24 +489,22 @@ class ToOdt(Tokenizer):
     def saveOpenDocText(self, savePath):
         """Save the data to an .odt file.
         """
-        mMap = {"manifest": "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"}
-        mMani = "{%s}manifest" % mMap["manifest"]
-        mVers = "{%s}version" % mMap["manifest"]
-        mPath = "{%s}full-path" % mMap["manifest"]
-        mType = "{%s}media-type" % mMap["manifest"]
-        mFile = "{%s}file-entry" % mMap["manifest"]
+        mMani = _mkTag("manifest", "manifest", nsMap=MANI_NS)
+        mVers = _mkTag("manifest", "version", nsMap=MANI_NS)
+        mPath = _mkTag("manifest", "full-path", nsMap=MANI_NS)
+        mType = _mkTag("manifest", "media-type", nsMap=MANI_NS)
+        mFile = _mkTag("manifest", "file-entry", nsMap=MANI_NS)
 
-        xMani = etree.Element(mMani, attrib={mVers: X_VERS}, nsmap=mMap)
+        xMani = etree.Element(mMani, attrib={mVers: X_VERS}, nsmap=MANI_NS)
         etree.SubElement(xMani, mFile, attrib={mPath: "/", mVers: X_VERS, mType: X_MIME})
         etree.SubElement(xMani, mFile, attrib={mPath: "settings.xml", mType: "text/xml"})
         etree.SubElement(xMani, mFile, attrib={mPath: "content.xml", mType: "text/xml"})
         etree.SubElement(xMani, mFile, attrib={mPath: "meta.xml", mType: "text/xml"})
         etree.SubElement(xMani, mFile, attrib={mPath: "styles.xml", mType: "text/xml"})
 
-        sMap = {"office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0"}
-        oRoot = "{%s}document-settings" % sMap["office"]
-        oSett = "{%s}settings" % sMap["office"]
-        xSett = etree.Element(oRoot, nsmap=sMap)
+        oRoot = _mkTag("office", "document-settings", nsMap=OFFICE_NS)
+        oSett = _mkTag("office", "settings", nsMap=OFFICE_NS)
+        xSett = etree.Element(oRoot, nsmap=OFFICE_NS)
         etree.SubElement(xSett, oSett)
 
         with ZipFile(savePath, mode="w") as outFile:
@@ -520,16 +535,16 @@ class ToOdt(Tokenizer):
         """Apply formatting to synopsis lines.
         """
         sSynop = self._localLookup("Synopsis")
-        rTxt = "**%s:** %s" % (sSynop, tText)
-        rFmt = "_B%s b_ %s" % (" "*len(sSynop), " "*len(tText))
+        rTxt = "**{0}:** {1}".format(sSynop, tText)
+        rFmt = "_B{0} b_ {1}".format(" "*len(sSynop), " "*len(tText))
         return rTxt, rFmt
 
     def _formatComments(self, tText):
         """Apply formatting to comments.
         """
         sComm = self._localLookup("Comment")
-        rTxt = "**%s:** %s" % (sComm, tText)
-        rFmt = "_B%s b_ %s" % (" "*len(sComm), " "*len(tText))
+        rTxt = "**{0}:** {1}".format(sComm, tText)
+        rFmt = "_B{0} b_ {1}".format(" "*len(sComm), " "*len(tText))
         return rTxt, rFmt
 
     def _formatKeywords(self, tText):
@@ -543,8 +558,8 @@ class ToOdt(Tokenizer):
         rFmt = ""
         if theBits[0] in nwLabels.KEY_NAME:
             tText = nwLabels.KEY_NAME[theBits[0]]
-            rTxt += "**%s:** " % tText
-            rFmt += "_B%s b_ " % (" "*len(tText))
+            rTxt += "**{0}:** ".format(tText)
+            rFmt += "_B{0} b_ ".format(" "*len(tText))
             if len(theBits) > 1:
                 if theBits[0] == nwKeyWords.TAG_KEY:
                     rTxt += theBits[1]
@@ -1468,16 +1483,4 @@ class XMLParagraph():
 
         return
 
-
-# =============================================================================================== #
-#  Local Functions
-# =============================================================================================== #
-
-def _mkTag(nsName, tagName):
-    """Assemble namespace and tag name.
-    """
-    theNS = XML_NS.get(nsName, "")
-    if theNS:
-        return "{%s}%s" % (theNS, tagName)
-    logger.warning("Missing xml namespace '%s'", nsName)
-    return tagName
+# END Class XMLParagraph

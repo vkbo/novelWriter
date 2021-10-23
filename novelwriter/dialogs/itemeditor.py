@@ -57,7 +57,8 @@ class GuiItemEditor(QDialog):
 
         self.theItem = self.theProject.projTree[tHandle]
         if self.theItem is None:
-            self._doClose()
+            self.close()
+            return
 
         self.setWindowTitle(self.tr("Item Settings"))
 

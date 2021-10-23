@@ -287,10 +287,8 @@ class NWIndex():
         nLine = 0
         nTitle = 0
         theLines = theText.splitlines()
-        for aLine in theLines:
-            nLine += 1
-            nChar = len(aLine.strip())
-            if nChar == 0:
+        for nLine, aLine in enumerate(theLines, start=1):
+            if len(aLine.strip()) == 0:
                 continue
 
             if aLine.startswith("#"):
@@ -363,7 +361,7 @@ class NWIndex():
         else:
             return False
 
-        sTitle = "T%06d" % nLine
+        sTitle = f"T{nLine:06d}"
         self._fileIndex[tHandle][sTitle] = {
             "level": hDepth,
             "title": hText,
@@ -391,14 +389,13 @@ class NWIndex():
             "pCount": 0,
             "synopsis": "",
         }
-
         return
 
     def _indexWordCounts(self, tHandle, theText, nTitle):
         """Count text stats and save the counts to the index.
         """
         cC, wC, pC = countWords(theText)
-        sTitle = "T%06d" % nTitle
+        sTitle = f"T{nTitle:06d}"
         if tHandle in self._fileIndex:
             if sTitle in self._fileIndex[tHandle]:
                 self._fileIndex[tHandle][sTitle]["cCount"] = cC
@@ -409,7 +406,7 @@ class NWIndex():
     def _indexSynopsis(self, tHandle, theText, nTitle):
         """Save the synopsis to the index.
         """
-        sTitle = "T%06d" % nTitle
+        sTitle = f"T{nTitle:06d}"
         if tHandle in self._fileIndex:
             if sTitle in self._fileIndex[tHandle]:
                 self._fileIndex[tHandle][sTitle]["synopsis"] = theText
@@ -428,7 +425,7 @@ class NWIndex():
             logger.warning("Skipping invalid keyword '%s' in '%s'", theBits[0], tHandle)
             return
 
-        sTitle = "T%06d" % nTitle
+        sTitle = f"T{nTitle:06d}"
         if theBits[0] == nwKeyWords.TAG_KEY:
             self._tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name, sTitle]
 
@@ -525,7 +522,7 @@ class NWIndex():
         """
         for tHandle in self._listNovelHandles(skipExcluded):
             for sTitle in sorted(self._fileIndex[tHandle]):
-                tKey = "%s:%s" % (tHandle, sTitle)
+                tKey = f"{tHandle}:{sTitle}"
                 yield tKey, tHandle, sTitle, self._fileIndex[tHandle][sTitle]
 
     def getNovelWordCount(self, skipExcluded=True):
@@ -559,7 +556,7 @@ class NWIndex():
             return theCounts
 
         for sTitle, sData in hRecord.items():
-            theCounts.append(("%s:%s" % (tHandle, sTitle), sData["wCount"]))
+            theCounts.append((f"{tHandle}:{sTitle}", sData["wCount"]))
 
         return theCounts
 

@@ -109,7 +109,7 @@ class ToHtml(Tokenizer):
         to theResult.
         """
         if self.genMode == self.M_PREVIEW:
-            htmlTags = {  # HTML4 + CSS2
+            htmlTags = {  # HTML4 + CSS2 (for Qt)
                 self.FMT_B_B: "<b>",
                 self.FMT_B_E: "</b>",
                 self.FMT_I_B: "<i>",
@@ -118,7 +118,7 @@ class ToHtml(Tokenizer):
                 self.FMT_D_E: "</span>",
             }
         else:
-            htmlTags = {  # HTML5
+            htmlTags = {  # HTML5 (for export)
                 self.FMT_B_B: "<strong>",
                 self.FMT_B_E: "</strong>",
                 self.FMT_I_B: "<em>",
@@ -176,17 +176,18 @@ class ToHtml(Tokenizer):
                     aStyle.append("margin-top: 0;")
 
                 if tStyle & self.A_IND_L:
-                    aStyle.append("margin-left: %dpx;" % self.mainConf.tabWidth)
+                    aStyle.append(f"margin-left: {self.mainConf.tabWidth:d}px;")
                 if tStyle & self.A_IND_R:
-                    aStyle.append("margin-right: %dpx;" % self.mainConf.tabWidth)
+                    aStyle.append(f"margin-right: {self.mainConf.tabWidth:d}px;")
 
             if len(aStyle) > 0:
-                hStyle = " style='%s'" % (" ".join(aStyle))
+                stVals = " ".join(aStyle)
+                hStyle = f" style='{stVals}'"
             else:
                 hStyle = ""
 
             if self.linkHeaders:
-                aNm = "<a name='T%06d'></a>" % tLine
+                aNm = f"<a name='T{tLine:06d}'></a>"
             else:
                 aNm = ""
 
@@ -200,36 +201,36 @@ class ToHtml(Tokenizer):
                     parClass = ""
                 if len(thisPar) > 0:
                     tTemp = "<br/>".join(thisPar)
-                    tmpResult.append("<p%s%s>%s</p>\n" % (parClass, parStyle, tTemp.rstrip()))
+                    tmpResult.append(f"<p{parClass+parStyle}>{tTemp.rstrip()}</p>\n")
                 thisPar = []
                 parStyle = None
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<h1 class='title'%s>%s%s</h1>\n" % (hStyle, aNm, tHead))
+                tmpResult.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
 
             elif tType == self.T_UNNUM:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<%s%s>%s%s</%s>\n" % (h2, hStyle, aNm, tHead, h2))
+                tmpResult.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<%s%s%s>%s%s</%s>\n" % (h1, h1Cl, hStyle, aNm, tHead, h1))
+                tmpResult.append(f"<{h1}{h1Cl}{hStyle}>{aNm}{tHead}</{h1}>\n")
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<%s%s>%s%s</%s>\n" % (h2, hStyle, aNm, tHead, h2))
+                tmpResult.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<%s%s>%s%s</%s>\n" % (h3, hStyle, aNm, tHead, h3))
+                tmpResult.append(f"<{h3}{hStyle}>{aNm}{tHead}</{h3}>\n")
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(r"\\", "<br/>")
-                tmpResult.append("<%s%s>%s%s</%s>\n" % (h4, hStyle, aNm, tHead, h4))
+                tmpResult.append(f"<{h4}{hStyle}>{aNm}{tHead}</{h4}>\n")
 
             elif tType == self.T_SEP:
-                tmpResult.append("<p class='sep'>%s</p>\n" % tText)
+                tmpResult.append(f"<p class='sep'>{tText}</p>\n")
 
             elif tType == self.T_SKIP:
                 tmpResult.append("<p class='skip'>&nbsp;</p>\n")
@@ -249,7 +250,7 @@ class ToHtml(Tokenizer):
                 tmpResult.append(self._formatComments(tText))
 
             elif tType == self.T_KEYWORD and self.doKeywords:
-                tTemp = "<p%s>%s</p>\n" % (hStyle, self._formatKeywords(tText))
+                tTemp = f"<p{hStyle}>{self._formatKeywords(tText)}</p>\n"
                 tmpResult.append(tTemp)
 
         self.theResult = "".join(tmpResult)
@@ -298,9 +299,9 @@ class ToHtml(Tokenizer):
         """Replace tabs with spaces in the html.
         """
         htmlText = []
-        eightSpace = spaceChar*nSpaces
+        tabSpace = spaceChar*nSpaces
         for aLine in self.fullHTML:
-            htmlText.append(aLine.replace("\t", eightSpace))
+            htmlText.append(aLine.replace("\t", tabSpace))
 
         self.fullHTML = htmlText
         return
@@ -315,75 +316,76 @@ class ToHtml(Tokenizer):
         mScale = self.lineHeight/1.15
         textAlign = "justify" if self.doJustify else "left"
 
-        theStyles.append("body {font-family: '%s'; font-size: %dpt;}" % (
+        theStyles.append("body {{font-family: '{0:s}'; font-size: {1:d}pt;}}".format(
             self.textFont, self.textSize
         ))
         theStyles.append((
-            "p {"
-            "text-align: %s; line-height: %d%%; "
-            "margin-top: %.2fem; margin-bottom: %.2fem;"
-            "}"
-        ) % (
+            "p {{"
+            "text-align: {0}; line-height: {1:d}%; "
+            "margin-top: {2:.2f}em; margin-bottom: {3:.2f}em;"
+            "}}"
+        ).format(
             textAlign,
             round(100 * self.lineHeight),
             mScale * self.marginText[0],
             mScale * self.marginText[1],
         ))
         theStyles.append((
-            "h1 {"
+            "h1 {{"
             "color: rgb(66, 113, 174); "
             "page-break-after: avoid; "
-            "margin-top: %.2fem; "
-            "margin-bottom: %.2fem;"
-            "}"
-        ) % (
+            "margin-top: {0:.2f}em; "
+            "margin-bottom: {1:.2f}em;"
+            "}}"
+        ).format(
             mScale * self.marginHead1[0], mScale * self.marginHead1[1]
         ))
         theStyles.append((
-            "h2 {"
+            "h2 {{"
             "color: rgb(66, 113, 174); "
             "page-break-after: avoid; "
-            "margin-top: %.2fem; "
-            "margin-bottom: %.2fem;"
-            "}"
-        ) % (
+            "margin-top: {0:.2f}em; "
+            "margin-bottom: {1:.2f}em;"
+            "}}"
+        ).format(
             mScale * self.marginHead2[0], mScale * self.marginHead2[1]
         ))
         theStyles.append((
-            "h3 {"
+            "h3 {{"
             "color: rgb(50, 50, 50); "
             "page-break-after: avoid; "
-            "margin-top: %.2fem; "
-            "margin-bottom: %.2fem;"
-            "}"
-        ) % (
+            "margin-top: {0:.2f}em; "
+            "margin-bottom: {1:.2f}em;"
+            "}}"
+        ).format(
             mScale * self.marginHead3[0], mScale * self.marginHead3[1]
         ))
         theStyles.append((
-            "h4 {"
+            "h4 {{"
             "color: rgb(50, 50, 50); "
             "page-break-after: avoid; "
-            "margin-top: %.2fem; "
-            "margin-bottom: %.2fem;"
-            "}"
-        ) % (
+            "margin-top: {0:.2f}em; "
+            "margin-bottom: {1:.2f}em;"
+            "}}"
+        ).format(
             mScale * self.marginHead4[0], mScale * self.marginHead4[1]
         ))
         theStyles.append((
-            ".title {"
+            ".title {{"
             "font-size: 2.5em; "
-            "margin-top: %.2fem; "
-            "margin-bottom: %.2fem;"
-            "}"
-        ) % (
+            "margin-top: {0:.2f}em; "
+            "margin-bottom: {1:.2f}em;"
+            "}}"
+        ).format(
             mScale * self.marginTitle[0], mScale * self.marginTitle[1]
         ))
         theStyles.append((
-            ".sep, .skip {"
+            ".sep, .skip {{"
             "text-align: center; "
-            "margin-top: %.2fem; "
-            "margin-bottom: %.2fem;}"
-        ) % (
+            "margin-top: {0:.2f}em; "
+            "margin-bottom: {1:.2f}em;"
+            "}}"
+        ).format(
             mScale, mScale
         ))
 
@@ -421,31 +423,25 @@ class ToHtml(Tokenizer):
     def _formatKeywords(self, tText):
         """Apply HTML formatting to keywords.
         """
-        isValid, theBits, thePos = self.theParent.theIndex.scanThis("@"+tText)
+        isValid, theBits, _ = self.theParent.theIndex.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 
         retText = ""
         refTags = []
         if theBits[0] in nwLabels.KEY_NAME:
-            retText += "<span class='tags'>%s:</span> " % nwLabels.KEY_NAME[theBits[0]]
+            retText += f"<span class='tags'>{nwLabels.KEY_NAME[theBits[0]]}:</span> "
             if len(theBits) > 1:
                 if theBits[0] == nwKeyWords.TAG_KEY:
-                    retText += "<a name='tag_%s'>%s</a>" % (
-                        theBits[1], theBits[1]
-                    )
+                    retText += f"<a name='tag_{theBits[1]}'>{theBits[1]}</a>"
                 else:
                     if self.genMode == self.M_PREVIEW:
                         for tTag in theBits[1:]:
-                            refTags.append("<a href='#%s=%s'>%s</a>" % (
-                                theBits[0][1:], tTag, tTag
-                            ))
+                            refTags.append(f"<a href='#{theBits[0][1:]}={tTag}'>{tTag}</a>")
                         retText += ", ".join(refTags)
                     else:
                         for tTag in theBits[1:]:
-                            refTags.append("<a href='#tag_%s'>%s</a>" % (
-                                tTag, tTag
-                            ))
+                            refTags.append(f"<a href='#tag_{tTag}'>{tTag}</a>")
                         retText += ", ".join(refTags)
 
         return retText
