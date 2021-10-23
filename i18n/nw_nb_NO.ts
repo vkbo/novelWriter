@@ -1271,7 +1271,7 @@
 <context>
     <name>GuiIcons</name>
     <message>
-        <location filename="../novelwriter/gui/theme.py" line="776"/>
+        <location filename="../novelwriter/gui/theme.py" line="775"/>
         <source>Could not load theme config file.</source>
         <translation>Kunne ikke laste temaets konfigurasjonsfil.</translation>
     </message>
@@ -3635,6 +3635,145 @@
     </message>
 </context>
 <context>
+    <name>GuiProjectDetails</name>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="57"/>
+        <source>Project Details</source>
+        <translation>Prosjektdetaljer</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="72"/>
+        <source>Overview</source>
+        <translation>Oversikt</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="73"/>
+        <source>Contents</source>
+        <translation>Innhold</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="76"/>
+        <source>Close</source>
+        <translation>Lukk</translation>
+    </message>
+</context>
+<context>
+    <name>GuiProjectDetailsContents</name>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="298"/>
+        <source>Title</source>
+        <translation>Tittel</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="298"/>
+        <source>Words</source>
+        <translation>Ord</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="298"/>
+        <source>Pages</source>
+        <translation>Sider</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="298"/>
+        <source>Page</source>
+        <translation>Side</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="298"/>
+        <source>Progress</source>
+        <translation>Fremdrift</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="337"/>
+        <source>Typical word count for a 5 by 8 inch book page with 11 pt font is 350.</source>
+        <translation>Typisk antall ord for en 5 x 8 tommers bokside med 11 pt tekst er 350.</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="340"/>
+        <source>Start counting page numbers from this page.</source>
+        <translation>Begynn sidetall fra denne siden.</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="343"/>
+        <source>Assume a new chapter or partition always start on an odd numbered page.</source>
+        <translation>Beregn at nye kapitler og partisjoner alltid starter på en høyreside.</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="347"/>
+        <source>Words per page</source>
+        <translation>Ord per side</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="358"/>
+        <source>Count pages from</source>
+        <translation>Tell sider fra</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="369"/>
+        <source>Clear double pages</source>
+        <translation>Tøm doble sider</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="392"/>
+        <source>Table of Contents</source>
+        <translation>Innholdsfortegnelse</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="428"/>
+        <source>END</source>
+        <translation>SLUTT</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="470"/>
+        <source>Untitled</source>
+        <translation>Uten tittel</translation>
+    </message>
+</context>
+<context>
+    <name>GuiProjectDetailsMain</name>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="166"/>
+        <source>Working Title: {0}</source>
+        <translation>Arbeidstittel: {0}</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="176"/>
+        <source>By {0}</source>
+        <translation>Av {0}</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="186"/>
+        <source>Words</source>
+        <translation>Ord</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="189"/>
+        <source>Chapters</source>
+        <translation>Kapitler</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="192"/>
+        <source>Scenes</source>
+        <translation>Scener</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="195"/>
+        <source>Revisions</source>
+        <translation>Revisjoner</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="198"/>
+        <source>Editing Time</source>
+        <translation>Redigeringstid</translation>
+    </message>
+    <message>
+        <location filename="../novelwriter/dialogs/projdetails.py" line="218"/>
+        <source>Path</source>
+        <translation>Filbane</translation>
+    </message>
+</context>
+<context>
     <name>GuiProjectEditMain</name>
     <message>
         <location filename="../novelwriter/dialogs/projsettings.py" line="174"/>
@@ -3922,97 +4061,97 @@
         <translation>Ta med ved eksport</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="197"/>
+        <location filename="../novelwriter/gui/projtree.py" line="193"/>
         <source>Please select a valid location in the tree to add the document.</source>
         <translation>Du må velge et gyldig sted i prosjekttreet for å legge til dokumentet.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="201"/>
+        <location filename="../novelwriter/gui/projtree.py" line="197"/>
         <source>Please select a valid location in the tree to add the folder.</source>
         <translation>Du må velge et gyldig sted i prosjekttreet for å legge til mappen.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="240"/>
+        <location filename="../novelwriter/gui/projtree.py" line="236"/>
         <source>Did not find anywhere to add the file or folder!</source>
         <translation>Fant ikke noe sted å legge til filen eller mappen!</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="255"/>
+        <location filename="../novelwriter/gui/projtree.py" line="251"/>
         <source>New File</source>
         <translation>Ny fil</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="266"/>
+        <location filename="../novelwriter/gui/projtree.py" line="262"/>
         <source>New Folder</source>
         <translation>Ny mappe</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="428"/>
+        <location filename="../novelwriter/gui/projtree.py" line="424"/>
         <source>There is currently no Trash folder in this project.</source>
         <translation>Det er for øyeblikket ingen søppel-mappe i dette prosjektet.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="439"/>
+        <location filename="../novelwriter/gui/projtree.py" line="435"/>
         <source>The Trash folder is already empty.</source>
         <translation>Søppel-mappen er allerede tom.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="444"/>
+        <location filename="../novelwriter/gui/projtree.py" line="440"/>
         <source>Empty Trash</source>
         <translation>Tøm søppel</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="444"/>
+        <location filename="../novelwriter/gui/projtree.py" line="440"/>
         <source>Permanently delete {0} file(s) from Trash?</source>
         <translation>Vil du slette {0} filer i søppel-mappen for godt?</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="540"/>
+        <location filename="../novelwriter/gui/projtree.py" line="536"/>
         <source>Delete File</source>
         <translation>Slett fil</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="506"/>
+        <location filename="../novelwriter/gui/projtree.py" line="502"/>
         <source>Permanently delete file &apos;{0}&apos;?</source>
         <translation>Slette filen &apos;{0}&apos; for godt?</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="540"/>
+        <location filename="../novelwriter/gui/projtree.py" line="536"/>
         <source>Move file &apos;{0}&apos; to Trash?</source>
         <translation>Vil du flytte filen &apos;{0}&apos; til søpla?</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="573"/>
+        <location filename="../novelwriter/gui/projtree.py" line="569"/>
         <source>Cannot delete folder. It is not empty. Recursive deletion is not supported. Please delete the content first.</source>
         <translation>Kan ikke slette mappen da den ikke er tom. Rekursiv sletting er ikke støttet. Du må slette innholdet først.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="589"/>
+        <location filename="../novelwriter/gui/projtree.py" line="585"/>
         <source>Cannot delete root folder. It is not empty. Recursive deletion is not supported. Please delete the content first.</source>
         <translation>Kan ikke slette hovedmappen da den ikke er tom. Rekursiv sletting er ikke støttet. Du må slette innholdet først.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="880"/>
+        <location filename="../novelwriter/gui/projtree.py" line="876"/>
         <source>The item cannot be moved to that location.</source>
         <translation>Denne enheten kan ikke flyttes til denne lokasjonen.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="246"/>
+        <location filename="../novelwriter/gui/projtree.py" line="242"/>
         <source>Cannot add new files or folders to the Trash folder.</source>
         <translation>Kan ikke legge til nye filer eller mapper til søppel-mappen.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="979"/>
+        <location filename="../novelwriter/gui/projtree.py" line="975"/>
         <source>There is nowhere to add item with name &apos;{0}&apos;.</source>
         <translation>Fant ikke noe sted å legge til enheten med navn &apos;{0}&apos;.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="527"/>
+        <location filename="../novelwriter/gui/projtree.py" line="523"/>
         <source>Could not delete document file.</source>
         <translation>Kunne ikke slette dokumentets fil.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="261"/>
+        <location filename="../novelwriter/gui/projtree.py" line="257"/>
         <source>Cannot add new folder to this item. Maximum folder depth has been reached.</source>
         <translation>Kan ikke legge til ny mappe på dette stedet da maksimum mappe-dypde er nådd.</translation>
     </message>
@@ -4030,52 +4169,52 @@
 <context>
     <name>GuiProjectTreeMenu</name>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="1091"/>
+        <location filename="../novelwriter/gui/projtree.py" line="1087"/>
         <source>Edit Project Item</source>
         <translation>Endre enhet</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="1095"/>
+        <location filename="../novelwriter/gui/projtree.py" line="1091"/>
         <source>Open Document</source>
         <translation>Åpne dokument</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="1099"/>
+        <location filename="../novelwriter/gui/projtree.py" line="1095"/>
         <source>View Document</source>
         <translation>Vis dokument</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="1103"/>
+        <location filename="../novelwriter/gui/projtree.py" line="1099"/>
         <source>Toggle Included Flag</source>
         <translation>Slå av/på inkludering</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="1107"/>
+        <location filename="../novelwriter/gui/projtree.py" line="1103"/>
         <source>New File</source>
         <translation>Ny fil</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="1111"/>
+        <location filename="../novelwriter/gui/projtree.py" line="1107"/>
         <source>New Folder</source>
         <translation>Ny mappe</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="1115"/>
+        <location filename="../novelwriter/gui/projtree.py" line="1111"/>
         <source>Delete Item</source>
         <translation>Slett enhet</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="1119"/>
+        <location filename="../novelwriter/gui/projtree.py" line="1115"/>
         <source>Empty Trash</source>
         <translation>Tøm søppel</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="1123"/>
+        <location filename="../novelwriter/gui/projtree.py" line="1119"/>
         <source>Move Item Up</source>
         <translation>Flytt enhet opp</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/projtree.py" line="1127"/>
+        <location filename="../novelwriter/gui/projtree.py" line="1123"/>
         <source>Move Item Down</source>
         <translation>Flytt enhet ned</translation>
     </message>
@@ -4083,12 +4222,12 @@
 <context>
     <name>GuiTheme</name>
     <message>
-        <location filename="../novelwriter/gui/theme.py" line="404"/>
+        <location filename="../novelwriter/gui/theme.py" line="403"/>
         <source>Could not load theme config file.</source>
         <translation>Kunne ikke laste temaets konfigurasjonsfil.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/gui/theme.py" line="437"/>
+        <location filename="../novelwriter/gui/theme.py" line="436"/>
         <source>Could not load syntax file.</source>
         <translation>Kunne ikke laste temaets syntaksfil.</translation>
     </message>
@@ -4310,317 +4449,317 @@
 <context>
     <name>NWProject</name>
     <message>
-        <location filename="../novelwriter/core/project.py" line="170"/>
+        <location filename="../novelwriter/core/project.py" line="169"/>
         <source>Trash</source>
         <translation>Søppel</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="224"/>
+        <location filename="../novelwriter/core/project.py" line="223"/>
         <source>New</source>
         <translation>Ny</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="220"/>
+        <location filename="../novelwriter/core/project.py" line="219"/>
         <source>Note</source>
         <translation>Notat</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="221"/>
+        <location filename="../novelwriter/core/project.py" line="220"/>
         <source>Draft</source>
         <translation>Utkast</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="222"/>
+        <location filename="../novelwriter/core/project.py" line="221"/>
         <source>Finished</source>
         <translation>Ferdig</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="225"/>
+        <location filename="../novelwriter/core/project.py" line="224"/>
         <source>Minor</source>
         <translation>Mindre</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="226"/>
+        <location filename="../novelwriter/core/project.py" line="225"/>
         <source>Major</source>
         <translation>Større</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="227"/>
+        <location filename="../novelwriter/core/project.py" line="226"/>
         <source>Main</source>
         <translation>Hoved</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="255"/>
+        <location filename="../novelwriter/core/project.py" line="254"/>
         <source>New Project</source>
         <translation>Nytt prosjekt</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="272"/>
+        <location filename="../novelwriter/core/project.py" line="271"/>
         <source>By</source>
         <translation>Av</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="302"/>
+        <location filename="../novelwriter/core/project.py" line="301"/>
         <source>Novel</source>
         <translation>Roman</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="279"/>
+        <location filename="../novelwriter/core/project.py" line="278"/>
         <source>Plot</source>
         <translation>Plott</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="280"/>
+        <location filename="../novelwriter/core/project.py" line="279"/>
         <source>Characters</source>
         <translation>Karakterer</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="281"/>
+        <location filename="../novelwriter/core/project.py" line="280"/>
         <source>World</source>
         <translation>Verden</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="308"/>
+        <location filename="../novelwriter/core/project.py" line="307"/>
         <source>Title Page</source>
         <translation>Tittelside</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="291"/>
+        <location filename="../novelwriter/core/project.py" line="290"/>
         <source>New Chapter</source>
         <translation>Nytt kapittel</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="294"/>
+        <location filename="../novelwriter/core/project.py" line="293"/>
         <source>New Scene</source>
         <translation>Ny scene</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="322"/>
+        <location filename="../novelwriter/core/project.py" line="321"/>
         <source>Chapter {0}</source>
         <translation>Kapittel {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="345"/>
+        <location filename="../novelwriter/core/project.py" line="344"/>
         <source>Scene {0}</source>
         <translation>Scene {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="368"/>
+        <location filename="../novelwriter/core/project.py" line="367"/>
         <source>File not found: {0}</source>
         <translation>Fant ikke filen: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="432"/>
+        <location filename="../novelwriter/core/project.py" line="431"/>
         <source>Failed to parse project xml.</source>
         <translation>Kunne ikke lese prosjektets xml-data.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="426"/>
+        <location filename="../novelwriter/core/project.py" line="425"/>
         <source>Attempting to open backup project file instead.</source>
         <translation>Forsøker å åpne prosjektets sekundære prosjektfil istedet.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="446"/>
+        <location filename="../novelwriter/core/project.py" line="445"/>
         <source>Unknown</source>
         <translation>Ukjent</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="455"/>
+        <location filename="../novelwriter/core/project.py" line="454"/>
         <source>Project file does not appear to be a novelWriterXML file.</source>
         <translation>Prosjektfilen later ikke til å være en novelWriterXML-fil.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="477"/>
+        <location filename="../novelwriter/core/project.py" line="476"/>
         <source>Unknown or unsupported novelWriter project file format. The project cannot be opened by this version of novelWriter. The file was saved with novelWriter version {0}.</source>
         <translation>Prosjektfilen har et ukjent eller ikke støttet format, og kan ikke åpnes med denne versjonen av novelWriter. Prosjektet ble lagret av novelWriter versjon {0}.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="512"/>
+        <location filename="../novelwriter/core/project.py" line="511"/>
         <source>Version Conflict</source>
         <translation>Versjonskonflikt</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="613"/>
+        <location filename="../novelwriter/core/project.py" line="612"/>
         <source>Opened Project: {0}</source>
         <translation>Åpnet prosjekt: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="634"/>
+        <location filename="../novelwriter/core/project.py" line="633"/>
         <source>Project path not set, cannot save project.</source>
         <translation>Prosjektet mangler filbane, og kan ikke lagres.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="712"/>
+        <location filename="../novelwriter/core/project.py" line="711"/>
         <source>Failed to save project.</source>
         <translation>Kunne ikke lagre prosjektet.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="733"/>
+        <location filename="../novelwriter/core/project.py" line="732"/>
         <source>Saved Project: {0}</source>
         <translation>Lagret prosjekt: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="786"/>
+        <location filename="../novelwriter/core/project.py" line="785"/>
         <source>Backing up project ...</source>
         <translation>Lager sikkerhetskopi ...</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="789"/>
+        <location filename="../novelwriter/core/project.py" line="788"/>
         <source>Cannot backup project because no backup path is set. Please set a valid backup location in Tools &gt; Preferences.</source>
         <translation>Kan ikke ta sikkerhetskopi av prosjektet da ingen filbane er satt. Du må først sette en filbane i Verktøy &gt; Innstillinger.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="796"/>
+        <location filename="../novelwriter/core/project.py" line="795"/>
         <source>Cannot backup project because no project name is set. Please set a Working Title in Project &gt; Project Settings.</source>
         <translation>Kan ikke ta sikkerhetskopi av prosjektet da ingen arbeidstittel er satt. Du må først sette en arbeidstittel i Prosjekt &gt; Prosjektinnstillinger.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="803"/>
+        <location filename="../novelwriter/core/project.py" line="802"/>
         <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Tools &gt; Preferences.</source>
         <translation>Kan ikke ta sikkerhetskopi av prosjektet da filbane ikke finnes. Du må sette en ny filbane i Verktøy &gt; Innstillinger.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="816"/>
+        <location filename="../novelwriter/core/project.py" line="815"/>
         <source>Could not create backup folder.</source>
         <translation>Kunne ikke lage mappe til sikkerhetskopi.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="822"/>
+        <location filename="../novelwriter/core/project.py" line="821"/>
         <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Tools &gt; Preferences.</source>
         <translation>Kan ikke ta sikkerhetskopi av prosjektet da filbanen er inne i prosjektmappen. Du må sette en ny filbane i Verktøy &gt; Innstillinger.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="829"/>
+        <location filename="../novelwriter/core/project.py" line="828"/>
         <source>Backup from {0}</source>
         <translation>Sikkerhetskopi fra {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="838"/>
+        <location filename="../novelwriter/core/project.py" line="837"/>
         <source>Backup archive file written to: {0}</source>
         <translation>Sikkerhetskopi skrevet til: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="843"/>
+        <location filename="../novelwriter/core/project.py" line="842"/>
         <source>Could not write backup archive.</source>
         <translation>Kunne ikke lage sikkerhetskopi.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="848"/>
+        <location filename="../novelwriter/core/project.py" line="847"/>
         <source>Project backed up to &apos;{0}&apos;</source>
         <translation>Sikkerhetskopi skrevet til &apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="898"/>
+        <location filename="../novelwriter/core/project.py" line="897"/>
         <source>Failed to create a new example project.</source>
         <translation>Kunne ikke lage nytt eksempel-prosjekt.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="903"/>
+        <location filename="../novelwriter/core/project.py" line="902"/>
         <source>Failed to create a new example project. Could not find the necessary files. They seem to be missing from this installation.</source>
         <translation>Kunne ikke lage nytt eksempel-prosjekt. Kunne ikke finne de nødvendige filene. De ser ut til å mangle i denne installasjonen.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="937"/>
+        <location filename="../novelwriter/core/project.py" line="936"/>
         <source>Could not create new project folder.</source>
         <translation>Kunne ikke lage ny prosjekt-mappe.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="944"/>
+        <location filename="../novelwriter/core/project.py" line="943"/>
         <source>New project folder is not empty. Each project requires a dedicated project folder.</source>
         <translation>Ny prosjektmappe er ikke tom. Hvert prosjekt trenger sin egen mappe.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="994"/>
+        <location filename="../novelwriter/core/project.py" line="993"/>
         <source>You must set a valid backup path in Preferences to use the automatic project backup feature.</source>
         <translation>Du må sette en gyldig filbane i innstillingene for å kunne bruke automatisk sikkerhetskopi.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="1001"/>
+        <location filename="../novelwriter/core/project.py" line="1000"/>
         <source>You must set a valid project name in Project Settings to use the automatic project backup feature.</source>
         <translation>Du må sette en gyldig arbeidstittel i prosjektinnstillingene for å kunne bruke automatisk sikkerhetskopi.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="1135"/>
+        <location filename="../novelwriter/core/project.py" line="1134"/>
         <source>and</source>
         <translation>og</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="1390"/>
+        <location filename="../novelwriter/core/project.py" line="1389"/>
         <source>Found {0} orphaned file(s) in project folder.</source>
         <translation>Fant {0} tapte filer i prosjektmappen.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="1400"/>
+        <location filename="../novelwriter/core/project.py" line="1399"/>
         <source>Recovered</source>
         <translation>Gjennopprettet</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="1414"/>
+        <location filename="../novelwriter/core/project.py" line="1413"/>
         <source>[{0}] {1}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="1419"/>
+        <location filename="../novelwriter/core/project.py" line="1418"/>
         <source>Recovered File {0}</source>
         <translation>Gjennopprettet fil {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="1446"/>
+        <location filename="../novelwriter/core/project.py" line="1445"/>
         <source>One or more orphaned files could not be added back into the project. Make sure at least a Novel root folder exists.</source>
         <translation>Én eller flere gjennopprettede filer kunne ikke bli lagt til i posjektet. Pass på at &quot;Roman&quot;-mappen i det minste eksisterer.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="1505"/>
+        <location filename="../novelwriter/core/project.py" line="1504"/>
         <source>Not a folder: {0}</source>
         <translation>Ikke en mappe: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="1527"/>
+        <location filename="../novelwriter/core/project.py" line="1526"/>
         <source>Could not move: {0}</source>
         <translation>Kunne ikke flytte: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="1550"/>
+        <location filename="../novelwriter/core/project.py" line="1549"/>
         <source>Could not delete: {0}</source>
         <translation>Kunne ikke slette: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="1562"/>
+        <location filename="../novelwriter/core/project.py" line="1561"/>
         <source>Could not make folder: {0}</source>
         <translation>Kunne ikke lage mappe: {0}</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="1573"/>
+        <location filename="../novelwriter/core/project.py" line="1572"/>
         <source>Could not move item {0} to {1}.</source>
         <translation>Kunne ikke flytte {0} til {1}.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="512"/>
+        <location filename="../novelwriter/core/project.py" line="511"/>
         <source>This project was saved by a newer version of novelWriter, version {0}. This is version {1}. If you continue to open the project, some attributes and settings may not be preserved, but the overall project should be fine. Continue opening the project?</source>
         <translation>Dette prosjektet ble lagret av en nyere versjon av novelWriter, versjon {0}. Dette er versjon {1}. Hvis du ønsker å fortsette med å åpne prosjektet, kan noen av innstillingene bli borte, men selve prosjektet vil være i orden. Vil du fortsatt åpne prosjektet?</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="127"/>
+        <location filename="../novelwriter/core/project.py" line="126"/>
         <source>Duplicate root item detected.</source>
         <translation>Duplikat hovedmappe.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="1331"/>
+        <location filename="../novelwriter/core/project.py" line="1330"/>
         <source>Could not create folder.</source>
         <translation>Kunne ikke opprette mappe.</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="486"/>
+        <location filename="../novelwriter/core/project.py" line="485"/>
         <source>File Version</source>
         <translation>Filversjon</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="486"/>
+        <location filename="../novelwriter/core/project.py" line="485"/>
         <source>The file format of your project is about to be updated. If you proceed, this project can no longer be opened by an older version of novelWriter. Continue?</source>
         <translation>Filformatet til dette prosjektet er i ferd med å bli oppdatert. Hvis du godtar dette, kan prosjektet ikke lenger åpnes av en tidligere versjon av novelWriter. Vil du fortsette?</translation>
     </message>
     <message>
-        <location filename="../novelwriter/core/project.py" line="499"/>
+        <location filename="../novelwriter/core/project.py" line="498"/>
         <source>The format of your project will now be updated. You may also have to make a few minor changes to your title page and unnumbered chapters. Please check the &apos;Project Format Changes &gt; File Format 1.3&apos; section of the documentation for more information. It is available from the Help menu.</source>
         <translation>Filformatet til dette prosjektet vil nå bli oppdatert. Du må regne med å måtte gjøre noen mindre endringer på tittelsiden og eventuelle unumrerte kapitler. Venligst se &apos;Project Format Changes &gt; File Format 1.3&apos; i brukermanualen for mer informasjon. Denne er tilgjengelig fra Hjelp-menyen.</translation>
     </message>

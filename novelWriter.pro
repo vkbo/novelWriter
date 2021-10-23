@@ -7,6 +7,7 @@ SOURCES += \
     novelwriter/dialogs/docsplit.py \
     novelwriter/dialogs/itemeditor.py \
     novelwriter/dialogs/preferences.py \
+    novelwriter/dialogs/projdetails.py \
     novelwriter/dialogs/projload.py \
     novelwriter/dialogs/projsettings.py \
     novelwriter/dialogs/updates.py \
@@ -19,7 +20,6 @@ SOURCES += \
     novelwriter/gui/noveltree.py \
     novelwriter/gui/outline.py \
     novelwriter/gui/outlinedetails.py \
-    novelwriter/gui/projdetails.py \
     novelwriter/gui/projtree.py \
     novelwriter/gui/statusbar.py \
     novelwriter/gui/theme.py \
