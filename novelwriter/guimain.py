@@ -1220,7 +1220,11 @@ class GuiMain(QMainWindow):
         """Switch focus between main GUI views.
         """
         if paneNo == nwWidget.TREE:
-            self.treeView.setFocus()
+            tabIdx = self.projTabs.currentIndex()
+            if tabIdx == self.idxTreeView:
+                self.treeView.setFocus()
+            elif tabIdx == self.idxNovelView:
+                self.novelView.setFocus()
         elif paneNo == nwWidget.EDITOR:
             self.mainTabs.setCurrentWidget(self.splitDocs)
             self.docEditor.setFocus()
