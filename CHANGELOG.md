@@ -1,5 +1,28 @@
 # novelWriter Changelog
 
+## Version 1.5.1 [2021-10-23]
+
+### Release Notes
+
+This is a bugfix release that fixes two issues. One related to the Project Details dialog missing
+its translated labels for non-English languages, and a fix concerning switching focus to the
+project tree when the Novel tab is visible. If the Novel tab is selected, the focus shift now
+correctly gives focus to the Novel tree.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* The Project Details dialog source file was previously in the wrong source code folder, and was
+  moved to the correct location in the previous release. However, the translation framework still
+  pointed to the old location. The reference has been fixed and the missing translation strings
+  restored.
+* Pressing the `Alt+1` key to switch focus to the Project Tree while the Novel Tree was in focus
+  would still give focus to the Project Tree, which would be invisible. The focus is now correctly
+  given to the Novel Tree when the tab is visible. Issue #913.
+
+----
+
 ## Version 1.5 [2021-09-19]
 
 ### Release Notes
