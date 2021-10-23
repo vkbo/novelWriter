@@ -1454,7 +1454,7 @@ if __name__ == "__main__":
         "                   sign package.",
         "    build-ubuntu   Build a .deb packages Launchpad. Add --sign to ",
         "                   sign package. Add --first to set build number to 0.",
-        "                   Add --snapshot to make a snapshot package."
+        "                   Add --snapshot to make a snapshot package.",
         "    build-pyz      Build a .pyz package in a folder with all dependencies",
         "                   using the zipapp tool. On Windows, python embeddable is",
         "                   added to the folder.",
