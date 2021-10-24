@@ -75,7 +75,7 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
-        "<h1 class='title' style='text-align: center; page-break-before: always;'>Title</h1>\n"
+        "<h1 class='title' style='text-align: center;'>Title</h1>\n"
     )
 
     # Unnumbered
@@ -276,7 +276,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
         (theHtml.T_EMPTY, 1, "", None, theHtml.A_NONE),
     ]
     theHtml.doConvert()
-    assert theHtml.theResult == "<p class='sep'>* * *</p>\n"
+    assert theHtml.theResult == "<p class='sep' style='text-align: center;'>* * *</p>\n"
 
     # Skip
     theHtml.theTokens = [

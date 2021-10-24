@@ -374,7 +374,7 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     theToken.tokenizeText()
     assert theToken.theTokens == [
-        (Tokenizer.T_TITLE, 1, "Title", None, Tokenizer.A_CENTRE | Tokenizer.A_PBB),
+        (Tokenizer.T_TITLE, 1, "Title", None, Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
     assert theToken.theMarkdown[-1] == "#! Title\n\n"
