@@ -9,8 +9,8 @@ projects, used by the Build Novel Project tool.
 **Note**
 
 When making a new translation, or updating an existing one, only commit the `nw_XX.ts` you have
-made changes to. The `qtlupdate` command mentioned below will likely modify all `nw_XX.ts`
-slightly, but please _don't_ commit those changes to the pull request.
+made changes to. The `qtlupdate` command mentioned below may modify all `nw_XX.ts` slightly, but
+please _don't_ commit those changes to the pull request.
 
 ## Qt GUI Localisation
 
@@ -21,18 +21,31 @@ be built with:
 python3 setup.py qtlrelease
 ```
 
-To add a new translation file, first add a new entry in the `novelWriter.pro` file under the
-`TRANSLATIONS` variable. Please use the underscore syntax for file names as the importer expects
-this format.
-
-After adding the entry in the `.pro` file, run:
+Before adding translations to an existing translation file, you may need to update the file against
+the current source code. This is done by running the command:
 ```bash
 python3 setup.py qtlupdate
 ```
 
+If you want to update specific language files, you can add them as one or more arguments, like so:
+```bash
+python3 setup.py qtlupdate i18n/nw_fr.ts
+```
+
+To add a new language to the translation framework, run the command above with the file name of the
+new, and not yet existing, language file. Make sure the file name is in the correct format. All
+translation files must be located in the `i18n` folder, start with `nw_` and end with `.ts`. In
+between goes the language code. It must be a valid ISO language code, otherwise novelWriter will
+not accept the file.
+
+For instance, to add a file for a language with language code "XX", run:
+```bash
+python3 setup.py qtlupdate i18n/nw_xx.ts
+```
+
 This will build a new `i18n/nw_XX.ts` file for the language you just added. The file can then be
 edited with the Qt 5 Linguist application provided by Qt. This is by far easier than manually
-editing the `.ts` file. Please select "English" and "United Kingdom" as the source langauge when
+editing the `.ts` file. Please select "English" and "United Kingdom" as the source langauge if
 prompted by Qt 5 Linguist.
 
 When you're done editing, you can build the `novelwriter/assets/i18n/nw_XX.qm` file and test it in
