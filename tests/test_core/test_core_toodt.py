@@ -308,7 +308,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="P3">Title</text:h>'
+        '<text:h text:style-name="Title">Title</text:h>'
         '</office:text>'
     )
 
@@ -445,9 +445,9 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="P4">* * *</text:p>'
+        '<text:p text:style-name="P3">* * *</text:p>'
         '<text:p text:style-name="Text_Body">Text</text:p>'
-        '<text:p text:style-name="P4">* * *</text:p>'
+        '<text:p text:style-name="P3">* * *</text:p>'
         '<text:p text:style-name="Text_Body">Text</text:p>'
         '</office:text>'
     )
@@ -491,26 +491,26 @@ def testCoreToOdt_Convert(mockGUI):
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="P5"><text:span text:style-name="T4">'
+        '<text:p text:style-name="P4"><text:span text:style-name="T4">'
         'Point of View:</text:span> Jane</text:p>'
-        '<text:p text:style-name="P6"><text:span text:style-name="T4">'
+        '<text:p text:style-name="P5"><text:span text:style-name="T4">'
         'Characters:</text:span> John</text:p>'
         '<text:p text:style-name="Text_Meta"><text:span text:style-name="T4">'
         'Plot:</text:span> Main</text:p>'
-        '<text:p text:style-name="P7">Right align</text:p>'
+        '<text:p text:style-name="P6">Right align</text:p>'
         '<text:p text:style-name="Text_Body">Left Align</text:p>'
-        '<text:p text:style-name="P4">Centered</text:p>'
-        '<text:p text:style-name="P8">Left indent</text:p>'
-        '<text:p text:style-name="P9">Right indent</text:p>'
+        '<text:p text:style-name="P3">Centered</text:p>'
+        '<text:p text:style-name="P7">Left indent</text:p>'
+        '<text:p text:style-name="P8">Right indent</text:p>'
         '</office:text>'
     )
+    assert getStyle("P4")._pAttr["margin-bottom"] == ["fo", "0.000cm"]
     assert getStyle("P5")._pAttr["margin-bottom"] == ["fo", "0.000cm"]
-    assert getStyle("P6")._pAttr["margin-bottom"] == ["fo", "0.000cm"]
-    assert getStyle("P6")._pAttr["margin-top"] == ["fo", "0.000cm"]
-    assert getStyle("P7")._pAttr["text-align"] == ["fo", "right"]
-    assert getStyle("P4")._pAttr["text-align"] == ["fo", "center"]
-    assert getStyle("P8")._pAttr["margin-left"] == ["fo", "1.693cm"]
-    assert getStyle("P9")._pAttr["margin-right"] == ["fo", "1.693cm"]
+    assert getStyle("P5")._pAttr["margin-top"] == ["fo", "0.000cm"]
+    assert getStyle("P6")._pAttr["text-align"] == ["fo", "right"]
+    assert getStyle("P3")._pAttr["text-align"] == ["fo", "center"]
+    assert getStyle("P7")._pAttr["margin-left"] == ["fo", "1.693cm"]
+    assert getStyle("P8")._pAttr["margin-right"] == ["fo", "1.693cm"]
 
     # Justified
     theDoc.theText = (
@@ -529,11 +529,11 @@ def testCoreToOdt_Convert(mockGUI):
         '<office:text>'
         '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
         '<text:p text:style-name="Text_Body">Regular paragraph</text:p>'
-        '<text:p text:style-name="P10">with<text:line-break/>break</text:p>'
-        '<text:p text:style-name="P10">Left Align</text:p>'
+        '<text:p text:style-name="P9">with<text:line-break/>break</text:p>'
+        '<text:p text:style-name="P9">Left Align</text:p>'
         '</office:text>'
     )
-    assert getStyle("P10")._pAttr["text-align"] == ["fo", "left"]
+    assert getStyle("P9")._pAttr["text-align"] == ["fo", "left"]
 
     # Page Breaks
     theDoc.theText = (

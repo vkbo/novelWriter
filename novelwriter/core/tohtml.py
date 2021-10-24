@@ -63,7 +63,6 @@ class ToHtml(Tokenizer):
         self.doKeywords = True
         self.doComments = doComments
         self.doSynopsis = doSynopsis
-
         return
 
     def setStyles(self, cssStyles):
@@ -230,10 +229,10 @@ class ToHtml(Tokenizer):
                 tmpResult.append(f"<{h4}{hStyle}>{aNm}{tHead}</{h4}>\n")
 
             elif tType == self.T_SEP:
-                tmpResult.append(f"<p class='sep'>{tText}</p>\n")
+                tmpResult.append(f"<p class='sep'{hStyle}>{tText}</p>\n")
 
             elif tType == self.T_SKIP:
-                tmpResult.append("<p class='skip'>&nbsp;</p>\n")
+                tmpResult.append(f"<p class='skip'{hStyle}>&nbsp;</p>\n")
 
             elif tType == self.T_TEXT:
                 tTemp = tText

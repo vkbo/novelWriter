@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.2" office:mimetype="application/vnd.oasis.opendocument.text">
   <office:meta>
-    <meta:creation-date>2021-08-13T18:57:51</meta:creation-date>
-    <meta:generator>novelWriter/1.5-alpha0</meta:generator>
+    <meta:creation-date>2021-10-24T21:44:56</meta:creation-date>
+    <meta:generator>novelWriter/1.6-alpha0</meta:generator>
   </office:meta>
   <office:font-face-decls>
     <style:font-face style:name="Liberation Serif" style:font-pitch="variable"/>
@@ -59,6 +59,9 @@
         <style:header-footer-properties fo:min-height="0.600cm" fo:margin-left="0.000cm" fo:margin-right="0.000cm" fo:margin-bottom="0.500cm"/>
       </style:header-style>
     </style:page-layout>
+    <style:style style:name="P1" style:family="paragraph" style:parent-style-name="Heading_2">
+      <style:paragraph-properties fo:break-before="page"/>
+    </style:style>
   </office:automatic-styles>
   <office:master-styles>
     <style:master-page style:name="Standard" style:page-layout-name="PM1">
@@ -74,7 +77,7 @@
     <office:text>
       <text:h text:style-name="Heading_2" text:outline-level="2">Chapter One</text:h>
       <text:p text:style-name="Text_Body">Text</text:p>
-      <text:h text:style-name="Heading_2" text:outline-level="2">Chapter Two</text:h>
+      <text:h text:style-name="P1" text:outline-level="2">Chapter Two</text:h>
       <text:p text:style-name="Text_Body">Text</text:p>
     </office:text>
   </office:body>

@@ -134,10 +134,10 @@ class Tokenizer():
         self.firstScene  = False  # Flag to indicate that the first scene of the chapter
 
         # This File
-        self.isNone  = False
-        self.isNovel = False
-        self.isNote  = False
-        self.isFirst = True
+        self.isNone  = False  # Document has unknown layout
+        self.isNovel = False  # Document is a novel document
+        self.isNote  = False  # Document is a project note
+        self.isFirst = True   # Document is the first in a set
 
         # Error Handling
         self.errData = []
@@ -156,30 +156,30 @@ class Tokenizer():
     ##
 
     def setTitleFormat(self, fmtTitle):
-        self.fmtTitle = fmtTitle
+        self.fmtTitle = fmtTitle.strip()
         return
 
     def setChapterFormat(self, fmtChapter):
-        self.fmtChapter = fmtChapter
+        self.fmtChapter = fmtChapter.strip()
         return
 
     def setUnNumberedFormat(self, fmtUnNum):
-        self.fmtUnNum = fmtUnNum
+        self.fmtUnNum = fmtUnNum.strip()
         return
 
     def setSceneFormat(self, fmtScene, hideScene):
-        self.fmtScene  = fmtScene
+        self.fmtScene = fmtScene.strip()
         self.hideScene = hideScene
         return
 
     def setSectionFormat(self, fmtSection, hideSection):
-        self.fmtSection  = fmtSection
+        self.fmtSection = fmtSection.strip()
         self.hideSection = hideSection
         return
 
     def setFont(self, textFont, textSize, textFixed=False):
-        self.textFont  = textFont
-        self.textSize  = round(int(textSize))
+        self.textFont = textFont
+        self.textSize = round(int(textSize))
         self.textFixed = textFixed
         return
 
@@ -446,8 +446,6 @@ class Tokenizer():
             elif aLine[:2] == "# ":
                 if self.isNovel:
                     sAlign |= self.A_CENTRE
-
-                if self.isNovel and not self.isFirst:
                     sAlign |= self.A_PBB
 
                 self.theTokens.append((
@@ -457,7 +455,7 @@ class Tokenizer():
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:3] == "## ":
-                if self.isNovel and not self.isFirst:
+                if self.isNovel:
                     sAlign |= self.A_PBB
 
                 self.theTokens.append((
@@ -486,9 +484,6 @@ class Tokenizer():
                 else:
                     tStyle = self.T_HEAD1
 
-                if self.isNovel and not self.isFirst:
-                    sAlign |= self.A_PBB
-
                 self.theTokens.append((
                     tStyle, nLine, aLine[3:].strip(), None, sAlign | self.A_CENTRE
                 ))
@@ -498,11 +493,9 @@ class Tokenizer():
             elif aLine[:4] == "##! ":
                 if self.isNovel:
                     tStyle = self.T_UNNUM
+                    sAlign |= self.A_PBB
                 else:
                     tStyle = self.T_HEAD2
-
-                if self.isNovel and not self.isFirst:
-                    sAlign |= self.A_PBB
 
                 self.theTokens.append((
                     tStyle, nLine, aLine[4:].strip(), None, sAlign
@@ -570,6 +563,14 @@ class Tokenizer():
         # If we have content, turn off the first page flag
         if self.isFirst and self.theTokens:
             self.isFirst = False
+
+            # Make sure the token array doesn't start with a page break
+            # on the very first page, adding a blank first page.
+            if self.theTokens[0][4] & self.A_PBB:
+                tToken = self.theTokens[0]
+                self.theTokens[0] = (
+                    tToken[0], tToken[1], tToken[2], tToken[3], tToken[4] & ~self.A_PBB
+                )
 
         # Always add an empty line at the end of the file
         self.theTokens.append((
@@ -665,7 +666,7 @@ class Tokenizer():
                         )
                     else:
                         self.theTokens[n] = (
-                            self.T_SKIP, tToken[1], "", None, self.A_NONE
+                            self.T_SKIP, tToken[1], "", None, tToken[4]
                         )
                 elif tTemp == self.fmtScene:
                     if self.firstScene:
@@ -674,11 +675,11 @@ class Tokenizer():
                         )
                     else:
                         self.theTokens[n] = (
-                            self.T_SEP, tToken[1], tTemp, None, self.A_CENTRE
+                            self.T_SEP, tToken[1], tTemp, None, tToken[4] | self.A_CENTRE
                         )
                 else:
                     self.theTokens[n] = (
-                        tToken[0], tToken[1], tTemp, None, self.A_NONE
+                        tToken[0], tToken[1], tTemp, None, tToken[4]
                     )
 
                 # Definitely no longer the first scene
@@ -694,15 +695,15 @@ class Tokenizer():
                     )
                 elif tTemp == "" and not self.hideSection:
                     self.theTokens[n] = (
-                        self.T_SKIP, tToken[1], "", None, self.A_NONE
+                        self.T_SKIP, tToken[1], "", None, tToken[4]
                     )
                 elif tTemp == self.fmtSection:
                     self.theTokens[n] = (
-                        self.T_SEP, tToken[1], tTemp, None, self.A_CENTRE
+                        self.T_SEP, tToken[1], tTemp, None, tToken[4] | self.A_CENTRE
                     )
                 else:
                     self.theTokens[n] = (
-                        tToken[0], tToken[1], tTemp, None, self.A_NONE
+                        tToken[0], tToken[1], tTemp, None, tToken[4]
                     )
 
         return True

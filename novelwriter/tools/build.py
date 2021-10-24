@@ -643,11 +643,11 @@ class GuiBuildNovel(QDialog):
         tStart = int(time())
 
         # Get Settings
-        fmtTitle      = self.fmtTitle.text().strip()
-        fmtChapter    = self.fmtChapter.text().strip()
-        fmtUnnumbered = self.fmtUnnumbered.text().strip()
-        fmtScene      = self.fmtScene.text().strip()
-        fmtSection    = self.fmtSection.text().strip()
+        fmtTitle      = self.fmtTitle.text()
+        fmtChapter    = self.fmtChapter.text()
+        fmtUnnumbered = self.fmtUnnumbered.text()
+        fmtScene      = self.fmtScene.text()
+        fmtSection    = self.fmtSection.text()
         textFont      = self.textFont.text()
         textSize      = self.textSize.value()
         lineHeight    = self.lineHeight.value()
@@ -675,7 +675,7 @@ class GuiBuildNovel(QDialog):
         bldObj.setTitleFormat(fmtTitle)
         bldObj.setChapterFormat(fmtChapter)
         bldObj.setUnNumberedFormat(fmtUnnumbered)
-        bldObj.setSceneFormat(fmtScene, fmtScene == "")
+        bldObj.setSceneFormat(fmtScene, False)
         bldObj.setSectionFormat(fmtSection, fmtSection == "")
 
         bldObj.setFont(textFont, textSize, textFixed)

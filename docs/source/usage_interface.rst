@@ -34,10 +34,7 @@ the project. It has four columns:
 
 **Column 4**
    The fourth column shows the user-defined status or importance labels you've assigned to each
-   project item. See :ref:`a_ui_tree_status` for more details. By default, both the icon and the
-   label text is shown, but you can turn off the text label from :guilabel:`Preferences`. If the
-   text label is off, the text will instead appear in a tooltip when you hover your mouse over the
-   icon.
+   project item. See :ref:`a_ui_tree_status` for more details.
 
 Right-clicking an item in the project tree will open a context menu under the cursor, displaying
 a selection of actions that can be performed on the selected item.
