@@ -116,12 +116,6 @@ class ToHtml(Tokenizer):
                 self.FMT_D_B: "<span style='text-decoration: line-through;'>",
                 self.FMT_D_E: "</span>",
             }
-            pbSize = round(0.65*self.mainConf.textSize)
-            pageBreak = (
-                f"<p style='text-align: center; font-size: {pbSize}pt;'>"
-                "&mdash;&nbsp;Page&nbsp;Break&nbsp;&mdash;"
-                "</p>"
-            )
         else:
             htmlTags = {  # HTML5 (for export)
                 self.FMT_B_B: "<strong>",
@@ -131,7 +125,6 @@ class ToHtml(Tokenizer):
                 self.FMT_D_B: "<del>",
                 self.FMT_D_E: "</del>",
             }
-            pageBreak = ""
 
         if self.isNovel and self.genMode != self.M_PREVIEW:
             # For story files, we bump the titles one level up
@@ -172,7 +165,6 @@ class ToHtml(Tokenizer):
 
                 if tStyle & self.A_PBB:
                     aStyle.append("page-break-before: always;")
-                    tmpResult.append(pageBreak)
 
                 if tStyle & self.A_PBA:
                     aStyle.append("page-break-after: always;")
