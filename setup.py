@@ -1435,7 +1435,7 @@ if __name__ == "__main__":
         "",
         "    help           Print the help message.",
         "    pip            Install all package dependencies for novelWriter using pip.",
-        "    clean          Will attempt to delete the 'build' and 'dist' folders.",
+        "    build-clean    Will attempt to delete 'build' and 'dist' folders.",
         "",
         "Additional Builds:",
         "",
