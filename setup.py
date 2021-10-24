@@ -268,10 +268,24 @@ def buildQtI18n():
     print("")
     print("Building Qt Localisation Files")
     print("==============================")
+
+    print("")
+    print("TS Files to Build:")
+    print("")
+
+    tsList = []
+    for aFile in os.listdir("i18n"):
+        aPath = os.path.join("i18n", aFile)
+        if os.path.isfile(aPath) and aFile.endswith(".ts"):
+            tsList.append(aPath)
+            print(aPath)
+
+    print("")
+    print("Building Translation Files:")
     print("")
 
     try:
-        subprocess.call(["lrelease", "-verbose", "novelWriter.pro"])
+        subprocess.call(["lrelease", "-verbose", *tsList])
     except Exception as e:
         print("Qt5 Linguist tools seem to be missing")
         print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
@@ -302,16 +316,71 @@ def buildQtI18n():
 #  Qt Linguist TS Builder (qtlupdate)
 ##
 
-def buildQtI18nTS():
+def buildQtI18nTS(sysArgs):
     """Build the lang.ts files for Qt Linguist.
     """
     print("")
     print("Building Qt Translation Files")
     print("=============================")
+
+    print("")
+    print("Scanning Source Tree:")
+    print("")
+
+    srcList = [os.path.join("i18n", "qtbase.py")]
+    for nRoot, _, nFiles in os.walk("novelwriter"):
+        if os.path.isdir(nRoot):
+            for aFile in nFiles:
+                aPath = os.path.join(nRoot, aFile)
+                if os.path.isfile(aPath) and aFile.endswith(".py"):
+                    srcList.append(aPath)
+
+    for aSource in srcList:
+        print(aSource)
+
+    print("")
+    print("TS Files to Update:")
+    print("")
+
+    tsList = []
+    if len(sysArgs) >= 2:
+        for anArg in sysArgs[1:]:
+            if not (anArg.startswith("i18n") and anArg.endswith(".ts")):
+                continue
+
+            fName = os.path.basename(anArg)
+            if not fName.startswith("nw_") and len(fName) > 6:
+                print("Skipping non-novelWriter TS file %s" % fName)
+                continue
+
+            if os.path.isfile(anArg):
+                tsList.append(anArg)
+            elif os.path.exists(anArg):
+                pass
+            else:  # Create an empty new language file
+                lCode = fName[3:-3]
+                writeFile(anArg, (
+                    "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                    "<!DOCTYPE TS>\n"
+                    f"<TS version=\"2.0\" language=\"{lCode}\" sourcelanguage=\"en_GB\"/>\n"
+                ))
+                tsList.append(anArg)
+
+    else:
+        for aFile in os.listdir("i18n"):
+            aPath = os.path.join("i18n", aFile)
+            if os.path.isfile(aPath) and aFile.endswith(".ts"):
+                tsList.append(aPath)
+
+    for aTS in tsList:
+        print(aTS)
+
+    print("")
+    print("Updating Language Files:")
     print("")
 
     try:
-        subprocess.call(["pylupdate5", "-verbose", "-noobsolete", "novelWriter.pro"])
+        subprocess.call(["pylupdate5", "-verbose", "-noobsolete", *srcList, "-ts", *tsList])
     except Exception as e:
         print("PyQt5 Linguist tools seem to be missing")
         print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
@@ -1435,14 +1504,15 @@ if __name__ == "__main__":
         "",
         "    help           Print the help message.",
         "    pip            Install all package dependencies for novelWriter using pip.",
-        "    clean          Will attempt to delete the 'build' and 'dist' folders.",
+        "    build-clean    Will attempt to delete 'build' and 'dist' folders.",
         "",
         "Additional Builds:",
         "",
         "    manual         Build the help documentation as PDF (requires LaTeX).",
-        "    qtlupdate      Update the translation files for internationalisation.",
-        "    qtlrelease     Build the language files for internationalisation.",
         "    sample         Build the sample project zip file and add it to assets.",
+        "    qtlupdate      Update the translation files for internationalisation.",
+        "                   To update specific TS files, list them after the command.",
+        "    qtlrelease     Build the language files for internationalisation.",
         "",
         "Python Packaging:",
         "",
@@ -1454,7 +1524,7 @@ if __name__ == "__main__":
         "                   sign package.",
         "    build-ubuntu   Build a .deb packages Launchpad. Add --sign to ",
         "                   sign package. Add --first to set build number to 0.",
-        "                   Add --snapshot to make a snapshot package."
+        "                   Add --snapshot to make a snapshot package.",
         "    build-pyz      Build a .pyz package in a folder with all dependencies",
         "                   using the zipapp tool. On Windows, python embeddable is",
         "                   added to the folder.",
@@ -1519,7 +1589,8 @@ if __name__ == "__main__":
 
     if "qtlupdate" in sys.argv:
         sys.argv.remove("qtlupdate")
-        buildQtI18nTS()
+        buildQtI18nTS(sys.argv)
+        sys.exit(0)  # Don't continue execution
 
     if "sample" in sys.argv:
         sys.argv.remove("sample")
