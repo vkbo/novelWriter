@@ -134,10 +134,10 @@ class Tokenizer():
         self.firstScene  = False  # Flag to indicate that the first scene of the chapter
 
         # This File
-        self.isNone  = False
-        self.isNovel = False
-        self.isNote  = False
-        self.isFirst = True
+        self.isNone  = False  # Document has unknown layout
+        self.isNovel = False  # Document is a novel document
+        self.isNote  = False  # Document is a project note
+        self.isFirst = True   # Document is the first in a set
 
         # Error Handling
         self.errData = []
@@ -446,8 +446,6 @@ class Tokenizer():
             elif aLine[:2] == "# ":
                 if self.isNovel:
                     sAlign |= self.A_CENTRE
-
-                if self.isNovel and not self.isFirst:
                     sAlign |= self.A_PBB
 
                 self.theTokens.append((
@@ -457,7 +455,7 @@ class Tokenizer():
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:3] == "## ":
-                if self.isNovel and not self.isFirst:
+                if self.isNovel:
                     sAlign |= self.A_PBB
 
                 self.theTokens.append((
@@ -486,9 +484,6 @@ class Tokenizer():
                 else:
                     tStyle = self.T_HEAD1
 
-                if self.isNovel and not self.isFirst:
-                    sAlign |= self.A_PBB
-
                 self.theTokens.append((
                     tStyle, nLine, aLine[3:].strip(), None, sAlign | self.A_CENTRE
                 ))
@@ -501,7 +496,7 @@ class Tokenizer():
                 else:
                     tStyle = self.T_HEAD2
 
-                if self.isNovel and not self.isFirst:
+                if self.isNovel:
                     sAlign |= self.A_PBB
 
                 self.theTokens.append((
@@ -570,6 +565,14 @@ class Tokenizer():
         # If we have content, turn off the first page flag
         if self.isFirst and self.theTokens:
             self.isFirst = False
+
+            # Make sure the token array doesn't start with a page break
+            # on the very first page, adding a blank first page.
+            if self.theTokens[0][4] & self.A_PBB:
+                tToken = self.theTokens[0]
+                self.theTokens[0] = (
+                    tToken[0], tToken[1], tToken[2], tToken[3], tToken[4] & ~self.A_PBB
+                )
 
         # Always add an empty line at the end of the file
         self.theTokens.append((
