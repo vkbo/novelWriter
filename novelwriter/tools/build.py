@@ -675,7 +675,7 @@ class GuiBuildNovel(QDialog):
         bldObj.setTitleFormat(fmtTitle)
         bldObj.setChapterFormat(fmtChapter)
         bldObj.setUnNumberedFormat(fmtUnnumbered)
-        bldObj.setSceneFormat(fmtScene, fmtScene == "")
+        bldObj.setSceneFormat(fmtScene, False)
         bldObj.setSectionFormat(fmtSection, fmtSection == "")
 
         bldObj.setFont(textFont, textSize, textFixed)
