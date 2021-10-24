@@ -493,11 +493,9 @@ class Tokenizer():
             elif aLine[:4] == "##! ":
                 if self.isNovel:
                     tStyle = self.T_UNNUM
+                    sAlign |= self.A_PBB
                 else:
                     tStyle = self.T_HEAD2
-
-                if self.isNovel:
-                    sAlign |= self.A_PBB
 
                 self.theTokens.append((
                     tStyle, nLine, aLine[4:].strip(), None, sAlign
