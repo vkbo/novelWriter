@@ -668,7 +668,7 @@ class Tokenizer():
                         )
                     else:
                         self.theTokens[n] = (
-                            self.T_SKIP, tToken[1], "", None, self.A_NONE
+                            self.T_SKIP, tToken[1], "", None, tToken[4]
                         )
                 elif tTemp == self.fmtScene:
                     if self.firstScene:
@@ -677,11 +677,11 @@ class Tokenizer():
                         )
                     else:
                         self.theTokens[n] = (
-                            self.T_SEP, tToken[1], tTemp, None, self.A_CENTRE
+                            self.T_SEP, tToken[1], tTemp, None, tToken[4] | self.A_CENTRE
                         )
                 else:
                     self.theTokens[n] = (
-                        tToken[0], tToken[1], tTemp, None, self.A_NONE
+                        tToken[0], tToken[1], tTemp, None, tToken[4]
                     )
 
                 # Definitely no longer the first scene
@@ -697,15 +697,15 @@ class Tokenizer():
                     )
                 elif tTemp == "" and not self.hideSection:
                     self.theTokens[n] = (
-                        self.T_SKIP, tToken[1], "", None, self.A_NONE
+                        self.T_SKIP, tToken[1], "", None, tToken[4]
                     )
                 elif tTemp == self.fmtSection:
                     self.theTokens[n] = (
-                        self.T_SEP, tToken[1], tTemp, None, self.A_CENTRE
+                        self.T_SEP, tToken[1], tTemp, None, tToken[4] | self.A_CENTRE
                     )
                 else:
                     self.theTokens[n] = (
-                        tToken[0], tToken[1], tTemp, None, self.A_NONE
+                        tToken[0], tToken[1], tTemp, None, tToken[4]
                     )
 
         return True
