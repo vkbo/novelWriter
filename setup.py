@@ -268,10 +268,24 @@ def buildQtI18n():
     print("")
     print("Building Qt Localisation Files")
     print("==============================")
+
+    print("")
+    print("TS Files to Update:")
+    print("")
+
+    tsList = []
+    for aFile in os.listdir("i18n"):
+        aPath = os.path.join("i18n", aFile)
+        if os.path.isfile(aPath) and aFile.endswith(".ts"):
+            tsList.append(aPath)
+            print(aPath)
+
+    print("")
+    print("Building Translation Files:")
     print("")
 
     try:
-        subprocess.call(["lrelease", "-verbose", "novelWriter.pro"])
+        subprocess.call(["lrelease", "-verbose", *tsList])
     except Exception as e:
         print("Qt5 Linguist tools seem to be missing")
         print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
@@ -308,6 +322,9 @@ def buildQtI18nTS(sysArgs):
     print("")
     print("Building Qt Translation Files")
     print("=============================")
+
+    print("")
+    print("Scanning Source Tree:")
     print("")
 
     srcList = [os.path.join("i18n", "qtbase.py")]
@@ -318,9 +335,11 @@ def buildQtI18nTS(sysArgs):
                 if os.path.isfile(aPath) and aFile.endswith(".py"):
                     srcList.append(aPath)
 
-    print("Scanning Source Tree:")
     for aSource in srcList:
         print(aSource)
+
+    print("")
+    print("TS Files to Update:")
     print("")
 
     tsList = []
@@ -353,12 +372,13 @@ def buildQtI18nTS(sysArgs):
             if os.path.isfile(aPath) and aFile.endswith(".ts"):
                 tsList.append(aPath)
 
-    print("TS Files to Update:")
     for aTS in tsList:
         print(aTS)
+
+    print("")
+    print("Updating Language Files:")
     print("")
 
-    print("Updating Language Files:")
     try:
         subprocess.call(["pylupdate5", "-verbose", "-noobsolete", *srcList, "-ts", *tsList])
     except Exception as e:
