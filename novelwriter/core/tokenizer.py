@@ -156,30 +156,30 @@ class Tokenizer():
     ##
 
     def setTitleFormat(self, fmtTitle):
-        self.fmtTitle = fmtTitle
+        self.fmtTitle = fmtTitle.strip()
         return
 
     def setChapterFormat(self, fmtChapter):
-        self.fmtChapter = fmtChapter
+        self.fmtChapter = fmtChapter.strip()
         return
 
     def setUnNumberedFormat(self, fmtUnNum):
-        self.fmtUnNum = fmtUnNum
+        self.fmtUnNum = fmtUnNum.strip()
         return
 
     def setSceneFormat(self, fmtScene, hideScene):
-        self.fmtScene  = fmtScene
+        self.fmtScene = fmtScene.strip()
         self.hideScene = hideScene
         return
 
     def setSectionFormat(self, fmtSection, hideSection):
-        self.fmtSection  = fmtSection
+        self.fmtSection = fmtSection.strip()
         self.hideSection = hideSection
         return
 
     def setFont(self, textFont, textSize, textFixed=False):
-        self.textFont  = textFont
-        self.textSize  = round(int(textSize))
+        self.textFont = textFont
+        self.textSize = round(int(textSize))
         self.textFixed = textFixed
         return
 
