@@ -30,13 +30,13 @@ title. See also the :ref:`a_fmt` section for more details about the markdown syn
 The syntax for the four basic header types, and the two special header types, is listed in section
 :ref:`a_fmt_head`. The meaning of the four levels for the structure of your novel is as follows:
 
-**Header Level 1**
+**Header Level 1: Partition**
    This header level signifies that the text refers to a top level partition. This is useful when
    you want to split the manuscript up into books, parts, or acts. These headings are not required.
    The novel title itself should use the special header level one code explained in
    :ref:`a_fmt_head`.
 
-**Header Level 2**
+**Header Level 2: Chapter**
    This header level signifies a chapter level partition. Each time you want to start a new
    chapter, you must add such a heading. If you choose to split your manuscript up into one
    document per scene, you need a single chapter document with just the heading. You can of course
@@ -44,16 +44,20 @@ The syntax for the four basic header types, and the two special header types, is
    chapter with a quote or other introductory text that isn't part of a scene, this is also where
    you'd put that text.
 
-**Header Level 3**
+**Header Level 3: Scene**
    This header level signifies a scene level partition. You must provide a title text, but the
    title text can be replaced with a scene separator or just skipped entirely when you export your
    manuscript.
 
-**Header Level 4**
+**Header Level 4: Section**
    This header level signifies a sub-scene level partition, usually called a "section" in the
    documentation and the user interface. These can be useful if you want to change tag references
    mid-scene, like if you change the point-of-view character. You are free to use sections as you
    wish, and can filter them out of the final manuscript just like with scene titles.
+
+Page breaks are automatically added before level 1 and 2 headers when you export your project to a
+format that supports page breaks, or when you print the document directly from the build tool. If
+you want page breaks in other places, you have to specify them manually. See :ref:`a_fmt_break`.
 
 .. tip::
    There are multiple options of how to process novel titles when exporting the manuscript. For
@@ -76,7 +80,7 @@ document, like so:
 The title is by default centred on the page when exported. You can add more text to the page as you
 wish, like for instance the author's name and details.
 
-If you want an additional page inserted after the title page, starting on a fresh page, you can add
+If you want an additional page of text after the title page, starting on a fresh page, you can add
 ``[NEW PAGE]`` on a line by itself, and continue the text after it. This will insert a page break
 when the project is exported.
 
@@ -93,7 +97,9 @@ build tool to skip these chapters.
 ``##! Unnumbered Chapter Title``
 
 There is a separate formatting feature for such chapters in the :guilabel:`Build Novel Project`
-tool as well. See the :ref:`a_export` page for more details.
+tool as well. See the :ref:`a_export` page for more details. When exporting to a format that
+supports page breaks, also unnumbered chapters will have a page break added just like for normal
+chapters.
 
 .. Note::
    Previously, you could also disable the automatic numbering of a chapter by adding an ``*`` as
