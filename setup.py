@@ -270,7 +270,7 @@ def buildQtI18n():
     print("==============================")
 
     print("")
-    print("TS Files to Update:")
+    print("TS Files to Build:")
     print("")
 
     tsList = []
