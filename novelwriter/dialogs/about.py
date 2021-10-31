@@ -251,7 +251,7 @@ class GuiAbout(QDialog):
         return
 
     def _wrapTable(self, theData):
-        """Wrap a list of label/value tuples in a html table.
+        """Wrap a list of label/value tuples in an html table.
         """
         theTable = []
         for aLabel, aValue in theData:

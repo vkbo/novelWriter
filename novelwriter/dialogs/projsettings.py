@@ -279,8 +279,7 @@ class GuiProjectEditStatus(QWidget):
 
         self.listBox = QTreeWidget()
         self.listBox.setHeaderLabels([
-            self.tr("Label"),
-            self.tr("Usage"),
+            self.tr("Label"), self.tr("Usage"),
         ])
         self.listBox.itemSelectionChanged.connect(self._selectedItem)
         self.listBox.setColumnWidth(self.COL_LABEL, wCol0)
@@ -551,7 +550,7 @@ class GuiProjectEditReplace(QWidget):
         self.editValue.setEnabled(False)
         self.editValue.setMaxLength(80)
 
-        self.saveButton = QPushButton("Save")
+        self.saveButton = QPushButton(self.tr("Save"))
         self.saveButton.setToolTip(self.tr("Save entry"))
         self.saveButton.clicked.connect(self._saveEntry)
 
