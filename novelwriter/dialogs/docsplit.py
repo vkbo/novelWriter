@@ -142,9 +142,7 @@ class GuiDocSplit(QDialog):
             theText = ""
 
         nLines = len(self.sourceText)
-        logger.debug(
-            "Splitting document %s with %d lines" % (self.sourceItem, nLines)
-        )
+        logger.debug("Splitting document %s with %d lines", self.sourceItem, nLines)
 
         finalOrder = []
         for i in range(self.listBox.count()):
@@ -177,7 +175,8 @@ class GuiDocSplit(QDialog):
             "{0}<br><br>{1}".format(
                 self.tr(
                     "The document will be split into {0} file(s) in a new folder. "
-                    "The original document will remain intact.").format(nFiles),
+                    "The original document will remain intact."
+                ).format(nFiles),
                 self.tr(
                     "Continue with the splitting process?"
                 )
@@ -199,9 +198,7 @@ class GuiDocSplit(QDialog):
             isNovel = srcItem.itemClass == nwItemClass.NOVEL
             itemLayout = nwItemLayout.DOCUMENT if isNovel else nwItemLayout.NOTE
 
-            wTitle = wTitle.lstrip("#")
-            wTitle = wTitle.strip()
-
+            wTitle = wTitle.lstrip("#").strip()
             nHandle = self.theProject.newFile(wTitle, srcItem.itemClass, fHandle)
             newItem = self.theProject.projTree[nHandle]
             newItem.setLayout(itemLayout)
