@@ -379,13 +379,19 @@ def buildQtI18nTS(sysArgs):
     print("Updating Language Files:")
     print("")
 
-    try:
-        subprocess.call(["pylupdate5", "-verbose", "-noobsolete", *srcList, "-ts", *tsList])
-    except Exception as e:
-        print("PyQt5 Linguist tools seem to be missing")
-        print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
-        print(str(e))
-        sys.exit(1)
+    # Using the pylupdate tool from PyQt6 instead as it supports TS file
+    # format 2.1. This can perhaps be changed back to the installed tool
+    # at a later time.
+    from i18n.pylupdate6 import lupdate
+    lupdate(srcList, tsList, no_obsolete=True, no_summary=False)
+
+    # try:
+    #     subprocess.call(["pylupdate5", "-verbose", "-noobsolete", *srcList, "-ts", *tsList])
+    # except Exception as e:
+    #     print("PyQt5 Linguist tools seem to be missing")
+    #     print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
+    #     print(str(e))
+    #     sys.exit(1)
 
     print("")
 
