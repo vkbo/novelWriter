@@ -1,17 +1,17 @@
 # Copyright (c) 2021 Riverbank Computing Limited <info@riverbankcomputing.com>
-# 
+#
 # This file is part of PyQt6.
-# 
+#
 # This file may be used under the terms of the GNU General Public License
 # version 3.0 as published by the Free Software Foundation and appearing in
 # the file LICENSE included in the packaging of this file.  Please review the
 # following information to ensure the GNU General Public License version 3.0
 # requirements will be met: http://www.gnu.org/copyleft/gpl.html.
-# 
+#
 # If you do not wish to use this file under the terms of the GPL version 3.0
 # then you may purchase a commercial license.  For more information contact
 # info@riverbankcomputing.com.
-# 
+#
 # This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 # WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
@@ -69,8 +69,10 @@ class PythonSource(SourceFile, User):
             tree = ast.parse(source, filename=self.filename)
         except SyntaxError as e:
             raise UserException(
-                    "Invalid syntax at line {0} of {1}:\n{2}".format(
-                            e.lineno, e.filename, e.text.rstrip()))
+                "Invalid syntax at line {0} of {1}:\n{2}".format(
+                    e.lineno, e.filename, e.text.rstrip()
+                )
+            )
 
         # Look for translation contexts and their contents.
         visitor = Visitor(self)
@@ -165,9 +167,12 @@ class Visitor(ast.NodeVisitor):
         # Update the context if the arguments are usable.
         if call_args is not None and call_args.source != '':
             call_args.context.messages.append(
-                    Message(self._source.filename, node.lineno,
-                            call_args.source, call_args.disambiguation,
-                            (call_args.numerus)))
+                Message(
+                    self._source.filename, node.lineno,
+                    call_args.source, call_args.disambiguation,
+                    (call_args.numerus)
+                )
+            )
 
         self.generic_visit(node)
 
@@ -257,8 +262,7 @@ class Visitor(ast.NodeVisitor):
         if name is None:
             return None
 
-        call_args = self._parse_noop_without_context(node.args[1:],
-                node.keywords)
+        call_args = self._parse_noop_without_context(node.args[1:], node.keywords)
         if call_args is None:
             return None
 

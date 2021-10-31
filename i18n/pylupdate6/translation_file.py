@@ -1,17 +1,17 @@
 # Copyright (c) 2021 Riverbank Computing Limited <info@riverbankcomputing.com>
-# 
+#
 # This file is part of PyQt6.
-# 
+#
 # This file may be used under the terms of the GNU General Public License
 # version 3.0 as published by the Free Software Foundation and appearing in
 # the file LICENSE included in the packaging of this file.  Please review the
 # following information to ensure the GNU General Public License version 3.0
 # requirements will be met: http://www.gnu.org/copyleft/gpl.html.
-# 
+#
 # If you do not wish to use this file under the terms of the GPL version 3.0
 # then you may purchase a commercial license.  For more information contact
 # info@riverbankcomputing.com.
-# 
+#
 # This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 # WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
@@ -37,8 +37,8 @@ class TranslationFile(User):
                 self._root = ElementTree.parse(ts_file).getroot()
             except Exception as e:
                 raise UserException(
-                        "{}: {}: {}".format(ts_file,
-                                "invalid translation file", str(e)))
+                    "{}: {}: {}".format(ts_file, "invalid translation file", str(e))
+                )
         else:
             self._root = ElementTree.fromstring(_EMPTY_TS)
 
@@ -106,9 +106,7 @@ class TranslationFile(User):
     def update(self, source):
         """ Update the translation file from a SourceFile object. """
 
-        self.progress(
-                "Updating {0} from {1}...".format(self._ts_file,
-                        source.filename))
+        self.progress("Updating {0} from {1}...".format(self._ts_file, source.filename))
 
         for context in source.contexts:
             # Get the messages that we already know about for this context.
@@ -130,21 +128,16 @@ class TranslationFile(User):
                 else:
                     # See if this is a new message.  If not then we just have
                     # another location for an existing message.
-                    message_el = self._find_message(message,
-                         updated_message_els)
+                    message_el = self._find_message(message, updated_message_els)
 
                 if message_el is None:
                     message_el = self._make_message_el(message)
                     updated_message_els.append(message_el)
 
-                    self.progress(
-                            "Added new message '{0}'".format(
-                                    self.pretty(message.source)))
+                    self.progress("Added new message '{0}'".format(self.pretty(message.source)))
                     self._nr_new += 1
                 else:
-                    self.progress(
-                            "Updated message '{0}'".format(
-                                    self.pretty(message.source)))
+                    self.progress("Updated message '{0}'".format(self.pretty(message.source)))
 
                     # Don't count another copy of a new message as an existing
                     # one.
@@ -169,26 +162,20 @@ class TranslationFile(User):
                 translation_el = message_el.find('translation')
                 if translation_el is not None and translation_el.text:
                     if self._no_obsolete:
-                        self.progress(
-                                "Discarded obsolete message '{0}'".format(
-                                        source))
+                        self.progress("Discarded obsolete message '{0}'".format(source))
                         self._nr_discarded_obsolete += 1
                     else:
                         translation_el.set('type', 'vanished')
 
                         if updated_message_els is None:
-                            updated_message_els = self._get_updated_message_els(
-                                    name)
+                            updated_message_els = self._get_updated_message_els(name)
 
                         self._add_message_el(message_el, updated_message_els)
 
-                        self.progress(
-                                "Kept obsolete message '{0}'".format(source))
+                        self.progress("Kept obsolete message '{0}'".format(source))
                         self._nr_kept_obsolete += 1
                 else:
-                    self.progress(
-                            "Discarded untranslated message '{0}'".format(
-                                    source))
+                    self.progress("Discarded untranslated message '{0}'".format(source))
                     self._nr_discarded_untranslated += 1
 
         # Created the sorted context elements.
@@ -287,10 +274,13 @@ class TranslationFile(User):
     def _make_location_el(self, message):
         """ Return a 'location' element. """
 
-        return ElementTree.Element('location',
-                filename=os.path.relpath(message.filename,
-                        start=os.path.dirname(os.path.abspath(self._ts_file))),
-                line=str(message.line_nr))
+        return ElementTree.Element(
+            'location',
+            filename=os.path.relpath(
+                message.filename, start=os.path.dirname(os.path.abspath(self._ts_file))
+            ),
+            line=str(message.line_nr)
+        )
 
     def _make_message_el(self, message):
         """ Return a 'message' element. """
@@ -319,8 +309,7 @@ class TranslationFile(User):
             extracomment_el.text = self._get_message_extra_comments(message)
             message_el.append(extracomment_el)
 
-        translation_el = ElementTree.Element('translation',
-                type='unfinished')
+        translation_el = ElementTree.Element('translation', type='unfinished')
 
         # Try and find another message with the same source and use its
         # translation if it has one.
@@ -328,14 +317,13 @@ class TranslationFile(User):
         if translation:
             translation_el.text = translation
 
-            self.progress(
-                    "Reused existing translation for '{0}'".format(
-                            self.pretty(message.source)))
+            self.progress("Reused existing translation for '{0}'".format(
+                self.pretty(message.source))
+            )
             self._nr_new_using_existing_translation += 1
 
         if message.numerus:
-            translation_el.append(ElementTree.Element(
-                    'numerusform'))
+            translation_el.append(ElementTree.Element('numerusform'))
 
         message_el.append(translation_el)
 
@@ -358,8 +346,7 @@ class TranslationFile(User):
             nonlocal summary_lines
 
             if not summary_lines:
-                summary_lines.append(
-                        "Summary of changes to {ts}:".format(ts=self._ts_file))
+                summary_lines.append("Summary of changes to {ts}:".format(ts=self._ts_file))
 
             summary_lines.append("    " + line)
 
