@@ -185,26 +185,4 @@ class OptionState():
                 return checkBool(self._theState[group].get(name, default), default)
         return default
 
-    ##
-    #  Validators
-    ##
-
-    def validIntRange(self, value, first, last, default):
-        """Check that an int is in a given range. If it isn't, return
-        the default value.
-        """
-        if isinstance(value, int):
-            if value >= first and value <= last:
-                return value
-        return default
-
-    def validIntTuple(self, value, valid, default):
-        """Check that an int is an element of a tuple. If it isn't,
-        return the default value.
-        """
-        if isinstance(value, int):
-            if value in valid:
-                return value
-        return default
-
 # END Class OptionState

@@ -140,13 +140,4 @@ def testCoreOptions_SetGet(mockGUI):
     assert theOpts.getBool("GuiBuildNovel", "addNovel", None) is True
     assert theOpts.getBool("GuiBuildNovel", "mockItem", None) is None
 
-    # Check integer validators
-    assert theOpts.validIntRange(5, 0, 9, 3) == 5
-    assert theOpts.validIntRange(5, 0, 4, 3) == 3
-    assert theOpts.validIntRange(5, 0, 5, 3) == 5
-    assert theOpts.validIntRange(0, 0, 5, 3) == 0
-
-    assert theOpts.validIntTuple(0, (0, 1, 2), 3) == 0
-    assert theOpts.validIntTuple(5, (0, 1, 2), 3) == 3
-
 # END Test testCoreOptions_SetGet
