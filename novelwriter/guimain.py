@@ -730,10 +730,10 @@ class GuiMain(QMainWindow):
             with open(loadFile, mode="rt", encoding="utf-8") as inFile:
                 theText = inFile.read()
             self.mainConf.setLastPath(loadFile)
-        except Exception as e:
-            self.makeAlert([
-                self.tr("Could not read file. The file must be an existing text file."), str(e)
-            ], nwAlert.ERROR)
+        except Exception as exc:
+            self.makeAlert(self.tr(
+                "Could not read file. The file must be an existing text file."
+            ), nwAlert.ERROR, exception=exc)
             return False
 
         if self.docEditor.docHandle() is None:
@@ -1116,51 +1116,52 @@ class GuiMain(QMainWindow):
 
         return
 
-    def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
+    def makeAlert(self, message, level=nwAlert.INFO, exception=None):
         """Alert both the user and the logger at the same time. The
         message can be either a string or a list of strings.
         """
-        if isinstance(theMessage, list):
-            theMessage = list(filter(None, theMessage))  # Strip empty strings
-            popMsg = "<br>".join(theMessage)
-            logMsg = theMessage
+        if isinstance(message, list):
+            message = list(filter(None, message))  # Strip empty strings
+            popMsg = "<br>".join(message)
+            logMsg = " ".join(message)
         else:
-            popMsg = theMessage
-            logMsg = [theMessage]
+            popMsg = str(message)
+            logMsg = str(message)
+
+        kw = {}
+        if exception is not None:
+            kw["exc_info"] = exception
+            popMsg = f"{popMsg}<br>{type(exception).__name__}: {str(exception)}"
 
         # Write to Log
-        if theLevel == nwAlert.INFO:
-            for msgLine in logMsg:
-                logger.info(msgLine)
-        elif theLevel == nwAlert.WARN:
-            for msgLine in logMsg:
-                logger.warning(msgLine)
-        elif theLevel == nwAlert.ERROR:
-            for msgLine in logMsg:
-                logger.error(msgLine)
-        elif theLevel == nwAlert.BUG:
-            for msgLine in logMsg:
-                logger.error(msgLine)
+        if level == nwAlert.INFO:
+            logger.info(logMsg, **kw)
+        elif level == nwAlert.WARN:
+            logger.warning(logMsg, **kw)
+        elif level == nwAlert.ERROR:
+            logger.error(logMsg, **kw)
+        elif level == nwAlert.BUG:
+            logger.error(logMsg, **kw)
 
         # Popup
         msgBox = QMessageBox()
-        if theLevel == nwAlert.INFO:
+        if level == nwAlert.INFO:
             msgBox.information(self, self.tr("Information"), popMsg)
-        elif theLevel == nwAlert.WARN:
+        elif level == nwAlert.WARN:
             msgBox.warning(self, self.tr("Warning"), popMsg)
-        elif theLevel == nwAlert.ERROR:
+        elif level == nwAlert.ERROR:
             msgBox.critical(self, self.tr("Error"), popMsg)
-        elif theLevel == nwAlert.BUG:
+        elif level == nwAlert.BUG:
             popMsg += "<br>%s" % self.tr("This is a bug!")
             msgBox.critical(self, self.tr("Internal Error"), popMsg)
 
         return
 
-    def askQuestion(self, theTitle, theQuestion):
+    def askQuestion(self, title, question):
         """Ask the user a Yes/No question.
         """
         msgBox = QMessageBox()
-        msgRes = msgBox.question(self, theTitle, theQuestion, QMessageBox.Yes | QMessageBox.No)
+        msgRes = msgBox.question(self, title, question, QMessageBox.Yes | QMessageBox.No)
         return msgRes == QMessageBox.Yes
 
     def reportConfErr(self):

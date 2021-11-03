@@ -872,8 +872,8 @@ class GuiBuildNovel(QDialog):
             try:
                 makeOdt.saveOpenDocText(savePath)
                 wSuccess = True
-            except Exception as e:
-                errMsg = str(e)
+            except Exception as exc:
+                errMsg = str(exc)
 
         elif theFmt == self.FMT_FODT:
             makeOdt = ToOdt(self.theProject, isFlat=True)
@@ -881,8 +881,8 @@ class GuiBuildNovel(QDialog):
             try:
                 makeOdt.saveFlatXML(savePath)
                 wSuccess = True
-            except Exception as e:
-                errMsg = str(e)
+            except Exception as exc:
+                errMsg = str(exc)
 
         elif theFmt == self.FMT_HTM:
             makeHtml = ToHtml(self.theProject)
@@ -893,8 +893,8 @@ class GuiBuildNovel(QDialog):
             try:
                 makeHtml.saveHTML5(savePath)
                 wSuccess = True
-            except Exception as e:
-                errMsg = str(e)
+            except Exception as exc:
+                errMsg = str(exc)
 
         elif theFmt == self.FMT_NWD:
             makeNwd = ToMarkdown(self.theProject)
@@ -906,8 +906,8 @@ class GuiBuildNovel(QDialog):
             try:
                 makeNwd.saveRawMarkdown(savePath)
                 wSuccess = True
-            except Exception as e:
-                errMsg = str(e)
+            except Exception as exc:
+                errMsg = str(exc)
 
         elif theFmt in (self.FMT_MD, self.FMT_GH):
             makeMd = ToMarkdown(self.theProject)
@@ -923,8 +923,8 @@ class GuiBuildNovel(QDialog):
             try:
                 makeMd.saveMarkdown(savePath)
                 wSuccess = True
-            except Exception as e:
-                errMsg = str(e)
+            except Exception as exc:
+                errMsg = str(exc)
 
         elif theFmt == self.FMT_JSON_H or theFmt == self.FMT_JSON_M:
             jsonData = {
@@ -968,8 +968,8 @@ class GuiBuildNovel(QDialog):
                 with open(savePath, mode="w", encoding="utf-8") as outFile:
                     outFile.write(json.dumps(jsonData, indent=2))
                     wSuccess = True
-            except Exception as e:
-                errMsg = str(e)
+            except Exception as exc:
+                errMsg = str(exc)
 
         elif theFmt == self.FMT_PDF:
             try:
@@ -983,8 +983,8 @@ class GuiBuildNovel(QDialog):
                 self.docView.document().print(thePrinter)
                 wSuccess = True
 
-            except Exception as e:
-                errMsg - str(e)
+            except Exception as exc:
+                errMsg = str(exc)
 
         else:
             # If the if statements above and here match, it should not

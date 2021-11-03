@@ -38,7 +38,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import nwAlert
-from novelwriter.common import formatTime, checkInt
+from novelwriter.common import formatTime, checkInt, checkIntRange, checkIntTuple
 from novelwriter.constants import nwConst, nwFiles
 from novelwriter.gui.custom import QSwitch
 
@@ -114,13 +114,10 @@ class GuiWritingStats(QDialog):
         hHeader.setTextAlignment(self.C_IDLE, Qt.AlignRight)
         hHeader.setTextAlignment(self.C_COUNT, Qt.AlignRight)
 
-        sortValid = (Qt.AscendingOrder, Qt.DescendingOrder)
-        sortCol = self.optState.validIntRange(
-            self.optState.getInt("GuiWritingStats", "sortCol", 0), 0, 2, 0
-        )
-        sortOrder = self.optState.validIntTuple(
+        sortCol = checkIntRange(self.optState.getInt("GuiWritingStats", "sortCol", 0), 0, 2, 0)
+        sortOrder = checkIntTuple(
             self.optState.getInt("GuiWritingStats", "sortOrder", Qt.DescendingOrder),
-            sortValid, Qt.DescendingOrder
+            (Qt.AscendingOrder, Qt.DescendingOrder), Qt.DescendingOrder
         )
         self.listBox.sortByColumn(sortCol, sortOrder)
         self.listBox.setSortingEnabled(True)
@@ -406,8 +403,8 @@ class GuiWritingStats(QDialog):
                         outFile.write(f'"{sD}",{tT:.0f},{wD},{wA},{wB},{tI}\n')
                     wSuccess = True
 
-        except Exception as e:
-            errMsg = str(e)
+        except Exception as exc:
+            errMsg = str(exc)
             wSuccess = False
 
         # Report to user
@@ -482,9 +479,9 @@ class GuiWritingStats(QDialog):
 
                     self.logData.append((dStart, sDiff, wcNovel, wcNotes, sIdle))
 
-        except Exception as e:
+        except Exception as exc:
             self.theParent.makeAlert([
-                self.tr("Failed to read session log file."), str(e)
+                self.tr("Failed to read session log file."), str(exc)
             ], nwAlert.ERROR)
             return False
 

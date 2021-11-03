@@ -43,15 +43,15 @@ class MockGuiMain():
     def releaseNotes(self):
         return
 
-    def makeAlert(self, theMessage, theLevel):
-        assert isinstance(theMessage, str) or isinstance(theMessage, list)
-        print("%s: %s" % (str(theLevel), theMessage))
-        self.lastAlert = str(theMessage)
+    def makeAlert(self, message, level=0, exception=None):
+        assert isinstance(message, str) or isinstance(message, list)
+        print("%s: %s" % (str(level), message))
+        self.lastAlert = str(message)
         return
 
-    def askQuestion(self, theTitle, theQustion):
-        print("Question: %s" % theQustion)
-        self.lastQuestion = (theTitle, theQustion)
+    def askQuestion(self, title, qustion):
+        print("Question: %s" % qustion)
+        self.lastQuestion = (title, qustion)
         return self.askResponse
 
     def setStatus(self, theMessage):

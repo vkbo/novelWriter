@@ -100,8 +100,8 @@ class NWDoc():
                     # Load the rest of the file
                     theText += inFile.read()
 
-            except Exception as e:
-                self._docError = str(e)
+            except Exception as exc:
+                self._docError = str(exc)
                 return None
 
         else:
@@ -149,8 +149,8 @@ class NWDoc():
             with open(docTemp, mode="w", encoding="utf-8") as outFile:
                 outFile.write(docMeta)
                 outFile.write(docText)
-        except Exception as e:
-            self._docError = str(e)
+        except Exception as exc:
+            self._docError = str(exc)
             return False
 
         # If we're here, the file was successfully saved, so we can
@@ -184,8 +184,8 @@ class NWDoc():
                 try:
                     os.unlink(chkFile)
                     logger.debug("Deleted: %s", chkFile)
-                except Exception as e:
-                    self._docError = str(e)
+                except Exception as exc:
+                    self._docError = str(exc)
                     return False
 
         return True
