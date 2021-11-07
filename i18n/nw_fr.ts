@@ -4610,18 +4610,18 @@
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="788"/>
-        <source>Cannot backup project because no backup path is set. Please set a valid backup location in Tools &gt; Preferences.</source>
-        <translation>Il est impossible de sauvegarder le projet car aucun emplacement de sauvegarde n&apos;a été défini. Veuillez en définir un dans Outils &gt; Préférences.</translation>
+        <source>Cannot backup project because no backup path is set. Please set a valid backup location in Preferences.</source>
+        <translation>Il est impossible de sauvegarder le projet car aucun emplacement de sauvegarde n&apos;a été défini. Veuillez en définir un dans Préférences.</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="795"/>
-        <source>Cannot backup project because no project name is set. Please set a Working Title in Project &gt; Project Settings.</source>
-        <translation>Il est impossible de sauvegarder le projet car il n&apos;a pas reçu de nom. Veuillez définir un titre de travail dans Projet &gt; Caractéristiques du projet.</translation>
+        <source>Cannot backup project because no project name is set. Please set a Working Title in Project Settings.</source>
+        <translation>Il est impossible de sauvegarder le projet car il n&apos;a pas reçu de nom. Veuillez définir un titre de travail dans Caractéristiques du projet.</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="802"/>
-        <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Tools &gt; Preferences.</source>
-        <translation>Il est impossible de sauvegarder le projet car l&apos;emplacement de sauvegarde défini n&apos;existe pas. Veuillez définir un emplacement correct dans Outils &gt; Préférences.</translation>
+        <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Preferences.</source>
+        <translation>Il est impossible de sauvegarder le projet car l&apos;emplacement de sauvegarde défini n&apos;existe pas. Veuillez définir un emplacement correct dans Préférences.</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="815"/>
@@ -4630,8 +4630,8 @@
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="821"/>
-        <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Tools &gt; Preferences.</source>
-        <translation>La sauvegarde du projet est impossible car l&apos;emplacement défini est situé dans le dossier à sauvegarder. Veuillez définir un autre répertoire de sauvegarde dans Outils &gt; Préférences.</translation>
+        <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Preferences.</source>
+        <translation>La sauvegarde du projet est impossible car l&apos;emplacement défini est situé dans le dossier à sauvegarder. Veuillez définir un autre répertoire de sauvegarde dans Préférences.</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="828"/>

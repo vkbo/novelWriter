@@ -788,21 +788,21 @@ class NWProject():
         if self.mainConf.backupPath is None or self.mainConf.backupPath == "":
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because no backup path is set. "
-                "Please set a valid backup location in Tools > Preferences."
+                "Please set a valid backup location in Preferences."
             ), nwAlert.ERROR)
             return False
 
         if self.projName is None or self.projName == "":
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because no project name is set. "
-                "Please set a Working Title in Project > Project Settings."
+                "Please set a Working Title in Project Settings."
             ), nwAlert.ERROR)
             return False
 
         if not os.path.isdir(self.mainConf.backupPath):
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because the backup path does not exist. "
-                "Please set a valid backup location in Tools > Preferences."
+                "Please set a valid backup location in Preferences."
             ), nwAlert.ERROR)
             return False
 
@@ -822,7 +822,7 @@ class NWProject():
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because the backup path is within the "
                 "project folder to be backed up. Please choose a different "
-                "backup path in Tools > Preferences."
+                "backup path in Preferences."
             ), nwAlert.ERROR)
             return False
 
