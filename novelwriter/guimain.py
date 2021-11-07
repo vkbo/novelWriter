@@ -500,10 +500,10 @@ class GuiMain(QMainWindow):
                     ),
                     self.tr(
                         "Note: If the program or the computer previously "
-                        "crashed, the lock can safely be overridden. If, "
-                        "however, another instance of novelWriter has the "
-                        "project open, overriding the lock may corrupt the "
-                        "project, and is not recommended."
+                        "crashed, the lock can safely be overridden. However, "
+                        "overriding it is not recommended if the project is "
+                        "open in another instance of novelWriter. Doing so "
+                        "may corrupt the project."
                     ),
                     lockDetails
                 ),

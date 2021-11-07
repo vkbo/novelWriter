@@ -487,8 +487,8 @@ class NWProject():
                 self.tr("File Version"),
                 self.tr(
                     "The file format of your project is about to be updated. "
-                    "If you proceed, this project can no longer be opened by "
-                    "an older version of novelWriter. Continue?"
+                    "If you proceed, older versions of novelWriter will no "
+                    "longer be able to open this project. Continue?"
                 )
             )
             if not msgYes:
