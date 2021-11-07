@@ -32,10 +32,10 @@ from tools import writeFile
 from novelwriter.guimain import GuiMain
 from novelwriter.common import (
     checkString, checkInt, checkFloat, checkBool, checkHandle, isHandle,
-    isTitleTag, isItemClass, isItemType, isItemLayout, hexToInt, formatInt,
-    formatTimeStamp, formatTime, parseTimeStamp, splitVersionNumber,
-    transferCase, fuzzyTime, numberToRoman, jsonEncode, readTextFile,
-    makeFileNameSafe, sha256sum, getGuiItem, NWConfigParser
+    isTitleTag, isItemClass, isItemType, isItemLayout, hexToInt, checkIntRange,
+    checkIntTuple, formatInt, formatTimeStamp, formatTime, parseTimeStamp,
+    splitVersionNumber, transferCase, fuzzyTime, numberToRoman, jsonEncode,
+    readTextFile, makeFileNameSafe, sha256sum, getGuiItem, NWConfigParser
 )
 
 
@@ -214,6 +214,28 @@ def testBaseCommon_HexToInt():
     assert hexToInt("0xffffq", 12) == 12
 
 # END Test testBaseCommon_HexToInt
+
+
+@pytest.mark.base
+def testBaseCommon_CheckIntRange():
+    """Test the checkIntRange function.
+    """
+    assert checkIntRange(5, 0, 9, 3) == 5
+    assert checkIntRange(5, 0, 4, 3) == 3
+    assert checkIntRange(5, 0, 5, 3) == 5
+    assert checkIntRange(0, 0, 5, 3) == 0
+
+# END Test testBaseCommon_CheckIntRange
+
+
+@pytest.mark.base
+def testBaseCommon_CheckIntTuple():
+    """Test the checkIntTuple function.
+    """
+    assert checkIntTuple(0, (0, 1, 2), 3) == 0
+    assert checkIntTuple(5, (0, 1, 2), 3) == 3
+
+# END Test testBaseCommon_CheckIntTuple
 
 
 @pytest.mark.base

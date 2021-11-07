@@ -62,9 +62,9 @@ def extractVersion():
                     hexVers = getValue((aLine))
                 if aLine.startswith("__date__"):
                     relDate = getValue((aLine))
-    except Exception as e:
+    except Exception as exc:
         print("Could not read file: %s" % initFile)
-        print(str(e))
+        print(str(exc))
 
     print("novelWriter version: %s (%s) at %s" % (numVers, hexVers, relDate))
 
@@ -127,9 +127,9 @@ def makeCheckSum(sumFile, cwd=None):
         with open(shaFile, mode="w") as fOut:
             subprocess.call(["sha256sum", sumFile], stdout=fOut, cwd=cwd)
         print("SHA256 Sum: %s" % shaFile)
-    except Exception as e:
+    except Exception as exc:
         print("Could not generate sha256 file")
-        print(str(e))
+        print(str(exc))
 
     return shaFile
 
@@ -163,9 +163,9 @@ def installPackages(hostOS):
         pkgCmd = stepCmd.split(" ")
         try:
             subprocess.call(pyCmd + pipCmd + pkgCmd)
-        except Exception as e:
+        except Exception as exc:
             print("Failed with error:")
-            print(str(e))
+            print(str(exc))
             sys.exit(1)
 
     return
@@ -243,10 +243,10 @@ def buildPdfManual():
         print("PDF manual build: OK")
         print("")
 
-    except Exception as e:
+    except Exception as exc:
         print("PDF manual build: FAILED")
         print("")
-        print(str(e))
+        print(str(exc))
         print("")
         print("Dependencies:")
         print(" * pip install sphinx")
@@ -286,10 +286,10 @@ def buildQtI18n():
 
     try:
         subprocess.call(["lrelease", "-verbose", *tsList])
-    except Exception as e:
+    except Exception as exc:
         print("Qt5 Linguist tools seem to be missing")
         print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
-        print(str(e))
+        print(str(exc))
         sys.exit(1)
 
     print("")
@@ -387,10 +387,10 @@ def buildQtI18nTS(sysArgs):
 
     # try:
     #     subprocess.call(["pylupdate5", "-verbose", "-noobsolete", *srcList, "-ts", *tsList])
-    # except Exception as e:
+    # except Exception as exc:
     #     print("PyQt5 Linguist tools seem to be missing")
     #     print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
-    #     print(str(e))
+    #     print(str(exc))
     #     sys.exit(1)
 
     print("")
@@ -922,9 +922,9 @@ def makeSimplePackage(embedPython):
     sysCmd += [libDir]
     try:
         subprocess.call(sysCmd)
-    except Exception as e:
+    except Exception as exc:
         print("Failed with error:")
-        print(str(e))
+        print(str(exc))
         sys.exit(1)
 
     for subDir in os.listdir(libDir):
@@ -1432,9 +1432,9 @@ def innoSetup():
 
     try:
         subprocess.call(["iscc", "setup.iss"])
-    except Exception as e:
+    except Exception as exc:
         print("Inno Setup failed with error:")
-        print(str(e))
+        print(str(exc))
         sys.exit(1)
 
     return

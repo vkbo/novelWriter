@@ -33,14 +33,14 @@ def cmpFiles(fileOne, fileTwo, ignoreLines=None, ignoreStart=None):
 
     try:
         foOne = open(fileOne, mode="r", encoding="utf-8")
-    except Exception as e:
-        print(str(e))
+    except Exception as exc:
+        print(str(exc))
         return False
 
     try:
         foTwo = open(fileTwo, mode="r", encoding="utf-8")
-    except Exception as e:
-        print(str(e))
+    except Exception as exc:
+        print(str(exc))
         return False
 
     txtOne = foOne.readlines()

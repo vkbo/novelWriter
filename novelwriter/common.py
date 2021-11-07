@@ -174,6 +174,26 @@ def hexToInt(value, default=0):
     return default
 
 
+def checkIntRange(value, first, last, default):
+    """Check that an int is in a given range. If it isn't, return the
+    default value.
+    """
+    if isinstance(value, int):
+        if value >= first and value <= last:
+            return value
+    return default
+
+
+def checkIntTuple(value, valid, default):
+    """Check that an int is an element of a tuple. If it isn't, return
+    the default value.
+    """
+    if isinstance(value, int):
+        if value in valid:
+            return value
+    return default
+
+
 # =============================================================================================== #
 #  Formatting Functions
 # =============================================================================================== #

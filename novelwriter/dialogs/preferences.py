@@ -776,7 +776,7 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.addRow(
             self.tr("Scroll past end of the document"),
             self.scrollPastEnd,
-            self.tr("Also improves trypewriter scrolling for short documents.")
+            self.tr("Also improves typewriter scrolling for short documents.")
         )
 
         # Typewriter Scrolling

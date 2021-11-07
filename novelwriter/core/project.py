@@ -415,10 +415,10 @@ class NWProject():
 
         try:
             nwXML = etree.parse(fileName)
-        except Exception as e:
-            self.theParent.makeAlert([
-                self.tr("Failed to parse project xml."), str(e)
-            ], nwAlert.ERROR)
+        except Exception as exc:
+            self.theParent.makeAlert(self.tr(
+                "Failed to parse project xml."
+            ), nwAlert.ERROR, exception=exc)
 
             # Trying to open backup file instead
             backFile = fileName[:-3]+"bak"
@@ -428,10 +428,10 @@ class NWProject():
                 ), nwAlert.INFO)
                 try:
                     nwXML = etree.parse(backFile)
-                except Exception as e:
-                    self.theParent.makeAlert([
-                        self.tr("Failed to parse project xml."), str(e)
-                    ], nwAlert.ERROR)
+                except Exception as exc:
+                    self.theParent.makeAlert(self.tr(
+                        "Failed to parse project xml."
+                    ), nwAlert.ERROR, exception=exc)
                     self.clearProject()
                     return False
             else:
@@ -487,8 +487,8 @@ class NWProject():
                 self.tr("File Version"),
                 self.tr(
                     "The file format of your project is about to be updated. "
-                    "If you proceed, this project can no longer be opened by "
-                    "an older version of novelWriter. Continue?"
+                    "If you proceed, older versions of novelWriter will no "
+                    "longer be able to open this project. Continue?"
                 )
             )
             if not msgYes:
@@ -708,10 +708,10 @@ class NWProject():
                     encoding="utf-8",
                     xml_declaration=True
                 ))
-        except Exception as e:
-            self.theParent.makeAlert([
-                self.tr("Failed to save project."), str(e)
-            ], nwAlert.ERROR)
+        except Exception as exc:
+            self.theParent.makeAlert(self.tr(
+                "Failed to save project."
+            ), nwAlert.ERROR, exception=exc)
             return False
 
         # If we're here, the file was successfully saved,
@@ -788,21 +788,21 @@ class NWProject():
         if self.mainConf.backupPath is None or self.mainConf.backupPath == "":
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because no backup path is set. "
-                "Please set a valid backup location in Tools > Preferences."
+                "Please set a valid backup location in Preferences."
             ), nwAlert.ERROR)
             return False
 
         if self.projName is None or self.projName == "":
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because no project name is set. "
-                "Please set a Working Title in Project > Project Settings."
+                "Please set a Working Title in Project Settings."
             ), nwAlert.ERROR)
             return False
 
         if not os.path.isdir(self.mainConf.backupPath):
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because the backup path does not exist. "
-                "Please set a valid backup location in Tools > Preferences."
+                "Please set a valid backup location in Preferences."
             ), nwAlert.ERROR)
             return False
 
@@ -812,17 +812,17 @@ class NWProject():
             try:
                 os.mkdir(baseDir)
                 logger.debug("Created folder: %s", baseDir)
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Could not create backup folder."), str(e)
-                ], nwAlert.ERROR)
+            except Exception as exc:
+                self.theParent.makeAlert(self.tr(
+                    "Could not create backup folder."
+                ), nwAlert.ERROR, exception=exc)
                 return False
 
         if os.path.commonpath([self.projPath, baseDir]) == self.projPath:
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because the backup path is within the "
                 "project folder to be backed up. Please choose a different "
-                "backup path in Tools > Preferences."
+                "backup path in Preferences."
             ), nwAlert.ERROR)
             return False
 
@@ -839,10 +839,10 @@ class NWProject():
                     "Backup archive file written to: {0}"
                 ).format(f"{os.path.join(cleanName, archName)}.zip"), nwAlert.INFO)
 
-        except Exception as e:
-            self.theParent.makeAlert([
-                self.tr("Could not write backup archive."), str(e)
-            ], nwAlert.ERROR)
+        except Exception as exc:
+            self.theParent.makeAlert(self.tr(
+                "Could not write backup archive."
+            ), nwAlert.ERROR, exception=exc)
             return False
 
         self.theParent.setStatus(self.tr(
@@ -872,10 +872,10 @@ class NWProject():
             try:
                 shutil.unpack_archive(pkgSample, projPath)
                 isSuccess = True
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Failed to create a new example project."), str(e)
-                ], nwAlert.ERROR)
+            except Exception as exc:
+                self.theParent.makeAlert(self.tr(
+                    "Failed to create a new example project."
+                ), nwAlert.ERROR, exception=exc)
 
         elif os.path.isdir(srcSample):
 
@@ -894,10 +894,10 @@ class NWProject():
 
                 isSuccess = True
 
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Failed to create a new example project."), str(e)
-                ], nwAlert.ERROR)
+            except Exception as exc:
+                self.theParent.makeAlert(self.tr(
+                    "Failed to create a new example project."
+                ), nwAlert.ERROR, exception=exc)
 
         else:
             self.theParent.makeAlert(self.tr(
@@ -933,10 +933,10 @@ class NWProject():
                 try:
                     os.mkdir(projPath)
                     logger.debug("Created folder: %s", projPath)
-                except Exception as e:
-                    self.theParent.makeAlert([
-                        self.tr("Could not create new project folder."), str(e)
-                    ], nwAlert.ERROR)
+                except Exception as exc:
+                    self.theParent.makeAlert(self.tr(
+                        "Could not create new project folder."
+                    ), nwAlert.ERROR, exception=exc)
                     return False
 
             if os.path.isdir(projPath):
@@ -1327,10 +1327,10 @@ class NWProject():
             try:
                 os.mkdir(thePath)
                 logger.debug("Created folder: %s", thePath)
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Could not create folder."), str(e)
-                ], nwAlert.ERROR)
+            except Exception as exc:
+                self.theParent.makeAlert(self.tr(
+                    "Could not create folder."
+                ), nwAlert.ERROR, exception=exc)
                 return False
         return True
 

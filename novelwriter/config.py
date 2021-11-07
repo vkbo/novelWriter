@@ -307,12 +307,12 @@ class Config:
         if not os.path.isdir(self.confPath):
             try:
                 os.mkdir(self.confPath)
-            except Exception as e:
+            except Exception as exc:
                 logger.error("Could not create folder: %s", self.confPath)
                 logException()
                 self.hasError = True
                 self.errData.append("Could not create folder: %s" % self.confPath)
-                self.errData.append(str(e))
+                self.errData.append(str(exc))
                 self.confPath = None
 
         # Check if config file exists
@@ -330,12 +330,12 @@ class Config:
             if not os.path.isdir(self.dataPath):
                 try:
                     os.mkdir(self.dataPath)
-                except Exception as e:
+                except Exception as exc:
                     logger.error("Could not create folder: %s", self.dataPath)
                     logException()
                     self.hasError = True
                     self.errData.append("Could not create folder: %s" % self.dataPath)
-                    self.errData.append(str(e))
+                    self.errData.append(str(exc))
                     self.dataPath = None
 
         # Host and Kernel
@@ -425,12 +425,12 @@ class Config:
         try:
             with open(cnfPath, mode="r", encoding="utf-8") as inFile:
                 theConf.read_file(inFile)
-        except Exception as e:
+        except Exception as exc:
             logger.error("Could not load config file")
             logException()
             self.hasError = True
             self.errData.append("Could not load config file")
-            self.errData.append(str(e))
+            self.errData.append(str(exc))
             return False
 
         # Main
@@ -655,12 +655,12 @@ class Config:
             with open(cnfPath, mode="w", encoding="utf-8") as outFile:
                 theConf.write(outFile)
             self.confChanged = False
-        except Exception as e:
+        except Exception as exc:
             logger.error("Could not save config file")
             logException()
             self.hasError = True
             self.errData.append("Could not save config file")
-            self.errData.append(str(e))
+            self.errData.append(str(exc))
             return False
 
         return True
@@ -688,10 +688,10 @@ class Config:
                     "words": theEntry.get("words", 0),
                 }
 
-        except Exception as e:
+        except Exception as exc:
             self.hasError = True
             self.errData.append("Could not load recent project cache")
-            self.errData.append(str(e))
+            self.errData.append(str(exc))
             return False
 
         return True
@@ -708,10 +708,10 @@ class Config:
         try:
             with open(cacheTemp, mode="w+", encoding="utf-8") as outFile:
                 json.dump(self.recentProj, outFile, indent=2)
-        except Exception as e:
+        except Exception as exc:
             self.hasError = True
             self.errData.append("Could not save recent project cache")
-            self.errData.append(str(e))
+            self.errData.append(str(exc))
             return False
 
         if os.path.isfile(cacheFile):
