@@ -3228,7 +3228,7 @@
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="788"/>
-        <source>Also improves trypewriter scrolling for short documents.</source>
+        <source>Also improves typewriter scrolling for short documents.</source>
         <translation>Também melhora a rolagem de máquina de escrever em documentos curtos.</translation>
     </message>
     <message>

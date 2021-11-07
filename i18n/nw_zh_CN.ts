@@ -3253,7 +3253,7 @@
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="788"/>
-        <source>Also improves trypewriter scrolling for short documents.</source>
+        <source>Also improves typewriter scrolling for short documents.</source>
         <translation>还为短文档改进了打字机滚动。</translation>
     </message>
     <message>
