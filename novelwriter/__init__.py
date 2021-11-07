@@ -215,25 +215,25 @@ def main(sysArgs=None):
     errorCode = 0
     if sys.hexversion < 0x030600f0:
         errorData.append(
-            "At least Python 3.6.0 is required, found %s" % CONFIG.verPyString
+            "At least Python 3.6 is required, found %s" % CONFIG.verPyString
         )
-        errorCode |= 4
+        errorCode |= 0x04
     if CONFIG.verQtValue < 50300:
         errorData.append(
             "At least Qt5 version 5.3 is required, found %s" % CONFIG.verQtString
         )
-        errorCode |= 8
+        errorCode |= 0x08
     if CONFIG.verPyQtValue < 50300:
         errorData.append(
             "At least PyQt5 version 5.3 is required, found %s" % CONFIG.verPyQtString
         )
-        errorCode |= 16
+        errorCode |= 0x10
 
     try:
         import lxml  # noqa: F401
     except ImportError:
         errorData.append("Python module 'lxml' is missing")
-        errorCode |= 32
+        errorCode |= 0x20
 
     if errorData:
         errApp = QApplication([])
