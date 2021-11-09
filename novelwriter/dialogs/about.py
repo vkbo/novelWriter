@@ -186,6 +186,7 @@ class GuiAbout(QDialog):
                 ("Norsk Bokmål", "Veronica Berglyd Olsen"),
                 ("Português", "Bruno Meneguello"),
                 ("简体中文", "Qianzhi Long"),
+                ("Español Latinoamericano", "Tommy Marplatt"),
             ])
         )
 

@@ -15,6 +15,7 @@
 * Norwegian: Veronica Berglyd Olsen (@vkbo)
 * Portuguese: Bruno Meneguello (@bkmeneguello)
 * Simplified Chinese: Qianzhi Long (@longqzh)
+* Latin American Spanish: Tommy Marplatt (@tmarplatt)
 
 ## Libraries
 
