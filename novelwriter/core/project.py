@@ -236,10 +236,13 @@ class NWProject():
 
         return
 
-    def newProject(self, projData={}):
+    def newProject(self, projData=None):
         """Create a new project by populating the project tree with a
         few starter items.
         """
+        if projData is None:
+            projData = {}
+
         popMinimal = projData.get("popMinimal", True)
         popCustom = projData.get("popCustom", False)
         popSample = projData.get("popSample", False)

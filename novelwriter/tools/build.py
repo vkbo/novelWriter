@@ -1302,9 +1302,12 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         return
 
-    def setStyleSheet(self, theStyles=[]):
+    def setStyleSheet(self, theStyles=None):
         """Set the stylesheet for the preview document.
         """
+        if theStyles is None:
+            theStyles = []
+
         if not theStyles:
             theStyles.append("h1, h2 {color: rgb(66, 113, 174);}")
             theStyles.append("h3, h4 {color: rgb(50, 50, 50);}")
