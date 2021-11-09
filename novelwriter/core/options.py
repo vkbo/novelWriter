@@ -27,10 +27,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import json
 import logging
-import novelwriter
 
-from novelwriter.constants import nwFiles
+from novelwriter.error import logException
 from novelwriter.common import checkBool, checkFloat, checkInt, checkString
+from novelwriter.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class OptionState():
                     theState = json.load(inFile)
             except Exception:
                 logger.error("Failed to load GUI options file")
-                novelwriter.logException()
+                logException()
                 return False
 
         # Filter out unused variables
@@ -113,7 +113,7 @@ class OptionState():
                 json.dump(self._theState, outFile, indent=2)
         except Exception:
             logger.error("Failed to save GUI options file")
-            novelwriter.logException()
+            logException()
             return False
 
         return True

@@ -25,13 +25,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import os
 import logging
-import novelwriter
 
 from time import time
 from lxml import etree
 from hashlib import sha256
 
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
+from novelwriter.error import logException
 from novelwriter.common import checkHandle
 from novelwriter.constants import nwConst, nwFiles
 from novelwriter.core.item import NWItem
@@ -184,7 +184,7 @@ class NWTree():
 
         except Exception:
             logger.error("Could not write ToC file")
-            novelwriter.logException()
+            logException()
             return False
 
         return True

@@ -113,8 +113,8 @@ class MockApp:
 # =========================================================================== #
 
 def causeOSError(*args, **kwargs):
-    raise OSError("OSError")
+    raise OSError("Mock OSError")
 
 
 def causeException(*args, **kwargs):
-    raise Exception("Exception")
+    raise Exception("Mock Exception")

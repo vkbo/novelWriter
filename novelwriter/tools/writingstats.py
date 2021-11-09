@@ -38,6 +38,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import nwAlert
+from novelwriter.error import formatException
 from novelwriter.common import formatTime, checkInt, checkIntRange, checkIntTuple
 from novelwriter.constants import nwConst, nwFiles
 from novelwriter.gui.custom import QSwitch
@@ -404,7 +405,7 @@ class GuiWritingStats(QDialog):
                     wSuccess = True
 
         except Exception as exc:
-            errMsg = str(exc)
+            errMsg = formatException(exc)
             wSuccess = False
 
         # Report to user
@@ -480,9 +481,9 @@ class GuiWritingStats(QDialog):
                     self.logData.append((dStart, sDiff, wcNovel, wcNotes, sIdle))
 
         except Exception as exc:
-            self.theParent.makeAlert([
-                self.tr("Failed to read session log file."), str(exc)
-            ], nwAlert.ERROR)
+            self.theParent.makeAlert(self.tr(
+                "Failed to read session log file."
+            ), nwAlert.ERROR, exception=exc)
             return False
 
         ttWords = ttNovel + ttNotes

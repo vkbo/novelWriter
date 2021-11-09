@@ -36,7 +36,7 @@ from PyQt5.QtCore import (
     QTranslator
 )
 
-from novelwriter.error import logException
+from novelwriter.error import logException, formatException
 from novelwriter.common import splitVersionNumber, formatTimeStamp, NWConfigParser
 from novelwriter.constants import nwFiles, nwUnicode
 
@@ -312,7 +312,7 @@ class Config:
                 logException()
                 self.hasError = True
                 self.errData.append("Could not create folder: %s" % self.confPath)
-                self.errData.append(str(exc))
+                self.errData.append(formatException(exc))
                 self.confPath = None
 
         # Check if config file exists
@@ -335,7 +335,7 @@ class Config:
                     logException()
                     self.hasError = True
                     self.errData.append("Could not create folder: %s" % self.dataPath)
-                    self.errData.append(str(exc))
+                    self.errData.append(formatException(exc))
                     self.dataPath = None
 
         # Host and Kernel
@@ -430,7 +430,7 @@ class Config:
             logException()
             self.hasError = True
             self.errData.append("Could not load config file")
-            self.errData.append(str(exc))
+            self.errData.append(formatException(exc))
             return False
 
         # Main
@@ -660,7 +660,7 @@ class Config:
             logException()
             self.hasError = True
             self.errData.append("Could not save config file")
-            self.errData.append(str(exc))
+            self.errData.append(formatException(exc))
             return False
 
         return True
@@ -691,7 +691,7 @@ class Config:
         except Exception as exc:
             self.hasError = True
             self.errData.append("Could not load recent project cache")
-            self.errData.append(str(exc))
+            self.errData.append(formatException(exc))
             return False
 
         return True
@@ -711,7 +711,7 @@ class Config:
         except Exception as exc:
             self.hasError = True
             self.errData.append("Could not save recent project cache")
-            self.errData.append(str(exc))
+            self.errData.append(formatException(exc))
             return False
 
         if os.path.isfile(cacheFile):
