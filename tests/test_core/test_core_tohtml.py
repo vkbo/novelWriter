@@ -379,6 +379,48 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
 
 @pytest.mark.core
+def testCoreToHtml_SpecialCases(mockGUI):
+    """Test some special cases that has caused errors in the past.
+    """
+    theProject = NWProject(mockGUI)
+    theHtml = ToHtml(theProject)
+    theHtml.isNovel = True
+
+    # Greater/Lesser than symbols
+    # ===========================
+
+    theHtml.theText = "Text with > and < with some **bold text** in it.\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<p>Text with &gt; and &lt; with some <strong>bold text</strong> in it.</p>\n"
+    )
+
+    theHtml.theText = "Text with some <**bold text**> in it.\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<p>Text with some &lt;<strong>bold text</strong>&gt; in it.</p>\n"
+    )
+
+    theHtml.theText = "Let's > be > _difficult **shall** > we_?\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<p>Let's &gt; be &gt; <em>difficult <strong>shall</strong> &gt; we</em>?</p>\n"
+    )
+
+    theHtml.theText = "Test > text _<**bold**>_ and more.\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<p>Test &gt; text <em>&lt;<strong>bold</strong>&gt;</em> and more.</p>\n"
+    )
+
+# END Test testCoreToHtml_SpecialCases
+
+
+@pytest.mark.core
 def testCoreToHtml_Complex(mockGUI, fncDir):
     """Test the save method of the ToHtml class.
     """
