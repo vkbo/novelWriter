@@ -150,15 +150,19 @@ class ToHtml(Tokenizer):
 
             # Replace < and > and recompute formatting positions
             cText = []
-            for i, c in enumerate(tDirty):
+            i = 0
+            for c in tDirty:
                 if c == "<":
                     cText.append("&lt;")
                     tFormat = [[a + 3 if a > i else a, b, c] for a, b, c in tFormat]
+                    i += 4
                 elif c == ">":
                     cText.append("&gt;")
                     tFormat = [[a + 3 if a > i else a, b, c] for a, b, c in tFormat]
+                    i += 4
                 else:
                     cText.append(c)
+                    i += 1
 
             tText = "".join(cText)
 
