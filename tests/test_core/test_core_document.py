@@ -56,7 +56,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
         mp.setattr("builtins.open", causeOSError)
         theDoc = NWDoc(theProject, sHandle)
         assert theDoc.readDocument() is None
-        assert theDoc.getError() == "OSError"
+        assert theDoc.getError() == "OSError: Mock OSError"
 
     # Load the text
     theDoc = NWDoc(theProject, sHandle)
@@ -107,7 +107,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         assert theDoc.writeDocument(theText) is False
-        assert theDoc.getError() == "OSError"
+        assert theDoc.getError() == "OSError: Mock OSError"
 
     # Saving with no handle
     theDoc._docHandle = None
@@ -126,7 +126,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
         mp.setattr("os.unlink", causeOSError)
         theDoc = NWDoc(theProject, xHandle)
         assert theDoc.deleteDocument() is False
-        assert theDoc.getError() == "OSError"
+        assert theDoc.getError() == "OSError: Mock OSError"
 
     # Make the delete pass
     theDoc = NWDoc(theProject, xHandle)

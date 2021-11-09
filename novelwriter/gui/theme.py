@@ -37,6 +37,7 @@ from PyQt5.QtGui import (
 )
 
 from novelwriter.enum import nwItemLayout, nwItemType
+from novelwriter.error import logException
 from novelwriter.common import NWConfigParser, readTextFile
 from novelwriter.constants import nwLabels
 
@@ -250,7 +251,7 @@ class GuiTheme:
                 confParser.read_file(inFile)
         except Exception:
             logger.error("Could not load theme settings from: %s", self.themeFile)
-            novelwriter.logException()
+            logException()
             return False
 
         # Main
@@ -310,7 +311,7 @@ class GuiTheme:
                 confParser.read_file(inFile)
         except Exception:
             logger.error("Could not load syntax colours from: %s", self.syntaxFile)
-            novelwriter.logException()
+            logException()
             return False
 
         # Main
@@ -531,7 +532,7 @@ class GuiIcons:
                 confParser.read_file(inFile)
         except Exception:
             logger.error("Could not load icon theme settings from: %s", themeConf)
-            novelwriter.logException()
+            logException()
             return False
 
         # Main
@@ -729,7 +730,7 @@ def _loadInternalName(confParser, confFile):
             confParser.read_file(inFile)
     except Exception:
         logger.error("Could not load file: %s", confFile)
-        novelwriter.logException()
+        logException()
         return ""
 
     return confParser.rdStr("Main", "name", "")

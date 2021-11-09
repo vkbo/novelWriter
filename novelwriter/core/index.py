@@ -32,6 +32,7 @@ import novelwriter
 from time import time
 
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
+from novelwriter.error import logException
 from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode
 from novelwriter.core.document import NWDoc
 from novelwriter.common import (
@@ -155,7 +156,7 @@ class NWIndex():
 
             except Exception:
                 logger.error("Failed to load index file")
-                novelwriter.logException()
+                logException()
                 self.indexBroken = True
                 return False
 
@@ -194,7 +195,7 @@ class NWIndex():
 
         except Exception:
             logger.error("Failed to save index file")
-            novelwriter.logException()
+            logException()
             return False
 
         logger.verbose("Index saved in %.3f ms", (time() - tStart)*1000)
@@ -217,7 +218,7 @@ class NWIndex():
 
         except Exception:
             logger.error("Error while checking index")
-            novelwriter.logException()
+            logException()
             self.indexBroken = True
 
         logger.verbose("Index check took %.3f ms", (time() - tStart)*1000)

@@ -27,6 +27,7 @@ import os
 import logging
 
 from novelwriter.enum import nwItemLayout, nwItemClass
+from novelwriter.error import formatException
 from novelwriter.common import isHandle, sha256sum
 
 logger = logging.getLogger(__name__)
@@ -101,7 +102,7 @@ class NWDoc():
                     theText += inFile.read()
 
             except Exception as exc:
-                self._docError = str(exc)
+                self._docError = formatException(exc)
                 return None
 
         else:
@@ -150,7 +151,7 @@ class NWDoc():
                 outFile.write(docMeta)
                 outFile.write(docText)
         except Exception as exc:
-            self._docError = str(exc)
+            self._docError = formatException(exc)
             return False
 
         # If we're here, the file was successfully saved, so we can
@@ -185,7 +186,7 @@ class NWDoc():
                     os.unlink(chkFile)
                     logger.debug("Deleted: %s", chkFile)
                 except Exception as exc:
-                    self._docError = str(exc)
+                    self._docError = formatException(exc)
                     return False
 
         return True
@@ -225,7 +226,7 @@ class NWDoc():
     ##
 
     def _parseMeta(self, metaLine):
-        """Parse a line from the document statting with the characters
+        """Parse a line from the document starting with the characters
         %%~ that may contain meta data.
         """
         if metaLine.startswith("%%~name:"):

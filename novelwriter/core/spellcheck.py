@@ -27,6 +27,8 @@ import os
 import logging
 import novelwriter
 
+from novelwriter.error import logException
+
 logger = logging.getLogger(__name__)
 
 
@@ -107,7 +109,7 @@ class NWSpellEnchant():
                 self._projDict.add(newWord)
             except Exception:
                 logger.error("Failed to add word to project word list %s", str(self._projectDict))
-                novelwriter.logException()
+                logException()
                 return False
             return True
 
@@ -135,7 +137,7 @@ class NWSpellEnchant():
             spName = self._theDict.provider.name
         except Exception:
             logger.error("Failed to extract information about the dictionary")
-            novelwriter.logException()
+            logException()
             spTag = ""
             spName = ""
 
@@ -169,7 +171,7 @@ class NWSpellEnchant():
 
         except Exception:
             logger.error("Failed to load project word list")
-            novelwriter.logException()
+            logException()
             return False
 
         return True

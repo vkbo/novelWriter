@@ -43,7 +43,14 @@ def logException():
     """Log the content of an exception message.
     """
     exType, exValue, _ = sys.exc_info()
-    logger.error("%s: %s", exType.__name__, str(exValue).strip("'"))
+    logger.error("%s: %s", exType.__name__, str(exValue))
+
+
+def formatException(exc):
+    """Format an exception as a string the same way the default
+    exception handler does.
+    """
+    return f"{type(exc).__name__}: {str(exc)}"
 
 
 # =============================================================================================== #
@@ -185,11 +192,11 @@ def exceptionHandler(exType, exValue, exTrace):
 
         except Exception as exc:
             logger.critical("Could not close the project before exiting")
-            logger.critical(str(exc))
+            logger.critical(formatException(exc))
 
         qApp.exit(1)
 
     except Exception as exc:
-        logger.critical(str(exc))
+        logger.critical(formatException(exc))
 
     return

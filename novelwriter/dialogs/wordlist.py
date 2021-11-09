@@ -34,6 +34,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import nwAlert
+from novelwriter.error import logException
 from novelwriter.constants import nwFiles
 
 logger = logging.getLogger(__name__)
@@ -161,7 +162,7 @@ class GuiWordList(QDialog):
 
         except Exception:
             logger.error("Could not save new word list")
-            novelwriter.logException()
+            logException()
             self.reject()
             return False
 

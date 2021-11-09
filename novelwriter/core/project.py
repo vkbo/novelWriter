@@ -37,14 +37,15 @@ from PyQt5.QtCore import QCoreApplication
 
 from novelwriter.core.tree import NWTree
 from novelwriter.core.item import NWItem
-from novelwriter.core.document import NWDoc
 from novelwriter.core.status import NWStatus
 from novelwriter.core.options import OptionState
+from novelwriter.core.document import NWDoc
+from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from novelwriter.error import logException
 from novelwriter.common import (
     checkString, checkBool, checkInt, isHandle, formatTimeStamp,
     makeFileNameSafe, hexToInt
 )
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.constants import trConst, nwFiles, nwLabels
 
 logger = logging.getLogger(__name__)
@@ -1255,7 +1256,7 @@ class NWProject():
 
         except Exception:
             logger.error("Failed to project language file")
-            novelwriter.logException()
+            logException()
             return False
 
         return True
@@ -1280,7 +1281,7 @@ class NWProject():
 
         except Exception:
             logger.error("Failed to read project lockfile")
-            novelwriter.logException()
+            logException()
             return ["ERROR"]
 
         return theLines
@@ -1301,7 +1302,7 @@ class NWProject():
 
         except Exception:
             logger.error("Failed to write project lockfile")
-            novelwriter.logException()
+            logException()
             return False
 
         return True
@@ -1318,7 +1319,7 @@ class NWProject():
                 os.unlink(lockFile)
             except Exception:
                 logger.error("Failed to remove project lockfile")
-                novelwriter.logException()
+                logException()
                 return False
 
         return True
@@ -1491,7 +1492,7 @@ class NWProject():
 
         except Exception:
             logger.error("Failed to write session stats file")
-            novelwriter.logException()
+            logException()
             return False
 
         return True
@@ -1529,7 +1530,7 @@ class NWProject():
                 except Exception:
                     errList.append(self.tr("Could not move: {0}").format(theFile))
                     logger.error("Could not move: %s", theFile)
-                    novelwriter.logException()
+                    logException()
 
             elif len(dataItem) == 21 and dataItem.endswith("_main.bak"):
                 try:
@@ -1538,7 +1539,7 @@ class NWProject():
                 except Exception:
                     errList.append(self.tr("Could not delete: {0}").format(theFile))
                     logger.error("Could not delete: %s", theFile)
-                    novelwriter.logException()
+                    logException()
 
             else:
                 theErr = self._moveUnknownItem(theData, dataItem)
@@ -1552,7 +1553,7 @@ class NWProject():
         except Exception:
             errList.append(self.tr("Could not delete: {0}").format(theFolder))
             logger.error("Could not delete: %s", theFolder)
-            novelwriter.logException()
+            logException()
 
         return errList
 
@@ -1572,7 +1573,7 @@ class NWProject():
             logger.info("Moved to junk: %s", theSrc)
         except Exception:
             logger.error("Could not move item %s to junk", theSrc)
-            novelwriter.logException()
+            logException()
             return self.tr("Could not move item {0} to {1}.").format(theSrc, theJunk)
 
         return ""
@@ -1607,7 +1608,7 @@ class NWProject():
                     os.unlink(rmFile)
                 except Exception:
                     logger.error("Could not delete: %s", rmFile)
-                    novelwriter.logException()
+                    logException()
                     return False
 
         return True
