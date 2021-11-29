@@ -61,10 +61,10 @@ class NWDoc():
     ##
 
     def readDocument(self, isOrphan=False):
-        """Read a document from set handle, capturing potential file
-        system errors and parse meta data. If the document doesn't exist
-        on disk, return an empty string. If something went wrong, return
-        None.
+        """Read the document specified by the handle set in the
+        contructor, capturing potential file system errors and parse
+        meta data. If the document doesn't exist on disk, return an
+        empty string. If something went wrong, return None.
         """
         self._docError = ""
         if self._docHandle is None:
@@ -88,7 +88,6 @@ class NWDoc():
         if os.path.isfile(docPath):
             try:
                 with open(docPath, mode="r", encoding="utf-8") as inFile:
-
                     # Check the first <= 10 lines for metadata
                     for i in range(10):
                         inLine = inFile.readline()
@@ -108,14 +107,15 @@ class NWDoc():
         else:
             # The document file does not exist, so we assume it's a new
             # document and initialise an empty text string.
-            logger.debug("The requested document does not exist.")
+            logger.debug("The requested document does not exist")
             return ""
 
         return theText
 
     def writeDocument(self, docText, forceWrite=False):
-        """Write the document. The file is saved via a temp file in case
-        of save failure. Returns True if successful, False if not.
+        """Write the document specified by the handle attribute. Handle
+        any IO errors in the process  Returns True if successful, False
+        if not.
         """
         self._docError = ""
         if self._docHandle is None:
@@ -156,9 +156,7 @@ class NWDoc():
 
         # If we're here, the file was successfully saved, so we can
         # replace the temp file with the actual file
-        if os.path.isfile(docPath):
-            os.unlink(docPath)
-        os.rename(docTemp, docPath)
+        os.replace(docTemp, docPath)
 
         self._prevHash = sha256sum(docPath)
         self._currHash = self._prevHash
@@ -174,11 +172,10 @@ class NWDoc():
             logger.error("No document handle set")
             return False
 
-        docFile = self._docHandle+".nwd"
-
-        chkList = []
-        chkList.append(os.path.join(self.theProject.projContent, docFile))
-        chkList.append(os.path.join(self.theProject.projContent, docFile+"~"))
+        chkList = [
+            os.path.join(self.theProject.projContent, f"{self._docHandle}.nwd"),
+            os.path.join(self.theProject.projContent, f"{self._docHandle}.nwd~"),
+        ]
 
         for chkFile in chkList:
             if os.path.isfile(chkFile):
@@ -196,18 +193,18 @@ class NWDoc():
     ##
 
     def getFileLocation(self):
-        """Return the file location of the current file.
+        """Return the file location of the current document.
         """
         return self._fileLoc
 
     def getCurrentItem(self):
-        """Return a pointer to the currently open item.
+        """Return a pointer to the currently open NWItem.
         """
         return self._theItem
 
     def getMeta(self):
-        """Parses the document meta tag and returns the path and name as
-        a list and a string.
+        """Parse the document meta tag and return the name, parent,
+        class and layout meta values.
         """
         theName = self._docMeta.get("name", "")
         theParent = self._docMeta.get("parent", None)
