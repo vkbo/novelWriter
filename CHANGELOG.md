@@ -1,5 +1,28 @@
 # novelWriter Changelog
 
+## Version 1.5.2 [2021-12-12]
+
+### Release Notes
+
+This is a bugfix release that fixes two issues. The first is an issue with an error in the HTML
+output if a paragraph has alignment or indentation tags while at the same time containing
+emphasised text. The second is an issue where the application cannot load a project with spell
+checking enabled if there is something wrong with the spell check package.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* When the HTML converter replaced grater than or smaller than symbols with the corresponding HTML
+  entities. the poisition of the formatting tags following in the text would be shifted, but the
+  positions were not updated. This is now solved by updating these positions when such a symbol is
+  encountered. This issue has been backported from 1.6 development. Issue #929.
+* If the pyenchant package is installed, but the underlying enchant library is broken in one way or
+  another, the pyenchant package will error, causing novelWriter to crash. All calls to the
+  pyenchant package has now been wrapped in try/except blocks to prevent this. Issue #933.
+
+----
+
 ## Version 1.5.1 [2021-10-23]
 
 ### Release Notes
