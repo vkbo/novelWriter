@@ -545,28 +545,14 @@ class NWIndex():
     def getHandleWordCounts(self, tHandle):
         """Get all header word counts for a specific handle.
         """
-        hRecord = self._fileIndex.get(tHandle, None)
-        if hRecord is None:
-            return []
-
-        theCounts = []
-        for sTitle, sData in hRecord.items():
-            theCounts.append((f"{tHandle}:{sTitle}", sData["wCount"]))
-
-        return theCounts
+        hRecord = self._fileIndex.get(tHandle, {})
+        return [(f"{tHandle}:{sTitle}", sData["wCount"]) for sTitle, sData in hRecord.items()]
 
     def getHandleHeaders(self, tHandle):
         """Get all headers for a specific handle.
         """
-        hRecord = self._fileIndex.get(tHandle, None)
-        if hRecord is None:
-            return []
-
-        theHeaders = []
-        for sTitle, sData in hRecord.items():
-            theHeaders.append((sTitle, sData["level"], sData["title"]))
-
-        return theHeaders
+        hRecord = self._fileIndex.get(tHandle, {})
+        return [(sTitle, sData["level"], sData["title"]) for sTitle, sData in hRecord.items()]
 
     def getHandleHeaderLevel(self, tHandle):
         """Get the header level of the first header of a handle.
@@ -597,14 +583,12 @@ class NWIndex():
                         "words": theData["wCount"],
                     }
 
-        theToC = []
-        for tKey in tOrder:
-            theToC.append((
-                tKey,
-                tData[tKey]["level"],
-                tData[tKey]["title"],
-                tData[tKey]["words"],
-            ))
+        theToC = [(
+            tKey,
+            tData[tKey]["level"],
+            tData[tKey]["title"],
+            tData[tKey]["words"]
+        ) for tKey in tOrder]
 
         return theToC
 
