@@ -28,59 +28,6 @@ from novelwriter.core import NWProject, NWIndex, ToHtml
 
 
 @pytest.mark.core
-def testCoreToHtml_Format(mockGUI):
-    """Test all the formatters for the ToHtml class.
-    """
-    theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
-    theHtml = ToHtml(theProject)
-
-    # Export Mode
-    # ===========
-
-    assert theHtml._formatSynopsis("synopsis text") == (
-        "<p class='synopsis'><strong>Synopsis:</strong> synopsis text</p>\n"
-    )
-    assert theHtml._formatComments("comment text") == (
-        "<p class='comment'><strong>Comment:</strong> comment text</p>\n"
-    )
-
-    assert theHtml._formatKeywords("") == ""
-    assert theHtml._formatKeywords("tag: Jane") == (
-        "<span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a>"
-    )
-    assert theHtml._formatKeywords("char: Bod, Jane") == (
-        "<span class='tags'>Characters:</span> "
-        "<a href='#tag_Bod'>Bod</a>, "
-        "<a href='#tag_Jane'>Jane</a>"
-    )
-
-    # Preview Mode
-    # ============
-
-    theHtml.setPreview(True, True)
-
-    assert theHtml._formatSynopsis("synopsis text") == (
-        "<p class='comment'><span class='synopsis'>Synopsis:</span> synopsis text</p>\n"
-    )
-    assert theHtml._formatComments("comment text") == (
-        "<p class='comment'>comment text</p>\n"
-    )
-
-    assert theHtml._formatKeywords("") == ""
-    assert theHtml._formatKeywords("tag: Jane") == (
-        "<span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a>"
-    )
-    assert theHtml._formatKeywords("char: Bod, Jane") == (
-        "<span class='tags'>Characters:</span> "
-        "<a href='#char=Bod'>Bod</a>, "
-        "<a href='#char=Jane'>Jane</a>"
-    )
-
-# END Test testCoreToHtml_Format
-
-
-@pytest.mark.core
 def testCoreToHtml_ConvertFormat(mockGUI):
     """Test the tokenizer and converter chain using the ToHtml class.
     """
@@ -128,7 +75,7 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
-        "<h1 class='title' style='text-align: center; page-break-before: always;'>Title</h1>\n"
+        "<h1 class='title' style='text-align: center;'>Title</h1>\n"
     )
 
     # Unnumbered
@@ -329,7 +276,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
         (theHtml.T_EMPTY, 1, "", None, theHtml.A_NONE),
     ]
     theHtml.doConvert()
-    assert theHtml.theResult == "<p class='sep'>* * *</p>\n"
+    assert theHtml.theResult == "<p class='sep' style='text-align: center;'>* * *</p>\n"
 
     # Skip
     theHtml.theTokens = [
@@ -432,8 +379,50 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
 
 @pytest.mark.core
+def testCoreToHtml_SpecialCases(mockGUI):
+    """Test some special cases that has caused errors in the past.
+    """
+    theProject = NWProject(mockGUI)
+    theHtml = ToHtml(theProject)
+    theHtml.isNovel = True
+
+    # Greater/Lesser than symbols
+    # ===========================
+
+    theHtml.theText = "Text with > and < with some **bold text** in it.\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<p>Text with &gt; and &lt; with some <strong>bold text</strong> in it.</p>\n"
+    )
+
+    theHtml.theText = "Text with some <**bold text**> in it.\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<p>Text with some &lt;<strong>bold text</strong>&gt; in it.</p>\n"
+    )
+
+    theHtml.theText = "Let's > be > _difficult **shall** > we_?\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<p>Let's &gt; be &gt; <em>difficult <strong>shall</strong> &gt; we</em>?</p>\n"
+    )
+
+    theHtml.theText = "Test > text _<**bold**>_ and more.\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<p>Test &gt; text <em>&lt;<strong>bold</strong>&gt;</em> and more.</p>\n"
+    )
+
+# END Test testCoreToHtml_SpecialCases
+
+
+@pytest.mark.core
 def testCoreToHtml_Complex(mockGUI, fncDir):
-    """Test the ave method of the ToHtml class.
+    """Test the save method of the ToHtml class.
     """
     theProject = NWProject(mockGUI)
     theHtml = ToHtml(theProject)
@@ -524,7 +513,7 @@ def testCoreToHtml_Complex(mockGUI, fncDir):
     theHtml.saveHTML5(saveFile)
     assert readFile(saveFile) == htmlDoc
 
-# END Test testCoreToHtml_Save
+# END Test testCoreToHtml_Complex
 
 
 @pytest.mark.core
@@ -589,3 +578,56 @@ def testCoreToHtml_Methods(mockGUI):
     assert theHtml.getStyleSheet() == []
 
 # END Test testCoreToHtml_Methods
+
+
+@pytest.mark.core
+def testCoreToHtml_Format(mockGUI):
+    """Test all the formatters for the ToHtml class.
+    """
+    theProject = NWProject(mockGUI)
+    mockGUI.theIndex = NWIndex(theProject)
+    theHtml = ToHtml(theProject)
+
+    # Export Mode
+    # ===========
+
+    assert theHtml._formatSynopsis("synopsis text") == (
+        "<p class='synopsis'><strong>Synopsis:</strong> synopsis text</p>\n"
+    )
+    assert theHtml._formatComments("comment text") == (
+        "<p class='comment'><strong>Comment:</strong> comment text</p>\n"
+    )
+
+    assert theHtml._formatKeywords("") == ""
+    assert theHtml._formatKeywords("tag: Jane") == (
+        "<span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a>"
+    )
+    assert theHtml._formatKeywords("char: Bod, Jane") == (
+        "<span class='tags'>Characters:</span> "
+        "<a href='#tag_Bod'>Bod</a>, "
+        "<a href='#tag_Jane'>Jane</a>"
+    )
+
+    # Preview Mode
+    # ============
+
+    theHtml.setPreview(True, True)
+
+    assert theHtml._formatSynopsis("synopsis text") == (
+        "<p class='comment'><span class='synopsis'>Synopsis:</span> synopsis text</p>\n"
+    )
+    assert theHtml._formatComments("comment text") == (
+        "<p class='comment'>comment text</p>\n"
+    )
+
+    assert theHtml._formatKeywords("") == ""
+    assert theHtml._formatKeywords("tag: Jane") == (
+        "<span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a>"
+    )
+    assert theHtml._formatKeywords("char: Bod, Jane") == (
+        "<span class='tags'>Characters:</span> "
+        "<a href='#char=Bod'>Bod</a>, "
+        "<a href='#char=Jane'>Jane</a>"
+    )
+
+# END Test testCoreToHtml_Format

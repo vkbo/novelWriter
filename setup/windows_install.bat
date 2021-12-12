@@ -35,6 +35,8 @@ echo.
 echo Please download and install it from https://www.python.org/downloads/
 echo Also make sure the "Add Python to PATH" option is selected during installation.
 echo.
+
+pause
 goto:eof
 
 :errorNoSetup

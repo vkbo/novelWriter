@@ -103,11 +103,8 @@ class NWItem():
             logger.error("XML item entry does not have a handle")
             return False
 
-        if "parent" in xItem.attrib:
-            self.setParent(xItem.attrib["parent"])
-
-        if "order" in xItem.attrib:
-            self.setOrder(xItem.attrib["order"])
+        self.setParent(xItem.attrib.get("parent", None))
+        self.setOrder(xItem.attrib.get("order", 0))
 
         tmpStatus = ""
         for xValue in xItem:
@@ -200,11 +197,8 @@ class NWItem():
     def setHandle(self, theHandle):
         """Set the item handle, and ensure it is valid.
         """
-        if isinstance(theHandle, str):
-            if isHandle(theHandle):
-                self.itemHandle = theHandle
-            else:
-                self.itemHandle = None
+        if isHandle(theHandle):
+            self.itemHandle = theHandle
         else:
             self.itemHandle = None
         return
@@ -214,11 +208,8 @@ class NWItem():
         """
         if theParent is None:
             self.itemParent = None
-        elif isinstance(theParent, str):
-            if isHandle(theParent):
-                self.itemParent = theParent
-            else:
-                self.itemParent = None
+        elif isHandle(theParent):
+            self.itemParent = theParent
         else:
             self.itemParent = None
         return

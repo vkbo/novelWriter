@@ -23,7 +23,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
 import json
+import hashlib
 import logging
 
 from datetime import datetime
@@ -44,7 +46,7 @@ logger = logging.getLogger(__name__)
 # =============================================================================================== #
 
 def checkString(value, default, allowNone=False):
-    """Check if a variable is a string or a none.
+    """Check if a variable is a string or a None.
     """
     if allowNone and (value is None or value == "None"):
         return None
@@ -54,7 +56,7 @@ def checkString(value, default, allowNone=False):
 
 
 def checkInt(value, default, allowNone=False):
-    """Check if a variable is an integer or a none.
+    """Check if a variable is an integer or a None.
     """
     if allowNone and (value is None or value == "None"):
         return None
@@ -64,8 +66,19 @@ def checkInt(value, default, allowNone=False):
         return default
 
 
+def checkFloat(value, default, allowNone=False):
+    """Check if a variable is a float or a None.
+    """
+    if allowNone and (value is None or value == "None"):
+        return None
+    try:
+        return float(value)
+    except Exception:
+        return default
+
+
 def checkBool(value, default, allowNone=False):
-    """Check if a variable is a boolean or a none.
+    """Check if a variable is a boolean or a None.
     """
     if allowNone and (value is None or value == "None"):
         return None
@@ -161,6 +174,26 @@ def hexToInt(value, default=0):
     return default
 
 
+def checkIntRange(value, first, last, default):
+    """Check that an int is in a given range. If it isn't, return the
+    default value.
+    """
+    if isinstance(value, int):
+        if value >= first and value <= last:
+            return value
+    return default
+
+
+def checkIntTuple(value, valid, default):
+    """Check that an int is an element of a tuple. If it isn't, return
+    the default value.
+    """
+    if isinstance(value, int):
+        if value in valid:
+            return value
+    return default
+
+
 # =============================================================================================== #
 #  Formatting Functions
 # =============================================================================================== #
@@ -209,7 +242,7 @@ def formatTime(tS):
 
 
 def parseTimeStamp(theStamp, default, allowNone=False):
-    """Parses a text representation of a time stamp and converts it into
+    """Parses a text representation of a timestamp and converts it into
     a float. Note that negative timestamps cause an OSError on Windows.
     See https://bugs.python.org/issue29097
     """
@@ -226,7 +259,7 @@ def parseTimeStamp(theStamp, default, allowNone=False):
 # =============================================================================================== #
 
 def splitVersionNumber(value):
-    """Splits a version string on the form aa.bb.cc into major, minor
+    """Split a version string on the form aa.bb.cc into major, minor
     and patch, and computes an integer value aabbcc.
     """
     if not isinstance(value, str):
@@ -335,7 +368,7 @@ def fuzzyTime(secDiff):
         ).format(int(round(secDiff/31557600)))
 
 
-def numberToRoman(numVal, isLower=False):
+def numberToRoman(numVal, toLower=False):
     """Convert an integer to a Roman number.
     """
     if not isinstance(numVal, int):
@@ -356,7 +389,7 @@ def numberToRoman(numVal, isLower=False):
         if numVal <= 0:
             break
 
-    return romNum.lower() if isLower else romNum
+    return romNum.lower() if toLower else romNum
 
 
 # =============================================================================================== #
@@ -411,24 +444,65 @@ def jsonEncode(data, n=0, nmax=0):
 
 
 # =============================================================================================== #
-#  Other Functions
+#  File and File System Functions
 # =============================================================================================== #
 
-def makeFileNameSafe(theText):
-    """Returns a filename safe version of the text.
+def readTextFile(filePath):
+    """Read the content of a text file in a robust manner.
+    """
+    if not os.path.isfile(filePath):
+        return ""
+
+    fileText = ""
+    try:
+        with open(filePath, mode="r", encoding="utf-8") as inFile:
+            fileText = inFile.read()
+    except Exception:
+        logger.error("Could not read file: %s", filePath)
+        logException()
+        return ""
+
+    return fileText
+
+
+def makeFileNameSafe(value):
+    """Returns a filename safe string of the value.
     """
     cleanName = ""
-    for c in theText.strip():
+    for c in str(value).strip():
         if c.isalpha() or c.isdigit() or c == " ":
             cleanName += c
     return cleanName
 
 
-def getGuiItem(theName):
+def sha256sum(filePath):
+    """Make a shasum of a file using a buffer.
+    Based on: https://stackoverflow.com/a/44873382/5825851
+    """
+    hDigest = hashlib.sha256()
+    bData = bytearray(65536)
+    mData = memoryview(bData)
+    try:
+        with open(filePath, mode="rb", buffering=0) as inFile:
+            for n in iter(lambda: inFile.readinto(mData), 0):
+                hDigest.update(mData[:n])
+    except Exception:
+        logger.error("Could not create sha256sum of: %s", filePath)
+        logException()
+        return None
+
+    return hDigest.hexdigest()
+
+
+# =============================================================================================== #
+#  Other Functions
+# =============================================================================================== #
+
+def getGuiItem(objName):
     """Returns a QtWidget based on its objectName.
     """
     for qWidget in qApp.topLevelWidgets():
-        if qWidget.objectName() == theName:
+        if qWidget.objectName() == objName:
             return qWidget
     return None
 

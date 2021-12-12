@@ -218,3 +218,11 @@ headers of level two for novel documents, i.e. chapters, but not for project not
 
 If you need to add a page break somewhere else, put the text ``[NEW PAGE]`` on a line by itself
 before the text you wish to start on a new page.
+
+Page breaks are automatically added to partition, chapter and unnumbered chapter headers of novel
+documents. If you want such breaks for scenes and sections, you must add them manually.
+
+.. note::
+   The page break code is applied to the text that follows. It adds a "page break before" mark to
+   the text when exporting to HTML or Open Document. This means that a ``[NEW PAGE]`` which has no
+   text following it will not result in a page break.

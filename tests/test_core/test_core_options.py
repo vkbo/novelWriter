@@ -73,7 +73,7 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, tmpDir):
     assert theOpts.loadSettings()
 
     # Check that unwanted items have been removed
-    assert theOpts.theState == {
+    assert theOpts._theState == {
         "GuiBuildNovel": {
             "winWidth": 1000,
             "winHeight": 700,
@@ -88,7 +88,7 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, tmpDir):
 
     # Load again to check we get the values back
     assert theOpts.loadSettings()
-    assert theOpts.theState == {
+    assert theOpts._theState == {
         "GuiBuildNovel": {
             "winWidth": 1000,
             "winHeight": 700,
@@ -129,7 +129,7 @@ def testCoreOptions_SetGet(mockGUI):
     assert theOpts.getValue("GuiBuildNovel", "mockItem", None) is None
 
     # Get type-specific
-    assert theOpts.getString("GuiBuildNovel", "winWidth", None) == "100"
+    assert theOpts.getString("GuiBuildNovel", "winWidth", None) is None
     assert theOpts.getString("GuiBuildNovel", "mockItem", None) is None
     assert theOpts.getInt("GuiBuildNovel", "winWidth", None) == 100
     assert theOpts.getInt("GuiBuildNovel", "textFont", None) is None
@@ -139,14 +139,5 @@ def testCoreOptions_SetGet(mockGUI):
     assert theOpts.getFloat("GuiBuildNovel", "mockItem", None) is None
     assert theOpts.getBool("GuiBuildNovel", "addNovel", None) is True
     assert theOpts.getBool("GuiBuildNovel", "mockItem", None) is None
-
-    # Check integer validators
-    assert theOpts.validIntRange(5, 0, 9, 3) == 5
-    assert theOpts.validIntRange(5, 0, 4, 3) == 3
-    assert theOpts.validIntRange(5, 0, 5, 3) == 5
-    assert theOpts.validIntRange(0, 0, 5, 3) == 0
-
-    assert theOpts.validIntTuple(0, (0, 1, 2), 3) == 0
-    assert theOpts.validIntTuple(5, (0, 1, 2), 3) == 3
 
 # END Test testCoreOptions_SetGet

@@ -3,12 +3,16 @@
   <office:font-face-decls>
     <style:font-face style:name="Liberation Serif" style:font-pitch="variable"/>
   </office:font-face-decls>
-  <office:automatic-styles/>
+  <office:automatic-styles>
+    <style:style style:name="P1" style:family="paragraph" style:parent-style-name="Heading_2">
+      <style:paragraph-properties fo:break-before="page"/>
+    </style:style>
+  </office:automatic-styles>
   <office:body>
     <office:text>
       <text:h text:style-name="Heading_2" text:outline-level="2">Chapter One</text:h>
       <text:p text:style-name="Text_Body">Text</text:p>
-      <text:h text:style-name="Heading_2" text:outline-level="2">Chapter Two</text:h>
+      <text:h text:style-name="P1" text:outline-level="2">Chapter Two</text:h>
       <text:p text:style-name="Text_Body">Text</text:p>
     </office:text>
   </office:body>

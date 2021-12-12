@@ -41,6 +41,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.core import ToHtml
 from novelwriter.enum import nwAlert, nwItemType, nwDocAction
+from novelwriter.error import logException
 from novelwriter.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -185,7 +186,7 @@ class GuiDocViewer(QTextBrowser):
             aDoc.doPostProcessing()
         except Exception:
             logger.error("Failed to generate preview for document with handle '%s'", tHandle)
-            novelwriter.logException()
+            logException()
             self.setText(self.tr("An error occurred while generating the preview."))
             return False
 

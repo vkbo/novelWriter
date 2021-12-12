@@ -83,7 +83,7 @@ class GuiMain(QMainWindow):
         # ============
 
         # Core Classes and Settings
-        self.theTheme    = GuiTheme(self)
+        self.theTheme    = GuiTheme()
         self.theProject  = NWProject(self)
         self.theIndex    = NWIndex(self.theProject)
         self.hasProject  = False
@@ -500,10 +500,10 @@ class GuiMain(QMainWindow):
                     ),
                     self.tr(
                         "Note: If the program or the computer previously "
-                        "crashed, the lock can safely be overridden. If, "
-                        "however, another instance of novelWriter has the "
-                        "project open, overriding the lock may corrupt the "
-                        "project, and is not recommended."
+                        "crashed, the lock can safely be overridden. However, "
+                        "overriding it is not recommended if the project is "
+                        "open in another instance of novelWriter. Doing so "
+                        "may corrupt the project."
                     ),
                     lockDetails
                 ),
@@ -730,10 +730,10 @@ class GuiMain(QMainWindow):
             with open(loadFile, mode="rt", encoding="utf-8") as inFile:
                 theText = inFile.read()
             self.mainConf.setLastPath(loadFile)
-        except Exception as e:
-            self.makeAlert([
-                self.tr("Could not read file. The file must be an existing text file."), str(e)
-            ], nwAlert.ERROR)
+        except Exception as exc:
+            self.makeAlert(self.tr(
+                "Could not read file. The file must be an existing text file."
+            ), nwAlert.ERROR, exception=exc)
             return False
 
         if self.docEditor.docHandle() is None:
@@ -784,7 +784,7 @@ class GuiMain(QMainWindow):
     def passDocumentAction(self, theAction):
         """Pass on document action to the document viewer if it has
         focus, or pass it to the document editor if it or any of
-        its clid widgets have focus. If neither has focus, ignore the
+        its child widgets have focus. If neither has focus, ignore the
         action.
         """
         if self.docViewer.hasFocus():
@@ -836,13 +836,13 @@ class GuiMain(QMainWindow):
 
         if tHandle is None:
             logger.warning("No item selected")
-            return
+            return False
 
         tItem = self.theProject.projTree[tHandle]
         if tItem is None:
-            return
+            return False
         if tItem.itemType not in nwLists.REG_TYPES:
-            return
+            return False
 
         logger.verbose("Requesting change to item '%s'", tHandle)
         dlgProj = GuiItemEditor(self, tHandle)
@@ -853,7 +853,7 @@ class GuiMain(QMainWindow):
             self.docEditor.updateDocInfo(tHandle)
             self.docViewer.updateDocInfo(tHandle)
 
-        return
+        return True
 
     def rebuildTrees(self):
         """Rebuild the project tree.
@@ -938,7 +938,7 @@ class GuiMain(QMainWindow):
     ##
 
     def showProjectLoadDialog(self):
-        """Opens the projects dialog for selecting either existing
+        """Open the projects dialog for selecting either existing
         projects from a cache of recently opened projects, or provide a
         browse button for projects not yet cached. Selecting to create a
         new project is forwarded to the new project wizard.
@@ -1058,7 +1058,7 @@ class GuiMain(QMainWindow):
         return
 
     def showWritingStatsDialog(self):
-        """Open the session log dialog.
+        """Open the session stats dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
@@ -1092,17 +1092,17 @@ class GuiMain(QMainWindow):
         if showNotes:
             dlgAbout.showReleaseNotes()
 
-        return
+        return True
 
     def showAboutQtDialog(self):
         """Show the about dialog for Qt.
         """
         msgBox = QMessageBox()
         msgBox.aboutQt(self, "About Qt")
-        return
+        return True
 
     def showUpdatesDialog(self):
-        """Show the updates dialog for novelWriter.
+        """Show the check for updates dialog.
         """
         dlgUpdate = getGuiItem("GuiUpdates")
         if dlgUpdate is None:
@@ -1116,50 +1116,52 @@ class GuiMain(QMainWindow):
 
         return
 
-    def makeAlert(self, theMessage, theLevel=nwAlert.INFO):
-        """Alert both the user and the logger at the same time. Message
-        can be either a string or an array of strings.
+    def makeAlert(self, message, level=nwAlert.INFO, exception=None):
+        """Alert both the user and the logger at the same time. The
+        message can be either a string or a list of strings.
         """
-        if isinstance(theMessage, list):
-            popMsg = "<br>".join(theMessage)
-            logMsg = theMessage
+        if isinstance(message, list):
+            message = list(filter(None, message))  # Strip empty strings
+            popMsg = "<br>".join(message)
+            logMsg = " ".join(message)
         else:
-            popMsg = theMessage
-            logMsg = [theMessage]
+            popMsg = str(message)
+            logMsg = str(message)
+
+        kw = {}
+        if exception is not None:
+            kw["exc_info"] = exception
+            popMsg = f"{popMsg}<br>{type(exception).__name__}: {str(exception)}"
 
         # Write to Log
-        if theLevel == nwAlert.INFO:
-            for msgLine in logMsg:
-                logger.info(msgLine)
-        elif theLevel == nwAlert.WARN:
-            for msgLine in logMsg:
-                logger.warning(msgLine)
-        elif theLevel == nwAlert.ERROR:
-            for msgLine in logMsg:
-                logger.error(msgLine)
-        elif theLevel == nwAlert.BUG:
-            for msgLine in logMsg:
-                logger.error(msgLine)
+        if level == nwAlert.INFO:
+            logger.info(logMsg, **kw)
+        elif level == nwAlert.WARN:
+            logger.warning(logMsg, **kw)
+        elif level == nwAlert.ERROR:
+            logger.error(logMsg, **kw)
+        elif level == nwAlert.BUG:
+            logger.error(logMsg, **kw)
 
         # Popup
         msgBox = QMessageBox()
-        if theLevel == nwAlert.INFO:
+        if level == nwAlert.INFO:
             msgBox.information(self, self.tr("Information"), popMsg)
-        elif theLevel == nwAlert.WARN:
+        elif level == nwAlert.WARN:
             msgBox.warning(self, self.tr("Warning"), popMsg)
-        elif theLevel == nwAlert.ERROR:
+        elif level == nwAlert.ERROR:
             msgBox.critical(self, self.tr("Error"), popMsg)
-        elif theLevel == nwAlert.BUG:
+        elif level == nwAlert.BUG:
             popMsg += "<br>%s" % self.tr("This is a bug!")
             msgBox.critical(self, self.tr("Internal Error"), popMsg)
 
         return
 
-    def askQuestion(self, theTitle, theQuestion):
+    def askQuestion(self, title, question):
         """Ask the user a Yes/No question.
         """
         msgBox = QMessageBox()
-        msgRes = msgBox.question(self, theTitle, theQuestion, QMessageBox.Yes | QMessageBox.No)
+        msgRes = msgBox.question(self, title, question, QMessageBox.Yes | QMessageBox.No)
         return msgRes == QMessageBox.Yes
 
     def reportConfErr(self):
@@ -1249,13 +1251,11 @@ class GuiMain(QMainWindow):
         self.theProject.setLastViewed(None)
         bPos = self.splitMain.sizes()
         self.splitView.setVisible(False)
-        vPos = [bPos[1], 0]
-        self.splitDocs.setSizes(vPos)
+        self.splitDocs.setSizes([bPos[1], 0])
         return not self.splitView.isVisible()
 
     def toggleFocusMode(self):
-        """Main GUI Focus Mode hides tree, view pane and optionally also
-        statusbar and menu.
+        """Main GUI Focus Mode hides tree, view, statusbar and menu.
         """
         if self.docEditor.docHandle() is None:
             logger.error("No document open, so not activating Focus Mode")
@@ -1412,7 +1412,7 @@ class GuiMain(QMainWindow):
         return True
 
     def _autoSaveProject(self):
-        """Triggered by the auto-save project timer to save the project.
+        """Triggered by the autosave project timer to save the project.
         """
         doSave  = self.hasProject
         doSave &= self.theProject.projChanged
@@ -1425,7 +1425,7 @@ class GuiMain(QMainWindow):
         return
 
     def _autoSaveDocument(self):
-        """Triggered by the auto-save document timer to save the
+        """Triggered by the autosave document timer to save the
         document.
         """
         if self.hasProject and self.docEditor.docChanged():
@@ -1514,7 +1514,7 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot()
     def _timeTick(self):
-        """Triggered on every tick of the timer.
+        """Triggered on every tick of the main timer.
         """
         if not self.hasProject:
             return

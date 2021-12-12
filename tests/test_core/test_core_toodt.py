@@ -308,7 +308,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="P3">Title</text:h>'
+        '<text:h text:style-name="Title">Title</text:h>'
         '</office:text>'
     )
 
@@ -445,9 +445,9 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="P4">* * *</text:p>'
+        '<text:p text:style-name="P3">* * *</text:p>'
         '<text:p text:style-name="Text_Body">Text</text:p>'
-        '<text:p text:style-name="P4">* * *</text:p>'
+        '<text:p text:style-name="P3">* * *</text:p>'
         '<text:p text:style-name="Text_Body">Text</text:p>'
         '</office:text>'
     )
@@ -491,26 +491,26 @@ def testCoreToOdt_Convert(mockGUI):
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="P5"><text:span text:style-name="T4">'
+        '<text:p text:style-name="P4"><text:span text:style-name="T4">'
         'Point of View:</text:span> Jane</text:p>'
-        '<text:p text:style-name="P6"><text:span text:style-name="T4">'
+        '<text:p text:style-name="P5"><text:span text:style-name="T4">'
         'Characters:</text:span> John</text:p>'
         '<text:p text:style-name="Text_Meta"><text:span text:style-name="T4">'
         'Plot:</text:span> Main</text:p>'
-        '<text:p text:style-name="P7">Right align</text:p>'
+        '<text:p text:style-name="P6">Right align</text:p>'
         '<text:p text:style-name="Text_Body">Left Align</text:p>'
-        '<text:p text:style-name="P4">Centered</text:p>'
-        '<text:p text:style-name="P8">Left indent</text:p>'
-        '<text:p text:style-name="P9">Right indent</text:p>'
+        '<text:p text:style-name="P3">Centered</text:p>'
+        '<text:p text:style-name="P7">Left indent</text:p>'
+        '<text:p text:style-name="P8">Right indent</text:p>'
         '</office:text>'
     )
+    assert getStyle("P4")._pAttr["margin-bottom"] == ["fo", "0.000cm"]
     assert getStyle("P5")._pAttr["margin-bottom"] == ["fo", "0.000cm"]
-    assert getStyle("P6")._pAttr["margin-bottom"] == ["fo", "0.000cm"]
-    assert getStyle("P6")._pAttr["margin-top"] == ["fo", "0.000cm"]
-    assert getStyle("P7")._pAttr["text-align"] == ["fo", "right"]
-    assert getStyle("P4")._pAttr["text-align"] == ["fo", "center"]
-    assert getStyle("P8")._pAttr["margin-left"] == ["fo", "1.693cm"]
-    assert getStyle("P9")._pAttr["margin-right"] == ["fo", "1.693cm"]
+    assert getStyle("P5")._pAttr["margin-top"] == ["fo", "0.000cm"]
+    assert getStyle("P6")._pAttr["text-align"] == ["fo", "right"]
+    assert getStyle("P3")._pAttr["text-align"] == ["fo", "center"]
+    assert getStyle("P7")._pAttr["margin-left"] == ["fo", "1.693cm"]
+    assert getStyle("P8")._pAttr["margin-right"] == ["fo", "1.693cm"]
 
     # Justified
     theDoc.theText = (
@@ -529,11 +529,11 @@ def testCoreToOdt_Convert(mockGUI):
         '<office:text>'
         '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
         '<text:p text:style-name="Text_Body">Regular paragraph</text:p>'
-        '<text:p text:style-name="P10">with<text:line-break/>break</text:p>'
-        '<text:p text:style-name="P10">Left Align</text:p>'
+        '<text:p text:style-name="P9">with<text:line-break/>break</text:p>'
+        '<text:p text:style-name="P9">Left Align</text:p>'
         '</office:text>'
     )
-    assert getStyle("P10")._pAttr["text-align"] == ["fo", "left"]
+    assert getStyle("P9")._pAttr["text-align"] == ["fo", "left"]
 
     # Page Breaks
     theDoc.theText = (
@@ -557,6 +557,62 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
 # END Test testCoreToOdt_Convert
+
+
+@pytest.mark.core
+def testCoreToOdt_ConvertDirect(mockGUI):
+    """Test the converter directly using the ToOdt class to reach some
+    otherwise hard to reach conditions.
+    """
+    theProject = NWProject(mockGUI)
+    mockGUI.theIndex = NWIndex(theProject)
+    theDoc = ToOdt(theProject, isFlat=True)
+
+    theDoc.isNovel = True
+
+    # Justified
+    theDoc = ToOdt(theProject, isFlat=True)
+    theDoc.theTokens = [
+        (theDoc.T_TEXT, 1, "This is a paragraph", [], theDoc.A_JUSTIFY),
+        (theDoc.T_EMPTY, 1, "", None, theDoc.A_NONE),
+    ]
+    theDoc.initDocument()
+    theDoc.doConvert()
+    theDoc.closeDocument()
+    assert (
+        '<style:style style:name="P1" style:family="paragraph" '
+        'style:parent-style-name="Text_Body">'
+        '<style:paragraph-properties fo:text-align="justify"/>'
+        '</style:style>'
+    ) in xmlToText(theDoc._xAuto)
+    assert xmlToText(theDoc._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="P1">This is a paragraph</text:p>'
+        '</office:text>'
+    )
+
+    # Page Break After
+    theDoc = ToOdt(theProject, isFlat=True)
+    theDoc.theTokens = [
+        (theDoc.T_TEXT, 1, "This is a paragraph", [], theDoc.A_PBA),
+        (theDoc.T_EMPTY, 1, "", None, theDoc.A_NONE),
+    ]
+    theDoc.initDocument()
+    theDoc.doConvert()
+    theDoc.closeDocument()
+    assert (
+        '<style:style style:name="P1" style:family="paragraph" '
+        'style:parent-style-name="Text_Body">'
+        '<style:paragraph-properties fo:break-after="page"/>'
+        '</style:style>'
+    ) in xmlToText(theDoc._xAuto)
+    assert xmlToText(theDoc._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="P1">This is a paragraph</text:p>'
+        '</office:text>'
+    )
+
+# END Test testCoreToOdt_ConvertDirect
 
 
 @pytest.mark.core
@@ -674,6 +730,36 @@ def testCoreToOdt_SaveFull(mockGUI, fncDir, outDir, refDir):
     assert cmpFiles(stylFile, stylComp)
 
 # END Test testCoreToOdt_SaveFull
+
+
+@pytest.mark.core
+def testCoreToOdt_Format(mockGUI):
+    """Test the formatters for the ToOdt class.
+    """
+    theProject = NWProject(mockGUI)
+    mockGUI.theIndex = NWIndex(theProject)
+    theDoc = ToOdt(theProject, isFlat=True)
+
+    assert theDoc._formatSynopsis("synopsis text") == (
+        "**Synopsis:** synopsis text",
+        "_B         b_              "
+    )
+    assert theDoc._formatComments("comment text") == (
+        "**Comment:** comment text",
+        "_B        b_             "
+    )
+
+    assert theDoc._formatKeywords("") == ""
+    assert theDoc._formatKeywords("tag: Jane") == (
+        "**Tag:** Jane",
+        "_B    b_     "
+    )
+    assert theDoc._formatKeywords("char: Bod, Jane") == (
+        "**Characters:** Bod, Jane",
+        "_B           b_          "
+    )
+
+# END Test testCoreToOdt_Format
 
 
 @pytest.mark.core
