@@ -48,6 +48,13 @@ def testCoreSpell_Enchant(monkeypatch, tmpDir):
         assert spChk.listDictionaries() == []
         assert spChk.describeDict() == ("", "")
 
+    # Break the enchant package, and check error handling
+    spChk = NWSpellEnchant()
+    spChk.theDict = None
+    assert spChk.checkWord("word") is True
+    assert spChk.suggestWords("word") == []
+    assert spChk.addWord("word") is False
+
     # Load the proper enchant package (twice)
     spChk = NWSpellEnchant()
     spChk.setLanguage("en", wList)

@@ -75,17 +75,26 @@ class NWSpellEnchant():
     def checkWord(self, theWord):
         """Wrapper function for pyenchant.
         """
-        return self.theDict.check(theWord)
+        try:
+            return self.theDict.check(theWord)
+        except Exception:
+            return True
 
     def suggestWords(self, theWord):
         """Wrapper function for pyenchant.
         """
-        return self.theDict.suggest(theWord)
+        try:
+            return self.theDict.suggest(theWord)
+        except Exception:
+            return []
 
     def addWord(self, newWord):
         """Add a word to the project dictionary.
         """
-        self.theDict.add_to_session(newWord)
+        try:
+            self.theDict.add_to_session(newWord)
+        except Exception:
+            return False
 
         if self.projectDict is not None and newWord not in self.projDict:
             newWord = newWord.strip()
