@@ -86,7 +86,7 @@ def testCoreItem_Setters(mockGUI):
     assert theItem.itemStatus == "Main"
 
     # Status
-    theItem.itemClass = nwItemClass.NOVEL
+    theItem._class = nwItemClass.NOVEL
     theItem.setStatus("Nonsense")
     assert theItem.itemStatus == "New"
     theItem.setStatus("New")
@@ -100,31 +100,31 @@ def testCoreItem_Setters(mockGUI):
 
     # Expanded
     theItem.setExpanded(8)
-    assert not theItem.isExpanded
+    assert theItem.isExpanded is False
     theItem.setExpanded(None)
-    assert not theItem.isExpanded
+    assert theItem.isExpanded is False
     theItem.setExpanded("None")
-    assert not theItem.isExpanded
+    assert theItem.isExpanded is False
     theItem.setExpanded("What?")
-    assert not theItem.isExpanded
+    assert theItem.isExpanded is False
     theItem.setExpanded("True")
-    assert theItem.isExpanded
+    assert theItem.isExpanded is True
     theItem.setExpanded(True)
-    assert theItem.isExpanded
+    assert theItem.isExpanded is True
 
     # Exported
     theItem.setExported(8)
-    assert not theItem.isExported
+    assert theItem.isExported is False
     theItem.setExported(None)
-    assert not theItem.isExported
+    assert theItem.isExported is False
     theItem.setExported("None")
-    assert not theItem.isExported
+    assert theItem.isExported is False
     theItem.setExported("What?")
-    assert not theItem.isExported
+    assert theItem.isExported is False
     theItem.setExported("True")
-    assert theItem.isExported
+    assert theItem.isExported is True
     theItem.setExported(True)
-    assert theItem.isExported
+    assert theItem.isExported is True
 
     # CharCount
     theItem.setCharCount(None)

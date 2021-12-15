@@ -223,7 +223,7 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     # Add new file after one that has no parent handle
     chItem = nwTree._getTreeItem("44cb730c42048")
     nwTree.setCurrentItem(chItem, QItemSelectionModel.Current)
-    nwTree.theProject.projTree["44cb730c42048"].itemParent = None
+    nwTree.theProject.projTree["44cb730c42048"]._parent = None
     assert not nwTree.newTreeItem(nwItemType.FILE, nwItemClass.NOVEL)
     nwTree.clearSelection()
 

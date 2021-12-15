@@ -39,61 +39,61 @@ def mockItems(mockGUI):
     theProject = NWProject(mockGUI)
 
     itemA = NWItem(theProject)
-    itemA.itemName = "Novel"
-    itemA.itemType = nwItemType.ROOT
-    itemA.itemClass = nwItemClass.NOVEL
-    itemA.isExpanded = True
+    itemA._name = "Novel"
+    itemA._type = nwItemType.ROOT
+    itemA._class = nwItemClass.NOVEL
+    itemA._expanded = True
 
     itemB = NWItem(theProject)
-    itemB.itemName = "Act One"
-    itemB.itemType = nwItemType.FOLDER
-    itemB.itemClass = nwItemClass.NOVEL
-    itemB.isExpanded = True
+    itemB._name = "Act One"
+    itemB._type = nwItemType.FOLDER
+    itemB._class = nwItemClass.NOVEL
+    itemB._expanded = True
 
     itemC = NWItem(theProject)
-    itemC.itemName = "Chapter One"
-    itemC.itemType = nwItemType.FILE
-    itemC.itemClass = nwItemClass.NOVEL
-    itemC.itemLayout = nwItemLayout.DOCUMENT
-    itemC.charCount = 300
-    itemC.wordCount = 50
-    itemC.paraCount = 2
+    itemC._name = "Chapter One"
+    itemC._type = nwItemType.FILE
+    itemC._class = nwItemClass.NOVEL
+    itemC._layout = nwItemLayout.DOCUMENT
+    itemC._charCount = 300
+    itemC._wordCount = 50
+    itemC._paraCount = 2
 
     itemD = NWItem(theProject)
-    itemD.itemName = "Scene One"
-    itemD.itemType = nwItemType.FILE
-    itemD.itemClass = nwItemClass.NOVEL
-    itemD.itemLayout = nwItemLayout.DOCUMENT
-    itemD.charCount = 3000
-    itemD.wordCount = 500
-    itemD.paraCount = 20
+    itemD._name = "Scene One"
+    itemD._type = nwItemType.FILE
+    itemD._class = nwItemClass.NOVEL
+    itemD._layout = nwItemLayout.DOCUMENT
+    itemD._charCount = 3000
+    itemD._wordCount = 500
+    itemD._paraCount = 20
 
     itemE = NWItem(theProject)
-    itemE.itemName = "Outtakes"
-    itemE.itemType = nwItemType.ROOT
-    itemE.itemClass = nwItemClass.ARCHIVE
-    itemE.isExpanded = False
+    itemE._name = "Outtakes"
+    itemE._type = nwItemType.ROOT
+    itemE._class = nwItemClass.ARCHIVE
+    itemE._expanded = False
 
     itemF = NWItem(theProject)
-    itemF.itemName = "Trash"
-    itemF.itemType = nwItemType.TRASH
-    itemF.itemClass = nwItemClass.TRASH
-    itemF.isExpanded = False
+    itemF._name = "Trash"
+    itemF._type = nwItemType.TRASH
+    itemF._class = nwItemClass.TRASH
+    itemF._expanded = False
 
     itemG = NWItem(theProject)
-    itemG.itemName = "Characters"
-    itemG.itemType = nwItemType.ROOT
-    itemG.itemClass = nwItemClass.CHARACTER
-    itemG.isExpanded = True
+    itemG._name = "Characters"
+    itemG._type = nwItemType.ROOT
+    itemG._class = nwItemClass.CHARACTER
+    itemG._expanded = True
 
     itemH = NWItem(theProject)
-    itemH.itemName = "Jane Doe"
-    itemH.itemType = nwItemType.FILE
-    itemH.itemClass = nwItemClass.CHARACTER
-    itemH.itemLayout = nwItemLayout.NOTE
-    itemH.charCount = 2000
-    itemH.wordCount = 400
-    itemH.paraCount = 16
+    itemH._name = "Jane Doe"
+    itemH._type = nwItemType.FILE
+    itemH._class = nwItemClass.CHARACTER
+    itemH._layout = nwItemLayout.NOTE
+    itemH._charCount = 2000
+    itemH._wordCount = 400
+    itemH._paraCount = 16
 
     theItems = [
         ("a000000000001", None,            itemA),
@@ -154,20 +154,20 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
 
     # Try to add another trash folder
     itemT = NWItem(theProject)
-    itemT.itemName = "Trash"
-    itemT.itemType = nwItemType.TRASH
-    itemT.itemClass = nwItemClass.TRASH
-    itemT.isExpanded = False
+    itemT._name = "Trash"
+    itemT._type = nwItemType.TRASH
+    itemT._class = nwItemClass.TRASH
+    itemT._expanded = False
 
     assert not theTree.append("1234567890abc", None, itemT)
     assert len(theTree) == len(mockItems)
 
     # Generate handle automatically
     itemT = NWItem(theProject)
-    itemT.itemName = "New File"
-    itemT.itemType = nwItemType.FILE
-    itemT.itemClass = nwItemClass.NOVEL
-    itemT.itemLayout = nwItemLayout.DOCUMENT
+    itemT._name = "New File"
+    itemT._type = nwItemType.FILE
+    itemT._class = nwItemClass.NOVEL
+    itemT._layout = nwItemLayout.DOCUMENT
 
     assert theTree.append(None, None, itemT)
     assert len(theTree) == len(mockItems) + 1
@@ -243,12 +243,12 @@ def testCoreTree_Methods(mockGUI, mockItems):
     ]
 
     # Break the folder parent handle
-    theTree["b000000000001"].itemParent = "stuff"
+    theTree["b000000000001"]._parent = "stuff"
     assert theTree.getItemPath("c000000000001") == [
         "c000000000001", "b000000000001"
     ]
 
-    theTree["b000000000001"].itemParent = "a000000000001"
+    theTree["b000000000001"]._parent = "a000000000001"
     assert theTree.getItemPath("c000000000001") == [
         "c000000000001", "b000000000001", "a000000000001"
     ]

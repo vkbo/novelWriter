@@ -1225,8 +1225,8 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ips
 
     # Open a document and populate it
     sHandle = "8c659a11cd429"
-    nwGUI.theProject.projTree[sHandle].initCount = 0  # Clear item's count
-    nwGUI.theProject.projTree[sHandle].wordCount = 0  # Clear item's count
+    nwGUI.theProject.projTree[sHandle]._initCount = 0  # Clear item's count
+    nwGUI.theProject.projTree[sHandle]._wordCount = 0  # Clear item's count
     assert nwGUI.openDocument(sHandle) is True
     qtbot.wait(stepDelay)
 
@@ -1252,9 +1252,9 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ips
     nwGUI.docEditor.wCounterDoc.run()
     # nwGUI.docEditor._updateDocCounts(cC, wC, pC)
     qtbot.wait(stepDelay)
-    assert nwGUI.theProject.projTree[sHandle].charCount == cC
-    assert nwGUI.theProject.projTree[sHandle].wordCount == wC
-    assert nwGUI.theProject.projTree[sHandle].paraCount == pC
+    assert nwGUI.theProject.projTree[sHandle]._charCount == cC
+    assert nwGUI.theProject.projTree[sHandle]._wordCount == wC
+    assert nwGUI.theProject.projTree[sHandle]._paraCount == pC
     assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} (+{wC})"
 
     # Select all text

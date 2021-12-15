@@ -430,7 +430,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     # Page wo/Title
     # =============
 
-    theProject.projTree[pHandle].itemLayout = nwItemLayout.DOCUMENT
+    theProject.projTree[pHandle]._layout = nwItemLayout.DOCUMENT
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))
@@ -443,7 +443,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert theIndex._fileIndex[pHandle]["T000000"]["pCount"] == 1
     assert theIndex._fileIndex[pHandle]["T000000"]["synopsis"] == ""
 
-    theProject.projTree[pHandle].itemLayout = nwItemLayout.NOTE
+    theProject.projTree[pHandle]._layout = nwItemLayout.NOTE
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))

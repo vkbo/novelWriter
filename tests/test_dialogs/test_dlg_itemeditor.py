@@ -62,9 +62,9 @@ def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj):
         assert nwGUI.editItem() is False
 
     # Invalid Type
-    nwGUI.theProject.projTree["0e17daca5f3e1"].itemType = nwItemType.NO_TYPE
+    nwGUI.theProject.projTree["0e17daca5f3e1"]._type = nwItemType.NO_TYPE
     assert nwGUI.editItem() is False
-    nwGUI.theProject.projTree["0e17daca5f3e1"].itemType = nwItemType.FILE
+    nwGUI.theProject.projTree["0e17daca5f3e1"]._type = nwItemType.FILE
 
     # Open Properly
     assert nwGUI.editItem() is True
