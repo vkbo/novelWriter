@@ -38,42 +38,42 @@ def testCoreToMarkdown_ConvertFormat(mockGUI):
     # Headers
     # =======
 
-    theMD.isNovel = True
-    theMD.isNote = False
-    theMD.isFirst = True
+    theMD._isNovel = True
+    theMD._isNote = False
+    theMD._isFirst = True
 
     # Header 1
-    theMD.theText = "# Partition\n"
+    theMD._theText = "# Partition\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == "# Partition\n\n"
 
     # Header 2
-    theMD.theText = "## Chapter Title\n"
+    theMD._theText = "## Chapter Title\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == "## Chapter Title\n\n"
 
     # Header 3
-    theMD.theText = "### Scene Title\n"
+    theMD._theText = "### Scene Title\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == "### Scene Title\n\n"
 
     # Header 4
-    theMD.theText = "#### Section Title\n"
+    theMD._theText = "#### Section Title\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == "#### Section Title\n\n"
 
     # Title
-    theMD.theText = "#! Title\n"
+    theMD._theText = "#! Title\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == "# Title\n\n"
 
     # Unnumbered
-    theMD.theText = "##! Prologue\n"
+    theMD._theText = "##! Prologue\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == "## Prologue\n\n"
@@ -83,7 +83,7 @@ def testCoreToMarkdown_ConvertFormat(mockGUI):
 
     # Text for GitHub Markdown
     theMD.setGitHubMarkdown()
-    theMD.theText = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
+    theMD._theText = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == (
@@ -92,7 +92,7 @@ def testCoreToMarkdown_ConvertFormat(mockGUI):
 
     # Text for Standard Markdown
     theMD.setStandardMarkdown()
-    theMD.theText = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
+    theMD._theText = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == (
@@ -100,50 +100,50 @@ def testCoreToMarkdown_ConvertFormat(mockGUI):
     )
 
     # Text w/Hard Break
-    theMD.theText = "Line one  \nLine two  \nLine three\n"
+    theMD._theText = "Line one  \nLine two  \nLine three\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == "Line one  \nLine two  \nLine three\n\n"
 
     # Synopsis
-    theMD.theText = "%synopsis: The synopsis ...\n"
+    theMD._theText = "%synopsis: The synopsis ...\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == ""
 
     theMD.setSynopsis(True)
-    theMD.theText = "%synopsis: The synopsis ...\n"
+    theMD._theText = "%synopsis: The synopsis ...\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == "**Synopsis:** The synopsis ...\n\n"
 
     # Comment
-    theMD.theText = "% A comment ...\n"
+    theMD._theText = "% A comment ...\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == ""
 
     theMD.setComments(True)
-    theMD.theText = "% A comment ...\n"
+    theMD._theText = "% A comment ...\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == "**Comment:** A comment ...\n\n"
 
     # Keywords
-    theMD.theText = "@char: Bod, Jane\n"
+    theMD._theText = "@char: Bod, Jane\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == ""
 
     theMD.setKeywords(True)
-    theMD.theText = "@char: Bod, Jane\n"
+    theMD._theText = "@char: Bod, Jane\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == "**Characters:** Bod, Jane\n\n"
 
     # Multiple Keywords
     theMD.setKeywords(True)
-    theMD.theText = "## Chapter\n\n@pov: Bod\n@plot: Main\n@location: Europe\n\n"
+    theMD._theText = "## Chapter\n\n@pov: Bod\n@plot: Main\n@location: Europe\n\n"
     theMD.tokenizeText()
     theMD.doConvert()
     assert theMD.theResult == (
@@ -164,14 +164,14 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
     mockGUI.theIndex = NWIndex(theProject)
     theMD = ToMarkdown(theProject)
 
-    theMD.isNovel = True
-    theMD.isNote = False
+    theMD._isNovel = True
+    theMD._isNote = False
 
     # Special Titles
     # ==============
 
     # Title
-    theMD.theTokens = [
+    theMD._theTokens = [
         (theMD.T_TITLE, 1, "A Title", None, theMD.A_PBB | theMD.A_CENTRE),
         (theMD.T_EMPTY, 1, "", None, theMD.A_NONE),
     ]
@@ -179,7 +179,7 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
     assert theMD.theResult == "# A Title\n\n"
 
     # Unnumbered
-    theMD.theTokens = [
+    theMD._theTokens = [
         (theMD.T_UNNUM, 1, "Prologue", None, theMD.A_PBB),
         (theMD.T_EMPTY, 1, "", None, theMD.A_NONE),
     ]
@@ -190,7 +190,7 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
     # ==========
 
     # Separator
-    theMD.theTokens = [
+    theMD._theTokens = [
         (theMD.T_SEP, 1, "* * *", None, theMD.A_CENTRE),
         (theMD.T_EMPTY, 1, "", None, theMD.A_NONE),
     ]
@@ -198,7 +198,7 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
     assert theMD.theResult == "* * *\n\n"
 
     # Skip
-    theMD.theTokens = [
+    theMD._theTokens = [
         (theMD.T_SKIP, 1, "", None, theMD.A_NONE),
         (theMD.T_EMPTY, 1, "", None, theMD.A_NONE),
     ]
@@ -214,7 +214,7 @@ def testCoreToMarkdown_Complex(mockGUI, fncDir):
     """
     theProject = NWProject(mockGUI)
     theMD = ToMarkdown(theProject)
-    theMD.isNovel = True
+    theMD._isNovel = True
 
     # Build Project
     # =============
@@ -239,7 +239,7 @@ def testCoreToMarkdown_Complex(mockGUI, fncDir):
     ]
 
     for i in range(len(docText)):
-        theMD.theText = docText[i]
+        theMD._theText = docText[i]
         theMD.doPreProcessing()
         theMD.tokenizeText()
         theMD.doConvert()

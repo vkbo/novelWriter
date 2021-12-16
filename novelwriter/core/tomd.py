@@ -39,21 +39,29 @@ class ToMarkdown(Tokenizer):
     def __init__(self, theProject):
         Tokenizer.__init__(self, theProject)
 
-        self.genMode = self.M_STD
-        self.fullMD = []
+        self._genMode = self.M_STD
+        self._fullMD = []
 
         return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def fullMD(self):
+        return self._fullMD
 
     ##
     #  Setters
     ##
 
     def setStandardMarkdown(self):
-        self.genMode = self.M_STD
+        self._genMode = self.M_STD
         return
 
     def setGitHubMarkdown(self):
-        self.genMode = self.M_GH
+        self._genMode = self.M_GH
         return
 
     ##
@@ -63,13 +71,13 @@ class ToMarkdown(Tokenizer):
     def getFullResultSize(self):
         """Return the size of the full Markdown result.
         """
-        return sum([len(x) for x in self.fullMD])
+        return sum([len(x) for x in self._fullMD])
 
     def doConvert(self):
         """Convert the list of text tokens into a HTML document saved
         to theResult.
         """
-        if self.genMode == self.M_STD:
+        if self._genMode == self.M_STD:
             # Standard
             mdTags = {
                 self.FMT_B_B: "**",
@@ -90,12 +98,12 @@ class ToMarkdown(Tokenizer):
                 self.FMT_D_E: "~~",
             }
 
-        self.theResult = ""
+        self._theResult = ""
 
         thisPar = []
         tmpResult = []
 
-        for tType, _, tText, tFormat, tStyle in self.theTokens:
+        for tType, _, tText, tFormat, tStyle in self._theTokens:
 
             # Process Text Type
             if tType == self.T_EMPTY:
@@ -140,21 +148,21 @@ class ToMarkdown(Tokenizer):
                     tTemp = tTemp[:xPos] + mdTags[xFmt] + tTemp[xPos+xLen:]
                 thisPar.append(tTemp.rstrip())
 
-            elif tType == self.T_SYNOPSIS and self.doSynopsis:
+            elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 locName = self._localLookup("Synopsis")
                 tmpResult.append(f"**{locName}:** {tText}\n\n")
 
-            elif tType == self.T_COMMENT and self.doComments:
+            elif tType == self.T_COMMENT and self._doComments:
                 locName = self._localLookup("Comment")
                 tmpResult.append(f"**{locName}:** {tText}\n\n")
 
-            elif tType == self.T_KEYWORD and self.doKeywords:
+            elif tType == self.T_KEYWORD and self._doKeywords:
                 tmpResult.append(self._formatKeywords(tText, tStyle))
 
-        self.theResult = "".join(tmpResult)
+        self._theResult = "".join(tmpResult)
         tmpResult = []
 
-        self.fullMD.append(self.theResult)
+        self._fullMD.append(self._theResult)
 
         return
 
@@ -162,7 +170,7 @@ class ToMarkdown(Tokenizer):
         """Save the data to a plain text file.
         """
         with open(savePath, mode="w", encoding="utf-8") as outFile:
-            theText = "".join(self.fullMD)
+            theText = "".join(self._fullMD)
             outFile.write(theText)
 
         return
@@ -172,10 +180,10 @@ class ToMarkdown(Tokenizer):
         """
         fullMD = []
         eightSpace = spaceChar*nSpaces
-        for aPage in self.fullMD:
+        for aPage in self._fullMD:
             fullMD.append(aPage.replace("\t", eightSpace))
 
-        self.fullMD = fullMD
+        self._fullMD = fullMD
         return
 
     ##
@@ -185,7 +193,7 @@ class ToMarkdown(Tokenizer):
     def _formatKeywords(self, tText, tStyle):
         """Apply Markdown formatting to keywords.
         """
-        isValid, theBits, _ = self.theParent.theIndex.scanThis("@"+tText)
+        isValid, theBits, _ = self._theParent.theIndex.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 
