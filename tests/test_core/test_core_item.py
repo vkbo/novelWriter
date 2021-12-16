@@ -196,6 +196,21 @@ def testCoreItem_Methods(mockGUI):
     theItem.setLayout("NOTE")
     assert theItem.describeMe() == "Project Note"
 
+    # Representation
+    # ==============
+
+    theItem.setName("New Item")
+    theItem.setHandle("1234567890abc")
+    theItem.setParent("4567890abcdef")
+    assert repr(theItem) == "<NWItem handle=1234567890abc, parent=4567890abcdef, name='New Item'>"
+
+    # Truthiness
+    # ==========
+
+    assert bool(theItem) is True
+    theItem.setHandle(None)
+    assert bool(theItem) is False
+
 # END Test testCoreItem_Methods
 
 
