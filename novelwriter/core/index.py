@@ -27,7 +27,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import json
 import logging
-import novelwriter
 
 from time import time
 
@@ -50,9 +49,8 @@ class NWIndex():
     def __init__(self, theProject):
 
         # Internal
-        self.mainConf    = novelwriter.CONFIG
-        self.theProject  = theProject
-        self.indexBroken = False
+        self._theProject  = theProject
+        self._indexBroken = False
 
         # Indices
         self._tagIndex  = {}
@@ -66,6 +64,10 @@ class NWIndex():
         self._timeIndex = 0
 
         return
+
+    @property
+    def indexBroken(self):
+        return self._indexBroken
 
     ##
     #  Public Methods
@@ -105,13 +107,13 @@ class NWIndex():
         """
         logger.debug("Re-indexing item '%s'", tHandle)
 
-        tItem = self.theProject.projTree[tHandle]
+        tItem = self._theProject.projTree[tHandle]
         if tItem is None:
             return False
         if tItem.itemType != nwItemType.FILE:
             return False
 
-        theDoc = NWDoc(self.theProject, tHandle)
+        theDoc = NWDoc(self._theProject, tHandle)
         theText = theDoc.readDocument()
         if theText:
             self.scanText(tHandle, theText)
@@ -141,7 +143,7 @@ class NWIndex():
         """Load index from last session from the project meta folder.
         """
         theData = {}
-        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
+        indexFile = os.path.join(self._theProject.projMeta, nwFiles.INDEX_FILE)
         tStart = time()
 
         if os.path.isfile(indexFile):
@@ -153,7 +155,7 @@ class NWIndex():
             except Exception:
                 logger.error("Failed to load index file")
                 logException()
-                self.indexBroken = True
+                self._indexBroken = True
                 return False
 
             self._tagIndex = theData.get("tagIndex", {})
@@ -177,7 +179,7 @@ class NWIndex():
         data folder.
         """
         logger.debug("Saving index file")
-        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
+        indexFile = os.path.join(self._theProject.projMeta, nwFiles.INDEX_FILE)
         tStart = time()
 
         try:
@@ -210,17 +212,17 @@ class NWIndex():
             self._checkRefIndex()
             self._checkFileIndex()
             self._checkFileMeta()
-            self.indexBroken = False
+            self._indexBroken = False
 
         except Exception:
             logger.error("Error while checking index")
             logException()
-            self.indexBroken = True
+            self._indexBroken = True
 
         logger.verbose("Index check took %.3f ms", (time() - tStart)*1000)
         logger.debug("Index check complete")
 
-        if self.indexBroken:
+        if self._indexBroken:
             self.clearIndex()
 
         return
@@ -236,8 +238,8 @@ class NWIndex():
         files before we save them in which case we already have the
         text.
         """
-        theItem = self.theProject.projTree[tHandle]
-        theRoot = self.theProject.projTree.getRootItem(tHandle)
+        theItem = self._theProject.projTree[tHandle]
+        theRoot = self._theProject.projTree.getRootItem(tHandle)
 
         if theItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
@@ -257,7 +259,7 @@ class NWIndex():
         self._fileMeta[tHandle] = ["H0", cC, wC, pC]
 
         # If the file is archived or in trash, we don't index the content
-        if self.theProject.projTree.isTrashRoot(theItem.itemParent):
+        if self._theProject.projTree.isTrashRoot(theItem.itemParent):
             logger.debug("Not indexing trash item '%s'", tHandle)
             return False
         if theRoot.itemClass == nwItemClass.ARCHIVE:
@@ -672,7 +674,7 @@ class NWIndex():
         """Return a list of all handles that exist in the novel index.
         """
         theHandles = []
-        for tItem in self.theProject.projTree:
+        for tItem in self._theProject.projTree:
             if tItem is None:
                 continue
             if not tItem.isExported and skipExcluded:

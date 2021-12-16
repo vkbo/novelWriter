@@ -37,7 +37,7 @@ class NWDoc():
 
     def __init__(self, theProject, theHandle):
 
-        self.theProject = theProject
+        self._theProject = theProject
 
         # Internal Variables
         self._theItem   = None  # The currently open item
@@ -52,9 +52,15 @@ class NWDoc():
             self._docHandle = theHandle
 
         if self._docHandle is not None:
-            self._theItem = self.theProject.projTree[theHandle]
+            self._theItem = self._theProject.projTree[theHandle]
 
         return
+
+    def __repr__(self):
+        return f"<NWDoc handle={self._docHandle}>"
+
+    def __bool__(self):
+        return self._docHandle is not None and bool(self._theItem)
 
     ##
     #  Class Methods
@@ -78,7 +84,7 @@ class NWDoc():
         docFile = self._docHandle+".nwd"
         logger.debug("Opening document: %s", docFile)
 
-        docPath = os.path.join(self.theProject.projContent, docFile)
+        docPath = os.path.join(self._theProject.projContent, docFile)
         self._fileLoc = docPath
 
         theText = ""
@@ -122,13 +128,13 @@ class NWDoc():
             logger.error("No document handle set")
             return False
 
-        self.theProject.ensureFolderStructure()
+        self._theProject.ensureFolderStructure()
 
         docFile = self._docHandle+".nwd"
         logger.debug("Saving document: %s", docFile)
 
-        docPath = os.path.join(self.theProject.projContent, docFile)
-        docTemp = os.path.join(self.theProject.projContent, docFile+"~")
+        docPath = os.path.join(self._theProject.projContent, docFile)
+        docTemp = os.path.join(self._theProject.projContent, docFile+"~")
 
         if self._prevHash is not None and not forceWrite:
             self._currHash = sha256sum(docPath)
@@ -173,8 +179,8 @@ class NWDoc():
             return False
 
         chkList = [
-            os.path.join(self.theProject.projContent, f"{self._docHandle}.nwd"),
-            os.path.join(self.theProject.projContent, f"{self._docHandle}.nwd~"),
+            os.path.join(self._theProject.projContent, f"{self._docHandle}.nwd"),
+            os.path.join(self._theProject.projContent, f"{self._docHandle}.nwd~"),
         ]
 
         for chkFile in chkList:
