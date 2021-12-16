@@ -110,7 +110,7 @@ CONFIG = Config()
 
 
 def main(sysArgs=None):
-    """Parse command line, set up logging, and launches main GUI.
+    """Parse command line, set up logging, and launch main GUI.
     """
     if sysArgs is None:
         sysArgs = sys.argv[1:]
@@ -130,8 +130,8 @@ def main(sysArgs=None):
     ]
 
     helpMsg = (
-        "novelWriter {version} ({date})\n"
-        "{copyright}\n"
+        f"novelWriter {__version__} ({__date__})\n"
+        f"{__copyright__}\n"
         "\n"
         "This program is distributed in the hope that it will be useful,\n"
         "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -147,10 +147,6 @@ def main(sysArgs=None):
         "     --style=   Sets Qt5 style flag. Defaults to 'Fusion'.\n"
         "     --config=  Alternative config file.\n"
         "     --data=    Alternative user data path.\n"
-    ).format(
-        version=__version__,
-        copyright=__copyright__,
-        date=__date__,
     )
 
     # Defaults
@@ -165,9 +161,9 @@ def main(sysArgs=None):
     # Parse Options
     try:
         inOpts, inRemain = getopt.getopt(sysArgs, shortOpt, longOpt)
-    except getopt.GetoptError as E:
+    except getopt.GetoptError as exc:
         print(helpMsg)
-        print("ERROR: %s" % str(E))
+        print(f"ERROR: {str(exc)}")
         sys.exit(2)
 
     if len(inRemain) > 0:
@@ -268,7 +264,7 @@ def main(sysArgs=None):
     elif CONFIG.osWindows:
         try:
             import ctypes
-            appID = "io.novelwriter.%s" % __version__
+            appID = f"io.novelwriter.{__version__}"
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)
         except Exception:
             logger.error("Failed to set application name")
@@ -281,7 +277,7 @@ def main(sysArgs=None):
         return nwGUI
 
     else:
-        nwApp = QApplication([CONFIG.appName, ("-style=%s" % qtStyle)])
+        nwApp = QApplication([CONFIG.appName, (f"-style={qtStyle}")])
         nwApp.setApplicationName(CONFIG.appName)
         nwApp.setApplicationVersion(__version__)
         nwApp.setWindowIcon(QIcon(CONFIG.appIcon))
