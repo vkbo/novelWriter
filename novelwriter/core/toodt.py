@@ -261,8 +261,8 @@ class ToOdt(Tokenizer):
         # ===============
 
         if self._headerText == "":
-            theTitle = self._theProject.bookTitle
-            theAuth  = self._theProject.getAuthors()
+            theTitle = self.theProject.bookTitle
+            theAuth  = self.theProject.getAuthors()
             self._headerText = f"{theTitle} / {theAuth} /"
 
         # Create Roots
@@ -550,7 +550,7 @@ class ToOdt(Tokenizer):
     def _formatKeywords(self, tText):
         """Apply formatting to keywords.
         """
-        isValid, theBits, _ = self._theParent.theIndex.scanThis("@"+tText)
+        isValid, theBits, _ = self.theParent.theIndex.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 

@@ -48,8 +48,9 @@ class NWIndex():
 
     def __init__(self, theProject):
 
+        self.theProject = theProject
+
         # Internal
-        self._theProject  = theProject
         self._indexBroken = False
 
         # Indices
@@ -107,13 +108,13 @@ class NWIndex():
         """
         logger.debug("Re-indexing item '%s'", tHandle)
 
-        tItem = self._theProject.projTree[tHandle]
+        tItem = self.theProject.projTree[tHandle]
         if tItem is None:
             return False
         if tItem.itemType != nwItemType.FILE:
             return False
 
-        theDoc = NWDoc(self._theProject, tHandle)
+        theDoc = NWDoc(self.theProject, tHandle)
         theText = theDoc.readDocument()
         if theText:
             self.scanText(tHandle, theText)
@@ -143,7 +144,7 @@ class NWIndex():
         """Load index from last session from the project meta folder.
         """
         theData = {}
-        indexFile = os.path.join(self._theProject.projMeta, nwFiles.INDEX_FILE)
+        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         tStart = time()
 
         if os.path.isfile(indexFile):
@@ -179,7 +180,7 @@ class NWIndex():
         data folder.
         """
         logger.debug("Saving index file")
-        indexFile = os.path.join(self._theProject.projMeta, nwFiles.INDEX_FILE)
+        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         tStart = time()
 
         try:
@@ -238,8 +239,8 @@ class NWIndex():
         files before we save them in which case we already have the
         text.
         """
-        theItem = self._theProject.projTree[tHandle]
-        theRoot = self._theProject.projTree.getRootItem(tHandle)
+        theItem = self.theProject.projTree[tHandle]
+        theRoot = self.theProject.projTree.getRootItem(tHandle)
 
         if theItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
@@ -259,7 +260,7 @@ class NWIndex():
         self._fileMeta[tHandle] = ["H0", cC, wC, pC]
 
         # If the file is archived or in trash, we don't index the content
-        if self._theProject.projTree.isTrashRoot(theItem.itemParent):
+        if self.theProject.projTree.isTrashRoot(theItem.itemParent):
             logger.debug("Not indexing trash item '%s'", tHandle)
             return False
         if theRoot.itemClass == nwItemClass.ARCHIVE:
@@ -674,7 +675,7 @@ class NWIndex():
         """Return a list of all handles that exist in the novel index.
         """
         theHandles = []
-        for tItem in self._theProject.projTree:
+        for tItem in self.theProject.projTree:
             if tItem is None:
                 continue
             if not tItem.isExported and skipExcluded:

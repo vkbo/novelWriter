@@ -62,7 +62,7 @@ VALID_MAP = {
 class OptionState():
 
     def __init__(self, theProject):
-        self._theProject = theProject
+        self.theProject = theProject
         self._theState = {}
         return
 
@@ -73,10 +73,10 @@ class OptionState():
     def loadSettings(self):
         """Load the options dictionary from the project settings file.
         """
-        if self._theProject.projMeta is None:
+        if self.theProject.projMeta is None:
             return False
 
-        stateFile = os.path.join(self._theProject.projMeta, nwFiles.OPTS_FILE)
+        stateFile = os.path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
         theState = {}
 
         if os.path.isfile(stateFile):
@@ -102,10 +102,10 @@ class OptionState():
     def saveSettings(self):
         """Save the options dictionary to the project settings file.
         """
-        if self._theProject.projMeta is None:
+        if self.theProject.projMeta is None:
             return False
 
-        stateFile = os.path.join(self._theProject.projMeta, nwFiles.OPTS_FILE)
+        stateFile = os.path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
         logger.debug("Saving GUI options file")
 
         try:

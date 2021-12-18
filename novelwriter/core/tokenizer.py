@@ -80,9 +80,9 @@ class Tokenizer():
 
     def __init__(self, theProject):
 
-        self._theProject = theProject
-        self._theParent  = theProject.theParent
-        self._mainConf   = novelwriter.CONFIG
+        self.theProject = theProject
+        self.theParent  = theProject.theParent
+        self.mainConf   = novelwriter.CONFIG
 
         # Data Variables
         self._theText   = ""    # The raw text to be tokenized
@@ -143,7 +143,7 @@ class Tokenizer():
         self._errData = []
 
         # Function Mapping
-        self._localLookup = self._theProject.localLookup
+        self._localLookup = self.theProject.localLookup
         self.tr = partial(QCoreApplication.translate, "Tokenizer")
 
         # Cached Translations
@@ -270,7 +270,7 @@ class Tokenizer():
     def addRootHeading(self, theHandle):
         """Add a heading at the start of a new root folder.
         """
-        theItem = self._theProject.projTree[theHandle]
+        theItem = self.theProject.projTree[theHandle]
         if theItem is None:
             return False
 
@@ -299,7 +299,7 @@ class Tokenizer():
         not set, load it from the file.
         """
         self._theHandle = theHandle
-        self._theItem   = self._theProject.projTree[theHandle]
+        self._theItem   = self.theProject.projTree[theHandle]
         if self._theItem is None:
             return False
 
@@ -309,7 +309,7 @@ class Tokenizer():
             self._theText = theText
         else:
             # Otherwise, load it from file
-            theDoc  = NWDoc(self._theProject, theHandle)
+            theDoc  = NWDoc(self.theProject, theHandle)
             theText = theDoc.readDocument()
             if theText:
                 self._theText = theText
@@ -332,9 +332,9 @@ class Tokenizer():
         """Run trough the various replace doctionaries.
         """
         # Process the user's auto-replace dictionary
-        if len(self._theProject.autoReplace) > 0:
+        if len(self.theProject.autoReplace) > 0:
             repDict = {}
-            for aKey, aVal in self._theProject.autoReplace.items():
+            for aKey, aVal in self.theProject.autoReplace.items():
                 repDict[f"<{aKey}>"] = aVal
             xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
             self._theText = xRep.sub(lambda x: repDict[x.group(0)], self._theText)
@@ -372,7 +372,7 @@ class Tokenizer():
         The format of the token list is an entry with a five-tuple for
         each line in the file. The tuple is as follows:
           1: The type of the block, self.T_*
-          2: The line in file where this block occurred
+          2: The line in the file where this block occurred
           3: The text content of the block, without leading tags
           4: The internal formatting map of the text, self.FMT_*
           5: The style of the block, self.A_*

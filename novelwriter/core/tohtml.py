@@ -198,9 +198,9 @@ class ToHtml(Tokenizer):
                     aStyle.append("margin-top: 0;")
 
                 if tStyle & self.A_IND_L:
-                    aStyle.append(f"margin-left: {self._mainConf.tabWidth:d}px;")
+                    aStyle.append(f"margin-left: {self.mainConf.tabWidth:d}px;")
                 if tStyle & self.A_IND_R:
-                    aStyle.append(f"margin-right: {self._mainConf.tabWidth:d}px;")
+                    aStyle.append(f"margin-right: {self.mainConf.tabWidth:d}px;")
 
             if len(aStyle) > 0:
                 stVals = " ".join(aStyle)
@@ -309,7 +309,7 @@ class ToHtml(Tokenizer):
                 "</body>\n"
                 "</html>\n"
             ).format(
-                projTitle=self._theProject.projName,
+                projTitle=self.theProject.projName,
                 htmlStyle="\n".join(theStyle),
                 bodyText=bodyText,
             )
@@ -445,7 +445,7 @@ class ToHtml(Tokenizer):
     def _formatKeywords(self, tText):
         """Apply HTML formatting to keywords.
         """
-        isValid, theBits, _ = self._theParent.theIndex.scanThis("@"+tText)
+        isValid, theBits, _ = self.theParent.theIndex.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 
