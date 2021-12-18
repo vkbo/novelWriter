@@ -120,27 +120,29 @@ class NWErrorMessage(QDialog):
             kernelVersion = "Unknown"
 
         try:
+            import lxml
+            lxmlVersion = lxml.__version__
+        except Exception:
+            lxmlVersion = "Unknown"
+
+        try:
+            import enchant
+            enchantVersion = enchant.__version__
+        except Exception:
+            enchantVersion = "Unknown"
+
+        try:
+            exTrace = "\n".join(format_tb(exTrace))
             self.msgBody.setPlainText((
                 "Environment:\n"
-                "novelWriter Version: {nwVersion}\n"
-                "Host OS: {osType} ({osKernel})\n"
-                "Python: {pyVersion} ({pyHexVer:#x})\n"
-                "Qt: {qtVers}, PyQt: {pyqtVers}\n"
-                "\n"
-                "{exType}:\n{exMessage}\n"
-                "\n"
-                "Traceback:\n{exTrace}\n"
-            ).format(
-                nwVersion=__version__,
-                osType=sys.platform,
-                osKernel=kernelVersion,
-                pyVersion=sys.version.split()[0],
-                pyHexVer=sys.hexversion,
-                qtVers=QT_VERSION_STR,
-                pyqtVers=PYQT_VERSION_STR,
-                exType=exType.__name__,
-                exMessage=str(exValue),
-                exTrace="\n".join(format_tb(exTrace)),
+                f"novelWriter Version: {__version__}\n"
+                f"Host OS: {sys.platform} ({kernelVersion})\n"
+                f"Python: {sys.version.split()[0]} ({sys.hexversion:#x})\n"
+                f"Qt: {QT_VERSION_STR}, PyQt: {PYQT_VERSION_STR}\n"
+                f"lxml: {lxmlVersion}\n"
+                f"enchant: {enchantVersion}\n\n"
+                f"{exType.__name__}:\n{str(exValue)}\n\n"
+                f"Traceback:\n{exTrace}\n"
             ))
         except Exception:
             self.msgBody.setPlainText("Failed to generate error report ...")

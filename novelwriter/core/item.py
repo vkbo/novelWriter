@@ -40,7 +40,7 @@ class NWItem():
 
     def __init__(self, theProject):
 
-        self._theProject = theProject
+        self.theProject = theProject
 
         self._name     = ""
         self._handle   = None
@@ -137,7 +137,7 @@ class NWItem():
     ##
 
     def packXML(self, xParent):
-        """Packs all the data in the class instance into an XML object.
+        """Pack all the data in the class instance into an XML object.
         """
         xPack = etree.SubElement(xParent, "item", attrib={
             "handle": str(self._handle),
@@ -161,7 +161,7 @@ class NWItem():
         return
 
     def unpackXML(self, xItem):
-        """Sets the values from an XML entry of type 'item'.
+        """Set the values from an XML entry of type 'item'.
         """
         if xItem.tag != "item":
             logger.error("XML entry is not an NWItem")
@@ -203,7 +203,7 @@ class NWItem():
             else:
                 # Sliently skip as we may otherwise cause orphaned
                 # items if an otherwise valid file is opened by a
-                # version of novelWriter that doesn't know the tag.
+                # version of novelWriter that doesn't know the tag
                 logger.error("Unknown tag '%s'", xValue.tag)
 
         # Guarantees that <status> is parsed after <class>
@@ -213,7 +213,7 @@ class NWItem():
 
     @staticmethod
     def _subPack(xParent, name, attrib=None, text=None, none=True):
-        """Packs the values into an xml element.
+        """Pack the values into an XML element.
         """
         if not none and (text is None or text == "None"):
             return None
@@ -274,7 +274,7 @@ class NWItem():
         return
 
     def setParent(self, theParent):
-        """Set the parent handle, and ensure that it is valid.
+        """Set the parent handle, and ensure it is valid.
         """
         if theParent is None:
             self._parent = None
@@ -286,14 +286,15 @@ class NWItem():
 
     def setOrder(self, theOrder):
         """Set the item order, and ensure that it is valid. This value
-        is purely a meta value, not actually used by novelWriter.
+        is purely a meta value, and not actually used by novelWriter at
+        the moment.
         """
         self._order = checkInt(theOrder, 0)
         return
 
     def setType(self, theType):
         """Set the item type from either a proper nwItemType, or set it
-        from a string representing a nwItemType.
+        from a string representing an nwItemType.
         """
         if isinstance(theType, nwItemType):
             self._type = theType
@@ -306,7 +307,7 @@ class NWItem():
 
     def setClass(self, theClass):
         """Set the item class from either a proper nwItemClass, or set
-        it from a string representing a nwItemClass.
+        it from a string representing an nwItemClass.
         """
         if isinstance(theClass, nwItemClass):
             self._class = theClass
@@ -319,7 +320,7 @@ class NWItem():
 
     def setLayout(self, theLayout):
         """Set the item layout from either a proper nwItemLayout, or set
-        it from a string representing a nwItemLayout.
+        it from a string representing an nwItemLayout.
         """
         if isinstance(theLayout, nwItemLayout):
             self._layout = theLayout
@@ -337,13 +338,13 @@ class NWItem():
         items of the current project.
         """
         if self._class in nwLists.CLS_NOVEL:
-            self._status = self._theProject.statusItems.checkEntry(theStatus)
+            self._status = self.theProject.statusItems.checkEntry(theStatus)
         else:
-            self._status = self._theProject.importItems.checkEntry(theStatus)
+            self._status = self.theProject.importItems.checkEntry(theStatus)
         return
 
     def setExpanded(self, expState):
-        """Save the expanded status of an item in the project tree.
+        """Set the expanded status of an item in the project tree.
         """
         if isinstance(expState, str):
             self._expanded = (expState == str(True))
@@ -352,7 +353,7 @@ class NWItem():
         return
 
     def setExported(self, expState):
-        """Save the export flag.
+        """Set the export flag.
         """
         if isinstance(expState, str):
             self._exported = (expState == str(True))
@@ -389,7 +390,7 @@ class NWItem():
         return
 
     def saveInitialCount(self):
-        """Set the initial word count.
+        """Save the initial word count.
         """
         self._initCount = self._wordCount
         return

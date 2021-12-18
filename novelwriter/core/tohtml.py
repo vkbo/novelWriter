@@ -40,15 +40,23 @@ class ToHtml(Tokenizer):
     def __init__(self, theProject):
         Tokenizer.__init__(self, theProject)
 
-        self.genMode = self.M_EXPORT
-        self.cssStyles = True
-        self.fullHTML = []
+        self._genMode = self.M_EXPORT
+        self._cssStyles = True
+        self._fullHTML = []
 
         # Internals
         self._trMap = {}
         self.setReplaceUnicode(False)
 
         return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def fullHTML(self):
+        return self._fullHTML
 
     ##
     #  Setters
@@ -59,17 +67,17 @@ class ToHtml(Tokenizer):
         need to make a few changes to formatting, which is managed by
         these flags.
         """
-        self.genMode = self.M_PREVIEW
-        self.doKeywords = True
-        self.doComments = doComments
-        self.doSynopsis = doSynopsis
+        self._genMode = self.M_PREVIEW
+        self._doKeywords = True
+        self._doComments = doComments
+        self._doSynopsis = doSynopsis
         return
 
     def setStyles(self, cssStyles):
         """Enable/disable CSS styling. Some elements may still have
         class tags.
         """
-        self.cssStyles = cssStyles
+        self._cssStyles = cssStyles
         return
 
     def setReplaceUnicode(self, doReplace):
@@ -93,21 +101,21 @@ class ToHtml(Tokenizer):
     def getFullResultSize(self):
         """Return the size of the full HTML result.
         """
-        return sum([len(x) for x in self.fullHTML])
+        return sum([len(x) for x in self._fullHTML])
 
     def doPreProcessing(self):
         """Extend the auto-replace to also properly encode some unicode
         characters into their respective HTML entities.
         """
         Tokenizer.doPreProcessing(self)
-        self.theText = self.theText.translate(self._trMap)
+        self._theText = self._theText.translate(self._trMap)
         return
 
     def doConvert(self):
         """Convert the list of text tokens into a HTML document saved
         to theResult.
         """
-        if self.genMode == self.M_PREVIEW:
+        if self._genMode == self.M_PREVIEW:
             htmlTags = {  # HTML4 + CSS2 (for Qt)
                 self.FMT_B_B: "<b>",
                 self.FMT_B_E: "</b>",
@@ -126,7 +134,7 @@ class ToHtml(Tokenizer):
                 self.FMT_D_E: "</del>",
             }
 
-        if self.isNovel and self.genMode != self.M_PREVIEW:
+        if self._isNovel and self._genMode != self.M_PREVIEW:
             # For story files, we bump the titles one level up
             h1Cl = " class='title'"
             h1 = "h1"
@@ -140,13 +148,13 @@ class ToHtml(Tokenizer):
             h3 = "h3"
             h4 = "h4"
 
-        self.theResult = ""
+        self._theResult = ""
 
         thisPar = []
         parStyle = None
         tmpResult = []
 
-        for tType, tLine, tDirty, tFormat, tStyle in self.theTokens:
+        for tType, tLine, tDirty, tFormat, tStyle in self._theTokens:
 
             # Replace < and > and recompute formatting positions
             cText = []
@@ -168,7 +176,7 @@ class ToHtml(Tokenizer):
 
             # Styles
             aStyle = []
-            if tStyle is not None and self.cssStyles:
+            if tStyle is not None and self._cssStyles:
                 if tStyle & self.A_LEFT:
                     aStyle.append("text-align: left;")
                 elif tStyle & self.A_RIGHT:
@@ -200,7 +208,7 @@ class ToHtml(Tokenizer):
             else:
                 hStyle = ""
 
-            if self.linkHeaders:
+            if self._linkHeaders:
                 aNm = f"<a name='T{tLine:06d}'></a>"
             else:
                 aNm = ""
@@ -209,7 +217,7 @@ class ToHtml(Tokenizer):
             if tType == self.T_EMPTY:
                 if parStyle is None:
                     parStyle = ""
-                if len(thisPar) > 1 and self.cssStyles:
+                if len(thisPar) > 1 and self._cssStyles:
                     parClass = " class='break'"
                 else:
                     parClass = ""
@@ -257,21 +265,21 @@ class ToHtml(Tokenizer):
                     tTemp = tTemp[:xPos] + htmlTags[xFmt] + tTemp[xPos+xLen:]
                 thisPar.append(tTemp.rstrip())
 
-            elif tType == self.T_SYNOPSIS and self.doSynopsis:
+            elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 tmpResult.append(self._formatSynopsis(tText))
 
-            elif tType == self.T_COMMENT and self.doComments:
+            elif tType == self.T_COMMENT and self._doComments:
                 tmpResult.append(self._formatComments(tText))
 
-            elif tType == self.T_KEYWORD and self.doKeywords:
+            elif tType == self.T_KEYWORD and self._doKeywords:
                 tTemp = f"<p{hStyle}>{self._formatKeywords(tText)}</p>\n"
                 tmpResult.append(tTemp)
 
-        self.theResult = "".join(tmpResult)
+        self._theResult = "".join(tmpResult)
         tmpResult = []
 
-        if self.genMode != self.M_PREVIEW:
-            self.fullHTML.append(self.theResult)
+        if self._genMode != self.M_PREVIEW:
+            self._fullHTML.append(self._theResult)
 
         return
 
@@ -281,7 +289,7 @@ class ToHtml(Tokenizer):
         with open(savePath, mode="w", encoding="utf-8") as outFile:
             theStyle = self.getStyleSheet()
             theStyle.append("article {width: 800px; margin: 40px auto;}")
-            bodyText = "".join(self.fullHTML)
+            bodyText = "".join(self._fullHTML)
             bodyText = bodyText.replace("\t", "&#09;").rstrip()
 
             theHtml = (
@@ -314,24 +322,24 @@ class ToHtml(Tokenizer):
         """
         htmlText = []
         tabSpace = spaceChar*nSpaces
-        for aLine in self.fullHTML:
+        for aLine in self._fullHTML:
             htmlText.append(aLine.replace("\t", tabSpace))
 
-        self.fullHTML = htmlText
+        self._fullHTML = htmlText
         return
 
     def getStyleSheet(self):
         """Generate a stylesheet appropriate for the current settings.
         """
         theStyles = []
-        if not self.cssStyles:
+        if not self._cssStyles:
             return theStyles
 
-        mScale = self.lineHeight/1.15
-        textAlign = "justify" if self.doJustify else "left"
+        mScale = self._lineHeight/1.15
+        textAlign = "justify" if self._doJustify else "left"
 
         theStyles.append("body {{font-family: '{0:s}'; font-size: {1:d}pt;}}".format(
-            self.textFont, self.textSize
+            self._textFont, self._textSize
         ))
         theStyles.append((
             "p {{"
@@ -340,9 +348,9 @@ class ToHtml(Tokenizer):
             "}}"
         ).format(
             textAlign,
-            round(100 * self.lineHeight),
-            mScale * self.marginText[0],
-            mScale * self.marginText[1],
+            round(100 * self._lineHeight),
+            mScale * self._marginText[0],
+            mScale * self._marginText[1],
         ))
         theStyles.append((
             "h1 {{"
@@ -352,7 +360,7 @@ class ToHtml(Tokenizer):
             "margin-bottom: {1:.2f}em;"
             "}}"
         ).format(
-            mScale * self.marginHead1[0], mScale * self.marginHead1[1]
+            mScale * self._marginHead1[0], mScale * self._marginHead1[1]
         ))
         theStyles.append((
             "h2 {{"
@@ -362,7 +370,7 @@ class ToHtml(Tokenizer):
             "margin-bottom: {1:.2f}em;"
             "}}"
         ).format(
-            mScale * self.marginHead2[0], mScale * self.marginHead2[1]
+            mScale * self._marginHead2[0], mScale * self._marginHead2[1]
         ))
         theStyles.append((
             "h3 {{"
@@ -372,7 +380,7 @@ class ToHtml(Tokenizer):
             "margin-bottom: {1:.2f}em;"
             "}}"
         ).format(
-            mScale * self.marginHead3[0], mScale * self.marginHead3[1]
+            mScale * self._marginHead3[0], mScale * self._marginHead3[1]
         ))
         theStyles.append((
             "h4 {{"
@@ -382,7 +390,7 @@ class ToHtml(Tokenizer):
             "margin-bottom: {1:.2f}em;"
             "}}"
         ).format(
-            mScale * self.marginHead4[0], mScale * self.marginHead4[1]
+            mScale * self._marginHead4[0], mScale * self._marginHead4[1]
         ))
         theStyles.append((
             ".title {{"
@@ -391,7 +399,7 @@ class ToHtml(Tokenizer):
             "margin-bottom: {1:.2f}em;"
             "}}"
         ).format(
-            mScale * self.marginTitle[0], mScale * self.marginTitle[1]
+            mScale * self._marginTitle[0], mScale * self._marginTitle[1]
         ))
         theStyles.append((
             ".sep, .skip {{"
@@ -418,7 +426,7 @@ class ToHtml(Tokenizer):
     def _formatSynopsis(self, tText):
         """Apply HTML formatting to synopsis.
         """
-        if self.genMode == self.M_PREVIEW:
+        if self._genMode == self.M_PREVIEW:
             sSynop = self._trSynopsis
             return f"<p class='comment'><span class='synopsis'>{sSynop}:</span> {tText}</p>\n"
         else:
@@ -428,7 +436,7 @@ class ToHtml(Tokenizer):
     def _formatComments(self, tText):
         """Apply HTML formatting to comments.
         """
-        if self.genMode == self.M_PREVIEW:
+        if self._genMode == self.M_PREVIEW:
             return f"<p class='comment'>{tText}</p>\n"
         else:
             sComm = self._localLookup("Comment")
@@ -449,7 +457,7 @@ class ToHtml(Tokenizer):
                 if theBits[0] == nwKeyWords.TAG_KEY:
                     retText += f"<a name='tag_{theBits[1]}'>{theBits[1]}</a>"
                 else:
-                    if self.genMode == self.M_PREVIEW:
+                    if self._genMode == self.M_PREVIEW:
                         for tTag in theBits[1:]:
                             refTags.append(f"<a href='#{theBits[0][1:]}={tTag}'>{tTag}</a>")
                         retText += ", ".join(refTags)

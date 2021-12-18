@@ -115,27 +115,27 @@ class ToOdt(Tokenizer):
         self._errData = []  # List of errors encountered
 
         # Properties
-        self.textFont   = "Liberation Serif"
-        self.textSize   = 12
-        self.textFixed  = False
-        self.colourHead = False
-        self.headerText = ""
+        self._textFont   = "Liberation Serif"
+        self._textSize   = 12
+        self._textFixed  = False
+        self._colourHead = False
+        self._headerText = ""
 
         # Internal
-        self._fontFamily  = "&apos;Liberation Serif&apos;"
-        self._fontPitch   = "variable"
-        self._fSizeTitle  = "30pt"
-        self._fSizeHead1  = "24pt"
-        self._fSizeHead2  = "20pt"
-        self._fSizeHead3  = "16pt"
-        self._fSizeHead4  = "14pt"
-        self._fSizeHead   = "14pt"
-        self._fSizeText   = "12pt"
-        self._lineHeight  = "115%"
-        self._blockIndent = "1.693cm"
-        self._textAlign   = "left"
-        self._dLanguage   = "en"
-        self._dCountry    = "GB"
+        self._fontFamily   = "&apos;Liberation Serif&apos;"
+        self._fontPitch    = "variable"
+        self._fSizeTitle   = "30pt"
+        self._fSizeHead1   = "24pt"
+        self._fSizeHead2   = "20pt"
+        self._fSizeHead3   = "16pt"
+        self._fSizeHead4   = "14pt"
+        self._fSizeHead    = "14pt"
+        self._fSizeText    = "12pt"
+        self._fLineHeight  = "115%"
+        self._fBlockIndent = "1.693cm"
+        self._textAlign    = "left"
+        self._dLanguage    = "en"
+        self._dCountry     = "GB"
 
         # Text Margings in Units of em
         self._mTopTitle = "0.423cm"
@@ -192,7 +192,7 @@ class ToOdt(Tokenizer):
     def setColourHeaders(self, doColour):
         """Enable/disable coloured headings and comments.
         """
-        self.colourHead = doColour
+        self._colourHead = doColour
         return
 
     ##
@@ -209,40 +209,40 @@ class ToOdt(Tokenizer):
         # Initialise Variables
         # ====================
 
-        self._fontFamily = self.textFont
-        if len(self.textFont.split()) > 1:
-            self._fontFamily = f"'{self.textFont}'"
-        self._fontPitch = "fixed" if self.textFixed else "variable"
+        self._fontFamily = self._textFont
+        if len(self._textFont.split()) > 1:
+            self._fontFamily = f"'{self._textFont}'"
+        self._fontPitch = "fixed" if self._textFixed else "variable"
 
-        self._fSizeTitle = f"{round(2.50 * self.textSize):d}pt"
-        self._fSizeHead1 = f"{round(2.00 * self.textSize):d}pt"
-        self._fSizeHead2 = f"{round(1.60 * self.textSize):d}pt"
-        self._fSizeHead3 = f"{round(1.30 * self.textSize):d}pt"
-        self._fSizeHead4 = f"{round(1.15 * self.textSize):d}pt"
-        self._fSizeHead  = f"{round(1.15 * self.textSize):d}pt"
-        self._fSizeText  = f"{self.textSize:d}pt"
+        self._fSizeTitle = f"{round(2.50 * self._textSize):d}pt"
+        self._fSizeHead1 = f"{round(2.00 * self._textSize):d}pt"
+        self._fSizeHead2 = f"{round(1.60 * self._textSize):d}pt"
+        self._fSizeHead3 = f"{round(1.30 * self._textSize):d}pt"
+        self._fSizeHead4 = f"{round(1.15 * self._textSize):d}pt"
+        self._fSizeHead  = f"{round(1.15 * self._textSize):d}pt"
+        self._fSizeText  = f"{self._textSize:d}pt"
 
-        mScale = self.lineHeight/1.15
+        mScale = self._lineHeight/1.15
 
-        self._mTopTitle = self._emToCm(mScale * self.marginTitle[0])
-        self._mTopHead1 = self._emToCm(mScale * self.marginHead1[0])
-        self._mTopHead2 = self._emToCm(mScale * self.marginHead2[0])
-        self._mTopHead3 = self._emToCm(mScale * self.marginHead3[0])
-        self._mTopHead4 = self._emToCm(mScale * self.marginHead4[0])
-        self._mTopHead  = self._emToCm(mScale * self.marginHead4[0])
-        self._mTopText  = self._emToCm(mScale * self.marginText[0])
-        self._mTopMeta  = self._emToCm(mScale * self.marginMeta[0])
+        self._mTopTitle = self._emToCm(mScale * self._marginTitle[0])
+        self._mTopHead1 = self._emToCm(mScale * self._marginHead1[0])
+        self._mTopHead2 = self._emToCm(mScale * self._marginHead2[0])
+        self._mTopHead3 = self._emToCm(mScale * self._marginHead3[0])
+        self._mTopHead4 = self._emToCm(mScale * self._marginHead4[0])
+        self._mTopHead  = self._emToCm(mScale * self._marginHead4[0])
+        self._mTopText  = self._emToCm(mScale * self._marginText[0])
+        self._mTopMeta  = self._emToCm(mScale * self._marginMeta[0])
 
-        self._mBotTitle = self._emToCm(mScale * self.marginTitle[1])
-        self._mBotHead1 = self._emToCm(mScale * self.marginHead1[1])
-        self._mBotHead2 = self._emToCm(mScale * self.marginHead2[1])
-        self._mBotHead3 = self._emToCm(mScale * self.marginHead3[1])
-        self._mBotHead4 = self._emToCm(mScale * self.marginHead4[1])
-        self._mBotHead  = self._emToCm(mScale * self.marginHead4[1])
-        self._mBotText  = self._emToCm(mScale * self.marginText[1])
-        self._mBotMeta  = self._emToCm(mScale * self.marginMeta[1])
+        self._mBotTitle = self._emToCm(mScale * self._marginTitle[1])
+        self._mBotHead1 = self._emToCm(mScale * self._marginHead1[1])
+        self._mBotHead2 = self._emToCm(mScale * self._marginHead2[1])
+        self._mBotHead3 = self._emToCm(mScale * self._marginHead3[1])
+        self._mBotHead4 = self._emToCm(mScale * self._marginHead4[1])
+        self._mBotHead  = self._emToCm(mScale * self._marginHead4[1])
+        self._mBotText  = self._emToCm(mScale * self._marginText[1])
+        self._mBotMeta  = self._emToCm(mScale * self._marginMeta[1])
 
-        if self.colourHead:
+        if self._colourHead:
             self._colHead12 = "#2a6099"
             self._opaHead12 = "100%"
             self._colHead34 = "#444444"
@@ -250,9 +250,9 @@ class ToOdt(Tokenizer):
             self._colMetaTx = "#813709"
             self._opaMetaTx = "100%"
 
-        self._lineHeight  = f"{round(100 * self.lineHeight):d}%"
-        self._blockIndent = self._emToCm(self.blockIndent)
-        self._textAlign   = "justify" if self.doJustify else "left"
+        self._fLineHeight  = f"{round(100 * self._lineHeight):d}%"
+        self._fBlockIndent = self._emToCm(self._blockIndent)
+        self._textAlign    = "justify" if self._doJustify else "left"
 
         # Clear Errors
         self._errData = []
@@ -260,10 +260,10 @@ class ToOdt(Tokenizer):
         # Document Header
         # ===============
 
-        if self.headerText == "":
+        if self._headerText == "":
             theTitle = self.theProject.bookTitle
             theAuth  = self.theProject.getAuthors()
-            self.headerText = f"{theTitle} / {theAuth} /"
+            self._headerText = f"{theTitle} / {theAuth} /"
 
         # Create Roots
         # ============
@@ -272,7 +272,7 @@ class ToOdt(Tokenizer):
         tAttr[_mkTag("office", "version")] = X_VERS
 
         fAttr = {}
-        fAttr[_mkTag("style", "name")] = self.textFont
+        fAttr[_mkTag("style", "name")] = self._textFont
         fAttr[_mkTag("style", "font-pitch")] = self._fontPitch
 
         if self._isFlat:
@@ -345,7 +345,7 @@ class ToOdt(Tokenizer):
     def doConvert(self):
         """Convert the list of text tokens into XML elements.
         """
-        self.theResult = ""  # Not used, but cleared just in case
+        self._theResult = ""  # Not used, but cleared just in case
 
         odtTags = {
             self.FMT_B_B: "_B",  # Bold open format
@@ -359,7 +359,7 @@ class ToOdt(Tokenizer):
         thisPar = []
         thisFmt = []
         parStyle = None
-        for tType, _, tText, tFormat, tStyle in self.theTokens:
+        for tType, _, tText, tFormat, tStyle in self._theTokens:
 
             # Styles
             oStyle = ODTParagraphStyle()
@@ -385,14 +385,14 @@ class ToOdt(Tokenizer):
                     oStyle.setMarginTop("0.000cm")
 
                 if tStyle & self.A_IND_L:
-                    oStyle.setMarginLeft(self._blockIndent)
+                    oStyle.setMarginLeft(self._fBlockIndent)
                 if tStyle & self.A_IND_R:
-                    oStyle.setMarginRight(self._blockIndent)
+                    oStyle.setMarginRight(self._fBlockIndent)
 
             # Process Text Types
             if tType == self.T_EMPTY:
                 if len(thisPar) > 1 and parStyle is not None:
-                    if self.doJustify:
+                    if self._doJustify:
                         parStyle.setTextAlign("left")
 
                 if len(thisPar) > 0:
@@ -449,15 +449,15 @@ class ToOdt(Tokenizer):
                 thisPar.append(tTxt)
                 thisFmt.append(tFmt)
 
-            elif tType == self.T_SYNOPSIS and self.doSynopsis:
+            elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 tTemp, fTemp = self._formatSynopsis(tText)
                 self._addTextPar("Text_Meta", oStyle, tTemp, theFmt=fTemp)
 
-            elif tType == self.T_COMMENT and self.doComments:
+            elif tType == self.T_COMMENT and self._doComments:
                 tTemp, fTemp = self._formatComments(tText)
                 self._addTextPar("Text_Meta", oStyle, tTemp, theFmt=fTemp)
 
-            elif tType == self.T_KEYWORD and self.doKeywords:
+            elif tType == self.T_KEYWORD and self._doKeywords:
                 tTemp, fTemp = self._formatKeywords(tText)
                 self._addTextPar("Text_Meta", oStyle, tTemp, theFmt=fTemp)
 
@@ -696,7 +696,7 @@ class ToOdt(Tokenizer):
     def _emToCm(self, emVal):
         """Converts an em value to centimetres.
         """
-        return f"{emVal*2.54/72*self.textSize:.3f}cm"
+        return f"{emVal*2.54/72*self._textSize:.3f}cm"
 
     ##
     #  Style Elements
@@ -747,7 +747,7 @@ class ToOdt(Tokenizer):
         etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
 
         theAttr = {}
-        theAttr[_mkTag("style", "font-name")]   = self.textFont
+        theAttr[_mkTag("style", "font-name")]   = self._textFont
         theAttr[_mkTag("fo",    "font-family")] = self._fontFamily
         theAttr[_mkTag("fo",    "font-size")]   = self._fSizeText
         theAttr[_mkTag("fo",    "language")]    = self._dLanguage
@@ -764,7 +764,7 @@ class ToOdt(Tokenizer):
         xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
 
         theAttr = {}
-        theAttr[_mkTag("style", "font-name")]   = self.textFont
+        theAttr[_mkTag("style", "font-name")]   = self._textFont
         theAttr[_mkTag("fo",    "font-family")] = self._fontFamily
         theAttr[_mkTag("fo",    "font-size")]   = self._fSizeText
         etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
@@ -787,7 +787,7 @@ class ToOdt(Tokenizer):
         etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
 
         theAttr = {}
-        theAttr[_mkTag("style", "font-name")]   = self.textFont
+        theAttr[_mkTag("style", "font-name")]   = self._textFont
         theAttr[_mkTag("fo",    "font-family")] = self._fontFamily
         theAttr[_mkTag("fo",    "font-size")]   = self._fSizeHead
         etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
@@ -816,8 +816,8 @@ class ToOdt(Tokenizer):
         oStyle.setClass("text")
         oStyle.setMarginTop(self._mTopText)
         oStyle.setMarginBottom(self._mBotText)
-        oStyle.setLineHeight(self._lineHeight)
-        oStyle.setFontName(self.textFont)
+        oStyle.setLineHeight(self._fLineHeight)
+        oStyle.setFontName(self._textFont)
         oStyle.setFontFamily(self._fontFamily)
         oStyle.setFontSize(self._fSizeText)
         oStyle.setTextAlign(self._textAlign)
@@ -834,8 +834,8 @@ class ToOdt(Tokenizer):
         oStyle.setClass("text")
         oStyle.setMarginTop(self._mTopMeta)
         oStyle.setMarginBottom(self._mBotMeta)
-        oStyle.setLineHeight(self._lineHeight)
-        oStyle.setFontName(self.textFont)
+        oStyle.setLineHeight(self._fLineHeight)
+        oStyle.setFontName(self._textFont)
         oStyle.setFontFamily(self._fontFamily)
         oStyle.setFontSize(self._fSizeText)
         oStyle.setColor(self._colMetaTx)
@@ -855,7 +855,7 @@ class ToOdt(Tokenizer):
         oStyle.setTextAlign("center")
         oStyle.setMarginTop(self._mTopTitle)
         oStyle.setMarginBottom(self._mBotTitle)
-        oStyle.setFontName(self.textFont)
+        oStyle.setFontName(self._textFont)
         oStyle.setFontFamily(self._fontFamily)
         oStyle.setFontSize(self._fSizeTitle)
         oStyle.setFontWeight("bold")
@@ -874,7 +874,7 @@ class ToOdt(Tokenizer):
         oStyle.setClass("text")
         oStyle.setMarginTop(self._mTopHead1)
         oStyle.setMarginBottom(self._mBotHead1)
-        oStyle.setFontName(self.textFont)
+        oStyle.setFontName(self._textFont)
         oStyle.setFontFamily(self._fontFamily)
         oStyle.setFontSize(self._fSizeHead1)
         oStyle.setColor(self._colHead12)
@@ -895,7 +895,7 @@ class ToOdt(Tokenizer):
         oStyle.setClass("text")
         oStyle.setMarginTop(self._mTopHead2)
         oStyle.setMarginBottom(self._mBotHead2)
-        oStyle.setFontName(self.textFont)
+        oStyle.setFontName(self._textFont)
         oStyle.setFontFamily(self._fontFamily)
         oStyle.setFontSize(self._fSizeHead2)
         oStyle.setColor(self._colHead12)
@@ -916,7 +916,7 @@ class ToOdt(Tokenizer):
         oStyle.setClass("text")
         oStyle.setMarginTop(self._mTopHead3)
         oStyle.setMarginBottom(self._mBotHead3)
-        oStyle.setFontName(self.textFont)
+        oStyle.setFontName(self._textFont)
         oStyle.setFontFamily(self._fontFamily)
         oStyle.setFontSize(self._fSizeHead3)
         oStyle.setColor(self._colHead34)
@@ -937,7 +937,7 @@ class ToOdt(Tokenizer):
         oStyle.setClass("text")
         oStyle.setMarginTop(self._mTopHead4)
         oStyle.setMarginBottom(self._mBotHead4)
-        oStyle.setFontName(self.textFont)
+        oStyle.setFontName(self._textFont)
         oStyle.setFontFamily(self._fontFamily)
         oStyle.setFontSize(self._fSizeHead4)
         oStyle.setColor(self._colHead34)
@@ -972,7 +972,7 @@ class ToOdt(Tokenizer):
         xPar = etree.SubElement(xHead, _mkTag("text", "p"), attrib={
             _mkTag("text", "style-name"): "Header"
         })
-        xPar.text = self.headerText.strip() + " "
+        xPar.text = self._headerText.strip() + " "
 
         xTail = etree.SubElement(xPar, _mkTag("text", "page-number"), attrib={
             _mkTag("text", "select-page"): "current"
