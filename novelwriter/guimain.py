@@ -623,9 +623,7 @@ class GuiMain(QMainWindow):
         fHandle = None   # The first file handle we encounter
         foundIt = False  # We've found tHandle, pick the next we see
         for tItem in self.theProject.projTree:
-            if tItem is None:
-                continue
-            if tItem.itemType != nwItemType.FILE:
+            if not self.theProject.projTree.checkType(tItem.itemHandle, nwItemType.FILE):
                 continue
             if fHandle is None:
                 fHandle = tItem.itemHandle
@@ -812,9 +810,7 @@ class GuiMain(QMainWindow):
             return False
 
         logger.verbose("Opening item '%s'", tHandle)
-        nwItem = self.theProject.projTree[tHandle]
-        if nwItem.itemType == nwItemType.FILE:
-            logger.verbose("Requested item '%s' is a file", tHandle)
+        if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
             self.openDocument(tHandle, doScroll=False)
         else:
             logger.verbose("Requested item '%s' is not a file", tHandle)
@@ -1572,13 +1568,10 @@ class GuiMain(QMainWindow):
         tHandle = tItem.data(self.treeView.C_NAME, Qt.UserRole)
         logger.verbose("User double clicked tree item with handle '%s'", tHandle)
 
-        nwItem = self.theProject.projTree[tHandle]
-        if nwItem is not None:
-            if nwItem.itemType == nwItemType.FILE:
-                logger.verbose("Requested item '%s' is a file", tHandle)
-                self.openDocument(tHandle, changeFocus=False, doScroll=False)
-            else:
-                logger.verbose("Requested item '%s' is a folder", tHandle)
+        if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+            self.openDocument(tHandle, changeFocus=False, doScroll=False)
+        else:
+            logger.verbose("Requested item '%s' is a folder", tHandle)
 
         return
 
@@ -1603,14 +1596,10 @@ class GuiMain(QMainWindow):
         """
         tHandle = self.treeView.getSelectedHandle()
         logger.verbose("User pressed return on tree item with handle '%s'", tHandle)
-
-        nwItem = self.theProject.projTree[tHandle]
-        if nwItem is not None:
-            if nwItem.itemType == nwItemType.FILE:
-                logger.verbose("Requested item '%s' is a file", tHandle)
-                self.openDocument(tHandle, changeFocus=False, doScroll=False)
-            else:
-                logger.verbose("Requested item '%s' is a folder", tHandle)
+        if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+            self.openDocument(tHandle, changeFocus=False, doScroll=False)
+        else:
+            logger.verbose("Requested item '%s' is a folder", tHandle)
 
         return
 

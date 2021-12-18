@@ -107,11 +107,7 @@ class NWIndex():
         project.
         """
         logger.debug("Re-indexing item '%s'", tHandle)
-
-        tItem = self.theProject.projTree[tHandle]
-        if tItem is None:
-            return False
-        if tItem.itemType != nwItemType.FILE:
+        if not self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
             return False
 
         theDoc = NWDoc(self.theProject, tHandle)

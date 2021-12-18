@@ -218,6 +218,11 @@ def testCoreTree_Methods(mockGUI, mockItems):
 
     assert len(theTree) == len(mockItems)
 
+    # Chech type
+    assert theTree.checkType("blabla", nwItemType.FILE) is False
+    assert theTree.checkType("b000000000001", nwItemType.FILE) is False
+    assert theTree.checkType("c000000000001", nwItemType.FILE) is True
+
     # Root item lookup
     theTree._treeRoots.append("stuff")
     assert theTree.findRoot(nwItemClass.WORLD) is None

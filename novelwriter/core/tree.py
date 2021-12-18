@@ -210,6 +210,14 @@ class NWTree():
     #  Tree Structure Methods
     ##
 
+    def checkType(self, tHandle, itemType):
+        """Return true of item exists and is of the specified item type.
+        """
+        tItem = self.__getitem__(tHandle)
+        if not tItem:
+            return False
+        return tItem.itemType == itemType
+
     def trashRoot(self):
         """Returns the handle of the trash folder, or None if there
         isn't one.

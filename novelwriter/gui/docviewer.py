@@ -159,12 +159,8 @@ class GuiDocViewer(QTextBrowser):
     def loadText(self, tHandle, updateHistory=True):
         """Load text into the viewer from an item handle.
         """
-        tItem = self.theProject.projTree[tHandle]
-        if tItem is None:
+        if not self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
             logger.warning("Item not found")
-            return False
-
-        if tItem.itemType != nwItemType.FILE:
             return False
 
         logger.debug("Generating preview for item '%s'", tHandle)
