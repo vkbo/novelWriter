@@ -48,36 +48,39 @@ def testCoreProject_NewMinimal(fncDir, outDir, refDir, mockGUI):
     theProject.projTree.setSeed(42)
 
     # Setting no data should fail
-    assert not theProject.newProject({})
+    assert theProject.newProject({}) is False
+
+    # Wrong type should also fail
+    assert theProject.newProject("stuff") is False
 
     # Try again with a proper path
-    assert theProject.newProject({"projPath": fncDir})
-    assert theProject.saveProject()
-    assert theProject.closeProject()
+    assert theProject.newProject({"projPath": fncDir}) is True
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
 
     # Creating the project once more should fail
-    assert not theProject.newProject({"projPath": fncDir})
+    assert theProject.newProject({"projPath": fncDir}) is False
 
     # Check the new project
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
 
     # Open again
-    assert theProject.openProject(projFile)
+    assert theProject.openProject(projFile) is True
 
     # Save and close
-    assert theProject.saveProject()
-    assert theProject.closeProject()
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
-    assert not theProject.projChanged
+    assert theProject.projChanged is False
 
     # Open a second time
-    assert theProject.openProject(projFile)
-    assert not theProject.openProject(projFile)
-    assert theProject.openProject(projFile, overrideLock=True)
-    assert theProject.saveProject()
-    assert theProject.closeProject()
+    assert theProject.openProject(projFile) is True
+    assert theProject.openProject(projFile) is False
+    assert theProject.openProject(projFile, overrideLock=True) is True
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
 
@@ -116,9 +119,9 @@ def testCoreProject_NewCustomA(fncDir, outDir, refDir, mockGUI):
     theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
 
-    assert theProject.newProject(projData)
-    assert theProject.saveProject()
-    assert theProject.closeProject()
+    assert theProject.newProject(projData) is True
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
@@ -158,9 +161,9 @@ def testCoreProject_NewCustomB(fncDir, outDir, refDir, mockGUI):
     theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
 
-    assert theProject.newProject(projData)
-    assert theProject.saveProject()
-    assert theProject.closeProject()
+    assert theProject.newProject(projData) is True
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
@@ -207,11 +210,11 @@ def testCoreProject_NewSampleA(fncDir, tmpConf, mockGUI, tmpDir):
             srcDoc = os.path.join(srcSample, "content", docFile)
             zipObj.write(srcDoc, "content/"+docFile)
 
-    assert theProject.newProject(projData)
-    assert theProject.openProject(fncDir)
+    assert theProject.newProject(projData) is True
+    assert theProject.openProject(fncDir) is True
     assert theProject.projName == "Sample Project"
-    assert theProject.saveProject()
-    assert theProject.closeProject()
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
     os.unlink(dstSample)
 
 # END Test testCoreProject_NewSampleA
@@ -242,11 +245,11 @@ def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, mockGUI, tmpDir):
     assert not theProject.newProject(projData)
 
     monkeypatch.setattr(nwFiles, "PROJ_FILE", "nwProject.nwx")
-    assert theProject.newProject(projData)
-    assert theProject.openProject(fncDir)
+    assert theProject.newProject(projData) is True
+    assert theProject.openProject(fncDir) is True
     assert theProject.projName == "Sample Project"
-    assert theProject.saveProject()
-    assert theProject.closeProject()
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
 
     # Misdirect the appRoot path so neither is possible
     tmpConf.appRoot = tmpDir
@@ -266,11 +269,11 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI):
     theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
 
-    assert theProject.newProject({"projPath": fncDir})
-    assert theProject.setProjectPath(fncDir)
-    assert theProject.saveProject()
-    assert theProject.closeProject()
-    assert theProject.openProject(projFile)
+    assert theProject.newProject({"projPath": fncDir}) is True
+    assert theProject.setProjectPath(fncDir) is True
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
+    assert theProject.openProject(projFile) is True
 
     assert isinstance(theProject.newRoot("Novel",     nwItemClass.NOVEL),     type(None))
     assert isinstance(theProject.newRoot("Plot",      nwItemClass.PLOT),      type(None))
@@ -281,13 +284,13 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI):
     assert isinstance(theProject.newRoot("Custom1",   nwItemClass.CUSTOM),    str)
     assert isinstance(theProject.newRoot("Custom2",   nwItemClass.CUSTOM),    str)
 
-    assert theProject.projChanged
-    assert theProject.saveProject()
-    assert theProject.closeProject()
+    assert theProject.projChanged is True
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
-    assert not theProject.projChanged
+    assert theProject.projChanged is False
 
 # END Test testCoreProject_NewRoot
 
@@ -303,21 +306,21 @@ def testCoreProject_NewFile(fncDir, outDir, refDir, mockGUI):
     theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
 
-    assert theProject.newProject({"projPath": fncDir})
-    assert theProject.setProjectPath(fncDir)
-    assert theProject.saveProject()
-    assert theProject.closeProject()
-    assert theProject.openProject(projFile)
+    assert theProject.newProject({"projPath": fncDir}) is True
+    assert theProject.setProjectPath(fncDir) is True
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
+    assert theProject.openProject(projFile) is True
 
     assert isinstance(theProject.newFile("Hello", nwItemClass.NOVEL,     "31489056e0916"), str)
     assert isinstance(theProject.newFile("Jane",  nwItemClass.CHARACTER, "71ee45a3c0db9"), str)
     assert theProject.projChanged
-    assert theProject.saveProject()
-    assert theProject.closeProject()
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
-    assert not theProject.projChanged
+    assert theProject.projChanged is False
 
 # END Test testCoreProject_NewFile
 
@@ -466,6 +469,7 @@ def testCoreProject_Save(monkeypatch, nwMinimal, mockGUI, refDir):
     """
     theProject = NWProject(mockGUI)
     testFile = os.path.join(nwMinimal, "nwProject.nwx")
+    backFile = os.path.join(nwMinimal, "nwProject.bak")
     compFile = os.path.join(refDir, os.path.pardir, "minimal", "nwProject.nwx")
 
     # Nothing to save
@@ -476,13 +480,19 @@ def testCoreProject_Save(monkeypatch, nwMinimal, mockGUI, refDir):
 
     # Fail on folder structure check
     with monkeypatch.context() as mp:
-        mp.setattr("os.path.isdir", lambda *args: False)
+        mp.setattr("os.path.isdir", lambda *a: False)
         assert theProject.saveProject() is False
 
     # Fail on open file
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         assert theProject.saveProject() is False
+
+    # Fail on creating .bak file
+    with monkeypatch.context() as mp:
+        mp.setattr("os.replace", causeOSError)
+        assert theProject.saveProject() is False
+        assert os.path.isfile(backFile) is False
 
     # Successful save
     saveCount = theProject.saveCount
@@ -491,6 +501,9 @@ def testCoreProject_Save(monkeypatch, nwMinimal, mockGUI, refDir):
     assert theProject.saveCount == saveCount + 1
     assert theProject.autoCount == autoCount
     assert cmpFiles(testFile, compFile, [2, 6, 7, 8, 9])
+
+    # Check that a second save creates a .bak file
+    assert os.path.isfile(backFile) is True
 
     # Successful autosave
     saveCount = theProject.saveCount

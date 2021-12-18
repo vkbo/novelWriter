@@ -31,8 +31,8 @@ import logging
 from datetime import datetime
 from configparser import ConfigParser
 
-from PyQt5.QtWidgets import qApp
 from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import qApp
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.error import logException

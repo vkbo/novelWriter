@@ -237,12 +237,13 @@ class NWProject():
 
         return
 
-    def newProject(self, projData=None):
+    def newProject(self, projData):
         """Create a new project by populating the project tree with a
         few starter items.
         """
-        if projData is None:
-            projData = {}
+        if not isinstance(projData, dict):
+            logger.error("Invalid call to newProject function")
+            return False
 
         popMinimal = projData.get("popMinimal", True)
         popCustom = projData.get("popCustom", False)
@@ -473,8 +474,8 @@ class NWProject():
         # 1.2 : Changes the way autoReplace entries are stored. The 1.1
         #       parser will lose the autoReplace settings if allowed to
         #       read the file. Introduced in version 0.10.
-        # 1.3 : Reduces the number of layouts to onlye two. One for
-        #       novel documents and one for project notes. Introduced in
+        # 1.3 : Reduces the number of layouts to only two. One for novel
+        #       documents and one for project notes. Introduced in
         #       version 1.5.
 
         if fileVersion not in ("1.0", "1.1", "1.2", "1.3"):
@@ -630,8 +631,8 @@ class NWProject():
 
     def saveProject(self, autoSave=False):
         """Save the project main XML file. The saving command itself
-        uses a temporary filename, and the file is renamed afterwards to
-        make sure if the save fails, we're not left with a truncated
+        uses a temporary filename, and the file is replaced afterwards
+        to make sure if the save fails, we're not left with a truncated
         file.
         """
         if self.projPath is None:
@@ -720,11 +721,15 @@ class NWProject():
 
         # If we're here, the file was successfully saved,
         # so let's sort out the temps and backups
-        if os.path.isfile(backFile):
-            os.unlink(backFile)
-        if os.path.isfile(saveFile):
-            os.rename(saveFile, backFile)
-        os.rename(tempFile, saveFile)
+        try:
+            if os.path.isfile(saveFile):
+                os.replace(saveFile, backFile)
+            os.replace(tempFile, saveFile)
+        except Exception as exc:
+            self.theParent.makeAlert(self.tr(
+                "Failed to save project."
+            ), nwAlert.ERROR, exception=exc)
+            return False
 
         # Save project GUI options
         self.optState.saveSettings()
@@ -857,9 +862,9 @@ class NWProject():
 
     def extractSampleProject(self, projData):
         """Make a copy of the sample project.
-        First, try to copy the content of the sample folder to the new
-        project path, or if the folder doesn't exist, look for the zip
-        file in the assets folder.
+        First, look for the sample.zip file in the assets folder and
+        unpack it. If it doesn't exist, try to copy the content of the
+        sample folder to the new project path. If neither exits, error.
         """
         projPath = projData.get("projPath", None)
         if projPath is None:
@@ -965,14 +970,14 @@ class NWProject():
         return True
 
     def setBookTitle(self, bookTitle):
-        """Set the boom title, that is, the title to include in exports.
+        """Set the book title, that is, the title to include in exports.
         """
         self.bookTitle = bookTitle.strip()
         self.setProjectChanged(True)
         return True
 
     def setBookAuthors(self, bookAuthors):
-        """A line separated list of book authors, parsed into an array.
+        """A line-separated list of authors, parsed into an array.
         """
         if not isinstance(bookAuthors, str):
             return False
@@ -1097,8 +1102,7 @@ class NWProject():
         return True
 
     def setAutoReplace(self, autoReplace):
-        """Update the auto-replace dictionary. This replaces the entire
-        dictionary, so alterations have to be made in a copy.
+        """Update the auto-replace dictionary.
         """
         self.autoReplace = autoReplace
         self.setProjectChanged(True)
@@ -1128,7 +1132,7 @@ class NWProject():
     ##
 
     def getAuthors(self):
-        """Returns a formatted string of authors.
+        """Return a formatted string of authors.
         """
         nAuth = len(self.bookAuthors)
         authString = ""
@@ -1225,8 +1229,7 @@ class NWProject():
         return it. The variable is cast to a string before lookup. If
         the word does not exist, it returns itself.
         """
-        theValue = str(theWord)
-        return self.langData.get(theValue, theValue)
+        return self.langData.get(str(theWord), str(theWord))
 
     ##
     #  Internal Functions

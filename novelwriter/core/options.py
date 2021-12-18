@@ -123,7 +123,7 @@ class OptionState():
     ##
 
     def setValue(self, group, name, value):
-        """Saves a value, with a given group and name.
+        """Save a value, with a given group and name.
         """
         if group not in VALID_MAP:
             logger.error("Unknown option group '%s'", group)

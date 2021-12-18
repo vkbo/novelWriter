@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import os
 import logging
-import novelwriter
 
 from novelwriter.error import logException
 
@@ -35,8 +34,6 @@ logger = logging.getLogger(__name__)
 class NWSpellEnchant():
 
     def __init__(self):
-
-        self.mainConf = novelwriter.CONFIG
 
         self._theDict = None
         self._projDict = set()
