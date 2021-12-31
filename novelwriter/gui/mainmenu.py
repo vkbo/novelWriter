@@ -84,7 +84,7 @@ class GuiMainMenu(QMenuBar):
                 continue
             if itemClass == nwItemClass.TRASH:
                 continue
-            self.rootItems[itemClass].setEnabled(
+            self.rootItems[itemClass].setVisible(
                 self.theProject.projTree.checkRootUnique(itemClass)
             )
         return
