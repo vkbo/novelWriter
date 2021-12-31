@@ -628,11 +628,14 @@ class GuiProjectTree(QTreeWidget):
         trItem.setToolTip(self.C_STATUS, nwItem.itemStatus)
 
         if self.mainConf.emphLabels and nwItem.itemLayout == nwItemLayout.DOCUMENT:
+            trFont = trItem.font(self.C_NAME)
             if hLevel in ("H1", "H2"):
-                trFont = trItem.font(self.C_NAME)
                 trFont.setBold(True)
                 trFont.setUnderline(True)
-                trItem.setFont(self.C_NAME, trFont)
+            else:
+                trFont.setBold(False)
+                trFont.setUnderline(False)
+            trItem.setFont(self.C_NAME, trFont)
 
         return
 
