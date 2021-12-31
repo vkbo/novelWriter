@@ -1166,7 +1166,7 @@ class NWProject():
         nMax = min(len(iterItems), 10000)
         while n < nMax:
             tHandle = iterItems[n]
-            tItem   = self.projTree[tHandle]
+            tItem = self.projTree[tHandle]
             n += 1
             if tItem is None:
                 # Technically a bug since treeOrder is built from the

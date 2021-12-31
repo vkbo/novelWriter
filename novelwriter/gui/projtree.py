@@ -1051,16 +1051,12 @@ class GuiProjectTree(QTreeWidget):
     def _emitItemChange(self, tHandle):
         """Emit an item change signal for a given handle.
         """
-        nwItem = self.theProject.projTree[tHandle]
-        if nwItem is None:
-            return
-
-        if nwItem.itemType == nwItemType.FILE:
+        if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+            nwItem = self.theProject.projTree[tHandle]
             if nwItem.itemClass == nwItemClass.NOVEL:
                 self.novelItemChanged.emit()
             else:
                 self.noteItemChanged.emit()
-
         return
 
     def _recordLastMove(self, srcItem, parItem, parIndex):
