@@ -117,7 +117,6 @@ class Config:
         # Text Editor
         self.textFont        = None   # Editor font
         self.textSize        = 12     # Editor font size
-        self.textFixedW      = True   # Keep editor text fixed width
         self.textWidth       = 600    # Editor text width
         self.textMargin      = 40     # Editor/viewer text margin
         self.tabWidth        = 40     # Editor tabulator width
@@ -468,7 +467,6 @@ class Config:
         cnfSec = "Editor"
         self.textFont        = theConf.rdStr(cnfSec, "textfont", self.textFont)
         self.textSize        = theConf.rdInt(cnfSec, "textsize", self.textSize)
-        self.textFixedW      = theConf.rdBool(cnfSec, "fixedwidth", self.textFixedW)
         self.textWidth       = theConf.rdInt(cnfSec, "width", self.textWidth)
         self.textMargin      = theConf.rdInt(cnfSec, "margin", self.textMargin)
         self.tabWidth        = theConf.rdInt(cnfSec, "tabwidth", self.tabWidth)
@@ -590,7 +588,6 @@ class Config:
         theConf["Editor"] = {
             "textfont":        str(self.textFont),
             "textsize":        str(self.textSize),
-            "fixedwidth":      str(self.textFixedW),
             "width":           str(self.textWidth),
             "margin":          str(self.textMargin),
             "tabwidth":        str(self.tabWidth),
@@ -922,17 +919,17 @@ class Config:
     def getOutlinePanePos(self):
         return [int(x*self.guiScale) for x in self.outlnPanePos]
 
-    def getTextWidth(self):
-        return self.pxInt(self.textWidth)
+    def getTextWidth(self, focusMode=False):
+        if focusMode:
+            return self.pxInt(max(self.focusWidth, 200))
+        else:
+            return self.pxInt(max(self.textWidth, 200))
 
     def getTextMargin(self):
-        return self.pxInt(self.textMargin)
+        return self.pxInt(max(self.textMargin, 0))
 
     def getTabWidth(self):
-        return self.pxInt(self.tabWidth)
-
-    def getFocusWidth(self):
-        return self.pxInt(self.focusWidth)
+        return self.pxInt(max(self.tabWidth, 0))
 
     def getErrData(self):
         """Compile and return error messages from the initialisation of

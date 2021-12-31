@@ -505,16 +505,16 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     # ============
 
     tmpConf.guiScale = 1.0
-    assert tmpConf.getTextWidth() == 600
+    assert tmpConf.getTextWidth(False) == 600
+    assert tmpConf.getTextWidth(True) == 800
     assert tmpConf.getTextMargin() == 40
     assert tmpConf.getTabWidth() == 40
-    assert tmpConf.getFocusWidth() == 800
 
     tmpConf.guiScale = 2.0
-    assert tmpConf.getTextWidth() == 1200
+    assert tmpConf.getTextWidth(False) == 1200
+    assert tmpConf.getTextWidth(True) == 1600
     assert tmpConf.getTextMargin() == 80
     assert tmpConf.getTabWidth() == 80
-    assert tmpConf.getFocusWidth() == 1600
 
     # Flag Setters
     # ============

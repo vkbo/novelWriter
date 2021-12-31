@@ -313,22 +313,30 @@ class GuiDocViewer(QTextBrowser):
     def updateDocMargins(self):
         """Automatically adjust the margins so the text is centred.
         """
+        wW = self.width()
+        wH = self.height()
+        cM = self.mainConf.getTextMargin()
+
         vBar = self.verticalScrollBar()
         sW = vBar.width() if vBar.isVisible() else 0
 
         hBar = self.horizontalScrollBar()
         sH = hBar.height() if hBar.isVisible() else 0
 
-        cM = self.mainConf.getTextMargin()
+        tM = cM
+        if self.mainConf.textWidth > 0:
+            tW = self.mainConf.getTextWidth()
+            tM = max((wW - sW - tW)//2, cM)
+
         tB = self.frameWidth()
-        tW = self.width() - 2*tB - sW
+        tW = wW - 2*tB - sW
         tH = self.docHeader.height()
         fH = self.docFooter.height()
-        fY = self.height() - fH - tB - sH
+        fY = wH - fH - tB - sH
 
         self.docHeader.setGeometry(tB, tB, tW, tH)
         self.docFooter.setGeometry(tB, fY, tW, fH)
-        self.setViewportMargins(cM, max(cM, tH), cM, max(cM, fH))
+        self.setViewportMargins(tM, max(cM, tH), tM, max(cM, fH))
 
         return
 
