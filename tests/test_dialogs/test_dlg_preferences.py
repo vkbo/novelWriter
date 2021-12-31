@@ -145,11 +145,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     tabDocs.tabWidth.setValue(45)
 
     qtbot.wait(keyDelay)
-    assert not tabDocs.textFixedW.isChecked()
-    qtbot.mouseClick(tabDocs.textFixedW, Qt.LeftButton)
-    assert tabDocs.textFixedW.isChecked()
-
-    qtbot.wait(keyDelay)
     assert not tabDocs.hideFocusFooter.isChecked()
     qtbot.mouseClick(tabDocs.hideFocusFooter, Qt.LeftButton)
     assert tabDocs.hideFocusFooter.isChecked()
