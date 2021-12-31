@@ -537,37 +537,28 @@ class GuiPreferencesDocuments(QWidget):
 
         # Max Text Width in Normal Mode
         self.textWidth = QSpinBox(self)
-        self.textWidth.setMinimum(300)
+        self.textWidth.setMinimum(0)
         self.textWidth.setMaximum(10000)
         self.textWidth.setSingleStep(10)
         self.textWidth.setValue(self.mainConf.textWidth)
         self.mainForm.addRow(
             self.tr("Maximum text width in \"Normal Mode\""),
             self.textWidth,
-            self.tr("Horizontal margins are scaled automatically."),
+            self.tr("Set to 0 to disable this feature."),
             theUnit=self.tr("px")
         )
 
         # Max Text Width in Focus Mode
         self.focusWidth = QSpinBox(self)
-        self.focusWidth.setMinimum(300)
+        self.focusWidth.setMinimum(200)
         self.focusWidth.setMaximum(10000)
         self.focusWidth.setSingleStep(10)
         self.focusWidth.setValue(self.mainConf.focusWidth)
         self.mainForm.addRow(
             self.tr("Maximum text width in \"Focus Mode\""),
             self.focusWidth,
-            self.tr("Horizontal margins are scaled automatically."),
+            self.tr("The maximum width cannot be disabled."),
             theUnit=self.tr("px")
-        )
-
-        # Document Fixed Width
-        self.textFixedW = QSwitch()
-        self.textFixedW.setChecked(not self.mainConf.textFixedW)
-        self.mainForm.addRow(
-            self.tr("Disable maximum text width in \"Normal Mode\""),
-            self.textFixedW,
-            self.tr("Text width is defined by the margins only.")
         )
 
         # Focus Mode Footer
@@ -597,7 +588,7 @@ class GuiPreferencesDocuments(QWidget):
         self.mainForm.addRow(
             self.tr("Text margin"),
             self.textMargin,
-            self.tr("If maximum width is set, this becomes the minimum margin."),
+            self.tr("The minimum margin around the text in the editor and viewer."),
             theUnit=self.tr("px")
         )
 
@@ -626,7 +617,6 @@ class GuiPreferencesDocuments(QWidget):
         # Text Flow
         self.mainConf.textWidth       = self.textWidth.value()
         self.mainConf.focusWidth      = self.focusWidth.value()
-        self.mainConf.textFixedW      = not self.textFixedW.isChecked()
         self.mainConf.hideFocusFooter = self.hideFocusFooter.isChecked()
         self.mainConf.doJustify       = self.doJustify.isChecked()
         self.mainConf.textMargin      = self.textMargin.value()

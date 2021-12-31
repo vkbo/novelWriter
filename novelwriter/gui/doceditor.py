@@ -509,8 +509,8 @@ class GuiDocEditor(QTextEdit):
 
     def updateDocMargins(self):
         """Automatically adjust the margins so the text is centred if
-        Config.textFixedW is enabled or we're in Focus Mode. Otherwise,
-        just ensure the margins are set correctly.
+        we have a text width set or we're in Focus Mode. Otherwise, just
+        ensure the margins are set correctly.
         """
         wW = self.width()
         wH = self.height()
@@ -522,7 +522,7 @@ class GuiDocEditor(QTextEdit):
         hBar = self.horizontalScrollBar()
         sH = hBar.height() if hBar.isVisible() else 0
 
-        if self.mainConf.textFixedW or self.theParent.isFocusMode:
+        if self.mainConf.textWidth > 0 or self.theParent.isFocusMode:
             if self.theParent.isFocusMode:
                 tW = self.mainConf.getFocusWidth()
             else:
