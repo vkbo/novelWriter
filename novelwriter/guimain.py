@@ -1599,9 +1599,8 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot()
     def _keyPressReturn(self):
-        """The user pressed return on the main GUI. If it is a
-        file, we open it. Otherwise, we do nothing. Pressing return does
-        not change focus to the editor as double click does.
+        """Forward the return/enter keypress to the function that opens
+        the currently selected item.
         """
         self.openSelectedItem()
         return
