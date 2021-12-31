@@ -262,9 +262,13 @@ class GuiMain(QMainWindow):
         # Shortcuts and Actions
         self._connectMenuActions()
 
-        keyReturn = QShortcut(self.treeView)
+        keyReturn = QShortcut(self)
         keyReturn.setKey(QKeySequence(Qt.Key_Return))
-        keyReturn.activated.connect(self._treeKeyPressReturn)
+        keyReturn.activated.connect(self._keyPressReturn)
+
+        keyEnter = QShortcut(self)
+        keyEnter.setKey(QKeySequence(Qt.Key_Enter))
+        keyEnter.activated.connect(self._keyPressReturn)
 
         keyEscape = QShortcut(self)
         keyEscape.setKey(QKeySequence(Qt.Key_Escape))
@@ -350,7 +354,7 @@ class GuiMain(QMainWindow):
     ##
 
     def newProject(self, projData=None):
-        """Create new project via the new project wizard.
+        """Create a new project via the new project wizard.
         """
         if self.hasProject:
             if not self.closeProject():
@@ -396,9 +400,9 @@ class GuiMain(QMainWindow):
         return True
 
     def closeProject(self, isYes=False):
-        """Closes the project if one is open. isYes is passed on from
-        the close application event so the user doesn't get prompted
-        twice to confirm.
+        """Close the project if one is open. isYes is passed on from the
+        close application event so the user doesn't get prompted twice
+        to confirm.
         """
         if not self.hasProject:
             # There is no project loaded, everything OK
@@ -596,6 +600,10 @@ class GuiMain(QMainWindow):
         """
         if not self.hasProject:
             logger.error("No project open")
+            return False
+
+        if not self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+            logger.debug("Requested item '%s' is not a document", tHandle)
             return False
 
         self.closeDocument()
@@ -798,22 +806,28 @@ class GuiMain(QMainWindow):
     ##
 
     def openSelectedItem(self):
-        """Open the selected documents.
+        """Open the selected item from the tree that is currently
+        active. It is not checked that the item is actually a document.
+        That should be handled by the openDocument function.
         """
         if not self.hasProject:
             logger.error("No project open")
             return False
 
-        tHandle = self.treeView.getSelectedHandle()
-        if tHandle is None:
+        tHandle = None
+        tLine = None
+        if self.treeView.hasFocus():
+            tHandle = self.treeView.getSelectedHandle()
+        elif self.novelView.hasFocus():
+            tHandle, tLine = self.novelView.getSelectedHandle()
+        elif self.projView.hasFocus():
+            tHandle, tLine = self.projView.getSelectedHandle()
+        else:
             logger.warning("No item selected")
             return False
 
-        logger.verbose("Opening item '%s'", tHandle)
-        if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
-            self.openDocument(tHandle, doScroll=False)
-        else:
-            logger.verbose("Requested item '%s' is not a file", tHandle)
+        if tHandle is not None:
+            self.openDocument(tHandle, tLine=tLine, changeFocus=False, doScroll=False)
 
         return True
 
@@ -986,7 +1000,7 @@ class GuiMain(QMainWindow):
         """
         if not self.hasProject:
             logger.error("No project open")
-            return
+            return False
 
         dlgProj = GuiProjectSettings(self)
         dlgProj.exec_()
@@ -996,14 +1010,14 @@ class GuiMain(QMainWindow):
             self.docEditor.setDictionaries()
             self._updateWindowTitle(self.theProject.projName)
 
-        return
+        return True
 
     def showProjectDetailsDialog(self):
         """Open the project details dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
-            return
+            return False
 
         self.treeView.flushTreeOrder()
 
@@ -1016,14 +1030,14 @@ class GuiMain(QMainWindow):
         dlgDetails.raise_()
         dlgDetails.updateValues()
 
-        return
+        return True
 
     def showBuildProjectDialog(self):
         """Open the build project dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
-            return
+            return False
 
         dlgBuild = getGuiItem("GuiBuildNovel")
         if dlgBuild is None:
@@ -1035,14 +1049,14 @@ class GuiMain(QMainWindow):
         qApp.processEvents()
         dlgBuild.viewCachedDoc()
 
-        return
+        return True
 
     def showProjectWordListDialog(self):
         """Open the project word list dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
-            return
+            return False
 
         dlgWords = GuiWordList(self)
         dlgWords.exec_()
@@ -1051,14 +1065,14 @@ class GuiMain(QMainWindow):
             logger.debug("Reloading word list")
             self.docEditor.setDictionaries()
 
-        return
+        return True
 
     def showWritingStatsDialog(self):
         """Open the session stats dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
-            return
+            return False
 
         dlgStats = getGuiItem("GuiWritingStats")
         if dlgStats is None:
@@ -1070,7 +1084,7 @@ class GuiMain(QMainWindow):
         qApp.processEvents()
         dlgStats.populateGUI()
 
-        return
+        return True
 
     def showAboutNWDialog(self, showNotes=False):
         """Show the about dialog for novelWriter.
@@ -1555,9 +1569,9 @@ class GuiMain(QMainWindow):
         """Single click on a project tree item just updates the details
         panel below the tree.
         """
-        sHandle = self.treeView.getSelectedHandle()
-        if sHandle is not None:
-            self.treeMeta.updateViewBox(sHandle)
+        tHandle = self.treeView.getSelectedHandle()
+        if tHandle is not None:
+            self.treeMeta.updateViewBox(tHandle)
         return
 
     @pyqtSlot("QTreeWidgetItem*", int)
@@ -1565,14 +1579,9 @@ class GuiMain(QMainWindow):
         """The user double-clicked an item in the tree. If it is a file,
         we open it. Otherwise, we do nothing.
         """
-        tHandle = tItem.data(self.treeView.C_NAME, Qt.UserRole)
-        logger.verbose("User double clicked tree item with handle '%s'", tHandle)
-
-        if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+        tHandle = self.treeView.getSelectedHandle()
+        if tHandle is not None:
             self.openDocument(tHandle, changeFocus=False, doScroll=False)
-        else:
-            logger.verbose("Requested item '%s' is a folder", tHandle)
-
         return
 
     @pyqtSlot()
@@ -1589,18 +1598,11 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot()
-    def _treeKeyPressReturn(self):
-        """The user pressed return on an item in the tree. If it is a
-        file, we open it. Otherwise, we do nothing. Pressing return does
-        not change focus to the editor as double click does.
+    def _keyPressReturn(self):
+        """Forward the return/enter keypress to the function that opens
+        the currently selected item.
         """
-        tHandle = self.treeView.getSelectedHandle()
-        logger.verbose("User pressed return on tree item with handle '%s'", tHandle)
-        if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
-            self.openDocument(tHandle, changeFocus=False, doScroll=False)
-        else:
-            logger.verbose("Requested item '%s' is a folder", tHandle)
-
+        self.openSelectedItem()
         return
 
     @pyqtSlot()
@@ -1642,7 +1644,7 @@ class GuiMain(QMainWindow):
             logger.verbose("Novel tree tab activated")
             if self.hasProject:
                 self.novelView.refreshTree()
-                sHandle = self.novelView.getSelectedHandle()
+                sHandle, _ = self.novelView.getSelectedHandle()
 
         self.treeMeta.updateViewBox(sHandle)
 

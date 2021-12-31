@@ -28,14 +28,102 @@ from tools import cmpFiles
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QDialog
 
-from novelwriter.dialogs.itemeditor import GuiItemEditor
-from novelwriter.gui.doceditor import GuiDocEditor
-from novelwriter.gui.projtree import GuiProjectTree
+from novelwriter.gui import (
+    GuiDocEditor, GuiProjectTree, GuiNovelTree, GuiOutline
+)
 from novelwriter.enum import nwItemType, nwWidget
+from novelwriter.dialogs.itemeditor import GuiItemEditor
 
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+
+
+@pytest.mark.gui
+def testGuiMain_ProjectBlocker(monkeypatch, nwGUI):
+    """Test the blocking of features when there's no project open.
+    """
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+
+    # Test no-project blocking
+    assert nwGUI.closeProject() is True
+    assert nwGUI.saveProject() is False
+    assert nwGUI.closeDocument() is False
+    assert nwGUI.openDocument(None) is False
+    assert nwGUI.openNextDocument(None) is False
+    assert nwGUI.saveDocument() is False
+    assert nwGUI.viewDocument(None) is False
+    assert nwGUI.importDocument() is False
+    assert nwGUI.mergeDocuments() is False
+    assert nwGUI.splitDocument() is False
+    assert nwGUI.openSelectedItem() is False
+    assert nwGUI.editItem() is False
+    assert nwGUI.requestNovelTreeRefresh() is False
+    assert nwGUI.rebuildIndex() is False
+    assert nwGUI.rebuildOutline() is False
+    assert nwGUI.showProjectSettingsDialog() is False
+    assert nwGUI.showProjectDetailsDialog() is False
+    assert nwGUI.showBuildProjectDialog() is False
+    assert nwGUI.showProjectWordListDialog() is False
+    assert nwGUI.showWritingStatsDialog() is False
+
+# END Test testGuiMain_NoProject
+
+
+@pytest.mark.gui
+def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj):
+    """Test handling of project tree items based on GUI focus states.
+    """
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+
+    nwGUI.theProject.projTree.setSeed(42)
+    assert nwGUI.newProject({"projPath": fncProj}) is True
+    assert nwGUI.saveProject() is True
+
+    sHandle = "0e17daca5f3e1"
+    assert nwGUI.openSelectedItem() is False
+
+    # Project Tree has focus
+    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI.projTabs.setCurrentIndex(0)
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
+        assert nwGUI.docEditor.docHandle() is None
+        nwGUI.treeView._getTreeItem(sHandle).setSelected(True)
+        nwGUI._keyPressReturn()
+        assert nwGUI.docEditor.docHandle() == sHandle
+        assert nwGUI.closeDocument() is True
+
+    # Novel Tree has focus
+    nwGUI.projTabs.setCurrentIndex(1)
+    nwGUI.novelView.refreshTree(True)
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiNovelTree, "hasFocus", lambda *a: True)
+        assert nwGUI.docEditor.docHandle() is None
+        actItem = nwGUI.novelView.topLevelItem(0)
+        chpItem = actItem.child(0)
+        selItem = chpItem.child(0)
+        nwGUI.novelView.setCurrentItem(selItem)
+        nwGUI._keyPressReturn()
+        assert nwGUI.docEditor.docHandle() == sHandle
+        assert nwGUI.closeDocument() is True
+
+    # Project Outline has focus
+    nwGUI.switchFocus(nwWidget.OUTLINE)
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiOutline, "hasFocus", lambda *a: True)
+        assert nwGUI.docEditor.docHandle() is None
+        actItem = nwGUI.projView.topLevelItem(0)
+        chpItem = actItem.child(0)
+        selItem = chpItem.child(0)
+        nwGUI.projView.setCurrentItem(selItem)
+        nwGUI._keyPressReturn()
+        assert nwGUI.docEditor.docHandle() == sHandle
+        assert nwGUI.closeDocument() is True
+
+    # qtbot.stopForInteraction()
+
+# END Test testGuiMain_ProjectTreeItems
 
 
 @pytest.mark.gui

@@ -74,7 +74,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     assert not topItem.isSelected()
     topItem.setSelected(True)
     assert nwTree.selectedItems()[0] == topItem
-    assert nwTree.getSelectedHandle() == "a35baf2e93843"
+    assert nwTree.getSelectedHandle() == ("a35baf2e93843", 0)
 
     nwTree.refreshTree()
     assert nwTree.topLevelItem(0).isSelected()
