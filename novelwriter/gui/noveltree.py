@@ -135,7 +135,7 @@ class GuiNovelTree(QTreeWidget):
         logger.verbose("Requesting refresh of the novel tree")
         treeChanged = self.theParent.treeView.changedSince(self._lastBuild)
         indexChanged = self.theIndex.novelChangedSince(self._lastBuild)
-        if not (treeChanged or indexChanged):
+        if not (treeChanged or indexChanged or overRide):
             logger.verbose("No changes have been made to the novel index")
             return
 
