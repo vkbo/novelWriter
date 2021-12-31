@@ -196,6 +196,20 @@ class GuiOutline(QTreeWidget):
         self._firstView = True
         return
 
+    def getSelectedHandle(self):
+        """Get the currently selected handle. If multiple items are
+        selected, return the first.
+        """
+        selItem = self.selectedItems()
+        if selItem:
+            tHandle = selItem[0].data(self._colIdx[nwOutline.TITLE], Qt.UserRole)
+            try:
+                tLine = int(selItem[0].text(self._colIdx[nwOutline.LINE])) - 1
+            except Exception:
+                tLine = 0
+
+        return tHandle, tLine
+
     ##
     #  Slots
     ##
@@ -206,15 +220,8 @@ class GuiOutline(QTreeWidget):
         clicked, and send it to the main gui class for opening in the
         document editor.
         """
-        tHandle = tItem.data(self._colIdx[nwOutline.TITLE], Qt.UserRole)
-        try:
-            tLine = int(tItem.text(self._colIdx[nwOutline.LINE]))
-        except Exception:
-            tLine = 1
-
-        logger.verbose("User selected entry with handle '%s' on line %s", tHandle, tLine)
+        tHandle, tLine = self.getSelectedHandle()
         self.theParent.openDocument(tHandle, tLine=tLine-1, doScroll=True)
-
         return
 
     @pyqtSlot()

@@ -262,9 +262,13 @@ class GuiMain(QMainWindow):
         # Shortcuts and Actions
         self._connectMenuActions()
 
-        keyReturn = QShortcut(self.treeView)
+        keyReturn = QShortcut(self)
         keyReturn.setKey(QKeySequence(Qt.Key_Return))
-        keyReturn.activated.connect(self._treeKeyPressReturn)
+        keyReturn.activated.connect(self._keyPressReturn)
+
+        keyEnter = QShortcut(self)
+        keyEnter.setKey(QKeySequence(Qt.Key_Enter))
+        keyEnter.activated.connect(self._keyPressReturn)
 
         keyEscape = QShortcut(self)
         keyEscape.setKey(QKeySequence(Qt.Key_Escape))
@@ -350,7 +354,7 @@ class GuiMain(QMainWindow):
     ##
 
     def newProject(self, projData=None):
-        """Create new project via the new project wizard.
+        """Create a new project via the new project wizard.
         """
         if self.hasProject:
             if not self.closeProject():
@@ -396,9 +400,9 @@ class GuiMain(QMainWindow):
         return True
 
     def closeProject(self, isYes=False):
-        """Closes the project if one is open. isYes is passed on from
-        the close application event so the user doesn't get prompted
-        twice to confirm.
+        """Close the project if one is open. isYes is passed on from the
+        close application event so the user doesn't get prompted twice
+        to confirm.
         """
         if not self.hasProject:
             # There is no project loaded, everything OK
@@ -596,6 +600,10 @@ class GuiMain(QMainWindow):
         """
         if not self.hasProject:
             logger.error("No project open")
+            return False
+
+        if not self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+            logger.debug("Requested item '%s' is not a document", tHandle)
             return False
 
         self.closeDocument()
@@ -1555,9 +1563,9 @@ class GuiMain(QMainWindow):
         """Single click on a project tree item just updates the details
         panel below the tree.
         """
-        sHandle = self.treeView.getSelectedHandle()
-        if sHandle is not None:
-            self.treeMeta.updateViewBox(sHandle)
+        tHandle = self.treeView.getSelectedHandle()
+        if tHandle is not None:
+            self.treeMeta.updateViewBox(tHandle)
         return
 
     @pyqtSlot("QTreeWidgetItem*", int)
@@ -1565,14 +1573,9 @@ class GuiMain(QMainWindow):
         """The user double-clicked an item in the tree. If it is a file,
         we open it. Otherwise, we do nothing.
         """
-        tHandle = tItem.data(self.treeView.C_NAME, Qt.UserRole)
-        logger.verbose("User double clicked tree item with handle '%s'", tHandle)
-
-        if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+        tHandle = self.treeView.getSelectedHandle()
+        if tHandle is not None:
             self.openDocument(tHandle, changeFocus=False, doScroll=False)
-        else:
-            logger.verbose("Requested item '%s' is a folder", tHandle)
-
         return
 
     @pyqtSlot()
@@ -1589,17 +1592,22 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot()
-    def _treeKeyPressReturn(self):
-        """The user pressed return on an item in the tree. If it is a
+    def _keyPressReturn(self):
+        """The user pressed return on the main GUI. If it is a
         file, we open it. Otherwise, we do nothing. Pressing return does
         not change focus to the editor as double click does.
         """
-        tHandle = self.treeView.getSelectedHandle()
-        logger.verbose("User pressed return on tree item with handle '%s'", tHandle)
-        if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
-            self.openDocument(tHandle, changeFocus=False, doScroll=False)
-        else:
-            logger.verbose("Requested item '%s' is a folder", tHandle)
+        tHandle = None
+        tLine = None
+        if self.treeView.hasFocus():
+            tHandle = self.treeView.getSelectedHandle()
+        elif self.novelView.hasFocus():
+            tHandle = self.novelView.getSelectedHandle()
+        elif self.projView.hasFocus():
+            tHandle, tLine = self.projView.getSelectedHandle()
+
+        if tHandle is not None:
+            self.openDocument(tHandle, tLine=tLine, changeFocus=False, doScroll=False)
 
         return
 
