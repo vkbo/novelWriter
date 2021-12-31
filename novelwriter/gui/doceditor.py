@@ -522,16 +522,10 @@ class GuiDocEditor(QTextEdit):
         hBar = self.horizontalScrollBar()
         sH = hBar.height() if hBar.isVisible() else 0
 
+        tM = cM
         if self.mainConf.textWidth > 0 or self.theParent.isFocusMode:
-            if self.theParent.isFocusMode:
-                tW = self.mainConf.getFocusWidth()
-            else:
-                tW = self.mainConf.getTextWidth()
-            tM = (wW - sW - tW)//2
-            if tM < cM:
-                tM = cM
-        else:
-            tM = cM
+            tW = self.mainConf.getTextWidth(self.theParent.isFocusMode)
+            tM = max((wW - sW - tW)//2, cM)
 
         tB = self.frameWidth()
         tW = wW - 2*tB - sW
@@ -541,13 +535,12 @@ class GuiDocEditor(QTextEdit):
         self.docHeader.setGeometry(tB, tB, tW, tH)
         self.docFooter.setGeometry(tB, fY, tW, fH)
 
+        rH = 0
         if self.docSearch.isVisible():
             rH = self.docSearch.height()
             rW = self.docSearch.width()
             rL = wW - sW - rW - 2*tB
             self.docSearch.move(rL, 2*tB)
-        else:
-            rH = 0
 
         uM = max(cM, tH, rH)
         lM = max(cM, fH)

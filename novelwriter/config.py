@@ -919,17 +919,17 @@ class Config:
     def getOutlinePanePos(self):
         return [int(x*self.guiScale) for x in self.outlnPanePos]
 
-    def getTextWidth(self):
-        return self.pxInt(max(self.textWidth, 200))
+    def getTextWidth(self, focusMode=False):
+        if focusMode:
+            return self.pxInt(max(self.focusWidth, 200))
+        else:
+            return self.pxInt(max(self.textWidth, 200))
 
     def getTextMargin(self):
         return self.pxInt(max(self.textMargin, 0))
 
     def getTabWidth(self):
         return self.pxInt(max(self.tabWidth, 0))
-
-    def getFocusWidth(self):
-        return self.pxInt(max(self.focusWidth, 200))
 
     def getErrData(self):
         """Compile and return error messages from the initialisation of
