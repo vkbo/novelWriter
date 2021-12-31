@@ -67,7 +67,7 @@ class NWItem():
     ##
 
     def packXML(self, xParent):
-        """Packs all the data in the class instance into an XML object.
+        """Pack all the data in the class instance into an XML object.
         """
         xPack = etree.SubElement(xParent, "item", attrib={
             "handle": str(self.itemHandle),
@@ -91,7 +91,7 @@ class NWItem():
         return
 
     def unpackXML(self, xItem):
-        """Sets the values from an XML entry of type 'item'.
+        """Set the values from an XML entry of type 'item'.
         """
         if xItem.tag != "item":
             logger.error("XML entry is not an NWItem")
@@ -103,11 +103,8 @@ class NWItem():
             logger.error("XML item entry does not have a handle")
             return False
 
-        if "parent" in xItem.attrib:
-            self.setParent(xItem.attrib["parent"])
-
-        if "order" in xItem.attrib:
-            self.setOrder(xItem.attrib["order"])
+        self.setParent(xItem.attrib.get("parent", None))
+        self.setOrder(xItem.attrib.get("order", 0))
 
         tmpStatus = ""
         for xValue in xItem:
@@ -136,7 +133,7 @@ class NWItem():
             else:
                 # Sliently skip as we may otherwise cause orphaned
                 # items if an otherwise valid file is opened by a
-                # version of novelWriter that doesn't know the tag.
+                # version of novelWriter that doesn't know the tag
                 logger.error("Unknown tag '%s'", xValue.tag)
 
         # Guarantees that <status> is parsed after <class>
@@ -146,7 +143,7 @@ class NWItem():
 
     @staticmethod
     def _subPack(xParent, name, attrib=None, text=None, none=True):
-        """Packs the values into an xml element.
+        """Pack the values into an XML element.
         """
         if not none and (text is None or text == "None"):
             return None
@@ -200,39 +197,34 @@ class NWItem():
     def setHandle(self, theHandle):
         """Set the item handle, and ensure it is valid.
         """
-        if isinstance(theHandle, str):
-            if isHandle(theHandle):
-                self.itemHandle = theHandle
-            else:
-                self.itemHandle = None
+        if isHandle(theHandle):
+            self.itemHandle = theHandle
         else:
             self.itemHandle = None
         return
 
     def setParent(self, theParent):
-        """Set the parent handle, and ensure that it is valid.
+        """Set the parent handle, and ensure it is valid.
         """
         if theParent is None:
             self.itemParent = None
-        elif isinstance(theParent, str):
-            if isHandle(theParent):
-                self.itemParent = theParent
-            else:
-                self.itemParent = None
+        elif isHandle(theParent):
+            self.itemParent = theParent
         else:
             self.itemParent = None
         return
 
     def setOrder(self, theOrder):
         """Set the item order, and ensure that it is valid. This value
-        is purely a meta value, not actually used by novelWriter.
+        is purely a meta value, and not actually used by novelWriter at
+        the moment.
         """
         self.itemOrder = checkInt(theOrder, 0)
         return
 
     def setType(self, theType):
         """Set the item type from either a proper nwItemType, or set it
-        from a string representing a nwItemType.
+        from a string representing an nwItemType.
         """
         if isinstance(theType, nwItemType):
             self.itemType = theType
@@ -245,7 +237,7 @@ class NWItem():
 
     def setClass(self, theClass):
         """Set the item class from either a proper nwItemClass, or set
-        it from a string representing a nwItemClass.
+        it from a string representing an nwItemClass.
         """
         if isinstance(theClass, nwItemClass):
             self.itemClass = theClass
@@ -258,7 +250,7 @@ class NWItem():
 
     def setLayout(self, theLayout):
         """Set the item layout from either a proper nwItemLayout, or set
-        it from a string representing a nwItemLayout.
+        it from a string representing an nwItemLayout.
         """
         if isinstance(theLayout, nwItemLayout):
             self.itemLayout = theLayout
@@ -282,7 +274,7 @@ class NWItem():
         return
 
     def setExpanded(self, expState):
-        """Save the expanded status of an item in the project tree.
+        """Set the expanded status of an item in the project tree.
         """
         if isinstance(expState, str):
             self.isExpanded = (expState == str(True))
@@ -291,7 +283,7 @@ class NWItem():
         return
 
     def setExported(self, expState):
-        """Save the export flag.
+        """Set the export flag.
         """
         if isinstance(expState, str):
             self.isExported = (expState == str(True))
@@ -306,29 +298,29 @@ class NWItem():
     def setCharCount(self, theCount):
         """Set the character count, and ensure that it is an integer.
         """
-        self.charCount = checkInt(theCount, 0)
+        self.charCount = max(0, checkInt(theCount, 0))
         return
 
     def setWordCount(self, theCount):
         """Set the word count, and ensure that it is an integer.
         """
-        self.wordCount = checkInt(theCount, 0)
+        self.wordCount = max(0, checkInt(theCount, 0))
         return
 
     def setParaCount(self, theCount):
         """Set the paragraph count, and ensure that it is an integer.
         """
-        self.paraCount = checkInt(theCount, 0)
+        self.paraCount = max(0, checkInt(theCount, 0))
         return
 
     def setCursorPos(self, thePosition):
         """Set the cursor position, and ensure that it is an integer.
         """
-        self.cursorPos = checkInt(thePosition, 0)
+        self.cursorPos = max(0, checkInt(thePosition, 0))
         return
 
     def saveInitialCount(self):
-        """Set the initial word count.
+        """Save the initial word count.
         """
         self.initCount = self.wordCount
         return

@@ -219,6 +219,9 @@ def testCoreIndex_CheckThese(nwMinimal, mockGUI):
     assert theIndex.notesChangedSince(0) is True
     assert theIndex.indexChangedSince(0) is True
 
+    assert theIndex.getHandleHeaderLevel(cHandle) == "H1"
+    assert theIndex.getHandleHeaderLevel(nHandle) == "H1"
+
     # Zero Items
     assert theIndex.checkThese([], cItem) == []
 

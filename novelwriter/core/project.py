@@ -37,14 +37,15 @@ from PyQt5.QtCore import QCoreApplication
 
 from novelwriter.core.tree import NWTree
 from novelwriter.core.item import NWItem
-from novelwriter.core.document import NWDoc
 from novelwriter.core.status import NWStatus
 from novelwriter.core.options import OptionState
+from novelwriter.core.document import NWDoc
+from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from novelwriter.error import logException
 from novelwriter.common import (
     checkString, checkBool, checkInt, isHandle, formatTimeStamp,
     makeFileNameSafe, hexToInt
 )
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.constants import trConst, nwFiles, nwLabels
 
 logger = logging.getLogger(__name__)
@@ -125,6 +126,7 @@ class NWProject():
         if not self.projTree.checkRootUnique(rootClass):
             self.theParent.makeAlert(self.tr("Duplicate root item detected."), nwAlert.ERROR)
             return None
+
         newItem = NWItem(self)
         newItem.setName(rootName)
         newItem.setType(nwItemType.ROOT)
@@ -235,10 +237,14 @@ class NWProject():
 
         return
 
-    def newProject(self, projData={}):
+    def newProject(self, projData):
         """Create a new project by populating the project tree with a
         few starter items.
         """
+        if not isinstance(projData, dict):
+            logger.error("Invalid call to newProject function")
+            return False
+
         popMinimal = projData.get("popMinimal", True)
         popCustom = projData.get("popCustom", False)
         popSample = projData.get("popSample", False)
@@ -356,7 +362,7 @@ class NWProject():
         return True
 
     def openProject(self, fileName, overrideLock=False):
-        """Open the project file provided, or if doesn't exist, assume
+        """Open the project file provided. If it doesn't exist, assume
         it is a folder and look for the file within it. If successful,
         parse the XML of the file and populate the project variables and
         build the tree of project items.
@@ -414,10 +420,10 @@ class NWProject():
 
         try:
             nwXML = etree.parse(fileName)
-        except Exception as e:
-            self.theParent.makeAlert([
-                self.tr("Failed to parse project xml."), str(e)
-            ], nwAlert.ERROR)
+        except Exception as exc:
+            self.theParent.makeAlert(self.tr(
+                "Failed to parse project xml."
+            ), nwAlert.ERROR, exception=exc)
 
             # Trying to open backup file instead
             backFile = fileName[:-3]+"bak"
@@ -427,10 +433,10 @@ class NWProject():
                 ), nwAlert.INFO)
                 try:
                     nwXML = etree.parse(backFile)
-                except Exception as e:
-                    self.theParent.makeAlert([
-                        self.tr("Failed to parse project xml."), str(e)
-                    ], nwAlert.ERROR)
+                except Exception as exc:
+                    self.theParent.makeAlert(self.tr(
+                        "Failed to parse project xml."
+                    ), nwAlert.ERROR, exception=exc)
                     self.clearProject()
                     return False
             else:
@@ -468,9 +474,9 @@ class NWProject():
         # 1.2 : Changes the way autoReplace entries are stored. The 1.1
         #       parser will lose the autoReplace settings if allowed to
         #       read the file. Introduced in version 0.10.
-        # 1.3 : Reduces the number of layouts to onlye two. One for
-        #       novel documents and one for notes. Introduced in version
-        #       1.5.
+        # 1.3 : Reduces the number of layouts to only two. One for novel
+        #       documents and one for project notes. Introduced in
+        #       version 1.5.
 
         if fileVersion not in ("1.0", "1.1", "1.2", "1.3"):
             self.theParent.makeAlert(self.tr(
@@ -486,8 +492,8 @@ class NWProject():
                 self.tr("File Version"),
                 self.tr(
                     "The file format of your project is about to be updated. "
-                    "If you proceed, this project can no longer be opened by "
-                    "an older version of novelWriter. Continue?"
+                    "If you proceed, older versions of novelWriter will no "
+                    "longer be able to open this project. Continue?"
                 )
             )
             if not msgYes:
@@ -625,8 +631,8 @@ class NWProject():
 
     def saveProject(self, autoSave=False):
         """Save the project main XML file. The saving command itself
-        uses a temporary filename, and the file is renamed afterwards to
-        make sure if the save fails, we're not left with a truncated
+        uses a temporary filename, and the file is replaced afterwards
+        to make sure if the save fails, we're not left with a truncated
         file.
         """
         if self.projPath is None:
@@ -707,19 +713,23 @@ class NWProject():
                     encoding="utf-8",
                     xml_declaration=True
                 ))
-        except Exception as e:
-            self.theParent.makeAlert([
-                self.tr("Failed to save project."), str(e)
-            ], nwAlert.ERROR)
+        except Exception as exc:
+            self.theParent.makeAlert(self.tr(
+                "Failed to save project."
+            ), nwAlert.ERROR, exception=exc)
             return False
 
         # If we're here, the file was successfully saved,
         # so let's sort out the temps and backups
-        if os.path.isfile(backFile):
-            os.unlink(backFile)
-        if os.path.isfile(saveFile):
-            os.rename(saveFile, backFile)
-        os.rename(tempFile, saveFile)
+        try:
+            if os.path.isfile(saveFile):
+                os.replace(saveFile, backFile)
+            os.replace(tempFile, saveFile)
+        except Exception as exc:
+            self.theParent.makeAlert(self.tr(
+                "Failed to save project."
+            ), nwAlert.ERROR, exception=exc)
+            return False
 
         # Save project GUI options
         self.optState.saveSettings()
@@ -787,21 +797,21 @@ class NWProject():
         if self.mainConf.backupPath is None or self.mainConf.backupPath == "":
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because no backup path is set. "
-                "Please set a valid backup location in Tools > Preferences."
+                "Please set a valid backup location in Preferences."
             ), nwAlert.ERROR)
             return False
 
         if self.projName is None or self.projName == "":
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because no project name is set. "
-                "Please set a Working Title in Project > Project Settings."
+                "Please set a Working Title in Project Settings."
             ), nwAlert.ERROR)
             return False
 
         if not os.path.isdir(self.mainConf.backupPath):
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because the backup path does not exist. "
-                "Please set a valid backup location in Tools > Preferences."
+                "Please set a valid backup location in Preferences."
             ), nwAlert.ERROR)
             return False
 
@@ -811,17 +821,17 @@ class NWProject():
             try:
                 os.mkdir(baseDir)
                 logger.debug("Created folder: %s", baseDir)
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Could not create backup folder."), str(e)
-                ], nwAlert.ERROR)
+            except Exception as exc:
+                self.theParent.makeAlert(self.tr(
+                    "Could not create backup folder."
+                ), nwAlert.ERROR, exception=exc)
                 return False
 
         if os.path.commonpath([self.projPath, baseDir]) == self.projPath:
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because the backup path is within the "
                 "project folder to be backed up. Please choose a different "
-                "backup path in Tools > Preferences."
+                "backup path in Preferences."
             ), nwAlert.ERROR)
             return False
 
@@ -838,10 +848,10 @@ class NWProject():
                     "Backup archive file written to: {0}"
                 ).format(f"{os.path.join(cleanName, archName)}.zip"), nwAlert.INFO)
 
-        except Exception as e:
-            self.theParent.makeAlert([
-                self.tr("Could not write backup archive."), str(e)
-            ], nwAlert.ERROR)
+        except Exception as exc:
+            self.theParent.makeAlert(self.tr(
+                "Could not write backup archive."
+            ), nwAlert.ERROR, exception=exc)
             return False
 
         self.theParent.setStatus(self.tr(
@@ -852,9 +862,9 @@ class NWProject():
 
     def extractSampleProject(self, projData):
         """Make a copy of the sample project.
-        First, try to copy the content of the sample folder to the new
-        project path, or if the folder doesn't exist, look for the zip
-        file in the assets folder.
+        First, look for the sample.zip file in the assets folder and
+        unpack it. If it doesn't exist, try to copy the content of the
+        sample folder to the new project path. If neither exits, error.
         """
         projPath = projData.get("projPath", None)
         if projPath is None:
@@ -871,10 +881,10 @@ class NWProject():
             try:
                 shutil.unpack_archive(pkgSample, projPath)
                 isSuccess = True
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Failed to create a new example project."), str(e)
-                ], nwAlert.ERROR)
+            except Exception as exc:
+                self.theParent.makeAlert(self.tr(
+                    "Failed to create a new example project."
+                ), nwAlert.ERROR, exception=exc)
 
         elif os.path.isdir(srcSample):
 
@@ -893,10 +903,10 @@ class NWProject():
 
                 isSuccess = True
 
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Failed to create a new example project."), str(e)
-                ], nwAlert.ERROR)
+            except Exception as exc:
+                self.theParent.makeAlert(self.tr(
+                    "Failed to create a new example project."
+                ), nwAlert.ERROR, exception=exc)
 
         else:
             self.theParent.makeAlert(self.tr(
@@ -932,10 +942,10 @@ class NWProject():
                 try:
                     os.mkdir(projPath)
                     logger.debug("Created folder: %s", projPath)
-                except Exception as e:
-                    self.theParent.makeAlert([
-                        self.tr("Could not create new project folder."), str(e)
-                    ], nwAlert.ERROR)
+                except Exception as exc:
+                    self.theParent.makeAlert(self.tr(
+                        "Could not create new project folder."
+                    ), nwAlert.ERROR, exception=exc)
                     return False
 
             if os.path.isdir(projPath):
@@ -960,20 +970,20 @@ class NWProject():
         return True
 
     def setBookTitle(self, bookTitle):
-        """Set the boom title, that is, the title to include in exports.
+        """Set the book title, that is, the title to include in exports.
         """
         self.bookTitle = bookTitle.strip()
         self.setProjectChanged(True)
         return True
 
     def setBookAuthors(self, bookAuthors):
-        """A line separated list of book authors, parsed into an array.
+        """A line-separated list of authors, parsed into an array.
         """
         if not isinstance(bookAuthors, str):
             return False
 
         self.bookAuthors = []
-        for bookAuthor in bookAuthors.split("\n"):
+        for bookAuthor in bookAuthors.splitlines():
             bookAuthor = bookAuthor.strip()
             if bookAuthor == "":
                 continue
@@ -1074,7 +1084,7 @@ class NWProject():
         replaceMap = self.statusItems.setNewEntries(newCols)
         for nwItem in self.projTree:
             if nwItem.itemClass == nwItemClass.NOVEL:
-                if nwItem.itemStatus in replaceMap.keys():
+                if nwItem.itemStatus in replaceMap:
                     nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
         return True
@@ -1086,14 +1096,13 @@ class NWProject():
         replaceMap = self.importItems.setNewEntries(newCols)
         for nwItem in self.projTree:
             if nwItem.itemClass != nwItemClass.NOVEL:
-                if nwItem.itemStatus in replaceMap.keys():
+                if nwItem.itemStatus in replaceMap:
                     nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
         return True
 
     def setAutoReplace(self, autoReplace):
-        """Update the auto-replace dictionary. This replaces the entire
-        dictionary, so alterations have to be made in a copy.
+        """Update the auto-replace dictionary.
         """
         self.autoReplace = autoReplace
         self.setProjectChanged(True)
@@ -1104,7 +1113,7 @@ class NWProject():
         """
         for valKey, valEntry in titleFormat.items():
             if valKey in self.titleFormat:
-                self.titleFormat[valKey] = checkString(valEntry, self.titleFormat[valKey], False)
+                self.titleFormat[valKey] = checkString(valEntry, self.titleFormat[valKey])
         return True
 
     def setProjectChanged(self, bValue):
@@ -1123,7 +1132,7 @@ class NWProject():
     ##
 
     def getAuthors(self):
-        """Returns a formatted string of authors.
+        """Return a formatted string of authors.
         """
         nAuth = len(self.bookAuthors)
         authString = ""
@@ -1220,8 +1229,7 @@ class NWProject():
         return it. The variable is cast to a string before lookup. If
         the word does not exist, it returns itself.
         """
-        theValue = str(theWord)
-        return self.langData.get(theValue, theValue)
+        return self.langData.get(str(theWord), str(theWord))
 
     ##
     #  Internal Functions
@@ -1251,7 +1259,7 @@ class NWProject():
 
         except Exception:
             logger.error("Failed to project language file")
-            novelwriter.logException()
+            logException()
             return False
 
         return True
@@ -1276,7 +1284,7 @@ class NWProject():
 
         except Exception:
             logger.error("Failed to read project lockfile")
-            novelwriter.logException()
+            logException()
             return ["ERROR"]
 
         return theLines
@@ -1297,7 +1305,7 @@ class NWProject():
 
         except Exception:
             logger.error("Failed to write project lockfile")
-            novelwriter.logException()
+            logException()
             return False
 
         return True
@@ -1314,7 +1322,7 @@ class NWProject():
                 os.unlink(lockFile)
             except Exception:
                 logger.error("Failed to remove project lockfile")
-                novelwriter.logException()
+                logException()
                 return False
 
         return True
@@ -1326,10 +1334,10 @@ class NWProject():
             try:
                 os.mkdir(thePath)
                 logger.debug("Created folder: %s", thePath)
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Could not create folder."), str(e)
-                ], nwAlert.ERROR)
+            except Exception as exc:
+                self.theParent.makeAlert(self.tr(
+                    "Could not create folder."
+                ), nwAlert.ERROR, exception=exc)
                 return False
         return True
 
@@ -1346,7 +1354,7 @@ class NWProject():
         return
 
     def _packProjectKeyValue(self, xParent, theName, theDict):
-        """Pack the entries in the auto-replace dictionary.
+        """Pack the entries of a dictionary into an xml element.
         """
         xAutoRep = etree.SubElement(xParent, theName)
         for aKey, aValue in theDict.items():
@@ -1487,7 +1495,7 @@ class NWProject():
 
         except Exception:
             logger.error("Failed to write session stats file")
-            novelwriter.logException()
+            logException()
             return False
 
         return True
@@ -1525,7 +1533,7 @@ class NWProject():
                 except Exception:
                     errList.append(self.tr("Could not move: {0}").format(theFile))
                     logger.error("Could not move: %s", theFile)
-                    novelwriter.logException()
+                    logException()
 
             elif len(dataItem) == 21 and dataItem.endswith("_main.bak"):
                 try:
@@ -1534,7 +1542,7 @@ class NWProject():
                 except Exception:
                     errList.append(self.tr("Could not delete: {0}").format(theFile))
                     logger.error("Could not delete: %s", theFile)
-                    novelwriter.logException()
+                    logException()
 
             else:
                 theErr = self._moveUnknownItem(theData, dataItem)
@@ -1548,7 +1556,7 @@ class NWProject():
         except Exception:
             errList.append(self.tr("Could not delete: {0}").format(theFolder))
             logger.error("Could not delete: %s", theFolder)
-            novelwriter.logException()
+            logException()
 
         return errList
 
@@ -1568,7 +1576,7 @@ class NWProject():
             logger.info("Moved to junk: %s", theSrc)
         except Exception:
             logger.error("Could not move item %s to junk", theSrc)
-            novelwriter.logException()
+            logException()
             return self.tr("Could not move item {0} to {1}.").format(theSrc, theJunk)
 
         return ""
@@ -1603,7 +1611,7 @@ class NWProject():
                     os.unlink(rmFile)
                 except Exception:
                     logger.error("Could not delete: %s", rmFile)
-                    novelwriter.logException()
+                    logException()
                     return False
 
         return True

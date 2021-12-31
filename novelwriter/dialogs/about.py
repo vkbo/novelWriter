@@ -36,6 +36,8 @@ from PyQt5.QtWidgets import (
     QTextBrowser, QLabel
 )
 
+from novelwriter.common import readTextFile
+
 logger = logging.getLogger(__name__)
 
 
@@ -63,7 +65,7 @@ class GuiAbout(QDialog):
         self.nwIcon = QLabel()
         self.nwIcon.setPixmap(self.theParent.theTheme.getPixmap("novelwriter", (nPx, nPx)))
         self.lblName = QLabel("<b>novelWriter</b>")
-        self.lblVers = QLabel("v%s" % novelwriter.__version__)
+        self.lblVers = QLabel(f"v{novelwriter.__version__}")
         self.lblDate = QLabel(datetime.strptime(novelwriter.__date__, "%Y-%m-%d").strftime("%x"))
 
         self.leftBox = QVBoxLayout()
@@ -176,7 +178,7 @@ class GuiAbout(QDialog):
             ),
         )
 
-        aboutMsg += "<h4>%s</h4><p>%s</p>" % (
+        aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
             self.tr("Translations"),
             self._wrapTable([
                 ("English", "Veronica Berglyd Olsen"),
@@ -184,6 +186,7 @@ class GuiAbout(QDialog):
                 ("Norsk Bokmål", "Veronica Berglyd Olsen"),
                 ("Português", "Bruno Meneguello"),
                 ("简体中文", "Qianzhi Long"),
+                ("Español Latinoamericano", "Tommy Marplatt"),
             ])
         )
 
@@ -191,7 +194,7 @@ class GuiAbout(QDialog):
         theIcons = self.theParent.theTheme.theIcons
         if theTheme.themeName and theTheme.themeAuthor != "N/A":
             licURL = f"<a href='{theTheme.themeLicenseUrl}'>{theTheme.themeLicense}</a>"
-            aboutMsg += "<h4>%s</h4><p>%s</p>" % (
+            aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
                 self.tr("Theme: {0}").format(theTheme.themeName),
                 self._wrapTable([
                     (self.tr("Author"), theTheme.themeAuthor),
@@ -202,7 +205,7 @@ class GuiAbout(QDialog):
 
         if theIcons.themeName:
             licURL = f"<a href='{theIcons.themeLicenseUrl}'>{theIcons.themeLicense}</a>"
-            aboutMsg += "<h4>%s</h4><p>%s</p>" % (
+            aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
                 self.tr("Icons: {0}").format(theIcons.themeName),
                 self._wrapTable([
                     (self.tr("Author"), theIcons.themeAuthor),
@@ -213,7 +216,7 @@ class GuiAbout(QDialog):
 
         if theTheme.syntaxName:
             licURL = f"<a href='{theTheme.syntaxLicenseUrl}'>{theTheme.syntaxLicense}</a>"
-            aboutMsg += "<h4>%s</h4><p>%s</p>" % (
+            aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
                 self.tr("Syntax: {0}").format(theTheme.syntaxName),
                 self._wrapTable([
                     (self.tr("Author"), theTheme.syntaxAuthor),
@@ -230,10 +233,9 @@ class GuiAbout(QDialog):
         """Load the content for the Release Notes page.
         """
         docPath = os.path.join(self.mainConf.assetPath, "text", "release_notes.htm")
-        if os.path.isfile(docPath):
-            with open(docPath, mode="r", encoding="utf-8") as inFile:
-                helpText = inFile.read()
-            self.pageNotes.setHtml(helpText)
+        docText = readTextFile(docPath)
+        if docText:
+            self.pageNotes.setHtml(docText)
         else:
             self.pageNotes.setHtml("Error loading release notes text ...")
         return
@@ -242,23 +244,22 @@ class GuiAbout(QDialog):
         """Load the content for the Licence page.
         """
         docPath = os.path.join(self.mainConf.assetPath, "text", "gplv3_en.htm")
-        if os.path.isfile(docPath):
-            with open(docPath, mode="r", encoding="utf-8") as inFile:
-                helpText = inFile.read()
-            self.pageLicense.setHtml(helpText)
+        docText = readTextFile(docPath)
+        if docText:
+            self.pageLicense.setHtml(docText)
         else:
             self.pageLicense.setHtml("Error loading licence text ...")
         return
 
     def _wrapTable(self, theData):
-        """Wrap a list of label/value tuples in a html table.
+        """Wrap a list of label/value tuples in an html table.
         """
         theTable = []
         for aLabel, aValue in theData:
             theTable.append(
                 f"<tr><td><b>{aLabel}:</b></td><td>{aValue}</td></tr>"
             )
-        return "<table>%s</table>" % "".join(theTable)
+        return "<table>{0}</table>".format("".join(theTable))
 
     def _setStyleSheet(self):
         """Set stylesheet for all browser tabs

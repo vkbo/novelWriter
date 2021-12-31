@@ -27,7 +27,8 @@ import os
 import logging
 
 from novelwriter.enum import nwItemLayout, nwItemClass
-from novelwriter.common import isHandle
+from novelwriter.error import formatException
+from novelwriter.common import isHandle, sha256sum
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,8 @@ class NWDoc():
         self._fileLoc   = None  # The file location of the currently open item
         self._docMeta   = {}    # The meta data of the currently open item
         self._docError  = ""    # The latest encountered IO error
+        self._prevHash  = None  # Previous sha256sum of the document file
+        self._currHash  = None  # Latest sha256sum of the document file
 
         if isHandle(theHandle):
             self._docHandle = theHandle
@@ -53,15 +56,21 @@ class NWDoc():
 
         return
 
+    def __repr__(self):
+        return f"<NWDoc handle={self._docHandle}>"
+
+    def __bool__(self):
+        return self._docHandle is not None and bool(self._theItem)
+
     ##
     #  Class Methods
     ##
 
     def readDocument(self, isOrphan=False):
-        """Read a document from set handle, capturing potential file
-        system errors and parse meta data. If the document doesn't exist
-        on disk, return an empty string. If something went wrong, return
-        None.
+        """Read the document specified by the handle set in the
+        contructor, capturing potential file system errors and parse
+        meta data. If the document doesn't exist on disk, return an
+        empty string. If something went wrong, return None.
         """
         self._docError = ""
         if self._docHandle is None:
@@ -80,10 +89,11 @@ class NWDoc():
 
         theText = ""
         self._docMeta = {}
+        self._prevHash = sha256sum(docPath)
+
         if os.path.isfile(docPath):
             try:
                 with open(docPath, mode="r", encoding="utf-8") as inFile:
-
                     # Check the first <= 10 lines for metadata
                     for i in range(10):
                         inLine = inFile.readline()
@@ -96,21 +106,22 @@ class NWDoc():
                     # Load the rest of the file
                     theText += inFile.read()
 
-            except Exception as e:
-                self._docError = str(e)
+            except Exception as exc:
+                self._docError = formatException(exc)
                 return None
 
         else:
             # The document file does not exist, so we assume it's a new
             # document and initialise an empty text string.
-            logger.debug("The requested document does not exist.")
+            logger.debug("The requested document does not exist")
             return ""
 
         return theText
 
-    def writeDocument(self, docText):
-        """Write the document. The file is saved via a temp file in case
-        of save failure. Returns True if successful, False if not.
+    def writeDocument(self, docText, forceWrite=False):
+        """Write the document specified by the handle attribute. Handle
+        any IO errors in the process  Returns True if successful, False
+        if not.
         """
         self._docError = ""
         if self._docHandle is None:
@@ -125,7 +136,13 @@ class NWDoc():
         docPath = os.path.join(self.theProject.projContent, docFile)
         docTemp = os.path.join(self.theProject.projContent, docFile+"~")
 
-        # DocMeta line
+        if self._prevHash is not None and not forceWrite:
+            self._currHash = sha256sum(docPath)
+            if self._currHash is not None and self._currHash != self._prevHash:
+                logger.error("File has been altered on disk since opened")
+                return False
+
+        # DocMeta Line
         if self._theItem is None:
             docMeta = ""
         else:
@@ -139,15 +156,16 @@ class NWDoc():
             with open(docTemp, mode="w", encoding="utf-8") as outFile:
                 outFile.write(docMeta)
                 outFile.write(docText)
-        except Exception as e:
-            self._docError = str(e)
+        except Exception as exc:
+            self._docError = formatException(exc)
             return False
 
         # If we're here, the file was successfully saved, so we can
         # replace the temp file with the actual file
-        if os.path.isfile(docPath):
-            os.unlink(docPath)
-        os.rename(docTemp, docPath)
+        os.replace(docTemp, docPath)
+
+        self._prevHash = sha256sum(docPath)
+        self._currHash = self._prevHash
 
         return True
 
@@ -160,19 +178,18 @@ class NWDoc():
             logger.error("No document handle set")
             return False
 
-        docFile = self._docHandle+".nwd"
-
-        chkList = []
-        chkList.append(os.path.join(self.theProject.projContent, docFile))
-        chkList.append(os.path.join(self.theProject.projContent, docFile+"~"))
+        chkList = [
+            os.path.join(self.theProject.projContent, f"{self._docHandle}.nwd"),
+            os.path.join(self.theProject.projContent, f"{self._docHandle}.nwd~"),
+        ]
 
         for chkFile in chkList:
             if os.path.isfile(chkFile):
                 try:
                     os.unlink(chkFile)
                     logger.debug("Deleted: %s", chkFile)
-                except Exception as e:
-                    self._docError = str(e)
+                except Exception as exc:
+                    self._docError = formatException(exc)
                     return False
 
         return True
@@ -182,18 +199,18 @@ class NWDoc():
     ##
 
     def getFileLocation(self):
-        """Return the file location of the current file.
+        """Return the file location of the current document.
         """
         return self._fileLoc
 
     def getCurrentItem(self):
-        """Return a pointer to the currently open item.
+        """Return a pointer to the currently open NWItem.
         """
         return self._theItem
 
     def getMeta(self):
-        """Parses the document meta tag and returns the path and name as
-        a list and a string.
+        """Parse the document meta tag and return the name, parent,
+        class and layout meta values.
         """
         theName = self._docMeta.get("name", "")
         theParent = self._docMeta.get("parent", None)
@@ -212,7 +229,7 @@ class NWDoc():
     ##
 
     def _parseMeta(self, metaLine):
-        """Parse a line from the document statting with the characters
+        """Parse a line from the document starting with the characters
         %%~ that may contain meta data.
         """
         if metaLine.startswith("%%~name:"):

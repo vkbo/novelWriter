@@ -43,7 +43,14 @@ def logException():
     """Log the content of an exception message.
     """
     exType, exValue, _ = sys.exc_info()
-    logger.error("%s: %s", exType.__name__, str(exValue).strip("'"))
+    logger.error("%s: %s", exType.__name__, str(exValue))
+
+
+def formatException(exc):
+    """Format an exception as a string the same way the default
+    exception handler does.
+    """
+    return f"{type(exc).__name__}: {str(exc)}"
 
 
 # =============================================================================================== #
@@ -113,27 +120,29 @@ class NWErrorMessage(QDialog):
             kernelVersion = "Unknown"
 
         try:
+            import lxml
+            lxmlVersion = lxml.__version__
+        except Exception:
+            lxmlVersion = "Unknown"
+
+        try:
+            import enchant
+            enchantVersion = enchant.__version__
+        except Exception:
+            enchantVersion = "Unknown"
+
+        try:
+            exTrace = "\n".join(format_tb(exTrace))
             self.msgBody.setPlainText((
                 "Environment:\n"
-                "novelWriter Version: {nwVersion}\n"
-                "Host OS: {osType} ({osKernel})\n"
-                "Python: {pyVersion} ({pyHexVer:#x})\n"
-                "Qt: {qtVers}, PyQt: {pyqtVers}\n"
-                "\n"
-                "{exType}:\n{exMessage}\n"
-                "\n"
-                "Traceback:\n{exTrace}\n"
-            ).format(
-                nwVersion=__version__,
-                osType=sys.platform,
-                osKernel=kernelVersion,
-                pyVersion=sys.version.split()[0],
-                pyHexVer=sys.hexversion,
-                qtVers=QT_VERSION_STR,
-                pyqtVers=PYQT_VERSION_STR,
-                exType=exType.__name__,
-                exMessage=str(exValue),
-                exTrace="\n".join(format_tb(exTrace)),
+                f"novelWriter Version: {__version__}\n"
+                f"Host OS: {sys.platform} ({kernelVersion})\n"
+                f"Python: {sys.version.split()[0]} ({sys.hexversion:#x})\n"
+                f"Qt: {QT_VERSION_STR}, PyQt: {PYQT_VERSION_STR}\n"
+                f"lxml: {lxmlVersion}\n"
+                f"enchant: {enchantVersion}\n\n"
+                f"{exType.__name__}:\n{str(exValue)}\n\n"
+                f"Traceback:\n{exTrace}\n"
             ))
         except Exception:
             self.msgBody.setPlainText("Failed to generate error report ...")
@@ -183,13 +192,13 @@ def exceptionHandler(exType, exValue, exTrace):
             nwGUI.closeMain()
             logger.info("Emergency shutdown successful")
 
-        except Exception as e:
+        except Exception as exc:
             logger.critical("Could not close the project before exiting")
-            logger.critical(str(e))
+            logger.critical(formatException(exc))
 
         qApp.exit(1)
 
-    except Exception as e:
-        logger.critical(str(e))
+    except Exception as exc:
+        logger.critical(formatException(exc))
 
     return

@@ -29,16 +29,16 @@ import logging
 import novelwriter
 
 from math import ceil
-from functools import partial
 
-from PyQt5.QtCore import QCoreApplication, Qt
-from PyQt5.QtWidgets import QStyle, qApp
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import qApp
 from PyQt5.QtGui import (
     QPalette, QColor, QIcon, QFont, QFontMetrics, QFontDatabase, QPixmap
 )
 
-from novelwriter.enum import nwAlert, nwItemLayout, nwItemType
-from novelwriter.common import NWConfigParser
+from novelwriter.enum import nwItemLayout, nwItemType
+from novelwriter.error import logException
+from novelwriter.common import NWConfigParser, readTextFile
 from novelwriter.constants import nwLabels
 
 logger = logging.getLogger(__name__)
@@ -51,19 +51,10 @@ logger = logging.getLogger(__name__)
 
 class GuiTheme:
 
-    def __init__(self, theParent):
+    def __init__(self):
 
-        self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theIcons   = GuiIcons(self.theParent)
-        self.guiPalette = QPalette()
-        self.guiPath    = "gui"
-        self.fontPath   = "fonts"
-        self.syntaxPath = "syntax"
-        self.cssName    = "style.qss"
-        self.confName   = "theme.conf"
-        self.themeList  = []
-        self.syntaxList = []
+        self.mainConf = novelwriter.CONFIG
+        self.theIcons = GuiIcons(self)
 
         # Loaded Theme Settings
         # =====================
@@ -84,6 +75,7 @@ class GuiTheme:
         self.helpText    = [0, 0, 0]
 
         # Loaded Syntax Settings
+        # ======================
 
         # Main
         self.syntaxName        = ""
@@ -115,14 +107,24 @@ class GuiTheme:
         # Changeable Settings
         self.guiTheme   = None
         self.guiSyntax  = None
-        self.themeRoot  = None
-        self.themePath  = None
         self.syntaxFile = None
-        self.confFile   = None
         self.cssFile    = None
         self.guiFontDB  = QFontDatabase()
 
-        self.loadFonts()
+        # Class Setup
+        # ===========
+
+        self._guiPalette  = QPalette()
+        self._themeList   = []
+        self._syntaxList  = []
+        self._availThemes = {}
+        self._availSyntax = {}
+
+        self._listConf(self._availSyntax, os.path.join(self.mainConf.dataPath, "syntax"))
+        self._listConf(self._availSyntax, os.path.join(self.mainConf.assetPath, "syntax"))
+        self._listConf(self._availThemes, os.path.join(self.mainConf.dataPath, "themes"))
+        self._listConf(self._availThemes, os.path.join(self.mainConf.assetPath, "themes"))
+
         self.updateFont()
         self.updateTheme()
         self.theIcons.updateTheme()
@@ -162,9 +164,6 @@ class GuiTheme:
         logger.verbose("Text 'N' Height: %d", self.textNHeight)
         logger.verbose("Text 'N' Width: %d", self.textNWidth)
 
-        # Internal Mapping
-        self.tr = partial(QCoreApplication.translate, "GuiTheme")
-
         return
 
     ##
@@ -184,43 +183,14 @@ class GuiTheme:
     #  Actions
     ##
 
-    def loadFonts(self):
-        """Add the fonts in the assets fonts folder to the app.
-        """
-        logger.debug("Loading additional fonts")
-
-        ttfList = []
-        fontAssets = os.path.join(self.mainConf.assetPath, self.fontPath)
-        for fontFam in os.listdir(fontAssets):
-            fontDir = os.path.join(fontAssets, fontFam)
-            if os.path.isdir(fontDir):
-                logger.verbose("Found font: %s", fontFam)
-                if fontFam not in self.guiFontDB.families():
-                    for fontFile in os.listdir(fontDir):
-                        ttfFile = os.path.join(fontDir, fontFile)
-                        if os.path.isfile(ttfFile) and fontFile.endswith(".ttf"):
-                            ttfList.append(ttfFile)
-
-        for ttfFile in ttfList:
-            relPath = os.path.relpath(ttfFile, fontAssets)
-            logger.verbose("Adding font: %s", relPath)
-            fontID = self.guiFontDB.addApplicationFont(ttfFile)
-            if fontID < 0:
-                logger.error("Failed to add font: %s", relPath)
-
-        return
-
     def updateFont(self):
         """Update the GUI's font style from settings.
         """
         theFont = QFont()
         if self.mainConf.guiFont not in self.guiFontDB.families():
-            if self.mainConf.osWindows:
-                if "Arial" in self.guiFontDB.families():
-                    theFont.setFamily("Arial")
-                else:
-                    # On Windows, fall back to Cantarell provided by novelWriter
-                    theFont.setFamily("Cantarell")
+            if self.mainConf.osWindows and "Arial" in self.guiFontDB.families():
+                # On Windows we default to Arial if possible
+                theFont.setFamily("Arial")
                 theFont.setPointSize(10)
             else:
                 theFont = self.guiFontDB.systemFont(QFontDatabase.GeneralFont)
@@ -237,16 +207,21 @@ class GuiTheme:
     def updateTheme(self):
         """Update the GUI theme from theme files.
         """
-        self.guiTheme   = self.mainConf.guiTheme
-        self.guiSyntax  = self.mainConf.guiSyntax
-        self.themeRoot  = self.mainConf.themeRoot
-        self.themePath  = os.path.join(self.mainConf.themeRoot, self.guiPath, self.guiTheme)
-        self.syntaxFile = os.path.join(self.themeRoot, self.syntaxPath, self.guiSyntax+".conf")
-        self.confFile   = os.path.join(self.themePath, self.confName)
-        self.cssFile    = os.path.join(self.themePath, self.cssName)
+        self.guiTheme  = self.mainConf.guiTheme
+        self.guiSyntax = self.mainConf.guiSyntax
 
-        self.loadTheme()
-        self.loadSyntax()
+        self.themeFile = self._availThemes.get(self.guiTheme, None)
+        if self.themeFile is None:
+            logger.error("Could not find GUI theme '%s'", self.guiTheme)
+        else:
+            self.cssFile = self.themeFile[:-5]+".css"
+            self.loadTheme()
+
+        self.syntaxFile = self._availSyntax.get(self.guiSyntax, None)
+        if self.syntaxFile is None:
+            logger.error("Could not find syntax theme '%s'", self.guiSyntax)
+        else:
+            self.loadSyntax()
 
         # Update dependant colours
         backCol = qApp.palette().window().color()
@@ -267,28 +242,16 @@ class GuiTheme:
     def loadTheme(self):
         """Load the currently specified GUI theme.
         """
-        logger.debug("Loading theme files")
-        logger.debug("System icon theme is '%s'", str(QIcon.themeName()))
-
-        # CSS File
-        cssData = ""
-        try:
-            if os.path.isfile(self.cssFile):
-                with open(self.cssFile, mode="r", encoding="utf-8") as inFile:
-                    cssData = inFile.read()
-        except Exception:
-            logger.error("Could not load theme css file")
-            novelwriter.logException()
-            return False
+        logger.info("Loading GUI theme '%s'", self.guiTheme)
 
         # Config File
         confParser = NWConfigParser()
         try:
-            with open(self.confFile, mode="r", encoding="utf-8") as inFile:
+            with open(self.themeFile, mode="r", encoding="utf-8") as inFile:
                 confParser.read_file(inFile)
         except Exception:
-            logger.error("Could not load theme settings from: %s", self.confFile)
-            novelwriter.logException()
+            logger.error("Could not load theme settings from: %s", self.themeFile)
+            logException()
             return False
 
         # Main
@@ -327,18 +290,20 @@ class GuiTheme:
             self.statUnsaved = self._loadColour(confParser, cnfSec, "statusunsaved")
             self.statSaved   = self._loadColour(confParser, cnfSec, "statussaved")
 
-        # Apply Styles
-        qApp.setStyleSheet(cssData)
-        qApp.setPalette(self.guiPalette)
+        # CSS File
+        cssData = readTextFile(self.cssFile)
+        if cssData:
+            qApp.setStyleSheet(cssData)
 
-        logger.info("Loaded theme '%s'", self.guiTheme)
+        # Apply Styles
+        qApp.setPalette(self._guiPalette)
 
         return True
 
     def loadSyntax(self):
         """Load the currently specified syntax highlighter theme.
         """
-        logger.debug("Loading syntax theme files")
+        logger.info("Loading syntax theme '%s'", self.guiSyntax)
 
         confParser = NWConfigParser()
         try:
@@ -346,7 +311,7 @@ class GuiTheme:
                 confParser.read_file(inFile)
         except Exception:
             logger.error("Could not load syntax colours from: %s", self.syntaxFile)
-            novelwriter.logException()
+            logException()
             return False
 
         # Main
@@ -380,78 +345,58 @@ class GuiTheme:
             self.colRepTag = self._loadColour(confParser, cnfSec, "replacetag")
             self.colMod    = self._loadColour(confParser, cnfSec, "modifier")
 
-        logger.info("Loaded syntax theme '%s'", self.guiSyntax)
-
         return True
 
     def listThemes(self):
         """Scan the GUI themes folder and list all themes.
         """
-        if self.themeList:
-            return self.themeList
+        if self._themeList:
+            return self._themeList
 
         confParser = NWConfigParser()
-        for themeDir in os.listdir(os.path.join(self.mainConf.themeRoot, self.guiPath)):
-            themeConf = os.path.join(
-                self.mainConf.themeRoot, self.guiPath, themeDir, self.confName
-            )
-            logger.verbose("Checking theme config for '%s'", themeDir)
-            try:
-                with open(themeConf, mode="r", encoding="utf-8") as inFile:
-                    confParser.read_file(inFile)
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Could not load theme config file."), str(e)
-                ], nwAlert.ERROR)
-                continue
-            themeName = ""
-            if confParser.has_section("Main"):
-                if confParser.has_option("Main", "name"):
-                    themeName = confParser.get("Main", "name")
-                    logger.verbose("Theme name is '%s'", themeName)
-            if themeName != "":
-                self.themeList.append((themeDir, themeName))
+        for themeKey, themePath in self._availThemes.items():
+            logger.verbose("Checking theme config for '%s'", themeKey)
+            themeName = _loadInternalName(confParser, themePath)
+            if themeName:
+                self._themeList.append((themeKey, themeName))
 
-        self.themeList = sorted(self.themeList, key=lambda x: x[1])
+        self._themeList = sorted(self._themeList, key=lambda x: x[1])
 
-        return self.themeList
+        return self._themeList
 
     def listSyntax(self):
         """Scan the syntax themes folder and list all themes.
         """
-        if self.syntaxList:
-            return self.syntaxList
+        if self._syntaxList:
+            return self._syntaxList
 
         confParser = NWConfigParser()
-        syntaxDir = os.path.join(self.mainConf.themeRoot, self.syntaxPath)
-        for syntaxFile in os.listdir(syntaxDir):
-            syntaxPath = os.path.join(syntaxDir, syntaxFile)
-            if not os.path.isfile(syntaxPath):
-                continue
-            logger.verbose("Checking theme syntax for '%s'", syntaxFile)
-            try:
-                with open(syntaxPath, mode="r", encoding="utf-8") as inFile:
-                    confParser.read_file(inFile)
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Could not load syntax file."), str(e)
-                ], nwAlert.ERROR)
-                return []
-            syntaxName = ""
-            if confParser.has_section("Main"):
-                if confParser.has_option("Main", "name"):
-                    syntaxName = confParser.get("Main", "name")
-            if len(syntaxFile) > 5 and syntaxName != "":
-                self.syntaxList.append((syntaxFile[:-5], syntaxName))
-                logger.verbose("Syntax name is '%s'", syntaxName)
+        for syntaxKey, syntaxPath in self._availSyntax.items():
+            logger.verbose("Checking theme syntax for '%s'", syntaxKey)
+            syntaxName = _loadInternalName(confParser, syntaxPath)
+            if syntaxName:
+                self._syntaxList.append((syntaxKey, syntaxName))
 
-        self.syntaxList = sorted(self.syntaxList, key=lambda x: x[1])
+        self._syntaxList = sorted(self._syntaxList, key=lambda x: x[1])
 
-        return self.syntaxList
+        return self._syntaxList
 
     ##
     #  Internal Functions
     ##
+
+    def _listConf(self, targetDict, checkDir):
+        """Scan for syntax and gui themes and populate the dictionary.
+        """
+        if not os.path.isdir(checkDir):
+            return
+
+        for checkFile in os.listdir(checkDir):
+            confPath = os.path.join(checkDir, checkFile)
+            if os.path.isfile(confPath) and confPath.endswith(".conf"):
+                targetDict[checkFile[:-5]] = confPath
+
+        return
 
     def _loadColour(self, confParser, cnfSec, cnfName):
         """Load a colour value from a config string.
@@ -485,7 +430,7 @@ class GuiTheme:
                 logger.error("Could not load theme colours for '%s' from config file", cnfName)
                 return
         if len(readCol) == 3:
-            self.guiPalette.setColor(paletteVal, QColor(*readCol))
+            self._guiPalette.setColor(paletteVal, QColor(*readCol))
         return
 
 # End Class GuiTheme
@@ -498,116 +443,57 @@ class GuiTheme:
 class GuiIcons:
     """The icon class manages the content of the assets/icons folder,
     and provides a simple interface for requesting icons. Only icons
-    listed in the ICON_MAP are handled.
+    listed in the ICON_KEYS are handled.
 
     Icons are loaded on first request, and then cached for further
-    requests. Each icon key in the ICON_MAP has a series of fallbacks:
-      * The first lookup is in the key-to-file map for the selected icon
-        theme. The map is specified in the icons.conf file in the theme
-        folder. The map makes it possible to preserve the original file
-        name from the icon theme were the icons were extracted.
-      * Second, if the icon does not exist in the theme map, the
-        GuiIcons class will check if there is a QStyle icon specified in
-        the ICON_MAP data tuple[0]. This will let Qt pull the closest
-        system icon.
-      * Third action is to look up the freedesktop icon theme name using
-        the fromTheme Qt call. This generally produces the same result
-        as the step above, but has more icons available in other cases.
-      * Fourth, and finally, the icon is looked up in the fallback
-        folder. Files in this folder must have the same file name as the
-        novelWriter internal icon key, with '-dark' appended to them for
-        the dark background version of the icon. If no dark icon exists,
-        the non-dark version will be returned.
+    requests. Each icon key in the ICON_KEYS set has standard icon set
+    in the icon theme conf file. The existence of the file, and the
+    definition of all keys are checked when the theme is loaded.
+
+    When an icon is requested, the icon is loaded and cached. If it is
+    missing, a blank icon is returned and a warning issued.
     """
 
-    ICON_MAP = {
+    ICON_KEYS = {
         # Project and GUI icons
-        "novelwriter":     (None, None),
-        "cls_none":        (QStyle.SP_DriveHDIcon, "drive-harddisk"),
-        "cls_novel":       (QStyle.SP_DriveHDIcon, "drive-harddisk"),
-        "cls_plot":        (QStyle.SP_DriveHDIcon, "drive-harddisk"),
-        "cls_character":   (QStyle.SP_DriveHDIcon, "drive-harddisk"),
-        "cls_world":       (QStyle.SP_DriveHDIcon, "drive-harddisk"),
-        "cls_timeline":    (QStyle.SP_DriveHDIcon, "drive-harddisk"),
-        "cls_object":      (QStyle.SP_DriveHDIcon, "drive-harddisk"),
-        "cls_entity":      (QStyle.SP_DriveHDIcon, "drive-harddisk"),
-        "cls_custom":      (QStyle.SP_DriveHDIcon, "drive-harddisk"),
-        "cls_archive":     (QStyle.SP_DriveHDIcon, "drive-harddisk"),
-        "cls_trash":       (QStyle.SP_TrashIcon,   "user-trash"),
-        "proj_document":   (QStyle.SP_FileIcon,    "x-office-document"),
-        "proj_title":      (QStyle.SP_FileIcon,    "x-office-document"),
-        "proj_chapter":    (QStyle.SP_FileIcon,    "x-office-document"),
-        "proj_scene":      (QStyle.SP_FileIcon,    "x-office-document"),
-        "proj_note":       (QStyle.SP_FileIcon,    "x-office-document"),
-        "proj_folder":     (QStyle.SP_DirIcon,     "folder"),
-        "proj_nwx":        (None, None),
-        "status_lang":     (None, None),
-        "status_time":     (None, None),
-        "status_idle":     (None, None),
-        "status_stats":    (None, None),
-        "status_lines":    (None, None),
-        "doc_h0":          (QStyle.SP_FileIcon, "x-office-document"),
-        "doc_h1":          (QStyle.SP_FileIcon, "x-office-document"),
-        "doc_h2":          (QStyle.SP_FileIcon, "x-office-document"),
-        "doc_h3":          (QStyle.SP_FileIcon, "x-office-document"),
-        "doc_h4":          (QStyle.SP_FileIcon, "x-office-document"),
-        "search_case":     (None, None),
-        "search_regex":    (None, None),
-        "search_word":     (None, None),
-        "search_loop":     (None, None),
-        "search_project":  (None, None),
-        "search_cancel":   (None, None),
-        "search_preserve": (None, None),
+        "novelwriter", "proj_nwx",
+        "cls_none", "cls_novel", "cls_plot", "cls_character", "cls_world",
+        "cls_timeline", "cls_object", "cls_entity", "cls_custom", "cls_archive", "cls_trash",
+        "proj_document", "proj_title", "proj_chapter", "proj_scene", "proj_note", "proj_folder",
+        "status_lang", "status_time", "status_idle", "status_stats", "status_lines",
+        "doc_h0", "doc_h1", "doc_h2", "doc_h3", "doc_h4",
+        "search_case", "search_regex", "search_word", "search_loop", "search_project",
+        "search_cancel", "search_preserve",
 
         # General Button Icons
-        "folder-open":    (QStyle.SP_DirOpenIcon,         "folder-open"),
-        "delete":         (QStyle.SP_DialogDiscardButton, "edit-delete"),
-        "close":          (QStyle.SP_DialogCloseButton,   "window-close"),
-        "done":           (QStyle.SP_DialogApplyButton,    None),
-        "clear":          (QStyle.SP_LineEditClearButton, "clear_left"),
-        "save":           (QStyle.SP_DialogSaveButton,    "document-save"),
-        "add":            (None, "list-add"),
-        "remove":         (None, "list-remove"),
-        "search":         (None, "edit-find"),
-        "search-replace": (None, "edit-find-replace"),
-        "edit":           (None, None),
-        "check":          (None, None),
-        "cross":          (None, None),
-        "hash":           (None, None),
-        "maximise":       (None, None),
-        "minimise":       (None, None),
-        "refresh":        (None, None),
-        "reference":      (None, None),
-        "backward":       (None, None),
-        "forward":        (None, None),
-        "settings":       (None, None),
+        "delete", "close", "done", "clear", "save", "add", "remove",
+        "search", "search_replace", "edit", "check", "cross", "hash",
+        "maximise", "minimise", "refresh", "reference", "backward",
+        "forward", "settings",
 
         # Switches
-        "sticky-on":  (None, None),
-        "sticky-off": (None, None),
-        "bullet-on":  (None, None),
-        "bullet-off": (None, None),
+        "sticky-on", "sticky-off",
+        "bullet-on", "bullet-off",
     }
 
     DECO_MAP = {
         "wiz-back": "wizard-back.jpg",
     }
 
-    def __init__(self, theParent):
+    def __init__(self, theTheme):
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
+        self.mainConf = novelwriter.CONFIG
+        self.theTheme = theTheme
 
         # Storage
-        self.qIcons    = {}
-        self.themeMap  = {}
-        self.themeList = []
-        self.fbackName = "fallback"
-        self.confName  = "icons.conf"
+        self._qIcons    = {}
+        self._themeMap  = {}
+        self._themeList = []
+        self._confName  = "icons.conf"
 
         # Icon Theme Path
-        self.iconPath = None
-        self.confFile = None
+        self._iconPath  = os.path.join(self.mainConf.assetPath, "icons")
+        self._themePath = os.path.join(self._iconPath, "system")
 
         # Icon Theme Meta
         self.themeName        = ""
@@ -629,25 +515,24 @@ class GuiIcons:
         the GUI icons cannot really be replaced without writing specific
         update functions for the classes where they're used.
         """
-        logger.debug("Loading icon theme files")
-
-        self.themeMap = {}
-        checkPath = os.path.join(self.mainConf.iconPath, self.mainConf.guiIcons)
-        if os.path.isdir(checkPath):
-            logger.debug("Loading icon theme '%s'", self.mainConf.guiIcons)
-            self.iconPath = checkPath
-            self.confFile = os.path.join(checkPath, self.confName)
-        else:
+        self._themeMap = {}
+        themePath = self._getThemePath()
+        if themePath is None:
+            logger.warning("No icons loaded")
             return False
+
+        self._themePath = themePath
+        themeConf = os.path.join(themePath, self._confName)
+        logger.info("Loading icon theme '%s'", self.mainConf.guiIcons)
 
         # Config File
         confParser = NWConfigParser()
         try:
-            with open(self.confFile, mode="r", encoding="utf-8") as inFile:
+            with open(themeConf, mode="r", encoding="utf-8") as inFile:
                 confParser.read_file(inFile)
         except Exception:
-            logger.error("Could not load icon theme settings from: %s", self.confFile)
-            novelwriter.logException()
+            logger.error("Could not load icon theme settings from: %s", themeConf)
+            logException()
             return False
 
         # Main
@@ -661,21 +546,28 @@ class GuiIcons:
             self.themeLicense     = confParser.rdStr(cnfSec, "license", "N/A")
             self.themeLicenseUrl  = confParser.rdStr(cnfSec, "licenseurl", "")
 
-        # Palette
+        # Populate Icon Map
         cnfSec = "Map"
         if confParser.has_section(cnfSec):
             for iconName, iconFile in confParser.items(cnfSec):
-                if iconName not in self.ICON_MAP:
+                if iconName not in self.ICON_KEYS:
                     logger.error("Unknown icon name '%s' in config file", iconName)
                 else:
-                    iconPath = os.path.join(self.iconPath, iconFile)
+                    iconPath = os.path.join(self._themePath, iconFile)
                     if os.path.isfile(iconPath):
-                        self.themeMap[iconName] = iconPath
+                        self._themeMap[iconName] = iconPath
                         logger.verbose("Icon slot '%s' using file '%s'", iconName, iconFile)
                     else:
                         logger.error("Icon file '%s' not in theme folder", iconFile)
 
-        logger.info("Loaded icon theme '%s'", self.mainConf.guiIcons)
+        # Check that icons have been defined
+        logger.debug("Scanning theme icons")
+        for iconKey in self.ICON_KEYS:
+            if iconKey in ("novelwriter", "proj_nwx"):
+                # These are not part of the theme itself
+                continue
+            if iconKey not in self._themeMap:
+                logger.error("No icon file specified for '%s'", iconKey)
 
         return True
 
@@ -713,11 +605,11 @@ class GuiIcons:
         return, load it, and if it still doesn't exist, return an empty
         icon.
         """
-        if iconKey in self.qIcons:
-            return self.qIcons[iconKey]
+        if iconKey in self._qIcons:
+            return self._qIcons[iconKey]
         else:
             qIcon = self._loadIcon(iconKey)
-            self.qIcons[iconKey] = qIcon
+            self._qIcons[iconKey] = qIcon
             return qIcon
 
     def getPixmap(self, iconKey, iconSize):
@@ -758,89 +650,87 @@ class GuiIcons:
     def listThemes(self):
         """Scan the icons themes folder and list all themes.
         """
-        if self.themeList:
-            return self.themeList
+        if self._themeList:
+            return self._themeList
 
         confParser = NWConfigParser()
-        for themeDir in os.listdir(self.mainConf.iconPath):
-            themePath = os.path.join(self.mainConf.iconPath, themeDir)
-            if not os.path.isdir(themePath) or themeDir == self.fbackName:
+        for themeDir in os.listdir(self._iconPath):
+            themePath = os.path.join(self._iconPath, themeDir)
+            if not os.path.isdir(themePath):
                 continue
-            themeConf = os.path.join(themePath, self.confName)
+
             logger.verbose("Checking icon theme config for '%s'", themeDir)
-            try:
-                with open(themeConf, mode="r", encoding="utf-8") as inFile:
-                    confParser.read_file(inFile)
-            except Exception as e:
-                self.theParent.makeAlert([
-                    self.tr("Could not load theme config file."), str(e)
-                ], nwAlert.ERROR)
-                continue
-            themeName = ""
-            if confParser.has_section("Main"):
-                if confParser.has_option("Main", "name"):
-                    themeName = confParser.get("Main", "name")
-                    logger.verbose("Theme name is '%s'", themeName)
-            if themeName != "":
-                self.themeList.append((themeDir, themeName))
+            themeConf = os.path.join(themePath, self._confName)
+            themeName = _loadInternalName(confParser, themeConf)
+            if themeName:
+                self._themeList.append((themeDir, themeName))
 
-        self.themeList = sorted(self.themeList, key=lambda x: x[1])
+        self._themeList = sorted(self._themeList, key=lambda x: x[1])
 
-        return self.themeList
+        return self._themeList
 
     ##
     #  Internal Functions
     ##
 
-    def _loadIcon(self, iconKey):
-        """Load an icon from the assets or themes folder, with a
-        preference for dark/light icons depending on theme type, if such
-        an icon exists. Prefer svg files over png files. Always returns
-        a QIcon.
+    def _getThemePath(self):
+        """Get a valid theme path. Returns None if it fails.
         """
-        if iconKey not in self.ICON_MAP:
+        themePath = os.path.join(self.mainConf.assetPath, "icons", self.mainConf.guiIcons)
+        if not os.path.isdir(themePath):
+            logger.warning(
+                "Icon theme '%s' not found, resetting to default", self.mainConf.guiIcons
+            )
+            self.mainConf.setDefaultIconTheme()
+
+            themePath = os.path.join(self.mainConf.assetPath, "icons", self.mainConf.guiIcons)
+            if not os.path.isdir(themePath):
+                logger.error("Default icon theme not found")
+                return None
+
+        return themePath
+
+    def _loadIcon(self, iconKey):
+        """Load an icon from the assets themes folder. Is guaranteed to
+        return a QIcon.
+        """
+        if iconKey not in self.ICON_KEYS:
             logger.error("Requested unknown icon name '%s'", iconKey)
             return QIcon()
 
-        # If we just want the app icon, return it right away
+        # If we just want the app icons, return right away
         if iconKey == "novelwriter":
-            return QIcon(os.path.join(self.mainConf.iconPath, "novelwriter.svg"))
+            return QIcon(os.path.join(self._iconPath, "novelwriter.svg"))
+        elif iconKey == "proj_nwx":
+            return QIcon(os.path.join(self._iconPath, "x-novelwriter-project.svg"))
 
-        # Otherwise, we start looking for it
-        # First in the theme folder
-        if iconKey in self.themeMap:
-            relPath = os.path.relpath(self.themeMap[iconKey], self.mainConf.iconPath)
+        # Otherwise, we load from the theme folder
+        if iconKey in self._themeMap:
+            relPath = os.path.relpath(self._themeMap[iconKey], self._iconPath)
             logger.verbose("Loading: %s", relPath)
-            return QIcon(self.themeMap[iconKey])
+            return QIcon(self._themeMap[iconKey])
 
-        # Next, we try to load the Qt style icons
-        if self.ICON_MAP[iconKey][0] is not None:
-            logger.verbose("Loading icon '%s' from Qt QStyle.standardIcon", iconKey)
-            return qApp.style().standardIcon(self.ICON_MAP[iconKey][0])
-
-        # If we're still here, try to set from system theme
-        if self.ICON_MAP[iconKey][1] is not None:
-            logger.verbose("Loading icon '%s' from system theme", iconKey)
-            if QIcon().hasThemeIcon(self.ICON_MAP[iconKey][1]):
-                return QIcon().fromTheme(self.ICON_MAP[iconKey][1])
-
-        # Finally. we check if we have a fallback icon
-        if self.mainConf.guiDark:
-            fbackIcon = os.path.join(
-                self.mainConf.iconPath, self.fbackName, "%s-dark.svg" % iconKey
-            )
-            if os.path.isfile(fbackIcon):
-                logger.verbose("Loading icon '%s' from fallback theme (dark mode)", iconKey)
-                return QIcon(fbackIcon)
-
-        fbackIcon = os.path.join(self.mainConf.iconPath, self.fbackName, "%s.svg" % iconKey)
-        if os.path.isfile(fbackIcon):
-            logger.verbose("Loading icon '%s' from fallback theme (light mode)", iconKey)
-            return QIcon(fbackIcon)
-
-        # Give up and return an empty icon
+        # If we didn't find one, give up and return an empty icon
         logger.warning("Did not load an icon for '%s'", iconKey)
 
         return QIcon()
 
 # END Class GuiIcons
+
+
+# =============================================================================================== #
+#  Module Functions
+# =============================================================================================== #
+
+def _loadInternalName(confParser, confFile):
+    """Open a conf file and read the 'name' setting.
+    """
+    try:
+        with open(confFile, mode="r", encoding="utf-8") as inFile:
+            confParser.read_file(inFile)
+    except Exception:
+        logger.error("Could not load file: %s", confFile)
+        logException()
+        return ""
+
+    return confParser.rdStr("Main", "name", "")

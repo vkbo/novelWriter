@@ -40,16 +40,14 @@ stepDelay = 20
 
 
 @pytest.mark.gui
+@pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
 def testToolProjectWizard_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test the new project wizard.
+    Disabled for macOS because the test segfaults on QWizard.show()
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
-    if sys.platform.startswith("darwin"):
-        # Disable for macOS because the test segfaults on QWizard.show()
-        return
 
     ##
     #  Test New Project Function

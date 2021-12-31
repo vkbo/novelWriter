@@ -139,7 +139,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
         assert os.path.isfile(confFile)
 
         copyfile(confFile, testFile)
-        assert cmpFiles(testFile, compFile, [2, 9, 10])
+        assert cmpFiles(testFile, compFile, ignoreStart=("timestamp", "lastnotes", "guilang"))
 
     # Load and save with OSError
     with monkeypatch.context() as mp:
@@ -255,7 +255,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     assert theList == [("en_GB", "British English"), ("fr", "Français")]
 
     copyfile(confFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 9, 10])
+    assert cmpFiles(testFile, compFile, ignoreStart=("timestamp", "lastnotes", "guilang"))
 
 # END Test testBaseConfig_Init
 
@@ -539,7 +539,7 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     assert tmpConf.confChanged is False
 
     copyfile(confFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 9, 10])
+    assert cmpFiles(testFile, compFile, ignoreStart=("timestamp", "lastnotes", "guilang"))
 
 # END Test testBaseConfig_SettersGetters
 

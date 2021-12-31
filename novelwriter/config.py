@@ -36,7 +36,7 @@ from PyQt5.QtCore import (
     QTranslator
 )
 
-from novelwriter.error import logException
+from novelwriter.error import logException, formatException
 from novelwriter.common import splitVersionNumber, formatTimeStamp, NWConfigParser
 from novelwriter.constants import nwFiles, nwUnicode
 
@@ -68,23 +68,23 @@ class Config:
         self.appRoot   = None   # The full path to the novelwriter root folder
         self.appIcon   = None   # The full path to the novelwriter icon file
         self.assetPath = None   # The full path to the novelwriter/assets folder
-        self.themeRoot = None   # The full path to the novelwriter/assets/themes folder
-        self.dictPath  = None   # The full path to the novelwriter/assets/dict folder
-        self.iconPath  = None   # The full path to the novelwriter/assets/icons folder
         self.pdfDocs   = None   # The location of the PDF manual, if it exists
 
         # Runtime Settings and Variables
         self.confChanged = False  # True whenever the config has chenged, false after save
 
         # General
-        self.guiTheme    = "default"
-        self.guiSyntax   = "default_light"
-        self.guiIcons    = "typicons_light"
-        self.guiDark     = False  # Load icons for dark backgrounds, if available
+        self.guiTheme    = ""     # GUI theme
+        self.guiSyntax   = ""     # Syntax theme
+        self.guiIcons    = ""     # Icon theme
         self.guiFont     = ""     # Defaults to system default font
         self.guiFontSize = 11     # Is overridden if system default is loaded
         self.guiScale    = 1.0    # Set automatically by Theme class
         self.lastNotes   = "0x0"  # The latest release notes that have been shown
+
+        self.setDefaultGuiTheme()
+        self.setDefaultSyntaxTheme()
+        self.setDefaultIconTheme()
 
         # Localisation
         self.qLocal     = QLocale.system()
@@ -293,10 +293,7 @@ class Config:
 
         # Assets
         self.assetPath = os.path.join(self.appPath, "assets")
-        self.themeRoot = os.path.join(self.assetPath, "themes")
-        self.dictPath  = os.path.join(self.assetPath, "dict")
-        self.iconPath  = os.path.join(self.assetPath, "icons")
-        self.appIcon   = os.path.join(self.iconPath, "novelwriter.svg")
+        self.appIcon   = os.path.join(self.assetPath, "icons", "novelwriter.svg")
 
         # Internationalisation
         self.nwLangPath = os.path.join(self.assetPath, "i18n")
@@ -305,17 +302,17 @@ class Config:
         logger.verbose("App path: %s", self.appPath)
         logger.verbose("Last path: %s", self.lastPath)
 
-        # If config folder does not exist, create it.
+        # If the config folder does not exist, create it.
         # This assumes that the os config folder itself exists.
         if not os.path.isdir(self.confPath):
             try:
                 os.mkdir(self.confPath)
-            except Exception as e:
+            except Exception as exc:
                 logger.error("Could not create folder: %s", self.confPath)
                 logException()
                 self.hasError = True
                 self.errData.append("Could not create folder: %s" % self.confPath)
-                self.errData.append(str(e))
+                self.errData.append(formatException(exc))
                 self.confPath = None
 
         # Check if config file exists
@@ -327,18 +324,18 @@ class Config:
                 # If it does not exist, save a copy of the default values
                 self.saveConfig()
 
-        # If data folder does not exist, make it.
+        # If the data folder does not exist, create it.
         # This assumes that the os data folder itself exists.
         if self.dataPath is not None:
             if not os.path.isdir(self.dataPath):
                 try:
                     os.mkdir(self.dataPath)
-                except Exception as e:
+                except Exception as exc:
                     logger.error("Could not create folder: %s", self.dataPath)
                     logException()
                     self.hasError = True
                     self.errData.append("Could not create folder: %s" % self.dataPath)
-                    self.errData.append(str(e))
+                    self.errData.append(formatException(exc))
                     self.dataPath = None
 
         # Host and Kernel
@@ -428,12 +425,12 @@ class Config:
         try:
             with open(cnfPath, mode="r", encoding="utf-8") as inFile:
                 theConf.read_file(inFile)
-        except Exception as e:
+        except Exception as exc:
             logger.error("Could not load config file")
             logException()
             self.hasError = True
             self.errData.append("Could not load config file")
-            self.errData.append(str(e))
+            self.errData.append(formatException(exc))
             return False
 
         # Main
@@ -441,7 +438,6 @@ class Config:
         self.guiTheme    = theConf.rdStr(cnfSec, "theme", self.guiTheme)
         self.guiSyntax   = theConf.rdStr(cnfSec, "syntax", self.guiSyntax)
         self.guiIcons    = theConf.rdStr(cnfSec, "icons", self.guiIcons)
-        self.guiDark     = theConf.rdBool(cnfSec, "guidark", self.guiDark)
         self.guiFont     = theConf.rdStr(cnfSec, "guifont", self.guiFont)
         self.guiFontSize = theConf.rdInt(cnfSec, "guifontsize", self.guiFontSize)
         self.lastNotes   = theConf.rdStr(cnfSec, "lastnotes", self.lastNotes)
@@ -538,7 +534,7 @@ class Config:
             logger.info("Using straight single quotes, so disabling auto-replace")
             self.doReplaceSQuote = False
 
-        if self.fmtDoubleQuotes == ["\"", "\""] and self.doReplaceDQuote:
+        if self.fmtDoubleQuotes == ['"', '"'] and self.doReplaceDQuote:
             logger.info("Using straight double quotes, so disabling auto-replace")
             self.doReplaceDQuote = False
 
@@ -564,7 +560,6 @@ class Config:
             "theme":       str(self.guiTheme),
             "syntax":      str(self.guiSyntax),
             "icons":       str(self.guiIcons),
-            "guidark":     str(self.guiDark),
             "guifont":     str(self.guiFont),
             "guifontsize": str(self.guiFontSize),
             "lastnotes":   str(self.lastNotes),
@@ -660,12 +655,12 @@ class Config:
             with open(cnfPath, mode="w", encoding="utf-8") as outFile:
                 theConf.write(outFile)
             self.confChanged = False
-        except Exception as e:
+        except Exception as exc:
             logger.error("Could not save config file")
             logException()
             self.hasError = True
             self.errData.append("Could not save config file")
-            self.errData.append(str(e))
+            self.errData.append(formatException(exc))
             return False
 
         return True
@@ -676,36 +671,28 @@ class Config:
         if self.dataPath is None:
             return False
 
-        cacheFile = os.path.join(self.dataPath, nwFiles.RECENT_FILE)
         self.recentProj = {}
 
-        if os.path.isfile(cacheFile):
-            try:
-                with open(cacheFile, mode="r", encoding="utf-8") as inFile:
-                    theData = json.load(inFile)
+        cacheFile = os.path.join(self.dataPath, nwFiles.RECENT_FILE)
+        if not os.path.isfile(cacheFile):
+            return True
 
-                for projPath in theData.keys():
-                    theEntry = theData[projPath]
-                    theTitle = ""
-                    lastTime = 0
-                    wordCount = 0
-                    if "title" in theEntry.keys():
-                        theTitle = theEntry["title"]
-                    if "time" in theEntry.keys():
-                        lastTime = int(theEntry["time"])
-                    if "words" in theEntry.keys():
-                        wordCount = int(theEntry["words"])
-                    self.recentProj[projPath] = {
-                        "title": theTitle,
-                        "time": lastTime,
-                        "words": wordCount,
-                    }
+        try:
+            with open(cacheFile, mode="r", encoding="utf-8") as inFile:
+                theData = json.load(inFile)
 
-            except Exception as e:
-                self.hasError = True
-                self.errData.append("Could not load recent project cache")
-                self.errData.append(str(e))
-                return False
+            for projPath, theEntry in theData.items():
+                self.recentProj[projPath] = {
+                    "title": theEntry.get("title", ""),
+                    "time": theEntry.get("time", 0),
+                    "words": theEntry.get("words", 0),
+                }
+
+        except Exception as exc:
+            self.hasError = True
+            self.errData.append("Could not load recent project cache")
+            self.errData.append(formatException(exc))
+            return False
 
         return True
 
@@ -721,10 +708,10 @@ class Config:
         try:
             with open(cacheTemp, mode="w+", encoding="utf-8") as outFile:
                 json.dump(self.recentProj, outFile, indent=2)
-        except Exception as e:
+        except Exception as exc:
             self.hasError = True
             self.errData.append("Could not save recent project cache")
-            self.errData.append(str(e))
+            self.errData.append(formatException(exc))
             return False
 
         if os.path.isfile(cacheFile):
@@ -760,6 +747,8 @@ class Config:
     ##
 
     def setConfPath(self, newPath):
+        """Set the path and filename to the config file.
+        """
         if newPath is None:
             return True
         if not os.path.isfile(newPath):
@@ -770,6 +759,8 @@ class Config:
         return True
 
     def setDataPath(self, newPath):
+        """Set the data path.
+        """
         if newPath is None:
             return True
         if not os.path.isdir(newPath):
@@ -779,6 +770,8 @@ class Config:
         return True
 
     def setLastPath(self, lastPath):
+        """Set the last used path (by the user).
+        """
         if lastPath is None or lastPath == "":
             self.lastPath = ""
         else:
@@ -786,6 +779,11 @@ class Config:
         return True
 
     def setWinSize(self, newWidth, newHeight):
+        """Set the size of the main window, but only if the change is
+        larger than 5 pixels. The OS window manager will sometimes
+        adjust it a bit, and we don't want the main window to shrink or
+        grow each time the app is opened.
+        """
         newWidth = int(newWidth/self.guiScale)
         newHeight = int(newHeight/self.guiScale)
         if abs(self.winGeometry[0] - newWidth) > 5:
@@ -797,60 +795,101 @@ class Config:
         return True
 
     def setPreferencesSize(self, newWidth, newHeight):
+        """Sat the size of the Preferences dialog window.
+        """
         self.prefGeometry[0] = int(newWidth/self.guiScale)
         self.prefGeometry[1] = int(newHeight/self.guiScale)
         self.confChanged = True
         return True
 
     def setTreeColWidths(self, colWidths):
+        """Set the column widths of the main project tree.
+        """
         self.treeColWidth = [int(x/self.guiScale) for x in colWidths]
         self.confChanged = True
         return True
 
     def setNovelColWidths(self, colWidths):
+        """Set the column widths of the novel tree.
+        """
         self.novelColWidth = [int(x/self.guiScale) for x in colWidths]
         self.confChanged = True
         return True
 
     def setProjColWidths(self, colWidths):
+        """Set the column widths of the Load Project dialog.
+        """
         self.projColWidth = [int(x/self.guiScale) for x in colWidths]
         self.confChanged = True
         return True
 
     def setMainPanePos(self, panePos):
+        """Set the position of the main GUI splitter.
+        """
         self.mainPanePos = [int(x/self.guiScale) for x in panePos]
         self.confChanged = True
         return True
 
     def setDocPanePos(self, panePos):
+        """Set the position of the main editor/viewer splitter.
+        """
         self.docPanePos = [int(x/self.guiScale) for x in panePos]
         self.confChanged = True
         return True
 
     def setViewPanePos(self, panePos):
+        """Set the position of the viewer meta data splitter.
+        """
         self.viewPanePos = [int(x/self.guiScale) for x in panePos]
         self.confChanged = True
         return True
 
     def setOutlinePanePos(self, panePos):
+        """Set the position of the outline details splitter.
+        """
         self.outlnPanePos = [int(x/self.guiScale) for x in panePos]
         self.confChanged = True
         return True
 
     def setShowRefPanel(self, checkState):
+        """Set the visibility state of the reference panel.
+        """
         self.showRefPanel = checkState
         self.confChanged = True
         return self.showRefPanel
 
     def setViewComments(self, viewState):
+        """Set the visibility state of comments in the viewer.
+        """
         self.viewComments = viewState
         self.confChanged = True
         return self.viewComments
 
     def setViewSynopsis(self, viewState):
+        """Set the visibility state of synopsis comments in the viewer.
+        """
         self.viewSynopsis = viewState
         self.confChanged = True
         return self.viewSynopsis
+
+    ##
+    #  Default Setters
+    ##
+
+    def setDefaultGuiTheme(self):
+        """Reset the GUI theme to default value.
+        """
+        self.guiTheme = "default"
+
+    def setDefaultSyntaxTheme(self):
+        """Reset the syntax theme to default value.
+        """
+        self.guiSyntax = "default_light"
+
+    def setDefaultIconTheme(self):
+        """Reset the icon theme to default value.
+        """
+        self.guiIcons = "typicons_light"
 
     ##
     #  Getters
@@ -896,6 +935,9 @@ class Config:
         return self.pxInt(self.focusWidth)
 
     def getErrData(self):
+        """Compile and return error messages from the initialisation of
+        the Config class, and clear the error buffer.
+        """
         errMessage = "<br>".join(self.errData)
         self.hasError = False
         self.errData = []
@@ -906,7 +948,8 @@ class Config:
     ##
 
     def _packList(self, inData):
-        """Pack a list of items into a comma-separated string.
+        """Pack a list of items into a comma-separated string for saving
+        to the config file.
         """
         return ", ".join([str(inVal) for inVal in inData])
 

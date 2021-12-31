@@ -203,15 +203,6 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Changing this requires restarting novelWriter.")
         )
 
-        # Dark Icons
-        self.guiDark = QSwitch()
-        self.guiDark.setChecked(self.mainConf.guiDark)
-        self.mainForm.addRow(
-            self.tr("Prefer icons for dark backgrounds"),
-            self.guiDark,
-            self.tr("May improve the look of icons on dark themes.")
-        )
-
         # Font Family
         self.guiFont = QLineEdit()
         self.guiFont.setReadOnly(True)
@@ -284,7 +275,6 @@ class GuiPreferencesGeneral(QWidget):
         guiLang     = self.guiLang.currentData()
         guiTheme    = self.guiTheme.currentData()
         guiIcons    = self.guiIcons.currentData()
-        guiDark     = self.guiDark.isChecked()
         guiFont     = self.guiFont.text()
         guiFontSize = self.guiFontSize.value()
         emphLabels  = self.emphLabels.isChecked()
@@ -294,7 +284,6 @@ class GuiPreferencesGeneral(QWidget):
         needsRestart |= self.mainConf.guiLang != guiLang
         needsRestart |= self.mainConf.guiTheme != guiTheme
         needsRestart |= self.mainConf.guiIcons != guiIcons
-        needsRestart |= self.mainConf.guiDark != guiDark
         needsRestart |= self.mainConf.guiFont != guiFont
         needsRestart |= self.mainConf.guiFontSize != guiFontSize
 
@@ -305,7 +294,6 @@ class GuiPreferencesGeneral(QWidget):
         self.mainConf.guiLang      = guiLang
         self.mainConf.guiTheme     = guiTheme
         self.mainConf.guiIcons     = guiIcons
-        self.mainConf.guiDark      = guiDark
         self.mainConf.guiFont      = guiFont
         self.mainConf.guiFontSize  = guiFontSize
         self.mainConf.emphLabels   = emphLabels
@@ -788,7 +776,7 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.addRow(
             self.tr("Scroll past end of the document"),
             self.scrollPastEnd,
-            self.tr("Also improves trypewriter scrolling for short documents.")
+            self.tr("Also improves typewriter scrolling for short documents.")
         )
 
         # Typewriter Scrolling
