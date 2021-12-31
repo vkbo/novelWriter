@@ -1,5 +1,30 @@
 # novelWriter Changelog
 
+## Version 1.5.3 [2021-12-31]
+
+### Release Notes
+
+This is a bugfix release that fixes two cosmetic issues. The first fix resolves and issue with the
+emphasis of partition or chapter items in the project tree not changing when the item is changed to
+a scene item. The second fix changes how the Create Root Folder submenu works. Instead of disabling
+the menu entries that are no longer available, they are instead removed. Disabled menu entries are
+not displayed correctly in all colour themes.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* The syntax themes lack a proper colouring for disabled menu entries. The only place menu entries
+  are disabled is in the Create Root Folder menu, so the simplest solution was to just replace the
+  enable/disable logic with switching on and off visibility like other menus in novelWriter do.
+  Issue #918.
+* The if-condition that determined whether an item in the Project Tree were to receive a bold and
+  underline formatting for its label lacked the logic to disable these when the item should not
+  receive it any longer. I.e., when a chapter was converted to a scene, the emphasis remained.
+  Issue #935.
+
+----
+
 ## Version 1.5.2 [2021-12-12]
 
 ### Release Notes

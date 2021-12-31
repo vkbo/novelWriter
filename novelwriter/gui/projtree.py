@@ -8,7 +8,7 @@ Created: 2018-09-29 [0.0.1] GuiProjectTree
 Created: 2020-06-04 [0.7]   GuiProjectTreeMenu
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -628,11 +628,14 @@ class GuiProjectTree(QTreeWidget):
         trItem.setToolTip(self.C_STATUS, nwItem.itemStatus)
 
         if self.mainConf.emphLabels and nwItem.itemLayout == nwItemLayout.DOCUMENT:
+            trFont = trItem.font(self.C_NAME)
             if hLevel in ("H1", "H2"):
-                trFont = trItem.font(self.C_NAME)
                 trFont.setBold(True)
                 trFont.setUnderline(True)
-                trItem.setFont(self.C_NAME, trFont)
+            else:
+                trFont.setBold(False)
+                trFont.setUnderline(False)
+            trItem.setFont(self.C_NAME, trFont)
 
         return
 

@@ -8,7 +8,7 @@ Created: 2019-04-22 [0.0.1] countWords
 Created: 2019-05-27 [0.1.4] NWIndex
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
