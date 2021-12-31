@@ -806,22 +806,28 @@ class GuiMain(QMainWindow):
     ##
 
     def openSelectedItem(self):
-        """Open the selected documents.
+        """Open the selected item from the tree that is currently
+        active. It is not checked that the item is actually a document.
+        That should be handled by the openDocument function.
         """
         if not self.hasProject:
             logger.error("No project open")
             return False
 
-        tHandle = self.treeView.getSelectedHandle()
-        if tHandle is None:
+        tHandle = None
+        tLine = None
+        if self.treeView.hasFocus():
+            tHandle = self.treeView.getSelectedHandle()
+        elif self.novelView.hasFocus():
+            tHandle, tLine = self.novelView.getSelectedHandle()
+        elif self.projView.hasFocus():
+            tHandle, tLine = self.projView.getSelectedHandle()
+        else:
             logger.warning("No item selected")
             return False
 
-        logger.verbose("Opening item '%s'", tHandle)
-        if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
-            self.openDocument(tHandle, doScroll=False)
-        else:
-            logger.verbose("Requested item '%s' is not a file", tHandle)
+        if tHandle is not None:
+            self.openDocument(tHandle, tLine=tLine, changeFocus=False, doScroll=False)
 
         return True
 
@@ -994,7 +1000,7 @@ class GuiMain(QMainWindow):
         """
         if not self.hasProject:
             logger.error("No project open")
-            return
+            return False
 
         dlgProj = GuiProjectSettings(self)
         dlgProj.exec_()
@@ -1004,14 +1010,14 @@ class GuiMain(QMainWindow):
             self.docEditor.setDictionaries()
             self._updateWindowTitle(self.theProject.projName)
 
-        return
+        return True
 
     def showProjectDetailsDialog(self):
         """Open the project details dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
-            return
+            return False
 
         self.treeView.flushTreeOrder()
 
@@ -1024,14 +1030,14 @@ class GuiMain(QMainWindow):
         dlgDetails.raise_()
         dlgDetails.updateValues()
 
-        return
+        return True
 
     def showBuildProjectDialog(self):
         """Open the build project dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
-            return
+            return False
 
         dlgBuild = getGuiItem("GuiBuildNovel")
         if dlgBuild is None:
@@ -1043,14 +1049,14 @@ class GuiMain(QMainWindow):
         qApp.processEvents()
         dlgBuild.viewCachedDoc()
 
-        return
+        return True
 
     def showProjectWordListDialog(self):
         """Open the project word list dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
-            return
+            return False
 
         dlgWords = GuiWordList(self)
         dlgWords.exec_()
@@ -1059,14 +1065,14 @@ class GuiMain(QMainWindow):
             logger.debug("Reloading word list")
             self.docEditor.setDictionaries()
 
-        return
+        return True
 
     def showWritingStatsDialog(self):
         """Open the session stats dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
-            return
+            return False
 
         dlgStats = getGuiItem("GuiWritingStats")
         if dlgStats is None:
@@ -1078,7 +1084,7 @@ class GuiMain(QMainWindow):
         qApp.processEvents()
         dlgStats.populateGUI()
 
-        return
+        return True
 
     def showAboutNWDialog(self, showNotes=False):
         """Show the about dialog for novelWriter.
@@ -1597,18 +1603,7 @@ class GuiMain(QMainWindow):
         file, we open it. Otherwise, we do nothing. Pressing return does
         not change focus to the editor as double click does.
         """
-        tHandle = None
-        tLine = None
-        if self.treeView.hasFocus():
-            tHandle = self.treeView.getSelectedHandle()
-        elif self.novelView.hasFocus():
-            tHandle = self.novelView.getSelectedHandle()
-        elif self.projView.hasFocus():
-            tHandle, tLine = self.projView.getSelectedHandle()
-
-        if tHandle is not None:
-            self.openDocument(tHandle, tLine=tLine, changeFocus=False, doScroll=False)
-
+        self.openSelectedItem()
         return
 
     @pyqtSlot()
@@ -1650,7 +1645,7 @@ class GuiMain(QMainWindow):
             logger.verbose("Novel tree tab activated")
             if self.hasProject:
                 self.novelView.refreshTree()
-                sHandle = self.novelView.getSelectedHandle()
+                sHandle, _ = self.novelView.getSelectedHandle()
 
         self.treeMeta.updateViewBox(sHandle)
 

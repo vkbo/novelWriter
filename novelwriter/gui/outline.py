@@ -34,6 +34,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import nwItemLayout, nwItemType, nwOutline
+from novelwriter.common import checkInt
 from novelwriter.constants import trConst, nwKeyWords, nwLabels
 
 logger = logging.getLogger(__name__)
@@ -201,12 +202,11 @@ class GuiOutline(QTreeWidget):
         selected, return the first.
         """
         selItem = self.selectedItems()
+        tHandle = None
+        tLine = 0
         if selItem:
             tHandle = selItem[0].data(self._colIdx[nwOutline.TITLE], Qt.UserRole)
-            try:
-                tLine = int(selItem[0].text(self._colIdx[nwOutline.LINE])) - 1
-            except Exception:
-                tLine = 0
+            tLine = checkInt(selItem[0].text(self._colIdx[nwOutline.LINE]), 1) - 1
 
         return tHandle, tLine
 
