@@ -181,7 +181,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     def clearEditor(self):
-        """Clear the current document and reset all document related
+        """Clear the current document and reset all document-related
         flags and counters.
         """
         self._nwDocument = None
@@ -313,7 +313,7 @@ class GuiDocEditor(QTextEdit):
         error, we must handle this and clear the editor so that we don't
         risk overwriting the file if it exists. This can for instance
         happen of the file contains binary elements or an encoding that
-        novelWriter does not support. If load is successful, or the
+        novelWriter does not support. If loading is successful, or the
         document is new (empty string), we set up the editor for editing
         the file.
         """
@@ -371,7 +371,7 @@ class GuiDocEditor(QTextEdit):
         self.highLight.spellCheck = spTemp
 
         if tLine is None and self._nwItem is not None:
-            # For large documents we queue the repositioning until the
+            # For large documents, we queue the repositioning until the
             # document layout has grown past the point we want to move
             # the cursor to. This makes the loading significantly
             # faster.
@@ -424,7 +424,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     def replaceText(self, theText):
-        """Replaces the text of the current document with the provided
+        """Replace the text of the current document with the provided
         text. This also clears undo history.
         """
         docSize = len(theText)
@@ -576,13 +576,13 @@ class GuiDocEditor(QTextEdit):
         return self._docChanged
 
     def docHandle(self):
-        """Return the handle of the currently open document. Returns
+        """Return the handle of the currently open document. Return
         None if no document is open.
         """
         return self._docHandle
 
     def lastActive(self):
-        """Eeturn the last active timestamp for the user.
+        """Return the last active timestamp for the user.
         """
         return self._lastActive
 
@@ -622,9 +622,8 @@ class GuiDocEditor(QTextEdit):
     ##
 
     def setDocumentChanged(self, bValue):
-        """Keeps track of the document changed variable, and ensures
-        that the corresponding icon on the status bar shows the same
-        status.
+        """Keep track of the document changed variable, and emit the
+        document change signal.
         """
         self._docChanged = bValue
         self.docEditedStatusChanged.emit(self._docChanged)
@@ -673,9 +672,8 @@ class GuiDocEditor(QTextEdit):
     ##
 
     def setDictionaries(self):
-        """Set the spell checker dictionary language, and update the
-        status bar to show the one actually loaded by the spell checker
-        class.
+        """Set the spell checker dictionary language, and emit the
+        dictionary changed signal.
         """
         if self.theProject.projSpell is None:
             theLang = self.mainConf.spellLanguage
@@ -907,7 +905,7 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def insertNewBlock(self, theText, defaultAfter=True):
-        """Inserts a piece of text on a blank line.
+        """Insert a piece of text on a blank line.
         """
         theCursor = self.textCursor()
         theBlock = theCursor.block()
@@ -972,11 +970,12 @@ class GuiDocEditor(QTextEdit):
     def keyPressEvent(self, keyEvent):
         """Intercept key press events.
         We need to intercept a few key sequences:
-          * The return and enter key redirects here even if the search
+          * The return and enter keys redirect here even if the search
             box has focus. Since we need these keys to continue search,
-            we block any further interaction here while it's in focus.
-          * The undo/redo/select all sequences bypasses the docAction
+            we block any further interaction here while ithas focus.
+          * The undo/redo/select all sequences bypass the docAction
             pathway from the menu, so we redirect them back from here.
+          * We also handle automatic scrolling here.
         """
         self._lastActive = time()
         isReturn  = keyEvent.key() == Qt.Key_Return
@@ -1048,7 +1047,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     def resizeEvent(self, theEvent):
-        """If the text editor is resize, we must make sure the document
+        """If the text editor is resized, we must make sure the document
         has its margins adjusted according to user preferences.
         """
         QTextEdit.resizeEvent(self, theEvent)
@@ -1396,14 +1395,15 @@ class GuiDocEditor(QTextEdit):
         theCursor.setPosition(resE[resIdx], QTextCursor.KeepAnchor)
         self.setTextCursor(theCursor)
 
+        self.docFooter.updateLineCount()
         self.docSearch.setResultCount(resIdx + 1, len(resS))
         self._lastFind = (resS[resIdx], resE[resIdx])
 
         return
 
     def findAllOccurences(self):
-        """Create a list of all search results of the current search in
-        the document.
+        """Create a list of all search results of the current search
+        text in the document.
         """
         resS = []
         resE = []
@@ -1558,7 +1558,7 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def _clearSurrounding(self, theCursor, nChars):
-        """Clears n characters before and after the cursor.
+        """Clear n characters before and after the cursor.
         """
         if not theCursor.hasSelection():
             logger.warning("No selection made, nothing to do")
@@ -1580,7 +1580,7 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def _wrapSelection(self, tBefore, tAfter=None):
-        """Wraps the selected text in whatever is in tBefore and tAfter.
+        """Wrap the selected text in whatever is in tBefore and tAfter.
         If there is no selection, the autoSelect setting decides the
         action. AutoSelect will select the word under the cursor before
         wrapping it. If this feature is disabled, nothing is done.
@@ -1669,7 +1669,7 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def _formatBlock(self, docAction):
-        """Changes the block format of the block under the cursor.
+        """Change the block format of the block under the cursor.
         """
         theCursor = self.textCursor()
         theBlock = theCursor.block()
@@ -1886,8 +1886,8 @@ class GuiDocEditor(QTextEdit):
         return False
 
     def _openSpellContext(self):
-        """Opens the spell check context menu at the current point of
-        the cursor.
+        """Open the spell check context menu at the current point of the
+        cursor.
         """
         self._openContextMenu(self.cursorRect().center())
         return
@@ -2026,7 +2026,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _autoSelect(self):
-        """Returns a cursor which may or may not have a selection based
+        """Return a cursor which may or may not have a selection based
         on user settings and document action.
         """
         theCursor = self.textCursor()
@@ -2065,7 +2065,7 @@ class GuiDocEditor(QTextEdit):
             theCursor = self._autoSelect()
 
         elif selMode == QTextCursor.BlockUnderCursor:
-            # This selection mode also selects the preceding oaragraph
+            # This selection mode also selects the preceding paragraph
             # separator, which we want to avoid.
             posS = theCursor.selectionStart()
             posE = theCursor.selectionEnd()
@@ -2088,7 +2088,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     def _allowAutoReplace(self, theState):
-        """used to enable/disable the auto-replace feature temporarily.
+        """Enable/disable the auto-replace feature temporarily.
         """
         if theState:
             self._doReplace = self.mainConf.doReplace
@@ -2372,7 +2372,7 @@ class GuiDocEditSearch(QFrame):
         return False
 
     def anyFocus(self):
-        """Returns true if any of the input boxes have focus.
+        """Return True if any of the input boxes have focus.
         """
         return self.searchBox.hasFocus() | self.replaceBox.hasFocus()
 
@@ -2480,7 +2480,7 @@ class GuiDocEditSearch(QFrame):
         return
 
     def _doToggleReplace(self, theState):
-        """Toggle the show/hide of the
+        """Toggle the show/hide of the replace box.
         """
         if theState:
             self.showReplace.setArrowType(Qt.DownArrow)
@@ -2678,8 +2678,8 @@ class GuiDocEditHeader(QWidget):
         return
 
     def setTitleFromHandle(self, tHandle):
-        """Sets the document title from the handle, or alternatively,
-        set the whole document path.
+        """Set the document title from the handle, or alternatively, set
+        the whole document path within the project.
         """
         self._docHandle = tHandle
         if tHandle is None:
