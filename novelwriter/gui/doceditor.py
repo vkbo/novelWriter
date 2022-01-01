@@ -40,8 +40,8 @@ from PyQt5.QtCore import (
     QPointF, QObject, QRunnable, QPropertyAnimation
 )
 from PyQt5.QtGui import (
-    QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
-    QTextDocument, QCursor, QPixmap
+    QFontMetrics, QTextCursor, QTextOption, QKeySequence, QFont, QColor,
+    QPalette, QTextDocument, QCursor, QPixmap
 )
 from PyQt5.QtWidgets import (
     qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QWidget, QLabel,
@@ -381,6 +381,12 @@ class GuiDocEditor(QTextEdit):
                 self.setCursorPosition(self._nwItem.cursorPos)
         else:
             self.setCursorLine(tLine)
+
+        if self.mainConf.scrollPastEnd > 0:
+            fSize = QFontMetrics(self.font()).lineSpacing()
+            docFrame = self.document().rootFrame().frameFormat()
+            docFrame.setBottomMargin(round(self.mainConf.scrollPastEnd * fSize))
+            self.document().rootFrame().setFrameFormat(docFrame)
 
         self.docFooter.updateLineCount()
         self._docHeaders = self.theIndex.getHandleHeaders(self._docHandle)

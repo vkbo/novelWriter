@@ -170,14 +170,12 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     assert tabEditor.showLineEndings.isChecked()
 
     qtbot.wait(keyDelay)
-    assert tabEditor.scrollPastEnd.isChecked()
-    qtbot.mouseClick(tabEditor.scrollPastEnd, Qt.LeftButton)
-    assert not tabEditor.scrollPastEnd.isChecked()
-
-    qtbot.wait(keyDelay)
     assert not tabEditor.autoScroll.isChecked()
     qtbot.mouseClick(tabEditor.autoScroll, Qt.LeftButton)
     assert tabEditor.autoScroll.isChecked()
+
+    qtbot.wait(keyDelay)
+    tabEditor.scrollPastEnd.setValue(0)
 
     qtbot.wait(keyDelay)
     tabEditor.bigDocLimit.setValue(500)

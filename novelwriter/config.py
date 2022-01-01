@@ -137,7 +137,7 @@ class Config:
         self.doReplaceDash   = True   # Replace multiple hyphens with dashes
         self.doReplaceDots   = True   # Replace three dots with ellipsis
 
-        self.scrollPastEnd   = True   # Allow scrolling past end of document
+        self.scrollPastEnd   = 25     # Number of lines to scroll past end of document
         self.autoScroll      = False  # Typewriter-like scrolling
         self.autoScrollPos   = 30     # Start point for typewriter-like scrolling
 
@@ -479,7 +479,7 @@ class Config:
         self.doReplaceDQuote = theConf.rdBool(cnfSec, "repdquotes", self.doReplaceDQuote)
         self.doReplaceDash   = theConf.rdBool(cnfSec, "repdash", self.doReplaceDash)
         self.doReplaceDots   = theConf.rdBool(cnfSec, "repdots", self.doReplaceDots)
-        self.scrollPastEnd   = theConf.rdBool(cnfSec, "scrollpastend", self.scrollPastEnd)
+        self.scrollPastEnd   = theConf.rdInt(cnfSec, "scrollpastend", self.scrollPastEnd)
         self.autoScroll      = theConf.rdBool(cnfSec, "autoscroll", self.autoScroll)
         self.autoScrollPos   = theConf.rdInt(cnfSec, "autoscrollpos", self.autoScrollPos)
         self.fmtSingleQuotes = theConf.rdStrList(cnfSec, "fmtsinglequote", self.fmtSingleQuotes)

@@ -199,7 +199,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     # Change some settings
     nwGUI.mainConf.hideHScroll = True
     nwGUI.mainConf.hideVScroll = True
-    nwGUI.mainConf.scrollPastEnd = True
     nwGUI.mainConf.autoScrollPos = 80
     nwGUI.mainConf.autoScroll = True
 
