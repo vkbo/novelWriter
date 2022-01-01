@@ -1336,6 +1336,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docEditor.docSearch.isRegEx
 
     # Set Invalid RegEx
+    assert nwGUI.docEditor.setCursorPosition(0)
     assert nwGUI.docEditor.docSearch.setSearchText(r"\bSus[")
     qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=keyDelay)
     assert nwGUI.docEditor.getCursorPosition() < 3  # No result
@@ -1379,6 +1380,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     # Replace "Sus" with "Foo" via Menu
     nwGUI.mainMenu.aReplaceNext.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[608:619] == "Foopendisse"
+    # qtbot.stopForInteraction()
 
     # Find Next to Loop File
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
@@ -1388,6 +1390,9 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docEditor.getText()[205:213] == "foocipit"
 
     # Revert Last Two Replaces
+    assert nwGUI.docEditor.docAction(nwDocAction.UNDO)
+    assert nwGUI.docEditor.docAction(nwDocAction.UNDO)
+    assert nwGUI.docEditor.docAction(nwDocAction.UNDO)
     assert nwGUI.docEditor.docAction(nwDocAction.UNDO)
     assert nwGUI.docEditor.docAction(nwDocAction.UNDO)
     assert nwGUI.docEditor.getText() == origText
