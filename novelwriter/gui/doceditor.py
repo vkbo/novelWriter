@@ -29,6 +29,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import bisect
 import logging
 import novelwriter
 
@@ -39,8 +40,8 @@ from PyQt5.QtCore import (
     QPointF, QObject, QRunnable, QPropertyAnimation
 )
 from PyQt5.QtGui import (
-    QTextCursor, QTextOption, QKeySequence, QFont, QColor, QPalette,
-    QTextDocument, QCursor, QPixmap
+    QFontMetrics, QTextCursor, QTextOption, QKeySequence, QFont, QColor,
+    QPalette, QTextDocument, QCursor, QPixmap
 )
 from PyQt5.QtWidgets import (
     qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QWidget, QLabel,
@@ -381,10 +382,17 @@ class GuiDocEditor(QTextEdit):
         else:
             self.setCursorLine(tLine)
 
+        if self.mainConf.scrollPastEnd > 0:
+            fSize = QFontMetrics(self.font()).lineSpacing()
+            docFrame = self.document().rootFrame().frameFormat()
+            docFrame.setBottomMargin(round(self.mainConf.scrollPastEnd * fSize))
+            self.document().rootFrame().setFrameFormat(docFrame)
+
         self.docFooter.updateLineCount()
         self._docHeaders = self.theIndex.getHandleHeaders(self._docHandle)
 
         qApp.processEvents()
+        self.document().clearUndoRedoStacks()
         self.setDocumentChanged(False)
         qApp.restoreOverrideCursor()
 
@@ -545,17 +553,6 @@ class GuiDocEditor(QTextEdit):
         uM = max(cM, tH, rH)
         lM = max(cM, fH)
         self.setViewportMargins(tM, uM, tM, lM)
-
-        tmpDocChanged = self._docChanged
-        if self.mainConf.scrollPastEnd:
-            docFrame = self.document().rootFrame().frameFormat()
-            docFrame.setBottomMargin(max(0, 0.9*(wH - uM - lM - 4*tB)))
-            self.document().rootFrame().setFrameFormat(docFrame)
-
-        # This is needed as the setFrameFormat function itself will
-        # trigger the contetsChanged signal which sets _docChanged, so we
-        # set it back to whatever it was before.
-        self.setDocumentChanged(tmpDocChanged)
 
         return
 
@@ -1322,6 +1319,7 @@ class GuiDocEditor(QTextEdit):
                 self._queuePos = None
             else:
                 logger.verbose("Denied cursor move to %d > %d", self._queuePos, thePos)
+
         return
 
     ##
@@ -1329,75 +1327,123 @@ class GuiDocEditor(QTextEdit):
     ##
 
     def beginSearch(self):
-        """Sets the selected text as the search text for the search bar.
+        """Set the selected text as the search text for the search bar.
         """
         theCursor = self.textCursor()
         if theCursor.hasSelection():
             self.docSearch.setSearchText(theCursor.selectedText())
         else:
             self.docSearch.setSearchText(None)
-        self.updateDocMargins()
+        resS, _ = self.findAllOccurences()
+        self.docSearch.setResultCount(None, len(resS))
         return
 
     def beginReplace(self):
-        """Opens the replace line of the search bar and sets the find
-        text if a selection has been made, and resets the replace text.
+        """Initialise the search box and reset the replace text box.
         """
-        theCursor = self.textCursor()
-        if theCursor.hasSelection():
-            self.docSearch.setSearchText(theCursor.selectedText())
-        else:
-            self.docSearch.setSearchText(None)
+        self.beginSearch()
         self.docSearch.setReplaceText("")
         self.updateDocMargins()
         return
 
     def findNext(self, goBack=False):
-        """Searches for the next or previous occurrence of the search
-        bar text in the document. Wraps around if not found and loop is
-        enabled, or continues to next file if next file is enabled.
+        """Search for the next or previous occurrence of the search bar
+        text in the document. Wrap around if not found and loop is
+        enabled, or continue to next file if next file is enabled.
         """
         if not self.anyFocus():
             logger.debug("Editor does not have focus")
-            return False
+            return
 
         if not self.docSearch.isVisible():
             self.beginSearch()
             return
 
-        findOpt = QTextDocument.FindFlag(0)
+        resS, resE = self.findAllOccurences()
+        if len(resS) == 0:
+            self.docSearch.setResultCount(0, 0)
+            self._lastFind = None
+            if self.docSearch.doNextFile and not goBack:
+                self.theParent.openNextDocument(
+                    self._docHandle, wrapAround=self.docSearch.doLoop
+                )
+                self.beginSearch()
+            return
+
+        theCursor = self.textCursor()
+        resIdx = bisect.bisect_left(resS, theCursor.position())
+
+        doLoop = self.docSearch.doLoop
+        maxIdx = len(resS) - 1
+
         if goBack:
-            findOpt |= QTextDocument.FindBackward
+            resIdx -= 2
+
+        if resIdx < 0:
+            resIdx = maxIdx if doLoop else 0
+
+        if resIdx > maxIdx:
+            if self.docSearch.doNextFile and not goBack:
+                self.theParent.openNextDocument(
+                    self._docHandle, wrapAround=self.docSearch.doLoop
+                )
+                self.beginSearch()
+                return
+            else:
+                resIdx = 0 if doLoop else maxIdx
+
+        theCursor.setPosition(resS[resIdx], QTextCursor.MoveAnchor)
+        theCursor.setPosition(resE[resIdx], QTextCursor.KeepAnchor)
+        self.setTextCursor(theCursor)
+
+        self.docSearch.setResultCount(resIdx + 1, len(resS))
+        self._lastFind = (resS[resIdx], resE[resIdx])
+
+        return
+
+    def findAllOccurences(self):
+        """Create a list of all search results of the current search in
+        the document.
+        """
+        resS = []
+        resE = []
+        theCursor = self.textCursor()
+        hasSelection = theCursor.hasSelection()
+        if hasSelection:
+            origA = theCursor.selectionStart()
+            origB = theCursor.selectionEnd()
+        else:
+            origA = theCursor.position()
+
+        findOpt = QTextDocument.FindFlag(0)
         if self.docSearch.isCaseSense:
             findOpt |= QTextDocument.FindCaseSensitively
         if self.docSearch.isWholeWord:
             findOpt |= QTextDocument.FindWholeWords
 
         searchFor = self.docSearch.getSearchObject()
-        wasFound = self.find(searchFor, findOpt)
-        if not wasFound:
-            if self.docSearch.doNextFile and not goBack:
-                self.theParent.openNextDocument(
-                    self._docHandle, wrapAround=self.docSearch.doLoop
-                )
-            elif self.docSearch.doLoop:
-                theCursor = self.textCursor()
-                theCursor.movePosition(
-                    QTextCursor.End if goBack else QTextCursor.Start
-                )
-                self.setTextCursor(theCursor)
-                wasFound = self.find(searchFor, findOpt)
+        theCursor.setPosition(0)
+        self.setTextCursor(theCursor)
 
-        if wasFound:
+        while self.find(searchFor, findOpt):
             theCursor = self.textCursor()
-            self._lastFind = (theCursor.selectionStart(), theCursor.selectionEnd())
+            resS.append(theCursor.selectionStart())
+            resE.append(theCursor.selectionEnd())
 
-        return
+        if hasSelection:
+            theCursor.setPosition(origA, QTextCursor.MoveAnchor)
+            theCursor.setPosition(origB, QTextCursor.KeepAnchor)
+        else:
+            theCursor.setPosition(origA)
+
+        self.setTextCursor(theCursor)
+
+        return resS, resE
 
     def replaceNext(self):
-        """Searches for the next occurrence of the search bar text in
-        the document and replaces it with the replace text. Calls search
-        next automatically when done.
+        """Search for the next occurrence of the search bar text in the
+        document and replace it with the replace text. Call search next
+        automatically when done.
         """
         if not self.anyFocus():
             logger.debug("Editor does not have focus")
@@ -2131,8 +2177,8 @@ class GuiDocEditSearch(QFrame):
 
         mPx = self.mainConf.pxInt(6)
         tPx = int(0.8*self.theTheme.fontPixelSize)
-        boxFont = self.theTheme.guiFont
-        boxFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        self.boxFont = self.theTheme.guiFont
+        self.boxFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -2143,13 +2189,14 @@ class GuiDocEditSearch(QFrame):
 
         # Text Boxes
         # ==========
+
         self.searchBox = QLineEdit(self)
-        self.searchBox.setFont(boxFont)
+        self.searchBox.setFont(self.boxFont)
         self.searchBox.setPlaceholderText(self.tr("Search"))
         self.searchBox.returnPressed.connect(self._doSearch)
 
         self.replaceBox = QLineEdit(self)
-        self.replaceBox.setFont(boxFont)
+        self.replaceBox.setFont(self.boxFont)
         self.replaceBox.setPlaceholderText(self.tr("Replace"))
         self.replaceBox.returnPressed.connect(self._doReplace)
 
@@ -2160,8 +2207,12 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
 
         self.searchLabel = QLabel(self.tr("Search"))
-        self.searchLabel.setFont(boxFont)
+        self.searchLabel.setFont(self.boxFont)
         self.searchLabel.setIndent(self.mainConf.pxInt(6))
+
+        self.resultLabel = QLabel("?/?")
+        self.resultLabel.setFont(self.boxFont)
+        self.resultLabel.setMinimumWidth(self.theTheme.getTextWidth("?/?", self.boxFont))
 
         self.toggleCase = QAction(self.tr("Case Sensitive"), self)
         self.toggleCase.setToolTip(self.tr("Match case"))
@@ -2223,6 +2274,7 @@ class GuiDocEditSearch(QFrame):
 
         # Buttons
         # =======
+
         bPx = self.searchBox.sizeHint().height()
 
         self.showReplace = QToolButton(self)
@@ -2243,18 +2295,20 @@ class GuiDocEditSearch(QFrame):
         self.replaceButton.clicked.connect(self._doReplace)
 
         self.mainBox.addWidget(self.searchLabel,   0, 0, 1, 2, Qt.AlignLeft)
-        self.mainBox.addWidget(self.searchOpt,     0, 2, 1, 2, Qt.AlignRight)
+        self.mainBox.addWidget(self.searchOpt,     0, 2, 1, 3, Qt.AlignRight)
         self.mainBox.addWidget(self.showReplace,   1, 0, 1, 1)
         self.mainBox.addWidget(self.searchBox,     1, 1, 1, 2)
         self.mainBox.addWidget(self.searchButton,  1, 3, 1, 1)
+        self.mainBox.addWidget(self.resultLabel,   1, 4, 1, 1)
         self.mainBox.addWidget(self.replaceBox,    2, 1, 1, 2)
         self.mainBox.addWidget(self.replaceButton, 2, 3, 1, 1)
 
-        self.mainBox.setColumnStretch(0, 1)
+        self.mainBox.setColumnStretch(0, 0)
         self.mainBox.setColumnStretch(1, 0)
-        self.mainBox.setColumnStretch(2, 0)
+        self.mainBox.setColumnStretch(2, 1)
         self.mainBox.setColumnStretch(3, 0)
         self.mainBox.setColumnStretch(4, 0)
+        self.mainBox.setColumnStretch(5, 0)
         self.mainBox.setSpacing(self.mainConf.pxInt(2))
         self.mainBox.setContentsMargins(mPx, mPx, mPx, mPx)
 
@@ -2348,6 +2402,18 @@ class GuiDocEditSearch(QFrame):
         self.replaceBox.setFocus()
         self.replaceBox.setText(theText)
         return True
+
+    def setResultCount(self, currRes, resCount):
+        """Set the count values for the current search.
+        """
+        currRes = "?" if currRes is None else currRes
+        resCount = "?" if resCount is None else resCount
+        minWidth = self.theTheme.getTextWidth(f"{resCount}//{resCount}", self.boxFont)
+        self.resultLabel.setText(f"{currRes}/{resCount}")
+        self.resultLabel.setMinimumWidth(minWidth)
+        self.adjustSize()
+        self.docEditor.updateDocMargins()
+        return
 
     def getSearchObject(self):
         """Return the current search text either as text or as a regular

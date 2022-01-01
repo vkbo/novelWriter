@@ -761,12 +761,16 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.addGroupLabel(self.tr("Scroll Behaviour"))
 
         # Scroll Past End
-        self.scrollPastEnd = QSwitch()
-        self.scrollPastEnd.setChecked(self.mainConf.scrollPastEnd)
+        self.scrollPastEnd = QSpinBox(self)
+        self.scrollPastEnd.setMinimum(0)
+        self.scrollPastEnd.setMaximum(100)
+        self.scrollPastEnd.setSingleStep(1)
+        self.scrollPastEnd.setValue(int(self.mainConf.scrollPastEnd))
         self.mainForm.addRow(
             self.tr("Scroll past end of the document"),
             self.scrollPastEnd,
-            self.tr("Also improves typewriter scrolling for short documents.")
+            self.tr("Set to 0 to disable this feature."),
+            theUnit=self.tr("lines")
         )
 
         # Typewriter Scrolling
@@ -809,7 +813,7 @@ class GuiPreferencesEditor(QWidget):
         self.mainConf.showLineEndings = self.showLineEndings.isChecked()
 
         # Scroll Behaviour
-        self.mainConf.scrollPastEnd = self.scrollPastEnd.isChecked()
+        self.mainConf.scrollPastEnd = self.scrollPastEnd.value()
         self.mainConf.autoScroll    = self.autoScroll.isChecked()
         self.mainConf.autoScrollPos = self.autoScrollPos.value()
 
