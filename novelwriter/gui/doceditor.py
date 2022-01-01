@@ -1396,6 +1396,7 @@ class GuiDocEditor(QTextEdit):
         theCursor.setPosition(resE[resIdx], QTextCursor.KeepAnchor)
         self.setTextCursor(theCursor)
 
+        self.docFooter.updateLineCount()
         self.docSearch.setResultCount(resIdx + 1, len(resS))
         self._lastFind = (resS[resIdx], resE[resIdx])
 
