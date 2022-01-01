@@ -386,6 +386,7 @@ class GuiDocEditor(QTextEdit):
         self._docHeaders = self.theIndex.getHandleHeaders(self._docHandle)
 
         qApp.processEvents()
+        self.document().clearUndoRedoStacks()
         self.setDocumentChanged(False)
         qApp.restoreOverrideCursor()
 
@@ -546,17 +547,6 @@ class GuiDocEditor(QTextEdit):
         uM = max(cM, tH, rH)
         lM = max(cM, fH)
         self.setViewportMargins(tM, uM, tM, lM)
-
-        tmpDocChanged = self._docChanged
-        if self.mainConf.scrollPastEnd:
-            docFrame = self.document().rootFrame().frameFormat()
-            docFrame.setBottomMargin(max(0, 0.9*(wH - uM - lM - 4*tB)))
-            self.document().rootFrame().setFrameFormat(docFrame)
-
-        # This is needed as the setFrameFormat function itself will
-        # trigger the contetsChanged signal which sets _docChanged, so we
-        # set it back to whatever it was before.
-        self.setDocumentChanged(tmpDocChanged)
 
         return
 
@@ -1323,6 +1313,7 @@ class GuiDocEditor(QTextEdit):
                 self._queuePos = None
             else:
                 logger.verbose("Denied cursor move to %d > %d", self._queuePos, thePos)
+
         return
 
     ##
@@ -1342,14 +1333,9 @@ class GuiDocEditor(QTextEdit):
         return
 
     def beginReplace(self):
-        """Open the replace line of the search bar and set the findtext
-        if a selection has been made, and reset the replace text.
+        """Initialise the search box and reset the replace text box.
         """
-        theCursor = self.textCursor()
-        if theCursor.hasSelection():
-            self.docSearch.setSearchText(theCursor.selectedText())
-        else:
-            self.docSearch.setSearchText(None)
+        self.beginSearch()
         self.docSearch.setReplaceText("")
         self.updateDocMargins()
         return
@@ -1361,7 +1347,7 @@ class GuiDocEditor(QTextEdit):
         """
         if not self.anyFocus():
             logger.debug("Editor does not have focus")
-            return False
+            return
 
         if not self.docSearch.isVisible():
             self.beginSearch()
@@ -1416,7 +1402,12 @@ class GuiDocEditor(QTextEdit):
         resS = []
         resE = []
         theCursor = self.textCursor()
-        origPos = theCursor.position()
+        hasSelection = theCursor.hasSelection()
+        if hasSelection:
+            origA = theCursor.selectionStart()
+            origB = theCursor.selectionEnd()
+        else:
+            origA = theCursor.position()
 
         findOpt = QTextDocument.FindFlag(0)
         if self.docSearch.isCaseSense:
@@ -1429,11 +1420,16 @@ class GuiDocEditor(QTextEdit):
         self.setTextCursor(theCursor)
 
         while self.find(searchFor, findOpt):
-            resCursor = self.textCursor()
-            resS.append(resCursor.selectionStart())
-            resE.append(resCursor.selectionEnd())
+            theCursor = self.textCursor()
+            resS.append(theCursor.selectionStart())
+            resE.append(theCursor.selectionEnd())
 
-        theCursor.setPosition(origPos)
+        if hasSelection:
+            theCursor.setPosition(origA, QTextCursor.MoveAnchor)
+            theCursor.setPosition(origB, QTextCursor.KeepAnchor)
+        else:
+            theCursor.setPosition(origA)
+
         self.setTextCursor(theCursor)
 
         return resS, resE
