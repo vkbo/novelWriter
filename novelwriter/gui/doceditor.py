@@ -2177,8 +2177,8 @@ class GuiDocEditSearch(QFrame):
 
         mPx = self.mainConf.pxInt(6)
         tPx = int(0.8*self.theTheme.fontPixelSize)
-        boxFont = self.theTheme.guiFont
-        boxFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        self.boxFont = self.theTheme.guiFont
+        self.boxFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -2191,12 +2191,12 @@ class GuiDocEditSearch(QFrame):
         # ==========
 
         self.searchBox = QLineEdit(self)
-        self.searchBox.setFont(boxFont)
+        self.searchBox.setFont(self.boxFont)
         self.searchBox.setPlaceholderText(self.tr("Search"))
         self.searchBox.returnPressed.connect(self._doSearch)
 
         self.replaceBox = QLineEdit(self)
-        self.replaceBox.setFont(boxFont)
+        self.replaceBox.setFont(self.boxFont)
         self.replaceBox.setPlaceholderText(self.tr("Replace"))
         self.replaceBox.returnPressed.connect(self._doReplace)
 
@@ -2207,11 +2207,12 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
 
         self.searchLabel = QLabel(self.tr("Search"))
-        self.searchLabel.setFont(boxFont)
+        self.searchLabel.setFont(self.boxFont)
         self.searchLabel.setIndent(self.mainConf.pxInt(6))
 
         self.resultLabel = QLabel("?/?")
-        self.resultLabel.setFont(boxFont)
+        self.resultLabel.setFont(self.boxFont)
+        self.resultLabel.setMinimumWidth(self.theTheme.getTextWidth("?/?", self.boxFont))
 
         self.toggleCase = QAction(self.tr("Case Sensitive"), self)
         self.toggleCase.setToolTip(self.tr("Match case"))
@@ -2407,7 +2408,9 @@ class GuiDocEditSearch(QFrame):
         """
         currRes = "?" if currRes is None else currRes
         resCount = "?" if resCount is None else resCount
+        minWidth = self.theTheme.getTextWidth(f"{resCount}//{resCount}", self.boxFont)
         self.resultLabel.setText(f"{currRes}/{resCount}")
+        self.resultLabel.setMinimumWidth(minWidth)
         self.adjustSize()
         self.docEditor.updateDocMargins()
         return
