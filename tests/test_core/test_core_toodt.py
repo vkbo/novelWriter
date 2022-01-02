@@ -122,21 +122,21 @@ def testCoreToOdt_TextFormatting(mockGUI):
     oStyle = ODTParagraphStyle()
 
     assert theDoc._paraStyle("stuff", oStyle) == "Standard"
-    assert theDoc._paraStyle("Text_Body", oStyle) == "Text_Body"
+    assert theDoc._paraStyle("Text_20_body", oStyle) == "Text_20_body"
 
     # Create new para style
     oStyle.setTextAlign("center")
-    assert theDoc._paraStyle("Text_Body", oStyle) == "P1"
+    assert theDoc._paraStyle("Text_20_body", oStyle) == "P1"
 
     # Return the same style on second call
-    assert theDoc._paraStyle("Text_Body", oStyle) == "P1"
+    assert theDoc._paraStyle("Text_20_body", oStyle) == "P1"
 
     assert list(theDoc._mainPara.keys()) == [
-        "Text_Body", "Text_Meta", "Title", "Heading_1",
-        "Heading_2", "Heading_3", "Heading_4", "Header"
+        "Text_20_body", "Text_20_Meta", "Title", "Heading_20_1",
+        "Heading_20_2", "Heading_20_3", "Heading_20_4", "Header"
     ]
 
-    theKey = "a956b3abcc3d2d5daedf829b2cef56b4ba9b5b583c9c8cc8c87816dfc5a0685d"
+    theKey = "071d6b2e4764749f8c78d3c1ab9099fa04c07d2d53fd3de61eb1bdf1cb4845c3"
     assert theDoc._autoPara[theKey][0] == "P1"
     assert isinstance(theDoc._autoPara[theKey][1], ODTParagraphStyle)
 
@@ -282,7 +282,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
+        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
         '</office:text>'
     )
 
@@ -295,7 +295,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_4" text:outline-level="4">Section</text:h>'
+        '<text:h text:style-name="Heading_20_4" text:outline-level="4">Section</text:h>'
         '</office:text>'
     )
 
@@ -337,7 +337,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_Body">Some '
+        '<text:p text:style-name="Text_20_body">Some '
         '<text:span text:style-name="T1">nested </text:span>'
         '<text:span text:style-name="T2">bold</text:span>'
         '<text:span text:style-name="T1"> and </text:span>'
@@ -355,7 +355,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_Body">Some text.<text:line-break/>Next line</text:p>'
+        '<text:p text:style-name="Text_20_body">Some text.<text:line-break/>Next line</text:p>'
         '</office:text>'
     )
 
@@ -368,7 +368,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_Body"><text:tab/>Item 1<text:tab/>Item 2</text:p>'
+        '<text:p text:style-name="Text_20_body"><text:tab/>Item 1<text:tab/>Item 2</text:p>'
         '</office:text>'
     )
 
@@ -381,7 +381,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_Body">Some <text:span text:style-name="T4">'
+        '<text:p text:style-name="Text_20_body">Some <text:span text:style-name="T4">'
         'bold<text:tab/>text</text:span></text:p>'
         '</office:text>'
     )
@@ -400,10 +400,10 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="Text_Body">Hello World</text:p>'
-        '<text:p text:style-name="Text_Body">Hello <text:s/>World</text:p>'
-        '<text:p text:style-name="Text_Body">Hello <text:s text:c="2"/>World</text:p>'
+        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
+        '<text:p text:style-name="Text_20_body">Hello World</text:p>'
+        '<text:p text:style-name="Text_20_body">Hello <text:s/>World</text:p>'
+        '<text:p text:style-name="Text_20_body">Hello <text:s text:c="2"/>World</text:p>'
         '</office:text>'
     )
 
@@ -424,12 +424,12 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="Text_Meta"><text:span text:style-name="T4">'
+        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T4">'
         'Point of View:</text:span> Jane</text:p>'
-        '<text:p text:style-name="Text_Meta"><text:span text:style-name="T4">'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T4">'
         'Synopsis:</text:span> So it begins</text:p>'
-        '<text:p text:style-name="Text_Meta"><text:span text:style-name="T4">'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T4">'
         'Comment:</text:span> a plain comment</text:p>'
         '</office:text>'
     )
@@ -446,9 +446,9 @@ def testCoreToOdt_Convert(mockGUI):
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="P3">* * *</text:p>'
-        '<text:p text:style-name="Text_Body">Text</text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
         '<text:p text:style-name="P3">* * *</text:p>'
-        '<text:p text:style-name="Text_Body">Text</text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )
 
@@ -463,10 +463,10 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_Body"></text:p>'
-        '<text:p text:style-name="Text_Body">Text</text:p>'
-        '<text:p text:style-name="Text_Body"></text:p>'
-        '<text:p text:style-name="Text_Body">Text</text:p>'
+        '<text:p text:style-name="Text_20_body"></text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
+        '<text:p text:style-name="Text_20_body"></text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )
 
@@ -490,15 +490,15 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
+        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
         '<text:p text:style-name="P4"><text:span text:style-name="T4">'
         'Point of View:</text:span> Jane</text:p>'
         '<text:p text:style-name="P5"><text:span text:style-name="T4">'
         'Characters:</text:span> John</text:p>'
-        '<text:p text:style-name="Text_Meta"><text:span text:style-name="T4">'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T4">'
         'Plot:</text:span> Main</text:p>'
         '<text:p text:style-name="P6">Right align</text:p>'
-        '<text:p text:style-name="Text_Body">Left Align</text:p>'
+        '<text:p text:style-name="Text_20_body">Left Align</text:p>'
         '<text:p text:style-name="P3">Centered</text:p>'
         '<text:p text:style-name="P7">Left indent</text:p>'
         '<text:p text:style-name="P8">Right indent</text:p>'
@@ -527,8 +527,8 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="Text_Body">Regular paragraph</text:p>'
+        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
+        '<text:p text:style-name="Text_20_body">Regular paragraph</text:p>'
         '<text:p text:style-name="P9">with<text:line-break/>break</text:p>'
         '<text:p text:style-name="P9">Left Align</text:p>'
         '</office:text>'
@@ -550,9 +550,9 @@ def testCoreToOdt_Convert(mockGUI):
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="P2" text:outline-level="2">Chapter One</text:h>'
-        '<text:p text:style-name="Text_Body">Text</text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
         '<text:h text:style-name="P2" text:outline-level="2">Chapter Two</text:h>'
-        '<text:p text:style-name="Text_Body">Text</text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )
 
@@ -581,7 +581,7 @@ def testCoreToOdt_ConvertDirect(mockGUI):
     theDoc.closeDocument()
     assert (
         '<style:style style:name="P1" style:family="paragraph" '
-        'style:parent-style-name="Text_Body">'
+        'style:parent-style-name="Text_20_body">'
         '<style:paragraph-properties fo:text-align="justify"/>'
         '</style:style>'
     ) in xmlToText(theDoc._xAuto)
@@ -602,7 +602,7 @@ def testCoreToOdt_ConvertDirect(mockGUI):
     theDoc.closeDocument()
     assert (
         '<style:style style:name="P1" style:family="paragraph" '
-        'style:parent-style-name="Text_Body">'
+        'style:parent-style-name="Text_20_body">'
         '<style:paragraph-properties fo:break-after="page"/>'
         '</style:style>'
     ) in xmlToText(theDoc._xAuto)
