@@ -400,7 +400,7 @@ class ToOdt(Tokenizer):
                     fTemp = " ".join(thisFmt)
                     tTxt = tTemp.rstrip()
                     tFmt = fTemp[:len(tTxt)]
-                    self._addTextPar("Text_Body", parStyle, tTxt, theFmt=tFmt)
+                    self._addTextPar("Text_20_body", parStyle, tTxt, theFmt=tFmt)
 
                 thisPar = []
                 thisFmt = []
@@ -412,29 +412,29 @@ class ToOdt(Tokenizer):
 
             elif tType == self.T_UNNUM:
                 tHead = tText.replace(r"\\", "\n")
-                self._addTextPar("Heading_2", oStyle, tHead, isHead=True, oLevel="2")
+                self._addTextPar("Heading_20_2", oStyle, tHead, isHead=True, oLevel="2")
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "\n")
-                self._addTextPar("Heading_1", oStyle, tHead, isHead=True, oLevel="1")
+                self._addTextPar("Heading_20_1", oStyle, tHead, isHead=True, oLevel="1")
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(r"\\", "\n")
-                self._addTextPar("Heading_2", oStyle, tHead, isHead=True, oLevel="2")
+                self._addTextPar("Heading_20_2", oStyle, tHead, isHead=True, oLevel="2")
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(r"\\", "\n")
-                self._addTextPar("Heading_3", oStyle, tHead, isHead=True, oLevel="3")
+                self._addTextPar("Heading_20_3", oStyle, tHead, isHead=True, oLevel="3")
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(r"\\", "\n")
-                self._addTextPar("Heading_4", oStyle, tHead, isHead=True, oLevel="4")
+                self._addTextPar("Heading_20_4", oStyle, tHead, isHead=True, oLevel="4")
 
             elif tType == self.T_SEP:
-                self._addTextPar("Text_Body", oStyle, tText)
+                self._addTextPar("Text_20_body", oStyle, tText)
 
             elif tType == self.T_SKIP:
-                self._addTextPar("Text_Body", oStyle, "")
+                self._addTextPar("Text_20_body", oStyle, "")
 
             elif tType == self.T_TEXT:
                 if parStyle is None:
@@ -451,15 +451,15 @@ class ToOdt(Tokenizer):
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 tTemp, fTemp = self._formatSynopsis(tText)
-                self._addTextPar("Text_Meta", oStyle, tTemp, theFmt=fTemp)
+                self._addTextPar("Text_20_Meta", oStyle, tTemp, theFmt=fTemp)
 
             elif tType == self.T_COMMENT and self._doComments:
                 tTemp, fTemp = self._formatComments(tText)
-                self._addTextPar("Text_Meta", oStyle, tTemp, theFmt=fTemp)
+                self._addTextPar("Text_20_Meta", oStyle, tTemp, theFmt=fTemp)
 
             elif tType == self.T_KEYWORD and self._doKeywords:
                 tTemp, fTemp = self._formatKeywords(tText)
-                self._addTextPar("Text_Meta", oStyle, tTemp, theFmt=fTemp)
+                self._addTextPar("Text_20_Meta", oStyle, tTemp, theFmt=fTemp)
 
         return
 
@@ -776,7 +776,7 @@ class ToOdt(Tokenizer):
         theAttr[_mkTag("style", "name")]              = "Heading"
         theAttr[_mkTag("style", "family")]            = "paragraph"
         theAttr[_mkTag("style", "parent-style-name")] = "Standard"
-        theAttr[_mkTag("style", "next-style-name")]   = "Text_Body"
+        theAttr[_mkTag("style", "next-style-name")]   = "Text_20_body"
         theAttr[_mkTag("style", "class")]             = "text"
         xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
 
@@ -795,7 +795,7 @@ class ToOdt(Tokenizer):
         # Add Header and Footer Styles
         # ============================
         theAttr = {}
-        theAttr[_mkTag("style", "name")]              = "Header_and_Footer"
+        theAttr[_mkTag("style", "name")]              = "Header_20_and_20_Footer"
         theAttr[_mkTag("style", "display-name")]      = "Header and Footer"
         theAttr[_mkTag("style", "family")]            = "paragraph"
         theAttr[_mkTag("style", "parent-style-name")] = "Standard"
@@ -811,7 +811,7 @@ class ToOdt(Tokenizer):
         # ===================
 
         oStyle = ODTParagraphStyle()
-        oStyle.setDisplayName("Text Body")
+        oStyle.setDisplayName("Text body")
         oStyle.setParentStyleName("Standard")
         oStyle.setClass("text")
         oStyle.setMarginTop(self._mTopText)
@@ -821,9 +821,9 @@ class ToOdt(Tokenizer):
         oStyle.setFontFamily(self._fontFamily)
         oStyle.setFontSize(self._fSizeText)
         oStyle.setTextAlign(self._textAlign)
-        oStyle.packXML(self._xStyl, "Text_Body")
+        oStyle.packXML(self._xStyl, "Text_20_body")
 
-        self._mainPara["Text_Body"] = oStyle
+        self._mainPara["Text_20_body"] = oStyle
 
         # Add Text Meta Style
         # ===================
@@ -840,9 +840,9 @@ class ToOdt(Tokenizer):
         oStyle.setFontSize(self._fSizeText)
         oStyle.setColor(self._colMetaTx)
         oStyle.setOpacity(self._opaMetaTx)
-        oStyle.packXML(self._xStyl, "Text_Meta")
+        oStyle.packXML(self._xStyl, "Text_20_Meta")
 
-        self._mainPara["Text_Meta"] = oStyle
+        self._mainPara["Text_20_Meta"] = oStyle
 
         # Add Title Style
         # ===============
@@ -850,7 +850,7 @@ class ToOdt(Tokenizer):
         oStyle = ODTParagraphStyle()
         oStyle.setDisplayName("Title")
         oStyle.setParentStyleName("Heading")
-        oStyle.setNextStyleName("Text_Body")
+        oStyle.setNextStyleName("Text_20_body")
         oStyle.setClass("chapter")
         oStyle.setTextAlign("center")
         oStyle.setMarginTop(self._mTopTitle)
@@ -869,7 +869,7 @@ class ToOdt(Tokenizer):
         oStyle = ODTParagraphStyle()
         oStyle.setDisplayName("Heading 1")
         oStyle.setParentStyleName("Heading")
-        oStyle.setNextStyleName("Text_Body")
+        oStyle.setNextStyleName("Text_20_body")
         oStyle.setOutlineLevel("1")
         oStyle.setClass("text")
         oStyle.setMarginTop(self._mTopHead1)
@@ -880,9 +880,9 @@ class ToOdt(Tokenizer):
         oStyle.setColor(self._colHead12)
         oStyle.setOpacity(self._opaHead12)
         oStyle.setFontWeight("bold")
-        oStyle.packXML(self._xStyl, "Heading_1")
+        oStyle.packXML(self._xStyl, "Heading_20_1")
 
-        self._mainPara["Heading_1"] = oStyle
+        self._mainPara["Heading_20_1"] = oStyle
 
         # Add Heading 2 Style
         # ===================
@@ -890,7 +890,7 @@ class ToOdt(Tokenizer):
         oStyle = ODTParagraphStyle()
         oStyle.setDisplayName("Heading 2")
         oStyle.setParentStyleName("Heading")
-        oStyle.setNextStyleName("Text_Body")
+        oStyle.setNextStyleName("Text_20_body")
         oStyle.setOutlineLevel("2")
         oStyle.setClass("text")
         oStyle.setMarginTop(self._mTopHead2)
@@ -901,9 +901,9 @@ class ToOdt(Tokenizer):
         oStyle.setColor(self._colHead12)
         oStyle.setOpacity(self._opaHead12)
         oStyle.setFontWeight("bold")
-        oStyle.packXML(self._xStyl, "Heading_2")
+        oStyle.packXML(self._xStyl, "Heading_20_2")
 
-        self._mainPara["Heading_2"] = oStyle
+        self._mainPara["Heading_20_2"] = oStyle
 
         # Add Heading 3 Style
         # ===================
@@ -911,7 +911,7 @@ class ToOdt(Tokenizer):
         oStyle = ODTParagraphStyle()
         oStyle.setDisplayName("Heading 3")
         oStyle.setParentStyleName("Heading")
-        oStyle.setNextStyleName("Text_Body")
+        oStyle.setNextStyleName("Text_20_body")
         oStyle.setOutlineLevel("3")
         oStyle.setClass("text")
         oStyle.setMarginTop(self._mTopHead3)
@@ -922,9 +922,9 @@ class ToOdt(Tokenizer):
         oStyle.setColor(self._colHead34)
         oStyle.setOpacity(self._opaHead34)
         oStyle.setFontWeight("bold")
-        oStyle.packXML(self._xStyl, "Heading_3")
+        oStyle.packXML(self._xStyl, "Heading_20_3")
 
-        self._mainPara["Heading_3"] = oStyle
+        self._mainPara["Heading_20_3"] = oStyle
 
         # Add Heading 4 Style
         # ===================
@@ -932,7 +932,7 @@ class ToOdt(Tokenizer):
         oStyle = ODTParagraphStyle()
         oStyle.setDisplayName("Heading 4")
         oStyle.setParentStyleName("Heading")
-        oStyle.setNextStyleName("Text_Body")
+        oStyle.setNextStyleName("Text_20_body")
         oStyle.setOutlineLevel("4")
         oStyle.setClass("text")
         oStyle.setMarginTop(self._mTopHead4)
@@ -943,15 +943,15 @@ class ToOdt(Tokenizer):
         oStyle.setColor(self._colHead34)
         oStyle.setOpacity(self._opaHead34)
         oStyle.setFontWeight("bold")
-        oStyle.packXML(self._xStyl, "Heading_4")
+        oStyle.packXML(self._xStyl, "Heading_20_4")
 
-        self._mainPara["Heading_4"] = oStyle
+        self._mainPara["Heading_20_4"] = oStyle
 
         # Add Header Style
         # ================
         oStyle = ODTParagraphStyle()
         oStyle.setDisplayName("Header")
-        oStyle.setParentStyleName("Header_and_Footer")
+        oStyle.setParentStyleName("Header_20_and_20_Footer")
         oStyle.setTextAlign("right")
         oStyle.packXML(self._xStyl, "Header")
 
