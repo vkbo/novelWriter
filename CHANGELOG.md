@@ -1,5 +1,24 @@
 # novelWriter Changelog
 
+## Version 1.5.4 [2022-01-04]
+
+### Release Notes
+
+This is a bugfix release that fixes an issues with renderring HTML from a document, either in the
+viewer or the build tool, when there is a greater or lesser than symbol in a text block that isn't
+a plain text paragraph, like for instance a comment or a heading. Any such document would fail to
+render.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed a bug where a greater or lesser than symbol would crash the html converter loop if the text
+  block did not have a format with a 'NoneType is not iterable' error. Most blocks that are not
+  plain text have the format set to 'None'. Issue #950, PR #951.
+
+----
+
 ## Version 1.5.3 [2021-12-31]
 
 ### Release Notes
