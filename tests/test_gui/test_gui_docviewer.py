@@ -24,8 +24,10 @@ import pytest
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import qApp, QAction, QMessageBox
+from mock import causeException
 
 from novelwriter.enum import nwDocAction
+from novelwriter.core import ToHtml
 
 keyDelay = 2
 typeDelay = 1
@@ -52,7 +54,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.theIndex._refIndex != {}
 
     # Select a document in the project tree
-    assert nwGUI.treeView.setSelectedHandle("88243afbe5ed8")
+    nwGUI.treeView.setSelectedHandle("88243afbe5ed8")
 
     # Middle-click the selected item
     theItem = nwGUI.treeView._getTreeItem("88243afbe5ed8")
@@ -67,14 +69,14 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docViewer.toPlainText() == origText
 
     # Cursor line
-    assert not nwGUI.docViewer.setCursorLine("not a number")
-    assert nwGUI.docViewer.setCursorLine(3)
+    assert nwGUI.docViewer.setCursorLine("not a number") is False
+    assert nwGUI.docViewer.setCursorLine(3) is True
     theCursor = nwGUI.docViewer.textCursor()
     assert theCursor.position() == 40
 
     # Cursor position
-    assert not nwGUI.docViewer.setCursorPosition("not a number")
-    assert nwGUI.docViewer.setCursorPosition(100)
+    assert nwGUI.docViewer.setCursorPosition("not a number") is False
+    assert nwGUI.docViewer.setCursorPosition(100) is True
 
     # Select word
     nwGUI.docViewer._makeSelection(QTextCursor.WordUnderCursor)
@@ -83,17 +85,17 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     qClip.clear()
 
     # Cut
-    assert nwGUI.docViewer.docAction(nwDocAction.CUT)
+    assert nwGUI.docViewer.docAction(nwDocAction.CUT) is True
     assert qClip.text() == "laoreet"
     qClip.clear()
 
     # Copy
-    assert nwGUI.docViewer.docAction(nwDocAction.COPY)
+    assert nwGUI.docViewer.docAction(nwDocAction.COPY) is True
     assert qClip.text() == "laoreet"
     qClip.clear()
 
     # Select Paragraph
-    assert nwGUI.docViewer.docAction(nwDocAction.SEL_PARA)
+    assert nwGUI.docViewer.docAction(nwDocAction.SEL_PARA) is True
     theCursor = nwGUI.docViewer.textCursor()
     assert theCursor.selectedText() == (
         "Synopsis: Aenean ut placerat velit. Etiam laoreet ullamcorper risus, "
@@ -103,26 +105,26 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     )
 
     # Select All
-    assert nwGUI.docViewer.docAction(nwDocAction.SEL_ALL)
+    assert nwGUI.docViewer.docAction(nwDocAction.SEL_ALL) is True
     theCursor = nwGUI.docViewer.textCursor()
     assert len(theCursor.selectedText()) == 3061
 
     # Other actions
-    assert not nwGUI.docViewer.docAction(nwDocAction.NO_ACTION)
+    assert nwGUI.docViewer.docAction(nwDocAction.NO_ACTION) is False
 
     # Close document
     nwGUI.docViewer.docHeader._closeDocument()
     assert nwGUI.docViewer.docHandle() is None
 
     # Action on no document
-    assert not nwGUI.docViewer.docAction(nwDocAction.COPY)
+    assert nwGUI.docViewer.docAction(nwDocAction.COPY) is False
 
     # Open again via menu
     assert nwGUI.treeView.setSelectedHandle("88243afbe5ed8")
     nwGUI.mainMenu.aViewDoc.activate(QAction.Trigger)
 
     # Select "Bod" link
-    assert nwGUI.docViewer.setCursorPosition(27)
+    assert nwGUI.docViewer.setCursorPosition(27) is True
     nwGUI.docViewer._makeSelection(QTextCursor.WordUnderCursor)
     theRect = nwGUI.docViewer.cursorRect()
     # qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.LeftButton, pos=theRect.center(), delay=100)
@@ -168,16 +170,22 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docViewer.stickyRef is viewState
 
     # Document footer show/hide synopsis
-    assert nwGUI.viewDocument("f96ec11c6a3da")
+    assert nwGUI.viewDocument("f96ec11c6a3da") is True
     assert len(nwGUI.docViewer.toPlainText()) == 4315
     nwGUI.docViewer.docFooter._doToggleSynopsis(False)
     assert len(nwGUI.docViewer.toPlainText()) == 4099
 
     # Document footer show/hide comments
-    assert nwGUI.viewDocument("846352075de7d")
+    assert nwGUI.viewDocument("846352075de7d") is True
     assert len(nwGUI.docViewer.toPlainText()) == 675
     nwGUI.docViewer.docFooter._doToggleComments(False)
     assert len(nwGUI.docViewer.toPlainText()) == 635
+
+    # Crash the HTML rendering
+    with monkeypatch.context() as mp:
+        mp.setattr(ToHtml, "doConvert", causeException)
+        assert nwGUI.docViewer.loadText("846352075de7d") is False
+        assert nwGUI.docViewer.toPlainText() == "An error occurred while generating the preview."
 
     # qtbot.stopForInteraction()
 
