@@ -417,6 +417,27 @@ def testCoreToHtml_SpecialCases(mockGUI):
         "<p>Test &gt; text <em>&lt;<strong>bold</strong>&gt;</em> and more.</p>\n"
     )
 
+    # Test for bug #950
+    # =================
+    # See: https://github.com/vkbo/novelWriter/issues/950
+
+    theHtml.setComments(True)
+    theHtml._theText = "% Test > text _<**bold**>_ and more.\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<p class='comment'>"
+        "<strong>Comment:</strong> Test &gt; text _&lt;**bold**&gt;_ and more."
+        "</p>\n"
+    )
+
+    theHtml._theText = "## Heading <1>\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<h1 style='page-break-before: always;'>Heading &lt;1&gt;</h1>\n"
+    )
+
 # END Test testCoreToHtml_SpecialCases
 
 
