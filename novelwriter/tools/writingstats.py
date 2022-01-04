@@ -7,7 +7,7 @@ File History:
 Created: 2019-10-20 [0.3]
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import nwAlert
-from novelwriter.common import formatTime, checkInt
+from novelwriter.error import formatException
+from novelwriter.common import formatTime, checkInt, checkIntRange, checkIntTuple
 from novelwriter.constants import nwConst, nwFiles
 from novelwriter.gui.custom import QSwitch
 
@@ -114,13 +115,10 @@ class GuiWritingStats(QDialog):
         hHeader.setTextAlignment(self.C_IDLE, Qt.AlignRight)
         hHeader.setTextAlignment(self.C_COUNT, Qt.AlignRight)
 
-        sortValid = (Qt.AscendingOrder, Qt.DescendingOrder)
-        sortCol = self.optState.validIntRange(
-            self.optState.getInt("GuiWritingStats", "sortCol", 0), 0, 2, 0
-        )
-        sortOrder = self.optState.validIntTuple(
+        sortCol = checkIntRange(self.optState.getInt("GuiWritingStats", "sortCol", 0), 0, 2, 0)
+        sortOrder = checkIntTuple(
             self.optState.getInt("GuiWritingStats", "sortOrder", Qt.DescendingOrder),
-            sortValid, Qt.DescendingOrder
+            (Qt.AscendingOrder, Qt.DescendingOrder), Qt.DescendingOrder
         )
         self.listBox.sortByColumn(sortCol, sortOrder)
         self.listBox.setSortingEnabled(True)
@@ -406,8 +404,8 @@ class GuiWritingStats(QDialog):
                         outFile.write(f'"{sD}",{tT:.0f},{wD},{wA},{wB},{tI}\n')
                     wSuccess = True
 
-        except Exception as e:
-            errMsg = str(e)
+        except Exception as exc:
+            errMsg = formatException(exc)
             wSuccess = False
 
         # Report to user
@@ -482,10 +480,10 @@ class GuiWritingStats(QDialog):
 
                     self.logData.append((dStart, sDiff, wcNovel, wcNotes, sIdle))
 
-        except Exception as e:
-            self.theParent.makeAlert([
-                self.tr("Failed to read session log file."), str(e)
-            ], nwAlert.ERROR)
+        except Exception as exc:
+            self.theParent.makeAlert(self.tr(
+                "Failed to read session log file."
+            ), nwAlert.ERROR, exception=exc)
             return False
 
         ttWords = ttNovel + ttNotes

@@ -3,7 +3,7 @@ novelWriter – NWIndex Class Tester
 ==================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -219,6 +219,9 @@ def testCoreIndex_CheckThese(nwMinimal, mockGUI):
     assert theIndex.notesChangedSince(0) is True
     assert theIndex.indexChangedSince(0) is True
 
+    assert theIndex.getHandleHeaderLevel(cHandle) == "H1"
+    assert theIndex.getHandleHeaderLevel(nHandle) == "H1"
+
     # Zero Items
     assert theIndex.checkThese([], cItem) == []
 
@@ -430,7 +433,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     # Page wo/Title
     # =============
 
-    theProject.projTree[pHandle].itemLayout = nwItemLayout.DOCUMENT
+    theProject.projTree[pHandle]._layout = nwItemLayout.DOCUMENT
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))
@@ -443,7 +446,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert theIndex._fileIndex[pHandle]["T000000"]["pCount"] == 1
     assert theIndex._fileIndex[pHandle]["T000000"]["synopsis"] == ""
 
-    theProject.projTree[pHandle].itemLayout = nwItemLayout.NOTE
+    theProject.projTree[pHandle]._layout = nwItemLayout.NOTE
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))

@@ -3,7 +3,7 @@ novelWriter – NWDoc Class Tester
 ================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ import os
 import pytest
 
 from mock import causeOSError
-from tools import readFile
+from tools import readFile, writeFile
 
 from novelwriter.core import NWProject, NWDoc
 from novelwriter.enum import nwItemClass, nwItemLayout
@@ -34,25 +34,30 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
     """Test loading and saving a document with the NWDoc class.
     """
     theProject = NWProject(mockGUI)
-    assert theProject.openProject(nwMinimal)
+    assert theProject.openProject(nwMinimal) is True
     assert theProject.projPath == nwMinimal
 
     sHandle = "8c659a11cd429"
 
+    # Read Document
+    # =============
+
     # Not a valid handle
     theDoc = NWDoc(theProject, "stuff")
+    assert bool(theDoc) is False
     assert theDoc.readDocument() is None
 
     # Non-existent handle
     theDoc = NWDoc(theProject, "0000000000000")
     assert theDoc.readDocument() is None
+    assert theDoc._currHash is None
 
     # Cause open() to fail while loading
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         theDoc = NWDoc(theProject, sHandle)
         assert theDoc.readDocument() is None
-        assert theDoc.getError() == "OSError"
+        assert theDoc.getError() == "OSError: Mock OSError"
 
     # Load the text
     theDoc = NWDoc(theProject, sHandle)
@@ -63,13 +68,18 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
     assert nHandle is not None
     xHandle = theProject.newFile("New File", nwItemClass.NOVEL, nHandle)
     theDoc = NWDoc(theProject, xHandle)
+    assert bool(theDoc) is True
+    assert repr(theDoc) == f"<NWDoc handle={xHandle}>"
     assert theDoc.readDocument() == ""
+
+    # Write Document
+    # ==============
 
     # Set handle and save again
     theText = "### Test File\n\nText ...\n\n"
     theDoc = NWDoc(theProject, xHandle)
     assert theDoc.readDocument(xHandle) == ""
-    assert theDoc.writeDocument(theText)
+    assert theDoc.writeDocument(theText) is True
 
     # Save again to ensure temp file and previous file is handled
     assert theDoc.writeDocument(theText)
@@ -84,36 +94,46 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
         "Text ...\n\n"
     )
 
+    # Alter the document on disk and save again
+    writeFile(docPath, "blablabla")
+    assert theDoc.writeDocument(theText) is False
+
+    # Force the overwrite
+    assert theDoc.writeDocument(theText, forceWrite=True) is True
+
     # Force no meta data
     theDoc._theItem = None
-    assert theDoc.writeDocument(theText)
+    assert theDoc.writeDocument(theText) is True
     assert readFile(docPath) == theText
 
     # Cause open() to fail while saving
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        assert not theDoc.writeDocument(theText)
-        assert theDoc.getError() == "OSError"
+        assert theDoc.writeDocument(theText) is False
+        assert theDoc.getError() == "OSError: Mock OSError"
 
     # Saving with no handle
     theDoc._docHandle = None
-    assert not theDoc.writeDocument(theText)
+    assert theDoc.writeDocument(theText) is False
+
+    # Delete Document
+    # ===============
 
     # Delete the last document
     theDoc = NWDoc(theProject, "stuff")
-    assert not theDoc.deleteDocument()
+    assert theDoc.deleteDocument() is False
     assert os.path.isfile(docPath)
 
     # Cause the delete to fail
     with monkeypatch.context() as mp:
         mp.setattr("os.unlink", causeOSError)
         theDoc = NWDoc(theProject, xHandle)
-        assert not theDoc.deleteDocument()
-        assert theDoc.getError() == "OSError"
+        assert theDoc.deleteDocument() is False
+        assert theDoc.getError() == "OSError: Mock OSError"
 
     # Make the delete pass
     theDoc = NWDoc(theProject, xHandle)
-    assert theDoc.deleteDocument()
+    assert theDoc.deleteDocument() is True
     assert not os.path.isfile(docPath)
 
 # END Test testCoreDocument_Load

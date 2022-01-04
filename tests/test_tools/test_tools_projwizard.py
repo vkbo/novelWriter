@@ -3,7 +3,7 @@ novelWriter – New Project Wizard Class Tester
 =============================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -40,16 +40,14 @@ stepDelay = 20
 
 
 @pytest.mark.gui
+@pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
 def testToolProjectWizard_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test the new project wizard.
+    Disabled for macOS because the test segfaults on QWizard.show()
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
-    if sys.platform.startswith("darwin"):
-        # Disable for macOS because the test segfaults on QWizard.show()
-        return
 
     ##
     #  Test New Project Function

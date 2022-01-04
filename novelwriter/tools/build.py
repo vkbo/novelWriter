@@ -7,7 +7,7 @@ File History:
 Created: 2020-05-09 [0.5]
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 
 from novelwriter.core import ToHtml, ToOdt, ToMarkdown
 from novelwriter.enum import nwAlert, nwItemType, nwItemLayout, nwItemClass
+from novelwriter.error import formatException, logException
 from novelwriter.common import fuzzyTime, makeFileNameSafe
 from novelwriter.constants import nwConst, nwFiles
 from novelwriter.gui.custom import QSwitch
@@ -643,11 +644,11 @@ class GuiBuildNovel(QDialog):
         tStart = int(time())
 
         # Get Settings
-        fmtTitle      = self.fmtTitle.text().strip()
-        fmtChapter    = self.fmtChapter.text().strip()
-        fmtUnnumbered = self.fmtUnnumbered.text().strip()
-        fmtScene      = self.fmtScene.text().strip()
-        fmtSection    = self.fmtSection.text().strip()
+        fmtTitle      = self.fmtTitle.text()
+        fmtChapter    = self.fmtChapter.text()
+        fmtUnnumbered = self.fmtUnnumbered.text()
+        fmtScene      = self.fmtScene.text()
+        fmtSection    = self.fmtSection.text()
         textFont      = self.textFont.text()
         textSize      = self.textSize.value()
         lineHeight    = self.lineHeight.value()
@@ -675,7 +676,7 @@ class GuiBuildNovel(QDialog):
         bldObj.setTitleFormat(fmtTitle)
         bldObj.setChapterFormat(fmtChapter)
         bldObj.setUnNumberedFormat(fmtUnnumbered)
-        bldObj.setSceneFormat(fmtScene, fmtScene == "")
+        bldObj.setSceneFormat(fmtScene, False)
         bldObj.setSectionFormat(fmtSection, fmtSection == "")
 
         bldObj.setFont(textFont, textSize, textFixed)
@@ -727,7 +728,7 @@ class GuiBuildNovel(QDialog):
 
             except Exception:
                 logger.error("Failed to build document '%s'", tItem.itemHandle)
-                novelwriter.logException()
+                logException()
                 if isPreview:
                     self.docView.setText((
                         "Failed to generate preview. "
@@ -872,8 +873,8 @@ class GuiBuildNovel(QDialog):
             try:
                 makeOdt.saveOpenDocText(savePath)
                 wSuccess = True
-            except Exception as e:
-                errMsg = str(e)
+            except Exception as exc:
+                errMsg = formatException(exc)
 
         elif theFmt == self.FMT_FODT:
             makeOdt = ToOdt(self.theProject, isFlat=True)
@@ -881,8 +882,8 @@ class GuiBuildNovel(QDialog):
             try:
                 makeOdt.saveFlatXML(savePath)
                 wSuccess = True
-            except Exception as e:
-                errMsg = str(e)
+            except Exception as exc:
+                errMsg = formatException(exc)
 
         elif theFmt == self.FMT_HTM:
             makeHtml = ToHtml(self.theProject)
@@ -893,8 +894,8 @@ class GuiBuildNovel(QDialog):
             try:
                 makeHtml.saveHTML5(savePath)
                 wSuccess = True
-            except Exception as e:
-                errMsg = str(e)
+            except Exception as exc:
+                errMsg = formatException(exc)
 
         elif theFmt == self.FMT_NWD:
             makeNwd = ToMarkdown(self.theProject)
@@ -906,8 +907,8 @@ class GuiBuildNovel(QDialog):
             try:
                 makeNwd.saveRawMarkdown(savePath)
                 wSuccess = True
-            except Exception as e:
-                errMsg = str(e)
+            except Exception as exc:
+                errMsg = formatException(exc)
 
         elif theFmt in (self.FMT_MD, self.FMT_GH):
             makeMd = ToMarkdown(self.theProject)
@@ -923,8 +924,8 @@ class GuiBuildNovel(QDialog):
             try:
                 makeMd.saveMarkdown(savePath)
                 wSuccess = True
-            except Exception as e:
-                errMsg = str(e)
+            except Exception as exc:
+                errMsg = formatException(exc)
 
         elif theFmt == self.FMT_JSON_H or theFmt == self.FMT_JSON_M:
             jsonData = {
@@ -968,8 +969,8 @@ class GuiBuildNovel(QDialog):
                 with open(savePath, mode="w", encoding="utf-8") as outFile:
                     outFile.write(json.dumps(jsonData, indent=2))
                     wSuccess = True
-            except Exception as e:
-                errMsg = str(e)
+            except Exception as exc:
+                errMsg = formatException(exc)
 
         elif theFmt == self.FMT_PDF:
             try:
@@ -983,8 +984,8 @@ class GuiBuildNovel(QDialog):
                 self.docView.document().print(thePrinter)
                 wSuccess = True
 
-            except Exception as e:
-                errMsg - str(e)
+            except Exception as exc:
+                errMsg = formatException(exc)
 
         else:
             # If the if statements above and here match, it should not
@@ -1050,7 +1051,7 @@ class GuiBuildNovel(QDialog):
                 theData = json.loads(theJson)
             except Exception:
                 logger.error("Failed to load build cache")
-                novelwriter.logException()
+                logException()
                 return False
 
             if "buildTime" in theData.keys():
@@ -1078,7 +1079,7 @@ class GuiBuildNovel(QDialog):
                 }, indent=2))
         except Exception:
             logger.error("Failed to save build cache")
-            novelwriter.logException()
+            logException()
             return False
 
         return True
@@ -1302,9 +1303,12 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         return
 
-    def setStyleSheet(self, theStyles=[]):
+    def setStyleSheet(self, theStyles=None):
         """Set the stylesheet for the preview document.
         """
+        if theStyles is None:
+            theStyles = []
+
         if not theStyles:
             theStyles.append("h1, h2 {color: rgb(66, 113, 174);}")
             theStyles.append("h3, h4 {color: rgb(50, 50, 50);}")

@@ -76,13 +76,13 @@ style guide, but with a few exceptions. Some key points are listed below.
 **Variable and Function Names**
 
 * PEP8 allows for camelCase for consistency with existing code. The Qt library uses camelCase, so
-  the Python the source code does too.
+  the Python source code does too.
 * The exception to the above is for constants. They should always be in upper snake case, like PEP8
   states.
 
 **Spaces, Indentation and Alignment**
 
-* Only indentation by 4 spaces is allowed.
+* Only indentation by multiples of 4 spaces is allowed.
 * No trailing spaces should occur on any line in the source code, including empty lines.
 * Ideally, a function should end on the same indention level as it started. Exceptions are allowed
   if it makes the code easier to follow.

@@ -3,7 +3,7 @@ novelWriter – Common Functions Tester
 =====================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,20 +19,23 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import hashlib
 import os
 import time
 import pytest
 
 from datetime import datetime
 
+from mock import causeOSError
 from tools import writeFile
 
+from novelwriter.guimain import GuiMain
 from novelwriter.common import (
-    checkString, checkInt, checkBool, checkHandle, isHandle, isTitleTag,
-    isItemClass, isItemType, isItemLayout, hexToInt, formatInt,
-    formatTimeStamp, formatTime, parseTimeStamp, splitVersionNumber,
-    transferCase, fuzzyTime, numberToRoman, jsonEncode, makeFileNameSafe,
-    NWConfigParser
+    checkString, checkInt, checkFloat, checkBool, checkHandle, isHandle,
+    isTitleTag, isItemClass, isItemType, isItemLayout, hexToInt, checkIntRange,
+    checkIntTuple, formatInt, formatTimeStamp, formatTime, parseTimeStamp,
+    splitVersionNumber, transferCase, fuzzyTime, numberToRoman, jsonEncode,
+    readTextFile, makeFileNameSafe, sha256sum, getGuiItem, NWConfigParser
 )
 
 
@@ -61,6 +64,20 @@ def testBaseCommon_CheckInt():
     assert checkInt(1, 3, False) == 1
     assert checkInt(1.0, 3, False) == 1
     assert checkInt(True, 3, False) == 1
+
+# END Test testBaseCommon_CheckInt
+
+
+@pytest.mark.base
+def testBaseCommon_CheckFloat():
+    """Test the checkFloat function.
+    """
+    assert checkFloat(None, 3.0, True) is None
+    assert checkFloat("None", 3.0, True) is None
+    assert checkFloat(None, 3.0, False) == 3.0
+    assert checkFloat(1, 3.0, False) == 1.0
+    assert checkFloat(1.0, 3.0, False) == 1.0
+    assert checkFloat(True, 3.0, False) == 1.0
 
 # END Test testBaseCommon_CheckInt
 
@@ -197,6 +214,28 @@ def testBaseCommon_HexToInt():
     assert hexToInt("0xffffq", 12) == 12
 
 # END Test testBaseCommon_HexToInt
+
+
+@pytest.mark.base
+def testBaseCommon_CheckIntRange():
+    """Test the checkIntRange function.
+    """
+    assert checkIntRange(5, 0, 9, 3) == 5
+    assert checkIntRange(5, 0, 4, 3) == 3
+    assert checkIntRange(5, 0, 5, 3) == 5
+    assert checkIntRange(0, 0, 5, 3) == 0
+
+# END Test testBaseCommon_CheckIntRange
+
+
+@pytest.mark.base
+def testBaseCommon_CheckIntTuple():
+    """Test the checkIntTuple function.
+    """
+    assert checkIntTuple(0, (0, 1, 2), 3) == 0
+    assert checkIntTuple(5, (0, 1, 2), 3) == 3
+
+# END Test testBaseCommon_CheckIntTuple
 
 
 @pytest.mark.base
@@ -342,18 +381,6 @@ def testBaseCommon_FuzzyTime():
 # END Test testBaseCommon_FuzzyTime
 
 
-@pytest.mark.base
-def testBaseCommon_MakeFileNameSafe():
-    """Test the fuzzyTime function.
-    """
-    assert makeFileNameSafe(" aaaa ") == "aaaa"
-    assert makeFileNameSafe("aaaa,bbbb") == "aaaabbbb"
-    assert makeFileNameSafe("aaaa\tbbbb") == "aaaabbbb"
-    assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
-
-# END Test testBaseCommon_MakeFileNameSafe
-
-
 @pytest.mark.core
 def testBaseCommon_RomanNumbers():
     """Test conversion of integers to Roman numbers.
@@ -464,6 +491,86 @@ def testBaseCommon_JsonEncode():
     )
 
 # END Test testBaseCommon_JsonEncode
+
+
+@pytest.mark.base
+def testBaseCommon_ReadTextFile(monkeypatch, fncDir, ipsumText):
+    """Test the readTextFile function.
+    """
+    testText = "\n\n".join(ipsumText) + "\n"
+    testFile = os.path.join(fncDir, "ipsum.txt")
+    writeFile(testFile, testText)
+
+    assert readTextFile(os.path.join(fncDir, "not_a_file.txt")) == ""
+    assert readTextFile(testFile) == testText
+
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert readTextFile(testFile) == ""
+
+# END Test testBaseCommon_ReadTextFile
+
+
+@pytest.mark.base
+def testBaseCommon_MakeFileNameSafe():
+    """Test the makeFileNameSafe function.
+    """
+    assert makeFileNameSafe(" aaaa ") == "aaaa"
+    assert makeFileNameSafe("aaaa,bbbb") == "aaaabbbb"
+    assert makeFileNameSafe("aaaa\tbbbb") == "aaaabbbb"
+    assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
+
+# END Test testBaseCommon_MakeFileNameSafe
+
+
+@pytest.mark.base
+def testBaseCommon_Sha256Sum(monkeypatch, fncDir, ipsumText):
+    """Test the sha256sum function.
+    """
+    longText = 50*(" ".join(ipsumText) + " ")
+    shortText = "This is a short file"
+    noneText = ""
+
+    assert len(longText) == 175650
+
+    longFile = os.path.join(fncDir, "long_file.txt")
+    shortFile = os.path.join(fncDir, "short_file.txt")
+    noneFile = os.path.join(fncDir, "none_file.txt")
+
+    writeFile(longFile, longText)
+    writeFile(shortFile, shortText)
+    writeFile(noneFile, noneText)
+
+    # Taken with sha256sum command on command line
+    longHash = "9b22aee35660da4fae204acbe96aec7f563022746ca2b7a3831f5e44544765eb"
+    shortHash = "6d7c9b2722364c471b8a8666bcb35d18500272d05b23b3427288e2e34c6618f0"
+    noneHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+    assert sha256sum(longFile) == longHash
+    assert sha256sum(shortFile) == shortHash
+    assert sha256sum(noneFile) == noneHash
+
+    assert hashlib.sha256(longText.encode("utf-8")).hexdigest() == longHash
+    assert hashlib.sha256(shortText.encode("utf-8")).hexdigest() == shortHash
+    assert hashlib.sha256(noneText.encode("utf-8")).hexdigest() == noneHash
+
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert sha256sum(longFile) is None
+        assert sha256sum(shortFile) is None
+        assert sha256sum(noneFile) is None
+
+# END Test testBaseCommon_Sha256Sum
+
+
+@pytest.mark.base
+def testBaseCommon_GetGuiItem(nwGUI):
+    """Check the GUI item function.
+    """
+    assert getGuiItem("gibberish") is None
+    assert isinstance(getGuiItem("GuiMain"), GuiMain)
+
+# END Test testBaseCommon_GetGuiItem
 
 
 @pytest.mark.base

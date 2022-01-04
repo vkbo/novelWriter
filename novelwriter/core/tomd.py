@@ -7,7 +7,7 @@ File History:
 Created: 2021-02-06 [1.2a0]
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -39,21 +39,29 @@ class ToMarkdown(Tokenizer):
     def __init__(self, theProject):
         Tokenizer.__init__(self, theProject)
 
-        self.genMode = self.M_STD
-        self.fullMD = []
+        self._genMode = self.M_STD
+        self._fullMD = []
 
         return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def fullMD(self):
+        return self._fullMD
 
     ##
     #  Setters
     ##
 
     def setStandardMarkdown(self):
-        self.genMode = self.M_STD
+        self._genMode = self.M_STD
         return
 
     def setGitHubMarkdown(self):
-        self.genMode = self.M_GH
+        self._genMode = self.M_GH
         return
 
     ##
@@ -63,13 +71,13 @@ class ToMarkdown(Tokenizer):
     def getFullResultSize(self):
         """Return the size of the full Markdown result.
         """
-        return sum([len(x) for x in self.fullMD])
+        return sum([len(x) for x in self._fullMD])
 
     def doConvert(self):
         """Convert the list of text tokens into a HTML document saved
         to theResult.
         """
-        if self.genMode == self.M_STD:
+        if self._genMode == self.M_STD:
             # Standard
             mdTags = {
                 self.FMT_B_B: "**",
@@ -90,43 +98,43 @@ class ToMarkdown(Tokenizer):
                 self.FMT_D_E: "~~",
             }
 
-        self.theResult = ""
+        self._theResult = ""
 
         thisPar = []
         tmpResult = []
 
-        for tType, _, tText, tFormat, tStyle in self.theTokens:
+        for tType, _, tText, tFormat, tStyle in self._theTokens:
 
             # Process Text Type
             if tType == self.T_EMPTY:
                 if len(thisPar) > 0:
-                    tTemp = "  \n".join(thisPar)
-                    tmpResult.append("%s\n\n" % tTemp.rstrip(" "))
+                    tTemp = ("  \n".join(thisPar)).rstrip(" ")
+                    tmpResult.append(f"{tTemp}\n\n")
                 thisPar = []
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("# %s\n\n" % tHead)
+                tmpResult.append(f"# {tHead}\n\n")
 
             elif tType == self.T_UNNUM:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("## %s\n\n" % tHead)
+                tmpResult.append(f"## {tHead}\n\n")
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("# %s\n\n" % tHead)
+                tmpResult.append(f"# {tHead}\n\n")
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("## %s\n\n" % tHead)
+                tmpResult.append(f"## {tHead}\n\n")
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("### %s\n\n" % tHead)
+                tmpResult.append(f"### {tHead}\n\n")
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(r"\\", "\n")
-                tmpResult.append("#### %s\n\n" % tHead)
+                tmpResult.append(f"#### {tHead}\n\n")
 
             elif tType == self.T_SEP:
                 tmpResult.append("%s\n\n" % tText)
@@ -140,19 +148,21 @@ class ToMarkdown(Tokenizer):
                     tTemp = tTemp[:xPos] + mdTags[xFmt] + tTemp[xPos+xLen:]
                 thisPar.append(tTemp.rstrip())
 
-            elif tType == self.T_SYNOPSIS and self.doSynopsis:
-                tmpResult.append("**%s:** %s\n\n" % (self._localLookup("Synopsis"), tText))
+            elif tType == self.T_SYNOPSIS and self._doSynopsis:
+                locName = self._localLookup("Synopsis")
+                tmpResult.append(f"**{locName}:** {tText}\n\n")
 
-            elif tType == self.T_COMMENT and self.doComments:
-                tmpResult.append("**%s:** %s\n\n" % (self._localLookup("Comment"), tText))
+            elif tType == self.T_COMMENT and self._doComments:
+                locName = self._localLookup("Comment")
+                tmpResult.append(f"**{locName}:** {tText}\n\n")
 
-            elif tType == self.T_KEYWORD and self.doKeywords:
+            elif tType == self.T_KEYWORD and self._doKeywords:
                 tmpResult.append(self._formatKeywords(tText, tStyle))
 
-        self.theResult = "".join(tmpResult)
+        self._theResult = "".join(tmpResult)
         tmpResult = []
 
-        self.fullMD.append(self.theResult)
+        self._fullMD.append(self._theResult)
 
         return
 
@@ -160,7 +170,7 @@ class ToMarkdown(Tokenizer):
         """Save the data to a plain text file.
         """
         with open(savePath, mode="w", encoding="utf-8") as outFile:
-            theText = "".join(self.fullMD)
+            theText = "".join(self._fullMD)
             outFile.write(theText)
 
         return
@@ -170,10 +180,10 @@ class ToMarkdown(Tokenizer):
         """
         fullMD = []
         eightSpace = spaceChar*nSpaces
-        for aPage in self.fullMD:
+        for aPage in self._fullMD:
             fullMD.append(aPage.replace("\t", eightSpace))
 
-        self.fullMD = fullMD
+        self._fullMD = fullMD
         return
 
     ##
@@ -189,7 +199,7 @@ class ToMarkdown(Tokenizer):
 
         retText = ""
         if theBits[0] in nwLabels.KEY_NAME:
-            retText += "**%s:** " % nwLabels.KEY_NAME[theBits[0]]
+            retText += f"**{nwLabels.KEY_NAME[theBits[0]]}:** "
 
             if len(theBits) > 1:
                 retText += ", ".join(theBits[1:])

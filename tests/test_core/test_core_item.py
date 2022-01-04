@@ -3,7 +3,7 @@ novelWriter – NWItem Class Tester
 =================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ def testCoreItem_Setters(mockGUI):
     assert theItem.itemStatus == "Main"
 
     # Status
-    theItem.itemClass = nwItemClass.NOVEL
+    theItem._class = nwItemClass.NOVEL
     theItem.setStatus("Nonsense")
     assert theItem.itemStatus == "New"
     theItem.setStatus("New")
@@ -100,31 +100,31 @@ def testCoreItem_Setters(mockGUI):
 
     # Expanded
     theItem.setExpanded(8)
-    assert not theItem.isExpanded
+    assert theItem.isExpanded is False
     theItem.setExpanded(None)
-    assert not theItem.isExpanded
+    assert theItem.isExpanded is False
     theItem.setExpanded("None")
-    assert not theItem.isExpanded
+    assert theItem.isExpanded is False
     theItem.setExpanded("What?")
-    assert not theItem.isExpanded
+    assert theItem.isExpanded is False
     theItem.setExpanded("True")
-    assert theItem.isExpanded
+    assert theItem.isExpanded is True
     theItem.setExpanded(True)
-    assert theItem.isExpanded
+    assert theItem.isExpanded is True
 
     # Exported
     theItem.setExported(8)
-    assert not theItem.isExported
+    assert theItem.isExported is False
     theItem.setExported(None)
-    assert not theItem.isExported
+    assert theItem.isExported is False
     theItem.setExported("None")
-    assert not theItem.isExported
+    assert theItem.isExported is False
     theItem.setExported("What?")
-    assert not theItem.isExported
+    assert theItem.isExported is False
     theItem.setExported("True")
-    assert theItem.isExported
+    assert theItem.isExported is True
     theItem.setExported(True)
-    assert theItem.isExported
+    assert theItem.isExported is True
 
     # CharCount
     theItem.setCharCount(None)
@@ -195,6 +195,21 @@ def testCoreItem_Methods(mockGUI):
 
     theItem.setLayout("NOTE")
     assert theItem.describeMe() == "Project Note"
+
+    # Representation
+    # ==============
+
+    theItem.setName("New Item")
+    theItem.setHandle("1234567890abc")
+    theItem.setParent("4567890abcdef")
+    assert repr(theItem) == "<NWItem handle=1234567890abc, parent=4567890abcdef, name='New Item'>"
+
+    # Truthiness
+    # ==========
+
+    assert bool(theItem) is True
+    theItem.setHandle(None)
+    assert bool(theItem) is False
 
 # END Test testCoreItem_Methods
 

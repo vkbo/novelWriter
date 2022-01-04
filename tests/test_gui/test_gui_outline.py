@@ -3,7 +3,7 @@ novelWriter – Main GUI Outline Class Tester
 ===========================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -77,6 +77,10 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     selItem = chpItem.child(0)
 
     nwGUI.projView.setCurrentItem(selItem)
+    tHandle, tLine = nwGUI.projView.getSelectedHandle()
+    assert tHandle == "88243afbe5ed8"
+    assert tLine == 0
+
     assert nwGUI.projMeta.titleLabel.text() == "<b>Scene</b>"
     assert nwGUI.projMeta.titleValue.text() == "Scene One"
     assert nwGUI.projMeta.fileValue.text() == "Scene One"
@@ -86,6 +90,25 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.projMeta.povKeyValue.text() == "<a href='#pov=Bod'>Bod</a>"
     nwGUI.projMeta._tagClicked("#pov=Bod")
     assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
+
+    # Scene One, Section Two
+    actItem = nwGUI.projView.topLevelItem(1)
+    chpItem = actItem.child(0)
+    scnItem = chpItem.child(0)
+    selItem = scnItem.child(0)
+
+    nwGUI.projView.setCurrentItem(selItem)
+    tHandle, tLine = nwGUI.projView.getSelectedHandle()
+    assert tHandle == "88243afbe5ed8"
+    assert tLine == 12
+
+    assert nwGUI.projMeta.titleLabel.text() == "<b>Section</b>"
+    assert nwGUI.projMeta.titleValue.text() == "Scene One, Section Two"
+    assert nwGUI.projMeta.fileValue.text() == "Scene One"
+    assert nwGUI.projMeta.itemValue.text() == "Finished"
+
+    nwGUI.projView._treeDoubleClick(selItem, 0)
+    assert nwGUI.docEditor.docHandle() == "88243afbe5ed8"
 
     # qtbot.stopForInteraction()
 

@@ -3,7 +3,7 @@ novelWriter – Main GUI Project Tree Class Tester
 ================================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -223,7 +223,7 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     # Add new file after one that has no parent handle
     chItem = nwTree._getTreeItem("44cb730c42048")
     nwTree.setCurrentItem(chItem, QItemSelectionModel.Current)
-    nwTree.theProject.projTree["44cb730c42048"].itemParent = None
+    nwTree.theProject.projTree["44cb730c42048"]._parent = None
     assert not nwTree.newTreeItem(nwItemType.FILE, nwItemClass.NOVEL)
     nwTree.clearSelection()
 

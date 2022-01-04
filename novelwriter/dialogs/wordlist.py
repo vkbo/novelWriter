@@ -7,7 +7,7 @@ File History:
 Created: 2021-02-12 [1.2b1]
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import nwAlert
+from novelwriter.error import logException
 from novelwriter.constants import nwFiles
 
 logger = logging.getLogger(__name__)
@@ -161,7 +162,7 @@ class GuiWordList(QDialog):
 
         except Exception:
             logger.error("Could not save new word list")
-            novelwriter.logException()
+            logException()
             self.reject()
             return False
 

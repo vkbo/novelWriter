@@ -3,7 +3,7 @@ novelWriter – About Dialog Class Tester
 =======================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,23 +27,22 @@ from PyQt5.QtWidgets import QAction, QMessageBox
 
 from novelwriter.dialogs import GuiAbout
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
-
 
 @pytest.mark.gui
-def testDlgAbout_Dialog(qtbot, monkeypatch, nwGUI):
-    """Test the full about dialogs.
+def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
+    """Test the novelWriter about dialogs.
     """
-    # NW About
-    monkeypatch.setattr(GuiAbout, "exec_", lambda *a: None)
-    nwGUI.mainMenu.aAboutNW.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiAbout") is not None, timeout=1000)
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
+    # NW About
+    nwGUI.theTheme.themeName = "A Theme"
+    nwGUI.theTheme.themeAuthor = "An Author"
+    assert nwGUI.showAboutNWDialog(showNotes=True) is True
+
+    qtbot.waitUntil(lambda: getGuiItem("GuiAbout") is not None, timeout=1000)
     msgAbout = getGuiItem("GuiAbout")
     assert isinstance(msgAbout, GuiAbout)
-    msgAbout.show()
 
     assert msgAbout.pageAbout.document().characterCount() > 100
     assert msgAbout.pageNotes.document().characterCount() > 100
@@ -59,12 +58,29 @@ def testDlgAbout_Dialog(qtbot, monkeypatch, nwGUI):
 
     msgAbout.showReleaseNotes()
     assert msgAbout.tabBox.currentWidget() == msgAbout.pageNotes
-
-    # Qt About
-    monkeypatch.setattr(QMessageBox, "aboutQt", lambda *a, **k: None)
-    nwGUI.mainMenu.aAboutQt.activate(QAction.Trigger)
-
-    # qtbot.stopForInteraction()
     msgAbout._doClose()
 
-# END Test testDlgAbout_Dialog
+    # Open Again from Menu
+    nwGUI.mainMenu.aAboutNW.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiAbout") is not None, timeout=1000)
+    msgAbout = getGuiItem("GuiAbout")
+    assert msgAbout is not None
+    msgAbout._doClose()
+
+# END Test testDlgAbout_NWDialog
+
+
+@pytest.mark.gui
+def testDlgAbout_QtDialog(monkeypatch, nwGUI):
+    """Test the Qt about dialogs.
+    """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "aboutQt", lambda *a, **k: None)
+
+    # Open About
+    # All it can do is check aigainst a crash
+    assert nwGUI.showAboutQtDialog() is True
+    nwGUI.mainMenu.aAboutQt.activate(QAction.Trigger)
+
+# END Test testDlgAbout_QtDialog

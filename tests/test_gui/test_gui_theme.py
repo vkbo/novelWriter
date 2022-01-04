@@ -3,7 +3,7 @@ novelWriter – GUI Theme and Icons Classes Tester
 ================================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ import pytest
 import novelwriter
 
 from PyQt5.QtGui import QColor, QPixmap, QIcon
-from PyQt5.QtWidgets import QStyle, QMessageBox
+from PyQt5.QtWidgets import QMessageBox
 
 keyDelay = 2
 typeDelay = 1
@@ -50,7 +50,6 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     novelwriter.CONFIG.guiTheme = "default_dark"
     novelwriter.CONFIG.guiSyntax = "tomorrow_night_eighties"
     novelwriter.CONFIG.guiIcons = "typicons_colour_dark"
-    novelwriter.CONFIG.guiDark = True
     novelwriter.CONFIG.guiFont = "Cantarell"
     novelwriter.CONFIG.guiFontSize = 11
     novelwriter.CONFIG.confChanged = True
@@ -73,9 +72,8 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert novelwriter.CONFIG.guiTheme == "default_dark"
     assert novelwriter.CONFIG.guiSyntax == "tomorrow_night_eighties"
     assert novelwriter.CONFIG.guiIcons == "typicons_dark"
-    assert novelwriter.CONFIG.guiDark is True
-    assert novelwriter.CONFIG.guiFont == "Cantarell"
-    assert novelwriter.CONFIG.guiFontSize == 11
+    assert novelwriter.CONFIG.guiFont != ""
+    assert novelwriter.CONFIG.guiFontSize > 0
 
     # Check GUI Colours
     thePalette = nwGUI.palette()
@@ -119,9 +117,8 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     # Test Icon class
     theIcons = nwGUI.theTheme.theIcons
     novelwriter.CONFIG.guiIcons = "invalid"
-    assert not theIcons.updateTheme()
-    novelwriter.CONFIG.guiIcons = "typicons_dark"
-    assert theIcons.updateTheme()
+    assert theIcons.updateTheme() is True
+    assert novelwriter.CONFIG.guiIcons == "typicons_light"
 
     # Ask for a non-existent key
     anImg = theIcons.loadDecoration("nonsense", 20, 20)
@@ -168,17 +165,8 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert isinstance(anIcon, QIcon)
     assert not anIcon.isNull()
 
-    # Add test icons and test alternative load paths
-    theIcons.ICON_MAP["testicon1"] = (QStyle.SP_DriveHDIcon, None)
-    anIcon = theIcons.getIcon("testicon1")
-    assert isinstance(anIcon, QIcon)
-    assert not anIcon.isNull()
-
-    theIcons.ICON_MAP["testicon2"] = (None, "folder")
-    anIcon = theIcons.getIcon("testicon2")
-    assert isinstance(anIcon, QIcon)
-
-    theIcons.ICON_MAP["testicon3"] = (None, None)
+    # Check return empty icon if file not found
+    theIcons.ICON_KEYS.add("testicon3")
     anIcon = theIcons.getIcon("testicon3")
     assert isinstance(anIcon, QIcon)
     assert anIcon.isNull()

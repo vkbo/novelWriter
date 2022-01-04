@@ -3253,7 +3253,7 @@
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="788"/>
-        <source>Also improves trypewriter scrolling for short documents.</source>
+        <source>Also improves typewriter scrolling for short documents.</source>
         <translation>还为短文档改进了打字机滚动。</translation>
     </message>
     <message>
@@ -4616,18 +4616,18 @@
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="788"/>
-        <source>Cannot backup project because no backup path is set. Please set a valid backup location in Tools &gt; Preferences.</source>
-        <translation>由于未设置备份路径，无法备份项目。 请在工具 &gt; 首选项中设置一个有效的备份位置。</translation>
+        <source>Cannot backup project because no backup path is set. Please set a valid backup location in Preferences.</source>
+        <translation>由于未设置备份路径，无法备份项目。 首选项中设置一个有效的备份位置。</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="795"/>
-        <source>Cannot backup project because no project name is set. Please set a Working Title in Project &gt; Project Settings.</source>
-        <translation>由于未设置项目名，无法备份项目。 请在项目 &gt; 项目设置中设置一个工作标题。</translation>
+        <source>Cannot backup project because no project name is set. Please set a Working Title in Project Settings.</source>
+        <translation>由于未设置项目名，无法备份项目。 项目设置中设置一个工作标题。</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="802"/>
-        <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Tools &gt; Preferences.</source>
-        <translation>无法备份项目，因为备份路径不存在。 请在工具 &gt; 首选项中设置一个有效的备份位置。</translation>
+        <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Preferences.</source>
+        <translation>无法备份项目，因为备份路径不存在。 首选项中设置一个有效的备份位置。</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="815"/>
@@ -4636,8 +4636,8 @@
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="821"/>
-        <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Tools &gt; Preferences.</source>
-        <translation>无法备份项目，因为备份路径在要备份的项目文件夹内。 请在工具 &gt; 首选项中选择不同的备份路径。</translation>
+        <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Preferences.</source>
+        <translation>无法备份项目，因为备份路径在要备份的项目文件夹内。 首选项中选择不同的备份路径。</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="828"/>

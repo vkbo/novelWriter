@@ -11,7 +11,7 @@ Created: 2020-06-09 [0.8]   GuiDocViewFooter
 Created: 2020-09-08 [1.0b1] GuiDocViewHistory
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.core import ToHtml
 from novelwriter.enum import nwAlert, nwItemType, nwDocAction
+from novelwriter.error import logException
 from novelwriter.constants import nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -158,12 +159,8 @@ class GuiDocViewer(QTextBrowser):
     def loadText(self, tHandle, updateHistory=True):
         """Load text into the viewer from an item handle.
         """
-        tItem = self.theProject.projTree[tHandle]
-        if tItem is None:
+        if not self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
             logger.warning("Item not found")
-            return False
-
-        if tItem.itemType != nwItemType.FILE:
             return False
 
         logger.debug("Generating preview for item '%s'", tHandle)
@@ -185,8 +182,9 @@ class GuiDocViewer(QTextBrowser):
             aDoc.doPostProcessing()
         except Exception:
             logger.error("Failed to generate preview for document with handle '%s'", tHandle)
-            novelwriter.logException()
+            logException()
             self.setText(self.tr("An error occurred while generating the preview."))
+            qApp.restoreOverrideCursor()
             return False
 
         # Refresh the tab stops
@@ -316,22 +314,30 @@ class GuiDocViewer(QTextBrowser):
     def updateDocMargins(self):
         """Automatically adjust the margins so the text is centred.
         """
+        wW = self.width()
+        wH = self.height()
+        cM = self.mainConf.getTextMargin()
+
         vBar = self.verticalScrollBar()
         sW = vBar.width() if vBar.isVisible() else 0
 
         hBar = self.horizontalScrollBar()
         sH = hBar.height() if hBar.isVisible() else 0
 
-        cM = self.mainConf.getTextMargin()
+        tM = cM
+        if self.mainConf.textWidth > 0:
+            tW = self.mainConf.getTextWidth()
+            tM = max((wW - sW - tW)//2, cM)
+
         tB = self.frameWidth()
-        tW = self.width() - 2*tB - sW
+        tW = wW - 2*tB - sW
         tH = self.docHeader.height()
         fH = self.docFooter.height()
-        fY = self.height() - fH - tB - sH
+        fY = wH - fH - tB - sH
 
         self.docHeader.setGeometry(tB, tB, tW, tH)
         self.docFooter.setGeometry(tB, fY, tW, fH)
-        self.setViewportMargins(cM, max(cM, tH), cM, max(cM, fH))
+        self.setViewportMargins(tM, max(cM, tH), tM, max(cM, fH))
 
         return
 

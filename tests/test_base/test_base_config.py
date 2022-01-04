@@ -3,7 +3,7 @@ novelWriter – Config Class Tester
 =================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -139,7 +139,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
         assert os.path.isfile(confFile)
 
         copyfile(confFile, testFile)
-        assert cmpFiles(testFile, compFile, [2, 9, 10])
+        assert cmpFiles(testFile, compFile, ignoreStart=("timestamp", "lastnotes", "guilang"))
 
     # Load and save with OSError
     with monkeypatch.context() as mp:
@@ -255,7 +255,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     assert theList == [("en_GB", "British English"), ("fr", "Français")]
 
     copyfile(confFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 9, 10])
+    assert cmpFiles(testFile, compFile, ignoreStart=("timestamp", "lastnotes", "guilang"))
 
 # END Test testBaseConfig_Init
 
@@ -505,16 +505,16 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     # ============
 
     tmpConf.guiScale = 1.0
-    assert tmpConf.getTextWidth() == 600
+    assert tmpConf.getTextWidth(False) == 600
+    assert tmpConf.getTextWidth(True) == 800
     assert tmpConf.getTextMargin() == 40
     assert tmpConf.getTabWidth() == 40
-    assert tmpConf.getFocusWidth() == 800
 
     tmpConf.guiScale = 2.0
-    assert tmpConf.getTextWidth() == 1200
+    assert tmpConf.getTextWidth(False) == 1200
+    assert tmpConf.getTextWidth(True) == 1600
     assert tmpConf.getTextMargin() == 80
     assert tmpConf.getTabWidth() == 80
-    assert tmpConf.getFocusWidth() == 1600
 
     # Flag Setters
     # ============
@@ -539,7 +539,7 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     assert tmpConf.confChanged is False
 
     copyfile(confFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 9, 10])
+    assert cmpFiles(testFile, compFile, ignoreStart=("timestamp", "lastnotes", "guilang"))
 
 # END Test testBaseConfig_SettersGetters
 

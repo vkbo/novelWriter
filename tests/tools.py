@@ -3,7 +3,7 @@ novelWriter – Test Suite Tools
 ==============================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import shutil
 from PyQt5.QtWidgets import qApp
 
 
-def cmpFiles(fileOne, fileTwo, ignoreLines=None):
+def cmpFiles(fileOne, fileTwo, ignoreLines=None, ignoreStart=None):
     """Compare two files, but optionally ignore lines given by a list.
     """
     if ignoreLines is None:
@@ -33,14 +33,14 @@ def cmpFiles(fileOne, fileTwo, ignoreLines=None):
 
     try:
         foOne = open(fileOne, mode="r", encoding="utf-8")
-    except Exception as e:
-        print(str(e))
+    except Exception as exc:
+        print(str(exc))
         return False
 
     try:
         foTwo = open(fileTwo, mode="r", encoding="utf-8")
-    except Exception as e:
-        print(str(e))
+    except Exception as exc:
+        print(str(exc))
         return False
 
     txtOne = foOne.readlines()
@@ -58,6 +58,11 @@ def cmpFiles(fileOne, fileTwo, ignoreLines=None):
         if n+1 in ignoreLines:
             print("Ignoring line %d" % (n+1))
             continue
+
+        if ignoreStart is not None:
+            if lnOne.startswith(ignoreStart):
+                print("Ignoring line %d" % (n+1))
+                continue
 
         if lnOne != lnTwo:
             print("Diff on line %d:" % (n+1))

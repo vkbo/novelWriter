@@ -7,7 +7,7 @@ File History:
 Created: 2020-02-01 [0.4.3]
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ class GuiDocSplit(QDialog):
         self.outerBox = QVBoxLayout()
         self.setWindowTitle(self.tr("Split Document"))
 
-        self.headLabel = QLabel("<b>%s</b>" % self.tr("Document Headers"))
+        self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headers")))
         self.helpLabel = QHelpLabel(
             self.tr("Select the maximum level to split into files."),
             self.theParent.theTheme.helpText
@@ -142,9 +142,7 @@ class GuiDocSplit(QDialog):
             theText = ""
 
         nLines = len(self.sourceText)
-        logger.debug(
-            "Splitting document %s with %d lines" % (self.sourceItem, nLines)
-        )
+        logger.debug("Splitting document %s with %d lines", self.sourceItem, nLines)
 
         finalOrder = []
         for i in range(self.listBox.count()):
@@ -174,10 +172,11 @@ class GuiDocSplit(QDialog):
 
         msgYes = self.theParent.askQuestion(
             self.tr("Split Document"),
-            "%s<br><br>%s" % (
+            "{0}<br><br>{1}".format(
                 self.tr(
                     "The document will be split into {0} file(s) in a new folder. "
-                    "The original document will remain intact.").format(nFiles),
+                    "The original document will remain intact."
+                ).format(nFiles),
                 self.tr(
                     "Continue with the splitting process?"
                 )
@@ -196,22 +195,17 @@ class GuiDocSplit(QDialog):
         # Loop through, and create the files
         for wTitle, iStart, iEnd in finalOrder:
 
-            if srcItem.itemClass == nwItemClass.NOVEL:
-                itemLayout = nwItemLayout.DOCUMENT
-            else:
-                itemLayout = nwItemLayout.NOTE
+            isNovel = srcItem.itemClass == nwItemClass.NOVEL
+            itemLayout = nwItemLayout.DOCUMENT if isNovel else nwItemLayout.NOTE
 
-            wTitle = wTitle.lstrip("#")
-            wTitle = wTitle.strip()
-
+            wTitle = wTitle.lstrip("#").strip()
             nHandle = self.theProject.newFile(wTitle, srcItem.itemClass, fHandle)
             newItem = self.theProject.projTree[nHandle]
             newItem.setLayout(itemLayout)
             newItem.setStatus(srcItem.itemStatus)
             logger.verbose(
-                "Creating new document %s with text from line %d to %d" % (
-                    nHandle, iStart+1, iEnd
-                )
+                "Creating new document '%s' with text from line %d to %d",
+                nHandle, iStart+1, iEnd
             )
 
             theText = "\n".join(self.sourceText[iStart:iEnd])
@@ -273,7 +267,8 @@ class GuiDocSplit(QDialog):
         spLevel = self.splitLevel.currentData()
         self.optState.setValue("GuiDocSplit", "spLevel", spLevel)
         logger.debug(
-            "Scanning document %s for headings level <= %d" % (self.sourceItem, spLevel)
+            "Scanning document '%s' for headings level <= %d",
+            self.sourceItem, spLevel
         )
 
         self.sourceText = theText.splitlines()

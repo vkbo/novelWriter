@@ -7,7 +7,7 @@ File History:
 Created: 2019-06-10 [0.1.5]
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -203,15 +203,6 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Changing this requires restarting novelWriter.")
         )
 
-        # Dark Icons
-        self.guiDark = QSwitch()
-        self.guiDark.setChecked(self.mainConf.guiDark)
-        self.mainForm.addRow(
-            self.tr("Prefer icons for dark backgrounds"),
-            self.guiDark,
-            self.tr("May improve the look of icons on dark themes.")
-        )
-
         # Font Family
         self.guiFont = QLineEdit()
         self.guiFont.setReadOnly(True)
@@ -284,7 +275,6 @@ class GuiPreferencesGeneral(QWidget):
         guiLang     = self.guiLang.currentData()
         guiTheme    = self.guiTheme.currentData()
         guiIcons    = self.guiIcons.currentData()
-        guiDark     = self.guiDark.isChecked()
         guiFont     = self.guiFont.text()
         guiFontSize = self.guiFontSize.value()
         emphLabels  = self.emphLabels.isChecked()
@@ -294,7 +284,6 @@ class GuiPreferencesGeneral(QWidget):
         needsRestart |= self.mainConf.guiLang != guiLang
         needsRestart |= self.mainConf.guiTheme != guiTheme
         needsRestart |= self.mainConf.guiIcons != guiIcons
-        needsRestart |= self.mainConf.guiDark != guiDark
         needsRestart |= self.mainConf.guiFont != guiFont
         needsRestart |= self.mainConf.guiFontSize != guiFontSize
 
@@ -305,7 +294,6 @@ class GuiPreferencesGeneral(QWidget):
         self.mainConf.guiLang      = guiLang
         self.mainConf.guiTheme     = guiTheme
         self.mainConf.guiIcons     = guiIcons
-        self.mainConf.guiDark      = guiDark
         self.mainConf.guiFont      = guiFont
         self.mainConf.guiFontSize  = guiFontSize
         self.mainConf.emphLabels   = emphLabels
@@ -549,37 +537,28 @@ class GuiPreferencesDocuments(QWidget):
 
         # Max Text Width in Normal Mode
         self.textWidth = QSpinBox(self)
-        self.textWidth.setMinimum(300)
+        self.textWidth.setMinimum(0)
         self.textWidth.setMaximum(10000)
         self.textWidth.setSingleStep(10)
         self.textWidth.setValue(self.mainConf.textWidth)
         self.mainForm.addRow(
             self.tr("Maximum text width in \"Normal Mode\""),
             self.textWidth,
-            self.tr("Horizontal margins are scaled automatically."),
+            self.tr("Set to 0 to disable this feature."),
             theUnit=self.tr("px")
         )
 
         # Max Text Width in Focus Mode
         self.focusWidth = QSpinBox(self)
-        self.focusWidth.setMinimum(300)
+        self.focusWidth.setMinimum(200)
         self.focusWidth.setMaximum(10000)
         self.focusWidth.setSingleStep(10)
         self.focusWidth.setValue(self.mainConf.focusWidth)
         self.mainForm.addRow(
             self.tr("Maximum text width in \"Focus Mode\""),
             self.focusWidth,
-            self.tr("Horizontal margins are scaled automatically."),
+            self.tr("The maximum width cannot be disabled."),
             theUnit=self.tr("px")
-        )
-
-        # Document Fixed Width
-        self.textFixedW = QSwitch()
-        self.textFixedW.setChecked(not self.mainConf.textFixedW)
-        self.mainForm.addRow(
-            self.tr("Disable maximum text width in \"Normal Mode\""),
-            self.textFixedW,
-            self.tr("Text width is defined by the margins only.")
         )
 
         # Focus Mode Footer
@@ -609,7 +588,7 @@ class GuiPreferencesDocuments(QWidget):
         self.mainForm.addRow(
             self.tr("Text margin"),
             self.textMargin,
-            self.tr("If maximum width is set, this becomes the minimum margin."),
+            self.tr("The minimum margin around the text in the editor and viewer."),
             theUnit=self.tr("px")
         )
 
@@ -638,7 +617,6 @@ class GuiPreferencesDocuments(QWidget):
         # Text Flow
         self.mainConf.textWidth       = self.textWidth.value()
         self.mainConf.focusWidth      = self.focusWidth.value()
-        self.mainConf.textFixedW      = not self.textFixedW.isChecked()
         self.mainConf.hideFocusFooter = self.hideFocusFooter.isChecked()
         self.mainConf.doJustify       = self.doJustify.isChecked()
         self.mainConf.textMargin      = self.textMargin.value()
@@ -783,12 +761,16 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.addGroupLabel(self.tr("Scroll Behaviour"))
 
         # Scroll Past End
-        self.scrollPastEnd = QSwitch()
-        self.scrollPastEnd.setChecked(self.mainConf.scrollPastEnd)
+        self.scrollPastEnd = QSpinBox(self)
+        self.scrollPastEnd.setMinimum(0)
+        self.scrollPastEnd.setMaximum(100)
+        self.scrollPastEnd.setSingleStep(1)
+        self.scrollPastEnd.setValue(int(self.mainConf.scrollPastEnd))
         self.mainForm.addRow(
             self.tr("Scroll past end of the document"),
             self.scrollPastEnd,
-            self.tr("Also improves trypewriter scrolling for short documents.")
+            self.tr("Set to 0 to disable this feature."),
+            theUnit=self.tr("lines")
         )
 
         # Typewriter Scrolling
@@ -831,7 +813,7 @@ class GuiPreferencesEditor(QWidget):
         self.mainConf.showLineEndings = self.showLineEndings.isChecked()
 
         # Scroll Behaviour
-        self.mainConf.scrollPastEnd = self.scrollPastEnd.isChecked()
+        self.mainConf.scrollPastEnd = self.scrollPastEnd.value()
         self.mainConf.autoScroll    = self.autoScroll.isChecked()
         self.mainConf.autoScrollPos = self.autoScrollPos.value()
 
