@@ -147,25 +147,31 @@ class ToHtml(Tokenizer):
         parStyle = None
         tmpResult = []
 
-        for tType, tLine, tDirty, tFormat, tStyle in self.theTokens:
+        for tType, tLine, tText, tFormat, tStyle in self.theTokens:
 
-            # Replace < and > and recompute formatting positions
-            cText = []
-            i = 0
-            for c in tDirty:
-                if c == "<":
-                    cText.append("&lt;")
-                    tFormat = [[a + 3 if a > i else a, b, c] for a, b, c in tFormat]
-                    i += 4
-                elif c == ">":
-                    cText.append("&gt;")
-                    tFormat = [[a + 3 if a > i else a, b, c] for a, b, c in tFormat]
-                    i += 4
-                else:
-                    cText.append(c)
-                    i += 1
+            # Replace < and > with HTML entities
+            if tFormat:
+                # If we have formatting, we must recompute the locations
+                cText = []
+                i = 0
+                for c in tText:
+                    if c == "<":
+                        cText.append("&lt;")
+                        tFormat = [[a + 3 if a > i else a, b, c] for a, b, c in tFormat]
+                        i += 4
+                    elif c == ">":
+                        cText.append("&gt;")
+                        tFormat = [[a + 3 if a > i else a, b, c] for a, b, c in tFormat]
+                        i += 4
+                    else:
+                        cText.append(c)
+                        i += 1
 
-            tText = "".join(cText)
+                tText = "".join(cText)
+
+            else:
+                # If we don't have formatting, we can do a plain replace
+                tText = tText.replace("<", "&lt;").replace(">", "&gt;")
 
             # Styles
             aStyle = []
