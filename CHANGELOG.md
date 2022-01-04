@@ -1,5 +1,96 @@
 # novelWriter Changelog
 
+## Version 1.6 Beta 1 [2022-01-04]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+Please check the changelog for an overview of changes. The full release notes will be added to the
+final release.
+
+### Detailed Changelog
+
+**Features**
+
+* When text is selected in the editor, the word counter in the editor's footer bar shows the number
+  of selected words instead of the total document word count. Feature Request #896. PR #899.
+* The way page breaks are automatically and manually added has been improved: The Title format no
+  longer has an automatic page break, Partition and Chapter formats now always have a page break,
+  Scene and Section headers can now have page breaks added manually, and empty scene header format
+  will now result in a larger gap between scenes. Feature Request #912. PR #916.
+* The Enter, Return and Ctrl+O keyboard shortcuts now open the selected document or item on the
+  tree that has focus. That is, on the Project Tree, Novel Tree, or in the Outline Tab. Previously,
+  these key strokes only affected the Project Tree. Feature Request #913. PR #945.
+* The search tool in the document editor now shows the number of search results when the search
+  button is clicked. When the replace tool is used, this number changes if the search result does.
+  Feature Request #645. PRs #946 and #947.
+
+**Other Changes**
+
+* The icon themes have been merged and reduced to two complete themes, and the Preferences switch
+  for additional dark icons has been removed. The user either selects the Typicons Dark or Light
+  theme. No need to match further settings. PR #893.
+* Custom GUI themes and syntax themes can now be loaded from the user's data path. The actual
+  storage path is determined by the OS. Part of Feature Request #892. PR #893.
+* A number of text messages and labels on the GUI have been improved. Issue #923. PR #926.
+* The switch in Preferences to disbale fixed width text in the editor has been removed. Instead,
+  the user just sets the fixed with setting to 0 to disable it. The settings is now also applied to
+  the document viewer as well. Issue #924. PR #943.
+* The Open Document export file produced from the build tool is now more LibreOffice and OpenOffice
+  friendly by using the same default styles as these editors do. Issue #948. PR #949.
+* When a document is saved from the document editor, the disk on file is checked for external
+  changes before it is overwritten. Such changes can arise from editing the file from another tool
+  at the same time, from file sync issues, or even from file system issues. If an inconsistency is
+  discovered, the user is asked to confirm the overwrite. Issue #878. PR #890.
+
+**Internationalisation**
+
+* A couple of missing translations, and typos, have been fixed. PRs #921 and #926.
+* Latin American Spanish translation has been added by Tommy Marplatt (@tmarplatt). PR #927.
+
+**Bugfixes**
+
+* Fixed an issue where greater or lesser than symbols used in text paragraphs which also has
+  formatting tags would cause the formatting tags to be shifted in HTML output. Issue #929. PR 928.
+  This fix was backported to 1.5 as patch 1.5.2. A secondary bug was reported in Issue #950, fixed
+  in PR #951, and backported to 1.5. as patch 1.5.4.
+
+**Documentation**
+
+* Documentation has been updated to reflect changes and new features. PRs #903, and #916.
+* The Readme file for internationalisation has been updated and improved. Contributed by Tommy
+  Marplatt (@tmarplatt) PR #917.
+
+**Installation and Packaging**
+
+* The Cantarell font is no longer included in the source and releases. PR #893.
+* The way icons are loaded is now simpler and there is no longer a bunch of fallback options. The
+  icon sets have been reduced to just two complete folders of coloured Typicons: one for dark and
+  one for light backgrounds. PR #893.
+* Fixed a couple of issues in the Windows setup scripts where the user never saw the error message
+  reporting on missing Python as the window would close before the user would be able to read the
+  error. PR #903.
+
+**Code Improvements**
+
+* Cleaned up log output, formatting, docstrings, and various other code structure and debug related
+  parts of the source. PRs #904, #926, #930, and #947.
+* Optimised various code snippets, either for performance or readability. The code now makes more
+  use of Python list comprehension and built-in functions for iterables. PRs #904, and #926.
+* Tightened up many of the internal classes, making attributes private, and add setter and getter
+  functions where that makes sense. PRs #904, #931, and #937.
+* The tools for adding and updating translation files have been improved. The Qt-specific `.pro`
+  file has been dropped, and instead the setup tool will scan the entire source tree each time
+  language files are updated. TS files can also be specified to the command, or if none are
+  specified, all files are updated. PR #915.
+* The language file update command in the setup tool now uses the pylupdate6 tool from PyQt6, which
+  has been included directly in the `i18n` folder. This tool uses the newer TS file format, which
+  the standard PyQt5 tool does not. Related to #911. PR #920.
+
+----
+
 ## Version 1.5.4 [2022-01-04]
 
 ### Release Notes
@@ -204,7 +295,7 @@ _These Release Notes also include the changes from 1.5 Beta 1, Beta 2, and RC 1.
 ### Release Notes
 
 This is a release candidate of the next release version, and is intended for testing purposes.
-Please be careful when using this version on live writing projects, and make sure you make frequent
+Please be careful when using this version on live writing projects, and make sure you take frequent
 backups.
 
 ### Detailed Changelog
@@ -255,7 +346,7 @@ backups.
 ### Release Notes
 
 This is a beta release of the next release version, and is intended for testing purposes. Please be
-careful when using this version on live writing projects, and make sure you make frequent backups.
+careful when using this version on live writing projects, and make sure you take frequent backups.
 
 ### Detailed Changelog
 
@@ -292,7 +383,7 @@ careful when using this version on live writing projects, and make sure you make
 ### Release Notes
 
 This is a beta release of the next release version, and is intended for testing purposes. Please be
-careful when using this version on live writing projects, and make sure you make frequent backups.
+careful when using this version on live writing projects, and make sure you take frequent backups.
 
 ### Detailed Changelog
 
