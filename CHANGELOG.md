@@ -4,7 +4,7 @@
 
 ### Release Notes
 
-This is a bugfix release that fixes an issues with renderring HTML from a document, either in the
+This is a bugfix release that fixes an issues with rendering HTML from a document, either in the
 viewer or the build tool, when there is a greater or lesser than symbol in a text block that isn't
 a plain text paragraph, like for instance a comment or a heading. Any such document would fail to
 render.
