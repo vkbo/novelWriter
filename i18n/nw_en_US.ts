@@ -3253,7 +3253,7 @@
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="788"/>
-        <source>Also improves trypewriter scrolling for short documents.</source>
+        <source>Also improves typewriter scrolling for short documents.</source>
         <translation></translation>
     </message>
     <message>
@@ -4610,17 +4610,17 @@
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="788"/>
-        <source>Cannot backup project because no backup path is set. Please set a valid backup location in Tools &gt; Preferences.</source>
+        <source>Cannot backup project because no backup path is set. Please set a valid backup location in Preferences.</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="795"/>
-        <source>Cannot backup project because no project name is set. Please set a Working Title in Project &gt; Project Settings.</source>
+        <source>Cannot backup project because no project name is set. Please set a Working Title in Project Settings.</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="802"/>
-        <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Tools &gt; Preferences.</source>
+        <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Preferences.</source>
         <translation></translation>
     </message>
     <message>
@@ -4630,7 +4630,7 @@
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="821"/>
-        <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Tools &gt; Preferences.</source>
+        <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Preferences.</source>
         <translation></translation>
     </message>
     <message>

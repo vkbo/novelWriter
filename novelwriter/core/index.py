@@ -8,7 +8,7 @@ Created: 2019-04-22 [0.0.1] countWords
 Created: 2019-05-27 [0.1.4] NWIndex
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,11 +27,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import json
 import logging
-import novelwriter
 
 from time import time
 
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
+from novelwriter.error import logException
 from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode
 from novelwriter.core.document import NWDoc
 from novelwriter.common import (
@@ -48,10 +48,10 @@ class NWIndex():
 
     def __init__(self, theProject):
 
+        self.theProject = theProject
+
         # Internal
-        self.mainConf    = novelwriter.CONFIG
-        self.theProject  = theProject
-        self.indexBroken = False
+        self._indexBroken = False
 
         # Indices
         self._tagIndex  = {}
@@ -65,6 +65,10 @@ class NWIndex():
         self._timeIndex = 0
 
         return
+
+    @property
+    def indexBroken(self):
+        return self._indexBroken
 
     ##
     #  Public Methods
@@ -87,11 +91,7 @@ class NWIndex():
         """
         logger.debug("Removing item '%s' from the index", tHandle)
 
-        delTags = []
-        for tTag in self._tagIndex:
-            if self._tagIndex[tTag][1] == tHandle:
-                delTags.append(tTag)
-
+        delTags = list(filter(lambda x: self._tagIndex[x][1] == tHandle, self._tagIndex))
         for tTag in delTags:
             self._tagIndex.pop(tTag, None)
 
@@ -107,11 +107,7 @@ class NWIndex():
         project.
         """
         logger.debug("Re-indexing item '%s'", tHandle)
-
-        tItem = self.theProject.projTree[tHandle]
-        if tItem is None:
-            return False
-        if tItem.itemType != nwItemType.FILE:
+        if not self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
             return False
 
         theDoc = NWDoc(self.theProject, tHandle)
@@ -155,8 +151,8 @@ class NWIndex():
 
             except Exception:
                 logger.error("Failed to load index file")
-                novelwriter.logException()
-                self.indexBroken = True
+                logException()
+                self._indexBroken = True
                 return False
 
             self._tagIndex = theData.get("tagIndex", {})
@@ -194,7 +190,7 @@ class NWIndex():
 
         except Exception:
             logger.error("Failed to save index file")
-            novelwriter.logException()
+            logException()
             return False
 
         logger.verbose("Index saved in %.3f ms", (time() - tStart)*1000)
@@ -213,17 +209,17 @@ class NWIndex():
             self._checkRefIndex()
             self._checkFileIndex()
             self._checkFileMeta()
-            self.indexBroken = False
+            self._indexBroken = False
 
         except Exception:
             logger.error("Error while checking index")
-            novelwriter.logException()
-            self.indexBroken = True
+            logException()
+            self._indexBroken = True
 
         logger.verbose("Index check took %.3f ms", (time() - tStart)*1000)
         logger.debug("Index check complete")
 
-        if self.indexBroken:
+        if self._indexBroken:
             self.clearIndex()
 
         return
@@ -236,7 +232,8 @@ class NWIndex():
         """Scan a piece of text associated with a handle. This will
         update the indices accordingly. This function takes the handle
         and text as separate inputs as we want to primarily scan the
-        files before we save them, unless we're rebuilding the index.
+        files before we save them in which case we already have the
+        text.
         """
         theItem = self.theProject.projTree[tHandle]
         theRoot = self.theProject.projTree.getRootItem(tHandle)
@@ -258,7 +255,7 @@ class NWIndex():
         cC, wC, pC = countWords(theText)
         self._fileMeta[tHandle] = ["H0", cC, wC, pC]
 
-        # If the file is archived or trashed, we don't index the file itself
+        # If the file is archived or in trash, we don't index the content
         if self.theProject.projTree.isTrashRoot(theItem.itemParent):
             logger.debug("Not indexing trash item '%s'", tHandle)
             return False
@@ -275,22 +272,16 @@ class NWIndex():
         self._refIndex.pop(tHandle, None)
         self._fileIndex[tHandle] = {}
 
-        # Also clear references to file in tag index
-        clearTags = []
-        for aTag in self._tagIndex:
-            if self._tagIndex[aTag][1] == tHandle:
-                clearTags.append(aTag)
+        # Also clear references to the file in the tags index
+        clearTags = list(filter(lambda x: self._tagIndex[x][1] == tHandle, self._tagIndex))
         for aTag in clearTags:
             self._tagIndex.pop(aTag)
 
         # Scan the text content
-        nLine = 0
         nTitle = 0
         theLines = theText.splitlines()
-        for aLine in theLines:
-            nLine += 1
-            nChar = len(aLine.strip())
-            if nChar == 0:
+        for nLine, aLine in enumerate(theLines, start=1):
+            if len(aLine.strip()) == 0:
                 continue
 
             if aLine.startswith("#"):
@@ -356,14 +347,14 @@ class NWIndex():
             hText = aLine[5:].strip()
         elif aLine.startswith("#! "):
             hDepth = "H1"
-            hText = aLine[2:].strip()
+            hText = aLine[3:].strip()
         elif aLine.startswith("##! "):
             hDepth = "H2"
             hText = aLine[4:].strip()
         else:
             return False
 
-        sTitle = "T%06d" % nLine
+        sTitle = f"T{nLine:06d}"
         self._fileIndex[tHandle][sTitle] = {
             "level": hDepth,
             "title": hText,
@@ -375,6 +366,8 @@ class NWIndex():
         }
 
         if self._fileMeta[tHandle][0] == "H0":
+            # Since this initialises to H0, this ensures that only the
+            # first header level is recorded in the file meta index
             self._fileMeta[tHandle][0] = hDepth
 
         return True
@@ -391,14 +384,13 @@ class NWIndex():
             "pCount": 0,
             "synopsis": "",
         }
-
         return
 
     def _indexWordCounts(self, tHandle, theText, nTitle):
         """Count text stats and save the counts to the index.
         """
         cC, wC, pC = countWords(theText)
-        sTitle = "T%06d" % nTitle
+        sTitle = f"T{nTitle:06d}"
         if tHandle in self._fileIndex:
             if sTitle in self._fileIndex[tHandle]:
                 self._fileIndex[tHandle][sTitle]["cCount"] = cC
@@ -409,7 +401,7 @@ class NWIndex():
     def _indexSynopsis(self, tHandle, theText, nTitle):
         """Save the synopsis to the index.
         """
-        sTitle = "T%06d" % nTitle
+        sTitle = f"T{nTitle:06d}"
         if tHandle in self._fileIndex:
             if sTitle in self._fileIndex[tHandle]:
                 self._fileIndex[tHandle][sTitle]["synopsis"] = theText
@@ -428,7 +420,7 @@ class NWIndex():
             logger.warning("Skipping invalid keyword '%s' in '%s'", theBits[0], tHandle)
             return
 
-        sTitle = "T%06d" % nTitle
+        sTitle = f"T{nTitle:06d}"
         if theBits[0] == nwKeyWords.TAG_KEY:
             self._tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name, sTitle]
 
@@ -525,7 +517,7 @@ class NWIndex():
         """
         for tHandle in self._listNovelHandles(skipExcluded):
             for sTitle in sorted(self._fileIndex[tHandle]):
-                tKey = "%s:%s" % (tHandle, sTitle)
+                tKey = f"{tHandle}:{sTitle}"
                 yield tKey, tHandle, sTitle, self._fileIndex[tHandle][sTitle]
 
     def getNovelWordCount(self, skipExcluded=True):
@@ -544,8 +536,7 @@ class NWIndex():
         hCount = [0, 0, 0, 0, 0]
         for tHandle in self._listNovelHandles(skipExcluded):
             for sTitle in self._fileIndex[tHandle]:
-                theData = self._fileIndex[tHandle][sTitle]
-                iLevel = H_LEVEL.get(theData["level"], 0)
+                iLevel = H_LEVEL.get(self._fileIndex[tHandle][sTitle]["level"], 0)
                 hCount[iLevel] += 1
 
         return hCount
@@ -553,45 +544,29 @@ class NWIndex():
     def getHandleWordCounts(self, tHandle):
         """Get all header word counts for a specific handle.
         """
-        theCounts = []
-        hRecord = self._fileIndex.get(tHandle, None)
-        if hRecord is None:
-            return theCounts
-
-        for sTitle, sData in hRecord.items():
-            theCounts.append(("%s:%s" % (tHandle, sTitle), sData["wCount"]))
-
-        return theCounts
+        hRecord = self._fileIndex.get(tHandle, {})
+        return [(f"{tHandle}:{sTitle}", sData["wCount"]) for sTitle, sData in hRecord.items()]
 
     def getHandleHeaders(self, tHandle):
         """Get all headers for a specific handle.
         """
-        theHeaders = []
-        hRecord = self._fileIndex.get(tHandle, None)
-        if hRecord is None:
-            return theHeaders
-
-        for sTitle, sData in hRecord.items():
-            theHeaders.append((sTitle, sData["level"], sData["title"]))
-
-        return theHeaders
+        hRecord = self._fileIndex.get(tHandle, {})
+        return [(sTitle, sData["level"], sData["title"]) for sTitle, sData in hRecord.items()]
 
     def getHandleHeaderLevel(self, tHandle):
         """Get the header level of the first header of a handle.
         """
-        if tHandle in self._fileMeta:
-            return self._fileMeta[tHandle][0]
-        return "H0"
+        return self._fileMeta.get(tHandle, ["H0"])[0]
 
     def getTableOfContents(self, maxDepth, skipExcluded=True):
-        """Generate a table of contents up to a maxiumum depth.
+        """Generate a table of contents up to a maximum depth.
         """
         tOrder = []
         tData = {}
         pKey = None
         for tHandle in self._listNovelHandles(skipExcluded):
             for sTitle in sorted(self._fileIndex[tHandle]):
-                tKey = "%s:%s" % (tHandle, sTitle)
+                tKey = f"{tHandle}:{sTitle}"
                 theData = self._fileIndex[tHandle][sTitle]
                 iLevel = H_LEVEL.get(theData["level"], 0)
                 if iLevel > maxDepth:
@@ -607,19 +582,17 @@ class NWIndex():
                         "words": theData["wCount"],
                     }
 
-        theToC = []
-        for tKey in tOrder:
-            theToC.append((
-                tKey,
-                tData[tKey]["level"],
-                tData[tKey]["title"],
-                tData[tKey]["words"],
-            ))
+        theToC = [(
+            tKey,
+            tData[tKey]["level"],
+            tData[tKey]["title"],
+            tData[tKey]["words"]
+        ) for tKey in tOrder]
 
         return theToC
 
     def getCounts(self, tHandle, sTitle=None):
-        """Returns the counts for a file, or a section of a file
+        """Return the counts for a file, or a section of a file,
         starting at title sTitle if it is provided.
         """
         cC = 0
@@ -642,12 +615,9 @@ class NWIndex():
 
     def getReferences(self, tHandle, sTitle=None):
         """Extract all references made in a file, and optionally title
-        section. sTitle must be a string.
+        section.
         """
-        theRefs = {}
-        for tKey in nwKeyWords.KEY_CLASS:
-            theRefs[tKey] = []
-
+        theRefs = {x: [] for x in nwKeyWords.KEY_CLASS}
         if tHandle not in self._refIndex:
             return theRefs
 
@@ -671,15 +641,11 @@ class NWIndex():
         """Build a list of files referring back to our file, specified
         by tHandle.
         """
-        theRefs = {}
         if tHandle is None:
-            return theRefs
+            return {}
 
-        theTags = set()
-        for tTag in self._tagIndex:
-            if tHandle == self._tagIndex[tTag][1]:
-                theTags.add(tTag)
-
+        theRefs = {}
+        theTags = set(filter(lambda x: self._tagIndex[x][1] == tHandle, self._tagIndex))
         if theTags:
             for tHandle in self._refIndex:
                 for sTitle in self._refIndex[tHandle]:
@@ -692,10 +658,9 @@ class NWIndex():
     def getTagSource(self, theTag):
         """Return the source location of a given tag.
         """
-        if theTag in self._tagIndex:
-            theRef = self._tagIndex[theTag]
-            if len(theRef) == 4:
-                return theRef[1], theRef[0], theRef[3]
+        theRef = self._tagIndex.get(theTag, [])
+        if len(theRef) == 4:
+            return theRef[1], theRef[0], theRef[3]
         return None, 0, "T000000"
 
     ##
@@ -861,9 +826,9 @@ def countWords(theText):
         return charCount, wordCount, paraCount
 
     # We need to treat dashes as word separators for counting words.
-    # The check+replace apprach is much faster that direct replace for
+    # The check+replace approach is much faster than direct replace for
     # large texts, and a bit slower for small texts, but in the latter
-    # case it doesn't matter.
+    # case it doesn't really matter.
     if nwUnicode.U_ENDASH in theText:
         theText = theText.replace(nwUnicode.U_ENDASH, " ")
     if nwUnicode.U_EMDASH in theText:

@@ -3,7 +3,7 @@ novelWriter – Merge and Split Dialog Classes Tester
 ===================================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -31,10 +31,6 @@ from novelwriter.dialogs import GuiDocSplit, GuiItemEditor
 from novelwriter.enum import nwItemType, nwWidget
 from novelwriter.core.document import NWDoc
 from novelwriter.core.tree import NWTree
-
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
 
 
 @pytest.mark.gui
@@ -103,7 +99,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj):
     nwSplit = getGuiItem("GuiDocSplit")
     assert isinstance(nwSplit, GuiDocSplit)
     nwSplit.show()
-    qtbot.wait(stepDelay)
+    qtbot.wait(50)
 
     # Populate List
     # =============
@@ -253,7 +249,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj):
     nwSplit.sourceItem = None
     assert nwSplit._doSplit() is False
 
-    # Close up
+    # Close
     nwSplit._doClose()
 
     # qtbot.stopForInteraction()

@@ -3,7 +3,7 @@ novelWriter – Test Suite Mocked Classes
 =======================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -43,15 +43,15 @@ class MockGuiMain():
     def releaseNotes(self):
         return
 
-    def makeAlert(self, theMessage, theLevel):
-        assert isinstance(theMessage, str) or isinstance(theMessage, list)
-        print("%s: %s" % (str(theLevel), theMessage))
-        self.lastAlert = str(theMessage)
+    def makeAlert(self, message, level=0, exception=None):
+        assert isinstance(message, str) or isinstance(message, list)
+        print("%s: %s" % (str(level), message))
+        self.lastAlert = str(message)
         return
 
-    def askQuestion(self, theTitle, theQustion):
-        print("Question: %s" % theQustion)
-        self.lastQuestion = (theTitle, theQustion)
+    def askQuestion(self, title, qustion):
+        print("Question: %s" % qustion)
+        self.lastQuestion = (title, qustion)
         return self.askResponse
 
     def setStatus(self, theMessage):
@@ -113,8 +113,8 @@ class MockApp:
 # =========================================================================== #
 
 def causeOSError(*args, **kwargs):
-    raise OSError("OSError")
+    raise OSError("Mock OSError")
 
 
 def causeException(*args, **kwargs):
-    raise Exception("Exception")
+    raise Exception("Mock Exception")

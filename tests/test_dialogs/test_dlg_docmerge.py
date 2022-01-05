@@ -3,7 +3,7 @@ novelWriter – Merge and Split Dialog Classes Tester
 ===================================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -30,10 +30,6 @@ from PyQt5.QtWidgets import QAction, QMessageBox, QDialog
 from novelwriter.dialogs import GuiDocMerge, GuiItemEditor
 from novelwriter.enum import nwItemType, nwWidget
 from novelwriter.core.tree import NWTree
-
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
 
 
 @pytest.mark.gui
@@ -96,7 +92,7 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj):
     nwMerge = getGuiItem("GuiDocMerge")
     assert isinstance(nwMerge, GuiDocMerge)
     nwMerge.show()
-    qtbot.wait(stepDelay)
+    qtbot.wait(50)
 
     # Populate List
     # =============

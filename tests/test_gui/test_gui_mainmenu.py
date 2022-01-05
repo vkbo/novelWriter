@@ -3,7 +3,7 @@ novelWriter – Main GUI Main Menu Class Tester
 =============================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 from tools import writeFile
 
 from novelwriter.gui.doceditor import GuiDocEditor
-from novelwriter.enum import nwDocAction, nwDocInsert, nwWidget
+from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.constants import nwKeyWords, nwUnicode
 
 keyDelay = 2
@@ -471,11 +471,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert nwGUI.newProject({"projPath": fncProj})
 
     assert nwGUI.treeView._getTreeItem("0e17daca5f3e1") is not None
-
-    nwGUI.switchFocus(nwWidget.TREE)
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem("0e17daca5f3e1").setSelected(True)
-    assert nwGUI.openSelectedItem()
+    assert nwGUI.openDocument("0e17daca5f3e1") is True
     nwGUI.docEditor.clear()
 
     # Test Faulty Inserts

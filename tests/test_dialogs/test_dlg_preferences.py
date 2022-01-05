@@ -3,7 +3,7 @@ novelWriter – Preferences Dialog Class Tester
 =============================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -85,11 +85,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     nwPrefs._tabBox.setCurrentWidget(tabGeneral)
 
     qtbot.wait(keyDelay)
-    assert not tabGeneral.guiDark.isChecked()
-    qtbot.mouseClick(tabGeneral.guiDark, Qt.LeftButton)
-    assert tabGeneral.guiDark.isChecked()
-
-    qtbot.wait(keyDelay)
     assert tabGeneral.showFullPath.isChecked()
     qtbot.mouseClick(tabGeneral.showFullPath, Qt.LeftButton)
     assert not tabGeneral.showFullPath.isChecked()
@@ -150,11 +145,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     tabDocs.tabWidth.setValue(45)
 
     qtbot.wait(keyDelay)
-    assert not tabDocs.textFixedW.isChecked()
-    qtbot.mouseClick(tabDocs.textFixedW, Qt.LeftButton)
-    assert tabDocs.textFixedW.isChecked()
-
-    qtbot.wait(keyDelay)
     assert not tabDocs.hideFocusFooter.isChecked()
     qtbot.mouseClick(tabDocs.hideFocusFooter, Qt.LeftButton)
     assert tabDocs.hideFocusFooter.isChecked()
@@ -180,14 +170,12 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     assert tabEditor.showLineEndings.isChecked()
 
     qtbot.wait(keyDelay)
-    assert tabEditor.scrollPastEnd.isChecked()
-    qtbot.mouseClick(tabEditor.scrollPastEnd, Qt.LeftButton)
-    assert not tabEditor.scrollPastEnd.isChecked()
-
-    qtbot.wait(keyDelay)
     assert not tabEditor.autoScroll.isChecked()
     qtbot.mouseClick(tabEditor.autoScroll, Qt.LeftButton)
     assert tabEditor.autoScroll.isChecked()
+
+    qtbot.wait(keyDelay)
+    tabEditor.scrollPastEnd.setValue(0)
 
     qtbot.wait(keyDelay)
     tabEditor.bigDocLimit.setValue(500)
@@ -249,8 +237,12 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     testFile = os.path.join(outDir, "guiPreferences_novelwriter.conf")
     compFile = os.path.join(refDir, "guiPreferences_novelwriter.conf")
     copyfile(projFile, testFile)
-    ignoreLines = [2, 7, 9, 10, 15, 16, 17, 18, 19, 20, 21, 22, 23, 32, 33]
-    assert cmpFiles(testFile, compFile, ignoreLines)
+    ignTuple = (
+        "timestamp", "guifont", "lastnotes", "guilang", "geometry",
+        "preferences", "treecols", "novelcols", "projcols", "mainpane",
+        "docpane", "viewpane", "outlinepane", "textfont", "textsize"
+    )
+    assert cmpFiles(testFile, compFile, ignoreStart=ignTuple)
 
     # Clean up
     novelwriter.CONFIG = origConf

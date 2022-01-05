@@ -3,7 +3,7 @@ novelWriter – Spell Check Classes Tester
 ========================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ def testCoreSpell_Enchant(monkeypatch, tmpDir):
 
     assert spChk._readProjectDictionary(None) is False
     assert spChk._readProjectDictionary(wList) is True
-    assert spChk.projectDict == wList
+    assert spChk._projectDict == wList
 
     # Cannot write to file
     with monkeypatch.context() as mp:

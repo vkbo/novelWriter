@@ -7,7 +7,7 @@ File History:
 Created: 2019-04-27 [0.0.1]
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -57,7 +57,8 @@ class GuiItemEditor(QDialog):
 
         self.theItem = self.theProject.projTree[tHandle]
         if self.theItem is None:
-            self._doClose()
+            self.close()
+            return
 
         self.setWindowTitle(self.tr("Item Settings"))
 

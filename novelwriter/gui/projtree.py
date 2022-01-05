@@ -8,7 +8,7 @@ Created: 2018-09-29 [0.0.1] GuiProjectTree
 Created: 2020-06-04 [0.7]   GuiProjectTreeMenu
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -1051,16 +1051,12 @@ class GuiProjectTree(QTreeWidget):
     def _emitItemChange(self, tHandle):
         """Emit an item change signal for a given handle.
         """
-        nwItem = self.theProject.projTree[tHandle]
-        if nwItem is None:
-            return
-
-        if nwItem.itemType == nwItemType.FILE:
+        if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+            nwItem = self.theProject.projTree[tHandle]
             if nwItem.itemClass == nwItemClass.NOVEL:
                 self.novelItemChanged.emit()
             else:
                 self.noteItemChanged.emit()
-
         return
 
     def _recordLastMove(self, srcItem, parItem, parIndex):

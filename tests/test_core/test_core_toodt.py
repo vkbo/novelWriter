@@ -3,7 +3,7 @@ novelWriter – ToOdt Class Tester
 =================================
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -122,21 +122,21 @@ def testCoreToOdt_TextFormatting(mockGUI):
     oStyle = ODTParagraphStyle()
 
     assert theDoc._paraStyle("stuff", oStyle) == "Standard"
-    assert theDoc._paraStyle("Text_Body", oStyle) == "Text_Body"
+    assert theDoc._paraStyle("Text_20_body", oStyle) == "Text_20_body"
 
     # Create new para style
     oStyle.setTextAlign("center")
-    assert theDoc._paraStyle("Text_Body", oStyle) == "P1"
+    assert theDoc._paraStyle("Text_20_body", oStyle) == "P1"
 
     # Return the same style on second call
-    assert theDoc._paraStyle("Text_Body", oStyle) == "P1"
+    assert theDoc._paraStyle("Text_20_body", oStyle) == "P1"
 
     assert list(theDoc._mainPara.keys()) == [
-        "Text_Body", "Text_Meta", "Title", "Heading_1",
-        "Heading_2", "Heading_3", "Heading_4", "Header"
+        "Text_20_body", "Text_20_Meta", "Title", "Heading_20_1",
+        "Heading_20_2", "Heading_20_3", "Heading_20_4", "Header"
     ]
 
-    theKey = "a956b3abcc3d2d5daedf829b2cef56b4ba9b5b583c9c8cc8c87816dfc5a0685d"
+    theKey = "071d6b2e4764749f8c78d3c1ab9099fa04c07d2d53fd3de61eb1bdf1cb4845c3"
     assert theDoc._autoPara[theKey][0] == "P1"
     assert isinstance(theDoc._autoPara[theKey][1], ODTParagraphStyle)
 
@@ -236,7 +236,7 @@ def testCoreToOdt_Convert(mockGUI):
     mockGUI.theIndex = NWIndex(theProject)
     theDoc = ToOdt(theProject, isFlat=True)
 
-    theDoc.isNovel = True
+    theDoc._isNovel = True
 
     def getStyle(styleName):
         for aSet in theDoc._autoPara.values():
@@ -248,7 +248,7 @@ def testCoreToOdt_Convert(mockGUI):
     # =======
 
     # Header 1
-    theDoc.theText = "# Title\n"
+    theDoc._theText = "# Title\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -261,7 +261,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Header 2
-    theDoc.theText = "## Chapter\n"
+    theDoc._theText = "## Chapter\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -274,7 +274,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Header 3
-    theDoc.theText = "### Scene\n"
+    theDoc._theText = "### Scene\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -282,12 +282,12 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
+        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
         '</office:text>'
     )
 
     # Header 4
-    theDoc.theText = "#### Section\n"
+    theDoc._theText = "#### Section\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -295,12 +295,12 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_4" text:outline-level="4">Section</text:h>'
+        '<text:h text:style-name="Heading_20_4" text:outline-level="4">Section</text:h>'
         '</office:text>'
     )
 
     # Title
-    theDoc.theText = "#! Title\n"
+    theDoc._theText = "#! Title\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -308,12 +308,12 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="P3">Title</text:h>'
+        '<text:h text:style-name="Title">Title</text:h>'
         '</office:text>'
     )
 
     # Unnumbered chapter
-    theDoc.theText = "##! Prologue\n"
+    theDoc._theText = "##! Prologue\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -329,7 +329,7 @@ def testCoreToOdt_Convert(mockGUI):
     # ==========
 
     # Nested Text
-    theDoc.theText = "Some ~~nested **bold** and _italics_ text~~ text."
+    theDoc._theText = "Some ~~nested **bold** and _italics_ text~~ text."
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -337,7 +337,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_Body">Some '
+        '<text:p text:style-name="Text_20_body">Some '
         '<text:span text:style-name="T1">nested </text:span>'
         '<text:span text:style-name="T2">bold</text:span>'
         '<text:span text:style-name="T1"> and </text:span>'
@@ -347,7 +347,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Hard Break
-    theDoc.theText = "Some text.\nNext line\n"
+    theDoc._theText = "Some text.\nNext line\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -355,12 +355,12 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_Body">Some text.<text:line-break/>Next line</text:p>'
+        '<text:p text:style-name="Text_20_body">Some text.<text:line-break/>Next line</text:p>'
         '</office:text>'
     )
 
     # Tab
-    theDoc.theText = "\tItem 1\tItem 2\n"
+    theDoc._theText = "\tItem 1\tItem 2\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -368,12 +368,12 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_Body"><text:tab/>Item 1<text:tab/>Item 2</text:p>'
+        '<text:p text:style-name="Text_20_body"><text:tab/>Item 1<text:tab/>Item 2</text:p>'
         '</office:text>'
     )
 
     # Tab in Format
-    theDoc.theText = "Some **bold\ttext**"
+    theDoc._theText = "Some **bold\ttext**"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -381,13 +381,13 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_Body">Some <text:span text:style-name="T4">'
+        '<text:p text:style-name="Text_20_body">Some <text:span text:style-name="T4">'
         'bold<text:tab/>text</text:span></text:p>'
         '</office:text>'
     )
 
     # Multiple Spaces
-    theDoc.theText = (
+    theDoc._theText = (
         "### Scene\n\n"
         "Hello World\n\n"
         "Hello  World\n\n"
@@ -400,15 +400,15 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="Text_Body">Hello World</text:p>'
-        '<text:p text:style-name="Text_Body">Hello <text:s/>World</text:p>'
-        '<text:p text:style-name="Text_Body">Hello <text:s text:c="2"/>World</text:p>'
+        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
+        '<text:p text:style-name="Text_20_body">Hello World</text:p>'
+        '<text:p text:style-name="Text_20_body">Hello <text:s/>World</text:p>'
+        '<text:p text:style-name="Text_20_body">Hello <text:s text:c="2"/>World</text:p>'
         '</office:text>'
     )
 
     # Synopsis, Comment, Keywords
-    theDoc.theText = (
+    theDoc._theText = (
         "### Scene\n\n"
         "@pov: Jane\n\n"
         "% synopsis: So it begins\n\n"
@@ -424,18 +424,18 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="Text_Meta"><text:span text:style-name="T4">'
+        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T4">'
         'Point of View:</text:span> Jane</text:p>'
-        '<text:p text:style-name="Text_Meta"><text:span text:style-name="T4">'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T4">'
         'Synopsis:</text:span> So it begins</text:p>'
-        '<text:p text:style-name="Text_Meta"><text:span text:style-name="T4">'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T4">'
         'Comment:</text:span> a plain comment</text:p>'
         '</office:text>'
     )
 
     # Scene Separator
-    theDoc.theText = "### Scene One\n\nText\n\n### Scene Two\n\nText"
+    theDoc._theText = "### Scene One\n\nText\n\n### Scene Two\n\nText"
     theDoc.setSceneFormat("* * *", False)
     theDoc.tokenizeText()
     theDoc.doHeaders()
@@ -445,15 +445,15 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="P4">* * *</text:p>'
-        '<text:p text:style-name="Text_Body">Text</text:p>'
-        '<text:p text:style-name="P4">* * *</text:p>'
-        '<text:p text:style-name="Text_Body">Text</text:p>'
+        '<text:p text:style-name="P3">* * *</text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
+        '<text:p text:style-name="P3">* * *</text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )
 
     # Scene Break
-    theDoc.theText = "### Scene One\n\nText\n\n### Scene Two\n\nText"
+    theDoc._theText = "### Scene One\n\nText\n\n### Scene Two\n\nText"
     theDoc.setSceneFormat("", False)
     theDoc.tokenizeText()
     theDoc.doHeaders()
@@ -463,15 +463,15 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_Body"></text:p>'
-        '<text:p text:style-name="Text_Body">Text</text:p>'
-        '<text:p text:style-name="Text_Body"></text:p>'
-        '<text:p text:style-name="Text_Body">Text</text:p>'
+        '<text:p text:style-name="Text_20_body"></text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
+        '<text:p text:style-name="Text_20_body"></text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )
 
     # Paragraph Styles
-    theDoc.theText = (
+    theDoc._theText = (
         "### Scene\n\n"
         "@pov: Jane\n"
         "@char: John\n"
@@ -490,30 +490,30 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="P5"><text:span text:style-name="T4">'
+        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
+        '<text:p text:style-name="P4"><text:span text:style-name="T4">'
         'Point of View:</text:span> Jane</text:p>'
-        '<text:p text:style-name="P6"><text:span text:style-name="T4">'
+        '<text:p text:style-name="P5"><text:span text:style-name="T4">'
         'Characters:</text:span> John</text:p>'
-        '<text:p text:style-name="Text_Meta"><text:span text:style-name="T4">'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T4">'
         'Plot:</text:span> Main</text:p>'
-        '<text:p text:style-name="P7">Right align</text:p>'
-        '<text:p text:style-name="Text_Body">Left Align</text:p>'
-        '<text:p text:style-name="P4">Centered</text:p>'
-        '<text:p text:style-name="P8">Left indent</text:p>'
-        '<text:p text:style-name="P9">Right indent</text:p>'
+        '<text:p text:style-name="P6">Right align</text:p>'
+        '<text:p text:style-name="Text_20_body">Left Align</text:p>'
+        '<text:p text:style-name="P3">Centered</text:p>'
+        '<text:p text:style-name="P7">Left indent</text:p>'
+        '<text:p text:style-name="P8">Right indent</text:p>'
         '</office:text>'
     )
+    assert getStyle("P4")._pAttr["margin-bottom"] == ["fo", "0.000cm"]
     assert getStyle("P5")._pAttr["margin-bottom"] == ["fo", "0.000cm"]
-    assert getStyle("P6")._pAttr["margin-bottom"] == ["fo", "0.000cm"]
-    assert getStyle("P6")._pAttr["margin-top"] == ["fo", "0.000cm"]
-    assert getStyle("P7")._pAttr["text-align"] == ["fo", "right"]
-    assert getStyle("P4")._pAttr["text-align"] == ["fo", "center"]
-    assert getStyle("P8")._pAttr["margin-left"] == ["fo", "1.693cm"]
-    assert getStyle("P9")._pAttr["margin-right"] == ["fo", "1.693cm"]
+    assert getStyle("P5")._pAttr["margin-top"] == ["fo", "0.000cm"]
+    assert getStyle("P6")._pAttr["text-align"] == ["fo", "right"]
+    assert getStyle("P3")._pAttr["text-align"] == ["fo", "center"]
+    assert getStyle("P7")._pAttr["margin-left"] == ["fo", "1.693cm"]
+    assert getStyle("P8")._pAttr["margin-right"] == ["fo", "1.693cm"]
 
     # Justified
-    theDoc.theText = (
+    theDoc._theText = (
         "### Scene\n\n"
         "Regular paragraph\n\n"
         "with\nbreak\n\n"
@@ -527,16 +527,16 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Heading_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="Text_Body">Regular paragraph</text:p>'
-        '<text:p text:style-name="P10">with<text:line-break/>break</text:p>'
-        '<text:p text:style-name="P10">Left Align</text:p>'
+        '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
+        '<text:p text:style-name="Text_20_body">Regular paragraph</text:p>'
+        '<text:p text:style-name="P9">with<text:line-break/>break</text:p>'
+        '<text:p text:style-name="P9">Left Align</text:p>'
         '</office:text>'
     )
-    assert getStyle("P10")._pAttr["text-align"] == ["fo", "left"]
+    assert getStyle("P9")._pAttr["text-align"] == ["fo", "left"]
 
     # Page Breaks
-    theDoc.theText = (
+    theDoc._theText = (
         "## Chapter One\n\n"
         "Text\n\n"
         "## Chapter Two\n\n"
@@ -550,13 +550,69 @@ def testCoreToOdt_Convert(mockGUI):
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="P2" text:outline-level="2">Chapter One</text:h>'
-        '<text:p text:style-name="Text_Body">Text</text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
         '<text:h text:style-name="P2" text:outline-level="2">Chapter Two</text:h>'
-        '<text:p text:style-name="Text_Body">Text</text:p>'
+        '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )
 
 # END Test testCoreToOdt_Convert
+
+
+@pytest.mark.core
+def testCoreToOdt_ConvertDirect(mockGUI):
+    """Test the converter directly using the ToOdt class to reach some
+    otherwise hard to reach conditions.
+    """
+    theProject = NWProject(mockGUI)
+    mockGUI.theIndex = NWIndex(theProject)
+    theDoc = ToOdt(theProject, isFlat=True)
+
+    theDoc._isNovel = True
+
+    # Justified
+    theDoc = ToOdt(theProject, isFlat=True)
+    theDoc._theTokens = [
+        (theDoc.T_TEXT, 1, "This is a paragraph", [], theDoc.A_JUSTIFY),
+        (theDoc.T_EMPTY, 1, "", None, theDoc.A_NONE),
+    ]
+    theDoc.initDocument()
+    theDoc.doConvert()
+    theDoc.closeDocument()
+    assert (
+        '<style:style style:name="P1" style:family="paragraph" '
+        'style:parent-style-name="Text_20_body">'
+        '<style:paragraph-properties fo:text-align="justify"/>'
+        '</style:style>'
+    ) in xmlToText(theDoc._xAuto)
+    assert xmlToText(theDoc._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="P1">This is a paragraph</text:p>'
+        '</office:text>'
+    )
+
+    # Page Break After
+    theDoc = ToOdt(theProject, isFlat=True)
+    theDoc._theTokens = [
+        (theDoc.T_TEXT, 1, "This is a paragraph", [], theDoc.A_PBA),
+        (theDoc.T_EMPTY, 1, "", None, theDoc.A_NONE),
+    ]
+    theDoc.initDocument()
+    theDoc.doConvert()
+    theDoc.closeDocument()
+    assert (
+        '<style:style style:name="P1" style:family="paragraph" '
+        'style:parent-style-name="Text_20_body">'
+        '<style:paragraph-properties fo:break-after="page"/>'
+        '</style:style>'
+    ) in xmlToText(theDoc._xAuto)
+    assert xmlToText(theDoc._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="P1">This is a paragraph</text:p>'
+        '</office:text>'
+    )
+
+# END Test testCoreToOdt_ConvertDirect
 
 
 @pytest.mark.core
@@ -567,12 +623,12 @@ def testCoreToOdt_SaveFlat(mockGUI, fncDir, outDir, refDir):
     mockGUI.theIndex = NWIndex(theProject)
 
     theDoc = ToOdt(theProject, isFlat=True)
-    theDoc.isNovel = True
+    theDoc._isNovel = True
     assert theDoc.setLanguage(None) is False
     assert theDoc.setLanguage("nb_NO") is True
     theDoc.setColourHeaders(True)
 
-    theDoc.theText = (
+    theDoc._theText = (
         "## Chapter One\n\n"
         "Text\n\n"
         "## Chapter Two\n\n"
@@ -604,9 +660,9 @@ def testCoreToOdt_SaveFull(mockGUI, fncDir, outDir, refDir):
     mockGUI.theIndex = NWIndex(theProject)
 
     theDoc = ToOdt(theProject, isFlat=False)
-    theDoc.isNovel = True
+    theDoc._isNovel = True
 
-    theDoc.theText = (
+    theDoc._theText = (
         "## Chapter One\n\n"
         "Text\n\n"
         "## Chapter Two\n\n"
@@ -674,6 +730,36 @@ def testCoreToOdt_SaveFull(mockGUI, fncDir, outDir, refDir):
     assert cmpFiles(stylFile, stylComp)
 
 # END Test testCoreToOdt_SaveFull
+
+
+@pytest.mark.core
+def testCoreToOdt_Format(mockGUI):
+    """Test the formatters for the ToOdt class.
+    """
+    theProject = NWProject(mockGUI)
+    mockGUI.theIndex = NWIndex(theProject)
+    theDoc = ToOdt(theProject, isFlat=True)
+
+    assert theDoc._formatSynopsis("synopsis text") == (
+        "**Synopsis:** synopsis text",
+        "_B         b_              "
+    )
+    assert theDoc._formatComments("comment text") == (
+        "**Comment:** comment text",
+        "_B        b_             "
+    )
+
+    assert theDoc._formatKeywords("") == ""
+    assert theDoc._formatKeywords("tag: Jane") == (
+        "**Tag:** Jane",
+        "_B    b_     "
+    )
+    assert theDoc._formatKeywords("char: Bod, Jane") == (
+        "**Characters:** Bod, Jane",
+        "_B           b_          "
+    )
+
+# END Test testCoreToOdt_Format
 
 
 @pytest.mark.core

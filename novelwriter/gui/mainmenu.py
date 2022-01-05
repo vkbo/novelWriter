@@ -7,7 +7,7 @@ File History:
 Created: 2019-04-27 [0.0.1]
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -793,28 +793,28 @@ class GuiMainMenu(QMenuBar):
 
         # Format > Header 1 (Partition)
         self.aFmtHead1 = QAction(self.tr("Header 1 (Partition)"), self)
-        self.aFmtHead1.setStatusTip(self.tr("Change the block format to Header 1"))
+        self.aFmtHead1.setStatusTip(self.tr("Set the text block format to Header 1 (Partition)"))
         self.aFmtHead1.setShortcut("Ctrl+1")
         self.aFmtHead1.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H1))
         self.fmtMenu.addAction(self.aFmtHead1)
 
         # Format > Header 2 (Chapter)
         self.aFmtHead2 = QAction(self.tr("Header 2 (Chapter)"), self)
-        self.aFmtHead2.setStatusTip(self.tr("Change the block format to Header 2"))
+        self.aFmtHead2.setStatusTip(self.tr("Set the text block format to Header 2 (Chapter)"))
         self.aFmtHead2.setShortcut("Ctrl+2")
         self.aFmtHead2.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H2))
         self.fmtMenu.addAction(self.aFmtHead2)
 
         # Format > Header 3 (Scene)
         self.aFmtHead3 = QAction(self.tr("Header 3 (Scene)"), self)
-        self.aFmtHead3.setStatusTip(self.tr("Change the block format to Header 3"))
+        self.aFmtHead3.setStatusTip(self.tr("Set the text block format to Header 3 (Scene)"))
         self.aFmtHead3.setShortcut("Ctrl+3")
         self.aFmtHead3.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H3))
         self.fmtMenu.addAction(self.aFmtHead3)
 
         # Format > Header 4 (Section)
         self.aFmtHead4 = QAction(self.tr("Header 4 (Section)"), self)
-        self.aFmtHead4.setStatusTip(self.tr("Change the block format to Header 4"))
+        self.aFmtHead4.setStatusTip(self.tr("Set the text block format to Header 4 (Section)"))
         self.aFmtHead4.setShortcut("Ctrl+4")
         self.aFmtHead4.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H4))
         self.fmtMenu.addAction(self.aFmtHead4)
@@ -824,13 +824,13 @@ class GuiMainMenu(QMenuBar):
 
         # Format > Novel Title
         self.aFmtTitle = QAction(self.tr("Novel Title"), self)
-        self.aFmtTitle.setStatusTip(self.tr("Change the block format to Novel Title"))
+        self.aFmtTitle.setStatusTip(self.tr("Set the text block format to Novel Title"))
         self.aFmtTitle.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_TTL))
         self.fmtMenu.addAction(self.aFmtTitle)
 
         # Format > Unnumbered Chapter
         self.aFmtUnNum = QAction(self.tr("Unnumbered Chapter"), self)
-        self.aFmtUnNum.setStatusTip(self.tr("Change the block format to Unnumbered Chapter"))
+        self.aFmtUnNum.setStatusTip(self.tr("Set the text block format to Unnumbered Chapter"))
         self.aFmtUnNum.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_UNN))
         self.fmtMenu.addAction(self.aFmtUnNum)
 
@@ -839,21 +839,21 @@ class GuiMainMenu(QMenuBar):
 
         # Format > Align Left
         self.aFmtAlignLeft = QAction(self.tr("Align Left"), self)
-        self.aFmtAlignLeft.setStatusTip(self.tr("Change the block alignment to left"))
+        self.aFmtAlignLeft.setStatusTip(self.tr("Left-align the text block"))
         self.aFmtAlignLeft.setShortcut("Ctrl+5")
         self.aFmtAlignLeft.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_L))
         self.fmtMenu.addAction(self.aFmtAlignLeft)
 
         # Format > Align Centre
         self.aFmtAlignCentre = QAction(self.tr("Align Centre"), self)
-        self.aFmtAlignCentre.setStatusTip(self.tr("Change the block alignment to centre"))
+        self.aFmtAlignCentre.setStatusTip(self.tr("Centre the text block"))
         self.aFmtAlignCentre.setShortcut("Ctrl+6")
         self.aFmtAlignCentre.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_C))
         self.fmtMenu.addAction(self.aFmtAlignCentre)
 
         # Format > Align Right
         self.aFmtAlignRight = QAction(self.tr("Align Right"), self)
-        self.aFmtAlignRight.setStatusTip(self.tr("Change the block alignment to right"))
+        self.aFmtAlignRight.setStatusTip(self.tr("Right-align the text block"))
         self.aFmtAlignRight.setShortcut("Ctrl+7")
         self.aFmtAlignRight.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_R))
         self.fmtMenu.addAction(self.aFmtAlignRight)
@@ -863,14 +863,14 @@ class GuiMainMenu(QMenuBar):
 
         # Format > Indent Left
         self.aFmtIndentLeft = QAction(self.tr("Indent Left"), self)
-        self.aFmtIndentLeft.setStatusTip(self.tr("Increase the block's left margin"))
+        self.aFmtIndentLeft.setStatusTip(self.tr("Increase the text block's left margin"))
         self.aFmtIndentLeft.setShortcut("Ctrl+8")
         self.aFmtIndentLeft.triggered.connect(lambda: self._docAction(nwDocAction.INDENT_L))
         self.fmtMenu.addAction(self.aFmtIndentLeft)
 
         # Format > Indent Right
         self.aFmtIndentRight = QAction(self.tr("Indent Right"), self)
-        self.aFmtIndentRight.setStatusTip(self.tr("Increase the block's right margin"))
+        self.aFmtIndentRight.setStatusTip(self.tr("Increase the text block's right margin"))
         self.aFmtIndentRight.setShortcut("Ctrl+9")
         self.aFmtIndentRight.triggered.connect(lambda: self._docAction(nwDocAction.INDENT_R))
         self.fmtMenu.addAction(self.aFmtIndentRight)
@@ -880,14 +880,14 @@ class GuiMainMenu(QMenuBar):
 
         # Format > Comment
         self.aFmtComment = QAction(self.tr("Comment"), self)
-        self.aFmtComment.setStatusTip(self.tr("Change the block format to comment"))
+        self.aFmtComment.setStatusTip(self.tr("Change the text block format to comment"))
         self.aFmtComment.setShortcut("Ctrl+/")
         self.aFmtComment.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_COM))
         self.fmtMenu.addAction(self.aFmtComment)
 
         # Format > Remove Block Format
         self.aFmtNoFormat = QAction(self.tr("Remove Block Format"), self)
-        self.aFmtNoFormat.setStatusTip(self.tr("Strips block format"))
+        self.aFmtNoFormat.setStatusTip(self.tr("Strip text block format"))
         self.aFmtNoFormat.setShortcuts(["Ctrl+0", "Ctrl+Shift+/"])
         self.aFmtNoFormat.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_TXT))
         self.fmtMenu.addAction(self.aFmtNoFormat)
@@ -898,7 +898,7 @@ class GuiMainMenu(QMenuBar):
         # Format > Replace Single Quotes
         self.aFmtReplSng = QAction(self.tr("Replace Single Quotes"), self)
         self.aFmtReplSng.setStatusTip(
-            self.tr("Replace all straight single quotes in selected text")
+            self.tr("Replace all straight single quotes in the selected text")
         )
         self.aFmtReplSng.triggered.connect(lambda: self._docAction(nwDocAction.REPL_SNG))
         self.fmtMenu.addAction(self.aFmtReplSng)
@@ -906,7 +906,7 @@ class GuiMainMenu(QMenuBar):
         # Format > Replace Double Quotes
         self.aFmtReplDbl = QAction(self.tr("Replace Double Quotes"), self)
         self.aFmtReplDbl.setStatusTip(
-            self.tr("Replace all straight double quotes in selected text")
+            self.tr("Replace all straight double quotes in the selected text")
         )
         self.aFmtReplDbl.triggered.connect(lambda: self._docAction(nwDocAction.REPL_DBL))
         self.fmtMenu.addAction(self.aFmtReplDbl)
@@ -914,7 +914,7 @@ class GuiMainMenu(QMenuBar):
         # Format > Remove In-Paragraph Breaks
         self.aFmtRmBreaks = QAction(self.tr("Remove In-Paragraph Breaks"), self)
         self.aFmtRmBreaks.setStatusTip(
-            self.tr("Removes all line breaks within paragraphs in the selected text")
+            self.tr("Remove all line breaks within paragraphs in the selected text")
         )
         self.aFmtRmBreaks.triggered.connect(lambda: self._docAction(nwDocAction.RM_BREAKS))
         self.fmtMenu.addAction(self.aFmtRmBreaks)

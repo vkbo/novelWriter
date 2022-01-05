@@ -7,7 +7,7 @@ File History:
 Created: 2019-06-11 [0.1.5]
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,7 +25,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import os
 import logging
-import novelwriter
+
+from novelwriter.error import logException
 
 logger = logging.getLogger(__name__)
 
@@ -34,16 +35,22 @@ class NWSpellEnchant():
 
     def __init__(self):
 
-        self.mainConf = novelwriter.CONFIG
-        self.theDict = None
-        self.projDict = set()
-        self.projectDict = None
-        self.spellLanguage = None
-        self.theBroker = None
+        self._theDict = None
+        self._projDict = set()
+        self._projectDict = None
+        self._spellLanguage = None
+        self._theBroker = None
 
         logger.debug("Enchant spell checking activated")
 
         return
+
+    ##
+    #  Getters and Setters
+    ##
+
+    def spellLanguage(self):
+        return self._spellLanguage
 
     def setLanguage(self, theLang, projectDict=None):
         """Load a dictionary for the language specified in the config.
@@ -52,31 +59,35 @@ class NWSpellEnchant():
         """
         try:
             import enchant
-            if self.theBroker is not None:
+            if self._theBroker is not None:
                 logger.debug("Deleting old pyenchant broker")
-                del self.theBroker
+                del self._theBroker
 
-            self.theBroker = enchant.Broker()
-            self.theDict = self.theBroker.request_dict(theLang)
-            self.spellLanguage = theLang
+            self._theBroker = enchant.Broker()
+            self._theDict = self._theBroker.request_dict(theLang)
+            self._spellLanguage = theLang
             logger.debug("Enchant spell checking for language '%s' loaded", theLang)
 
         except Exception:
             logger.error("Failed to load enchant spell checking for language '%s'", theLang)
-            self.theDict = FakeEnchant()
-            self.spellLanguage = None
+            self._theDict = FakeEnchant()
+            self._spellLanguage = None
 
         self._readProjectDictionary(projectDict)
-        for pWord in self.projDict:
-            self.theDict.add_to_session(pWord)
+        for pWord in self._projDict:
+            self._theDict.add_to_session(pWord)
 
         return
+
+    ##
+    #  Methods
+    ##
 
     def checkWord(self, theWord):
         """Wrapper function for pyenchant.
         """
         try:
-            return self.theDict.check(theWord)
+            return self._theDict.check(theWord)
         except Exception:
             return True
 
@@ -84,7 +95,7 @@ class NWSpellEnchant():
         """Wrapper function for pyenchant.
         """
         try:
-            return self.theDict.suggest(theWord)
+            return self._theDict.suggest(theWord)
         except Exception:
             return []
 
@@ -92,19 +103,19 @@ class NWSpellEnchant():
         """Add a word to the project dictionary.
         """
         try:
-            self.theDict.add_to_session(newWord)
+            self._theDict.add_to_session(newWord)
         except Exception:
             return False
 
-        if self.projectDict is not None and newWord not in self.projDict:
+        if self._projectDict is not None and newWord not in self._projDict:
             newWord = newWord.strip()
             try:
-                with open(self.projectDict, mode="a+", encoding="utf-8") as outFile:
+                with open(self._projectDict, mode="a+", encoding="utf-8") as outFile:
                     outFile.write("%s\n" % newWord)
-                self.projDict.add(newWord)
+                self._projDict.add(newWord)
             except Exception:
-                logger.error("Failed to add word to project word list %s", str(self.projectDict))
-                novelwriter.logException()
+                logger.error("Failed to add word to project word list %s", str(self._projectDict))
+                logException()
                 return False
             return True
 
@@ -128,11 +139,11 @@ class NWSpellEnchant():
         dictionary.
         """
         try:
-            spTag = self.theDict.tag
-            spName = self.theDict.provider.name
+            spTag = self._theDict.tag
+            spName = self._theDict.provider.name
         except Exception:
             logger.error("Failed to extract information about the dictionary")
-            novelwriter.logException()
+            logException()
             spTag = ""
             spName = ""
 
@@ -146,8 +157,8 @@ class NWSpellEnchant():
         """Read the content of the project dictionary, and add it to the
         lookup lists.
         """
-        self.projDict = set()
-        self.projectDict = projectDict
+        self._projDict = set()
+        self._projectDict = projectDict
 
         if projectDict is None:
             return False
@@ -160,13 +171,13 @@ class NWSpellEnchant():
             with open(projectDict, mode="r", encoding="utf-8") as wordsFile:
                 for theLine in wordsFile:
                     theLine = theLine.strip()
-                    if len(theLine) > 0 and theLine not in self.projDict:
-                        self.projDict.add(theLine)
-            logger.debug("Project word list contains %d words", len(self.projDict))
+                    if len(theLine) > 0 and theLine not in self._projDict:
+                        self._projDict.add(theLine)
+            logger.debug("Project word list contains %d words", len(self._projDict))
 
         except Exception:
             logger.error("Failed to load project word list")
-            novelwriter.logException()
+            logException()
             return False
 
         return True

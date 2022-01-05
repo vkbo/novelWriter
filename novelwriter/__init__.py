@@ -7,7 +7,7 @@ File History:
 Created: 2018-09-22 [0.0.1]
 
 This file is a part of novelWriter
-Copyright 2018–2021, Veronica Berglyd Olsen
+Copyright 2018–2022, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -44,26 +44,25 @@ from novelwriter.config import Config
 #  - Digit 7   : Release Type (a: aplha, b: beta, c: candidate, f: final)
 #  - Digit 8   : Release Number (0-f)
 #
-#  Example    : Full        Short      Description
-# -------------------------------------------------------------------------
-#  0x010200a0 : 1.2-alpha0  1.2a0      Use while developing next release
-#  0x010200a1 : 1.2-alpha1  1.2a1      First alpha release
-#  0x010200b1 : 1.2-beta1   1.2b1      First beta release
-#  0x010200c1 : 1.2-rc1     1.2rc1     First release candidate
-#  0x010200f0 : 1.2         1.2        Final release
-#  0x010200f1 : 1.2-post1   1.2.post1  Post release, but not a code patch!
-#  0x010201f0 : 1.2.1       1.2.1      Patch release
+#  Example    : Full        Short   Description
+# --------------------------------------------------------------------
+#  0x010200a0 : 1.2-alpha0  1.2a0   Use while developing next release
+#  0x010200a1 : 1.2-alpha1  1.2a1   First alpha release
+#  0x010200b1 : 1.2-beta1   1.2b1   First beta release
+#  0x010200c1 : 1.2-rc1     1.2rc1  First release candidate
+#  0x010200f0 : 1.2.0       1.2.0   Final release
+#  0x010201f0 : 1.2.1       1.2.1   Patch release
 ##
 
 __package__    = "novelwriter"
-__copyright__  = "Copyright 2018–2021, Veronica Berglyd Olsen"
+__copyright__  = "Copyright 2018–2022, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "1.5.5"
-__hexversion__ = "0x010505f0"
-__date__       = "2022-01-05"
+__version__    = "1.6-beta1"
+__hexversion__ = "0x010600b1"
+__date__       = "2022-01-04"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 __url__        = "https://novelwriter.io"
@@ -111,14 +110,14 @@ CONFIG = Config()
 
 
 def main(sysArgs=None):
-    """Parse command line, set up logging, and launches main GUI.
+    """Parse command line, set up logging, and launch main GUI.
     """
     if sysArgs is None:
         sysArgs = sys.argv[1:]
 
     # Valid Input Options
     shortOpt = "hv"
-    longOpt  = [
+    longOpt = [
         "help",
         "version",
         "info",
@@ -131,8 +130,8 @@ def main(sysArgs=None):
     ]
 
     helpMsg = (
-        "novelWriter {version} ({date})\n"
-        "{copyright}\n"
+        f"novelWriter {__version__} ({__date__})\n"
+        f"{__copyright__}\n"
         "\n"
         "This program is distributed in the hope that it will be useful,\n"
         "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -148,10 +147,6 @@ def main(sysArgs=None):
         "     --style=   Sets Qt5 style flag. Defaults to 'Fusion'.\n"
         "     --config=  Alternative config file.\n"
         "     --data=    Alternative user data path.\n"
-    ).format(
-        version=__version__,
-        copyright=__copyright__,
-        date=__date__,
     )
 
     # Defaults
@@ -166,9 +161,9 @@ def main(sysArgs=None):
     # Parse Options
     try:
         inOpts, inRemain = getopt.getopt(sysArgs, shortOpt, longOpt)
-    except getopt.GetoptError as E:
+    except getopt.GetoptError as exc:
         print(helpMsg)
-        print("ERROR: %s" % str(E))
+        print(f"ERROR: {str(exc)}")
         sys.exit(2)
 
     if len(inRemain) > 0:
@@ -216,31 +211,31 @@ def main(sysArgs=None):
     errorCode = 0
     if sys.hexversion < 0x030600f0:
         errorData.append(
-            "At least Python 3.6.0 is required, found %s." % CONFIG.verPyString
+            "At least Python 3.6 is required, found %s" % CONFIG.verPyString
         )
-        errorCode |= 4
+        errorCode |= 0x04
     if CONFIG.verQtValue < 50300:
         errorData.append(
-            "At least Qt5 version 5.3 is required, found %s." % CONFIG.verQtString
+            "At least Qt5 version 5.3 is required, found %s" % CONFIG.verQtString
         )
-        errorCode |= 8
+        errorCode |= 0x08
     if CONFIG.verPyQtValue < 50300:
         errorData.append(
-            "At least PyQt5 version 5.3 is required, found %s." % CONFIG.verPyQtString
+            "At least PyQt5 version 5.3 is required, found %s" % CONFIG.verPyQtString
         )
-        errorCode |= 16
+        errorCode |= 0x10
 
     try:
         import lxml  # noqa: F401
     except ImportError:
-        errorData.append("Python module 'lxml' is missing.")
-        errorCode |= 32
+        errorData.append("Python module 'lxml' is missing")
+        errorCode |= 0x20
 
     if errorData:
         errApp = QApplication([])
-        errMsg = QErrorMessage()
-        errMsg.resize(500, 300)
-        errMsg.showMessage((
+        errDlg = QErrorMessage()
+        errDlg.resize(500, 300)
+        errDlg.showMessage((
             "<h3>A critical error has been encountered</h3>"
             "<p>novelWriter cannot start due to the following issues:<p>"
             "<p>&nbsp;-&nbsp;%s</p>"
@@ -248,8 +243,8 @@ def main(sysArgs=None):
         ) % (
             "<br>&nbsp;-&nbsp;".join(errorData)
         ))
-        for errMsg in errorData:
-            logger.critical(errMsg)
+        for errLine in errorData:
+            logger.critical(errLine)
         errApp.exec_()
         sys.exit(errorCode)
 
@@ -269,7 +264,7 @@ def main(sysArgs=None):
     elif CONFIG.osWindows:
         try:
             import ctypes
-            appID = "io.novelwriter.%s" % __version__
+            appID = f"io.novelwriter.{__version__}"
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)
         except Exception:
             logger.error("Failed to set application name")
@@ -282,7 +277,7 @@ def main(sysArgs=None):
         return nwGUI
 
     else:
-        nwApp = QApplication([CONFIG.appName, ("-style=%s" % qtStyle)])
+        nwApp = QApplication([CONFIG.appName, (f"-style={qtStyle}")])
         nwApp.setApplicationName(CONFIG.appName)
         nwApp.setApplicationVersion(__version__)
         nwApp.setWindowIcon(QIcon(CONFIG.appIcon))

@@ -3228,7 +3228,7 @@
     </message>
     <message>
         <location filename="../novelwriter/dialogs/preferences.py" line="788"/>
-        <source>Also improves trypewriter scrolling for short documents.</source>
+        <source>Also improves typewriter scrolling for short documents.</source>
         <translation>Também melhora a rolagem de máquina de escrever em documentos curtos.</translation>
     </message>
     <message>
@@ -4580,18 +4580,18 @@
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="788"/>
-        <source>Cannot backup project because no backup path is set. Please set a valid backup location in Tools &gt; Preferences.</source>
-        <translation>Não foi possível realizar uma cópia de segurança do projeto porquê o caminho das cópias de segurança não foi definido. Por favor, defina um caminho válido para as cópias de segurança em Ferramentas &gt; Preferências.</translation>
+        <source>Cannot backup project because no backup path is set. Please set a valid backup location in Preferences.</source>
+        <translation>Não foi possível realizar uma cópia de segurança do projeto porquê o caminho das cópias de segurança não foi definido. Por favor, defina um caminho válido para as cópias de segurança em Preferências.</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="795"/>
-        <source>Cannot backup project because no project name is set. Please set a Working Title in Project &gt; Project Settings.</source>
-        <translation>Não foi possível realizar a cópia de segurança do projeto porque o nome do projeto não está definido. Por favor defina o Nome do Projeto em Projeto &gt; Configurações do Projeto.</translation>
+        <source>Cannot backup project because no project name is set. Please set a Working Title in Project Settings.</source>
+        <translation>Não foi possível realizar a cópia de segurança do projeto porque o nome do projeto não está definido. Por favor defina o Nome do Projeto em Configurações do Projeto.</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="802"/>
-        <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Tools &gt; Preferences.</source>
-        <translation>Não foi possível realizar a cópia de segurança do projeto porque o caminho das cópias de segurança não exite. Por favor, defina um cainho válido para as cópias de segurança em Ferramentas &gt; Preferências.</translation>
+        <source>Cannot backup project because the backup path does not exist. Please set a valid backup location in Preferences.</source>
+        <translation>Não foi possível realizar a cópia de segurança do projeto porque o caminho das cópias de segurança não exite. Por favor, defina um cainho válido para as cópias de segurança em Preferências.</translation>
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="815"/>
@@ -4600,7 +4600,7 @@
     </message>
     <message>
         <location filename="../novelwriter/core/project.py" line="821"/>
-        <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Tools &gt; Preferences.</source>
+        <source>Cannot backup project because the backup path is within the project folder to be backed up. Please choose a different backup path in Preferences.</source>
         <translation>Não foi possível realizar a cópia de segurança do projeto porque o caminho das cópias de segurança está em um caminho dentro do diretório do projeto. Por favor, escolha um caminho diferente para as cópias de segurança em Ferramentas&gt; Preferências.</translation>
     </message>
     <message>

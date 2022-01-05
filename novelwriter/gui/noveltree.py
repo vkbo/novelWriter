@@ -135,7 +135,7 @@ class GuiNovelTree(QTreeWidget):
         logger.verbose("Requesting refresh of the novel tree")
         treeChanged = self.theParent.treeView.changedSince(self._lastBuild)
         indexChanged = self.theIndex.novelChangedSince(self._lastBuild)
-        if not (treeChanged or indexChanged):
+        if not (treeChanged or indexChanged or overRide):
             logger.verbose("No changes have been made to the novel index")
             return
 
@@ -175,10 +175,13 @@ class GuiNovelTree(QTreeWidget):
         selected, return the first.
         """
         selItem = self.selectedItems()
+        tHandle = None
+        tLine = 0
         if selItem:
-            return selItem[0].data(self.C_TITLE, Qt.UserRole)[0]
+            tHandle = selItem[0].data(self.C_TITLE, Qt.UserRole)[0]
+            tLine = checkInt(selItem[0].data(self.C_TITLE, Qt.UserRole)[1], 1) - 1
 
-        return None
+        return tHandle, tLine
 
     ##
     #  Events
@@ -201,7 +204,7 @@ class GuiNovelTree(QTreeWidget):
             if not isinstance(selItem, QTreeWidgetItem):
                 return
 
-            tHandle = self.getSelectedHandle()
+            tHandle, _ = self.getSelectedHandle()
             if tHandle is None:
                 return
 
@@ -218,13 +221,8 @@ class GuiNovelTree(QTreeWidget):
         clicked, and send it to the main gui class for opening in the
         document editor.
         """
-        theData = tItem.data(self.C_TITLE, Qt.UserRole)
-        tHandle = theData[0]
-        tLine = checkInt(theData[1], 1)
-
-        logger.verbose("User selected entry with handle '%s' on line %s", tHandle, tLine)
+        tHandle, tLine = self.getSelectedHandle()
         self.theParent.openDocument(tHandle, tLine=tLine-1, doScroll=True)
-
         return
 
     def _itemSelected(self):
