@@ -827,7 +827,7 @@ class NWProject():
                 ), nwAlert.ERROR, exception=exc)
                 return False
 
-        if os.path.commonpath([self.projPath, baseDir]) == self.projPath:
+        if baseDir and baseDir.startswith(self.projPath):
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because the backup path is within the "
                 "project folder to be backed up. Please choose a different "

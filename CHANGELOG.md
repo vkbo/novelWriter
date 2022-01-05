@@ -91,6 +91,24 @@ final release.
 
 ----
 
+## Version 1.5.5 [2022-01-05]
+
+### Release Notes
+
+This is a bugfix release that fixes an issues with the backup tool crashing the app if the project
+path and backup path are on different drive locations. This issue only affects Windows.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed a bug with using the commonpath command in Python which will raise an error if the two
+  paths don't have a common root. This is particularly an issue on Windows where the paths can be
+  on different drives. The command was used in the project backup function, and has now been
+  replaced by a safer check. Issue #954.
+
+----
+
 ## Version 1.5.4 [2022-01-04]
 
 ### Release Notes

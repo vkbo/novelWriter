@@ -1223,26 +1223,30 @@ def testCoreProject_Backup(monkeypatch, mockGUI, nwMinimal, tmpDir):
 
     # No project
     mockGUI.hasProject = False
-    assert not theProject.zipIt(doNotify=False)
+    assert theProject.zipIt(doNotify=False) is False
     mockGUI.hasProject = True
 
     # Invalid path
     theProject.mainConf.backupPath = None
-    assert not theProject.zipIt(doNotify=False)
+    assert theProject.zipIt(doNotify=False) is False
 
     # Missing project name
     theProject.mainConf.backupPath = tmpDir
     theProject.projName = ""
-    assert not theProject.zipIt(doNotify=False)
+    assert theProject.zipIt(doNotify=False) is False
 
     # Non-existent folder
     theProject.mainConf.backupPath = os.path.join(tmpDir, "nonexistent")
     theProject.projName = "Test Minimal"
-    assert not theProject.zipIt(doNotify=False)
+    assert theProject.zipIt(doNotify=False) is False
 
     # Same folder as project (causes infinite loop in zipping)
     theProject.mainConf.backupPath = nwMinimal
-    assert not theProject.zipIt(doNotify=False)
+    assert theProject.zipIt(doNotify=False) is False
+
+    # Subfolder of project (causes infinite loop in zipping)
+    theProject.mainConf.backupPath = os.path.join(nwMinimal, "subdir")
+    assert theProject.zipIt(doNotify=False) is False
 
     # Set a valid folder
     theProject.mainConf.backupPath = tmpDir
@@ -1250,15 +1254,15 @@ def testCoreProject_Backup(monkeypatch, mockGUI, nwMinimal, tmpDir):
     # Can't make folder
     with monkeypatch.context() as mp:
         mp.setattr("os.mkdir", causeOSError)
-        assert not theProject.zipIt(doNotify=False)
+        assert theProject.zipIt(doNotify=False) is False
 
     # Can't write archive
     with monkeypatch.context() as mp:
         mp.setattr("shutil.make_archive", causeOSError)
-        assert not theProject.zipIt(doNotify=False)
+        assert theProject.zipIt(doNotify=False) is False
 
     # Test correct settings
-    assert theProject.zipIt(doNotify=True)
+    assert theProject.zipIt(doNotify=True) is True
 
     theFiles = os.listdir(os.path.join(tmpDir, "Test Minimal"))
     assert len(theFiles) == 1
