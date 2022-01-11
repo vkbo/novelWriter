@@ -112,6 +112,18 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
         assert theDoc.writeDocument(theText) is False
         assert theDoc.getError() == "OSError: Mock OSError"
 
+    theDoc._docError = ""
+    assert theDoc.getError() == ""
+
+    # Cause os.replace() to fail while saving
+    with monkeypatch.context() as mp:
+        mp.setattr("os.replace", causeOSError)
+        assert theDoc.writeDocument(theText) is False
+        assert theDoc.getError() == "OSError: Mock OSError"
+
+    theDoc._docError = ""
+    assert theDoc.getError() == ""
+
     # Saving with no handle
     theDoc._docHandle = None
     assert theDoc.writeDocument(theText) is False
