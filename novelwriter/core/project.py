@@ -734,8 +734,7 @@ class NWProject():
                 repErr = exc
             else:
                 break
-
-        if repErr is not None:
+        else:
             self.theParent.makeAlert(self.tr(
                 "Failed to save project."
             ), nwAlert.ERROR, exception=repErr)

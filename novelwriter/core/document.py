@@ -165,7 +165,7 @@ class NWDoc():
         # If we're here, the file was successfully saved, so we can
         # replace the temp file with the actual file
         # This also tries to outwait potential file locks, see issue #960
-        repErr = None
+        repErr = ""
         for i in range(5):
             sleep(0.05*i)
             try:
@@ -175,8 +175,7 @@ class NWDoc():
                 repErr = formatException(exc)
             else:
                 break
-
-        if repErr is not None:
+        else:
             self._docError = repErr
             return False
 
