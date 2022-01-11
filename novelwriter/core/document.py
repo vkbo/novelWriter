@@ -170,7 +170,7 @@ class NWDoc():
             sleep(0.05*i)
             try:
                 os.replace(docTemp, docPath)
-            except Exception as exc:
+            except OSError as exc:
                 logger.error("Failed to save document on attempt %d", i+1)
                 repErr = formatException(exc)
             else:

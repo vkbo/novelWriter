@@ -729,7 +729,7 @@ class NWProject():
                 if os.path.isfile(saveFile):
                     os.replace(saveFile, backFile)
                 os.replace(tempFile, saveFile)
-            except Exception as exc:
+            except OSError as exc:
                 logger.error("Failed to save project on attempt %d", i+1)
                 repErr = exc
             else:
