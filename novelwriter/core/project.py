@@ -29,7 +29,7 @@ import shutil
 import logging
 import novelwriter
 
-from time import time, sleep
+from time import time
 from lxml import etree
 from functools import partial
 
@@ -721,23 +721,14 @@ class NWProject():
 
         # If we're here, the file was successfully saved,
         # so let's sort out the temps and backups
-        # This also tries to outwait potential file locks, see issue #960
-        repErr = None
-        for i in range(5):
-            sleep(0.05*i)
-            try:
-                if os.path.isfile(saveFile):
-                    os.replace(saveFile, backFile)
-                os.replace(tempFile, saveFile)
-            except OSError as exc:
-                logger.error("Failed to save project on attempt %d", i+1)
-                repErr = exc
-            else:
-                break
-        else:
+        try:
+            if os.path.isfile(saveFile):
+                os.replace(saveFile, backFile)
+            os.replace(tempFile, saveFile)
+        except OSError as exc:
             self.theParent.makeAlert(self.tr(
                 "Failed to save project."
-            ), nwAlert.ERROR, exception=repErr)
+            ), nwAlert.ERROR, exception=exc)
             return False
 
         # Save project GUI options

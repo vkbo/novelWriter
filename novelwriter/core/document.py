@@ -26,8 +26,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import logging
 
-from time import sleep
-
 from novelwriter.enum import nwItemLayout, nwItemClass
 from novelwriter.error import formatException
 from novelwriter.common import isHandle, sha256sum
@@ -164,19 +162,10 @@ class NWDoc():
 
         # If we're here, the file was successfully saved, so we can
         # replace the temp file with the actual file
-        # This also tries to outwait potential file locks, see issue #960
-        repErr = ""
-        for i in range(5):
-            sleep(0.05*i)
-            try:
-                os.replace(docTemp, docPath)
-            except OSError as exc:
-                logger.error("Failed to save document on attempt %d", i+1)
-                repErr = formatException(exc)
-            else:
-                break
-        else:
-            self._docError = repErr
+        try:
+            os.replace(docTemp, docPath)
+        except OSError as exc:
+            self._docError = formatException(exc)
             return False
 
         self._prevHash = sha256sum(docPath)
