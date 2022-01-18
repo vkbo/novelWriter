@@ -500,16 +500,6 @@ class NWProject():
                 self.clearProject()
                 return False
 
-            if fileVersion in ("1.0", "1.1", "1.2"):
-                self.theParent.makeAlert(self.tr(
-                    "The format of your project will now be updated. You may "
-                    "also have to make a few minor changes to your title page "
-                    "and unnumbered chapters. Please check the 'Project "
-                    "Format Changes > File Format 1.3' section of the "
-                    "documentation for more information. It is available from "
-                    "the Help menu."
-                ), nwAlert.INFO)
-
         # Check novelWriter Version
         # =========================
 
@@ -794,24 +784,17 @@ class NWProject():
         logger.info("Backing up project")
         self.theParent.setStatus(self.tr("Backing up project ..."))
 
-        if self.mainConf.backupPath is None or self.mainConf.backupPath == "":
+        if not (self.mainConf.backupPath and os.path.isdir(self.mainConf.backupPath)):
             self.theParent.makeAlert(self.tr(
-                "Cannot backup project because no backup path is set. "
+                "Cannot backup project because no valid backup path is set. "
                 "Please set a valid backup location in Preferences."
             ), nwAlert.ERROR)
             return False
 
-        if self.projName is None or self.projName == "":
+        if not self.projName:
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because no project name is set. "
                 "Please set a Working Title in Project Settings."
-            ), nwAlert.ERROR)
-            return False
-
-        if not os.path.isdir(self.mainConf.backupPath):
-            self.theParent.makeAlert(self.tr(
-                "Cannot backup project because the backup path does not exist. "
-                "Please set a valid backup location in Preferences."
             ), nwAlert.ERROR)
             return False
 

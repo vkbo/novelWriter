@@ -310,22 +310,22 @@ class ProjWizardCustomPage(QWizardPage):
         self.rootGroup.setLayout(self.rootForm)
 
         self.lblPlot = QLabel(self.tr("{0} folder").format(
-            trConst(nwLabels.CLASS_NAME[nwItemClass.PLOT]))
+            trConst(nwLabels.CLASS_NAME_LBL[nwItemClass.PLOT]))
         )
         self.lblChar = QLabel(self.tr("{0} folder").format(
-            trConst(nwLabels.CLASS_NAME[nwItemClass.CHARACTER]))
+            trConst(nwLabels.CLASS_NAME_LBL[nwItemClass.CHARACTER]))
         )
         self.lblWorld = QLabel(self.tr("{0} folder").format(
-            trConst(nwLabels.CLASS_NAME[nwItemClass.WORLD]))
+            trConst(nwLabels.CLASS_NAME_LBL[nwItemClass.WORLD]))
         )
         self.lblTime = QLabel(self.tr("{0} folder").format(
-            trConst(nwLabels.CLASS_NAME[nwItemClass.TIMELINE]))
+            trConst(nwLabels.CLASS_NAME_LBL[nwItemClass.TIMELINE]))
         )
         self.lblObject = QLabel(self.tr("{0} folder").format(
-            trConst(nwLabels.CLASS_NAME[nwItemClass.OBJECT]))
+            trConst(nwLabels.CLASS_NAME_LBL[nwItemClass.OBJECT]))
         )
         self.lblEntity = QLabel(self.tr("{0} folder").format(
-            trConst(nwLabels.CLASS_NAME[nwItemClass.ENTITY]))
+            trConst(nwLabels.CLASS_NAME_LBL[nwItemClass.ENTITY]))
         )
 
         self.addPlot   = QSwitch()
