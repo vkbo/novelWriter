@@ -2215,7 +2215,6 @@ class GuiDocEditSearch(QFrame):
         self.resultLabel.setMinimumWidth(self.theTheme.getTextWidth("?/?", self.boxFont))
 
         self.toggleCase = QAction(self.tr("Case Sensitive"), self)
-        self.toggleCase.setToolTip(self.tr("Match case"))
         self.toggleCase.setIcon(self.theTheme.getIcon("search_case"))
         self.toggleCase.setCheckable(True)
         self.toggleCase.setChecked(self.isCaseSense)
@@ -2223,7 +2222,6 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addAction(self.toggleCase)
 
         self.toggleWord = QAction(self.tr("Whole Words Only"), self)
-        self.toggleWord.setToolTip(self.tr("Match whole words"))
         self.toggleWord.setIcon(self.theTheme.getIcon("search_word"))
         self.toggleWord.setCheckable(True)
         self.toggleWord.setChecked(self.isWholeWord)
@@ -2231,7 +2229,6 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addAction(self.toggleWord)
 
         self.toggleRegEx = QAction(self.tr("RegEx Mode"), self)
-        self.toggleRegEx.setToolTip(self.tr("Search using regular expressions"))
         self.toggleRegEx.setIcon(self.theTheme.getIcon("search_regex"))
         self.toggleRegEx.setCheckable(True)
         self.toggleRegEx.setChecked(self.isRegEx)
@@ -2239,7 +2236,6 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addAction(self.toggleRegEx)
 
         self.toggleLoop = QAction(self.tr("Loop Search"), self)
-        self.toggleLoop.setToolTip(self.tr("Loop the search when reaching the end"))
         self.toggleLoop.setIcon(self.theTheme.getIcon("search_loop"))
         self.toggleLoop.setCheckable(True)
         self.toggleLoop.setChecked(self.doLoop)
@@ -2247,7 +2243,6 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addAction(self.toggleLoop)
 
         self.toggleProject = QAction(self.tr("Search Next File"), self)
-        self.toggleProject.setToolTip(self.tr("Continue searching in the next file"))
         self.toggleProject.setIcon(self.theTheme.getIcon("search_project"))
         self.toggleProject.setCheckable(True)
         self.toggleProject.setChecked(self.doNextFile)
@@ -2257,7 +2252,6 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addSeparator()
 
         self.toggleMatchCap = QAction(self.tr("Preserve Case"), self)
-        self.toggleMatchCap.setToolTip(self.tr("Preserve case on replace"))
         self.toggleMatchCap.setIcon(self.theTheme.getIcon("search_preserve"))
         self.toggleMatchCap.setCheckable(True)
         self.toggleMatchCap.setChecked(self.doMatchCap)
@@ -2267,7 +2261,6 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addSeparator()
 
         self.cancelSearch = QAction(self.tr("Close Search"), self)
-        self.cancelSearch.setToolTip(self.tr("Close the search box [{0}]").format("Esc"))
         self.cancelSearch.setIcon(self.theTheme.getIcon("search_cancel"))
         self.cancelSearch.triggered.connect(self._doClose)
         self.searchOpt.addAction(self.cancelSearch)
@@ -2280,7 +2273,6 @@ class GuiDocEditSearch(QFrame):
         self.showReplace = QToolButton(self)
         self.showReplace.setArrowType(Qt.RightArrow)
         self.showReplace.setCheckable(True)
-        self.showReplace.setToolTip(self.tr("Show/hide the replace text box"))
         self.showReplace.setStyleSheet("QToolButton {border: none; background: transparent;}")
         self.showReplace.toggled.connect(self._doToggleReplace)
 

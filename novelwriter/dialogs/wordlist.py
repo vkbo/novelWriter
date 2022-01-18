@@ -79,11 +79,9 @@ class GuiWordList(QDialog):
         self.newEntry = QLineEdit()
 
         self.addButton = QPushButton(self.theTheme.getIcon("add"), "")
-        self.addButton.setToolTip(self.tr("Add new entry"))
         self.addButton.clicked.connect(self._doAdd)
 
         self.delButton = QPushButton(self.theTheme.getIcon("remove"), "")
-        self.delButton.setToolTip(self.tr("Delete selected entry"))
         self.delButton.clicked.connect(self._doDelete)
 
         self.editBox = QHBoxLayout()
