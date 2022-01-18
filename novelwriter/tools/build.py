@@ -1351,7 +1351,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         else:
             strBuildTime = self.tr("Unknown")
 
-        self.theTitle.setText(self.tr("<b>Build Time:</b> {0}").format(strBuildTime))
+        self.theTitle.setText("%s %s" % (self.tr("Build Time:"), strBuildTime))
 
         return
 

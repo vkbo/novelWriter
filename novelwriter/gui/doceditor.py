@@ -479,7 +479,7 @@ class GuiDocEditor(QTextEdit):
                     self.tr("File Changed on Disk"),
                     self.tr(
                         "This document has been changed outside of novelWriter "
-                        "while it was open. Overvrite the file on disk?"
+                        "while it was open. Overwrite the file on disk?"
                     )
                 )
                 if msgYes:

@@ -801,7 +801,7 @@
     </message>
     <message>
       <location filename="../novelwriter/tools/build.py" line="1354" />
-      <source>&lt;b&gt;Build Time:&lt;/b&gt; {0}</source>
+      <source>Build Time:</source>
       <translation type="unfinished" />
     </message>
   </context>
@@ -984,7 +984,7 @@
     </message>
     <message>
       <location filename="../novelwriter/gui/doceditor.py" line="480" />
-      <source>This document has been changed outside of novelWriter while it was open. Overvrite the file on disk?</source>
+      <source>This document has been changed outside of novelWriter while it was open. Overwrite the file on disk?</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -5030,102 +5030,94 @@
     </message>
   </context>
   <context>
-    <name>QGuiApplication</name>
-    <message>
-      <location filename="qtbase.py" line="32" />
-      <source>Translate this string to the string 'LTR' in left-to-right languages or to 'RTL' in right-to-left languages (such as Hebrew and Arabic) to get proper widget layout.</source>
-      <translation type="unfinished" />
-    </message>
-  </context>
-  <context>
     <name>QPlatformTheme</name>
     <message>
-      <location filename="qtbase.py" line="40" />
+      <location filename="qtbase.py" line="32" />
       <source>OK</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="41" />
+      <location filename="qtbase.py" line="33" />
       <source>Save</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="42" />
+      <location filename="qtbase.py" line="34" />
       <source>Save All</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="43" />
+      <location filename="qtbase.py" line="35" />
       <source>Open</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="44" />
+      <location filename="qtbase.py" line="36" />
       <source>&amp;Yes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="45" />
+      <location filename="qtbase.py" line="37" />
       <source>Yes to &amp;All</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="46" />
+      <location filename="qtbase.py" line="38" />
       <source>&amp;No</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="47" />
+      <location filename="qtbase.py" line="39" />
       <source>N&amp;o to All</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="48" />
+      <location filename="qtbase.py" line="40" />
       <source>Abort</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="49" />
+      <location filename="qtbase.py" line="41" />
       <source>Retry</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="50" />
+      <location filename="qtbase.py" line="42" />
       <source>Ignore</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="51" />
+      <location filename="qtbase.py" line="43" />
       <source>Close</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="52" />
+      <location filename="qtbase.py" line="44" />
       <source>Cancel</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="53" />
+      <location filename="qtbase.py" line="45" />
       <source>Discard</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="54" />
+      <location filename="qtbase.py" line="46" />
       <source>Help</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="55" />
+      <location filename="qtbase.py" line="47" />
       <source>Apply</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="56" />
+      <location filename="qtbase.py" line="48" />
       <source>Reset</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="57" />
+      <location filename="qtbase.py" line="49" />
       <source>Restore Defaults</source>
       <translation type="unfinished" />
     </message>
@@ -5133,58 +5125,58 @@
   <context>
     <name>QWizard</name>
     <message>
-      <location filename="qtbase.py" line="62" />
+      <location filename="qtbase.py" line="54" />
       <source>Go Back</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="63" />
+      <location filename="qtbase.py" line="55" />
       <source>&lt; &amp;Back</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="64" />
+      <location filename="qtbase.py" line="56" />
       <source>Continue</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="65" />
+      <location filename="qtbase.py" line="57" />
       <source>&amp;Next</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="66" />
+      <location filename="qtbase.py" line="58" />
       <source>&amp;Next &gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="67" />
+      <location filename="qtbase.py" line="59" />
       <source>Commit</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="68" />
+      <location filename="qtbase.py" line="60" />
       <source>Done</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="69" />
+      <location filename="qtbase.py" line="61" />
       <source>&amp;Finish</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="71" />
-      <location filename="qtbase.py" line="70" />
+      <location filename="qtbase.py" line="63" />
+      <location filename="qtbase.py" line="62" />
       <source>Cancel</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="72" />
+      <location filename="qtbase.py" line="64" />
       <source>Help</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="qtbase.py" line="73" />
+      <location filename="qtbase.py" line="65" />
       <source>&amp;Help</source>
       <translation type="unfinished" />
     </message>
