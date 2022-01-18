@@ -902,7 +902,7 @@ class GuiPreferencesSyntax(QWidget):
         self.showMultiSpaces = QSwitch()
         self.showMultiSpaces.setChecked(self.mainConf.showMultiSpaces)
         self.mainForm.addRow(
-            self.tr("Hihglight multiple spaces"),
+            self.tr("Highlight multiple spaces"),
             self.showMultiSpaces,
             self.tr("Applies to the document editor only.")
         )

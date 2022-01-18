@@ -3063,7 +3063,7 @@
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="905" />
-      <source>Hihglight multiple spaces</source>
+      <source>Highlight multiple spaces</source>
       <translation type="unfinished" />
     </message>
   </context>
