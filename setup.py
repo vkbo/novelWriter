@@ -276,7 +276,7 @@ def buildQtI18n():
     tsList = []
     for aFile in os.listdir("i18n"):
         aPath = os.path.join("i18n", aFile)
-        if os.path.isfile(aPath) and aFile.endswith(".ts"):
+        if os.path.isfile(aPath) and aFile.endswith(".ts") and aFile != "nw_base.ts":
             tsList.append(aPath)
             print(aPath)
 
@@ -384,14 +384,6 @@ def buildQtI18nTS(sysArgs):
     # at a later time.
     from i18n.pylupdate6 import lupdate
     lupdate(srcList, tsList, no_obsolete=True, no_summary=False)
-
-    # try:
-    #     subprocess.call(["pylupdate5", "-verbose", "-noobsolete", *srcList, "-ts", *tsList])
-    # except Exception as exc:
-    #     print("PyQt5 Linguist tools seem to be missing")
-    #     print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
-    #     print(str(exc))
-    #     sys.exit(1)
 
     print("")
 
