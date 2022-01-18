@@ -1242,20 +1242,14 @@ class NWProject():
             self.langData = {}
             return False
 
-        lngShort = self.projLang.split("_")[0]
-        loadFile = os.path.join(self.mainConf.nwLangPath, "project_en.json")
-        chkFile1 = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self.projLang)
-        chkFile2 = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % lngShort)
-
-        if os.path.isfile(chkFile1):
-            loadFile = chkFile1
-        elif os.path.isfile(chkFile2):
-            loadFile = chkFile2
+        langFile = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self.projLang)
+        if not os.path.isfile(langFile):
+            langFile = os.path.join(self.mainConf.nwLangPath, "project_en_GB.json")
 
         try:
-            with open(loadFile, mode="r", encoding="utf-8") as inFile:
+            with open(langFile, mode="r", encoding="utf-8") as inFile:
                 self.langData = json.load(inFile)
-            logger.debug("Loaded project language file: %s", os.path.basename(loadFile))
+            logger.debug("Loaded project language file: %s", os.path.basename(langFile))
 
         except Exception:
             logger.error("Failed to project language file")
