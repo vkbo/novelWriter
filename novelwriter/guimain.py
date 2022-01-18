@@ -359,7 +359,7 @@ class GuiMain(QMainWindow):
         if self.hasProject:
             if not self.closeProject():
                 self.makeAlert(self.tr(
-                    "Cannot create new project when another project is open."
+                    "Cannot create a new project when another project is open."
                 ), nwAlert.ERROR)
                 return False
 
