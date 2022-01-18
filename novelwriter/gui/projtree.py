@@ -206,7 +206,9 @@ class GuiProjectTree(QTreeWidget):
         )
 
         if itemType == nwItemType.ROOT:
-            tHandle = self.theProject.newRoot(trConst(nwLabels.CLASS_NAME[itemClass]), itemClass)
+            tHandle = self.theProject.newRoot(
+                trConst(nwLabels.CLASS_NAME_LBL[itemClass]), itemClass
+            )
             if tHandle is None:
                 logger.error("No root item added")
                 return False

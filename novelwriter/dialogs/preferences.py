@@ -168,7 +168,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Main GUI language"),
             self.guiLang,
-            self.tr("Changing this requires restarting novelWriter.")
+            self.tr("Requires restart.")
         )
 
         # Select Theme
@@ -184,7 +184,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Main GUI theme"),
             self.guiTheme,
-            self.tr("Changing this requires restarting novelWriter.")
+            self.tr("Requires restart.")
         )
 
         # Select Icon Theme
@@ -200,7 +200,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Main icon theme"),
             self.guiIcons,
-            self.tr("Changing this requires restarting novelWriter.")
+            self.tr("Requires restart.")
         )
 
         # Font Family
@@ -214,7 +214,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Font family"),
             self.guiFont,
-            self.tr("Changing this requires restarting novelWriter."),
+            self.tr("Requires restart."),
             theButton=self.fontButton
         )
 
@@ -227,7 +227,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Font size"),
             self.guiFontSize,
-            self.tr("Changing this requires restarting novelWriter."),
+            self.tr("Requires restart."),
             theUnit=self.tr("pt")
         )
 
@@ -240,7 +240,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Emphasise partition and chapter labels"),
             self.emphLabels,
-            self.tr("The novel document labels will be bold and underlined."),
+            self.tr("Makes them stand out in the project tree."),
         )
 
         self.showFullPath = QSwitch()
@@ -351,7 +351,7 @@ class GuiPreferencesProjects(QWidget):
         self.mainForm.addRow(
             self.tr("Save document interval"),
             self.autoSaveDoc,
-            self.tr("How often the open document is automatically saved."),
+            self.tr("How often the document is automatically saved."),
             theUnit=self.tr("seconds")
         )
 
@@ -364,7 +364,7 @@ class GuiPreferencesProjects(QWidget):
         self.mainForm.addRow(
             self.tr("Save project interval"),
             self.autoSaveProj,
-            self.tr("How often the open project is automatically saved."),
+            self.tr("How often the project is automatically saved."),
             theUnit=self.tr("seconds")
         )
 
@@ -514,7 +514,7 @@ class GuiPreferencesDocuments(QWidget):
         self.mainForm.addRow(
             self.tr("Font family"),
             self.textFont,
-            self.tr("Font for the document editor and viewer."),
+            self.tr("Applies to both document editor and viewer."),
             theButton=self.fontButton
         )
 
@@ -527,7 +527,7 @@ class GuiPreferencesDocuments(QWidget):
         self.mainForm.addRow(
             self.tr("Font size"),
             self.textSize,
-            self.tr("Font size for the document editor and viewer."),
+            self.tr("Applies to both document editor and viewer."),
             theUnit=self.tr("pt")
         )
 
@@ -567,16 +567,16 @@ class GuiPreferencesDocuments(QWidget):
         self.mainForm.addRow(
             self.tr("Hide document footer in \"Focus Mode\""),
             self.hideFocusFooter,
-            self.tr("Hide the information bar at the bottom of the document.")
+            self.tr("Hide the information bar in the document editor.")
         )
 
         # Justify Text
         self.doJustify = QSwitch()
         self.doJustify.setChecked(self.mainConf.doJustify)
         self.mainForm.addRow(
-            self.tr("Justify the text margins in editor and viewer"),
+            self.tr("Justify the text margins"),
             self.doJustify,
-            self.tr("Lay out text with straight edges in the editor and viewer.")
+            self.tr("Applies to both document editor and viewer."),
         )
 
         # Document Margins
@@ -586,9 +586,9 @@ class GuiPreferencesDocuments(QWidget):
         self.textMargin.setSingleStep(1)
         self.textMargin.setValue(self.mainConf.textMargin)
         self.mainForm.addRow(
-            self.tr("Text margin"),
+            self.tr("Minimum text margin"),
             self.textMargin,
-            self.tr("The minimum margin around the text in the editor and viewer."),
+            self.tr("Applies to both document editor and viewer."),
             theUnit=self.tr("px")
         )
 
@@ -689,7 +689,7 @@ class GuiPreferencesEditor(QWidget):
             self.spellLanguage.setCurrentIndex(spellIdx)
 
         self.mainForm.addRow(
-            self.tr("Spell check language ({0})").format("PyEnchant"),
+            self.tr("Spell check language"),
             self.spellLanguage,
             self.tr("Available languages are determined by your system.")
         )
@@ -721,7 +721,6 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.addRow(
             self.tr("Word count interval"),
             self.wordCountTimer,
-            self.tr("How often the word count is updated."),
             theUnit=self.tr("seconds")
         )
 
@@ -729,9 +728,8 @@ class GuiPreferencesEditor(QWidget):
         self.incNotesWCount = QSwitch()
         self.incNotesWCount.setChecked(self.mainConf.incNotesWCount)
         self.mainForm.addRow(
-            self.tr("Include project notes in total word count"),
-            self.incNotesWCount,
-            self.tr("Affects the word count shown on the status bar.")
+            self.tr("Include project notes in status bar word count"),
+            self.incNotesWCount
         )
 
         # Writing Guides
@@ -743,8 +741,7 @@ class GuiPreferencesEditor(QWidget):
         self.showTabsNSpaces.setChecked(self.mainConf.showTabsNSpaces)
         self.mainForm.addRow(
             self.tr("Show tabs and spaces"),
-            self.showTabsNSpaces,
-            self.tr("Add symbols to indicate tabs and spaces in the editor.")
+            self.showTabsNSpaces
         )
 
         # Show Line Endings
@@ -752,8 +749,7 @@ class GuiPreferencesEditor(QWidget):
         self.showLineEndings.setChecked(self.mainConf.showLineEndings)
         self.mainForm.addRow(
             self.tr("Show line endings"),
-            self.showLineEndings,
-            self.tr("Add a symbol to indicate line endings in the editor.")
+            self.showLineEndings
         )
 
         # Scroll Behaviour
@@ -779,7 +775,7 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.addRow(
             self.tr("Typewriter style scrolling when you type"),
             self.autoScroll,
-            self.tr("Try to keep the cursor at a fixed vertical position.")
+            self.tr("Keeps the cursor at a fixed vertical position.")
         )
 
         # Typewriter Position
@@ -854,7 +850,7 @@ class GuiPreferencesSyntax(QWidget):
         self.mainForm.addRow(
             self.tr("Highlighting theme"),
             self.guiSyntax,
-            self.tr("Colour theme to apply to the editor and viewer.")
+            self.tr("Colour theme for the editor and viewer.")
         )
 
         # Quotes & Dialogue
@@ -867,7 +863,7 @@ class GuiPreferencesSyntax(QWidget):
         self.mainForm.addRow(
             self.tr("Highlight text wrapped in quotes"),
             self.highlightQuotes,
-            self.tr("Applies to single, double and straight quotes.")
+            self.tr("Applies to the document editor only.")
         )
 
         self.allowOpenSQuote = QSwitch()
@@ -895,7 +891,7 @@ class GuiPreferencesSyntax(QWidget):
         self.mainForm.addRow(
             self.tr("Add highlight colour to emphasised text"),
             self.highlightEmph,
-            self.tr("Applies to emphasis (italic) and strong (bold).")
+            self.tr("Applies to the document editor only.")
         )
 
         # Text Errors
@@ -906,9 +902,9 @@ class GuiPreferencesSyntax(QWidget):
         self.showMultiSpaces = QSwitch()
         self.showMultiSpaces.setChecked(self.mainConf.showMultiSpaces)
         self.mainForm.addRow(
-            self.tr("Mark redundant spaces"),
+            self.tr("Highlight multiple spaces"),
             self.showMultiSpaces,
-            self.tr("Trailing spaces or multiple spaces between words.")
+            self.tr("Applies to the document editor only.")
         )
 
         return
@@ -997,7 +993,7 @@ class GuiPreferencesAutomation(QWidget):
         self.mainForm.addRow(
             self.tr("Auto-replace single quotes"),
             self.doReplaceSQuote,
-            self.tr("Try to guess which is an opening or a closing single quote.")
+            self.tr("Try to guess which is an opening or a closing quote.")
         )
 
         # Auto-Replace Double Quotes
@@ -1007,7 +1003,7 @@ class GuiPreferencesAutomation(QWidget):
         self.mainForm.addRow(
             self.tr("Auto-replace double quotes"),
             self.doReplaceDQuote,
-            self.tr("Try to guess which is an opening or a closing double quote.")
+            self.tr("Try to guess which is an opening or a closing quote.")
         )
 
         # Auto-Replace Hyphens
