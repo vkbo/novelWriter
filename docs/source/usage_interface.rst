@@ -78,7 +78,7 @@ major or minor character.
 
 Whether a document uses a "Status" or "Importance" flag depends on which root folder it lives in.
 If it's in the :guilabel:`Novel` folder, it uses the "Status" flag, otherwise it uses an
-"Importance" flag. Some folders, like :guilabel:`Trash` and :guilabel:`Outtakes` allow both.
+"Importance" flag. Some folders, like :guilabel:`Trash` and :guilabel:`Archive` allow both.
 
 
 .. _a_ui_tree_dnd:
@@ -96,7 +96,7 @@ the last move action can be undone by pressing :kbd:`Ctrl`:kbd:`Shift`:kbd:`Z`.
 
 Documents and their folders can be rearranged freely within their root folders. Novel documents
 cannot be moved out of the :guilabel:`Novel` folder, except to :guilabel:`Trash` and the
-:guilabel:`Outtakes` folders. Notes can be moved freely between all root folders, but keep in mind
+:guilabel:`Archive` folders. Notes can be moved freely between all root folders, but keep in mind
 that if you move a note into a :guilabel:`Novel`, its "Importance" setting will be reset to the
 default "Status" setting. See :ref:`a_ui_tree_status`.
 

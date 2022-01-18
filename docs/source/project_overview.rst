@@ -104,11 +104,11 @@ supported. A document or a folder can be deleted from the :guilabel:`Project` me
 
 .. _a_proj_roots_out:
 
-Archived Documents (Outtakes)
------------------------------
+Archived Documents
+------------------
 
 If you don't want to delete a document, or put it in the :guilabel:`Trash` folder where it may be
-deleted, but still want it out of your main project tree, you can create an :guilabel:`Outtakes`
+deleted, but still want it out of your main project tree, you can create an :guilabel:`Archive`
 root folder from the :guilabel:`Project` menu. You are not allowed to move entire folders to this
 root folder, only documents. If you need folders in it to organise your documents, you can of
 course create new ones there.

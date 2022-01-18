@@ -85,7 +85,7 @@
       <expanded>False</expanded>
     </item>
     <item handle="98010bd9270f9" order="0" parent="None">
-      <name>Entity</name>
+      <name>Entities</name>
       <type>ROOT</type>
       <class>ENTITY</class>
       <status>New</status>

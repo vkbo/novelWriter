@@ -168,7 +168,7 @@ class NWProject():
         trashHandle = self.projTree.trashRoot()
         if trashHandle is None:
             newItem = NWItem(self)
-            newItem.setName(self.tr("Trash"))
+            newItem.setName(trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH]))
             newItem.setType(nwItemType.TRASH)
             newItem.setClass(nwItemClass.TRASH)
             self.projTree.append(None, None, newItem)
@@ -307,7 +307,7 @@ class NWProject():
             nHandle = self.newRoot(self.tr("Novel"), nwItemClass.NOVEL)
             for newRoot in projData.get("addRoots", []):
                 if newRoot in nwItemClass:
-                    self.newRoot(trConst(nwLabels.CLASS_NAME[newRoot]), newRoot)
+                    self.newRoot(trConst(nwLabels.CLASS_NAME_LBL[newRoot]), newRoot)
 
             # Create a title page
             tHandle = self.newFile(self.tr("Title Page"), nwItemClass.NOVEL, nHandle)
