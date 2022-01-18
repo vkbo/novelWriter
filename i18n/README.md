@@ -18,12 +18,14 @@ modify all `nw_XX.ts` slightly, but please _don't_ commit those changes to the p
 
 ## Qt5 GUI Localisation
 
-You will need the tools Qt 5 Linguist and the PyQt5 tool `pylupdate5` installed on your system.
+You will need the translation tool Qt 5 Linguist on your system.
 
 For Ubuntu/Debian, run:
 ```bash
-sudo apt install qttools5-dev-tools pyqt5-dev-tools
+sudo apt install qttools5-dev-tools
 ```
+
+See also [Qt Linguist Manual: Translators](https://doc.qt.io/qt-5/linguist-translators.html).
 
 ### Workflow
 
