@@ -26,14 +26,6 @@ QT_TRANSLATE_NOOP("QGnomeTheme", "&Cancel")
 QT_TRANSLATE_NOOP("QGnomeTheme", "&Close")
 QT_TRANSLATE_NOOP("QGnomeTheme", "Close without Saving")
 
-# QGuiApplication
-# ===============
-
-QT_TRANSLATE_NOOP("QGuiApplication", (
-    "Translate this string to the string 'LTR' in left-to-right languages or to "
-    "'RTL' in right-to-left languages (such as Hebrew and Arabic) to get proper widget layout."
-))
-
 # QPlatformTheme
 # ==============
 

@@ -9,8 +9,7 @@ The following contributions are welcome:
 
 * Bugfixes for new or existing bugs. Please also report new bugs in the issue tracker even if you
   also provide a fix. It makes it easier to keep track of what has been fixed and when.
-* New translations. You can read more about contributing translations
-  [here](https://github.com/vkbo/novelWriter/blob/main/i18n/README.md).
+* Translations via the [crowdin project page](https://crowdin.com/project/novelwriter).
 * Improvements to the documentation. Particularly if the documentation is unclear. Please don't
   make any larger changes to the documentation without discussing if with the maintainer first.
 * Adaptations, installation or packaging features targeting specific operating systems.

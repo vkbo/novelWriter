@@ -9,6 +9,7 @@
 [![release](https://img.shields.io/github/v/release/vkbo/novelwriter)](https://github.com/vkbo/novelWriter/releases)
 [![pypi](https://img.shields.io/pypi/v/novelwriter)](https://pypi.org/project/novelWriter)
 [![python](https://img.shields.io/pypi/pyversions/novelwriter)](https://pypi.org/project/novelWriter)
+[![Crowdin](https://badges.crowdin.net/novelwriter/localized.svg)](https://crowdin.com/project/novelwriter)
 
 <img align="left" style="margin: 0 16px 4px 0;" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/novelwriter.png">
 
@@ -67,8 +68,11 @@ also be appreciated, but please make an issue or a discussion topic first. Befor
 code, please also read the full
 [Contributing Guide](https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md).
 
-New translations are always welcome. Please read the additional
-[instructions](https://github.com/vkbo/novelWriter/blob/main/i18n/README.md) for further details.
+### Translations
+
+New translations are always welcome. This project uses crowdin to maintain translations, and you
+can contribute translations at the [crowdin project page](https://crowdin.com/project/novelwriter).
+See also the [Translations of novelWriter](https://github.com/vkbo/novelWriter/issues/93).
 
 ## Key Features
 
