@@ -1,8 +1,1 @@
-files:
-  - source: /**/*.py
-    ignore:
-      - /docs
-      - /i18n/pylupdate6
-      - /tests
-      - /setup.py
-    translation: /i18n/nw_%locale_with_underscore%.ts
+files: []
