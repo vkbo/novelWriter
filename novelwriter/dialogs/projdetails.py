@@ -73,7 +73,7 @@ class GuiProjectDetails(PagedDialog):
         self.addTab(self.tabContents, self.tr("Contents"))
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
-        self.buttonBox.button(QDialogButtonBox.Close).setText(self.tr("Close"))
+        self.buttonBox.button(QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
 

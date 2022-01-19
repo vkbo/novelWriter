@@ -1,7 +1,20 @@
 # novelWriter Internationalisation (i18n)
 
-Here you will find instructions for translating novelWriter to a new language or updating the
-translations for an already existing supported language.
+The maintenance of translations has been moved to the Crowdin service. The translation strings can
+be edited there at the [novelWriter project page](https://crowdin.com/project/novelwriter).
+
+You can still use the manual approach listed below, and then upload the file through the website's
+interface. The translation strings for that language will then be updated and queued for approval.
+
+To verify a language file translated through the Crowdin tool, download and extract it into the
+`i18n` folder in the novelWriter source and follow the instructions in
+[Generate an Updated Translation File](#generate-an-updated-translation-file) below.
+
+
+# Direct Approach Using Qt Linguist
+
+Here you will find instructions for translating novelWriter to a new language directly using Qt
+Linguist, or updating the translations for an already existing supported language.
 
 There are two areas relevant to localisation:
 
@@ -9,21 +22,21 @@ There are two areas relevant to localisation:
   translation work.
 * The `project_XX.json` files. See [Project Localisation](#project-localisation) below.
 
+The `XX` in the file name corresponds to the language and country code for the translation. For
+instance `en_GB` for British English.
 
-**Important:**
-
-When making a new translation, or updating an existing one, only commit the `nw_XX.ts` (and
-`project_XX.json`) files you have made changes to. The `qtlupdate` command mentioned below may
-modify all `nw_XX.ts` slightly, but please _don't_ commit those changes to the pull request.
 
 ## Qt5 GUI Localisation
 
-You will need the tools Qt 5 Linguist and the PyQt5 tool `pylupdate5` installed on your system.
+You will need the translation tool Qt 5 Linguist on your system.
 
 For Ubuntu/Debian, run:
 ```bash
-sudo apt install qttools5-dev-tools pyqt5-dev-tools
+sudo apt install qttools5-dev-tools
 ```
+
+See also [Qt Linguist Manual: Translators](https://doc.qt.io/qt-5/linguist-translators.html).
+
 
 ### Workflow
 
@@ -38,6 +51,7 @@ Here's an overview of the localisation workflow:
 When you want to translate new changes, again create a new branch off of `main` and re-generate the
 translation file. Continue from step 2.
 
+
 ### Generate an Updated Translation File
 
 The `i18n` folder at the root of the repository contains the `nw_XX.ts` translation files.
@@ -49,14 +63,12 @@ python3 setup.py qtlupdate i18n/nw_XX.ts
 ```
 
 The file name must be in the correct format. All translation files must be located in the `i18n`
-folder, start with `nw_` and end with `.ts`. In between goes the language code. It must be a valid
-ISO language code, otherwise novelWriter will not accept the file.
+folder, start with `nw_` and end with `.ts`. In between goes the language and country code. It must
+be a valid ISO language code, otherwise novelWriter will not accept the file.
 
-For instance, the French translation uses the language code `fr`, so its translation file will be
-`nw_fr.ts`
+For instance, the French translation uses the language code `fr_FR`, so its translation file will
+be `nw_fr_FR.ts`
 
-**Note:** If you run the `qtlupdate` command without a file name, it will update translation files
-for all languages.
 
 ### Edit the Translation File in Qt Linguist
 
@@ -64,6 +76,7 @@ The `i18n/nw_XX.ts` file can be edited with the Qt Linguist application provided
 by far easier than manually editing the `.ts` file.
 
 Please select "English" and "United Kingdom" as the _source_ language if prompted by Qt Linguist.
+
 
 ### Verify Your Translation
 
@@ -77,8 +90,6 @@ python3 setup.py qtlrelease
 You can now test the translation in novelWriter. The Preferences dialog should list the newly added
 language, so go ahead and select it.
 
-**Note:** Please do not submit the `.qm` files to the repository. Only the `.ts` file you just
-added in the `i18n` folder is needed.
 
 ### Missing QtBase Translations
 
@@ -96,6 +107,7 @@ These additional translation entries are generated from a file named `i18n/qtbas
 a file that novelWriter uses. It is there only to generate these additional entries for the `.ts`
 files.
 
+
 ## Project Localisation
 
 Projects can have a different language setting than the GUI itself. The files with format
@@ -107,8 +119,5 @@ time, no other parts of the application use these files. Since these are used as
 lookups, they are maintained as plain JSON files. The main usage is to generate chapter headers as
 number words.
 
-Adding new translations for these files is easy. Just copy the `project_en.json` file, rename it to
-the appropriate language coded filename, and open it in a text editor. Please use the underscore as
-separator if a language needs to be localised to a specific country under a language. The importer
-will for instance look for `en_US` first, then use `en` if it is not found. If there are no
-matching files, the project falls back to using English.
+Adding new translations for these files is easy. Just copy the `project_en_GB.json` file, rename it
+to the appropriate language coded filename, and open it in a text editor and edit the content.

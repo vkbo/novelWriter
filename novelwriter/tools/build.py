@@ -343,22 +343,16 @@ class GuiBuildNovel(QDialog):
         self.fileGroup.setLayout(self.fileForm)
 
         self.novelFiles = QSwitch(width=wS, height=hS)
-        self.novelFiles.setToolTip(self.tr("Include files with layouts other than 'Note'."))
         self.novelFiles.setChecked(
             self.optState.getBool("GuiBuildNovel", "addNovel", True)
         )
 
         self.noteFiles = QSwitch(width=wS, height=hS)
-        self.noteFiles.setToolTip(self.tr("Include files with layout 'Note'."))
         self.noteFiles.setChecked(
             self.optState.getBool("GuiBuildNovel", "addNotes", False)
         )
 
         self.ignoreFlag = QSwitch(width=wS, height=hS)
-        self.ignoreFlag.setToolTip(self.tr(
-            "Ignore the 'Include when building project' setting and include "
-            "all files in the output."
-        ))
         self.ignoreFlag.setChecked(
             self.optState.getBool("GuiBuildNovel", "ignoreFlag", False)
         )
@@ -1351,7 +1345,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         else:
             strBuildTime = self.tr("Unknown")
 
-        self.theTitle.setText(self.tr("<b>Build Time:</b> {0}").format(strBuildTime))
+        self.theTitle.setText("%s %s" % (self.tr("Build Time:"), strBuildTime))
 
         return
 

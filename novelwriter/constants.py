@@ -136,9 +136,9 @@ class nwLabels():
         nwItemClass.WORLD:     QT_TRANSLATE_NOOP("Constant", "Locations"),
         nwItemClass.TIMELINE:  QT_TRANSLATE_NOOP("Constant", "Timeline"),
         nwItemClass.OBJECT:    QT_TRANSLATE_NOOP("Constant", "Objects"),
-        nwItemClass.ENTITY:    QT_TRANSLATE_NOOP("Constant", "Entity"),
+        nwItemClass.ENTITY:    QT_TRANSLATE_NOOP("Constant", "Entities"),
         nwItemClass.CUSTOM:    QT_TRANSLATE_NOOP("Constant", "Custom"),
-        nwItemClass.ARCHIVE:   QT_TRANSLATE_NOOP("Constant", "Outtakes"),
+        nwItemClass.ARCHIVE:   QT_TRANSLATE_NOOP("Constant", "Archive"),
         nwItemClass.TRASH:     QT_TRANSLATE_NOOP("Constant", "Trash"),
     }
     CLASS_ICON = {

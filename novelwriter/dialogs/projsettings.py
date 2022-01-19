@@ -292,11 +292,9 @@ class GuiProjectEditStatus(QWidget):
         # =============
 
         self.addButton = QPushButton(self.theTheme.getIcon("add"), "")
-        self.addButton.setToolTip(self.tr("Add new entry"))
         self.addButton.clicked.connect(self._newItem)
 
         self.delButton = QPushButton(self.theTheme.getIcon("remove"), "")
-        self.delButton.setToolTip(self.tr("Delete selected entry"))
         self.delButton.clicked.connect(self._delItem)
 
         # Edit Form
@@ -531,11 +529,9 @@ class GuiProjectEditReplace(QWidget):
         # =============
 
         self.addButton = QPushButton(self.theTheme.getIcon("add"), "")
-        self.addButton.setToolTip(self.tr("Add new entry"))
         self.addButton.clicked.connect(self._addEntry)
 
         self.delButton = QPushButton(self.theTheme.getIcon("remove"), "")
-        self.delButton.setToolTip(self.tr("Delete selected entry"))
         self.delButton.clicked.connect(self._delEntry)
 
         # Edit Form
@@ -551,7 +547,6 @@ class GuiProjectEditReplace(QWidget):
         self.editValue.setMaxLength(80)
 
         self.saveButton = QPushButton(self.tr("Save"))
-        self.saveButton.setToolTip(self.tr("Save entry"))
         self.saveButton.clicked.connect(self._saveEntry)
 
         # Assemble

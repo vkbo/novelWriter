@@ -168,7 +168,7 @@ class NWProject():
         trashHandle = self.projTree.trashRoot()
         if trashHandle is None:
             newItem = NWItem(self)
-            newItem.setName(self.tr("Trash"))
+            newItem.setName(trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH]))
             newItem.setType(nwItemType.TRASH)
             newItem.setClass(nwItemClass.TRASH)
             self.projTree.append(None, None, newItem)
@@ -500,16 +500,6 @@ class NWProject():
                 self.clearProject()
                 return False
 
-            if fileVersion in ("1.0", "1.1", "1.2"):
-                self.theParent.makeAlert(self.tr(
-                    "The format of your project will now be updated. You may "
-                    "also have to make a few minor changes to your title page "
-                    "and unnumbered chapters. Please check the 'Project "
-                    "Format Changes > File Format 1.3' section of the "
-                    "documentation for more information. It is available from "
-                    "the Help menu."
-                ), nwAlert.INFO)
-
         # Check novelWriter Version
         # =========================
 
@@ -794,24 +784,17 @@ class NWProject():
         logger.info("Backing up project")
         self.theParent.setStatus(self.tr("Backing up project ..."))
 
-        if self.mainConf.backupPath is None or self.mainConf.backupPath == "":
+        if not (self.mainConf.backupPath and os.path.isdir(self.mainConf.backupPath)):
             self.theParent.makeAlert(self.tr(
-                "Cannot backup project because no backup path is set. "
+                "Cannot backup project because no valid backup path is set. "
                 "Please set a valid backup location in Preferences."
             ), nwAlert.ERROR)
             return False
 
-        if self.projName is None or self.projName == "":
+        if not self.projName:
             self.theParent.makeAlert(self.tr(
                 "Cannot backup project because no project name is set. "
                 "Please set a Working Title in Project Settings."
-            ), nwAlert.ERROR)
-            return False
-
-        if not os.path.isdir(self.mainConf.backupPath):
-            self.theParent.makeAlert(self.tr(
-                "Cannot backup project because the backup path does not exist. "
-                "Please set a valid backup location in Preferences."
             ), nwAlert.ERROR)
             return False
 
@@ -1242,20 +1225,14 @@ class NWProject():
             self.langData = {}
             return False
 
-        lngShort = self.projLang.split("_")[0]
-        loadFile = os.path.join(self.mainConf.nwLangPath, "project_en.json")
-        chkFile1 = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self.projLang)
-        chkFile2 = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % lngShort)
-
-        if os.path.isfile(chkFile1):
-            loadFile = chkFile1
-        elif os.path.isfile(chkFile2):
-            loadFile = chkFile2
+        langFile = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self.projLang)
+        if not os.path.isfile(langFile):
+            langFile = os.path.join(self.mainConf.nwLangPath, "project_en_GB.json")
 
         try:
-            with open(loadFile, mode="r", encoding="utf-8") as inFile:
+            with open(langFile, mode="r", encoding="utf-8") as inFile:
                 self.langData = json.load(inFile)
-            logger.debug("Loaded project language file: %s", os.path.basename(loadFile))
+            logger.debug("Loaded project language file: %s", os.path.basename(langFile))
 
         except Exception:
             logger.error("Failed to project language file")

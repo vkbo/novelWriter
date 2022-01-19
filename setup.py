@@ -27,6 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import sys
 import shutil
+import zipfile
 import datetime
 import subprocess
 import email.utils
@@ -276,7 +277,7 @@ def buildQtI18n():
     tsList = []
     for aFile in os.listdir("i18n"):
         aPath = os.path.join("i18n", aFile)
-        if os.path.isfile(aPath) and aFile.endswith(".ts"):
+        if os.path.isfile(aPath) and aFile.endswith(".ts") and aFile != "nw_base.ts":
             tsList.append(aPath)
             print(aPath)
 
@@ -367,10 +368,9 @@ def buildQtI18nTS(sysArgs):
                 tsList.append(anArg)
 
     else:
-        for aFile in os.listdir("i18n"):
-            aPath = os.path.join("i18n", aFile)
-            if os.path.isfile(aPath) and aFile.endswith(".ts"):
-                tsList.append(aPath)
+        print("No translation files selected for update ...")
+        print("")
+        return
 
     for aTS in tsList:
         print(aTS)
@@ -384,14 +384,6 @@ def buildQtI18nTS(sysArgs):
     # at a later time.
     from i18n.pylupdate6 import lupdate
     lupdate(srcList, tsList, no_obsolete=True, no_summary=False)
-
-    # try:
-    #     subprocess.call(["pylupdate5", "-verbose", "-noobsolete", *srcList, "-ts", *tsList])
-    # except Exception as exc:
-    #     print("PyQt5 Linguist tools seem to be missing")
-    #     print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
-    #     print(str(exc))
-    #     sys.exit(1)
 
     print("")
 
@@ -442,6 +434,47 @@ def buildSampleZip():
 # =============================================================================================== #
 #  Python Packaging
 # =============================================================================================== #
+
+##
+#  Import Translations (import-i18n)
+##
+
+def importI18nUpdates(sysArgs):
+    """Import new translation files from a zip file.
+    """
+    print("")
+    print("Import Updated Translations")
+    print("===========================")
+    print("")
+
+    fileName = None
+    if len(sysArgs) >= 2:
+        if os.path.isfile(sysArgs[1]):
+            fileName = sysArgs[1]
+
+    if fileName is None:
+        print("File not found ...")
+        sys.exit(1)
+
+    projPath = os.path.join("novelwriter", "assets", "i18n")
+    mainPath = "i18n"
+
+    print("Loading file: %s" % fileName)
+    with zipfile.ZipFile(fileName) as zipObj:
+        for archFile in zipObj.namelist():
+            if archFile.startswith("nw_") and archFile.endswith(".ts"):
+                zipObj.extract(archFile, mainPath)
+                print("Extracted: %s > %s" % (archFile, os.path.join(mainPath, archFile)))
+            elif archFile.startswith("project_") and archFile.endswith(".json"):
+                zipObj.extract(archFile, projPath)
+                print("Extracted: %s > %s" % (archFile, os.path.join(projPath, archFile)))
+            else:
+                print("Skipped: %s" % archFile)
+
+    print("")
+
+    return
+
 
 ##
 #  Make Minimal Package (minimal-zip)
@@ -1516,12 +1549,13 @@ if __name__ == "__main__":
         "",
         "    manual         Build the help documentation as PDF (requires LaTeX).",
         "    sample         Build the sample project zip file and add it to assets.",
-        "    qtlupdate      Update the translation files for internationalisation.",
-        "                   To update specific TS files, list them after the command.",
+        "    qtlupdate      Update translation files for internationalisation.",
+        "                   The files to be updated must be provided as arguments.",
         "    qtlrelease     Build the language files for internationalisation.",
         "",
         "Python Packaging:",
         "",
+        "    import-i18n    Import updated i18n files from a zip file.",
         "    minimal-zip    Creates a minimal zip file of the core application without",
         "                   all the other source files. Defaults to tailor the zip file",
         "                   for the current OS, but accepts a target OS flag to build",
@@ -1604,6 +1638,11 @@ if __name__ == "__main__":
 
     # Python Packaging
     # ================
+
+    if "import-i18n" in sys.argv:
+        sys.argv.remove("import-i18n")
+        importI18nUpdates(sys.argv)
+        sys.exit(0)  # Don't continue execution
 
     if "minimal-zip" in sys.argv:
         sys.argv.remove("minimal-zip")

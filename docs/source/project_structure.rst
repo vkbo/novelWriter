@@ -182,7 +182,7 @@ available to change how the documents where formatted on export. These have now 
 just two layouts: :guilabel:`Novel Document` and :guilabel:`Project Note`.
 
 Novel documents can only live in the :guilabel:`Novel` root folder. You can also move them to
-:guilabel:`Outtakes` and :guilabel:`Trash` of course. Project notes can be added anywhere in the
+:guilabel:`Archive` and :guilabel:`Trash` of course. Project notes can be added anywhere in the
 project.
 
 Depending on which icon theme you're using, the project tree can distinguish between the different

@@ -396,7 +396,7 @@ class Config:
         elif lngSet == self.LANG_PROJ:
             fPre = "project_"
             fExt = ".json"
-            langList = {"en": "English"}
+            langList = {"en_GB": QLocale("en_GB").nativeLanguageName().title()}
         else:
             return []
 
@@ -407,7 +407,7 @@ class Config:
                 continue
             qmLang = qmFile[len(fPre):-len(fExt)]
             qmName = QLocale(qmLang).nativeLanguageName().title()
-            if qmLang and qmName and qmLang != "en":
+            if qmLang and qmName and qmLang != "en_GB":
                 langList[qmLang] = qmName
 
         return sorted(langList.items(), key=lambda x: x[0])

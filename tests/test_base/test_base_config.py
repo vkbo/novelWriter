@@ -243,7 +243,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     theList = tstConf.listLanguages(tstConf.LANG_NW)
     assert theList == [("en_GB", "British English")]
     theList = tstConf.listLanguages(tstConf.LANG_PROJ)
-    assert theList == [("en", "English")]
+    assert theList == [("en_GB", "British English")]
     theList = tstConf.listLanguages(None)
     assert theList == []
 
