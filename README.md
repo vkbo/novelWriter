@@ -70,9 +70,13 @@ code, please also read the full
 
 ### Translations
 
-New translations are always welcome. This project uses crowdin to maintain translations, and you
-can contribute translations at the [crowdin project page](https://crowdin.com/project/novelwriter).
-See also the [Translations of novelWriter](https://github.com/vkbo/novelWriter/issues/93).
+New translations are always welcome. This project uses Crowdin to maintain translations, and you
+can contribute translations at the [Crowdin project page](https://crowdin.com/project/novelwriter).
+If you have any questions, feel free to post them to the
+[Translations of novelWriter](https://github.com/vkbo/novelWriter/issues/93) issue thread.
+
+For more details, and how to use Qt Linguist for translations, see the
+[i18n instructions](https://github.com/vkbo/novelWriter/blob/main/i18n/README.md).
 
 ## Key Features
 

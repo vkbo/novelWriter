@@ -368,10 +368,9 @@ def buildQtI18nTS(sysArgs):
                 tsList.append(anArg)
 
     else:
-        for aFile in os.listdir("i18n"):
-            aPath = os.path.join("i18n", aFile)
-            if os.path.isfile(aPath) and aFile.endswith(".ts"):
-                tsList.append(aPath)
+        print("No translation files selected for update ...")
+        print("")
+        return
 
     for aTS in tsList:
         print(aTS)
@@ -1550,8 +1549,8 @@ if __name__ == "__main__":
         "",
         "    manual         Build the help documentation as PDF (requires LaTeX).",
         "    sample         Build the sample project zip file and add it to assets.",
-        "    qtlupdate      Update the translation files for internationalisation.",
-        "                   To update specific TS files, list them after the command.",
+        "    qtlupdate      Update translation files for internationalisation.",
+        "                   The files to be updated must be provided as arguments.",
         "    qtlrelease     Build the language files for internationalisation.",
         "",
         "Python Packaging:",

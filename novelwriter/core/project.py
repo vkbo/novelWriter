@@ -307,7 +307,7 @@ class NWProject():
             nHandle = self.newRoot(self.tr("Novel"), nwItemClass.NOVEL)
             for newRoot in projData.get("addRoots", []):
                 if newRoot in nwItemClass:
-                    self.newRoot(trConst(nwLabels.CLASS_NAME_LBL[newRoot]), newRoot)
+                    self.newRoot(trConst(nwLabels.CLASS_NAME[newRoot]), newRoot)
 
             # Create a title page
             tHandle = self.newFile(self.tr("Title Page"), nwItemClass.NOVEL, nHandle)
