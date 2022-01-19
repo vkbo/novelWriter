@@ -162,7 +162,11 @@ class NWDoc():
 
         # If we're here, the file was successfully saved, so we can
         # replace the temp file with the actual file
-        os.replace(docTemp, docPath)
+        try:
+            os.replace(docTemp, docPath)
+        except OSError as exc:
+            self._docError = formatException(exc)
+            return False
 
         self._prevHash = sha256sum(docPath)
         self._currHash = self._prevHash

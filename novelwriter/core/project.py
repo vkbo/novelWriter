@@ -715,7 +715,7 @@ class NWProject():
             if os.path.isfile(saveFile):
                 os.replace(saveFile, backFile)
             os.replace(tempFile, saveFile)
-        except Exception as exc:
+        except OSError as exc:
             self.theParent.makeAlert(self.tr(
                 "Failed to save project."
             ), nwAlert.ERROR, exception=exc)
