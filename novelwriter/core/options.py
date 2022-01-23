@@ -42,10 +42,11 @@ VALID_MAP = {
     },
     "GuiDocSplit": {"spLevel"},
     "GuiBuildNovel": {
-        "winWidth", "winHeight", "boxWidth", "docWidth", "addNovel",
-        "addNotes", "ignoreFlag", "justifyText", "excludeBody", "textFont",
-        "textSize", "lineHeight", "noStyling", "incSynopsis", "incComments",
-        "incKeywords", "incBodyText", "replaceTabs", "replaceUCode"
+        "winWidth", "winHeight", "boxWidth", "docWidth", "hideScene",
+        "hideSection", "addNovel", "addNotes", "ignoreFlag", "justifyText",
+        "excludeBody", "textFont", "textSize", "lineHeight", "noStyling",
+        "incSynopsis", "incComments", "incKeywords", "incBodyText",
+        "replaceTabs", "replaceUCode"
     },
     "GuiOutline": {"headerOrder", "columnWidth", "columnHidden"},
     "GuiProjectSettings": {
