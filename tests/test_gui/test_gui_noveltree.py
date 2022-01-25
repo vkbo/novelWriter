@@ -61,10 +61,6 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     ##
 
     nwGUI.projTabs.setCurrentIndex(nwGUI.idxNovelView)
-
-    # The tree should be empty as there is no index
-    assert nwTree.topLevelItemCount() == 0
-
     nwGUI.rebuildIndex()
     nwTree._populateTree()
     assert nwTree.topLevelItemCount() == 1

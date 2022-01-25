@@ -46,9 +46,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.openProject(nwLipsum)
 
-    # Rebuild the index as it isn't automatically copied
-    assert nwGUI.theIndex._tagIndex == {}
-    assert nwGUI.theIndex._refIndex == {}
+    # Rebuild the index
     nwGUI.mainMenu.aRebuildIndex.activate(QAction.Trigger)
     assert nwGUI.theIndex._tagIndex != {}
     assert nwGUI.theIndex._refIndex != {}
