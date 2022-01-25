@@ -84,6 +84,7 @@ class NWProject():
         self.projSpell   = None  # The spell check language, if different than default
         self.projLang    = None  # The project language, used for builds
         self.projFile    = None  # The file name of the project main XML file
+        self.projFiles   = []    # A list of all files in the content folder on load
 
         # Project Meta
         self.projName    = ""  # Project name (working title)
@@ -203,6 +204,7 @@ class NWProject():
         self.projSpell   = None
         self.projLang    = None
         self.projFile    = nwFiles.PROJ_FILE
+        self.projFiles   = []
         self.projName    = ""
         self.bookTitle   = ""
         self.bookAuthors = []
@@ -1352,6 +1354,7 @@ class NWProject():
         # Then check the files in the data folder
         logger.debug("Checking files in project content folder")
         orphanFiles = []
+        self.projFiles = []
         for fileItem in os.listdir(self.projContent):
             if not fileItem.endswith(".nwd"):
                 logger.warning("Skipping file: %s", fileItem)
@@ -1359,11 +1362,14 @@ class NWProject():
             if len(fileItem) != 17:
                 logger.warning("Skipping file: %s", fileItem)
                 continue
+
             fHandle = fileItem[:13]
             if not isHandle(fHandle):
                 logger.warning("Skipping file: %s", fileItem)
                 continue
+
             if fHandle in self.projTree:
+                self.projFiles.append(fHandle)
                 logger.debug("Checking file %s, handle '%s': OK", fileItem, fHandle)
             else:
                 logger.warning("Checking file %s, handle '%s': Orphaned", fileItem, fHandle)

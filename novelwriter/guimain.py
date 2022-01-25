@@ -550,8 +550,7 @@ class GuiMain(QMainWindow):
             ), nwAlert.WARN)
             self.rebuildIndex()
 
-        # Make sure the changed status is set to false on all that was
-        # just opened
+        # Make sure the changed status is set to false on things opened
         qApp.processEvents()
         self.docEditor.setDocumentChanged(False)
         self.theProject.setProjectChanged(False)

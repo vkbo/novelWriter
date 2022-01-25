@@ -167,7 +167,7 @@ class NWIndex():
 
         logger.verbose("Index loaded in %.3f ms", (time() - tStart)*1000)
 
-        self.checkIndex()
+        self._checkIndex()
 
         return True
 
@@ -182,10 +182,10 @@ class NWIndex():
         try:
             with open(indexFile, mode="w+", encoding="utf-8") as outFile:
                 outFile.write("{\n")
-                outFile.write(f'"tagIndex": {jsonEncode(self._tagIndex, nmax=1)},\n')
-                outFile.write(f'"refIndex": {jsonEncode(self._refIndex, nmax=2)},\n')
-                outFile.write(f'"fileIndex": {jsonEncode(self._fileIndex, nmax=2)},\n')
-                outFile.write(f'"fileMeta": {jsonEncode(self._fileMeta, nmax=1)}\n')
+                outFile.write(f'  "tagIndex": {jsonEncode(self._tagIndex, n=1, nmax=2)},\n')
+                outFile.write(f'  "refIndex": {jsonEncode(self._refIndex, n=1, nmax=3)},\n')
+                outFile.write(f'  "fileIndex": {jsonEncode(self._fileIndex, n=1, nmax=3)},\n')
+                outFile.write(f'  "fileMeta": {jsonEncode(self._fileMeta, n=1, nmax=2)}\n')
                 outFile.write("}\n")
 
         except Exception:
@@ -196,33 +196,6 @@ class NWIndex():
         logger.verbose("Index saved in %.3f ms", (time() - tStart)*1000)
 
         return True
-
-    def checkIndex(self):
-        """Check that the entries in the index are valid and contain the
-        elements it should.
-        """
-        logger.debug("Checking index")
-        tStart = time()
-
-        try:
-            self._checkTagIndex()
-            self._checkRefIndex()
-            self._checkFileIndex()
-            self._checkFileMeta()
-            self._indexBroken = False
-
-        except Exception:
-            logger.error("Error while checking index")
-            logException()
-            self._indexBroken = True
-
-        logger.verbose("Index check took %.3f ms", (time() - tStart)*1000)
-        logger.debug("Index check complete")
-
-        if self._indexBroken:
-            self.clearIndex()
-
-        return
 
     ##
     #  Index Building
@@ -686,6 +659,40 @@ class NWIndex():
     ##
     #  Index Checkers
     ##
+
+    def _checkIndex(self):
+        """Check that the entries in the index are valid and contain the
+        elements it should. Also check that each file present in the
+        contents folder when the project was loaded are also present in
+        the fileMeta index.
+        """
+        logger.debug("Checking index")
+        tStart = time()
+
+        try:
+            self._checkTagIndex()
+            self._checkRefIndex()
+            self._checkFileIndex()
+            self._checkFileMeta()
+            self._indexBroken = False
+
+        except Exception:
+            logger.error("Error while checking index")
+            logException()
+            self._indexBroken = True
+
+        # Check that project files are indexed
+        for fHandle in self.theProject.projFiles:
+            if fHandle not in self._fileMeta:
+                self._indexBroken = True
+                break
+
+        logger.verbose("Index check completed in %.3f ms", (time() - tStart)*1000)
+
+        if self._indexBroken:
+            self.clearIndex()
+
+        return
 
     def _checkTagIndex(self):
         """Scan the tag index for errors.
