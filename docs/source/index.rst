@@ -35,7 +35,7 @@ robustness.
 The project storage is suitable for version control software, and also well suited for file
 synchronisation tools. All text is saved as plain text files with a meta data header. The core
 project structure is stored in a single project XML file. Other meta data is primarily saved as
-JSON files. See also the :ref:`a_storage` section for more details.
+JSON files. See the :ref:`a_intro_storage` section for more details.
 
 Any operating system that can run Python 3 and has the Qt 5 libraries should be able to run
 novelWriter. It runs fine on Linux, Windows and macOS, and users have tested it on other platforms
