@@ -57,6 +57,11 @@ Then run the update and install commands as for Ubuntu:
    sudo apt update
    sudo apt install novelwriter
 
+.. note::
+
+   Please use the Ubuntu 20.04 packages for Debian. The newer Ubuntu packages use a different
+   compression that Debian doesn't currently support.
+
 
 Pre-Releases
 ------------

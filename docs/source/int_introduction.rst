@@ -8,11 +8,11 @@ novelWriter is a simple, multi-document plain text editor using a markup syntax 
 markdown to apply simple formatting to the text. It is designed for writing novels, so the
 formatting features are limited.
 
-The idea is to let the user focus on writing instead of spending time messing with the formatting
-of headers and text. Therefore you cannot change the look of the text in the editor window.
-Instead, you provide formatting tags where they're needed, like for instance which text is a
-header, where you want text bolded or italicised, and what alignment you want for paragraphs. The
-actual formatting is then added to the text when you run the :guilabel:`Build Novel Project` tool.
+The idea is to let the user focus on writing instead of spending time on the formatting of headers
+and text. Therefore you cannot change the look of the text in the editor window. Instead, you
+provide formatting tags where they're needed, like for instance which text is a header, where you
+want text bolded or italicised, and what alignment you want for paragraphs. The actual formatting
+is then added to the text when you run the :guilabel:`Build Novel Project` tool.
 
 A document viewer to the right of the editor can also show a renderred version of any document if
 you want to inspect the result, or just want to keep a second document open for reference when
@@ -39,6 +39,42 @@ Syntax highlighting is provided to make it easier to verify that the markdown ta
 correctly.
 
 An overview of the supported formatting syntax is covered in :ref:`a_ui`.
+
+
+.. _a_intro_storage:
+
+Project Storage
+===============
+
+The files of a novelWriter project are stored in a dedicated project folder. The project structure
+is kept in a file at the root of this folder called ``nwProject.nwx``. All the document files and
+associated meta data is stored in the other folders below the project folder. For more technical
+details about what all the files mean and how they're organised, see the :ref:`a_storage` section.
+
+This way of storing data was chosen for several reasons. Firstly, all the text you add to your
+project is saved directly to your project folder in separate files. Only the project structure and
+the text you are currently editing is stored in memory at any given time. Secondly, having multiple
+small files means it is very easy to sync them between computers with standard file synchronisation
+tools. Thirdly, if you use version control software to track the changes to your project, the file
+formats used for the files are well suited for this.
+
+.. note::
+
+   Since novelWriter has to keep track of a bunch of files and folders when a project is open, it
+   may not run well on some virtual file systems. A file or folder must be accessible with exactly
+   the path it was saved or created with. An example where this is not the case is the way Google
+   Drive is mapped on Linux Gnome desktops using gvfs/gio.
+
+.. warning::
+
+   You should not add additional files to the project folder yourself. Nor should you manually edit
+   files within it as a general rule. If you really must manually edit the text files, e.g. with
+   some automated task you want to perform, you need to rebuild the index when you open the project
+   again.
+
+   Editing text files in the ``content`` folder is less risky as they are just plain text. Editing
+   the main project XML file, however, may make the project file unreadable and you may crash
+   novelWriter and lose project structure information and project settings.
 
 
 .. _a_intro_design:
