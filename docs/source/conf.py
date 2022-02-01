@@ -10,54 +10,52 @@
 
 import os
 import time
-import sphinx_rtd_theme  # noqa: F401
+import datetime
 
 # -- Project Information -----------------------------------------------------
 
 project = "novelWriter"
-copyright = "2018–2021, Veronica Berglyd Olsen"
+copyright = f"{datetime.date.today().year}, Veronica Berglyd Olsen"
 author = "Veronica Berglyd Olsen"
 
-# The short X.Y version
-version = "1.6"
-# The full version, including alpha/beta/rc tags
-release = "1.6-beta1"
+initFile = os.path.join(
+    os.path.dirname(__file__), os.pardir, os.pardir,
+    "novelwriter", "__init__.py"
+)
+with open(initFile) as inFile:
+    for aLine in inFile:
+        if aLine.startswith("__version__"):
+            release = aLine.split('"')[1].strip()
+            break
+    else:
+        release = "unknown"
+
+version = release.split("-")[0]
 
 # -- General Configuration ---------------------------------------------------
 
 os.environ["TZ"] = "Europe/Oslo"
 time.tzset()
 
-# needs_sphinx = "1.0"
-extensions = [
-    "sphinx_rtd_theme",
-]
+needs_sphinx = "4.0"
 templates_path = ["_templates"]
 source_suffix = ".rst"
 master_doc = "index"
 today_fmt = "%A, %d %B %Y at %H:%M"
 language = None
 exclude_patterns = []
-pygments_style = None
+pygments_style = "sphinx"
+pygments_dark_style = "monokai"
 
 # -- Options for HTML Output -------------------------------------------------
 
-html_theme = "sphinx_rtd_theme"
-html_logo = "images/novelwriter.png"
-html_theme_options = {
-    # Toc options
-    "collapse_navigation": True,
-    "sticky_navigation": True,
-    "navigation_depth": 3,
-    "includehidden": True,
-    "titles_only": False,
-    "logo_only": True,
-}
-
+html_theme = "furo"
 html_static_path = ["_static"]
-html_css_files = [
-    "css/custom.css",
-]
+html_theme_options = {
+    "light_logo": "novelwriter-light.png",
+    "dark_logo": "novelwriter-dark.png",
+}
+html_title = f"<div style='text-align: center'>Documentation<br>Version {version}</div>"
 
 # -- Options for HTMLHelp Output ---------------------------------------------
 
