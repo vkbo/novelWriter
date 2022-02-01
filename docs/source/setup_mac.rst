@@ -29,7 +29,7 @@ These instructions assume you're using brew, and have Python and pip set up. If 
 `brew docs`_ for help. Main requirements are installed via the requirements file. You also need to
 install the ``pyobjc`` package, so you should run:
 
-.. code-block:: console
+.. code-block:: bash
 
    pip3 install --user -r requirements.txt
    pip3 install --user pyobjc
@@ -37,7 +37,7 @@ install the ``pyobjc`` package, so you should run:
 For spell checking you may also need to install the enchant package. It comes with a lot of default
 dictionaries.
 
-.. code-block:: console
+.. code-block:: bash
 
    brew install enchant
 
@@ -50,14 +50,14 @@ Step 2: Install Package (Optional)
 
 You can install novelWriter to the correct location for Python packages with:
 
-.. code-block:: console
+.. code-block:: bash
 
    ./setup.py install --user
 
 This requires that the package ``setuptools`` is installed on your system. If not, it can be
 installed with:
 
-.. code-block:: console
+.. code-block:: bash
 
    pip3 install --user setuptools
 

@@ -13,7 +13,7 @@ Dependencies
 
 The dependencies for running the tests can be installed with:
 
-.. code-block:: console
+.. code-block:: bash
 
    pip install -r requirements-dev.txt
 
@@ -26,7 +26,7 @@ Simple Test Run
 
 To run the tests, you simply need to execute the following from the root of the source folder:
 
-.. code-block:: console
+.. code-block:: bash
 
    pytest
 
@@ -37,7 +37,7 @@ interfere with the execution of some tests.
 You can disable the renderring of the GUI by setting the flag ``export QT_QPA_PLATFORM=offscreen``,
 or alternatively run the tests with the ``xvfb`` package, like so:
 
-.. code-block:: console
+.. code-block:: bash
 
    xvfb-run pytest
 
@@ -49,7 +49,7 @@ Adding the flag ``-v`` to the ``pytest`` command will increase verbosity of the 
 
 You can also add coverage report generation. For instance to HTML:
 
-.. code-block:: console
+.. code-block:: bash
 
    xvfb-run pytest -v --cov=novelwriter --cov-report=html
 
@@ -58,7 +58,7 @@ Other useful report formats are ``xml``, and ``term`` for terminal output.
 You can also run tests per subpackage of novelWriter with the ``-m`` command. The available
 subpackage groups are ``base``, ``core``, and ``gui``. Consider for instance:
 
-.. code-block:: console
+.. code-block:: bash
 
    xvfb-run pytest -v --cov=novelwriter --cov-report=html -m core
 
@@ -69,7 +69,7 @@ components, and the "base" tests cover the bits in-between.
 You can also filter the tests with the ``-k`` switch. The following will do the same as
 ``-m core``:
 
-.. code-block:: console
+.. code-block:: bash
 
    xvfb-run pytest -v --cov=novelwriter --cov-report=html -k testCore
 
@@ -78,7 +78,7 @@ They all start with the word "test". Then comes the group: "Core", "Base", "Dlg"
 Finally comes the name of the class or module, which generally corresponds to a single source code
 file. For instance, running the following will run all tests for the document editor:
 
-.. code-block:: console
+.. code-block:: bash
 
    xvfb-run pytest -v --cov=novelwriter --cov-report=html -k testGuiEditor
 

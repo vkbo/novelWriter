@@ -93,7 +93,7 @@ If you want more control of what's happening during the install process, or want
 yourself, you can run the install steps below from a command line window from inside the folder
 containing either the minimal package, or the extracted full source package.
 
-.. code-block:: console
+.. code-block:: bash
 
    pip install --user -r requirements.txt
    pip install --user pywin32
@@ -112,7 +112,7 @@ project file from your file explorer.
 
 The above steps can be reverted by running:
 
-.. code-block:: console
+.. code-block:: bash
 
    python setup.py win-uninstall
    pip uninstall pywin32

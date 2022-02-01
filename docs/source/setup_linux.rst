@@ -30,7 +30,7 @@ Ubuntu and Mint
 
 You can add the Ubuntu PPA_ and install novelWriter with the following commands.
 
-.. code-block:: console
+.. code-block:: bash
 
    sudo add-apt-repository ppa:vkbo/novelwriter
    sudo apt update
@@ -45,14 +45,14 @@ However, the above command will fail to add the signing key.
 
 Instead, run the following commands to add the repository and key:
 
-.. code-block:: console
+.. code-block:: bash
 
    sudo gpg --no-default-keyring --keyring /usr/share/keyrings/novelwriter-ppa-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F19F1FCE50043114
    echo "deb [signed-by=/usr/share/keyrings/novelwriter-ppa-keyring.gpg] http://ppa.launchpad.net/vkbo/novelwriter/ubuntu focal main" | sudo tee /etc/apt/sources.list.d/novelwriter.list
 
 Then run the update and install commands as for Ubuntu:
 
-.. code-block:: console
+.. code-block:: bash
 
    sudo apt update
    sudo apt install novelwriter
@@ -69,7 +69,7 @@ Pre-Releases
 There is also a `Pre-Release PPA`_ available with beta releases and release candidates of
 novelWriter. For Ubuntu, run the following commands:
 
-.. code-block:: console
+.. code-block:: bash
 
    sudo add-apt-repository ppa:vkbo/novelwriter-pre
    sudo apt update
@@ -91,14 +91,14 @@ Step 1: Installing Dependencies
 The dependencies of novelWriter are generally available from Linux distro repositories. For Debian
 and Ubuntu, they can be installed with:
 
-.. code-block:: console
+.. code-block:: bash
 
    sudo apt install python3-pyqt5 python3-lxml python3-enchant
 
 If you prefer to install dependencies via PyPi, or the repository dependencies are out of date, you
 can install them with:
 
-.. code-block:: console
+.. code-block:: bash
 
    pip3 install --user -r requirements.txt
 
@@ -112,14 +112,14 @@ file association with ``.nwx`` files added.
 
 To set this up, run the following from inside the novelWriter folder at the final location:
 
-.. code-block:: console
+.. code-block:: bash
 
    python3 setup.py xdg-install
 
 This will only install the launcher and icons for the current user. To set up novelWriter for all
 users, run:
 
-.. code-block:: console
+.. code-block:: bash
 
    sudo python3 setup.py xdg-install
 
@@ -129,7 +129,7 @@ Uninstalling Icons
 
 The steps taken by the ``xdg-install`` step can be reversed by running:
 
-.. code-block:: console
+.. code-block:: bash
 
    python3 setup.py xdg-uninstall
 

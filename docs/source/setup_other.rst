@@ -45,7 +45,7 @@ must be at least 3.0 to work with Windows. On Linux, 2.0 also works fine.
 If you install from PyPi, these dependencies should be installed automatically. If you install from
 source, dependencies can still be installed from PyPi with:
 
-.. code-block:: console
+.. code-block:: bash
 
    pip install -r requirements.txt
 
@@ -63,19 +63,19 @@ how to get the Python environment set up.
 
 To install novelWriter from PyPi, use the following command:
 
-.. code-block:: console
+.. code-block:: bash
 
    pip install novelwriter
 
 To upgrade an existing installation, use:
 
-.. code-block:: console
+.. code-block:: bash
 
    pip install --upgrade novelwriter
 
 When installing via pip, novelWriter can be launched from command line with:
 
-.. code-block:: console
+.. code-block:: bash
 
    novelWriter
 
@@ -96,19 +96,19 @@ This step requires that you have ``setuptools`` installed on your system. If you
 installed, it can usually be installed from your distro's repository. For Debian and Ubuntu this is
 achieved with:
 
-.. code-block:: console
+.. code-block:: bash
 
    sudo apt install python3-setuptools
 
 The package is also available from PyPi:
 
-.. code-block:: console
+.. code-block:: bash
 
    pip install --user setuptools
 
 With ``setuptools`` in place, novelWriter can be installed to the user space with:
 
-.. code-block:: console
+.. code-block:: bash
 
    python setup.py install --user
 
@@ -130,7 +130,7 @@ have the ``.qm`` file extension.
 
 You can build the ``.qm`` files with:
 
-.. code-block:: console
+.. code-block:: bash
 
    python setup.py qtlrelease
 
@@ -156,13 +156,13 @@ packages on Debian and Ubuntu.
 
 Or from PyPi:
 
-.. code-block:: console
+.. code-block:: bash
 
    pip install sphinx sphinx-rtd-theme
 
 The documentation can then be built from the ``docs`` folder in the source code by running:
 
-.. code-block:: console
+.. code-block:: bash
 
    make html
 
@@ -171,7 +171,7 @@ open the ``index.html`` file in your browser.
 
 You can also build a PDF manual from the documentation using the setup script:
 
-.. code-block:: console
+.. code-block:: bash
 
    python setup.py manual
 

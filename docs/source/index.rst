@@ -47,7 +47,7 @@ the necessary icons and file associations. See the setup instructions for your o
 further details.
 
 .. note::
-   Version 1.5 introduces a few changes that will require you to make a few minor modifications to
+   Version 1.5 introduced a few changes that will require you to make a few minor modifications to
    some of the headings in your project. It should be fairly quick and straightforward. Please see
    the :ref:`a_prjfmt_1_3` section for more details.
 
@@ -63,8 +63,9 @@ further details.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Introduction
+   :hidden:
 
    int_introduction
    setup_linux
@@ -74,8 +75,9 @@ further details.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Using novelWriter
+   :hidden:
 
    usage_interface
    usage_format
@@ -85,8 +87,9 @@ further details.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Organising Your Project
+   :hidden:
 
    project_overview
    project_structure
@@ -95,16 +98,9 @@ further details.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Under the Hood
+   :hidden:
 
    tech_storage
    tech_tests
-
-
-Indices and Tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
