@@ -518,7 +518,7 @@ def makeMinimalPackage(targetOS):
 
     numVers, _, _ = extractVersion()
     pkgVers = compactVersion(numVers)
-    zipFile = f"novelWriter-{pkgVers}-minimal{targName}.zip"
+    zipFile = f"novelwriter-{pkgVers}-minimal{targName}.zip"
     outFile = os.path.join(bldDir, zipFile)
     if os.path.isfile(outFile):
         os.unlink(outFile)
@@ -952,19 +952,18 @@ def makeWindowsEmbedded(sysArgs):
 
     print("Updating starting script ...")
 
-    with open(os.path.join(outDir, "novelWriter.pyw"), mode="w") as outFile:
-        outFile.write(
-            "#!/usr/bin/env python3\n"
-            "import os\n"
-            "import sys\n"
-            "\n"
-            "os.curdir = os.path.abspath(os.path.dirname(__file__))\n"
-            "sys.path.insert(0, os.path.join(os.curdir, \"lib\"))\n"
-            "\n"
-            "if __name__ == \"__main__\":\n"
-            "    import novelwriter\n"
-            "    novelwriter.main(sys.argv[1:])\n"
-        )
+    writeFile(os.path.join(outDir, "novelWriter.pyw"), (
+        "#!/usr/bin/env python3\n"
+        "import os\n"
+        "import sys\n"
+        "\n"
+        "os.curdir = os.path.abspath(os.path.dirname(__file__))\n"
+        "sys.path.insert(0, os.path.join(os.curdir, \"lib\"))\n"
+        "\n"
+        "if __name__ == \"__main__\":\n"
+        "    import novelwriter\n"
+        "    novelwriter.main(sys.argv[1:])\n"
+    ))
 
     print("Done")
     print("")
@@ -986,29 +985,21 @@ def makeWindowsEmbedded(sysArgs):
     print("========================")
     print("")
 
-    print("Dictionaries")
-    dictDir = os.path.join(libDir, "enchant", "data", "mingw64", "share", "enchant", "hunspell")
+    pyQt5Dir = os.path.join(libDir, "PyQt5")
+    bindDir  = os.path.join(pyQt5Dir, "bindings")
+    qt5Dir   = os.path.join(pyQt5Dir, "Qt5")
+    binDir   = os.path.join(qt5Dir, "bin")
+    plugDir  = os.path.join(qt5Dir, "plugins")
+    qmDir    = os.path.join(qt5Dir, "translations")
+    dictDir  = os.path.join(libDir, "enchant", "data", "mingw64", "share", "enchant", "hunspell")
+
     for dictFile in os.listdir(dictDir):
-        dictPath = os.path.join(dictDir, dictFile)
-        if not os.path.isfile(dictPath):
-            continue
-        if dictFile.startswith("en_GB"):
-            continue
-        if dictFile.startswith("en_US"):
-            continue
-        unlinkIfFound(dictPath)
+        if not dictFile.startswith(("en_GB", "en_US")):
+            unlinkIfFound(os.path.join(dictDir, dictFile))
 
-    print("Translations")
-    qmDir = os.path.join(libDir, "PyQt5", "Qt5", "translations")
     for qmFile in os.listdir(qmDir):
-        qmPath = os.path.join(qmDir, qmFile)
-        if not os.path.isfile(qmPath):
-            continue
-        if qmFile.startswith("qtbase"):
-            continue
-        unlinkIfFound(qmPath)
-
-    print("")
+        if not qmFile.startswith("qtbase"):
+            unlinkIfFound(os.path.join(qmDir, qmFile))
 
     delQt5 = [
         "Qt5Bluetooth", "Qt5DBus", "Qt5Designer", "Qt5Designer", "Qt5Help", "Qt5Location",
@@ -1020,16 +1011,15 @@ def makeWindowsEmbedded(sysArgs):
         "Qt5SerialPort", "Qt5Sql", "Qt5Test", "Qt5TextToSpeech", "Qt5WebChannel", "Qt5WebSockets",
         "Qt5WebView", "Qt5Xml", "Qt5XmlPatterns"
     ]
-    pyQt5Dir = os.path.join(libDir, "PyQt5")
-    bindDir  = os.path.join(pyQt5Dir, "bindings")
-    qt5Dir   = os.path.join(pyQt5Dir, "Qt5")
-    binDir   = os.path.join(qt5Dir, "bin")
-    plugDir  = os.path.join(qt5Dir, "plugins")
+    for qt5Item in delQt5:
+        qtItem = qt5Item.replace("Qt5", "Qt")
+        unlinkIfFound(os.path.join(binDir, qt5Item+".dll"))
+        unlinkIfFound(os.path.join(pyQt5Dir, qtItem+".pyd"))
+        unlinkIfFound(os.path.join(pyQt5Dir, qtItem+".pyi"))
+        deleteFolder(os.path.join(bindDir, qtItem))
 
-    delFiles = [
-        os.path.join(binDir, "opengl32sw.dll")
-    ]
-    delFolders = [
+    delList = [
+        os.path.join(binDir, "opengl32sw.dll"),
         os.path.join(qt5Dir, "qml"),
         os.path.join(plugDir, "geoservices"),
         os.path.join(plugDir, "playlistformats"),
@@ -1040,25 +1030,11 @@ def makeWindowsEmbedded(sysArgs):
         os.path.join(plugDir, "texttospeech"),
         os.path.join(plugDir, "webview"),
     ]
-
-    for qt5Item in delQt5:
-        print("Qt5 Component %s" % qt5Item)
-        qtItem = qt5Item.replace("Qt5", "Qt")
-        unlinkIfFound(os.path.join(binDir, qt5Item+".dll"))
-        unlinkIfFound(os.path.join(pyQt5Dir, qtItem+".pyd"))
-        unlinkIfFound(os.path.join(pyQt5Dir, qtItem+".pyi"))
-        deleteFolder(os.path.join(bindDir, qtItem))
-        print("")
-
-    print("Additional Files")
-    for delItem in delFiles:
-        unlinkIfFound(delItem)
-    print("")
-
-    print("Additional Folders")
-    for delItem in delFolders:
-        deleteFolder(delItem)
-    print("")
+    for delItem in delList:
+        if os.path.isfile(delItem):
+            unlinkIfFound(delItem)
+        elif os.path.isdir(delItem):
+            deleteFolder(delItem)
 
     print("Done")
     print("")
