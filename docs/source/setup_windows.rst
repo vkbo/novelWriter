@@ -37,7 +37,8 @@ Make sure you select the "Add Python to PATH" option during installation, otherw
 command will not work in the command line window.
 
 .. image:: images/python_win_install.png
-   :width: 600
+   :align: center
+   :width: 500
 
 .. _python.org: https://www.python.org/downloads/windows
 

@@ -16,7 +16,9 @@ data syntax for comments, synopsis, and cross-referencing. It is designed to be 
 editor that allows for easy organisation of text and notes, using human readable text files as
 storage for robustness.
 
-.. centered:: * * *
+.. figure:: images/screenshot_multi.png
+   :align: center
+   :width: 500
 
 The project storage is suitable for version control software, and also well suited for file
 synchronisation tools. All text is saved as plain text files with a meta data header. The core
@@ -54,6 +56,7 @@ system for further details.
    :hidden:
 
    int_introduction
+   int_started
    setup_linux
    setup_mac
    setup_windows
@@ -88,7 +91,3 @@ system for further details.
 
    tech_storage
    tech_tests
-
-.. figure:: images/screenshot_multi.png
-   :align: center
-   :width: 600
