@@ -870,8 +870,8 @@ def makeSimplePackage(embedPython):
 
     if embedPython:
         print("")
-        print("# Adding Python Embeddable")
-        print("# ========================")
+        print("Adding Python Embeddable")
+        print("========================")
         print("")
 
         pyVers = "%d.%d.%d" % (sys.version_info[:3])
@@ -900,8 +900,8 @@ def makeSimplePackage(embedPython):
     # ==================
 
     print("")
-    print("# Copying Package Files")
-    print("# =====================")
+    print("Copying Package Files")
+    print("=====================")
     print("")
 
     copyList = ["CREDITS.md", "CHANGELOG.md", "LICENSE.md", "requirements.txt"]
@@ -946,8 +946,8 @@ def makeSimplePackage(embedPython):
     # ====================
 
     print("")
-    print("# Installing Dependencies")
-    print("# =======================")
+    print("Installing Dependencies")
+    print("=======================")
     print("")
 
     sysCmd  = [sys.executable]
@@ -1007,6 +1007,254 @@ def makeSimplePackage(embedPython):
     print("")
     print("Done!")
     print("")
+
+    return
+
+
+##
+#  Make Windows Setup EXE (build-win-exe)
+##
+
+def makeWindowsEmbedded(sysArgs):
+    """Set up a package with embedded Python and dependencies for
+    Windows installation.
+    """
+    import urllib.request
+    import zipfile
+    import compileall
+
+    print("")
+    print("Build Standalone Windows Package")
+    print("================================")
+    print("")
+
+    minimalZip = None
+    packVersion = "none"
+    if len(sysArgs) >= 2:
+        if os.path.isfile(sysArgs[1]):
+            minimalZip = sysArgs[1]
+
+    if minimalZip is None:
+        print("Please provide the path to the minimal win pacage as an argument")
+        sys.exit(1)
+
+    packVersion = os.path.basename(minimalZip).split("-")[1]
+    print("Version: %s" % packVersion)
+
+    # Set Up Folder
+    # =============
+
+    if not os.path.isdir("dist"):
+        os.mkdir("dist")
+
+    outDir = os.path.join("dist", "novelWriter")
+    libDir = os.path.join(outDir, "lib")
+    if os.path.isdir(outDir):
+        shutil.rmtree(outDir)
+
+    os.mkdir(outDir)
+    os.mkdir(libDir)
+
+    # Extract Source Files
+    # ====================
+
+    print("Extracting source files ...")
+    with zipfile.ZipFile(minimalZip, "r") as inFile:
+        inFile.extractall(outDir)
+
+    shutil.copyfile(
+        os.path.join(outDir, "novelwriter", "assets", "icons", "novelwriter.ico"),
+        os.path.join(outDir, "novelwriter.ico")
+    )
+
+    compileall.compile_dir(os.path.join(outDir, "novelwriter"))
+
+    print("Done")
+    print("")
+
+    # Download Python Embeddable
+    # ==========================
+
+    print("Adding Python embeddable ...")
+
+    pyVers = "%d.%d.%d" % (sys.version_info[:3])
+    zipFile = "python-%s-embed-amd64.zip" % pyVers
+    pyZip = os.path.join("dist", zipFile)
+    if not os.path.isfile(pyZip):
+        pyUrl = f"https://www.python.org/ftp/python/{pyVers}/{zipFile}"
+        print("Downloading: %s" % pyUrl)
+        urllib.request.urlretrieve(pyUrl, pyZip)
+
+    print("Extracting ...")
+    with zipfile.ZipFile(pyZip, "r") as inFile:
+        inFile.extractall(outDir)
+
+    print("Done")
+    print("")
+
+    # Sort Out Licence Files
+    # ======================
+
+    os.rename(
+        os.path.join(outDir, "LICENSE.txt"),
+        os.path.join(outDir, "PYTHON-LICENSE.txt")
+    )
+    shutil.copyfile(
+        os.path.join("setup", "iss_license.txt"),
+        os.path.join(outDir, "LICENSES.txt")
+    )
+
+    # Install Dependencies
+    # ====================
+
+    print("Install dependencies ...")
+
+    sysCmd  = [sys.executable]
+    sysCmd += "-m pip install -r requirements.txt --target".split()
+    sysCmd += [libDir]
+    try:
+        subprocess.call(sysCmd)
+    except Exception as exc:
+        print("Failed with error:")
+        print(str(exc))
+        sys.exit(1)
+
+    print("Done")
+    print("")
+
+    # Update Launch File
+    # ==================
+
+    print("Updating starting script ...")
+
+    with open(os.path.join(outDir, "novelWriter.pyw"), mode="w") as outFile:
+        outFile.write(
+            "#!/usr/bin/env python3\n"
+            "import os\n"
+            "import sys\n"
+            "\n"
+            "os.curdir = os.path.abspath(os.path.dirname(__file__))\n"
+            "sys.path.insert(0, os.path.join(os.curdir, \"lib\"))\n"
+            "\n"
+            "if __name__ == \"__main__\":\n"
+            "    import novelwriter\n"
+            "    novelwriter.main(sys.argv[1:])\n"
+        )
+
+    print("Done")
+    print("")
+
+    # Clean Up Files
+    # ==============
+
+    def unlinkIfFound(delFile):
+        if os.path.isfile(delFile):
+            os.unlink(delFile)
+            print("Deleted: %s" % delFile)
+
+    def deleteFolder(delPath):
+        if os.path.isdir(delPath):
+            shutil.rmtree(delPath)
+            print("Deleted: %s" % delPath)
+
+    print("Deleting Redundant Files")
+    print("========================")
+    print("")
+
+    print("Dictionaries")
+    dictDir = os.path.join(libDir, "enchant", "data", "mingw64", "share", "enchant", "hunspell")
+    for dictFile in os.listdir(dictDir):
+        dictPath = os.path.join(dictDir, dictFile)
+        if not os.path.isfile(dictPath):
+            continue
+        if dictFile.startswith("en_GB"):
+            continue
+        if dictFile.startswith("en_US"):
+            continue
+        unlinkIfFound(dictPath)
+
+    print("Translations")
+    qmDir = os.path.join(libDir, "PyQt5", "Qt5", "translations")
+    for qmFile in os.listdir(qmDir):
+        qmPath = os.path.join(qmDir, qmFile)
+        if not os.path.isfile(qmPath):
+            continue
+        if qmFile.startswith("qtbase"):
+            continue
+        unlinkIfFound(qmPath)
+
+    print("")
+
+    delQt5 = [
+        "Qt5Bluetooth", "Qt5DBus", "Qt5Designer", "Qt5Designer", "Qt5Help", "Qt5Location",
+        "Qt5Multimedia", "Qt5MultimediaWidgets", "Qt5Network", "Qt5Nfc", "Qt5OpenGL",
+        "Qt5Positioning", "Qt5PositioningQuick", "Qt5Qml", "Qt5QmlModels", "Qt5QmlWorkerScript",
+        "Qt5Quick", "Qt5Quick3D", "Qt5Quick3DAssetImport", "Qt5Quick3DRender",
+        "Qt5Quick3DRuntimeRender", "Qt5Quick3DUtils", "Qt5QuickControls2", "Qt5QuickParticles",
+        "Qt5QuickShapes", "Qt5QuickTemplates2", "Qt5QuickTest", "Qt5QuickWidgets", "Qt5Sensors",
+        "Qt5SerialPort", "Qt5Sql", "Qt5Test", "Qt5TextToSpeech", "Qt5WebChannel", "Qt5WebSockets",
+        "Qt5WebView", "Qt5Xml", "Qt5XmlPatterns"
+    ]
+    pyQt5Dir = os.path.join(libDir, "PyQt5")
+    bindDir  = os.path.join(pyQt5Dir, "bindings")
+    qt5Dir   = os.path.join(pyQt5Dir, "Qt5")
+    binDir   = os.path.join(qt5Dir, "bin")
+    plugDir  = os.path.join(qt5Dir, "plugins")
+
+    delFiles = [
+        os.path.join(binDir, "opengl32sw.dll")
+    ]
+    delFolders = [
+        os.path.join(qt5Dir, "qml"),
+        os.path.join(plugDir, "geoservices"),
+        os.path.join(plugDir, "playlistformats"),
+        os.path.join(plugDir, "renderers"),
+        os.path.join(plugDir, "sensorgestures"),
+        os.path.join(plugDir, "sensors"),
+        os.path.join(plugDir, "sqldrivers"),
+        os.path.join(plugDir, "texttospeech"),
+        os.path.join(plugDir, "webview"),
+    ]
+
+    for qt5Item in delQt5:
+        print("Qt5 Component %s" % qt5Item)
+        qtItem = qt5Item.replace("Qt5", "Qt")
+        unlinkIfFound(os.path.join(binDir, qt5Item+".dll"))
+        unlinkIfFound(os.path.join(pyQt5Dir, qtItem+".pyd"))
+        unlinkIfFound(os.path.join(pyQt5Dir, qtItem+".pyi"))
+        deleteFolder(os.path.join(bindDir, qtItem))
+        print("")
+
+    print("Additional Files")
+    for delItem in delFiles:
+        unlinkIfFound(delItem)
+    print("")
+
+    print("Additional Folders")
+    for delItem in delFolders:
+        deleteFolder(delItem)
+    print("")
+
+    print("Done")
+    print("")
+
+    print("Running Inno Setup")
+    print("##################")
+    print("")
+
+    # Read the iss template
+    issData = readFile(os.path.join("setup", "win_setup_embed.iss"))
+    issData = issData.replace(r"%%version%%", packVersion)
+    issData = issData.replace(r"%%dir%%", os.getcwd())
+    writeFile("setup.iss", issData)
+    print("")
+
+    try:
+        subprocess.call(["iscc", "setup.iss"])
+    except Exception as exc:
+        print("Inno Setup failed with error:")
+        print(str(exc))
+        sys.exit(1)
 
     return
 
@@ -1565,6 +1813,8 @@ if __name__ == "__main__":
         "    build-ubuntu   Build a .deb packages Launchpad. Add --sign to ",
         "                   sign package. Add --first to set build number to 0.",
         "                   Add --snapshot to make a snapshot package.",
+        "    build-win-exe  Build a setup.exe file with Python embedded for Windows.",
+        "                   The package must be built from a minimal windows zip file.",
         "    build-pyz      Build a .pyz package in a folder with all dependencies",
         "                   using the zipapp tool. On Windows, python embeddable is",
         "                   added to the folder.",
@@ -1667,6 +1917,11 @@ if __name__ == "__main__":
         else:
             print("ERROR: Command 'build-ubuntu' can only be used on Linux")
             sys.exit(1)
+
+    if "build-win-exe" in sys.argv:
+        sys.argv.remove("build-win-exe")
+        makeWindowsEmbedded(sys.argv)
+        sys.exit(0)  # Don't continue execution
 
     if "build-pyz" in sys.argv:
         sys.argv.remove("build-pyz")
