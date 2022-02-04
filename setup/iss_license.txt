@@ -1,0 +1,49 @@
+novelWriter License
+
+Copyright (C) 2018-2022  Veronica Berglyd Olsen
+License: GPL v3+ <https://www.gnu.org/licenses/gpl-3.0.html>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Dependencies
+
+Qt5
+Copyright: Qt Company
+Website: <https://www.qt.io/>
+License: LGPL v3 <https://www.gnu.org/licenses/lgpl-3.0.html>
+
+PyQt5 / PyQt5-sip
+Copyright: Riverbank Computing
+Website: <https://www.riverbankcomputing.com/software/pyqt/>
+License: GPL v3 <https://www.gnu.org/licenses/gpl-3.0.html>
+
+lxml
+Copyright: Infrae
+Website: <https://lxml.de/>
+License: BSD
+
+Enchant
+Copyright: Dom Lachowicz
+Website: <https://abiword.github.io/enchant/>
+License: LGPL v2.1 <https://www.gnu.org/licenses/lgpl-2.1.html>
+
+PyEnchant
+Copyright: Dimitri Merejkowsky
+Website: <https://pyenchant.github.io/pyenchant/>
+License: LGPL v2.1 <https://www.gnu.org/licenses/lgpl-2.1.html>
+
+Typicons
+Copyright: Stephen Hutchings
+Website: <https://www.s-ings.com/typicons/>
+License: CC BY-SA 4.0 <http://creativecommons.org/licenses/by-sa/4.0/>

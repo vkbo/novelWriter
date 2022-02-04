@@ -5,12 +5,10 @@
 #define nwAppName "novelWriter"
 #define nwAppVersion "%%version%%"
 #define nwAppPublisher "novelWriter"
-#define nwAppURL "http://novelWriter.io"
-#define nwAppExeName "novelWriter.pyz"
+#define nwAppURL "https://novelWriter.io"
+#define nwAppExeName "novelWriter.pyw"
 
 [Setup]
-; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
-; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{459A75D0-951F-4932-9809-6002EC8E733E}
 AppName={#nwAppName}
 AppVersion={#nwAppVersion}
@@ -19,15 +17,14 @@ AppPublisher={#nwAppPublisher}
 AppPublisherURL={#nwAppURL}
 AppSupportURL={#nwAppURL}
 AppUpdatesURL={#nwAppURL}
+SetupIconFile=setup\icons\novelwriter.ico
 DefaultDirName={autopf}\{#nwAppName}
+LicenseFile=setup\iss_license.txt
 DisableProgramGroupPage=yes
-; The [Icons] "quicklaunchicon" entry uses {userappdata} but its [Tasks] entry has a proper IsAdminInstallMode Check.
 UsedUserAreasWarning=no
-; Uncomment the following line to run in non administrative install mode (install for current user only.)
-;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir={#nwAppDir}
-OutputBaseFilename=novelwriter-{#nwAppVersion}-win10-amd64-pyz-setup
+OutputBaseFilename=novelwriter-{#nwAppVersion}-win10-amd64-standalone-setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -56,4 +53,4 @@ Root: HKA; Subkey: "Software\Classes\.nwx\OpenWithProgids"; ValueType: string; V
 Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx"; ValueType: string; ValueName: ""; ValueData: "novelWriter Project File"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\assets\icons\x-novelwriter-project.ico"
 Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\pythonw.exe"" ""{app}\{#nwAppExeName}"" ""%1"""
-Root: HKA; Subkey: "Software\Classes\Applications\{#nwAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".nwx"; ValueData: ""
+Root: HKA; Subkey: "Software\Classes\Applications\{#nwAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".nwx"; ValueData: ""; Flags: uninsdeletekey
