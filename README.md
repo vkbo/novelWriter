@@ -45,9 +45,14 @@ You can also use the novelWriter [PPA](https://launchpad.net/~vkbo/+archive/ubun
 For more details, check the [Linux](https://novelwriter.readthedocs.io/en/latest/setup_linux.html)
 setup chapter in the documentation.
 
-### Other Operating Systems
+### Windows 10+
 
-For a regular installation, it is recommended that you download one of the minimal zip files from
+The Release page has a `-setup.exe` file for Windows 10, that should also work on other Windows
+versions. The installer includes Python 3.10 and the library dependencies.
+
+### Other Install Options
+
+You can also download and install one of the minimal zip files from
 the [Releases](https://github.com/vkbo/novelWriter/releases) page or the
 [novelwriter.io](https://novelwriter.io/) website.
 The [documentation](https://novelwriter.readthedocs.io/) has detailed install instructions for
