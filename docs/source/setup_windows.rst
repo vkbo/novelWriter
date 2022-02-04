@@ -11,8 +11,9 @@ This is a brief guide to how you can get novelWriter running on a Windows comput
 Standard Installer
 ==================
 
-You can install novelWriter with dependencies embedded using the setup.exe install file from the
-`main website`_, or from the GitHub_ releases page. Installing it should be straightforward.
+You can install novelWriter with dependencies embedded using the Windows Installer (setup.exe) file
+from the `main website`_, or from the GitHub_ releases page. Installing it should be
+straightforward.
 
 If you have any issues, try uninstalling the previous version and making a fresh install.
 
