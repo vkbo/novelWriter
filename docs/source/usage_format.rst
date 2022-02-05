@@ -4,14 +4,32 @@
 Formatting Your Text
 ********************
 
-The editor itself is a plain text editor that uses formatting codes for setting meta data values
-and allowing for some text formatting. The syntax is based on Markdown, but novelWriter is *not* a
-Markdown editor. It supports basic formatting like emphasis (italic), strong importance (bold)
-and strikethrough text, as well as four levels of headings.
+The novelWriter text editor is a plain text editor that uses formatting codes for setting meta data
+values and allowing for some text formatting. The syntax is based on Markdown, but novelWriter is
+*not* strictly a Markdown editor. It supports basic formatting like emphasis (italic), strong
+importance (bold) and strikethrough text, as well as four levels of headings.
 
 In addition to formatting codes, novelWriter allows for comments, a synopsis tag, and a set of
 keyword and value sets used for tags and references. There are also some codes that apply two whole
 paragraphs. See :ref:`a_fmt_text` below for more details.
+
+
+.. _a_fmt_hlight:
+
+Syntax Highlighting
+===================
+
+The editor has a syntax highlighter feature that is meant to help you know when you've used the
+formtatting tags or other features correctly. It will change the colour and font size of your
+headings, change the text colour of emphasised text, and it can also show you where you have
+dialogue in your text.
+
+When you use the commands to set tags and references, these also change colour. Correct commands
+have a dedicated colour, and the references themselves will get a colour if they are valid. Invalid
+references will get a squiggly error line underneath.
+
+There are a number of syntax highlighter colour themes available, both for light and dark GUIs. You
+can select them for :guilabel:`Preferences`.
 
 
 .. _a_fmt_head:
@@ -20,7 +38,7 @@ Headings
 ========
 
 Four levels of headings are allowed. For project notes they are free to be used as you see fit.
-That is, novelWriter doesn't assign the different headings any importance. However, for novel
+That is, novelWriter doesn't assign the different headings any meaning. However, for novel
 documents they indicate the structural level of the novel and must be used correctly to produce the
 intended result. See :ref:`a_struct_heads` for more details.
 
@@ -81,8 +99,9 @@ Non-breaking spaces are highlighted by the syntax highlighter with an alternate 
 background, depending on the selected theme.
 
 .. tip::
-   Non-breaking spaces are the correct type of space to separate a number from its unit. Generally,
-   it prevents the line wrapping algorithms from adding line breaks where it shouldn't.
+   Non-breaking spaces are for instance the correct type of space to separate a number from its
+   unit. Generally, non-breaking spaces are used to prevent line wrapping algorithms from adding
+   line breaks where they shouldn't.
 
 
 .. _a_fmt_emph:

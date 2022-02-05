@@ -116,22 +116,17 @@ Building the Documentation
 ==========================
 
 A local copy of this documentation can be generated as HTML. This requires the following Python
-packages on Debian and Ubuntu.
-
-* ``python3-sphinx``
-* ``python3-sphinx-rtd-theme``
-
-Or from PyPi:
+packages from PyPi:
 
 .. code-block:: bash
 
-   pip install sphinx sphinx-rtd-theme
+   pip install furo sphinx
 
-The documentation can then be built from the ``docs`` folder in the source code by running:
+The documentation can then be built from the root folder in the source code by running:
 
 .. code-block:: bash
 
-   make html
+   make -C docs html
 
 If successful, the documentation should be available in the ``docs/build/html`` folder and you can
 open the ``index.html`` file in your browser.

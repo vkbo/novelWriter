@@ -4,9 +4,11 @@
 How it Works
 ************
 
-The :ref:`a_intro` section listed a few key features of novelWriter. Here, they are covered in some
-more details. Many of the features listed below have their own full section documenting how the are
-to be used, so the text here is more of a general overview.
+.. _Typicons: https://github.com/stephenhutchings/typicons.font
+
+The main features of novelWriter are listed in the :ref:`a_intro` section. Here, we go into some
+more details on how they are implemented. Later on in this documentation, these features will be
+covered in more detail.
 
 
 .. _a_breakdown_design:
@@ -21,10 +23,7 @@ The main window does not have a toolbar like many other applications do. This re
 since the documents are formatted with style tags, is more or less redundant. However, most
 formatting features supported are available through convenient keyboard shortcuts. They are also
 available in the main menu so you don't have to look up formatting codes every time you need them.
-A full list of shortcuts can be found in the :ref:`a_kb` section.
-
-In addition, novelWriter has a :guilabel:`Focus Mode` where all the user interface elements other
-than the document editor itself are hidden away.
+However, a list of all shortcuts can be found in the :ref:`a_kb` section.
 
 .. note::
    novelWriter is not intended to be a full office type word processor. It doesn't support images,
@@ -39,8 +38,12 @@ The main window is split in two, or optionally three, panels. The left-most pane
 project tree and all the documents in your project. The second panel is the document editor. An
 optional third panel is a document viewer which can view any document in your project independently
 of what is open in the document editor. It is not intended as a preview window, although you can
-use it for this. The main purpose of the viewer is for viewing your notes next to your editor
-while you're writing.
+use it for this as well as it will apply the formatting tags you have specified. The main purpose
+of the viewer is for viewing your notes next to your editor while you're writing.
+
+The editor also has a :guilabel:`Focus Mode` you can toggle either from the menu, or from the icon
+in the editor header. When :guilabel:`Focus Mode` is enabled, all the user interface elements other
+than the document editor itself are hidden away.
 
 A second tab is also available on the main window. This is the :guilabel:`Outline` tab where the
 entire novel structure can be displayed, with all the tags and references listed. Depending on how
@@ -49,21 +52,19 @@ Your project tree lists individual documents, your Outline tree lists the struct
 itself in terms of partitions, chapters and scenes as it appears in the text of those documents.
 
 
-Colour Theming
---------------
+Colour Themes
+-------------
 
 The colour theme of the user interface defaults to that of the host operating system. Some other
 light and dark colour themes are provided, and can be enabled in :guilabel:`Preferences` from the
 :guilabel:`Tools` menu. A number of syntax highlighting themes are also available in
-:guilabel:`Preferences`. Icon themes for light and dark GUI are also available. The icons are based
-on the Typicons_ icon set designed by Stephen Hutchings.
+:guilabel:`Preferences`. Icon themes for light and dark GUIs are also available. The icons are
+based on the Typicons_ icon set designed by Stephen Hutchings.
 
 .. note::
    The GUI colour theme and the syntax highlighting theme are separate settings in
    :guilabel:`Preferences`. If you switch to dark mode on the GUI, you should also switch the icon
    theme and syntax highlighting theme.
-
-.. _Typicons: https://github.com/stephenhutchings/typicons.font
 
 
 .. _a_breakdown_project:
@@ -71,10 +72,13 @@ on the Typicons_ icon set designed by Stephen Hutchings.
 Project Layout
 ==============
 
-You are free to organise your project documents as you wish into subfolders, and split the text
-between documents in whatever way suits you. All that matters to novelWriter is the linear order
-the documents appear at in the project tree (top to bottom). The chapters, scenes and sections of
-the novel are determined by the headings within those documents.
+This is a brief introduction to how you structure your writing projects. All of this will be
+covered in more detail later.
+
+The main point is that you are free to organise your project documents as you wish into subfolders,
+and split the text between documents in whatever way suits you. All that matters to novelWriter is
+the linear order the documents appear at in the project tree (top to bottom). The chapters, scenes
+and sections of the novel are determined by the headings within those documents.
 
 The four heading levels (**H1** to **H4**) are treated as follows:
 
@@ -107,9 +111,10 @@ dictionary with a couple of lines of code. The JSON file can be populated either
 formatted text, or with the raw text as typed into the novel documents. See :ref:`a_export_options`
 for more details.
 
-A number of filter options can be applied to the Build tool, allowing you to export a draft
-manuscript, a reference document of notes, an outline based on chapter and scene titles with a
-synopsis each, and so on. See :ref:`a_export` for more details on export features and formats.
+A number of filter options can be applied to the :guilabel:`Build Novel Project` tool, allowing you
+to export a draft manuscript, a reference document of notes, an outline based on chapter and scene
+titles with a synopsis each, and so on. See :ref:`a_export` for more details on export features and
+formats.
 
 
 .. _a_breakdown_storage:
@@ -127,7 +132,7 @@ project is saved directly to your project folder in separate files. Only the pro
 the text you are currently editing is stored in memory at any given time. Secondly, having multiple
 small files means it is very easy to sync them between computers with standard file synchronisation
 tools. Thirdly, if you use version control software to track the changes to your project, the file
-formats used for the files are well suited for this.
+formats used for the files are well suited. Also the JSON documents have line breaks and indents.
 
 .. note::
 
@@ -136,7 +141,7 @@ formats used for the files are well suited for this.
    the path it was saved or created with. An example where this is not the case is the way Google
    Drive is mapped on Linux Gnome desktops using gvfs/gio.
 
-.. warning::
+.. caution::
 
    You should not add additional files to the project folder yourself. Nor should you manually edit
    files within it as a general rule. If you really must manually edit the text files, e.g. with
