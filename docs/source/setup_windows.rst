@@ -6,17 +6,25 @@ Setup on Windows
 
 This is a brief guide to how you can get novelWriter running on a Windows computer.
 
-Unlike other operating systems, Windows does not come prepared with an environment to run Python
-applications, so you must first install Python. After that, running novelWriter is straightforward.
-
-
 .. _a_setup_win_install:
 
-Install novelWriter
-===================
+Standard Installer
+==================
 
-The recommended way to run novelWriter on Windows is to download the "Minimal Package" option from
-the `main website`_, or from the GitHub_ releases page (it's the same download file).
+You can install novelWriter with dependencies embedded using the Windows Installer (setup.exe) file
+from the `main website`_, or from the GitHub_ releases page. Installing it should be
+straightforward.
+
+If you have any issues, try uninstalling the previous version and making a fresh install.
+
+
+.. _a_setup_win_minimal:
+
+Minimal Package
+===============
+
+Alternatively, you can run novelWriter from the  "Minimal Package" option from the `main website`_,
+or from the GitHub_ releases page (it's the same download file).
 
 This is a zip file containing only the files you need to run novelWriter on Windows. In order to
 make it run on your system, you must first have Python installed (Step 1). Thereafter, a script
@@ -120,14 +128,3 @@ The above steps can be reverted by running:
    pip uninstall -r requirements.txt
 
 .. _Python Package Index: https://pypi.org/
-
-
-Windows Installer
------------------
-
-There used to be a Windows installer, but this is no longer provided. See the `installer issue`_
-for more info on why. You can still create the installer yourself if you want to. It can be
-generated with the provided ``setup.py`` script. use the script's ``help`` command to get further
-instructions.
-
-.. _installer issue: https://github.com/vkbo/novelWriter/issues/640
