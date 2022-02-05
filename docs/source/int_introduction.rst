@@ -1,174 +1,53 @@
 .. _a_intro:
 
 ************
-Introduction
+Key Features
 ************
 
-novelWriter is a simple, multi-document plain text editor using a markup syntax inspired by
-markdown to apply simple formatting to the text. It is designed for writing novels, so the
-formatting features are limited.
+novelWriter is a multi-document plain text editor using a markup syntax inspired by markdown to
+apply simple formatting to the text. It is designed for writing novels, so the formatting features
+are limited. Your novel project is organised as a collection of separate plain text documents
+instead of a single, large document.
 
-The idea is to let the user focus on writing instead of spending time on the formatting of headers
-and text. Therefore you cannot change the look of the text in the editor window. Instead, you
-provide formatting tags where they're needed, like for instance which text is a header, where you
-want text bolded or italicised, and what alignment you want for paragraphs. The actual formatting
-is then added to the text when you run the :guilabel:`Build Novel Project` tool.
+Below are some key features of novelWriter.
 
-A document viewer to the right of the editor can also show a renderred version of any document if
-you want to inspect the result, or just want to keep a second document open for reference when
-you're writing.
+**Focus on writing**
+   The aim of the user interface is to let the user focus on writing instead of spending time
+   formatting text. Formatting is therefore limited to a small set of formatting tags for simple
+   things like text emphasis and paragraph alignment. When you really want to focus on just
+   writing, you can switch the editor into :guilabel:`Focus Mode` where only the text editor window
+   itself is vissible.
 
-You can split your novel project up into as many individual files as you want to. The files are
-glued together when you build the project, in the top-to-bottom order in which they appear in the
-project tree. Splitting the project up into chapter and scene files means you can easily reorder
-them using the drag and drop feature. More details about how projects are structured is covered in
-:ref:`a_struct`.
+**Keep an eye on your notes**
+   The main window can optionally show a document viewer to the right of the editor. This view
+   panel is intended for displaying another scene document, you character notes, plot notes, or any
+   other document you may need to reference while writing.
 
-In addition to novel text documents, the project can contain notes on the various plot elements,
-characters, locations, etc, that make up the story. These notes are organised in a set of
-category-specific top-level folders referred to as *Root Folders*. Each note can be assigned one or
-more tags (one tag is allowed for each heading in the note), and these tags can be referenced from
-within the novel documents and other notes.
+**Organise your documents how you like**
+   You can split your novel project up into as many individual documents as you want to. They are
+   all glued together when you build the project in the top-to-bottom order in which they appear in
+   the project tree. Splitting the project up into chapters and scenes means you can easily reorder
+   them using the drag and drop feature.
 
-These tags make it possible to inter-link documents, and you can also generate an overview of the
-entire novel project and how the various documents and plot elements are interconnected. The tag
-and reference syntax is covered in :ref:`a_proj` and :ref:`a_notes`.
+**Keep track of your plot elements**
+   All notes in your project can be assigned a *tag* you can *reference* from any other document or
+   note. In fact, you can add a new tag under each heading of a note if you need to be able to
+   reference a specific section. Note tags are organised into categories with specific keywords you
+   can use to reference them.
 
-These features are available through special meta keywords described in :ref:`a_struct_tags`.
-Syntax highlighting is provided to make it easier to verify that the markdown tags are used
-correctly.
+**Get an overview of your plot elements**
+   In the :guilabel:`Outline` tab on the main window you can see an outline of all the chapter and
+   scene sections of your project. If they have any references in them, these are listed in
+   columns. You can also add a synopsis to each document, which can be listed here. You have the
+   option to add or remove columns of information from the outline. A subset of the outline
+   information is also available in the :guilabel:`Novel` tab under the main project tree.
 
-An overview of the supported formatting syntax is covered in :ref:`a_ui`.
-
-
-.. _a_intro_storage:
-
-Project Storage
-===============
-
-The files of a novelWriter project are stored in a dedicated project folder. The project structure
-is kept in a file at the root of this folder called ``nwProject.nwx``. All the document files and
-associated meta data is stored in the other folders below the project folder. For more technical
-details about what all the files mean and how they're organised, see the :ref:`a_storage` section.
-
-This way of storing data was chosen for several reasons. Firstly, all the text you add to your
-project is saved directly to your project folder in separate files. Only the project structure and
-the text you are currently editing is stored in memory at any given time. Secondly, having multiple
-small files means it is very easy to sync them between computers with standard file synchronisation
-tools. Thirdly, if you use version control software to track the changes to your project, the file
-formats used for the files are well suited for this.
-
-.. note::
-
-   Since novelWriter has to keep track of a bunch of files and folders when a project is open, it
-   may not run well on some virtual file systems. A file or folder must be accessible with exactly
-   the path it was saved or created with. An example where this is not the case is the way Google
-   Drive is mapped on Linux Gnome desktops using gvfs/gio.
-
-.. warning::
-
-   You should not add additional files to the project folder yourself. Nor should you manually edit
-   files within it as a general rule. If you really must manually edit the text files, e.g. with
-   some automated task you want to perform, you need to rebuild the index when you open the project
-   again.
-
-   Editing text files in the ``content`` folder is less risky as they are just plain text. Editing
-   the main project XML file, however, may make the project file unreadable and you may crash
-   novelWriter and lose project structure information and project settings.
-
-
-.. _a_intro_design:
-
-Design Philosophy
-=================
-
-The user interface of novelWriter is intended to be as minimalistic as practically possible, while
-at the same time provide a complete set of features needed for writing a novel.
-
-.. note::
-   novelWriter is not intended to be a full office type word processor. It doesn't support images,
-   links, tables, and other complex structures and objects often needed for such documents.
-   Formatting is limited to headers, emphasis, text alignment, and a few other simple features.
-
-.. tip::
-   If you do need to align information in rows and columns in your notes, you can achieve this with
-   tabs and line breaks. The tab stop width can be specified in :guilabel:`Preferences`.
-
-The main window does not have a toolbar like many other applications do. This reduces clutter, and
-since the documents are formatted with style tags, is more or less redundant. However, most
-formatting features supported are available through convenient keyboard shortcuts. They are also
-available in the main menu so you don't have to look up formatting codes every time you need them.
-A full list of shortcuts can be found in the :ref:`a_kb` section.
-
-In addition, novelWriter has a :guilabel:`Focus Mode` where all the user interface elements other
-than the document editor itself are hidden away.
-
-The colour scheme of the user interface defaults to that of the host operating system. Some other
-light and dark colour themes are provided, and can be enabled in :guilabel:`Preferences` from the
-:guilabel:`Tools` menu. A number of syntax highlighting themes are also available in
-:guilabel:`Preferences`. A set of icon themes in colour and greyscale are also offered. The icons
-are based on the Typicons_ icon set designed by Stephen Hutchings.
-
-The main window is split in two, or optionally three, panels. The left-most panel contains the
-project tree and all the documents in your project. The second panel is the document editor. An
-optional third panel is a document viewer which can view any document in your project independently
-of what is open in the document editor. It is not intended as a preview window, although you can
-use it for this. The main purpose of the viewer is for viewing your notes next to your editor
-while you're writing.
-
-A second tab is also available on the main window. This is the :guilabel:`Outline` tab where the
-entire novel structure can be displayed, with all the tags and references listed. Depending on how
-you structure your novel documents, this outline can be quite different from your project tree.
-Your project tree lists individual documents, your Outline tree lists the structure of the novel
-itself in terms of partitions, chapters and scenes as it appears in the text of those documents.
-
-.. _Typicons: https://github.com/stephenhutchings/typicons.font
-
-
-.. _a_intro_project:
-
-Project Layout
-==============
-
-You are free to organise your project documents as you wish into subfolders, and split the text
-between documents in whatever way suits you. All that matters to novelWriter is the linear order
-the documents appear at in the project tree (top to bottom). The chapters, scenes and sections of
-the novel are determined by the headings within those documents.
-
-The four heading levels (**H1** to **H4**) are treated as follows:
-
-* **H1** is used for the book title, and for partitions.
-* **H2** is used for chapter tiles.
-* **H3** is used for scene titles – optionally replaced by separators.
-* **H4** is for section titles within scenes, if such granularity is needed.
-
-This header level structure is only taken into account for novel documents. For the project notes,
-the header levels have no structural meaning, and the user is free to do whatever they want. See
-:ref:`a_struct` and :ref:`a_notes` for more details.
-
-
-.. _a_intro_export:
-
-Project Export
-==============
-
-The project can at any time be exported to a range of different formats through the
-:guilabel:`Build Novel Project` tool. Natively, novelWriter supports export to Open Document,
-HTML5, and various flavours of Markdown.
-
-The HTML5 export format is suitable for conversion by a number of other tools like Pandoc, or for
-importing into word processors if the Open Document format isn't suitable. In addition, printing
-and printing to PDF is also possible. 
-
-You can also export the content of the project to a JSON file. This is useful if you want to write
-your own processing script in for instance Python as the entire novel can be read into a Python
-dictionary with a couple of lines of code. The JSON file can be populated either with HTML
-formatted text, or with the raw text as typed into the novel documents. See :ref:`a_export_options`
-for more details.
-
-A number of filter options can be applied to the Build tool, allowing you to export a draft
-manuscript, a reference document of notes, an outline based on chapter and scene titles with a
-synopsis each, and so on. See :ref:`a_export` for more details on export features and formats.
+**Building your manuscript**
+   Whether you want to compile a manuscript, or export all your notes, or generate an outline of
+   your chapters and scenes with a synopsis, you can use the :guilabel:`Build Novel Project` tool.
+   The tool lets you select what information you want to include in the generated document, and how
+   it is formatted. You can send the result to a printer, a PDF, or to an Open Document file that
+   can be opened by most office type word processors.
 
 
 .. _a_intro_screenshots:

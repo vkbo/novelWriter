@@ -16,7 +16,7 @@ The main shorcuts are as follows:
 
 .. csv-table:: Keyboard Shortcuts
    :header: "Shortcut", "Description"
-   :widths: 30, 70
+   :widths: 25, 75
    :class: "tight-table"
 
    ":kbd:`Alt`:kbd:`1`",                 "Switch focus to the project tree. On Windows, use :kbd:`Ctrl`:kbd:`Alt`:kbd:`1`."
@@ -110,7 +110,7 @@ a key or key combination for the inserted content.
 
 .. csv-table:: Keyboard Shortcuts
    :header: "Shortcut", "Description"
-   :widths: 40, 60
+   :widths: 25, 75
    :class: "tight-table"
 
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`−`",                 "Insert a short dash (en dash)."

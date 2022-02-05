@@ -1,7 +1,7 @@
-.. _a_other:
+.. _a_source:
 
 *******************
-Other Setup Methods
+Running from Source
 *******************
 
 .. _main website: https://novelwriter.io
@@ -9,8 +9,8 @@ Other Setup Methods
 .. _PyPi: https://pypi.org/project/novelWriter/
 .. _Sphinx Docs: https://www.sphinx-doc.org/
 
-This section describes various other setup methods, and instructions for building needed files
-when running novelWriter from the source code directly.
+This section describes various ways of running novelWriter directly from the source code, and how
+to build the various components like the translation files and documentation.
 
 .. note::
    The text below assumes the command ``python`` corresponds to a Python 3 executable. Python 2 is
@@ -19,7 +19,7 @@ when running novelWriter from the source code directly.
    without the ``python`` command. Likewise, ``pip`` may need to be replaced with ``pip3``.
 
 
-.. _a_other_depend:
+.. _a_source_depend:
 
 Dependencies
 ============
@@ -45,48 +45,15 @@ must be at least 3.0 to work with Windows. On Linux, 2.0 also works fine.
 If you install from PyPi, these dependencies should be installed automatically. If you install from
 source, dependencies can still be installed from PyPi with:
 
-.. code-block:: console
+.. code-block:: bash
 
    pip install -r requirements.txt
 
 
-.. _a_other_pip:
+.. _a_source_install:
 
-Installing from PyPi
-====================
-
-novelWriter is available on the Python Package Index, or PyPi_.
-
-To install from PyPi you must first have the ``python`` and ``pip`` commands available on your
-system. If you don't, see specific instructions for your operating system in this documentation on
-how to get the Python environment set up.
-
-To install novelWriter from PyPi, use the following command:
-
-.. code-block:: console
-
-   pip install novelwriter
-
-To upgrade an existing installation, use:
-
-.. code-block:: console
-
-   pip install --upgrade novelwriter
-
-When installing via pip, novelWriter can be launched from command line with:
-
-.. code-block:: console
-
-   novelWriter
-
-Make sure the install location for pip is in your PATH variable. This is not always the case by
-default.
-
-
-.. _a_other_source:
-
-Installing from Source
-======================
+Install from Source
+===================
 
 You can download the latest version of novelWriter from the source repository on GitHub_ and run
 the setup manually. It is equivalent to what the ``pip install`` command does, and it installs
@@ -96,19 +63,19 @@ This step requires that you have ``setuptools`` installed on your system. If you
 installed, it can usually be installed from your distro's repository. For Debian and Ubuntu this is
 achieved with:
 
-.. code-block:: console
+.. code-block:: bash
 
    sudo apt install python3-setuptools
 
 The package is also available from PyPi:
 
-.. code-block:: console
+.. code-block:: bash
 
    pip install --user setuptools
 
 With ``setuptools`` in place, novelWriter can be installed to the user space with:
 
-.. code-block:: console
+.. code-block:: bash
 
    python setup.py install --user
 
@@ -118,7 +85,7 @@ With ``setuptools`` in place, novelWriter can be installed to the user space wit
    running ``python setup.py --help``.
 
 
-.. _a_other_i18n:
+.. _a_source_i18n:
 
 Building the Translation Files
 ==============================
@@ -130,7 +97,7 @@ have the ``.qm`` file extension.
 
 You can build the ``.qm`` files with:
 
-.. code-block:: console
+.. code-block:: bash
 
    python setup.py qtlrelease
 
@@ -143,35 +110,30 @@ needed package is called `qttools5-dev-tools`.
    the ``i18n`` folder of the source code.
 
 
-.. _a_other_docs:
+.. _a_source_docs:
 
 Building the Documentation
 ==========================
 
 A local copy of this documentation can be generated as HTML. This requires the following Python
-packages on Debian and Ubuntu.
+packages from PyPi:
 
-* ``python3-sphinx``
-* ``python3-sphinx-rtd-theme``
+.. code-block:: bash
 
-Or from PyPi:
+   pip install furo sphinx
 
-.. code-block:: console
+The documentation can then be built from the root folder in the source code by running:
 
-   pip install sphinx sphinx-rtd-theme
+.. code-block:: bash
 
-The documentation can then be built from the ``docs`` folder in the source code by running:
-
-.. code-block:: console
-
-   make html
+   make -C docs html
 
 If successful, the documentation should be available in the ``docs/build/html`` folder and you can
 open the ``index.html`` file in your browser.
 
 You can also build a PDF manual from the documentation using the setup script:
 
-.. code-block:: console
+.. code-block:: bash
 
    python setup.py manual
 

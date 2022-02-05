@@ -1,11 +1,13 @@
 .. _a_ui:
 
-***********************
-User Interface Overview
-***********************
+******************
+The User Interface
+******************
 
-The user interface is kept as simple as possible to avoid distractions when writing. This page
-lists all the main GUI elements, and explains what they do.
+.. _Compose Key: https://en.wikipedia.org/wiki/Compose_key
+
+This sections covers in more detail what all the information on the user interface is for, and how
+you can organise your project, and how you use the editor, viewer and outline panel.
 
 
 .. _a_ui_tree:
@@ -14,7 +16,7 @@ The Project Tree
 ================
 
 The main window contains a project tree in the left-most panel. It shows the entire structure of
-the project. It has four columns:
+the project, and has four columns:
 
 **Column 1**
    The first column shows the icon and label of each folder, document, or note in your project. The
@@ -30,7 +32,7 @@ the project. It has four columns:
 **Column 3**
    The third column indicates whether the document is included in the final project build or not.
    You may want to filter out documents that you no longer want to keep in the final manuscript,
-   but want to keep in the project for reference.
+   but want to keep in the project tree for reference.
 
 **Column 4**
    The fourth column shows the user-defined status or importance labels you've assigned to each
@@ -60,7 +62,7 @@ story itself rather than the document files.
 
 .. note::
    You cannot reorganise the entries in the novel tree, or add any new ones, as that would imply
-   restructuring the content of the document files.
+   restructuring the content of the document files. Any editing must be done in the project tree.
 
 
 .. _a_ui_tree_status:
@@ -117,9 +119,9 @@ Editing and Viewing Documents
 To edit a document, double-click it in the project tree, or press the :kbd:`Return` key while
 having it selected. This will open the document in the document editor. The editor uses a
 markdown-like syntax for some features, and a novelWriter-specific syntax for others. The syntax
-format is described in the :ref:`a_fmt` section below. The editor has a maximise button (toggles
-the :guilabel:`Focus Mode`) and a close button in the top–right corner. On the top–left side you
-will find an edit button that opens the :guilabel:`Item Settings` dialog for the currently open
+format is described in the :ref:`a_fmt` section. The editor has a maximise button (toggles the
+:guilabel:`Focus Mode`) and a close button in the top–right corner. On the top–left side you will
+find an edit button that opens the :guilabel:`Item Settings` dialog for the currently open
 document, and a search button to open the search dialog.
 
 Any document in the project tree can also be viewed in parallel in a right hand side document
@@ -132,8 +134,11 @@ the view panel, next to the close button, to achieve the same thing.
 
 Both the document editor and viewer will show the label of the document in the header at the top of
 the edit or view panel. Optionally, the full project path to the document can be shown. This can be
-set in :guilabel:`Preferences`. Clicking on the document title bar will select and reveal its
-location in the project tree, making it easier to locate in a large project.
+set in :guilabel:`Preferences`.
+
+.. tip::
+   Clicking on the document title bar will select the document in the project tree and reveal its
+   location, making it easier to locate in a large project.
 
 Any tag reference in the editor can be opened in the viewer by moving the cursor to the label and
 pressing :kbd:`Ctrl`:kbd:`Return`. You can also control-click them with your mouse. In the viewer,
@@ -172,7 +177,7 @@ Pressing :kbd:`Return` while in the search box will search for the next occurren
 the highlighted text and move to the next result.
 
 There are a number of settings for the search tool available as toggle switches above the search
-box. They allows you to search for, in order: matched case only, whole word results only, search
+box. They allow you to search for, in order: matched case only, whole word results only, search
 using regular expressions, loop search when reaching the end of the document, and move to the next
 document when reaching the end. There is also a switch that will try to match the case of the word
 when the replacement is made. That is, it will try to keep the word upper, lower, or capitalised to
@@ -195,8 +200,6 @@ you wish.
    If you don't like auto-replacement, all symbols inserted by this feature are also available in
    the :guilabel:`Insert` menu, and via convenient :ref:`a_kb_ins`. You may also be using a
    `Compose Key`_ setup, which means you may not need the auto-replace feature.
-
-.. _Compose Key: https://en.wikipedia.org/wiki/Compose_key
 
 The editor is able to replace two and three hyphens with short and long dashes, triple points with
 ellipsis, and replace straight single and double quotes with user-defined quote symbols. It will
