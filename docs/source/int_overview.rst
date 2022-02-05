@@ -1,8 +1,8 @@
-.. _a_started:
+.. _a_overview:
 
-***************
-Getting Started
-***************
+********
+Overview
+********
 
 .. image:: images/python_powered.svg
    :align: right

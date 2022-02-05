@@ -56,7 +56,7 @@ system for further details.
    :hidden:
 
    int_introduction
-   int_started
+   int_overview
    setup_linux
    setup_mac
    setup_windows
