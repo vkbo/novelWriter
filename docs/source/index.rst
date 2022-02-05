@@ -27,13 +27,8 @@ JSON files. See the :ref:`a_breakdown_storage` section for more details.
 
 Any operating system that can run Python 3 and has the Qt 5 libraries should be able to run
 novelWriter. It runs fine on Linux, Windows and macOS, and users have tested it on other platforms
-too. novelWriter can be run directly from the Python source, installed from the pip tool. See also
-:ref:`a_setup_linux`, :ref:`a_setup_win`, or :ref:`a_setup_mac`.
-
-You can also download a minimal archive package of novelWriter tailored for your operating system.
-This package can be extracted anywhere on your computer. It contains a setup script that will
-create the necessary icons and file associations. See the setup instructions for your operating
-system for further details.
+too. novelWriter can be run directly from the Python source, installed from the pip tool. See
+:ref:`a_started` for more details.
 
 .. note::
    Version 1.5 introduced a few changes that will require you to make a few minor modifications to
@@ -57,10 +52,8 @@ system for further details.
 
    int_introduction
    int_overview
-   setup_linux
-   setup_mac
-   setup_windows
-   setup_other
+   int_started
+   int_source
 
 .. toctree::
    :maxdepth: 1

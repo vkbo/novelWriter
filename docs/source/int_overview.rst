@@ -19,7 +19,7 @@ In order to run novelWriter, you also need a few additional packages. The user i
 with `Qt 5 <https://www.qt.io/>`_, a cross platform library for building graphical user interface
 applications.
 
-For install instructions, see :ref:`a_setup_linux`, :ref:`a_setup_win`, or :ref:`a_setup_mac`.
+For install instructions, see :ref:`a_started`.
 
 Using novelWriter
 =================
