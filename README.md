@@ -42,7 +42,7 @@ met. It is regularly tested on Debian and Ubuntu Linux, Windows, and macOS.
 The Releases page has a `.deb` package that should install on Mint, Ubuntu and Debian.
 
 You can also use the novelWriter [PPA](https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter).
-For more details, check the [Getting STarted](https://novelwriter.readthedocs.io/en/latest/int_started.html)
+For more details, check the [Getting Started](https://novelwriter.readthedocs.io/en/latest/int_started.html)
 section in the documentation.
 
 ### Windows 10+
@@ -55,7 +55,7 @@ versions. The installer includes Python 3.10 and the library dependencies.
 You can also download and install one of the minimal zip files from the
 [Releases](https://github.com/vkbo/novelWriter/releases) page or the
 [novelwriter.io](https://novelwriter.io/) website.
-The [Getting STarted](https://novelwriter.readthedocs.io/en/latest/int_started.html) section of the
+The [Getting Started](https://novelwriter.readthedocs.io/en/latest/int_started.html) section of the
 documentation has detailed install instructions for these packages, and for installation via the
 Python Package Index.
 
