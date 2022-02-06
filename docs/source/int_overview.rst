@@ -4,9 +4,11 @@
 Overview
 ********
 
-.. image:: images/python_powered.svg
-   :align: right
-   :width: 220
+.. only:: html
+
+   .. image:: images/python_powered.png
+      :align: right
+      :width: 220
 
 novelWriter is built on `Python 3 <https://www.python.org/>`_, a cross platform programming
 language that doesn't require a compiler to build and run. That means that the code can run on your
