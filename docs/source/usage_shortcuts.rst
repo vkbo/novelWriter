@@ -16,7 +16,7 @@ The main shorcuts are as follows:
 
 .. csv-table:: Keyboard Shortcuts
    :header: "Shortcut", "Description"
-   :widths: 25, 75
+   :widths: 20, 80
    :class: "tight-table"
 
    ":kbd:`Alt`:kbd:`1`",                 "Switch focus to the project tree. On Windows, use :kbd:`Ctrl`:kbd:`Alt`:kbd:`1`."
@@ -42,9 +42,9 @@ The main shorcuts are as follows:
    ":kbd:`Ctrl`:kbd:`B`",                "Format selected text, or word under cursor, with strong emphasis (bold)."
    ":kbd:`Ctrl`:kbd:`C`",                "Copy selected text to clipboard."
    ":kbd:`Ctrl`:kbd:`D`",                "Strikethrough selected text, or word under cursor."
-   ":kbd:`Ctrl`:kbd:`E`",                "If in the project tree, edit a document or folder settings. (Same as :kbd:`F2`.)"
+   ":kbd:`Ctrl`:kbd:`E`",                "If in the project tree, edit a document or folder settings."
    ":kbd:`Ctrl`:kbd:`F`",                "Open the search bar and search for the selected word, if any is selected."
-   ":kbd:`Ctrl`:kbd:`G`",                "Find next occurrence of search word in current document. (Same as :kbd:`F3`.)"
+   ":kbd:`Ctrl`:kbd:`G`",                "Find next occurrence of search word in current document."
    ":kbd:`Ctrl`:kbd:`H`",                "Open the search and replace bar and search for the selected word, if any is selected. (On Mac, this is :kbd:`Cmd`:kbd:`=`.)"
    ":kbd:`Ctrl`:kbd:`I`",                "Format selected text, or word under cursor, with emphasis (italic)."
    ":kbd:`Ctrl`:kbd:`K`",                "Activate the insert commands. The commands are listed in :ref:`a_kb_ins`."
@@ -71,7 +71,7 @@ The main shorcuts are as follows:
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`/`",    "Remove block formatting for block under cursor."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`1`",    "Replace occurrence of search word in current document, and search for next occurrence."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`A`",    "Select all text in current paragraph."
-   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`G`",    "Find previous occurrence of search word in current document. (Same as :kbd:`Shift`:kbd:`F3`.)"
+   ":kbd:`Ctrl`:kbd:`Shift`:kbd:`G`",    "Find previous occurrence of search word in current document."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`I`",    "Import text to the current document from a text file."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`N`",    "Create new folder."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`O`",    "Open a project."
@@ -81,8 +81,8 @@ The main shorcuts are as follows:
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`Z`",    "Undo move of project tree item."
    ":kbd:`Ctrl`:kbd:`Shift`:kbd:`Del`",  "If in the project tree, move a document to trash, or delete a folder."
    ":kbd:`F1`",                          "Open the online user manual."
-   ":kbd:`F2`",                          "If in the project tree, edit a document or folder settings. (Same as :kbd:`Ctrl`:kbd:`E`)"
-   ":kbd:`F3`",                          "Find next occurrence of search word in current document. (Same as :kbd:`Ctrl`:kbd:`G`)"
+   ":kbd:`F2`",                          "If in the project tree, edit a document or folder settings."
+   ":kbd:`F3`",                          "Find next occurrence of search word in current document."
    ":kbd:`F5`",                          "Open the :guilabel:`Build Novel Project` dialog."
    ":kbd:`F6`",                          "Open the :guilabel:`Writing Statistics` dialog."
    ":kbd:`F7`",                          "Re-run spell checker."
@@ -91,7 +91,7 @@ The main shorcuts are as follows:
    ":kbd:`F10`",                         "Re-build the project outline."
    ":kbd:`F11`",                         "Activate full screen mode."
    ":kbd:`Shift`:kbd:`F1`",              "Open the local user manual (PDF) if it is available."
-   ":kbd:`Shift`:kbd:`F3`",              "Find previous occurrence of search word in current document. (Same as :kbd:`Ctrl`:kbd:`Shift`:kbd:`G`.)"
+   ":kbd:`Shift`:kbd:`F3`",              "Find previous occurrence of search word in current document."
    ":kbd:`Shift`:kbd:`F6`",              "Open the :guilabel:`Project Details` dialog."
    ":kbd:`Return`",                      "If in the project tree, open a document for editing."
 
@@ -110,7 +110,7 @@ a key or key combination for the inserted content.
 
 .. csv-table:: Keyboard Shortcuts
    :header: "Shortcut", "Description"
-   :widths: 25, 75
+   :widths: 30, 70
    :class: "tight-table"
 
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`−`",                 "Insert a short dash (en dash)."
