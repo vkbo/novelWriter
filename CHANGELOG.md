@@ -1,5 +1,67 @@
 # novelWriter Changelog
 
+## Version 1.6 RC 1 [2022-02-06]
+
+### Release Notes
+
+This is a release candidate for the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you take frequent
+backups.
+
+Please check the changelog for an overview of changes. The full release notes will be added to the
+final release.
+
+### Detailed Changelog
+
+**Features**
+
+* Added switches to hide scene and section breaks on the Build Novel Project tool. This means the
+  section format can now be used like the scene format in that it is possible to leave them blank
+  to insert an empty paragraph into the manuscript. Issue #972. PR #974.
+* The project index is now automatically rebuilt if any of the project files are missing in it when
+  the project is opened. This also solves the issue of an empty index being silently ignored.
+  Issue #957. PR #975.
+
+**User Interface**
+
+* Remove the descriptive labels for all menu entries that were displayed on the status bar. They
+  generally just restated what the menu item label already said, so they weren't very helpful.
+  Removing them, as well as removing or joining a number of other labels and tooltips, reduced the
+  amount of words needing translating for i18n by about 25%. PR #969.
+
+**Installation**
+
+* A Windows setup installer build option has been added again to the main setup script. It builds
+  a setup.exe file with Python and dependencies embedded, based on the minimal zip file of the
+  source for Windows. PRs #981 and #983.
+
+**Bugfixes**
+
+* Fix an issue on Windows where a crash would occur if project and backup paths were on separate
+  drives. Issue #954. PR #955.
+* Fix a JSON error in the Chinese project file translations. PR #963.
+* Make sure the document save call doesn't crash when renaming the temp file to the permanent file
+  name. This caused a crash on a mapped Google Drive. Google Drive on Linux is not supported, but
+  trying to use it still shouldn't cause a crash. Issue #960. PRs #961 and #976.
+
+**Internationalisation**
+
+* Move the whole i18n effort onto Crowdin. This required a few changes to the way i18n files are
+  generated and named. PRs #964, #965, #968, and #970.
+
+**Documentation**
+
+* Remove outdated reference to `pylupdate5` as a dependency for i18n. The needed code is now
+  included with the i18n framework in the source. PR #963.
+* Add a note in the documentation that if the Launchpad PPA is used on Debian, the end point for
+  Ubuntu 20.04 must be used. This is due to a change in the compression algorithm used in later
+  releases. Issue #956. PR #976.
+* Add a new theme for the documentation, and restructure it with better introduction and overview
+  sections. PR #978.
+* Add information on how to customise novelWriter to the documentation. Issue #892. PR #984.
+
+----
+
 ## Version 1.6 Beta 1 [2022-01-04]
 
 ### Release Notes
