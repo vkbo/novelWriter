@@ -278,6 +278,18 @@ class Config:
         logger.verbose("Config path: %s", self.confPath)
         logger.verbose("Data path: %s", self.dataPath)
 
+        # Check Data Path Subdirs
+        dataDirs = ["syntax", "themes"]
+        for dataDir in dataDirs:
+            dirPath = os.path.join(self.dataPath, dataDir)
+            if not os.path.isdir(dirPath):
+                try:
+                    os.mkdir(dirPath)
+                    logger.info("Created folder: %s", dirPath)
+                except Exception:
+                    logger.error("Could not create folder: %s", dirPath)
+                    logException()
+
         self.confFile = self.appHandle+".conf"
         self.lastPath = os.path.expanduser("~")
         self.appPath = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))

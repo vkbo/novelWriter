@@ -54,6 +54,7 @@ too. novelWriter can be run directly from the Python source, installed from the 
    int_overview
    int_started
    int_source
+   int_customise
 
 .. toctree::
    :maxdepth: 1
@@ -82,5 +83,6 @@ too. novelWriter can be run directly from the Python source, installed from the 
    :caption: Under the Hood
    :hidden:
 
+   tech_locations
    tech_storage
    tech_tests

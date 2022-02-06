@@ -21,6 +21,8 @@ applications.
 
 For install instructions, see :ref:`a_started`.
 
+For information on how to add spell check dictionaries, see :ref:`a_custom_dict`.
+
 Using novelWriter
 =================
 
