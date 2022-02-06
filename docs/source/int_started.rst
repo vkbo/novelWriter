@@ -4,21 +4,26 @@
 Getting Started
 ***************
 
+.. _brew docs: https://docs.brew.sh/Homebrew-and-Python
+.. _Enchant: https://abiword.github.io/enchant/
 .. _GitHub: https://github.com/vkbo/novelWriter
-.. _Releases: https://github.com/vkbo/novelWriter/releases
-.. _RPM: https://github.com/vkbo/novelWriter/issues/907
 .. _macOS: https://github.com/vkbo/novelWriter/issues/867
 .. _main website: https://novelwriter.io
 .. _PPA: https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter
 .. _Pre-Release PPA: https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter-pre
-.. _python.org: https://www.python.org/downloads/windows
-.. _brew docs: https://docs.brew.sh/Homebrew-and-Python
 .. _PyPi: https://pypi.org/project/novelWriter/
+.. _python.org: https://www.python.org/downloads/windows
+.. _Releases: https://github.com/vkbo/novelWriter/releases
+.. _RPM: https://github.com/vkbo/novelWriter/issues/907
 
 If you are using Windows or a Debian-based Linux distribtuion, you can install novelWriter from
 package installers. If you are on macOS, you have the option to run novelWriter from a standalone
 folder. See :ref:`a_started_minimal`. This option is also available for Windows and Linux. The
 third option is to install novelWriter from the Python Package Index. See :ref:`a_started_pip`.
+
+Spell checking in novelWriter is provided by a third party library called Enchant_. Generally, it
+should pull dictionaries from your operating system automatically. However, on Windows they must be
+installed manually. See :ref:`a_custom_dict` for more details.
 
 .. admonition:: Help Wanted
    :class: seealso
