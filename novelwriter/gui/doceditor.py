@@ -237,10 +237,10 @@ class GuiDocEditor(QTextEdit):
         if self.mainConf.textFont is None:
             # If none is defined, set a default font
             theFont = QFont()
-            if self.mainConf.osWindows and "Arial" in self.guiFontDB.families():
+            if self.mainConf.osWindows and "Arial" in self.theTheme.guiFontDB.families():
                 theFont.setFamily("Arial")
                 theFont.setPointSize(12)
-            elif self.mainConf.osDarwin and "Courier" in self.guiFontDB.families():
+            elif self.mainConf.osDarwin and "Courier" in self.theTheme.guiFontDB.families():
                 theFont.setFamily("Courier")
                 theFont.setPointSize(12)
             else:
