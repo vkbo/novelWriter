@@ -52,12 +52,13 @@ modify it as you like.
 Remember to also change the name of your theme by modifying the ``name`` setting at the top of the
 file.
 
-For novelWriter to locate the custom theme files, you must copy them to the :ref:`a_locations_data`
-location in your home or user area. There should be a folder there named ``syntax`` for syntax
-themes and just ``themes`` for GUI themes.
+For novelWriter to be able to locate the custom theme files, you must copy them to the
+:ref:`a_locations_data` location in your home or user area. There should be a folder there named
+``syntax`` for syntax themes and just ``themes`` for GUI themes.
 
 Once the files are copied there, they should show up in :guilabel:`Preferences` with the label you
 set as ``name`` inside the file.
+
 
 Theme CSS Files
 ---------------

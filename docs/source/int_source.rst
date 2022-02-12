@@ -82,7 +82,7 @@ With ``setuptools`` in place, novelWriter can be installed to the user space wit
 .. tip::
 
    The main setup script has a number of options that may be useful to you. You can list them by
-   running ``python setup.py --help``.
+   running ``python setup.py help``.
 
 
 .. _a_source_i18n:

@@ -24,16 +24,16 @@ Below are some key features of novelWriter.
    other document you may need to reference while writing.
 
 **Organise your documents how you like**
-   You can split your novel project up into as many individual documents as you want to. They are
-   all glued together when you build the project in the top-to-bottom order in which they appear in
-   the project tree. Splitting the project up into chapters and scenes means you can easily reorder
-   them using the drag and drop feature.
+   You can split your novel project up into as many individual documents as you want to. When you
+   build the project, they are all glued together in the top-to-bottom order in which they appear
+   in the project tree. You can use as few text documents as you like, but splitting the project up
+   into chapters and scenes means you can easily reorder them using the drag and drop feature.
 
 **Keep track of your plot elements**
    All notes in your project can be assigned a *tag* you can *reference* from any other document or
-   note. In fact, you can add a new tag under each heading of a note if you need to be able to
-   reference a specific section. Note tags are organised into categories with specific keywords you
-   can use to reference them.
+   notes. In fact, you can add a new tag under each heading of a note if you need to be able to
+   reference a specific section. Note tags are organised into categories with specific reference
+   keywords.
 
 **Get an overview of your plot elements**
    In the :guilabel:`Outline` tab on the main window you can see an outline of all the chapter and

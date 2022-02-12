@@ -28,8 +28,8 @@ installed manually. See :ref:`a_custom_dict` for more details.
 .. admonition:: Help Wanted
    :class: seealso
 
-   If you would like to help making more installers, the project is currently loooking for people
-   who can help make releases for Reed Hat-based Linux distros (RPM) and for macOS. See the issues
+   If you would like to help making more installers, the project is currently looking for people
+   who can help make releases for Red Hat-based Linux distros (RPM) and for macOS. See the issues
    posted for RPM_ and macOS_ on GitHub_.
 
 
@@ -42,7 +42,8 @@ You can install novelWriter with both Python and library dependencies embedded u
 Installer (setup.exe) file from the `main website`_, or from the Releases_ page on GitHub.
 Installing it should be straightforward.
 
-If you have any issues, try uninstalling the previous version and making a fresh install.
+If you have any issues, try uninstalling the previous version and making a fresh install. If you
+already had a version installed via a different method, you should uninstall that first.
 
 
 .. _a_started_debian:
@@ -92,8 +93,8 @@ Then run the update and install commands as for Ubuntu:
 
 .. note::
 
-   Please use the Ubuntu 20.04 packages for Debian. The newer Ubuntu packages use a different
-   compression that Debian doesn't currently support.
+   Please use the Ubuntu 20.04 (focal) packages for Debian. The newer Ubuntu packages use a
+   different compression algorithm that Debian doesn't currently support.
 
 
 .. _a_started_minimal:
