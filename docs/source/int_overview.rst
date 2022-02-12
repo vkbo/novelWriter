@@ -12,10 +12,10 @@ Overview
 
 novelWriter is built on `Python 3 <https://www.python.org/>`_, a cross platform programming
 language that doesn't require a compiler to build and run. That means that the code can run on your
-computer right out of the box, or zip file as it were.
+computer right out of the box, or from a zip file.
 
-While it is developed for Linux primarily, it runs just fine on Windows as well. It also works just
-fine on macOS, but the author is not a mac user so less attention is paid to that platform.
+While it is developed for Linux primarily, it runs just fine on Windows as well. It also works fine
+on macOS, but the author is not a mac user so less attention is paid to that platform.
 
 In order to run novelWriter, you also need a few additional packages. The user interface is built
 with `Qt 5 <https://www.qt.io/>`_, a cross platform library for building graphical user interface
@@ -25,12 +25,13 @@ For install instructions, see :ref:`a_started`.
 
 For information on how to add spell check dictionaries, see :ref:`a_custom_dict`.
 
+
 Using novelWriter
 =================
 
 In order to use novelWriter effectively, you need to know the basics of how it works. The following
-sections will explain the main principles. It starts of with the basics, and gets more detailed as
-you read on.
+sections will explain the main principles. It starts with the basics, and gets more detailed as you
+read on.
 
 :ref:`a_breakdown` – Essential Information
    This section explains the basics of how the application works and what it can and cannot do.
@@ -46,7 +47,7 @@ you read on.
 
 :ref:`a_kb` – Optional / Lookup
    This section lists all the keyboard shortcuts in novelWriter and what they do. Most of the
-   shortcuts are also listed next to the menu items inside the app, so this section is purely for
+   shortcuts are also listed next to the menu items inside the app, so this section is mostly for
    reference.
 
 :ref:`a_typ` – Optional
@@ -71,8 +72,8 @@ to take advantage of these features, you must structure your text in a specific 
 meta data for it to extract.
 
 :ref:`a_proj` – Essential Information
-   This section explains how you organise the content of your project, how to customise them, and
-   how to handle archived content and set up automated backups of your work.
+   This section explains how you organise the content of your project, how to customise the text,
+   and how to set up automated backups of your work.
 
 :ref:`a_struct` – Essential Information
    This section covers the way your novel's structure is encoded into the text documents. It
@@ -82,7 +83,7 @@ meta data for it to extract.
 :ref:`a_notes` - Recommended Reading
    This section briefly describes what novelWriter does with the note files you add to your
    project. Generally, the application doesn't do much with them at all aside from looking through
-   the for tags you've set so that it knows which file to open when you click on a reference.
+   them for tags you've set so that it knows which file to open when you click on a reference.
 
 :ref:`a_export` - Recommended Reading
    This section explains in more detail how the export tool works. In particular how you can
