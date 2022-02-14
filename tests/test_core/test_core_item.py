@@ -358,12 +358,9 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     xContent = etree.SubElement(nwXML, "content")
     theItem.packXML(xContent)
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
-        b"<content>"
-        b"<item handle=\"0123456789abc\" order=\"1\" parent=\"0123456789abc\">"
-        b"<name>A Name</name><type>FILE</type><class>NOVEL</class><status>New</status>"
-        b"<exported>False</exported><layout>NOTE</layout><charCount>7</charCount>"
-        b"<wordCount>5</wordCount><paraCount>3</paraCount><cursorPos>11</cursorPos></item>"
-        b"</content>"
+        b'<content><item handle="0123456789abc" order="1" parent="0123456789abc" type="FILE" '
+        b'class="NOVEL" layout="NOTE"><meta exported="False" charCount="7" wordCount="5" '
+        b'paraCount="3" cursorPos="11"/><name status="New">A Name</name></item></content>'
     )
 
     # Unpack
@@ -404,11 +401,8 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     xContent = etree.SubElement(nwXML, "content")
     theItem.packXML(xContent)
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
-        b"<content>"
-        b"<item handle=\"0123456789abc\" order=\"1\" parent=\"0123456789abc\">"
-        b"<name>A Name</name><type>FOLDER</type><class>NOVEL</class><status>New</status>"
-        b"<expanded>True</expanded></item>"
-        b"</content>"
+        b'<content><item handle="0123456789abc" order="1" parent="0123456789abc" type="FOLDER" '
+        b'class="NOVEL"><meta expanded="True"/><name status="New">A Name</name></item></content>'
     )
 
     # Unpack
@@ -418,7 +412,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     assert theItem.itemParent == "0123456789abc"
     assert theItem.itemOrder == 1
     assert theItem.isExpanded is True
-    assert theItem.isExported is True
+    assert theItem.isExported is False
     assert theItem.paraCount == 0
     assert theItem.wordCount == 0
     assert theItem.charCount == 0

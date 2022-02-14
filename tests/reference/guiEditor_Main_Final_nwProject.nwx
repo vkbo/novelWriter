@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.5-beta2" hexVersion="0x010500b2" fileVersion="1.3" timeStamp="2021-08-31 00:03:45">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-02-14 23:18:39">
   <project>
     <name>New Project</name>
     <title></title>
     <saveCount>5</saveCount>
     <autoCount>2</autoCount>
-    <editTime>4</editTime>
+    <editTime>3</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
@@ -40,119 +40,53 @@
     </importance>
   </settings>
   <content count="12">
-    <item handle="73475cb40a568" order="0" parent="None">
-      <name>Novel</name>
-      <type>ROOT</type>
-      <class>NOVEL</class>
-      <status>New</status>
-      <expanded>True</expanded>
+    <item handle="73475cb40a568" order="0" parent="None" type="ROOT" class="NOVEL">
+      <meta expanded="True"/>
+      <name status="New">Novel</name>
     </item>
-    <item handle="25fc0e7096fc6" order="0" parent="73475cb40a568">
-      <name>Title Page</name>
-      <type>FILE</type>
-      <class>NOVEL</class>
-      <status>New</status>
-      <exported>True</exported>
-      <layout>DOCUMENT</layout>
-      <charCount>11</charCount>
-      <wordCount>2</wordCount>
-      <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
+    <item handle="25fc0e7096fc6" order="0" parent="73475cb40a568" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta exported="True" charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
+      <name status="New">Title Page</name>
     </item>
-    <item handle="31489056e0916" order="1" parent="73475cb40a568">
-      <name>New Chapter</name>
-      <type>FOLDER</type>
-      <class>NOVEL</class>
-      <status>New</status>
-      <expanded>True</expanded>
+    <item handle="31489056e0916" order="1" parent="73475cb40a568" type="FOLDER" class="NOVEL">
+      <meta expanded="True"/>
+      <name status="New">New Chapter</name>
     </item>
-    <item handle="98010bd9270f9" order="0" parent="31489056e0916">
-      <name>New Chapter</name>
-      <type>FILE</type>
-      <class>NOVEL</class>
-      <status>New</status>
-      <exported>True</exported>
-      <layout>DOCUMENT</layout>
-      <charCount>11</charCount>
-      <wordCount>2</wordCount>
-      <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
+    <item handle="98010bd9270f9" order="0" parent="31489056e0916" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta exported="True" charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
+      <name status="New">New Chapter</name>
     </item>
-    <item handle="0e17daca5f3e1" order="1" parent="31489056e0916">
-      <name>New Scene</name>
-      <type>FILE</type>
-      <class>NOVEL</class>
-      <status>New</status>
-      <exported>True</exported>
-      <layout>DOCUMENT</layout>
-      <charCount>612</charCount>
-      <wordCount>95</wordCount>
-      <paraCount>10</paraCount>
-      <cursorPos>768</cursorPos>
+    <item handle="0e17daca5f3e1" order="1" parent="31489056e0916" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta exported="True" charCount="612" wordCount="95" paraCount="10" cursorPos="768"/>
+      <name status="New">New Scene</name>
     </item>
-    <item handle="44cb730c42048" order="1" parent="None">
-      <name>Plot</name>
-      <type>ROOT</type>
-      <class>PLOT</class>
-      <status>New</status>
-      <expanded>True</expanded>
+    <item handle="44cb730c42048" order="1" parent="None" type="ROOT" class="PLOT">
+      <meta expanded="True"/>
+      <name status="New">Plot</name>
     </item>
-    <item handle="031b4af5197ec" order="0" parent="44cb730c42048">
-      <name>New File</name>
-      <type>FILE</type>
-      <class>PLOT</class>
-      <status>New</status>
-      <exported>True</exported>
-      <layout>NOTE</layout>
-      <charCount>48</charCount>
-      <wordCount>10</wordCount>
-      <paraCount>1</paraCount>
-      <cursorPos>69</cursorPos>
+    <item handle="031b4af5197ec" order="0" parent="44cb730c42048" type="FILE" class="PLOT" layout="NOTE">
+      <meta exported="True" charCount="48" wordCount="10" paraCount="1" cursorPos="69"/>
+      <name status="New">New File</name>
     </item>
-    <item handle="71ee45a3c0db9" order="2" parent="None">
-      <name>Characters</name>
-      <type>ROOT</type>
-      <class>CHARACTER</class>
-      <status>New</status>
-      <expanded>True</expanded>
+    <item handle="71ee45a3c0db9" order="2" parent="None" type="ROOT" class="CHARACTER">
+      <meta expanded="True"/>
+      <name status="New">Characters</name>
     </item>
-    <item handle="1a6562590ef19" order="0" parent="71ee45a3c0db9">
-      <name>New File</name>
-      <type>FILE</type>
-      <class>CHARACTER</class>
-      <status>New</status>
-      <exported>True</exported>
-      <layout>NOTE</layout>
-      <charCount>34</charCount>
-      <wordCount>8</wordCount>
-      <paraCount>1</paraCount>
-      <cursorPos>51</cursorPos>
+    <item handle="1a6562590ef19" order="0" parent="71ee45a3c0db9" type="FILE" class="CHARACTER" layout="NOTE">
+      <meta exported="True" charCount="34" wordCount="8" paraCount="1" cursorPos="51"/>
+      <name status="New">New File</name>
     </item>
-    <item handle="811786ad1ae74" order="3" parent="None">
-      <name>World</name>
-      <type>ROOT</type>
-      <class>WORLD</class>
-      <status>New</status>
-      <expanded>True</expanded>
+    <item handle="811786ad1ae74" order="3" parent="None" type="ROOT" class="WORLD">
+      <meta expanded="True"/>
+      <name status="New">World</name>
     </item>
-    <item handle="41cfc0d1f2d12" order="0" parent="811786ad1ae74">
-      <name>New File</name>
-      <type>FILE</type>
-      <class>WORLD</class>
-      <status>New</status>
-      <exported>True</exported>
-      <layout>NOTE</layout>
-      <charCount>51</charCount>
-      <wordCount>9</wordCount>
-      <paraCount>1</paraCount>
-      <cursorPos>68</cursorPos>
+    <item handle="41cfc0d1f2d12" order="0" parent="811786ad1ae74" type="FILE" class="WORLD" layout="NOTE">
+      <meta exported="True" charCount="51" wordCount="9" paraCount="1" cursorPos="68"/>
+      <name status="New">New File</name>
     </item>
-    <item handle="2fca346db6561" order="4" parent="None">
-      <name>Trash</name>
-      <type>TRASH</type>
-      <class>TRASH</class>
-      <status>None</status>
-      <expanded>True</expanded>
+    <item handle="2fca346db6561" order="4" parent="None" type="TRASH" class="TRASH">
+      <meta expanded="True"/>
+      <name status="None">Trash</name>
     </item>
   </content>
 </novelWriterXML>
