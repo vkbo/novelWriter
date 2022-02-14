@@ -121,13 +121,8 @@ class NWProject():
     ##
 
     def newRoot(self, rootName, rootClass):
-        """Add a new root item. These items are unique, except for item class
-        CUSTOM, and always have parent handle set to None.
+        """Add a new root item.
         """
-        if not self.projTree.checkRootUnique(rootClass):
-            self.theParent.makeAlert(self.tr("Duplicate root item detected."), nwAlert.ERROR)
-            return None
-
         newItem = NWItem(self)
         newItem.setName(rootName)
         newItem.setType(nwItemType.ROOT)

@@ -72,24 +72,6 @@ class GuiMainMenu(QMenuBar):
         return
 
     ##
-    #  Methods
-    ##
-
-    def setAvailableRoot(self):
-        """Update the list of available root folders and set the ones
-        that are active.
-        """
-        for itemClass in nwItemClass:
-            if itemClass == nwItemClass.NO_CLASS:
-                continue
-            if itemClass == nwItemClass.TRASH:
-                continue
-            self.rootItems[itemClass].setVisible(
-                self.theProject.projTree.checkRootUnique(itemClass)
-            )
-        return
-
-    ##
     #  Update Menu on Settings Changed
     ##
 

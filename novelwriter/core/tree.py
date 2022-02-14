@@ -253,21 +253,6 @@ class NWTree():
                 return tItem.itemHandle
         return None
 
-    def checkRootUnique(self, theClass):
-        """Checks if there already is a root entry of class 'theClass'
-        in the root of the project tree. CUSTOM class is skipped as it
-        is not required to be unique.
-        """
-        if theClass == nwItemClass.CUSTOM:
-            return True
-        for aRoot in self._treeRoots:
-            tItem = self.__getitem__(aRoot)
-            if tItem is None:
-                continue
-            if theClass == tItem.itemClass:
-                return False
-        return True
-
     def getRootItem(self, tHandle):
         """Iterate upwards in the tree until we find the item with
         parent None, the root item. We do this with a for loop with a

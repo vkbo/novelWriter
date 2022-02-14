@@ -581,7 +581,6 @@ class GuiProjectTree(QTreeWidget):
             if trItemS.childCount() == 0:
                 self.takeTopLevelItem(tIndex)
                 self._deleteTreeItem(tHandle)
-                self.theParent.mainMenu.setAvailableRoot()
                 self._setTreeChanged(True)
             else:
                 self.theParent.makeAlert(self.tr(
@@ -973,7 +972,6 @@ class GuiProjectTree(QTreeWidget):
         if pHandle is None:
             if nwItem.itemType == nwItemType.ROOT:
                 self.addTopLevelItem(newItem)
-                self.theParent.mainMenu.setAvailableRoot()
             elif nwItem.itemType == nwItemType.TRASH:
                 self.addTopLevelItem(newItem)
             else:
