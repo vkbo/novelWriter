@@ -139,24 +139,28 @@ class NWItem():
     def packXML(self, xParent):
         """Pack all the data in the class instance into an XML object.
         """
-        xPack = etree.SubElement(xParent, "item", attrib={
-            "handle": str(self._handle),
-            "order":  str(self._order),
-            "parent": str(self._parent),
-        })
-        self._subPack(xPack, "name",   text=str(self._name))
-        self._subPack(xPack, "type",   text=str(self._type.name))
-        self._subPack(xPack, "class",  text=str(self._class.name))
-        self._subPack(xPack, "status", text=str(self._status))
+        itemAttrib = {}
+        itemAttrib["handle"] = str(self._handle)
+        itemAttrib["order"]  = str(self._order)
+        itemAttrib["parent"] = str(self._parent)
+        itemAttrib["type"]   = str(self._type.name)
+        itemAttrib["class"]  = str(self._class.name)
         if self._type == nwItemType.FILE:
-            self._subPack(xPack, "exported",  text=str(self._exported))
-            self._subPack(xPack, "layout",    text=str(self._layout.name))
-            self._subPack(xPack, "charCount", text=str(self._charCount), none=False)
-            self._subPack(xPack, "wordCount", text=str(self._wordCount), none=False)
-            self._subPack(xPack, "paraCount", text=str(self._paraCount), none=False)
-            self._subPack(xPack, "cursorPos", text=str(self._cursorPos), none=False)
+            itemAttrib["layout"] = str(self._layout.name)
+
+        metaAttrib = {}
+        if self._type == nwItemType.FILE:
+            metaAttrib["exported"]  = str(self._exported)
+            metaAttrib["charCount"] = str(self._charCount)
+            metaAttrib["wordCount"] = str(self._wordCount)
+            metaAttrib["paraCount"] = str(self._paraCount)
+            metaAttrib["cursorPos"] = str(self._cursorPos)
         else:
-            self._subPack(xPack, "expanded", text=str(self._expanded))
+            metaAttrib["expanded"]  = str(self._expanded)
+
+        xPack = etree.SubElement(xParent, "item", attrib=itemAttrib)
+        self._subPack(xPack, "meta",   attrib=metaAttrib)
+        self._subPack(xPack, "name",   text=str(self._name), attrib={"status": str(self._status)})
 
         return
 
@@ -175,19 +179,31 @@ class NWItem():
 
         self.setParent(xItem.attrib.get("parent", None))
         self.setOrder(xItem.attrib.get("order", 0))
+        self.setType(xItem.attrib.get("type", None))
+        self.setClass(xItem.attrib.get("class", None))
+        self.setLayout(xItem.attrib.get("layout", None))
 
-        tmpStatus = ""
         for xValue in xItem:
-            if xValue.tag == "name":
+            if xValue.tag == "meta":
+                self.setExpanded(xValue.attrib.get("expanded", False))
+                self.setExported(xValue.attrib.get("exported", False))
+                self.setCharCount(xValue.attrib.get("charCount", 0))
+                self.setWordCount(xValue.attrib.get("wordCount", 0))
+                self.setParaCount(xValue.attrib.get("paraCount", 0))
+                self.setCursorPos(xValue.attrib.get("cursorPos", 0))
+            elif xValue.tag == "name":
                 self.setName(xValue.text)
+                self.setStatus(xValue.attrib.get("status", None))
+
+            # Legacy Format (1.3 and earlier)
+            elif xValue.tag == "status":
+                self.setStatus(xValue.text)
             elif xValue.tag == "type":
                 self.setType(xValue.text)
             elif xValue.tag == "class":
                 self.setClass(xValue.text)
             elif xValue.tag == "layout":
                 self.setLayout(xValue.text)
-            elif xValue.tag == "status":
-                tmpStatus = xValue.text
             elif xValue.tag == "expanded":
                 self.setExpanded(xValue.text)
             elif xValue.tag == "exported":
@@ -205,9 +221,6 @@ class NWItem():
                 # items if an otherwise valid file is opened by a
                 # version of novelWriter that doesn't know the tag
                 logger.error("Unknown tag '%s'", xValue.tag)
-
-        # Guarantees that <status> is parsed after <class>
-        self.setStatus(tmpStatus)
 
         return True
 
