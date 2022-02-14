@@ -275,10 +275,10 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI):
     assert theProject.closeProject() is True
     assert theProject.openProject(projFile) is True
 
-    assert isinstance(theProject.newRoot("Novel",     nwItemClass.NOVEL),     type(None))
-    assert isinstance(theProject.newRoot("Plot",      nwItemClass.PLOT),      type(None))
-    assert isinstance(theProject.newRoot("Character", nwItemClass.CHARACTER), type(None))
-    assert isinstance(theProject.newRoot("World",     nwItemClass.WORLD),     type(None))
+    assert isinstance(theProject.newRoot("Novel",     nwItemClass.NOVEL),     str)
+    assert isinstance(theProject.newRoot("Plot",      nwItemClass.PLOT),      str)
+    assert isinstance(theProject.newRoot("Character", nwItemClass.CHARACTER), str)
+    assert isinstance(theProject.newRoot("World",     nwItemClass.WORLD),     str)
     assert isinstance(theProject.newRoot("Timeline",  nwItemClass.TIMELINE),  str)
     assert isinstance(theProject.newRoot("Object",    nwItemClass.OBJECT),    str)
     assert isinstance(theProject.newRoot("Custom1",   nwItemClass.CUSTOM),    str)

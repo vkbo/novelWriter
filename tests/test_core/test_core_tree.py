@@ -229,12 +229,6 @@ def testCoreTree_Methods(mockGUI, mockItems):
     assert theTree.findRoot(nwItemClass.NOVEL) == "a000000000001"
     assert theTree.findRoot(nwItemClass.CHARACTER) == "a000000000004"
 
-    # Check for root uniqueness
-    assert theTree.checkRootUnique(nwItemClass.CUSTOM)
-    assert theTree.checkRootUnique(nwItemClass.WORLD)
-    assert not theTree.checkRootUnique(nwItemClass.NOVEL)
-    assert not theTree.checkRootUnique(nwItemClass.CHARACTER)
-
     # Find root item of child item
     assert theTree.getRootItem("b000000000001").itemHandle == "a000000000001"
     assert theTree.getRootItem("c000000000001").itemHandle == "a000000000001"

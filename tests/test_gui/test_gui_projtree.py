@@ -51,21 +51,22 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     ##
 
     # Try to add and move item with no project
-    assert not nwTree.newTreeItem(nwItemType.FILE, None)
-    assert not nwTree.moveTreeItem(1)
+    assert nwTree.newTreeItem(nwItemType.FILE, None) is False
+    assert nwTree.moveTreeItem(1) is False
 
     # Open a project
-    assert nwGUI.openProject(nwMinimal)
+    assert nwGUI.openProject(nwMinimal) is True
 
     # No location selected for new item
     nwTree.clearSelection()
-    assert not nwTree.newTreeItem(nwItemType.FILE, None)
-    assert not nwTree.newTreeItem(nwItemType.FOLDER, None)
-    assert nwTree.newTreeItem(nwItemType.FILE, nwItemClass.NOVEL)
+    assert nwTree.newTreeItem(nwItemType.FILE, None) is False
+    assert nwTree.newTreeItem(nwItemType.FOLDER, None) is False
+    assert nwTree.newTreeItem(nwItemType.FILE, nwItemClass.NOVEL) is True
 
     # No itemType set or ROOT, but no class
-    assert not nwTree.newTreeItem(None, None)
-    assert not nwTree.newTreeItem(nwItemType.ROOT, None)
+    nwTree.clearSelection()
+    assert nwTree.newTreeItem(None, None) is False
+    assert nwTree.newTreeItem(nwItemType.ROOT, None) is False
 
     # Select a location
     chItem = nwTree._getTreeItem("a6d311a93600a")
@@ -73,23 +74,23 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     chItem.setExpanded(True)
 
     # Create new item with no class set (defaults to NOVEL)
-    assert nwTree.newTreeItem(nwItemType.FILE, None)
-    assert nwTree.newTreeItem(nwItemType.FOLDER, None)
+    assert nwTree.newTreeItem(nwItemType.FILE, None) is True
+    assert nwTree.newTreeItem(nwItemType.FOLDER, None) is True
 
     # Check that we have the correct tree order
     assert nwTree.getTreeFromHandle("a6d311a93600a") == [
         "a6d311a93600a", "f5ab3e30151e1", "8c659a11cd429", "44cb730c42048", "71ee45a3c0db9"
     ]
 
-    # Add roots
-    assert not nwTree.newTreeItem(nwItemType.ROOT, nwItemClass.WORLD)  # Duplicate
-    assert nwTree.newTreeItem(nwItemType.ROOT, nwItemClass.CUSTOM)     # Valid
+    # Add more roots
+    assert nwTree.newTreeItem(nwItemType.ROOT, nwItemClass.WORLD) is True   # Duplicate
+    assert nwTree.newTreeItem(nwItemType.ROOT, nwItemClass.CUSTOM) is True  # Unique
 
     # Change max depth and try to add a subfolder that is too deep
     monkeypatch.setattr("novelwriter.constants.nwConst.MAX_DEPTH", 2)
     chItem = nwTree._getTreeItem("71ee45a3c0db9")
     nwTree.setCurrentItem(chItem, QItemSelectionModel.Current)
-    assert not nwTree.newTreeItem(nwItemType.FOLDER, None)
+    assert nwTree.newTreeItem(nwItemType.FOLDER, None) is False
 
     ##
     #  Move Items
@@ -99,7 +100,7 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
 
     # Shift focus and try to move item
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: False)
-    assert not nwTree.moveTreeItem(1)
+    assert nwTree.moveTreeItem(1) is False
     assert nwTree.getTreeFromHandle("a6d311a93600a") == [
         "a6d311a93600a", "f5ab3e30151e1", "8c659a11cd429", "44cb730c42048", "71ee45a3c0db9"
     ]
@@ -153,7 +154,7 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
 
     nwGUI.mainMenu.aMoveDown.activate(QAction.Trigger)
     nwTree.flushTreeOrder()
-    assert nwGUI.theProject.projTree._treeOrder.index("9d5247ab588e0") == 11
+    assert nwGUI.theProject.projTree._treeOrder.index("9d5247ab588e0") == 12
 
     ##
     #  Delete and Trash
@@ -168,20 +169,20 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
 
     # Delete the items we added earlier
     nwTree.clearSelection()
-    assert not nwTree.emptyTrash()  # No folder yet
-    assert not nwTree.deleteItem(None)
-    assert not nwTree.deleteItem("1111111111111")
-    assert nwTree.deleteItem("73475cb40a568")  # New File
-    assert nwTree.deleteItem("71ee45a3c0db9")  # New Folder
-    assert nwTree.deleteItem("811786ad1ae74")  # Custom Root
+    assert nwTree.emptyTrash() is False  # No folder yet
+    assert nwTree.deleteItem(None) is False
+    assert nwTree.deleteItem("1111111111111") is False
+    assert nwTree.deleteItem("73475cb40a568") is True  # New File
+    assert nwTree.deleteItem("71ee45a3c0db9") is True  # New Folder
+    assert nwTree.deleteItem("811786ad1ae74") is True  # Custom Root
     assert "73475cb40a568" in nwGUI.theProject.projTree._treeOrder
     assert "71ee45a3c0db9" not in nwGUI.theProject.projTree._treeOrder
     assert "811786ad1ae74" not in nwGUI.theProject.projTree._treeOrder
 
     # The file is in trash, empty it
     assert os.path.isfile(os.path.join(nwMinimal, "content", "73475cb40a568.nwd"))
-    assert nwTree.emptyTrash()
-    assert not nwTree.emptyTrash()  # Already empty
+    assert nwTree.emptyTrash() is True
+    assert nwTree.emptyTrash() is False  # Already empty
     assert not os.path.isfile(os.path.join(nwMinimal, "content", "73475cb40a568.nwd"))
     assert "73475cb40a568" not in nwGUI.theProject.projTree._treeOrder
 
@@ -189,8 +190,8 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     trashHandle = nwGUI.theProject.projTree.trashRoot()
     chItem = nwTree._getTreeItem(trashHandle)
     nwTree.setCurrentItem(chItem, QItemSelectionModel.Current)
-    assert not nwTree.newTreeItem(nwItemType.FILE, None)
-    assert not nwTree.newTreeItem(nwItemType.FOLDER, None)
+    assert nwTree.newTreeItem(nwItemType.FILE, None) is False
+    assert nwTree.newTreeItem(nwItemType.FOLDER, None) is False
 
     # Close the project
     nwGUI.closeProject()
@@ -217,21 +218,21 @@ def testGuiProjTree_TreeItems(qtbot, caplog, monkeypatch, nwGUI, nwMinimal):
     ##
 
     # Add an item with an invalid type
-    assert not nwTree.newTreeItem(nwItemType.NO_TYPE, nwItemClass.NOVEL)
+    assert nwTree.newTreeItem(nwItemType.NO_TYPE, nwItemClass.NOVEL) is False
     assert "Failed to add new item" in caplog.messages[-1]
 
     # Add new file after one that has no parent handle
     chItem = nwTree._getTreeItem("44cb730c42048")
     nwTree.setCurrentItem(chItem, QItemSelectionModel.Current)
     nwTree.theProject.projTree["44cb730c42048"]._parent = None
-    assert not nwTree.newTreeItem(nwItemType.FILE, nwItemClass.NOVEL)
+    assert nwTree.newTreeItem(nwItemType.FILE, nwItemClass.NOVEL) is False
     nwTree.clearSelection()
 
     # Add a file with no parent, and fail to find a suitable parent item
     monkeypatch.setattr("novelwriter.core.tree.NWTree.findRoot", lambda *a: None)
 
-    assert not nwTree.newTreeItem(nwItemType.FILE, nwItemClass.NOVEL)
-    assert not nwTree.newTreeItem(nwItemType.FOLDER, nwItemClass.NOVEL)
+    assert nwTree.newTreeItem(nwItemType.FILE, nwItemClass.NOVEL) is False
+    assert nwTree.newTreeItem(nwItemType.FOLDER, nwItemClass.NOVEL) is False
 
     # qtbot.stopForInteraction()
     nwGUI.closeProject()
