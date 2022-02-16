@@ -90,7 +90,9 @@ class NWErrorMessage(QDialog):
         self.setWindowTitle([
             "+++ Out of Cheese Error +++",
             "+++ Divide by Cucumber Error +++",
-        ][random.randint(0, 1)])
+            "+++ Whoops! Here Comes The Cheese! +++",
+            "+++ Please Reinstall Universe and Reboot +++",
+        ][random.randint(0, 3)])
 
         self.setLayout(self.mainBox)
 
