@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-02-14 23:05:49">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-02-17 21:57:21">
   <project>
     <name>Test Minimal</name>
     <title>Minimal</title>
     <author>Jane Doe</author>
     <author>John Doh</author>
-    <saveCount>10</saveCount>
+    <saveCount>12</saveCount>
     <autoCount>2</autoCount>
-    <editTime>123</editTime>
+    <editTime>129</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
@@ -42,35 +42,35 @@
     </importance>
   </settings>
   <content count="8">
-    <item handle="a508bb932959c" order="0" parent="None" type="ROOT" class="NOVEL">
+    <item handle="a508bb932959c" parent="None" order="0" type="ROOT" class="NOVEL">
       <meta expanded="True"/>
       <name status="New">Novel</name>
     </item>
-    <item handle="a35baf2e93843" order="0" parent="a508bb932959c" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta exported="True" charCount="28" wordCount="6" paraCount="1" cursorPos="33"/>
-      <name status="New">Title Page</name>
+    <item handle="a35baf2e93843" parent="a508bb932959c" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta charCount="28" wordCount="6" paraCount="1" cursorPos="33"/>
+      <name status="New" exported="True">Title Page</name>
     </item>
-    <item handle="a6d311a93600a" order="1" parent="a508bb932959c" type="FOLDER" class="NOVEL">
+    <item handle="a6d311a93600a" parent="a508bb932959c" order="1" type="FOLDER" class="NOVEL">
       <meta expanded="True"/>
       <name status="New">New Chapter</name>
     </item>
-    <item handle="f5ab3e30151e1" order="0" parent="a6d311a93600a" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta exported="True" charCount="11" wordCount="2" paraCount="0" cursorPos="16"/>
-      <name status="New">New Chapter</name>
+    <item handle="f5ab3e30151e1" parent="a6d311a93600a" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta charCount="11" wordCount="2" paraCount="0" cursorPos="16"/>
+      <name status="New" exported="True">New Chapter</name>
     </item>
-    <item handle="8c659a11cd429" order="1" parent="a6d311a93600a" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta exported="True" charCount="9" wordCount="2" paraCount="0" cursorPos="15"/>
-      <name status="New">New Scene</name>
+    <item handle="8c659a11cd429" parent="a6d311a93600a" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta charCount="9" wordCount="2" paraCount="0" cursorPos="15"/>
+      <name status="New" exported="True">New Scene</name>
     </item>
-    <item handle="7695ce551d265" order="1" parent="None" type="ROOT" class="PLOT">
+    <item handle="7695ce551d265" parent="None" order="1" type="ROOT" class="PLOT">
       <meta expanded="False"/>
       <name status="New">Plot</name>
     </item>
-    <item handle="afb3043c7b2b3" order="2" parent="None" type="ROOT" class="CHARACTER">
+    <item handle="afb3043c7b2b3" parent="None" order="2" type="ROOT" class="CHARACTER">
       <meta expanded="False"/>
       <name status="New">Characters</name>
     </item>
-    <item handle="9d5247ab588e0" order="3" parent="None" type="ROOT" class="WORLD">
+    <item handle="9d5247ab588e0" parent="None" order="3" type="ROOT" class="WORLD">
       <meta expanded="False"/>
       <name status="New">World</name>
     </item>

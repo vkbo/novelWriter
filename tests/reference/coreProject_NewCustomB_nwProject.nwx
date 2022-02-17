@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-02-14 23:08:41">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-02-17 21:57:31">
   <project>
     <name>Test Custom</name>
     <title>Test Novel</title>
@@ -42,61 +42,61 @@
     </importance>
   </settings>
   <content count="14">
-    <item handle="73475cb40a568" order="0" parent="None" type="ROOT" class="NOVEL">
+    <item handle="73475cb40a568" parent="None" order="0" type="ROOT" class="NOVEL">
       <meta expanded="False"/>
       <name status="New">Novel</name>
     </item>
-    <item handle="44cb730c42048" order="0" parent="None" type="ROOT" class="PLOT">
+    <item handle="44cb730c42048" parent="None" order="0" type="ROOT" class="PLOT">
       <meta expanded="False"/>
       <name status="New">Plot</name>
     </item>
-    <item handle="71ee45a3c0db9" order="0" parent="None" type="ROOT" class="CHARACTER">
+    <item handle="71ee45a3c0db9" parent="None" order="0" type="ROOT" class="CHARACTER">
       <meta expanded="False"/>
       <name status="New">Characters</name>
     </item>
-    <item handle="811786ad1ae74" order="0" parent="None" type="ROOT" class="WORLD">
+    <item handle="811786ad1ae74" parent="None" order="0" type="ROOT" class="WORLD">
       <meta expanded="False"/>
       <name status="New">Locations</name>
     </item>
-    <item handle="25fc0e7096fc6" order="0" parent="None" type="ROOT" class="TIMELINE">
+    <item handle="25fc0e7096fc6" parent="None" order="0" type="ROOT" class="TIMELINE">
       <meta expanded="False"/>
       <name status="New">Timeline</name>
     </item>
-    <item handle="31489056e0916" order="0" parent="None" type="ROOT" class="OBJECT">
+    <item handle="31489056e0916" parent="None" order="0" type="ROOT" class="OBJECT">
       <meta expanded="False"/>
       <name status="New">Objects</name>
     </item>
-    <item handle="98010bd9270f9" order="0" parent="None" type="ROOT" class="ENTITY">
+    <item handle="98010bd9270f9" parent="None" order="0" type="ROOT" class="ENTITY">
       <meta expanded="False"/>
       <name status="New">Entities</name>
     </item>
-    <item handle="0e17daca5f3e1" order="0" parent="73475cb40a568" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta exported="True" charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New">Title Page</name>
+    <item handle="0e17daca5f3e1" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
+      <name status="New" exported="True">Title Page</name>
     </item>
-    <item handle="1a6562590ef19" order="0" parent="73475cb40a568" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta exported="True" charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New">Scene 1</name>
+    <item handle="1a6562590ef19" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
+      <name status="New" exported="True">Scene 1</name>
     </item>
-    <item handle="031b4af5197ec" order="0" parent="73475cb40a568" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta exported="True" charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New">Scene 2</name>
+    <item handle="031b4af5197ec" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
+      <name status="New" exported="True">Scene 2</name>
     </item>
-    <item handle="41cfc0d1f2d12" order="0" parent="73475cb40a568" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta exported="True" charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New">Scene 3</name>
+    <item handle="41cfc0d1f2d12" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
+      <name status="New" exported="True">Scene 3</name>
     </item>
-    <item handle="2858dcd1057d3" order="0" parent="73475cb40a568" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta exported="True" charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New">Scene 4</name>
+    <item handle="2858dcd1057d3" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
+      <name status="New" exported="True">Scene 4</name>
     </item>
-    <item handle="2fca346db6561" order="0" parent="73475cb40a568" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta exported="True" charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New">Scene 5</name>
+    <item handle="2fca346db6561" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
+      <name status="New" exported="True">Scene 5</name>
     </item>
-    <item handle="02d20bbd7e394" order="0" parent="73475cb40a568" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta exported="True" charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New">Scene 6</name>
+    <item handle="02d20bbd7e394" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
+      <name status="New" exported="True">Scene 6</name>
     </item>
   </content>
 </novelWriterXML>

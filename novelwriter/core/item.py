@@ -141,8 +141,8 @@ class NWItem():
         """
         itemAttrib = {}
         itemAttrib["handle"] = str(self._handle)
-        itemAttrib["order"]  = str(self._order)
         itemAttrib["parent"] = str(self._parent)
+        itemAttrib["order"]  = str(self._order)
         itemAttrib["type"]   = str(self._type.name)
         itemAttrib["class"]  = str(self._class.name)
         if self._type == nwItemType.FILE:
@@ -150,7 +150,6 @@ class NWItem():
 
         metaAttrib = {}
         if self._type == nwItemType.FILE:
-            metaAttrib["exported"]  = str(self._exported)
             metaAttrib["charCount"] = str(self._charCount)
             metaAttrib["wordCount"] = str(self._wordCount)
             metaAttrib["paraCount"] = str(self._paraCount)
@@ -158,9 +157,14 @@ class NWItem():
         else:
             metaAttrib["expanded"]  = str(self._expanded)
 
+        nameAttrib = {}
+        nameAttrib["status"] = str(self._status)
+        if self._type == nwItemType.FILE:
+            nameAttrib["exported"]  = str(self._exported)
+
         xPack = etree.SubElement(xParent, "item", attrib=itemAttrib)
         self._subPack(xPack, "meta",   attrib=metaAttrib)
-        self._subPack(xPack, "name",   text=str(self._name), attrib={"status": str(self._status)})
+        self._subPack(xPack, "name",   text=str(self._name), attrib=nameAttrib)
 
         return
 
@@ -186,7 +190,6 @@ class NWItem():
         for xValue in xItem:
             if xValue.tag == "meta":
                 self.setExpanded(xValue.attrib.get("expanded", False))
-                self.setExported(xValue.attrib.get("exported", False))
                 self.setCharCount(xValue.attrib.get("charCount", 0))
                 self.setWordCount(xValue.attrib.get("wordCount", 0))
                 self.setParaCount(xValue.attrib.get("paraCount", 0))
@@ -194,6 +197,7 @@ class NWItem():
             elif xValue.tag == "name":
                 self.setName(xValue.text)
                 self.setStatus(xValue.attrib.get("status", None))
+                self.setExported(xValue.attrib.get("exported", True))
 
             # Legacy Format (1.3 and earlier)
             elif xValue.tag == "status":
