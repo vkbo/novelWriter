@@ -306,22 +306,6 @@ def testCoreItem_LayoutSetter(mockGUI):
     theItem.setLayout("NOTE")
     assert theItem.itemLayout == nwItemLayout.NOTE
 
-    # Deprecated Layouts
-    theItem.setLayout("TITLE")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("PAGE")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("BOOK")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("PARTITION")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("UNNUMBERED")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("CHAPTER")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("SCENE")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-
     # Alternatives
     theItem.setLayout(nwItemLayout.NOTE)
     assert theItem.itemLayout == nwItemLayout.NOTE
@@ -358,12 +342,9 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     xContent = etree.SubElement(nwXML, "content")
     theItem.packXML(xContent)
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
-        b"<content>"
-        b"<item handle=\"0123456789abc\" order=\"1\" parent=\"0123456789abc\">"
-        b"<name>A Name</name><type>FILE</type><class>NOVEL</class><status>New</status>"
-        b"<exported>False</exported><layout>NOTE</layout><charCount>7</charCount>"
-        b"<wordCount>5</wordCount><paraCount>3</paraCount><cursorPos>11</cursorPos></item>"
-        b"</content>"
+        b'<content><item handle="0123456789abc" parent="0123456789abc" order="1" type="FILE" '
+        b'class="NOVEL" layout="NOTE"><meta charCount="7" wordCount="5" paraCount="3" '
+        b'cursorPos="11"/><name status="New" exported="False">A Name</name></item></content>'
     )
 
     # Unpack
@@ -404,11 +385,8 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     xContent = etree.SubElement(nwXML, "content")
     theItem.packXML(xContent)
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
-        b"<content>"
-        b"<item handle=\"0123456789abc\" order=\"1\" parent=\"0123456789abc\">"
-        b"<name>A Name</name><type>FOLDER</type><class>NOVEL</class><status>New</status>"
-        b"<expanded>True</expanded></item>"
-        b"</content>"
+        b'<content><item handle="0123456789abc" parent="0123456789abc" order="1" type="FOLDER" '
+        b'class="NOVEL"><meta expanded="True"/><name status="New">A Name</name></item></content>'
     )
 
     # Unpack
@@ -462,3 +440,107 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     )
 
 # END Test testCoreItem_XMLPackUnpack
+
+
+@pytest.mark.core
+def testCoreItem_ConvertFromFmt12(mockGUI):
+    """Test the setter for all the nwItemLayout values for the NWItem
+    class using the class names that were present in file format 1.2.
+    """
+    theProject = NWProject(mockGUI)
+    theItem = NWItem(theProject)
+
+    # Deprecated Layouts
+    theItem.setLayout("TITLE")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    theItem.setLayout("PAGE")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    theItem.setLayout("BOOK")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    theItem.setLayout("PARTITION")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    theItem.setLayout("UNNUMBERED")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    theItem.setLayout("CHAPTER")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    theItem.setLayout("SCENE")
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    theItem.setLayout("MUMBOJUMBO")
+    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
+
+# END Test testCoreItem_ConvertFromFmt12
+
+
+@pytest.mark.core
+def testCoreItem_ConvertFromFmt13(mockGUI):
+    """Test packing and unpacking XML objects for the NWItem class from
+    format version 1.3
+    """
+    theProject = NWProject(mockGUI)
+
+    # Make Version 1.3 XML
+    nwXML = etree.Element("novelWriterXML")
+    xContent = etree.SubElement(nwXML, "content")
+
+    # Folder
+    xPack = etree.SubElement(xContent, "item", attrib={
+        "handle": "a000000000001",
+        "order":  "1",
+        "parent": "b000000000001",
+    })
+    NWItem._subPack(xPack, "name",     text="Folder")
+    NWItem._subPack(xPack, "type",     text="FOLDER")
+    NWItem._subPack(xPack, "class",    text="NOVEL")
+    NWItem._subPack(xPack, "status",   text="New")
+    NWItem._subPack(xPack, "expanded", text="True")
+
+    # Unpack Folder
+    theItem = NWItem(theProject)
+    theItem.unpackXML(xContent[0])
+    assert theItem.itemHandle == "a000000000001"
+    assert theItem.itemParent == "b000000000001"
+    assert theItem.itemOrder == 1
+    assert theItem.isExpanded is True
+    assert theItem.isExported is True
+    assert theItem.charCount == 0
+    assert theItem.wordCount == 0
+    assert theItem.paraCount == 0
+    assert theItem.cursorPos == 0
+    assert theItem.itemClass == nwItemClass.NOVEL
+    assert theItem.itemType == nwItemType.FOLDER
+    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
+
+    # File
+    xPack = etree.SubElement(xContent, "item", attrib={
+        "handle": "c000000000001",
+        "order":  "2",
+        "parent": "a000000000001",
+    })
+    NWItem._subPack(xPack, "name",      text="Scene")
+    NWItem._subPack(xPack, "type",      text="FILE")
+    NWItem._subPack(xPack, "class",     text="NOVEL")
+    NWItem._subPack(xPack, "status",    text="New")
+    NWItem._subPack(xPack, "exported",  text="True")
+    NWItem._subPack(xPack, "layout",    text="DOCUMENT")
+    NWItem._subPack(xPack, "charCount", text="600")
+    NWItem._subPack(xPack, "wordCount", text="100")
+    NWItem._subPack(xPack, "paraCount", text="6")
+    NWItem._subPack(xPack, "cursorPos", text="50")
+
+    # Unpack File
+    theItem = NWItem(theProject)
+    theItem.unpackXML(xContent[1])
+    assert theItem.itemHandle == "c000000000001"
+    assert theItem.itemParent == "a000000000001"
+    assert theItem.itemOrder == 2
+    assert theItem.isExpanded is False
+    assert theItem.isExported is True
+    assert theItem.charCount == 600
+    assert theItem.wordCount == 100
+    assert theItem.paraCount == 6
+    assert theItem.cursorPos == 50
+    assert theItem.itemClass == nwItemClass.NOVEL
+    assert theItem.itemType == nwItemType.FILE
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+
+# END Test testCoreItem_ConvertFromFmt13
