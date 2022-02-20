@@ -241,19 +241,6 @@ def formatTime(tS):
     return "ERROR"
 
 
-def parseTimeStamp(theStamp, default, allowNone=False):
-    """Parses a text representation of a timestamp and converts it into
-    a float. Note that negative timestamps cause an OSError on Windows.
-    See https://bugs.python.org/issue29097
-    """
-    if str(theStamp).lower() == "none" and allowNone:
-        return None
-    try:
-        return datetime.strptime(theStamp, nwConst.FMT_TSTAMP).timestamp()
-    except Exception:
-        return default
-
-
 # =============================================================================================== #
 #  String Functions
 # =============================================================================================== #
