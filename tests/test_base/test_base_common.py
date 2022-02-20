@@ -24,8 +24,6 @@ import os
 import time
 import pytest
 
-from datetime import datetime
-
 from mock import causeOSError
 from tools import writeFile
 
@@ -33,9 +31,9 @@ from novelwriter.guimain import GuiMain
 from novelwriter.common import (
     checkString, checkInt, checkFloat, checkBool, checkHandle, isHandle,
     isTitleTag, isItemClass, isItemType, isItemLayout, hexToInt, checkIntRange,
-    checkIntTuple, formatInt, formatTimeStamp, formatTime, parseTimeStamp,
-    splitVersionNumber, transferCase, fuzzyTime, numberToRoman, jsonEncode,
-    readTextFile, makeFileNameSafe, sha256sum, getGuiItem, NWConfigParser
+    checkIntTuple, formatInt, formatTimeStamp, formatTime, splitVersionNumber,
+    transferCase, fuzzyTime, numberToRoman, jsonEncode, readTextFile,
+    makeFileNameSafe, sha256sum, getGuiItem, NWConfigParser
 )
 
 
@@ -270,21 +268,6 @@ def testBaseCommon_FormatTime():
     assert formatTime(360000) == "4-04:00:00"
 
 # END Test testBaseCommon_FormatTime
-
-
-@pytest.mark.base
-def testBaseCommon_ParseTimeStamp():
-    """Test the parseTimeStamp function.
-    """
-    localEpoch = datetime(2000, 1, 1).timestamp()
-    assert parseTimeStamp(None, 0.0, allowNone=True) is None
-    assert parseTimeStamp("None", 0.0, allowNone=True) is None
-    assert parseTimeStamp("None", 0.0) == 0.0
-    assert parseTimeStamp("2000-01-01 00:00:00", 123.0) == localEpoch
-    assert parseTimeStamp("2000-13-01 00:00:00", 123.0) == 123.0
-    assert parseTimeStamp("2000-01-32 00:00:00", 123.0) == 123.0
-
-# END Test testBaseCommon_ParseTimeStamp
 
 
 @pytest.mark.base
