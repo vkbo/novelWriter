@@ -55,7 +55,7 @@ html_theme_options = {
     "light_logo": "novelwriter-light.png",
     "dark_logo": "novelwriter-dark.png",
 }
-html_title = f"<div style='text-align: center'>Documentation<br>Version {release}</div>"
+html_title = f"<div style='text-align: center'>Documentation Version {release}</div>"
 
 # -- Options for HTMLHelp Output ---------------------------------------------
 
