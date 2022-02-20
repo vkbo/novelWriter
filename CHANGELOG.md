@@ -1,5 +1,72 @@
 # novelWriter Changelog
 
+## Version 1.6 [2022-02-20]
+
+### Release Notes
+
+This release does not introduce any major new features, but is instead a collection of minor
+improvements and tweaks based on user requests. There are also a number of changes under the hood
+to improve the structure and performance of novelWriter.
+
+Some key improvements to the user interface are:
+
+* The max text width setting in Preferences now also applies to the document viewer, and the
+  setting itself on the Preference dialog has been simplified a bit.
+* When text is selected in the document editor, the number of words selected is displayed in the
+  editor's footer area.
+* The search tool in the document editor now shows the number of results in the document.
+* The Enter and Ctrl+O keyboard shortcuts should now work the same way in all tree views.
+* It is now possible to set a blank section title format on the Build Novel Project tool and get
+  empty paragraphs in the output. Previously, a blank format would just remove the section break
+  entirely. This change allows the user to define hard and soft scene breaks using level three and
+  four headings. The scene and section titles can be hidden completely with two new switches added
+  to the user interface.
+
+Other feature changes include:
+
+* The project index is now automatically rebuilt in the event it is empty or incomplete when the
+  project is opened.
+* The user can now add their own syntax and GUI theme files in the app folder in their user area on
+  the host operating system. Where the custom files must be added is described in the
+  documentation.
+* A Windows installer is yet again provided for novelWriter. If you have novelWriter installed
+  using another method, make sure you uninstall it properly first as the two methods are not
+  compatible.
+* Release versions for Ubuntu 21.04 have been dropped, and added for the upcoming Ubuntu 22.04.
+* Most translations have been updated. A Dutch translation is in the works.
+
+In addition to these changes, the documentation has been completely restructured and a new theme
+added. The theme has a light and a dark mode.
+
+_These Release Notes also include the changes from 1.6 Beta 1 and RC 1._
+
+### Detailed Changelog
+
+**User Interface**
+
+* The default OS font is not always suitable for editing documents. The default editor font is now
+  Arial on Windows and Courier on macOS; if those fonts are available on the platform. Issue #988.
+  PR #990.
+* Added some some random error messages from Discworld to the error dialog shown when novelWriter
+  crashes. They are visible on the dialog title bar if the title bar is visible on the platform.
+  This is just a fun addition made to note the #1000 addition to novelWriter. PR #1000.
+
+**Installation**
+
+* Dropped the Ubuntu 21.04 release as it is now deprecated, and added a release package for the
+  upcoming Ubuntu 22.04. PR #987.
+
+**Internationalisation**
+
+* The French, Norwegian and Portuguese (Brazil) translations have been updated. #992.
+
+**Documentation**
+
+* Some minor improvements have been made to the Introduction section of the documentations.
+  PR #991.
+
+----
+
 ## Version 1.6 RC 1 [2022-02-06]
 
 ### Release Notes
@@ -97,7 +164,7 @@ final release.
 * Custom GUI themes and syntax themes can now be loaded from the user's data path. The actual
   storage path is determined by the OS. Part of Feature Request #892. PR #893.
 * A number of text messages and labels on the GUI have been improved. Issue #923. PR #926.
-* The switch in Preferences to disbale fixed width text in the editor has been removed. Instead,
+* The switch in Preferences to disable fixed width text in the editor has been removed. Instead,
   the user just sets the fixed with setting to 0 to disable it. The settings is now also applied to
   the document viewer as well. Issue #924. PR #943.
 * The Open Document export file produced from the build tool is now more LibreOffice and OpenOffice
