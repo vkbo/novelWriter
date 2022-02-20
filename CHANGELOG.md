@@ -38,6 +38,8 @@ Other feature changes include:
 In addition to these changes, the documentation has been completely restructured and a new theme
 added. The theme has a light and a dark mode.
 
+_These Release Notes also include the changes from 1.6 Beta 1 and RC 1._
+
 ### Detailed Changelog
 
 **User Interface**
