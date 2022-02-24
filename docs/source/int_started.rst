@@ -115,7 +115,7 @@ Windows
 -------
 
 First, make sure you have Python installed on your system. If you don't, you can download it from
-`python.org`_. Python 3.6 or higher is required, but it is recommended that you install the latest
+`python.org`_. Python 3.7 or higher is required, but it is recommended that you install the latest
 version.
 
 Make sure you select the "Add Python to PATH" option during installation, otherwise the ``python``

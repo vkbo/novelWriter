@@ -11,13 +11,32 @@ changes require minor actions from the user.
 The key changes in the formats are listed below, as well as the user actions required where
 applicable.
 
+.. caution::
+
+   When you update a project from one format version to the next, the project can no longer be
+   opened by a version of novelWriter prior to the version where the new file format was
+   introduced. You will get a notification about any updates to your project file format and will
+   have the option to decline the upgrade.
+
+
+.. _a_prjfmt_1_4:
+
+Format 1.4 Changes
+==================
+
+This project format was introduced in novelWriter version 1.7.
+
+This format changes the way project items (folders, documents and notes) are stored. It is a more
+compact format that is simpler and faster to parse, and easier to extend. The conversion is done
+automatically the first time a project is loaded. No user action is required.
+
 
 .. _a_prjfmt_1_3:
 
 Format 1.3 Changes
 ==================
 
-This project format vas introduces in novelWriter version 1.5.
+This project format was introduced in novelWriter version 1.5.
 
 With this format, the number of document layouts was reduced from 8 to 2. The conversion of
 document layouts is performed automatically when the project is opened.
@@ -55,7 +74,7 @@ should be used only a few places in any given project. These are as follows:
 Format 1.2 Changes
 ==================
 
-This project format was introduces in novelWriter version 0.10.
+This project format was introduced in novelWriter version 0.10.
 
 With this format, the way auto-replace entries were stored in the main project XML file changed.
 Opening an old project automatically converts the storage format up to and including version 1.1.1.
@@ -69,7 +88,7 @@ auto-replace is not being used, can still be opened in novelWriter as of version
 Format 1.1 Changes
 ==================
 
-This project format was introduces in novelWriter version 0.7.
+This project format was introduced in novelWriter version 0.7.
 
 With this format, the ``content`` folder was introduced in the project storage. Previously, all
 novelWriter documents were saved in a series of folders numbered from ``data_0`` to ``data_f``.
