@@ -471,10 +471,11 @@ class GuiDocViewer(QTextBrowser):
     ##
 
     def resizeEvent(self, theEvent):
-        """Make sure the document title is the same width as the window.
+        """If the text editor is resized, we must make sure the document
+        has its margins adjusted according to user preferences.
         """
-        QTextBrowser.resizeEvent(self, theEvent)
         self.updateDocMargins()
+        QTextBrowser.resizeEvent(self, theEvent)
         return
 
     def mouseReleaseEvent(self, theEvent):

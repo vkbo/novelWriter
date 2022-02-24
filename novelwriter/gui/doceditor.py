@@ -1061,8 +1061,8 @@ class GuiDocEditor(QTextEdit):
         """If the text editor is resized, we must make sure the document
         has its margins adjusted according to user preferences.
         """
-        QTextEdit.resizeEvent(self, theEvent)
         self.updateDocMargins()
+        QTextEdit.resizeEvent(self, theEvent)
         return
 
     ##
