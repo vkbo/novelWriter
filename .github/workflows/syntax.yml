@@ -27,5 +27,5 @@ jobs:
           flake8 tests --count --select=E9,F63,F7,F82 --show-source --statistics
       - name: Coding Style Violations
         run: | 
-          flake8 novelwriter --count --max-line-length=99 --ignore E221,E226,E228,E241 --show-source --statistics
-          flake8 tests --count --max-line-length=99 --ignore E221,E226,E228,E241 --show-source --statistics
+          flake8 novelwriter --count --max-line-length=99 --ignore E133,E221,E226,E228,E241,W503 --show-source --statistics
+          flake8 tests --count --max-line-length=99 --ignore E133,E221,E226,E228,E241,W503 --show-source --statistics
