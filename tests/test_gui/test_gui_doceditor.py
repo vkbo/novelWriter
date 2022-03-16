@@ -1286,13 +1286,13 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
     nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.openProject(nwLipsum)
-    assert nwGUI.openDocument("4c4f28287af27")
+    assert nwGUI.openProject(nwLipsum) is True
+    assert nwGUI.openDocument("4c4f28287af27") is True
     origText = nwGUI.docEditor.getText()
     qtbot.wait(stepDelay)
 
     # Select the Word "est"
-    assert nwGUI.docEditor.setCursorPosition(630)
+    nwGUI.docEditor.setCursorPosition(630)
     nwGUI.docEditor._makeSelection(QTextCursor.WordUnderCursor)
     theCursor = nwGUI.docEditor.textCursor()
     assert theCursor.selectedText() == "est"
@@ -1331,7 +1331,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docEditor.docSearch.isVisible() is True
 
     # Search for non-existing
-    assert nwGUI.docEditor.setCursorPosition(0)
+    nwGUI.docEditor.setCursorPosition(0)
     assert nwGUI.docEditor.docSearch.setSearchText("abcdef")
     qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=keyDelay)
     assert nwGUI.docEditor.getCursorPosition() < 3  # No result
@@ -1342,10 +1342,17 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docEditor.docSearch.isRegEx is True
 
     # Set invalid RegEx
-    assert nwGUI.docEditor.setCursorPosition(0)
+    nwGUI.docEditor.setCursorPosition(0)
     assert nwGUI.docEditor.docSearch.setSearchText(r"\bSus[")
     qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=keyDelay)
     assert nwGUI.docEditor.getCursorPosition() < 3  # No result
+
+    # Set dangerous RegEx (issue #1015)
+    # If this doesn't get caught, the app will hang
+    nwGUI.docEditor.setCursorPosition(0)
+    assert nwGUI.docEditor.docSearch.setSearchText(r".*")
+    qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=keyDelay)
+    assert abs(nwGUI.docEditor.getCursorPosition() - 14) < 3
 
     # Set valid RegEx
     assert nwGUI.docEditor.docSearch.setSearchText(r"\bSus")

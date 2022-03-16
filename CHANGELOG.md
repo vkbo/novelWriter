@@ -1,5 +1,38 @@
 # novelWriter Changelog
 
+## Version 1.6.1 [2022-03-16]
+
+### Release Notes
+
+This is a bugfix and patch release that fixes two recursion/loop issues. One can cause a crash if
+the window is resized rapidly, and one can cause a hang with certain search parameters in the
+editor's search box. The Latin American Spanish translation has also been updated.
+
+### Detailed Changelog
+
+**Installation**
+
+* When using the new installer on Windows, the project file mime type icon path would not be
+  correctly configured in registry. The correct path is now used. PR #1006.
+
+**Internationalisation**
+
+* The Latin American Spanish translation has been updated with two missing translation strings.
+  PR #1017.
+
+**Bugfixes**
+
+* Fix a bug where rapidly resizing the main window could trigger the recursion detector in Python
+  if done on a slower system. The actual issue may be a race condition or similar, and the change
+  made at least makes it harder to trigger. PR #1007.
+* With some document searches, it was possible to trigger an infinite loop in the function that
+  counts results. It seems to be caused by the QTextEdit widget's find function returning a
+  successful result status, but no actual result selection. The fix will now write a warning to the
+  log and exit in such cases. The number of results is also now capped at 1000. Issue #1015.
+  PR #1016.
+
+----
+
 ## Version 1.6 [2022-02-20]
 
 ### Release Notes

@@ -535,12 +535,12 @@
     <message>
       <location filename="../novelwriter/tools/build.py" line="203"/>
       <source>Hide scene</source>
-      <translation type="unfinished">Hide scene</translation>
+      <translation>Ocultar la escena</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/build.py" line="204"/>
       <source>Hide section</source>
-      <translation type="unfinished">Hide section</translation>
+      <translation>Ocultar la sección</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/build.py" line="229"/>
