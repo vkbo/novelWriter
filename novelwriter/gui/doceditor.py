@@ -1444,6 +1444,7 @@ class GuiDocEditor(QTextEdit):
                 resS.append(theCursor.selectionStart())
                 resE.append(theCursor.selectionEnd())
             else:
+                logger.warning("The search returned an empty result")
                 break
 
         if hasSelection:
