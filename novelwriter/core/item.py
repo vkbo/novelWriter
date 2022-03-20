@@ -183,9 +183,9 @@ class NWItem():
 
         self.setParent(xItem.attrib.get("parent", None))
         self.setOrder(xItem.attrib.get("order", 0))
-        self.setType(xItem.attrib.get("type", None))
-        self.setClass(xItem.attrib.get("class", None))
-        self.setLayout(xItem.attrib.get("layout", None))
+        self.setType(xItem.attrib.get("type", nwItemType.NO_TYPE))
+        self.setClass(xItem.attrib.get("class", nwItemClass.NO_CLASS))
+        self.setLayout(xItem.attrib.get("layout", nwItemLayout.NO_LAYOUT))
 
         for xValue in xItem:
             if xValue.tag == "meta":
