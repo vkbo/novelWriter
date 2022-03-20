@@ -457,12 +457,8 @@ class GuiWritingStats(QDialog):
                     if len(inData) < 6:
                         continue
 
-                    dStart = datetime.strptime(
-                        "%s %s" % (inData[0], inData[1]), nwConst.FMT_TSTAMP
-                    )
-                    dEnd = datetime.strptime(
-                        "%s %s" % (inData[2], inData[3]), nwConst.FMT_TSTAMP
-                    )
+                    dStart = datetime.fromisoformat(" ".join(inData[0:2]))
+                    dEnd   = datetime.fromisoformat(" ".join(inData[2:4]))
 
                     sIdle = 0
                     if len(inData) > 6:

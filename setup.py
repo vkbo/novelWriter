@@ -786,7 +786,6 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
             bldNum = "0"
 
     distLoop = [
-        ("18.04", "bionic"),
         ("20.04", "focal"),
         ("21.10", "impish"),
         ("22.04", "jammy"),
