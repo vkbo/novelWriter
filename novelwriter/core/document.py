@@ -89,9 +89,10 @@ class NWDoc():
 
         theText = ""
         self._docMeta = {}
-        self._prevHash = sha256sum(docPath)
+        self._prevHash = None
 
         if os.path.isfile(docPath):
+            self._prevHash = sha256sum(docPath)
             try:
                 with open(docPath, mode="r", encoding="utf-8") as inFile:
                     # Check the first <= 10 lines for metadata

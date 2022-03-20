@@ -1,5 +1,63 @@
 # novelWriter Changelog
 
+## Version 1.6.2 [2022-03-20]
+
+### Release Notes
+
+This is a bugfix release that fixes a couple of minor issues. Projects containing one or more empty
+documents would trigger a rebuild of the index each time the project was opened. This has now been
+fixed. Another fix resolves an error message being written to the console logging output when a new
+document was created. Both errors were harmless.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where projects containing empty documents would trigger an index rebuild on open,
+  but the empty document would be skipped due to a check that skips empty documents. As a
+  consequence, the index would be rebuilt each time the project was opened. Empty documents are now
+  added to the index, resolving this issue. Issue #1020. PR #1022.
+* Fixed an issue where the shasum calculation would be performed when a new document was created,
+  which would fail as the file did not yet exist. The error was handled, but an error message was
+  printed to the console log. The shasum is now no longer called if the file doesn't already exist.
+  Issue #1021. PR #1023.
+
+----
+
+## Version 1.6.1 [2022-03-16]
+
+### Release Notes
+
+This is a bugfix and patch release that fixes two recursion/loop issues. One would potentially
+cause a crash if the window was resized rapidly, and one would cause a hang with certain search
+parameters in the editor's search box. The Latin American Spanish translation has also been
+updated.
+
+### Detailed Changelog
+
+**Installation**
+
+* When using the new installer on Windows, the project file mime type icon path would not be
+  correctly configured in registry. The correct path is now used. PR #1006.
+
+**Internationalisation**
+
+* The Latin American Spanish translation has been updated with two missing translation strings.
+  PR #1017.
+
+**Bugfixes**
+
+* Fix a bug where rapidly resizing the main window could trigger the recursion detector in Python
+  if done on a slower system. The actual issue may be a race condition or similar, and the change
+  made at least makes it harder to trigger. PR #1007.
+* With some document searches, it was possible to trigger an infinite loop in the function that
+  counts results. It seems to be caused by the QTextEdit widget's find function returning a
+  successful result status, but no actual result selection. The fix will now write a warning to the
+  log and exit in such cases. The number of results is also now capped at 1000. Issue #1015.
+  PR #1016.
+
+----
+
 ## Version 1.6 [2022-02-20]
 
 ### Release Notes

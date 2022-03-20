@@ -112,8 +112,7 @@ class NWIndex():
 
         theDoc = NWDoc(self.theProject, tHandle)
         theText = theDoc.readDocument()
-        if theText:
-            self.scanText(tHandle, theText)
+        self.scanText(tHandle, theText if theText is not None else "")
 
         return True
 
@@ -217,18 +216,19 @@ class NWIndex():
         if theItem.itemType != nwItemType.FILE:
             logger.info("Not indexing non-file item '%s'", tHandle)
             return False
+
+        # Run word counter for the whole text
+        cC, wC, pC = countWords(theText)
+        self._fileMeta[tHandle] = ["H0", cC, wC, pC]
+
+        # If the file's meta data is missing, or the file is out of the
+        # main project, we don't index the content
         if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
             logger.info("Not indexing no-layout item '%s'", tHandle)
             return False
         if theItem.itemParent is None:
             logger.info("Not indexing orphaned item '%s'", tHandle)
             return False
-
-        # Run word counter for the whole text
-        cC, wC, pC = countWords(theText)
-        self._fileMeta[tHandle] = ["H0", cC, wC, pC]
-
-        # If the file is archived or in trash, we don't index the content
         if self.theProject.projTree.isTrashRoot(theItem.itemParent):
             logger.debug("Not indexing trash item '%s'", tHandle)
             return False
