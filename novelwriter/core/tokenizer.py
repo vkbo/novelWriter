@@ -1,7 +1,7 @@
 """
 novelWriter – Text Tokenizer
 ============================
-Splits a piece of novelWriter markdown text into its elements
+Split novelWriter plain text into its elements
 
 File History:
 Created: 2019-05-05 [0.0.1]
@@ -27,6 +27,7 @@ import re
 import logging
 import novelwriter
 
+from abc import ABC, abstractmethod
 from operator import itemgetter
 from functools import partial
 
@@ -40,7 +41,7 @@ from novelwriter.core.document import NWDoc
 logger = logging.getLogger(__name__)
 
 
-class Tokenizer():
+class Tokenizer(ABC):
 
     # In-Text Format
     FMT_B_B = 1  # Begin bold
@@ -266,6 +267,10 @@ class Tokenizer():
     ##
     #  Class Methods
     ##
+
+    @abstractmethod
+    def doConvert(self):
+        raise NotImplementedError
 
     def addRootHeading(self, theHandle):
         """Add a heading at the start of a new root folder.
