@@ -221,7 +221,8 @@ class NWIndex():
         cC, wC, pC = countWords(theText)
         self._fileMeta[tHandle] = ["H0", cC, wC, pC]
 
-        # If the file is archived or in trash, we don't index the content
+        # If the file's meta data is missing, or the file is out of the
+        # main project, we don't index the content
         if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
             logger.info("Not indexing no-layout item '%s'", tHandle)
             return False
