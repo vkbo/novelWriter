@@ -41,9 +41,17 @@ not compatible.</p>
 
 <h3>Patch 1.6.1 &ndash; 16 March 2022</h3>
 
-<p>This is a bugfix and patch release that fixes two recursion/loop issues. One can cause a crash
-if the window is resized rapidly, and one can cause a hang with certain search parameters in the
-editor's search box. The Latin American Spanish translation has also been updated.</p>
+<p>This is a bugfix and patch release that fixes two recursion/loop issues. One would potentially
+cause a crash if the window was resized rapidly, and one would cause a hang with certain search
+parameters in the editor's search box. The Latin American Spanish translation has also been
+updated.</p>
+
+<h3>Patch 1.6.2 &ndash; 20 March 2022</h3>
+
+<p>This is a bugfix release that fixes a couple of minor issues. Projects containing one or more
+empty documents would trigger a rebuild of the index each time the project was opened. This has now
+been fixed. Another fix resolves an error message being written to the console logging output when
+a new document was created. Both errors were harmless.</p>
 
 </body>
 </html>
