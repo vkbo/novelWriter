@@ -1,12 +1,37 @@
 # novelWriter Changelog
 
+## Version 1.6.2 [2022-03-20]
+
+### Release Notes
+
+This is a bugfix release that fixes a couple of minor issues. Projects containing one or more empty
+documents would trigger a rebuild of the index each time the project was opened. This has now been
+fixed. Another fix resolves an error message being written to the console logging output when a new
+document was created. Both errors were harmless.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where projects containing empty documents would trigger an index rebuild on open,
+  but the empty document would be skipped due to a check that skips empty documents. As a
+  consequence, the index would be rebuilt each time the project was opened. Empty documents are now
+  added to the index, resolving this issue. Issue #1020. PR #1022.
+* Fixed an issue where the shasum calculation would be performed when a new document was created,
+  which would fail as the file did not yet exist. The error was handled, but an error message was
+  printed to the console log. The shasum is now no longer called if the file doesn't already exist.
+  Issue #1021. PR #1023.
+
+----
+
 ## Version 1.6.1 [2022-03-16]
 
 ### Release Notes
 
-This is a bugfix and patch release that fixes two recursion/loop issues. One can cause a crash if
-the window is resized rapidly, and one can cause a hang with certain search parameters in the
-editor's search box. The Latin American Spanish translation has also been updated.
+This is a bugfix and patch release that fixes two recursion/loop issues. One would potentially
+cause a crash if the window was resized rapidly, and one would cause a hang with certain search
+parameters in the editor's search box. The Latin American Spanish translation has also been
+updated.
 
 ### Detailed Changelog
 
