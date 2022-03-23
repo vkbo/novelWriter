@@ -16,6 +16,7 @@
 * Portuguese: Bruno Meneguello (@bkmeneguello)
 * Simplified Chinese: Qianzhi Long (@longqzh)
 * Latin American Spanish: Tommy Marplatt (@tmarplatt)
+* Dutch: Martijn van der Kleijn (@mvdkleijn)
 
 ## Libraries
 
