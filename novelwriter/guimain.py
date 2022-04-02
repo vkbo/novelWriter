@@ -47,7 +47,9 @@ from novelwriter.dialogs import (
     GuiProjectDetails, GuiProjectLoad, GuiProjectSettings, GuiUpdates,
     GuiWordList
 )
-from novelwriter.tools import GuiBuildNovel, GuiProjectWizard, GuiWritingStats
+from novelwriter.tools import (
+    GuiBuildNovel, GuiLipsum, GuiProjectWizard, GuiWritingStats
+)
 from novelwriter.core import NWProject, NWIndex
 from novelwriter.enum import (
     nwItemType, nwItemClass, nwAlert, nwWidget, nwState
@@ -1047,6 +1049,24 @@ class GuiMain(QMainWindow):
         dlgBuild.raise_()
         qApp.processEvents()
         dlgBuild.viewCachedDoc()
+
+        return True
+
+    def showLoremIpsumDialog(self):
+        """Open the insert lorem ipsum text dialog.
+        """
+        if not self.hasProject:
+            logger.error("No project open")
+            return False
+
+        dlgLipsum = getGuiItem("GuiLipsum")
+        if dlgLipsum is None:
+            dlgLipsum = GuiLipsum(self)
+
+        dlgLipsum.setModal(False)
+        dlgLipsum.show()
+        dlgLipsum.raise_()
+        qApp.processEvents()
 
         return True
 
