@@ -327,11 +327,6 @@ class GuiMainMenu(QMenuBar):
         self.aImportFile.triggered.connect(lambda: self.theParent.importDocument())
         self.docuMenu.addAction(self.aImportFile)
 
-        # Document > Insert Placeholder Text
-        self.aLipsumText = QAction(self.tr("Insert Placeholder Text"), self)
-        self.aLipsumText.triggered.connect(lambda: self.theParent.showLoremIpsumDialog())
-        self.docuMenu.addAction(self.aLipsumText)
-
         # Document > Merge Documents
         self.aMergeDocs = QAction(self.tr("Merge Folder to Document"), self)
         self.aMergeDocs.triggered.connect(lambda: self.theParent.mergeDocuments())
@@ -673,6 +668,11 @@ class GuiMainMenu(QMenuBar):
         self.aInsVSpaceM = QAction(self.tr("Vertical Space (Multi)"), self)
         self.aInsVSpaceM.triggered.connect(lambda: self._docInsert(nwDocInsert.VSPACE_M))
         self.mInsBreaks.addAction(self.aInsVSpaceM)
+
+        # Insert > Placeholder Text
+        self.aLipsumText = QAction(self.tr("Placeholder Text"), self)
+        self.aLipsumText.triggered.connect(lambda: self.theParent.showLoremIpsumDialog())
+        self.insertMenu.addAction(self.aLipsumText)
 
         return
 

@@ -23,6 +23,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
+import random
 import logging
 import novelwriter
 
@@ -33,6 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.gui.custom import QSwitch
+from novelwriter.common import readTextFile
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +58,7 @@ class GuiLipsum(QDialog):
         self.innerBox.setSpacing(self.mainConf.pxInt(16))
 
         # Icon
-        nPx = self.mainConf.pxInt(72)
+        nPx = self.mainConf.pxInt(64)
         vSp = self.mainConf.pxInt(4)
         self.docIcon = QLabel()
         self.docIcon.setPixmap(self.theParent.theTheme.getPixmap("proj_document", (nPx, nPx)))
@@ -67,7 +70,7 @@ class GuiLipsum(QDialog):
         self.innerBox.addLayout(self.leftBox)
 
         # Form
-        self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Insert Lorem Ipsum Paragraphs")))
+        self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Insert Lorem Ipsum Text")))
 
         self.paraLabel = QLabel(self.tr("Number of pragraphs"))
         self.paraCount = QSpinBox()
@@ -115,6 +118,19 @@ class GuiLipsum(QDialog):
     ##
 
     def _doInsert(self):
+        """Load the text and insert it in the open document.
+        """
+        lipsumFile = os.path.join(self.mainConf.assetPath, "text", "lipsum.txt")
+        lipsumText = readTextFile(lipsumFile).splitlines()
+
+        if self.randSwitch.isChecked():
+            random.shuffle(lipsumText)
+
+        pCount = self.paraCount.value()
+        inText = "\n\n".join(lipsumText[0:pCount]) + "\n\n"
+
+        self.theParent.docEditor.insertText(inText)
+
         return
 
     def _doClose(self):
