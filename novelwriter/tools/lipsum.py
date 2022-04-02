@@ -45,8 +45,8 @@ class GuiLipsum(QDialog):
     def __init__(self, theParent):
         QDialog.__init__(self, theParent)
 
-        logger.debug("Initialising GuiLispum ...")
-        self.setObjectName("GuiLispum")
+        logger.debug("Initialising GuiLipsum ...")
+        self.setObjectName("GuiLipsum")
 
         self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
@@ -109,7 +109,7 @@ class GuiLipsum(QDialog):
         self.outerBox.setSpacing(self.mainConf.pxInt(16))
         self.setLayout(self.outerBox)
 
-        logger.debug("GuiLispum initialisation complete")
+        logger.debug("GuiLipsum initialisation complete")
 
         return
 
