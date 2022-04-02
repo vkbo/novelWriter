@@ -224,16 +224,9 @@ def testCoreTree_Methods(mockGUI, mockItems):
     assert theTree.checkType("c000000000001", nwItemType.FILE) is True
 
     # Root item lookup
-    theTree._treeRoots.append("stuff")
     assert theTree.findRoot(nwItemClass.WORLD) is None
     assert theTree.findRoot(nwItemClass.NOVEL) == "a000000000001"
     assert theTree.findRoot(nwItemClass.CHARACTER) == "a000000000004"
-
-    # Find root item of child item
-    assert theTree.getRootItem("b000000000001").itemHandle == "a000000000001"
-    assert theTree.getRootItem("c000000000001").itemHandle == "a000000000001"
-    assert theTree.getRootItem("c000000000002").itemHandle == "a000000000001"
-    assert theTree.getRootItem("stuff") is None
 
     # Get item path
     assert theTree.getItemPath("stuff") == []

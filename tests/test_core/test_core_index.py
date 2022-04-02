@@ -284,6 +284,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     aHandle = theProject.newRoot("Archive", nwItemClass.ARCHIVE)
     assert theProject.projTree[aHandle] is not None
     xItem.setParent(aHandle)
+    xItem.setRoot(aHandle)
     assert theIndex.scanText(xHandle, "Hello World!") is False
 
     # Make some usable items

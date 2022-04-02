@@ -608,6 +608,7 @@ class NWProject():
         self.theParent.setStatus(self.tr("Opened Project: {0}").format(self.projName))
 
         self._scanProjectFolder()
+        self._checkProjectTree()
         self._loadProjectLocalisation()
         self.updateWordCounts()
 
@@ -1339,6 +1340,17 @@ class NWProject():
                 xEntry = etree.SubElement(xAutoRep, "entry", attrib={"key": aKey})
                 xEntry.text = aValue
         return
+
+    def _checkProjectTree(self):
+        """Check the project tree and make sure all items have sensible
+        values.
+        """
+        for tItem in self.projTree:
+            tHandle = tItem.itemHandle
+            logger.verbose("Checking item '%s'", tHandle)
+            if tItem.itemRoot is None:
+                self.projTree.updateItemRoot(tHandle)
+                logger.warning("Corrected the root setting of item '%s'", tHandle)
 
     def _scanProjectFolder(self):
         """Scan the project folder and check that the files in it are

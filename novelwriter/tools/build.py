@@ -799,8 +799,7 @@ class GuiBuildNovel(QDialog):
         if isNovel and not novelFiles:
             return False
 
-        rootItem = self.theProject.projTree.getRootItem(theItem.itemHandle)
-        if rootItem.itemClass == nwItemClass.ARCHIVE:
+        if self.theProject.projTree.getItemClass(theItem.itemHandle) == nwItemClass.ARCHIVE:
             return False
 
         return True

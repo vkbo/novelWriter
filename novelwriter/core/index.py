@@ -208,8 +208,6 @@ class NWIndex():
         text.
         """
         theItem = self.theProject.projTree[tHandle]
-        theRoot = self.theProject.projTree.getRootItem(tHandle)
-
         if theItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
             return False
@@ -232,7 +230,7 @@ class NWIndex():
         if self.theProject.projTree.isTrashRoot(theItem.itemParent):
             logger.debug("Not indexing trash item '%s'", tHandle)
             return False
-        if theRoot.itemClass == nwItemClass.ARCHIVE:
+        if self.theProject.projTree.getItemClass(tHandle) == nwItemClass.ARCHIVE:
             logger.debug("Not indexing archived item '%s'", tHandle)
             return False
 
