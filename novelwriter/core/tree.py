@@ -113,6 +113,7 @@ class NWTree():
 
         self._projTree[tHandle] = nwItem
         self._treeOrder.append(tHandle)
+        self.updateItemRoot(tHandle)
         self._setTreeChanged(True)
 
         return True

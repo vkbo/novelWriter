@@ -65,6 +65,18 @@ def testCoreItem_Setters(mockGUI):
     theItem.setParent("0123456789abc")
     assert theItem.itemParent == "0123456789abc"
 
+    # Root
+    theItem.setRoot(None)
+    assert theItem.itemRoot is None
+    theItem.setRoot(123)
+    assert theItem.itemRoot is None
+    theItem.setRoot("0123456789abcdef")
+    assert theItem.itemRoot is None
+    theItem.setRoot("0123456789abg")
+    assert theItem.itemRoot is None
+    theItem.setRoot("0123456789abc")
+    assert theItem.itemRoot == "0123456789abc"
+
     # Order
     theItem.setOrder(None)
     assert theItem.itemOrder == 0
@@ -326,6 +338,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     theItem = NWItem(theProject)
     theItem.setHandle("0123456789abc")
     theItem.setParent("0123456789abc")
+    theItem.setRoot("0123456789abc")
     theItem.setOrder(1)
     theItem.setName("A Name")
     theItem.setClass("NOVEL")
@@ -342,9 +355,11 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     xContent = etree.SubElement(nwXML, "content")
     theItem.packXML(xContent)
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
-        b'<content><item handle="0123456789abc" parent="0123456789abc" order="1" type="FILE" '
-        b'class="NOVEL" layout="NOTE"><meta charCount="7" wordCount="5" paraCount="3" '
-        b'cursorPos="11"/><name status="New" exported="False">A Name</name></item></content>'
+        b'<content>'
+        b'<item handle="0123456789abc" parent="0123456789abc" root="0123456789abc" order="1" '
+        b'type="FILE" class="NOVEL" layout="NOTE"><meta charCount="7" wordCount="5" paraCount="3" '
+        b'cursorPos="11"/><name status="New" exported="False">A Name</name></item>'
+        b'</content>'
     )
 
     # Unpack
@@ -368,6 +383,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     theItem = NWItem(theProject)
     theItem.setHandle("0123456789abc")
     theItem.setParent("0123456789abc")
+    theItem.setRoot("0123456789abc")
     theItem.setOrder(1)
     theItem.setName("A Name")
     theItem.setClass("NOVEL")
@@ -385,8 +401,11 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     xContent = etree.SubElement(nwXML, "content")
     theItem.packXML(xContent)
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
-        b'<content><item handle="0123456789abc" parent="0123456789abc" order="1" type="FOLDER" '
-        b'class="NOVEL"><meta expanded="True"/><name status="New">A Name</name></item></content>'
+        b'<content>'
+        b'<item handle="0123456789abc" parent="0123456789abc" root="0123456789abc" order="1" '
+        b'type="FOLDER" class="NOVEL"><meta expanded="True"/><name status="New">A Name</name>'
+        b'</item>'
+        b'</content>'
     )
 
     # Unpack

@@ -45,6 +45,7 @@ class NWItem():
         self._name     = ""
         self._handle   = None
         self._parent   = None
+        self._root     = None
         self._order    = 0
         self._type     = nwItemType.NO_TYPE
         self._class    = nwItemClass.NO_CLASS
@@ -83,6 +84,10 @@ class NWItem():
     @property
     def itemParent(self):
         return self._parent
+
+    @property
+    def itemRoot(self):
+        return self._root
 
     @property
     def itemOrder(self):
@@ -142,6 +147,7 @@ class NWItem():
         itemAttrib = {}
         itemAttrib["handle"] = str(self._handle)
         itemAttrib["parent"] = str(self._parent)
+        itemAttrib["root"]   = str(self._root)
         itemAttrib["order"]  = str(self._order)
         itemAttrib["type"]   = str(self._type.name)
         itemAttrib["class"]  = str(self._class.name)
@@ -182,6 +188,7 @@ class NWItem():
             return False
 
         self.setParent(xItem.attrib.get("parent", None))
+        self.setRoot(xItem.attrib.get("root", None))
         self.setOrder(xItem.attrib.get("order", 0))
         self.setType(xItem.attrib.get("type", nwItemType.NO_TYPE))
         self.setClass(xItem.attrib.get("class", nwItemClass.NO_CLASS))
@@ -299,6 +306,17 @@ class NWItem():
             self._parent = theParent
         else:
             self._parent = None
+        return
+
+    def setRoot(self, theRoot):
+        """Set the root handle, and ensure it is valid.
+        """
+        if theRoot is None:
+            self._root = None
+        elif isHandle(theRoot):
+            self._root = theRoot
+        else:
+            self._root = None
         return
 
     def setOrder(self, theOrder):
