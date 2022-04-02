@@ -669,6 +669,11 @@ class GuiMainMenu(QMenuBar):
         self.aInsVSpaceM.triggered.connect(lambda: self._docInsert(nwDocInsert.VSPACE_M))
         self.mInsBreaks.addAction(self.aInsVSpaceM)
 
+        # Insert > Placeholder Text
+        self.aLipsumText = QAction(self.tr("Placeholder Text"), self)
+        self.aLipsumText.triggered.connect(lambda: self.theParent.showLoremIpsumDialog())
+        self.insertMenu.addAction(self.aLipsumText)
+
         return
 
     def _buildFormatMenu(self):
