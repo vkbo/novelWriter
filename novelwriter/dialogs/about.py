@@ -187,6 +187,7 @@ class GuiAbout(QDialog):
                 ("Português", "Bruno Meneguello"),
                 ("简体中文", "Qianzhi Long"),
                 ("Español Latinoamericano", "Tommy Marplatt"),
+                ("Nederlands", "Martijn van der Kleijn"),
             ])
         )
 

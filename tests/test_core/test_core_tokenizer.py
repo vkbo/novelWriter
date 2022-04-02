@@ -28,12 +28,17 @@ from novelwriter.core import NWProject, NWDoc
 from novelwriter.core.tokenizer import Tokenizer
 
 
+class BareTokenizer(Tokenizer):
+    def doConvert(self):
+        pass
+
+
 @pytest.mark.core
 def testCoreToken_Setters(mockGUI):
     """Test all the setters for the Tokenizer class.
     """
     theProject = NWProject(mockGUI)
-    theToken = Tokenizer(theProject)
+    theToken = BareTokenizer(theProject)
 
     # Verify defaults
     assert theToken._fmtTitle == "%title%"
@@ -135,7 +140,7 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
     theProject.projLang = "en"
     theProject._loadProjectLocalisation()
 
-    theToken = Tokenizer(theProject)
+    theToken = BareTokenizer(theProject)
     theToken.setKeepMarkdown(True)
 
     assert theProject.openProject(nwMinimal)
@@ -222,7 +227,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     """Test the tokenization of header formats in the Tokenizer class.
     """
     theProject = NWProject(mockGUI)
-    theToken = Tokenizer(theProject)
+    theToken = BareTokenizer(theProject)
     theToken.setKeepMarkdown(True)
 
     # Title
@@ -426,7 +431,7 @@ def testCoreToken_MetaFormat(mockGUI):
     """Test the tokenization of meta formats in the Tokenizer class.
     """
     theProject = NWProject(mockGUI)
-    theToken = Tokenizer(theProject)
+    theToken = BareTokenizer(theProject)
     theToken.setKeepMarkdown(True)
 
     # Comment
@@ -495,7 +500,7 @@ def testCoreToken_MarginFormat(mockGUI):
     """Test the tokenization of margin formats in the Tokenizer class.
     """
     theProject = NWProject(mockGUI)
-    theToken = Tokenizer(theProject)
+    theToken = BareTokenizer(theProject)
     theToken.setKeepMarkdown(True)
 
     # Alignment and Indentation
@@ -550,7 +555,7 @@ def testCoreToken_TextFormat(mockGUI):
     """Test the tokenization of text formats in the Tokenizer class.
     """
     theProject = NWProject(mockGUI)
-    theToken = Tokenizer(theProject)
+    theToken = BareTokenizer(theProject)
     theToken.setKeepMarkdown(True)
 
     # Text
@@ -672,7 +677,7 @@ def testCoreToken_SpecialFormat(mockGUI):
     """Test the tokenization of special formats in the Tokenizer class.
     """
     theProject = NWProject(mockGUI)
-    theToken = Tokenizer(theProject)
+    theToken = BareTokenizer(theProject)
 
     theToken._isNovel = True
 
@@ -877,7 +882,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     theProject = NWProject(mockGUI)
     theProject.projLang = "en"
     theProject._loadProjectLocalisation()
-    theToken = Tokenizer(theProject)
+    theToken = BareTokenizer(theProject)
 
     # Nothing
     theToken._theText = "Some text ...\n"

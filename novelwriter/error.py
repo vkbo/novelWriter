@@ -24,6 +24,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import sys
+import random
 import logging
 
 from PyQt5.QtCore import Qt
@@ -85,6 +86,13 @@ class NWErrorMessage(QDialog):
         self.mainBox.addWidget(self.msgBody, 1, 1, 1, 1)
         self.mainBox.addWidget(self.btnBox,  2, 0, 1, 2)
         self.mainBox.setSpacing(16)
+
+        self.setWindowTitle([
+            "+++ Out of Cheese Error +++",
+            "+++ Divide by Cucumber Error +++",
+            "+++ Whoops! Here Comes The Cheese! +++",
+            "+++ Please Reinstall Universe and Reboot +++",
+        ][random.randint(0, 3)])
 
         self.setLayout(self.mainBox)
 

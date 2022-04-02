@@ -2,16 +2,56 @@
 <html>
 <body>
 
-<h2>Release Notes for 1.6 RC 1</h2>
-<p><i>Released on 6 February 2022</i></p>
+<h2>Release Notes for 1.6</h2>
+<p><i>Released on 20 February 2022</i></p>
 
-<p>This is a release candidate for the next release version, and is intended for testing purposes.
-Please be careful when using this version on live writing projects, and make sure you take frequent
-backups.</p>
-<p>Please check the changelog for an overview of changes. The full release notes will be added to
-the final release.</p>
+<p>This release does not introduce any major new features, but is instead a collection of minor
+improvements and tweaks based on user requests. There are also a number of changes under the hood
+to improve the structure and performance of novelWriter.</p>
+<p><u>Some key improvements to the user interface are:</u></p>
+<p>&#10003; The max text width setting in Preferences now also applies to the document viewer, and
+the setting itself on the Preference dialog has been simplified a bit.</p>
+<p>&#10003; When text is selected in the document editor, the number of words selected is displayed
+in the editor's footer area.</p>
+<p>&#10003; The search tool in the document editor now shows the number of results in the
+document.</p>
+<p>&#10003; The Enter and Ctrl+O keyboard shortcuts should now work the same way in all tree
+views.</p>
+<p>&#10003; It is now possible to set a blank section title format on the Build Novel Project tool
+and get empty paragraphs in the output. Previously, a blank format would just remove the section
+break entirely. This change allows the user to define hard and soft scene breaks using level three
+and four headings. The scene and section titles can be hidden completely with two new switches
+added to the user interface.</p>
+<p><u>Other feature changes include:</u></p>
+<p>&#10003; The project index is now automatically rebuilt in the event it is empty or incomplete
+when the project is opened.</p>
+<p>&#10003; The user can now add their own syntax and GUI theme files in the app folder in their
+user area on the host operating system. Where the custom files must be added is described in the
+documentation.</p>
+<p>&#10003; A Windows installer is yet again provided for novelWriter. If you have novelWriter
+installed using another method, make sure you uninstall it properly first as the two methods are
+not compatible.</p>
+<p>&#10003; Release versions for Ubuntu 21.04 have been dropped, and added for the upcoming Ubuntu
+22.04.</p>
+<p>&#10003; Most translations have been updated. A Dutch translation is in the works.</p>
 
 <p><i>See also the <a href="https://github.com/vkbo/novelWriter/releases">Releases</a> page.</i></p>
+
+<h2>Patch Notes</h2>
+
+<h3>Patch 1.6.1 &ndash; 16 March 2022</h3>
+
+<p>This is a bugfix and patch release that fixes two recursion/loop issues. One would potentially
+cause a crash if the window was resized rapidly, and one would cause a hang with certain search
+parameters in the editor's search box. The Latin American Spanish translation has also been
+updated.</p>
+
+<h3>Patch 1.6.2 &ndash; 20 March 2022</h3>
+
+<p>This is a bugfix release that fixes a couple of minor issues. Projects containing one or more
+empty documents would trigger a rebuild of the index each time the project was opened. This has now
+been fixed. Another fix resolves an error message being written to the console logging output when
+a new document was created. Both errors were harmless.</p>
 
 </body>
 </html>

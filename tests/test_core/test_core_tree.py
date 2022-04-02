@@ -379,36 +379,29 @@ def testCoreTree_XMLPackUnpack(mockGUI, mockItems):
     nwXML = etree.Element("novelWriterXML")
     theTree.packXML(nwXML)
     assert etree.tostring(nwXML, pretty_print=False, encoding="utf-8") == (
-        b"<novelWriterXML>"
-        b"<content count=\"8\">"
-        b"<item handle=\"a000000000001\" order=\"0\" parent=\"None\">"
-        b"<name>Novel</name><type>ROOT</type><class>NOVEL</class><status>None</status>"
-        b"<expanded>True</expanded></item>"
-        b"<item handle=\"b000000000001\" order=\"0\" parent=\"a000000000001\">"
-        b"<name>Act One</name><type>FOLDER</type><class>NOVEL</class><status>None</status>"
-        b"<expanded>True</expanded></item>"
-        b"<item handle=\"c000000000001\" order=\"0\" parent=\"b000000000001\">"
-        b"<name>Chapter One</name><type>FILE</type><class>NOVEL</class><status>None</status>"
-        b"<exported>True</exported><layout>DOCUMENT</layout><charCount>300</charCount>"
-        b"<wordCount>50</wordCount><paraCount>2</paraCount><cursorPos>0</cursorPos></item>"
-        b"<item handle=\"c000000000002\" order=\"0\" parent=\"b000000000001\">"
-        b"<name>Scene One</name><type>FILE</type><class>NOVEL</class><status>None</status>"
-        b"<exported>True</exported><layout>DOCUMENT</layout><charCount>3000</charCount>"
-        b"<wordCount>500</wordCount><paraCount>20</paraCount><cursorPos>0</cursorPos></item>"
-        b"<item handle=\"a000000000002\" order=\"0\" parent=\"None\">"
-        b"<name>Outtakes</name><type>ROOT</type><class>ARCHIVE</class><status>None</status>"
-        b"<expanded>False</expanded></item>"
-        b"<item handle=\"a000000000003\" order=\"0\" parent=\"None\">"
-        b"<name>Trash</name><type>TRASH</type><class>TRASH</class><status>None</status>"
-        b"<expanded>False</expanded></item>"
-        b"<item handle=\"a000000000004\" order=\"0\" parent=\"None\">"
-        b"<name>Characters</name><type>ROOT</type><class>CHARACTER</class><status>None</status>"
-        b"<expanded>True</expanded></item>"
-        b"<item handle=\"b000000000002\" order=\"0\" parent=\"a000000000002\">"
-        b"<name>Jane Doe</name><type>FILE</type><class>CHARACTER</class><status>None</status>"
-        b"<exported>True</exported><layout>NOTE</layout><charCount>2000</charCount>"
-        b"<wordCount>400</wordCount><paraCount>16</paraCount><cursorPos>0</cursorPos></item>"
-        b"</content></novelWriterXML>"
+        b'<novelWriterXML>'
+        b'<content count="8">'
+        b'<item handle="a000000000001" parent="None" order="0" type="ROOT" class="NOVEL">'
+        b'<meta expanded="True"/><name status="None">Novel</name></item>'
+        b'<item handle="b000000000001" parent="a000000000001" order="0" type="FOLDER" '
+        b'class="NOVEL"><meta expanded="True"/><name status="None">Act One</name></item>'
+        b'<item handle="c000000000001" parent="b000000000001" order="0" type="FILE" class="NOVEL" '
+        b'layout="DOCUMENT"><meta charCount="300" wordCount="50" paraCount="2" cursorPos="0"/>'
+        b'<name status="None" exported="True">Chapter One</name></item>'
+        b'<item handle="c000000000002" parent="b000000000001" order="0" type="FILE" class="NOVEL" '
+        b'layout="DOCUMENT"><meta charCount="3000" wordCount="500" paraCount="20" cursorPos="0"/>'
+        b'<name status="None" exported="True">Scene One</name></item>'
+        b'<item handle="a000000000002" parent="None" order="0" type="ROOT" class="ARCHIVE">'
+        b'<meta expanded="False"/><name status="None">Outtakes</name></item>'
+        b'<item handle="a000000000003" parent="None" order="0" type="TRASH" class="TRASH">'
+        b'<meta expanded="False"/><name status="None">Trash</name></item>'
+        b'<item handle="a000000000004" parent="None" order="0" type="ROOT" class="CHARACTER">'
+        b'<meta expanded="True"/><name status="None">Characters</name></item>'
+        b'<item handle="b000000000002" parent="a000000000002" order="0" type="FILE" '
+        b'class="CHARACTER" layout="NOTE"><meta charCount="2000" wordCount="400" paraCount="16" '
+        b'cursorPos="0"/><name status="None" exported="True">Jane Doe</name></item>'
+        b'</content>'
+        b'</novelWriterXML>'
     )
 
     theTree.clear()

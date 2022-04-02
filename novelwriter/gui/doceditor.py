@@ -1061,8 +1061,8 @@ class GuiDocEditor(QTextEdit):
         """If the text editor is resized, we must make sure the document
         has its margins adjusted according to user preferences.
         """
-        QTextEdit.resizeEvent(self, theEvent)
         self.updateDocMargins()
+        QTextEdit.resizeEvent(self, theEvent)
         return
 
     ##
@@ -1436,10 +1436,16 @@ class GuiDocEditor(QTextEdit):
         theCursor.setPosition(0)
         self.setTextCursor(theCursor)
 
-        while self.find(searchFor, findOpt):
+        # Search up to a maximum of 1000, and make sure certain special
+        # searches like a regex search for .* turns into an infinite loop
+        while self.find(searchFor, findOpt) and len(resE) <= 1000:
             theCursor = self.textCursor()
-            resS.append(theCursor.selectionStart())
-            resE.append(theCursor.selectionEnd())
+            if theCursor.hasSelection():
+                resS.append(theCursor.selectionStart())
+                resE.append(theCursor.selectionEnd())
+            else:
+                logger.warning("The search returned an empty result")
+                break
 
         if hasSelection:
             theCursor.setPosition(origA, QTextCursor.MoveAnchor)
@@ -2410,7 +2416,7 @@ class GuiDocEditSearch(QFrame):
         """Set the count values for the current search.
         """
         currRes = "?" if currRes is None else currRes
-        resCount = "?" if resCount is None else resCount
+        resCount = "?" if resCount is None else "1000+" if resCount > 1000 else resCount
         minWidth = self.theTheme.getTextWidth(f"{resCount}//{resCount}", self.boxFont)
         self.resultLabel.setText(f"{currRes}/{resCount}")
         self.resultLabel.setMinimumWidth(minWidth)

@@ -53,7 +53,7 @@ logger = logging.getLogger(__name__)
 
 class NWProject():
 
-    FILE_VERSION = "1.3"
+    FILE_VERSION = "1.4"
 
     def __init__(self, theParent):
 
@@ -474,8 +474,11 @@ class NWProject():
         # 1.3 : Reduces the number of layouts to only two. One for novel
         #       documents and one for project notes. Introduced in
         #       version 1.5.
+        # 1.4 : Introduces a more compact format for storing items. All
+        #       settings aside from name are now attributes. Introduced
+        #       in version 1.7.
 
-        if fileVersion not in ("1.0", "1.1", "1.2", "1.3"):
+        if fileVersion not in ("1.0", "1.1", "1.2", "1.3", "1.4"):
             self.theParent.makeAlert(self.tr(
                 "Unknown or unsupported novelWriter project file format. "
                 "The project cannot be opened by this version of novelWriter. "
