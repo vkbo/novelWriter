@@ -46,7 +46,7 @@ from novelwriter.common import (
     checkString, checkBool, checkInt, isHandle, formatTimeStamp,
     makeFileNameSafe, hexToInt
 )
-from novelwriter.constants import trConst, nwFiles, nwLabels
+from novelwriter.constants import nwLists, trConst, nwFiles, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -1071,7 +1071,7 @@ class NWProject():
         """
         replaceMap = self.statusItems.setNewEntries(newCols)
         for nwItem in self.projTree:
-            if nwItem.itemClass == nwItemClass.NOVEL:
+            if nwItem.itemClass in nwLists.CLS_NOVEL:
                 if nwItem.itemStatus in replaceMap:
                     nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
@@ -1083,9 +1083,9 @@ class NWProject():
         """
         replaceMap = self.importItems.setNewEntries(newCols)
         for nwItem in self.projTree:
-            if nwItem.itemClass != nwItemClass.NOVEL:
-                if nwItem.itemStatus in replaceMap:
-                    nwItem.setStatus(replaceMap[nwItem.itemStatus])
+            if nwItem.itemClass not in nwLists.CLS_NOVEL:
+                if nwItem.itemImport in replaceMap:
+                    nwItem.setImport(replaceMap[nwItem.itemImport])
         self.setProjectChanged(True)
         return True
 
@@ -1206,10 +1206,10 @@ class NWProject():
         self.statusItems.resetCounts()
         self.importItems.resetCounts()
         for nwItem in self.projTree:
-            if nwItem.itemClass == nwItemClass.NOVEL:
+            if nwItem.itemClass in nwLists.CLS_NOVEL:
                 self.statusItems.countEntry(nwItem.itemStatus)
             else:
-                self.importItems.countEntry(nwItem.itemStatus)
+                self.importItems.countEntry(nwItem.itemImport)
         return
 
     def localLookup(self, theWord):

@@ -174,11 +174,12 @@ def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj):
     itemEdit.editName.setText("New Character")
     itemEdit.editStatus.setCurrentIndex(1)
     itemEdit.editExport.setChecked(False)
+    itemEdit._doSave()
 
     # Check New Settings
-    itemEdit._doSave()
     assert itemEdit.theItem.itemName == "New Character"
-    assert itemEdit.theItem.itemStatus == "Minor"
+    assert itemEdit.theItem.itemStatus == "New"
+    assert itemEdit.theItem.itemImport == "Minor"
     assert itemEdit.theItem.itemLayout == nwItemLayout.NOTE
     assert itemEdit.theItem.isExported is False
 

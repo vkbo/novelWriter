@@ -24,8 +24,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
+import novelwriter
 
 from lxml import etree
+
+from PyQt5.QtGui import QIcon, QPixmap, QColor
 
 from novelwriter.common import checkInt
 
@@ -39,9 +42,11 @@ class NWStatus():
         self._theLabels = []
         self._theColours = []
         self._theCounts = []
+        self._theIcons = []
         self._theMap = {}
         self._theLength = 0
         self._theIndex = 0
+        self._iconSize = novelwriter.CONFIG.pxInt(32)
 
         return
 
@@ -50,37 +55,34 @@ class NWStatus():
         a duplicate.
         """
         theLabel = theLabel.strip()
-        if self.lookupEntry(theLabel) is None:
+        if self._getIndex(theLabel) is None:
+            theIcon = QPixmap(self._iconSize, self._iconSize)
+            theIcon.fill(QColor(*theColours))
+            self._theIcons.append(QIcon(theIcon))
             self._theLabels.append(theLabel)
             self._theColours.append(theColours)
             self._theCounts.append(0)
             self._theMap[theLabel] = self._theLength
             self._theLength += 1
-        return True
 
-    def lookupEntry(self, theLabel):
-        """Look up a status entry in the object lists, and return it if
-        it exists.
-        """
-        if theLabel is None:
-            return None
-        theLabel = theLabel.strip()
-        if theLabel in self._theMap.keys():
-            return self._theMap[theLabel]
-        return None
+        return True
 
     def checkEntry(self, theStatus):
         """Check if a status value is valid, and returns the safe
         reference to be used internally.
         """
         if isinstance(theStatus, str):
-            theStatus = theStatus.strip()
-            if self.lookupEntry(theStatus) is not None:
-                return theStatus
-        theStatus = checkInt(theStatus, 0, False)
-        if theStatus >= 0 and theStatus < self._theLength:
-            return self._theLabels[theStatus]
+            if self._getIndex(theStatus) is not None:
+                return theStatus.strip()
         return self._theLabels[0]
+
+    def getIcon(self, theLabel):
+        """Return the icon for the given status item.
+        """
+        theIndex = self._getIndex(theLabel)
+        if theIndex is not None:
+            return self._theIcons[theIndex]
+        return QIcon()
 
     def setNewEntries(self, newList):
         """Update the list of entries after they have been modified by
@@ -92,6 +94,7 @@ class NWStatus():
             self._theLabels = []
             self._theColours = []
             self._theCounts = []
+            self._theIcons = []
             self._theMap = {}
             self._theLength = 0
             self._theIndex = 0
@@ -113,7 +116,7 @@ class NWStatus():
         """Increment the counter for a given label. This should be used
         together with resetCounts in a loop over project items.
         """
-        theIndex = self.lookupEntry(theLabel)
+        theIndex = self._getIndex(theLabel)
         if theIndex is not None:
             self._theCounts[theIndex] += 1
         return
@@ -124,9 +127,9 @@ class NWStatus():
         """
         for n in range(self._theLength):
             xSub = etree.SubElement(xParent, "entry", attrib={
-                "blue":  str(self._theColours[n][2]),
-                "green": str(self._theColours[n][1]),
                 "red":   str(self._theColours[n][0]),
+                "green": str(self._theColours[n][1]),
+                "blue":  str(self._theColours[n][2]),
             })
             xSub.text = self._theLabels[n]
         return True
@@ -145,17 +148,30 @@ class NWStatus():
             theColours.append((cR, cG, cB))
 
         if len(theLabels) > 0:
-            self._theLabels  = []
+            self._theLabels = []
             self._theColours = []
-            self._theCounts  = []
-            self._theMap     = {}
-            self._theLength  = 0
-            self._theIndex   = 0
+            self._theCounts = []
+            self._theIcons = []
+            self._theMap = {}
+            self._theLength = 0
+            self._theIndex = 0
 
             for n in range(len(theLabels)):
                 self.addEntry(theLabels[n], theColours[n])
 
         return True
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _getIndex(self, theLabel):
+        """Look up a status entry in the object lists, and return it if
+        it exists.
+        """
+        if theLabel is None:
+            return None
+        return self._theMap.get(theLabel.strip(), None)
 
     ##
     #  Iterator Bits
@@ -165,8 +181,8 @@ class NWStatus():
         """Return an entry by its index.
         """
         if n >= 0 and n < self._theLength:
-            return self._theLabels[n], self._theColours[n], self._theCounts[n]
-        return None, None, None
+            return self._theLabels[n], self._theColours[n], self._theCounts[n], self._theIcons[n]
+        return None, None, None, QIcon()
 
     def __iter__(self):
         """Initialise the iterator.
@@ -178,9 +194,9 @@ class NWStatus():
         """Return the next entry for the iterator.
         """
         if self._theIndex < self._theLength:
-            theLabel, theColour, theCount = self.__getitem__(self._theIndex)
+            theLabel, theColour, theCount, theIcon = self.__getitem__(self._theIndex)
             self._theIndex += 1
-            return theLabel, theColour, theCount
+            return theLabel, theColour, theCount, theIcon
         else:
             raise StopIteration
 
