@@ -23,6 +23,8 @@ import pytest
 
 from lxml import etree
 
+from PyQt5.QtGui import QIcon
+
 from novelwriter.core.status import NWStatus
 
 
@@ -58,6 +60,10 @@ def testCoreStatus_Entries():
     assert theStatus.checkEntry("New ") == "New"
     assert theStatus.checkEntry("  Main ") == "Main"
 
+    # Icons
+    assert isinstance(theStatus.getIcon("Stuff"), QIcon)
+    assert isinstance(theStatus.getIcon("New"), QIcon)
+
     # Set new list
     newList = [
         ("New", 1, 1, 1, "New"),
@@ -92,6 +98,12 @@ def testCoreStatus_Entries():
         assert sB == theStatus._theColours[i]
         assert sC == theStatus._theCounts[i]
         assert sD == theStatus._theIcons[i]
+
+    sA, sB, sC, sD = theStatus[9]
+    assert sA is None
+    assert sB is None
+    assert sC is None
+    assert isinstance(sD, QIcon)
 
     # Clear counts
     theStatus.resetCounts()

@@ -23,6 +23,8 @@ import pytest
 
 from lxml import etree
 
+from PyQt5.QtGui import QIcon
+
 from novelwriter.core import NWProject
 from novelwriter.core.item import NWItem
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
@@ -98,6 +100,27 @@ def testCoreItem_Setters(mockGUI):
     assert theItem.itemStatus == "Draft"
     theItem.setStatus("Finished")
     assert theItem.itemStatus == "Finished"
+
+    # Status/Importance Wrapper
+    theItem._class = nwItemClass.CHARACTER
+    theItem.setImportStatus("New")
+    assert theItem.itemImport == "New"
+    theItem.setImportStatus("Minor")
+    assert theItem.itemImport == "Minor"
+    theItem.setImportStatus("Note")
+    assert theItem.itemImport == "New"
+    theItem.setImportStatus("Draft")
+    assert theItem.itemImport == "New"
+
+    theItem._class = nwItemClass.NOVEL
+    theItem.setImportStatus("New")
+    assert theItem.itemStatus == "New"
+    theItem.setImportStatus("Minor")
+    assert theItem.itemStatus == "New"
+    theItem.setImportStatus("Note")
+    assert theItem.itemStatus == "Note"
+    theItem.setImportStatus("Draft")
+    assert theItem.itemStatus == "Draft"
 
     # Expanded
     theItem.setExpanded(8)
@@ -196,6 +219,22 @@ def testCoreItem_Methods(mockGUI):
 
     theItem.setLayout("NOTE")
     assert theItem.describeMe() == "Project Note"
+
+    # Status + Icon
+    # =============
+    theItem.setType("FILE")
+    theItem.setStatus("Note")
+    theItem.setImport("Minor")
+
+    theItem.setClass("NOVEL")
+    stT, stI = theItem.getImportStatus()
+    assert stT == "Note"
+    assert isinstance(stI, QIcon)
+
+    theItem.setClass("CHARACTER")
+    stT, stI = theItem.getImportStatus()
+    assert stT == "Minor"
+    assert isinstance(stI, QIcon)
 
     # Representation
     # ==============
