@@ -50,6 +50,7 @@ class NWItem():
         self._class    = nwItemClass.NO_CLASS
         self._layout   = nwItemLayout.NO_LAYOUT
         self._status   = None
+        self._import   = None
         self._expanded = False
         self._exported = True
 
@@ -103,6 +104,10 @@ class NWItem():
     @property
     def itemStatus(self):
         return self._status
+
+    @property
+    def itemImport(self):
+        return self._import
 
     @property
     def isExpanded(self):
@@ -159,12 +164,13 @@ class NWItem():
 
         nameAttrib = {}
         nameAttrib["status"] = str(self._status)
+        nameAttrib["import"] = str(self._import)
         if self._type == nwItemType.FILE:
             nameAttrib["exported"]  = str(self._exported)
 
         xPack = etree.SubElement(xParent, "item", attrib=itemAttrib)
-        self._subPack(xPack, "meta",   attrib=metaAttrib)
-        self._subPack(xPack, "name",   text=str(self._name), attrib=nameAttrib)
+        self._subPack(xPack, "meta", attrib=metaAttrib)
+        self._subPack(xPack, "name", text=str(self._name), attrib=nameAttrib)
 
         return
 
@@ -197,11 +203,12 @@ class NWItem():
             elif xValue.tag == "name":
                 self.setName(xValue.text)
                 self.setStatus(xValue.attrib.get("status", None))
+                self.setImport(xValue.attrib.get("import", None))
                 self.setExported(xValue.attrib.get("exported", True))
 
             # Legacy Format (1.3 and earlier)
             elif xValue.tag == "status":
-                self.setStatus(xValue.text)
+                self.setImportStatus(xValue.text)
             elif xValue.tag == "type":
                 self.setType(xValue.text)
             elif xValue.tag == "class":
@@ -267,6 +274,28 @@ class NWItem():
                 descKey = "note"
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
+
+    def getImportStatus(self):
+        """Return the relevant importance or status label and icon for
+        the current item based on its class.
+        """
+        if self._class in nwLists.CLS_NOVEL:
+            stName = self.theProject.statusItems.checkEntry(self._status)
+            stIcon = self.theProject.statusItems.getIcon(stName)
+        else:
+            stName = self.theProject.importItems.checkEntry(self._import)
+            stIcon = self.theProject.importItems.getIcon(stName)
+        return stName, stIcon
+
+    def setImportStatus(self, theLabel):
+        """Update the importance or status value based on class. This is
+        a wrapper setter for setStatus and setImport.
+        """
+        if self._class in nwLists.CLS_NOVEL:
+            self.setStatus(theLabel)
+        else:
+            self.setImport(theLabel)
+        return
 
     ##
     #  Set Item Values
@@ -354,10 +383,14 @@ class NWItem():
         """Set the item status by looking it up in the valid status
         items of the current project.
         """
-        if self._class in nwLists.CLS_NOVEL:
-            self._status = self.theProject.statusItems.checkEntry(theStatus)
-        else:
-            self._status = self.theProject.importItems.checkEntry(theStatus)
+        self._status = self.theProject.statusItems.checkEntry(theStatus)
+        return
+
+    def setImport(self, theImport):
+        """Set the item importance by looking it up in the valid import
+        items of the current project.
+        """
+        self._import = self.theProject.importItems.checkEntry(theImport)
         return
 
     def setExpanded(self, expState):

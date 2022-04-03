@@ -610,14 +610,7 @@ class GuiProjectTree(QTreeWidget):
             else:
                 expIcon = self.theTheme.getIcon("cross")
 
-        iStatus = nwItem.itemStatus
-        if nwItem.itemClass == nwItemClass.NOVEL:
-            iStatus = self.theProject.statusItems.checkEntry(iStatus)
-            statIcon = self.theProject.statusItems.getIcon(iStatus)
-        else:
-            iStatus = self.theProject.importItems.checkEntry(iStatus)
-            statIcon = self.theProject.importItems.getIcon(iStatus)
-
+        itempStatus, statusIcon = nwItem.getImportStatus()
         hLevel = self.theIndex.getHandleHeaderLevel(tHandle)
         itemIcon = self.theTheme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
@@ -626,8 +619,8 @@ class GuiProjectTree(QTreeWidget):
         trItem.setIcon(self.C_NAME, itemIcon)
         trItem.setText(self.C_NAME, nwItem.itemName)
         trItem.setIcon(self.C_EXPORT, expIcon)
-        trItem.setIcon(self.C_STATUS, statIcon)
-        trItem.setToolTip(self.C_STATUS, nwItem.itemStatus)
+        trItem.setIcon(self.C_STATUS, statusIcon)
+        trItem.setToolTip(self.C_STATUS, itempStatus)
 
         if self.mainConf.emphLabels and nwItem.itemLayout == nwItemLayout.DOCUMENT:
             trFont = trItem.font(self.C_NAME)

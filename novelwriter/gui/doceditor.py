@@ -50,7 +50,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import NWDoc, NWSpellEnchant, countWords
-from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwItemClass
+from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert
 from novelwriter.common import transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
 from novelwriter.gui.dochighlight import GuiDocHighlighter
@@ -2940,17 +2940,10 @@ class GuiDocEditFooter(QWidget):
             sIcon = QPixmap()
             sText = ""
         else:
-            iStatus = self._theItem.itemStatus
-            if self._theItem.itemClass == nwItemClass.NOVEL:
-                iStatus = self.theProject.statusItems.checkEntry(iStatus)
-                theIcon = self.theProject.statusItems.getIcon(iStatus)
-            else:
-                iStatus = self.theProject.importItems.checkEntry(iStatus)
-                theIcon = self.theProject.importItems.getIcon(iStatus)
-
+            theStatus, theIcon = self._theItem.getImportStatus()
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
             hLevel = self.theParent.theIndex.getHandleHeaderLevel(self._docHandle)
-            sText = f"{self._theItem.itemStatus} / {self._theItem.describeMe(hLevel)}"
+            sText = f"{theStatus} / {self._theItem.describeMe(hLevel)}"
 
         self.statusIcon.setPixmap(sIcon)
         self.statusText.setText(sText)

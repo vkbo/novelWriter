@@ -48,9 +48,9 @@ def testCoreStatus_Entries():
     assert theStatus._theLength == 4
 
     # Lookups
-    assert theStatus.lookupEntry(None) is None
-    assert theStatus.lookupEntry("stuff") is None
-    assert theStatus.lookupEntry("Main") == 3
+    assert theStatus._getIndex(None) is None
+    assert theStatus._getIndex("stuff") is None
+    assert theStatus._getIndex("Main") == 3
 
     # Checks
     assert theStatus.checkEntry(123) == "New"

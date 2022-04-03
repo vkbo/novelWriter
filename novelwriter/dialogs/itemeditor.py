@@ -116,7 +116,8 @@ class GuiItemEditor(QDialog):
         self.editName.setText(self.theItem.itemName)
         self.editName.selectAll()
 
-        statusIdx = self.editStatus.findData(self.theItem.itemStatus)
+        currStatus, _ = self.theItem.getImportStatus()
+        statusIdx = self.editStatus.findData(currStatus)
         if statusIdx != -1:
             self.editStatus.setCurrentIndex(statusIdx)
 
@@ -176,7 +177,7 @@ class GuiItemEditor(QDialog):
         isExported = self.editExport.isChecked()
 
         self.theItem.setName(itemName)
-        self.theItem.setStatus(itemStatus)
+        self.theItem.setImportStatus(itemStatus)
         self.theItem.setLayout(itemLayout)
         self.theItem.setExported(isExported)
 

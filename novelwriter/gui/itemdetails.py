@@ -30,7 +30,7 @@ from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 
-from novelwriter.enum import nwItemClass, nwItemType
+from novelwriter.enum import nwItemType
 from novelwriter.constants import trConst, nwLabels
 
 logger = logging.getLogger(__name__)
@@ -249,16 +249,9 @@ class GuiItemDetails(QWidget):
         # Status
         # ======
 
-        itStatus = nwItem.itemStatus
-        if nwItem.itemClass == nwItemClass.NOVEL:
-            itStatus = self.theProject.statusItems.checkEntry(itStatus)
-            flagIcon = self.theProject.statusItems.getIcon(itStatus)
-        else:
-            itStatus = self.theProject.importItems.checkEntry(itStatus)
-            flagIcon = self.theProject.importItems.getIcon(itStatus)
-
-        self.statusIcon.setPixmap(flagIcon.pixmap(iPx, iPx))
-        self.statusData.setText(nwItem.itemStatus)
+        theStatus, theIcon = nwItem.getImportStatus()
+        self.statusIcon.setPixmap(theIcon.pixmap(iPx, iPx))
+        self.statusData.setText(theStatus)
 
         # Class
         # =====
