@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-03 20:09:35">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-03 21:38:23">
   <project>
     <name>Test Custom</name>
     <title>Test Novel</title>
@@ -44,95 +44,95 @@
   <content count="23">
     <item handle="73475cb40a568" parent="None" order="0" type="ROOT" class="NOVEL">
       <meta expanded="False"/>
-      <name status="New">Novel</name>
+      <name status="New" import="None">Novel</name>
     </item>
     <item handle="44cb730c42048" parent="None" order="0" type="ROOT" class="PLOT">
       <meta expanded="False"/>
-      <name status="New">Plot</name>
+      <name status="New" import="None">Plot</name>
     </item>
     <item handle="71ee45a3c0db9" parent="None" order="0" type="ROOT" class="CHARACTER">
       <meta expanded="False"/>
-      <name status="New">Characters</name>
+      <name status="New" import="None">Characters</name>
     </item>
     <item handle="811786ad1ae74" parent="None" order="0" type="ROOT" class="WORLD">
       <meta expanded="False"/>
-      <name status="New">Locations</name>
+      <name status="New" import="None">Locations</name>
     </item>
     <item handle="25fc0e7096fc6" parent="None" order="0" type="ROOT" class="TIMELINE">
       <meta expanded="False"/>
-      <name status="New">Timeline</name>
+      <name status="New" import="None">Timeline</name>
     </item>
     <item handle="31489056e0916" parent="None" order="0" type="ROOT" class="OBJECT">
       <meta expanded="False"/>
-      <name status="New">Objects</name>
+      <name status="New" import="None">Objects</name>
     </item>
     <item handle="98010bd9270f9" parent="None" order="0" type="ROOT" class="ENTITY">
       <meta expanded="False"/>
-      <name status="New">Entities</name>
+      <name status="New" import="None">Entities</name>
     </item>
     <item handle="0e17daca5f3e1" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Title Page</name>
+      <name status="New" import="None" exported="True">Title Page</name>
     </item>
     <item handle="1a6562590ef19" parent="73475cb40a568" order="0" type="FOLDER" class="NOVEL">
       <meta expanded="False"/>
-      <name status="New">Chapter 1</name>
+      <name status="New" import="None">Chapter 1</name>
     </item>
     <item handle="031b4af5197ec" parent="1a6562590ef19" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Chapter 1</name>
+      <name status="New" import="None" exported="True">Chapter 1</name>
     </item>
     <item handle="41cfc0d1f2d12" parent="1a6562590ef19" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Scene 1.1</name>
+      <name status="New" import="None" exported="True">Scene 1.1</name>
     </item>
     <item handle="2858dcd1057d3" parent="1a6562590ef19" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Scene 1.2</name>
+      <name status="New" import="None" exported="True">Scene 1.2</name>
     </item>
     <item handle="2fca346db6561" parent="1a6562590ef19" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Scene 1.3</name>
+      <name status="New" import="None" exported="True">Scene 1.3</name>
     </item>
     <item handle="02d20bbd7e394" parent="73475cb40a568" order="0" type="FOLDER" class="NOVEL">
       <meta expanded="False"/>
-      <name status="New">Chapter 2</name>
+      <name status="New" import="None">Chapter 2</name>
     </item>
     <item handle="7688b6ef52555" parent="02d20bbd7e394" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Chapter 2</name>
+      <name status="New" import="None" exported="True">Chapter 2</name>
     </item>
     <item handle="c837649cce43f" parent="02d20bbd7e394" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Scene 2.1</name>
+      <name status="New" import="None" exported="True">Scene 2.1</name>
     </item>
     <item handle="6208ef0f7750c" parent="02d20bbd7e394" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Scene 2.2</name>
+      <name status="New" import="None" exported="True">Scene 2.2</name>
     </item>
     <item handle="3e1e967e9b793" parent="02d20bbd7e394" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Scene 2.3</name>
+      <name status="New" import="None" exported="True">Scene 2.3</name>
     </item>
     <item handle="39fa9ec190eee" parent="73475cb40a568" order="0" type="FOLDER" class="NOVEL">
       <meta expanded="False"/>
-      <name status="New">Chapter 3</name>
+      <name status="New" import="None">Chapter 3</name>
     </item>
     <item handle="d029fa3a95e17" parent="39fa9ec190eee" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Chapter 3</name>
+      <name status="New" import="None" exported="True">Chapter 3</name>
     </item>
     <item handle="81b8a03f97e87" parent="39fa9ec190eee" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Scene 3.1</name>
+      <name status="New" import="None" exported="True">Scene 3.1</name>
     </item>
     <item handle="da4ea2a5506f2" parent="39fa9ec190eee" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Scene 3.2</name>
+      <name status="New" import="None" exported="True">Scene 3.2</name>
     </item>
     <item handle="a68b412c42825" parent="39fa9ec190eee" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Scene 3.3</name>
+      <name status="New" import="None" exported="True">Scene 3.3</name>
     </item>
   </content>
 </novelWriterXML>

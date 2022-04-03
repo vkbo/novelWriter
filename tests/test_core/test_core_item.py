@@ -74,16 +74,17 @@ def testCoreItem_Setters(mockGUI):
     assert theItem.itemOrder == 1
 
     # Importance
-    theItem.setStatus("Nonsense")
-    assert theItem.itemStatus == "New"
-    theItem.setStatus("New")
-    assert theItem.itemStatus == "New"
-    theItem.setStatus("Minor")
-    assert theItem.itemStatus == "Minor"
-    theItem.setStatus("Major")
-    assert theItem.itemStatus == "Major"
-    theItem.setStatus("Main")
-    assert theItem.itemStatus == "Main"
+    theItem._class = nwItemClass.CHARACTER
+    theItem.setImport("Nonsense")
+    assert theItem.itemImport == "New"
+    theItem.setImport("New")
+    assert theItem.itemImport == "New"
+    theItem.setImport("Minor")
+    assert theItem.itemImport == "Minor"
+    theItem.setImport("Major")
+    assert theItem.itemImport == "Major"
+    theItem.setImport("Main")
+    assert theItem.itemImport == "Main"
 
     # Status
     theItem._class = nwItemClass.NOVEL
@@ -342,9 +343,11 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     xContent = etree.SubElement(nwXML, "content")
     theItem.packXML(xContent)
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
-        b'<content><item handle="0123456789abc" parent="0123456789abc" order="1" type="FILE" '
-        b'class="NOVEL" layout="NOTE"><meta charCount="7" wordCount="5" paraCount="3" '
-        b'cursorPos="11"/><name status="New" exported="False">A Name</name></item></content>'
+        b'<content>'
+        b'<item handle="0123456789abc" parent="0123456789abc" order="1" type="FILE" class="NOVEL" '
+        b'layout="NOTE"><meta charCount="7" wordCount="5" paraCount="3" cursorPos="11"/>'
+        b'<name status="New" import="None" exported="False">A Name</name></item>'
+        b'</content>'
     )
 
     # Unpack
@@ -385,8 +388,11 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     xContent = etree.SubElement(nwXML, "content")
     theItem.packXML(xContent)
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
-        b'<content><item handle="0123456789abc" parent="0123456789abc" order="1" type="FOLDER" '
-        b'class="NOVEL"><meta expanded="True"/><name status="New">A Name</name></item></content>'
+        b'<content>'
+        b'<item handle="0123456789abc" parent="0123456789abc" order="1" type="FOLDER" '
+        b'class="NOVEL"><meta expanded="True"/><name status="New" import="None">A Name</name>'
+        b'</item>'
+        b'</content>'
     )
 
     # Unpack

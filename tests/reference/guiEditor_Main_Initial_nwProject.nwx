@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-03 20:06:37">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-03 21:00:21">
   <project>
     <name>New Project</name>
     <title></title>
@@ -42,35 +42,35 @@
   <content count="8">
     <item handle="73475cb40a568" parent="None" order="0" type="ROOT" class="NOVEL">
       <meta expanded="False"/>
-      <name status="New">Novel</name>
+      <name status="New" import="None">Novel</name>
     </item>
     <item handle="25fc0e7096fc6" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">Title Page</name>
+      <name status="New" import="None" exported="True">Title Page</name>
     </item>
     <item handle="31489056e0916" parent="73475cb40a568" order="1" type="FOLDER" class="NOVEL">
       <meta expanded="False"/>
-      <name status="New">New Chapter</name>
+      <name status="New" import="None">New Chapter</name>
     </item>
     <item handle="98010bd9270f9" parent="31489056e0916" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">New Chapter</name>
+      <name status="New" import="None" exported="True">New Chapter</name>
     </item>
     <item handle="0e17daca5f3e1" parent="31489056e0916" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="9" wordCount="2" paraCount="0" cursorPos="0"/>
-      <name status="New" exported="True">New Scene</name>
+      <name status="New" import="None" exported="True">New Scene</name>
     </item>
     <item handle="44cb730c42048" parent="None" order="1" type="ROOT" class="PLOT">
       <meta expanded="False"/>
-      <name status="New">Plot</name>
+      <name status="New" import="None">Plot</name>
     </item>
     <item handle="71ee45a3c0db9" parent="None" order="2" type="ROOT" class="CHARACTER">
       <meta expanded="False"/>
-      <name status="New">Characters</name>
+      <name status="New" import="None">Characters</name>
     </item>
     <item handle="811786ad1ae74" parent="None" order="3" type="ROOT" class="WORLD">
       <meta expanded="False"/>
-      <name status="New">World</name>
+      <name status="New" import="None">World</name>
     </item>
   </content>
 </novelWriterXML>
