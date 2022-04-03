@@ -2943,10 +2943,10 @@ class GuiDocEditFooter(QWidget):
             iStatus = self._theItem.itemStatus
             if self._theItem.itemClass == nwItemClass.NOVEL:
                 iStatus = self.theProject.statusItems.checkEntry(iStatus)
-                theIcon = self.theParent.statusIcons[iStatus]
+                theIcon = self.theProject.statusItems.getIcon(iStatus)
             else:
                 iStatus = self.theProject.importItems.checkEntry(iStatus)
-                theIcon = self.theParent.importIcons[iStatus]
+                theIcon = self.theProject.importItems.getIcon(iStatus)
 
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
             hLevel = self.theParent.theIndex.getHandleHeaderLevel(self._docHandle)

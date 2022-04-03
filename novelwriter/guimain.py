@@ -31,7 +31,7 @@ from time import time
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer, QSize, QThreadPool, pyqtSlot
-from PyQt5.QtGui import QIcon, QPixmap, QColor, QKeySequence, QCursor
+from PyQt5.QtGui import QIcon, QKeySequence, QCursor
 from PyQt5.QtWidgets import (
     qApp, QMainWindow, QVBoxLayout, QWidget, QSplitter, QFileDialog, QShortcut,
     QMessageBox, QDialog, QTabWidget, QToolBar, QAction
@@ -128,10 +128,6 @@ class GuiMain(QMainWindow):
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
         self.treeView.wordCountsChanged.connect(self._updateStatusWordCount)
-
-        # Minor GUI Elements
-        self.statusIcons = []
-        self.importIcons = []
 
         # Project Tree Tabs
         self.projTabs = QTabWidget()
@@ -869,8 +865,6 @@ class GuiMain(QMainWindow):
     def rebuildTrees(self):
         """Rebuild the project tree.
         """
-        self._makeStatusIcons()
-        self._makeImportIcons()
         self.treeView.buildTree()
         self.novelView.refreshTree()
         return
@@ -1460,29 +1454,6 @@ class GuiMain(QMainWindow):
         if self.hasProject and self.docEditor.docChanged():
             logger.debug("Autosaving document")
             self.saveDocument()
-        return
-
-    def _makeStatusIcons(self):
-        """Generate all the item status icons based on project settings.
-        """
-        self.statusIcons = {}
-        iPx = self.mainConf.pxInt(32)
-        for sLabel, sCol, _ in self.theProject.statusItems:
-            theIcon = QPixmap(iPx, iPx)
-            theIcon.fill(QColor(*sCol))
-            self.statusIcons[sLabel] = QIcon(theIcon)
-        return
-
-    def _makeImportIcons(self):
-        """Generate all the item importance icons based on project
-        settings.
-        """
-        self.importIcons = {}
-        iPx = self.mainConf.pxInt(32)
-        for sLabel, sCol, _ in self.theProject.importItems:
-            theIcon = QPixmap(iPx, iPx)
-            theIcon.fill(QColor(*sCol))
-            self.importIcons[sLabel] = QIcon(theIcon)
         return
 
     def _assembleProjectWizardData(self, newProj):

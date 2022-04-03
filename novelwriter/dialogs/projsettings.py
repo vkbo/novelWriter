@@ -285,7 +285,7 @@ class GuiProjectEditStatus(QWidget):
         self.listBox.setColumnWidth(self.COL_LABEL, wCol0)
         self.listBox.setIndentation(0)
 
-        for iName, iCol, nUse in self.theStatus:
+        for iName, iCol, nUse, _ in self.theStatus:
             self._addItem(iName, iCol, iName, nUse)
 
         # List Controls

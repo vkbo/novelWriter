@@ -75,15 +75,11 @@ class GuiItemEditor(QDialog):
         self.editStatus = QComboBox()
         self.editStatus.setMinimumWidth(mVd)
         if self.theItem.itemClass in nwLists.CLS_NOVEL:
-            for sLabel, _, _ in self.theProject.statusItems:
-                self.editStatus.addItem(
-                    self.theParent.statusIcons[sLabel], sLabel, sLabel
-                )
+            for sLabel, _, _, sIcon in self.theProject.statusItems:
+                self.editStatus.addItem(sIcon, sLabel, sLabel)
         else:
-            for sLabel, _, _ in self.theProject.importItems:
-                self.editStatus.addItem(
-                    self.theParent.importIcons[sLabel], sLabel, sLabel
-                )
+            for sLabel, _, _, sIcon in self.theProject.importItems:
+                self.editStatus.addItem(sIcon, sLabel, sLabel)
 
         # Item Layout
         self.editLayout = QComboBox()

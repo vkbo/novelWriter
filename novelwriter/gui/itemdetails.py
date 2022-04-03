@@ -251,11 +251,11 @@ class GuiItemDetails(QWidget):
 
         itStatus = nwItem.itemStatus
         if nwItem.itemClass == nwItemClass.NOVEL:
-            itStatus = self.theProject.statusItems.checkEntry(itStatus)  # Make sure it's valid
-            flagIcon = self.theParent.statusIcons[itStatus]
+            itStatus = self.theProject.statusItems.checkEntry(itStatus)
+            flagIcon = self.theProject.statusItems.getIcon(itStatus)
         else:
-            itStatus = self.theProject.importItems.checkEntry(itStatus)  # Make sure it's valid
-            flagIcon = self.theParent.importIcons[itStatus]
+            itStatus = self.theProject.importItems.checkEntry(itStatus)
+            flagIcon = self.theProject.importItems.getIcon(itStatus)
 
         self.statusIcon.setPixmap(flagIcon.pixmap(iPx, iPx))
         self.statusData.setText(nwItem.itemStatus)

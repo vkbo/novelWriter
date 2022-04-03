@@ -612,11 +612,11 @@ class GuiProjectTree(QTreeWidget):
 
         iStatus = nwItem.itemStatus
         if nwItem.itemClass == nwItemClass.NOVEL:
-            iStatus = self.theProject.statusItems.checkEntry(iStatus)  # Make sure it's valid
-            statIcon = self.theParent.statusIcons[iStatus]
+            iStatus = self.theProject.statusItems.checkEntry(iStatus)
+            statIcon = self.theProject.statusItems.getIcon(iStatus)
         else:
-            iStatus = self.theProject.importItems.checkEntry(iStatus)  # Make sure it's valid
-            statIcon = self.theParent.importIcons[iStatus]
+            iStatus = self.theProject.importItems.checkEntry(iStatus)
+            statIcon = self.theProject.importItems.getIcon(iStatus)
 
         hLevel = self.theIndex.getHandleHeaderLevel(tHandle)
         itemIcon = self.theTheme.getItemIcon(
