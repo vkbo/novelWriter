@@ -780,12 +780,13 @@ class GuiBuildNovel(QDialog):
         if theItem is None:
             return False
 
-        if not theItem.isExported and not ignoreFlag:
+        if not (theItem.isExported or ignoreFlag):
             return False
 
         isNone  = theItem.itemType != nwItemType.FILE
         isNone |= theItem.itemLayout == nwItemLayout.NO_LAYOUT
         isNone |= theItem.itemClass == nwItemClass.NO_CLASS
+        isNone |= theItem.itemClass == nwItemClass.ARCHIVE
         isNone |= theItem.itemClass == nwItemClass.TRASH
         isNone |= theItem.itemParent == self.theProject.projTree.trashRoot()
         isNone |= theItem.itemParent is None
@@ -797,9 +798,6 @@ class GuiBuildNovel(QDialog):
         if isNote and not noteFiles:
             return False
         if isNovel and not novelFiles:
-            return False
-
-        if self.theProject.projTree.getItemClass(theItem.itemHandle) == nwItemClass.ARCHIVE:
             return False
 
         return True

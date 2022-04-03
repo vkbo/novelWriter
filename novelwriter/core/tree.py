@@ -113,7 +113,6 @@ class NWTree():
 
         self._projTree[tHandle] = nwItem
         self._treeOrder.append(tHandle)
-        self.updateItemRoot(tHandle)
         self._setTreeChanged(True)
 
         return True
@@ -208,8 +207,29 @@ class NWTree():
         return novelWords, noteWords
 
     ##
-    #  Tree Structure Methods
+    #  Tree Item Methods
     ##
+
+    def updateItemData(self, tHandle):
+        """Update the root item handle of a given item. Returns True if
+        a root was found and data updated, otherwise False.
+        """
+        tItem = self.__getitem__(tHandle)
+        if tItem is None:
+            return False
+
+        iItem = tItem
+        for _ in range(nwConst.MAX_DEPTH + 1):
+            if iItem.itemParent is None:
+                tItem.setRoot(iItem.itemHandle)
+                tItem.setClass(iItem.itemClass)
+                return True
+            else:
+                iItem = self.__getitem__(iItem.itemParent)
+                if iItem is None:
+                    return False
+
+        return False
 
     def checkType(self, tHandle, itemType):
         """Return true of item exists and is of the specified item type.
@@ -218,70 +238,6 @@ class NWTree():
         if not tItem:
             return False
         return tItem.itemType == itemType
-
-    def trashRoot(self):
-        """Returns the handle of the trash folder, or None if there
-        isn't one.
-        """
-        if self._trashRoot:
-            return self._trashRoot
-        return None
-
-    def isTrashRoot(self, tHandle):
-        """Check if a handle is the trash folder.
-        """
-        if self._trashRoot is None:
-            return False
-        return tHandle == self._trashRoot
-
-    def archiveRoot(self):
-        """Returns the handle of the archive folder, or None if there
-        isn't one.
-        """
-        if self._archRoot:
-            return self._archRoot
-        return None
-
-    def findRoot(self, theClass):
-        """Find the root item for a given class.
-        Note: This returns the first item for class CUSTOM.
-        """
-        for aRoot in self._treeRoots:
-            tItem = self.__getitem__(aRoot)
-            if tItem is None:
-                continue
-            if theClass == tItem.itemClass:
-                return tItem.itemHandle
-        return None
-
-    def isRoot(self, tHandle):
-        """Check if a handle is a root item.
-        """
-        return tHandle in self._treeRoots
-
-    def updateItemRoot(self, tHandle):
-        """Update the root item handle of a given item.
-        """
-        tItem = self.__getitem__(tHandle)
-        iItem = tItem
-        if iItem is not None:
-            for _ in range(nwConst.MAX_DEPTH + 1):
-                if iItem.itemParent is None:
-                    tItem.setRoot(iItem.itemHandle)
-                    return iItem.itemHandle
-                else:
-                    tHandle = iItem.itemParent
-                    iItem = self.__getitem__(tHandle)
-        return None
-
-    def getItemClass(self, tHandle):
-        """Return the class of a given item.
-        """
-        tItem = self.__getitem__(tHandle)
-        if tItem is not None:
-            if tItem.itemRoot in self._treeRoots:
-                return self._treeRoots[tItem.itemRoot].itemClass
-        return nwItemClass.NO_CLASS
 
     def getItemPath(self, tHandle):
         """Iterate upwards in the tree until we find the item with
@@ -304,6 +260,49 @@ class NWTree():
                     else:
                         tTree.append(tHandle)
         return tTree
+
+    ##
+    #  Tree Root Methods
+    ##
+
+    def isRoot(self, tHandle):
+        """Check if a handle is a root item.
+        """
+        return tHandle in self._treeRoots
+
+    def isTrashRoot(self, tHandle):
+        """Check if a handle is the trash folder.
+        """
+        if self._trashRoot is None:
+            return False
+        return tHandle == self._trashRoot
+
+    def trashRoot(self):
+        """Returns the handle of the trash folder, or None if there
+        isn't one.
+        """
+        if self._trashRoot:
+            return self._trashRoot
+        return None
+
+    def archiveRoot(self):
+        """Returns the handle of the archive folder, or None if there
+        isn't one.
+        """
+        if self._archRoot:
+            return self._archRoot
+        return None
+
+    def findRoot(self, theClass):
+        """Find the first root item for a given class.
+        """
+        for aRoot in self._treeRoots:
+            tItem = self.__getitem__(aRoot)
+            if tItem is None:
+                continue
+            if theClass == tItem.itemClass:
+                return tItem.itemHandle
+        return None
 
     ##
     #  Setters

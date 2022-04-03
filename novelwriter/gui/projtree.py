@@ -280,7 +280,7 @@ class GuiProjectTree(QTreeWidget):
         if nwItem.itemType != nwItemType.FILE:
             return True
 
-        # This is a new files, so let's add some content
+        # This is a new file, so let's add some content
         newDoc = NWDoc(self.theProject, tHandle)
         curTxt = newDoc.readDocument()
         if curTxt is None:

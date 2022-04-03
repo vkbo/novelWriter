@@ -227,10 +227,10 @@ class NWIndex():
         if theItem.itemParent is None:
             logger.info("Not indexing orphaned item '%s'", tHandle)
             return False
-        if self.theProject.projTree.isTrashRoot(theItem.itemParent):
+        if theItem.itemClass == nwItemClass.TRASH:
             logger.debug("Not indexing trash item '%s'", tHandle)
             return False
-        if self.theProject.projTree.getItemClass(tHandle) == nwItemClass.ARCHIVE:
+        if theItem.itemClass == nwItemClass.ARCHIVE:
             logger.debug("Not indexing archived item '%s'", tHandle)
             return False
 

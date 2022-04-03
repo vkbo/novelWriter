@@ -53,7 +53,7 @@ logger = logging.getLogger(__name__)
 
 class NWProject():
 
-    FILE_VERSION = "1.4"
+    FILE_VERSION = "1.4"  # The current project file format version
 
     def __init__(self, theParent):
 
@@ -129,6 +129,7 @@ class NWProject():
         newItem.setClass(rootClass)
         newItem.setStatus(0)
         self.projTree.append(None, None, newItem)
+        self.projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
     def newFolder(self, folderName, folderClass, pHandle):
@@ -140,6 +141,7 @@ class NWProject():
         newItem.setClass(folderClass)
         newItem.setStatus(0)
         self.projTree.append(None, pHandle, newItem)
+        self.projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
     def newFile(self, fileName, fileClass, pHandle):
@@ -156,6 +158,7 @@ class NWProject():
         newItem.setClass(fileClass)
         newItem.setStatus(0)
         self.projTree.append(None, pHandle, newItem)
+        self.projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
     def trashFolder(self):
@@ -168,6 +171,7 @@ class NWProject():
             newItem.setType(nwItemType.TRASH)
             newItem.setClass(nwItemClass.TRASH)
             self.projTree.append(None, None, newItem)
+            self.projTree.updateItemData(newItem.itemHandle)
             return newItem.itemHandle
 
         return trashHandle
@@ -605,10 +609,15 @@ class NWProject():
         self.mainConf.updateRecentCache(self.projPath, self.projName, self.lastWCount, time())
         self.mainConf.saveRecentCache()
 
-        self.theParent.setStatus(self.tr("Opened Project: {0}").format(self.projName))
+        # Check the project tree consistency
+        for tItem in self.projTree:
+            tHandle = tItem.itemHandle
+            logger.verbose("Checking item '%s'", tHandle)
+            if not self.projTree.updateItemData(tHandle):
+                logger.error("There was a problem item '%s', and it has been removed", tHandle)
+                del self.projTree[tHandle]  # The file will be re-added as orphaned
 
         self._scanProjectFolder()
-        self._checkProjectTree()
         self._loadProjectLocalisation()
         self.updateWordCounts()
 
@@ -617,6 +626,7 @@ class NWProject():
 
         self._writeLockFile()
         self.setProjectChanged(False)
+        self.theParent.setStatus(self.tr("Opened Project: {0}").format(self.projName))
 
         return True
 
@@ -1341,17 +1351,6 @@ class NWProject():
                 xEntry.text = aValue
         return
 
-    def _checkProjectTree(self):
-        """Check the project tree and make sure all items have sensible
-        values.
-        """
-        for tItem in self.projTree:
-            tHandle = tItem.itemHandle
-            logger.verbose("Checking item '%s'", tHandle)
-            if tItem.itemRoot is None:
-                self.projTree.updateItemRoot(tHandle)
-                logger.warning("Corrected the root setting of item '%s'", tHandle)
-
     def _scanProjectFolder(self):
         """Scan the project folder and check that the files in it are
         also in the project XML file. If they aren't, import them as
@@ -1441,6 +1440,7 @@ class NWProject():
             orphItem.setClass(oClass)
             orphItem.setLayout(oLayout)
             self.projTree.append(oHandle, oParent, orphItem)
+            self.projTree.updateItemData(orphItem.itemHandle)
 
         if noWhere:
             self.theParent.makeAlert(self.tr(
