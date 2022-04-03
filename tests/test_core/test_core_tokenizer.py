@@ -30,7 +30,7 @@ from novelwriter.core.tokenizer import Tokenizer
 
 class BareTokenizer(Tokenizer):
     def doConvert(self):
-        pass
+        super().doConvert()
 
 
 @pytest.mark.core
@@ -218,6 +218,10 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
         "# Notes: Plot\n\n"
         "# Notes: Plot\n\n"
     )
+
+    # Ckeck abstract method
+    with pytest.raises(NotImplementedError):
+        theToken.doConvert()
 
 # END Test testCoreToken_TextOps
 

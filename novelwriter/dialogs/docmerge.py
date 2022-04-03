@@ -133,6 +133,7 @@ class GuiDocMerge(QDialog):
         nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemClass, srcItem.itemParent)
         newItem = self.theProject.projTree[nHandle]
         newItem.setStatus(srcItem.itemStatus)
+        newItem.setImport(srcItem.itemImport)
 
         outDoc = NWDoc(self.theProject, nHandle)
         if not outDoc.writeDocument(theText):

@@ -61,10 +61,6 @@ def testCoreProject_NewMinimal(fncDir, outDir, refDir, mockGUI):
     # Creating the project once more should fail
     assert theProject.newProject({"projPath": fncDir}) is False
 
-    # Check the new project
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
-
     # Open again
     assert theProject.openProject(projFile) is True
 
@@ -857,7 +853,7 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
 
     # Change importance
     fHandle = theProject.newFile("Jane Doe", nwItemClass.CHARACTER, "afb3043c7b2b3")
-    theProject.projTree[fHandle].setStatus("Main")
+    theProject.projTree[fHandle].setImport("Main")
     newList = [
         ("New", 1, 1, 1, "New"),
         ("Minor", 2, 2, 2, "Minor"),
@@ -872,7 +868,7 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
     assert theProject.importItems._theColours == [
         (1, 1, 1), (2, 2, 2), (3, 3, 3), (4, 4, 4), (5, 5, 5)
     ]
-    assert theProject.projTree[fHandle].itemStatus == "Min"
+    assert theProject.projTree[fHandle].itemImport == "Min"
 
     # Check status counts
     assert theProject.statusItems._theCounts == [0, 0, 0, 0, 0]

@@ -75,15 +75,11 @@ class GuiItemEditor(QDialog):
         self.editStatus = QComboBox()
         self.editStatus.setMinimumWidth(mVd)
         if self.theItem.itemClass in nwLists.CLS_NOVEL:
-            for sLabel, _, _ in self.theProject.statusItems:
-                self.editStatus.addItem(
-                    self.theParent.statusIcons[sLabel], sLabel, sLabel
-                )
+            for sLabel, _, _, sIcon in self.theProject.statusItems:
+                self.editStatus.addItem(sIcon, sLabel, sLabel)
         else:
-            for sLabel, _, _ in self.theProject.importItems:
-                self.editStatus.addItem(
-                    self.theParent.importIcons[sLabel], sLabel, sLabel
-                )
+            for sLabel, _, _, sIcon in self.theProject.importItems:
+                self.editStatus.addItem(sIcon, sLabel, sLabel)
 
         # Item Layout
         self.editLayout = QComboBox()
@@ -120,7 +116,8 @@ class GuiItemEditor(QDialog):
         self.editName.setText(self.theItem.itemName)
         self.editName.selectAll()
 
-        statusIdx = self.editStatus.findData(self.theItem.itemStatus)
+        currStatus, _ = self.theItem.getImportStatus()
+        statusIdx = self.editStatus.findData(currStatus)
         if statusIdx != -1:
             self.editStatus.setCurrentIndex(statusIdx)
 
@@ -180,7 +177,7 @@ class GuiItemEditor(QDialog):
         isExported = self.editExport.isChecked()
 
         self.theItem.setName(itemName)
-        self.theItem.setStatus(itemStatus)
+        self.theItem.setImportStatus(itemStatus)
         self.theItem.setLayout(itemLayout)
         self.theItem.setExported(isExported)
 

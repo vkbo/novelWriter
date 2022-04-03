@@ -203,6 +203,7 @@ class GuiDocSplit(QDialog):
             newItem = self.theProject.projTree[nHandle]
             newItem.setLayout(itemLayout)
             newItem.setStatus(srcItem.itemStatus)
+            newItem.setImport(srcItem.itemImport)
             logger.verbose(
                 "Creating new document '%s' with text from line %d to %d",
                 nHandle, iStart+1, iEnd

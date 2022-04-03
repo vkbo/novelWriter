@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-02 19:15:31">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-03 21:36:12">
   <project>
     <name>Lorem Ipsum</name>
     <title>Lorem Ipsum</title>
     <author>lipsum.com</author>
     <saveCount>23</saveCount>
     <autoCount>24</autoCount>
-    <editTime>1857</editTime>
+    <editTime>1854</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -31,102 +31,102 @@
       <section></section>
     </titleFormat>
     <status>
-      <entry blue="100" green="100" red="100">New</entry>
-      <entry blue="0" green="50" red="200">Note</entry>
-      <entry blue="0" green="150" red="200">Draft</entry>
-      <entry blue="0" green="200" red="50">Finished</entry>
+      <entry red="100" green="100" blue="100">New</entry>
+      <entry red="200" green="50" blue="0">Note</entry>
+      <entry red="200" green="150" blue="0">Draft</entry>
+      <entry red="50" green="200" blue="0">Finished</entry>
     </status>
     <importance>
-      <entry blue="100" green="100" red="100">New</entry>
-      <entry blue="0" green="50" red="200">Minor</entry>
-      <entry blue="0" green="150" red="200">Major</entry>
-      <entry blue="0" green="200" red="50">Main</entry>
+      <entry red="100" green="100" blue="100">New</entry>
+      <entry red="200" green="50" blue="0">Minor</entry>
+      <entry red="200" green="150" blue="0">Major</entry>
+      <entry red="50" green="200" blue="0">Main</entry>
     </importance>
   </settings>
   <content count="21">
     <item handle="b3643d0f92e32" parent="None" root="b3643d0f92e32" order="0" type="ROOT" class="NOVEL">
       <meta expanded="True"/>
-      <name status="New">Novel</name>
+      <name status="New" import="New">Novel</name>
     </item>
     <item handle="7a992350f3eb6" parent="b3643d0f92e32" root="b3643d0f92e32" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="230" wordCount="40" paraCount="3" cursorPos="148"/>
-      <name status="Finished" exported="True">Lorem Ipsum</name>
+      <name status="Finished" import="New" exported="True">Lorem Ipsum</name>
     </item>
     <item handle="8c58a65414c23" parent="b3643d0f92e32" root="b3643d0f92e32" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="1058" wordCount="176" paraCount="2" cursorPos="43"/>
-      <name status="Finished" exported="True">Front Matter</name>
+      <name status="Finished" import="New" exported="True">Front Matter</name>
     </item>
     <item handle="88d59a277361b" parent="b3643d0f92e32" root="b3643d0f92e32" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="584" wordCount="92" paraCount="1" cursorPos="4"/>
-      <name status="Draft" exported="True">Prologue</name>
+      <name status="Draft" import="New" exported="True">Prologue</name>
     </item>
     <item handle="db7e733775d4d" parent="b3643d0f92e32" root="b3643d0f92e32" order="3" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="35" wordCount="6" paraCount="1" cursorPos="42"/>
-      <name status="New" exported="True">Act One</name>
+      <name status="New" import="New" exported="True">Act One</name>
     </item>
     <item handle="45e6b01ca35c1" parent="b3643d0f92e32" root="b3643d0f92e32" order="4" type="FOLDER" class="NOVEL">
       <meta expanded="True"/>
-      <name status="Draft">Chapter One</name>
+      <name status="Draft" import="New">Chapter One</name>
     </item>
     <item handle="fb609cd8319dc" parent="45e6b01ca35c1" root="b3643d0f92e32" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="419" wordCount="67" paraCount="1" cursorPos="56"/>
-      <name status="Draft" exported="True">Chapter One</name>
+      <name status="Draft" import="New" exported="True">Chapter One</name>
     </item>
     <item handle="88243afbe5ed8" parent="45e6b01ca35c1" root="b3643d0f92e32" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="2758" wordCount="404" paraCount="4" cursorPos="1528"/>
-      <name status="Finished" exported="True">Scene One</name>
+      <name status="Finished" import="New" exported="True">Scene One</name>
     </item>
     <item handle="f96ec11c6a3da" parent="45e6b01ca35c1" root="b3643d0f92e32" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="4043" wordCount="600" paraCount="6" cursorPos="2335"/>
-      <name status="Finished" exported="True">Scene Two</name>
+      <name status="Finished" import="New" exported="True">Scene Two</name>
     </item>
     <item handle="846352075de7d" parent="b3643d0f92e32" root="b3643d0f92e32" order="5" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="631" wordCount="109" paraCount="3" cursorPos="376"/>
-      <name status="New" exported="False">Interlude</name>
+      <name status="New" import="New" exported="False">Interlude</name>
     </item>
     <item handle="6bd935d2490cd" parent="b3643d0f92e32" root="b3643d0f92e32" order="6" type="FOLDER" class="NOVEL">
       <meta expanded="True"/>
-      <name status="Draft">Chapter Two</name>
+      <name status="Draft" import="New">Chapter Two</name>
     </item>
     <item handle="441420a886d82" parent="6bd935d2490cd" root="b3643d0f92e32" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="477" wordCount="70" paraCount="1" cursorPos="56"/>
-      <name status="Draft" exported="True">Chapter Two</name>
+      <name status="Draft" import="New" exported="True">Chapter Two</name>
     </item>
     <item handle="eb103bc70c90c" parent="6bd935d2490cd" root="b3643d0f92e32" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="3006" wordCount="439" paraCount="4" cursorPos="57"/>
-      <name status="Finished" exported="True">Scene Three</name>
+      <name status="Finished" import="New" exported="True">Scene Three</name>
     </item>
     <item handle="f8c0562e50f1b" parent="6bd935d2490cd" root="b3643d0f92e32" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="3839" wordCount="563" paraCount="6" cursorPos="56"/>
-      <name status="Finished" exported="True">Scene Four</name>
+      <name status="Finished" import="New" exported="True">Scene Four</name>
     </item>
     <item handle="47666c91c7ccf" parent="6bd935d2490cd" root="b3643d0f92e32" order="3" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="3644" wordCount="543" paraCount="5" cursorPos="351"/>
-      <name status="Finished" exported="True">Scene Five</name>
+      <name status="Finished" import="New" exported="True">Scene Five</name>
     </item>
     <item handle="67a8707f2f249" parent="None" root="67a8707f2f249" order="1" type="ROOT" class="CHARACTER">
       <meta expanded="True"/>
-      <name status="New">Characters</name>
+      <name status="New" import="New">Characters</name>
     </item>
     <item handle="4c4f28287af27" parent="67a8707f2f249" root="67a8707f2f249" order="0" type="FILE" class="CHARACTER" layout="NOTE">
       <meta charCount="1864" wordCount="284" paraCount="3" cursorPos="1883"/>
-      <name status="Major" exported="True">Mr. Nobody</name>
+      <name status="New" import="New" exported="True">Mr. Nobody</name>
     </item>
     <item handle="6c6afb1247750" parent="None" root="6c6afb1247750" order="2" type="ROOT" class="PLOT">
       <meta expanded="True"/>
-      <name status="New">Plot</name>
+      <name status="New" import="New">Plot</name>
     </item>
     <item handle="2426c6f0ca922" parent="6c6afb1247750" root="6c6afb1247750" order="0" type="FILE" class="PLOT" layout="NOTE">
       <meta charCount="1369" wordCount="195" paraCount="2" cursorPos="1387"/>
-      <name status="Main" exported="True">Main</name>
+      <name status="New" import="New" exported="True">Main</name>
     </item>
     <item handle="60bdf227455cc" parent="None" root="60bdf227455cc" order="3" type="ROOT" class="WORLD">
       <meta expanded="True"/>
-      <name status="New">World</name>
+      <name status="New" import="New">World</name>
     </item>
     <item handle="04468803b92e1" parent="60bdf227455cc" root="60bdf227455cc" order="0" type="FILE" class="WORLD" layout="NOTE">
       <meta charCount="1770" wordCount="259" paraCount="3" cursorPos="1792"/>
-      <name status="Minor" exported="True">Ancient Europe</name>
+      <name status="New" import="New" exported="True">Ancient Europe</name>
     </item>
   </content>
 </novelWriterXML>

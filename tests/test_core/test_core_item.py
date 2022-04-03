@@ -23,6 +23,8 @@ import pytest
 
 from lxml import etree
 
+from PyQt5.QtGui import QIcon
+
 from novelwriter.core import NWProject
 from novelwriter.core.item import NWItem
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
@@ -86,16 +88,17 @@ def testCoreItem_Setters(mockGUI):
     assert theItem.itemOrder == 1
 
     # Importance
-    theItem.setStatus("Nonsense")
-    assert theItem.itemStatus == "New"
-    theItem.setStatus("New")
-    assert theItem.itemStatus == "New"
-    theItem.setStatus("Minor")
-    assert theItem.itemStatus == "Minor"
-    theItem.setStatus("Major")
-    assert theItem.itemStatus == "Major"
-    theItem.setStatus("Main")
-    assert theItem.itemStatus == "Main"
+    theItem._class = nwItemClass.CHARACTER
+    theItem.setImport("Nonsense")
+    assert theItem.itemImport == "New"
+    theItem.setImport("New")
+    assert theItem.itemImport == "New"
+    theItem.setImport("Minor")
+    assert theItem.itemImport == "Minor"
+    theItem.setImport("Major")
+    assert theItem.itemImport == "Major"
+    theItem.setImport("Main")
+    assert theItem.itemImport == "Main"
 
     # Status
     theItem._class = nwItemClass.NOVEL
@@ -109,6 +112,27 @@ def testCoreItem_Setters(mockGUI):
     assert theItem.itemStatus == "Draft"
     theItem.setStatus("Finished")
     assert theItem.itemStatus == "Finished"
+
+    # Status/Importance Wrapper
+    theItem._class = nwItemClass.CHARACTER
+    theItem.setImportStatus("New")
+    assert theItem.itemImport == "New"
+    theItem.setImportStatus("Minor")
+    assert theItem.itemImport == "Minor"
+    theItem.setImportStatus("Note")
+    assert theItem.itemImport == "New"
+    theItem.setImportStatus("Draft")
+    assert theItem.itemImport == "New"
+
+    theItem._class = nwItemClass.NOVEL
+    theItem.setImportStatus("New")
+    assert theItem.itemStatus == "New"
+    theItem.setImportStatus("Minor")
+    assert theItem.itemStatus == "New"
+    theItem.setImportStatus("Note")
+    assert theItem.itemStatus == "Note"
+    theItem.setImportStatus("Draft")
+    assert theItem.itemStatus == "Draft"
 
     # Expanded
     theItem.setExpanded(8)
@@ -207,6 +231,22 @@ def testCoreItem_Methods(mockGUI):
 
     theItem.setLayout("NOTE")
     assert theItem.describeMe() == "Project Note"
+
+    # Status + Icon
+    # =============
+    theItem.setType("FILE")
+    theItem.setStatus("Note")
+    theItem.setImport("Minor")
+
+    theItem.setClass("NOVEL")
+    stT, stI = theItem.getImportStatus()
+    assert stT == "Note"
+    assert isinstance(stI, QIcon)
+
+    theItem.setClass("CHARACTER")
+    stT, stI = theItem.getImportStatus()
+    assert stT == "Minor"
+    assert isinstance(stI, QIcon)
 
     # Representation
     # ==============
@@ -358,7 +398,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
         b'<content>'
         b'<item handle="0123456789abc" parent="0123456789abc" root="0123456789abc" order="1" '
         b'type="FILE" class="NOVEL" layout="NOTE"><meta charCount="7" wordCount="5" paraCount="3" '
-        b'cursorPos="11"/><name status="New" exported="False">A Name</name></item>'
+        b'cursorPos="11"/><name status="New" import="None" exported="False">A Name</name></item>'
         b'</content>'
     )
 
@@ -403,8 +443,8 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog):
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
         b'<content>'
         b'<item handle="0123456789abc" parent="0123456789abc" root="0123456789abc" order="1" '
-        b'type="FOLDER" class="NOVEL"><meta expanded="True"/><name status="New">A Name</name>'
-        b'</item>'
+        b'type="FOLDER" class="NOVEL"><meta expanded="True"/><name status="New" '
+        b'import="None">A Name</name></item>'
         b'</content>'
     )
 

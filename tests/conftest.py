@@ -36,6 +36,13 @@ from PyQt5.QtWidgets import QMessageBox  # noqa: E402
 from novelwriter.config import Config  # noqa: E402
 
 
+@pytest.fixture(autouse=True)
+def initQt(qtbot):
+    """Ensures that the qt main thread is always available in all tests.
+    """
+    return
+
+
 ##
 #  Core Test Folders
 ##
