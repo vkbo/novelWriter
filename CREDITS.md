@@ -17,6 +17,7 @@
 * Simplified Chinese: Qianzhi Long (@longqzh)
 * Latin American Spanish: Tommy Marplatt (@tmarplatt)
 * Dutch: Martijn van der Kleijn (@mvdkleijn)
+* German: Myian (@heymyian)
 
 ## Libraries
 
