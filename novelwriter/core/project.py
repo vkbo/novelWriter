@@ -1071,9 +1071,8 @@ class NWProject():
         """
         replaceMap = self.statusItems.setNewEntries(newCols)
         for nwItem in self.projTree:
-            if nwItem.itemClass in nwLists.CLS_NOVEL:
-                if nwItem.itemStatus in replaceMap:
-                    nwItem.setStatus(replaceMap[nwItem.itemStatus])
+            if nwItem.itemStatus in replaceMap:
+                nwItem.setStatus(replaceMap[nwItem.itemStatus])
         self.setProjectChanged(True)
         return True
 
@@ -1083,9 +1082,8 @@ class NWProject():
         """
         replaceMap = self.importItems.setNewEntries(newCols)
         for nwItem in self.projTree:
-            if nwItem.itemClass not in nwLists.CLS_NOVEL:
-                if nwItem.itemImport in replaceMap:
-                    nwItem.setImport(replaceMap[nwItem.itemImport])
+            if nwItem.itemImport in replaceMap:
+                nwItem.setImport(replaceMap[nwItem.itemImport])
         self.setProjectChanged(True)
         return True
 
