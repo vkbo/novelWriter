@@ -403,7 +403,7 @@
     <message>
       <location filename="../novelwriter/dialogs/about.py" line="173"/>
       <source>See the Licence tab for the full licence text, or visit the GNU website at {0} for more details.</source>
-      <translation>Die vollständige Lizenz können Sie unter dem Registerreiter „Lizenz“ einsehen. Weitere informationen finden Sie auf der GNU-Website ({0}).</translation>
+      <translation>Die vollständige Lizenz können Sie unter dem Registerreiter „Lizenz“ einsehen. Weitere Informationen finden Sie auf der GNU-Website ({0}).</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/about.py" line="182"/>
@@ -926,7 +926,7 @@
     <message>
       <location filename="../novelwriter/gui/doceditor.py" line="432"/>
       <source>The text you are trying to add is too big. The text size is {0} MB. The maximum size allowed is {1} MB.</source>
-      <translation>Zuviel Text. Die Größe Ihrere Datei ist {0} MB. Die maximal zulässige Größe ist {1} MB.</translation>
+      <translation>Zuviel Text. Die Größe Ihrer Datei ist {0} MB. Die maximal zulässige Größe ist {1} MB.</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/doceditor.py" line="479"/>
@@ -1437,7 +1437,7 @@
     <message>
       <location filename="../novelwriter/guimain.py" line="548"/>
       <source>The project index is outdated or broken. Rebuilding index.</source>
-      <translation>Der Index ist nicht aktuell oder defekt. Index wird aktualisiert...</translation>
+      <translation>Der Index ist nicht aktuell oder defekt. Index wird aktualisiert.</translation>
     </message>
     <message>
       <location filename="../novelwriter/guimain.py" line="719"/>
@@ -2354,7 +2354,7 @@
     <message>
       <location filename="../novelwriter/gui/outlinedetails.py" line="193"/>
       <source>Reference Tags</source>
-      <translation>References</translation>
+      <translation>Referenzen</translation>
     </message>
   </context>
   <context>
@@ -3128,7 +3128,7 @@
     <message>
       <location filename="../novelwriter/dialogs/projdetails.py" line="392"/>
       <source>Table of Contents</source>
-      <translation>Inhaltsverzeichznis</translation>
+      <translation>Inhaltsverzeichnis</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/projdetails.py" line="428"/>
@@ -4006,7 +4006,7 @@
     <message>
       <location filename="../novelwriter/core/project.py" line="790"/>
       <source>Cannot backup project because no valid backup path is set. Please set a valid backup location in Preferences.</source>
-      <translation>Ein Backup konnte nicht erstellt werden, da kein gültiges Backup-Verzeichnis festgelegt ist. Bitte geben Sie in den Einstellungen einen gültiges Backup-Verzeichnis an.</translation>
+      <translation>Ein Backup konnte nicht erstellt werden, da kein gültiges Backup-Verzeichnis festgelegt ist. Bitte geben Sie in den Einstellungen ein gültiges Backup-Verzeichnis an.</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/project.py" line="797"/>
@@ -4067,7 +4067,7 @@
     <message>
       <location filename="../novelwriter/core/project.py" line="988"/>
       <source>You must set a valid backup path in Preferences to use the automatic project backup feature.</source>
-      <translation>Um automatische Backups erstellen zu können, geben Sie bitte eine gültiges Backup-Verzeichnis in den Einstellungen an.</translation>
+      <translation>Um automatische Backups erstellen zu können, geben Sie bitte ein gültiges Backup-Verzeichnis in den Einstellungen an.</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/project.py" line="995"/>
@@ -4146,7 +4146,7 @@
     <message>
       <location filename="../novelwriter/tools/projwizard.py" line="298"/>
       <source>Select which additional root folders to make, and how to populate the Novel folder. If you don't want to add chapters or scenes, set the values to 0. You can add scenes without chapters.</source>
-      <translation>Wählen Sie aus, welche Stammordner und wieviele Kapitel/Szenen Sie erstellen möchten. Falls Sie keine Kapitel/Szenen möchten, setzen Sie den Wert auf 0. Sie können auch Szenen ohne Kapitel erstellen.</translation>
+      <translation>Wählen Sie aus, welche Stammordner und wie viele Kapitel/Szenen Sie erstellen möchten. Falls Sie keine Kapitel/Szenen möchten, setzen Sie den Wert auf 0. Sie können auch Szenen ohne Kapitel erstellen.</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/projwizard.py" line="308"/>
@@ -4194,7 +4194,7 @@
     <message>
       <location filename="../novelwriter/tools/projwizard.py" line="419"/>
       <source>All done.</source>
-      <translation>Alles erledigt!</translation>
+      <translation>Alles erledigt.</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/projwizard.py" line="420"/>
