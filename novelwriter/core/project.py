@@ -218,16 +218,16 @@ class NWProject():
         }
         self.spellCheck  = False
         self.autoOutline = True
-        self.statusItems = NWStatus()
-        self.statusItems.addEntry(self.tr("New"),      (100, 100, 100))
-        self.statusItems.addEntry(self.tr("Note"),     (200, 50,  0))
-        self.statusItems.addEntry(self.tr("Draft"),    (200, 150, 0))
-        self.statusItems.addEntry(self.tr("Finished"), (50,  200, 0))
-        self.importItems = NWStatus()
-        self.importItems.addEntry(self.tr("New"),      (100, 100, 100))
-        self.importItems.addEntry(self.tr("Minor"),    (200, 50,  0))
-        self.importItems.addEntry(self.tr("Major"),    (200, 150, 0))
-        self.importItems.addEntry(self.tr("Main"),     (50,  200, 0))
+        self.statusItems = NWStatus("s")
+        self.statusItems.write(None, self.tr("New"),      (100, 100, 100))
+        self.statusItems.write(None, self.tr("Note"),     (200, 50,  0))
+        self.statusItems.write(None, self.tr("Draft"),    (200, 150, 0))
+        self.statusItems.write(None, self.tr("Finished"), (50,  200, 0))
+        self.importItems = NWStatus("i")
+        self.importItems.write(None, self.tr("New"),   (100, 100, 100))
+        self.importItems.write(None, self.tr("Minor"), (200, 50,  0))
+        self.importItems.write(None, self.tr("Major"), (200, 150, 0))
+        self.importItems.write(None, self.tr("Main"),  (50,  200, 0))
         self.lastEdited = None
         self.lastViewed = None
         self.lastWCount = 0
@@ -1205,9 +1205,9 @@ class NWProject():
         self.importItems.resetCounts()
         for nwItem in self.projTree:
             if nwItem.itemClass in nwLists.CLS_NOVEL:
-                self.statusItems.countEntry(nwItem.itemStatus)
+                self.statusItems.increment(nwItem.itemStatus)
             else:
-                self.importItems.countEntry(nwItem.itemImport)
+                self.importItems.increment(nwItem.itemImport)
         return
 
     def localLookup(self, theWord):
