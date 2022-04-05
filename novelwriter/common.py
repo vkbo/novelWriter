@@ -184,6 +184,12 @@ def checkIntRange(value, first, last, default):
     return default
 
 
+def getMinMax(value, minVal, maxVal):
+    """Make sure an integer is between min and max value (inclusive).
+    """
+    return min(maxVal, max(minVal, value))
+
+
 def checkIntTuple(value, valid, default):
     """Check that an int is an element of a tuple. If it isn't, return
     the default value.
@@ -244,6 +250,13 @@ def formatTime(tS):
 # =============================================================================================== #
 #  String Functions
 # =============================================================================================== #
+
+def simplified(string):
+    """Take a string an strip leading and trailing whitespaces, and
+    replace all occurences of (multiple) whitespaces with a 0x20 space.
+    """
+    return " ".join(str(string).strip().split())
+
 
 def splitVersionNumber(value):
     """Split a version string on the form aa.bb.cc into major, minor
