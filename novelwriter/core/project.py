@@ -687,6 +687,8 @@ class NWProject():
             if len(aKey) > 0:
                 self._packProjectValue(xTitleFmt, aKey, aValue)
 
+        # Save Status/Importance
+        self.countStatus()
         xStatus = etree.SubElement(xSettings, "status")
         self.statusItems.packXML(xStatus)
         xStatus = etree.SubElement(xSettings, "importance")
@@ -1018,7 +1020,8 @@ class NWProject():
         if self.projSpell != theLang:
             self.projSpell = theLang
             self.setProjectChanged(True)
-        return True
+            return True
+        return False
 
     def setProjectLang(self, theLang):
         """Set the project-specific language.
@@ -1065,26 +1068,46 @@ class NWProject():
             self.setProjectChanged(True)
         return True
 
-    def setStatusColours(self, newCols):
+    def setStatusColours(self, newCols, delCols):
         """Update the list of novel file status flags. Also iterate
         through the project and replace keys that have been renamed.
         """
-        replaceMap = self.statusItems.setNewEntries(newCols)
-        for nwItem in self.projTree:
-            if nwItem.itemStatus in replaceMap:
-                nwItem.setStatus(replaceMap[nwItem.itemStatus])
+        if not (newCols or delCols):
+            return False
+
+        for entry in newCols:
+            key = entry.get("key", None)
+            name = entry.get("name", "")
+            cols = entry.get("cols", (100, 100, 100))
+            if name:
+                self.statusItems.write(key, name, cols)
+
+        for key in delCols:
+            self.statusItems.remove(key)
+
         self.setProjectChanged(True)
+
         return True
 
-    def setImportColours(self, newCols):
+    def setImportColours(self, newCols, delCols):
         """Update the list of note file importance flags. Also iterate
         through the project and replace keys that have been renamed.
         """
-        replaceMap = self.importItems.setNewEntries(newCols)
-        for nwItem in self.projTree:
-            if nwItem.itemImport in replaceMap:
-                nwItem.setImport(replaceMap[nwItem.itemImport])
+        if not (newCols or delCols):
+            return False
+
+        for entry in newCols:
+            key = entry.get("key", None)
+            name = entry.get("name", "")
+            cols = entry.get("cols", (100, 100, 100))
+            if name:
+                self.importItems.write(key, name, cols)
+
+        for key in delCols:
+            self.importItems.remove(key)
+
         self.setProjectChanged(True)
+
         return True
 
     def setAutoReplace(self, autoReplace):

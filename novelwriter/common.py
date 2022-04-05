@@ -184,7 +184,7 @@ def checkIntRange(value, first, last, default):
     return default
 
 
-def getMinMax(value, minVal, maxVal):
+def minmax(value, minVal, maxVal):
     """Make sure an integer is between min and max value (inclusive).
     """
     return min(maxVal, max(minVal, value))
