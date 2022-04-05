@@ -188,7 +188,7 @@ class GuiAbout(QDialog):
                 ("简体中文", "Qianzhi Long"),
                 ("Español Latinoamericano", "Tommy Marplatt"),
                 ("Nederlands", "Martijn van der Kleijn"),
-                ("Deutsch","Myian"),
+                ("Deutsch", "Myian"),
             ])
         )
 
