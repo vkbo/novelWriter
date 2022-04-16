@@ -684,7 +684,7 @@ class NWIndex():
         if self._indexBroken:
             self.clearIndex()
             logger.verbose("Index check completed in %.3f ms", (time() - tStart)*1000)
-            return False
+            return
 
         # If the index was ok, we check that project files are indexed
         for fHandle in self.theProject.projFiles:
@@ -694,7 +694,7 @@ class NWIndex():
 
         logger.verbose("Index check completed in %.3f ms", (time() - tStart)*1000)
 
-        return True
+        return
 
     def _checkTagIndex(self):
         """Scan the tag index for errors.

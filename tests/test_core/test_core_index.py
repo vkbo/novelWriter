@@ -108,7 +108,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     # Break the index and check that we notice
     assert theIndex.indexBroken is False
     theIndex._tagIndex["Bod"].append("Stuff")
-    assert theIndex._checkIndex() is False
+    theIndex._checkIndex()
     assert theIndex.indexBroken is True
 
     # Finalise
