@@ -306,6 +306,12 @@ class GuiProjectEditStatus(QWidget):
         self.delButton = QPushButton(self.theTheme.getIcon("remove"), "")
         self.delButton.clicked.connect(self._delItem)
 
+        self.upButton = QPushButton(self.theTheme.getIcon("up"), "")
+        self.upButton.clicked.connect(lambda: self._moveItem(-1))
+
+        self.dnButton = QPushButton(self.theTheme.getIcon("down"), "")
+        self.dnButton.clicked.connect(lambda: self._moveItem(1))
+
         # Edit Form
         # =========
 
@@ -315,7 +321,7 @@ class GuiProjectEditStatus(QWidget):
         self.editName.setPlaceholderText(self.tr("Select item to edit"))
 
         self.colPixmap = QPixmap(self.iPx, self.iPx)
-        self.colPixmap.fill(QColor(120, 120, 120))
+        self.colPixmap.fill(QColor(100, 100, 100))
         self.colButton = QPushButton(QIcon(self.colPixmap), self.tr("Colour"))
         self.colButton.setIconSize(self.colPixmap.rect().size())
         self.colButton.clicked.connect(self._selectColour)
@@ -329,6 +335,8 @@ class GuiProjectEditStatus(QWidget):
         self.listControls = QVBoxLayout()
         self.listControls.addWidget(self.addButton)
         self.listControls.addWidget(self.delButton)
+        self.listControls.addWidget(self.upButton)
+        self.listControls.addWidget(self.dnButton)
         self.listControls.addStretch(1)
 
         self.editBox = QHBoxLayout()
@@ -390,7 +398,7 @@ class GuiProjectEditStatus(QWidget):
     def _newItem(self):
         """Create a new status item.
         """
-        newItem = self._addItem(None, self.tr("New Item"), (0, 0, 0), 0)
+        newItem = self._addItem(None, self.tr("New Item"), (100, 100, 100), 0)
         newItem.setBackground(self.COL_LABEL, QBrush(QColor(0, 255, 0, 70)))
         newItem.setBackground(self.COL_USAGE, QBrush(QColor(0, 255, 0, 70)))
         self.colChanged = True
@@ -445,23 +453,47 @@ class GuiProjectEditStatus(QWidget):
 
         return item
 
+    def _moveItem(self, step):
+        """Move and item up or down step.
+        """
+        selItem = self._getSelectedItem()
+        if selItem is None:
+            return
+
+        tIndex = self.listBox.indexOfTopLevelItem(selItem)
+        nChild = self.listBox.topLevelItemCount()
+        nIndex = tIndex + step
+        if nIndex < 0 or nIndex >= nChild:
+            return False
+
+        cItem = self.listBox.takeTopLevelItem(tIndex)
+        self.listBox.insertTopLevelItem(nIndex, cItem)
+        self.listBox.clearSelection()
+
+        cItem.setSelected(True)
+        self.colChanged = True
+
+        return
+
     def _selectedItem(self):
         """Extract the info of a selected item and populate the settings
         boxes and button.
         """
         selItem = self._getSelectedItem()
-        if selItem is not None:
-            cols = selItem.data(self.COL_LABEL, self.COL_ROLE)
-            name = selItem.text(self.COL_LABEL)
+        if selItem is None:
+            return
 
-            pixmap = QPixmap(self.iPx, self.iPx)
-            pixmap.fill(QColor(*cols))
-            self.selColour = QColor(*cols)
-            self.editName.setText(name)
-            self.colButton.setIcon(QIcon(pixmap))
-            self.editName.setEnabled(True)
-            self.editName.selectAll()
-            self.editName.setFocus()
+        cols = selItem.data(self.COL_LABEL, self.COL_ROLE)
+        name = selItem.text(self.COL_LABEL)
+
+        pixmap = QPixmap(self.iPx, self.iPx)
+        pixmap.fill(QColor(*cols))
+        self.selColour = QColor(*cols)
+        self.editName.setText(name)
+        self.colButton.setIcon(QIcon(pixmap))
+        self.editName.setEnabled(True)
+        self.editName.selectAll()
+        self.editName.setFocus()
 
         return
 
@@ -476,12 +508,6 @@ class GuiProjectEditStatus(QWidget):
         if len(selItem) > 0:
             return selItem[0]
         return None
-
-    def _rowsMoved(self):
-        """A row has been moved, so set the changed flag.
-        """
-        self.colChanged = True
-        return
 
     def _usageString(self, nUse):
         """Generate usage string.

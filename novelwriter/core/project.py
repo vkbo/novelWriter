@@ -1072,46 +1072,14 @@ class NWProject():
         return True
 
     def setStatusColours(self, newCols, delCols):
-        """Update the list of novel file status flags. Also iterate
-        through the project and replace keys that have been renamed.
+        """Update the list of novel file status flags.
         """
-        if not (newCols or delCols):
-            return False
-
-        for entry in newCols:
-            key = entry.get("key", None)
-            name = entry.get("name", "")
-            cols = entry.get("cols", (100, 100, 100))
-            if name:
-                self.statusItems.write(key, name, cols)
-
-        for key in delCols:
-            self.statusItems.remove(key)
-
-        self.setProjectChanged(True)
-
-        return True
+        return self._setStatusImport(newCols, delCols, self.statusItems)
 
     def setImportColours(self, newCols, delCols):
-        """Update the list of note file importance flags. Also iterate
-        through the project and replace keys that have been renamed.
+        """Update the list of note file importance flags.
         """
-        if not (newCols or delCols):
-            return False
-
-        for entry in newCols:
-            key = entry.get("key", None)
-            name = entry.get("name", "")
-            cols = entry.get("cols", (100, 100, 100))
-            if name:
-                self.importItems.write(key, name, cols)
-
-        for key in delCols:
-            self.importItems.remove(key)
-
-        self.setProjectChanged(True)
-
-        return True
+        return self._setStatusImport(newCols, delCols, self.importItems)
 
     def setAutoReplace(self, autoReplace):
         """Update the auto-replace dictionary.
@@ -1250,6 +1218,28 @@ class NWProject():
     ##
     #  Internal Functions
     ##
+
+    def _setStatusImport(self, new, delete, target):
+        """Update the list of novel file status or importance flags, and
+        delete those that have been requested deleted.
+        """
+        if not (new or delete):
+            return False
+
+        order = []
+        for entry in new:
+            key = entry.get("key", None)
+            name = entry.get("name", "")
+            cols = entry.get("cols", (100, 100, 100))
+            if name:
+                order.append(target.write(key, name, cols))
+
+        for key in delete:
+            target.remove(key)
+
+        target.reorder(order)
+
+        return True
 
     def _loadProjectLocalisation(self):
         """Load the language data for the current project language.
