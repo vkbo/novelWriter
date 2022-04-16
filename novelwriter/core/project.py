@@ -44,7 +44,7 @@ from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.error import logException
 from novelwriter.common import (
     checkString, checkBool, checkInt, isHandle, formatTimeStamp,
-    makeFileNameSafe, hexToInt
+    makeFileNameSafe, hexToInt, simplified
 )
 from novelwriter.constants import nwLists, trConst, nwFiles, nwLabels
 
@@ -534,14 +534,16 @@ class NWProject():
                     if xItem.text is None:
                         continue
                     if xItem.tag == "name":
-                        logger.verbose("Working Title: '%s'", xItem.text)
-                        self.projName = xItem.text
+                        self.projName = checkString(simplified(xItem.text), "")
+                        logger.verbose("Working Title: '%s'", self.projName)
                     elif xItem.tag == "title":
-                        logger.verbose("Title is '%s'", xItem.text)
-                        self.bookTitle = xItem.text
+                        self.bookTitle = checkString(simplified(xItem.text), "")
+                        logger.verbose("Title is '%s'", self.bookTitle)
                     elif xItem.tag == "author":
-                        logger.verbose("Author: '%s'", xItem.text)
-                        self.bookAuthors.append(xItem.text)
+                        author = checkString(simplified(xItem.text), "")
+                        if author:
+                            self.bookAuthors.append(author)
+                            logger.verbose("Author: '%s'", author)
                     elif xItem.tag == "saveCount":
                         self.saveCount = checkInt(xItem.text, 0)
                     elif xItem.tag == "autoCount":
@@ -956,14 +958,14 @@ class NWProject():
         """Set the project name (working title), This is the the title
         used for backup files etc.
         """
-        self.projName = projName.strip()
+        self.projName = simplified(projName)
         self.setProjectChanged(True)
         return True
 
     def setBookTitle(self, bookTitle):
         """Set the book title, that is, the title to include in exports.
         """
-        self.bookTitle = bookTitle.strip()
+        self.bookTitle = simplified(bookTitle)
         self.setProjectChanged(True)
         return True
 
@@ -975,7 +977,7 @@ class NWProject():
 
         self.bookAuthors = []
         for bookAuthor in bookAuthors.splitlines():
-            bookAuthor = bookAuthor.strip()
+            bookAuthor = simplified(bookAuthor)
             if bookAuthor == "":
                 continue
             self.bookAuthors.append(bookAuthor)
@@ -1114,7 +1116,9 @@ class NWProject():
     def setAutoReplace(self, autoReplace):
         """Update the auto-replace dictionary.
         """
-        self.autoReplace = autoReplace
+        self.autoReplace = {}
+        for key, entry in autoReplace.items():
+            self.autoReplace[key] = simplified(entry)
         self.setProjectChanged(True)
         return True
 
@@ -1123,7 +1127,9 @@ class NWProject():
         """
         for valKey, valEntry in titleFormat.items():
             if valKey in self.titleFormat:
-                self.titleFormat[valKey] = checkString(valEntry, self.titleFormat[valKey])
+                self.titleFormat[valKey] = checkString(
+                    simplified(valEntry), self.titleFormat[valKey]
+                )
         return True
 
     def setProjectChanged(self, bValue):
