@@ -469,7 +469,7 @@ class GuiIcons:
         "delete", "close", "done", "clear", "save", "add", "remove",
         "search", "search_replace", "edit", "check", "cross", "hash",
         "maximise", "minimise", "refresh", "reference", "backward",
-        "forward", "settings",
+        "forward", "settings", "up", "down",
 
         # Switches
         "sticky-on", "sticky-off",
