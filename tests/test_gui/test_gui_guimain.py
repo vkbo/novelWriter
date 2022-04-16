@@ -19,8 +19,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import pytest
 import os
+import random
+import pytest
 
 from shutil import copyfile
 from tools import cmpFiles
@@ -139,6 +140,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
     # Create new, save, close project
+    random.seed(42)
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": fncProj})
     assert nwGUI.saveProject()

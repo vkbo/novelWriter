@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-03 21:38:23">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-16 14:15:44">
   <project>
     <name>Test Custom</name>
     <title>Test Novel</title>
@@ -29,74 +29,74 @@
       <section></section>
     </titleFormat>
     <status>
-      <entry red="100" green="100" blue="100">New</entry>
-      <entry red="200" green="50" blue="0">Note</entry>
-      <entry red="200" green="150" blue="0">Draft</entry>
-      <entry red="50" green="200" blue="0">Finished</entry>
+      <entry key="sbc8960" count="8" red="100" green="100" blue="100">New</entry>
+      <entry key="s1a3d1f" count="0" red="200" green="50" blue="0">Note</entry>
+      <entry key="sad3c2d" count="0" red="200" green="150" blue="0">Draft</entry>
+      <entry key="sbd9c66" count="0" red="50" green="200" blue="0">Finished</entry>
     </status>
     <importance>
-      <entry red="100" green="100" blue="100">New</entry>
-      <entry red="200" green="50" blue="0">Minor</entry>
-      <entry red="200" green="150" blue="0">Major</entry>
-      <entry red="50" green="200" blue="0">Main</entry>
+      <entry key="ie465e1" count="0" red="100" green="100" blue="100">New</entry>
+      <entry key="i8b9d24" count="0" red="200" green="50" blue="0">Minor</entry>
+      <entry key="i16419f" count="0" red="200" green="150" blue="0">Major</entry>
+      <entry key="i972a84" count="0" red="50" green="200" blue="0">Main</entry>
     </importance>
   </settings>
   <content count="14">
     <item handle="73475cb40a568" parent="None" order="0" type="ROOT" class="NOVEL">
       <meta expanded="False"/>
-      <name status="New" import="None">Novel</name>
+      <name status="sbc8960" import="None">Novel</name>
     </item>
     <item handle="44cb730c42048" parent="None" order="0" type="ROOT" class="PLOT">
       <meta expanded="False"/>
-      <name status="New" import="None">Plot</name>
+      <name status="sbc8960" import="None">Plot</name>
     </item>
     <item handle="71ee45a3c0db9" parent="None" order="0" type="ROOT" class="CHARACTER">
       <meta expanded="False"/>
-      <name status="New" import="None">Characters</name>
+      <name status="sbc8960" import="None">Characters</name>
     </item>
     <item handle="811786ad1ae74" parent="None" order="0" type="ROOT" class="WORLD">
       <meta expanded="False"/>
-      <name status="New" import="None">Locations</name>
+      <name status="sbc8960" import="None">Locations</name>
     </item>
     <item handle="25fc0e7096fc6" parent="None" order="0" type="ROOT" class="TIMELINE">
       <meta expanded="False"/>
-      <name status="New" import="None">Timeline</name>
+      <name status="sbc8960" import="None">Timeline</name>
     </item>
     <item handle="31489056e0916" parent="None" order="0" type="ROOT" class="OBJECT">
       <meta expanded="False"/>
-      <name status="New" import="None">Objects</name>
+      <name status="sbc8960" import="None">Objects</name>
     </item>
     <item handle="98010bd9270f9" parent="None" order="0" type="ROOT" class="ENTITY">
       <meta expanded="False"/>
-      <name status="New" import="None">Entities</name>
+      <name status="sbc8960" import="None">Entities</name>
     </item>
     <item handle="0e17daca5f3e1" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" import="None" exported="True">Title Page</name>
+      <name status="sbc8960" import="None" exported="True">Title Page</name>
     </item>
     <item handle="1a6562590ef19" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" import="None" exported="True">Scene 1</name>
+      <name status="sbc8960" import="None" exported="True">Scene 1</name>
     </item>
     <item handle="031b4af5197ec" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" import="None" exported="True">Scene 2</name>
+      <name status="sbc8960" import="None" exported="True">Scene 2</name>
     </item>
     <item handle="41cfc0d1f2d12" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" import="None" exported="True">Scene 3</name>
+      <name status="sbc8960" import="None" exported="True">Scene 3</name>
     </item>
     <item handle="2858dcd1057d3" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" import="None" exported="True">Scene 4</name>
+      <name status="sbc8960" import="None" exported="True">Scene 4</name>
     </item>
     <item handle="2fca346db6561" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" import="None" exported="True">Scene 5</name>
+      <name status="sbc8960" import="None" exported="True">Scene 5</name>
     </item>
     <item handle="02d20bbd7e394" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="New" import="None" exported="True">Scene 6</name>
+      <name status="sbc8960" import="None" exported="True">Scene 6</name>
     </item>
   </content>
 </novelWriterXML>

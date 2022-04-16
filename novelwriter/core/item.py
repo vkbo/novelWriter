@@ -280,11 +280,11 @@ class NWItem():
         the current item based on its class.
         """
         if self._class in nwLists.CLS_NOVEL:
-            stName = self.theProject.statusItems.checkEntry(self._status)
-            stIcon = self.theProject.statusItems.getIcon(stName)
+            stName = self.theProject.statusItems.name(self._status)
+            stIcon = self.theProject.statusItems.icon(self._status)
         else:
-            stName = self.theProject.importItems.checkEntry(self._import)
-            stIcon = self.theProject.importItems.getIcon(stName)
+            stName = self.theProject.importItems.name(self._import)
+            stIcon = self.theProject.importItems.icon(self._import)
         return stName, stIcon
 
     def setImportStatus(self, theLabel):
@@ -383,14 +383,14 @@ class NWItem():
         """Set the item status by looking it up in the valid status
         items of the current project.
         """
-        self._status = self.theProject.statusItems.checkEntry(theStatus)
+        self._status = self.theProject.statusItems.check(theStatus)
         return
 
     def setImport(self, theImport):
         """Set the item importance by looking it up in the valid import
         items of the current project.
         """
-        self._import = self.theProject.importItems.checkEntry(theImport)
+        self._import = self.theProject.importItems.check(theImport)
         return
 
     def setExpanded(self, expState):

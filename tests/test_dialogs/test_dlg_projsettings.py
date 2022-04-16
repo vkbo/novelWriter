@@ -19,8 +19,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import pytest
 import os
+import pytest
+import random
 
 from shutil import copyfile
 from tools import cmpFiles, getGuiItem
@@ -39,7 +40,9 @@ stepDelay = 20
 
 
 @pytest.mark.gui
-def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDir, refDir):
+def testDlgProjSettings_Dialog(
+    qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDir, refDir, constData
+):
     """Test the full project settings dialog.
     """
     projFile = os.path.join(fncProj, "nwProject.nwx")
@@ -55,6 +58,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
     assert getGuiItem("GuiProjectSettings") is None
 
     # Create new project
+    random.seed(42)
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": fncProj})
     nwGUI.mainConf.backupPath = fncDir
@@ -111,7 +115,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
     projEdit._tabBox.setCurrentWidget(projEdit.tabStatus)
 
     assert projEdit.tabStatus.colChanged is False
-    assert projEdit.tabStatus.getNewList() is None
+    assert projEdit.tabStatus.getNewList() == ([], [])
     assert projEdit.tabStatus.listBox.topLevelItemCount() == 4
 
     # Fake drag'n'drop should change changed status
@@ -150,12 +154,29 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
     qtbot.wait(stepDelay)
 
     assert projEdit.tabStatus.colChanged is True
-    assert projEdit.tabStatus.getNewList() == [
-        ("New", 100, 100, 100, "New"),
-        ("Note", 200, 50, 0, "Note"),
-        ("Finished", 50, 200, 0, "Finished"),
-        ("Final", 20, 30, 40, None)
-    ]
+    assert projEdit.tabStatus.getNewList() == (
+        [
+            {
+                "key": constData.statusKeys[0],
+                "name": "New",
+                "cols": (100, 100, 100)
+            }, {
+                "key": constData.statusKeys[1],
+                "name": "Note",
+                "cols": (200, 50, 0)
+            }, {
+                "key": constData.statusKeys[3],
+                "name": "Finished",
+                "cols": (50, 200, 0)
+            }, {
+                "key": None,
+                "name": "Final",
+                "cols": (20, 30, 40)
+            }
+        ], [
+            constData.statusKeys[2]  # Deleted item
+        ]
+    )
 
     # Importance Tab
     # ==============
