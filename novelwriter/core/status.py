@@ -106,6 +106,13 @@ class NWStatus():
         del self._reverse[self._store[key]["name"]]
         del self._store[key]
 
+        keys = list(self._store.keys())
+        if key == self._default:
+            if len(keys) > 0:
+                self._default = keys[0]
+            else:
+                self._default = None
+
         return True
 
     def check(self, value):
@@ -241,6 +248,9 @@ class NWStatus():
     ##
     #  Iterator Bits
     ##
+
+    def __len__(self):
+        return len(self._store)
 
     def __getitem__(self, key):
         return self._store[key]
