@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import NWDoc
-from novelwriter.enum import nwAlert, nwItemType, nwItemClass, nwItemLayout
+from novelwriter.enum import nwAlert, nwItemType
 from novelwriter.constants import nwConst
 from novelwriter.gui.custom import QHelpLabel
 
@@ -186,22 +186,16 @@ class GuiDocSplit(QDialog):
             return False
 
         # Create the folder
-        fHandle = self.theProject.newFolder(
-            srcItem.itemName, srcItem.itemClass, srcItem.itemParent
-        )
+        fHandle = self.theProject.newFolder(srcItem.itemName, srcItem.itemParent)
         self.theParent.treeView.revealNewTreeItem(fHandle)
         logger.verbose("Creating folder '%s'", fHandle)
 
         # Loop through, and create the files
         for wTitle, iStart, iEnd in finalOrder:
 
-            isNovel = srcItem.itemClass == nwItemClass.NOVEL
-            itemLayout = nwItemLayout.DOCUMENT if isNovel else nwItemLayout.NOTE
-
             wTitle = wTitle.lstrip("#").strip()
-            nHandle = self.theProject.newFile(wTitle, srcItem.itemClass, fHandle)
+            nHandle = self.theProject.newFile(wTitle, fHandle)
             newItem = self.theProject.projTree[nHandle]
-            newItem.setLayout(itemLayout)
             newItem.setStatus(srcItem.itemStatus)
             newItem.setImport(srcItem.itemImport)
             logger.verbose(

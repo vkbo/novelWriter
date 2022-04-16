@@ -250,7 +250,7 @@ class GuiProjectTree(QTreeWidget):
 
             # If we're still here, add the file or folder
             if itemType == nwItemType.FILE:
-                tHandle = self.theProject.newFile(self.tr("New File"), itemClass, pHandle)
+                tHandle = self.theProject.newFile(self.tr("New File"), pHandle)
 
             elif itemType == nwItemType.FOLDER:
                 if len(parTree) >= nwConst.MAX_DEPTH - 1:
@@ -261,7 +261,7 @@ class GuiProjectTree(QTreeWidget):
                         "Maximum folder depth has been reached."
                     ), nwAlert.ERROR)
                     return False
-                tHandle = self.theProject.newFolder(self.tr("New Folder"), itemClass, pHandle)
+                tHandle = self.theProject.newFolder(self.tr("New Folder"), pHandle)
 
             else:
                 logger.error("Failed to add new item")

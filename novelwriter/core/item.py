@@ -294,14 +294,33 @@ class NWItem():
             stIcon = self.theProject.importItems.icon(self._import)
         return stName, stIcon
 
-    def setImportStatus(self, theLabel):
+    def setImportStatus(self, value):
         """Update the importance or status value based on class. This is
         a wrapper setter for setStatus and setImport.
         """
         if self._class in nwLists.CLS_NOVEL:
-            self.setStatus(theLabel)
+            self.setStatus(value)
         else:
-            self.setImport(theLabel)
+            self.setImport(value)
+        return
+
+    def setClassDefaults(self, itemClass):
+        """Set the default values based on the item's class and the
+        project settings.
+        """
+        self.setClass(itemClass)
+
+        if self._class in nwLists.CLS_NOVEL:
+            self._layout = nwItemLayout.DOCUMENT
+        else:
+            self._layout = nwItemLayout.NOTE
+
+        if self._status is None:
+            self.setStatus("New")  # This forces a default value lookup
+
+        if self._import is None:
+            self.setImport("New")  # This forces a default value lookup
+
         return
 
     ##

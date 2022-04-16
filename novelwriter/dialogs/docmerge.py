@@ -130,7 +130,7 @@ class GuiDocMerge(QDialog):
             self.theParent.makeAlert(self.tr("Internal error."), nwAlert.ERROR)
             return False
 
-        nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemClass, srcItem.itemParent)
+        nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemParent)
         newItem = self.theProject.projTree[nHandle]
         newItem.setStatus(srcItem.itemStatus)
         newItem.setImport(srcItem.itemImport)

@@ -222,7 +222,7 @@ class NWTree():
         for _ in range(nwConst.MAX_DEPTH + 1):
             if iItem.itemParent is None:
                 tItem.setRoot(iItem.itemHandle)
-                tItem.setClass(iItem.itemClass)
+                tItem.setClassDefaults(iItem.itemClass)
                 return True
             else:
                 iItem = self.__getitem__(iItem.itemParent)
