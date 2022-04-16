@@ -40,6 +40,7 @@ stepDelay = 20
 def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal):
     """test the word list editor.
     """
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiWordList, "exec_", lambda *a: None)

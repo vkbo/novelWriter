@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-03 21:36:18">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-16 14:19:35">
   <project>
     <name>Test Minimal</name>
     <title>Minimal</title>
     <author>Jane Doe</author>
     <author>John Doh</author>
-    <saveCount>14</saveCount>
+    <saveCount>15</saveCount>
     <autoCount>2</autoCount>
-    <editTime>135</editTime>
+    <editTime>146</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
@@ -29,50 +29,50 @@
       <section></section>
     </titleFormat>
     <status>
-      <entry red="100" green="100" blue="100">New</entry>
-      <entry red="200" green="50" blue="0">Note</entry>
-      <entry red="200" green="150" blue="0">Draft</entry>
-      <entry red="50" green="200" blue="0">Finished</entry>
+      <entry key="s72322d" count="5" red="100" green="100" blue="100">New</entry>
+      <entry key="sb6adc7" count="0" red="200" green="50" blue="0">Note</entry>
+      <entry key="s2ae76d" count="0" red="200" green="150" blue="0">Draft</entry>
+      <entry key="s541953" count="0" red="50" green="200" blue="0">Finished</entry>
     </status>
     <importance>
-      <entry red="100" green="100" blue="100">New</entry>
-      <entry red="200" green="50" blue="0">Minor</entry>
-      <entry red="200" green="150" blue="0">Major</entry>
-      <entry red="50" green="200" blue="0">Main</entry>
+      <entry key="iffcacb" count="3" red="100" green="100" blue="100">New</entry>
+      <entry key="i6b130b" count="0" red="200" green="50" blue="0">Minor</entry>
+      <entry key="iece803" count="0" red="200" green="150" blue="0">Major</entry>
+      <entry key="i5ba06e" count="0" red="50" green="200" blue="0">Main</entry>
     </importance>
   </settings>
   <content count="8">
     <item handle="a508bb932959c" parent="None" order="0" type="ROOT" class="NOVEL">
       <meta expanded="True"/>
-      <name status="New" import="New">Novel</name>
+      <name status="s72322d" import="iffcacb">Novel</name>
     </item>
     <item handle="a35baf2e93843" parent="a508bb932959c" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="28" wordCount="6" paraCount="1" cursorPos="33"/>
-      <name status="New" import="New" exported="True">Title Page</name>
+      <name status="s72322d" import="iffcacb" exported="True">Title Page</name>
     </item>
     <item handle="a6d311a93600a" parent="a508bb932959c" order="1" type="FOLDER" class="NOVEL">
       <meta expanded="True"/>
-      <name status="New" import="New">New Chapter</name>
+      <name status="s72322d" import="iffcacb">New Chapter</name>
     </item>
     <item handle="f5ab3e30151e1" parent="a6d311a93600a" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="11" wordCount="2" paraCount="0" cursorPos="16"/>
-      <name status="New" import="New" exported="True">New Chapter</name>
+      <name status="s72322d" import="iffcacb" exported="True">New Chapter</name>
     </item>
     <item handle="8c659a11cd429" parent="a6d311a93600a" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="9" wordCount="2" paraCount="0" cursorPos="15"/>
-      <name status="New" import="New" exported="True">New Scene</name>
+      <name status="s72322d" import="iffcacb" exported="True">New Scene</name>
     </item>
     <item handle="7695ce551d265" parent="None" order="1" type="ROOT" class="PLOT">
       <meta expanded="False"/>
-      <name status="New" import="New">Plot</name>
+      <name status="s72322d" import="iffcacb">Plot</name>
     </item>
     <item handle="afb3043c7b2b3" parent="None" order="2" type="ROOT" class="CHARACTER">
       <meta expanded="False"/>
-      <name status="New" import="New">Characters</name>
+      <name status="s72322d" import="iffcacb">Characters</name>
     </item>
     <item handle="9d5247ab588e0" parent="None" order="3" type="ROOT" class="WORLD">
       <meta expanded="False"/>
-      <name status="New" import="New">World</name>
+      <name status="s72322d" import="iffcacb">World</name>
     </item>
   </content>
 </novelWriterXML>
