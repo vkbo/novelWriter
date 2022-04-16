@@ -686,13 +686,127 @@ def testCoreProject_AccessItems(nwMinimal, mockGUI):
 
 
 @pytest.mark.core
-def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
+def testCoreProject_StatusImport(mockGUI, fncDir, constData):
+    """Test the status and importance flag handling.
+    """
+    theProject = NWProject(mockGUI)
+    random.seed(42)
+    theProject.projTree.setSeed(42)
+    assert theProject.newProject({"projPath": fncDir}) is True
+
+    # Change Status
+    # =============
+
+    theProject.projTree["44cb730c42048"].setStatus("Finished")
+    theProject.projTree["71ee45a3c0db9"].setStatus("Draft")
+    theProject.projTree["811786ad1ae74"].setStatus("Note")
+    theProject.projTree["25fc0e7096fc6"].setStatus("Finished")
+
+    assert theProject.projTree["44cb730c42048"].itemStatus == constData.statusKeys[3]
+    assert theProject.projTree["71ee45a3c0db9"].itemStatus == constData.statusKeys[2]
+    assert theProject.projTree["811786ad1ae74"].itemStatus == constData.statusKeys[1]
+    assert theProject.projTree["25fc0e7096fc6"].itemStatus == constData.statusKeys[3]
+
+    newList = [
+        {"key": constData.statusKeys[0], "name": "New", "cols": (1, 1, 1)},
+        {"key": constData.statusKeys[1], "name": "Draft", "cols": (2, 2, 2)},   # These are swapped
+        {"key": constData.statusKeys[2], "name": "Note", "cols": (3, 3, 3)},    # These are swapped
+        {"key": constData.statusKeys[3], "name": "Edited", "cols": (4, 4, 4)},  # Renamed
+        {"key": None, "name": "Finished", "cols": (5, 5, 5)},                   # New, reused name
+    ]
+    assert theProject.setStatusColours(None, None) is False
+    assert theProject.setStatusColours([], []) is False
+    assert theProject.setStatusColours(newList, []) is True
+
+    assert theProject.statusItems.name(constData.statusKeys[0]) == "New"
+    assert theProject.statusItems.name(constData.statusKeys[1]) == "Draft"
+    assert theProject.statusItems.name(constData.statusKeys[2]) == "Note"
+    assert theProject.statusItems.name(constData.statusKeys[3]) == "Edited"
+    assert theProject.statusItems.cols(constData.statusKeys[0]) == (1, 1, 1)
+    assert theProject.statusItems.cols(constData.statusKeys[1]) == (2, 2, 2)
+    assert theProject.statusItems.cols(constData.statusKeys[2]) == (3, 3, 3)
+    assert theProject.statusItems.cols(constData.statusKeys[3]) == (4, 4, 4)
+
+    # Check the new entry
+    lastKey = theProject.statusItems.check("Finished")
+    assert lastKey == "sbc8960"
+    assert theProject.statusItems.name(lastKey) == "Finished"
+    assert theProject.statusItems.cols(lastKey) == (5, 5, 5)
+
+    # Delete last entry
+    assert theProject.setStatusColours([], [lastKey]) is True
+    assert theProject.statusItems.name(lastKey) == "New"
+
+    # Change Importance
+    # =================
+
+    fHandle = theProject.newFile("Jane Doe", nwItemClass.CHARACTER, "73475cb40a568")
+    theProject.projTree[fHandle].setImport("Main")
+
+    assert theProject.projTree[fHandle].itemImport == constData.importKeys[3]
+    newList = [
+        {"key": constData.importKeys[0], "name": "New", "cols": (1, 1, 1)},
+        {"key": constData.importKeys[1], "name": "Minor", "cols": (2, 2, 2)},
+        {"key": constData.importKeys[2], "name": "Major", "cols": (3, 3, 3)},
+        {"key": constData.importKeys[3], "name": "Min", "cols": (4, 4, 4)},
+        {"key": None, "name": "Max", "cols": (5, 5, 5)},
+    ]
+    assert theProject.setImportColours(None, None) is False
+    assert theProject.setImportColours([], []) is False
+    assert theProject.setImportColours(newList, []) is True
+
+    assert theProject.importItems.name(constData.importKeys[0]) == "New"
+    assert theProject.importItems.name(constData.importKeys[1]) == "Minor"
+    assert theProject.importItems.name(constData.importKeys[2]) == "Major"
+    assert theProject.importItems.name(constData.importKeys[3]) == "Min"
+    assert theProject.importItems.cols(constData.importKeys[0]) == (1, 1, 1)
+    assert theProject.importItems.cols(constData.importKeys[1]) == (2, 2, 2)
+    assert theProject.importItems.cols(constData.importKeys[2]) == (3, 3, 3)
+    assert theProject.importItems.cols(constData.importKeys[3]) == (4, 4, 4)
+
+    # Check the new entry
+    lastKey = theProject.importItems.check("Max")
+    assert lastKey == "i1a3d1f"
+    assert theProject.importItems.name(lastKey) == "Max"
+    assert theProject.importItems.cols(lastKey) == (5, 5, 5)
+
+    # Delete last entry
+    assert theProject.setImportColours([], [lastKey]) is True
+    assert theProject.importItems.name(lastKey) == "New"
+
+    # Delete Status/Import
+    # ====================
+
+    theProject.statusItems.resetCounts()
+    for key in list(theProject.statusItems.keys()):
+        assert theProject.statusItems.remove(key) is True
+
+    theProject.importItems.resetCounts()
+    for key in list(theProject.importItems.keys()):
+        assert theProject.importItems.remove(key) is True
+
+    assert len(theProject.statusItems) == 0
+    assert len(theProject.importItems) == 0
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
+
+    # This should restore the default status/import labels
+    random.seed(42)
+    assert theProject.openProject(fncDir) is True
+    assert theProject.saveProject() is True
+    assert list(theProject.statusItems.keys()) == constData.statusKeys
+    assert list(theProject.importItems.keys()) == constData.importKeys
+
+# END Test testCoreProject_StatusImport
+
+
+@pytest.mark.core
+def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir):
     """Test other project class methods and functions.
     """
     theProject = NWProject(mockGUI)
     theProject.projTree.setSeed(42)
-    assert theProject.openProject(nwMinimal)
-    assert theProject.projPath == nwMinimal
+    assert theProject.newProject({"projPath": fncDir}) is True
 
     # Setting project path
     assert theProject.setProjectPath(None)
@@ -703,16 +817,16 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
     assert theProject.projPath == os.path.expanduser("~")
 
     # Create a new folder and populate it
-    projPath = os.path.join(nwMinimal, "mock1")
+    projPath = os.path.join(fncDir, "mock1")
     assert theProject.setProjectPath(projPath, newProject=True)
 
     # Make os.mkdir fail
     monkeypatch.setattr("os.mkdir", causeOSError)
-    projPath = os.path.join(nwMinimal, "mock2")
+    projPath = os.path.join(fncDir, "mock2")
     assert not theProject.setProjectPath(projPath, newProject=True)
 
     # Set back
-    assert theProject.setProjectPath(nwMinimal)
+    assert theProject.setProjectPath(fncDir)
 
     # Project Name
     assert theProject.setProjectName("  A Name ")
@@ -750,9 +864,10 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
 
     # Trash folder
     # Should create on first call, and just returned on later calls
-    assert theProject.projTree["73475cb40a568"] is None
-    assert theProject.trashFolder() == "73475cb40a568"
-    assert theProject.trashFolder() == "73475cb40a568"
+    hTrash = "1a6562590ef19"
+    assert theProject.projTree[hTrash] is None
+    assert theProject.trashFolder() == hTrash
+    assert theProject.trashFolder() == hTrash
 
     # Project backup
     assert theProject.doBackup is True
@@ -819,70 +934,20 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
 
     # Change project tree order
     oldOrder = [
-        "a508bb932959c", "a35baf2e93843", "a6d311a93600a",
-        "f5ab3e30151e1", "8c659a11cd429", "7695ce551d265",
-        "afb3043c7b2b3", "9d5247ab588e0", "73475cb40a568",
+        "73475cb40a568", "44cb730c42048", "71ee45a3c0db9",
+        "811786ad1ae74", "25fc0e7096fc6", "31489056e0916",
+        "98010bd9270f9", "0e17daca5f3e1", "1a6562590ef19",
     ]
     newOrder = [
-        "f5ab3e30151e1", "8c659a11cd429", "7695ce551d265",
-        "a508bb932959c", "a35baf2e93843", "a6d311a93600a",
-        "afb3043c7b2b3", "9d5247ab588e0",
+        "811786ad1ae74", "25fc0e7096fc6", "31489056e0916",
+        "73475cb40a568", "44cb730c42048", "71ee45a3c0db9",
+        "98010bd9270f9", "0e17daca5f3e1",
     ]
     assert theProject.projTree.handles() == oldOrder
     assert theProject.setTreeOrder(newOrder)
     assert theProject.projTree.handles() == newOrder
     assert theProject.setTreeOrder(oldOrder)
     assert theProject.projTree.handles() == oldOrder
-
-    # # Change status
-    # theProject.projTree["a35baf2e93843"].setStatus("Finished")
-    # theProject.projTree["a6d311a93600a"].setStatus("Draft")
-    # theProject.projTree["f5ab3e30151e1"].setStatus("Note")
-    # theProject.projTree["8c659a11cd429"].setStatus("Finished")
-    # newList = [
-    #     ("New", 1, 1, 1, "New"),
-    #     ("Draft", 2, 2, 2, "Note"),       # These are swapped
-    #     ("Note", 3, 3, 3, "Draft"),       # These are swapped
-    #     ("Edited", 4, 4, 4, "Finished"),  # Renamed
-    #     ("Finished", 5, 5, 5, None),      # New, with reused name
-    # ]
-    # assert theProject.setStatusColours(newList, [])
-    # assert theProject.statusItems._theLabels == [
-    #     "New", "Draft", "Note", "Edited", "Finished"
-    # ]
-    # assert theProject.statusItems._theColours == [
-    #     (1, 1, 1), (2, 2, 2), (3, 3, 3), (4, 4, 4), (5, 5, 5)
-    # ]
-    # assert theProject.projTree["a35baf2e93843"].itemStatus == "Edited"  # Renamed
-    # assert theProject.projTree["a6d311a93600a"].itemStatus == "Note"    # Swapped
-    # assert theProject.projTree["f5ab3e30151e1"].itemStatus == "Draft"   # Swapped
-    # assert theProject.projTree["8c659a11cd429"].itemStatus == "Edited"  # Renamed
-
-    # # Change importance
-    # fHandle = theProject.newFile("Jane Doe", nwItemClass.CHARACTER, "afb3043c7b2b3")
-    # theProject.projTree[fHandle].setImport("Main")
-    # newList = [
-    #     ("New", 1, 1, 1, "New"),
-    #     ("Minor", 2, 2, 2, "Minor"),
-    #     ("Major", 3, 3, 3, "Major"),
-    #     ("Min", 4, 4, 4, "Main"),
-    #     ("Max", 5, 5, 5, None),
-    # ]
-    # assert theProject.setImportColours(newList)
-    # assert theProject.importItems._theLabels == [
-    #     "New", "Minor", "Major", "Min", "Max"
-    # ]
-    # assert theProject.importItems._theColours == [
-    #     (1, 1, 1), (2, 2, 2), (3, 3, 3), (4, 4, 4), (5, 5, 5)
-    # ]
-    # assert theProject.projTree[fHandle].itemImport == "Min"
-
-    # # Check status counts
-    # assert theProject.statusItems._theCounts == [0, 0, 0, 0, 0]
-    # assert theProject.importItems._theCounts == [0, 0, 0, 0, 0]
-    # theProject.countStatus()
-    # assert theProject.statusItems._theCounts == [1, 1, 1, 2, 0]
-    # assert theProject.importItems._theCounts == [3, 0, 0, 1, 0]
 
     # Session stats
     theProject.currWCount = 200
@@ -897,7 +962,7 @@ def testCoreProject_Methods(monkeypatch, nwMinimal, mockGUI, tmpDir):
         assert not theProject._appendSessionStats(idleTime=0)
 
     # Write entry
-    assert theProject.projMeta == os.path.join(nwMinimal, "meta")
+    assert theProject.projMeta == os.path.join(fncDir, "meta")
     statsFile = os.path.join(theProject.projMeta, nwFiles.SESS_STATS)
 
     theProject.projOpened = 1600002000
