@@ -464,7 +464,7 @@ class GuiProjectEditStatus(QWidget):
         nChild = self.listBox.topLevelItemCount()
         nIndex = tIndex + step
         if nIndex < 0 or nIndex >= nChild:
-            return False
+            return
 
         cItem = self.listBox.takeTopLevelItem(tIndex)
         self.listBox.insertTopLevelItem(nIndex, cItem)

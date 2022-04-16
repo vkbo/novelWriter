@@ -175,7 +175,7 @@ class NWStatus():
             return False
 
         if order == list(self._store.keys()):
-            return True
+            return False
 
         store = {}
         for key in order:
