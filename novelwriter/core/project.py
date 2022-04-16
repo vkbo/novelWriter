@@ -44,7 +44,7 @@ from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.error import logException
 from novelwriter.common import (
     checkString, checkBool, checkInt, isHandle, formatTimeStamp,
-    makeFileNameSafe, hexToInt
+    makeFileNameSafe, hexToInt, simplified
 )
 from novelwriter.constants import nwLists, trConst, nwFiles, nwLabels
 
@@ -217,16 +217,16 @@ class NWProject():
         }
         self.spellCheck  = False
         self.autoOutline = True
-        self.statusItems = NWStatus()
-        self.statusItems.addEntry(self.tr("New"),      (100, 100, 100))
-        self.statusItems.addEntry(self.tr("Note"),     (200, 50,  0))
-        self.statusItems.addEntry(self.tr("Draft"),    (200, 150, 0))
-        self.statusItems.addEntry(self.tr("Finished"), (50,  200, 0))
-        self.importItems = NWStatus()
-        self.importItems.addEntry(self.tr("New"),      (100, 100, 100))
-        self.importItems.addEntry(self.tr("Minor"),    (200, 50,  0))
-        self.importItems.addEntry(self.tr("Major"),    (200, 150, 0))
-        self.importItems.addEntry(self.tr("Main"),     (50,  200, 0))
+        self.statusItems = NWStatus(NWStatus.STATUS)
+        self.statusItems.write(None, self.tr("New"),      (100, 100, 100))
+        self.statusItems.write(None, self.tr("Note"),     (200, 50,  0))
+        self.statusItems.write(None, self.tr("Draft"),    (200, 150, 0))
+        self.statusItems.write(None, self.tr("Finished"), (50,  200, 0))
+        self.importItems = NWStatus(NWStatus.IMPORT)
+        self.importItems.write(None, self.tr("New"),   (100, 100, 100))
+        self.importItems.write(None, self.tr("Minor"), (200, 50,  0))
+        self.importItems.write(None, self.tr("Major"), (200, 150, 0))
+        self.importItems.write(None, self.tr("Main"),  (50,  200, 0))
         self.lastEdited = None
         self.lastViewed = None
         self.lastWCount = 0
@@ -266,6 +266,7 @@ class NWProject():
             logger.error("No project path set for the new project")
             return False
 
+        self.clearProject()
         if not self.setProjectPath(projPath, newProject=True):
             return False
 
@@ -532,14 +533,16 @@ class NWProject():
                     if xItem.text is None:
                         continue
                     if xItem.tag == "name":
-                        logger.verbose("Working Title: '%s'", xItem.text)
-                        self.projName = xItem.text
+                        self.projName = checkString(simplified(xItem.text), "")
+                        logger.verbose("Working Title: '%s'", self.projName)
                     elif xItem.tag == "title":
-                        logger.verbose("Title is '%s'", xItem.text)
-                        self.bookTitle = xItem.text
+                        self.bookTitle = checkString(simplified(xItem.text), "")
+                        logger.verbose("Title is '%s'", self.bookTitle)
                     elif xItem.tag == "author":
-                        logger.verbose("Author: '%s'", xItem.text)
-                        self.bookAuthors.append(xItem.text)
+                        author = checkString(simplified(xItem.text), "")
+                        if author:
+                            self.bookAuthors.append(author)
+                            logger.verbose("Author: '%s'", author)
                     elif xItem.tag == "saveCount":
                         self.saveCount = checkInt(xItem.text, 0)
                     elif xItem.tag == "autoCount":
@@ -693,6 +696,8 @@ class NWProject():
             if len(aKey) > 0:
                 self._packProjectValue(xTitleFmt, aKey, aValue)
 
+        # Save Status/Importance
+        self.countStatus()
         xStatus = etree.SubElement(xSettings, "status")
         self.statusItems.packXML(xStatus)
         xStatus = etree.SubElement(xSettings, "importance")
@@ -959,14 +964,14 @@ class NWProject():
         """Set the project name (working title), This is the the title
         used for backup files etc.
         """
-        self.projName = projName.strip()
+        self.projName = simplified(projName)
         self.setProjectChanged(True)
         return True
 
     def setBookTitle(self, bookTitle):
         """Set the book title, that is, the title to include in exports.
         """
-        self.bookTitle = bookTitle.strip()
+        self.bookTitle = simplified(bookTitle)
         self.setProjectChanged(True)
         return True
 
@@ -978,7 +983,7 @@ class NWProject():
 
         self.bookAuthors = []
         for bookAuthor in bookAuthors.splitlines():
-            bookAuthor = bookAuthor.strip()
+            bookAuthor = simplified(bookAuthor)
             if bookAuthor == "":
                 continue
             self.bookAuthors.append(bookAuthor)
@@ -1024,7 +1029,8 @@ class NWProject():
         if self.projSpell != theLang:
             self.projSpell = theLang
             self.setProjectChanged(True)
-        return True
+            return True
+        return False
 
     def setProjectLang(self, theLang):
         """Set the project-specific language.
@@ -1071,34 +1077,22 @@ class NWProject():
             self.setProjectChanged(True)
         return True
 
-    def setStatusColours(self, newCols):
-        """Update the list of novel file status flags. Also iterate
-        through the project and replace keys that have been renamed.
+    def setStatusColours(self, newCols, delCols):
+        """Update the list of novel file status flags.
         """
-        replaceMap = self.statusItems.setNewEntries(newCols)
-        for nwItem in self.projTree:
-            if nwItem.itemClass in nwLists.CLS_NOVEL:
-                if nwItem.itemStatus in replaceMap:
-                    nwItem.setStatus(replaceMap[nwItem.itemStatus])
-        self.setProjectChanged(True)
-        return True
+        return self._setStatusImport(newCols, delCols, self.statusItems)
 
-    def setImportColours(self, newCols):
-        """Update the list of note file importance flags. Also iterate
-        through the project and replace keys that have been renamed.
+    def setImportColours(self, newCols, delCols):
+        """Update the list of note file importance flags.
         """
-        replaceMap = self.importItems.setNewEntries(newCols)
-        for nwItem in self.projTree:
-            if nwItem.itemClass not in nwLists.CLS_NOVEL:
-                if nwItem.itemImport in replaceMap:
-                    nwItem.setImport(replaceMap[nwItem.itemImport])
-        self.setProjectChanged(True)
-        return True
+        return self._setStatusImport(newCols, delCols, self.importItems)
 
     def setAutoReplace(self, autoReplace):
         """Update the auto-replace dictionary.
         """
-        self.autoReplace = autoReplace
+        self.autoReplace = {}
+        for key, entry in autoReplace.items():
+            self.autoReplace[key] = simplified(entry)
         self.setProjectChanged(True)
         return True
 
@@ -1107,7 +1101,9 @@ class NWProject():
         """
         for valKey, valEntry in titleFormat.items():
             if valKey in self.titleFormat:
-                self.titleFormat[valKey] = checkString(valEntry, self.titleFormat[valKey])
+                self.titleFormat[valKey] = checkString(
+                    simplified(valEntry), self.titleFormat[valKey]
+                )
         return True
 
     def setProjectChanged(self, bValue):
@@ -1213,9 +1209,9 @@ class NWProject():
         self.importItems.resetCounts()
         for nwItem in self.projTree:
             if nwItem.itemClass in nwLists.CLS_NOVEL:
-                self.statusItems.countEntry(nwItem.itemStatus)
+                self.statusItems.increment(nwItem.itemStatus)
             else:
-                self.importItems.countEntry(nwItem.itemImport)
+                self.importItems.increment(nwItem.itemImport)
         return
 
     def localLookup(self, theWord):
@@ -1228,6 +1224,28 @@ class NWProject():
     ##
     #  Internal Functions
     ##
+
+    def _setStatusImport(self, new, delete, target):
+        """Update the list of novel file status or importance flags, and
+        delete those that have been requested deleted.
+        """
+        if not (new or delete):
+            return False
+
+        order = []
+        for entry in new:
+            key = entry.get("key", None)
+            name = entry.get("name", "")
+            cols = entry.get("cols", (100, 100, 100))
+            if name:
+                order.append(target.write(key, name, cols))
+
+        for key in delete:
+            target.remove(key)
+
+        target.reorder(order)
+
+        return True
 
     def _loadProjectLocalisation(self):
         """Load the language data for the current project language.

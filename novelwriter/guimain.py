@@ -545,7 +545,7 @@ class GuiMain(QMainWindow):
         if self.theIndex.indexBroken:
             self.makeAlert(self.tr(
                 "The project index is outdated or broken. Rebuilding index."
-            ), nwAlert.WARN)
+            ), nwAlert.INFO)
             self.rebuildIndex()
 
         # Make sure the changed status is set to false on things opened
@@ -1002,7 +1002,9 @@ class GuiMain(QMainWindow):
 
         if dlgProj.result() == QDialog.Accepted:
             logger.debug("Applying new project settings")
-            self.docEditor.setDictionaries()
+            if dlgProj.spellChanged:
+                self.docEditor.setDictionaries()
+            self.treeMeta.refreshDetails()
             self._updateWindowTitle(self.theProject.projName)
 
         return True

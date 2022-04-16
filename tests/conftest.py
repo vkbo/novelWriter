@@ -24,6 +24,8 @@ import sys
 import pytest
 import shutil
 
+from dataclasses import dataclass
+
 from mock import MockGuiMain
 from tools import cleanProject
 
@@ -249,8 +251,23 @@ def nwOldProj(tmpDir):
 
 
 ##
-#  Useful Fixtures
+#  Data Fixtures
 ##
+
+@dataclass
+class TestConst:
+
+    statusKeys = ["sa3b179", "s1c8031", "s06671a", "sbdd640"]
+    importKeys = ["i466852", "i3eb13b", "i392456", "i23b8c1"]
+
+
+@pytest.fixture(scope="session")
+def constData():
+    """A named tuple of known contstant values. For those that depend on
+    the random number generator, they assume the seed is 42.
+    """
+    return TestConst()
+
 
 @pytest.fixture(scope="session")
 def ipsumText():

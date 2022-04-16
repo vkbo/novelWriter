@@ -679,16 +679,18 @@ class NWIndex():
             logException()
             self._indexBroken = True
 
-        # Check that project files are indexed
-        for fHandle in self.theProject.projFiles:
-            if fHandle not in self._fileMeta:
-                self._indexBroken = True
-                break
-
-        logger.verbose("Index check completed in %.3f ms", (time() - tStart)*1000)
-
         if self._indexBroken:
             self.clearIndex()
+            logger.verbose("Index check completed in %.3f ms", (time() - tStart)*1000)
+            return
+
+        # If the index was ok, we check that project files are indexed
+        for fHandle in self.theProject.projFiles:
+            if fHandle not in self._fileMeta:
+                logger.warning("Item '%s' is not in the index", fHandle)
+                self.reIndexHandle(fHandle)
+
+        logger.verbose("Index check completed in %.3f ms", (time() - tStart)*1000)
 
         return
 

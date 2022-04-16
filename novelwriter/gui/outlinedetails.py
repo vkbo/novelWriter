@@ -291,8 +291,10 @@ class GuiOutlineDetails(QScrollArea):
             self.titleLabel.setText("<b>%s</b>" % self.tr("Title"))
         self.titleValue.setText(novIdx["title"])
 
+        itemStatus, _ = nwItem.getImportStatus()
+
         self.fileValue.setText(nwItem.itemName)
-        self.itemValue.setText(nwItem.itemStatus)
+        self.itemValue.setText(itemStatus)
 
         cC = checkInt(novIdx["cCount"], 0)
         wC = checkInt(novIdx["wCount"], 0)

@@ -214,6 +214,11 @@ class GuiItemDetails(QWidget):
 
         return
 
+    def refreshDetails(self):
+        """Reload the content of the details panel.
+        """
+        self.updateViewBox(self._itemHandle)
+
     def updateViewBox(self, tHandle):
         """Populate the details box from a given handle.
         """

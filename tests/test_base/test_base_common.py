@@ -31,9 +31,9 @@ from novelwriter.guimain import GuiMain
 from novelwriter.common import (
     checkString, checkInt, checkFloat, checkBool, checkHandle, isHandle,
     isTitleTag, isItemClass, isItemType, isItemLayout, hexToInt, checkIntRange,
-    checkIntTuple, formatInt, formatTimeStamp, formatTime, splitVersionNumber,
-    transferCase, fuzzyTime, numberToRoman, jsonEncode, readTextFile,
-    makeFileNameSafe, sha256sum, getGuiItem, NWConfigParser
+    minmax, checkIntTuple, formatInt, formatTimeStamp, formatTime, simplified,
+    splitVersionNumber, transferCase, fuzzyTime, numberToRoman, jsonEncode,
+    readTextFile, makeFileNameSafe, sha256sum, getGuiItem, NWConfigParser
 )
 
 
@@ -227,6 +227,16 @@ def testBaseCommon_CheckIntRange():
 
 
 @pytest.mark.base
+def testBaseCommon_MinMax():
+    """Test the minmax function.
+    """
+    for i in range(-5, 15):
+        assert 0 <= minmax(i, 0, 10) <= 10
+
+# END Test testBaseCommon_MinMax
+
+
+@pytest.mark.base
 def testBaseCommon_CheckIntTuple():
     """Test the checkIntTuple function.
     """
@@ -268,6 +278,17 @@ def testBaseCommon_FormatTime():
     assert formatTime(360000) == "4-04:00:00"
 
 # END Test testBaseCommon_FormatTime
+
+
+@pytest.mark.base
+def testBaseCommon_Simplified():
+    """Test the simplified function.
+    """
+    assert simplified("Hello World") == "Hello World"
+    assert simplified("  Hello    World   ") == "Hello World"
+    assert simplified("\tHello\n\r\tWorld") == "Hello World"
+
+# END Test testBaseCommon_Simplified
 
 
 @pytest.mark.base
