@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-16 14:14:40">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-16 20:40:13">
   <project>
     <name>Test Custom</name>
     <title>Test Novel</title>
@@ -35,7 +35,7 @@
       <entry key="sbd9c66" count="0" red="50" green="200" blue="0">Finished</entry>
     </status>
     <importance>
-      <entry key="ie465e1" count="0" red="100" green="100" blue="100">New</entry>
+      <entry key="ie465e1" count="6" red="100" green="100" blue="100">New</entry>
       <entry key="i8b9d24" count="0" red="200" green="50" blue="0">Minor</entry>
       <entry key="i16419f" count="0" red="200" green="150" blue="0">Major</entry>
       <entry key="i972a84" count="0" red="50" green="200" blue="0">Main</entry>
@@ -44,95 +44,95 @@
   <content count="23">
     <item handle="73475cb40a568" parent="None" root="73475cb40a568" order="0" type="ROOT" class="NOVEL">
       <meta expanded="False"/>
-      <name status="sbc8960" import="None">Novel</name>
+      <name status="sbc8960" import="ie465e1">Novel</name>
     </item>
     <item handle="44cb730c42048" parent="None" root="44cb730c42048" order="0" type="ROOT" class="PLOT">
       <meta expanded="False"/>
-      <name status="sbc8960" import="None">Plot</name>
+      <name status="sbc8960" import="ie465e1">Plot</name>
     </item>
     <item handle="71ee45a3c0db9" parent="None" root="71ee45a3c0db9" order="0" type="ROOT" class="CHARACTER">
       <meta expanded="False"/>
-      <name status="sbc8960" import="None">Characters</name>
+      <name status="sbc8960" import="ie465e1">Characters</name>
     </item>
     <item handle="811786ad1ae74" parent="None" root="811786ad1ae74" order="0" type="ROOT" class="WORLD">
       <meta expanded="False"/>
-      <name status="sbc8960" import="None">Locations</name>
+      <name status="sbc8960" import="ie465e1">Locations</name>
     </item>
     <item handle="25fc0e7096fc6" parent="None" root="25fc0e7096fc6" order="0" type="ROOT" class="TIMELINE">
       <meta expanded="False"/>
-      <name status="sbc8960" import="None">Timeline</name>
+      <name status="sbc8960" import="ie465e1">Timeline</name>
     </item>
     <item handle="31489056e0916" parent="None" root="31489056e0916" order="0" type="ROOT" class="OBJECT">
       <meta expanded="False"/>
-      <name status="sbc8960" import="None">Objects</name>
+      <name status="sbc8960" import="ie465e1">Objects</name>
     </item>
     <item handle="98010bd9270f9" parent="None" root="98010bd9270f9" order="0" type="ROOT" class="ENTITY">
       <meta expanded="False"/>
-      <name status="sbc8960" import="None">Entities</name>
+      <name status="sbc8960" import="ie465e1">Entities</name>
     </item>
     <item handle="0e17daca5f3e1" parent="73475cb40a568" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Title Page</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Title Page</name>
     </item>
     <item handle="1a6562590ef19" parent="73475cb40a568" root="73475cb40a568" order="0" type="FOLDER" class="NOVEL">
       <meta expanded="False"/>
-      <name status="sbc8960" import="None">Chapter 1</name>
+      <name status="sbc8960" import="ie465e1">Chapter 1</name>
     </item>
     <item handle="031b4af5197ec" parent="1a6562590ef19" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Chapter 1</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Chapter 1</name>
     </item>
     <item handle="41cfc0d1f2d12" parent="1a6562590ef19" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Scene 1.1</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Scene 1.1</name>
     </item>
     <item handle="2858dcd1057d3" parent="1a6562590ef19" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Scene 1.2</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Scene 1.2</name>
     </item>
     <item handle="2fca346db6561" parent="1a6562590ef19" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Scene 1.3</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Scene 1.3</name>
     </item>
     <item handle="02d20bbd7e394" parent="73475cb40a568" root="73475cb40a568" order="0" type="FOLDER" class="NOVEL">
       <meta expanded="False"/>
-      <name status="sbc8960" import="None">Chapter 2</name>
+      <name status="sbc8960" import="ie465e1">Chapter 2</name>
     </item>
     <item handle="7688b6ef52555" parent="02d20bbd7e394" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Chapter 2</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Chapter 2</name>
     </item>
     <item handle="c837649cce43f" parent="02d20bbd7e394" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Scene 2.1</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Scene 2.1</name>
     </item>
     <item handle="6208ef0f7750c" parent="02d20bbd7e394" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Scene 2.2</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Scene 2.2</name>
     </item>
     <item handle="3e1e967e9b793" parent="02d20bbd7e394" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Scene 2.3</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Scene 2.3</name>
     </item>
     <item handle="39fa9ec190eee" parent="73475cb40a568" root="73475cb40a568" order="0" type="FOLDER" class="NOVEL">
       <meta expanded="False"/>
-      <name status="sbc8960" import="None">Chapter 3</name>
+      <name status="sbc8960" import="ie465e1">Chapter 3</name>
     </item>
     <item handle="d029fa3a95e17" parent="39fa9ec190eee" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Chapter 3</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Chapter 3</name>
     </item>
     <item handle="81b8a03f97e87" parent="39fa9ec190eee" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Scene 3.1</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Scene 3.1</name>
     </item>
     <item handle="da4ea2a5506f2" parent="39fa9ec190eee" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Scene 3.2</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Scene 3.2</name>
     </item>
     <item handle="a68b412c42825" parent="39fa9ec190eee" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Scene 3.3</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Scene 3.3</name>
     </item>
   </content>
 </novelWriterXML>

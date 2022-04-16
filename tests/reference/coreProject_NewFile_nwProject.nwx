@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-16 14:17:50">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-16 20:37:42">
   <project>
     <name>New Project</name>
     <title></title>
@@ -33,7 +33,7 @@
       <entry key="sbd9c66" count="0" red="50" green="200" blue="0">Finished</entry>
     </status>
     <importance>
-      <entry key="ie465e1" count="3" red="100" green="100" blue="100">New</entry>
+      <entry key="ie465e1" count="4" red="100" green="100" blue="100">New</entry>
       <entry key="i8b9d24" count="0" red="200" green="50" blue="0">Minor</entry>
       <entry key="i16419f" count="0" red="200" green="150" blue="0">Major</entry>
       <entry key="i972a84" count="0" red="50" green="200" blue="0">Main</entry>
@@ -74,11 +74,11 @@
     </item>
     <item handle="1a6562590ef19" parent="31489056e0916" root="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Hello</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Hello</name>
     </item>
     <item handle="031b4af5197ec" parent="71ee45a3c0db9" root="71ee45a3c0db9" order="0" type="FILE" class="CHARACTER" layout="NOTE">
       <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
-      <name status="sbc8960" import="None" exported="True">Jane</name>
+      <name status="sbc8960" import="ie465e1" exported="True">Jane</name>
     </item>
   </content>
 </novelWriterXML>
