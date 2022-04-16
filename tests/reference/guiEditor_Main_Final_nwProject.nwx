@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-03 21:31:53">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-16 12:58:48">
   <project>
     <name>New Project</name>
     <title></title>
@@ -27,62 +27,62 @@
       <section></section>
     </titleFormat>
     <status>
-      <entry red="100" green="100" blue="100">New</entry>
-      <entry red="200" green="50" blue="0">Note</entry>
-      <entry red="200" green="150" blue="0">Draft</entry>
-      <entry red="50" green="200" blue="0">Finished</entry>
+      <entry key="sa3b179" count="5" red="100" green="100" blue="100">New</entry>
+      <entry key="s1c8031" count="0" red="200" green="50" blue="0">Note</entry>
+      <entry key="s06671a" count="0" red="200" green="150" blue="0">Draft</entry>
+      <entry key="sbdd640" count="0" red="50" green="200" blue="0">Finished</entry>
     </status>
     <importance>
-      <entry red="100" green="100" blue="100">New</entry>
-      <entry red="200" green="50" blue="0">Minor</entry>
-      <entry red="200" green="150" blue="0">Major</entry>
-      <entry red="50" green="200" blue="0">Main</entry>
+      <entry key="i466852" count="3" red="100" green="100" blue="100">New</entry>
+      <entry key="i3eb13b" count="0" red="200" green="50" blue="0">Minor</entry>
+      <entry key="i392456" count="0" red="200" green="150" blue="0">Major</entry>
+      <entry key="i23b8c1" count="0" red="50" green="200" blue="0">Main</entry>
     </importance>
   </settings>
   <content count="12">
     <item handle="73475cb40a568" parent="None" order="0" type="ROOT" class="NOVEL">
       <meta expanded="True"/>
-      <name status="New" import="New">Novel</name>
+      <name status="sa3b179" import="i466852">Novel</name>
     </item>
     <item handle="25fc0e7096fc6" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
-      <name status="New" import="New" exported="True">Title Page</name>
+      <name status="sa3b179" import="i466852" exported="True">Title Page</name>
     </item>
     <item handle="31489056e0916" parent="73475cb40a568" order="1" type="FOLDER" class="NOVEL">
       <meta expanded="True"/>
-      <name status="New" import="New">New Chapter</name>
+      <name status="sa3b179" import="i466852">New Chapter</name>
     </item>
     <item handle="98010bd9270f9" parent="31489056e0916" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
-      <name status="New" import="New" exported="True">New Chapter</name>
+      <name status="sa3b179" import="i466852" exported="True">New Chapter</name>
     </item>
     <item handle="0e17daca5f3e1" parent="31489056e0916" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta charCount="612" wordCount="95" paraCount="10" cursorPos="768"/>
-      <name status="New" import="New" exported="True">New Scene</name>
+      <name status="sa3b179" import="i466852" exported="True">New Scene</name>
     </item>
     <item handle="44cb730c42048" parent="None" order="1" type="ROOT" class="PLOT">
       <meta expanded="True"/>
-      <name status="New" import="New">Plot</name>
+      <name status="sa3b179" import="i466852">Plot</name>
     </item>
     <item handle="031b4af5197ec" parent="44cb730c42048" order="0" type="FILE" class="PLOT" layout="NOTE">
       <meta charCount="48" wordCount="10" paraCount="1" cursorPos="69"/>
-      <name status="New" import="None" exported="True">New File</name>
+      <name status="sa3b179" import="None" exported="True">New File</name>
     </item>
     <item handle="71ee45a3c0db9" parent="None" order="2" type="ROOT" class="CHARACTER">
       <meta expanded="True"/>
-      <name status="New" import="New">Characters</name>
+      <name status="sa3b179" import="i466852">Characters</name>
     </item>
     <item handle="1a6562590ef19" parent="71ee45a3c0db9" order="0" type="FILE" class="CHARACTER" layout="NOTE">
       <meta charCount="34" wordCount="8" paraCount="1" cursorPos="51"/>
-      <name status="New" import="None" exported="True">New File</name>
+      <name status="sa3b179" import="None" exported="True">New File</name>
     </item>
     <item handle="811786ad1ae74" parent="None" order="3" type="ROOT" class="WORLD">
       <meta expanded="True"/>
-      <name status="New" import="New">World</name>
+      <name status="sa3b179" import="i466852">World</name>
     </item>
     <item handle="41cfc0d1f2d12" parent="811786ad1ae74" order="0" type="FILE" class="WORLD" layout="NOTE">
       <meta charCount="51" wordCount="9" paraCount="1" cursorPos="68"/>
-      <name status="New" import="None" exported="True">New File</name>
+      <name status="sa3b179" import="None" exported="True">New File</name>
     </item>
     <item handle="2fca346db6561" parent="None" order="4" type="TRASH" class="TRASH">
       <meta expanded="True"/>

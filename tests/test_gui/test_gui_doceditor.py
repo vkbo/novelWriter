@@ -43,6 +43,7 @@ def testGuiEditor_Init(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
 
     # Open project
     assert nwGUI.openProject(nwMinimal)

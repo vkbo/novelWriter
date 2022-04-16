@@ -1002,7 +1002,9 @@ class GuiMain(QMainWindow):
 
         if dlgProj.result() == QDialog.Accepted:
             logger.debug("Applying new project settings")
-            self.docEditor.setDictionaries()
+            if dlgProj.spellChanged:
+                self.docEditor.setDictionaries()
+            self.treeMeta.refreshDetails()
             self._updateWindowTitle(self.theProject.projName)
 
         return True
