@@ -75,11 +75,20 @@ class GuiItemEditor(QDialog):
         self.editStatus = QComboBox()
         self.editStatus.setMinimumWidth(mVd)
         if self.theItem.itemClass in nwLists.CLS_NOVEL:
-            for sLabel, _, _, sIcon in self.theProject.statusItems:
-                self.editStatus.addItem(sIcon, sLabel, sLabel)
+            for key, entry in self.theProject.statusItems.items():
+                self.editStatus.addItem(entry["icon"], entry["name"], key)
+
+            index = self.editStatus.findData(self.theItem.itemStatus)
+            if index != -1:
+                self.editStatus.setCurrentIndex(index)
+
         else:
-            for sLabel, _, _, sIcon in self.theProject.importItems:
-                self.editStatus.addItem(sIcon, sLabel, sLabel)
+            for key, entry in self.theProject.importItems.items():
+                self.editStatus.addItem(entry["icon"], entry["name"], key)
+
+            index = self.editStatus.findData(self.theItem.itemImport)
+            if index != -1:
+                self.editStatus.setCurrentIndex(index)
 
         # Item Layout
         self.editLayout = QComboBox()
@@ -96,6 +105,10 @@ class GuiItemEditor(QDialog):
         for itemLayout in nwItemLayout:
             if itemLayout in validLayouts:
                 self.editLayout.addItem(trConst(nwLabels.LAYOUT_NAME[itemLayout]), itemLayout)
+
+        index = self.editLayout.findData(self.theItem.itemLayout)
+        if index != -1:
+            self.editLayout.setCurrentIndex(index)
 
         # Export Switch
         self.textExport = QLabel(self.tr("Include when building project"))
@@ -115,15 +128,6 @@ class GuiItemEditor(QDialog):
         # Set Current Values
         self.editName.setText(self.theItem.itemName)
         self.editName.selectAll()
-
-        currStatus, _ = self.theItem.getImportStatus()
-        statusIdx = self.editStatus.findData(currStatus)
-        if statusIdx != -1:
-            self.editStatus.setCurrentIndex(statusIdx)
-
-        layoutIdx = self.editLayout.findData(self.theItem.itemLayout)
-        if layoutIdx != -1:
-            self.editLayout.setCurrentIndex(layoutIdx)
 
         ##
         #  Assemble
