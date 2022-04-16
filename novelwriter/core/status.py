@@ -39,9 +39,12 @@ logger = logging.getLogger(__name__)
 
 class NWStatus():
 
+    STATUS = 1
+    IMPORT = 2
+
     def __init__(self, type):
 
-        self._type = str(type)
+        self._type = type
         self._store = {}
         self._reverse = {}
         self._default = None
@@ -50,6 +53,13 @@ class NWStatus():
         pixmap = QPixmap(self._iconSize, self._iconSize)
         pixmap.fill(QColor(100, 100, 100))
         self._defaultIcon = QIcon(pixmap)
+
+        if self._type == self.STATUS:
+            self._prefix = "s"
+        elif self._type == self.IMPORT:
+            self._prefix = "i"
+        else:
+            raise Exception("This is a bug!")
 
         return
 
@@ -209,21 +219,21 @@ class NWStatus():
         flags. The Python recursion limit is given the job to handle
         the extreme case and will cause an app crash.
         """
-        key = f"{self._type}{random.randint(0, 0xffffff):06x}"
+        key = f"{self._prefix}{random.getrandbits(24):06x}"
         if key in self._store:
             key = self._newKey()
         return key
 
-    def _isKey(self, key):
-        """Check if a string is a key or not.
+    def _isKey(self, value):
+        """Check if a value is a key or not.
         """
-        if not isinstance(key, str):
+        if not isinstance(value, str):
             return False
-        if len(key) != 7:
+        if len(value) != 7:
             return False
-        if key[0] != self._type:
+        if value[0] != self._prefix:
             return False
-        for c in key[1:]:
+        for c in value[1:]:
             if c not in "0123456789abcdef":
                 return False
         return True

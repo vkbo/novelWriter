@@ -218,12 +218,12 @@ class NWProject():
         }
         self.spellCheck  = False
         self.autoOutline = True
-        self.statusItems = NWStatus("s")
+        self.statusItems = NWStatus(NWStatus.STATUS)
         self.statusItems.write(None, self.tr("New"),      (100, 100, 100))
         self.statusItems.write(None, self.tr("Note"),     (200, 50,  0))
         self.statusItems.write(None, self.tr("Draft"),    (200, 150, 0))
         self.statusItems.write(None, self.tr("Finished"), (50,  200, 0))
-        self.importItems = NWStatus("i")
+        self.importItems = NWStatus(NWStatus.IMPORT)
         self.importItems.write(None, self.tr("New"),   (100, 100, 100))
         self.importItems.write(None, self.tr("Minor"), (200, 50,  0))
         self.importItems.write(None, self.tr("Major"), (200, 150, 0))
@@ -267,6 +267,7 @@ class NWProject():
             logger.error("No project path set for the new project")
             return False
 
+        self.clearProject()
         if not self.setProjectPath(projPath, newProject=True):
             return False
 
