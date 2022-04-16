@@ -28,9 +28,7 @@ from tools import cmpFiles, getGuiItem
 
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
-    QDialog, QAction, QMessageBox, QColorDialog, QTreeWidgetItem
-)
+from PyQt5.QtWidgets import QDialog, QAction, QMessageBox, QColorDialog
 
 from novelwriter.dialogs import GuiProjectSettings
 
@@ -118,16 +116,6 @@ def testDlgProjSettings_Dialog(
     assert projEdit.tabStatus.getNewList() == ([], [])
     assert projEdit.tabStatus.listBox.topLevelItemCount() == 4
 
-    # Fake drag'n'drop should change changed status
-    projEdit.tabStatus._rowsMoved()
-    assert projEdit.tabStatus.colChanged is True
-    projEdit.tabStatus.colChanged = False
-
-    projEdit.tabStatus.listBox.clearSelection()
-    assert projEdit.tabStatus._getSelectedItem() is None
-    projEdit.tabStatus.listBox.topLevelItem(0).setSelected(True)
-    assert isinstance(projEdit.tabStatus._getSelectedItem(), QTreeWidgetItem)
-
     # Can't delete the first item (it's in use)
     projEdit.tabStatus.listBox.clearSelection()
     projEdit.tabStatus.listBox.topLevelItem(0).setSelected(True)
@@ -177,6 +165,31 @@ def testDlgProjSettings_Dialog(
             constData.statusKeys[2]  # Deleted item
         ]
     )
+
+    # Move items
+    projEdit.tabStatus.listBox.clearSelection()
+    projEdit.tabStatus._moveItem(1)
+    assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
+        constData.statusKeys[0], constData.statusKeys[1], constData.statusKeys[3], None
+    ]
+
+    projEdit.tabStatus.listBox.clearSelection()
+    projEdit.tabStatus.listBox.topLevelItem(0).setSelected(True)
+    projEdit.tabStatus._moveItem(-1)
+    assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
+        constData.statusKeys[0], constData.statusKeys[1], constData.statusKeys[3], None
+    ]
+
+    projEdit.tabStatus.listBox.clearSelection()
+    projEdit.tabStatus.listBox.topLevelItem(3).setSelected(True)
+    projEdit.tabStatus._moveItem(-1)
+    assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
+        constData.statusKeys[0], constData.statusKeys[1], None, constData.statusKeys[3]
+    ]
+    projEdit.tabStatus._moveItem(1)
+    assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
+        constData.statusKeys[0], constData.statusKeys[1], constData.statusKeys[3], None
+    ]
 
     # Importance Tab
     # ==============

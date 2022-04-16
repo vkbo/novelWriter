@@ -167,6 +167,28 @@ class NWStatus():
         else:
             return self._defaultIcon
 
+    def reorder(self, order):
+        """Reorder the items according to list.
+        """
+        if len(order) != len(self._store):
+            logger.error("Length mismatch between new and old order")
+            return False
+
+        if order == list(self._store.keys()):
+            return False
+
+        store = {}
+        for key in order:
+            if key in self._store:
+                store[key] = self._store[key]
+            else:
+                logger.error("Unknown key '%s' in order", key)
+                return False
+
+        self._store = store
+
+        return True
+
     def resetCounts(self):
         """Clear the counts of references to the status entries.
         """

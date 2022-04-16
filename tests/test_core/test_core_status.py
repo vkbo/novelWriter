@@ -229,6 +229,38 @@ def testCoreStatus_Entries(constData):
     assert theStatus.count(constData.statusKeys[2]) == 0
     assert theStatus.count(constData.statusKeys[3]) == 0
 
+    # Reorder
+    # =======
+
+    cOrder = list(theStatus.keys())
+    assert cOrder == constData.statusKeys
+
+    # Wrong length
+    assert theStatus.reorder([]) is False
+
+    # No change
+    assert theStatus.reorder(cOrder) is False
+
+    # Actual reaorder
+    nOrder = [
+        constData.statusKeys[0],
+        constData.statusKeys[2],
+        constData.statusKeys[1],
+        constData.statusKeys[3],
+    ]
+    assert theStatus.reorder(nOrder) is True
+    assert list(theStatus.keys()) == nOrder
+
+    # Add an unknown key
+    wOrder = nOrder.copy()
+    wOrder[3] = theStatus._newKey()
+    assert theStatus.reorder(wOrder) is False
+    assert list(theStatus.keys()) == nOrder
+
+    # Put it back
+    assert theStatus.reorder(cOrder) is True
+    assert list(theStatus.keys()) == cOrder
+
     # Default
     # =======
 
