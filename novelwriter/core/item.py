@@ -29,7 +29,7 @@ from lxml import etree
 
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
 from novelwriter.common import (
-    checkInt, isHandle, isItemClass, isItemLayout, isItemType
+    checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified
 )
 from novelwriter.constants import nwLabels, nwLists, trConst
 
@@ -305,7 +305,7 @@ class NWItem():
         """Set the item name.
         """
         if isinstance(theName, str):
-            self._name = theName.strip()
+            self._name = simplified(theName)
         else:
             self._name = ""
         return

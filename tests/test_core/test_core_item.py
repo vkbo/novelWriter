@@ -44,6 +44,8 @@ def testCoreItem_Setters(mockGUI, constData):
     assert theItem.itemName == "A Name"
     theItem.setName("\t A Name   ")
     assert theItem.itemName == "A Name"
+    theItem.setName("\t A\t\u2009\u202f\u2002\u2003\u2028\u2029Name   ")
+    assert theItem.itemName == "A Name"
     theItem.setName(123)
     assert theItem.itemName == ""
 
