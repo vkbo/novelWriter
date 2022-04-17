@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.core import NWDoc
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.constants import nwConst, trConst, nwLists, nwLabels
+from novelwriter.constants import trConst, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -161,114 +161,64 @@ class GuiProjectTree(QTreeWidget):
         self._timeChanged = 0
         return
 
-    def newTreeItem(self, itemType, itemClass):
-        """Add new item to the tree, with a given itemType and
-        itemClass, and attach it to the selected handle. Also make sure
-        the item is added in a place it can be added, and that other
+    def newTreeItem(self, itemType, itemClass=None):
+        """Add new item to the tree, with a given itemType (and
+        itemClass if Root), and attach it to the selected handle. Also make
+        sure the item is added in a place it can be added, and that other
         meta data is set correctly to ensure a valid project tree.
         """
-        pHandle = self.getSelectedHandle()
-        nHandle = None
-
         if not self.theParent.hasProject:
             logger.error("No project open")
             return False
 
-        if not isinstance(itemType, nwItemType):
-            # This would indicate an internal bug
-            logger.error("No itemType provided")
-            return False
+        nHandle = None
+        tHandle = None
 
-        # The item needs to be assigned an item class, so one must be
-        # provided, or it must be possible to extract it from the parent
-        # item of the new item.
-        if itemClass is None and pHandle is not None:
-            pItem = self.theProject.projTree[pHandle]
-            if pItem is not None:
-                itemClass = pItem.itemClass
+        if itemType == nwItemType.ROOT and isinstance(itemClass, nwItemClass):
 
-        # If class is still not set, alert the user and exit
-        if itemClass is None:
-            if itemType == nwItemType.FILE:
-                self.theParent.makeAlert(self.tr(
-                    "Please select a valid location in the tree to add the document."
-                ), nwAlert.ERROR)
-            else:
-                self.theParent.makeAlert(self.tr(
-                    "Please select a valid location in the tree to add the folder."
-                ), nwAlert.ERROR)
-            return False
-
-        # Everything is fine, we have what we need, so we proceed
-        logger.verbose(
-            "Adding new item of type '%s' and class '%s' to handle '%s'",
-            itemType.name, itemClass.name, str(pHandle)
-        )
-
-        if itemType == nwItemType.ROOT:
             tHandle = self.theProject.newRoot(
                 trConst(nwLabels.CLASS_NAME[itemClass]), itemClass
             )
-            if tHandle is None:
-                logger.error("No root item added")
-                return False
 
-        else:
-            # If no parent has been selected, make the new file under
-            # the root NOVEL item.
-            if pHandle is None:
-                pHandle = self.theProject.projTree.findRoot(nwItemClass.NOVEL)
+        elif itemType in (nwItemType.FILE, nwItemType.FOLDER):
 
-            # If still nothing, give up
-            if pHandle is None:
+            sHandle = self.getSelectedHandle()
+            if sHandle is None or sHandle not in self.theProject.projTree:
                 self.theParent.makeAlert(self.tr(
                     "Did not find anywhere to add the file or folder!"
                 ), nwAlert.ERROR)
                 return False
 
-            # Now check if the selected item is a file, in which case
-            # the new file will be a sibling
-            pItem = self.theProject.projTree[pHandle]
+            # If the selected item is a file, the new item will be a sibling
+            pItem = self.theProject.projTree[sHandle]
             if pItem.itemType == nwItemType.FILE:
-                nHandle = pHandle
-                pHandle = pItem.itemParent
+                nHandle = sHandle
+                sHandle = pItem.itemParent
+                if sHandle is None:
+                    logger.error("Internal error")  # Bug
+                    return False
 
-            # If we again have no home, give up
-            if pHandle is None:
-                self.theParent.makeAlert(self.tr(
-                    "Did not find anywhere to add the file or folder!"
-                ), nwAlert.ERROR)
-                return False
-
-            if self.theProject.projTree.isTrashRoot(pHandle):
+            if self.theProject.projTree.isTrash(sHandle):
                 self.theParent.makeAlert(self.tr(
                     "Cannot add new files or folders to the Trash folder."
                 ), nwAlert.ERROR)
                 return False
 
-            parTree = self.theProject.projTree.getItemPath(pHandle)
-
-            # If we're still here, add the file or folder
+            # Add the file or folder
             if itemType == nwItemType.FILE:
-                tHandle = self.theProject.newFile(self.tr("New File"), itemClass, pHandle)
-
+                if pItem.isNovelLike():
+                    tHandle = self.theProject.newFile(self.tr("New Document"), sHandle)
+                else:
+                    tHandle = self.theProject.newFile(self.tr("New Note"), sHandle)
             elif itemType == nwItemType.FOLDER:
-                if len(parTree) >= nwConst.MAX_DEPTH - 1:
-                    # Folders cannot be deeper than MAX_DEPTH - 1, leaving room
-                    # for one more level of files.
-                    self.theParent.makeAlert(self.tr(
-                        "Cannot add new folder to this item. "
-                        "Maximum folder depth has been reached."
-                    ), nwAlert.ERROR)
-                    return False
-                tHandle = self.theProject.newFolder(self.tr("New Folder"), itemClass, pHandle)
+                tHandle = self.theProject.newFolder(self.tr("New Folder"), sHandle)
 
-            else:
-                logger.error("Failed to add new item")
-                return False
+        else:
+            logger.error("Failed to add new item")
+            return False
 
-        # If there is no handle set, return here
-        if tHandle is None:
+        # If there is no handle set, return here. This is a bug
+        if tHandle is None:  # pragma: no cover
             return True
 
         # Add the new item to the tree
@@ -280,13 +230,9 @@ class GuiProjectTree(QTreeWidget):
         if nwItem.itemType != nwItemType.FILE:
             return True
 
-        # This is a new files, so let's add some content
+        # This is a new file, so let's add some content
         newDoc = NWDoc(self.theProject, tHandle)
-        curTxt = newDoc.readDocument()
-        if curTxt is None:
-            curTxt = ""
-
-        if curTxt == "":
+        if not newDoc.readDocument():
             if nwItem.itemLayout == nwItemLayout.DOCUMENT:
                 newText = f"### {nwItem.itemName}\n\n"
             else:
@@ -310,6 +256,9 @@ class GuiProjectTree(QTreeWidget):
         """Reveal a newly added project item in the project tree.
         """
         nwItem = self.theProject.projTree[tHandle]
+        if nwItem is None:
+            return False
+
         trItem = self._addTreeItem(nwItem, nHandle)
         if trItem is None:
             return False
@@ -495,8 +444,7 @@ class GuiProjectTree(QTreeWidget):
                 logger.error("Could not delete item")
                 return False
 
-            pHandle = nwItemS.itemParent
-            if self.theProject.projTree.isTrashRoot(pHandle):
+            if self.theProject.projTree.isTrash(tHandle):
                 # If the file is in the trash folder already, as the
                 # user if they want to permanently delete the file.
                 doPermanent = False
@@ -513,19 +461,19 @@ class GuiProjectTree(QTreeWidget):
                 if doPermanent:
                     logger.debug("Permanently deleting file with handle '%s'", tHandle)
 
-                    self.propagateCount(tHandle, 0)
-                    tIndex = trItemP.indexOfChild(trItemS)
-                    trItemC = trItemP.takeChild(tIndex)
-
-                    if self.theParent.docEditor.docHandle() == tHandle:
-                        self.theParent.closeDocument()
-
                     delDoc = NWDoc(self.theProject, tHandle)
                     if not delDoc.deleteDocument():
                         self.theParent.makeAlert([
                             self.tr("Could not delete document file."), delDoc.getError()
                         ], nwAlert.ERROR)
                         return False
+
+                    self.propagateCount(tHandle, 0)
+                    tIndex = trItemP.indexOfChild(trItemS)
+                    trItemC = trItemP.takeChild(tIndex)
+
+                    if self.theParent.docEditor.docHandle() == tHandle:
+                        self.theParent.closeDocument()
 
                     self.theIndex.deleteHandle(tHandle)
                     self._deleteTreeItem(tHandle)
@@ -540,19 +488,13 @@ class GuiProjectTree(QTreeWidget):
                     self.tr("Move file '{0}' to Trash?").format(nwItemS.itemName),
                 )
                 if msgYes:
-                    if pHandle is None:
-                        logger.warning("File has no parent item")
-
                     logger.debug("Moving file '%s' to trash", tHandle)
 
                     self.propagateCount(tHandle, 0)
-                    tIndex  = trItemP.indexOfChild(trItemS)
+                    tIndex = trItemP.indexOfChild(trItemS)
                     trItemC = trItemP.takeChild(tIndex)
                     trItemT.addChild(trItemC)
-                    self._updateItemParent(tHandle)
-                    self.propagateCount(tHandle, wCount)
-
-                    self.theIndex.deleteHandle(tHandle)
+                    self._postItemMove(tHandle, wCount)
                     self._recordLastMove(trItemS, trItemP, tIndex)
                     self._setTreeChanged(True)
 
@@ -562,6 +504,7 @@ class GuiProjectTree(QTreeWidget):
             if trItemP is None:
                 logger.error("Could not delete folder")
                 return False
+
             tIndex = trItemP.indexOfChild(trItemS)
             if trItemS.childCount() == 0:
                 trItemP.takeChild(tIndex)
@@ -581,7 +524,6 @@ class GuiProjectTree(QTreeWidget):
             if trItemS.childCount() == 0:
                 self.takeTopLevelItem(tIndex)
                 self._deleteTreeItem(tHandle)
-                self.theParent.mainMenu.setAvailableRoot()
                 self._setTreeChanged(True)
             else:
                 self.theParent.makeAlert(self.tr(
@@ -634,7 +576,7 @@ class GuiProjectTree(QTreeWidget):
 
         return
 
-    def propagateCount(self, tHandle, theCount, nDepth=0):
+    def propagateCount(self, tHandle, theCount):
         """Recursive function setting the word count for a given item,
         and propagating that count upwards in the tree until reaching a
         root item. This function is more efficient than recalculating
@@ -654,12 +596,13 @@ class GuiProjectTree(QTreeWidget):
             return
 
         pCount = 0
+        pHandle = None
         for i in range(pItem.childCount()):
             pCount += int(pItem.child(i).data(self.C_COUNT, Qt.UserRole))
             pHandle = pItem.data(self.C_NAME, Qt.UserRole)
 
-        if not nDepth > nwConst.MAX_DEPTH + 1 and pHandle != "":
-            self.propagateCount(pHandle, pCount, nDepth+1)
+        if pHandle:
+            self.propagateCount(pHandle, pCount)
 
         return
 
@@ -714,9 +657,7 @@ class GuiProjectTree(QTreeWidget):
         movItem = parItem.takeChild(srcIndex)
         dstItem.insertChild(dstIndex, movItem)
 
-        snItem = self.theProject.projTree[sHandle]
-        dnItem = self.theProject.projTree[dHandle]
-        self._postItemMove(sHandle, snItem, dnItem, wCount)
+        self._postItemMove(sHandle, wCount)
 
         self.clearSelection()
         movItem.setSelected(True)
@@ -848,29 +789,34 @@ class GuiProjectTree(QTreeWidget):
         if pItem is not None:
             pIndex = pItem.indexOfChild(sItem)
 
-        wCount = int(sItem.data(self.C_COUNT, Qt.UserRole))
+        # Determine if the drag and drop is allowed:
+        # - Files can be moved anywhere
+        # - Folders can only be moved within the same root folder
+        # - Root folders cannot be moved at all
+        # - Items cannot be dropped on top of a file (moved inside)
+
         isFile = snItem.itemType == nwItemType.FILE
         isRoot = snItem.itemType == nwItemType.ROOT
         onFile = dnItem.itemType == nwItemType.FILE
+        inSame = snItem.itemRoot == dnItem.itemRoot
 
-        isSame = snItem.itemClass == dnItem.itemClass
-        isNone = snItem.itemClass == nwItemClass.NO_CLASS
-        isNote = snItem.itemLayout == nwItemLayout.NOTE
-        onFree = dnItem.itemClass in nwLists.FREE_CLASS and isFile
-
-        allowDrop  = isSame or isNone or isNote or onFree
+        allowDrop  = inSame or isFile
         allowDrop &= not (self.dropIndicatorPosition() == QAbstractItemView.OnItem and onFile)
 
         if allowDrop and not isRoot:
             logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
+
+            wCount = int(sItem.data(self.C_COUNT, Qt.UserRole))
             self.propagateCount(sHandle, 0)
+
             QTreeWidget.dropEvent(self, theEvent)
-            self._postItemMove(sHandle, snItem, dnItem, wCount)
+            self._postItemMove(sHandle, wCount)
             self._recordLastMove(sItem, pItem, pIndex)
 
         else:
-            theEvent.ignore()
             logger.debug("Drag'n'drop of item '%s' not accepted", sHandle)
+
+            theEvent.ignore()
             self.theParent.makeAlert(self.tr(
                 "The item cannot be moved to that location."
             ), nwAlert.ERROR)
@@ -881,40 +827,39 @@ class GuiProjectTree(QTreeWidget):
     #  Internal Functions
     ##
 
-    def _postItemMove(self, sHandle, snItem, dnItem, wCount):
+    def _postItemMove(self, tHandle, wCount):
         """Run various maintenance tasks for a moved item.
         """
-        isFile = snItem.itemType == nwItemType.FILE
-        isSame = snItem.itemClass == dnItem.itemClass
-        onFree = dnItem.itemClass in nwLists.FREE_CLASS and isFile
+        trItemS = self._getTreeItem(tHandle)
+        nwItemS = self.theProject.projTree[tHandle]
+        trItemP = trItemS.parent()
+        if trItemP is None:
+            logger.error("Failed to find new parent item of '%s'", tHandle)
+            return False
 
-        self._updateItemParent(sHandle)
+        # Update item parent handle in the project, make sure meta data
+        # is updated accordingly, and update word count
+        pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
+        nwItemS.setParent(pHandle)
+        self.theProject.projTree.updateItemData(tHandle)
+        self.setTreeItemValues(tHandle)
+        self.propagateCount(tHandle, wCount)
 
-        # If the item does not have the same class as the target,
-        # and the target is not a free root folder, update its class
-        if not (isSame or onFree):
-            logger.debug(
-                "Item '%s' class has been changed from '%s' to '%s'",
-                sHandle, snItem.itemClass.name, dnItem.itemClass.name
-            )
-            snItem.setClass(dnItem.itemClass)
-            self.setTreeItemValues(sHandle)
-
-        self.propagateCount(sHandle, wCount)
+        logger.debug("The parent of item '%s' has been changed to '%s'", tHandle, pHandle)
 
         # The items dropped into archive or trash should be removed
         # from the project index, for all other items, we rescan the
         # file to ensure the index is up to date.
-        if onFree:
-            self.theIndex.deleteHandle(sHandle)
+        if nwItemS.isInactive():
+            self.theIndex.deleteHandle(tHandle)
         else:
-            self.theIndex.reIndexHandle(sHandle)
+            self.theIndex.reIndexHandle(tHandle)
 
         # Trigger dependent updates
         self._setTreeChanged(True)
-        self._emitItemChange(sHandle)
+        self._emitItemChange(tHandle)
 
-        return
+        return True
 
     def _getTreeItem(self, tHandle):
         """Returns the QTreeWidgetItem of a given item handle.
@@ -966,7 +911,6 @@ class GuiProjectTree(QTreeWidget):
         if pHandle is None:
             if nwItem.itemType == nwItemType.ROOT:
                 self.addTopLevelItem(newItem)
-                self.theParent.mainMenu.setAvailableRoot()
             elif nwItem.itemType == nwItemType.TRASH:
                 self.addTopLevelItem(newItem)
             else:
@@ -1015,25 +959,6 @@ class GuiProjectTree(QTreeWidget):
 
         return trItem
 
-    def _updateItemParent(self, tHandle):
-        """Update the parent handle of an item so that the information
-        in the project is consistent with the treeView.
-        """
-        trItemS = self._getTreeItem(tHandle)
-        nwItemS = self.theProject.projTree[tHandle]
-        trItemP = trItemS.parent()
-        if trItemP is None:
-            logger.error("Failed to find new parent item of '%s'", tHandle)
-            return False
-
-        pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
-        nwItemS.setParent(pHandle)
-        self.setTreeItemValues(tHandle)
-
-        logger.debug("The parent of item '%s' has been changed to '%s'", tHandle, pHandle)
-
-        return True
-
     def _setTreeChanged(self, theState):
         """Set the tree change flag, and propagate to the project.
         """
@@ -1048,7 +973,7 @@ class GuiProjectTree(QTreeWidget):
         """
         if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
             nwItem = self.theProject.projTree[tHandle]
-            if nwItem.itemClass == nwItemClass.NOVEL:
+            if nwItem.isNovelLike():
                 self.novelItemChanged.emit()
             else:
                 self.noteItemChanged.emit()
@@ -1182,7 +1107,7 @@ class GuiProjectTreeMenu(QMenu):
         """Forward the new file call to the project tree.
         """
         if self.theItem is not None:
-            self.theTree.newTreeItem(nwItemType.FILE, None)
+            self.theTree.newTreeItem(nwItemType.FILE)
         return
 
     @pyqtSlot()
@@ -1190,7 +1115,7 @@ class GuiProjectTreeMenu(QMenu):
         """Forward the new folder call to the project tree.
         """
         if self.theItem is not None:
-            self.theTree.newTreeItem(nwItemType.FOLDER, None)
+            self.theTree.newTreeItem(nwItemType.FOLDER)
         return
 
     @pyqtSlot()

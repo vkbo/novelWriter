@@ -175,7 +175,7 @@ def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj, constData):
     itemEdit.show()
 
     # Check Existing Settings
-    assert itemEdit.editName.text() == "New File"
+    assert itemEdit.editName.text() == "New Note"
     assert itemEdit.editStatus.currentData() == constData.importKeys[0]
     assert itemEdit.editLayout.currentData() == nwItemLayout.NOTE
     assert itemEdit.editExport.isChecked() is True

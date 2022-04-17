@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import nwItemLayout, nwItemType
-from novelwriter.constants import trConst, nwLists, nwLabels
+from novelwriter.constants import trConst, nwLabels
 from novelwriter.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
@@ -74,7 +74,7 @@ class GuiItemEditor(QDialog):
         # Item Status
         self.editStatus = QComboBox()
         self.editStatus.setMinimumWidth(mVd)
-        if self.theItem.itemClass in nwLists.CLS_NOVEL:
+        if self.theItem.isNovelLike():
             for key, entry in self.theProject.statusItems.items():
                 self.editStatus.addItem(entry["icon"], entry["name"], key)
 
@@ -95,7 +95,7 @@ class GuiItemEditor(QDialog):
         self.editLayout.setMinimumWidth(mVd)
         validLayouts = []
         if self.theItem.itemType == nwItemType.FILE:
-            if self.theItem.itemClass in nwLists.CLS_NOVEL:
+            if self.theItem.documentAllowed():
                 validLayouts.append(nwItemLayout.DOCUMENT)
             validLayouts.append(nwItemLayout.NOTE)
         else:

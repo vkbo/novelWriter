@@ -25,7 +25,7 @@ import pytest
 from PyQt5.QtWidgets import QMessageBox
 
 from novelwriter.core import NWDoc
-from novelwriter.enum import nwItemClass, nwState
+from novelwriter.enum import nwState
 
 
 @pytest.mark.gui
@@ -36,7 +36,7 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, fncProj):
 
     nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": fncProj}) is True
-    cHandle = nwGUI.theProject.newFile("A Note", nwItemClass.CHARACTER, "71ee45a3c0db9")
+    cHandle = nwGUI.theProject.newFile("A Note", "71ee45a3c0db9")
     newDoc = NWDoc(nwGUI.theProject, cHandle)
     newDoc.writeDocument("# A Note\n\n")
     nwGUI.treeView.revealNewTreeItem(cHandle)

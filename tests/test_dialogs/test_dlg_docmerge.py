@@ -58,9 +58,9 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj):
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
+    nwGUI.treeView.newTreeItem(nwItemType.FILE)
+    nwGUI.treeView.newTreeItem(nwItemType.FILE)
+    nwGUI.treeView.newTreeItem(nwItemType.FILE)
 
     assert nwGUI.saveProject() is True
     assert nwGUI.closeProject() is True

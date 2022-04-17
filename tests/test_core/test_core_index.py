@@ -181,8 +181,8 @@ def testCoreIndex_CheckThese(nwMinimal, mockGUI):
     assert theProject.openProject(nwMinimal) is True
 
     theIndex = NWIndex(theProject)
-    nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
-    cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
+    nHandle = theProject.newFile("Hello", "a508bb932959c")
+    cHandle = theProject.newFile("Jane",  "afb3043c7b2b3")
     nItem = theProject.projTree[nHandle]
     cItem = theProject.projTree[cHandle]
 
@@ -260,8 +260,8 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     theIndex = NWIndex(theProject)
 
     # Some items for fail to scan tests
-    dHandle = theProject.newFolder("Folder", nwItemClass.NOVEL, "a508bb932959c")
-    xHandle = theProject.newFile("No Layout", nwItemClass.NOVEL, "a508bb932959c")
+    dHandle = theProject.newFolder("Folder", "a508bb932959c")
+    xHandle = theProject.newFile("No Layout", "a508bb932959c")
     xItem = theProject.projTree[xHandle]
     xItem.setLayout(nwItemLayout.NO_LAYOUT)
 
@@ -278,20 +278,24 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     tHandle = theProject.trashFolder()
     assert theProject.projTree[tHandle] is not None
     xItem.setParent(tHandle)
+    theProject.projTree.updateItemData(xItem.itemHandle)
+    assert xItem.itemRoot == tHandle
+    assert xItem.itemClass == nwItemClass.TRASH
     assert theIndex.scanText(xHandle, "Hello World!") is False
 
     # Create the archive root
     aHandle = theProject.newRoot("Archive", nwItemClass.ARCHIVE)
     assert theProject.projTree[aHandle] is not None
     xItem.setParent(aHandle)
+    theProject.projTree.updateItemData(xItem.itemHandle)
     assert theIndex.scanText(xHandle, "Hello World!") is False
 
     # Make some usable items
-    tHandle = theProject.newFile("Title", nwItemClass.NOVEL, "a508bb932959c")
-    pHandle = theProject.newFile("Page",  nwItemClass.NOVEL, "a508bb932959c")
-    nHandle = theProject.newFile("Hello", nwItemClass.NOVEL, "a508bb932959c")
-    cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
-    sHandle = theProject.newFile("Scene", nwItemClass.NOVEL, "a508bb932959c")
+    tHandle = theProject.newFile("Title", "a508bb932959c")
+    pHandle = theProject.newFile("Page",  "a508bb932959c")
+    nHandle = theProject.newFile("Hello", "a508bb932959c")
+    cHandle = theProject.newFile("Jane",  "afb3043c7b2b3")
+    sHandle = theProject.newFile("Scene", "a508bb932959c")
 
     # Text Indexing
     # =============
@@ -473,8 +477,8 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     assert theProject.openProject(nwMinimal) is True
 
     theIndex = NWIndex(theProject)
-    nHandle = theProject.newFile("Hello", nwItemClass.NOVEL,     "a508bb932959c")
-    cHandle = theProject.newFile("Jane",  nwItemClass.CHARACTER, "afb3043c7b2b3")
+    nHandle = theProject.newFile("Hello", "a508bb932959c")
+    cHandle = theProject.newFile("Jane",  "afb3043c7b2b3")
 
     assert theIndex.getNovelData("", "") is None
     assert theIndex.getNovelData("a508bb932959c", "") is None
@@ -628,9 +632,9 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     # Novel Stats
     # ===========
 
-    hHandle = theProject.newFile("Chapter", nwItemClass.NOVEL, "a508bb932959c")
-    sHandle = theProject.newFile("Scene One", nwItemClass.NOVEL, "a508bb932959c")
-    tHandle = theProject.newFile("Scene Two", nwItemClass.NOVEL, "a508bb932959c")
+    hHandle = theProject.newFile("Chapter", "a508bb932959c")
+    sHandle = theProject.newFile("Scene One", "a508bb932959c")
+    tHandle = theProject.newFile("Scene Two", "a508bb932959c")
 
     theProject.projTree[hHandle].itemLayout == nwItemLayout.DOCUMENT
     theProject.projTree[sHandle].itemLayout == nwItemLayout.DOCUMENT

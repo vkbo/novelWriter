@@ -29,7 +29,7 @@ from PyQt5.QtWidgets import QAction, QMessageBox, qApp
 
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.core import countWords
-from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout
+from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout
 from novelwriter.constants import nwKeyWords, nwUnicode
 
 keyDelay = 2
@@ -1143,7 +1143,7 @@ def testGuiEditor_Tags(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
 
     # Create Character
     theText = "### Jane Doe\n\n@tag: Jane\n\n" + ipsumText[1] + "\n\n"
-    cHandle = nwGUI.theProject.newFile("Jane Doe", nwItemClass.CHARACTER, "afb3043c7b2b3")
+    cHandle = nwGUI.theProject.newFile("Jane Doe", "afb3043c7b2b3")
     assert nwGUI.openDocument(cHandle) is True
     assert nwGUI.docEditor.replaceText(theText) is True
     assert nwGUI.saveDocument() is True

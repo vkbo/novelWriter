@@ -276,10 +276,10 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI):
     assert theProject.closeProject() is True
     assert theProject.openProject(projFile) is True
 
-    assert isinstance(theProject.newRoot("Novel",     nwItemClass.NOVEL),     type(None))
-    assert isinstance(theProject.newRoot("Plot",      nwItemClass.PLOT),      type(None))
-    assert isinstance(theProject.newRoot("Character", nwItemClass.CHARACTER), type(None))
-    assert isinstance(theProject.newRoot("World",     nwItemClass.WORLD),     type(None))
+    assert isinstance(theProject.newRoot("Novel",     nwItemClass.NOVEL),     str)
+    assert isinstance(theProject.newRoot("Plot",      nwItemClass.PLOT),      str)
+    assert isinstance(theProject.newRoot("Character", nwItemClass.CHARACTER), str)
+    assert isinstance(theProject.newRoot("World",     nwItemClass.WORLD),     str)
     assert isinstance(theProject.newRoot("Timeline",  nwItemClass.TIMELINE),  str)
     assert isinstance(theProject.newRoot("Object",    nwItemClass.OBJECT),    str)
     assert isinstance(theProject.newRoot("Custom1",   nwItemClass.CUSTOM),    str)
@@ -314,8 +314,8 @@ def testCoreProject_NewFile(fncDir, outDir, refDir, mockGUI):
     assert theProject.closeProject() is True
     assert theProject.openProject(projFile) is True
 
-    assert isinstance(theProject.newFile("Hello", nwItemClass.NOVEL,     "31489056e0916"), str)
-    assert isinstance(theProject.newFile("Jane",  nwItemClass.CHARACTER, "71ee45a3c0db9"), str)
+    assert isinstance(theProject.newFile("Hello", "31489056e0916"), str)
+    assert isinstance(theProject.newFile("Jane", "71ee45a3c0db9"), str)
     assert theProject.projChanged
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
@@ -661,7 +661,7 @@ def testCoreProject_AccessItems(nwMinimal, mockGUI):
     theProject.projTree._treeOrder.append("01234567789abc")
 
     # Add an item with a non-existent parent
-    nHandle = theProject.newFile("Test File", nwItemClass.NOVEL, "a6d311a93600a")
+    nHandle = theProject.newFile("Test File", "a6d311a93600a")
     theProject.projTree[nHandle].setParent("cba9876543210")
     assert theProject.projTree[nHandle].itemParent == "cba9876543210"
 
@@ -740,7 +740,7 @@ def testCoreProject_StatusImport(mockGUI, fncDir, constData):
     # Change Importance
     # =================
 
-    fHandle = theProject.newFile("Jane Doe", nwItemClass.CHARACTER, "73475cb40a568")
+    fHandle = theProject.newFile("Jane Doe", "73475cb40a568")
     theProject.projTree[fHandle].setImport("Main")
 
     assert theProject.projTree[fHandle].itemImport == constData.importKeys[3]
@@ -1016,9 +1016,16 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
     """
     theProject = NWProject(mockGUI)
 
-    assert theProject.openProject(nwLipsum)
+    assert theProject.openProject(nwLipsum) is True
     assert theProject.projTree["636b6aa9b697b"] is None
-    assert theProject.closeProject()
+
+    # Add a file with non-existent parent
+    # This file will be renoved from the project on open
+    assert theProject.newFile("Oops", "0000000000000")
+
+    # Save and close
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
 
     # First Item with Meta Data
     orphPath = os.path.join(nwLipsum, "content", "636b6aa9b697b.nwd")

@@ -46,14 +46,14 @@ from novelwriter.common import (
     checkString, checkBool, checkInt, isHandle, formatTimeStamp,
     makeFileNameSafe, hexToInt, simplified
 )
-from novelwriter.constants import nwLists, trConst, nwFiles, nwLabels
+from novelwriter.constants import trConst, nwFiles, nwLabels
 
 logger = logging.getLogger(__name__)
 
 
 class NWProject():
 
-    FILE_VERSION = "1.4"
+    FILE_VERSION = "1.4"  # The current project file format version
 
     def __init__(self, theParent):
 
@@ -121,46 +121,34 @@ class NWProject():
     ##
 
     def newRoot(self, rootName, rootClass):
-        """Add a new root item. These items are unique, except for item class
-        CUSTOM, and always have parent handle set to None.
+        """Add a new root item.
         """
-        if not self.projTree.checkRootUnique(rootClass):
-            self.theParent.makeAlert(self.tr("Duplicate root item detected."), nwAlert.ERROR)
-            return None
-
         newItem = NWItem(self)
         newItem.setName(rootName)
         newItem.setType(nwItemType.ROOT)
         newItem.setClass(rootClass)
-        newItem.setStatus(0)
         self.projTree.append(None, None, newItem)
+        self.projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
-    def newFolder(self, folderName, folderClass, pHandle):
-        """Add a new folder with a given name and class and parent item.
+    def newFolder(self, folderName, pHandle):
+        """Add a new folder with a given name and parent item.
         """
         newItem = NWItem(self)
         newItem.setName(folderName)
         newItem.setType(nwItemType.FOLDER)
-        newItem.setClass(folderClass)
-        newItem.setStatus(0)
         self.projTree.append(None, pHandle, newItem)
+        self.projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
-    def newFile(self, fileName, fileClass, pHandle):
-        """Add a new file with a given name and class, and set a layout
-        based on the class. DOCUMENT for NOVEL, otherwise NOTE.
+    def newFile(self, fileName, pHandle):
+        """Add a new file with a given name and parent item.
         """
         newItem = NWItem(self)
         newItem.setName(fileName)
         newItem.setType(nwItemType.FILE)
-        if fileClass == nwItemClass.NOVEL:
-            newItem.setLayout(nwItemLayout.DOCUMENT)
-        else:
-            newItem.setLayout(nwItemLayout.NOTE)
-        newItem.setClass(fileClass)
-        newItem.setStatus(0)
         self.projTree.append(None, pHandle, newItem)
+        self.projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
     def trashFolder(self):
@@ -173,6 +161,7 @@ class NWProject():
             newItem.setType(nwItemType.TRASH)
             newItem.setClass(nwItemClass.TRASH)
             self.projTree.append(None, None, newItem)
+            self.projTree.updateItemData(newItem.itemHandle)
             return newItem.itemHandle
 
         return trashHandle
@@ -287,10 +276,10 @@ class NWProject():
             xHandle[2] = self.newRoot(self.tr("Plot"),          nwItemClass.PLOT)
             xHandle[3] = self.newRoot(self.tr("Characters"),    nwItemClass.CHARACTER)
             xHandle[4] = self.newRoot(self.tr("World"),         nwItemClass.WORLD)
-            xHandle[5] = self.newFile(self.tr("Title Page"),    nwItemClass.NOVEL, xHandle[1])
-            xHandle[6] = self.newFolder(self.tr("New Chapter"), nwItemClass.NOVEL, xHandle[1])
-            xHandle[7] = self.newFile(self.tr("New Chapter"),   nwItemClass.NOVEL, xHandle[6])
-            xHandle[8] = self.newFile(self.tr("New Scene"),     nwItemClass.NOVEL, xHandle[6])
+            xHandle[5] = self.newFile(self.tr("Title Page"),    xHandle[1])
+            xHandle[6] = self.newFolder(self.tr("New Chapter"), xHandle[1])
+            xHandle[7] = self.newFile(self.tr("New Chapter"),   xHandle[6])
+            xHandle[8] = self.newFile(self.tr("New Scene"),     xHandle[6])
 
             aDoc = NWDoc(self, xHandle[5])
             aDoc.writeDocument(titlePage)
@@ -313,8 +302,7 @@ class NWProject():
                     self.newRoot(trConst(nwLabels.CLASS_NAME[newRoot]), newRoot)
 
             # Create a title page
-            tHandle = self.newFile(self.tr("Title Page"), nwItemClass.NOVEL, nHandle)
-            self.projTree.setFileItemLayout(tHandle, nwItemLayout.DOCUMENT)
+            tHandle = self.newFile(self.tr("Title Page"), nHandle)
 
             aDoc = NWDoc(self, tHandle)
             aDoc.writeDocument(titlePage)
@@ -330,10 +318,9 @@ class NWProject():
                     chTitle = self.tr("Chapter {0}").format(f"{ch+1:d}")
                     pHandle = nHandle
                     if chFolders:
-                        pHandle = self.newFolder(chTitle, nwItemClass.NOVEL, nHandle)
+                        pHandle = self.newFolder(chTitle, nHandle)
 
-                    cHandle = self.newFile(chTitle, nwItemClass.NOVEL, pHandle)
-                    self.projTree.setFileItemLayout(cHandle, nwItemLayout.DOCUMENT)
+                    cHandle = self.newFile(chTitle, pHandle)
 
                     aDoc = NWDoc(self, cHandle)
                     aDoc.writeDocument("## %s\n\n" % chTitle)
@@ -342,7 +329,7 @@ class NWProject():
                     if numScenes > 0:
                         for sc in range(numScenes):
                             scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
-                            sHandle = self.newFile(scTitle, nwItemClass.NOVEL, pHandle)
+                            sHandle = self.newFile(scTitle, pHandle)
 
                             aDoc = NWDoc(self, sHandle)
                             aDoc.writeDocument("### %s\n\n" % scTitle)
@@ -351,7 +338,7 @@ class NWProject():
             elif numScenes > 0:
                 for sc in range(numScenes):
                     scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
-                    sHandle = self.newFile(scTitle, nwItemClass.NOVEL, nHandle)
+                    sHandle = self.newFile(scTitle, nHandle)
 
                     aDoc = NWDoc(self, sHandle)
                     aDoc.writeDocument("### %s\n\n" % scTitle)
@@ -481,8 +468,9 @@ class NWProject():
         #       documents and one for project notes. Introduced in
         #       version 1.5.
         # 1.4 : Introduces a more compact format for storing items. All
-        #       settings aside from name are now attributes. Introduced
-        #       in version 1.7.
+        #       settings aside from name are now attributes. This format
+        #       also changes the way satus and importance labels are
+        #       stored and handled. Introduced in version 1.7.
 
         if fileVersion not in ("1.0", "1.1", "1.2", "1.3", "1.4"):
             self.theParent.makeAlert(self.tr(
@@ -613,7 +601,13 @@ class NWProject():
         self.mainConf.updateRecentCache(self.projPath, self.projName, self.lastWCount, time())
         self.mainConf.saveRecentCache()
 
-        self.theParent.setStatus(self.tr("Opened Project: {0}").format(self.projName))
+        # Check the project tree consistency
+        for tItem in self.projTree:
+            tHandle = tItem.itemHandle
+            logger.verbose("Checking item '%s'", tHandle)
+            if not self.projTree.updateItemData(tHandle):
+                logger.error("There was a problem item '%s', and it has been removed", tHandle)
+                del self.projTree[tHandle]  # The file will be re-added as orphaned
 
         self._scanProjectFolder()
         self._loadProjectLocalisation()
@@ -624,6 +618,7 @@ class NWProject():
 
         self._writeLockFile()
         self.setProjectChanged(False)
+        self.theParent.setStatus(self.tr("Opened Project: {0}").format(self.projName))
 
         return True
 
@@ -1202,7 +1197,7 @@ class NWProject():
         self.statusItems.resetCounts()
         self.importItems.resetCounts()
         for nwItem in self.projTree:
-            if nwItem.itemClass in nwLists.CLS_NOVEL:
+            if nwItem.isNovelLike():
                 self.statusItems.increment(nwItem.itemStatus)
             else:
                 self.importItems.increment(nwItem.itemImport)
@@ -1452,6 +1447,7 @@ class NWProject():
             orphItem.setClass(oClass)
             orphItem.setLayout(oLayout)
             self.projTree.append(oHandle, oParent, orphItem)
+            self.projTree.updateItemData(orphItem.itemHandle)
 
         if noWhere:
             self.theParent.makeAlert(self.tr(

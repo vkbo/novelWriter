@@ -33,8 +33,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import NWDoc
-from novelwriter.enum import nwAlert, nwItemType, nwItemClass, nwItemLayout
-from novelwriter.constants import nwConst
+from novelwriter.enum import nwAlert, nwItemType
 from novelwriter.gui.custom import QHelpLabel
 
 logger = logging.getLogger(__name__)
@@ -160,16 +159,6 @@ class GuiDocSplit(QDialog):
             ), nwAlert.ERROR)
             return False
 
-        # Check that another folder can be created
-        parTree = self.theProject.projTree.getItemPath(srcItem.itemParent)
-        if len(parTree) >= nwConst.MAX_DEPTH - 1:
-            self.theParent.makeAlert(self.tr(
-                "Cannot add new folder for the document split. "
-                "Maximum folder depth has been reached. "
-                "Please move the file to another level in the project tree."
-            ), nwAlert.ERROR)
-            return False
-
         msgYes = self.theParent.askQuestion(
             self.tr("Split Document"),
             "{0}<br><br>{1}".format(
@@ -186,22 +175,16 @@ class GuiDocSplit(QDialog):
             return False
 
         # Create the folder
-        fHandle = self.theProject.newFolder(
-            srcItem.itemName, srcItem.itemClass, srcItem.itemParent
-        )
+        fHandle = self.theProject.newFolder(srcItem.itemName, srcItem.itemParent)
         self.theParent.treeView.revealNewTreeItem(fHandle)
         logger.verbose("Creating folder '%s'", fHandle)
 
         # Loop through, and create the files
         for wTitle, iStart, iEnd in finalOrder:
 
-            isNovel = srcItem.itemClass == nwItemClass.NOVEL
-            itemLayout = nwItemLayout.DOCUMENT if isNovel else nwItemLayout.NOTE
-
             wTitle = wTitle.lstrip("#").strip()
-            nHandle = self.theProject.newFile(wTitle, srcItem.itemClass, fHandle)
+            nHandle = self.theProject.newFile(wTitle, fHandle)
             newItem = self.theProject.projTree[nHandle]
-            newItem.setLayout(itemLayout)
             newItem.setStatus(srcItem.itemStatus)
             newItem.setImport(srcItem.itemImport)
             logger.verbose(

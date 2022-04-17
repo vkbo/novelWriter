@@ -62,7 +62,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj):
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.treeView.clearSelection()
     nwGUI.treeView._getTreeItem(hNovelRoot).setSelected(True)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
+    nwGUI.treeView.newTreeItem(nwItemType.FILE)
 
     assert nwGUI.saveProject() is True
     assert nwGUI.closeProject() is True
@@ -228,12 +228,6 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj):
     # Select to not split
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
-        assert nwSplit._doSplit() is False
-
-    # Block folder creation by returning that the folder has a depth
-    # of 50 items in the tree
-    with monkeypatch.context() as mp:
-        mp.setattr(NWTree, "getItemPath", lambda *a: [""]*50)
         assert nwSplit._doSplit() is False
 
     # Clear the list

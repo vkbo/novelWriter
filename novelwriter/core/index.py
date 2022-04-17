@@ -30,7 +30,7 @@ import logging
 
 from time import time
 
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
+from novelwriter.enum import nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode
 from novelwriter.core.document import NWDoc
@@ -208,8 +208,6 @@ class NWIndex():
         text.
         """
         theItem = self.theProject.projTree[tHandle]
-        theRoot = self.theProject.projTree.getRootItem(tHandle)
-
         if theItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
             return False
@@ -229,11 +227,8 @@ class NWIndex():
         if theItem.itemParent is None:
             logger.info("Not indexing orphaned item '%s'", tHandle)
             return False
-        if self.theProject.projTree.isTrashRoot(theItem.itemParent):
-            logger.debug("Not indexing trash item '%s'", tHandle)
-            return False
-        if theRoot.itemClass == nwItemClass.ARCHIVE:
-            logger.debug("Not indexing archived item '%s'", tHandle)
+        if theItem.isInactive():
+            logger.debug("Not indexing inactive item '%s'", tHandle)
             return False
 
         itemClass  = theItem.itemClass

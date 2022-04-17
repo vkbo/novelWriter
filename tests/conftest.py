@@ -166,7 +166,9 @@ def nwGUI(qtbot, monkeypatch, fncDir, fncConf):
     """
     monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr("novelwriter.CONFIG", fncConf)
-    nwGUI = novelwriter.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
+    nwGUI = novelwriter.main(
+        ["--testmode", "--info", "--config=%s" % fncDir, "--data=%s" % fncDir]
+    )
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.wait(20)
