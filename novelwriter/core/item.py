@@ -35,9 +35,6 @@ from novelwriter.constants import nwLabels, trConst
 
 logger = logging.getLogger(__name__)
 
-# Deprecated layout labels
-DEP_LAYOUTS = ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE")
-
 
 class NWItem():
 
@@ -365,33 +362,33 @@ class NWItem():
             self._name = ""
         return
 
-    def setHandle(self, tHandle):
+    def setHandle(self, handle):
         """Set the item handle, and ensure it is valid.
         """
-        if isHandle(tHandle):
-            self._handle = tHandle
+        if isHandle(handle):
+            self._handle = handle
         else:
             self._handle = None
         return
 
-    def setParent(self, pHandle):
+    def setParent(self, handle):
         """Set the parent handle, and ensure it is valid.
         """
-        if pHandle is None:
+        if handle is None:
             self._parent = None
-        elif isHandle(pHandle):
-            self._parent = pHandle
+        elif isHandle(handle):
+            self._parent = handle
         else:
             self._parent = None
         return
 
-    def setRoot(self, rHandle):
+    def setRoot(self, handle):
         """Set the root handle, and ensure it is valid.
         """
-        if rHandle is None:
+        if handle is None:
             self._root = None
-        elif isHandle(rHandle):
-            self._root = rHandle
+        elif isHandle(handle):
+            self._root = handle
         else:
             self._root = None
         return
@@ -404,59 +401,59 @@ class NWItem():
         self._order = checkInt(order, 0)
         return
 
-    def setType(self, itemType):
+    def setType(self, value):
         """Set the item type from either a proper nwItemType, or set it
         from a string representing an nwItemType.
         """
-        if isinstance(itemType, nwItemType):
-            self._type = itemType
-        elif isItemType(itemType):
-            self._type = nwItemType[itemType]
+        if isinstance(value, nwItemType):
+            self._type = value
+        elif isItemType(value):
+            self._type = nwItemType[value]
         else:
-            logger.error("Unrecognised item type '%s'", itemType)
+            logger.error("Unrecognised item type '%s'", value)
             self._type = nwItemType.NO_TYPE
         return
 
-    def setClass(self, itemClass):
+    def setClass(self, value):
         """Set the item class from either a proper nwItemClass, or set
         it from a string representing an nwItemClass.
         """
-        if isinstance(itemClass, nwItemClass):
-            self._class = itemClass
-        elif isItemClass(itemClass):
-            self._class = nwItemClass[itemClass]
+        if isinstance(value, nwItemClass):
+            self._class = value
+        elif isItemClass(value):
+            self._class = nwItemClass[value]
         else:
-            logger.error("Unrecognised item class '%s'", itemClass)
+            logger.error("Unrecognised item class '%s'", value)
             self._class = nwItemClass.NO_CLASS
         return
 
-    def setLayout(self, itemLayout):
+    def setLayout(self, value):
         """Set the item layout from either a proper nwItemLayout, or set
         it from a string representing an nwItemLayout.
         """
-        if isinstance(itemLayout, nwItemLayout):
-            self._layout = itemLayout
-        elif isItemLayout(itemLayout):
-            self._layout = nwItemLayout[itemLayout]
-        elif itemLayout in DEP_LAYOUTS:
+        if isinstance(value, nwItemLayout):
+            self._layout = value
+        elif isItemLayout(value):
+            self._layout = nwItemLayout[value]
+        elif value in ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE"):
             self._layout = nwItemLayout.DOCUMENT
         else:
-            logger.error("Unrecognised item layout '%s'", itemLayout)
+            logger.error("Unrecognised item layout '%s'", value)
             self._layout = nwItemLayout.NO_LAYOUT
         return
 
-    def setStatus(self, itemStatus):
+    def setStatus(self, value):
         """Set the item status by looking it up in the valid status
         items of the current project.
         """
-        self._status = self.theProject.statusItems.check(itemStatus)
+        self._status = self.theProject.statusItems.check(value)
         return
 
-    def setImport(self, itemImport):
+    def setImport(self, value):
         """Set the item importance by looking it up in the valid import
         items of the current project.
         """
-        self._import = self.theProject.importItems.check(itemImport)
+        self._import = self.theProject.importItems.check(value)
         return
 
     def setExpanded(self, state):

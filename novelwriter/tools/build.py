@@ -785,10 +785,7 @@ class GuiBuildNovel(QDialog):
 
         isNone  = theItem.itemType != nwItemType.FILE
         isNone |= theItem.itemLayout == nwItemLayout.NO_LAYOUT
-        isNone |= theItem.itemClass == nwItemClass.NO_CLASS
-        isNone |= theItem.itemClass == nwItemClass.ARCHIVE
-        isNone |= theItem.itemClass == nwItemClass.TRASH
-        isNone |= theItem.itemParent == self.theProject.projTree.trashRoot()
+        isNone |= theItem.isInactive()
         isNone |= theItem.itemParent is None
         isNote  = theItem.itemLayout == nwItemLayout.NOTE
         isNovel = not isNone and not isNote

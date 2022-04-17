@@ -444,8 +444,7 @@ class GuiProjectTree(QTreeWidget):
                 logger.error("Could not delete item")
                 return False
 
-            pHandle = nwItemS.itemParent
-            if self.theProject.projTree.isTrashRoot(pHandle):
+            if self.theProject.projTree.isTrash(tHandle):
                 # If the file is in the trash folder already, as the
                 # user if they want to permanently delete the file.
                 doPermanent = False

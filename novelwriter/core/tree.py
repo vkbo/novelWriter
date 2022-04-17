@@ -292,27 +292,12 @@ class NWTree():
                 return True
         return False
 
-    def isTrashRoot(self, tHandle):
-        """Check if a handle is the trash folder.
-        """
-        if self._trashRoot is None:
-            return False
-        return tHandle == self._trashRoot
-
     def trashRoot(self):
         """Returns the handle of the trash folder, or None if there
         isn't one.
         """
         if self._trashRoot:
             return self._trashRoot
-        return None
-
-    def archiveRoot(self):
-        """Returns the handle of the archive folder, or None if there
-        isn't one.
-        """
-        if self._archRoot:
-            return self._archRoot
         return None
 
     def findRoot(self, theClass):

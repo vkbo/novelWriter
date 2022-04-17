@@ -126,8 +126,6 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
 
     # Check for archive and trash folders
     assert theTree.trashRoot() is None
-    assert theTree.archiveRoot() is None
-    assert theTree.isTrashRoot("a000000000003") is False
 
     aHandles = []
     for tHandle, pHandle, nwItem in mockItems:
@@ -152,8 +150,8 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
 
     # Check that we have the correct archive and trash folders
     assert theTree.trashRoot() == "a000000000003"
-    assert theTree.archiveRoot() == "a000000000002"
-    assert theTree.isTrashRoot("a000000000003") is True
+    assert theTree.findRoot(nwItemClass.ARCHIVE) == "a000000000002"
+    assert theTree.isTrash("a000000000003") is True
     assert theTree.isRoot("a000000000002") is True
 
     # Check the isTrash function
@@ -221,7 +219,6 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     del theTree["a000000000002"]
     assert len(theTree) == len(mockItems) - 2
     assert "a000000000002" not in theTree
-    assert theTree.archiveRoot() is None
 
     del theTree["a000000000003"]
     assert len(theTree) == len(mockItems) - 3
