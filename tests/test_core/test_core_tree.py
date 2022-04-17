@@ -21,6 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import os
 import pytest
+import random
 
 from lxml import etree
 from hashlib import sha256
@@ -36,6 +37,7 @@ from novelwriter.constants import nwFiles
 def mockItems(mockGUI):
     """Create a list of mock items.
     """
+    random.seed(42)
     theProject = NWProject(mockGUI)
 
     itemA = NWItem(theProject)
@@ -151,8 +153,28 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     # Check that we have the correct archive and trash folders
     assert theTree.trashRoot() == "a000000000003"
     assert theTree.archiveRoot() == "a000000000002"
-    assert theTree.isTrashRoot("a000000000003")
-    assert theTree.isRoot("a000000000002")
+    assert theTree.isTrashRoot("a000000000003") is True
+    assert theTree.isRoot("a000000000002") is True
+
+    # Check the isTrash function
+    assert theTree.isTrash("0000000000000") is True  # Doesn't exist
+    assert theTree.isTrash("a000000000003") is True  # This the trash folder
+
+    theTree["a000000000003"].setClass(nwItemClass.NO_CLASS)
+    assert theTree.isTrash("a000000000003") is True  # This is still trash
+    theTree["a000000000003"].setClass(nwItemClass.TRASH)
+
+    assert theTree.isTrash("b000000000002") is False  # This is not trash
+
+    value = theTree["b000000000002"].itemParent
+    theTree["b000000000002"].setParent("a000000000003")
+    assert theTree.isTrash("b000000000002") is True  # This is in trash
+    theTree["b000000000002"].setParent(value)
+
+    value = theTree["b000000000002"].itemRoot
+    theTree["b000000000002"].setRoot("a000000000003")
+    assert theTree.isTrash("b000000000002") is True  # This is in trash
+    theTree["b000000000002"].setRoot(value)
 
     # Try to add another trash folder
     itemT = NWItem(theProject)
@@ -161,7 +183,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     itemT._class = nwItemClass.TRASH
     itemT._expanded = False
 
-    assert not theTree.append("1234567890abc", None, itemT)
+    assert theTree.append("1234567890abc", None, itemT) is False
     assert len(theTree) == len(mockItems)
 
     # Generate handle automatically
@@ -251,11 +273,23 @@ def testCoreTree_Methods(mockGUI, mockItems):
     assert theTree.findRoot(nwItemClass.NOVEL) == "a000000000001"
     assert theTree.findRoot(nwItemClass.CHARACTER) == "a000000000004"
 
+    # Add a fake item to root and check that it can handle it
+    theTree._treeRoots["0000000000000"] = NWItem(theProject)
+    assert theTree.findRoot(nwItemClass.WORLD) is None
+    del theTree._treeRoots["0000000000000"]
+
     # Get item path
     assert theTree.getItemPath("stuff") == []
     assert theTree.getItemPath("c000000000001") == [
         "c000000000001", "b000000000001", "a000000000001"
     ]
+
+    # Cause recursion error
+    maxDepth = theTree.MAX_DEPTH
+    theTree.MAX_DEPTH = 0
+    with pytest.raises(RecursionError):
+        theTree.getItemPath("c000000000001")
+    theTree.MAX_DEPTH = maxDepth
 
     # Break the folder parent handle
     theTree["b000000000001"]._parent = "stuff"
@@ -381,7 +415,7 @@ def testCoreTree_Reorder(mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testCoreTree_XMLPackUnpack(mockGUI, mockItems):
+def testCoreTree_XMLPackUnpack(mockGUI, mockItems, constData):
     """Test packing and unpacking the tree to and from XML.
     """
     theProject = NWProject(mockGUI)
@@ -395,39 +429,41 @@ def testCoreTree_XMLPackUnpack(mockGUI, mockItems):
 
     nwXML = etree.Element("novelWriterXML")
     theTree.packXML(nwXML)
-    assert etree.tostring(nwXML, pretty_print=False, encoding="utf-8") == (
-        b'<novelWriterXML>'
-        b'<content count="8">'
-        b'<item handle="a000000000001" parent="None" root="a000000000001" order="0" type="ROOT" '
-        b'class="NOVEL"><meta expanded="True"/><name status="s43dac0" '
-        b'import="i6c52c4">Novel</name></item>'
-        b'<item handle="b000000000001" parent="a000000000001" root="a000000000001" order="0" '
-        b'type="FOLDER" class="NOVEL"><meta expanded="True"/><name status="s43dac0" '
-        b'import="i6c52c4">Act One</name></item>'
-        b'<item handle="c000000000001" parent="b000000000001" root="a000000000001" order="0" '
-        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta charCount="300" wordCount="50" '
-        b'paraCount="2" cursorPos="0"/><name status="s43dac0" import="i6c52c4" '
-        b'exported="True">Chapter One</name></item>'
-        b'<item handle="c000000000002" parent="b000000000001" root="a000000000001" order="0" '
-        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta charCount="3000" wordCount="500" '
-        b'paraCount="20" cursorPos="0"/><name status="s43dac0" import="i6c52c4" '
-        b'exported="True">Scene One</name></item>'
-        b'<item handle="a000000000002" parent="None" root="a000000000002" order="0" type="ROOT" '
-        b'class="ARCHIVE"><meta expanded="False"/><name status="s43dac0" '
-        b'import="i6c52c4">Outtakes</name></item>'
-        b'<item handle="a000000000003" parent="None" root="a000000000003" order="0" type="TRASH" '
-        b'class="TRASH"><meta expanded="False"/><name status="s43dac0" '
-        b'import="i6c52c4">Trash</name></item>'
-        b'<item handle="a000000000004" parent="None" root="a000000000004" order="0" type="ROOT" '
-        b'class="CHARACTER"><meta expanded="True"/><name status="s43dac0" '
-        b'import="i6c52c4">Characters</name></item>'
-        b'<item handle="b000000000002" parent="a000000000004" root="a000000000004" order="0" '
-        b'type="FILE" class="CHARACTER" layout="NOTE"><meta charCount="2000" wordCount="400" '
-        b'paraCount="16" cursorPos="0"/><name status="s43dac0" import="i6c52c4" '
-        b'exported="True">Jane Doe</name></item>'
-        b'</content>'
-        b'</novelWriterXML>'
-    )
+    assert etree.tostring(nwXML, pretty_print=False, encoding="utf-8") == bytes((
+        '<novelWriterXML>'
+        '<content count="8">'
+        '<item handle="a000000000001" parent="None" root="a000000000001" order="0" type="ROOT" '
+        'class="NOVEL"><meta expanded="True"/><name status="{s0}" '
+        'import="{i0}">Novel</name></item>'
+        '<item handle="b000000000001" parent="a000000000001" root="a000000000001" order="0" '
+        'type="FOLDER" class="NOVEL"><meta expanded="True"/><name status="{s0}" '
+        'import="{i0}">Act One</name></item>'
+        '<item handle="c000000000001" parent="b000000000001" root="a000000000001" order="0" '
+        'type="FILE" class="NOVEL" layout="DOCUMENT"><meta charCount="300" wordCount="50" '
+        'paraCount="2" cursorPos="0"/><name status="{s0}" import="{i0}" '
+        'exported="True">Chapter One</name></item>'
+        '<item handle="c000000000002" parent="b000000000001" root="a000000000001" order="0" '
+        'type="FILE" class="NOVEL" layout="DOCUMENT"><meta charCount="3000" wordCount="500" '
+        'paraCount="20" cursorPos="0"/><name status="{s0}" import="{i0}" '
+        'exported="True">Scene One</name></item>'
+        '<item handle="a000000000002" parent="None" root="a000000000002" order="0" type="ROOT" '
+        'class="ARCHIVE"><meta expanded="False"/><name status="{s0}" '
+        'import="{i0}">Outtakes</name></item>'
+        '<item handle="a000000000003" parent="None" root="a000000000003" order="0" type="TRASH" '
+        'class="TRASH"><meta expanded="False"/><name status="{s0}" '
+        'import="{i0}">Trash</name></item>'
+        '<item handle="a000000000004" parent="None" root="a000000000004" order="0" type="ROOT" '
+        'class="CHARACTER"><meta expanded="True"/><name status="{s0}" '
+        'import="{i0}">Characters</name></item>'
+        '<item handle="b000000000002" parent="a000000000004" root="a000000000004" order="0" '
+        'type="FILE" class="CHARACTER" layout="NOTE"><meta charCount="2000" wordCount="400" '
+        'paraCount="16" cursorPos="0"/><name status="{s0}" import="{i0}" '
+        'exported="True">Jane Doe</name></item>'
+        '</content>'
+        '</novelWriterXML>'
+    ).format(
+        s0=constData.statusKeys[0], i0=constData.importKeys[0]
+    ), encoding="utf8")
 
     theTree.clear()
     assert len(theTree) == 0

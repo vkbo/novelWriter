@@ -256,6 +256,9 @@ class GuiProjectTree(QTreeWidget):
         """Reveal a newly added project item in the project tree.
         """
         nwItem = self.theProject.projTree[tHandle]
+        if nwItem is None:
+            return False
+
         trItem = self._addTreeItem(nwItem, nHandle)
         if trItem is None:
             return False
@@ -459,19 +462,19 @@ class GuiProjectTree(QTreeWidget):
                 if doPermanent:
                     logger.debug("Permanently deleting file with handle '%s'", tHandle)
 
-                    self.propagateCount(tHandle, 0)
-                    tIndex = trItemP.indexOfChild(trItemS)
-                    trItemC = trItemP.takeChild(tIndex)
-
-                    if self.theParent.docEditor.docHandle() == tHandle:
-                        self.theParent.closeDocument()
-
                     delDoc = NWDoc(self.theProject, tHandle)
                     if not delDoc.deleteDocument():
                         self.theParent.makeAlert([
                             self.tr("Could not delete document file."), delDoc.getError()
                         ], nwAlert.ERROR)
                         return False
+
+                    self.propagateCount(tHandle, 0)
+                    tIndex = trItemP.indexOfChild(trItemS)
+                    trItemC = trItemP.takeChild(tIndex)
+
+                    if self.theParent.docEditor.docHandle() == tHandle:
+                        self.theParent.closeDocument()
 
                     self.theIndex.deleteHandle(tHandle)
                     self._deleteTreeItem(tHandle)
@@ -486,13 +489,10 @@ class GuiProjectTree(QTreeWidget):
                     self.tr("Move file '{0}' to Trash?").format(nwItemS.itemName),
                 )
                 if msgYes:
-                    if pHandle is None:
-                        logger.warning("File has no parent item")
-
                     logger.debug("Moving file '%s' to trash", tHandle)
 
                     self.propagateCount(tHandle, 0)
-                    tIndex  = trItemP.indexOfChild(trItemS)
+                    tIndex = trItemP.indexOfChild(trItemS)
                     trItemC = trItemP.takeChild(tIndex)
                     trItemT.addChild(trItemC)
                     self._updateItemParent(tHandle)
@@ -508,6 +508,7 @@ class GuiProjectTree(QTreeWidget):
             if trItemP is None:
                 logger.error("Could not delete folder")
                 return False
+
             tIndex = trItemP.indexOfChild(trItemS)
             if trItemS.childCount() == 0:
                 trItemP.takeChild(tIndex)
@@ -993,7 +994,7 @@ class GuiProjectTree(QTreeWidget):
         """
         if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
             nwItem = self.theProject.projTree[tHandle]
-            if nwItem.itemClass == nwItemClass.NOVEL:
+            if nwItem.itemClass in nwLists.CLS_NOVEL:
                 self.novelItemChanged.emit()
             else:
                 self.noteItemChanged.emit()

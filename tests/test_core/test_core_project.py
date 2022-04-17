@@ -1016,9 +1016,16 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
     """
     theProject = NWProject(mockGUI)
 
-    assert theProject.openProject(nwLipsum)
+    assert theProject.openProject(nwLipsum) is True
     assert theProject.projTree["636b6aa9b697b"] is None
-    assert theProject.closeProject()
+
+    # Add a file with non-existent parent
+    # This file will be renoved from the project on open
+    assert theProject.newFile("Oops", "0000000000000")
+
+    # Save and close
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
 
     # First Item with Meta Data
     orphPath = os.path.join(nwLipsum, "content", "636b6aa9b697b.nwd")
