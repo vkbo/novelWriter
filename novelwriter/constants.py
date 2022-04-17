@@ -48,15 +48,6 @@ class nwConst():
 # END Class nwConst
 
 
-class nwLists():
-    """Lists used for grouping various other constants.
-    """
-    # Item classes which do not require items to have same class
-    FREE_CLASS = {nwItemClass.ARCHIVE, nwItemClass.TRASH}
-
-# END Class nwLists
-
-
 class nwRegEx():
 
     FMT_EI = r"(?<![\w\\])(_)(?![\s_])(.+?)(?<![\s\\])(\1)(?!\w)"

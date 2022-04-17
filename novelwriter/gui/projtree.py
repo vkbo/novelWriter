@@ -806,15 +806,18 @@ class GuiProjectTree(QTreeWidget):
 
         if allowDrop and not isRoot:
             logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
+
             wCount = int(sItem.data(self.C_COUNT, Qt.UserRole))
             self.propagateCount(sHandle, 0)
+
             QTreeWidget.dropEvent(self, theEvent)
             self._postItemMove(sHandle, wCount)
             self._recordLastMove(sItem, pItem, pIndex)
 
         else:
-            theEvent.ignore()
             logger.debug("Drag'n'drop of item '%s' not accepted", sHandle)
+
+            theEvent.ignore()
             self.theParent.makeAlert(self.tr(
                 "The item cannot be moved to that location."
             ), nwAlert.ERROR)
@@ -835,6 +838,8 @@ class GuiProjectTree(QTreeWidget):
             logger.error("Failed to find new parent item of '%s'", tHandle)
             return False
 
+        # Update item parent handle in the project, make sure meta data
+        # is updated accordingly, and update word count
         pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
         nwItemS.setParent(pHandle)
         self.theProject.projTree.updateItemData(tHandle)
