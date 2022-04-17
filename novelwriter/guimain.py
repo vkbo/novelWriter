@@ -55,7 +55,6 @@ from novelwriter.enum import (
     nwItemType, nwItemClass, nwAlert, nwWidget, nwState
 )
 from novelwriter.common import getGuiItem, hexToInt
-from novelwriter.constants import nwLists
 
 logger = logging.getLogger(__name__)
 
@@ -848,7 +847,7 @@ class GuiMain(QMainWindow):
         tItem = self.theProject.projTree[tHandle]
         if tItem is None:
             return False
-        if tItem.itemType not in nwLists.REG_TYPES:
+        if tItem.itemType == nwItemType.NO_TYPE:
             return False
 
         logger.verbose("Requesting change to item '%s'", tHandle)

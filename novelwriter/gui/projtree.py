@@ -206,7 +206,7 @@ class GuiProjectTree(QTreeWidget):
 
             # Add the file or folder
             if itemType == nwItemType.FILE:
-                if pItem.itemClass in nwLists.CLS_NOVEL:
+                if pItem.isNovelLike():
                     tHandle = self.theProject.newFile(self.tr("New Document"), sHandle)
                 else:
                     tHandle = self.theProject.newFile(self.tr("New Note"), sHandle)
@@ -495,10 +495,7 @@ class GuiProjectTree(QTreeWidget):
                     tIndex = trItemP.indexOfChild(trItemS)
                     trItemC = trItemP.takeChild(tIndex)
                     trItemT.addChild(trItemC)
-                    self._updateItemParent(tHandle)
-                    self.propagateCount(tHandle, wCount)
-
-                    self.theIndex.deleteHandle(tHandle)
+                    self._postItemMove(tHandle, wCount)
                     self._recordLastMove(trItemS, trItemP, tIndex)
                     self._setTreeChanged(True)
 
@@ -661,9 +658,7 @@ class GuiProjectTree(QTreeWidget):
         movItem = parItem.takeChild(srcIndex)
         dstItem.insertChild(dstIndex, movItem)
 
-        snItem = self.theProject.projTree[sHandle]
-        dnItem = self.theProject.projTree[dHandle]
-        self._postItemMove(sHandle, snItem, dnItem, wCount)
+        self._postItemMove(sHandle, wCount)
 
         self.clearSelection()
         movItem.setSelected(True)
@@ -812,7 +807,7 @@ class GuiProjectTree(QTreeWidget):
             logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
             self.propagateCount(sHandle, 0)
             QTreeWidget.dropEvent(self, theEvent)
-            self._postItemMove(sHandle, snItem, dnItem, wCount)
+            self._postItemMove(sHandle, wCount)
             self._recordLastMove(sItem, pItem, pIndex)
 
         else:
@@ -828,40 +823,37 @@ class GuiProjectTree(QTreeWidget):
     #  Internal Functions
     ##
 
-    def _postItemMove(self, sHandle, snItem, dnItem, wCount):
+    def _postItemMove(self, tHandle, wCount):
         """Run various maintenance tasks for a moved item.
         """
-        isFile = snItem.itemType == nwItemType.FILE
-        isSame = snItem.itemClass == dnItem.itemClass
-        onFree = dnItem.itemClass in nwLists.FREE_CLASS and isFile
+        trItemS = self._getTreeItem(tHandle)
+        nwItemS = self.theProject.projTree[tHandle]
+        trItemP = trItemS.parent()
+        if trItemP is None:
+            logger.error("Failed to find new parent item of '%s'", tHandle)
+            return False
 
-        self._updateItemParent(sHandle)
+        pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
+        nwItemS.setParent(pHandle)
+        self.theProject.projTree.updateItemData(tHandle)
+        self.setTreeItemValues(tHandle)
+        self.propagateCount(tHandle, wCount)
 
-        # If the item does not have the same class as the target,
-        # and the target is not a free root folder, update its class
-        if not (isSame or onFree):
-            logger.debug(
-                "Item '%s' class has been changed from '%s' to '%s'",
-                sHandle, snItem.itemClass.name, dnItem.itemClass.name
-            )
-            snItem.setClass(dnItem.itemClass)
-            self.setTreeItemValues(sHandle)
-
-        self.propagateCount(sHandle, wCount)
+        logger.debug("The parent of item '%s' has been changed to '%s'", tHandle, pHandle)
 
         # The items dropped into archive or trash should be removed
         # from the project index, for all other items, we rescan the
         # file to ensure the index is up to date.
-        if onFree:
-            self.theIndex.deleteHandle(sHandle)
+        if nwItemS.isInactive():
+            self.theIndex.deleteHandle(tHandle)
         else:
-            self.theIndex.reIndexHandle(sHandle)
+            self.theIndex.reIndexHandle(tHandle)
 
         # Trigger dependent updates
         self._setTreeChanged(True)
-        self._emitItemChange(sHandle)
+        self._emitItemChange(tHandle)
 
-        return
+        return True
 
     def _getTreeItem(self, tHandle):
         """Returns the QTreeWidgetItem of a given item handle.
@@ -961,25 +953,6 @@ class GuiProjectTree(QTreeWidget):
 
         return trItem
 
-    def _updateItemParent(self, tHandle):
-        """Update the parent handle of an item so that the information
-        in the project is consistent with the treeView.
-        """
-        trItemS = self._getTreeItem(tHandle)
-        nwItemS = self.theProject.projTree[tHandle]
-        trItemP = trItemS.parent()
-        if trItemP is None:
-            logger.error("Failed to find new parent item of '%s'", tHandle)
-            return False
-
-        pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
-        nwItemS.setParent(pHandle)
-        self.setTreeItemValues(tHandle)
-
-        logger.debug("The parent of item '%s' has been changed to '%s'", tHandle, pHandle)
-
-        return True
-
     def _setTreeChanged(self, theState):
         """Set the tree change flag, and propagate to the project.
         """
@@ -994,7 +967,7 @@ class GuiProjectTree(QTreeWidget):
         """
         if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
             nwItem = self.theProject.projTree[tHandle]
-            if nwItem.itemClass in nwLists.CLS_NOVEL:
+            if nwItem.isNovelLike():
                 self.novelItemChanged.emit()
             else:
                 self.noteItemChanged.emit()

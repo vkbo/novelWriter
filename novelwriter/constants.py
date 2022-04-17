@@ -25,7 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwOutline
+from novelwriter.enum import nwItemClass, nwItemLayout, nwOutline
 
 
 def trConst(tString):
@@ -51,17 +51,8 @@ class nwConst():
 class nwLists():
     """Lists used for grouping various other constants.
     """
-    # Regular user-accessible item types
-    REG_TYPES = {nwItemType.ROOT, nwItemType.FOLDER, nwItemType.FILE}
-
-    # Item classes where the full list of novel layouts are allowed
-    CLS_NOVEL = {nwItemClass.NOVEL, nwItemClass.ARCHIVE}
-
     # Item classes which do not require items to have same class
     FREE_CLASS = {nwItemClass.ARCHIVE, nwItemClass.TRASH}
-
-    # Deprecated nwItemLayout entries
-    DEP_LAYOUT = ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE")
 
 # END Class nwLists
 

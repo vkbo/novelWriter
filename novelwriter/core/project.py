@@ -46,7 +46,7 @@ from novelwriter.common import (
     checkString, checkBool, checkInt, isHandle, formatTimeStamp,
     makeFileNameSafe, hexToInt, simplified
 )
-from novelwriter.constants import nwLists, trConst, nwFiles, nwLabels
+from novelwriter.constants import trConst, nwFiles, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -1197,7 +1197,7 @@ class NWProject():
         self.statusItems.resetCounts()
         self.importItems.resetCounts()
         for nwItem in self.projTree:
-            if nwItem.itemClass in nwLists.CLS_NOVEL:
+            if nwItem.isNovelLike():
                 self.statusItems.increment(nwItem.itemStatus)
             else:
                 self.importItems.increment(nwItem.itemImport)

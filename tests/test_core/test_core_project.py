@@ -1076,7 +1076,7 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
     assert oItem.itemParent == "b3643d0f92e32"
     assert oItem.itemClass == nwItemClass.NOVEL
     assert oItem.itemType == nwItemType.FILE
-    assert oItem.itemLayout == nwItemLayout.DOCUMENT
+    assert oItem.itemLayout == nwItemLayout.NOTE
 
     assert theProject.saveProject(nwLipsum)
     assert theProject.closeProject()

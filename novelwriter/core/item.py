@@ -31,9 +31,12 @@ from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified
 )
-from novelwriter.constants import nwLabels, nwLists, trConst
+from novelwriter.constants import nwLabels, trConst
 
 logger = logging.getLogger(__name__)
+
+# Deprecated layout labels
+DEP_LAYOUTS = ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE")
 
 
 class NWItem():
@@ -282,11 +285,27 @@ class NWItem():
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
 
+    def isNovelLike(self):
+        """Returns true if the item is of a novel-like class.
+        """
+        return self._class in (nwItemClass.NOVEL, nwItemClass.ARCHIVE)
+
+    def documentAllowed(self):
+        """Returns true if the item is allowed to be of document layout.
+        """
+        return self._class in (nwItemClass.NOVEL, nwItemClass.ARCHIVE, nwItemClass.TRASH)
+
+    def isInactive(self):
+        """Returns true if the item is in the inactive parts of the
+        project.
+        """
+        return self._class in (nwItemClass.NO_CLASS, nwItemClass.ARCHIVE, nwItemClass.TRASH)
+
     def getImportStatus(self):
         """Return the relevant importance or status label and icon for
         the current item based on its class.
         """
-        if self._class in nwLists.CLS_NOVEL:
+        if self.isNovelLike():
             stName = self.theProject.statusItems.name(self._status)
             stIcon = self.theProject.statusItems.icon(self._status)
         else:
@@ -298,7 +317,7 @@ class NWItem():
         """Update the importance or status value based on class. This is
         a wrapper setter for setStatus and setImport.
         """
-        if self._class in nwLists.CLS_NOVEL:
+        if self.isNovelLike():
             self.setStatus(value)
         else:
             self.setImport(value)
@@ -312,9 +331,14 @@ class NWItem():
             # Only update for child items
             self.setClass(itemClass)
 
-        if self._class in nwLists.CLS_NOVEL:
-            self._layout = nwItemLayout.DOCUMENT
-        else:
+        if self._layout == nwItemLayout.NO_LAYOUT:
+            # If no layout is set, pick one
+            if self.isNovelLike():
+                self._layout = nwItemLayout.DOCUMENT
+            else:
+                self._layout = nwItemLayout.NOTE
+        elif not self.documentAllowed():
+            # Change layout to note if it is not in an allowed folder
             self._layout = nwItemLayout.NOTE
 
         if self._status is None:
@@ -411,7 +435,7 @@ class NWItem():
             self._layout = itemLayout
         elif isItemLayout(itemLayout):
             self._layout = nwItemLayout[itemLayout]
-        elif itemLayout in nwLists.DEP_LAYOUT:
+        elif itemLayout in DEP_LAYOUTS:
             self._layout = nwItemLayout.DOCUMENT
         else:
             logger.error("Unrecognised item layout '%s'", itemLayout)
