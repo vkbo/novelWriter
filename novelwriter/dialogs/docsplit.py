@@ -34,7 +34,6 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.core import NWDoc
 from novelwriter.enum import nwAlert, nwItemType
-from novelwriter.constants import nwConst
 from novelwriter.gui.custom import QHelpLabel
 
 logger = logging.getLogger(__name__)
@@ -157,16 +156,6 @@ class GuiDocSplit(QDialog):
         if nFiles == 0:
             self.theParent.makeAlert(self.tr(
                 "No headers found. Nothing to do."
-            ), nwAlert.ERROR)
-            return False
-
-        # Check that another folder can be created
-        parTree = self.theProject.projTree.getItemPath(srcItem.itemParent)
-        if len(parTree) >= nwConst.MAX_DEPTH - 1:
-            self.theParent.makeAlert(self.tr(
-                "Cannot add new folder for the document split. "
-                "Maximum folder depth has been reached. "
-                "Please move the file to another level in the project tree."
             ), nwAlert.ERROR)
             return False
 

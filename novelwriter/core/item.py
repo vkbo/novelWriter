@@ -308,7 +308,9 @@ class NWItem():
         """Set the default values based on the item's class and the
         project settings.
         """
-        self.setClass(itemClass)
+        if self._parent is not None:
+            # Only update for child items
+            self.setClass(itemClass)
 
         if self._class in nwLists.CLS_NOVEL:
             self._layout = nwItemLayout.DOCUMENT

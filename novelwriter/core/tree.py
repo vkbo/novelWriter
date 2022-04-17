@@ -33,13 +33,15 @@ from hashlib import sha256
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.common import checkHandle
-from novelwriter.constants import nwConst, nwFiles
+from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
 
 logger = logging.getLogger(__name__)
 
 
 class NWTree():
+
+    MAX_DEPTH = 1000  # Cap of tree traversing for loops
 
     def __init__(self, theProject):
 
@@ -219,7 +221,7 @@ class NWTree():
             return False
 
         iItem = tItem
-        for _ in range(nwConst.MAX_DEPTH + 1):
+        for _ in range(self.MAX_DEPTH):
             if iItem.itemParent is None:
                 tItem.setRoot(iItem.itemHandle)
                 tItem.setClassDefaults(iItem.itemClass)
@@ -228,8 +230,8 @@ class NWTree():
                 iItem = self.__getitem__(iItem.itemParent)
                 if iItem is None:
                     return False
-
-        return False
+        else:
+            raise RecursionError("Critical internal error")
 
     def checkType(self, tHandle, itemType):
         """Return true of item exists and is of the specified item type.
@@ -249,7 +251,7 @@ class NWTree():
         tItem = self.__getitem__(tHandle)
         if tItem is not None:
             tTree.append(tHandle)
-            for _ in range(nwConst.MAX_DEPTH + 1):
+            for _ in range(self.MAX_DEPTH):
                 if tItem.itemParent is None:
                     return tTree
                 else:
@@ -259,6 +261,9 @@ class NWTree():
                         return tTree
                     else:
                         tTree.append(tHandle)
+            else:
+                raise RecursionError("Critical internal error")
+
         return tTree
 
     ##
@@ -269,6 +274,23 @@ class NWTree():
         """Check if a handle is a root item.
         """
         return tHandle in self._treeRoots
+
+    def isTrash(self, tHandle):
+        """Check if an item is in or is the trash folder.
+        """
+        tItem = self.__getitem__(tHandle)
+        if tItem is None:
+            return True
+        if tItem.itemClass == nwItemClass.TRASH:
+            return True
+        if self._trashRoot is not None:
+            if tHandle == self._trashRoot:
+                return True
+            elif tItem.itemParent == self._trashRoot:
+                return True
+            elif tItem.itemRoot == self._trashRoot:
+                return True
+        return False
 
     def isTrashRoot(self, tHandle):
         """Check if a handle is the trash folder.

@@ -197,7 +197,7 @@ class GuiMainMenu(QMenuBar):
         # Project > New Folder
         self.aCreateFolder = QAction(self.tr("Create Folder"), self)
         self.aCreateFolder.setShortcut("Ctrl+Shift+N")
-        self.aCreateFolder.triggered.connect(lambda: self._newTreeItem(nwItemType.FOLDER, None))
+        self.aCreateFolder.triggered.connect(lambda: self._newTreeItem(nwItemType.FOLDER))
         self.projMenu.addAction(self.aCreateFolder)
 
         # Project > Separator
@@ -259,7 +259,7 @@ class GuiMainMenu(QMenuBar):
         # Document > New
         self.aNewDoc = QAction(self.tr("New Document"), self)
         self.aNewDoc.setShortcut("Ctrl+N")
-        self.aNewDoc.triggered.connect(lambda: self._newTreeItem(nwItemType.FILE, None))
+        self.aNewDoc.triggered.connect(lambda: self._newTreeItem(nwItemType.FILE))
         self.docuMenu.addAction(self.aNewDoc)
 
         # Document > Open

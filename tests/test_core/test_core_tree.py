@@ -210,7 +210,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testCoreTree_Methods(monkeypatch, mockGUI, mockItems):
+def testCoreTree_Methods(mockGUI, mockItems):
     """Test various class methods.
     """
     theProject = NWProject(mockGUI)
@@ -235,9 +235,11 @@ def testCoreTree_Methods(monkeypatch, mockGUI, mockItems):
     assert theTree.updateItemData("b000000000001") is True
 
     # Update item data, root is unreachable
-    with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.constants.nwConst.MAX_DEPTH", 0)
-        assert theTree.updateItemData("b000000000001") is False
+    maxDepth = theTree.MAX_DEPTH
+    theTree.MAX_DEPTH = 0
+    with pytest.raises(RecursionError):
+        theTree.updateItemData("b000000000001")
+    theTree.MAX_DEPTH = maxDepth
 
     # Chech type
     assert theTree.checkType("blabla", nwItemType.FILE) is False

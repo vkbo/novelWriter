@@ -42,7 +42,6 @@ class nwConst():
     FMT_DSTAMP = "%Y-%m-%d"           # Date only format
 
     # Various Hard Limits
-    MAX_DEPTH     = 30        # Maximum folder depth of a project
     MAX_DOCSIZE   = 5000000   # Maxium size of a single document
     MAX_BUILDSIZE = 10000000  # Maxium size of a project build
 
