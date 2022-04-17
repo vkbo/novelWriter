@@ -220,6 +220,7 @@ def testCoreItem_Methods(mockGUI):
 
     # Status + Icon
     # =============
+
     theItem.setType("FILE")
     theItem.setStatus("Note")
     theItem.setImport("Minor")
@@ -229,10 +230,18 @@ def testCoreItem_Methods(mockGUI):
     assert stT == "Note"
     assert isinstance(stI, QIcon)
 
+    theItem.setImportStatus("Draft")
+    stT, stI = theItem.getImportStatus()
+    assert stT == "Draft"
+
     theItem.setClass("CHARACTER")
     stT, stI = theItem.getImportStatus()
     assert stT == "Minor"
     assert isinstance(stI, QIcon)
+
+    theItem.setImportStatus("Major")
+    stT, stI = theItem.getImportStatus()
+    assert stT == "Major"
 
     # Representation
     # ==============
@@ -275,6 +284,8 @@ def testCoreItem_TypeSetter(mockGUI):
     assert theItem.itemType == nwItemType.FILE
     theItem.setType("TRASH")
     assert theItem.itemType == nwItemType.TRASH
+
+    # Alternative
     theItem.setType(nwItemType.ROOT)
     assert theItem.itemType == nwItemType.ROOT
 
@@ -294,28 +305,74 @@ def testCoreItem_ClassSetter(mockGUI):
     assert theItem.itemClass == nwItemClass.NO_CLASS
     theItem.setClass("NONSENSE")
     assert theItem.itemClass == nwItemClass.NO_CLASS
+
     theItem.setClass("NO_CLASS")
     assert theItem.itemClass == nwItemClass.NO_CLASS
+    assert theItem.isNovelLike() is False
+    assert theItem.documentAllowed() is False
+    assert theItem.isInactive() is True
+
     theItem.setClass("NOVEL")
     assert theItem.itemClass == nwItemClass.NOVEL
+    assert theItem.isNovelLike() is True
+    assert theItem.documentAllowed() is True
+    assert theItem.isInactive() is False
+
     theItem.setClass("PLOT")
     assert theItem.itemClass == nwItemClass.PLOT
+    assert theItem.isNovelLike() is False
+    assert theItem.documentAllowed() is False
+    assert theItem.isInactive() is False
+
     theItem.setClass("CHARACTER")
     assert theItem.itemClass == nwItemClass.CHARACTER
+    assert theItem.isNovelLike() is False
+    assert theItem.documentAllowed() is False
+    assert theItem.isInactive() is False
+
     theItem.setClass("WORLD")
     assert theItem.itemClass == nwItemClass.WORLD
+    assert theItem.isNovelLike() is False
+    assert theItem.documentAllowed() is False
+    assert theItem.isInactive() is False
+
     theItem.setClass("TIMELINE")
     assert theItem.itemClass == nwItemClass.TIMELINE
+    assert theItem.isNovelLike() is False
+    assert theItem.documentAllowed() is False
+    assert theItem.isInactive() is False
+
     theItem.setClass("OBJECT")
     assert theItem.itemClass == nwItemClass.OBJECT
+    assert theItem.isNovelLike() is False
+    assert theItem.documentAllowed() is False
+    assert theItem.isInactive() is False
+
     theItem.setClass("ENTITY")
     assert theItem.itemClass == nwItemClass.ENTITY
+    assert theItem.isNovelLike() is False
+    assert theItem.documentAllowed() is False
+    assert theItem.isInactive() is False
+
     theItem.setClass("CUSTOM")
     assert theItem.itemClass == nwItemClass.CUSTOM
+    assert theItem.isNovelLike() is False
+    assert theItem.documentAllowed() is False
+    assert theItem.isInactive() is False
+
     theItem.setClass("ARCHIVE")
     assert theItem.itemClass == nwItemClass.ARCHIVE
+    assert theItem.isNovelLike() is True
+    assert theItem.documentAllowed() is True
+    assert theItem.isInactive() is True
+
     theItem.setClass("TRASH")
     assert theItem.itemClass == nwItemClass.TRASH
+    assert theItem.isNovelLike() is False
+    assert theItem.documentAllowed() is True
+    assert theItem.isInactive() is True
+
+    # Alternative
     theItem.setClass(nwItemClass.NOVEL)
     assert theItem.itemClass == nwItemClass.NOVEL
 
@@ -344,11 +401,67 @@ def testCoreItem_LayoutSetter(mockGUI):
     theItem.setLayout("NOTE")
     assert theItem.itemLayout == nwItemLayout.NOTE
 
-    # Alternatives
+    # Alternative
     theItem.setLayout(nwItemLayout.NOTE)
     assert theItem.itemLayout == nwItemLayout.NOTE
 
 # END Test testCoreItem_LayoutSetter
+
+
+@pytest.mark.core
+def testCoreItem_ClassDefaults(mockGUI):
+    """Test the setter for the default values.
+    """
+    theProject = NWProject(mockGUI)
+    theItem = NWItem(theProject)
+
+    # Root items should not have their class updated
+    theItem.setParent(None)
+    theItem.setClass(nwItemClass.NO_CLASS)
+    assert theItem.itemClass == nwItemClass.NO_CLASS
+
+    theItem.setClassDefaults(nwItemClass.NOVEL)
+    assert theItem.itemClass == nwItemClass.NO_CLASS
+
+    # Non-root items should have their class updated
+    theItem.setParent("0123456789abc")
+    theItem.setClass(nwItemClass.NO_CLASS)
+    assert theItem.itemClass == nwItemClass.NO_CLASS
+
+    theItem.setClassDefaults(nwItemClass.NOVEL)
+    assert theItem.itemClass == nwItemClass.NOVEL
+
+    # Non-layout items should have their layout set based on class
+    theItem.setParent("0123456789abc")
+    theItem.setClass(nwItemClass.NO_CLASS)
+    theItem.setLayout(nwItemLayout.NO_LAYOUT)
+    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
+
+    theItem.setClassDefaults(nwItemClass.NOVEL)
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+
+    theItem.setParent("0123456789abc")
+    theItem.setClass(nwItemClass.NO_CLASS)
+    theItem.setLayout(nwItemLayout.NO_LAYOUT)
+    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
+
+    theItem.setClassDefaults(nwItemClass.PLOT)
+    assert theItem.itemLayout == nwItemLayout.NOTE
+
+    # If documents are not allowed in that class, the layout should be changed
+    theItem.setParent("0123456789abc")
+    theItem.setClass(nwItemClass.NO_CLASS)
+    theItem.setLayout(nwItemLayout.DOCUMENT)
+    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+
+    theItem.setClassDefaults(nwItemClass.PLOT)
+    assert theItem.itemLayout == nwItemLayout.NOTE
+
+    # In all cases, status and importance should no longer be None
+    assert theItem.itemStatus is not None
+    assert theItem.itemImport is not None
+
+# END Test testCoreItem_ClassDefaults
 
 
 @pytest.mark.core

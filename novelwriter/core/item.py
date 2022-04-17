@@ -259,7 +259,7 @@ class NWItem():
         return
 
     ##
-    #  Methods
+    #  Lookup Methods
     ##
 
     def describeMe(self, hLevel=None):
@@ -296,8 +296,7 @@ class NWItem():
         return self._class in (nwItemClass.NOVEL, nwItemClass.ARCHIVE, nwItemClass.TRASH)
 
     def isInactive(self):
-        """Returns true if the item is in the inactive parts of the
-        project.
+        """Returns true if the item is in an inactive class.
         """
         return self._class in (nwItemClass.NO_CLASS, nwItemClass.ARCHIVE, nwItemClass.TRASH)
 
@@ -312,6 +311,10 @@ class NWItem():
             stName = self.theProject.importItems.name(self._import)
             stIcon = self.theProject.importItems.icon(self._import)
         return stName, stIcon
+
+    ##
+    #  Special Setters
+    ##
 
     def setImportStatus(self, value):
         """Update the importance or status value based on class. This is

@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.core import NWDoc
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.constants import trConst, nwLists, nwLabels
+from novelwriter.constants import trConst, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -790,21 +790,23 @@ class GuiProjectTree(QTreeWidget):
         if pItem is not None:
             pIndex = pItem.indexOfChild(sItem)
 
-        wCount = int(sItem.data(self.C_COUNT, Qt.UserRole))
+        # Determine if the drag and drop is allowed:
+        # - Files can be moved anywhere
+        # - Folders can only be moved within the same root folder
+        # - Root folders cannot be moved at all
+        # - Items cannot be dropped on top of a file (moved inside)
+
         isFile = snItem.itemType == nwItemType.FILE
         isRoot = snItem.itemType == nwItemType.ROOT
         onFile = dnItem.itemType == nwItemType.FILE
+        inSame = snItem.itemRoot == dnItem.itemRoot
 
-        isSame = snItem.itemClass == dnItem.itemClass
-        isNone = snItem.itemClass == nwItemClass.NO_CLASS
-        isNote = snItem.itemLayout == nwItemLayout.NOTE
-        onFree = dnItem.itemClass in nwLists.FREE_CLASS and isFile
-
-        allowDrop  = isSame or isNone or isNote or onFree
+        allowDrop  = inSame or isFile
         allowDrop &= not (self.dropIndicatorPosition() == QAbstractItemView.OnItem and onFile)
 
         if allowDrop and not isRoot:
             logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
+            wCount = int(sItem.data(self.C_COUNT, Qt.UserRole))
             self.propagateCount(sHandle, 0)
             QTreeWidget.dropEvent(self, theEvent)
             self._postItemMove(sHandle, wCount)
