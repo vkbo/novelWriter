@@ -978,12 +978,12 @@ class Config:
         """
         try:
             import enchant  # noqa: F401
-            self.hasEnchant = True
-            logger.debug("Checking package 'pyenchant': OK")
-        except Exception:
+        except ImportError:
             self.hasEnchant = False
             logger.debug("Checking package 'pyenchant': Missing")
-
+        else:
+            self.hasEnchant = True
+            logger.debug("Checking package 'pyenchant': OK")
         return
 
 # END Class Config
