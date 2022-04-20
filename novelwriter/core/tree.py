@@ -24,11 +24,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import os
+import random
 import logging
 
-from time import time
 from lxml import etree
-from hashlib import sha256
 
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
 from novelwriter.error import logException
@@ -54,9 +53,6 @@ class NWTree():
         self._archRoot    = None   # The handle of the archive root folder
         self._theIndex    = 0      # The current iterator index
         self._treeChanged = False  # True if tree structure has changed
-
-        self._handleSeed  = None   # Used for generating handles for testing
-        self._handleCount = 0      # A counter that is added to the handle generator
 
         return
 
@@ -340,14 +336,6 @@ class NWTree():
 
         return
 
-    def setSeed(self, theSeed):
-        """Used for debugging!
-        Sets a seed for generating handles so that they always come out
-        in a predictable order.
-        """
-        self._handleSeed = theSeed
-        return
-
     def setFileItemLayout(self, tHandle, itemLayout):
         """Set the nwItemLayout for a specific file.
         """
@@ -474,29 +462,16 @@ class NWTree():
             self.theProject.setProjectChanged(True)
         return
 
-    def _makeHandle(self, addSeed=""):
+    def _makeHandle(self):
         """Generate a unique item handle. In the event that the key
-        already exists, salt the seed and generate a new handle.
-        A key collision is very unlikely to be caused by the truncation
-        of the sha256 hash to 13 characters. Assuming it is near-random,
-        it will on average happen every 4.5^15 times. However, the clock
-        seed is likely to occasionally generate a collision if the
-        handle requests come faster than the clock resolution.
+        already exists, generate a new one.
         """
-        if self._handleSeed is None:
-            newSeed = "%s_%d_%s" % (str(time()), self._handleCount, addSeed)
-            self._handleCount += 1
-        else:
-            # This is used for debugging
-            newSeed = str(self._handleSeed)
-            self._handleSeed += 1
-
-        logger.verbose("Generating handle with seed '%s'", newSeed)
-        itemHandle = sha256(newSeed.encode()).hexdigest()[0:13]
-        if itemHandle in self._projTree:
+        logger.verbose("Generating new handle")
+        handle = f"{random.getrandbits(52):013x}"
+        if handle in self._projTree:
             logger.warning("Duplicate handle encountered! Retrying ...")
-            itemHandle = self._makeHandle(addSeed+"!")
+            handle = self._makeHandle()
 
-        return itemHandle
+        return handle
 
 # END Class NWTree
