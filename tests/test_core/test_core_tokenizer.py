@@ -136,7 +136,6 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
     """Test handling files and text in the Tokenizer class.
     """
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
     theProject.projLang = "en"
     theProject._loadProjectLocalisation()
 

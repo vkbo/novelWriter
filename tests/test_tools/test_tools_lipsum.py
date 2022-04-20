@@ -29,7 +29,7 @@ from novelwriter.tools import GuiLipsum
 
 
 @pytest.mark.gui
-def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, fncProj):
+def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test the Lorem Ipsum tool.
     """
     # Block message box
@@ -40,9 +40,8 @@ def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, fncProj):
     assert getGuiItem("GuiLipsum") is None
 
     # Create a new project
-    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": fncProj}) is True
-    assert nwGUI.openDocument("0e17daca5f3e1") is True
+    assert nwGUI.openDocument("000000000000f") is True
     assert len(nwGUI.docEditor.getText()) == 15
 
     # Open the tool

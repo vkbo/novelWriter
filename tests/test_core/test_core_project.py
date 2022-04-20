@@ -21,7 +21,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import os
 import pytest
-import random
 
 from shutil import copyfile
 from zipfile import ZipFile
@@ -37,7 +36,7 @@ from novelwriter.constants import nwFiles
 
 
 @pytest.mark.core
-def testCoreProject_NewMinimal(fncDir, outDir, refDir, mockGUI):
+def testCoreProject_NewMinimal(fncDir, outDir, refDir, mockGUI, mockRnd):
     """Create a new project from a project wizard dictionary. With
     default setting, creating a Minimal project.
     """
@@ -45,9 +44,7 @@ def testCoreProject_NewMinimal(fncDir, outDir, refDir, mockGUI):
     testFile = os.path.join(outDir, "coreProject_NewMinimal_nwProject.nwx")
     compFile = os.path.join(refDir, "coreProject_NewMinimal_nwProject.nwx")
 
-    random.seed(42)
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
 
     # Setting no data should fail
     assert theProject.newProject({}) is False
@@ -86,7 +83,7 @@ def testCoreProject_NewMinimal(fncDir, outDir, refDir, mockGUI):
 
 
 @pytest.mark.core
-def testCoreProject_NewCustomA(fncDir, outDir, refDir, mockGUI):
+def testCoreProject_NewCustomA(fncDir, outDir, refDir, mockGUI, mockRnd):
     """Create a new project from a project wizard dictionary.
     Custom type with chapters and scenes.
     """
@@ -114,9 +111,7 @@ def testCoreProject_NewCustomA(fncDir, outDir, refDir, mockGUI):
         "numScenes": 3,
         "chFolders": True,
     }
-    random.seed(42)
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
 
     assert theProject.newProject(projData) is True
     assert theProject.saveProject() is True
@@ -129,7 +124,7 @@ def testCoreProject_NewCustomA(fncDir, outDir, refDir, mockGUI):
 
 
 @pytest.mark.core
-def testCoreProject_NewCustomB(fncDir, outDir, refDir, mockGUI):
+def testCoreProject_NewCustomB(fncDir, outDir, refDir, mockGUI, mockRnd):
     """Create a new project from a project wizard dictionary.
     Custom type without chapters, but with scenes.
     """
@@ -157,9 +152,7 @@ def testCoreProject_NewCustomB(fncDir, outDir, refDir, mockGUI):
         "numScenes": 6,
         "chFolders": True,
     }
-    random.seed(42)
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
 
     assert theProject.newProject(projData) is True
     assert theProject.saveProject() is True
@@ -186,7 +179,6 @@ def testCoreProject_NewSampleA(fncDir, tmpConf, mockGUI, tmpDir):
         "popCustom": False,
     }
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
 
     # Sample set, but no path
     assert not theProject.newProject({"popSample": True})
@@ -235,7 +227,6 @@ def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, mockGUI, tmpDir):
         "popCustom": False,
     }
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
 
     # Make sure we do not pick up the novelwriter/assets/sample.zip file
     tmpConf.assetPath = tmpDir
@@ -259,16 +250,14 @@ def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, mockGUI, tmpDir):
 
 
 @pytest.mark.core
-def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI):
+def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
     """Check that new root folders can be added to the project.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
     testFile = os.path.join(outDir, "coreProject_NewRoot_nwProject.nwx")
     compFile = os.path.join(refDir, "coreProject_NewRoot_nwProject.nwx")
 
-    random.seed(42)
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
 
     assert theProject.newProject({"projPath": fncDir}) is True
     assert theProject.setProjectPath(fncDir) is True
@@ -297,16 +286,14 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI):
 
 
 @pytest.mark.core
-def testCoreProject_NewFile(fncDir, outDir, refDir, mockGUI):
+def testCoreProject_NewFile(fncDir, outDir, refDir, mockGUI, mockRnd):
     """Check that new files can be added to the project.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
     testFile = os.path.join(outDir, "coreProject_NewFile_nwProject.nwx")
     compFile = os.path.join(refDir, "coreProject_NewFile_nwProject.nwx")
 
-    random.seed(42)
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
 
     assert theProject.newProject({"projPath": fncDir}) is True
     assert theProject.setProjectPath(fncDir) is True
@@ -686,50 +673,51 @@ def testCoreProject_AccessItems(nwMinimal, mockGUI):
 
 
 @pytest.mark.core
-def testCoreProject_StatusImport(mockGUI, fncDir, constData):
+def testCoreProject_StatusImport(mockGUI, fncDir, mockRnd):
     """Test the status and importance flag handling.
     """
     theProject = NWProject(mockGUI)
-    random.seed(42)
-    theProject.projTree.setSeed(42)
     assert theProject.newProject({"projPath": fncDir}) is True
+
+    statusKeys = ["s000008", "s000009", "s00000a", "s00000b"]
+    importKeys = ["i00000c", "i00000d", "i00000e", "i00000f"]
 
     # Change Status
     # =============
 
-    theProject.projTree["44cb730c42048"].setStatus("Finished")
-    theProject.projTree["71ee45a3c0db9"].setStatus("Draft")
-    theProject.projTree["811786ad1ae74"].setStatus("Note")
-    theProject.projTree["25fc0e7096fc6"].setStatus("Finished")
+    theProject.projTree["0000000000014"].setStatus("Finished")
+    theProject.projTree["0000000000015"].setStatus("Draft")
+    theProject.projTree["0000000000016"].setStatus("Note")
+    theProject.projTree["0000000000017"].setStatus("Finished")
 
-    assert theProject.projTree["44cb730c42048"].itemStatus == constData.statusKeys[3]
-    assert theProject.projTree["71ee45a3c0db9"].itemStatus == constData.statusKeys[2]
-    assert theProject.projTree["811786ad1ae74"].itemStatus == constData.statusKeys[1]
-    assert theProject.projTree["25fc0e7096fc6"].itemStatus == constData.statusKeys[3]
+    assert theProject.projTree["0000000000014"].itemStatus == statusKeys[3]
+    assert theProject.projTree["0000000000015"].itemStatus == statusKeys[2]
+    assert theProject.projTree["0000000000016"].itemStatus == statusKeys[1]
+    assert theProject.projTree["0000000000017"].itemStatus == statusKeys[3]
 
     newList = [
-        {"key": constData.statusKeys[0], "name": "New", "cols": (1, 1, 1)},
-        {"key": constData.statusKeys[1], "name": "Draft", "cols": (2, 2, 2)},   # These are swapped
-        {"key": constData.statusKeys[2], "name": "Note", "cols": (3, 3, 3)},    # These are swapped
-        {"key": constData.statusKeys[3], "name": "Edited", "cols": (4, 4, 4)},  # Renamed
-        {"key": None, "name": "Finished", "cols": (5, 5, 5)},                   # New, reused name
+        {"key": statusKeys[0], "name": "New", "cols": (1, 1, 1)},
+        {"key": statusKeys[1], "name": "Draft", "cols": (2, 2, 2)},   # These are swapped
+        {"key": statusKeys[2], "name": "Note", "cols": (3, 3, 3)},    # These are swapped
+        {"key": statusKeys[3], "name": "Edited", "cols": (4, 4, 4)},  # Renamed
+        {"key": None, "name": "Finished", "cols": (5, 5, 5)},         # New, reused name
     ]
     assert theProject.setStatusColours(None, None) is False
     assert theProject.setStatusColours([], []) is False
     assert theProject.setStatusColours(newList, []) is True
 
-    assert theProject.statusItems.name(constData.statusKeys[0]) == "New"
-    assert theProject.statusItems.name(constData.statusKeys[1]) == "Draft"
-    assert theProject.statusItems.name(constData.statusKeys[2]) == "Note"
-    assert theProject.statusItems.name(constData.statusKeys[3]) == "Edited"
-    assert theProject.statusItems.cols(constData.statusKeys[0]) == (1, 1, 1)
-    assert theProject.statusItems.cols(constData.statusKeys[1]) == (2, 2, 2)
-    assert theProject.statusItems.cols(constData.statusKeys[2]) == (3, 3, 3)
-    assert theProject.statusItems.cols(constData.statusKeys[3]) == (4, 4, 4)
+    assert theProject.statusItems.name(statusKeys[0]) == "New"
+    assert theProject.statusItems.name(statusKeys[1]) == "Draft"
+    assert theProject.statusItems.name(statusKeys[2]) == "Note"
+    assert theProject.statusItems.name(statusKeys[3]) == "Edited"
+    assert theProject.statusItems.cols(statusKeys[0]) == (1, 1, 1)
+    assert theProject.statusItems.cols(statusKeys[1]) == (2, 2, 2)
+    assert theProject.statusItems.cols(statusKeys[2]) == (3, 3, 3)
+    assert theProject.statusItems.cols(statusKeys[3]) == (4, 4, 4)
 
     # Check the new entry
     lastKey = theProject.statusItems.check("Finished")
-    assert lastKey == "sbc8960"
+    assert lastKey == "s000018"
     assert theProject.statusItems.name(lastKey) == "Finished"
     assert theProject.statusItems.cols(lastKey) == (5, 5, 5)
 
@@ -740,33 +728,33 @@ def testCoreProject_StatusImport(mockGUI, fncDir, constData):
     # Change Importance
     # =================
 
-    fHandle = theProject.newFile("Jane Doe", "73475cb40a568")
+    fHandle = theProject.newFile("Jane Doe", "8b9d2e465e150")
     theProject.projTree[fHandle].setImport("Main")
 
-    assert theProject.projTree[fHandle].itemImport == constData.importKeys[3]
+    assert theProject.projTree[fHandle].itemImport == importKeys[3]
     newList = [
-        {"key": constData.importKeys[0], "name": "New", "cols": (1, 1, 1)},
-        {"key": constData.importKeys[1], "name": "Minor", "cols": (2, 2, 2)},
-        {"key": constData.importKeys[2], "name": "Major", "cols": (3, 3, 3)},
-        {"key": constData.importKeys[3], "name": "Min", "cols": (4, 4, 4)},
+        {"key": importKeys[0], "name": "New", "cols": (1, 1, 1)},
+        {"key": importKeys[1], "name": "Minor", "cols": (2, 2, 2)},
+        {"key": importKeys[2], "name": "Major", "cols": (3, 3, 3)},
+        {"key": importKeys[3], "name": "Min", "cols": (4, 4, 4)},
         {"key": None, "name": "Max", "cols": (5, 5, 5)},
     ]
     assert theProject.setImportColours(None, None) is False
     assert theProject.setImportColours([], []) is False
     assert theProject.setImportColours(newList, []) is True
 
-    assert theProject.importItems.name(constData.importKeys[0]) == "New"
-    assert theProject.importItems.name(constData.importKeys[1]) == "Minor"
-    assert theProject.importItems.name(constData.importKeys[2]) == "Major"
-    assert theProject.importItems.name(constData.importKeys[3]) == "Min"
-    assert theProject.importItems.cols(constData.importKeys[0]) == (1, 1, 1)
-    assert theProject.importItems.cols(constData.importKeys[1]) == (2, 2, 2)
-    assert theProject.importItems.cols(constData.importKeys[2]) == (3, 3, 3)
-    assert theProject.importItems.cols(constData.importKeys[3]) == (4, 4, 4)
+    assert theProject.importItems.name(importKeys[0]) == "New"
+    assert theProject.importItems.name(importKeys[1]) == "Minor"
+    assert theProject.importItems.name(importKeys[2]) == "Major"
+    assert theProject.importItems.name(importKeys[3]) == "Min"
+    assert theProject.importItems.cols(importKeys[0]) == (1, 1, 1)
+    assert theProject.importItems.cols(importKeys[1]) == (2, 2, 2)
+    assert theProject.importItems.cols(importKeys[2]) == (3, 3, 3)
+    assert theProject.importItems.cols(importKeys[3]) == (4, 4, 4)
 
     # Check the new entry
     lastKey = theProject.importItems.check("Max")
-    assert lastKey == "i1a3d1f"
+    assert lastKey == "i00001a"
     assert theProject.importItems.name(lastKey) == "Max"
     assert theProject.importItems.cols(lastKey) == (5, 5, 5)
 
@@ -791,21 +779,25 @@ def testCoreProject_StatusImport(mockGUI, fncDir, constData):
     assert theProject.closeProject() is True
 
     # This should restore the default status/import labels
-    random.seed(42)
     assert theProject.openProject(fncDir) is True
     assert theProject.saveProject() is True
-    assert list(theProject.statusItems.keys()) == constData.statusKeys
-    assert list(theProject.importItems.keys()) == constData.importKeys
+    assert theProject.statusItems.name("s000023") == "New"
+    assert theProject.statusItems.name("s000024") == "Note"
+    assert theProject.statusItems.name("s000025") == "Draft"
+    assert theProject.statusItems.name("s000026") == "Finished"
+    assert theProject.importItems.name("i000027") == "New"
+    assert theProject.importItems.name("i000028") == "Minor"
+    assert theProject.importItems.name("i000029") == "Major"
+    assert theProject.importItems.name("i00002a") == "Main"
 
 # END Test testCoreProject_StatusImport
 
 
 @pytest.mark.core
-def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir):
+def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     """Test other project class methods and functions.
     """
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
     assert theProject.newProject({"projPath": fncDir}) is True
 
     # Setting project path
@@ -864,7 +856,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir):
 
     # Trash folder
     # Should create on first call, and just returned on later calls
-    hTrash = "1a6562590ef19"
+    hTrash = "0000000000018"
     assert theProject.projTree[hTrash] is None
     assert theProject.trashFolder() == hTrash
     assert theProject.trashFolder() == hTrash
@@ -934,14 +926,14 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir):
 
     # Change project tree order
     oldOrder = [
-        "73475cb40a568", "44cb730c42048", "71ee45a3c0db9",
-        "811786ad1ae74", "25fc0e7096fc6", "31489056e0916",
-        "98010bd9270f9", "0e17daca5f3e1", "1a6562590ef19",
+        "0000000000010", "0000000000011", "0000000000012",
+        "0000000000013", "0000000000014", "0000000000015",
+        "0000000000016", "0000000000017", "0000000000018",
     ]
     newOrder = [
-        "811786ad1ae74", "25fc0e7096fc6", "31489056e0916",
-        "73475cb40a568", "44cb730c42048", "71ee45a3c0db9",
-        "98010bd9270f9", "0e17daca5f3e1",
+        "0000000000013", "0000000000014", "0000000000015",
+        "0000000000010", "0000000000011", "0000000000012",
+        "0000000000016", "0000000000017",
     ]
     assert theProject.projTree.handles() == oldOrder
     assert theProject.setTreeOrder(newOrder)

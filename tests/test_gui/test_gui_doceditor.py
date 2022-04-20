@@ -1286,7 +1286,6 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
-    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.openProject(nwLipsum) is True
     assert nwGUI.openDocument("4c4f28287af27") is True
     origText = nwGUI.docEditor.getText()

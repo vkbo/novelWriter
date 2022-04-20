@@ -43,7 +43,6 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
 
     # Open project
-    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.openProject(nwLipsum)
 
     # Rebuild the index

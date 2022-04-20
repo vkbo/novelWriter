@@ -43,7 +43,6 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     compFile = os.path.join(refDir, "coreIndex_LoadSave_tagsIndex.json")
 
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
     assert theProject.openProject(nwLipsum)
 
     theIndex = NWIndex(theProject)
@@ -125,7 +124,6 @@ def testCoreIndex_ScanThis(nwMinimal, mockGUI):
     """Test the tag scanner function scanThis.
     """
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal) is True
 
     theIndex = NWIndex(theProject)
@@ -177,7 +175,6 @@ def testCoreIndex_CheckThese(nwMinimal, mockGUI):
     """Test the tag checker function checkThese.
     """
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal) is True
 
     theIndex = NWIndex(theProject)
@@ -254,7 +251,6 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     """Check the index text scanner.
     """
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal) is True
 
     theIndex = NWIndex(theProject)
@@ -473,7 +469,6 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     """Check the index data extraction functions.
     """
     theProject = NWProject(mockGUI)
-    theProject.projTree.setSeed(42)
     assert theProject.openProject(nwMinimal) is True
 
     theIndex = NWIndex(theProject)

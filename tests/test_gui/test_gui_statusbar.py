@@ -29,14 +29,13 @@ from novelwriter.enum import nwState
 
 
 @pytest.mark.gui
-def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, fncProj):
+def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test the the various features of the status bar.
     """
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
-    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": fncProj}) is True
-    cHandle = nwGUI.theProject.newFile("A Note", "71ee45a3c0db9")
+    cHandle = nwGUI.theProject.newFile("A Note", "000000000000a")
     newDoc = NWDoc(nwGUI.theProject, cHandle)
     newDoc.writeDocument("# A Note\n\n")
     nwGUI.treeView.revealNewTreeItem(cHandle)

@@ -48,7 +48,6 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
     # Test Document Action with No Project
     assert nwGUI.docEditor.docAction(nwDocAction.COPY) is False
 
-    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.openProject(nwLipsum) is True
     qtbot.wait(stepDelay)
 
@@ -381,7 +380,6 @@ def testGuiMenu_ContextMenus(qtbot, monkeypatch, nwGUI, nwLipsum):
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
-    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.openProject(nwLipsum)
     assert nwGUI.openDocument("4c4f28287af27")
     qtbot.wait(stepDelay)
@@ -460,18 +458,17 @@ def testGuiMenu_ContextMenus(qtbot, monkeypatch, nwGUI, nwLipsum):
 
 
 @pytest.mark.gui
-def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
+def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     """Test the Insert menu.
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
 
-    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": fncProj})
 
-    assert nwGUI.treeView._getTreeItem("0e17daca5f3e1") is not None
-    assert nwGUI.openDocument("0e17daca5f3e1") is True
+    assert nwGUI.treeView._getTreeItem("000000000000f") is not None
+    assert nwGUI.openDocument("000000000000f") is True
     nwGUI.docEditor.clear()
 
     # Test Faulty Inserts
@@ -680,7 +677,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert not nwGUI.importDocument()
 
     # Open the document from before, and add some text to it
-    nwGUI.openDocument("0e17daca5f3e1")
+    nwGUI.openDocument("000000000000f")
     nwGUI.docEditor.setText("Bar")
     assert nwGUI.docEditor.getText() == "Bar"
 
@@ -712,7 +709,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     theBits = theMessage.split("<br>")
     assert len(theBits) == 2
     assert theBits[0] == "The currently open file is saved in:"
-    assert theBits[1] == os.path.join(fncProj, "content", "0e17daca5f3e1.nwd")
+    assert theBits[1] == os.path.join(fncProj, "content", "000000000000f.nwd")
 
     # qtbot.stopForInteraction()
 
