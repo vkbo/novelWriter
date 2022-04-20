@@ -21,7 +21,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import os
 import pytest
-import random
 
 from shutil import copyfile
 from tools import cmpFiles, getGuiItem
@@ -35,11 +34,13 @@ from novelwriter.dialogs import GuiProjectSettings
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+statusKeys = ["s000000", "s000001", "s000002", "s000003"]
+importKeys = ["i000004", "i000005", "i000006", "i000007"]
 
 
 @pytest.mark.gui
 def testDlgProjSettings_Dialog(
-    qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDir, refDir, constData
+    qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDir, refDir, mockRnd
 ):
     """Test the full project settings dialog.
     """
@@ -56,8 +57,6 @@ def testDlgProjSettings_Dialog(
     assert getGuiItem("GuiProjectSettings") is None
 
     # Create new project
-    random.seed(42)
-    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": fncProj})
     nwGUI.mainConf.backupPath = fncDir
 
@@ -145,15 +144,15 @@ def testDlgProjSettings_Dialog(
     assert projEdit.tabStatus.getNewList() == (
         [
             {
-                "key": constData.statusKeys[0],
+                "key": statusKeys[0],
                 "name": "New",
                 "cols": (100, 100, 100)
             }, {
-                "key": constData.statusKeys[1],
+                "key": statusKeys[1],
                 "name": "Note",
                 "cols": (200, 50, 0)
             }, {
-                "key": constData.statusKeys[3],
+                "key": statusKeys[3],
                 "name": "Finished",
                 "cols": (50, 200, 0)
             }, {
@@ -162,7 +161,7 @@ def testDlgProjSettings_Dialog(
                 "cols": (20, 30, 40)
             }
         ], [
-            constData.statusKeys[2]  # Deleted item
+            statusKeys[2]  # Deleted item
         ]
     )
 
@@ -170,25 +169,25 @@ def testDlgProjSettings_Dialog(
     projEdit.tabStatus.listBox.clearSelection()
     projEdit.tabStatus._moveItem(1)
     assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
-        constData.statusKeys[0], constData.statusKeys[1], constData.statusKeys[3], None
+        statusKeys[0], statusKeys[1], statusKeys[3], None
     ]
 
     projEdit.tabStatus.listBox.clearSelection()
     projEdit.tabStatus.listBox.topLevelItem(0).setSelected(True)
     projEdit.tabStatus._moveItem(-1)
     assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
-        constData.statusKeys[0], constData.statusKeys[1], constData.statusKeys[3], None
+        statusKeys[0], statusKeys[1], statusKeys[3], None
     ]
 
     projEdit.tabStatus.listBox.clearSelection()
     projEdit.tabStatus.listBox.topLevelItem(3).setSelected(True)
     projEdit.tabStatus._moveItem(-1)
     assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
-        constData.statusKeys[0], constData.statusKeys[1], None, constData.statusKeys[3]
+        statusKeys[0], statusKeys[1], None, statusKeys[3]
     ]
     projEdit.tabStatus._moveItem(1)
     assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
-        constData.statusKeys[0], constData.statusKeys[1], constData.statusKeys[3], None
+        statusKeys[0], statusKeys[1], statusKeys[3], None
     ]
 
     # Importance Tab

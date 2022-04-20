@@ -20,7 +20,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import os
-import random
 import pytest
 
 from shutil import copyfile
@@ -72,16 +71,16 @@ def testGuiMain_ProjectBlocker(monkeypatch, nwGUI):
 
 
 @pytest.mark.gui
-def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj):
+def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test handling of project tree items based on GUI focus states.
     """
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
-    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": fncProj}) is True
     assert nwGUI.saveProject() is True
+    # assert False
 
-    sHandle = "0e17daca5f3e1"
+    sHandle = "000000000000f"
     assert nwGUI.openSelectedItem() is False
 
     # Project Tree has focus
@@ -128,7 +127,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj):
 
 
 @pytest.mark.gui
-def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
+def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mockRnd):
     """Test the document editor.
     """
     # Block message box
@@ -140,8 +139,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
     # Create new, save, close project
-    random.seed(42)
-    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.newProject({"projPath": fncProj})
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
@@ -186,14 +183,14 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     assert not nwGUI.theProject.spellCheck
 
     # Check that tree items have been created
-    assert nwGUI.treeView._getTreeItem("73475cb40a568") is not None
-    assert nwGUI.treeView._getTreeItem("25fc0e7096fc6") is not None
-    assert nwGUI.treeView._getTreeItem("31489056e0916") is not None
-    assert nwGUI.treeView._getTreeItem("98010bd9270f9") is not None
-    assert nwGUI.treeView._getTreeItem("0e17daca5f3e1") is not None
-    assert nwGUI.treeView._getTreeItem("44cb730c42048") is not None
-    assert nwGUI.treeView._getTreeItem("71ee45a3c0db9") is not None
-    assert nwGUI.treeView._getTreeItem("811786ad1ae74") is not None
+    assert nwGUI.treeView._getTreeItem("0000000000008") is not None
+    assert nwGUI.treeView._getTreeItem("0000000000009") is not None
+    assert nwGUI.treeView._getTreeItem("000000000000a") is not None
+    assert nwGUI.treeView._getTreeItem("000000000000b") is not None
+    assert nwGUI.treeView._getTreeItem("000000000000c") is not None
+    assert nwGUI.treeView._getTreeItem("000000000000d") is not None
+    assert nwGUI.treeView._getTreeItem("000000000000e") is not None
+    assert nwGUI.treeView._getTreeItem("000000000000f") is not None
 
     nwGUI.mainMenu.aSpellCheck.setChecked(True)
     assert nwGUI.mainMenu._toggleSpellCheck()
@@ -207,7 +204,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     # Add a Character File
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem("71ee45a3c0db9").setSelected(True)
+    nwGUI.treeView._getTreeItem("000000000000a").setSelected(True)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     assert nwGUI.openSelectedItem()
 
@@ -229,7 +226,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     # Add a Plot File
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem("44cb730c42048").setSelected(True)
+    nwGUI.treeView._getTreeItem("0000000000009").setSelected(True)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     assert nwGUI.openSelectedItem()
 
@@ -251,7 +248,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     # Add a World File
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem("811786ad1ae74").setSelected(True)
+    nwGUI.treeView._getTreeItem("000000000000b").setSelected(True)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     assert nwGUI.openSelectedItem()
 
@@ -282,9 +279,9 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     # Select the 'New Scene' file
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem("73475cb40a568").setExpanded(True)
-    nwGUI.treeView._getTreeItem("31489056e0916").setExpanded(True)
-    nwGUI.treeView._getTreeItem("0e17daca5f3e1").setSelected(True)
+    nwGUI.treeView._getTreeItem("0000000000008").setExpanded(True)
+    nwGUI.treeView._getTreeItem("000000000000d").setExpanded(True)
+    nwGUI.treeView._getTreeItem("000000000000f").setSelected(True)
     assert nwGUI.openSelectedItem()
 
     # Type something into the document
@@ -419,8 +416,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
 
     # Open and view the edited document
     nwGUI.switchFocus(nwWidget.VIEWER)
-    assert nwGUI.openDocument("0e17daca5f3e1")
-    assert nwGUI.viewDocument("0e17daca5f3e1")
+    assert nwGUI.openDocument("000000000000f")
+    assert nwGUI.viewDocument("000000000000f")
     qtbot.wait(stepDelay)
     assert nwGUI.saveProject()
     assert nwGUI.closeDocViewer()
@@ -429,11 +426,11 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     # Check a Quick Create and Delete
     assert nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     newHandle = nwGUI.treeView.getSelectedHandle()
-    assert nwGUI.theProject.projTree["2858dcd1057d3"] is not None
+    assert nwGUI.theProject.projTree["0000000000020"] is not None
     assert nwGUI.treeView.deleteItem()
     assert nwGUI.treeView.setSelectedHandle(newHandle)
     assert nwGUI.treeView.deleteItem()
-    assert nwGUI.theProject.projTree["2fca346db6561"] is not None  # Trash
+    assert nwGUI.theProject.projTree["0000000000024"] is not None  # Trash
     assert nwGUI.saveProject()
 
     # Check the files
@@ -443,27 +440,27 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
 
-    projFile = os.path.join(fncProj, "content", "031b4af5197ec.nwd")
-    testFile = os.path.join(outDir, "guiEditor_Main_Final_031b4af5197ec.nwd")
-    compFile = os.path.join(refDir, "guiEditor_Main_Final_031b4af5197ec.nwd")
+    projFile = os.path.join(fncProj, "content", "000000000000f.nwd")
+    testFile = os.path.join(outDir, "guiEditor_Main_Final_000000000000f.nwd")
+    compFile = os.path.join(refDir, "guiEditor_Main_Final_000000000000f.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
-    projFile = os.path.join(fncProj, "content", "1a6562590ef19.nwd")
-    testFile = os.path.join(outDir, "guiEditor_Main_Final_1a6562590ef19.nwd")
-    compFile = os.path.join(refDir, "guiEditor_Main_Final_1a6562590ef19.nwd")
+    projFile = os.path.join(fncProj, "content", "0000000000020.nwd")
+    testFile = os.path.join(outDir, "guiEditor_Main_Final_0000000000020.nwd")
+    compFile = os.path.join(refDir, "guiEditor_Main_Final_0000000000020.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
-    projFile = os.path.join(fncProj, "content", "0e17daca5f3e1.nwd")
-    testFile = os.path.join(outDir, "guiEditor_Main_Final_0e17daca5f3e1.nwd")
-    compFile = os.path.join(refDir, "guiEditor_Main_Final_0e17daca5f3e1.nwd")
+    projFile = os.path.join(fncProj, "content", "0000000000021.nwd")
+    testFile = os.path.join(outDir, "guiEditor_Main_Final_0000000000021.nwd")
+    compFile = os.path.join(refDir, "guiEditor_Main_Final_0000000000021.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
-    projFile = os.path.join(fncProj, "content", "41cfc0d1f2d12.nwd")
-    testFile = os.path.join(outDir, "guiEditor_Main_Final_41cfc0d1f2d12.nwd")
-    compFile = os.path.join(refDir, "guiEditor_Main_Final_41cfc0d1f2d12.nwd")
+    projFile = os.path.join(fncProj, "content", "0000000000022.nwd")
+    testFile = os.path.join(outDir, "guiEditor_Main_Final_0000000000022.nwd")
+    compFile = os.path.join(refDir, "guiEditor_Main_Final_0000000000022.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 

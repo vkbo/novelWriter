@@ -37,7 +37,6 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
 
     nwGUI.openProject(nwMinimal)
-    nwGUI.theProject.projTree.setSeed(42)
     nwTree = nwGUI.novelView
 
     ##

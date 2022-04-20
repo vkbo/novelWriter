@@ -20,7 +20,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import pytest
-import random
 
 from lxml import etree
 
@@ -32,12 +31,14 @@ from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 
 
 @pytest.mark.core
-def testCoreItem_Setters(mockGUI, constData):
+def testCoreItem_Setters(mockGUI, mockRnd):
     """Test all the simple setters for the NWItem class.
     """
-    random.seed(42)
     theProject = NWProject(mockGUI)
     theItem = NWItem(theProject)
+
+    statusKeys = ["s000000", "s000001", "s000002", "s000003"]
+    importKeys = ["i000004", "i000005", "i000006", "i000007"]
 
     # Name
     theItem.setName("A Name")
@@ -94,30 +95,30 @@ def testCoreItem_Setters(mockGUI, constData):
     # Importance
     theItem._class = nwItemClass.CHARACTER
     theItem.setImport("Word")
-    assert theItem.itemImport == constData.importKeys[0]  # Default
-    for key in constData.importKeys:
+    assert theItem.itemImport == importKeys[0]  # Default
+    for key in importKeys:
         theItem.setImport(key)
         assert theItem.itemImport == key
 
     # Status
     theItem._class = nwItemClass.NOVEL
     theItem.setStatus("Word")
-    assert theItem.itemStatus == constData.statusKeys[0]  # Default
-    for key in constData.statusKeys:
+    assert theItem.itemStatus == statusKeys[0]  # Default
+    for key in statusKeys:
         theItem.setStatus(key)
         assert theItem.itemStatus == key
 
     # Status/Importance Wrapper
     theItem._class = nwItemClass.CHARACTER
-    for key in constData.importKeys:
+    for key in importKeys:
         theItem.setImport(key)
         assert theItem.itemImport == key
-        assert theItem.itemStatus == constData.statusKeys[3]  # Should not change
+        assert theItem.itemStatus == statusKeys[3]  # Should not change
 
     theItem._class = nwItemClass.NOVEL
-    for key in constData.statusKeys:
+    for key in statusKeys:
         theItem.setStatus(key)
-        assert theItem.itemImport == constData.importKeys[3]  # Should not change
+        assert theItem.itemImport == importKeys[3]  # Should not change
         assert theItem.itemStatus == key
 
     # Expanded
@@ -465,12 +466,14 @@ def testCoreItem_ClassDefaults(mockGUI):
 
 
 @pytest.mark.core
-def testCoreItem_XMLPackUnpack(mockGUI, caplog, constData):
+def testCoreItem_XMLPackUnpack(mockGUI, caplog, mockRnd):
     """Test packing and unpacking XML objects for the NWItem class.
     """
-    random.seed(42)
     theProject = NWProject(mockGUI)
     nwXML = etree.Element("novelWriterXML")
+
+    statusKeys = ["s000000", "s000001", "s000002", "s000003"]
+    importKeys = ["i000004", "i000005", "i000006", "i000007"]
 
     # File
     # ====
@@ -483,7 +486,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, constData):
     theItem.setName("A Name")
     theItem.setClass("NOVEL")
     theItem.setType("FILE")
-    theItem.setImport(constData.importKeys[3])
+    theItem.setImport(importKeys[3])
     theItem.setLayout("NOTE")
     theItem.setExported(False)
     theItem.setParaCount(3)
@@ -500,7 +503,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, constData):
         b'type="FILE" class="NOVEL" layout="NOTE"><meta charCount="7" wordCount="5" paraCount="3" '
         b'cursorPos="11"/><name status="None" import="%s" exported="False">A Name</name></item>'
         b'</content>'
-    ) % bytes(constData.importKeys[3], encoding="utf8")
+    ) % bytes(importKeys[3], encoding="utf8")
 
     # Unpack
     theItem = NWItem(theProject)
@@ -517,8 +520,8 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, constData):
     assert theItem.itemClass == nwItemClass.NOVEL
     assert theItem.itemType == nwItemType.FILE
     assert theItem.itemLayout == nwItemLayout.NOTE
-    assert theItem.itemStatus == constData.statusKeys[0]  # Was None, should now be default
-    assert theItem.itemImport == constData.importKeys[3]
+    assert theItem.itemStatus == statusKeys[0]  # Was None, should now be default
+    assert theItem.itemImport == importKeys[3]
 
     # Folder
     # ======
@@ -531,7 +534,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, constData):
     theItem.setName("A Name")
     theItem.setClass("NOVEL")
     theItem.setType("FOLDER")
-    theItem.setStatus(constData.statusKeys[1])
+    theItem.setStatus(statusKeys[1])
     theItem.setLayout("NOTE")
     theItem.setExpanded(True)
     theItem.setExported(False)
@@ -549,7 +552,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, constData):
         b'type="FOLDER" class="NOVEL"><meta expanded="True"/><name status="%s" '
         b'import="None">A Name</name></item>'
         b'</content>'
-    ) % bytes(constData.statusKeys[1], encoding="utf8")
+    ) % bytes(statusKeys[1], encoding="utf8")
 
     # Unpack
     theItem = NWItem(theProject)
@@ -567,8 +570,8 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, constData):
     assert theItem.itemClass == nwItemClass.NOVEL
     assert theItem.itemType == nwItemType.FOLDER
     assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
-    assert theItem.itemStatus == constData.statusKeys[1]
-    assert theItem.itemImport == constData.importKeys[0]  # Was None, should now be default
+    assert theItem.itemStatus == statusKeys[1]
+    assert theItem.itemImport == importKeys[0]  # Was None, should now be default
 
     # Errors
     # ======

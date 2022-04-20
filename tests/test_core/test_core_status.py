@@ -28,9 +28,12 @@ from PyQt5.QtGui import QIcon
 
 from novelwriter.core.status import NWStatus
 
+statusKeys = ["sa3b179", "s1c8031", "s06671a", "sbdd640"]
+importKeys = ["i466852", "i3eb13b", "i392456", "i23b8c1"]
+
 
 @pytest.mark.core
-def testCoreStatus_Internal(constData):
+def testCoreStatus_Internal():
     """Test all the internal functions of the NWStatus class.
     """
     random.seed(42)
@@ -43,19 +46,19 @@ def testCoreStatus_Internal(constData):
     # Generate Key
     # ============
 
-    assert theStatus._newKey() == constData.statusKeys[0]
-    assert theStatus._newKey() == constData.statusKeys[1]
+    assert theStatus._newKey() == statusKeys[0]
+    assert theStatus._newKey() == statusKeys[1]
 
     # Key collision, should move to key 3
-    theStatus.write(constData.statusKeys[2], "Crash", (0, 0, 0))
-    assert theStatus._newKey() == constData.statusKeys[3]
+    theStatus.write(statusKeys[2], "Crash", (0, 0, 0))
+    assert theStatus._newKey() == statusKeys[3]
 
-    assert theImport._newKey() == constData.importKeys[0]
-    assert theImport._newKey() == constData.importKeys[1]
+    assert theImport._newKey() == importKeys[0]
+    assert theImport._newKey() == importKeys[1]
 
     # Key collision, should move to key 3
-    theImport.write(constData.importKeys[2], "Crash", (0, 0, 0))
-    assert theImport._newKey() == constData.importKeys[3]
+    theImport.write(importKeys[2], "Crash", (0, 0, 0))
+    assert theImport._newKey() == importKeys[3]
 
     # Check Key
     # =========
@@ -84,18 +87,19 @@ def testCoreStatus_Internal(constData):
 
 
 @pytest.mark.core
-def testCoreStatus_Iterator(constData):
+def testCoreStatus_Iterator():
     """Test the iterator functions of the NWStatus class.
     """
     random.seed(42)
     theStatus = NWStatus(NWStatus.STATUS)
+
     theStatus.write(None, "New",      (100, 100, 100))
     theStatus.write(None, "Note",     (200, 50,  0))
     theStatus.write(None, "Draft",    (200, 150, 0))
     theStatus.write(None, "Finished", (50,  200, 0))
 
     # Direct access
-    entry = theStatus[constData.statusKeys[0]]
+    entry = theStatus[statusKeys[0]]
     assert entry["cols"] == (100, 100, 100)
     assert entry["name"] == "New"
     assert entry["count"] == 0
@@ -107,11 +111,11 @@ def testCoreStatus_Iterator(constData):
     assert len(theStatus) == 4
 
     # Keys
-    assert list(theStatus.keys()) == constData.statusKeys
+    assert list(theStatus.keys()) == statusKeys
 
     # Items
     for index, (key, entry) in enumerate(theStatus.items()):
-        assert key == constData.statusKeys[index]
+        assert key == statusKeys[index]
         assert "cols" in entry
         assert "name" in entry
         assert "count" in entry
@@ -128,7 +132,7 @@ def testCoreStatus_Iterator(constData):
 
 
 @pytest.mark.core
-def testCoreStatus_Entries(constData):
+def testCoreStatus_Entries():
     """Test all the simple setters for the NWStatus class.
     """
     random.seed(42)
@@ -138,74 +142,74 @@ def testCoreStatus_Entries(constData):
     # =====
 
     # Have a key
-    theStatus.write(constData.statusKeys[0], "Entry 1", (200, 100, 50))
-    assert theStatus[constData.statusKeys[0]]["name"] == "Entry 1"
-    assert theStatus[constData.statusKeys[0]]["cols"] == (200, 100, 50)
+    theStatus.write(statusKeys[0], "Entry 1", (200, 100, 50))
+    assert theStatus[statusKeys[0]]["name"] == "Entry 1"
+    assert theStatus[statusKeys[0]]["cols"] == (200, 100, 50)
 
     # Don't have a key
     theStatus.write(None, "Entry 2", (210, 110, 60))
-    assert theStatus[constData.statusKeys[1]]["name"] == "Entry 2"
-    assert theStatus[constData.statusKeys[1]]["cols"] == (210, 110, 60)
+    assert theStatus[statusKeys[1]]["name"] == "Entry 2"
+    assert theStatus[statusKeys[1]]["cols"] == (210, 110, 60)
 
     # Wrong colour spec
     theStatus.write(None, "Entry 3", "what?")
-    assert theStatus[constData.statusKeys[2]]["name"] == "Entry 3"
-    assert theStatus[constData.statusKeys[2]]["cols"] == (100, 100, 100)
+    assert theStatus[statusKeys[2]]["name"] == "Entry 3"
+    assert theStatus[statusKeys[2]]["cols"] == (100, 100, 100)
 
     # Wrong colour count
     theStatus.write(None, "Entry 4", (10, 20))
-    assert theStatus[constData.statusKeys[3]]["name"] == "Entry 4"
-    assert theStatus[constData.statusKeys[3]]["cols"] == (100, 100, 100)
+    assert theStatus[statusKeys[3]]["name"] == "Entry 4"
+    assert theStatus[statusKeys[3]]["cols"] == (100, 100, 100)
 
     # Check reverse map
     assert theStatus._reverse == {
-        "Entry 1": constData.statusKeys[0],
-        "Entry 2": constData.statusKeys[1],
-        "Entry 3": constData.statusKeys[2],
-        "Entry 4": constData.statusKeys[3],
+        "Entry 1": statusKeys[0],
+        "Entry 2": statusKeys[1],
+        "Entry 3": statusKeys[2],
+        "Entry 4": statusKeys[3],
     }
 
     # Check
     # =====
 
     # Normal lookup
-    for key in constData.statusKeys:
+    for key in statusKeys:
         assert theStatus.check(key) == key
 
     # Reverse map lookup
-    assert theStatus.check("Entry 1") == constData.statusKeys[0]
-    assert theStatus.check("Entry 2") == constData.statusKeys[1]
-    assert theStatus.check("Entry 3") == constData.statusKeys[2]
-    assert theStatus.check("Entry 4") == constData.statusKeys[3]
+    assert theStatus.check("Entry 1") == statusKeys[0]
+    assert theStatus.check("Entry 2") == statusKeys[1]
+    assert theStatus.check("Entry 3") == statusKeys[2]
+    assert theStatus.check("Entry 4") == statusKeys[3]
 
     # Non-existing name
-    assert theStatus.check("Entry 5") == constData.statusKeys[0]
+    assert theStatus.check("Entry 5") == statusKeys[0]
 
     # Name Access
     # ===========
 
-    assert theStatus.name(constData.statusKeys[0]) == "Entry 1"
-    assert theStatus.name(constData.statusKeys[1]) == "Entry 2"
-    assert theStatus.name(constData.statusKeys[2]) == "Entry 3"
-    assert theStatus.name(constData.statusKeys[3]) == "Entry 4"
+    assert theStatus.name(statusKeys[0]) == "Entry 1"
+    assert theStatus.name(statusKeys[1]) == "Entry 2"
+    assert theStatus.name(statusKeys[2]) == "Entry 3"
+    assert theStatus.name(statusKeys[3]) == "Entry 4"
     assert theStatus.name("blablabla") == "Entry 1"
 
     # Colour Access
     # =============
 
-    assert theStatus.cols(constData.statusKeys[0]) == (200, 100, 50)
-    assert theStatus.cols(constData.statusKeys[1]) == (210, 110, 60)
-    assert theStatus.cols(constData.statusKeys[2]) == (100, 100, 100)
-    assert theStatus.cols(constData.statusKeys[3]) == (100, 100, 100)
+    assert theStatus.cols(statusKeys[0]) == (200, 100, 50)
+    assert theStatus.cols(statusKeys[1]) == (210, 110, 60)
+    assert theStatus.cols(statusKeys[2]) == (100, 100, 100)
+    assert theStatus.cols(statusKeys[3]) == (100, 100, 100)
     assert theStatus.cols("blablabla") == (200, 100, 50)
 
     # Icon Access
     # ===========
 
-    assert isinstance(theStatus.icon(constData.statusKeys[0]), QIcon)
-    assert isinstance(theStatus.icon(constData.statusKeys[1]), QIcon)
-    assert isinstance(theStatus.icon(constData.statusKeys[2]), QIcon)
-    assert isinstance(theStatus.icon(constData.statusKeys[3]), QIcon)
+    assert isinstance(theStatus.icon(statusKeys[0]), QIcon)
+    assert isinstance(theStatus.icon(statusKeys[1]), QIcon)
+    assert isinstance(theStatus.icon(statusKeys[2]), QIcon)
+    assert isinstance(theStatus.icon(statusKeys[3]), QIcon)
     assert isinstance(theStatus.icon("blablabla"), QIcon)
 
     # Increment and Count Access
@@ -214,26 +218,26 @@ def testCoreStatus_Entries(constData):
     countTo = [3, 5, 7, 9]
     for i, n in enumerate(countTo):
         for _ in range(n):
-            theStatus.increment(constData.statusKeys[i])
+            theStatus.increment(statusKeys[i])
 
-    assert theStatus.count(constData.statusKeys[0]) == countTo[0]
-    assert theStatus.count(constData.statusKeys[1]) == countTo[1]
-    assert theStatus.count(constData.statusKeys[2]) == countTo[2]
-    assert theStatus.count(constData.statusKeys[3]) == countTo[3]
+    assert theStatus.count(statusKeys[0]) == countTo[0]
+    assert theStatus.count(statusKeys[1]) == countTo[1]
+    assert theStatus.count(statusKeys[2]) == countTo[2]
+    assert theStatus.count(statusKeys[3]) == countTo[3]
     assert theStatus.count("blablabla") == countTo[0]
 
     theStatus.resetCounts()
 
-    assert theStatus.count(constData.statusKeys[0]) == 0
-    assert theStatus.count(constData.statusKeys[1]) == 0
-    assert theStatus.count(constData.statusKeys[2]) == 0
-    assert theStatus.count(constData.statusKeys[3]) == 0
+    assert theStatus.count(statusKeys[0]) == 0
+    assert theStatus.count(statusKeys[1]) == 0
+    assert theStatus.count(statusKeys[2]) == 0
+    assert theStatus.count(statusKeys[3]) == 0
 
     # Reorder
     # =======
 
     cOrder = list(theStatus.keys())
-    assert cOrder == constData.statusKeys
+    assert cOrder == statusKeys
 
     # Wrong length
     assert theStatus.reorder([]) is False
@@ -243,10 +247,10 @@ def testCoreStatus_Entries(constData):
 
     # Actual reaorder
     nOrder = [
-        constData.statusKeys[0],
-        constData.statusKeys[2],
-        constData.statusKeys[1],
-        constData.statusKeys[3],
+        statusKeys[0],
+        statusKeys[2],
+        statusKeys[1],
+        statusKeys[3],
     ]
     assert theStatus.reorder(nOrder) is True
     assert list(theStatus.keys()) == nOrder
@@ -282,15 +286,15 @@ def testCoreStatus_Entries(constData):
     assert theStatus.remove("blablabla") is False
 
     # Non-zero entry
-    theStatus.increment(constData.statusKeys[3])
-    assert theStatus.remove(constData.statusKeys[3]) is False
+    theStatus.increment(statusKeys[3])
+    assert theStatus.remove(statusKeys[3]) is False
 
     # Delete last entry
     theStatus.resetCounts()
-    lastName = theStatus.name(constData.statusKeys[3])
+    lastName = theStatus.name(statusKeys[3])
     assert lastName == "Entry 4"
-    assert theStatus.remove(constData.statusKeys[3]) is True
-    assert theStatus.check(constData.statusKeys[3]) == theStatus._default
+    assert theStatus.remove(statusKeys[3]) is True
+    assert theStatus.check(statusKeys[3]) == theStatus._default
     assert theStatus.check(lastName) == theStatus._default
 
     # Delete default entry, Entry 2 is new default
@@ -300,8 +304,8 @@ def testCoreStatus_Entries(constData):
     assert theStatus.name(firstName) == "Entry 2"
 
     # Remove remaining entries
-    assert theStatus.remove(constData.statusKeys[1]) is True
-    assert theStatus.remove(constData.statusKeys[2]) is True
+    assert theStatus.remove(statusKeys[1]) is True
+    assert theStatus.remove(statusKeys[2]) is True
 
     assert len(theStatus) == 0
     assert theStatus._default is None
@@ -310,7 +314,7 @@ def testCoreStatus_Entries(constData):
 
 
 @pytest.mark.core
-def testCoreStatus_XMLPackUnpack(constData):
+def testCoreStatus_XMLPackUnpack():
     """Test all the XML pack/unpack of the NWStatus class.
     """
     random.seed(42)
@@ -323,7 +327,7 @@ def testCoreStatus_XMLPackUnpack(constData):
     countTo = [3, 5, 7, 9]
     for i, n in enumerate(countTo):
         for _ in range(n):
-            theStatus.increment(constData.statusKeys[i])
+            theStatus.increment(statusKeys[i])
 
     nwXML = etree.Element("novelWriterXML")
 
@@ -343,18 +347,18 @@ def testCoreStatus_XMLPackUnpack(constData):
     theStatus = NWStatus(NWStatus.STATUS)
     assert theStatus.unpackXML(xStatus)
     assert len(theStatus._store) == 4
-    assert list(theStatus._store.keys()) == constData.statusKeys
-    assert theStatus._store[constData.statusKeys[0]]["name"] == "New"
-    assert theStatus._store[constData.statusKeys[1]]["name"] == "Note"
-    assert theStatus._store[constData.statusKeys[2]]["name"] == "Draft"
-    assert theStatus._store[constData.statusKeys[3]]["name"] == "Finished"
-    assert theStatus._store[constData.statusKeys[0]]["cols"] == (100, 100, 100)
-    assert theStatus._store[constData.statusKeys[1]]["cols"] == (200, 50,  0)
-    assert theStatus._store[constData.statusKeys[2]]["cols"] == (200, 150, 0)
-    assert theStatus._store[constData.statusKeys[3]]["cols"] == (50,  200, 0)
-    assert theStatus._store[constData.statusKeys[0]]["count"] == countTo[0]
-    assert theStatus._store[constData.statusKeys[1]]["count"] == countTo[1]
-    assert theStatus._store[constData.statusKeys[2]]["count"] == countTo[2]
-    assert theStatus._store[constData.statusKeys[3]]["count"] == countTo[3]
+    assert list(theStatus._store.keys()) == statusKeys
+    assert theStatus._store[statusKeys[0]]["name"] == "New"
+    assert theStatus._store[statusKeys[1]]["name"] == "Note"
+    assert theStatus._store[statusKeys[2]]["name"] == "Draft"
+    assert theStatus._store[statusKeys[3]]["name"] == "Finished"
+    assert theStatus._store[statusKeys[0]]["cols"] == (100, 100, 100)
+    assert theStatus._store[statusKeys[1]]["cols"] == (200, 50,  0)
+    assert theStatus._store[statusKeys[2]]["cols"] == (200, 150, 0)
+    assert theStatus._store[statusKeys[3]]["cols"] == (50,  200, 0)
+    assert theStatus._store[statusKeys[0]]["count"] == countTo[0]
+    assert theStatus._store[statusKeys[1]]["count"] == countTo[1]
+    assert theStatus._store[statusKeys[2]]["count"] == countTo[2]
+    assert theStatus._store[statusKeys[3]]["count"] == countTo[3]
 
 # END Test testCoreStatus_XMLPackUnpack
