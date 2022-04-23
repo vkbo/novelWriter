@@ -793,17 +793,12 @@ class GuiProjectTree(QTreeWidget):
         # - Files can be moved anywhere
         # - Folders can only be moved within the same root folder
         # - Root folders cannot be moved at all
-        # - Items cannot be dropped on top of a file (moved inside)
 
         isFile = snItem.itemType == nwItemType.FILE
         isRoot = snItem.itemType == nwItemType.ROOT
-        onFile = dnItem.itemType == nwItemType.FILE
         inSame = snItem.itemRoot == dnItem.itemRoot
 
-        allowDrop  = inSame or isFile
-        allowDrop &= not (self.dropIndicatorPosition() == QAbstractItemView.OnItem and onFile)
-
-        if allowDrop and not isRoot:
+        if (inSame or isFile) and not isRoot:
             logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
 
             wCount = int(sItem.data(self.C_COUNT, Qt.UserRole))
@@ -1057,7 +1052,7 @@ class GuiProjectTreeMenu(QMenu):
 
         trashHandle = self.theTree.theProject.projTree.trashRoot()
 
-        inTrash = theItem.itemParent == trashHandle and trashHandle is not None
+        inTrash = self.theTree.theProject.projTree.isTrash(theItem.itemHandle)
         isTrash = theItem.itemHandle == trashHandle and trashHandle is not None
         isFile = theItem.itemType == nwItemType.FILE
 
