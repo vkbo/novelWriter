@@ -500,8 +500,9 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, mockRnd):
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
         b'<content>'
         b'<item handle="0123456789abc" parent="0123456789abc" root="0123456789abc" order="1" '
-        b'type="FILE" class="NOVEL" layout="NOTE"><meta charCount="7" wordCount="5" paraCount="3" '
-        b'cursorPos="11"/><name status="None" import="%s" exported="False">A Name</name></item>'
+        b'type="FILE" class="NOVEL" layout="NOTE"><meta expanded="False" charCount="7" '
+        b'wordCount="5" paraCount="3" cursorPos="11"/><name status="None" import="%s" '
+        b'exported="False">A Name</name></item>'
         b'</content>'
     ) % bytes(importKeys[3], encoding="utf8")
 

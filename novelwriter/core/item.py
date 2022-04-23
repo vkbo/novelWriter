@@ -160,13 +160,12 @@ class NWItem():
             itemAttrib["layout"] = str(self._layout.name)
 
         metaAttrib = {}
+        metaAttrib["expanded"] = str(self._expanded)
         if self._type == nwItemType.FILE:
             metaAttrib["charCount"] = str(self._charCount)
             metaAttrib["wordCount"] = str(self._wordCount)
             metaAttrib["paraCount"] = str(self._paraCount)
             metaAttrib["cursorPos"] = str(self._cursorPos)
-        else:
-            metaAttrib["expanded"]  = str(self._expanded)
 
         nameAttrib = {}
         nameAttrib["status"] = str(self._status)

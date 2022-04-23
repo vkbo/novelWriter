@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-20 20:00:23">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-23 15:34:25">
   <project>
     <name>New Project</name>
     <title></title>
@@ -57,7 +57,7 @@
       <name status="s000008" import="i00000c">World</name>
     </item>
     <item handle="0000000000014" parent="0000000000010" root="0000000000010" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
+      <meta expanded="False" charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
       <name status="s000008" import="i00000c" exported="True">Title Page</name>
     </item>
     <item handle="0000000000015" parent="0000000000010" root="0000000000010" order="0" type="FOLDER" class="NOVEL">
@@ -65,11 +65,11 @@
       <name status="s000008" import="i00000c">New Chapter</name>
     </item>
     <item handle="0000000000016" parent="0000000000015" root="0000000000010" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
+      <meta expanded="False" charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
       <name status="s000008" import="i00000c" exported="True">New Chapter</name>
     </item>
     <item handle="0000000000017" parent="0000000000015" root="0000000000010" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
+      <meta expanded="False" charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
       <name status="s000008" import="i00000c" exported="True">New Scene</name>
     </item>
   </content>
