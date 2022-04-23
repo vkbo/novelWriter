@@ -435,7 +435,6 @@ class GuiProjectTree(QTreeWidget):
             logger.error("Could not find tree item for deletion")
             return False
 
-        wCount = int(trItemS.data(self.C_COUNT, Qt.UserRole))
         if nwItemS.itemType == nwItemType.FILE:
             logger.debug("User requested file '%s' deleted", tHandle)
             trItemP = trItemS.parent()
@@ -494,7 +493,7 @@ class GuiProjectTree(QTreeWidget):
                     tIndex = trItemP.indexOfChild(trItemS)
                     trItemC = trItemP.takeChild(tIndex)
                     trItemT.addChild(trItemC)
-                    self._postItemMove(tHandle, wCount)
+                    self._postItemMove(tHandle)
                     self._recordLastMove(trItemS, trItemP, tIndex)
                     self._setTreeChanged(True)
 
@@ -646,7 +645,6 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         dstIndex = min(max(0, dstIndex), dstItem.childCount())
-        wCount = int(srcItem.data(self.C_COUNT, Qt.UserRole))
         sHandle = srcItem.data(self.C_NAME, Qt.UserRole)
         dHandle = dstItem.data(self.C_NAME, Qt.UserRole)
         logger.debug("Moving item '%s' back to '%s', index %d", sHandle, dHandle, dstIndex)
@@ -657,7 +655,7 @@ class GuiProjectTree(QTreeWidget):
         movItem = parItem.takeChild(srcIndex)
         dstItem.insertChild(dstIndex, movItem)
 
-        self._postItemMove(sHandle, wCount)
+        self._postItemMove(sHandle)
 
         self.clearSelection()
         movItem.setSelected(True)
@@ -801,11 +799,9 @@ class GuiProjectTree(QTreeWidget):
         if (inSame or isFile) and not isRoot:
             logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
 
-            wCount = int(sItem.data(self.C_COUNT, Qt.UserRole))
             self.propagateCount(sHandle, 0)
-
             QTreeWidget.dropEvent(self, theEvent)
-            self._postItemMove(sHandle, wCount)
+            self._postItemMove(sHandle)
             self._recordLastMove(sItem, pItem, pIndex)
 
         else:
@@ -822,7 +818,7 @@ class GuiProjectTree(QTreeWidget):
     #  Internal Functions
     ##
 
-    def _postItemMove(self, tHandle, wCount):
+    def _postItemMove(self, tHandle):
         """Run various maintenance tasks for a moved item.
         """
         trItemS = self._getTreeItem(tHandle)
@@ -836,19 +832,23 @@ class GuiProjectTree(QTreeWidget):
         # is updated accordingly, and update word count
         pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
         nwItemS.setParent(pHandle)
-        self.theProject.projTree.updateItemData(tHandle)
-        self.setTreeItemValues(tHandle)
-        self.propagateCount(tHandle, wCount)
-
         logger.debug("The parent of item '%s' has been changed to '%s'", tHandle, pHandle)
 
-        # The items dropped into archive or trash should be removed
-        # from the project index, for all other items, we rescan the
-        # file to ensure the index is up to date.
-        if nwItemS.isInactive():
-            self.theIndex.deleteHandle(tHandle)
-        else:
-            self.theIndex.reIndexHandle(tHandle)
+        mHandles = self.getTreeFromHandle(tHandle)
+        logger.debug("A total of %d item(s) were moved", len(mHandles))
+        for mHandle in mHandles:
+            logger.debug("Updating item '%s'", mHandle)
+            wCount = self._getItemWordCount(mHandle)
+            self.theProject.projTree.updateItemData(mHandle)
+
+            # Update the index
+            if nwItemS.isInactive():
+                self.theIndex.deleteHandle(tHandle)
+            else:
+                self.theIndex.reIndexHandle(tHandle)
+
+            self.setTreeItemValues(mHandle)
+            self.propagateCount(mHandle, wCount)
 
         # Trigger dependent updates
         self._setTreeChanged(True)
@@ -856,8 +856,16 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
+    def _getItemWordCount(self, tHandle):
+        """Retrun the word count of a given item handle.
+        """
+        tItem = self._getTreeItem(tHandle)
+        if tItem is None:
+            return 0
+        return int(tItem.data(self.C_COUNT, Qt.UserRole))
+
     def _getTreeItem(self, tHandle):
-        """Returns the QTreeWidgetItem of a given item handle.
+        """Return the QTreeWidgetItem of a given item handle.
         """
         return self._treeMap.get(tHandle, None)
 
