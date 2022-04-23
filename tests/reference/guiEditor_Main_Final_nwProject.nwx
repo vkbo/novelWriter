@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-23 15:34:36">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-23 16:55:50">
   <project>
     <name>New Project</name>
     <title></title>
@@ -84,7 +84,7 @@
       <meta expanded="False" charCount="51" wordCount="9" paraCount="1" cursorPos="68"/>
       <name status="s000000" import="i000004" exported="True">New Note</name>
     </item>
-    <item handle="0000000000024" parent="None" root="0000000000024" order="4" type="TRASH" class="TRASH">
+    <item handle="0000000000024" parent="None" root="0000000000024" order="4" type="ROOT" class="TRASH">
       <meta expanded="True"/>
       <name status="s000000" import="i000004">Trash</name>
     </item>

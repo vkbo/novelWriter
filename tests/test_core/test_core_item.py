@@ -283,8 +283,6 @@ def testCoreItem_TypeSetter(mockGUI):
     assert theItem.itemType == nwItemType.FOLDER
     theItem.setType("FILE")
     assert theItem.itemType == nwItemType.FILE
-    theItem.setType("TRASH")
-    assert theItem.itemType == nwItemType.TRASH
 
     # Alternative
     theItem.setType(nwItemType.ROOT)
@@ -711,5 +709,9 @@ def testCoreItem_ConvertFromFmt13(mockGUI):
     assert theItem.itemClass == nwItemClass.NOVEL
     assert theItem.itemType == nwItemType.FILE
     assert theItem.itemLayout == nwItemLayout.DOCUMENT
+
+    # Deprecated Type
+    theItem.setType("TRASH")
+    assert theItem.itemType == nwItemType.ROOT
 
 # END Test testCoreItem_ConvertFromFmt13

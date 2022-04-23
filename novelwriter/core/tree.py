@@ -352,30 +352,6 @@ class NWTree():
         return True
 
     ##
-    #  Getters
-    ##
-
-    def countTypes(self):
-        """Count the number of files, folders and roots in the project.
-        """
-        nRoot = 0
-        nFolder = 0
-        nFile = 0
-
-        for tHandle in self._treeOrder:
-            tItem = self.__getitem__(tHandle)
-            if tItem is None:
-                continue
-            elif tItem.itemType == nwItemType.ROOT:
-                nRoot += 1
-            elif tItem.itemType == nwItemType.FOLDER:
-                nFolder += 1
-            elif tItem.itemType == nwItemType.FILE:
-                nFile += 1
-
-        return nRoot, nFolder, nFile
-
-    ##
     #  Meta Methods
     ##
 

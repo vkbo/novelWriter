@@ -76,7 +76,7 @@ def mockItems(mockGUI, mockRnd):
 
     itemF = NWItem(theProject)
     itemF._name = "Trash"
-    itemF._type = nwItemType.TRASH
+    itemF._type = nwItemType.ROOT
     itemF._class = nwItemClass.TRASH
     itemF._expanded = False
 
@@ -172,7 +172,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     # Try to add another trash folder
     itemT = NWItem(theProject)
     itemT._name = "Trash"
-    itemT._type = nwItemType.TRASH
+    itemT._type = nwItemType.ROOT
     itemT._class = nwItemClass.TRASH
     itemT._expanded = False
 
@@ -353,12 +353,6 @@ def testCoreTree_Stats(mockGUI, mockItems):
     assert novelWords == 550
     assert noteWords == 400
 
-    # Count types
-    nRoot, nFolder, nFile = theTree.countTypes()
-    assert nRoot == 3
-    assert nFolder == 1
-    assert nFile == 3
-
 # END Test testCoreTree_Stats
 
 
@@ -429,7 +423,7 @@ def testCoreTree_XMLPackUnpack(mockGUI, mockItems):
         b'<item handle="a000000000002" parent="None" root="a000000000002" order="0" type="ROOT" '
         b'class="ARCHIVE"><meta expanded="False"/><name status="s000000" '
         b'import="i000004">Outtakes</name></item>'
-        b'<item handle="a000000000003" parent="None" root="a000000000003" order="0" type="TRASH" '
+        b'<item handle="a000000000003" parent="None" root="a000000000003" order="0" type="ROOT" '
         b'class="TRASH"><meta expanded="False"/><name status="s000000" '
         b'import="i000004">Trash</name></item>'
         b'<item handle="a000000000004" parent="None" root="a000000000004" order="0" type="ROOT" '
