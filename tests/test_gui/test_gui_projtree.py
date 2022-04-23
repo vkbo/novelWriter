@@ -298,9 +298,6 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
-    # Delete File
-    # ===========
-
     # Delete item without focus -> blocked
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: False)
     nwTree.setSelectedHandle("0000000000012")
@@ -318,6 +315,16 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     caplog.clear()
     assert nwTree.deleteItem("0000000000000") is False
     assert "Could not find tree item" in caplog.text
+
+    # Delete Folder/Root
+    # ==================
+
+    # Deleting non-empty folders is blocked
+    assert nwTree.deleteItem("0000000000008") is False  # Novel Root
+    assert nwTree.deleteItem("000000000000a") is True   # Character Root
+
+    # Delete File
+    # ===========
 
     # Block adding trash folder
     funcPointer = nwTree._addTrashRoot
@@ -352,12 +359,7 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
         trashHandle, "0000000000011"
     ]
 
-    # Try to delete the second document, but block the deletion
-    with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.document.NWDoc.deleteDocument", lambda *a: False)
-        assert nwTree.deleteItem("0000000000011") is False
-
-    # Delete proper, and skip asking for permission
+    # Delete the second file, and skip asking for permission
     assert os.path.isfile(os.path.join(prjDir, "content", "0000000000011.nwd"))
     assert "0000000000011" in nwGUI.theProject.projTree
     assert nwTree.deleteItem("0000000000011", alreadyAsked=True) is True
@@ -365,33 +367,36 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     assert "0000000000011" not in nwGUI.theProject.projTree
     assert nwTree.getTreeFromHandle(trashHandle) == [trashHandle]
 
-    # Delete Folder/Root
-    # ==================
+    # Delete Folder
+    # =============
 
-    # Deleting non-empty folders is blocked
-    assert nwTree.deleteItem("000000000000d") is False  # Folder
-    assert nwTree.deleteItem("0000000000008") is False  # Root
+    trashHandle = nwGUI.theProject.projTree.trashRoot()
 
-    # Add a folder we can delete
-    nwTree.setSelectedHandle("000000000000a")  # Character Root
+    # Add a folder with two files
+    nwTree.setSelectedHandle("0000000000009")
     assert nwTree.newTreeItem(nwItemType.FOLDER) is True
-    assert "0000000000014" in nwGUI.theProject.projTree
+    nwTree.setSelectedHandle("0000000000014")
+    assert nwTree.newTreeItem(nwItemType.FILE) is True
+    assert nwTree.newTreeItem(nwItemType.FILE) is True
+    assert os.path.isfile(os.path.join(fncDir, "project", "content", "0000000000015.nwd"))
+    assert os.path.isfile(os.path.join(fncDir, "project", "content", "0000000000016.nwd"))
 
-    # Try to delete, but block parent item lookup
-    with monkeypatch.context() as mp:
-        mp.setattr("PyQt5.QtWidgets.QTreeWidgetItem.parent", lambda *a: None)
-        caplog.clear()
-        assert nwTree.deleteItem("0000000000014") is False
-        assert "Could not delete folder" in caplog.text
-        assert "0000000000014" in nwGUI.theProject.projTree
-
-    # Delete folder properly
+    # Delete the folder, which moves everything to Trash
+    assert nwTree.getTreeFromHandle("0000000000014") == [
+        "0000000000014", "0000000000015", "0000000000016"
+    ]
     assert nwTree.deleteItem("0000000000014") is True
-    assert "0000000000014" not in nwGUI.theProject.projTree
+    assert nwTree.getTreeFromHandle(trashHandle) == [
+        trashHandle, "0000000000014", "0000000000015", "0000000000016"
+    ]
+    assert os.path.isfile(os.path.join(fncDir, "project", "content", "0000000000015.nwd"))
+    assert os.path.isfile(os.path.join(fncDir, "project", "content", "0000000000016.nwd"))
 
-    # Delete the Character root
-    assert nwTree.deleteItem("000000000000a") is True
-    assert "000000000000a" not in nwGUI.theProject.projTree
+    # Delete again, which should delete folder and all files
+    assert nwTree.deleteItem("0000000000014") is True
+    assert nwTree.getTreeFromHandle(trashHandle) == [trashHandle]
+    assert not os.path.isfile(os.path.join(fncDir, "project", "content", "0000000000015.nwd"))
+    assert not os.path.isfile(os.path.join(fncDir, "project", "content", "0000000000016.nwd"))
 
     # Empty Trash
     # ===========
@@ -420,6 +425,18 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     assert nwTree.emptyTrash() is True
     assert nwTree.getTreeFromHandle(trashHandle) == [trashHandle]
     assert nwTree._treeChanged is True
+
+    # Try to delete a file, but block the underlying deletion of the file on disk
+    assert os.path.isfile(os.path.join(fncDir, "project", "content", "000000000000e.nwd"))
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.document.NWDoc.deleteDocument", lambda *a: False)
+        assert nwTree.deleteItem("000000000000e") is True
+        assert nwTree.deleteItem("000000000000e") is True
+        assert os.path.isfile(os.path.join(fncDir, "project", "content", "000000000000e.nwd"))
+
+    # Delete proper
+    assert nwTree._deleteTreeItem("000000000000e") is True
+    assert not os.path.isfile(os.path.join(fncDir, "project", "content", "000000000000e.nwd"))
 
     # Clean up
     # qtbot.stopForInteraction()

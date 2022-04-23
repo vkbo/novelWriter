@@ -404,7 +404,7 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         logger.verbose("Deleting %d file(s) from Trash", nTrash)
-        for tHandle in self.getTreeFromHandle(trashHandle):
+        for tHandle in reversed(self.getTreeFromHandle(trashHandle)):
             if tHandle == trashHandle:
                 continue
             self.deleteItem(tHandle, alreadyAsked=True, bulkAction=True)
@@ -418,8 +418,8 @@ class GuiProjectTree(QTreeWidget):
         """Delete an item from the project tree. As a first step, files are
         moved to the Trash folder. Permanent deletion is a second step. This
         second step also deletes the item from the project object as well as
-        delete the files on disk. Folders are deleted if they're empty only,
-        and the deletion is always permanent.
+        delete the files on disk. Root folders are deleted if they're empty
+        only, and the deletion is always permanent.
         """
         if not self.theParent.hasProject:
             logger.error("No project open")
@@ -444,90 +444,8 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         wCount = self._getItemWordCount(tHandle)
-        if nwItemS.itemType == nwItemType.FILE:
-            logger.debug("User requested file '%s' deleted", tHandle)
-            trItemP = trItemS.parent()
-            trItemT = self._addTrashRoot()
-            if trItemP is None or trItemT is None:
-                logger.error("Could not delete item")
-                return False
-
-            if self.theProject.projTree.isTrash(tHandle):
-                # If the file is in the trash folder already, as the
-                # user if they want to permanently delete the file.
-                doPermanent = False
-                if not alreadyAsked:
-                    msgYes = self.theParent.askQuestion(
-                        self.tr("Delete File"),
-                        self.tr("Permanently delete file '{0}'?").format(nwItemS.itemName)
-                    )
-                    if msgYes:
-                        doPermanent = True
-                else:
-                    doPermanent = True
-
-                if doPermanent:
-                    logger.debug("Permanently deleting file with handle '%s'", tHandle)
-
-                    delDoc = NWDoc(self.theProject, tHandle)
-                    if not delDoc.deleteDocument():
-                        self.theParent.makeAlert([
-                            self.tr("Could not delete document file."), delDoc.getError()
-                        ], nwAlert.ERROR)
-                        return False
-
-                    self.propagateCount(tHandle, 0)
-                    tIndex = trItemP.indexOfChild(trItemS)
-                    trItemC = trItemP.takeChild(tIndex)
-
-                    if self.theParent.docEditor.docHandle() == tHandle:
-                        self.theParent.closeDocument()
-
-                    self.theIndex.deleteHandle(tHandle)
-                    self._deleteTreeItem(tHandle)
-                    self._setTreeChanged(True)
-                    self.wordCountsChanged.emit()
-
-            else:
-                # The file is not already in the trash folder, so we
-                # move it there.
-                msgYes = self.theParent.askQuestion(
-                    self.tr("Delete File"),
-                    self.tr("Move file '{0}' to Trash?").format(nwItemS.itemName),
-                )
-                if msgYes:
-                    logger.debug("Moving file '%s' to trash", tHandle)
-
-                    self.propagateCount(tHandle, 0)
-                    tIndex = trItemP.indexOfChild(trItemS)
-                    trItemC = trItemP.takeChild(tIndex)
-                    trItemT.addChild(trItemC)
-                    self._postItemMove(tHandle, wCount)
-                    self._recordLastMove(trItemS, trItemP, tIndex)
-                    self._setTreeChanged(True)
-
-        elif nwItemS.itemType == nwItemType.FOLDER:
-            logger.debug("User requested folder '%s' deleted", tHandle)
-            trItemP = trItemS.parent()
-            if trItemP is None:
-                logger.error("Could not delete folder")
-                return False
-
-            tIndex = trItemP.indexOfChild(trItemS)
-            if trItemS.childCount() == 0:
-                trItemP.takeChild(tIndex)
-                self._deleteTreeItem(tHandle)
-                self._setTreeChanged(True)
-            else:
-                self.theParent.makeAlert(self.tr(
-                    "Cannot delete folder. It is not empty. "
-                    "Recursive deletion is not supported. "
-                    "Please delete the content first."
-                ), nwAlert.ERROR)
-                return False
-
-        elif nwItemS.itemType == nwItemType.ROOT:
-            logger.debug("User requested root folder '%s' deleted", tHandle)
+        if nwItemS.itemType == nwItemType.ROOT:
+            logger.debug("User requested a root folder '%s' deleted", tHandle)
             tIndex = self.indexOfTopLevelItem(trItemS)
             if trItemS.childCount() == 0:
                 self.takeTopLevelItem(tIndex)
@@ -540,6 +458,60 @@ class GuiProjectTree(QTreeWidget):
                     "Please delete the content first."
                 ), nwAlert.ERROR)
                 return False
+
+        else:
+            logger.debug("User requested a file or folder '%s' deleted", tHandle)
+            trItemP = trItemS.parent()
+            trItemT = self._addTrashRoot()
+            if trItemP is None or trItemT is None:
+                logger.error("Could not delete item")
+                return False
+
+            if self.theProject.projTree.isTrash(tHandle):
+                # If the file is in the trash folder already, as the
+                # user if they want to permanently delete the file.
+                doPermanent = False
+                if not alreadyAsked:
+                    msgYes = self.theParent.askQuestion(
+                        self.tr("Delete"),
+                        self.tr("Permanently delete '{0}'?").format(nwItemS.itemName)
+                    )
+                    if msgYes:
+                        doPermanent = True
+                else:
+                    doPermanent = True
+
+                if doPermanent:
+                    logger.debug("Permanently deleting item with handle '%s'", tHandle)
+
+                    self.propagateCount(tHandle, 0)
+                    tIndex = trItemP.indexOfChild(trItemS)
+                    trItemC = trItemP.takeChild(tIndex)
+                    for dHandle in reversed(self.getTreeFromHandle(tHandle)):
+                        if self.theParent.docEditor.docHandle() == dHandle:
+                            self.theParent.closeDocument()
+                        self._deleteTreeItem(dHandle)
+
+                    self._setTreeChanged(True)
+                    self.wordCountsChanged.emit()
+
+            else:
+                # The item is not already in the trash folder, so we
+                # move it there.
+                msgYes = self.theParent.askQuestion(
+                    self.tr("Delete"),
+                    self.tr("Move '{0}' to Trash?").format(nwItemS.itemName),
+                )
+                if msgYes:
+                    logger.debug("Moving item '%s' to trash", tHandle)
+
+                    self.propagateCount(tHandle, 0)
+                    tIndex = trItemP.indexOfChild(trItemS)
+                    trItemC = trItemP.takeChild(tIndex)
+                    trItemT.addChild(trItemC)
+                    self._postItemMove(tHandle, wCount)
+                    self._recordLastMove(trItemS, trItemP, tIndex)
+                    self._setTreeChanged(True)
 
         return True
 
@@ -863,11 +835,21 @@ class GuiProjectTree(QTreeWidget):
         return self._treeMap.get(tHandle, None)
 
     def _deleteTreeItem(self, tHandle):
-        """Delete a tree item from the project and the map.
+        """Permanently delete a tree item from the project and the map.
         """
+        if self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+            delDoc = NWDoc(self.theProject, tHandle)
+            if not delDoc.deleteDocument():
+                self.theParent.makeAlert([
+                    self.tr("Could not delete document file."), delDoc.getError()
+                ], nwAlert.ERROR)
+                return False
+
+        self.theIndex.deleteHandle(tHandle)
         del self.theProject.projTree[tHandle]
         self._treeMap.pop(tHandle, None)
-        return
+
+        return True
 
     def _scanChildren(self, theList, tItem, tIndex):
         """This is a recursive function returning all items in a tree
