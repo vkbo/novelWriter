@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-20 21:23:06">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-23 16:55:50">
   <project>
     <name>New Project</name>
     <title></title>
     <saveCount>5</saveCount>
     <autoCount>2</autoCount>
-    <editTime>4</editTime>
+    <editTime>3</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
@@ -45,7 +45,7 @@
       <name status="s000000" import="i000004">Novel</name>
     </item>
     <item handle="000000000000c" parent="0000000000008" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
+      <meta expanded="False" charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
       <name status="s000000" import="i000004" exported="True">Title Page</name>
     </item>
     <item handle="000000000000d" parent="0000000000008" root="0000000000008" order="1" type="FOLDER" class="NOVEL">
@@ -53,11 +53,11 @@
       <name status="s000000" import="i000004">New Chapter</name>
     </item>
     <item handle="000000000000e" parent="000000000000d" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
+      <meta expanded="False" charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
       <name status="s000000" import="i000004" exported="True">New Chapter</name>
     </item>
     <item handle="000000000000f" parent="000000000000d" root="0000000000008" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta charCount="612" wordCount="95" paraCount="10" cursorPos="768"/>
+      <meta expanded="False" charCount="612" wordCount="95" paraCount="10" cursorPos="768"/>
       <name status="s000000" import="i000004" exported="True">New Scene</name>
     </item>
     <item handle="0000000000009" parent="None" root="0000000000009" order="1" type="ROOT" class="PLOT">
@@ -65,7 +65,7 @@
       <name status="s000000" import="i000004">Plot</name>
     </item>
     <item handle="0000000000021" parent="0000000000009" root="0000000000009" order="0" type="FILE" class="PLOT" layout="NOTE">
-      <meta charCount="48" wordCount="10" paraCount="1" cursorPos="69"/>
+      <meta expanded="False" charCount="48" wordCount="10" paraCount="1" cursorPos="69"/>
       <name status="s000000" import="i000004" exported="True">New Note</name>
     </item>
     <item handle="000000000000a" parent="None" root="000000000000a" order="2" type="ROOT" class="CHARACTER">
@@ -73,7 +73,7 @@
       <name status="s000000" import="i000004">Characters</name>
     </item>
     <item handle="0000000000020" parent="000000000000a" root="000000000000a" order="0" type="FILE" class="CHARACTER" layout="NOTE">
-      <meta charCount="34" wordCount="8" paraCount="1" cursorPos="51"/>
+      <meta expanded="False" charCount="34" wordCount="8" paraCount="1" cursorPos="51"/>
       <name status="s000000" import="i000004" exported="True">New Note</name>
     </item>
     <item handle="000000000000b" parent="None" root="000000000000b" order="3" type="ROOT" class="WORLD">
@@ -81,11 +81,11 @@
       <name status="s000000" import="i000004">World</name>
     </item>
     <item handle="0000000000022" parent="000000000000b" root="000000000000b" order="0" type="FILE" class="WORLD" layout="NOTE">
-      <meta charCount="51" wordCount="9" paraCount="1" cursorPos="68"/>
+      <meta expanded="False" charCount="51" wordCount="9" paraCount="1" cursorPos="68"/>
       <name status="s000000" import="i000004" exported="True">New Note</name>
     </item>
-    <item handle="0000000000024" parent="None" root="0000000000024" order="4" type="TRASH" class="TRASH">
-      <meta expanded="True"/>
+    <item handle="0000000000024" parent="None" root="0000000000024" order="4" type="ROOT" class="TRASH">
+      <meta expanded="False"/>
       <name status="s000000" import="i000004">Trash</name>
     </item>
   </content>

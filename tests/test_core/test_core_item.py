@@ -283,8 +283,6 @@ def testCoreItem_TypeSetter(mockGUI):
     assert theItem.itemType == nwItemType.FOLDER
     theItem.setType("FILE")
     assert theItem.itemType == nwItemType.FILE
-    theItem.setType("TRASH")
-    assert theItem.itemType == nwItemType.TRASH
 
     # Alternative
     theItem.setType(nwItemType.ROOT)
@@ -500,8 +498,9 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, mockRnd):
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
         b'<content>'
         b'<item handle="0123456789abc" parent="0123456789abc" root="0123456789abc" order="1" '
-        b'type="FILE" class="NOVEL" layout="NOTE"><meta charCount="7" wordCount="5" paraCount="3" '
-        b'cursorPos="11"/><name status="None" import="%s" exported="False">A Name</name></item>'
+        b'type="FILE" class="NOVEL" layout="NOTE"><meta expanded="False" charCount="7" '
+        b'wordCount="5" paraCount="3" cursorPos="11"/><name status="None" import="%s" '
+        b'exported="False">A Name</name></item>'
         b'</content>'
     ) % bytes(importKeys[3], encoding="utf8")
 
@@ -710,5 +709,9 @@ def testCoreItem_ConvertFromFmt13(mockGUI):
     assert theItem.itemClass == nwItemClass.NOVEL
     assert theItem.itemType == nwItemType.FILE
     assert theItem.itemLayout == nwItemLayout.DOCUMENT
+
+    # Deprecated Type
+    theItem.setType("TRASH")
+    assert theItem.itemType == nwItemType.ROOT
 
 # END Test testCoreItem_ConvertFromFmt13

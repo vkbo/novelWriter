@@ -82,7 +82,7 @@ class GuiProjectTree(QTreeWidget):
         # Tree Settings
         iPx = self.theTheme.baseIconSize
         self.setIconSize(QSize(iPx, iPx))
-        self.setExpandsOnDoubleClick(True)
+        self.setExpandsOnDoubleClick(False)
         self.setIndentation(iPx)
         self.setColumnCount(4)
         self.setHeaderLabels([
@@ -349,6 +349,14 @@ class GuiProjectTree(QTreeWidget):
             theList = self._scanChildren(theList, theItem, 0)
         return theList
 
+    def toggleExpanded(self, tHandle):
+        """Expand an item based on its handle.
+        """
+        trItem = self._getTreeItem(tHandle)
+        if trItem is not None:
+            trItem.setExpanded(not trItem.isExpanded())
+        return
+
     def getColumnSizes(self):
         """Return the column widths for the tree columns.
         """
@@ -435,7 +443,7 @@ class GuiProjectTree(QTreeWidget):
             logger.error("Could not find tree item for deletion")
             return False
 
-        wCount = int(trItemS.data(self.C_COUNT, Qt.UserRole))
+        wCount = self._getItemWordCount(tHandle)
         if nwItemS.itemType == nwItemType.FILE:
             logger.debug("User requested file '%s' deleted", tHandle)
             trItemP = trItemS.parent()
@@ -576,7 +584,7 @@ class GuiProjectTree(QTreeWidget):
 
         return
 
-    def propagateCount(self, tHandle, theCount):
+    def propagateCount(self, tHandle, newCount, countChildren=False):
         """Recursive function setting the word count for a given item,
         and propagating that count upwards in the tree until reaching a
         root item. This function is more efficient than recalculating
@@ -588,8 +596,12 @@ class GuiProjectTree(QTreeWidget):
         if tItem is None:
             return
 
-        tItem.setText(self.C_COUNT, f"{theCount:n}")
-        tItem.setData(self.C_COUNT, Qt.UserRole, int(theCount))
+        if countChildren:
+            for i in range(tItem.childCount()):
+                newCount += int(tItem.child(i).data(self.C_COUNT, Qt.UserRole))
+
+        tItem.setText(self.C_COUNT, f"{newCount:n}")
+        tItem.setData(self.C_COUNT, Qt.UserRole, int(newCount))
 
         pItem = tItem.parent()
         if pItem is None:
@@ -602,7 +614,12 @@ class GuiProjectTree(QTreeWidget):
             pHandle = pItem.data(self.C_NAME, Qt.UserRole)
 
         if pHandle:
-            self.propagateCount(pHandle, pCount)
+            if self.theProject.projTree.checkType(pHandle, nwItemType.FILE):
+                # A file has an internal word count we need to account
+                # for, but a folder always has 0 words on its own.
+                pCount += self.theIndex.getCounts(pHandle)[1]
+
+            self.propagateCount(pHandle, pCount, countChildren=False)
 
         return
 
@@ -646,11 +663,11 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         dstIndex = min(max(0, dstIndex), dstItem.childCount())
-        wCount = int(srcItem.data(self.C_COUNT, Qt.UserRole))
         sHandle = srcItem.data(self.C_NAME, Qt.UserRole)
         dHandle = dstItem.data(self.C_NAME, Qt.UserRole)
         logger.debug("Moving item '%s' back to '%s', index %d", sHandle, dHandle, dstIndex)
 
+        wCount = self._getItemWordCount(sHandle)
         self.propagateCount(sHandle, 0)
         parItem = srcItem.parent()
         srcIndex = parItem.indexOfChild(srcItem)
@@ -724,7 +741,7 @@ class GuiProjectTree(QTreeWidget):
     def doUpdateCounts(self, tHandle, cCount, wCount, pCount):
         """Slot for updating the word count of a specific item.
         """
-        self.propagateCount(tHandle, wCount)
+        self.propagateCount(tHandle, wCount, countChildren=True)
         self.wordCountsChanged.emit()
         return
 
@@ -765,61 +782,28 @@ class GuiProjectTree(QTreeWidget):
         """
         sHandle = self.getSelectedHandle()
         if sHandle is None:
-            logger.error("No handle selected")
+            logger.error("Invalid drag and drop event")
             return
 
-        dIndex = self.indexAt(theEvent.pos())
-        if not dIndex.isValid():
-            logger.error("Invalid drop index")
-            return
+        logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
 
         sItem = self._getTreeItem(sHandle)
-        dItem = self.itemFromIndex(dIndex)
-        dHandle = dItem.data(self.C_NAME, Qt.UserRole)
-        snItem = self.theProject.projTree[sHandle]
-        dnItem = self.theProject.projTree[dHandle]
-        if dnItem is None:
-            self.theParent.makeAlert(self.tr(
-                "The item cannot be moved to that location."
-            ), nwAlert.ERROR)
-            return
+        isExpanded = False
+        if sItem is not None:
+            isExpanded = sItem.isExpanded()
 
         pItem = sItem.parent()
         pIndex = 0
         if pItem is not None:
             pIndex = pItem.indexOfChild(sItem)
 
-        # Determine if the drag and drop is allowed:
-        # - Files can be moved anywhere
-        # - Folders can only be moved within the same root folder
-        # - Root folders cannot be moved at all
-        # - Items cannot be dropped on top of a file (moved inside)
+        wCount = self._getItemWordCount(sHandle)
+        self.propagateCount(sHandle, 0)
 
-        isFile = snItem.itemType == nwItemType.FILE
-        isRoot = snItem.itemType == nwItemType.ROOT
-        onFile = dnItem.itemType == nwItemType.FILE
-        inSame = snItem.itemRoot == dnItem.itemRoot
-
-        allowDrop  = inSame or isFile
-        allowDrop &= not (self.dropIndicatorPosition() == QAbstractItemView.OnItem and onFile)
-
-        if allowDrop and not isRoot:
-            logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
-
-            wCount = int(sItem.data(self.C_COUNT, Qt.UserRole))
-            self.propagateCount(sHandle, 0)
-
-            QTreeWidget.dropEvent(self, theEvent)
-            self._postItemMove(sHandle, wCount)
-            self._recordLastMove(sItem, pItem, pIndex)
-
-        else:
-            logger.debug("Drag'n'drop of item '%s' not accepted", sHandle)
-
-            theEvent.ignore()
-            self.theParent.makeAlert(self.tr(
-                "The item cannot be moved to that location."
-            ), nwAlert.ERROR)
+        QTreeWidget.dropEvent(self, theEvent)
+        self._postItemMove(sHandle, wCount)
+        self._recordLastMove(sItem, pItem, pIndex)
+        sItem.setExpanded(isExpanded)
 
         return
 
@@ -841,28 +825,40 @@ class GuiProjectTree(QTreeWidget):
         # is updated accordingly, and update word count
         pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
         nwItemS.setParent(pHandle)
-        self.theProject.projTree.updateItemData(tHandle)
-        self.setTreeItemValues(tHandle)
-        self.propagateCount(tHandle, wCount)
-
+        trItemP.setExpanded(True)
         logger.debug("The parent of item '%s' has been changed to '%s'", tHandle, pHandle)
 
-        # The items dropped into archive or trash should be removed
-        # from the project index, for all other items, we rescan the
-        # file to ensure the index is up to date.
-        if nwItemS.isInactive():
-            self.theIndex.deleteHandle(tHandle)
-        else:
-            self.theIndex.reIndexHandle(tHandle)
+        mHandles = self.getTreeFromHandle(tHandle)
+        logger.debug("A total of %d item(s) were moved", len(mHandles))
+        for mHandle in mHandles:
+            logger.debug("Updating item '%s'", mHandle)
+            self.theProject.projTree.updateItemData(mHandle)
+
+            # Update the index
+            if nwItemS.isInactive():
+                self.theIndex.deleteHandle(mHandle)
+            else:
+                self.theIndex.reIndexHandle(mHandle)
+
+            self.setTreeItemValues(mHandle)
 
         # Trigger dependent updates
+        self.propagateCount(tHandle, wCount)
         self._setTreeChanged(True)
         self._emitItemChange(tHandle)
 
         return True
 
+    def _getItemWordCount(self, tHandle):
+        """Retrun the word count of a given item handle.
+        """
+        tItem = self._getTreeItem(tHandle)
+        if tItem is None:
+            return 0
+        return int(tItem.data(self.C_COUNT, Qt.UserRole))
+
     def _getTreeItem(self, tHandle):
-        """Returns the QTreeWidgetItem of a given item handle.
+        """Return the QTreeWidgetItem of a given item handle.
         """
         return self._treeMap.get(tHandle, None)
 
@@ -878,12 +874,17 @@ class GuiProjectTree(QTreeWidget):
         starting at a given QTreeWidgetItem.
         """
         tHandle = tItem.data(self.C_NAME, Qt.UserRole)
+        cCount = tItem.childCount()
+
+        # Update tree-related meta data
         nwItem = self.theProject.projTree[tHandle]
-        nwItem.setExpanded(tItem.isExpanded())
+        nwItem.setExpanded(tItem.isExpanded() and cCount > 0)
         nwItem.setOrder(tIndex)
+
         theList.append(tHandle)
-        for i in range(tItem.childCount()):
+        for i in range(cCount):
             self._scanChildren(theList, tItem.child(i), i)
+
         return theList
 
     def _addTreeItem(self, nwItem, nHandle=None):
@@ -910,8 +911,7 @@ class GuiProjectTree(QTreeWidget):
         self._treeMap[tHandle] = newItem
         if pHandle is None:
             if nwItem.itemType == nwItemType.ROOT:
-                self.addTopLevelItem(newItem)
-            elif nwItem.itemType == nwItemType.TRASH:
+                newItem.setFlags(newItem.flags() ^ Qt.ItemIsDragEnabled)
                 self.addTopLevelItem(newItem)
             else:
                 self.theParent.makeAlert(self.tr(
@@ -931,7 +931,7 @@ class GuiProjectTree(QTreeWidget):
                 self._treeMap[pHandle].insertChild(byIndex+1, newItem)
             else:
                 self._treeMap[pHandle].addChild(newItem)
-            self.propagateCount(tHandle, nwItem.wordCount)
+            self.propagateCount(tHandle, nwItem.wordCount, countChildren=True)
 
         self.setTreeItemValues(tHandle)
         newItem.setExpanded(nwItem.isExpanded)
@@ -1057,7 +1057,7 @@ class GuiProjectTreeMenu(QMenu):
 
         trashHandle = self.theTree.theProject.projTree.trashRoot()
 
-        inTrash = theItem.itemParent == trashHandle and trashHandle is not None
+        inTrash = self.theTree.theProject.projTree.isTrash(theItem.itemHandle)
         isTrash = theItem.itemHandle == trashHandle and trashHandle is not None
         isFile = theItem.itemType == nwItemType.FILE
 

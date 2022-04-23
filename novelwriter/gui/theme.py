@@ -639,9 +639,6 @@ class GuiIcons:
                     iconName = "proj_scene"
             elif tLayout == nwItemLayout.NOTE:
                 iconName = "proj_note"
-        elif tType == nwItemType.TRASH:
-            iconName = nwLabels.CLASS_ICON[tClass]
-
         if iconName is None:
             return QIcon()
 

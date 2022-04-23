@@ -76,7 +76,7 @@ def mockItems(mockGUI, mockRnd):
 
     itemF = NWItem(theProject)
     itemF._name = "Trash"
-    itemF._type = nwItemType.TRASH
+    itemF._type = nwItemType.ROOT
     itemF._class = nwItemClass.TRASH
     itemF._expanded = False
 
@@ -172,7 +172,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     # Try to add another trash folder
     itemT = NWItem(theProject)
     itemT._name = "Trash"
-    itemT._type = nwItemType.TRASH
+    itemT._type = nwItemType.ROOT
     itemT._class = nwItemClass.TRASH
     itemT._expanded = False
 
@@ -353,12 +353,6 @@ def testCoreTree_Stats(mockGUI, mockItems):
     assert novelWords == 550
     assert noteWords == 400
 
-    # Count types
-    nRoot, nFolder, nFile = theTree.countTypes()
-    assert nRoot == 3
-    assert nFolder == 1
-    assert nFile == 3
-
 # END Test testCoreTree_Stats
 
 
@@ -419,25 +413,25 @@ def testCoreTree_XMLPackUnpack(mockGUI, mockItems):
         b'type="FOLDER" class="NOVEL"><meta expanded="True"/><name status="s000000" '
         b'import="i000004">Act One</name></item>'
         b'<item handle="c000000000001" parent="b000000000001" root="a000000000001" order="0" '
-        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta charCount="300" wordCount="50" '
-        b'paraCount="2" cursorPos="0"/><name status="s000000" import="i000004" '
+        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta expanded="False" charCount="300" '
+        b'wordCount="50" paraCount="2" cursorPos="0"/><name status="s000000" import="i000004" '
         b'exported="True">Chapter One</name></item>'
         b'<item handle="c000000000002" parent="b000000000001" root="a000000000001" order="0" '
-        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta charCount="3000" wordCount="500" '
-        b'paraCount="20" cursorPos="0"/><name status="s000000" import="i000004" '
+        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta expanded="False" charCount="3000" '
+        b'wordCount="500" paraCount="20" cursorPos="0"/><name status="s000000" import="i000004" '
         b'exported="True">Scene One</name></item>'
         b'<item handle="a000000000002" parent="None" root="a000000000002" order="0" type="ROOT" '
         b'class="ARCHIVE"><meta expanded="False"/><name status="s000000" '
         b'import="i000004">Outtakes</name></item>'
-        b'<item handle="a000000000003" parent="None" root="a000000000003" order="0" type="TRASH" '
+        b'<item handle="a000000000003" parent="None" root="a000000000003" order="0" type="ROOT" '
         b'class="TRASH"><meta expanded="False"/><name status="s000000" '
         b'import="i000004">Trash</name></item>'
         b'<item handle="a000000000004" parent="None" root="a000000000004" order="0" type="ROOT" '
         b'class="CHARACTER"><meta expanded="True"/><name status="s000000" '
         b'import="i000004">Characters</name></item>'
         b'<item handle="b000000000002" parent="a000000000004" root="a000000000004" order="0" '
-        b'type="FILE" class="CHARACTER" layout="NOTE"><meta charCount="2000" wordCount="400" '
-        b'paraCount="16" cursorPos="0"/><name status="s000000" import="i000004" '
+        b'type="FILE" class="CHARACTER" layout="NOTE"><meta expanded="False" charCount="2000" '
+        b'wordCount="400" paraCount="16" cursorPos="0"/><name status="s000000" import="i000004" '
         b'exported="True">Jane Doe</name></item>'
         b'</content>'
         b'</novelWriterXML>'
