@@ -158,7 +158,7 @@ class NWProject():
         if trashHandle is None:
             newItem = NWItem(self)
             newItem.setName(trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH]))
-            newItem.setType(nwItemType.TRASH)
+            newItem.setType(nwItemType.ROOT)
             newItem.setClass(nwItemClass.TRASH)
             self.projTree.append(None, None, newItem)
             self.projTree.updateItemData(newItem.itemHandle)

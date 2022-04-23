@@ -100,14 +100,13 @@ class NWTree():
             if nwItem.itemClass == nwItemClass.ARCHIVE:
                 logger.verbose("Item '%s' is the archive folder", str(tHandle))
                 self._archRoot = tHandle
-
-        if nwItem.itemType == nwItemType.TRASH:
-            if self._trashRoot is None:
-                logger.verbose("Item '%s' is the trash folder", str(tHandle))
-                self._trashRoot = tHandle
-            else:
-                logger.error("Only one trash folder allowed")
-                return False
+            elif nwItem.itemClass == nwItemClass.TRASH:
+                if self._trashRoot is None:
+                    logger.verbose("Item '%s' is the trash folder", str(tHandle))
+                    self._trashRoot = tHandle
+                else:
+                    logger.error("Only one trash folder allowed")
+                    return False
 
         self._projTree[tHandle] = nwItem
         self._treeOrder.append(tHandle)
@@ -351,30 +350,6 @@ class NWTree():
         tItem.setLayout(itemLayout)
 
         return True
-
-    ##
-    #  Getters
-    ##
-
-    def countTypes(self):
-        """Count the number of files, folders and roots in the project.
-        """
-        nRoot = 0
-        nFolder = 0
-        nFile = 0
-
-        for tHandle in self._treeOrder:
-            tItem = self.__getitem__(tHandle)
-            if tItem is None:
-                continue
-            elif tItem.itemType == nwItemType.ROOT:
-                nRoot += 1
-            elif tItem.itemType == nwItemType.FOLDER:
-                nFolder += 1
-            elif tItem.itemType == nwItemType.FILE:
-                nFile += 1
-
-        return nRoot, nFolder, nFile
 
     ##
     #  Meta Methods

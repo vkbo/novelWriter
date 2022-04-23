@@ -161,6 +161,7 @@ def testBaseCommon_IsItemClass():
     assert isItemClass("ARCHIVE") is True
     assert isItemClass("TRASH") is True
 
+    # Invalid
     assert isItemClass("None") is False
     assert isItemClass(None) is False
     assert isItemClass("STUFF") is False
@@ -176,8 +177,11 @@ def testBaseCommon_IsItemType():
     assert isItemType("ROOT") is True
     assert isItemType("FOLDER") is True
     assert isItemType("FILE") is True
-    assert isItemType("TRASH") is True
 
+    # Deprecated Type
+    assert isItemType("TRASH") is False
+
+    # Invalid
     assert isItemType("None") is False
     assert isItemType(None) is False
     assert isItemType("STUFF") is False
@@ -193,6 +197,16 @@ def testBaseCommon_IsItemLayout():
     assert isItemLayout("DOCUMENT") is True
     assert isItemLayout("NOTE") is True
 
+    # Deprecated Layouts
+    assert isItemLayout("TITLE") is False
+    assert isItemLayout("PAGE") is False
+    assert isItemLayout("BOOK") is False
+    assert isItemLayout("PARTITION") is False
+    assert isItemLayout("UNNUMBERED") is False
+    assert isItemLayout("CHAPTER") is False
+    assert isItemLayout("SCENE") is False
+
+    # Invalid
     assert isItemLayout("None") is False
     assert isItemLayout(None) is False
     assert isItemLayout("STUFF") is False

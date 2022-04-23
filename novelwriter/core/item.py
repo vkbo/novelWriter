@@ -160,13 +160,12 @@ class NWItem():
             itemAttrib["layout"] = str(self._layout.name)
 
         metaAttrib = {}
+        metaAttrib["expanded"] = str(self._expanded)
         if self._type == nwItemType.FILE:
             metaAttrib["charCount"] = str(self._charCount)
             metaAttrib["wordCount"] = str(self._wordCount)
             metaAttrib["paraCount"] = str(self._paraCount)
             metaAttrib["cursorPos"] = str(self._cursorPos)
-        else:
-            metaAttrib["expanded"]  = str(self._expanded)
 
         nameAttrib = {}
         nameAttrib["status"] = str(self._status)
@@ -409,6 +408,8 @@ class NWItem():
             self._type = value
         elif isItemType(value):
             self._type = nwItemType[value]
+        elif value == "TRASH":
+            self._type = nwItemType.ROOT
         else:
             logger.error("Unrecognised item type '%s'", value)
             self._type = nwItemType.NO_TYPE

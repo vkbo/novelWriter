@@ -906,7 +906,7 @@ class GuiMain(QMainWindow):
                 tItem.setCharCount(cC)
                 tItem.setWordCount(wC)
                 tItem.setParaCount(pC)
-                self.treeView.propagateCount(tItem.itemHandle, wC)
+                self.treeView.propagateCount(tItem.itemHandle, wC, countChildren=True)
                 self.treeView.setTreeItemValues(tItem.itemHandle)
 
         tEnd = time()
@@ -1568,11 +1568,17 @@ class GuiMain(QMainWindow):
     @pyqtSlot("QTreeWidgetItem*", int)
     def _treeDoubleClick(self, tItem, colNo):
         """The user double-clicked an item in the tree. If it is a file,
-        we open it. Otherwise, we do nothing.
+        we open it. Otherwise, we toggle the expanded status.
         """
         tHandle = self.treeView.getSelectedHandle()
         if tHandle is not None:
-            self.openDocument(tHandle, changeFocus=False, doScroll=False)
+            tItem = self.theProject.projTree[tHandle]
+            if tItem is None:
+                return
+            if tItem.itemType == nwItemType.FILE:
+                self.openDocument(tHandle, changeFocus=False, doScroll=False)
+            else:
+                self.treeView.toggleExpanded(tHandle)
         return
 
     @pyqtSlot()
