@@ -304,9 +304,7 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     # Delete item without focus -> blocked
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: False)
     nwTree.setSelectedHandle("0000000000012")
-    caplog.clear()
     assert nwTree.deleteItem() is False
-    assert "blocked" in caplog.text
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
     # No selection made
@@ -399,10 +397,8 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     # ===========
 
     # Try to empty trash that is already empty
-    caplog.clear()
     assert nwTree.getTreeFromHandle(trashHandle) == [trashHandle]
     assert nwTree.emptyTrash() is False
-    assert "already empty" in caplog.text
 
     # Move the two remaining scene documents to trash
     assert nwTree.deleteItem("000000000000f") is True
