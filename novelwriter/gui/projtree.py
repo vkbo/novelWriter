@@ -762,13 +762,9 @@ class GuiProjectTree(QTreeWidget):
         drop is allowed or not. Disallowed drops are cancelled.
         """
         sHandle = self.getSelectedHandle()
-        if sHandle is None:
-            logger.error("No handle selected")
-            return
-
         dIndex = self.indexAt(theEvent.pos())
-        if not dIndex.isValid():
-            logger.error("Invalid drop index")
+        if sHandle is None or not dIndex.isValid():
+            logger.error("Invalid drag and drop event")
             return
 
         sItem = self._getTreeItem(sHandle)
@@ -776,41 +772,27 @@ class GuiProjectTree(QTreeWidget):
         dHandle = dItem.data(self.C_NAME, Qt.UserRole)
         snItem = self.theProject.projTree[sHandle]
         dnItem = self.theProject.projTree[dHandle]
-        if dnItem is None:
+
+        if snItem.itemType == nwItemType.ROOT or dnItem is None:
+            logger.debug("Drag'n'drop of item '%s' not accepted", sHandle)
+            theEvent.ignore()
             self.theParent.makeAlert(self.tr(
                 "The item cannot be moved to that location."
             ), nwAlert.ERROR)
             return
+
+        logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
+
+        self.propagateCount(sHandle, 0)
+        QTreeWidget.dropEvent(self, theEvent)
+        self._postItemMove(sHandle)
 
         pItem = sItem.parent()
         pIndex = 0
         if pItem is not None:
             pIndex = pItem.indexOfChild(sItem)
 
-        # Determine if the drag and drop is allowed:
-        # - Files can be moved anywhere
-        # - Folders can only be moved within the same root folder
-        # - Root folders cannot be moved at all
-
-        isFile = snItem.itemType == nwItemType.FILE
-        isRoot = snItem.itemType == nwItemType.ROOT
-        inSame = snItem.itemRoot == dnItem.itemRoot
-
-        if (inSame or isFile) and not isRoot:
-            logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
-
-            self.propagateCount(sHandle, 0)
-            QTreeWidget.dropEvent(self, theEvent)
-            self._postItemMove(sHandle)
-            self._recordLastMove(sItem, pItem, pIndex)
-
-        else:
-            logger.debug("Drag'n'drop of item '%s' not accepted", sHandle)
-
-            theEvent.ignore()
-            self.theParent.makeAlert(self.tr(
-                "The item cannot be moved to that location."
-            ), nwAlert.ERROR)
+        self._recordLastMove(sItem, pItem, pIndex)
 
         return
 
