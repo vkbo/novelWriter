@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-23 15:51:36">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-23 16:56:31">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1308</saveCount>
+    <saveCount>1309</saveCount>
     <autoCount>201</autoCount>
-    <editTime>65350</editTime>
+    <editTime>65353</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -141,7 +141,7 @@
       <meta expanded="False" charCount="315" wordCount="55" paraCount="1" cursorPos="322"/>
       <name status="s90e6c9" import="ia857f0" exported="True">Old File</name>
     </item>
-    <item handle="98acd8c76c93a" parent="None" root="98acd8c76c93a" order="4" type="TRASH" class="TRASH">
+    <item handle="98acd8c76c93a" parent="None" root="98acd8c76c93a" order="4" type="ROOT" class="TRASH">
       <meta expanded="True"/>
       <name status="sf12341" import="ia857f0">Trash</name>
     </item>

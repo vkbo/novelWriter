@@ -100,14 +100,13 @@ class NWTree():
             if nwItem.itemClass == nwItemClass.ARCHIVE:
                 logger.verbose("Item '%s' is the archive folder", str(tHandle))
                 self._archRoot = tHandle
-
-        if nwItem.itemType == nwItemType.TRASH:
-            if self._trashRoot is None:
-                logger.verbose("Item '%s' is the trash folder", str(tHandle))
-                self._trashRoot = tHandle
-            else:
-                logger.error("Only one trash folder allowed")
-                return False
+            elif nwItem.itemClass == nwItemClass.TRASH:
+                if self._trashRoot is None:
+                    logger.verbose("Item '%s' is the trash folder", str(tHandle))
+                    self._trashRoot = tHandle
+                else:
+                    logger.error("Only one trash folder allowed")
+                    return False
 
         self._projTree[tHandle] = nwItem
         self._treeOrder.append(tHandle)

@@ -32,7 +32,6 @@ class nwItemType(Enum):
     ROOT    = 1
     FOLDER  = 2
     FILE    = 3
-    TRASH   = 4
 
 # END Enum nwItemType
 

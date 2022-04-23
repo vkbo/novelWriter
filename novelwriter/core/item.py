@@ -408,6 +408,8 @@ class NWItem():
             self._type = value
         elif isItemType(value):
             self._type = nwItemType[value]
+        elif value == "TRASH":
+            self._type = nwItemType.ROOT
         else:
             logger.error("Unrecognised item type '%s'", value)
             self._type = nwItemType.NO_TYPE

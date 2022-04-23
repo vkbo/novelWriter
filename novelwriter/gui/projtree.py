@@ -762,23 +762,8 @@ class GuiProjectTree(QTreeWidget):
         drop is allowed or not. Disallowed drops are cancelled.
         """
         sHandle = self.getSelectedHandle()
-        dIndex = self.indexAt(theEvent.pos())
-        if sHandle is None or not dIndex.isValid():
+        if sHandle is None:
             logger.error("Invalid drag and drop event")
-            return
-
-        sItem = self._getTreeItem(sHandle)
-        dItem = self.itemFromIndex(dIndex)
-        dHandle = dItem.data(self.C_NAME, Qt.UserRole)
-        snItem = self.theProject.projTree[sHandle]
-        dnItem = self.theProject.projTree[dHandle]
-
-        if snItem.itemType == nwItemType.ROOT or dnItem is None:
-            logger.debug("Drag'n'drop of item '%s' not accepted", sHandle)
-            theEvent.ignore()
-            self.theParent.makeAlert(self.tr(
-                "The item cannot be moved to that location."
-            ), nwAlert.ERROR)
             return
 
         logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
@@ -787,6 +772,8 @@ class GuiProjectTree(QTreeWidget):
         QTreeWidget.dropEvent(self, theEvent)
         self._postItemMove(sHandle)
 
+        # Record undo information
+        sItem = self._getTreeItem(sHandle)
         pItem = sItem.parent()
         pIndex = 0
         if pItem is not None:
@@ -895,8 +882,7 @@ class GuiProjectTree(QTreeWidget):
         self._treeMap[tHandle] = newItem
         if pHandle is None:
             if nwItem.itemType == nwItemType.ROOT:
-                self.addTopLevelItem(newItem)
-            elif nwItem.itemType == nwItemType.TRASH:
+                newItem.setFlags(newItem.flags() ^ Qt.ItemIsDragEnabled)
                 self.addTopLevelItem(newItem)
             else:
                 self.theParent.makeAlert(self.tr(
