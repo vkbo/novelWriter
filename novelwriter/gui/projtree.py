@@ -435,6 +435,7 @@ class GuiProjectTree(QTreeWidget):
             logger.error("Could not find tree item for deletion")
             return False
 
+        wCount = self._getItemWordCount(tHandle)
         if nwItemS.itemType == nwItemType.FILE:
             logger.debug("User requested file '%s' deleted", tHandle)
             trItemP = trItemS.parent()
@@ -493,7 +494,7 @@ class GuiProjectTree(QTreeWidget):
                     tIndex = trItemP.indexOfChild(trItemS)
                     trItemC = trItemP.takeChild(tIndex)
                     trItemT.addChild(trItemC)
-                    self._postItemMove(tHandle)
+                    self._postItemMove(tHandle, wCount)
                     self._recordLastMove(trItemS, trItemP, tIndex)
                     self._setTreeChanged(True)
 
@@ -649,13 +650,14 @@ class GuiProjectTree(QTreeWidget):
         dHandle = dstItem.data(self.C_NAME, Qt.UserRole)
         logger.debug("Moving item '%s' back to '%s', index %d", sHandle, dHandle, dstIndex)
 
+        wCount = self._getItemWordCount(sHandle)
         self.propagateCount(sHandle, 0)
         parItem = srcItem.parent()
         srcIndex = parItem.indexOfChild(srcItem)
         movItem = parItem.takeChild(srcIndex)
         dstItem.insertChild(dstIndex, movItem)
 
-        self._postItemMove(sHandle)
+        self._postItemMove(sHandle, wCount)
 
         self.clearSelection()
         movItem.setSelected(True)
@@ -768,18 +770,23 @@ class GuiProjectTree(QTreeWidget):
 
         logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
 
-        self.propagateCount(sHandle, 0)
-        QTreeWidget.dropEvent(self, theEvent)
-        self._postItemMove(sHandle)
-
-        # Record undo information
         sItem = self._getTreeItem(sHandle)
+        isExpanded = False
+        if sItem is not None:
+            isExpanded = sItem.isExpanded()
+
         pItem = sItem.parent()
         pIndex = 0
         if pItem is not None:
             pIndex = pItem.indexOfChild(sItem)
 
+        wCount = self._getItemWordCount(sHandle)
+        self.propagateCount(sHandle, 0)
+
+        QTreeWidget.dropEvent(self, theEvent)
+        self._postItemMove(sHandle, wCount)
         self._recordLastMove(sItem, pItem, pIndex)
+        sItem.setExpanded(isExpanded)
 
         return
 
@@ -787,7 +794,7 @@ class GuiProjectTree(QTreeWidget):
     #  Internal Functions
     ##
 
-    def _postItemMove(self, tHandle):
+    def _postItemMove(self, tHandle, wCount):
         """Run various maintenance tasks for a moved item.
         """
         trItemS = self._getTreeItem(tHandle)
@@ -807,19 +814,18 @@ class GuiProjectTree(QTreeWidget):
         logger.debug("A total of %d item(s) were moved", len(mHandles))
         for mHandle in mHandles:
             logger.debug("Updating item '%s'", mHandle)
-            wCount = self._getItemWordCount(mHandle)
             self.theProject.projTree.updateItemData(mHandle)
 
             # Update the index
             if nwItemS.isInactive():
-                self.theIndex.deleteHandle(tHandle)
+                self.theIndex.deleteHandle(mHandle)
             else:
-                self.theIndex.reIndexHandle(tHandle)
+                self.theIndex.reIndexHandle(mHandle)
 
             self.setTreeItemValues(mHandle)
-            self.propagateCount(mHandle, wCount)
 
         # Trigger dependent updates
+        self.propagateCount(tHandle, wCount)
         self._setTreeChanged(True)
         self._emitItemChange(tHandle)
 
