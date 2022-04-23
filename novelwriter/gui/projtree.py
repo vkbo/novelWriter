@@ -404,7 +404,7 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         logger.verbose("Deleting %d file(s) from Trash", nTrash)
-        for tHandle in self.getTreeFromHandle(trashHandle):
+        for tHandle in reversed(self.getTreeFromHandle(trashHandle)):
             if tHandle == trashHandle:
                 continue
             self.deleteItem(tHandle, alreadyAsked=True, bulkAction=True)
@@ -418,8 +418,8 @@ class GuiProjectTree(QTreeWidget):
         """Delete an item from the project tree. As a first step, files are
         moved to the Trash folder. Permanent deletion is a second step. This
         second step also deletes the item from the project object as well as
-        delete the files on disk. Folders are deleted if they're empty only,
-        and the deletion is always permanent.
+        delete the files on disk. Root folders are deleted if they're empty
+        only, and the deletion is always permanent.
         """
         if not self.theParent.hasProject:
             logger.error("No project open")
