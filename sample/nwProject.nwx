@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-23 16:56:31">
+<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-23 18:59:25">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1309</saveCount>
-    <autoCount>201</autoCount>
-    <editTime>65353</editTime>
+    <saveCount>1323</saveCount>
+    <autoCount>207</autoCount>
+    <editTime>66237</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -69,21 +69,21 @@
       <meta expanded="True"/>
       <name status="s90e6c9" import="ia857f0">A Folder</name>
     </item>
-    <item handle="ba8a28a246524" parent="e7ded148d6e4a" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" charCount="617" wordCount="101" paraCount="3" cursorPos="4"/>
-      <name status="sf12341" import="ia857f0" exported="True">Interlude</name>
-    </item>
-    <item handle="6a2d6d5f4f401" parent="e7ded148d6e4a" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
+    <item handle="6a2d6d5f4f401" parent="e7ded148d6e4a" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="True" charCount="75" wordCount="14" paraCount="1" cursorPos="279"/>
       <name status="sf24ce6" import="ia857f0" exported="True">Chapter One</name>
     </item>
     <item handle="636b6aa9b697b" parent="6a2d6d5f4f401" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" charCount="2429" wordCount="432" paraCount="14" cursorPos="219"/>
+      <meta expanded="True" charCount="2429" wordCount="432" paraCount="14" cursorPos="1479"/>
       <name status="s90e6c9" import="ia857f0" exported="True">Making a Scene</name>
     </item>
     <item handle="bc0cbd2a407f3" parent="6a2d6d5f4f401" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="False" charCount="476" wordCount="93" paraCount="3" cursorPos="577"/>
       <name status="s90e6c9" import="ia857f0" exported="True">Another Scene</name>
+    </item>
+    <item handle="ba8a28a246524" parent="e7ded148d6e4a" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="False" charCount="617" wordCount="101" paraCount="3" cursorPos="4"/>
+      <name status="sf12341" import="ia857f0" exported="True">Interlude</name>
     </item>
     <item handle="96b68994dfa3d" parent="e7ded148d6e4a" root="7031beac91f75" order="2" type="FILE" class="NOVEL" layout="NOTE">
       <meta expanded="False" charCount="1692" wordCount="313" paraCount="6" cursorPos="1110"/>
@@ -138,7 +138,7 @@
       <name status="sf12341" import="ia857f0">Scenes</name>
     </item>
     <item handle="8a5deb88c0e97" parent="ae9bf3c3ea159" root="6827118336ac1" order="0" type="FILE" class="ARCHIVE" layout="DOCUMENT">
-      <meta expanded="False" charCount="315" wordCount="55" paraCount="1" cursorPos="322"/>
+      <meta expanded="False" charCount="314" wordCount="55" paraCount="1" cursorPos="322"/>
       <name status="s90e6c9" import="ia857f0" exported="True">Old File</name>
     </item>
     <item handle="98acd8c76c93a" parent="None" root="98acd8c76c93a" order="4" type="ROOT" class="TRASH">

@@ -82,7 +82,7 @@ class GuiProjectTree(QTreeWidget):
         # Tree Settings
         iPx = self.theTheme.baseIconSize
         self.setIconSize(QSize(iPx, iPx))
-        self.setExpandsOnDoubleClick(True)
+        self.setExpandsOnDoubleClick(False)
         self.setIndentation(iPx)
         self.setColumnCount(4)
         self.setHeaderLabels([
@@ -349,6 +349,14 @@ class GuiProjectTree(QTreeWidget):
             theList = self._scanChildren(theList, theItem, 0)
         return theList
 
+    def toggleExpanded(self, tHandle):
+        """Expand an item based on its handle.
+        """
+        trItem = self._getTreeItem(tHandle)
+        if trItem is not None:
+            trItem.setExpanded(not trItem.isExpanded())
+        return
+
     def getColumnSizes(self):
         """Return the column widths for the tree columns.
         """
@@ -576,7 +584,7 @@ class GuiProjectTree(QTreeWidget):
 
         return
 
-    def propagateCount(self, tHandle, theCount):
+    def propagateCount(self, tHandle, newCount, countChildren=False):
         """Recursive function setting the word count for a given item,
         and propagating that count upwards in the tree until reaching a
         root item. This function is more efficient than recalculating
@@ -588,8 +596,12 @@ class GuiProjectTree(QTreeWidget):
         if tItem is None:
             return
 
-        tItem.setText(self.C_COUNT, f"{theCount:n}")
-        tItem.setData(self.C_COUNT, Qt.UserRole, int(theCount))
+        if countChildren:
+            for i in range(tItem.childCount()):
+                newCount += int(tItem.child(i).data(self.C_COUNT, Qt.UserRole))
+
+        tItem.setText(self.C_COUNT, f"{newCount:n}")
+        tItem.setData(self.C_COUNT, Qt.UserRole, int(newCount))
 
         pItem = tItem.parent()
         if pItem is None:
@@ -602,7 +614,12 @@ class GuiProjectTree(QTreeWidget):
             pHandle = pItem.data(self.C_NAME, Qt.UserRole)
 
         if pHandle:
-            self.propagateCount(pHandle, pCount)
+            if self.theProject.projTree.checkType(pHandle, nwItemType.FILE):
+                # A file has an internal word count we need to account
+                # for, but a folder always has 0 words on its own.
+                pCount += self.theIndex.getCounts(pHandle)[1]
+
+            self.propagateCount(pHandle, pCount, countChildren=False)
 
         return
 
@@ -724,7 +741,7 @@ class GuiProjectTree(QTreeWidget):
     def doUpdateCounts(self, tHandle, cCount, wCount, pCount):
         """Slot for updating the word count of a specific item.
         """
-        self.propagateCount(tHandle, wCount)
+        self.propagateCount(tHandle, wCount, countChildren=True)
         self.wordCountsChanged.emit()
         return
 
@@ -908,7 +925,7 @@ class GuiProjectTree(QTreeWidget):
                 self._treeMap[pHandle].insertChild(byIndex+1, newItem)
             else:
                 self._treeMap[pHandle].addChild(newItem)
-            self.propagateCount(tHandle, nwItem.wordCount)
+            self.propagateCount(tHandle, nwItem.wordCount, countChildren=True)
 
         self.setTreeItemValues(tHandle)
         newItem.setExpanded(nwItem.isExpanded)
