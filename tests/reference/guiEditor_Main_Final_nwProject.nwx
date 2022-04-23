@@ -85,7 +85,7 @@
       <name status="s000000" import="i000004" exported="True">New Note</name>
     </item>
     <item handle="0000000000024" parent="None" root="0000000000024" order="4" type="ROOT" class="TRASH">
-      <meta expanded="True"/>
+      <meta expanded="False"/>
       <name status="s000000" import="i000004">Trash</name>
     </item>
   </content>

@@ -825,6 +825,7 @@ class GuiProjectTree(QTreeWidget):
         # is updated accordingly, and update word count
         pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
         nwItemS.setParent(pHandle)
+        trItemP.setExpanded(True)
         logger.debug("The parent of item '%s' has been changed to '%s'", tHandle, pHandle)
 
         mHandles = self.getTreeFromHandle(tHandle)
@@ -873,12 +874,17 @@ class GuiProjectTree(QTreeWidget):
         starting at a given QTreeWidgetItem.
         """
         tHandle = tItem.data(self.C_NAME, Qt.UserRole)
+        cCount = tItem.childCount()
+
+        # Update tree-related meta data
         nwItem = self.theProject.projTree[tHandle]
-        nwItem.setExpanded(tItem.isExpanded())
+        nwItem.setExpanded(tItem.isExpanded() and cCount > 0)
         nwItem.setOrder(tIndex)
+
         theList.append(tHandle)
-        for i in range(tItem.childCount()):
+        for i in range(cCount):
             self._scanChildren(theList, tItem.child(i), i)
+
         return theList
 
     def _addTreeItem(self, nwItem, nHandle=None):
