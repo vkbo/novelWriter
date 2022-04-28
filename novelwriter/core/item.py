@@ -239,6 +239,11 @@ class NWItem():
                 # version of novelWriter that doesn't know the tag
                 logger.error("Unknown tag '%s'", xValue.tag)
 
+        # Make some checks to ensure consistency
+        if self._type == nwItemType.ROOT:
+            self._root = self._handle  # Root items are their own ancestor
+            self._parent = None        # Root items cannot have a parent
+
         return True
 
     @staticmethod
