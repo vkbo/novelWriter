@@ -445,6 +445,7 @@ class GuiProjectTree(QTreeWidget):
 
         wCount = self._getItemWordCount(tHandle)
         if nwItemS.itemType == nwItemType.ROOT:
+            # Only an empty ROOT folder can be deleted
             logger.debug("User requested a root folder '%s' deleted", tHandle)
             tIndex = self.indexOfTopLevelItem(trItemS)
             if trItemS.childCount() == 0:
@@ -459,7 +460,17 @@ class GuiProjectTree(QTreeWidget):
                 ), nwAlert.ERROR)
                 return False
 
+        elif nwItemS.itemType == nwItemType.FOLDER and trItemS.childCount() == 0:
+            # An empty FOLDER is just deleted without any further checks
+            logger.debug("User requested an empty folder '%s' deleted", tHandle)
+            trItemP = trItemS.parent()
+            tIndex = trItemP.indexOfChild(trItemS)
+            trItemP.takeChild(tIndex)
+            self._deleteTreeItem(tHandle)
+            self._setTreeChanged(True)
+
         else:
+            # A populated FOLDER or a FILE requires confirmtation
             logger.debug("User requested a file or folder '%s' deleted", tHandle)
             trItemP = trItemS.parent()
             trItemT = self._addTrashRoot()
