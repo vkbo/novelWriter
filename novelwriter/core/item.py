@@ -171,7 +171,7 @@ class NWItem():
         nameAttrib["status"] = str(self._status)
         nameAttrib["import"] = str(self._import)
         if self._type == nwItemType.FILE:
-            nameAttrib["exported"]  = str(self._exported)
+            nameAttrib["exported"] = str(self._exported)
 
         xPack = etree.SubElement(xParent, "item", attrib=itemAttrib)
         self._subPack(xPack, "meta", attrib=metaAttrib)
@@ -243,6 +243,12 @@ class NWItem():
         if self._type == nwItemType.ROOT:
             self._root = self._handle  # Root items are their own ancestor
             self._parent = None        # Root items cannot have a parent
+
+        if self._type != nwItemType.FILE:
+            self._charCount = 0  # Only set for files
+            self._wordCount = 0  # Only set for files
+            self._paraCount = 0  # Only set for files
+            self._cursorPos = 0  # Only set for files
 
         return True
 
