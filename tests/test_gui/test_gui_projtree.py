@@ -398,6 +398,15 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     assert not os.path.isfile(os.path.join(fncDir, "project", "content", "0000000000015.nwd"))
     assert not os.path.isfile(os.path.join(fncDir, "project", "content", "0000000000016.nwd"))
 
+    # Add an empty folder, which can be deleted with no further restrictions
+    nwTree.setSelectedHandle("0000000000009")
+    assert nwTree.newTreeItem(nwItemType.FOLDER) is True
+    assert nwTree.getTreeFromHandle("0000000000009") == ["0000000000009", "0000000000017"]
+
+    nwTree.setSelectedHandle("0000000000017")
+    assert nwTree.deleteItem("0000000000017") is True
+    assert nwTree.getTreeFromHandle("0000000000009") == ["0000000000009"]
+
     # Empty Trash
     # ===========
 
