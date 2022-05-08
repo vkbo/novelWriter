@@ -760,8 +760,8 @@ class GuiProjectTree(QTreeWidget):
         return
 
     def dropEvent(self, theEvent):
-        """Overload the drop of dragged item event to check whether the
-        drop is allowed or not. Disallowed drops are cancelled.
+        """Overload the drop item event to ensure relevant data has been
+        updated.
         """
         sHandle = self.getSelectedHandle()
         if sHandle is None:
