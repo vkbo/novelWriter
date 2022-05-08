@@ -29,6 +29,8 @@ The full documentation is available at
 The full credits are listed in
 [CREDITS.md](https://github.com/vkbo/novelWriter/blob/main/CREDITS.md).
 
+You can also follow novelWriter on Mastodon at [fosstodon.org/@novelwriter](https://fosstodon.org/@novelwriter).
+
 ## Implementation
 
 The application is written with Python 3 (3.7+) using Qt5 and PyQt5 (5.3+). It is developed on
