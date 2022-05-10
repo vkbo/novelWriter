@@ -26,13 +26,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtWidgets import QToolBar, QWidget, QSizePolicy, QAction
+
+from novelwriter.enum import nwView
 
 logger = logging.getLogger(__name__)
 
 
 class GuiViewsBar(QToolBar):
+
+    viewChangeRequested = pyqtSignal(nwView)
 
     def __init__(self, theParent):
         QToolBar.__init__(self, theParent)
@@ -60,17 +64,35 @@ class GuiViewsBar(QToolBar):
 
         # Actions
         self.aProject = QAction(self.tr("Project"))
-        self.aProject.setIcon(self.theTheme.getIcon("status_lines"))
+        self.aProject.setIcon(self.theTheme.getIcon("proj_folder"))
+        self.aProject.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.PROJECT))
+
+        self.aNovel = QAction(self.tr("Novel"))
+        self.aNovel.setIcon(self.theTheme.getIcon("cls_novel"))
+        self.aNovel.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.NOVEL))
+
+        self.aOutline = QAction(self.tr("Outline"))
+        self.aOutline.setIcon(self.theTheme.getIcon("cls_plot"))
+        self.aOutline.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.OUTLINE))
+
+        self.aDetails = QAction(self.tr("Details"))
+        self.aDetails.setIcon(self.theTheme.getIcon("status_lines"))
+        self.aDetails.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.DETAILS))
 
         self.aStats = QAction(self.tr("Stats"))
         self.aStats.setIcon(self.theTheme.getIcon("status_stats"))
+        self.aStats.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.STATS))
 
         self.aSettings = QAction(self.tr("Settings"))
         self.aSettings.setIcon(self.theTheme.getIcon("settings"))
+        self.aSettings.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.SET_PROJ))
 
         # Assemble
-        self.addWidget(stretch)
         self.addAction(self.aProject)
+        self.addAction(self.aNovel)
+        self.addAction(self.aOutline)
+        self.addWidget(stretch)
+        self.addAction(self.aDetails)
         self.addAction(self.aStats)
         self.addAction(self.aSettings)
 

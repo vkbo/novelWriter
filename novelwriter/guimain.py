@@ -30,11 +30,11 @@ import novelwriter
 from time import time
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QTimer, QSize, QThreadPool, pyqtSlot
+from PyQt5.QtCore import Qt, QTimer, QThreadPool, pyqtSlot
 from PyQt5.QtGui import QIcon, QKeySequence, QCursor
 from PyQt5.QtWidgets import (
     qApp, QMainWindow, QVBoxLayout, QWidget, QSplitter, QFileDialog, QShortcut,
-    QMessageBox, QDialog, QTabWidget, QToolBar, QAction
+    QMessageBox, QDialog, QStackedWidget
 )
 
 from novelwriter.gui import (
@@ -52,7 +52,7 @@ from novelwriter.tools import (
 )
 from novelwriter.core import NWProject, NWIndex
 from novelwriter.enum import (
-    nwItemType, nwItemClass, nwAlert, nwWidget, nwState
+    nwItemType, nwItemClass, nwAlert, nwWidget, nwState, nwView
 )
 from novelwriter.common import getGuiItem, hexToInt
 
@@ -102,8 +102,6 @@ class GuiMain(QMainWindow):
 
         # Sizes
         mPx = self.mainConf.pxInt(4)
-        fPx = self.theTheme.fontPixelSize
-        fPt = self.theTheme.fontPointSize
 
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
@@ -129,48 +127,20 @@ class GuiMain(QMainWindow):
         self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
         self.treeView.wordCountsChanged.connect(self._updateStatusWordCount)
 
-        # Project Tree Tabs
-        self.projTabs = QTabWidget()
-        self.projTabs.setTabPosition(QTabWidget.South)
-        self.projTabs.setStyleSheet("QTabWidget::pane {border: 0;};")
-        self.projTabs.addTab(self.treeView, self.tr("Project"))
-        self.projTabs.addTab(self.novelView, self.tr("Novel"))
-        self.projTabs.currentChanged.connect(self._projTabsChanged)
+        self.viewsBar.viewChangeRequested.connect(self._changeView)
 
-        tabFont = self.projTabs.tabBar().font()
-        tabFont.setPointSizeF(0.9*fPt)
-        self.projTabs.tabBar().setFont(tabFont)
-
-        # Project Tree Action Buttons
-        btnSize = int(round(0.7*fPx))
-        self.treeButtons = QToolBar()
-        self.treeButtons.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        self.treeButtons.setIconSize(QSize(btnSize, btnSize))
-        self.treeButtons.setContentsMargins(0, 0, 0, 0)
-        self.treeButtons.setStyleSheet("QToolBar {padding: 0;}")
-        self.projTabs.setCornerWidget(self.treeButtons, Qt.BottomRightCorner)
-
-        self.projDetailsBtn = QAction(self.tr("Project Details"))
-        self.projDetailsBtn.setIcon(self.theTheme.getIcon("status_lines"))
-        self.projDetailsBtn.triggered.connect(lambda: self.showProjectDetailsDialog())
-        self.treeButtons.addAction(self.projDetailsBtn)
-
-        self.projStatsBtn = QAction(self.tr("Writing Statistics"))
-        self.projStatsBtn.setIcon(self.theTheme.getIcon("status_stats"))
-        self.projStatsBtn.triggered.connect(lambda: self.showWritingStatsDialog())
-        self.treeButtons.addAction(self.projStatsBtn)
-
-        self.projSettingsBtn = QAction(self.tr("Project Settings"))
-        self.projSettingsBtn.setIcon(self.theTheme.getIcon("settings"))
-        self.projSettingsBtn.triggered.connect(lambda: self.showProjectSettingsDialog())
-        self.treeButtons.addAction(self.projSettingsBtn)
+        # Project Tree Stack
+        self.projStack = QStackedWidget()
+        self.projStack.addWidget(self.treeView)
+        self.projStack.addWidget(self.novelView)
+        self.projStack.currentChanged.connect(self._projStackChanged)
 
         # Project Tree View
         self.treePane = QWidget()
         self.treeBox = QVBoxLayout()
         self.treeBox.setContentsMargins(0, 0, 0, 0)
         self.treeBox.setSpacing(mPx)
-        self.treeBox.addWidget(self.projTabs)
+        self.treeBox.addWidget(self.projStack)
         self.treeBox.addWidget(self.treeMeta)
         self.treePane.setLayout(self.treeBox)
 
@@ -192,33 +162,31 @@ class GuiMain(QMainWindow):
         self.splitOutline.setSizes(self.mainConf.getOutlinePanePos())
 
         # Main Tabs : Editor / Outline
-        self.mainTabs = QTabWidget()
-        self.mainTabs.setTabPosition(QTabWidget.East)
-        self.mainTabs.setStyleSheet("QTabWidget::pane {border: 0;}")
-        self.mainTabs.addTab(self.splitDocs, self.tr("Editor"))
-        self.mainTabs.addTab(self.splitOutline, self.tr("Outline"))
-        self.mainTabs.currentChanged.connect(self._mainTabChanged)
+        self.mainStack = QStackedWidget()
+        self.mainStack.addWidget(self.splitDocs)
+        self.mainStack.addWidget(self.splitOutline)
+        self.mainStack.currentChanged.connect(self._mainStackChanged)
 
         # Splitter : Project Tree / Main Tabs
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.setContentsMargins(mPx, mPx, mPx, mPx)
         self.splitMain.addWidget(self.treePane)
-        self.splitMain.addWidget(self.mainTabs)
+        self.splitMain.addWidget(self.mainStack)
         self.splitMain.setSizes(self.mainConf.getMainPanePos())
 
         # Indices of Splitter Widgets
         self.idxTree     = self.splitMain.indexOf(self.treePane)
-        self.idxMain     = self.splitMain.indexOf(self.mainTabs)
+        self.idxMain     = self.splitMain.indexOf(self.mainStack)
         self.idxEditor   = self.splitDocs.indexOf(self.docEditor)
         self.idxViewer   = self.splitDocs.indexOf(self.splitView)
         self.idxViewDoc  = self.splitView.indexOf(self.docViewer)
         self.idxViewMeta = self.splitView.indexOf(self.viewMeta)
 
         # Indices of Tab Widgets
-        self.idxTabEdit   = self.mainTabs.indexOf(self.splitDocs)
-        self.idxTabProj   = self.mainTabs.indexOf(self.splitOutline)
-        self.idxTreeView  = self.projTabs.indexOf(self.treeView)
-        self.idxNovelView = self.projTabs.indexOf(self.novelView)
+        self.idxTabEdit   = self.mainStack.indexOf(self.splitDocs)
+        self.idxTabProj   = self.mainStack.indexOf(self.splitOutline)
+        self.idxTreeView  = self.projStack.indexOf(self.treeView)
+        self.idxNovelView = self.projStack.indexOf(self.novelView)
 
         # Splitter Behaviour
         self.splitMain.setCollapsible(self.idxTree, False)
@@ -450,7 +418,7 @@ class GuiMain(QMainWindow):
             self.theIndex.clearIndex()
             self.clearGUI()
             self.hasProject = False
-            self.mainTabs.setCurrentWidget(self.splitDocs)
+            self.mainStack.setCurrentWidget(self.splitDocs)
 
         return saveOK
 
@@ -466,7 +434,7 @@ class GuiMain(QMainWindow):
             return False
 
         # Switch main tab to editor view
-        self.mainTabs.setCurrentWidget(self.splitDocs)
+        self.mainStack.setCurrentWidget(self.splitDocs)
 
         # Try to open the project
         if not self.theProject.openProject(projFile):
@@ -605,7 +573,7 @@ class GuiMain(QMainWindow):
             return False
 
         self.closeDocument()
-        self.mainTabs.setCurrentWidget(self.splitDocs)
+        self.mainStack.setCurrentWidget(self.splitDocs)
         if self.docEditor.loadText(tHandle, tLine):
             if changeFocus:
                 self.docEditor.setFocus()
@@ -688,7 +656,7 @@ class GuiMain(QMainWindow):
                 return False
 
         # Make sure main tab is in Editor view
-        self.mainTabs.setCurrentWidget(self.splitDocs)
+        self.mainStack.setCurrentWidget(self.splitDocs)
 
         logger.debug("Viewing document with handle '%s'", tHandle)
         if self.docViewer.loadText(tHandle):
@@ -873,7 +841,7 @@ class GuiMain(QMainWindow):
     def requestNovelTreeRefresh(self):
         """Update the novel tree, but only if it is visible.
         """
-        if self.projTabs.currentIndex() == self.idxNovelView and self.hasProject:
+        if self.projStack.currentIndex() == self.idxNovelView and self.hasProject:
             self.novelView.refreshTree()
             return True
         return False
@@ -934,7 +902,7 @@ class GuiMain(QMainWindow):
             return False
 
         logger.verbose("Forcing a rebuild of the Project Outline")
-        self.mainTabs.setCurrentWidget(self.splitOutline)
+        self.mainStack.setCurrentWidget(self.splitOutline)
         self.projView.refreshTree(overRide=True)
 
         return True
@@ -1247,19 +1215,19 @@ class GuiMain(QMainWindow):
         """Switch focus between main GUI views.
         """
         if paneNo == nwWidget.TREE:
-            tabIdx = self.projTabs.currentIndex()
+            tabIdx = self.projStack.currentIndex()
             if tabIdx == self.idxTreeView:
                 self.treeView.setFocus()
             elif tabIdx == self.idxNovelView:
                 self.novelView.setFocus()
         elif paneNo == nwWidget.EDITOR:
-            self.mainTabs.setCurrentWidget(self.splitDocs)
+            self.mainStack.setCurrentWidget(self.splitDocs)
             self.docEditor.setFocus()
         elif paneNo == nwWidget.VIEWER:
-            self.mainTabs.setCurrentWidget(self.splitDocs)
+            self.mainStack.setCurrentWidget(self.splitDocs)
             self.docViewer.setFocus()
         elif paneNo == nwWidget.OUTLINE:
-            self.mainTabs.setCurrentWidget(self.splitOutline)
+            self.mainStack.setCurrentWidget(self.splitOutline)
             self.projView.setFocus()
         return
 
@@ -1292,7 +1260,7 @@ class GuiMain(QMainWindow):
         self.mainMenu.setFocusMode(self.isFocusMode)
         if self.isFocusMode:
             logger.debug("Activating Focus Mode")
-            self.mainTabs.setCurrentWidget(self.splitDocs)
+            self.mainStack.setCurrentWidget(self.splitDocs)
             self.switchFocus(nwWidget.EDITOR)
         else:
             logger.debug("Deactivating Focus Mode")
@@ -1302,7 +1270,6 @@ class GuiMain(QMainWindow):
         self.statusBar.setVisible(isVisible)
         self.mainMenu.setVisible(isVisible)
         self.viewsBar.setVisible(isVisible)
-        self.mainTabs.tabBar().setVisible(isVisible)
 
         hideDocFooter = self.isFocusMode and self.mainConf.hideFocusFooter
         self.docEditor.docFooter.setVisible(not hideDocFooter)
@@ -1516,6 +1483,32 @@ class GuiMain(QMainWindow):
     #  Slots
     ##
 
+    @pyqtSlot(nwView)
+    def _changeView(self, view):
+        """Handle the requested change of view from the GuiViewBar.
+        """
+        if view == nwView.PROJECT:
+            self.mainStack.setCurrentWidget(self.splitDocs)
+            self.projStack.setCurrentWidget(self.treeView)
+
+        elif view == nwView.NOVEL:
+            self.mainStack.setCurrentWidget(self.splitDocs)
+            self.projStack.setCurrentWidget(self.novelView)
+
+        elif view == nwView.OUTLINE:
+            self.mainStack.setCurrentWidget(self.splitOutline)
+
+        elif view == nwView.DETAILS:
+            self.showProjectDetailsDialog()
+
+        elif view == nwView.STATS:
+            self.showWritingStatsDialog()
+
+        elif view == nwView.SET_PROJ:
+            self.showProjectSettingsDialog()
+
+        return
+
     @pyqtSlot()
     def _timeTick(self):
         """Triggered on every tick of the main timer.
@@ -1589,7 +1582,7 @@ class GuiMain(QMainWindow):
         """Triggered when there is a change to a novel item in the
         project tree.
         """
-        if self.mainTabs.currentIndex() == self.idxTabProj:
+        if self.mainStack.currentIndex() == self.idxTabProj:
             logger.verbose("Novel tree changed while Outline tab active")
             if self.hasProject:
                 self.treeView.flushTreeOrder()
@@ -1618,7 +1611,7 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot(int)
-    def _mainTabChanged(self, tabIndex):
+    def _mainStackChanged(self, tabIndex):
         """Activated when the main window tab is changed.
         """
         if tabIndex == self.idxTabEdit:
@@ -1631,7 +1624,7 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot(int)
-    def _projTabsChanged(self, tabIndex):
+    def _projStackChanged(self, tabIndex):
         """Activated when the project view tab is changed.
         """
         sHandle = None

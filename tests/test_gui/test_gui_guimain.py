@@ -85,7 +85,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
 
     # Project Tree has focus
     nwGUI.switchFocus(nwWidget.TREE)
-    nwGUI.projTabs.setCurrentIndex(0)
+    nwGUI.projStack.setCurrentIndex(0)
     with monkeypatch.context() as mp:
         mp.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle() is None
@@ -95,7 +95,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
         assert nwGUI.closeDocument() is True
 
     # Novel Tree has focus
-    nwGUI.projTabs.setCurrentIndex(1)
+    nwGUI.projStack.setCurrentIndex(1)
     nwGUI.novelView.refreshTree(True)
     with monkeypatch.context() as mp:
         mp.setattr(GuiNovelTree, "hasFocus", lambda *a: True)
