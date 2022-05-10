@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
 from novelwriter.gui import (
     GuiDocEditor, GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiMainMenu,
     GuiMainStatus, GuiNovelTree, GuiOutline, GuiOutlineDetails, GuiProjectTree,
-    GuiTheme
+    GuiTheme, GuiViewsBar
 )
 from novelwriter.dialogs import (
     GuiAbout, GuiDocMerge, GuiDocSplit, GuiItemEditor, GuiPreferences,
@@ -116,6 +116,7 @@ class GuiMain(QMainWindow):
         self.projView  = GuiOutline(self)
         self.projMeta  = GuiOutlineDetails(self)
         self.mainMenu  = GuiMainMenu(self)
+        self.viewsBar  = GuiViewsBar(self)
 
         # Connect Signals Between Main Elements
         self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
@@ -238,6 +239,7 @@ class GuiMain(QMainWindow):
         self.setMenuBar(self.mainMenu)
         self.setCentralWidget(self.splitMain)
         self.setStatusBar(self.statusBar)
+        self.addToolBar(Qt.LeftToolBarArea, self.viewsBar)
 
         # Finalise Initialisation
         # =======================
@@ -1299,6 +1301,7 @@ class GuiMain(QMainWindow):
         self.treePane.setVisible(isVisible)
         self.statusBar.setVisible(isVisible)
         self.mainMenu.setVisible(isVisible)
+        self.viewsBar.setVisible(isVisible)
         self.mainTabs.tabBar().setVisible(isVisible)
 
         hideDocFooter = self.isFocusMode and self.mainConf.hideFocusFooter

@@ -29,6 +29,7 @@ from novelwriter.gui.outlinedetails import GuiOutlineDetails
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.gui.statusbar import GuiMainStatus
 from novelwriter.gui.theme import GuiTheme
+from novelwriter.gui.viewsbar import GuiViewsBar
 
 __all__ = [
     "GuiDocEditor",
@@ -42,4 +43,5 @@ __all__ = [
     "GuiOutlineDetails",
     "GuiProjectTree",
     "GuiTheme",
+    "GuiViewsBar",
 ]
