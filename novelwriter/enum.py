@@ -132,13 +132,14 @@ class nwState(Enum):
 
 class nwView(Enum):
 
-    PROJECT  = 0
-    NOVEL    = 1
-    OUTLINE  = 2
-    DETAILS  = 3
-    STATS    = 4
-    SET_PROJ = 5
-    SET_MAIN = 6
+    EDITOR   = 0
+    PROJECT  = 1
+    NOVEL    = 2
+    OUTLINE  = 3
+    DETAILS  = 4
+    STATS    = 5
+    SET_PROJ = 6
+    SET_MAIN = 7
 
 # END Enum nwView
 

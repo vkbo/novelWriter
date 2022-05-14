@@ -26,11 +26,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
-from PyQt5.QtCore import Qt, QT_TRANSLATE_NOOP
+from PyQt5.QtCore import Qt, QT_TRANSLATE_NOOP, pyqtSignal
 from PyQt5.QtWidgets import (
     QScrollArea, QWidget, QGridLayout, QHBoxLayout, QGroupBox, QLabel
 )
 
+from novelwriter.enum import nwView
 from novelwriter.common import checkInt
 from novelwriter.constants import trConst, nwKeyWords, nwLabels
 
@@ -45,6 +46,8 @@ class GuiOutlineDetails(QScrollArea):
         "H3": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Scene"),
         "H4": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Section"),
     }
+
+    viewChangeRequested = pyqtSignal(nwView)
 
     def __init__(self, theParent):
         QScrollArea.__init__(self, theParent)
@@ -329,6 +332,7 @@ class GuiOutlineDetails(QScrollArea):
         if len(theLink) > 0:
             theBits = theLink.split("=")
             if len(theBits) == 2:
+                self.viewChangeRequested.emit(nwView.PROJECT)
                 self.theParent.docViewer.loadFromTag(theBits[1])
         return
 
