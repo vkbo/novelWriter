@@ -130,6 +130,20 @@ class nwState(Enum):
 # END Enum nwState
 
 
+class nwView(Enum):
+
+    EDITOR   = 0
+    PROJECT  = 1
+    NOVEL    = 2
+    OUTLINE  = 3
+    DETAILS  = 4
+    STATS    = 5
+    SET_PROJ = 6
+    SET_MAIN = 7
+
+# END Enum nwView
+
+
 class nwWidget(Enum):
 
     TREE    = 1

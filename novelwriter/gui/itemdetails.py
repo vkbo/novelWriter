@@ -115,6 +115,7 @@ class GuiItemDetails(QWidget):
         self.usageData = QLabel("")
         self.usageData.setFont(fntValue)
         self.usageData.setAlignment(Qt.AlignLeft)
+        self.usageData.setWordWrap(True)
 
         # Character Count
         self.cCountName = QLabel("  "+self.tr("Characters"))
