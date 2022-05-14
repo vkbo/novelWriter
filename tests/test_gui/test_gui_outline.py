@@ -43,7 +43,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.mainConf.lastPath = nwLipsum
 
     nwGUI.rebuildIndex()
-    nwGUI.mainStack.setCurrentIndex(nwGUI.idxTabProj)
+    nwGUI.mainStack.setCurrentIndex(nwGUI.idxOutlineView)
 
     assert nwGUI.projView.topLevelItemCount() > 0
 
