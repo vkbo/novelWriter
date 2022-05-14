@@ -456,20 +456,18 @@ class GuiIcons:
 
     ICON_KEYS = {
         # Project and GUI icons
-        "novelwriter", "proj_nwx",
-        "cls_none", "cls_novel", "cls_plot", "cls_character", "cls_world",
-        "cls_timeline", "cls_object", "cls_entity", "cls_custom", "cls_archive", "cls_trash",
-        "proj_document", "proj_title", "proj_chapter", "proj_scene", "proj_note", "proj_folder",
-        "status_lang", "status_time", "status_idle", "status_stats", "status_lines",
-        "doc_h0", "doc_h1", "doc_h2", "doc_h3", "doc_h4",
-        "search_case", "search_regex", "search_word", "search_loop", "search_project",
-        "search_cancel", "search_preserve",
+        "novelwriter", "cls_archive", "cls_character", "cls_custom", "cls_entity", "cls_none",
+        "cls_novel", "cls_object", "cls_plot", "cls_timeline", "cls_trash", "cls_world", "doc_h0",
+        "doc_h1", "doc_h2", "doc_h3", "doc_h4", "proj_chapter", "proj_details", "proj_document",
+        "proj_folder", "proj_note", "proj_nwx", "proj_scene", "proj_stats", "proj_title",
+        "search_cancel", "search_case", "search_loop", "search_preserve", "search_project",
+        "search_regex", "search_word", "status_idle", "status_lang", "status_lines",
+        "status_stats", "status_time", "view_editor", "view_novel", "view_outline",
 
         # General Button Icons
-        "delete", "close", "done", "clear", "save", "add", "remove",
-        "search", "search_replace", "edit", "check", "cross", "hash",
-        "maximise", "minimise", "refresh", "reference", "backward",
-        "forward", "settings", "up", "down",
+        "add", "backward", "check", "clear", "close", "cross", "delete", "done", "down", "edit",
+        "forward", "hash", "maximise", "minimise", "reference", "refresh", "remove", "save",
+        "search_replace", "search", "settings", "up",
 
         # Switches
         "sticky-on", "sticky-off",

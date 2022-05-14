@@ -64,23 +64,23 @@ class GuiViewsBar(QToolBar):
 
         # Actions
         self.aProject = QAction(self.tr("Project"))
-        self.aProject.setIcon(self.theTheme.getIcon("proj_folder"))
+        self.aProject.setIcon(self.theTheme.getIcon("view_editor"))
         self.aProject.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.PROJECT))
 
         self.aNovel = QAction(self.tr("Novel"))
-        self.aNovel.setIcon(self.theTheme.getIcon("cls_novel"))
+        self.aNovel.setIcon(self.theTheme.getIcon("view_novel"))
         self.aNovel.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.NOVEL))
 
         self.aOutline = QAction(self.tr("Outline"))
-        self.aOutline.setIcon(self.theTheme.getIcon("cls_plot"))
+        self.aOutline.setIcon(self.theTheme.getIcon("view_outline"))
         self.aOutline.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.OUTLINE))
 
         self.aDetails = QAction(self.tr("Details"))
-        self.aDetails.setIcon(self.theTheme.getIcon("status_lines"))
+        self.aDetails.setIcon(self.theTheme.getIcon("proj_details"))
         self.aDetails.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.DETAILS))
 
         self.aStats = QAction(self.tr("Stats"))
-        self.aStats.setIcon(self.theTheme.getIcon("status_stats"))
+        self.aStats.setIcon(self.theTheme.getIcon("proj_stats"))
         self.aStats.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.STATS))
 
         self.aSettings = QAction(self.tr("Settings"))
