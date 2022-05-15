@@ -73,6 +73,9 @@ class GuiOutline(QWidget):
 
         self.setLayout(self.outerBox)
 
+        # Function Mappings
+        self.getSelectedHandle = self.outlineView.getSelectedHandle
+
         return
 
     ##
@@ -98,6 +101,12 @@ class GuiOutline(QWidget):
     def refreshView(self, overRide=False, novelChanged=False):
         self.outlineView.refreshTree(overRide=overRide, novelChanged=novelChanged)
         return
+
+    def treeFocus(self):
+        return self.outlineView.hasFocus()
+
+    def setTreeFocus(self):
+        return self.outlineView.setFocus()
 
 # END Class GuiOutline
 

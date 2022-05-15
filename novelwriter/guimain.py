@@ -780,7 +780,7 @@ class GuiMain(QMainWindow):
             tHandle = self.treeView.getSelectedHandle()
         elif self.novelView.hasFocus():
             tHandle, tLine = self.novelView.getSelectedHandle()
-        elif self.projView.hasFocus():
+        elif self.projView.treeFocus():
             tHandle, tLine = self.projView.getSelectedHandle()
         else:
             logger.warning("No item selected")
@@ -1221,7 +1221,7 @@ class GuiMain(QMainWindow):
             self.docViewer.setFocus()
         elif paneNo == nwWidget.OUTLINE:
             self._changeView(nwView.OUTLINE)
-            self.projView.setFocus()
+            self.projView.setTreeFocus()
         return
 
     def closeDocEditor(self):

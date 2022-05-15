@@ -45,69 +45,72 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.rebuildIndex()
     nwGUI.mainStack.setCurrentIndex(nwGUI.idxOutlineView)
 
-    assert nwGUI.projView.topLevelItemCount() > 0
+    outlineView = nwGUI.projView.outlineView
+    outlineData = nwGUI.projView.outlineData
+
+    assert outlineView.topLevelItemCount() > 0
 
     # Context Menu
-    nwGUI.projView._headerRightClick(QPoint(1, 1))
-    nwGUI.projView.headerMenu.actionMap[nwOutline.CCOUNT].activate(QAction.Trigger)
-    nwGUI.projView.headerMenu.close()
-    qtbot.mouseClick(nwGUI.projView, Qt.LeftButton)
+    outlineView._headerRightClick(QPoint(1, 1))
+    outlineView.headerMenu.actionMap[nwOutline.CCOUNT].activate(QAction.Trigger)
+    outlineView.headerMenu.close()
+    qtbot.mouseClick(outlineView, Qt.LeftButton)
 
-    nwGUI.projView._loadHeaderState()
-    assert not nwGUI.projView._colHidden[nwOutline.CCOUNT]
+    outlineView._loadHeaderState()
+    assert not outlineView._colHidden[nwOutline.CCOUNT]
 
     # First Item
     nwGUI.rebuildOutline()
-    selItem = nwGUI.projView.topLevelItem(0)
+    selItem = outlineView.topLevelItem(0)
     assert isinstance(selItem, QTreeWidgetItem)
 
-    nwGUI.projView.setCurrentItem(selItem)
-    assert nwGUI.projMeta.titleLabel.text() == "<b>Title</b>"
-    assert nwGUI.projMeta.titleValue.text() == "Lorem Ipsum"
-    assert nwGUI.projMeta.fileValue.text() == "Lorem Ipsum"
-    assert nwGUI.projMeta.itemValue.text() == "Finished"
+    outlineView.setCurrentItem(selItem)
+    assert outlineData.titleLabel.text() == "<b>Title</b>"
+    assert outlineData.titleValue.text() == "Lorem Ipsum"
+    assert outlineData.fileValue.text() == "Lorem Ipsum"
+    assert outlineData.itemValue.text() == "Finished"
 
-    assert nwGUI.projMeta.cCValue.text() == "230"
-    assert nwGUI.projMeta.wCValue.text() == "40"
-    assert nwGUI.projMeta.pCValue.text() == "3"
+    assert outlineData.cCValue.text() == "230"
+    assert outlineData.wCValue.text() == "40"
+    assert outlineData.pCValue.text() == "3"
 
     # Scene One
-    actItem = nwGUI.projView.topLevelItem(1)
+    actItem = outlineView.topLevelItem(1)
     chpItem = actItem.child(0)
     selItem = chpItem.child(0)
 
-    nwGUI.projView.setCurrentItem(selItem)
-    tHandle, tLine = nwGUI.projView.getSelectedHandle()
+    outlineView.setCurrentItem(selItem)
+    tHandle, tLine = outlineView.getSelectedHandle()
     assert tHandle == "88243afbe5ed8"
     assert tLine == 0
 
-    assert nwGUI.projMeta.titleLabel.text() == "<b>Scene</b>"
-    assert nwGUI.projMeta.titleValue.text() == "Scene One"
-    assert nwGUI.projMeta.fileValue.text() == "Scene One"
-    assert nwGUI.projMeta.itemValue.text() == "Finished"
+    assert outlineData.titleLabel.text() == "<b>Scene</b>"
+    assert outlineData.titleValue.text() == "Scene One"
+    assert outlineData.fileValue.text() == "Scene One"
+    assert outlineData.itemValue.text() == "Finished"
 
     # Click POV Link
-    assert nwGUI.projMeta.povKeyValue.text() == "<a href='#pov=Bod'>Bod</a>"
-    nwGUI.projMeta._tagClicked("#pov=Bod")
+    assert outlineData.povKeyValue.text() == "<a href='#pov=Bod'>Bod</a>"
+    outlineData._tagClicked("#pov=Bod")
     assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
 
     # Scene One, Section Two
-    actItem = nwGUI.projView.topLevelItem(1)
+    actItem = outlineView.topLevelItem(1)
     chpItem = actItem.child(0)
     scnItem = chpItem.child(0)
     selItem = scnItem.child(0)
 
-    nwGUI.projView.setCurrentItem(selItem)
-    tHandle, tLine = nwGUI.projView.getSelectedHandle()
+    outlineView.setCurrentItem(selItem)
+    tHandle, tLine = outlineView.getSelectedHandle()
     assert tHandle == "88243afbe5ed8"
     assert tLine == 12
 
-    assert nwGUI.projMeta.titleLabel.text() == "<b>Section</b>"
-    assert nwGUI.projMeta.titleValue.text() == "Scene One, Section Two"
-    assert nwGUI.projMeta.fileValue.text() == "Scene One"
-    assert nwGUI.projMeta.itemValue.text() == "Finished"
+    assert outlineData.titleLabel.text() == "<b>Section</b>"
+    assert outlineData.titleValue.text() == "Scene One, Section Two"
+    assert outlineData.fileValue.text() == "Scene One"
+    assert outlineData.itemValue.text() == "Finished"
 
-    nwGUI.projView._treeDoubleClick(selItem, 0)
+    outlineView._treeDoubleClick(selItem, 0)
     assert nwGUI.docEditor.docHandle() == "88243afbe5ed8"
 
     # qtbot.stopForInteraction()
