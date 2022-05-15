@@ -185,6 +185,9 @@ class ProjWizardFolderPage(QWizardPage):
         self.browseButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
         self.browseButton.clicked.connect(self._doBrowse)
 
+        self.errLabel = QLabel("")
+        self.errLabel.setWordWrap(True)
+
         self.mainForm = QHBoxLayout()
         self.mainForm.addWidget(QLabel(self.tr("Project Path")), 0)
         self.mainForm.addWidget(self.projPath, 1)
@@ -198,10 +201,35 @@ class ProjWizardFolderPage(QWizardPage):
         self.outerBox.setSpacing(vS)
         self.outerBox.addWidget(self.theText)
         self.outerBox.addLayout(self.mainForm)
+        self.outerBox.addWidget(self.errLabel)
         self.outerBox.addStretch(1)
         self.setLayout(self.outerBox)
 
         return
+
+    def isComplete(self):
+        """Check that the selected path isn't already being used.
+        """
+        self.errLabel.setText("")
+        if not QWizardPage.isComplete(self):
+            return False
+
+        setPath = os.path.abspath(os.path.expanduser(self.projPath.text()))
+        parPath = os.path.dirname(setPath)
+        logger.verbose("Path is: %s", setPath)
+        if parPath and not os.path.isdir(parPath):
+            self.errLabel.setText(self.tr(
+                "Error: A project folder cannot be created using this path."
+            ))
+            return False
+
+        if os.path.exists(setPath):
+            self.errLabel.setText(self.tr(
+                "Error: The selected path already exists."
+            ))
+            return False
+
+        return True
 
     ##
     #  Slots
