@@ -39,8 +39,8 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.gui import (
     GuiDocEditor, GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiMainMenu,
-    GuiMainStatus, GuiNovelTree, GuiOutline, GuiOutlineDetails, GuiProjectTree,
-    GuiTheme, GuiViewsBar
+    GuiMainStatus, GuiNovelTree, GuiOutline, GuiProjectTree, GuiTheme,
+    GuiViewsBar
 )
 from novelwriter.dialogs import (
     GuiAbout, GuiDocMerge, GuiDocSplit, GuiItemEditor, GuiPreferences,
@@ -112,7 +112,6 @@ class GuiMain(QMainWindow):
         self.docViewer = GuiDocViewer(self)
         self.treeMeta  = GuiItemDetails(self)
         self.projView  = GuiOutline(self)
-        self.projMeta  = GuiOutlineDetails(self)
         self.mainMenu  = GuiMainMenu(self)
         self.viewsBar  = GuiViewsBar(self)
 
@@ -128,7 +127,7 @@ class GuiMain(QMainWindow):
         self.treeView.wordCountsChanged.connect(self._updateStatusWordCount)
 
         self.viewsBar.viewChangeRequested.connect(self._changeView)
-        self.projMeta.viewChangeRequested.connect(self._changeView)
+        self.projView.viewChangeRequested.connect(self._changeView)
 
         # Project Tree Stack
         self.projStack = QStackedWidget()
@@ -156,12 +155,6 @@ class GuiMain(QMainWindow):
         self.splitDocs.addWidget(self.docEditor)
         self.splitDocs.addWidget(self.splitView)
 
-        # Splitter : Project Outlie / Outline Details
-        self.splitOutline = QSplitter(Qt.Vertical)
-        self.splitOutline.addWidget(self.projView)
-        self.splitOutline.addWidget(self.projMeta)
-        self.splitOutline.setSizes(self.mainConf.getOutlinePanePos())
-
         # Splitter : Project Tree / Main Tabs
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.setContentsMargins(0, 0, mPx, 0)
@@ -172,7 +165,7 @@ class GuiMain(QMainWindow):
         # Main Stack : Editor / Outline
         self.mainStack = QStackedWidget()
         self.mainStack.addWidget(self.splitMain)
-        self.mainStack.addWidget(self.splitOutline)
+        self.mainStack.addWidget(self.projView)
         self.mainStack.currentChanged.connect(self._mainStackChanged)
 
         # Indices of Splitter Widgets
@@ -185,7 +178,7 @@ class GuiMain(QMainWindow):
 
         # Indices of Tab Widgets
         self.idxEditorView  = self.mainStack.indexOf(self.splitMain)
-        self.idxOutlineView = self.mainStack.indexOf(self.splitOutline)
+        self.idxOutlineView = self.mainStack.indexOf(self.projView)
         self.idxTreeView    = self.projStack.indexOf(self.treeView)
         self.idxNovelView   = self.projStack.indexOf(self.novelView)
 
@@ -293,7 +286,7 @@ class GuiMain(QMainWindow):
         self.docEditor.clearEditor()
         self.docEditor.setDictionaries()
         self.closeDocViewer()
-        self.projMeta.clearDetails()
+        self.projView.clearOutline()
 
         # General
         self.statusBar.clearStatus()
@@ -904,7 +897,7 @@ class GuiMain(QMainWindow):
 
         logger.verbose("Forcing a rebuild of the Project Outline")
         self._changeView(nwView.OUTLINE)
-        self.projView.refreshTree(overRide=True)
+        self.projView.refreshView(overRide=True)
 
         return True
 
@@ -955,7 +948,6 @@ class GuiMain(QMainWindow):
             self.treeView.initTree()
             self.novelView.initTree()
             self.projView.initOutline()
-            self.projMeta.initDetails()
             self._updateStatusWordCount()
 
         return
@@ -1192,7 +1184,7 @@ class GuiMain(QMainWindow):
         if not self.isFocusMode:
             self.mainConf.setMainPanePos(self.splitMain.sizes())
             self.mainConf.setDocPanePos(self.splitDocs.sizes())
-            self.mainConf.setOutlinePanePos(self.splitOutline.sizes())
+            self.mainConf.setOutlinePanePos(self.projView.splitSizes())
             if self.viewMeta.isVisible():
                 self.mainConf.setViewPanePos(self.splitView.sizes())
 
@@ -1500,7 +1492,7 @@ class GuiMain(QMainWindow):
             self.projStack.setCurrentWidget(self.novelView)
 
         elif view == nwView.OUTLINE:
-            self.mainStack.setCurrentWidget(self.splitOutline)
+            self.mainStack.setCurrentWidget(self.projView)
 
         elif view == nwView.DETAILS:
             self.showProjectDetailsDialog()
@@ -1590,7 +1582,7 @@ class GuiMain(QMainWindow):
             logger.verbose("Novel tree changed while Outline tab active")
             if self.hasProject:
                 self.treeView.flushTreeOrder()
-                self.projView.refreshTree(novelChanged=True)
+                self.projView.refreshView(novelChanged=True)
 
         return
 
@@ -1623,7 +1615,7 @@ class GuiMain(QMainWindow):
         elif tabIndex == self.idxOutlineView:
             logger.verbose("Project outline tab activated")
             if self.hasProject:
-                self.projView.refreshTree()
+                self.projView.refreshView()
 
         return
 
