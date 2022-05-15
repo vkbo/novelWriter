@@ -19,8 +19,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import pytest
 import os
+import sys
+import pytest
 
 from tools import getGuiItem
 
@@ -39,7 +40,7 @@ stepDelay = 20
 
 
 @pytest.mark.gui
-# @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
+@pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
 def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test the launch of the project wizard.
     Disabled for macOS because the test segfaults on QWizard.show()
