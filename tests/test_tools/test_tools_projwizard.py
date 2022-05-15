@@ -107,6 +107,7 @@ def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, nwMinimal):
 
 @pytest.mark.gui
 @pytest.mark.parametrize("prjType", ["minimal", "custom1", "custom2", "sample"])
+@pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
 def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
     """Test the new project wizard with a set of selection scenarios.
     """
