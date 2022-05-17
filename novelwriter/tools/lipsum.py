@@ -72,7 +72,7 @@ class GuiLipsum(QDialog):
         # Form
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Insert Lorem Ipsum Text")))
 
-        self.paraLabel = QLabel(self.tr("Number of pragraphs"))
+        self.paraLabel = QLabel(self.tr("Number of paragraphs"))
         self.paraCount = QSpinBox()
         self.paraCount.setMinimum(1)
         self.paraCount.setMaximum(100)
