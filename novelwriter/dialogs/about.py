@@ -182,12 +182,12 @@ class GuiAbout(QDialog):
             self.tr("Translations"),
             self._wrapTable([
                 ("English", "Veronica Berglyd Olsen"),
+                ("Español Latinoamericano", "Tommy Marplatt"),
                 ("Français", "Jan Lüdke (jyhelle)"),
+                ("Nederlands", "Martijn van der Kleijn"),
                 ("Norsk Bokmål", "Veronica Berglyd Olsen"),
                 ("Português", "Bruno Meneguello"),
                 ("简体中文", "Qianzhi Long"),
-                ("Español Latinoamericano", "Tommy Marplatt"),
-                ("Nederlands", "Martijn van der Kleijn"),
             ])
         )
 
