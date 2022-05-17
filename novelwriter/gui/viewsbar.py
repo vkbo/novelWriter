@@ -49,6 +49,7 @@ class GuiViewsBar(QToolBar):
 
         # Style
         iPx = self.mainConf.pxInt(22)
+        mPx = self.mainConf.pxInt(58)
 
         lblFont = self.theTheme.guiFont
         lblFont.setPointSizeF(0.65*self.theTheme.fontPointSize)
@@ -57,6 +58,7 @@ class GuiViewsBar(QToolBar):
         self.setMovable(False)
         self.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.setIconSize(QSize(iPx, iPx))
+        self.setMaximumWidth(mPx)
         self.setContentsMargins(0, 0, 0, 0)
 
         stretch = QWidget(self)
