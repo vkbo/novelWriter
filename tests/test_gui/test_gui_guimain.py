@@ -23,7 +23,7 @@ import os
 import pytest
 
 from shutil import copyfile
-from tools import cmpFiles
+from tools import cmpFiles, buildTestProject
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QDialog
@@ -76,9 +76,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
-    assert nwGUI.newProject({"projPath": fncProj}) is True
-    assert nwGUI.saveProject() is True
-    # assert False
+    buildTestProject(nwGUI, fncProj)
 
     sHandle = "000000000000f"
     assert nwGUI.openSelectedItem() is False
@@ -139,7 +137,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
     # Create new, save, close project
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
 
@@ -178,9 +176,9 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert nwGUI.theProject.projMeta == os.path.join(fncProj, "meta")
     assert nwGUI.theProject.projFile == "nwProject.nwx"
     assert nwGUI.theProject.projName == "New Project"
-    assert nwGUI.theProject.bookTitle == ""
-    assert len(nwGUI.theProject.bookAuthors) == 0
-    assert not nwGUI.theProject.spellCheck
+    assert nwGUI.theProject.bookTitle == "New Novel"
+    assert len(nwGUI.theProject.bookAuthors) == 1
+    assert nwGUI.theProject.spellCheck is False
 
     # Check that tree items have been created
     assert nwGUI.treeView._getTreeItem("0000000000008") is not None

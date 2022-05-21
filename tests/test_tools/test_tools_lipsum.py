@@ -21,7 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from tools import getGuiItem
+from tools import getGuiItem, buildTestProject
 
 from PyQt5.QtWidgets import QAction, QMessageBox
 
@@ -40,7 +40,7 @@ def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     assert getGuiItem("GuiLipsum") is None
 
     # Create a new project
-    assert nwGUI.newProject({"projPath": fncProj}) is True
+    buildTestProject(nwGUI, fncProj)
     assert nwGUI.openDocument("000000000000f") is True
     assert len(nwGUI.docEditor.getText()) == 15
 

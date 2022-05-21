@@ -22,6 +22,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import pytest
 import os
 
+from tools import buildTestProject
+
 from PyQt5.QtWidgets import QAction, QMessageBox
 
 from novelwriter.guimain import GuiMain
@@ -47,7 +49,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
 
     # Create a project
     prjDir = os.path.join(fncDir, "project")
-    assert nwGUI.newProject({"projPath": prjDir}) is True
+    buildTestProject(nwGUI, prjDir)
 
     # No itemType set
     nwTree.clearSelection()
@@ -155,7 +157,7 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
 
     # Create a project
     prjDir = os.path.join(fncDir, "project")
-    assert nwGUI.newProject({"projPath": prjDir}) is True
+    buildTestProject(nwGUI, prjDir)
 
     # Move Documents
     # ==============
@@ -283,7 +285,7 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
 
     # Create a project
     prjDir = os.path.join(fncDir, "project")
-    assert nwGUI.newProject({"projPath": prjDir}) is True
+    buildTestProject(nwGUI, prjDir)
 
     # Try emptying the trash already now, when there is no trash folder
     assert nwTree.emptyTrash() is False

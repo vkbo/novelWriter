@@ -22,6 +22,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import time
 import pytest
 
+from tools import buildTestProject
+
 from PyQt5.QtWidgets import QMessageBox
 
 from novelwriter.core import NWDoc
@@ -34,7 +36,7 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
-    assert nwGUI.newProject({"projPath": fncProj}) is True
+    buildTestProject(nwGUI, fncProj)
     cHandle = nwGUI.theProject.newFile("A Note", "000000000000a")
     newDoc = NWDoc(nwGUI.theProject, cHandle)
     newDoc.writeDocument("# A Note\n\n")
@@ -89,10 +91,10 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Project Stats
     nwGUI.statusBar.mainConf.incNotesWCount = False
     nwGUI._updateStatusWordCount()
-    assert nwGUI.statusBar.statsText.text() == "Words: 6 (+6)"
+    assert nwGUI.statusBar.statsText.text() == "Words: 9 (+9)"
     nwGUI.statusBar.mainConf.incNotesWCount = True
     nwGUI._updateStatusWordCount()
-    assert nwGUI.statusBar.statsText.text() == "Words: 8 (+8)"
+    assert nwGUI.statusBar.statsText.text() == "Words: 11 (+11)"
 
     # qtbot.stopForInteraction()
 

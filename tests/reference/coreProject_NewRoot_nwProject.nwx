@@ -1,8 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-23 15:34:25">
+<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-05-21 17:07:33">
   <project>
     <name>New Project</name>
-    <title></title>
+    <title>New Novel</title>
+    <author>Jane Doe</author>
     <saveCount>2</saveCount>
     <autoCount>1</autoCount>
     <editTime>0</editTime>

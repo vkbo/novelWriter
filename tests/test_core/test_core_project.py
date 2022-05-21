@@ -26,7 +26,7 @@ from shutil import copyfile
 from zipfile import ZipFile
 from lxml import etree
 
-from tools import cmpFiles, writeFile, readFile
+from tools import cmpFiles, writeFile, readFile, buildTestProject
 from mock import causeOSError
 
 from novelwriter.core.project import NWProject
@@ -252,8 +252,8 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
     compFile = os.path.join(refDir, "coreProject_NewRoot_nwProject.nwx")
 
     theProject = NWProject(mockGUI)
+    buildTestProject(theProject, fncDir)
 
-    assert theProject.newProject({"projPath": fncDir}) is True
     assert theProject.setProjectPath(fncDir) is True
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
@@ -288,8 +288,8 @@ def testCoreProject_NewFile(fncDir, outDir, refDir, mockGUI, mockRnd):
     compFile = os.path.join(refDir, "coreProject_NewFile_nwProject.nwx")
 
     theProject = NWProject(mockGUI)
+    buildTestProject(theProject, fncDir)
 
-    assert theProject.newProject({"projPath": fncDir}) is True
     assert theProject.setProjectPath(fncDir) is True
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
@@ -671,7 +671,7 @@ def testCoreProject_StatusImport(mockGUI, fncDir, mockRnd):
     """Test the status and importance flag handling.
     """
     theProject = NWProject(mockGUI)
-    assert theProject.newProject({"projPath": fncDir}) is True
+    buildTestProject(theProject, fncDir)
 
     statusKeys = ["s000008", "s000009", "s00000a", "s00000b"]
     importKeys = ["i00000c", "i00000d", "i00000e", "i00000f"]
@@ -792,7 +792,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     """Test other project class methods and functions.
     """
     theProject = NWProject(mockGUI)
-    assert theProject.newProject({"projPath": fncDir}) is True
+    buildTestProject(theProject, fncDir)
 
     # Setting project path
     assert theProject.setProjectPath(None)
