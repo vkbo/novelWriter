@@ -23,7 +23,7 @@ import os
 import pytest
 
 from shutil import copyfile
-from tools import cmpFiles, buildTestProject, XML_IGNORE
+from tools import cmpFiles, buildTestProject, XML_IGNORE, writeFile
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QDialog
@@ -32,6 +32,7 @@ from novelwriter.gui import (
     GuiDocEditor, GuiProjectTree, GuiNovelTree, GuiOutline
 )
 from novelwriter.enum import nwItemType, nwWidget
+from novelwriter.tools import GuiProjectWizard
 from novelwriter.dialogs.itemeditor import GuiItemEditor
 
 keyDelay = 2
@@ -68,6 +69,45 @@ def testGuiMain_ProjectBlocker(monkeypatch, nwGUI):
     assert nwGUI.showWritingStatsDialog() is False
 
 # END Test testGuiMain_NoProject
+
+
+@pytest.mark.gui
+def testGuiMain_NewProject(monkeypatch, nwGUI, fncProj):
+    """Test creating a new project.
+    """
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
+
+    # No data
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiProjectWizard, "exec_", lambda *a: None)
+        assert nwGUI.newProject(projData=None) is False
+
+    # Close project
+    with monkeypatch.context() as mp:
+        nwGUI.hasProject = True
+        mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
+        assert nwGUI.newProject(projData={"projPath": fncProj}) is False
+
+    # No project path
+    assert nwGUI.newProject(projData={}) is False
+
+    # Project file already exists
+    projFile = os.path.join(fncProj, nwGUI.theProject.projFile)
+    writeFile(projFile, "Stuff")
+    assert nwGUI.newProject(projData={"projPath": fncProj}) is False
+    os.unlink(projFile)
+
+    # An unreachable path should also fail
+    projPath = os.path.join(fncProj, "stuff", "stuff", "stuff")
+    assert nwGUI.newProject(projData={"projPath": projPath}) is False
+
+    # This one should work just fine
+    assert nwGUI.newProject(projData={"projPath": fncProj}) is True
+    assert os.path.isfile(os.path.join(fncProj, nwGUI.theProject.projFile))
+    assert os.path.isdir(os.path.join(fncProj, "content"))
+
+# END Test testGuiMain_NewProject
 
 
 @pytest.mark.gui
@@ -465,3 +505,52 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     # qtbot.stopForInteraction()
 
 # END Test testGuiMain_Editing
+
+
+@pytest.mark.gui
+def testGuiMain_FocusFullMode(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
+    """Test toggling focus mode in main window.
+    """
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+
+    buildTestProject(nwGUI, fncProj)
+    assert nwGUI.isFocusMode is False
+
+    # Focus Mode
+    # ==========
+
+    # No document open, so not allowing focus mode
+    assert nwGUI.toggleFocusMode() is False
+
+    # Open a file in editor and viewer
+    assert nwGUI.openDocument("000000000000f")
+    assert nwGUI.viewDocument("000000000000f")
+
+    # Enable focus mode
+    assert nwGUI.toggleFocusMode() is True
+    assert nwGUI.treePane.isVisible() is False
+    assert nwGUI.statusBar.isVisible() is False
+    assert nwGUI.mainMenu.isVisible() is False
+    assert nwGUI.viewsBar.isVisible() is False
+    assert nwGUI.splitView.isVisible() is False
+
+    # Disable focus mode
+    assert nwGUI.toggleFocusMode() is True
+    assert nwGUI.treePane.isVisible() is True
+    assert nwGUI.statusBar.isVisible() is True
+    assert nwGUI.mainMenu.isVisible() is True
+    assert nwGUI.viewsBar.isVisible() is True
+    assert nwGUI.splitView.isVisible() is True
+
+    # Full Screen Mode
+    # ================
+
+    assert nwGUI.mainConf.isFullScreen is False
+    nwGUI.toggleFullScreenMode()
+    assert nwGUI.mainConf.isFullScreen is True
+    nwGUI.toggleFullScreenMode()
+    assert nwGUI.mainConf.isFullScreen is False
+
+    # qtbot.stopForInteraction()
+
+# END Test testGuiMain_FocusFullMode
