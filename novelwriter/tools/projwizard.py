@@ -97,7 +97,7 @@ class ProjWizardIntroPage(QWizardPage):
         self.setTitle(self.tr("Create New Project"))
         self.theText = QLabel(self.tr(
             "Provide at least a project name. The project name should not "
-            "be change beyond this point as it is used for generating file "
+            "be changed beyond this point as it is used for generating file "
             "names for for instance backups. The other fields are optional "
             "and can be changed at any time in Project Settings."
         ))
@@ -402,7 +402,7 @@ class ProjWizardFinalPage(QWizardPage):
         self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
 
-        self.setTitle(self.tr("Finished"))
+        self.setTitle(self.tr("Summary"))
         self.theText = QLabel("")
         self.theText.setWordWrap(True)
 
@@ -452,8 +452,8 @@ class ProjWizardFinalPage(QWizardPage):
                     ))
 
         self.theText.setText(
-            "<h4>%s</h4><p>&nbsp;&bull;&nbsp;%s</p><p>%s</p>" % (
-                self.tr("Summary"),
+            "<p>%s</p><p>&nbsp;&bull;&nbsp;%s</p><p>%s</p>" % (
+                self.tr("You have selected the following:"),
                 "<br>&nbsp;&bull;&nbsp;".join(sumList),
                 self.tr("Press '{0}' to create the new project.").format(
                     self.tr("Done") if self.mainConf.osDarwin else self.tr("Finish")
