@@ -25,6 +25,8 @@ import shutil
 
 from PyQt5.QtWidgets import qApp
 
+XML_IGNORE = ("<novelWriterXML", "<saveCount", "<autoCount", "<editTime")
+
 
 def cmpFiles(fileOne, fileTwo, ignoreLines=None, ignoreStart=None):
     """Compare two files, but optionally ignore lines given by a list.

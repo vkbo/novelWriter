@@ -26,7 +26,7 @@ from shutil import copyfile
 from zipfile import ZipFile
 from lxml import etree
 
-from tools import cmpFiles, writeFile, readFile, buildTestProject
+from tools import cmpFiles, writeFile, readFile, buildTestProject, XML_IGNORE
 from mock import causeOSError
 
 from novelwriter.core.project import NWProject
@@ -67,7 +67,7 @@ def testCoreProject_NewMinimal(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
     assert theProject.projChanged is False
 
     # Open a second time
@@ -77,7 +77,7 @@ def testCoreProject_NewMinimal(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
 # END Test testCoreProject_NewMinimal
 
@@ -115,7 +115,7 @@ def testCoreProject_NewCustomA(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
 # END Test testCoreProject_NewCustomA
 
@@ -153,7 +153,7 @@ def testCoreProject_NewCustomB(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
 # END Test testCoreProject_NewCustomB
 
@@ -273,7 +273,7 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
     assert theProject.projChanged is False
 
 # END Test testCoreProject_NewRoot
@@ -302,7 +302,7 @@ def testCoreProject_NewFile(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
     assert theProject.projChanged is False
 
 # END Test testCoreProject_NewFile
@@ -483,7 +483,7 @@ def testCoreProject_Save(monkeypatch, nwMinimal, mockGUI, refDir):
     assert theProject.saveProject() is True
     assert theProject.saveCount == saveCount + 1
     assert theProject.autoCount == autoCount
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8, 9])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
     # Check that a second save creates a .bak file
     assert os.path.isfile(backFile) is True
@@ -494,7 +494,7 @@ def testCoreProject_Save(monkeypatch, nwMinimal, mockGUI, refDir):
     assert theProject.saveProject(autoSave=True) is True
     assert theProject.saveCount == saveCount
     assert theProject.autoCount == autoCount + 1
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8, 9])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
     # Close test project
     assert theProject.closeProject()

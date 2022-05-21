@@ -23,7 +23,7 @@ import os
 import pytest
 
 from shutil import copyfile
-from tools import cmpFiles, buildTestProject
+from tools import cmpFiles, buildTestProject, XML_IGNORE
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QDialog
@@ -158,7 +158,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     testFile = os.path.join(outDir, "guiEditor_Main_Initial_nwProject.nwx")
     compFile = os.path.join(refDir, "guiEditor_Main_Initial_nwProject.nwx")
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
     qtbot.wait(stepDelay)
 
     # qtbot.stopForInteraction()
@@ -436,7 +436,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     testFile = os.path.join(outDir, "guiEditor_Main_Final_nwProject.nwx")
     compFile = os.path.join(refDir, "guiEditor_Main_Final_nwProject.nwx")
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
     projFile = os.path.join(fncProj, "content", "000000000000f.nwd")
     testFile = os.path.join(outDir, "guiEditor_Main_Final_000000000000f.nwd")
