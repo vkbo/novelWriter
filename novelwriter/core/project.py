@@ -277,17 +277,16 @@ class NWProject():
             xHandle[3] = self.newRoot(self.tr("Characters"),    nwItemClass.CHARACTER)
             xHandle[4] = self.newRoot(self.tr("World"),         nwItemClass.WORLD)
             xHandle[5] = self.newFile(self.tr("Title Page"),    xHandle[1])
-            xHandle[6] = self.newFolder(self.tr("New Chapter"), xHandle[1])
-            xHandle[7] = self.newFile(self.tr("New Chapter"),   xHandle[6])
-            xHandle[8] = self.newFile(self.tr("New Scene"),     xHandle[6])
+            xHandle[6] = self.newFile(self.tr("New Chapter"),   xHandle[1])
+            xHandle[7] = self.newFile(self.tr("New Scene"),     xHandle[6])
 
             aDoc = NWDoc(self, xHandle[5])
             aDoc.writeDocument(titlePage)
 
-            aDoc = NWDoc(self, xHandle[7])
+            aDoc = NWDoc(self, xHandle[6])
             aDoc.writeDocument("## %s\n\n" % self.tr("New Chapter"))
 
-            aDoc = NWDoc(self, xHandle[8])
+            aDoc = NWDoc(self, xHandle[7])
             aDoc.writeDocument("### %s\n\n" % self.tr("New Scene"))
 
         elif popCustom:
