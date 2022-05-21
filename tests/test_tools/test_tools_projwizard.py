@@ -205,14 +205,11 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
         customPage.addPlot.setChecked(True)
         customPage.addChar.setChecked(True)
         customPage.addWorld.setChecked(True)
-        customPage.addTime.setChecked(True)
-        customPage.addObject.setChecked(True)
-        customPage.addEntity.setChecked(True)
+        customPage.addNotes.setChecked(True)
 
         if prjType == "custom2":
             customPage.numChapters.setValue(0)
             customPage.numScenes.setValue(10)
-            customPage.chFolders.setChecked(False)
 
         qtbot.wait(stepDelay)
         qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
@@ -240,23 +237,20 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
             nwItemClass.PLOT,
             nwItemClass.CHARACTER,
             nwItemClass.WORLD,
-            nwItemClass.TIMELINE,
-            nwItemClass.OBJECT,
-            nwItemClass.ENTITY,
         ]
         if prjType == "custom1":
             assert projData["numChapters"] == 5
             assert projData["numScenes"] == 5
-            assert projData["chFolders"]
+            assert projData["addNotes"] is True
         else:
             assert projData["numChapters"] == 0
             assert projData["numScenes"] == 10
-            assert not projData["chFolders"]
+            assert projData["addNotes"] is True
     else:
         assert projData["addRoots"] == []
         assert projData["numChapters"] == 0
         assert projData["numScenes"] == 0
-        assert not projData["chFolders"]
+        assert projData["addNotes"] is False
 
     # Cleanup
     nwWiz.reject()

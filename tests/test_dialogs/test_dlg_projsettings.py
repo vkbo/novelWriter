@@ -23,7 +23,7 @@ import os
 import pytest
 
 from shutil import copyfile
-from tools import cmpFiles, getGuiItem
+from tools import cmpFiles, getGuiItem, buildTestProject
 
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
@@ -57,7 +57,7 @@ def testDlgProjSettings_Dialog(
     assert getGuiItem("GuiProjectSettings") is None
 
     # Create new project
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
     nwGUI.mainConf.backupPath = fncDir
 
     nwGUI.theProject.setSpellLang("en")
@@ -81,7 +81,7 @@ def testDlgProjSettings_Dialog(
     # ============
 
     assert projEdit.tabMain.editName.text() == "New Project"
-    assert projEdit.tabMain.editTitle.text() == ""
+    assert projEdit.tabMain.editTitle.text() == "New Novel"
     assert projEdit.tabMain.editAuthors.toPlainText() == "Jane Smith\nJohn Smith"
     assert projEdit.tabMain.spellLang.currentData() == "en"
     assert projEdit.tabMain.doBackup.isChecked() is False
@@ -90,6 +90,7 @@ def testDlgProjSettings_Dialog(
     projEdit.tabMain.editName.setText("")
     for c in "Project Name":
         qtbot.keyClick(projEdit.tabMain.editName, c, delay=typeDelay)
+    projEdit.tabMain.editTitle.setText("")
     for c in "Project Title":
         qtbot.keyClick(projEdit.tabMain.editTitle, c, delay=typeDelay)
 

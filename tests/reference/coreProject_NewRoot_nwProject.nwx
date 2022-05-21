@@ -1,8 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-23 15:34:25">
+<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-05-21 22:07:28">
   <project>
     <name>New Project</name>
-    <title></title>
+    <title>New Novel</title>
+    <author>Jane Doe</author>
     <saveCount>2</saveCount>
     <autoCount>1</autoCount>
     <editTime>0</editTime>
@@ -82,11 +83,11 @@
     </item>
     <item handle="000000000002a" parent="None" root="000000000002a" order="0" type="ROOT" class="CHARACTER">
       <meta expanded="False"/>
-      <name status="s000008" import="i00000c">Character</name>
+      <name status="s000008" import="i00000c">Characters</name>
     </item>
     <item handle="000000000002b" parent="None" root="000000000002b" order="0" type="ROOT" class="WORLD">
       <meta expanded="False"/>
-      <name status="s000008" import="i00000c">World</name>
+      <name status="s000008" import="i00000c">Locations</name>
     </item>
     <item handle="000000000002c" parent="None" root="000000000002c" order="0" type="ROOT" class="TIMELINE">
       <meta expanded="False"/>
@@ -94,15 +95,15 @@
     </item>
     <item handle="000000000002d" parent="None" root="000000000002d" order="0" type="ROOT" class="OBJECT">
       <meta expanded="False"/>
-      <name status="s000008" import="i00000c">Object</name>
+      <name status="s000008" import="i00000c">Objects</name>
     </item>
     <item handle="000000000002e" parent="None" root="000000000002e" order="0" type="ROOT" class="CUSTOM">
       <meta expanded="False"/>
-      <name status="s000008" import="i00000c">Custom1</name>
+      <name status="s000008" import="i00000c">Custom</name>
     </item>
     <item handle="000000000002f" parent="None" root="000000000002f" order="0" type="ROOT" class="CUSTOM">
       <meta expanded="False"/>
-      <name status="s000008" import="i00000c">Custom2</name>
+      <name status="s000008" import="i00000c">Custom</name>
     </item>
   </content>
 </novelWriterXML>
