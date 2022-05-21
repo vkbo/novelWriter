@@ -103,13 +103,10 @@ def testCoreProject_NewCustomA(fncDir, outDir, refDir, mockGUI, mockRnd):
             nwItemClass.PLOT,
             nwItemClass.CHARACTER,
             nwItemClass.WORLD,
-            nwItemClass.TIMELINE,
-            nwItemClass.OBJECT,
-            nwItemClass.ENTITY,
         ],
+        "addNotes": True,
         "numChapters": 3,
         "numScenes": 3,
-        "chFolders": True,
     }
     theProject = NWProject(mockGUI)
 
@@ -144,13 +141,10 @@ def testCoreProject_NewCustomB(fncDir, outDir, refDir, mockGUI, mockRnd):
             nwItemClass.PLOT,
             nwItemClass.CHARACTER,
             nwItemClass.WORLD,
-            nwItemClass.TIMELINE,
-            nwItemClass.OBJECT,
-            nwItemClass.ENTITY,
         ],
+        "addNotes": True,
         "numChapters": 0,
         "numScenes": 6,
-        "chFolders": True,
     }
     theProject = NWProject(mockGUI)
 
@@ -1177,10 +1171,6 @@ def testCoreProject_LegacyData(monkeypatch, mockGUI, fncDir):
     """
     theProject = NWProject(mockGUI)
     theProject.setProjectPath(fncDir)
-
-    # assert theProject.newProject({"projPath": fncDir})
-    # assert theProject.saveProject()
-    # assert theProject.closeProject()
 
     # Check behaviour of deprecated files function on OSError
     tstFile = os.path.join(fncDir, "ToC.json")

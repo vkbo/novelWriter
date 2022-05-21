@@ -295,27 +295,9 @@ class NWProject():
             # and a number of chapters and scenes selected in the
             # wizard's custom page.
 
-            noteTitles = {
-                nwItemClass.PLOT: self.tr("Main Plot"),
-                nwItemClass.CHARACTER: self.tr("Protagonist"),
-                nwItemClass.WORLD: self.tr("Main Location"),
-            }
-
-            # Create root folders
+            # Create novel folders
             nHandle = self.newRoot(self.tr("Novel"), nwItemClass.NOVEL)
-            addNotes = projData.get("addNotes", False)
-            for newRoot in projData.get("addRoots", []):
-                if newRoot in nwItemClass:
-                    rHandle = self.newRoot(nwLabels.CLASS_NAME[newRoot], newRoot)
-                    if addNotes:
-                        aHandle = self.newFile(noteTitles[newRoot], rHandle)
-                        ntTag = simplified(noteTitles[newRoot]).replace(" ", "")
-                        aDoc = NWDoc(self, aHandle)
-                        aDoc.writeDocument(f"# {noteTitles[newRoot]}\n\n@tag: {ntTag}\n\n")
-
-            # Create a title page
             tHandle = self.newFile(self.tr("Title Page"), nHandle)
-
             aDoc = NWDoc(self, tHandle)
             aDoc.writeDocument(titlePage)
 
@@ -349,6 +331,23 @@ class NWProject():
                     sHandle = self.newFile(scTitle, nHandle)
                     aDoc = NWDoc(self, sHandle)
                     aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
+
+            # Create notes folders
+            noteTitles = {
+                nwItemClass.PLOT: self.tr("Main Plot"),
+                nwItemClass.CHARACTER: self.tr("Protagonist"),
+                nwItemClass.WORLD: self.tr("Main Location"),
+            }
+
+            addNotes = projData.get("addNotes", False)
+            for newRoot in projData.get("addRoots", []):
+                if newRoot in nwItemClass:
+                    rHandle = self.newRoot(nwLabels.CLASS_NAME[newRoot], newRoot)
+                    if addNotes:
+                        aHandle = self.newFile(noteTitles[newRoot], rHandle)
+                        ntTag = simplified(noteTitles[newRoot]).replace(" ", "")
+                        aDoc = NWDoc(self, aHandle)
+                        aDoc.writeDocument(f"# {noteTitles[newRoot]}\n\n@tag: {ntTag}\n\n")
 
         # Finalise
         if popCustom or popMinimal:
