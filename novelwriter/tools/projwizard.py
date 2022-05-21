@@ -328,7 +328,9 @@ class ProjWizardCustomPage(QWizardPage):
         ))
         self.theText.setWordWrap(True)
 
-        vS = self.mainConf.pxInt(12)
+        cM = self.mainConf.pxInt(12)
+        mH = self.mainConf.pxInt(26)
+        fS = self.mainConf.pxInt(4)
 
         # Root Folders
         self.addPlot = QSwitch()
@@ -364,8 +366,12 @@ class ProjWizardCustomPage(QWizardPage):
         self.addBox.addWidget(self.addNotes,    3, 1, 1, 1, Qt.AlignRight)
         self.addBox.addWidget(self.numChapters, 4, 1, 1, 1, Qt.AlignRight)
         self.addBox.addWidget(self.numScenes,   5, 1, 1, 1, Qt.AlignRight)
-        self.addBox.setRowStretch(6, 1)
+        self.addBox.setVerticalSpacing(fS)
+        self.addBox.setHorizontalSpacing(cM)
+        self.addBox.setContentsMargins(cM, 0, cM, 0)
         self.addBox.setColumnStretch(2, 1)
+        for i in range(6):
+            self.addBox.setRowMinimumHeight(i, mH)
 
         # Wizard Fields
         self.registerField("addPlot", self.addPlot)
@@ -377,7 +383,7 @@ class ProjWizardCustomPage(QWizardPage):
 
         # Assemble
         self.outerBox = QVBoxLayout()
-        self.outerBox.setSpacing(vS)
+        self.outerBox.setSpacing(cM)
         self.outerBox.addWidget(self.theText)
         self.outerBox.addLayout(self.addBox)
         self.outerBox.addStretch(1)
@@ -397,14 +403,7 @@ class ProjWizardFinalPage(QWizardPage):
         self.theWizard = theWizard
 
         self.setTitle(self.tr("Finished"))
-        self.theText = QLabel(
-            "<p>%s</p><p>%s</p>" % (
-                self.tr("All done."),
-                self.tr("Press '{0}' to create the new project.").format(
-                    self.tr("Done") if self.mainConf.osDarwin else self.tr("Finish")
-                )
-            )
-        )
+        self.theText = QLabel("")
         self.theText.setWordWrap(True)
 
         # Assemble
@@ -414,6 +413,53 @@ class ProjWizardFinalPage(QWizardPage):
         self.outerBox.addStretch(1)
         self.setLayout(self.outerBox)
 
+        return
+
+    def initializePage(self):
+        """Update the summary information on the final page.
+        """
+        QWizardPage.initializePage(self)
+
+        sumList = []
+        sumList.append(self.tr("Project Name: {0}").format(self.field("projName")))
+        sumList.append(self.tr("Project Path: {0}").format(self.field("projPath")))
+
+        if self.field("popMinimal"):
+            sumList.append(self.tr("Fill the project with a minimal set of items"))
+        elif self.field("popSample"):
+            sumList.append(self.tr("Fill the project with example files"))
+        elif self.field("popCustom"):
+            if self.field("addPlot"):
+                sumList.append(self.tr("Add a folder for plot notes"))
+            if self.field("addChar"):
+                sumList.append(self.tr("Add a folder for character notes"))
+            if self.field("addWorld"):
+                sumList.append(self.tr("Add a folder for location notes"))
+            if self.field("addNotes"):
+                sumList.append(self.tr("Add example notes to the above"))
+            if self.field("numChapters") > 0:
+                sumList.append(self.tr("Add {0} chapters to the novel folder").format(
+                    self.field("numChapters")
+                ))
+                if self.field("numScenes") > 0:
+                    sumList.append(self.tr("Add {0} scenes to each chapter").format(
+                        self.field("numScenes")
+                    ))
+            else:
+                if self.field("numScenes") > 0:
+                    sumList.append(self.tr("Add {0} scenes").format(
+                        self.field("numScenes")
+                    ))
+
+        self.theText.setText(
+            "<h4>%s</h4><p>&nbsp;&bull;&nbsp;%s</p><p>%s</p>" % (
+                self.tr("Summary"),
+                "<br>&nbsp;&bull;&nbsp;".join(sumList),
+                self.tr("Press '{0}' to create the new project.").format(
+                    self.tr("Done") if self.mainConf.osDarwin else self.tr("Finish")
+                )
+            )
+        )
         return
 
 # END Class ProjWizardFinalPage
