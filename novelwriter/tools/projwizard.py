@@ -31,12 +31,10 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QWizard, QWizardPage, QLabel, QVBoxLayout, QLineEdit, QPlainTextEdit,
     QPushButton, QFileDialog, QHBoxLayout, QRadioButton, QFormLayout,
-    QGroupBox, QGridLayout, QSpinBox
+    QGridLayout, QSpinBox
 )
 
-from novelwriter.enum import nwItemClass
 from novelwriter.common import makeFileNameSafe
-from novelwriter.constants import trConst, nwLabels
 from novelwriter.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
@@ -98,10 +96,10 @@ class ProjWizardIntroPage(QWizardPage):
 
         self.setTitle(self.tr("Create New Project"))
         self.theText = QLabel(self.tr(
-            "Provide at least a working title. The working title should not "
-            "be change beyond this point as it is used by the application for "
-            "generating file names for for instance backups. The other fields "
-            "are optional and can be changed at any time in Project Settings."
+            "Provide at least a project name. The project name should not "
+            "be change beyond this point as it is used for generating file "
+            "names for for instance backups. The other fields are optional "
+            "and can be changed at any time in Project Settings."
         ))
         self.theText.setWordWrap(True)
 
@@ -134,7 +132,7 @@ class ProjWizardIntroPage(QWizardPage):
         self.projAuthors.setPlaceholderText(self.tr("Optional. One name per line."))
 
         self.mainForm = QFormLayout()
-        self.mainForm.addRow(self.tr("Working Title"), self.projName)
+        self.mainForm.addRow(self.tr("Project Name"), self.projName)
         self.mainForm.addRow(self.tr("Novel Title"), self.projTitle)
         self.mainForm.addRow(self.tr("Author(s)"), self.projAuthors)
         self.mainForm.setVerticalSpacing(fS)
@@ -324,68 +322,26 @@ class ProjWizardCustomPage(QWizardPage):
 
         self.setTitle(self.tr("Custom Project Options"))
         self.theText = QLabel(self.tr(
-            "Select which additional root folders to make, and how to populate "
-            "the Novel folder. If you don't want to add chapters or scenes, set "
-            "the values to 0. You can add scenes without chapters."
+            "Select which additional elements to populate the project with. "
+            "You can skip making chapters and add only scenes by setting the "
+            "number of chapters to 0."
         ))
         self.theText.setWordWrap(True)
 
         vS = self.mainConf.pxInt(12)
 
         # Root Folders
-        self.rootGroup = QGroupBox(self.tr("Additional Root Folders"))
-        self.rootForm  = QGridLayout()
-        self.rootGroup.setLayout(self.rootForm)
-
-        self.lblPlot = QLabel(self.tr("{0} folder").format(
-            trConst(nwLabels.CLASS_NAME[nwItemClass.PLOT]))
-        )
-        self.lblChar = QLabel(self.tr("{0} folder").format(
-            trConst(nwLabels.CLASS_NAME[nwItemClass.CHARACTER]))
-        )
-        self.lblWorld = QLabel(self.tr("{0} folder").format(
-            trConst(nwLabels.CLASS_NAME[nwItemClass.WORLD]))
-        )
-        self.lblTime = QLabel(self.tr("{0} folder").format(
-            trConst(nwLabels.CLASS_NAME[nwItemClass.TIMELINE]))
-        )
-        self.lblObject = QLabel(self.tr("{0} folder").format(
-            trConst(nwLabels.CLASS_NAME[nwItemClass.OBJECT]))
-        )
-        self.lblEntity = QLabel(self.tr("{0} folder").format(
-            trConst(nwLabels.CLASS_NAME[nwItemClass.ENTITY]))
-        )
-
-        self.addPlot   = QSwitch()
-        self.addChar   = QSwitch()
-        self.addWorld  = QSwitch()
-        self.addTime   = QSwitch()
-        self.addObject = QSwitch()
-        self.addEntity = QSwitch()
+        self.addPlot = QSwitch()
+        self.addChar = QSwitch()
+        self.addWorld = QSwitch()
+        self.addNotes = QSwitch()
 
         self.addPlot.setChecked(True)
         self.addChar.setChecked(True)
-        self.addWorld.setChecked(True)
+        self.addWorld.setChecked(False)
+        self.addNotes.setChecked(False)
 
-        self.rootForm.addWidget(self.lblPlot,   0, 0)
-        self.rootForm.addWidget(self.lblChar,   1, 0)
-        self.rootForm.addWidget(self.lblWorld,  2, 0)
-        self.rootForm.addWidget(self.lblTime,   3, 0)
-        self.rootForm.addWidget(self.lblObject, 4, 0)
-        self.rootForm.addWidget(self.lblEntity, 5, 0)
-        self.rootForm.addWidget(self.addPlot,   0, 1, 1, 1, Qt.AlignRight)
-        self.rootForm.addWidget(self.addChar,   1, 1, 1, 1, Qt.AlignRight)
-        self.rootForm.addWidget(self.addWorld,  2, 1, 1, 1, Qt.AlignRight)
-        self.rootForm.addWidget(self.addTime,   3, 1, 1, 1, Qt.AlignRight)
-        self.rootForm.addWidget(self.addObject, 4, 1, 1, 1, Qt.AlignRight)
-        self.rootForm.addWidget(self.addEntity, 5, 1, 1, 1, Qt.AlignRight)
-        self.rootForm.setRowStretch(6, 1)
-
-        # Novel Options
-        self.novelGroup = QGroupBox(self.tr("Populate Novel Folder"))
-        self.novelForm  = QGridLayout()
-        self.novelGroup.setLayout(self.novelForm)
-
+        # Generate Content
         self.numChapters = QSpinBox()
         self.numChapters.setRange(0, 100)
         self.numChapters.setValue(5)
@@ -394,37 +350,36 @@ class ProjWizardCustomPage(QWizardPage):
         self.numScenes.setRange(0, 200)
         self.numScenes.setValue(5)
 
-        self.chFolders = QSwitch()
-        self.chFolders.setChecked(True)
-
-        self.novelForm.addWidget(QLabel(self.tr("Add chapters")),         0, 0)
-        self.novelForm.addWidget(QLabel(self.tr("Scenes (per chapter)")), 1, 0)
-        self.novelForm.addWidget(QLabel(self.tr("Add chapter folders")),  2, 0)
-        self.novelForm.addWidget(self.numChapters, 0, 1, 1, 1, Qt.AlignRight)
-        self.novelForm.addWidget(self.numScenes,   1, 1, 1, 1, Qt.AlignRight)
-        self.novelForm.addWidget(self.chFolders,   2, 1, 1, 1, Qt.AlignRight)
-        self.novelForm.setRowStretch(3, 1)
+        # Grid Form
+        self.addBox = QGridLayout()
+        self.addBox.addWidget(QLabel(self.tr("Add a folder for plot notes")),      0, 0)
+        self.addBox.addWidget(QLabel(self.tr("Add a folder for character notes")), 1, 0)
+        self.addBox.addWidget(QLabel(self.tr("Add a folder for location notes")),  2, 0)
+        self.addBox.addWidget(QLabel(self.tr("Add example notes to the above")),   3, 0)
+        self.addBox.addWidget(QLabel(self.tr("Add chapters to the novel folder")), 4, 0)
+        self.addBox.addWidget(QLabel(self.tr("Add scenes to each chapter")),       5, 0)
+        self.addBox.addWidget(self.addPlot,     0, 1, 1, 1, Qt.AlignRight)
+        self.addBox.addWidget(self.addChar,     1, 1, 1, 1, Qt.AlignRight)
+        self.addBox.addWidget(self.addWorld,    2, 1, 1, 1, Qt.AlignRight)
+        self.addBox.addWidget(self.addNotes,    3, 1, 1, 1, Qt.AlignRight)
+        self.addBox.addWidget(self.numChapters, 4, 1, 1, 1, Qt.AlignRight)
+        self.addBox.addWidget(self.numScenes,   5, 1, 1, 1, Qt.AlignRight)
+        self.addBox.setRowStretch(6, 1)
+        self.addBox.setColumnStretch(2, 1)
 
         # Wizard Fields
         self.registerField("addPlot", self.addPlot)
         self.registerField("addChar", self.addChar)
         self.registerField("addWorld", self.addWorld)
-        self.registerField("addTime", self.addTime)
-        self.registerField("addObject", self.addObject)
-        self.registerField("addEntity", self.addEntity)
+        self.registerField("addNotes", self.addNotes)
         self.registerField("numChapters", self.numChapters)
         self.registerField("numScenes", self.numScenes)
-        self.registerField("chFolders", self.chFolders)
 
         # Assemble
-        self.innerBox = QHBoxLayout()
-        self.innerBox.addWidget(self.rootGroup)
-        self.innerBox.addWidget(self.novelGroup)
-
         self.outerBox = QVBoxLayout()
         self.outerBox.setSpacing(vS)
         self.outerBox.addWidget(self.theText)
-        self.outerBox.addLayout(self.innerBox)
+        self.outerBox.addLayout(self.addBox)
         self.outerBox.addStretch(1)
         self.setLayout(self.outerBox)
 
