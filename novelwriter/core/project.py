@@ -295,11 +295,23 @@ class NWProject():
             # and a number of chapters and scenes selected in the
             # wizard's custom page.
 
+            noteTitles = {
+                nwItemClass.PLOT: self.tr("Main Plot"),
+                nwItemClass.CHARACTER: self.tr("Protagonist"),
+                nwItemClass.WORLD: self.tr("Main Location"),
+            }
+
             # Create root folders
             nHandle = self.newRoot(self.tr("Novel"), nwItemClass.NOVEL)
+            addNotes = projData.get("addNotes", False)
             for newRoot in projData.get("addRoots", []):
                 if newRoot in nwItemClass:
-                    self.newRoot(trConst(nwLabels.CLASS_NAME[newRoot]), newRoot)
+                    rHandle = self.newRoot(nwLabels.CLASS_NAME[newRoot], newRoot)
+                    if addNotes:
+                        aHandle = self.newFile(noteTitles[newRoot], rHandle)
+                        ntTag = simplified(noteTitles[newRoot]).replace(" ", "")
+                        aDoc = NWDoc(self, aHandle)
+                        aDoc.writeDocument(f"# {noteTitles[newRoot]}\n\n@tag: {ntTag}\n\n")
 
             # Create a title page
             tHandle = self.newFile(self.tr("Title Page"), nHandle)
@@ -310,38 +322,33 @@ class NWProject():
             # Create chapters and scenes
             numChapters = projData.get("numChapters", 0)
             numScenes = projData.get("numScenes", 0)
-            chFolders = projData.get("chFolders", False)
+
+            chSynop = self.tr("Summary of the chapter.")
+            scSynop = self.tr("Summary of the scene.")
 
             # Create chapters
             if numChapters > 0:
                 for ch in range(numChapters):
                     chTitle = self.tr("Chapter {0}").format(f"{ch+1:d}")
-                    pHandle = nHandle
-                    if chFolders:
-                        pHandle = self.newFolder(chTitle, nHandle)
-
-                    cHandle = self.newFile(chTitle, pHandle)
-
+                    cHandle = self.newFile(chTitle, nHandle)
                     aDoc = NWDoc(self, cHandle)
-                    aDoc.writeDocument("## %s\n\n" % chTitle)
+                    aDoc.writeDocument(f"## {chTitle}\n\n% Synopsis: {chSynop}\n\n")
 
                     # Create chapter scenes
                     if numScenes > 0:
                         for sc in range(numScenes):
                             scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
-                            sHandle = self.newFile(scTitle, pHandle)
-
+                            sHandle = self.newFile(scTitle, cHandle)
                             aDoc = NWDoc(self, sHandle)
-                            aDoc.writeDocument("### %s\n\n" % scTitle)
+                            aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
 
             # Create scenes (no chapters)
             elif numScenes > 0:
                 for sc in range(numScenes):
                     scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
                     sHandle = self.newFile(scTitle, nHandle)
-
                     aDoc = NWDoc(self, sHandle)
-                    aDoc.writeDocument("### %s\n\n" % scTitle)
+                    aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
 
         # Finalise
         if popCustom or popMinimal:
