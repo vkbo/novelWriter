@@ -120,32 +120,34 @@ class NWProject():
     #  Item Methods
     ##
 
-    def newRoot(self, rootName, rootClass):
-        """Add a new root item.
+    def newRoot(self, itemClass, label=None):
+        """Add a new root item. If label is None, use the class label.
         """
+        if label is None:
+            label = trConst(nwLabels.CLASS_NAME[itemClass])
         newItem = NWItem(self)
-        newItem.setName(rootName)
+        newItem.setName(label)
         newItem.setType(nwItemType.ROOT)
-        newItem.setClass(rootClass)
+        newItem.setClass(itemClass)
         self.projTree.append(None, None, newItem)
         self.projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
-    def newFolder(self, folderName, pHandle):
-        """Add a new folder with a given name and parent item.
+    def newFolder(self, label, pHandle):
+        """Add a new folder with a given label and parent item.
         """
         newItem = NWItem(self)
-        newItem.setName(folderName)
+        newItem.setName(label)
         newItem.setType(nwItemType.FOLDER)
         self.projTree.append(None, pHandle, newItem)
         self.projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
-    def newFile(self, fileName, pHandle):
-        """Add a new file with a given name and parent item.
+    def newFile(self, label, pHandle):
+        """Add a new file with a given label and parent item.
         """
         newItem = NWItem(self)
-        newItem.setName(fileName)
+        newItem.setName(label)
         newItem.setType(nwItemType.FILE)
         self.projTree.append(None, pHandle, newItem)
         self.projTree.updateItemData(newItem.itemHandle)
@@ -264,15 +266,13 @@ class NWProject():
         self.setBookTitle(projTitle)
         self.setBookAuthors(projAuthors)
 
-        hNovelRoot = self.newRoot(
-            trConst(nwLabels.CLASS_NAME[nwItemClass.NOVEL]), nwItemClass.NOVEL
-        )
+        hNovelRoot = self.newRoot(nwItemClass.NOVEL)
+        hTitlePage = self.newFile(self.tr("Title Page"), hNovelRoot)
 
         titlePage = "#! %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
         if self.bookAuthors:
             titlePage = "%s>> %s %s <<\n" % (titlePage, self.tr("By"), self.getAuthors())
 
-        hTitlePage = self.newFile(self.tr("Title Page"), hNovelRoot)
         aDoc = NWDoc(self, hTitlePage)
         aDoc.writeDocument(titlePage)
 
@@ -287,12 +287,10 @@ class NWProject():
             aDoc = NWDoc(self, hScene)
             aDoc.writeDocument("### %s\n\n" % self.tr("New Scene"))
 
-            minClasses = [
-                nwItemClass.PLOT, nwItemClass.CHARACTER,
-                nwItemClass.WORLD, nwItemClass.ARCHIVE
-            ]
-            for minClass in minClasses:
-                self.newRoot(trConst(nwLabels.CLASS_NAME[minClass]), minClass)
+            self.newRoot(nwItemClass.PLOT)
+            self.newRoot(nwItemClass.CHARACTER)
+            self.newRoot(nwItemClass.WORLD)
+            self.newRoot(nwItemClass.ARCHIVE)
 
         elif popCustom:
             # Create a project structure based on selected root folders
@@ -340,7 +338,7 @@ class NWProject():
             addNotes = projData.get("addNotes", False)
             for newRoot in projData.get("addRoots", []):
                 if newRoot in nwItemClass:
-                    rHandle = self.newRoot(trConst(nwLabels.CLASS_NAME[newRoot]), newRoot)
+                    rHandle = self.newRoot(newRoot)
                     if addNotes:
                         aHandle = self.newFile(noteTitles[newRoot], rHandle)
                         ntTag = simplified(noteTitles[newRoot]).replace(" ", "")
@@ -348,7 +346,7 @@ class NWProject():
                         aDoc.writeDocument(f"# {noteTitles[newRoot]}\n\n@tag: {ntTag}\n\n")
 
             # Also add the archive and trash folders
-            self.newRoot(trConst(nwLabels.CLASS_NAME[nwItemClass.ARCHIVE]), nwItemClass.ARCHIVE)
+            self.newRoot(nwItemClass.ARCHIVE)
             self.trashFolder()
 
         # Finalise

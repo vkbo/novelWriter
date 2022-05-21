@@ -259,14 +259,14 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.closeProject() is True
     assert theProject.openProject(projFile) is True
 
-    assert isinstance(theProject.newRoot("Novel",     nwItemClass.NOVEL),     str)
-    assert isinstance(theProject.newRoot("Plot",      nwItemClass.PLOT),      str)
-    assert isinstance(theProject.newRoot("Character", nwItemClass.CHARACTER), str)
-    assert isinstance(theProject.newRoot("World",     nwItemClass.WORLD),     str)
-    assert isinstance(theProject.newRoot("Timeline",  nwItemClass.TIMELINE),  str)
-    assert isinstance(theProject.newRoot("Object",    nwItemClass.OBJECT),    str)
-    assert isinstance(theProject.newRoot("Custom1",   nwItemClass.CUSTOM),    str)
-    assert isinstance(theProject.newRoot("Custom2",   nwItemClass.CUSTOM),    str)
+    assert isinstance(theProject.newRoot(nwItemClass.NOVEL),     str)
+    assert isinstance(theProject.newRoot(nwItemClass.PLOT),      str)
+    assert isinstance(theProject.newRoot(nwItemClass.CHARACTER), str)
+    assert isinstance(theProject.newRoot(nwItemClass.WORLD),     str)
+    assert isinstance(theProject.newRoot(nwItemClass.TIMELINE),  str)
+    assert isinstance(theProject.newRoot(nwItemClass.OBJECT),    str)
+    assert isinstance(theProject.newRoot(nwItemClass.CUSTOM),    str)
+    assert isinstance(theProject.newRoot(nwItemClass.CUSTOM),    str)
 
     assert theProject.projChanged is True
     assert theProject.saveProject() is True

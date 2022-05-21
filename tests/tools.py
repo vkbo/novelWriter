@@ -147,14 +147,14 @@ def buildTestProject(theObject, projPath):
     # Creating a minimal project with a few root folders and a
     # single chapter folder with a single file.
     xHandle = {}
-    xHandle[1] = theProject.newRoot(theProject.tr("Novel"),         nwItemClass.NOVEL)
-    xHandle[2] = theProject.newRoot(theProject.tr("Plot"),          nwItemClass.PLOT)
-    xHandle[3] = theProject.newRoot(theProject.tr("Characters"),    nwItemClass.CHARACTER)
-    xHandle[4] = theProject.newRoot(theProject.tr("World"),         nwItemClass.WORLD)
-    xHandle[5] = theProject.newFile(theProject.tr("Title Page"),    xHandle[1])
-    xHandle[6] = theProject.newFolder(theProject.tr("New Chapter"), xHandle[1])
-    xHandle[7] = theProject.newFile(theProject.tr("New Chapter"),   xHandle[6])
-    xHandle[8] = theProject.newFile(theProject.tr("New Scene"),     xHandle[6])
+    xHandle[1] = theProject.newRoot(nwItemClass.NOVEL, "Novel")
+    xHandle[2] = theProject.newRoot(nwItemClass.PLOT, "Plot")
+    xHandle[3] = theProject.newRoot(nwItemClass.CHARACTER, "Characters")
+    xHandle[4] = theProject.newRoot(nwItemClass.WORLD, "World")
+    xHandle[5] = theProject.newFile("Title Page", xHandle[1])
+    xHandle[6] = theProject.newFolder("New Chapter", xHandle[1])
+    xHandle[7] = theProject.newFile("New Chapter", xHandle[6])
+    xHandle[8] = theProject.newFile("New Scene", xHandle[6])
 
     aDoc = NWDoc(theProject, xHandle[5])
     aDoc.writeDocument("#! New Novel\n\n>> By Jane DOe <<\n")
