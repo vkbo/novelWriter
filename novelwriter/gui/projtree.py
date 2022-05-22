@@ -51,6 +51,7 @@ class GuiProjectTree(QTreeWidget):
     novelItemChanged = pyqtSignal()
     noteItemChanged = pyqtSignal()
     wordCountsChanged = pyqtSignal()
+    rootFoldersChanged = pyqtSignal()
 
     def __init__(self, theParent):
         QTreeWidget.__init__(self, theParent)
@@ -177,6 +178,7 @@ class GuiProjectTree(QTreeWidget):
         if itemType == nwItemType.ROOT and isinstance(itemClass, nwItemClass):
 
             tHandle = self.theProject.newRoot(itemClass)
+            self.rootFoldersChanged.emit()
 
         elif itemType in (nwItemType.FILE, nwItemType.FOLDER):
 
@@ -450,6 +452,7 @@ class GuiProjectTree(QTreeWidget):
                 self.takeTopLevelItem(tIndex)
                 self._deleteTreeItem(tHandle)
                 self._setTreeChanged(True)
+                self.rootFoldersChanged.emit()
             else:
                 self.theParent.makeAlert(self.tr(
                     "Cannot delete root folder. It is not empty. "
@@ -541,7 +544,7 @@ class GuiProjectTree(QTreeWidget):
             else:
                 expIcon = self.theTheme.getIcon("cross")
 
-        itempStatus, statusIcon = nwItem.getImportStatus()
+        itemStatus, statusIcon = nwItem.getImportStatus()
         hLevel = self.theIndex.getHandleHeaderLevel(tHandle)
         itemIcon = self.theTheme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
@@ -551,7 +554,7 @@ class GuiProjectTree(QTreeWidget):
         trItem.setText(self.C_NAME, nwItem.itemName)
         trItem.setIcon(self.C_EXPORT, expIcon)
         trItem.setIcon(self.C_STATUS, statusIcon)
-        trItem.setToolTip(self.C_STATUS, itempStatus)
+        trItem.setToolTip(self.C_STATUS, itemStatus)
 
         if self.mainConf.emphLabels and nwItem.itemLayout == nwItemLayout.DOCUMENT:
             trFont = trItem.font(self.C_NAME)

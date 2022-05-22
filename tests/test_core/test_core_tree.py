@@ -149,6 +149,11 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     assert theTree.isTrash("a000000000003") is True
     assert theTree.isRoot("a000000000002") is True
 
+    # Check that we have the root classes
+    assert theTree.rootClasses() == {
+        nwItemClass.NOVEL, nwItemClass.CHARACTER, nwItemClass.ARCHIVE, nwItemClass.TRASH
+    }
+
     # Check the isTrash function
     assert theTree.isTrash("0000000000000") is True  # Doesn't exist
     assert theTree.isTrash("a000000000003") is True  # This the trash folder

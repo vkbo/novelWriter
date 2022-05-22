@@ -126,6 +126,7 @@ class GuiMain(QMainWindow):
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
         self.treeView.wordCountsChanged.connect(self._updateStatusWordCount)
+        self.treeView.rootFoldersChanged.connect(self.projView.updateClasses)
 
         self.viewsBar.viewChangeRequested.connect(self._changeView)
         self.projView.viewChangeRequested.connect(self._changeView)
@@ -352,6 +353,7 @@ class GuiMain(QMainWindow):
             self.rebuildTrees()
             self.saveProject()
             self.docEditor.setDictionaries()
+            self.projView.updateClasses()
             self.rebuildIndex(beQuiet=True)
             self.statusBar.setRefTime(self.theProject.projOpened)
             self.statusBar.setProjectStatus(nwState.GOOD)
@@ -499,6 +501,7 @@ class GuiMain(QMainWindow):
         self.docEditor.toggleSpellCheck(self.theProject.spellCheck)
         self.mainMenu.setAutoOutline(self.theProject.autoOutline)
         self.statusBar.setRefTime(self.theProject.projOpened)
+        self.projView.updateClasses()
         self._updateStatusWordCount()
 
         # Restore previously open documents, if any

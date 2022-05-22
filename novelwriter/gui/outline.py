@@ -39,7 +39,9 @@ from PyQt5.QtWidgets import (
     QWidget, QFrame
 )
 
-from novelwriter.enum import nwItemLayout, nwItemType, nwOutline, nwView
+from novelwriter.enum import (
+    nwItemClass, nwItemLayout, nwItemType, nwOutline, nwView
+)
 from novelwriter.common import checkInt
 from novelwriter.constants import trConst, nwKeyWords, nwLabels
 
@@ -75,6 +77,7 @@ class GuiOutline(QWidget):
 
         # Function Mappings
         self.getSelectedHandle = self.outlineView.getSelectedHandle
+        self.updateClasses = self.outlineData.updateClasses
 
         return
 
@@ -96,6 +99,7 @@ class GuiOutline(QWidget):
 
     def closeOutline(self):
         self.outlineView.closeOutline()
+        self.outlineData.updateClasses()
         return
 
     def refreshView(self, overRide=False, novelChanged=False):
@@ -307,7 +311,6 @@ class GuiOutlineView(QTreeWidget):
             tHandle = selItems[0].data(self._colIdx[nwOutline.TITLE], Qt.UserRole)
             sTitle  = selItems[0].data(self._colIdx[nwOutline.LINE], Qt.UserRole)
             self.theOutline.outlineData.showItem(tHandle, sTitle)
-            self.theParent.treeView.setSelectedHandle(tHandle)
 
         return
 
@@ -824,6 +827,8 @@ class GuiOutlineDetails(QScrollArea):
         else:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
+        self.updateClasses()
+
         return
 
     def clearDetails(self):
@@ -846,6 +851,7 @@ class GuiOutlineDetails(QScrollArea):
         self.objKeyValue.setText("")
         self.entKeyValue.setText("")
         self.cstKeyValue.setText("")
+        self.updateClasses()
         return
 
     def showItem(self, tHandle, sTitle):
@@ -895,6 +901,7 @@ class GuiOutlineDetails(QScrollArea):
     #  Slots
     ##
 
+    @pyqtSlot(str)
     def _tagClicked(self, theLink):
         """Capture the click of a tag in the right-most column.
         """
@@ -904,6 +911,34 @@ class GuiOutlineDetails(QScrollArea):
             if len(theBits) == 2:
                 self.theOutline.viewChangeRequested.emit(nwView.PROJECT)
                 self.theParent.docViewer.loadFromTag(theBits[1])
+        return
+
+    @pyqtSlot()
+    def updateClasses(self):
+        """Update the visibility status of class details.
+        """
+        usedClasses = self.theProject.projTree.rootClasses()
+
+        pltVisible = nwItemClass.PLOT in usedClasses
+        timVisible = nwItemClass.TIMELINE in usedClasses
+        wldVisible = nwItemClass.WORLD in usedClasses
+        objVisible = nwItemClass.OBJECT in usedClasses
+        entVisible = nwItemClass.ENTITY in usedClasses
+        cstVisible = nwItemClass.CUSTOM in usedClasses
+
+        self.pltKeyLabel.setVisible(pltVisible)
+        self.pltKeyValue.setVisible(pltVisible)
+        self.timKeyLabel.setVisible(timVisible)
+        self.timKeyValue.setVisible(timVisible)
+        self.wldKeyLabel.setVisible(wldVisible)
+        self.wldKeyValue.setVisible(wldVisible)
+        self.objKeyLabel.setVisible(objVisible)
+        self.objKeyValue.setVisible(objVisible)
+        self.entKeyLabel.setVisible(entVisible)
+        self.entKeyValue.setVisible(entVisible)
+        self.cstKeyLabel.setVisible(cstVisible)
+        self.cstKeyValue.setVisible(cstVisible)
+
         return
 
     ##
