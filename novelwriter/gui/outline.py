@@ -36,7 +36,7 @@ from PyQt5.QtCore import (
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QGridLayout, QGroupBox, QHBoxLayout, QLabel,
     QMenu, QScrollArea, QSplitter, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget
+    QWidget, QFrame
 )
 
 from novelwriter.enum import nwItemLayout, nwItemType, nwOutline, nwView
@@ -167,6 +167,7 @@ class GuiOutlineView(QTreeWidget):
         self.optState   = theOutline.theParent.theProject.optState
         self.headerMenu = GuiOutlineHeaderMenu(self)
 
+        self.setFrameStyle(QFrame.NoFrame)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setExpandsOnDoubleClick(False)
@@ -801,6 +802,7 @@ class GuiOutlineDetails(QScrollArea):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setWidgetResizable(True)
+        self.setFrameStyle(QFrame.NoFrame)
 
         self.initDetails()
 

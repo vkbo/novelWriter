@@ -187,7 +187,7 @@ class GuiProjectEditMain(QWidget):
         self.editName.setMaximumWidth(xW)
         self.editName.setText(self.theProject.projName)
         self.mainForm.addRow(
-            self.tr("Working title"),
+            self.tr("Project name"),
             self.editName,
             self.tr("Should be set only once.")
         )
