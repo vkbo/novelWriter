@@ -1496,15 +1496,6 @@ class GuiMain(QMainWindow):
         elif view == nwView.OUTLINE:
             self.mainStack.setCurrentWidget(self.splitOutline)
 
-        elif view == nwView.DETAILS:
-            self.showProjectDetailsDialog()
-
-        elif view == nwView.STATS:
-            self.showWritingStatsDialog()
-
-        elif view == nwView.SET_PROJ:
-            self.showProjectSettingsDialog()
-
         return
 
     @pyqtSlot()
