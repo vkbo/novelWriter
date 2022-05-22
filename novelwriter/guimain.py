@@ -126,7 +126,7 @@ class GuiMain(QMainWindow):
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
         self.treeView.wordCountsChanged.connect(self._updateStatusWordCount)
-        self.treeView.rootFoldersChanged.connect(self.projView.updateClasses)
+        self.treeView.rootFoldersChanged.connect(self.projView.projectUpdated)
 
         self.viewsBar.viewChangeRequested.connect(self._changeView)
         self.projView.viewChangeRequested.connect(self._changeView)
@@ -353,7 +353,7 @@ class GuiMain(QMainWindow):
             self.rebuildTrees()
             self.saveProject()
             self.docEditor.setDictionaries()
-            self.projView.updateClasses()
+            self.projView.projectUpdated()
             self.rebuildIndex(beQuiet=True)
             self.statusBar.setRefTime(self.theProject.projOpened)
             self.statusBar.setProjectStatus(nwState.GOOD)
@@ -499,9 +499,8 @@ class GuiMain(QMainWindow):
         self.rebuildTrees()
         self.docEditor.setDictionaries()
         self.docEditor.toggleSpellCheck(self.theProject.spellCheck)
-        self.mainMenu.setAutoOutline(self.theProject.autoOutline)
         self.statusBar.setRefTime(self.theProject.projOpened)
-        self.projView.updateClasses()
+        self.projView.projectUpdated()
         self._updateStatusWordCount()
 
         # Restore previously open documents, if any
@@ -892,19 +891,6 @@ class GuiMain(QMainWindow):
             self.makeAlert(self.tr(
                 "The project index has been successfully rebuilt."
             ), nwAlert.INFO)
-
-        return True
-
-    def rebuildOutline(self):
-        """Force a rebuild of the Outline view.
-        """
-        if not self.hasProject:
-            logger.error("No project open")
-            return False
-
-        logger.verbose("Forcing a rebuild of the Project Outline")
-        self._changeView(nwView.OUTLINE)
-        self.projView.refreshView(overRide=True)
 
         return True
 

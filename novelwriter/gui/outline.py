@@ -4,9 +4,11 @@ novelWriter – GUI Project Outline
 GUI class for the project outline view
 
 File History:
-Created: 2019-11-16 [0.4.1] GuiOutlineView, GuiOutlineHeaderMenu
-Created: 2020-06-02 [0.7.0] GuiOutlineDetails
 Created: 2022-05-15 [1.7b1] GuiOutline
+Created: 2022-05-22 [1.7b1] GuiOutlineToolBar
+Created: 2019-11-16 [0.4.1] GuiOutlineView
+Created: 2019-11-16 [0.4.1] GuiOutlineHeaderMenu
+Created: 2020-06-02 [0.7.0] GuiOutlineDetails
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -29,6 +31,7 @@ import logging
 import novelwriter
 
 from time import time
+from enum import Enum
 
 from PyQt5.QtCore import (
     Qt, pyqtSignal, pyqtSlot, QSize, QT_TRANSLATE_NOOP
@@ -36,7 +39,7 @@ from PyQt5.QtCore import (
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QGridLayout, QGroupBox, QHBoxLayout, QLabel,
     QMenu, QScrollArea, QSplitter, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget, QFrame
+    QWidget, QFrame, QToolBar, QSizePolicy, QComboBox, QToolButton
 )
 
 from novelwriter.enum import (
@@ -60,6 +63,7 @@ class GuiOutline(QWidget):
         self.theParent  = theParent
         self.theProject = theParent.theProject
 
+        self.outlineBar  = GuiOutlineToolBar(self)
         self.outlineView = GuiOutlineView(self)
         self.outlineData = GuiOutlineDetails(self)
 
@@ -71,13 +75,20 @@ class GuiOutline(QWidget):
         # Assemble
         self.outerBox = QVBoxLayout()
         self.outerBox.setContentsMargins(0, 0, 0, 0)
+        self.outerBox.addWidget(self.outlineBar)
         self.outerBox.addWidget(self.splitOutline)
 
         self.setLayout(self.outerBox)
 
+        # Connect Signals
+        self.outlineView.hiddenStateChanged.connect(self._updateMenuColumns)
+        self.outlineBar.columnToggled.connect(self.outlineView.menuColumnToggled)
+        self.outlineBar.viewRefreshRequested.connect(
+            lambda: self.outlineView.refreshTree(overRide=True)
+        )
+
         # Function Mappings
         self.getSelectedHandle = self.outlineView.getSelectedHandle
-        self.updateClasses = self.outlineData.updateClasses
 
         return
 
@@ -112,7 +123,110 @@ class GuiOutline(QWidget):
     def setTreeFocus(self):
         return self.outlineView.setFocus()
 
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot()
+    def projectUpdated(self):
+        """Should be called whenever the number of root folders change.
+        """
+        self.outlineBar.populateNovelList()
+        self.outlineData.updateClasses()
+        return
+
+    @pyqtSlot()
+    def _updateMenuColumns(self):
+        """Trigger an update of the toggled state of the column menu
+        checkboxes whenever a signal is received that the hidden state
+        of columns has changed.
+        """
+        self.outlineBar.setColumnHiddenState(self.outlineView.hiddenColumns)
+        return
+
 # END Class GuiOutline
+
+
+class GuiOutlineToolBar(QToolBar):
+
+    columnToggled = pyqtSignal(bool, Enum)
+    viewRefreshRequested = pyqtSignal()
+
+    def __init__(self, theOutline):
+        QTreeWidget.__init__(self, theOutline)
+
+        logger.debug("Initialising GuiOutlineToolBar ...")
+
+        self.mainConf   = novelwriter.CONFIG
+        self.theOutline = theOutline
+        self.theParent  = theOutline.theParent
+        self.theProject = theOutline.theParent.theProject
+        self.theTheme   = theOutline.theParent.theTheme
+
+        iPx = self.mainConf.pxInt(22)
+        mPx = self.mainConf.pxInt(12)
+
+        self.setMovable(False)
+        self.setIconSize(QSize(iPx, iPx))
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setStyleSheet("QToolBar {border: 0px;}")
+
+        stretch = QWidget(self)
+        stretch.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Novel Selector
+        self.novelLabel = QLabel(self.tr("Outline of"))
+        self.novelLabel.setContentsMargins(0, 0, mPx, 0)
+
+        self.novelValue = QComboBox(self)
+        self.novelValue.setMinimumWidth(self.mainConf.pxInt(200))
+
+        # Actions
+        self.aRefresh = QAction(self.tr("Refresh"), self)
+        self.aRefresh.setIcon(self.theTheme.getIcon("refresh"))
+        self.aRefresh.triggered.connect(
+            lambda: self.viewRefreshRequested.emit()
+        )
+
+        # Column Menu
+        self.mColumns = GuiOutlineHeaderMenu(self)
+        self.mColumns.columnToggled.connect(
+            lambda isChecked, tItem: self.columnToggled.emit(isChecked, tItem)
+        )
+
+        self.tbColumns = QToolButton(self)
+        self.tbColumns.setIcon(self.theTheme.getIcon("menu"))
+        self.tbColumns.setMenu(self.mColumns)
+        self.tbColumns.setPopupMode(QToolButton.InstantPopup)
+
+        # Assemble
+        self.addWidget(self.novelLabel)
+        self.addWidget(self.novelValue)
+        self.addSeparator()
+        self.addAction(self.aRefresh)
+        self.addWidget(self.tbColumns)
+        self.addWidget(stretch)
+
+        self.populateNovelList()
+
+        logger.debug("GuiOutlineToolBar initialisation complete")
+
+    def populateNovelList(self):
+        """Fill the novel combo box.
+        """
+        self.novelValue.clear()
+        for tHandle, nwItem in self.theProject.projTree.novelRoots().items():
+            self.novelValue.addItem(
+                self.theTheme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass]),
+                nwItem.itemName, tHandle
+            )
+        return
+
+    def setColumnHiddenState(self, hiddenState):
+        self.mColumns.setHiddenState(hiddenState)
+        return
+
+# END Class GuiOutlineToolBar
 
 
 class GuiOutlineView(QTreeWidget):
@@ -157,10 +271,12 @@ class GuiOutlineView(QTreeWidget):
         nwOutline.SYNOP:  False,
     }
 
+    hiddenStateChanged = pyqtSignal()
+
     def __init__(self, theOutline):
         QTreeWidget.__init__(self, theOutline)
 
-        logger.debug("Initialising GuiOutline ...")
+        logger.debug("Initialising GuiOutlineView ...")
 
         self.mainConf   = novelwriter.CONFIG
         self.theOutline = theOutline
@@ -169,7 +285,6 @@ class GuiOutlineView(QTreeWidget):
         self.theTheme   = theOutline.theParent.theTheme
         self.theIndex   = theOutline.theParent.theIndex
         self.optState   = theOutline.theParent.theProject.optState
-        self.headerMenu = GuiOutlineHeaderMenu(self)
 
         self.setFrameStyle(QFrame.NoFrame)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -184,8 +299,6 @@ class GuiOutlineView(QTreeWidget):
         self.setIndentation(iPx)
 
         self.treeHead = self.header()
-        self.treeHead.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.treeHead.customContextMenuRequested.connect(self._headerRightClick)
         self.treeHead.sectionMoved.connect(self._columnMoved)
 
         # Internals
@@ -199,11 +312,24 @@ class GuiOutlineView(QTreeWidget):
 
         self.initOutline()
         self.clearOutline()
-        self.headerMenu.setHiddenState(self._colHidden)
 
-        logger.debug("GuiOutline initialisation complete")
+        self.hiddenStateChanged.emit()
+
+        logger.debug("GuiOutlineView initialisation complete")
 
         return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def hiddenColumns(self):
+        return self._colHidden
+
+    ##
+    #  Methods
+    ##
 
     def initOutline(self):
         """Set or update outline settings.
@@ -314,13 +440,6 @@ class GuiOutlineView(QTreeWidget):
 
         return
 
-    @pyqtSlot("QPoint")
-    def _headerRightClick(self, clickPos):
-        """Show the header column menu.
-        """
-        self.headerMenu.exec_(self.mapToGlobal(clickPos))
-        return
-
     @pyqtSlot(int, int, int)
     def _columnMoved(self, logIdx, oldVisualIdx, newVisualIdx):
         """Make sure the order array is up to date with the actual order
@@ -330,9 +449,10 @@ class GuiOutlineView(QTreeWidget):
         self._saveHeaderState()
         return
 
-    def _menuColumnToggled(self, isChecked, theItem):
+    @pyqtSlot(bool, Enum)
+    def menuColumnToggled(self, isChecked, theItem):
         """Receive the changes to column visibility forwarded by the
-        header context menu.
+        column selection menu.
         """
         logger.verbose("User toggled Outline column '%s'", theItem.name)
         if theItem in self._colIdx:
@@ -389,7 +509,7 @@ class GuiOutlineView(QTreeWidget):
             except Exception:
                 logger.warning("Ignored unknown outline column '%s'", str(hName))
 
-        self.headerMenu.setHiddenState(self._colHidden)
+        self.hiddenStateChanged.emit()
 
         return
 
@@ -558,10 +678,11 @@ class GuiOutlineView(QTreeWidget):
 
 class GuiOutlineHeaderMenu(QMenu):
 
-    def __init__(self, theParent):
-        QMenu.__init__(self, theParent)
+    columnToggled = pyqtSignal(bool, Enum)
 
-        self.theParent = theParent
+    def __init__(self, theOutline):
+        QMenu.__init__(self, theOutline)
+
         self.acceptToggle = True
 
         mnuHead = QAction(self.tr("Select Columns"), self)
@@ -575,7 +696,7 @@ class GuiOutlineHeaderMenu(QMenu):
             self.actionMap[hItem] = QAction(trConst(nwLabels.OUTLINE_COLS[hItem]), self)
             self.actionMap[hItem].setCheckable(True)
             self.actionMap[hItem].toggled.connect(
-                lambda isChecked, tItem=hItem: self._columnToggled(isChecked, tItem)
+                lambda isChecked, tItem=hItem: self.columnToggled.emit(isChecked, tItem)
             )
             self.addAction(self.actionMap[hItem])
 
@@ -594,18 +715,6 @@ class GuiOutlineHeaderMenu(QMenu):
 
         self.acceptToggle = True
 
-        return
-
-    ##
-    #  Slots
-    ##
-
-    def _columnToggled(self, isChecked, theItem):
-        """The user has toggled the visibility of a column. Forward the
-        event to the parent class only if we're accepting changes.
-        """
-        if self.acceptToggle:
-            self.theParent._menuColumnToggled(isChecked, theItem)
         return
 
 # END Class GuiOutlineHeaderMenu
@@ -945,16 +1054,12 @@ class GuiOutlineDetails(QScrollArea):
     #  Internal Functions
     ##
 
-    def _formatTags(self, theRefs, theKey):
+    def _formatTags(self, refs, key):
         """Format the tags as clickable links.
         """
-        if theKey not in theRefs:
-            return ""
-        refTags = []
-        for tTag in theRefs[theKey]:
-            refTags.append("<a href='#%s=%s'>%s</a>" % (
-                theKey[1:], tTag, tTag
-            ))
-        return ", ".join(refTags)
+        mKey = key[1:]
+        return ", ".join(
+            [f"<a href='#{mKey}={tag}'>{tag}</a>" for tag in refs.get(key, [])]
+        )
 
 # END Class GuiOutlineDetails

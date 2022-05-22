@@ -61,7 +61,6 @@ def testGuiMain_ProjectBlocker(monkeypatch, nwGUI):
     assert nwGUI.editItem() is False
     assert nwGUI.requestNovelTreeRefresh() is False
     assert nwGUI.rebuildIndex() is False
-    assert nwGUI.rebuildOutline() is False
     assert nwGUI.showProjectSettingsDialog() is False
     assert nwGUI.showProjectDetailsDialog() is False
     assert nwGUI.showBuildProjectDialog() is False

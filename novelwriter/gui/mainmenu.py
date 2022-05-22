@@ -81,12 +81,6 @@ class GuiMainMenu(QMenuBar):
         self.aSpellCheck.setChecked(theMode)
         return
 
-    def setAutoOutline(self, theMode):
-        """Forward auto outline check state to its action.
-        """
-        self.aAutoOutline.setChecked(theMode)
-        return
-
     def setFocusMode(self, theMode):
         """Forward focus mode check state to its action.
         """
@@ -103,12 +97,6 @@ class GuiMainMenu(QMenuBar):
         decision, just pass a None to the function and let it decide.
         """
         self.theParent.docEditor.toggleSpellCheck(None)
-        return True
-
-    def _toggleAutoOutline(self, theMode):
-        """Toggle auto outline when the menu entry is checked.
-        """
-        self.theProject.setAutoOutline(theMode)
         return True
 
     def _openWebsite(self, theUrl):
@@ -888,19 +876,6 @@ class GuiMainMenu(QMenuBar):
         self.aRebuildIndex.setShortcut("F9")
         self.aRebuildIndex.triggered.connect(lambda: self.theParent.rebuildIndex())
         self.toolsMenu.addAction(self.aRebuildIndex)
-
-        # Tools > Rebuild Outline
-        self.aRebuildOutline = QAction(self.tr("Rebuild Outline"), self)
-        self.aRebuildOutline.setShortcut("F10")
-        self.aRebuildOutline.triggered.connect(lambda: self.theParent.rebuildOutline())
-        self.toolsMenu.addAction(self.aRebuildOutline)
-
-        # Tools > Toggle Auto Build Outline
-        self.aAutoOutline = QAction(self.tr("Auto-Update Outline"), self)
-        self.aAutoOutline.setCheckable(True)
-        self.aAutoOutline.toggled.connect(self._toggleAutoOutline)
-        self.aAutoOutline.setShortcut("Ctrl+F10")
-        self.toolsMenu.addAction(self.aAutoOutline)
 
         # Tools > Separator
         self.toolsMenu.addSeparator()
