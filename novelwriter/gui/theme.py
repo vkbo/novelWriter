@@ -466,8 +466,8 @@ class GuiIcons:
 
         # General Button Icons
         "add", "backward", "check", "clear", "close", "cross", "delete", "done", "down", "edit",
-        "forward", "hash", "maximise", "minimise", "reference", "refresh", "remove", "save",
-        "search_replace", "search", "settings", "up",
+        "forward", "hash", "maximise", "menu", "minimise", "reference", "refresh", "remove",
+        "save", "search_replace", "search", "settings", "up",
 
         # Switches
         "sticky-on", "sticky-off",
