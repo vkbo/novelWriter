@@ -1,9 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-23 15:28:44">
+<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-05-21 17:25:41">
   <project>
     <name>New Project</name>
-    <title></title>
-    <saveCount>3</saveCount>
+    <title>New Novel</title>
+    <author>Jane Doe</author>
+    <saveCount>2</saveCount>
     <autoCount>1</autoCount>
     <editTime>0</editTime>
   </project>
@@ -15,8 +16,8 @@
     <autoOutline>True</autoOutline>
     <lastEdited>None</lastEdited>
     <lastViewed>None</lastViewed>
-    <lastWordCount>6</lastWordCount>
-    <novelWordCount>6</novelWordCount>
+    <lastWordCount>9</lastWordCount>
+    <novelWordCount>9</novelWordCount>
     <notesWordCount>0</notesWordCount>
     <autoReplace/>
     <titleFormat>
@@ -45,7 +46,7 @@
       <name status="s000000" import="i000004">Novel</name>
     </item>
     <item handle="000000000000c" parent="0000000000008" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
+      <meta expanded="False" charCount="20" wordCount="5" paraCount="1" cursorPos="0"/>
       <name status="s000000" import="i000004" exported="True">Title Page</name>
     </item>
     <item handle="000000000000d" parent="0000000000008" root="0000000000008" order="1" type="FOLDER" class="NOVEL">

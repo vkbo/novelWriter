@@ -120,32 +120,34 @@ class NWProject():
     #  Item Methods
     ##
 
-    def newRoot(self, rootName, rootClass):
-        """Add a new root item.
+    def newRoot(self, itemClass, label=None):
+        """Add a new root item. If label is None, use the class label.
         """
+        if label is None:
+            label = trConst(nwLabels.CLASS_NAME[itemClass])
         newItem = NWItem(self)
-        newItem.setName(rootName)
+        newItem.setName(label)
         newItem.setType(nwItemType.ROOT)
-        newItem.setClass(rootClass)
+        newItem.setClass(itemClass)
         self.projTree.append(None, None, newItem)
         self.projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
-    def newFolder(self, folderName, pHandle):
-        """Add a new folder with a given name and parent item.
+    def newFolder(self, label, pHandle):
+        """Add a new folder with a given label and parent item.
         """
         newItem = NWItem(self)
-        newItem.setName(folderName)
+        newItem.setName(label)
         newItem.setType(nwItemType.FOLDER)
         self.projTree.append(None, pHandle, newItem)
         self.projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
-    def newFile(self, fileName, pHandle):
-        """Add a new file with a given name and parent item.
+    def newFile(self, label, pHandle):
+        """Add a new file with a given label and parent item.
         """
         newItem = NWItem(self)
-        newItem.setName(fileName)
+        newItem.setName(label)
         newItem.setType(nwItemType.FILE)
         self.projTree.append(None, pHandle, newItem)
         self.projTree.updateItemData(newItem.itemHandle)
@@ -264,84 +266,88 @@ class NWProject():
         self.setBookTitle(projTitle)
         self.setBookAuthors(projAuthors)
 
+        hNovelRoot = self.newRoot(nwItemClass.NOVEL)
+        hTitlePage = self.newFile(self.tr("Title Page"), hNovelRoot)
+
         titlePage = "#! %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
         if self.bookAuthors:
             titlePage = "%s>> %s %s <<\n" % (titlePage, self.tr("By"), self.getAuthors())
 
+        aDoc = NWDoc(self, hTitlePage)
+        aDoc.writeDocument(titlePage)
+
         if popMinimal:
             # Creating a minimal project with a few root folders and a
-            # single chapter folder with a single file.
-            xHandle = {}
-            xHandle[1] = self.newRoot(self.tr("Novel"),         nwItemClass.NOVEL)
-            xHandle[2] = self.newRoot(self.tr("Plot"),          nwItemClass.PLOT)
-            xHandle[3] = self.newRoot(self.tr("Characters"),    nwItemClass.CHARACTER)
-            xHandle[4] = self.newRoot(self.tr("World"),         nwItemClass.WORLD)
-            xHandle[5] = self.newFile(self.tr("Title Page"),    xHandle[1])
-            xHandle[6] = self.newFolder(self.tr("New Chapter"), xHandle[1])
-            xHandle[7] = self.newFile(self.tr("New Chapter"),   xHandle[6])
-            xHandle[8] = self.newFile(self.tr("New Scene"),     xHandle[6])
-
-            aDoc = NWDoc(self, xHandle[5])
-            aDoc.writeDocument(titlePage)
-
-            aDoc = NWDoc(self, xHandle[7])
+            # single chapter with a single scene.
+            hChapter = self.newFile(self.tr("New Chapter"), hNovelRoot)
+            aDoc = NWDoc(self, hChapter)
             aDoc.writeDocument("## %s\n\n" % self.tr("New Chapter"))
 
-            aDoc = NWDoc(self, xHandle[8])
+            hScene = self.newFile(self.tr("New Scene"), hChapter)
+            aDoc = NWDoc(self, hScene)
             aDoc.writeDocument("### %s\n\n" % self.tr("New Scene"))
+
+            self.newRoot(nwItemClass.PLOT)
+            self.newRoot(nwItemClass.CHARACTER)
+            self.newRoot(nwItemClass.WORLD)
+            self.newRoot(nwItemClass.ARCHIVE)
 
         elif popCustom:
             # Create a project structure based on selected root folders
             # and a number of chapters and scenes selected in the
             # wizard's custom page.
 
-            # Create root folders
-            nHandle = self.newRoot(self.tr("Novel"), nwItemClass.NOVEL)
-            for newRoot in projData.get("addRoots", []):
-                if newRoot in nwItemClass:
-                    self.newRoot(trConst(nwLabels.CLASS_NAME[newRoot]), newRoot)
-
-            # Create a title page
-            tHandle = self.newFile(self.tr("Title Page"), nHandle)
-
-            aDoc = NWDoc(self, tHandle)
-            aDoc.writeDocument(titlePage)
-
             # Create chapters and scenes
             numChapters = projData.get("numChapters", 0)
             numScenes = projData.get("numScenes", 0)
-            chFolders = projData.get("chFolders", False)
+
+            chSynop = self.tr("Summary of the chapter.")
+            scSynop = self.tr("Summary of the scene.")
 
             # Create chapters
             if numChapters > 0:
                 for ch in range(numChapters):
                     chTitle = self.tr("Chapter {0}").format(f"{ch+1:d}")
-                    pHandle = nHandle
-                    if chFolders:
-                        pHandle = self.newFolder(chTitle, nHandle)
-
-                    cHandle = self.newFile(chTitle, pHandle)
-
+                    cHandle = self.newFile(chTitle, hNovelRoot)
                     aDoc = NWDoc(self, cHandle)
-                    aDoc.writeDocument("## %s\n\n" % chTitle)
+                    aDoc.writeDocument(f"## {chTitle}\n\n% Synopsis: {chSynop}\n\n")
 
                     # Create chapter scenes
                     if numScenes > 0:
                         for sc in range(numScenes):
                             scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
-                            sHandle = self.newFile(scTitle, pHandle)
-
+                            sHandle = self.newFile(scTitle, cHandle)
                             aDoc = NWDoc(self, sHandle)
-                            aDoc.writeDocument("### %s\n\n" % scTitle)
+                            aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
 
             # Create scenes (no chapters)
             elif numScenes > 0:
                 for sc in range(numScenes):
                     scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
-                    sHandle = self.newFile(scTitle, nHandle)
-
+                    sHandle = self.newFile(scTitle, hNovelRoot)
                     aDoc = NWDoc(self, sHandle)
-                    aDoc.writeDocument("### %s\n\n" % scTitle)
+                    aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
+
+            # Create notes folders
+            noteTitles = {
+                nwItemClass.PLOT: self.tr("Main Plot"),
+                nwItemClass.CHARACTER: self.tr("Protagonist"),
+                nwItemClass.WORLD: self.tr("Main Location"),
+            }
+
+            addNotes = projData.get("addNotes", False)
+            for newRoot in projData.get("addRoots", []):
+                if newRoot in nwItemClass:
+                    rHandle = self.newRoot(newRoot)
+                    if addNotes:
+                        aHandle = self.newFile(noteTitles[newRoot], rHandle)
+                        ntTag = simplified(noteTitles[newRoot]).replace(" ", "")
+                        aDoc = NWDoc(self, aHandle)
+                        aDoc.writeDocument(f"# {noteTitles[newRoot]}\n\n@tag: {ntTag}\n\n")
+
+            # Also add the archive and trash folders
+            self.newRoot(nwItemClass.ARCHIVE)
+            self.trashFolder()
 
         # Finalise
         if popCustom or popMinimal:

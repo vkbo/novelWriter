@@ -21,7 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from tools import getGuiItem
+from tools import getGuiItem, buildTestProject
 
 from PyQt5.QtWidgets import QAction, QDialog, QMessageBox
 
@@ -48,7 +48,7 @@ def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     assert nwGUI.editItem() is False
 
     # Create and Open Project
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
     tHandle = "000000000000f"
 
     # No Selection
@@ -99,7 +99,7 @@ def testDlgItemEditor_Novel(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
     # Create Project and Open Document
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
     tHandle = "000000000000f"
 
     assert nwGUI.theProject.statusItems.name(statusKeys[0]) == "New"
@@ -156,7 +156,7 @@ def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
     # Create Project and Open Document
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
     assert nwGUI.theProject.statusItems.name(statusKeys[0]) == "New"
     assert nwGUI.theProject.statusItems.name(statusKeys[1]) == "Note"
     assert nwGUI.theProject.importItems.name(importKeys[0]) == "New"
@@ -209,7 +209,7 @@ def testDlgItemEditor_Folder(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
     # Create Project and Open Document
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
 
     # Edit a Folder
     itemEdit = GuiItemEditor(nwGUI, "000000000000d")

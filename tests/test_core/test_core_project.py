@@ -26,7 +26,7 @@ from shutil import copyfile
 from zipfile import ZipFile
 from lxml import etree
 
-from tools import cmpFiles, writeFile, readFile
+from tools import cmpFiles, writeFile, readFile, buildTestProject, XML_IGNORE
 from mock import causeOSError
 
 from novelwriter.core.project import NWProject
@@ -67,7 +67,7 @@ def testCoreProject_NewMinimal(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
     assert theProject.projChanged is False
 
     # Open a second time
@@ -77,7 +77,7 @@ def testCoreProject_NewMinimal(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
 # END Test testCoreProject_NewMinimal
 
@@ -103,13 +103,10 @@ def testCoreProject_NewCustomA(fncDir, outDir, refDir, mockGUI, mockRnd):
             nwItemClass.PLOT,
             nwItemClass.CHARACTER,
             nwItemClass.WORLD,
-            nwItemClass.TIMELINE,
-            nwItemClass.OBJECT,
-            nwItemClass.ENTITY,
         ],
+        "addNotes": True,
         "numChapters": 3,
         "numScenes": 3,
-        "chFolders": True,
     }
     theProject = NWProject(mockGUI)
 
@@ -118,7 +115,7 @@ def testCoreProject_NewCustomA(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
 # END Test testCoreProject_NewCustomA
 
@@ -144,13 +141,10 @@ def testCoreProject_NewCustomB(fncDir, outDir, refDir, mockGUI, mockRnd):
             nwItemClass.PLOT,
             nwItemClass.CHARACTER,
             nwItemClass.WORLD,
-            nwItemClass.TIMELINE,
-            nwItemClass.OBJECT,
-            nwItemClass.ENTITY,
         ],
+        "addNotes": True,
         "numChapters": 0,
         "numScenes": 6,
-        "chFolders": True,
     }
     theProject = NWProject(mockGUI)
 
@@ -159,7 +153,7 @@ def testCoreProject_NewCustomB(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
 # END Test testCoreProject_NewCustomB
 
@@ -258,28 +252,28 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
     compFile = os.path.join(refDir, "coreProject_NewRoot_nwProject.nwx")
 
     theProject = NWProject(mockGUI)
+    buildTestProject(theProject, fncDir)
 
-    assert theProject.newProject({"projPath": fncDir}) is True
     assert theProject.setProjectPath(fncDir) is True
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
     assert theProject.openProject(projFile) is True
 
-    assert isinstance(theProject.newRoot("Novel",     nwItemClass.NOVEL),     str)
-    assert isinstance(theProject.newRoot("Plot",      nwItemClass.PLOT),      str)
-    assert isinstance(theProject.newRoot("Character", nwItemClass.CHARACTER), str)
-    assert isinstance(theProject.newRoot("World",     nwItemClass.WORLD),     str)
-    assert isinstance(theProject.newRoot("Timeline",  nwItemClass.TIMELINE),  str)
-    assert isinstance(theProject.newRoot("Object",    nwItemClass.OBJECT),    str)
-    assert isinstance(theProject.newRoot("Custom1",   nwItemClass.CUSTOM),    str)
-    assert isinstance(theProject.newRoot("Custom2",   nwItemClass.CUSTOM),    str)
+    assert isinstance(theProject.newRoot(nwItemClass.NOVEL),     str)
+    assert isinstance(theProject.newRoot(nwItemClass.PLOT),      str)
+    assert isinstance(theProject.newRoot(nwItemClass.CHARACTER), str)
+    assert isinstance(theProject.newRoot(nwItemClass.WORLD),     str)
+    assert isinstance(theProject.newRoot(nwItemClass.TIMELINE),  str)
+    assert isinstance(theProject.newRoot(nwItemClass.OBJECT),    str)
+    assert isinstance(theProject.newRoot(nwItemClass.CUSTOM),    str)
+    assert isinstance(theProject.newRoot(nwItemClass.CUSTOM),    str)
 
     assert theProject.projChanged is True
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
     assert theProject.projChanged is False
 
 # END Test testCoreProject_NewRoot
@@ -294,8 +288,8 @@ def testCoreProject_NewFile(fncDir, outDir, refDir, mockGUI, mockRnd):
     compFile = os.path.join(refDir, "coreProject_NewFile_nwProject.nwx")
 
     theProject = NWProject(mockGUI)
+    buildTestProject(theProject, fncDir)
 
-    assert theProject.newProject({"projPath": fncDir}) is True
     assert theProject.setProjectPath(fncDir) is True
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
@@ -308,7 +302,7 @@ def testCoreProject_NewFile(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
     assert theProject.projChanged is False
 
 # END Test testCoreProject_NewFile
@@ -489,7 +483,7 @@ def testCoreProject_Save(monkeypatch, nwMinimal, mockGUI, refDir):
     assert theProject.saveProject() is True
     assert theProject.saveCount == saveCount + 1
     assert theProject.autoCount == autoCount
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8, 9])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
     # Check that a second save creates a .bak file
     assert os.path.isfile(backFile) is True
@@ -500,7 +494,7 @@ def testCoreProject_Save(monkeypatch, nwMinimal, mockGUI, refDir):
     assert theProject.saveProject(autoSave=True) is True
     assert theProject.saveCount == saveCount
     assert theProject.autoCount == autoCount + 1
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8, 9])
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
     # Close test project
     assert theProject.closeProject()
@@ -677,7 +671,7 @@ def testCoreProject_StatusImport(mockGUI, fncDir, mockRnd):
     """Test the status and importance flag handling.
     """
     theProject = NWProject(mockGUI)
-    assert theProject.newProject({"projPath": fncDir}) is True
+    buildTestProject(theProject, fncDir)
 
     statusKeys = ["s000008", "s000009", "s00000a", "s00000b"]
     importKeys = ["i00000c", "i00000d", "i00000e", "i00000f"]
@@ -798,7 +792,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     """Test other project class methods and functions.
     """
     theProject = NWProject(mockGUI)
-    assert theProject.newProject({"projPath": fncDir}) is True
+    buildTestProject(theProject, fncDir)
 
     # Setting project path
     assert theProject.setProjectPath(None)
@@ -1177,10 +1171,6 @@ def testCoreProject_LegacyData(monkeypatch, mockGUI, fncDir):
     """
     theProject = NWProject(mockGUI)
     theProject.setProjectPath(fncDir)
-
-    # assert theProject.newProject({"projPath": fncDir})
-    # assert theProject.saveProject()
-    # assert theProject.closeProject()
 
     # Check behaviour of deprecated files function on OSError
     tstFile = os.path.join(fncDir, "ToC.json")

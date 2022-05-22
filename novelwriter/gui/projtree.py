@@ -37,7 +37,6 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.core import NWDoc
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.constants import trConst, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -176,9 +175,7 @@ class GuiProjectTree(QTreeWidget):
 
         if itemType == nwItemType.ROOT and isinstance(itemClass, nwItemClass):
 
-            tHandle = self.theProject.newRoot(
-                trConst(nwLabels.CLASS_NAME[itemClass]), itemClass
-            )
+            tHandle = self.theProject.newRoot(itemClass)
 
         elif itemType in (nwItemType.FILE, nwItemType.FOLDER):
 

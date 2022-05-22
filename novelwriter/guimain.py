@@ -1432,9 +1432,9 @@ class GuiMain(QMainWindow):
             "popMinimal": newProj.field("popMinimal"),
             "popCustom": newProj.field("popCustom"),
             "addRoots": [],
+            "addNotes": False,
             "numChapters": 0,
             "numScenes": 0,
-            "chFolders": False,
         }
         if newProj.field("popCustom"):
             addRoots = []
@@ -1444,16 +1444,10 @@ class GuiMain(QMainWindow):
                 addRoots.append(nwItemClass.CHARACTER)
             if newProj.field("addWorld"):
                 addRoots.append(nwItemClass.WORLD)
-            if newProj.field("addTime"):
-                addRoots.append(nwItemClass.TIMELINE)
-            if newProj.field("addObject"):
-                addRoots.append(nwItemClass.OBJECT)
-            if newProj.field("addEntity"):
-                addRoots.append(nwItemClass.ENTITY)
             projData["addRoots"] = addRoots
+            projData["addNotes"] = newProj.field("addNotes")
             projData["numChapters"] = newProj.field("numChapters")
             projData["numScenes"] = newProj.field("numScenes")
-            projData["chFolders"] = newProj.field("chFolders")
 
         return projData
 

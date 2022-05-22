@@ -26,7 +26,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor, QTextBlock
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
-from tools import writeFile
+from tools import writeFile, buildTestProject
 
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.enum import nwDocAction, nwDocInsert
@@ -465,7 +465,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
 
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
 
     assert nwGUI.treeView._getTreeItem("000000000000f") is not None
     assert nwGUI.openDocument("000000000000f") is True

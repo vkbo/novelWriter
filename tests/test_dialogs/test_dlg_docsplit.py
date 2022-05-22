@@ -23,7 +23,7 @@ import os
 import pytest
 
 from mock import causeOSError
-from tools import getGuiItem, readFile, writeFile
+from tools import getGuiItem, readFile, writeFile, buildTestProject
 
 from PyQt5.QtWidgets import QAction, QMessageBox, QDialog
 
@@ -42,7 +42,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
 
     # Create a new project
-    assert nwGUI.newProject({"projPath": fncProj}) is True
+    buildTestProject(nwGUI, fncProj)
 
     # Handles for new objects
     hNovelRoot  = "0000000000008"
