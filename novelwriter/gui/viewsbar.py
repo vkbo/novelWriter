@@ -27,7 +27,9 @@ import logging
 import novelwriter
 
 from PyQt5.QtCore import Qt, QSize, pyqtSignal
-from PyQt5.QtWidgets import QToolBar, QWidget, QSizePolicy, QAction
+from PyQt5.QtWidgets import (
+    QToolBar, QWidget, QSizePolicy, QAction, QMenu, QToolButton
+)
 
 from novelwriter.enum import nwView
 
@@ -49,54 +51,86 @@ class GuiViewsBar(QToolBar):
 
         # Style
         iPx = self.mainConf.pxInt(22)
-        mPx = self.mainConf.pxInt(58)
+        mPx = self.mainConf.pxInt(60)
 
         lblFont = self.theTheme.guiFont
         lblFont.setPointSizeF(0.65*self.theTheme.fontPointSize)
-        self.setFont(lblFont)
 
         self.setMovable(False)
         self.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.setIconSize(QSize(iPx, iPx))
         self.setMaximumWidth(mPx)
         self.setContentsMargins(0, 0, 0, 0)
+        self.setStyleSheet("QToolBar {border: 0px;}")
 
         stretch = QWidget(self)
         stretch.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         # Actions
         self.aProject = QAction(self.tr("Project"))
+        self.aProject.setFont(lblFont)
+        self.aProject.setToolTip(self.tr("Show project tree and editor"))
         self.aProject.setIcon(self.theTheme.getIcon("view_editor"))
         self.aProject.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.PROJECT))
 
         self.aNovel = QAction(self.tr("Novel"))
+        self.aNovel.setFont(lblFont)
+        self.aNovel.setToolTip(self.tr("Show novel tree and editor"))
         self.aNovel.setIcon(self.theTheme.getIcon("view_novel"))
         self.aNovel.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.NOVEL))
 
         self.aOutline = QAction(self.tr("Outline"))
+        self.aOutline.setFont(lblFont)
+        self.aOutline.setToolTip(self.tr("Show novel outline"))
         self.aOutline.setIcon(self.theTheme.getIcon("view_outline"))
         self.aOutline.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.OUTLINE))
 
+        self.aBuild = QAction(self.tr("Build"))
+        self.aBuild.setFont(lblFont)
+        self.aBuild.setToolTip(self.tr("Build novel project"))
+        self.aBuild.setIcon(self.theTheme.getIcon("view_build"))
+        self.aBuild.triggered.connect(lambda: self.theParent.showBuildProjectDialog())
+
         self.aDetails = QAction(self.tr("Details"))
+        self.aDetails.setFont(lblFont)
+        self.aDetails.setToolTip(self.tr("Show project details"))
         self.aDetails.setIcon(self.theTheme.getIcon("proj_details"))
-        self.aDetails.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.DETAILS))
+        self.aDetails.triggered.connect(lambda: self.theParent.showProjectDetailsDialog())
 
         self.aStats = QAction(self.tr("Stats"))
+        self.aStats.setFont(lblFont)
+        self.aStats.setToolTip(self.tr("Show project statistics"))
         self.aStats.setIcon(self.theTheme.getIcon("proj_stats"))
-        self.aStats.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.STATS))
+        self.aStats.triggered.connect(lambda: self.theParent.showWritingStatsDialog())
 
-        self.aSettings = QAction(self.tr("Settings"))
-        self.aSettings.setIcon(self.theTheme.getIcon("settings"))
-        self.aSettings.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.SET_PROJ))
+        # Settings Menu
+        self.mSettings = QMenu()
+
+        self.aPrjSettings = QAction(self.tr("Project Settings"))
+        self.aPrjSettings.triggered.connect(lambda: self.theParent.showProjectSettingsDialog())
+        self.mSettings.addAction(self.aPrjSettings)
+
+        self.aPreferences = QAction(self.tr("Preferences"))
+        self.aPreferences.triggered.connect(lambda: self.theParent.showPreferencesDialog())
+        self.mSettings.addAction(self.aPreferences)
+
+        self.tbSettings = QToolButton(self)
+        self.tbSettings.setFont(lblFont)
+        self.tbSettings.setText(self.tr("Settings"))
+        self.tbSettings.setIcon(self.theTheme.getIcon("settings"))
+        self.tbSettings.setMenu(self.mSettings)
+        self.tbSettings.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.tbSettings.setPopupMode(QToolButton.InstantPopup)
 
         # Assemble
         self.addAction(self.aProject)
         self.addAction(self.aNovel)
         self.addAction(self.aOutline)
+        self.addAction(self.aBuild)
         self.addWidget(stretch)
         self.addAction(self.aDetails)
         self.addAction(self.aStats)
-        self.addAction(self.aSettings)
+        self.addWidget(self.tbSettings)
 
         logger.debug("GuiViewsBar initialisation complete")
 

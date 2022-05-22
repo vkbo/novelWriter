@@ -36,7 +36,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtWidgets import (
     qApp, QTextBrowser, QWidget, QScrollArea, QLabel, QHBoxLayout, QToolButton,
-    QAction, QMenu
+    QAction, QMenu, QFrame
 )
 
 from novelwriter.core import ToHtml
@@ -68,6 +68,7 @@ class GuiDocViewer(QTextBrowser):
         self.setAutoFillBackground(True)
         self.setOpenExternalLinks(False)
         self.setFocusPolicy(Qt.StrongFocus)
+        self.setFrameStyle(QFrame.NoFrame)
 
         # Document Header and Footer
         self.docHeader  = GuiDocViewHeader(self)
@@ -1185,6 +1186,7 @@ class GuiDocViewDetails(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setWidgetResizable(True)
         self.setMinimumHeight(self.mainConf.pxInt(50))
+        self.setFrameStyle(QFrame.NoFrame)
 
         logger.debug("GuiDocViewDetails initialisation complete")
 

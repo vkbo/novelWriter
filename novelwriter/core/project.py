@@ -87,7 +87,7 @@ class NWProject():
         self.projFiles   = []    # A list of all files in the content folder on load
 
         # Project Meta
-        self.projName    = ""  # Project name (working title)
+        self.projName    = ""  # Project name
         self.bookTitle   = ""  # The final title; should only be used for exports
         self.bookAuthors = []  # A list of book authors
 
@@ -956,8 +956,8 @@ class NWProject():
         return True
 
     def setProjectName(self, projName):
-        """Set the project name (working title), This is the the title
-        used for backup files etc.
+        """Set the project name, This is the the name used for backup
+        files etc.
         """
         self.projName = simplified(projName)
         self.setProjectChanged(True)

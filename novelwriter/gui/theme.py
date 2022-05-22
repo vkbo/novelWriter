@@ -462,7 +462,7 @@ class GuiIcons:
         "proj_folder", "proj_note", "proj_nwx", "proj_scene", "proj_stats", "proj_title",
         "search_cancel", "search_case", "search_loop", "search_preserve", "search_project",
         "search_regex", "search_word", "status_idle", "status_lang", "status_lines",
-        "status_stats", "status_time", "view_editor", "view_novel", "view_outline",
+        "status_stats", "status_time", "view_build", "view_editor", "view_novel", "view_outline",
 
         # General Button Icons
         "add", "backward", "check", "clear", "close", "cross", "delete", "done", "down", "edit",

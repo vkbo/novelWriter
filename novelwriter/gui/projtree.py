@@ -32,7 +32,7 @@ from time import time
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
-    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction
+    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction, QFrame
 )
 
 from novelwriter.core import NWDoc
@@ -81,6 +81,7 @@ class GuiProjectTree(QTreeWidget):
         # Tree Settings
         iPx = self.theTheme.baseIconSize
         self.setIconSize(QSize(iPx, iPx))
+        self.setFrameStyle(QFrame.NoFrame)
         self.setExpandsOnDoubleClick(False)
         self.setIndentation(iPx)
         self.setColumnCount(4)
