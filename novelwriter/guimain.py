@@ -1397,7 +1397,7 @@ class GuiMain(QMainWindow):
         return True
 
     def _updateWindowTitle(self, projName=None):
-        """Set the window title and add the project's working title.
+        """Set the window title and add the project's name.
         """
         winTitle = self.mainConf.appName
         if projName is not None:
