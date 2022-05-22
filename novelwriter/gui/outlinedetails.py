@@ -28,7 +28,7 @@ import novelwriter
 
 from PyQt5.QtCore import Qt, QT_TRANSLATE_NOOP, pyqtSignal
 from PyQt5.QtWidgets import (
-    QScrollArea, QWidget, QGridLayout, QHBoxLayout, QGroupBox, QLabel
+    QScrollArea, QWidget, QGridLayout, QHBoxLayout, QGroupBox, QLabel, QFrame
 )
 
 from novelwriter.enum import nwView
@@ -233,6 +233,7 @@ class GuiOutlineDetails(QScrollArea):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setWidgetResizable(True)
+        self.setFrameStyle(QFrame.NoFrame)
 
         self.initDetails()
 

@@ -30,7 +30,7 @@ from time import time
 
 from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtWidgets import (
-    QTreeWidget, QTreeWidgetItem, QMenu, QAction, QAbstractItemView
+    QTreeWidget, QTreeWidgetItem, QMenu, QAction, QAbstractItemView, QFrame
 )
 
 from novelwriter.enum import nwItemLayout, nwItemType, nwOutline
@@ -95,6 +95,7 @@ class GuiOutline(QTreeWidget):
         self.optState   = theParent.theProject.optState
         self.headerMenu = GuiOutlineHeaderMenu(self)
 
+        self.setFrameStyle(QFrame.NoFrame)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setExpandsOnDoubleClick(False)

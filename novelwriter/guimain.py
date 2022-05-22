@@ -102,6 +102,7 @@ class GuiMain(QMainWindow):
 
         # Sizes
         mPx = self.mainConf.pxInt(4)
+        hWd = self.mainConf.pxInt(4)
 
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
@@ -149,12 +150,14 @@ class GuiMain(QMainWindow):
         self.splitView = QSplitter(Qt.Vertical)
         self.splitView.addWidget(self.docViewer)
         self.splitView.addWidget(self.viewMeta)
+        self.splitView.setHandleWidth(hWd)
         self.splitView.setSizes(self.mainConf.getViewPanePos())
 
         # Splitter : Document Editor / Document Viewer
         self.splitDocs = QSplitter(Qt.Horizontal)
         self.splitDocs.addWidget(self.docEditor)
         self.splitDocs.addWidget(self.splitView)
+        self.splitDocs.setHandleWidth(hWd)
 
         # Splitter : Project Outlie / Outline Details
         self.splitOutline = QSplitter(Qt.Vertical)
@@ -164,9 +167,10 @@ class GuiMain(QMainWindow):
 
         # Splitter : Project Tree / Main Tabs
         self.splitMain = QSplitter(Qt.Horizontal)
-        self.splitMain.setContentsMargins(0, 0, mPx, 0)
+        self.splitMain.setContentsMargins(0, 0, 0, 0)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.splitDocs)
+        self.splitMain.setHandleWidth(hWd)
         self.splitMain.setSizes(self.mainConf.getMainPanePos())
 
         # Main Stack : Editor / Outline

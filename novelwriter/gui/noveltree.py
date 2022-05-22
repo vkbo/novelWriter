@@ -29,7 +29,9 @@ import novelwriter
 from time import time
 
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView
+from PyQt5.QtWidgets import (
+    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QFrame
+)
 
 from novelwriter.common import checkInt
 from novelwriter.constants import nwKeyWords
@@ -60,6 +62,7 @@ class GuiNovelTree(QTreeWidget):
 
         # Build GUI
         iPx = self.theTheme.baseIconSize
+        self.setFrameStyle(QFrame.NoFrame)
         self.setIconSize(QSize(iPx, iPx))
         self.setIndentation(iPx)
         self.setColumnCount(3)

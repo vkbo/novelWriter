@@ -131,8 +131,9 @@ class GuiDocEditor(QTextEdit):
 
         # Editor Settings
         self.setMinimumWidth(self.mainConf.pxInt(300))
-        self.setAutoFillBackground(True)
         self.setAcceptRichText(False)
+        self.setAutoFillBackground(True)
+        self.setFrameStyle(QFrame.NoFrame)
 
         # Custom Shortcuts
         QShortcut(
