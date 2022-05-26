@@ -62,6 +62,14 @@ class nwItemLayout(Enum):
 # END Enum nwItemLayout
 
 
+class nwDocMode(Enum):
+
+    VIEW = 0
+    EDIT = 1
+
+# END Enum nwDocMode
+
+
 class nwDocAction(Enum):
 
     NO_ACTION = 0

@@ -43,7 +43,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import (
-    nwItemClass, nwItemLayout, nwItemType, nwOutline, nwView
+    nwDocMode, nwItemClass, nwItemLayout, nwItemType, nwOutline
 )
 from novelwriter.common import checkInt
 from novelwriter.constants import trConst, nwKeyWords, nwLabels
@@ -54,14 +54,13 @@ logger = logging.getLogger(__name__)
 
 class GuiOutline(QWidget):
 
-    viewChangeRequested = pyqtSignal(nwView)
+    loadDocumentTagRequest = pyqtSignal(str, Enum)
 
     def __init__(self, theParent):
         QWidget.__init__(self, theParent)
 
-        self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theProject = theParent.theProject
+        self.mainConf  = novelwriter.CONFIG
+        self.theParent = theParent
 
         self.outlineBar  = GuiOutlineToolBar(self)
         self.outlineView = GuiOutlineView(self)
@@ -82,7 +81,9 @@ class GuiOutline(QWidget):
 
         # Connect Signals
         self.outlineView.hiddenStateChanged.connect(self._updateMenuColumns)
-        self.outlineBar.columnToggled.connect(self.outlineView.menuColumnToggled)
+        self.outlineView.activeItemChanged.connect(self.outlineData.showItem)
+        self.outlineData.itemTagClicked.connect(self._tagClicked)
+        self.outlineBar.viewColumnToggled.connect(self.outlineView.menuColumnToggled)
         self.outlineBar.viewRefreshRequested.connect(
             lambda: self.outlineView.refreshTree(overRide=True)
         )
@@ -144,13 +145,22 @@ class GuiOutline(QWidget):
         self.outlineBar.setColumnHiddenState(self.outlineView.hiddenColumns)
         return
 
+    @pyqtSlot(str)
+    def _tagClicked(self, link):
+        """Capture the click of a tag in the details panel.
+        """
+        if link:
+            self.loadDocumentTagRequest.emit(link, nwDocMode.VIEW)
+        return
+
 # END Class GuiOutline
 
 
 class GuiOutlineToolBar(QToolBar):
 
-    columnToggled = pyqtSignal(bool, Enum)
+    novelRootChanged = pyqtSignal(str)
     viewRefreshRequested = pyqtSignal()
+    viewColumnToggled = pyqtSignal(bool, Enum)
 
     def __init__(self, theOutline):
         QTreeWidget.__init__(self, theOutline)
@@ -158,7 +168,6 @@ class GuiOutlineToolBar(QToolBar):
         logger.debug("Initialising GuiOutlineToolBar ...")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theOutline = theOutline
         self.theParent  = theOutline.theParent
         self.theProject = theOutline.theParent.theProject
         self.theTheme   = theOutline.theParent.theTheme
@@ -180,6 +189,7 @@ class GuiOutlineToolBar(QToolBar):
 
         self.novelValue = QComboBox(self)
         self.novelValue.setMinimumWidth(self.mainConf.pxInt(200))
+        self.novelValue.currentIndexChanged.connect(self._novelValueChanged)
 
         # Actions
         self.aRefresh = QAction(self.tr("Refresh"), self)
@@ -191,7 +201,7 @@ class GuiOutlineToolBar(QToolBar):
         # Column Menu
         self.mColumns = GuiOutlineHeaderMenu(self)
         self.mColumns.columnToggled.connect(
-            lambda isChecked, tItem: self.columnToggled.emit(isChecked, tItem)
+            lambda isChecked, tItem: self.viewColumnToggled.emit(isChecked, tItem)
         )
 
         self.tbColumns = QToolButton(self)
@@ -207,9 +217,11 @@ class GuiOutlineToolBar(QToolBar):
         self.addWidget(self.tbColumns)
         self.addWidget(stretch)
 
-        self.populateNovelList()
-
         logger.debug("GuiOutlineToolBar initialisation complete")
+
+    ##
+    #  Methods
+    ##
 
     def populateNovelList(self):
         """Fill the novel combo box.
@@ -223,7 +235,21 @@ class GuiOutlineToolBar(QToolBar):
         return
 
     def setColumnHiddenState(self, hiddenState):
+        """Forward the change of column hidden states to the menu.
+        """
         self.mColumns.setHiddenState(hiddenState)
+        return
+
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot(int)
+    def _novelValueChanged(self, index):
+        """Emit a signal containing the handle of the selected item.
+        """
+        if index >= 0:
+            self.novelRootChanged.emit(self.novelValue.currentData())
         return
 
 # END Class GuiOutlineToolBar
@@ -272,6 +298,7 @@ class GuiOutlineView(QTreeWidget):
     }
 
     hiddenStateChanged = pyqtSignal()
+    activeItemChanged = pyqtSignal(str, str)
 
     def __init__(self, theOutline):
         QTreeWidget.__init__(self, theOutline)
@@ -279,7 +306,6 @@ class GuiOutlineView(QTreeWidget):
         logger.debug("Initialising GuiOutlineView ...")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theOutline = theOutline
         self.theParent  = theOutline.theParent
         self.theProject = theOutline.theParent.theProject
         self.theTheme   = theOutline.theParent.theTheme
@@ -436,7 +462,7 @@ class GuiOutlineView(QTreeWidget):
         if selItems:
             tHandle = selItems[0].data(self._colIdx[nwOutline.TITLE], Qt.UserRole)
             sTitle  = selItems[0].data(self._colIdx[nwOutline.LINE], Qt.UserRole)
-            self.theOutline.outlineData.showItem(tHandle, sTitle)
+            self.activeItemChanged.emit(tHandle, sTitle)
 
         return
 
@@ -729,6 +755,8 @@ class GuiOutlineDetails(QScrollArea):
         "H4": QT_TRANSLATE_NOOP("GuiOutlineDetails", "Section"),
     }
 
+    itemTagClicked = pyqtSignal(str)
+
     def __init__(self, theOutline):
         QScrollArea.__init__(self, theOutline)
 
@@ -828,15 +856,18 @@ class GuiOutlineDetails(QScrollArea):
         self.entKeyValue.setWordWrap(True)
         self.cstKeyValue.setWordWrap(True)
 
-        self.povKeyValue.linkActivated.connect(self._tagClicked)
-        self.focKeyValue.linkActivated.connect(self._tagClicked)
-        self.chrKeyValue.linkActivated.connect(self._tagClicked)
-        self.pltKeyValue.linkActivated.connect(self._tagClicked)
-        self.timKeyValue.linkActivated.connect(self._tagClicked)
-        self.wldKeyValue.linkActivated.connect(self._tagClicked)
-        self.objKeyValue.linkActivated.connect(self._tagClicked)
-        self.entKeyValue.linkActivated.connect(self._tagClicked)
-        self.cstKeyValue.linkActivated.connect(self._tagClicked)
+        def tagClicked(link):
+            self.itemTagClicked.emit(link)
+
+        self.povKeyValue.linkActivated.connect(tagClicked)
+        self.focKeyValue.linkActivated.connect(tagClicked)
+        self.chrKeyValue.linkActivated.connect(tagClicked)
+        self.pltKeyValue.linkActivated.connect(tagClicked)
+        self.timKeyValue.linkActivated.connect(tagClicked)
+        self.wldKeyValue.linkActivated.connect(tagClicked)
+        self.objKeyValue.linkActivated.connect(tagClicked)
+        self.entKeyValue.linkActivated.connect(tagClicked)
+        self.cstKeyValue.linkActivated.connect(tagClicked)
 
         self.povKeyLWrap.addWidget(self.povKeyValue, 1)
         self.focKeyLWrap.addWidget(self.focKeyValue, 1)
@@ -963,6 +994,11 @@ class GuiOutlineDetails(QScrollArea):
         self.updateClasses()
         return
 
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot(str, str)
     def showItem(self, tHandle, sTitle):
         """Update the content of the tree with the given handle and line
         number pointing to a header.
@@ -1006,22 +1042,6 @@ class GuiOutlineDetails(QScrollArea):
 
         return True
 
-    ##
-    #  Slots
-    ##
-
-    @pyqtSlot(str)
-    def _tagClicked(self, theLink):
-        """Capture the click of a tag in the right-most column.
-        """
-        logger.verbose("Clicked link: '%s'", theLink)
-        if len(theLink) > 0:
-            theBits = theLink.split("=")
-            if len(theBits) == 2:
-                self.theOutline.viewChangeRequested.emit(nwView.PROJECT)
-                self.theParent.docViewer.loadFromTag(theBits[1])
-        return
-
     @pyqtSlot()
     def updateClasses(self):
         """Update the visibility status of class details.
@@ -1050,16 +1070,12 @@ class GuiOutlineDetails(QScrollArea):
 
         return
 
-    ##
-    #  Internal Functions
-    ##
-
-    def _formatTags(self, refs, key):
-        """Format the tags as clickable links.
+    @staticmethod
+    def _formatTags(refs, key):
+        """Convert a list of tags into a list of clickable tag links.
         """
-        mKey = key[1:]
         return ", ".join(
-            [f"<a href='#{mKey}={tag}'>{tag}</a>" for tag in refs.get(key, [])]
+            [f"<a href='{tag}'>{tag}</a>" for tag in refs.get(key, [])]
         )
 
 # END Class GuiOutlineDetails

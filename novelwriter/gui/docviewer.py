@@ -30,7 +30,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
-from PyQt5.QtCore import Qt, QUrl, QSize, pyqtSlot
+from enum import Enum
+
+from PyQt5.QtCore import Qt, QUrl, QSize, pyqtSlot, pyqtSignal
 from PyQt5.QtGui import (
     QTextOption, QFont, QPalette, QColor, QTextCursor, QIcon, QCursor
 )
@@ -40,7 +42,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import ToHtml
-from novelwriter.enum import nwAlert, nwItemType, nwDocAction
+from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
 from novelwriter.error import logException
 from novelwriter.constants import nwUnicode
 
@@ -48,6 +50,8 @@ logger = logging.getLogger(__name__)
 
 
 class GuiDocViewer(QTextBrowser):
+
+    loadDocumentTagRequest = pyqtSignal(str, Enum)
 
     def __init__(self, theParent):
         QTextBrowser.__init__(self, theParent)
@@ -239,30 +243,6 @@ class GuiDocViewer(QTextBrowser):
         self.updateDocMargins()
         return
 
-    def loadFromTag(self, theTag):
-        """Load text in the document from a reference given by a meta
-        tag rather than a known handle. This function depends on the
-        index being up to date.
-        """
-        logger.debug("Loading document from tag '%s'", theTag)
-        tHandle, _, sTitle = self.theParent.theIndex.getTagSource(theTag)
-        if tHandle is None:
-            self.theParent.makeAlert(self.tr(
-                "Could not find the reference for tag '{0}'. It either doesn't "
-                "exist, or the index is out of date. The index can be updated "
-                "from the Tools menu, or by pressing {1}."
-            ).format(
-                theTag, "F9"
-            ), nwAlert.ERROR)
-            return False
-        else:
-            # Let the parent handle the opening as it also ensures that
-            # the doc view panel is visible in case this request comes
-            # from outside this class.
-            logger.verbose("Tag points to '%s#%s'", tHandle, sTitle)
-            self.theParent.viewDocument(tHandle, "#%s" % sTitle)
-        return True
-
     def docAction(self, theAction):
         """Wrapper function for various document actions on the current
         document.
@@ -414,14 +394,14 @@ class GuiDocViewer(QTextBrowser):
 
     @pyqtSlot("QUrl")
     def _linkClicked(self, theURL):
-        """Slot for a link in the document being clicked.
+        """Process a clicked link internally in the document.
         """
         theLink = theURL.url()
         logger.verbose("Clicked link: '%s'", theLink)
         if len(theLink) > 0:
             theBits = theLink.split("=")
             if len(theBits) == 2:
-                self.loadFromTag(theBits[1])
+                self.loadDocumentTagRequest.emit(theBits[1], nwDocMode.VIEW)
         return
 
     @pyqtSlot("QPoint")

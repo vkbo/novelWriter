@@ -27,6 +27,7 @@ import os
 import logging
 import novelwriter
 
+from enum import Enum
 from time import time
 from datetime import datetime
 
@@ -52,7 +53,7 @@ from novelwriter.tools import (
 )
 from novelwriter.core import NWProject, NWIndex
 from novelwriter.enum import (
-    nwItemType, nwItemClass, nwAlert, nwWidget, nwState, nwView
+    nwDocMode, nwItemType, nwItemClass, nwAlert, nwWidget, nwState, nwView
 )
 from novelwriter.common import getGuiItem, hexToInt
 
@@ -117,10 +118,7 @@ class GuiMain(QMainWindow):
         self.viewsBar  = GuiViewsBar(self)
 
         # Connect Signals Between Main Elements
-        self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
-        self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
-        self.docEditor.docCountsChanged.connect(self.treeMeta.doUpdateCounts)
-        self.docEditor.docCountsChanged.connect(self.treeView.doUpdateCounts)
+        self.viewsBar.viewChangeRequested.connect(self._changeView)
 
         self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
@@ -128,8 +126,15 @@ class GuiMain(QMainWindow):
         self.treeView.wordCountsChanged.connect(self._updateStatusWordCount)
         self.treeView.rootFoldersChanged.connect(self.projView.projectUpdated)
 
-        self.viewsBar.viewChangeRequested.connect(self._changeView)
-        self.projView.viewChangeRequested.connect(self._changeView)
+        self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
+        self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
+        self.docEditor.docCountsChanged.connect(self.treeMeta.doUpdateCounts)
+        self.docEditor.docCountsChanged.connect(self.treeView.doUpdateCounts)
+        self.docEditor.loadDocumentTagRequest.connect(self._followTag)
+
+        self.docViewer.loadDocumentTagRequest.connect(self._followTag)
+
+        self.projView.loadDocumentTagRequest.connect(self._followTag)
 
         # Project Tree Stack
         self.projStack = QStackedWidget()
@@ -1444,6 +1449,23 @@ class GuiMain(QMainWindow):
 
         return projData
 
+    def _getTagSource(self, tTag):
+        """A wrapper function for the index lookup of a tag that will
+        display an alert if the tag cannot be found.
+        """
+        tHandle, _, sTitle = self.theIndex.getTagSource(tTag)
+        if tHandle is None:
+            self.makeAlert(self.tr(
+                "Could not find the reference for tag '{0}'. It either doesn't "
+                "exist, or the index is out of date. The index can be updated "
+                "from the Tools menu, or by pressing {1}."
+            ).format(
+                tTag, "F9"
+            ), nwAlert.ERROR)
+            return None, None
+
+        return tHandle, sTitle
+
     ##
     #  Events
     ##
@@ -1461,6 +1483,18 @@ class GuiMain(QMainWindow):
     ##
     #  Slots
     ##
+
+    @pyqtSlot(str, Enum)
+    def _followTag(self, tTag, tMode):
+        """Follow a tag after user interaction with a link.
+        """
+        tHandle, sTitle = self._getTagSource(tTag)
+        if tHandle is not None:
+            if tMode == nwDocMode.EDIT:
+                self.openDocument(tHandle)
+            elif tMode == nwDocMode.VIEW:
+                self.viewDocument(tHandle=tHandle, tAnchor=f"#{sTitle}")
+        return
 
     @pyqtSlot(nwView)
     def _changeView(self, view):
