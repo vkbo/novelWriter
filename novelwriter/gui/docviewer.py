@@ -245,7 +245,7 @@ class GuiDocViewer(QTextBrowser):
         index being up to date.
         """
         logger.debug("Loading document from tag '%s'", theTag)
-        tHandle, _, sTitle = self.theProject.index.getTagSource(theTag)
+        tHandle, sTitle = self.theProject.index.getTagSource(theTag)
         if tHandle is None:
             self.theParent.makeAlert(self.tr(
                 "Could not find the reference for tag '{0}'. It either doesn't "

@@ -35,13 +35,14 @@ from novelwriter.error import logException
 from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode
 from novelwriter.core.document import NWDoc
 from novelwriter.common import (
-    checkInt, isHandle, isTitleTag, isItemClass, isItemLayout, jsonEncode
+    checkInt, isHandle, isTitleTag, isItemLayout, jsonEncode
 )
 
 logger = logging.getLogger(__name__)
 
 H_VALID = ("H0", "H1", "H2", "H3", "H4")
 H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
+H_NONE = "T000000"
 
 
 class NWIndex():
@@ -54,7 +55,6 @@ class NWIndex():
         self._indexBroken = False
 
         # Indices
-        self._tagIndex  = {}
         self._refIndex  = {}
         self._fileIndex = {}
         self._fileMeta  = {}
@@ -80,7 +80,6 @@ class NWIndex():
     def clearIndex(self):
         """Clear the index dictionaries and time stamps.
         """
-        self._tagIndex  = {}
         self._refIndex  = {}
         self._fileIndex = {}
         self._fileMeta  = {}
@@ -98,9 +97,9 @@ class NWIndex():
         """
         logger.debug("Removing item '%s' from the index", tHandle)
 
-        delTags = list(filter(lambda x: self._tagIndex[x][1] == tHandle, self._tagIndex))
+        delTags = list(filter(lambda x: self._tags[x].get("handle") == tHandle, self._tags))
         for tTag in delTags:
-            self._tagIndex.pop(tTag, None)
+            self._tags.pop(tTag, None)
 
         self._refIndex.pop(tHandle, None)
         self._fileIndex.pop(tHandle, None)
@@ -161,7 +160,6 @@ class NWIndex():
                 self._indexBroken = True
                 return False
 
-            self._tagIndex = theData.get("tagIndex", {})
             self._refIndex = theData.get("refIndex", {})
             self._fileIndex = theData.get("fileIndex", {})
             self._fileMeta = theData.get("fileMeta", {})
@@ -188,15 +186,13 @@ class NWIndex():
                 self._indexBroken = True
                 return False
 
-            for tHandle, tData in theData.items():
+            self._tags = theData.get("tagsIndex", {})
+            for tHandle, tData in theData.get("itemIndex", {}).items():
                 nwItem = self.theProject.tree[tHandle]
                 if nwItem is not None:
                     tItem = IndexItem(tHandle, nwItem)
                     tItem.unpackData(tData)
                     self._items[tHandle] = tItem
-
-            self._generateTagsIndex()
-            # print(json.dumps(self._tags, indent=2, default=str))
 
         logger.verbose("Index loaded in %.3f ms", (time() - tStart)*1000)
 
@@ -215,7 +211,6 @@ class NWIndex():
         try:
             with open(indexFile, mode="w+", encoding="utf-8") as outFile:
                 outFile.write("{\n")
-                outFile.write(f'  "tagIndex": {jsonEncode(self._tagIndex, n=1, nmax=2)},\n')
                 outFile.write(f'  "refIndex": {jsonEncode(self._refIndex, n=1, nmax=3)},\n')
                 outFile.write(f'  "fileIndex": {jsonEncode(self._fileIndex, n=1, nmax=3)},\n')
                 outFile.write(f'  "fileMeta": {jsonEncode(self._fileMeta, n=1, nmax=2)}\n')
@@ -233,7 +228,10 @@ class NWIndex():
 
         itemsIndex = {handle: item.packData() for handle, item in self._items.items()}
         with open(indexFile, mode="w+", encoding="utf-8") as outFile:
-            outFile.write(jsonEncode(itemsIndex, nmax=3))
+            outFile.write("{\n")
+            outFile.write(f'  "tagsIndex": {jsonEncode(self._tags, n=1, nmax=2)},\n')
+            outFile.write(f'  "itemIndex": {jsonEncode(itemsIndex, n=1, nmax=4)}\n')
+            outFile.write("}\n")
 
         logger.verbose("Index saved in %.3f ms", (time() - tStart)*1000)
 
@@ -289,9 +287,9 @@ class NWIndex():
         self._fileIndex[tHandle] = {}
 
         # Also clear references to the file in the tags index
-        clearTags = list(filter(lambda x: self._tagIndex[x][1] == tHandle, self._tagIndex))
+        clearTags = list(filter(lambda x: self._tags[x].get("handle") == tHandle, self._tags))
         for aTag in clearTags:
-            self._tagIndex.pop(aTag)
+            self._tags.pop(aTag)
 
         # Scan the text content
         nTitle = 0
@@ -395,7 +393,7 @@ class NWIndex():
     def _indexPage(self, tHandle, itemLayout):
         """Index a page with no title.
         """
-        self._fileIndex[tHandle]["T000000"] = {
+        self._fileIndex[tHandle][H_NONE] = {
             "level": "H0",
             "title": "",
             "layout": itemLayout.name,
@@ -446,8 +444,11 @@ class NWIndex():
 
         sTitle = f"T{nTitle:06d}"
         if theBits[0] == nwKeyWords.TAG_KEY:
-            self._tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name, sTitle]
-            self._tags[theBits[1]] = [tHandle, itemClass.name, sTitle]
+            self._tags[theBits[1]] = {
+                "handle": tHandle,
+                "heading": sTitle,
+                "class": itemClass.name,
+            }
             if tHandle in self._items:
                 self._items[tHandle].setHeadingTag(sTitle, theBits[1])
 
@@ -521,8 +522,8 @@ class NWIndex():
 
         # For a tag, only the first value is accepted, the rest are ignored
         if theBits[0] == nwKeyWords.TAG_KEY and nBits > 1:
-            if theBits[1] in self._tagIndex:
-                isGood[1] = self._tagIndex[theBits[1]][1] == tItem.itemHandle
+            if theBits[1] in self._tags:
+                isGood[1] = self._tags[theBits[1]].get("handle") == tItem.itemHandle
             else:
                 isGood[1] = True
             return isGood
@@ -530,8 +531,8 @@ class NWIndex():
         # If we're still here, we check that the references exist
         theKey = nwKeyWords.KEY_CLASS[theBits[0]].name
         for n in range(1, nBits):
-            if theBits[n] in self._tagIndex:
-                isGood[n] = theKey == self._tagIndex[theBits[n]][2]
+            if theBits[n] in self._tags:
+                isGood[n] = theKey == self._tags[theBits[n]].get("class")
 
         return isGood
 
@@ -674,7 +675,7 @@ class NWIndex():
             return {}
 
         theRefs = {}
-        theTags = set(filter(lambda x: self._tagIndex[x][1] == tHandle, self._tagIndex))
+        theTags = set(filter(lambda x: self._tags[x].get("handle") == tHandle, self._tags))
         if theTags:
             for tHandle in self._refIndex:
                 for sTitle in self._refIndex[tHandle]:
@@ -687,10 +688,8 @@ class NWIndex():
     def getTagSource(self, theTag):
         """Return the source location of a given tag.
         """
-        theRef = self._tagIndex.get(theTag, [])
-        if len(theRef) == 4:
-            return theRef[1], theRef[0], theRef[3]
-        return None, 0, "T000000"
+        ref = self._tags.get(theTag, {})
+        return ref.get("handle"), ref.get("heading", H_NONE)
 
     ##
     #  Internal Functions
@@ -712,17 +711,6 @@ class NWIndex():
 
         return theHandles
 
-    def _generateTagsIndex(self):
-        """Generate the reverse tags index from the loaded index data.
-        The tags index must be updated during runtime with new changes.
-        """
-        self._tags = {}
-        for tHandle, tItem in self._items.items():
-            for sTitle, tHead in tItem.items():
-                if tHead.tag:
-                    self._tags[tHead.tag] = (tHandle, tItem.itemClass.name, sTitle)
-        return
-
     ##
     #  Index Checkers
     ##
@@ -737,7 +725,6 @@ class NWIndex():
         tStart = time()
 
         try:
-            self._checkTagIndex()
             self._checkRefIndex()
             self._checkFileIndex()
             self._checkFileMeta()
@@ -760,28 +747,6 @@ class NWIndex():
                 self.reIndexHandle(fHandle)
 
         logger.verbose("Index check completed in %.3f ms", (time() - tStart)*1000)
-
-        return
-
-    def _checkTagIndex(self):
-        """Scan the tag index for errors.
-        Warning: This function raises exceptions.
-        """
-        for tTag in self._tagIndex:
-            if not isinstance(tTag, str):
-                raise KeyError("tagIndex key is not a string")
-
-            tEntry = self._tagIndex[tTag]
-            if len(tEntry) != 4:
-                raise IndexError("tagIndex[a] expected 4 values")
-            if not isinstance(tEntry[0], int):
-                raise ValueError("tagIndex[a][0] is not an integer")
-            if not isHandle(tEntry[1]):
-                raise ValueError("tagIndex[a][1] is not a handle")
-            if not isItemClass(tEntry[2]):
-                raise ValueError("tagIndex[a][2] is not an nwItemClass")
-            if not isTitleTag(tEntry[3]):
-                raise ValueError("tagIndex[a][3] is not a title tag")
 
         return
 
@@ -968,8 +933,6 @@ def countWords(theText):
 
 class IndexItem:
 
-    DEF_HKEY = "T000000"
-
     def __init__(self, tHandle, tItem):
         self._handle = tHandle
         self._item = tItem
@@ -979,7 +942,7 @@ class IndexItem:
         self._index = 0
 
         # Add a placeholder heading
-        self._headings[self.DEF_HKEY] = IndexHeading(self.DEF_HKEY)
+        self._headings[H_NONE] = IndexHeading(H_NONE)
 
         return
 
@@ -1016,8 +979,8 @@ class IndexItem:
         return
 
     def addHeading(self, tHeading):
-        if "T000000" in self._headings:
-            self._headings.pop("T000000")
+        if H_NONE in self._headings:
+            self._headings.pop(H_NONE)
         self._headings[tHeading.key] = tHeading
         return
 
