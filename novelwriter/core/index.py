@@ -35,7 +35,7 @@ from novelwriter.error import logException
 from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode
 from novelwriter.core.document import NWDoc
 from novelwriter.common import (
-    isHandle, isTitleTag, isItemClass, isItemLayout, jsonEncode
+    checkInt, isHandle, isTitleTag, isItemClass, isItemLayout, jsonEncode
 )
 
 logger = logging.getLogger(__name__)
@@ -58,6 +58,9 @@ class NWIndex():
         self._refIndex  = {}
         self._fileIndex = {}
         self._fileMeta  = {}
+
+        self._tags = {}
+        self._items = {}
 
         # TimeStamps
         self._timeNovel = 0
@@ -84,6 +87,10 @@ class NWIndex():
         self._timeNovel = 0
         self._timeNotes = 0
         self._timeIndex = 0
+
+        self._tags = {}
+        self._items = {}
+
         return
 
     def deleteHandle(self, tHandle):
@@ -194,6 +201,18 @@ class NWIndex():
 
         logger.verbose("Index saved in %.3f ms", (time() - tStart)*1000)
 
+        indexFile = os.path.join(self.theProject.projMeta, "tagsIndex2.json")
+        tStart = time()
+
+        itemsIndex = {}
+        for item in self._items.values():
+            item.packData(itemsIndex)
+
+        with open(indexFile, mode="w+", encoding="utf-8") as outFile:
+            outFile.write(jsonEncode(itemsIndex, nmax=3))
+
+        logger.verbose("Index saved in %.3f ms", (time() - tStart)*1000)
+
         return True
 
     ##
@@ -218,6 +237,11 @@ class NWIndex():
         # Run word counter for the whole text
         cC, wC, pC = countWords(theText)
         self._fileMeta[tHandle] = ["H0", cC, wC, pC]
+
+        self._items[tHandle] = IndexItem(tHandle, theItem)
+        theItem.setCharCount(cC)
+        theItem.setWordCount(wC)
+        theItem.setParaCount(pC)
 
         # If the file's meta data is missing, or the file is out of the
         # main project, we don't index the content
@@ -338,6 +362,10 @@ class NWIndex():
             # first header level is recorded in the file meta index
             self._fileMeta[tHandle][0] = hDepth
 
+        tItem = self._items[tHandle]
+        tItem.updateLevel(hDepth)
+        tItem.addHeading(IndexHeading(sTitle, hDepth, hText))
+
         return True
 
     def _indexPage(self, tHandle, itemLayout):
@@ -364,6 +392,8 @@ class NWIndex():
                 self._fileIndex[tHandle][sTitle]["cCount"] = cC
                 self._fileIndex[tHandle][sTitle]["wCount"] = wC
                 self._fileIndex[tHandle][sTitle]["pCount"] = pC
+        if tHandle in self._items:
+            self._items[tHandle].setHeadingCounts(sTitle, cC, wC, pC)
         return
 
     def _indexSynopsis(self, tHandle, theText, nTitle):
@@ -373,6 +403,8 @@ class NWIndex():
         if tHandle in self._fileIndex:
             if sTitle in self._fileIndex[tHandle]:
                 self._fileIndex[tHandle][sTitle]["synopsis"] = theText
+        if tHandle in self._items:
+            self._items[tHandle].setHeadingSynopsis(sTitle, theText)
         return
 
     def _indexKeyword(self, tHandle, aLine, nLine, nTitle, itemClass):
@@ -391,6 +423,8 @@ class NWIndex():
         sTitle = f"T{nTitle:06d}"
         if theBits[0] == nwKeyWords.TAG_KEY:
             self._tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name, sTitle]
+            if tHandle in self._items:
+                self._items[tHandle].setHeadingTag(sTitle, theBits[1])
 
         else:
             if tHandle not in self._refIndex:
@@ -399,6 +433,8 @@ class NWIndex():
                 self._refIndex[tHandle][sTitle] = []
             for aVal in theBits[1:]:
                 self._refIndex[tHandle][sTitle].append([nLine, theBits[0], aVal])
+            if tHandle in self._items:
+                self._items[tHandle].addHeadingReferences(sTitle, theBits[1:], theBits[0])
 
         return
 
@@ -892,3 +928,191 @@ def countWords(theText):
         prevEmpty = not countPara
 
     return charCount, wordCount, paraCount
+
+
+class IndexItem:
+
+    DEF_HKEY = "T000000"
+
+    def __init__(self, tHandle, tItem):
+        self._handle = tHandle
+        self._item = tItem
+
+        self._level = "H0"
+        self._headings = {}
+
+        # Add a placeholder heading
+        self._headings[self.DEF_HKEY] = IndexHeading(self.DEF_HKEY)
+
+        return
+
+    ##
+    # Properties
+    ##
+
+    @property
+    def level(self):
+        return self._level
+
+    ##
+    #  Setters
+    ##
+
+    def setLevel(self, level):
+        if level in H_VALID:
+            self._level = level
+        else:
+            self._level = "H0"
+        return
+
+    def updateLevel(self, level):
+        """Set the level only if it is H0.
+        """
+        if level in H_VALID and self._level == "H0":
+            self._level = level
+        else:
+            self._level = "H0"
+        return
+
+    def addHeading(self, tHeading):
+        if "T000000" in self._headings:
+            self._headings.pop("T000000")
+        self._headings[tHeading.key] = tHeading
+        return
+
+    def setHeadingCounts(self, sTitle, charCount, wordCount, paraCount):
+        if sTitle in self._headings:
+            self._headings[sTitle].setCounts(charCount, wordCount, paraCount)
+        return
+
+    def setHeadingSynopsis(self, sTitle, synopText):
+        if sTitle in self._headings:
+            self._headings[sTitle].setSynopsis(synopText)
+        return
+
+    def setHeadingTag(self, sTitle, tagKey):
+        if sTitle in self._headings:
+            self._headings[sTitle].setTag(tagKey)
+        return
+
+    def addHeadingReferences(self, sTitle, tagKeys, refType):
+        if sTitle in self._headings:
+            for tagKey in tagKeys:
+                self._headings[sTitle].addReference(tagKey, refType)
+        return
+
+    ##
+    #  Data Methods
+    ##
+
+    def packData(self, container):
+        """Pack the indexed item's data into an existing dictionary.
+        """
+        container[self._handle] = {
+            "firstLevel": self._level,
+        }
+        container[self._handle]["headings"] = {
+            key: value.packData() for key, value in self._headings.items()
+        }
+        container[self._handle]["references"] = {
+            key: value.packReferences() for key, value in self._headings.items()
+        }
+        return
+
+# END Class IndexItem
+
+
+class IndexHeading:
+
+    def __init__(self, key, level="H0", title=""):
+        self._key = key
+        self._level = level
+        self._title = title
+
+        self._charCount = 0
+        self._wordCount = 0
+        self._paraCount = 0
+        self._synopsis = ""
+
+        self._tag = ""
+        self._refs = {}
+
+        return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def key(self):
+        return self._key
+
+    ##
+    #  Setters
+    ##
+
+    def setLevel(self, level):
+        if level in H_VALID:
+            self._level = level
+        else:
+            self._level = "H0"
+        return
+
+    def setCounts(self, charCount, wordCount, paraCount):
+        self._charCount = max(0, checkInt(charCount, 0))
+        self._wordCount = max(0, checkInt(wordCount, 0))
+        self._paraCount = max(0, checkInt(paraCount, 0))
+        return
+
+    def setSynopsis(self, synopText):
+        self._synopsis = str(synopText)
+        return
+
+    def setTag(self, tagKey):
+        self._tag = str(tagKey)
+        return
+
+    def addReference(self, tagKey, refType):
+        """Add a record of a reference tag, and what keyword types it is
+        associated with.
+        """
+        if tagKey not in self._refs:
+            self._refs[tagKey] = set()
+        self._refs[tagKey].add(refType)
+        return
+
+    ##
+    #  Data Methods
+    ##
+
+    def packData(self):
+        """Pack the values into a dictionary for saving to cache.
+        """
+        return {
+            "level": self._level,
+            "title": self._title,
+            "tag": self._tag,
+            "cCount": self._charCount,
+            "wCount": self._wordCount,
+            "pCount": self._paraCount,
+            "synopsis": self._synopsis,
+        }
+
+    def packReferences(self):
+        return {key: list(value) for key, value in self._refs.items()}
+
+    def unpackData(self, data):
+        """Unpack a title entry
+        """
+        self._setLevel(data.get("level", "H0"))
+        self._title = str(data.get("title", ""))
+        self._tag = str(data.get("tag", ""))
+        self.setCounts(
+            data.get("cCount", 0),
+            data.get("wCount", 0),
+            data.get("pCount", 0),
+        )
+        self._synopsis = str(data.get("synopsis", ""))
+        return
+
+# END Class IndexHeading
