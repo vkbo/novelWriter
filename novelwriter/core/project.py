@@ -63,10 +63,10 @@ class NWProject():
         self.mainConf  = novelwriter.CONFIG
 
         # Core Elements
-        self.optState  = OptionState(self)  # Project-specific GUI options
-        self.projTree  = NWTree(self)       # The project tree
+        self._optState  = OptionState(self)  # Project-specific GUI options
+        self._projTree  = NWTree(self)       # The project tree
         self._projIndex = NWIndex(self)      # The projecty index
-        self.langData  = {}                 # Localisation data
+        self._langData  = {}                 # Localisation data
 
         # Project Status
         self.projOpened  = 0      # The time stamp of when the project file was opened
@@ -123,8 +123,16 @@ class NWProject():
     ##
 
     @property
-    def index(self):
+    def index(self) -> NWIndex:
         return self._projIndex
+
+    @property
+    def tree(self) -> NWTree:
+        return self._projTree
+
+    @property
+    def options(self) -> OptionState:
+        return self._optState
 
     ##
     #  Item Methods
@@ -139,8 +147,8 @@ class NWProject():
         newItem.setName(label)
         newItem.setType(nwItemType.ROOT)
         newItem.setClass(itemClass)
-        self.projTree.append(None, None, newItem)
-        self.projTree.updateItemData(newItem.itemHandle)
+        self._projTree.append(None, None, newItem)
+        self._projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
     def newFolder(self, label, pHandle):
@@ -149,8 +157,8 @@ class NWProject():
         newItem = NWItem(self)
         newItem.setName(label)
         newItem.setType(nwItemType.FOLDER)
-        self.projTree.append(None, pHandle, newItem)
-        self.projTree.updateItemData(newItem.itemHandle)
+        self._projTree.append(None, pHandle, newItem)
+        self._projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
     def newFile(self, label, pHandle):
@@ -159,21 +167,21 @@ class NWProject():
         newItem = NWItem(self)
         newItem.setName(label)
         newItem.setType(nwItemType.FILE)
-        self.projTree.append(None, pHandle, newItem)
-        self.projTree.updateItemData(newItem.itemHandle)
+        self._projTree.append(None, pHandle, newItem)
+        self._projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
     def trashFolder(self):
         """Add the special trash root folder to the project.
         """
-        trashHandle = self.projTree.trashRoot()
+        trashHandle = self._projTree.trashRoot()
         if trashHandle is None:
             newItem = NWItem(self)
             newItem.setName(trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH]))
             newItem.setType(nwItemType.ROOT)
             newItem.setClass(nwItemClass.TRASH)
-            self.projTree.append(None, None, newItem)
-            self.projTree.updateItemData(newItem.itemHandle)
+            self._projTree.append(None, None, newItem)
+            self._projTree.updateItemData(newItem.itemHandle)
             return newItem.itemHandle
 
         return trashHandle
@@ -194,7 +202,7 @@ class NWProject():
         self.autoCount   = 0
 
         # Project Tree
-        self.projTree.clear()
+        self._projTree.clear()
 
         # Project Settings
         self.projPath    = None
@@ -598,9 +606,9 @@ class NWProject():
 
             elif xChild.tag == "content":
                 logger.debug("Found project content")
-                self.projTree.unpackXML(xChild)
+                self._projTree.unpackXML(xChild)
 
-        self.optState.loadSettings()
+        self._optState.loadSettings()
 
         # Sort out old file locations
         if legacyList:
@@ -618,12 +626,12 @@ class NWProject():
         self.mainConf.saveRecentCache()
 
         # Check the project tree consistency
-        for tItem in self.projTree:
+        for tItem in self._projTree:
             tHandle = tItem.itemHandle
             logger.verbose("Checking item '%s'", tHandle)
-            if not self.projTree.updateItemData(tHandle):
+            if not self._projTree.updateItemData(tHandle):
                 logger.error("There was a problem item '%s', and it has been removed", tHandle)
-                del self.projTree[tHandle]  # The file will be re-added as orphaned
+                del self._projTree[tHandle]  # The file will be re-added as orphaned
 
         self._scanProjectFolder()
         self._loadProjectLocalisation()
@@ -710,7 +718,7 @@ class NWProject():
 
         # Save Tree Content
         logger.debug("Writing project content")
-        self.projTree.packXML(nwXML)
+        self._projTree.packXML(nwXML)
 
         # Write the xml tree to file
         tempFile = os.path.join(self.projPath, self.projFile+"~")
@@ -743,7 +751,7 @@ class NWProject():
             return False
 
         # Save project GUI options
-        self.optState.saveSettings()
+        self._optState.saveSettings()
 
         # Update recent projects
         self.mainConf.updateRecentCache(self.projPath, self.projName, self.currWCount, saveTime)
@@ -759,8 +767,8 @@ class NWProject():
         """Close the current project and clear all meta data.
         """
         logger.info("Closing project: %s", self.projPath)
-        self.optState.saveSettings()
-        self.projTree.writeToCFile()
+        self._optState.saveSettings()
+        self._projTree.writeToCFile()
         self._appendSessionStats(idleTime)
         self._clearLockFile()
         self.clearProject()
@@ -1060,9 +1068,9 @@ class NWProject():
         items in the GUI project tree. The user can rearrange the order
         by drag-and-drop. Forwarded to the NWTree class.
         """
-        if len(self.projTree) != len(newOrder):
+        if len(self._projTree) != len(newOrder):
             logger.warning("Sizes of new and old tree order do not match")
-        self.projTree.setOrder(newOrder)
+        self._projTree.setOrder(newOrder)
         self.setProjectChanged(True)
         return True
 
@@ -1156,16 +1164,16 @@ class NWProject():
         capable of handling it.
         """
         sentItems = []
-        iterItems = self.projTree.handles()
+        iterItems = self._projTree.handles()
         n = 0
         nMax = min(len(iterItems), 10000)
         while n < nMax:
             tHandle = iterItems[n]
-            tItem = self.projTree[tHandle]
+            tItem = self._projTree[tHandle]
             n += 1
             if tItem is None:
                 # Technically a bug since treeOrder is built from the
-                # same data as projTree
+                # same data as _projTree
                 continue
             elif tItem.itemParent is None:
                 # Item is a root, or already been identified as an
@@ -1196,7 +1204,7 @@ class NWProject():
     def updateWordCounts(self):
         """Update the total word count values.
         """
-        wcNovel, wcNotes = self.projTree.sumWords()
+        wcNovel, wcNotes = self._projTree.sumWords()
         wcTotal = wcNovel + wcNotes
         if wcTotal != self.currWCount:
             self.currNovelWC = wcNovel
@@ -1212,7 +1220,7 @@ class NWProject():
         """
         self.statusItems.resetCounts()
         self.importItems.resetCounts()
-        for nwItem in self.projTree:
+        for nwItem in self._projTree:
             if nwItem.isNovelLike():
                 self.statusItems.increment(nwItem.itemStatus)
             else:
@@ -1224,7 +1232,7 @@ class NWProject():
         return it. The variable is cast to a string before lookup. If
         the word does not exist, it returns itself.
         """
-        return self.langData.get(str(theWord), str(theWord))
+        return self._langData.get(str(theWord), str(theWord))
 
     ##
     #  Internal Functions
@@ -1256,7 +1264,7 @@ class NWProject():
         """Load the language data for the current project language.
         """
         if self.projLang is None:
-            self.langData = {}
+            self._langData = {}
             return False
 
         langFile = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self.projLang)
@@ -1265,7 +1273,7 @@ class NWProject():
 
         try:
             with open(langFile, mode="r", encoding="utf-8") as inFile:
-                self.langData = json.load(inFile)
+                self._langData = json.load(inFile)
             logger.debug("Loaded project language file: %s", os.path.basename(langFile))
 
         except Exception:
@@ -1400,7 +1408,7 @@ class NWProject():
                 logger.warning("Skipping file: %s", fileItem)
                 continue
 
-            if fHandle in self.projTree:
+            if fHandle in self._projTree:
                 self.projFiles.append(fHandle)
                 logger.debug("Checking file %s, handle '%s': OK", fileItem, fHandle)
             else:
@@ -1447,10 +1455,10 @@ class NWProject():
             if oLayout is None:
                 oLayout = nwItemLayout.NOTE
 
-            if oParent is None or oParent not in self.projTree:
-                oParent = self.projTree.findRoot(oClass)
+            if oParent is None or oParent not in self._projTree:
+                oParent = self._projTree.findRoot(oClass)
                 if oParent is None:
-                    oParent = self.projTree.findRoot(nwItemClass.NOVEL)
+                    oParent = self._projTree.findRoot(nwItemClass.NOVEL)
 
             # If the file still has no parent item, skip it
             if oParent is None:
@@ -1462,8 +1470,8 @@ class NWProject():
             orphItem.setType(nwItemType.FILE)
             orphItem.setClass(oClass)
             orphItem.setLayout(oLayout)
-            self.projTree.append(oHandle, oParent, orphItem)
-            self.projTree.updateItemData(orphItem.itemHandle)
+            self._projTree.append(oHandle, oParent, orphItem)
+            self._projTree.updateItemData(orphItem.itemHandle)
 
         if noWhere:
             self.theParent.makeAlert(self.tr(

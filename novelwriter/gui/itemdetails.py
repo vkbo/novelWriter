@@ -227,7 +227,7 @@ class GuiItemDetails(QWidget):
             self.clearDetails()
             return
 
-        nwItem = self.theProject.projTree[tHandle]
+        nwItem = self.theProject.tree[tHandle]
         if nwItem is None:
             self.clearDetails()
             return

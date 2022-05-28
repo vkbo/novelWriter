@@ -52,19 +52,19 @@ class GuiProjectSettings(PagedDialog):
         self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
-        self.optState   = theParent.theProject.optState
 
         self.theProject.countStatus()
         self.setWindowTitle(self.tr("Project Settings"))
 
         wW = self.mainConf.pxInt(570)
         wH = self.mainConf.pxInt(375)
+        pOptions = self.theProject.options
 
         self.setMinimumWidth(wW)
         self.setMinimumHeight(wH)
         self.resize(
-            self.mainConf.pxInt(self.optState.getInt("GuiProjectSettings", "winWidth",  wW)),
-            self.mainConf.pxInt(self.optState.getInt("GuiProjectSettings", "winHeight", wH))
+            self.mainConf.pxInt(pOptions.getInt("GuiProjectSettings", "winWidth",  wW)),
+            self.mainConf.pxInt(pOptions.getInt("GuiProjectSettings", "winHeight", wH))
         )
 
         self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
@@ -152,11 +152,12 @@ class GuiProjectSettings(PagedDialog):
         statusColW  = self.mainConf.rpxInt(self.tabStatus.listBox.columnWidth(0))
         importColW  = self.mainConf.rpxInt(self.tabImport.listBox.columnWidth(0))
 
-        self.optState.setValue("GuiProjectSettings", "winWidth",    winWidth)
-        self.optState.setValue("GuiProjectSettings", "winHeight",   winHeight)
-        self.optState.setValue("GuiProjectSettings", "replaceColW", replaceColW)
-        self.optState.setValue("GuiProjectSettings", "statusColW",  statusColW)
-        self.optState.setValue("GuiProjectSettings", "importColW",  importColW)
+        pOptions = self.theProject.options
+        pOptions.setValue("GuiProjectSettings", "winWidth",    winWidth)
+        pOptions.setValue("GuiProjectSettings", "winHeight",   winHeight)
+        pOptions.setValue("GuiProjectSettings", "replaceColW", replaceColW)
+        pOptions.setValue("GuiProjectSettings", "statusColW",  statusColW)
+        pOptions.setValue("GuiProjectSettings", "importColW",  importColW)
 
         return
 
@@ -261,7 +262,6 @@ class GuiProjectEditStatus(QWidget):
         self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theProject
-        self.optState   = theProject.optState
         self.theTheme   = theParent.theTheme
 
         if isStatus:
@@ -274,7 +274,7 @@ class GuiProjectEditStatus(QWidget):
             colSetting = "importColW"
 
         wCol0 = self.mainConf.pxInt(
-            self.optState.getInt("GuiProjectSettings", colSetting, 130)
+            self.theProject.options.getInt("GuiProjectSettings", colSetting, 130)
         )
 
         self.colDeleted = []
@@ -534,11 +534,10 @@ class GuiProjectEditReplace(QWidget):
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theProject
-        self.optState   = theProject.optState
         self.arChanged  = False
 
         wCol0 = self.mainConf.pxInt(
-            self.optState.getInt("GuiProjectSettings", "replaceColW", 130)
+            self.theProject.options.getInt("GuiProjectSettings", "replaceColW", 130)
         )
         pageLabel = self.tr("Text Replace List for Preview and Export")
 

@@ -58,7 +58,6 @@ class GuiOutlineDetails(QScrollArea):
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.theTheme   = theParent.theTheme
-        self.optState   = theParent.theProject.optState
 
         # Sizes
         minTitle = 30*self.theTheme.textNWidth
@@ -283,7 +282,7 @@ class GuiOutlineDetails(QScrollArea):
         number pointing to a header.
         """
         pIndex = self.theProject.index
-        nwItem = self.theProject.projTree[tHandle]
+        nwItem = self.theProject.tree[tHandle]
         novIdx = pIndex.getNovelData(tHandle, sTitle)
         theRefs = pIndex.getReferences(tHandle, sTitle)
         if nwItem is None or novIdx is None:

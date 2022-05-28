@@ -288,7 +288,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         if theText.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(self.BLOCK_META)
             pIndex = self.theProject.index
-            tItem = self.theParent.theProject.projTree[self.theHandle]
+            tItem = self.theParent.theProject.tree[self.theHandle]
             isValid, theBits, thePos = pIndex.scanThis(theText)
             isGood = pIndex.checkThese(theBits, tItem)
             if isValid:

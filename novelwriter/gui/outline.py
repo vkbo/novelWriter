@@ -91,7 +91,6 @@ class GuiOutline(QTreeWidget):
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.theTheme   = theParent.theTheme
-        self.optState   = theParent.theProject.optState
         self.headerMenu = GuiOutlineHeaderMenu(self)
 
         self.setFrameStyle(QFrame.NoFrame)
@@ -273,10 +272,12 @@ class GuiOutline(QTreeWidget):
         """Load the state of the main tree header, that is, column order
         and column width.
         """
+        pOptions = self.theProject.options
+
         # Load whatever we saved last time, regardless of wether it
         # contains the correct names or number of columns. The names
         # must be valid though.
-        tempOrder = self.optState.getValue("GuiOutline", "headerOrder", [])
+        tempOrder = pOptions.getValue("GuiOutline", "headerOrder", [])
         treeOrder = []
         for hName in tempOrder:
             try:
@@ -299,14 +300,14 @@ class GuiOutline(QTreeWidget):
 
         # We load whatever column widths and hidden states we find in
         # the file, and leave the rest in their default state.
-        tmpWidth = self.optState.getValue("GuiOutline", "columnWidth", {})
+        tmpWidth = pOptions.getValue("GuiOutline", "columnWidth", {})
         for hName in tmpWidth:
             try:
                 self._colWidth[nwOutline[hName]] = self.mainConf.pxInt(tmpWidth[hName])
             except Exception:
                 logger.warning("Ignored unknown outline column '%s'", str(hName))
 
-        tmpHidden = self.optState.getValue("GuiOutline", "columnHidden", {})
+        tmpHidden = pOptions.getValue("GuiOutline", "columnHidden", {})
         for hName in tmpHidden:
             try:
                 self._colHidden[nwOutline[hName]] = tmpHidden[hName]
@@ -347,10 +348,11 @@ class GuiOutline(QTreeWidget):
             if not logHidden and logWidth > 0:
                 colWidth[hName] = logWidth
 
-        self.optState.setValue("GuiOutline", "headerOrder",  treeOrder)
-        self.optState.setValue("GuiOutline", "columnWidth",  colWidth)
-        self.optState.setValue("GuiOutline", "columnHidden", colHidden)
-        self.optState.saveSettings()
+        pOptions = self.theProject.options
+        pOptions.setValue("GuiOutline", "headerOrder",  treeOrder)
+        pOptions.setValue("GuiOutline", "columnWidth",  colWidth)
+        pOptions.setValue("GuiOutline", "columnHidden", colHidden)
+        pOptions.saveSettings()
 
         return
 
@@ -437,7 +439,7 @@ class GuiOutline(QTreeWidget):
     def _createTreeItem(self, tHandle, sTitle, novIdx):
         """Populate a tree item with all the column values.
         """
-        nwItem = self.theProject.projTree[tHandle]
+        nwItem = self.theProject.tree[tHandle]
         newItem = QTreeWidgetItem()
         hIcon = "doc_%s" % novIdx["level"].lower()
 

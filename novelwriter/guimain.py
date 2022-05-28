@@ -572,7 +572,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        if not self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+        if not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
             logger.debug("Requested item '%s' is not a document", tHandle)
             return False
 
@@ -600,8 +600,8 @@ class GuiMain(QMainWindow):
         nHandle = None   # The next handle after tHandle
         fHandle = None   # The first file handle we encounter
         foundIt = False  # We've found tHandle, pick the next we see
-        for tItem in self.theProject.projTree:
-            if not self.theProject.projTree.checkType(tItem.itemHandle, nwItemType.FILE):
+        for tItem in self.theProject.tree:
+            if not self.theProject.tree.checkType(tItem.itemHandle, nwItemType.FILE):
                 continue
             if fHandle is None:
                 fHandle = tItem.itemHandle
@@ -818,7 +818,7 @@ class GuiMain(QMainWindow):
             logger.warning("No item selected")
             return False
 
-        tItem = self.theProject.projTree[tHandle]
+        tItem = self.theProject.tree[tHandle]
         if tItem is None:
             return False
         if tItem.itemType == nwItemType.NO_TYPE:
@@ -864,7 +864,7 @@ class GuiMain(QMainWindow):
         self.treeView.saveTreeOrder()
         self.theProject.index.clearIndex()
 
-        for tItem in self.theProject.projTree:
+        for tItem in self.theProject.tree:
 
             if tItem is not None:
                 self.setStatus(self.tr("Indexing: '{0}'").format(tItem.itemName))
@@ -1560,7 +1560,7 @@ class GuiMain(QMainWindow):
         """
         tHandle = self.treeView.getSelectedHandle()
         if tHandle is not None:
-            tItem = self.theProject.projTree[tHandle]
+            tItem = self.theProject.tree[tHandle]
             if tItem is None:
                 return
             if tItem.itemType == nwItemType.FILE:

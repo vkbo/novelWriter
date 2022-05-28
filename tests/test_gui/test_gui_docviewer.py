@@ -140,7 +140,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.docViewer.reloadText()
 
     # Change document title
-    nwItem = nwGUI.theProject.projTree["4c4f28287af27"]
+    nwItem = nwGUI.theProject.tree["4c4f28287af27"]
     nwItem.setName("Test Title")
     assert nwItem.itemName == "Test Title"
     nwGUI.docViewer.updateDocInfo("4c4f28287af27")

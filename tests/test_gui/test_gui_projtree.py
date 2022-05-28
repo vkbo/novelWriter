@@ -63,7 +63,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
 
     # Create root item
     assert nwTree.newTreeItem(nwItemType.ROOT, nwItemClass.WORLD) is True
-    assert "0000000000010" in nwGUI.theProject.projTree
+    assert "0000000000010" in nwGUI.theProject.tree
 
     # File/Folder Items
     # =================
@@ -78,42 +78,42 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     # Create new folder as child of Novel folder
     nwTree.setSelectedHandle("0000000000008")
     assert nwTree.newTreeItem(nwItemType.FOLDER) is True
-    assert nwGUI.theProject.projTree["0000000000011"].itemParent == "0000000000008"
-    assert nwGUI.theProject.projTree["0000000000011"].itemRoot == "0000000000008"
-    assert nwGUI.theProject.projTree["0000000000011"].itemClass == nwItemClass.NOVEL
+    assert nwGUI.theProject.tree["0000000000011"].itemParent == "0000000000008"
+    assert nwGUI.theProject.tree["0000000000011"].itemRoot == "0000000000008"
+    assert nwGUI.theProject.tree["0000000000011"].itemClass == nwItemClass.NOVEL
 
     # Add a new file in the new folder
     nwTree.setSelectedHandle("0000000000011")
     assert nwTree.newTreeItem(nwItemType.FILE) is True
-    assert nwGUI.theProject.projTree["0000000000012"].itemParent == "0000000000011"
-    assert nwGUI.theProject.projTree["0000000000012"].itemRoot == "0000000000008"
-    assert nwGUI.theProject.projTree["0000000000012"].itemClass == nwItemClass.NOVEL
+    assert nwGUI.theProject.tree["0000000000012"].itemParent == "0000000000011"
+    assert nwGUI.theProject.tree["0000000000012"].itemRoot == "0000000000008"
+    assert nwGUI.theProject.tree["0000000000012"].itemClass == nwItemClass.NOVEL
 
     # Add a new file next to the other new file
     nwTree.setSelectedHandle("0000000000012")
     assert nwTree.newTreeItem(nwItemType.FILE) is True
-    assert nwGUI.theProject.projTree["0000000000013"].itemParent == "0000000000011"
-    assert nwGUI.theProject.projTree["0000000000013"].itemRoot == "0000000000008"
-    assert nwGUI.theProject.projTree["0000000000013"].itemClass == nwItemClass.NOVEL
+    assert nwGUI.theProject.tree["0000000000013"].itemParent == "0000000000011"
+    assert nwGUI.theProject.tree["0000000000013"].itemRoot == "0000000000008"
+    assert nwGUI.theProject.tree["0000000000013"].itemClass == nwItemClass.NOVEL
     assert nwGUI.openDocument("0000000000013")
     assert nwGUI.docEditor.getText() == "### New Document\n\n"
 
     # Add a new file to the characters folder
     nwTree.setSelectedHandle("000000000000a")
     assert nwTree.newTreeItem(nwItemType.FILE) is True
-    assert nwGUI.theProject.projTree["0000000000014"].itemParent == "000000000000a"
-    assert nwGUI.theProject.projTree["0000000000014"].itemRoot == "000000000000a"
-    assert nwGUI.theProject.projTree["0000000000014"].itemClass == nwItemClass.CHARACTER
+    assert nwGUI.theProject.tree["0000000000014"].itemParent == "000000000000a"
+    assert nwGUI.theProject.tree["0000000000014"].itemRoot == "000000000000a"
+    assert nwGUI.theProject.tree["0000000000014"].itemClass == nwItemClass.CHARACTER
     assert nwGUI.openDocument("0000000000014")
     assert nwGUI.docEditor.getText() == "# New Note\n\n"
 
     # Make sure the sibling folder bug trap works
     nwTree.setSelectedHandle("0000000000013")
-    nwGUI.theProject.projTree["0000000000013"].setParent(None)  # This should not happen
+    nwGUI.theProject.tree["0000000000013"].setParent(None)  # This should not happen
     caplog.clear()
     assert nwTree.newTreeItem(nwItemType.FILE) is False
     assert "Internal error" in caplog.text
-    nwGUI.theProject.projTree["0000000000013"].setParent("0000000000011")
+    nwGUI.theProject.tree["0000000000013"].setParent("0000000000011")
 
     # Get the trash folder
     nwTree._addTrashRoot()
@@ -242,22 +242,22 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     # ===========
 
     nwTree.setSelectedHandle("0000000000008")
-    assert nwGUI.theProject.projTree._treeOrder.index("0000000000008") == 0
+    assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 0
 
     # Move novel folder up
     assert nwTree.moveTreeItem(-1) is False
     nwTree.flushTreeOrder()
-    assert nwGUI.theProject.projTree._treeOrder.index("0000000000008") == 0
+    assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 0
 
     # Move novel folder down
     assert nwTree.moveTreeItem(1) is True
     nwTree.flushTreeOrder()
-    assert nwGUI.theProject.projTree._treeOrder.index("0000000000008") == 1
+    assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 1
 
     # Move novel folder up again
     assert nwTree.moveTreeItem(-1) is True
     nwTree.flushTreeOrder()
-    assert nwGUI.theProject.projTree._treeOrder.index("0000000000008") == 0
+    assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 0
 
     # Clean up
     # qtbot.stopForInteraction()
@@ -341,7 +341,7 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
         "000000000000d", "000000000000e", "000000000000f",
         "0000000000010"
     ]
-    trashHandle = nwGUI.theProject.projTree.trashRoot()
+    trashHandle = nwGUI.theProject.tree.trashRoot()
     assert nwTree.getTreeFromHandle(trashHandle) == [
         trashHandle, "0000000000012", "0000000000011"
     ]
@@ -349,30 +349,30 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     # Delete the first file again (permanent), and ask for permission
     # Also open the document in the editor, which should trigger a close
     assert os.path.isfile(os.path.join(prjDir, "content", "0000000000012.nwd"))
-    assert "0000000000012" in nwGUI.theProject.projTree
+    assert "0000000000012" in nwGUI.theProject.tree
     assert nwGUI.docEditor.docHandle() is None
     assert nwGUI.openDocument("0000000000012") is True
     assert nwGUI.docEditor.docHandle() == "0000000000012"
     assert nwTree.deleteItem("0000000000012") is True
     assert nwGUI.docEditor.docHandle() is None
     assert not os.path.isfile(os.path.join(prjDir, "content", "0000000000012.nwd"))
-    assert "0000000000012" not in nwGUI.theProject.projTree
+    assert "0000000000012" not in nwGUI.theProject.tree
     assert nwTree.getTreeFromHandle(trashHandle) == [
         trashHandle, "0000000000011"
     ]
 
     # Delete the second file, and skip asking for permission
     assert os.path.isfile(os.path.join(prjDir, "content", "0000000000011.nwd"))
-    assert "0000000000011" in nwGUI.theProject.projTree
+    assert "0000000000011" in nwGUI.theProject.tree
     assert nwTree.deleteItem("0000000000011", alreadyAsked=True) is True
     assert not os.path.isfile(os.path.join(prjDir, "content", "0000000000011.nwd"))
-    assert "0000000000011" not in nwGUI.theProject.projTree
+    assert "0000000000011" not in nwGUI.theProject.tree
     assert nwTree.getTreeFromHandle(trashHandle) == [trashHandle]
 
     # Delete Folder
     # =============
 
-    trashHandle = nwGUI.theProject.projTree.trashRoot()
+    trashHandle = nwGUI.theProject.tree.trashRoot()
 
     # Add a folder with two files
     nwTree.setSelectedHandle("0000000000009")

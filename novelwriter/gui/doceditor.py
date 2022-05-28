@@ -2701,15 +2701,15 @@ class GuiDocEditHeader(QWidget):
 
         if self.mainConf.showFullPath:
             tTitle = []
-            tTree = self.theProject.projTree.getItemPath(tHandle)
+            tTree = self.theProject.tree.getItemPath(tHandle)
             for aHandle in reversed(tTree):
-                nwItem = self.theProject.projTree[aHandle]
+                nwItem = self.theProject.tree[aHandle]
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
             sSep = "  %s  " % nwUnicode.U_RSAQUO
             self.theTitle.setText(sSep.join(tTitle))
         else:
-            nwItem = self.theProject.projTree[tHandle]
+            nwItem = self.theProject.tree[tHandle]
             if nwItem is None:
                 return False
             self.theTitle.setText(nwItem.itemName)
@@ -2795,7 +2795,6 @@ class GuiDocEditFooter(QWidget):
         self.theParent  = docEditor.theParent
         self.theProject = docEditor.theProject
         self.theTheme   = docEditor.theTheme
-        self.optState   = docEditor.theProject.optState
 
         self._theItem   = None
         self._docHandle = None
@@ -2918,7 +2917,7 @@ class GuiDocEditFooter(QWidget):
             logger.verbose("No handle set, so clearing the editor footer")
             self._theItem = None
         else:
-            self._theItem = self.theProject.projTree[self._docHandle]
+            self._theItem = self.theProject.tree[self._docHandle]
 
         self.setHasSelection(False)
         self.updateInfo()

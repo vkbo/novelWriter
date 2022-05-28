@@ -54,7 +54,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
         "6c6afb1247750": False,  # Plot ROOT
         "60bdf227455cc": False,  # World ROOT
     }
-    for tItem in theProject.projTree:
+    for tItem in theProject.tree:
         assert theIndex.reIndexHandle(tItem.itemHandle) is notIndexable.get(tItem.itemHandle, True)
 
     assert theIndex.reIndexHandle(None) is False
@@ -180,8 +180,8 @@ def testCoreIndex_CheckThese(nwMinimal, mockGUI):
     theIndex = NWIndex(theProject)
     nHandle = theProject.newFile("Hello", "a508bb932959c")
     cHandle = theProject.newFile("Jane",  "afb3043c7b2b3")
-    nItem = theProject.projTree[nHandle]
-    cItem = theProject.projTree[cHandle]
+    nItem = theProject.tree[nHandle]
+    cItem = theProject.tree[cHandle]
 
     assert theIndex.novelChangedSince(0) is False
     assert theIndex.notesChangedSince(0) is False
@@ -258,7 +258,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     # Some items for fail to scan tests
     dHandle = theProject.newFolder("Folder", "a508bb932959c")
     xHandle = theProject.newFile("No Layout", "a508bb932959c")
-    xItem = theProject.projTree[xHandle]
+    xItem = theProject.tree[xHandle]
     xItem.setLayout(nwItemLayout.NO_LAYOUT)
 
     # Check invalid data
@@ -272,18 +272,18 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
 
     # Create the trash folder
     tHandle = theProject.trashFolder()
-    assert theProject.projTree[tHandle] is not None
+    assert theProject.tree[tHandle] is not None
     xItem.setParent(tHandle)
-    theProject.projTree.updateItemData(xItem.itemHandle)
+    theProject.tree.updateItemData(xItem.itemHandle)
     assert xItem.itemRoot == tHandle
     assert xItem.itemClass == nwItemClass.TRASH
     assert theIndex.scanText(xHandle, "Hello World!") is False
 
     # Create the archive root
     aHandle = theProject.newRoot(nwItemClass.ARCHIVE)
-    assert theProject.projTree[aHandle] is not None
+    assert theProject.tree[aHandle] is not None
     xItem.setParent(aHandle)
-    theProject.projTree.updateItemData(xItem.itemHandle)
+    theProject.tree.updateItemData(xItem.itemHandle)
     assert theIndex.scanText(xHandle, "Hello World!") is False
 
     # Make some usable items
@@ -433,7 +433,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     # Page wo/Title
     # =============
 
-    theProject.projTree[pHandle]._layout = nwItemLayout.DOCUMENT
+    theProject.tree[pHandle]._layout = nwItemLayout.DOCUMENT
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))
@@ -446,7 +446,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert theIndex._fileIndex[pHandle]["T000000"]["pCount"] == 1
     assert theIndex._fileIndex[pHandle]["T000000"]["synopsis"] == ""
 
-    theProject.projTree[pHandle]._layout = nwItemLayout.NOTE
+    theProject.tree[pHandle]._layout = nwItemLayout.NOTE
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))
@@ -499,7 +499,7 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     assert theKeys == ["%s:T000001" % nHandle]
 
     # Check that excluded files can be skipped
-    theProject.projTree[nHandle].setExported(False)
+    theProject.tree[nHandle].setExported(False)
 
     theKeys = []
     for aKey, _, _, _ in theIndex.novelStructure(skipExcluded=False):
@@ -631,9 +631,9 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     sHandle = theProject.newFile("Scene One", "a508bb932959c")
     tHandle = theProject.newFile("Scene Two", "a508bb932959c")
 
-    theProject.projTree[hHandle].itemLayout == nwItemLayout.DOCUMENT
-    theProject.projTree[sHandle].itemLayout == nwItemLayout.DOCUMENT
-    theProject.projTree[tHandle].itemLayout == nwItemLayout.DOCUMENT
+    theProject.tree[hHandle].itemLayout == nwItemLayout.DOCUMENT
+    theProject.tree[sHandle].itemLayout == nwItemLayout.DOCUMENT
+    theProject.tree[tHandle].itemLayout == nwItemLayout.DOCUMENT
 
     assert theIndex.scanText(hHandle, "## Chapter One\n\n")
     assert theIndex.scanText(sHandle, "### Scene One\n\n")
@@ -643,9 +643,9 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     assert theIndex._listNovelHandles(True) == [hHandle, sHandle, tHandle]
 
     # Add a fake handle to the tree and check that it's ignored
-    theProject.projTree._treeOrder.append("0000000000000")
+    theProject.tree._treeOrder.append("0000000000000")
     assert theIndex._listNovelHandles(False) == [nHandle, hHandle, sHandle, tHandle]
-    theProject.projTree._treeOrder.remove("0000000000000")
+    theProject.tree._treeOrder.remove("0000000000000")
 
     # Extract stats
     assert theIndex.getNovelWordCount(False) == 34

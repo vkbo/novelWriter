@@ -107,7 +107,7 @@ class NWIndex():
         project.
         """
         logger.debug("Re-indexing item '%s'", tHandle)
-        if not self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+        if not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
             return False
 
         theDoc = NWDoc(self.theProject, tHandle)
@@ -207,7 +207,7 @@ class NWIndex():
         files before we save them in which case we already have the
         text.
         """
-        theItem = self.theProject.projTree[tHandle]
+        theItem = self.theProject.tree[tHandle]
         if theItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
             return False
@@ -639,7 +639,7 @@ class NWIndex():
         """Return a list of all handles that exist in the novel index.
         """
         theHandles = []
-        for tItem in self.theProject.projTree:
+        for tItem in self.theProject.tree:
             if tItem is None:
                 continue
             if not tItem.isExported and skipExcluded:

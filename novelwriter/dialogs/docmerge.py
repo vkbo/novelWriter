@@ -125,13 +125,13 @@ class GuiDocMerge(QDialog):
             ), nwAlert.ERROR)
             return False
 
-        srcItem = self.theProject.projTree[self.sourceItem]
+        srcItem = self.theProject.tree[self.sourceItem]
         if srcItem is None:
             self.theParent.makeAlert(self.tr("Internal error."), nwAlert.ERROR)
             return False
 
         nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemParent)
-        newItem = self.theProject.projTree[nHandle]
+        newItem = self.theProject.tree[nHandle]
         newItem.setStatus(srcItem.itemStatus)
         newItem.setImport(srcItem.itemImport)
 
@@ -170,7 +170,7 @@ class GuiDocMerge(QDialog):
         if tHandle is None:
             return False
 
-        nwItem = self.theProject.projTree[tHandle]
+        nwItem = self.theProject.tree[tHandle]
         if nwItem is None:
             return False
 
@@ -182,7 +182,7 @@ class GuiDocMerge(QDialog):
 
         for sHandle in self.theParent.treeView.getTreeFromHandle(tHandle):
             newItem = QListWidgetItem()
-            nwItem  = self.theProject.projTree[sHandle]
+            nwItem  = self.theProject.tree[sHandle]
             if nwItem.itemType is not nwItemType.FILE:
                 continue
             newItem.setText(nwItem.itemName)
