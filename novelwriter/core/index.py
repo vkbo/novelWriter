@@ -173,6 +173,33 @@ class NWIndex():
 
         logger.verbose("Index loaded in %.3f ms", (time() - tStart)*1000)
 
+        indexFile = os.path.join(self.theProject.projMeta, "tagsIndex2.json")
+        tStart = time()
+
+        if os.path.isfile(indexFile):
+            logger.debug("Loading index file")
+            try:
+                with open(indexFile, mode="r", encoding="utf-8") as inFile:
+                    theData = json.load(inFile)
+
+            except Exception:
+                logger.error("Failed to load index file")
+                logException()
+                self._indexBroken = True
+                return False
+
+            for tHandle, tData in theData.items():
+                nwItem = self.theProject.tree[tHandle]
+                if nwItem is not None:
+                    tItem = IndexItem(tHandle, nwItem)
+                    tItem.unpackData(tData)
+                    self._items[tHandle] = tItem
+
+            self._generateTagsIndex()
+            # print(json.dumps(self._tags, indent=2, default=str))
+
+        logger.verbose("Index loaded in %.3f ms", (time() - tStart)*1000)
+
         self._checkIndex()
 
         return True
@@ -204,10 +231,7 @@ class NWIndex():
         indexFile = os.path.join(self.theProject.projMeta, "tagsIndex2.json")
         tStart = time()
 
-        itemsIndex = {}
-        for item in self._items.values():
-            item.packData(itemsIndex)
-
+        itemsIndex = {handle: item.packData() for handle, item in self._items.items()}
         with open(indexFile, mode="w+", encoding="utf-8") as outFile:
             outFile.write(jsonEncode(itemsIndex, nmax=3))
 
@@ -423,6 +447,7 @@ class NWIndex():
         sTitle = f"T{nTitle:06d}"
         if theBits[0] == nwKeyWords.TAG_KEY:
             self._tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name, sTitle]
+            self._tags[theBits[1]] = [tHandle, itemClass.name, sTitle]
             if tHandle in self._items:
                 self._items[tHandle].setHeadingTag(sTitle, theBits[1])
 
@@ -687,6 +712,17 @@ class NWIndex():
 
         return theHandles
 
+    def _generateTagsIndex(self):
+        """Generate the reverse tags index from the loaded index data.
+        The tags index must be updated during runtime with new changes.
+        """
+        self._tags = {}
+        for tHandle, tItem in self._items.items():
+            for sTitle, tHead in tItem.items():
+                if tHead.tag:
+                    self._tags[tHead.tag] = (tHandle, tItem.itemClass.name, sTitle)
+        return
+
     ##
     #  Index Checkers
     ##
@@ -940,6 +976,7 @@ class IndexItem:
 
         self._level = "H0"
         self._headings = {}
+        self._index = 0
 
         # Add a placeholder heading
         self._headings[self.DEF_HKEY] = IndexHeading(self.DEF_HKEY)
@@ -953,6 +990,10 @@ class IndexItem:
     @property
     def level(self):
         return self._level
+
+    @property
+    def itemClass(self):
+        return self._item.itemClass
 
     ##
     #  Setters
@@ -1005,18 +1046,44 @@ class IndexItem:
     #  Data Methods
     ##
 
-    def packData(self, container):
-        """Pack the indexed item's data into an existing dictionary.
+    def __getitem__(self, sTitle):
+        return self._headings.get(sTitle, None)
+
+    def items(self):
+        return self._headings.items()
+
+    ##
+    #  Pack/Unpack
+    ##
+
+    def packData(self):
+        """Pack the indexed item's data into a dictionary.
         """
-        container[self._handle] = {
-            "firstLevel": self._level,
-        }
-        container[self._handle]["headings"] = {
-            key: value.packData() for key, value in self._headings.items()
-        }
-        container[self._handle]["references"] = {
-            key: value.packReferences() for key, value in self._headings.items()
-        }
+        heads = {}
+        refs = {}
+        for sTitle, hItem in self._headings.items():
+            heads[sTitle] = hItem.packData()
+            hRefs = hItem.packReferences()
+            if hRefs:
+                refs[sTitle] = hRefs
+
+        data = {"level": self._level}
+        data["headings"] = heads
+        if refs:
+            data["references"] = refs
+
+        return data
+
+    def unpackData(self, data):
+        """Unpack an item entry from the data.
+        """
+        self._level = data.get("level", "H0")
+        references = data.get("references", {})
+        for sTitle, hData in data.get("headings", {}).items():
+            tHeading = IndexHeading(sTitle)
+            tHeading.unpackData(hData)
+            tHeading.unpackReferences(references.get(sTitle, {}))
+            self.addHeading(tHeading)
         return
 
 # END Class IndexItem
@@ -1046,6 +1113,10 @@ class IndexHeading:
     @property
     def key(self):
         return self._key
+
+    @property
+    def tag(self):
+        return self._tag
 
     ##
     #  Setters
@@ -1099,12 +1170,14 @@ class IndexHeading:
         }
 
     def packReferences(self):
+        """Pack references into a dictionary for saving to cache.
+        """
         return {key: list(value) for key, value in self._refs.items()}
 
     def unpackData(self, data):
-        """Unpack a title entry
+        """Unpack a heading entry from a dictionary.
         """
-        self._setLevel(data.get("level", "H0"))
+        self.setLevel(data.get("level", "H0"))
         self._title = str(data.get("title", ""))
         self._tag = str(data.get("tag", ""))
         self.setCounts(
@@ -1113,6 +1186,13 @@ class IndexHeading:
             data.get("pCount", 0),
         )
         self._synopsis = str(data.get("synopsis", ""))
+        return
+
+    def unpackReferences(self, data):
+        """Unpack a set of references from a dictionary.
+        """
+        for tagKey, refTypes in data.items():
+            self._refs[tagKey] = set(refTypes)
         return
 
 # END Class IndexHeading
