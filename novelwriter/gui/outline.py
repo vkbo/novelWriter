@@ -393,7 +393,7 @@ class GuiOutline(QTreeWidget):
 
             tItem = self._createTreeItem(tHandle, sTitle, novIdx)
 
-            tLevel = novIdx["level"]
+            tLevel = novIdx.level
             if tLevel == "H1":
                 self.addTopLevelItem(tItem)
                 currTitle = tItem
@@ -441,24 +441,24 @@ class GuiOutline(QTreeWidget):
         """
         nwItem = self.theProject.tree[tHandle]
         newItem = QTreeWidgetItem()
-        hIcon = "doc_%s" % novIdx["level"].lower()
+        hIcon = "doc_%s" % novIdx.level.lower()
 
         hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
         dIcon = self.theTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, hLevel)
 
-        cC = int(novIdx["cCount"])
-        wC = int(novIdx["wCount"])
-        pC = int(novIdx["pCount"])
+        cC = int(novIdx.charCount)
+        wC = int(novIdx.wordCount)
+        pC = int(novIdx.paraCount)
 
-        newItem.setText(self._colIdx[nwOutline.TITLE],  novIdx["title"])
+        newItem.setText(self._colIdx[nwOutline.TITLE],  novIdx.title)
         newItem.setData(self._colIdx[nwOutline.TITLE],  Qt.UserRole, tHandle)
         newItem.setIcon(self._colIdx[nwOutline.TITLE],  self.theTheme.getIcon(hIcon))
-        newItem.setText(self._colIdx[nwOutline.LEVEL],  novIdx["level"])
+        newItem.setText(self._colIdx[nwOutline.LEVEL],  novIdx.level)
         newItem.setText(self._colIdx[nwOutline.LABEL],  nwItem.itemName)
         newItem.setIcon(self._colIdx[nwOutline.LABEL],  dIcon)
         newItem.setText(self._colIdx[nwOutline.LINE],   sTitle[1:].lstrip("0"))
         newItem.setData(self._colIdx[nwOutline.LINE],   Qt.UserRole, sTitle)
-        newItem.setText(self._colIdx[nwOutline.SYNOP],  novIdx["synopsis"])
+        newItem.setText(self._colIdx[nwOutline.SYNOP],  novIdx.synopsis)
         newItem.setText(self._colIdx[nwOutline.CCOUNT], f"{cC:n}")
         newItem.setText(self._colIdx[nwOutline.WCOUNT], f"{wC:n}")
         newItem.setText(self._colIdx[nwOutline.PCOUNT], f"{pC:n}")

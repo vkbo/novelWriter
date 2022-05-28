@@ -34,9 +34,7 @@ from novelwriter.enum import nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode
 from novelwriter.core.document import NWDoc
-from novelwriter.common import (
-    checkInt, isHandle, isTitleTag, isItemLayout, jsonEncode
-)
+from novelwriter.common import checkInt, jsonEncode
 
 logger = logging.getLogger(__name__)
 
@@ -55,10 +53,6 @@ class NWIndex():
         self._indexBroken = False
 
         # Indices
-        self._refIndex  = {}
-        self._fileIndex = {}
-        self._fileMeta  = {}
-
         self._tags = {}
         self._items = {}
 
@@ -80,9 +74,6 @@ class NWIndex():
     def clearIndex(self):
         """Clear the index dictionaries and time stamps.
         """
-        self._refIndex  = {}
-        self._fileIndex = {}
-        self._fileMeta  = {}
         self._timeNovel = 0
         self._timeNotes = 0
         self._timeIndex = 0
@@ -95,15 +86,15 @@ class NWIndex():
     def deleteHandle(self, tHandle):
         """Delete all entries of a given document handle.
         """
+        if tHandle not in self._items:
+            return
+
         logger.debug("Removing item '%s' from the index", tHandle)
 
-        delTags = list(filter(lambda x: self._tags[x].get("handle") == tHandle, self._tags))
-        for tTag in delTags:
+        for tTag in self._items[tHandle].allTags():
             self._tags.pop(tTag, None)
 
-        self._refIndex.pop(tHandle, None)
-        self._fileIndex.pop(tHandle, None)
-        self._fileMeta.pop(tHandle, None)
+        self._items.pop(tHandle, None)
 
         return
 
@@ -160,32 +151,6 @@ class NWIndex():
                 self._indexBroken = True
                 return False
 
-            self._refIndex = theData.get("refIndex", {})
-            self._fileIndex = theData.get("fileIndex", {})
-            self._fileMeta = theData.get("fileMeta", {})
-
-            nowTime = round(time())
-            self._timeNovel = nowTime
-            self._timeNotes = nowTime
-            self._timeIndex = nowTime
-
-        logger.verbose("Index loaded in %.3f ms", (time() - tStart)*1000)
-
-        indexFile = os.path.join(self.theProject.projMeta, "tagsIndex2.json")
-        tStart = time()
-
-        if os.path.isfile(indexFile):
-            logger.debug("Loading index file")
-            try:
-                with open(indexFile, mode="r", encoding="utf-8") as inFile:
-                    theData = json.load(inFile)
-
-            except Exception:
-                logger.error("Failed to load index file")
-                logException()
-                self._indexBroken = True
-                return False
-
             self._tags = theData.get("tagsIndex", {})
             for tHandle, tData in theData.get("itemIndex", {}).items():
                 nwItem = self.theProject.tree[tHandle]
@@ -193,6 +158,11 @@ class NWIndex():
                     tItem = IndexItem(tHandle, nwItem)
                     tItem.unpackData(tData)
                     self._items[tHandle] = tItem
+
+            nowTime = round(time())
+            self._timeNovel = nowTime
+            self._timeNotes = nowTime
+            self._timeIndex = nowTime
 
         logger.verbose("Index loaded in %.3f ms", (time() - tStart)*1000)
 
@@ -209,29 +179,17 @@ class NWIndex():
         tStart = time()
 
         try:
+            itemsIndex = {handle: item.packData() for handle, item in self._items.items()}
             with open(indexFile, mode="w+", encoding="utf-8") as outFile:
                 outFile.write("{\n")
-                outFile.write(f'  "refIndex": {jsonEncode(self._refIndex, n=1, nmax=3)},\n')
-                outFile.write(f'  "fileIndex": {jsonEncode(self._fileIndex, n=1, nmax=3)},\n')
-                outFile.write(f'  "fileMeta": {jsonEncode(self._fileMeta, n=1, nmax=2)}\n')
+                outFile.write(f'  "tagsIndex": {jsonEncode(self._tags, n=1, nmax=2)},\n')
+                outFile.write(f'  "itemIndex": {jsonEncode(itemsIndex, n=1, nmax=4)}\n')
                 outFile.write("}\n")
 
         except Exception:
             logger.error("Failed to save index file")
             logException()
             return False
-
-        logger.verbose("Index saved in %.3f ms", (time() - tStart)*1000)
-
-        indexFile = os.path.join(self.theProject.projMeta, "tagsIndex2.json")
-        tStart = time()
-
-        itemsIndex = {handle: item.packData() for handle, item in self._items.items()}
-        with open(indexFile, mode="w+", encoding="utf-8") as outFile:
-            outFile.write("{\n")
-            outFile.write(f'  "tagsIndex": {jsonEncode(self._tags, n=1, nmax=2)},\n')
-            outFile.write(f'  "itemIndex": {jsonEncode(itemsIndex, n=1, nmax=4)}\n')
-            outFile.write("}\n")
 
         logger.verbose("Index saved in %.3f ms", (time() - tStart)*1000)
 
@@ -256,11 +214,12 @@ class NWIndex():
             logger.info("Not indexing non-file item '%s'", tHandle)
             return False
 
-        # Run word counter for the whole text
-        cC, wC, pC = countWords(theText)
-        self._fileMeta[tHandle] = ["H0", cC, wC, pC]
+        self.deleteHandle(tHandle)
 
+        # Run word counter for the whole text
         self._items[tHandle] = IndexItem(tHandle, theItem)
+
+        cC, wC, pC = countWords(theText)
         theItem.setCharCount(cC)
         theItem.setWordCount(wC)
         theItem.setParaCount(pC)
@@ -281,15 +240,6 @@ class NWIndex():
         itemLayout = theItem.itemLayout
 
         logger.debug("Indexing item with handle '%s'", tHandle)
-
-        # Delete or reset old entries for the file
-        self._refIndex.pop(tHandle, None)
-        self._fileIndex[tHandle] = {}
-
-        # Also clear references to the file in the tags index
-        clearTags = list(filter(lambda x: self._tags[x].get("handle") == tHandle, self._tags))
-        for aTag in clearTags:
-            self._tags.pop(aTag)
 
         # Scan the text content
         nTitle = 0
@@ -326,7 +276,6 @@ class NWIndex():
 
         # Index page with no titles and references
         if nTitle == 0:
-            self._indexPage(tHandle, itemLayout)
             self._indexWordCounts(tHandle, theText, nTitle)
 
         # Update timestamps for index changes
@@ -369,51 +318,17 @@ class NWIndex():
             return False
 
         sTitle = f"T{nLine:06d}"
-        self._fileIndex[tHandle][sTitle] = {
-            "level": hDepth,
-            "title": hText,
-            "layout": itemLayout.name,
-            "cCount": 0,
-            "wCount": 0,
-            "pCount": 0,
-            "synopsis": "",
-        }
-
-        if self._fileMeta[tHandle][0] == "H0":
-            # Since this initialises to H0, this ensures that only the
-            # first header level is recorded in the file meta index
-            self._fileMeta[tHandle][0] = hDepth
-
         tItem = self._items[tHandle]
         tItem.updateLevel(hDepth)
         tItem.addHeading(IndexHeading(sTitle, hDepth, hText))
 
         return True
 
-    def _indexPage(self, tHandle, itemLayout):
-        """Index a page with no title.
-        """
-        self._fileIndex[tHandle][H_NONE] = {
-            "level": "H0",
-            "title": "",
-            "layout": itemLayout.name,
-            "cCount": 0,
-            "wCount": 0,
-            "pCount": 0,
-            "synopsis": "",
-        }
-        return
-
     def _indexWordCounts(self, tHandle, theText, nTitle):
         """Count text stats and save the counts to the index.
         """
         cC, wC, pC = countWords(theText)
         sTitle = f"T{nTitle:06d}"
-        if tHandle in self._fileIndex:
-            if sTitle in self._fileIndex[tHandle]:
-                self._fileIndex[tHandle][sTitle]["cCount"] = cC
-                self._fileIndex[tHandle][sTitle]["wCount"] = wC
-                self._fileIndex[tHandle][sTitle]["pCount"] = pC
         if tHandle in self._items:
             self._items[tHandle].setHeadingCounts(sTitle, cC, wC, pC)
         return
@@ -422,9 +337,6 @@ class NWIndex():
         """Save the synopsis to the index.
         """
         sTitle = f"T{nTitle:06d}"
-        if tHandle in self._fileIndex:
-            if sTitle in self._fileIndex[tHandle]:
-                self._fileIndex[tHandle][sTitle]["synopsis"] = theText
         if tHandle in self._items:
             self._items[tHandle].setHeadingSynopsis(sTitle, theText)
         return
@@ -451,14 +363,7 @@ class NWIndex():
             }
             if tHandle in self._items:
                 self._items[tHandle].setHeadingTag(sTitle, theBits[1])
-
         else:
-            if tHandle not in self._refIndex:
-                self._refIndex[tHandle] = {}
-            if sTitle not in self._refIndex[tHandle]:
-                self._refIndex[tHandle][sTitle] = []
-            for aVal in theBits[1:]:
-                self._refIndex[tHandle][sTitle].append([nLine, theBits[0], aVal])
             if tHandle in self._items:
                 self._items[tHandle].addHeadingReferences(sTitle, theBits[1:], theBits[0])
 
@@ -546,17 +451,17 @@ class NWIndex():
         files, but skipping all note files.
         """
         for tHandle in self._listNovelHandles(skipExcluded):
-            for sTitle in sorted(self._fileIndex[tHandle]):
+            for sTitle in self._items[tHandle].headings:
                 tKey = f"{tHandle}:{sTitle}"
-                yield tKey, tHandle, sTitle, self._fileIndex[tHandle][sTitle]
+                yield tKey, tHandle, sTitle, self._items[tHandle][sTitle]
 
     def getNovelWordCount(self, skipExcluded=True):
         """Count the number of words in the novel project.
         """
         wCount = 0
         for tHandle in self._listNovelHandles(skipExcluded):
-            for sTitle in self._fileIndex[tHandle]:
-                wCount += self._fileIndex[tHandle][sTitle]["wCount"]
+            for hItem in self._items[tHandle].entries:
+                wCount += hItem.wordCount
 
         return wCount
 
@@ -565,8 +470,8 @@ class NWIndex():
         """
         hCount = [0, 0, 0, 0, 0]
         for tHandle in self._listNovelHandles(skipExcluded):
-            for sTitle in self._fileIndex[tHandle]:
-                iLevel = H_LEVEL.get(self._fileIndex[tHandle][sTitle]["level"], 0)
+            for hItem in self._items[tHandle].entries:
+                iLevel = H_LEVEL.get(hItem.level, 0)
                 hCount[iLevel] += 1
 
         return hCount
@@ -574,19 +479,26 @@ class NWIndex():
     def getHandleWordCounts(self, tHandle):
         """Get all header word counts for a specific handle.
         """
-        hRecord = self._fileIndex.get(tHandle, {})
-        return [(f"{tHandle}:{sTitle}", sData["wCount"]) for sTitle, sData in hRecord.items()]
+        return [
+            (f"{tHandle}:{sTitle}", hItem.wordCount)
+            for sTitle, hItem in self._items.get(tHandle, {}).items()
+        ]
 
     def getHandleHeaders(self, tHandle):
         """Get all headers for a specific handle.
         """
-        hRecord = self._fileIndex.get(tHandle, {})
-        return [(sTitle, sData["level"], sData["title"]) for sTitle, sData in hRecord.items()]
+        return [
+            (sTitle, hItem.level, hItem.title)
+            for sTitle, hItem in self._items.get(tHandle, {}).items()
+        ]
 
     def getHandleHeaderLevel(self, tHandle):
         """Get the header level of the first header of a handle.
         """
-        return self._fileMeta.get(tHandle, ["H0"])[0]
+        if tHandle in self._items:
+            return self._items[tHandle].level
+        else:
+            return "H0"
 
     def getTableOfContents(self, maxDepth, skipExcluded=True):
         """Generate a table of contents up to a maximum depth.
@@ -595,21 +507,20 @@ class NWIndex():
         tData = {}
         pKey = None
         for tHandle in self._listNovelHandles(skipExcluded):
-            for sTitle in sorted(self._fileIndex[tHandle]):
+            for sTitle in self._items[tHandle].headings:
                 tKey = f"{tHandle}:{sTitle}"
-                theData = self._fileIndex[tHandle][sTitle]
-                iLevel = H_LEVEL.get(theData["level"], 0)
+                hItem = self._items[tHandle][sTitle]
+                iLevel = H_LEVEL.get(hItem.level, 0)
                 if iLevel > maxDepth:
                     if pKey in tData:
-                        theData["wCount"]
-                        tData[pKey]["words"] += theData["wCount"]
+                        tData[pKey]["words"] += hItem.wordCount
                 else:
                     pKey = tKey
                     tOrder.append(tKey)
                     tData[tKey] = {
                         "level": iLevel,
-                        "title": theData["title"],
-                        "words": theData["wCount"],
+                        "title": hItem.title,
+                        "words": hItem.wordCount,
                     }
 
         theToC = [(
@@ -630,16 +541,18 @@ class NWIndex():
         pC = 0
 
         if sTitle is None:
-            if tHandle in self._fileMeta:
-                cC = self._fileMeta[tHandle][1]
-                wC = self._fileMeta[tHandle][2]
-                pC = self._fileMeta[tHandle][3]
+            if tHandle in self._items:
+                tItem = self._items[tHandle].item
+                cC = tItem.charCount
+                wC = tItem.wordCount
+                pC = tItem.paraCount
         else:
-            if tHandle in self._fileIndex:
-                if sTitle in self._fileIndex[tHandle]:
-                    cC = self._fileIndex[tHandle][sTitle]["cCount"]
-                    wC = self._fileIndex[tHandle][sTitle]["wCount"]
-                    pC = self._fileIndex[tHandle][sTitle]["pCount"]
+            if tHandle in self._items:
+                if sTitle in self._items[tHandle]:
+                    hItem = self._items[tHandle][sTitle]
+                    cC = hItem.charCount
+                    wC = hItem.wordCount
+                    pC = hItem.paraCount
 
         return cC, wC, pC
 
@@ -648,40 +561,43 @@ class NWIndex():
         section.
         """
         theRefs = {x: [] for x in nwKeyWords.KEY_CLASS}
-        if tHandle not in self._refIndex:
+        if tHandle not in self._items:
             return theRefs
 
-        for refTitle in self._refIndex[tHandle]:
-            for aTag in self._refIndex[tHandle][refTitle]:
-                if len(aTag) == 3 and (sTitle is None or sTitle == refTitle):
-                    if aTag[1] in theRefs:
-                        theRefs[aTag[1]].append(aTag[2])
+        for rTitle, hItem in self._items[tHandle].items():
+            if sTitle is None or sTitle == rTitle:
+                for aTag, refTypes in hItem.references.items():
+                    for refType in refTypes:
+                        if refType in theRefs:
+                            theRefs[refType].append(aTag)
 
         return theRefs
 
     def getNovelData(self, tHandle, sTitle):
         """Return the novel data of a given handle and title.
         """
-        if tHandle in self._fileIndex:
-            if sTitle in self._fileIndex[tHandle]:
-                return self._fileIndex[tHandle][sTitle]
+        if tHandle in self._items:
+            if sTitle in self._items[tHandle]:
+                return self._items[tHandle][sTitle]
         return None
 
     def getBackReferenceList(self, tHandle):
         """Build a list of files referring back to our file, specified
         by tHandle.
         """
-        if tHandle is None:
+        if tHandle is None or tHandle not in self._items:
             return {}
 
         theRefs = {}
-        theTags = set(filter(lambda x: self._tags[x].get("handle") == tHandle, self._tags))
-        if theTags:
-            for tHandle in self._refIndex:
-                for sTitle in self._refIndex[tHandle]:
-                    for _, _, tTag in self._refIndex[tHandle][sTitle]:
-                        if tTag in theTags and tHandle not in theRefs:
-                            theRefs[tHandle] = sTitle
+        theTags = self._items[tHandle].allTags()
+        if not theTags:
+            return theRefs
+
+        for aHandle, tItem in self._items.items():
+            for sTitle, hItem in tItem.items():
+                for aTag in hItem.references:
+                    if aTag in theTags and aHandle not in theRefs:
+                        theRefs[aHandle] = sTitle
 
         return theRefs
 
@@ -706,7 +622,7 @@ class NWIndex():
                 continue
             if tItem.itemLayout == nwItemLayout.NOTE:
                 continue
-            if tItem.itemHandle in self._fileIndex:
+            if tItem.itemHandle in self._items:
                 theHandles.append(tItem.itemHandle)
 
         return theHandles
@@ -724,126 +640,13 @@ class NWIndex():
         logger.debug("Checking index")
         tStart = time()
 
-        try:
-            self._checkRefIndex()
-            self._checkFileIndex()
-            self._checkFileMeta()
-            self._indexBroken = False
-
-        except Exception:
-            logger.error("Error while checking index")
-            logException()
-            self._indexBroken = True
-
-        if self._indexBroken:
-            self.clearIndex()
-            logger.verbose("Index check completed in %.3f ms", (time() - tStart)*1000)
-            return
-
         # If the index was ok, we check that project files are indexed
         for fHandle in self.theProject.projFiles:
-            if fHandle not in self._fileMeta:
+            if fHandle not in self._items:
                 logger.warning("Item '%s' is not in the index", fHandle)
                 self.reIndexHandle(fHandle)
 
         logger.verbose("Index check completed in %.3f ms", (time() - tStart)*1000)
-
-        return
-
-    def _checkRefIndex(self):
-        """Scan the reference index for errors.
-        Warning: This function raises exceptions.
-        """
-        for tHandle in self._refIndex:
-            if not isHandle(tHandle):
-                raise KeyError("refIndex key is not a handle")
-
-            hEntry = self._refIndex[tHandle]
-            for sTitle in hEntry:
-                if not isTitleTag(sTitle):
-                    raise KeyError("refIndex[a] key is not a title tag")
-
-                sEntry = hEntry[sTitle]
-                for tEntry in sEntry:
-                    if len(tEntry) != 3:
-                        raise IndexError("refIndex[a][b][i] expected 3 values")
-                    if not isinstance(tEntry[0], int):
-                        raise ValueError("refIndex[a][b][i][0] is not an integer")
-                    if not tEntry[1] in nwKeyWords.VALID_KEYS:
-                        raise ValueError("refIndex[a][b][i][1] is not a keyword")
-                    if not isinstance(tEntry[2], str):
-                        raise ValueError("refIndex[a][b][i][2] is not a string")
-
-        return
-
-    def _checkFileIndex(self):
-        """Scan the file index for errors.
-        Warning: This function raises exceptions.
-        """
-        for tHandle in self._fileIndex:
-            if not isHandle(tHandle):
-                raise KeyError("fileIndex key is not a handle")
-
-            hEntry = self._fileIndex[tHandle]
-            for sTitle in self._fileIndex[tHandle]:
-                if not isTitleTag(sTitle):
-                    raise KeyError("fileIndex[a] key is not a title tag")
-
-                sEntry = hEntry[sTitle]
-                if len(sEntry) != 7:
-                    raise IndexError("fileIndex[a][b] expected 7 values")
-
-                if "level" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'level' key")
-                if "title" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'title' key")
-                if "layout" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'layout' key")
-                if "cCount" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'cCount' key")
-                if "wCount" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'wCount' key")
-                if "pCount" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'pCount' key")
-                if "synopsis" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'synopsis' key")
-
-                if not sEntry["level"] in H_VALID:
-                    raise ValueError("fileIndex[a][b][level] is not a header level")
-                if not isinstance(sEntry["title"], str):
-                    raise ValueError("fileIndex[a][b][title] is not a string")
-                if not isItemLayout(sEntry["layout"]):
-                    raise ValueError("fileIndex[a][b][layout] is not an nwItemLayout")
-                if not isinstance(sEntry["cCount"], int):
-                    raise ValueError("fileIndex[a][b][cCount] is not an integer")
-                if not isinstance(sEntry["wCount"], int):
-                    raise ValueError("fileIndex[a][b][wCount] is not an integer")
-                if not isinstance(sEntry["pCount"], int):
-                    raise ValueError("fileIndex[a][b][pCount] is not an integer")
-                if not isinstance(sEntry["synopsis"], str):
-                    raise ValueError("fileIndex[a][b][synopsis] is not a string")
-
-        return
-
-    def _checkFileMeta(self):
-        """Scan the text counts index for errors.
-        Warning: This function raises exceptions.
-        """
-        for tHandle in self._fileMeta:
-            if not isHandle(tHandle):
-                raise KeyError("fileMeta key is not a handle")
-
-            tEntry = self._fileMeta[tHandle]
-            if len(tEntry) != 4:
-                raise IndexError("fileMeta[a] expected 4 values")
-            if not tEntry[0] in H_VALID:
-                raise ValueError("fileMeta[a][0] is not a header level")
-            if not isinstance(tEntry[1], int):
-                raise ValueError("fileMeta[a][1] is not an integer")
-            if not isinstance(tEntry[2], int):
-                raise ValueError("fileMeta[a][2] is not an integer")
-            if not isinstance(tEntry[3], int):
-                raise ValueError("fileMeta[a][3] is not an integer")
 
         return
 
@@ -951,12 +754,20 @@ class IndexItem:
     ##
 
     @property
+    def item(self):
+        return self._item
+
+    @property
     def level(self):
         return self._level
 
     @property
-    def itemClass(self):
-        return self._item.itemClass
+    def headings(self):
+        return sorted(self._headings.keys())
+
+    @property
+    def entries(self):
+        return self._headings.values()
 
     ##
     #  Setters
@@ -1012,8 +823,21 @@ class IndexItem:
     def __getitem__(self, sTitle):
         return self._headings.get(sTitle, None)
 
+    def __contains__(self, sTitle):
+        return sTitle in self._headings
+
     def items(self):
         return self._headings.items()
+
+    def allTags(self):
+        """Return a list of all tags in the current item.
+        """
+        tags = []
+        for hItem in self._headings.values():
+            tag = hItem.tag
+            if tag:
+                tags.append(tag)
+        return tags
 
     ##
     #  Pack/Unpack
@@ -1078,8 +902,36 @@ class IndexHeading:
         return self._key
 
     @property
+    def level(self):
+        return self._level
+
+    @property
+    def title(self):
+        return self._title
+
+    @property
+    def charCount(self):
+        return self._charCount
+
+    @property
+    def wordCount(self):
+        return self._wordCount
+
+    @property
+    def paraCount(self):
+        return self._paraCount
+
+    @property
+    def synopsis(self):
+        return self._synopsis
+
+    @property
     def tag(self):
         return self._tag
+
+    @property
+    def references(self):
+        return self._refs
 
     ##
     #  Setters

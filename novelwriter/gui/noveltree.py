@@ -258,7 +258,7 @@ class GuiNovelTree(QTreeWidget):
             tItem = self._createTreeItem(tHandle, sTitle, tKey, novIdx)
             self._treeMap[tKey] = tItem
 
-            tLevel = novIdx["level"]
+            tLevel = novIdx.level
             if tLevel == "H1":
                 self.addTopLevelItem(tItem)
                 currTitle = tItem
@@ -305,12 +305,12 @@ class GuiNovelTree(QTreeWidget):
         """Populate a tree item with all the column values.
         """
         newItem = QTreeWidgetItem()
-        hIcon   = "doc_%s" % novIdx["level"].lower()
+        hIcon   = "doc_%s" % novIdx.level.lower()
         theData = (tHandle, sTitle[1:].lstrip("0"), titleKey)
 
-        wC = int(novIdx["wCount"])
+        wC = int(novIdx.wordCount)
 
-        newItem.setText(self.C_TITLE, novIdx["title"])
+        newItem.setText(self.C_TITLE, novIdx.title)
         newItem.setData(self.C_TITLE, Qt.UserRole, theData)
         newItem.setIcon(self.C_TITLE, self.theTheme.getIcon(hIcon))
         newItem.setText(self.C_WORDS, f"{wC:n}")

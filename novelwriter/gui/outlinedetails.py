@@ -288,26 +288,26 @@ class GuiOutlineDetails(QScrollArea):
         if nwItem is None or novIdx is None:
             return False
 
-        if novIdx["level"] in self.LVL_MAP:
-            self.titleLabel.setText("<b>%s</b>" % self.tr(self.LVL_MAP[novIdx["level"]]))
+        if novIdx.level in self.LVL_MAP:
+            self.titleLabel.setText("<b>%s</b>" % self.tr(self.LVL_MAP[novIdx.level]))
         else:
             self.titleLabel.setText("<b>%s</b>" % self.tr("Title"))
-        self.titleValue.setText(novIdx["title"])
+        self.titleValue.setText(novIdx.title)
 
         itemStatus, _ = nwItem.getImportStatus()
 
         self.fileValue.setText(nwItem.itemName)
         self.itemValue.setText(itemStatus)
 
-        cC = checkInt(novIdx["cCount"], 0)
-        wC = checkInt(novIdx["wCount"], 0)
-        pC = checkInt(novIdx["pCount"], 0)
+        cC = checkInt(novIdx.charCount, 0)
+        wC = checkInt(novIdx.wordCount, 0)
+        pC = checkInt(novIdx.paraCount, 0)
 
         self.cCValue.setText(f"{cC:n}")
         self.wCValue.setText(f"{wC:n}")
         self.pCValue.setText(f"{pC:n}")
 
-        self.synopValue.setText(novIdx["synopsis"])
+        self.synopValue.setText(novIdx.synopsis)
 
         self.povKeyValue.setText(self._formatTags(theRefs, nwKeyWords.POV_KEY))
         self.focKeyValue.setText(self._formatTags(theRefs, nwKeyWords.FOCUS_KEY))
