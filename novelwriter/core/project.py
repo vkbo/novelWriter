@@ -123,15 +123,15 @@ class NWProject():
     ##
 
     @property
-    def index(self) -> NWIndex:
+    def index(self):
         return self._projIndex
 
     @property
-    def tree(self) -> NWTree:
+    def tree(self):
         return self._projTree
 
     @property
-    def options(self) -> OptionState:
+    def options(self):
         return self._optState
 
     ##
