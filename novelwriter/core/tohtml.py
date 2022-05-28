@@ -451,7 +451,7 @@ class ToHtml(Tokenizer):
     def _formatKeywords(self, tText):
         """Apply HTML formatting to keywords.
         """
-        isValid, theBits, _ = self.theParent.theIndex.scanThis("@"+tText)
+        isValid, theBits, _ = self.theProject.index.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 

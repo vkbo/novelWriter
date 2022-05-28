@@ -79,7 +79,6 @@ class GuiDocEditor(QTextEdit):
         self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
-        self.theIndex   = theParent.theIndex
         self.theProject = theParent.theProject
 
         self._nwDocument = None
@@ -401,7 +400,7 @@ class GuiDocEditor(QTextEdit):
             self.document().rootFrame().setFrameFormat(docFrame)
 
         self.docFooter.updateLineCount()
-        self._docHeaders = self.theIndex.getHandleHeaders(self._docHandle)
+        self._docHeaders = self.theProject.index.getHandleHeaders(self._docHandle)
 
         qApp.processEvents()
         self.document().clearUndoRedoStacks()
@@ -506,9 +505,9 @@ class GuiDocEditor(QTextEdit):
 
         self.setDocumentChanged(False)
 
-        oldHeader = self.theIndex.getHandleHeaderLevel(tHandle)
-        self.theIndex.scanText(tHandle, docText)
-        newHeader = self.theIndex.getHandleHeaderLevel(tHandle)
+        oldHeader = self.theProject.index.getHandleHeaderLevel(tHandle)
+        self.theProject.index.scanText(tHandle, docText)
+        newHeader = self.theProject.index.getHandleHeaderLevel(tHandle)
 
         if self._updateHeaders(checkLevel=True):
             self.theParent.requestNovelTreeRefresh()
@@ -2003,7 +2002,7 @@ class GuiDocEditor(QTextEdit):
         if self._docHandle is None:
             return False
 
-        newHeaders = self.theIndex.getHandleHeaders(self._docHandle)
+        newHeaders = self.theProject.index.getHandleHeaders(self._docHandle)
         if checkPos:
             newPos = [x[0] for x in newHeaders]
             oldPos = [x[0] for x in self._docHeaders]
@@ -2943,7 +2942,7 @@ class GuiDocEditFooter(QWidget):
         else:
             theStatus, theIcon = self._theItem.getImportStatus()
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            hLevel = self.theParent.theIndex.getHandleHeaderLevel(self._docHandle)
+            hLevel = self.theProject.index.getHandleHeaderLevel(self._docHandle)
             sText = f"{theStatus} / {self._theItem.describeMe(hLevel)}"
 
         self.statusIcon.setPixmap(sIcon)

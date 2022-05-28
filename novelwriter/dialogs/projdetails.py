@@ -145,7 +145,6 @@ class GuiProjectDetailsMain(QWidget):
         self.theParent  = theParent
         self.theProject = theProject
         self.theTheme   = theParent.theTheme
-        self.theIndex   = theParent.theIndex
 
         fPx = self.theTheme.fontPixelSize
         fPt = self.theTheme.fontPointSize
@@ -245,8 +244,9 @@ class GuiProjectDetailsMain(QWidget):
     def updateValues(self):
         """Set all the values.
         """
-        hCounts = self.theIndex.getNovelTitleCounts()
-        nwCount = self.theIndex.getNovelWordCount()
+        pIndex = self.theProject.index
+        hCounts = pIndex.getNovelTitleCounts()
+        nwCount = pIndex.getNovelWordCount()
         edTime = self.theProject.getCurrentEditTime()
 
         self.wordCountVal.setText(f"{nwCount:n}")
@@ -277,7 +277,6 @@ class GuiProjectDetailsContents(QWidget):
         self.theParent  = theParent
         self.theProject = theProject
         self.theTheme   = theParent.theTheme
-        self.theIndex   = theParent.theIndex
         self.optState   = theProject.optState
 
         # Internal
@@ -424,7 +423,7 @@ class GuiProjectDetailsContents(QWidget):
         """Extract the data for the tree.
         """
         self._theToC = []
-        self._theToC = self.theIndex.getTableOfContents(2)
+        self._theToC = self.theProject.index.getTableOfContents(2)
         self._theToC.append(("", 0, self.tr("END"), 0))
         return
 

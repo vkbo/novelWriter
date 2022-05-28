@@ -37,6 +37,7 @@ from PyQt5.QtCore import QCoreApplication
 
 from novelwriter.core.tree import NWTree
 from novelwriter.core.item import NWItem
+from novelwriter.core.index import NWIndex
 from novelwriter.core.status import NWStatus
 from novelwriter.core.options import OptionState
 from novelwriter.core.document import NWDoc
@@ -62,9 +63,10 @@ class NWProject():
         self.mainConf  = novelwriter.CONFIG
 
         # Core Elements
-        self.optState = OptionState(self)  # Project-specific GUI options
-        self.projTree = NWTree(self)       # The project tree
-        self.langData = {}                 # Localisation data
+        self.optState  = OptionState(self)  # Project-specific GUI options
+        self.projTree  = NWTree(self)       # The project tree
+        self._projIndex = NWIndex(self)      # The projecty index
+        self.langData  = {}                 # Localisation data
 
         # Project Status
         self.projOpened  = 0      # The time stamp of when the project file was opened
@@ -115,6 +117,14 @@ class NWProject():
         self.clearProject()
 
         return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def index(self):
+        return self._projIndex
 
     ##
     #  Item Methods

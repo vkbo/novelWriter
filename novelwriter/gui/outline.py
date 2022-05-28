@@ -91,7 +91,6 @@ class GuiOutline(QTreeWidget):
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.theTheme   = theParent.theTheme
-        self.theIndex   = theParent.theIndex
         self.optState   = theParent.theProject.optState
         self.headerMenu = GuiOutlineHeaderMenu(self)
 
@@ -182,7 +181,7 @@ class GuiOutline(QTreeWidget):
 
         # If the novel index or novel tree has changed since the tree
         # was last built, we rebuild the tree from the updated index.
-        indexChanged = self.theIndex.novelChangedSince(self._lastBuild)
+        indexChanged = self.theProject.index.novelChangedSince(self._lastBuild)
         doBuild = (novelChanged or indexChanged) and self.theProject.autoOutline
         if doBuild or overRide:
             logger.debug("Rebuilding Project Outline")
@@ -388,7 +387,7 @@ class GuiOutline(QTreeWidget):
         currChapter = None
         currScene = None
 
-        for tKey, tHandle, sTitle, novIdx in self.theIndex.novelStructure(skipExcluded=True):
+        for _, tHandle, sTitle, novIdx in self.theProject.index.novelStructure(skipExcluded=True):
 
             tItem = self._createTreeItem(tHandle, sTitle, novIdx)
 
@@ -442,7 +441,7 @@ class GuiOutline(QTreeWidget):
         newItem = QTreeWidgetItem()
         hIcon = "doc_%s" % novIdx["level"].lower()
 
-        hLevel = self.theIndex.getHandleHeaderLevel(tHandle)
+        hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
         dIcon = self.theTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, hLevel)
 
         cC = int(novIdx["cCount"])
@@ -465,7 +464,7 @@ class GuiOutline(QTreeWidget):
         newItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], Qt.AlignRight)
         newItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], Qt.AlignRight)
 
-        theRefs = self.theIndex.getReferences(tHandle, sTitle)
+        theRefs = self.theProject.index.getReferences(tHandle, sTitle)
         newItem.setText(self._colIdx[nwOutline.POV],    ", ".join(theRefs[nwKeyWords.POV_KEY]))
         newItem.setText(self._colIdx[nwOutline.FOCUS],  ", ".join(theRefs[nwKeyWords.FOCUS_KEY]))
         newItem.setText(self._colIdx[nwOutline.CHAR],   ", ".join(theRefs[nwKeyWords.CHAR_KEY]))

@@ -50,7 +50,7 @@ from novelwriter.dialogs import (
 from novelwriter.tools import (
     GuiBuildNovel, GuiLipsum, GuiProjectWizard, GuiWritingStats
 )
-from novelwriter.core import NWProject, NWIndex
+from novelwriter.core import NWProject
 from novelwriter.enum import (
     nwItemType, nwItemClass, nwAlert, nwWidget, nwState, nwView
 )
@@ -86,7 +86,6 @@ class GuiMain(QMainWindow):
         # Core Classes and Settings
         self.theTheme    = GuiTheme()
         self.theProject  = NWProject(self)
-        self.theIndex    = NWIndex(self.theProject)
         self.hasProject  = False
         self.isFocusMode = False
         self.idleRefTime = time()
@@ -420,7 +419,7 @@ class GuiMain(QMainWindow):
             self.idleRefTime = time()
             self.idleTime = 0.0
 
-            self.theIndex.clearIndex()
+            self.theProject.index.clearIndex()
             self.clearGUI()
             self.hasProject = False
             self._changeView(nwView.PROJECT)
@@ -497,7 +496,7 @@ class GuiMain(QMainWindow):
         self.idleTime = 0.0
 
         # Load the tag index
-        self.theIndex.loadIndex()
+        self.theProject.index.loadIndex()
 
         # Update GUI
         self._updateWindowTitle(self.theProject.projName)
@@ -516,7 +515,7 @@ class GuiMain(QMainWindow):
             self.viewDocument(self.theProject.lastViewed)
 
         # Check if we need to rebuild the index
-        if self.theIndex.indexBroken:
+        if self.theProject.index.indexBroken:
             self.makeAlert(self.tr(
                 "The project index is outdated or broken. Rebuilding index."
             ), nwAlert.INFO)
@@ -540,7 +539,7 @@ class GuiMain(QMainWindow):
 
         self.treeView.saveTreeOrder()
         if self.theProject.saveProject(autoSave=autoSave):
-            self.theIndex.saveIndex()
+            self.theProject.index.saveIndex()
 
         return True
 
@@ -863,7 +862,7 @@ class GuiMain(QMainWindow):
         tStart = time()
 
         self.treeView.saveTreeOrder()
-        self.theIndex.clearIndex()
+        self.theProject.index.clearIndex()
 
         for tItem in self.theProject.projTree:
 
@@ -874,10 +873,10 @@ class GuiMain(QMainWindow):
 
             if tItem is not None and tItem.itemType == nwItemType.FILE:
                 logger.verbose("Scanning '%s'", tItem.itemName)
-                self.theIndex.reIndexHandle(tItem.itemHandle)
+                self.theProject.index.reIndexHandle(tItem.itemHandle)
 
                 # Get Word Counts
-                cC, wC, pC = self.theIndex.getCounts(tItem.itemHandle)
+                cC, wC, pC = self.theProject.index.getCounts(tItem.itemHandle)
                 tItem.setCharCount(cC)
                 tItem.setWordCount(wC)
                 tItem.setParaCount(pC)

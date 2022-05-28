@@ -61,7 +61,6 @@ class GuiProjectTree(QTreeWidget):
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theParent.theProject
-        self.theIndex   = theParent.theIndex
 
         # Internal Variables
         self._treeMap     = {}
@@ -236,12 +235,14 @@ class GuiProjectTree(QTreeWidget):
             else:
                 newText = f"# {nwItem.itemName}\n\n"
 
+            pIndex = self.theProject.index
+
             # Save the text and index it
             newDoc.writeDocument(newText)
-            self.theIndex.scanText(tHandle, newText)
+            pIndex.scanText(tHandle, newText)
 
             # Get Word Counts
-            cC, wC, pC = self.theIndex.getCounts(tHandle)
+            cC, wC, pC = pIndex.getCounts(tHandle)
             nwItem.setCharCount(cC)
             nwItem.setWordCount(wC)
             nwItem.setParaCount(pC)
@@ -542,7 +543,7 @@ class GuiProjectTree(QTreeWidget):
                 expIcon = self.theTheme.getIcon("cross")
 
         itempStatus, statusIcon = nwItem.getImportStatus()
-        hLevel = self.theIndex.getHandleHeaderLevel(tHandle)
+        hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
         itemIcon = self.theTheme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
         )
@@ -598,7 +599,7 @@ class GuiProjectTree(QTreeWidget):
             if self.theProject.projTree.checkType(pHandle, nwItemType.FILE):
                 # A file has an internal word count we need to account
                 # for, but a folder always has 0 words on its own.
-                pCount += self.theIndex.getCounts(pHandle)[1]
+                pCount += self.theProject.index.getCounts(pHandle)[1]
 
             self.propagateCount(pHandle, pCount, countChildren=False)
 
@@ -817,9 +818,9 @@ class GuiProjectTree(QTreeWidget):
 
             # Update the index
             if nwItemS.isInactive():
-                self.theIndex.deleteHandle(mHandle)
+                self.theProject.index.deleteHandle(mHandle)
             else:
-                self.theIndex.reIndexHandle(mHandle)
+                self.theProject.index.reIndexHandle(mHandle)
 
             self.setTreeItemValues(mHandle)
 
@@ -854,7 +855,7 @@ class GuiProjectTree(QTreeWidget):
                 ], nwAlert.ERROR)
                 return False
 
-        self.theIndex.deleteHandle(tHandle)
+        self.theProject.index.deleteHandle(tHandle)
         del self.theProject.projTree[tHandle]
         self._treeMap.pop(tHandle, None)
 

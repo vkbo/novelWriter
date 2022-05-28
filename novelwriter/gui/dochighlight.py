@@ -55,7 +55,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.spEnchant  = spEnchant
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
-        self.theIndex   = theParent.theIndex
+        self.theProject = theParent.theProject
         self.theHandle  = None
         self.spellCheck = False
         self.spellRx    = None
@@ -287,9 +287,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         if theText.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(self.BLOCK_META)
+            pIndex = self.theProject.index
             tItem = self.theParent.theProject.projTree[self.theHandle]
-            isValid, theBits, thePos = self.theIndex.scanThis(theText)
-            isGood = self.theIndex.checkThese(theBits, tItem)
+            isValid, theBits, thePos = pIndex.scanThis(theText)
+            isGood = pIndex.checkThese(theBits, tItem)
             if isValid:
                 for n, theBit in enumerate(theBits):
                     xPos = thePos[n]

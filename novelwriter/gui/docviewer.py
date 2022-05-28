@@ -245,7 +245,7 @@ class GuiDocViewer(QTextBrowser):
         index being up to date.
         """
         logger.debug("Loading document from tag '%s'", theTag)
-        tHandle, _, sTitle = self.theParent.theIndex.getTagSource(theTag)
+        tHandle, _, sTitle = self.theProject.index.getTagSource(theTag)
         if tHandle is None:
             self.theParent.makeAlert(self.tr(
                 "Could not find the reference for tag '{0}'. It either doesn't "
@@ -1199,7 +1199,7 @@ class GuiDocViewDetails(QScrollArea):
         if self.theParent.docViewer.stickyRef:
             return
 
-        theRefs = self.theParent.theIndex.getBackReferenceList(tHandle)
+        theRefs = self.theProject.index.getBackReferenceList(tHandle)
         theList = []
         for tHandle in theRefs:
             tItem = self.theProject.projTree[tHandle]
