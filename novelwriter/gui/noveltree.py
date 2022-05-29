@@ -251,9 +251,7 @@ class GuiNovelTree(QTreeWidget):
         currChapter = None
         currScene = None
 
-        for tKey, tHandle, sTitle, novIdx in self.theProject.index.novelStructure(
-            skipExcluded=True
-        ):
+        for tKey, tHandle, sTitle, novIdx in self.theProject.index.novelStructure(skipExcl=True):
 
             tItem = self._createTreeItem(tHandle, sTitle, tKey, novIdx)
             self._treeMap[tKey] = tItem

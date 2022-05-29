@@ -48,7 +48,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     # Rebuild the index
     nwGUI.mainMenu.aRebuildIndex.activate(QAction.Trigger)
     assert nwGUI.theProject.index._tags != {}
-    assert nwGUI.theProject.index._items != {}
+    assert nwGUI.theProject.index._itemIndex._items != {}
 
     # Select a document in the project tree
     nwGUI.treeView.setSelectedHandle("88243afbe5ed8")

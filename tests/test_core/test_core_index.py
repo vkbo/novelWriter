@@ -69,19 +69,19 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
 
     # Take a copy of the index
     tagIndex = str(theIndex._tags)
-    itemsIndex = str({handle: item.packData() for handle, item in theIndex._items.items()})
+    itemsIndex = str(theIndex._itemIndex.packData())
 
     # Delete a handle
     assert theIndex._tags.get("Bod", None) is not None
-    assert theIndex._items.get("4c4f28287af27", None) is not None
+    assert theIndex._itemIndex["4c4f28287af27"] is not None
     theIndex.deleteHandle("4c4f28287af27")
     assert theIndex._tags.get("Bod", None) is None
-    assert theIndex._items.get("4c4f28287af27", None) is None
+    assert theIndex._itemIndex["4c4f28287af27"] is None
 
     # Clear the index
     theIndex.clearIndex()
     assert theIndex._tags == {}
-    assert theIndex._items == {}
+    assert theIndex._itemIndex._items == {}
 
     # Make the load fail
     with monkeypatch.context() as mp:
@@ -92,9 +92,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     assert theIndex.loadIndex() is True
 
     assert str(theIndex._tags) == tagIndex
-    assert str(
-        {handle: item.packData() for handle, item in theIndex._items.items()}
-    ) == itemsIndex
+    assert str(theIndex._itemIndex.packData()) == itemsIndex
 
     # Break the index and check that we notice
     # assert theIndex.indexBroken is False
@@ -328,40 +326,40 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
         "##### Title Five\n\n"  # Not interpreted as a title, the hashes are counted as a word
         "Paragraph Five.\n\n"
     ))
-    assert theIndex._items[nHandle]["T000001"].references == {}
-    assert theIndex._items[nHandle]["T000007"].references == {}
-    assert theIndex._items[nHandle]["T000013"].references == {}
-    assert theIndex._items[nHandle]["T000019"].references == {}
+    assert theIndex._itemIndex[nHandle]["T000001"].references == {}
+    assert theIndex._itemIndex[nHandle]["T000007"].references == {}
+    assert theIndex._itemIndex[nHandle]["T000013"].references == {}
+    assert theIndex._itemIndex[nHandle]["T000019"].references == {}
 
-    assert theIndex._items[nHandle]["T000001"].level == "H1"
-    assert theIndex._items[nHandle]["T000007"].level == "H2"
-    assert theIndex._items[nHandle]["T000013"].level == "H3"
-    assert theIndex._items[nHandle]["T000019"].level == "H4"
+    assert theIndex._itemIndex[nHandle]["T000001"].level == "H1"
+    assert theIndex._itemIndex[nHandle]["T000007"].level == "H2"
+    assert theIndex._itemIndex[nHandle]["T000013"].level == "H3"
+    assert theIndex._itemIndex[nHandle]["T000019"].level == "H4"
 
-    assert theIndex._items[nHandle]["T000001"].title == "Title One"
-    assert theIndex._items[nHandle]["T000007"].title == "Title Two"
-    assert theIndex._items[nHandle]["T000013"].title == "Title Three"
-    assert theIndex._items[nHandle]["T000019"].title == "Title Four"
+    assert theIndex._itemIndex[nHandle]["T000001"].title == "Title One"
+    assert theIndex._itemIndex[nHandle]["T000007"].title == "Title Two"
+    assert theIndex._itemIndex[nHandle]["T000013"].title == "Title Three"
+    assert theIndex._itemIndex[nHandle]["T000019"].title == "Title Four"
 
-    assert theIndex._items[nHandle]["T000001"].charCount == 23
-    assert theIndex._items[nHandle]["T000007"].charCount == 23
-    assert theIndex._items[nHandle]["T000013"].charCount == 27
-    assert theIndex._items[nHandle]["T000019"].charCount == 56
+    assert theIndex._itemIndex[nHandle]["T000001"].charCount == 23
+    assert theIndex._itemIndex[nHandle]["T000007"].charCount == 23
+    assert theIndex._itemIndex[nHandle]["T000013"].charCount == 27
+    assert theIndex._itemIndex[nHandle]["T000019"].charCount == 56
 
-    assert theIndex._items[nHandle]["T000001"].wordCount == 4
-    assert theIndex._items[nHandle]["T000007"].wordCount == 4
-    assert theIndex._items[nHandle]["T000013"].wordCount == 4
-    assert theIndex._items[nHandle]["T000019"].wordCount == 9
+    assert theIndex._itemIndex[nHandle]["T000001"].wordCount == 4
+    assert theIndex._itemIndex[nHandle]["T000007"].wordCount == 4
+    assert theIndex._itemIndex[nHandle]["T000013"].wordCount == 4
+    assert theIndex._itemIndex[nHandle]["T000019"].wordCount == 9
 
-    assert theIndex._items[nHandle]["T000001"].paraCount == 1
-    assert theIndex._items[nHandle]["T000007"].paraCount == 1
-    assert theIndex._items[nHandle]["T000013"].paraCount == 1
-    assert theIndex._items[nHandle]["T000019"].paraCount == 3
+    assert theIndex._itemIndex[nHandle]["T000001"].paraCount == 1
+    assert theIndex._itemIndex[nHandle]["T000007"].paraCount == 1
+    assert theIndex._itemIndex[nHandle]["T000013"].paraCount == 1
+    assert theIndex._itemIndex[nHandle]["T000019"].paraCount == 3
 
-    assert theIndex._items[nHandle]["T000001"].synopsis == "Synopsis One."
-    assert theIndex._items[nHandle]["T000007"].synopsis == "Synopsis Two."
-    assert theIndex._items[nHandle]["T000013"].synopsis == "Synopsis Three."
-    assert theIndex._items[nHandle]["T000019"].synopsis == "Synopsis Four."
+    assert theIndex._itemIndex[nHandle]["T000001"].synopsis == "Synopsis One."
+    assert theIndex._itemIndex[nHandle]["T000007"].synopsis == "Synopsis Two."
+    assert theIndex._itemIndex[nHandle]["T000013"].synopsis == "Synopsis Three."
+    assert theIndex._itemIndex[nHandle]["T000019"].synopsis == "Synopsis Four."
 
     # Note File
     assert theIndex.scanText(cHandle, (
@@ -370,13 +368,13 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
         "% synopsis: Synopsis One.\n\n"
         "Paragraph One.\n\n"
     ))
-    assert theIndex._items[cHandle]["T000001"].references == {}
-    assert theIndex._items[cHandle]["T000001"].level == "H1"
-    assert theIndex._items[cHandle]["T000001"].title == "Title One"
-    assert theIndex._items[cHandle]["T000001"].charCount == 23
-    assert theIndex._items[cHandle]["T000001"].wordCount == 4
-    assert theIndex._items[cHandle]["T000001"].paraCount == 1
-    assert theIndex._items[cHandle]["T000001"].synopsis == "Synopsis One."
+    assert theIndex._itemIndex[cHandle]["T000001"].references == {}
+    assert theIndex._itemIndex[cHandle]["T000001"].level == "H1"
+    assert theIndex._itemIndex[cHandle]["T000001"].title == "Title One"
+    assert theIndex._itemIndex[cHandle]["T000001"].charCount == 23
+    assert theIndex._itemIndex[cHandle]["T000001"].wordCount == 4
+    assert theIndex._itemIndex[cHandle]["T000001"].paraCount == 1
+    assert theIndex._itemIndex[cHandle]["T000001"].synopsis == "Synopsis One."
 
     # Valid and Invalid References
     assert theIndex.scanText(sHandle, (
@@ -387,7 +385,7 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
         "% synopsis: Synopsis One.\n\n"
         "Paragraph One.\n\n"
     ))
-    assert theIndex._items[sHandle]["T000001"].references == {
+    assert theIndex._itemIndex[sHandle]["T000001"].references == {
         "One": {"@pov"}, "Two": {"@char"}
     }
 
@@ -398,25 +396,25 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
         "#! My Project\n\n"
         ">> By Jane Doe <<\n\n"
     ))
-    assert theIndex._items[cHandle]["T000001"].references == {}
-    assert theIndex._items[tHandle]["T000001"].level == "H1"
-    assert theIndex._items[tHandle]["T000001"].title == "My Project"
-    assert theIndex._items[tHandle]["T000001"].charCount == 21
-    assert theIndex._items[tHandle]["T000001"].wordCount == 5
-    assert theIndex._items[tHandle]["T000001"].paraCount == 1
-    assert theIndex._items[tHandle]["T000001"].synopsis == ""
+    assert theIndex._itemIndex[cHandle]["T000001"].references == {}
+    assert theIndex._itemIndex[tHandle]["T000001"].level == "H1"
+    assert theIndex._itemIndex[tHandle]["T000001"].title == "My Project"
+    assert theIndex._itemIndex[tHandle]["T000001"].charCount == 21
+    assert theIndex._itemIndex[tHandle]["T000001"].wordCount == 5
+    assert theIndex._itemIndex[tHandle]["T000001"].paraCount == 1
+    assert theIndex._itemIndex[tHandle]["T000001"].synopsis == ""
 
     assert theIndex.scanText(tHandle, (
         "##! Prologue\n\n"
         "In the beginning there was time ...\n\n"
     ))
-    assert theIndex._items[cHandle]["T000001"].references == {}
-    assert theIndex._items[tHandle]["T000001"].level == "H2"
-    assert theIndex._items[tHandle]["T000001"].title == "Prologue"
-    assert theIndex._items[tHandle]["T000001"].charCount == 43
-    assert theIndex._items[tHandle]["T000001"].wordCount == 8
-    assert theIndex._items[tHandle]["T000001"].paraCount == 1
-    assert theIndex._items[tHandle]["T000001"].synopsis == ""
+    assert theIndex._itemIndex[cHandle]["T000001"].references == {}
+    assert theIndex._itemIndex[tHandle]["T000001"].level == "H2"
+    assert theIndex._itemIndex[tHandle]["T000001"].title == "Prologue"
+    assert theIndex._itemIndex[tHandle]["T000001"].charCount == 43
+    assert theIndex._itemIndex[tHandle]["T000001"].wordCount == 8
+    assert theIndex._itemIndex[tHandle]["T000001"].paraCount == 1
+    assert theIndex._itemIndex[tHandle]["T000001"].synopsis == ""
 
     # Page wo/Title
     # =============
@@ -425,25 +423,25 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))
-    assert theIndex._items[pHandle]["T000000"].references == {}
-    assert theIndex._items[pHandle]["T000000"].level == "H0"
-    assert theIndex._items[pHandle]["T000000"].title == ""
-    assert theIndex._items[pHandle]["T000000"].charCount == 36
-    assert theIndex._items[pHandle]["T000000"].wordCount == 9
-    assert theIndex._items[pHandle]["T000000"].paraCount == 1
-    assert theIndex._items[pHandle]["T000000"].synopsis == ""
+    assert theIndex._itemIndex[pHandle]["T000000"].references == {}
+    assert theIndex._itemIndex[pHandle]["T000000"].level == "H0"
+    assert theIndex._itemIndex[pHandle]["T000000"].title == ""
+    assert theIndex._itemIndex[pHandle]["T000000"].charCount == 36
+    assert theIndex._itemIndex[pHandle]["T000000"].wordCount == 9
+    assert theIndex._itemIndex[pHandle]["T000000"].paraCount == 1
+    assert theIndex._itemIndex[pHandle]["T000000"].synopsis == ""
 
     theProject.tree[pHandle]._layout = nwItemLayout.NOTE
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))
-    assert theIndex._items[pHandle]["T000000"].references == {}
-    assert theIndex._items[pHandle]["T000000"].level == "H0"
-    assert theIndex._items[pHandle]["T000000"].title == ""
-    assert theIndex._items[pHandle]["T000000"].charCount == 36
-    assert theIndex._items[pHandle]["T000000"].wordCount == 9
-    assert theIndex._items[pHandle]["T000000"].paraCount == 1
-    assert theIndex._items[pHandle]["T000000"].synopsis == ""
+    assert theIndex._itemIndex[pHandle]["T000000"].references == {}
+    assert theIndex._itemIndex[pHandle]["T000000"].level == "H0"
+    assert theIndex._itemIndex[pHandle]["T000000"].title == ""
+    assert theIndex._itemIndex[pHandle]["T000000"].charCount == 36
+    assert theIndex._itemIndex[pHandle]["T000000"].wordCount == 9
+    assert theIndex._itemIndex[pHandle]["T000000"].paraCount == 1
+    assert theIndex._itemIndex[pHandle]["T000000"].synopsis == ""
 
     assert theProject.closeProject() is True
 
@@ -488,13 +486,13 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     theProject.tree[nHandle].setExported(False)
 
     theKeys = []
-    for aKey, _, _, _ in theIndex.novelStructure(skipExcluded=False):
+    for aKey, _, _, _ in theIndex.novelStructure(skipExcl=False):
         theKeys.append(aKey)
 
     assert theKeys == ["%s:T000001" % nHandle]
 
     theKeys = []
-    for aKey, _, _, _ in theIndex.novelStructure(skipExcluded=True):
+    for aKey, _, _, _ in theIndex.novelStructure(skipExcl=True):
         theKeys.append(aKey)
 
     assert theKeys == []
@@ -625,12 +623,29 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     assert theIndex.scanText(sHandle, "### Scene One\n\n")
     assert theIndex.scanText(tHandle, "### Scene Two\n\n")
 
-    assert theIndex._listNovelHandles(False) == [nHandle, hHandle, sHandle, tHandle]
-    assert theIndex._listNovelHandles(True) == [hHandle, sHandle, tHandle]
+    assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=False)] == [
+        (nHandle, "T000001"),
+        (nHandle, "T000011"),
+        (hHandle, "T000001"),
+        (sHandle, "T000001"),
+        (tHandle, "T000001"),
+    ]
+
+    assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=True)] == [
+        (hHandle, "T000001"),
+        (sHandle, "T000001"),
+        (tHandle, "T000001"),
+    ]
 
     # Add a fake handle to the tree and check that it's ignored
     theProject.tree._treeOrder.append("0000000000000")
-    assert theIndex._listNovelHandles(False) == [nHandle, hHandle, sHandle, tHandle]
+    assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=False)] == [
+        (nHandle, "T000001"),
+        (nHandle, "T000011"),
+        (hHandle, "T000001"),
+        (sHandle, "T000001"),
+        (tHandle, "T000001"),
+    ]
     theProject.tree._treeOrder.remove("0000000000000")
 
     # Extract stats

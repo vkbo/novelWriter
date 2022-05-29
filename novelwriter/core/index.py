@@ -4,8 +4,9 @@ novelWriter – Project Index
 Data class for the project index of tags, headers and references
 
 File History:
-Created: 2019-04-22 [0.0.1] countWords
-Created: 2019-05-27 [0.1.4] NWIndex
+Created: 2019-04-22 [0.0.1]  countWords
+Created: 2019-05-27 [0.1.4]  NWIndex
+Created: 2022-05-28 [1.7rc1] IndexItem, IndexHeading
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -56,7 +57,7 @@ class NWIndex():
 
         # Indices
         self._tags = {}
-        self._items = {}
+        self._itemIndex = ItemIndex(theProject)
 
         # TimeStamps
         self._timeNovel = 0
@@ -64,6 +65,10 @@ class NWIndex():
         self._timeIndex = 0
 
         return
+
+    ##
+    #  Properties
+    ##
 
     @property
     def indexBroken(self):
@@ -77,7 +82,7 @@ class NWIndex():
         """Clear the index dictionaries and time stamps.
         """
         self._tags = {}
-        self._items = {}
+        self._itemIndex.clear()
         self._timeNovel = 0
         self._timeNotes = 0
         self._timeIndex = 0
@@ -86,13 +91,11 @@ class NWIndex():
     def deleteHandle(self, tHandle):
         """Delete all entries of a given document handle.
         """
-        if tHandle not in self._items:
-            return
-
         logger.debug("Removing item '%s' from the index", tHandle)
-        for tTag in self._items[tHandle].allTags():
+        for tTag in self._itemIndex.allItemTags(tHandle):
             self._tags.pop(tTag, None)
-        self._items.pop(tHandle, None)
+
+        del self._itemIndex[tHandle]
 
         return
 
@@ -150,7 +153,7 @@ class NWIndex():
 
             try:
                 self._validateTagsIndex(theData["tagsIndex"])
-                self._validateItemIndex(theData["itemIndex"])
+                self._itemIndex.unpackData(theData["itemIndex"])
             except Exception:
                 logger.error("The index content is invalid")
                 logException()
@@ -161,7 +164,7 @@ class NWIndex():
 
         # Check that all files are indexed
         for fHandle in self.theProject.projFiles:
-            if fHandle not in self._items:
+            if fHandle not in self._itemIndex:
                 logger.warning("Item '%s' is not in the index", fHandle)
                 self.reIndexHandle(fHandle)
 
@@ -183,11 +186,11 @@ class NWIndex():
         tStart = time()
 
         try:
-            itemsIndex = {handle: item.packData() for handle, item in self._items.items()}
+            itemIndex = self._itemIndex.packData()
             with open(indexFile, mode="w+", encoding="utf-8") as outFile:
                 outFile.write("{\n")
                 outFile.write(f'  "tagsIndex": {jsonEncode(self._tags, n=1, nmax=2)},\n')
-                outFile.write(f'  "itemIndex": {jsonEncode(itemsIndex, n=1, nmax=4)}\n')
+                outFile.write(f'  "itemIndex": {jsonEncode(itemIndex, n=1, nmax=4)}\n')
                 outFile.write("}\n")
 
         except Exception:
@@ -220,7 +223,7 @@ class NWIndex():
 
         # Delete the old entry and create a new
         self.deleteHandle(tHandle)
-        self._items[tHandle] = IndexItem(tHandle, theItem)
+        self._itemIndex.add(tHandle, theItem)
 
         # Run word counter for the whole text
         cC, wC, pC = countWords(theText)
@@ -240,9 +243,6 @@ class NWIndex():
             logger.debug("Not indexing inactive item '%s'", tHandle)
             return False
 
-        itemClass  = theItem.itemClass
-        itemLayout = theItem.itemLayout
-
         logger.debug("Indexing item with handle '%s'", tHandle)
 
         # Scan the text content
@@ -261,7 +261,7 @@ class NWIndex():
                     nTitle = nLine
 
             elif aLine.startswith("@"):
-                self._indexKeyword(tHandle, aLine, nTitle, itemClass)
+                self._indexKeyword(tHandle, aLine, nTitle, theItem.itemClass)
 
             elif aLine.startswith("%"):
                 if nTitle > 0:
@@ -285,7 +285,7 @@ class NWIndex():
         # Update timestamps for index changes
         nowTime = round(time())
         self._timeIndex = nowTime
-        if itemLayout == nwItemLayout.NOTE:
+        if theItem.itemLayout == nwItemLayout.NOTE:
             self._timeNotes = nowTime
         else:
             self._timeNovel = nowTime
@@ -296,7 +296,7 @@ class NWIndex():
     #  Internal Indexers
     ##
 
-    def _indexTitle(self, tHandle, aLine, nLine):
+    def _indexTitle(self, tHandle, aLine, nTitle):
         """Save information about the title and its location in the
         file to the index.
         """
@@ -321,28 +321,24 @@ class NWIndex():
         else:
             return False
 
-        sTitle = f"T{nLine:06d}"
-        tItem = self._items[tHandle]
-        tItem.updateLevel(hDepth)
-        tItem.addHeading(IndexHeading(sTitle, hDepth, hText))
+        sTitle = f"T{nTitle:06d}"
+        self._itemIndex.addItemHeading(tHandle, sTitle, hDepth, hText)
 
         return True
 
     def _indexWordCounts(self, tHandle, theText, nTitle):
         """Count text stats and save the counts to the index.
         """
-        cC, wC, pC = countWords(theText)
         sTitle = f"T{nTitle:06d}"
-        if tHandle in self._items:
-            self._items[tHandle].setHeadingCounts(sTitle, cC, wC, pC)
+        cC, wC, pC = countWords(theText)
+        self._itemIndex.setHeadingCounts(tHandle, sTitle,  cC, wC, pC)
         return
 
     def _indexSynopsis(self, tHandle, theText, nTitle):
         """Save the synopsis to the index.
         """
         sTitle = f"T{nTitle:06d}"
-        if tHandle in self._items:
-            self._items[tHandle].setHeadingSynopsis(sTitle, theText)
+        self._itemIndex.setHeadingSynopsis(tHandle, sTitle, theText)
         return
 
     def _indexKeyword(self, tHandle, aLine, nTitle, itemClass):
@@ -365,9 +361,9 @@ class NWIndex():
                 "heading": sTitle,
                 "class": itemClass.name,
             }
-            self._items[tHandle].setHeadingTag(sTitle, theBits[1])
+            self._itemIndex.setHeadingTag(tHandle, sTitle, theBits[1])
         else:
-            self._items[tHandle].addHeadingReferences(sTitle, theBits[1:], theBits[0])
+            self._itemIndex.addHeadingReferences(tHandle, sTitle, theBits[1:], theBits[0])
 
         return
 
@@ -447,35 +443,31 @@ class NWIndex():
     #  Extract Data
     ##
 
-    def novelStructure(self, skipExcluded=True):
+    def novelStructure(self, skipExcl=True):
         """Iterate over all titles in the novel, in the correct order as
         they appear in the tree view and in the respective document
         files, but skipping all note files.
         """
-        for tHandle in self._listNovelHandles(skipExcluded):
-            for sTitle in self._items[tHandle].headings:
-                tKey = f"{tHandle}:{sTitle}"
-                yield tKey, tHandle, sTitle, self._items[tHandle][sTitle]
+        for tHandle, sTitle, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
+            tKey = f"{tHandle}:{sTitle}"
+            yield tKey, tHandle, sTitle, hItem
+        return
 
-    def getNovelWordCount(self, skipExcluded=True):
+    def getNovelWordCount(self, skipExcl=True):
         """Count the number of words in the novel project.
         """
         wCount = 0
-        for tHandle in self._listNovelHandles(skipExcluded):
-            for hItem in self._items[tHandle].entries:
-                wCount += hItem.wordCount
-
+        for _, _, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
+            wCount += hItem.wordCount
         return wCount
 
-    def getNovelTitleCounts(self, skipExcluded=True):
+    def getNovelTitleCounts(self, skipExcl=True):
         """Count the number of titles in the novel project.
         """
         hCount = [0, 0, 0, 0, 0]
-        for tHandle in self._listNovelHandles(skipExcluded):
-            for hItem in self._items[tHandle].entries:
-                iLevel = H_LEVEL.get(hItem.level, 0)
-                hCount[iLevel] += 1
-
+        for _, _, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
+            iLevel = H_LEVEL.get(hItem.level, 0)
+            hCount[iLevel] += 1
         return hCount
 
     def getHandleWordCounts(self, tHandle):
@@ -483,7 +475,7 @@ class NWIndex():
         """
         return [
             (f"{tHandle}:{sTitle}", hItem.wordCount)
-            for sTitle, hItem in self._items.get(tHandle, {}).items()
+            for sTitle, hItem in self._itemIndex.iterItemHeaders(tHandle)
         ]
 
     def getHandleHeaders(self, tHandle):
@@ -491,39 +483,34 @@ class NWIndex():
         """
         return [
             (sTitle, hItem.level, hItem.title)
-            for sTitle, hItem in self._items.get(tHandle, {}).items()
+            for sTitle, hItem in self._itemIndex.iterItemHeaders(tHandle)
         ]
 
     def getHandleHeaderLevel(self, tHandle):
         """Get the header level of the first header of a handle.
         """
-        if tHandle in self._items:
-            return self._items[tHandle].level
-        else:
-            return "H0"
+        return self._itemIndex.mainItemHeader(tHandle)
 
-    def getTableOfContents(self, maxDepth, skipExcluded=True):
+    def getTableOfContents(self, maxDepth, skipExcl=True):
         """Generate a table of contents up to a maximum depth.
         """
         tOrder = []
         tData = {}
         pKey = None
-        for tHandle in self._listNovelHandles(skipExcluded):
-            for sTitle in self._items[tHandle].headings:
-                tKey = f"{tHandle}:{sTitle}"
-                hItem = self._items[tHandle][sTitle]
-                iLevel = H_LEVEL.get(hItem.level, 0)
-                if iLevel > maxDepth:
-                    if pKey in tData:
-                        tData[pKey]["words"] += hItem.wordCount
-                else:
-                    pKey = tKey
-                    tOrder.append(tKey)
-                    tData[tKey] = {
-                        "level": iLevel,
-                        "title": hItem.title,
-                        "words": hItem.wordCount,
-                    }
+        for tHandle, sTitle, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
+            tKey = f"{tHandle}:{sTitle}"
+            iLevel = H_LEVEL.get(hItem.level, 0)
+            if iLevel > maxDepth:
+                if pKey in tData:
+                    tData[pKey]["words"] += hItem.wordCount
+            else:
+                pKey = tKey
+                tOrder.append(tKey)
+                tData[tKey] = {
+                    "level": iLevel,
+                    "title": hItem.title,
+                    "words": hItem.wordCount,
+                }
 
         theToC = [(
             tKey,
@@ -538,35 +525,26 @@ class NWIndex():
         """Return the counts for a file, or a section of a file,
         starting at title sTitle if it is provided.
         """
-        cC = 0
-        wC = 0
-        pC = 0
+        tItem = self._itemIndex[tHandle]
+        if tItem is None:
+            return 0, 0, 0
 
         if sTitle is None:
-            if tHandle in self._items:
-                tItem = self._items[tHandle].item
-                cC = tItem.charCount
-                wC = tItem.wordCount
-                pC = tItem.paraCount
+            cItem = tItem.item
         else:
-            if tHandle in self._items:
-                if sTitle in self._items[tHandle]:
-                    hItem = self._items[tHandle][sTitle]
-                    cC = hItem.charCount
-                    wC = hItem.wordCount
-                    pC = hItem.paraCount
+            cItem = tItem[sTitle]
 
-        return cC, wC, pC
+        if cItem is not None:
+            return cItem.charCount, cItem.wordCount, cItem.paraCount
+
+        return 0, 0, 0
 
     def getReferences(self, tHandle, sTitle=None):
         """Extract all references made in a file, and optionally title
         section.
         """
         theRefs = {x: [] for x in nwKeyWords.KEY_CLASS}
-        if tHandle not in self._items:
-            return theRefs
-
-        for rTitle, hItem in self._items[tHandle].items():
+        for rTitle, hItem in self._itemIndex.iterItemHeaders(tHandle):
             if sTitle is None or sTitle == rTitle:
                 for aTag, refTypes in hItem.references.items():
                     for refType in refTypes:
@@ -578,28 +556,26 @@ class NWIndex():
     def getNovelData(self, tHandle, sTitle):
         """Return the novel data of a given handle and title.
         """
-        if tHandle in self._items:
-            if sTitle in self._items[tHandle]:
-                return self._items[tHandle][sTitle]
+        if tHandle in self._itemIndex:
+            return self._itemIndex[tHandle][sTitle]
         return None
 
     def getBackReferenceList(self, tHandle):
         """Build a list of files referring back to our file, specified
         by tHandle.
         """
-        if tHandle is None or tHandle not in self._items:
+        if tHandle is None or tHandle not in self._itemIndex:
             return {}
 
         theRefs = {}
-        theTags = self._items[tHandle].allTags()
+        theTags = self._itemIndex.allItemTags(tHandle)
         if not theTags:
             return theRefs
 
-        for aHandle, tItem in self._items.items():
-            for sTitle, hItem in tItem.items():
-                for aTag in hItem.references:
-                    if aTag in theTags and aHandle not in theRefs:
-                        theRefs[aHandle] = sTitle
+        for aHandle, sTitle, hItem in self._itemIndex.iterAllHeaders():
+            for aTag in hItem.references:
+                if aTag in theTags and aHandle not in theRefs:
+                    theRefs[aHandle] = sTitle
 
         return theRefs
 
@@ -612,22 +588,6 @@ class NWIndex():
     ##
     #  Internal Functions
     ##
-
-    def _listNovelHandles(self, skipExcluded):
-        """Return a list of all handles that exist in the novel index.
-        """
-        theHandles = []
-        for tItem in self.theProject.tree:
-            if tItem is None:
-                continue
-            if not tItem.isExported and skipExcluded:
-                continue
-            if tItem.itemLayout == nwItemLayout.NOTE:
-                continue
-            if tItem.itemHandle in self._items:
-                theHandles.append(tItem.itemHandle)
-
-        return theHandles
 
     def _validateTagsIndex(self, tagsIndex):
         """Iterate through the tagsIndex loaded from cache and check
@@ -657,15 +617,172 @@ class NWIndex():
 
         return
 
-    def _validateItemIndex(self, itemIndex):
-        """Iterate through the itemIndex loaded from cache and check
-        that it's valid.
+# END Class NWIndex
+
+
+# =============================================================================================== #
+#  Indexer Objects
+# =============================================================================================== #
+
+class ItemIndex:
+    """A wrapper object holding the indexed items.
+    """
+
+    def __init__(self, theProject):
+        self.theProject = theProject
+        self._items = {}
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def clear(self):
+        """Clear the index.
         """
         self._items = {}
-        if not isinstance(itemIndex, dict):
+        return
+
+    def __contains__(self, tHandle):
+        """Check if an item exists in the index,
+        """
+        return tHandle in self._items
+
+    def __delitem__(self, tHandle):
+        """Delete an entry in the index.
+        """
+        self._items.pop(tHandle, None)
+        return
+
+    def __getitem__(self, tHandle):
+        """Return an item, or return None if it isn't found.
+        """
+        return self._items.get(tHandle, None)
+
+    def add(self, tHandle, tItem):
+        """Add a new item to the index. This will overwrite the item if
+        it already exists.
+        """
+        self._items[tHandle] = IndexItem(tHandle, tItem)
+        return
+
+    def mainItemHeader(self, tHandle):
+        """Return the primary item header for an item.
+        """
+        if tHandle in self._items:
+            return self._items[tHandle].level
+        return "H0"
+
+    def allItemTags(self, tHandle):
+        """Get all tags set for headings of an item.
+        """
+        if tHandle in self._items:
+            return self._items[tHandle].allTags()
+        return []
+
+    def iterItemHeaders(self, tHandle):
+        """Iterate over all item headers of an item.
+        """
+        if tHandle in self._items:
+            for sTitle, hItem in self._items[tHandle].items():
+                yield sTitle, hItem
+        return
+
+    def iterAllHeaders(self):
+        """Iterate through all items and headings in the index.
+        """
+        for tHandle, tItem in self._items.items():
+            for sTitle, hItem in tItem.items():
+                yield tHandle, sTitle, hItem
+        return
+
+    def iterNovelStructure(self, rootHandle=None, skipExcl=False):
+        """Iterate over all items and headers in the novel structure for
+        a given root handle, or for all if root handle is None.
+        """
+        for tItem in self.theProject.tree:
+            if tItem is None:
+                continue
+            if tItem.itemLayout == nwItemLayout.NOTE:
+                continue
+            if skipExcl and not tItem.isExported:
+                continue
+
+            tHandle = tItem.itemHandle
+            if tHandle not in self._items:
+                continue
+
+            if rootHandle is None:
+                for sTitle, hItem in self._items[tHandle].items():
+                    yield tHandle, sTitle, hItem
+            elif tItem.rootHandle == rootHandle:
+                for sTitle, hItem in self._items[tHandle].items():
+                    yield tHandle, sTitle, hItem
+            else:
+                continue
+
+        return
+
+    ##
+    #  Setters
+    ##
+
+    def addItemHeading(self, tHandle, sTitle, hDepth, hText):
+        """Set the main heading level of an item.
+        """
+        if tHandle in self._items:
+            tItem = self._items[tHandle]
+            tItem.updateLevel(hDepth)
+            tItem.addHeading(IndexHeading(sTitle, hDepth, hText))
+        return
+
+    def setHeadingCounts(self, tHandle, sTitle, cC, wC, pC):
+        """Set the character, word and paragraph counts of a heading
+        on a given item.
+        """
+        if tHandle in self._items:
+            self._items[tHandle].setHeadingCounts(sTitle, cC, wC, pC)
+        return
+
+    def setHeadingSynopsis(self, tHandle, sTitle, sText):
+        """Set the synopsis text for a heading on a given item.
+        """
+        if tHandle in self._items:
+            self._items[tHandle].setHeadingSynopsis(sTitle, sText)
+        return
+
+    def setHeadingTag(self, tHandle, sTitle, tagKey):
+        """Set the main tag for a heading on a given item.
+        """
+        if tHandle in self._items:
+            self._items[tHandle].setHeadingTag(sTitle, tagKey)
+        return
+
+    def addHeadingReferences(self, tHandle, sTitle, tagKeys, refType):
+        """Set the reference tags for a heading on a given item.
+        """
+        if tHandle in self._items:
+            self._items[tHandle].addHeadingReferences(sTitle, tagKeys, refType)
+        return
+
+    ##
+    #  Pack/Unpack
+    ##
+
+    def packData(self):
+        """Pack all the data of the index into a single dictionary.
+        """
+        return {handle: item.packData() for handle, item in self._items.items()}
+
+    def unpackData(self, data):
+        """Iterate through the itemIndex loaded from cache and check
+        that it's valid. This will raise errors if there is a problem.
+        """
+        self._items = {}
+        if not isinstance(data, dict):
             raise ValueError("itemIndex is not a dict")
 
-        for tHandle, tData in itemIndex.items():
+        for tHandle, tData in data.items():
             if not isHandle(tHandle):
                 raise ValueError("itemIndex keys must be handles")
 
@@ -677,100 +794,14 @@ class NWIndex():
 
         return
 
-# END Class NWIndex
+# END Class ItemIndex
 
-
-# =============================================================================================== #
-#  Simple Word Counter
-# =============================================================================================== #
-
-def countWords(theText):
-    """Count words in a piece of text, skipping special syntax and
-    comments.
-    """
-    charCount = 0
-    wordCount = 0
-    paraCount = 0
-    prevEmpty = True
-
-    if not isinstance(theText, str):
-        return charCount, wordCount, paraCount
-
-    # We need to treat dashes as word separators for counting words.
-    # The check+replace approach is much faster than direct replace for
-    # large texts, and a bit slower for small texts, but in the latter
-    # case it doesn't really matter.
-    if nwUnicode.U_ENDASH in theText:
-        theText = theText.replace(nwUnicode.U_ENDASH, " ")
-    if nwUnicode.U_EMDASH in theText:
-        theText = theText.replace(nwUnicode.U_EMDASH, " ")
-
-    for aLine in theText.splitlines():
-
-        countPara = True
-
-        if not aLine:
-            prevEmpty = True
-            continue
-        if aLine[0] == "@" or aLine[0] == "%":
-            continue
-
-        if aLine[0] == "[":
-            if aLine.startswith(("[NEWPAGE]", "[NEW PAGE]", "[VSPACE]")):
-                continue
-            elif aLine.startswith("[VSPACE:") and aLine.endswith("]"):
-                continue
-
-        elif aLine[0] == "#":
-            if aLine[:5] == "#### ":
-                aLine = aLine[5:]
-                countPara = False
-            elif aLine[:4] == "### ":
-                aLine = aLine[4:]
-                countPara = False
-            elif aLine[:3] == "## ":
-                aLine = aLine[3:]
-                countPara = False
-            elif aLine[:2] == "# ":
-                aLine = aLine[2:]
-                countPara = False
-            elif aLine[:3] == "#! ":
-                aLine = aLine[3:]
-                countPara = False
-            elif aLine[:4] == "##! ":
-                aLine = aLine[4:]
-                countPara = False
-
-        elif aLine[0] == ">" or aLine[-1] == "<":
-            if aLine[:2] == ">>":
-                aLine = aLine[2:].lstrip(" ")
-            elif aLine[:1] == ">":
-                aLine = aLine[1:].lstrip(" ")
-            if aLine[-2:] == "<<":
-                aLine = aLine[:-2].rstrip(" ")
-            elif aLine[-1:] == "<":
-                aLine = aLine[:-1].rstrip(" ")
-
-        wordCount += len(aLine.split())
-        charCount += len(aLine)
-        if countPara and prevEmpty:
-            paraCount += 1
-
-        prevEmpty = not countPara
-
-    return charCount, wordCount, paraCount
-
-
-# =============================================================================================== #
-#  Indexer Objects
-# =============================================================================================== #
 
 class IndexItem:
 
     def __init__(self, tHandle, tItem):
         self._handle = tHandle
         self._item = tItem
-
         self._level = "H0"
         self._headings = {}
         self._index = 0
@@ -779,6 +810,9 @@ class IndexItem:
         self._headings[H_NONE] = IndexHeading(H_NONE)
 
         return
+
+    def __repr__(self):
+        return f"<IndexItem handle={self._handle}>"
 
     ##
     # Properties
@@ -792,47 +826,50 @@ class IndexItem:
     def level(self):
         return self._level
 
-    @property
-    def headings(self):
-        return sorted(self._headings.keys())
-
-    @property
-    def entries(self):
-        return self._headings.values()
-
     ##
     #  Setters
     ##
 
     def updateLevel(self, level):
-        """Set the level only if it is H0.
+        """Set the level only if it has not already been set.
         """
         if self._level == "H0":
             self._level = level
         return
 
     def addHeading(self, tHeading):
+        """Add a heading to the item. Also remove the placeholder entry
+        if it exists.
+        """
         if H_NONE in self._headings:
             self._headings.pop(H_NONE)
         self._headings[tHeading.key] = tHeading
         return
 
     def setHeadingCounts(self, sTitle, charCount, wordCount, paraCount):
+        """Set the character, word and paragraph count of a heading.
+        """
         if sTitle in self._headings:
             self._headings[sTitle].setCounts(charCount, wordCount, paraCount)
         return
 
     def setHeadingSynopsis(self, sTitle, synopText):
+        """Set the synopsis text of a heading.
+        """
         if sTitle in self._headings:
             self._headings[sTitle].setSynopsis(synopText)
         return
 
     def setHeadingTag(self, sTitle, tagKey):
+        """Set the tag of a heading.
+        """
         if sTitle in self._headings:
             self._headings[sTitle].setTag(tagKey)
         return
 
     def addHeadingReferences(self, sTitle, tagKeys, refType):
+        """Add a reference key and all its types to a heading.
+        """
         if sTitle in self._headings:
             for tagKey in tagKeys:
                 self._headings[sTitle].addReference(tagKey, refType)
@@ -917,6 +954,9 @@ class IndexHeading:
 
         return
 
+    def __repr__(self):
+        return f"<IndexHeading key={self._key}>"
+
     ##
     #  Properties
     ##
@@ -962,21 +1002,30 @@ class IndexHeading:
     ##
 
     def setLevel(self, level):
+        """Set the level of the header if it's a valid value.
+        """
         if level in H_VALID:
             self._level = level
         return
 
     def setCounts(self, charCount, wordCount, paraCount):
+        """Set the character, word and paragraph count. Make sure the
+        value is an integer and is not smaller than 0.
+        """
         self._charCount = max(0, checkInt(charCount, 0))
         self._wordCount = max(0, checkInt(wordCount, 0))
         self._paraCount = max(0, checkInt(paraCount, 0))
         return
 
     def setSynopsis(self, synopText):
+        """Set the synopsis text and make sure it is a string.
+        """
         self._synopsis = str(synopText)
         return
 
     def setTag(self, tagKey):
+        """Set the tag for references, and make sure it is a string.
+        """
         self._tag = str(tagKey)
         return
 
@@ -1041,3 +1090,84 @@ class IndexHeading:
         return
 
 # END Class IndexHeading
+
+
+# =============================================================================================== #
+#  Simple Word Counter
+# =============================================================================================== #
+
+def countWords(theText):
+    """Count words in a piece of text, skipping special syntax and
+    comments.
+    """
+    charCount = 0
+    wordCount = 0
+    paraCount = 0
+    prevEmpty = True
+
+    if not isinstance(theText, str):
+        return charCount, wordCount, paraCount
+
+    # We need to treat dashes as word separators for counting words.
+    # The check+replace approach is much faster than direct replace for
+    # large texts, and a bit slower for small texts, but in the latter
+    # case it doesn't really matter.
+    if nwUnicode.U_ENDASH in theText:
+        theText = theText.replace(nwUnicode.U_ENDASH, " ")
+    if nwUnicode.U_EMDASH in theText:
+        theText = theText.replace(nwUnicode.U_EMDASH, " ")
+
+    for aLine in theText.splitlines():
+
+        countPara = True
+
+        if not aLine:
+            prevEmpty = True
+            continue
+        if aLine[0] == "@" or aLine[0] == "%":
+            continue
+
+        if aLine[0] == "[":
+            if aLine.startswith(("[NEWPAGE]", "[NEW PAGE]", "[VSPACE]")):
+                continue
+            elif aLine.startswith("[VSPACE:") and aLine.endswith("]"):
+                continue
+
+        elif aLine[0] == "#":
+            if aLine[:5] == "#### ":
+                aLine = aLine[5:]
+                countPara = False
+            elif aLine[:4] == "### ":
+                aLine = aLine[4:]
+                countPara = False
+            elif aLine[:3] == "## ":
+                aLine = aLine[3:]
+                countPara = False
+            elif aLine[:2] == "# ":
+                aLine = aLine[2:]
+                countPara = False
+            elif aLine[:3] == "#! ":
+                aLine = aLine[3:]
+                countPara = False
+            elif aLine[:4] == "##! ":
+                aLine = aLine[4:]
+                countPara = False
+
+        elif aLine[0] == ">" or aLine[-1] == "<":
+            if aLine[:2] == ">>":
+                aLine = aLine[2:].lstrip(" ")
+            elif aLine[:1] == ">":
+                aLine = aLine[1:].lstrip(" ")
+            if aLine[-2:] == "<<":
+                aLine = aLine[:-2].rstrip(" ")
+            elif aLine[-1:] == "<":
+                aLine = aLine[:-1].rstrip(" ")
+
+        wordCount += len(aLine.split())
+        charCount += len(aLine)
+        if countPara and prevEmpty:
+            paraCount += 1
+
+        prevEmpty = not countPara
+
+    return charCount, wordCount, paraCount

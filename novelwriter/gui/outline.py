@@ -389,7 +389,7 @@ class GuiOutline(QTreeWidget):
         currChapter = None
         currScene = None
 
-        for _, tHandle, sTitle, novIdx in self.theProject.index.novelStructure(skipExcluded=True):
+        for _, tHandle, sTitle, novIdx in self.theProject.index.novelStructure(skipExcl=True):
 
             tItem = self._createTreeItem(tHandle, sTitle, novIdx)
 
