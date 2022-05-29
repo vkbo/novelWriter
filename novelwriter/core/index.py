@@ -56,7 +56,7 @@ class NWIndex():
         self._indexBroken = False
 
         # Indices
-        self._tags = {}
+        self._tagsIndex = TagsIndex()
         self._itemIndex = ItemIndex(theProject)
 
         # TimeStamps
@@ -81,7 +81,7 @@ class NWIndex():
     def clearIndex(self):
         """Clear the index dictionaries and time stamps.
         """
-        self._tags = {}
+        self._tagsIndex.clear()
         self._itemIndex.clear()
         self._timeNovel = 0
         self._timeNotes = 0
@@ -93,7 +93,7 @@ class NWIndex():
         """
         logger.debug("Removing item '%s' from the index", tHandle)
         for tTag in self._itemIndex.allItemTags(tHandle):
-            self._tags.pop(tTag, None)
+            del self._tagsIndex[tTag]
 
         del self._itemIndex[tHandle]
 
@@ -152,7 +152,7 @@ class NWIndex():
                 return False
 
             try:
-                self._validateTagsIndex(theData["tagsIndex"])
+                self._tagsIndex.unpackData(theData["tagsIndex"])
                 self._itemIndex.unpackData(theData["itemIndex"])
             except Exception:
                 logger.error("The index content is invalid")
@@ -186,10 +186,11 @@ class NWIndex():
         tStart = time()
 
         try:
+            tagsIndex = self._tagsIndex.packData()
             itemIndex = self._itemIndex.packData()
             with open(indexFile, mode="w+", encoding="utf-8") as outFile:
                 outFile.write("{\n")
-                outFile.write(f'  "tagsIndex": {jsonEncode(self._tags, n=1, nmax=2)},\n')
+                outFile.write(f'  "tagsIndex": {jsonEncode(tagsIndex, n=1, nmax=2)},\n')
                 outFile.write(f'  "itemIndex": {jsonEncode(itemIndex, n=1, nmax=4)}\n')
                 outFile.write("}\n")
 
@@ -356,11 +357,7 @@ class NWIndex():
 
         sTitle = f"T{nTitle:06d}"
         if theBits[0] == nwKeyWords.TAG_KEY:
-            self._tags[theBits[1]] = {
-                "handle": tHandle,
-                "heading": sTitle,
-                "class": itemClass.name,
-            }
+            self._tagsIndex.add(theBits[1], tHandle, sTitle, itemClass)
             self._itemIndex.setHeadingTag(tHandle, sTitle, theBits[1])
         else:
             self._itemIndex.addHeadingReferences(tHandle, sTitle, theBits[1:], theBits[0])
@@ -425,8 +422,8 @@ class NWIndex():
 
         # For a tag, only the first value is accepted, the rest are ignored
         if theBits[0] == nwKeyWords.TAG_KEY and nBits > 1:
-            if theBits[1] in self._tags:
-                isGood[1] = self._tags[theBits[1]].get("handle") == tItem.itemHandle
+            if theBits[1] in self._tagsIndex:
+                isGood[1] = self._tagsIndex.tagHandle(theBits[1]) == tItem.itemHandle
             else:
                 isGood[1] = True
             return isGood
@@ -434,8 +431,8 @@ class NWIndex():
         # If we're still here, we check that the references exist
         theKey = nwKeyWords.KEY_CLASS[theBits[0]].name
         for n in range(1, nBits):
-            if theBits[n] in self._tags:
-                isGood[n] = theKey == self._tags[theBits[n]].get("class")
+            if theBits[n] in self._tagsIndex:
+                isGood[n] = self._tagsIndex.tagClass(theBits[n]) == theKey
 
         return isGood
 
@@ -582,22 +579,98 @@ class NWIndex():
     def getTagSource(self, theTag):
         """Return the source location of a given tag.
         """
-        ref = self._tags.get(theTag, {})
-        return ref.get("handle"), ref.get("heading", H_NONE)
+        tHandle = self._tagsIndex.tagHandle(theTag)
+        sTitle = self._tagsIndex.tagHeading(theTag)
+        return tHandle, sTitle
+
+# END Class NWIndex
+
+
+# =============================================================================================== #
+#  Indexer Objects
+# =============================================================================================== #
+
+class TagsIndex:
+    """A wrapper class that holds the reverse lookup tags index.
+    """
+
+    def __init__(self):
+        self._tags = {}
+        return
 
     ##
-    #  Internal Functions
+    #  Methods
     ##
 
-    def _validateTagsIndex(self, tagsIndex):
+    def clear(self):
+        """Clear the index.
+        """
+        self._tags = {}
+        return
+
+    def __contains__(self, tagKey):
+        """Check if a tag exists in the index,
+        """
+        return tagKey in self._tags
+
+    def __delitem__(self, tagKey):
+        """Delete an entry in the index.
+        """
+        self._tags.pop(tagKey, None)
+        return
+
+    def __getitem__(self, tagKey):
+        """Return a tag, or return None if it isn't found.
+        """
+        return self._tags.get(tagKey, None)
+
+    def add(self, tagKey, tHandle, sTitle, itemClass):
+        """Add a key to the index and set all values.
+        """
+        self._tags[tagKey] = {
+            "handle": tHandle, "heading": sTitle, "class": itemClass.name
+        }
+        return
+
+    def tagHandle(self, tagKey):
+        """Get the handle of a given tag.
+        """
+        if tagKey in self._tags:
+            return self._tags.get(tagKey).get("handle")
+        return None
+
+    def tagHeading(self, tagKey):
+        """Get the heading of a given tag.
+        """
+        if tagKey in self._tags:
+            return self._tags.get(tagKey).get("heading")
+        return H_NONE
+
+    def tagClass(self, tagKey):
+        """Get the class of a given tag.
+        """
+        if tagKey in self._tags:
+            return self._tags.get(tagKey).get("class")
+        return None
+
+    ##
+    #  Pack/Unpack
+    ##
+
+    def packData(self):
+        """Pack all the data of the tags into a single dictionary.
+        """
+        return self._tags
+
+    def unpackData(self, data):
         """Iterate through the tagsIndex loaded from cache and check
         that it's valid.
         """
         self._tags = {}
-        if not isinstance(tagsIndex, dict):
+        if not isinstance(data, dict):
             raise ValueError("tagsIndex is not a dict")
 
-        for tagKey, tagData in tagsIndex.items():
+        for tagKey, tagData in data.items():
             if not isinstance(tagKey, str):
                 raise ValueError("tagsIndex keys must be a strings")
             if "handle" not in tagData:
@@ -613,16 +686,12 @@ class NWIndex():
             if not isItemClass(tagData["class"]):
                 raise ValueError("tagsIndex handle must be an nwItemClass")
 
-        self._tags = tagsIndex
+        self._tags = data
 
         return
 
-# END Class NWIndex
+# END Class TagsIndex
 
-
-# =============================================================================================== #
-#  Indexer Objects
-# =============================================================================================== #
 
 class ItemIndex:
     """A wrapper object holding the indexed items.

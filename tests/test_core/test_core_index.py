@@ -68,19 +68,19 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     assert theIndex.saveIndex() is True
 
     # Take a copy of the index
-    tagIndex = str(theIndex._tags)
+    tagIndex = str(theIndex._tagsIndex.packData())
     itemsIndex = str(theIndex._itemIndex.packData())
 
     # Delete a handle
-    assert theIndex._tags.get("Bod", None) is not None
+    assert theIndex._tagsIndex["Bod"] is not None
     assert theIndex._itemIndex["4c4f28287af27"] is not None
     theIndex.deleteHandle("4c4f28287af27")
-    assert theIndex._tags.get("Bod", None) is None
+    assert theIndex._tagsIndex["Bod"] is None
     assert theIndex._itemIndex["4c4f28287af27"] is None
 
     # Clear the index
     theIndex.clearIndex()
-    assert theIndex._tags == {}
+    assert theIndex._tagsIndex._tags == {}
     assert theIndex._itemIndex._items == {}
 
     # Make the load fail
@@ -91,7 +91,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     # Make the load pass
     assert theIndex.loadIndex() is True
 
-    assert str(theIndex._tags) == tagIndex
+    assert str(theIndex._tagsIndex.packData()) == tagIndex
     assert str(theIndex._itemIndex.packData()) == itemsIndex
 
     # Break the index and check that we notice
@@ -188,9 +188,9 @@ def testCoreIndex_CheckThese(nwMinimal, mockGUI):
         "@pov: Jane\n"
         "@invalid: John\n"  # Checks for issue #688
     ))
-    assert theIndex._tags == {
-        "Jane": {"handle": cHandle, "heading": "T000001", "class": "CHARACTER"}
-    }
+    assert theIndex._tagsIndex.tagHandle("Jane") == cHandle
+    assert theIndex._tagsIndex.tagHeading("Jane") == "T000001"
+    assert theIndex._tagsIndex.tagClass("Jane") == "CHARACTER"
     assert theIndex.getNovelData(nHandle, "T000001").title == "Hello World!"
     assert theIndex.getReferences(nHandle, "T000001") == {
         "@char": [],
@@ -301,9 +301,9 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
         "This is a story about Jane Smith.\n\n"
         "Well, not really.\n"
     ))
-    assert theIndex._tags == {
-        "Jane": {"handle": cHandle, "heading": "T000001", "class": "CHARACTER"}
-    }
+    assert theIndex._tagsIndex.tagHandle("Jane") == cHandle
+    assert theIndex._tagsIndex.tagHeading("Jane") == "T000001"
+    assert theIndex._tagsIndex.tagClass("Jane") == "CHARACTER"
     assert theIndex.getNovelData(nHandle, "T000001").title == "Hello World!"
 
     # Title Indexing
