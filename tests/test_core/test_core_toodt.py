@@ -28,7 +28,8 @@ from shutil import copyfile
 
 from tools import cmpFiles
 
-from novelwriter.core import NWProject, NWIndex, ToOdt
+from novelwriter.core import NWProject, ToOdt
+from novelwriter.core.index import NWIndex
 from novelwriter.core.toodt import ODTParagraphStyle, ODTTextStyle, XMLParagraph, _mkTag
 
 XML_NS = [

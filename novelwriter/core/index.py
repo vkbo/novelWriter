@@ -46,7 +46,7 @@ H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
 H_NONE = "T000000"
 
 
-class NWIndex():
+class NWIndex:
 
     def __init__(self, theProject):
 
