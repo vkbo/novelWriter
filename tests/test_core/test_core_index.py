@@ -19,14 +19,14 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import pytest
 import os
 import json
+import pytest
 
 from shutil import copyfile
 
 from mock import causeException
-from tools import cmpFiles
+from tools import buildTestProject, cmpFiles, writeFile
 
 from novelwriter.core.project import NWProject
 from novelwriter.core.index import NWIndex, countWords
@@ -87,36 +87,58 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     with monkeypatch.context() as mp:
         mp.setattr(json, "load", causeException)
         assert theIndex.loadIndex() is False
+        assert theIndex.indexBroken is True
 
     # Make the load pass
     assert theIndex.loadIndex() is True
+    assert theIndex.indexBroken is False
 
     assert str(theIndex._tagsIndex.packData()) == tagIndex
     assert str(theIndex._itemIndex.packData()) == itemsIndex
 
-    # Break the index and check that we notice
-    # assert theIndex.indexBroken is False
-    # theIndex._tagIndex["Bod"].append("Stuff")
-    # theIndex._checkIndex()
-    # assert theIndex.indexBroken is True
+    # Check File
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile)
+
+    # Write an emtpy index file and load it
+    writeFile(projFile, "{}")
+    assert theIndex.loadIndex() is False
+    assert theIndex.indexBroken is True
+
+    # Write an index file that passes loading, but is still empty
+    writeFile(projFile, '{"tagsIndex": {}, "itemIndex": {}}')
+    assert theIndex.loadIndex() is True
+    assert theIndex.indexBroken is False
+
+    # Check that the index is re-populated
+    assert "04468803b92e1" in theIndex._itemIndex
+    assert "2426c6f0ca922" in theIndex._itemIndex
+    assert "441420a886d82" in theIndex._itemIndex
+    assert "47666c91c7ccf" in theIndex._itemIndex
+    assert "4c4f28287af27" in theIndex._itemIndex
+    assert "846352075de7d" in theIndex._itemIndex
+    assert "88243afbe5ed8" in theIndex._itemIndex
+    assert "88d59a277361b" in theIndex._itemIndex
+    assert "8c58a65414c23" in theIndex._itemIndex
+    assert "db7e733775d4d" in theIndex._itemIndex
+    assert "eb103bc70c90c" in theIndex._itemIndex
+    assert "f8c0562e50f1b" in theIndex._itemIndex
+    assert "f96ec11c6a3da" in theIndex._itemIndex
+    assert "fb609cd8319dc" in theIndex._itemIndex
+    assert "7a992350f3eb6" in theIndex._itemIndex
 
     # Finalise
     assert theProject.closeProject() is True
-
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
 
 # END Test testCoreIndex_LoadSave
 
 
 @pytest.mark.core
-def testCoreIndex_ScanThis(nwMinimal, mockGUI):
+def testCoreIndex_ScanThis(mockGUI):
     """Test the tag scanner function scanThis.
     """
     theProject = NWProject(mockGUI)
-    assert theProject.openProject(nwMinimal) is True
-
-    theIndex = NWIndex(theProject)
+    theIndex = theProject.index
 
     isValid, theBits, thePos = theIndex.scanThis("tag: this, and this")
     assert isValid is False
@@ -161,15 +183,15 @@ def testCoreIndex_ScanThis(nwMinimal, mockGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_CheckThese(nwMinimal, mockGUI):
+def testCoreIndex_CheckThese(mockGUI, fncDir, mockRnd):
     """Test the tag checker function checkThese.
     """
     theProject = NWProject(mockGUI)
-    assert theProject.openProject(nwMinimal) is True
+    buildTestProject(theProject, fncDir)
+    theIndex = theProject.index
 
-    theIndex = NWIndex(theProject)
-    nHandle = theProject.newFile("Hello", "a508bb932959c")
-    cHandle = theProject.newFile("Jane",  "afb3043c7b2b3")
+    nHandle = theProject.newFile("Hello", "0000000000010")
+    cHandle = theProject.newFile("Jane",  "0000000000012")
     nItem = theProject.tree[nHandle]
     cItem = theProject.tree[cHandle]
 
@@ -239,17 +261,16 @@ def testCoreIndex_CheckThese(nwMinimal, mockGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_ScanText(nwMinimal, mockGUI):
+def testCoreIndex_ScanText(mockGUI, fncDir, mockRnd):
     """Check the index text scanner.
     """
     theProject = NWProject(mockGUI)
-    assert theProject.openProject(nwMinimal) is True
-
-    theIndex = NWIndex(theProject)
+    buildTestProject(theProject, fncDir)
+    theIndex = theProject.index
 
     # Some items for fail to scan tests
-    dHandle = theProject.newFolder("Folder", "a508bb932959c")
-    xHandle = theProject.newFile("No Layout", "a508bb932959c")
+    dHandle = theProject.newFolder("Folder", "0000000000010")
+    xHandle = theProject.newFile("No Layout", "0000000000010")
     xItem = theProject.tree[xHandle]
     xItem.setLayout(nwItemLayout.NO_LAYOUT)
 
@@ -279,11 +300,11 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
     assert theIndex.scanText(xHandle, "Hello World!") is False
 
     # Make some usable items
-    tHandle = theProject.newFile("Title", "a508bb932959c")
-    pHandle = theProject.newFile("Page",  "a508bb932959c")
-    nHandle = theProject.newFile("Hello", "a508bb932959c")
-    cHandle = theProject.newFile("Jane",  "afb3043c7b2b3")
-    sHandle = theProject.newFile("Scene", "a508bb932959c")
+    tHandle = theProject.newFile("Title", "0000000000010")
+    pHandle = theProject.newFile("Page",  "0000000000010")
+    nHandle = theProject.newFile("Hello", "0000000000010")
+    cHandle = theProject.newFile("Jane",  "0000000000012")
+    sHandle = theProject.newFile("Scene", "0000000000010")
 
     # Text Indexing
     # =============
@@ -449,18 +470,27 @@ def testCoreIndex_ScanText(nwMinimal, mockGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_ExtractData(nwMinimal, mockGUI):
+def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
     """Check the index data extraction functions.
     """
     theProject = NWProject(mockGUI)
-    assert theProject.openProject(nwMinimal) is True
+    buildTestProject(theProject, fncDir)
 
-    theIndex = NWIndex(theProject)
-    nHandle = theProject.newFile("Hello", "a508bb932959c")
-    cHandle = theProject.newFile("Jane",  "afb3043c7b2b3")
+    theIndex = theProject.index
+    theIndex.reIndexHandle("0000000000010")
+    theIndex.reIndexHandle("0000000000011")
+    theIndex.reIndexHandle("0000000000012")
+    theIndex.reIndexHandle("0000000000013")
+    theIndex.reIndexHandle("0000000000014")
+    theIndex.reIndexHandle("0000000000015")
+    theIndex.reIndexHandle("0000000000016")
+    theIndex.reIndexHandle("0000000000017")
+
+    nHandle = theProject.newFile("Hello", "0000000000010")
+    cHandle = theProject.newFile("Jane",  "0000000000012")
 
     assert theIndex.getNovelData("", "") is None
-    assert theIndex.getNovelData("a508bb932959c", "") is None
+    assert theIndex.getNovelData("0000000000010", "") is None
 
     assert theIndex.scanText(cHandle, (
         "# Jane Smith\n"
@@ -480,7 +510,12 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     for aKey, _, _, _ in theIndex.novelStructure():
         theKeys.append(aKey)
 
-    assert theKeys == ["%s:T000001" % nHandle]
+    assert theKeys == [
+        "0000000000014:T000001",
+        "0000000000016:T000001",
+        "0000000000017:T000001",
+        "%s:T000001" % nHandle,
+    ]
 
     # Check that excluded files can be skipped
     theProject.tree[nHandle].setExported(False)
@@ -489,19 +524,22 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     for aKey, _, _, _ in theIndex.novelStructure(skipExcl=False):
         theKeys.append(aKey)
 
-    assert theKeys == ["%s:T000001" % nHandle]
+    assert theKeys == [
+        "0000000000014:T000001",
+        "0000000000016:T000001",
+        "0000000000017:T000001",
+        "%s:T000001" % nHandle,
+    ]
 
     theKeys = []
     for aKey, _, _, _ in theIndex.novelStructure(skipExcl=True):
         theKeys.append(aKey)
 
-    assert theKeys == []
-
-    theKeys = []
-    for aKey, _, _, _ in theIndex.novelStructure():
-        theKeys.append(aKey)
-
-    assert theKeys == []
+    assert theKeys == [
+        "0000000000014:T000001",
+        "0000000000016:T000001",
+        "0000000000017:T000001",
+    ]
 
     # The novel file should have the correct counts
     cC, wC, pC = theIndex.getCounts(nHandle)
@@ -528,6 +566,9 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     # None handle should return an empty dict
     assert theIndex.getBackReferenceList(None) == {}
 
+    # The Title Page file should have no references as it has no tag
+    assert theIndex.getBackReferenceList("0000000000014") == {}
+
     # The character file should have a record of the reference from the novel file
     theRefs = theIndex.getBackReferenceList(cHandle)
     assert theRefs == {nHandle: "T000001"}
@@ -541,6 +582,10 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     # getCounts
     # =========
     # For whole text and sections
+
+    # Invalid handle or title should return 0s
+    assert theIndex.getCounts("stuff") == (0, 0, 0)
+    assert theIndex.getCounts(nHandle, "stuff") == (0, 0, 0)
 
     # Get section counts for a novel file
     assert theIndex.scanText(nHandle, (
@@ -611,9 +656,9 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     # Novel Stats
     # ===========
 
-    hHandle = theProject.newFile("Chapter", "a508bb932959c")
-    sHandle = theProject.newFile("Scene One", "a508bb932959c")
-    tHandle = theProject.newFile("Scene Two", "a508bb932959c")
+    hHandle = theProject.newFile("Chapter", "0000000000010")
+    sHandle = theProject.newFile("Scene One", "0000000000010")
+    tHandle = theProject.newFile("Scene Two", "0000000000010")
 
     theProject.tree[hHandle].itemLayout == nwItemLayout.DOCUMENT
     theProject.tree[sHandle].itemLayout == nwItemLayout.DOCUMENT
@@ -624,6 +669,9 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     assert theIndex.scanText(tHandle, "### Scene Two\n\n")
 
     assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=False)] == [
+        ("0000000000014", "T000001"),
+        ("0000000000016", "T000001"),
+        ("0000000000017", "T000001"),
         (nHandle, "T000001"),
         (nHandle, "T000011"),
         (hHandle, "T000001"),
@@ -632,6 +680,9 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     ]
 
     assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=True)] == [
+        ("0000000000014", "T000001"),
+        ("0000000000016", "T000001"),
+        ("0000000000017", "T000001"),
         (hHandle, "T000001"),
         (sHandle, "T000001"),
         (tHandle, "T000001"),
@@ -640,6 +691,9 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     # Add a fake handle to the tree and check that it's ignored
     theProject.tree._treeOrder.append("0000000000000")
     assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=False)] == [
+        ("0000000000014", "T000001"),
+        ("0000000000016", "T000001"),
+        ("0000000000017", "T000001"),
         (nHandle, "T000001"),
         (nHandle, "T000011"),
         (hHandle, "T000001"),
@@ -649,25 +703,33 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     theProject.tree._treeOrder.remove("0000000000000")
 
     # Extract stats
-    assert theIndex.getNovelWordCount(False) == 34
-    assert theIndex.getNovelWordCount(True) == 6
-    assert theIndex.getNovelTitleCounts(False) == [0, 2, 1, 2, 0]
-    assert theIndex.getNovelTitleCounts(True) == [0, 0, 1, 2, 0]
+    assert theIndex.getNovelWordCount(skipExcl=False) == 43
+    assert theIndex.getNovelWordCount(skipExcl=True) == 15
+    assert theIndex.getNovelTitleCounts(skipExcl=False) == [0, 3, 2, 3, 0]
+    assert theIndex.getNovelTitleCounts(skipExcl=True) == [0, 1, 2, 3, 0]
 
     # Table of Contents
-    assert theIndex.getTableOfContents(0, True) == []
-    assert theIndex.getTableOfContents(1, True) == []
-    assert theIndex.getTableOfContents(2, True) == [
+    assert theIndex.getTableOfContents(0, skipExcl=True) == []
+    assert theIndex.getTableOfContents(1, skipExcl=True) == [
+        ("0000000000014:T000001", 1, "New Novel", 15),
+    ]
+    assert theIndex.getTableOfContents(2, skipExcl=True) == [
+        ("0000000000014:T000001", 1, "New Novel", 5),
+        ("0000000000016:T000001", 2, "New Chapter", 4),
         ("%s:T000001" % hHandle, 2, "Chapter One", 6),
     ]
-    assert theIndex.getTableOfContents(3, True) == [
+    assert theIndex.getTableOfContents(3, skipExcl=True) == [
+        ("0000000000014:T000001", 1, "New Novel", 5),
+        ("0000000000016:T000001", 2, "New Chapter", 2),
+        ("0000000000017:T000001", 3, "New Scene", 2),
         ("%s:T000001" % hHandle, 2, "Chapter One", 2),
         ("%s:T000001" % sHandle, 3, "Scene One", 2),
         ("%s:T000001" % tHandle, 3, "Scene Two", 2),
     ]
 
-    assert theIndex.getTableOfContents(0, False) == []
-    assert theIndex.getTableOfContents(1, False) == [
+    assert theIndex.getTableOfContents(0, skipExcl=False) == []
+    assert theIndex.getTableOfContents(1, skipExcl=False) == [
+        ("0000000000014:T000001", 1, "New Novel", 9),
         ("%s:T000001" % nHandle, 1, "Hello World!", 12),
         ("%s:T000011" % nHandle, 1, "Hello World!", 22),
     ]
@@ -682,7 +744,9 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
         ("%s:T000001" % nHandle, 12), ("%s:T000011" % nHandle, 16)
     ]
 
-    assert theProject.closeProject()
+    assert theIndex.saveIndex() is True
+    assert theProject.saveProject() is True
+    assert theProject.closeProject() is True
 
     # Header Record
     bHandle = "0000000000000"
@@ -695,6 +759,156 @@ def testCoreIndex_ExtractData(nwMinimal, mockGUI):
     ]
 
 # END Test testCoreIndex_ExtractData
+
+
+@pytest.mark.core
+def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
+    """Check the ItemIndex class.
+    """
+    theProject = NWProject(mockGUI)
+    buildTestProject(theProject, fncDir)
+
+    nHandle = "0000000000014"
+    cHandle = "0000000000016"
+    sHandle = "0000000000017"
+
+    assert theProject.index.saveIndex() is True
+    itemIndex = theProject.index._itemIndex
+
+    # The index should be empty
+    assert nHandle not in itemIndex
+    assert cHandle not in itemIndex
+    assert sHandle not in itemIndex
+
+    # Unpack Data
+    # ===========
+
+    # Data must be dictionary
+    with pytest.raises(ValueError):
+        itemIndex.unpackData("stuff")
+
+    # Keys must be valid handles
+    with pytest.raises(ValueError):
+        itemIndex.unpackData({"stuff": "more stuff"})
+
+    # Unknown keys should be skipped
+    itemIndex.unpackData({"0000000000000": {}})
+    assert itemIndex._items == {}
+
+    # Known keys can be added, even witout data
+    itemIndex.unpackData({nHandle: {}})
+    assert nHandle in itemIndex
+    itemIndex.clear()
+
+    # Add Items
+    # =========
+    assert cHandle not in itemIndex
+
+    # Add the novel chapter file
+    itemIndex.add(cHandle, theProject.tree[cHandle])
+    assert cHandle in itemIndex
+    assert itemIndex[cHandle].item == theProject.tree[cHandle]
+    assert itemIndex.mainItemHeader(cHandle) == "H0"
+    assert itemIndex.allItemTags(cHandle) == []
+    assert list(itemIndex.iterItemHeaders(cHandle))[0][0] == "T000000"
+
+    # Add a heading to the item, which should replace the T000000 heading
+    itemIndex.addItemHeading(cHandle, "T000001", "H2", "Chapter One")
+    assert itemIndex.mainItemHeader(cHandle) == "H2"
+    assert list(itemIndex.iterItemHeaders(cHandle))[0][0] == "T000001"
+
+    # Set the remainig data values
+    itemIndex.setHeadingCounts(cHandle, "T000001", 60, 10, 2)
+    itemIndex.setHeadingSynopsis(cHandle, "T000001", "In the beginning ...")
+    itemIndex.setHeadingTag(cHandle, "T000001", "One")  # Although it isn't allowed to have a tag
+    itemIndex.addHeadingReferences(cHandle, "T000001", ["Jane"], "@pov")
+    itemIndex.addHeadingReferences(cHandle, "T000001", ["Jane"], "@focus")
+    itemIndex.addHeadingReferences(cHandle, "T000001", ["Jane", "John"], "@char")
+    idxData = itemIndex.packData()
+
+    assert idxData[cHandle]["level"] == "H2"
+    assert idxData[cHandle]["headings"]["T000001"] == {
+        "level": "H2", "title": "Chapter One", "tag": "One",
+        "cCount": 60, "wCount": 10, "pCount": 2, "synopsis": "In the beginning ...",
+    }
+    assert "@pov" in idxData[cHandle]["references"]["T000001"]["Jane"]
+    assert "@focus" in idxData[cHandle]["references"]["T000001"]["Jane"]
+    assert "@char" in idxData[cHandle]["references"]["T000001"]["Jane"]
+    assert "@char" in idxData[cHandle]["references"]["T000001"]["John"]
+
+    # Add the other two files
+    itemIndex.add(nHandle, theProject.tree[nHandle])
+    itemIndex.add(sHandle, theProject.tree[sHandle])
+    itemIndex.addItemHeading(nHandle, "T000001", "H1", "Novel")
+    itemIndex.addItemHeading(sHandle, "T000001", "H3", "Scene One")
+
+    # Data Extraction
+    # ===============
+
+    # Get headers
+    allHeads = list(itemIndex.iterAllHeaders())
+    assert allHeads[0][0] == cHandle
+    assert allHeads[1][0] == nHandle
+    assert allHeads[2][0] == sHandle
+    assert allHeads[0][1] == "T000001"
+    assert allHeads[1][1] == "T000001"
+    assert allHeads[2][1] == "T000001"
+
+    # Ask for stuff that doesn't exist
+    assert itemIndex.mainItemHeader("blablabla") == "H0"
+    assert itemIndex.allItemTags("blablabla") == []
+
+    # Novel Structure
+    # ===============
+
+    # Add a second novel
+    mHandle = theProject.newRoot(nwItemClass.NOVEL)
+    uHandle = theProject.newFile("Title Page", mHandle)
+    itemIndex.add(uHandle, theProject.tree[uHandle])
+    itemIndex.addItemHeading(uHandle, "T000001", "H1", "Novel 2")
+    assert uHandle in itemIndex
+
+    # Structure of all novels
+    nStruct = list(itemIndex.iterNovelStructure())
+    assert len(nStruct) == 4
+    assert nStruct[0][0] == nHandle
+    assert nStruct[1][0] == cHandle
+    assert nStruct[2][0] == sHandle
+    assert nStruct[3][0] == uHandle
+
+    # Novel structure with root handle set
+    nStruct = list(itemIndex.iterNovelStructure(rootHandle="0000000000010"))
+    assert len(nStruct) == 3
+    assert nStruct[0][0] == nHandle
+    assert nStruct[1][0] == cHandle
+    assert nStruct[2][0] == sHandle
+
+    nStruct = list(itemIndex.iterNovelStructure(rootHandle=mHandle))
+    assert len(nStruct) == 1
+    assert nStruct[0][0] == uHandle
+
+    # Inject garbage into tree
+    theProject.tree._treeOrder.append("stuff")
+    nStruct = list(itemIndex.iterNovelStructure())
+    assert len(nStruct) == 4
+    assert nStruct[0][0] == nHandle
+    assert nStruct[1][0] == cHandle
+    assert nStruct[2][0] == sHandle
+    assert nStruct[3][0] == uHandle
+
+    # Skip excluded
+    theProject.tree[sHandle].setExported(False)
+    nStruct = list(itemIndex.iterNovelStructure(skipExcl=True))
+    assert len(nStruct) == 3
+    assert nStruct[0][0] == nHandle
+    assert nStruct[1][0] == cHandle
+    assert nStruct[2][0] == uHandle
+
+    # Delete new item
+    del itemIndex[uHandle]
+    assert uHandle not in itemIndex
+
+# END Test testCoreIndex_ItemIndex
 
 
 @pytest.mark.core

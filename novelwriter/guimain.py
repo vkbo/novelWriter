@@ -865,22 +865,13 @@ class GuiMain(QMainWindow):
         self.theProject.index.clearIndex()
 
         for tItem in self.theProject.tree:
+            if tItem is None:  # pragma: no cover
+                continue  # This is a bug trap
 
-            if tItem is not None:
-                self.setStatus(self.tr("Indexing: '{0}'").format(tItem.itemName))
-            else:
-                self.setStatus(self.tr("Indexing: '{0}'").format(self.tr("Unknown item")))
-
-            if tItem is not None and tItem.itemType == nwItemType.FILE:
-                logger.verbose("Scanning '%s'", tItem.itemName)
-                self.theProject.index.reIndexHandle(tItem.itemHandle)
-
-                # Get Word Counts
-                cC, wC, pC = self.theProject.index.getCounts(tItem.itemHandle)
-                tItem.setCharCount(cC)
-                tItem.setWordCount(wC)
-                tItem.setParaCount(pC)
-                self.treeView.propagateCount(tItem.itemHandle, wC, countChildren=True)
+            logger.verbose("Indexing '%s'", tItem.itemName)
+            if self.theProject.index.reIndexHandle(tItem.itemHandle):
+                # Update Word Counts
+                self.treeView.propagateCount(tItem.itemHandle, tItem.wordCount, countChildren=True)
                 self.treeView.setTreeItemValues(tItem.itemHandle)
 
         tEnd = time()

@@ -7,6 +7,7 @@ File History:
 Created: 2019-04-22 [0.0.1]  countWords
 Created: 2019-05-27 [0.1.4]  NWIndex
 Created: 2022-05-28 [1.7rc1] IndexItem, IndexHeading
+Created: 2022-05-29 [1.7rc1] TagsIndex, ItemIndex
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -43,10 +44,24 @@ logger = logging.getLogger(__name__)
 
 H_VALID = ("H0", "H1", "H2", "H3", "H4")
 H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
-H_NONE = "T000000"
+TT_NONE = "T000000"
 
 
 class NWIndex:
+    """This class holds the entire index for a given project. The index
+    contains the data that isn't stored in the project items themselves.
+    The content of the index is updated every time a file item is saved.
+
+    The primary index data is contained in the ItemIndex class, which
+    contains an IndexItem representing each NWItem. Each IndexItem holds
+    an IndexHeading object for each heading of the item's text.
+
+    A reverse index of all tags is contained in the TagsIndex class.
+    This is duplicate information used for quicker lookups from the tags
+    and back to items where they are defined.
+
+    The index data is cached in a JSON file between writing sessions.
+    """
 
     def __init__(self, theProject):
 
@@ -104,10 +119,10 @@ class NWIndex:
         moved from the archive or trash folders back into the active
         project.
         """
-        logger.debug("Re-indexing item '%s'", tHandle)
         if not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
             return False
 
+        logger.debug("Re-indexing item '%s'", tHandle)
         theDoc = NWDoc(self.theProject, tHandle)
         theText = theDoc.readDocument()
         self.scanText(tHandle, theText if theText is not None else "")
@@ -140,6 +155,7 @@ class NWIndex:
         indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         tStart = time()
 
+        self._indexBroken = False
         if os.path.isfile(indexFile):
             logger.debug("Loading index file")
             try:
@@ -222,8 +238,9 @@ class NWIndex:
             logger.info("Not indexing non-file item '%s'", tHandle)
             return False
 
-        # Delete the old entry and create a new
-        self.deleteHandle(tHandle)
+        # Delete tags and create new item entry
+        for tTag in self._itemIndex.allItemTags(tHandle):
+            del self._tagsIndex[tTag]
         self._itemIndex.add(tHandle, theItem)
 
         # Run word counter for the whole text
@@ -644,7 +661,7 @@ class TagsIndex:
         """
         if tagKey in self._tags:
             return self._tags.get(tagKey).get("heading")
-        return H_NONE
+        return TT_NONE
 
     def tagClass(self, tagKey):
         """Get the class of a given tag.
@@ -782,11 +799,11 @@ class ItemIndex:
                 continue
 
             if rootHandle is None:
-                for sTitle, hItem in self._items[tHandle].items():
-                    yield tHandle, sTitle, hItem
-            elif tItem.rootHandle == rootHandle:
-                for sTitle, hItem in self._items[tHandle].items():
-                    yield tHandle, sTitle, hItem
+                for sTitle in self._items[tHandle].headings():
+                    yield tHandle, sTitle, self._items[tHandle][sTitle]
+            elif tItem.itemRoot == rootHandle:
+                for sTitle in self._items[tHandle].headings():
+                    yield tHandle, sTitle, self._items[tHandle][sTitle]
             else:
                 continue
 
@@ -876,7 +893,7 @@ class IndexItem:
         self._index = 0
 
         # Add a placeholder heading
-        self._headings[H_NONE] = IndexHeading(H_NONE)
+        self._headings[TT_NONE] = IndexHeading(TT_NONE)
 
         return
 
@@ -910,8 +927,8 @@ class IndexItem:
         """Add a heading to the item. Also remove the placeholder entry
         if it exists.
         """
-        if H_NONE in self._headings:
-            self._headings.pop(H_NONE)
+        if TT_NONE in self._headings:
+            self._headings.pop(TT_NONE)
         self._headings[tHeading.key] = tHeading
         return
 
@@ -956,6 +973,9 @@ class IndexItem:
 
     def items(self):
         return self._headings.items()
+
+    def headings(self):
+        return sorted(self._headings.keys())
 
     def allTags(self):
         """Return a list of all tags in the current item.
@@ -1102,9 +1122,10 @@ class IndexHeading:
         """Add a record of a reference tag, and what keyword types it is
         associated with.
         """
-        if tagKey not in self._refs:
-            self._refs[tagKey] = set()
-        self._refs[tagKey].add(refType)
+        if refType in nwKeyWords.VALID_KEYS:
+            if tagKey not in self._refs:
+                self._refs[tagKey] = set()
+            self._refs[tagKey].add(refType)
         return
 
     ##
