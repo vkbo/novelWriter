@@ -35,7 +35,7 @@
         "T000001": {"level": "H2", "title": "Chapter One", "tag": "", "cCount": 419, "wCount": 67, "pCount": 1, "synopsis": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at aliquam quam."}
       },
       "references": {
-        "T000001": {"Bod": ["@pov"], "Main": ["@plot"], "Europe": ["@location"]}
+        "T000001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
       }
     },
     "88243afbe5ed8": {
@@ -45,7 +45,7 @@
         "T000013": {"level": "H4", "title": "Scene One, Section Two", "tag": "", "cCount": 1561, "wCount": 230, "pCount": 2, "synopsis": ""}
       },
       "references": {
-        "T000001": {"Bod": ["@pov"], "Main": ["@plot"], "Europe": ["@location"]}
+        "T000001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
       }
     },
     "f96ec11c6a3da": {
@@ -55,7 +55,7 @@
         "T000015": {"level": "H4", "title": "Scene Two, Section Two", "tag": "", "cCount": 2009, "wCount": 301, "pCount": 3, "synopsis": ""}
       },
       "references": {
-        "T000001": {"Bod": ["@pov"], "Main": ["@plot"], "Europe": ["@location"]}
+        "T000001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
       }
     },
     "846352075de7d": {
@@ -70,7 +70,7 @@
         "T000001": {"level": "H2", "title": "Chapter Two", "tag": "", "cCount": 477, "wCount": 70, "pCount": 1, "synopsis": "Curabitur a elit posuere, varius ex et, convallis neque. Phasellus sagittis pharetra sem vitae dapibus. Curabitur varius lorem non pulvinar congue."}
       },
       "references": {
-        "T000001": {"Bod": ["@pov"], "Main": ["@plot"], "Europe": ["@location"]}
+        "T000001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
       }
     },
     "eb103bc70c90c": {
@@ -79,7 +79,7 @@
         "T000001": {"level": "H3", "title": "Scene Three", "tag": "", "cCount": 3006, "wCount": 439, "pCount": 4, "synopsis": "Aenean ut libero ut lectus porttitor rhoncus vel et massa. Nam pretium, nibh et varius vehicula, urna metus blandit eros, euismod pharetra diam diam et libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos."}
       },
       "references": {
-        "T000001": {"Bod": ["@pov"], "Main": ["@plot"], "Europe": ["@location"]}
+        "T000001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
       }
     },
     "f8c0562e50f1b": {
@@ -88,7 +88,7 @@
         "T000001": {"level": "H3", "title": "Scene Four", "tag": "", "cCount": 3839, "wCount": 563, "pCount": 6, "synopsis": "Nam tempor blandit magna laoreet aliquet. Vestibulum auctor posuere leo, ac gravida nisi rhoncus varius. Aenean posuere dolor vitae condimentum volutpat. Donec egestas volutpat risus, quis luctus justo."}
       },
       "references": {
-        "T000001": {"Bod": ["@pov"], "Main": ["@plot"], "Europe": ["@location"]}
+        "T000001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
       }
     },
     "47666c91c7ccf": {
@@ -97,7 +97,7 @@
         "T000001": {"level": "H3", "title": "Scene Five", "tag": "", "cCount": 3644, "wCount": 543, "pCount": 5, "synopsis": "Praesent eget est porta, dictum ante in, egestas risus. Mauris risus mauris, consequat aliquam mauris et, feugiat iaculis ipsum. Aliquam arcu ipsum, fermentum ut arcu sed, lobortis euismod sem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."}
       },
       "references": {
-        "T000001": {"Bod": ["@pov"], "Main": ["@plot"], "Europe": ["@location"]}
+        "T000001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
       }
     },
     "4c4f28287af27": {
@@ -106,7 +106,7 @@
         "T000001": {"level": "H1", "title": "Nobody Owens", "tag": "Bod", "cCount": 1864, "wCount": 284, "pCount": 3, "synopsis": ""}
       },
       "references": {
-        "T000001": {"Main": ["@plot"]}
+        "T000001": {"Main": "@plot"}
       }
     },
     "2426c6f0ca922": {

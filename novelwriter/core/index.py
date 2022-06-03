@@ -227,7 +227,7 @@ class NWIndex:
         """Scan a piece of text associated with a handle. This will
         update the indices accordingly. This function takes the handle
         and text as separate inputs as we want to primarily scan the
-        files before we save them in which case we already have the
+        files before we save them, in which case we already have the
         text.
         """
         theItem = self.theProject.tree[tHandle]
@@ -238,9 +238,8 @@ class NWIndex:
             logger.info("Not indexing non-file item '%s'", tHandle)
             return False
 
-        # Delete tags and create new item entry
-        for tTag in self._itemIndex.allItemTags(tHandle):
-            del self._tagsIndex[tTag]
+        # Keep a record of existing tags, and create a new item entry
+        itemTags = dict.fromkeys(self._itemIndex.allItemTags(tHandle), False)
         self._itemIndex.add(tHandle, theItem)
 
         # Run word counter for the whole text
@@ -279,7 +278,7 @@ class NWIndex:
                     nTitle = nLine
 
             elif aLine.startswith("@"):
-                self._indexKeyword(tHandle, aLine, nTitle, theItem.itemClass)
+                self._indexKeyword(tHandle, aLine, nTitle, theItem.itemClass, itemTags)
 
             elif aLine.startswith("%"):
                 if nTitle > 0:
@@ -299,6 +298,12 @@ class NWIndex:
         # Also count words on a page with no titles
         if nTitle == 0:
             self._indexWordCounts(tHandle, theText, nTitle)
+
+        # Prune no longer used tags
+        for tTag, isActive in itemTags.items():
+            if not isActive:
+                logger.verbose("Deleting removed tag '%s'", tTag)
+                del self._tagsIndex[tTag]
 
         # Update timestamps for index changes
         nowTime = round(time())
@@ -359,9 +364,11 @@ class NWIndex:
         self._itemIndex.setHeadingSynopsis(tHandle, sTitle, theText)
         return
 
-    def _indexKeyword(self, tHandle, aLine, nTitle, itemClass):
+    def _indexKeyword(self, tHandle, aLine, nTitle, itemClass, itemTags):
         """Validate and save the information about a reference to a tag
-        in another file.
+        in another file, or the setting of a tag in the file. A record
+        of active tags is updated so that no longer used tags can be
+        pruned later.
         """
         isValid, theBits, _ = self.scanThis(aLine)
         if not isValid or len(theBits) < 2:
@@ -374,8 +381,10 @@ class NWIndex:
 
         sTitle = f"T{nTitle:06d}"
         if theBits[0] == nwKeyWords.TAG_KEY:
-            self._tagsIndex.add(theBits[1], tHandle, sTitle, itemClass)
-            self._itemIndex.setHeadingTag(tHandle, sTitle, theBits[1])
+            tagName = theBits[1]
+            self._tagsIndex.add(tagName, tHandle, sTitle, itemClass)
+            self._itemIndex.setHeadingTag(tHandle, sTitle, tagName)
+            itemTags[tagName] = True
         else:
             self._itemIndex.addHeadingReferences(tHandle, sTitle, theBits[1:], theBits[0])
 
@@ -884,6 +893,11 @@ class ItemIndex:
 
 
 class IndexItem:
+    """This object represents the index data of a project item (NWItem).
+    It holds a record of all the headings in the text, and the meta data
+    associated with each heading. It also holds a pointer to the project
+    item.
+    """
 
     def __init__(self, tHandle, tItem):
         self._handle = tHandle
@@ -1027,6 +1041,10 @@ class IndexItem:
 
 
 class IndexHeading:
+    """This object represents a section of text in a project item
+    associated with a single (valid) heading. It holds a separate record
+    of all references made under each heading.
+    """
 
     def __init__(self, key, level="H0", title=""):
         self._key = key
@@ -1148,7 +1166,7 @@ class IndexHeading:
     def packReferences(self):
         """Pack references into a dictionary for saving to cache.
         """
-        return {key: list(value) for key, value in self._refs.items()}
+        return {key: ",".join(value) for key, value in self._refs.items()}
 
     def unpackData(self, data):
         """Unpack a heading entry from a dictionary.
@@ -1170,9 +1188,9 @@ class IndexHeading:
         for tagKey, refTypes in data.items():
             if not isinstance(tagKey, str):
                 raise ValueError("itemIndex reference key must be a string")
-            if not isinstance(refTypes, list):
-                raise ValueError("itemIndex reference types must be a list")
-            for refType in refTypes:
+            if not isinstance(refTypes, str):
+                raise ValueError("itemIndex reference types must be a string")
+            for refType in refTypes.split(","):
                 if refType in nwKeyWords.VALID_KEYS:
                     self.addReference(tagKey, refType)
                 else:
