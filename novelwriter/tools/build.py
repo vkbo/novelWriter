@@ -659,6 +659,7 @@ class GuiBuildNovel(QDialog):
         fmtUnnumbered = self.fmtUnnumbered.text()
         fmtScene      = self.fmtScene.text()
         fmtSection    = self.fmtSection.text()
+        buildLang     = self.buildLang.currentData()
         hideScene     = self.hideScene.isChecked()
         hideSection   = self.hideSection.isChecked()
         textFont      = self.textFont.text()
@@ -676,7 +677,7 @@ class GuiBuildNovel(QDialog):
         replaceUCode  = self.replaceUCode.isChecked()
 
         # The language lookup dict is reloaded if needed
-        self.theProject.setProjectLang(self.buildLang.currentData())
+        self.theProject.setProjectLang(buildLang)
 
         # Get font information
         fontInfo = QFontInfo(QFont(textFont, textSize))
@@ -706,6 +707,7 @@ class GuiBuildNovel(QDialog):
 
         if isOdt:
             bldObj.setColourHeaders(not noStyling)
+            bldObj.setLanguage(buildLang)
             bldObj.initDocument()
 
         # Make sure the project and document is up to date
