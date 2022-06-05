@@ -275,7 +275,7 @@ class Tokenizer(ABC):
     def addRootHeading(self, theHandle):
         """Add a heading at the start of a new root folder.
         """
-        if not self.theProject.projTree.checkType(theHandle, nwItemType.ROOT):
+        if not self.theProject.tree.checkType(theHandle, nwItemType.ROOT):
             return False
 
         if self._isFirst:
@@ -284,7 +284,7 @@ class Tokenizer(ABC):
         else:
             textAlign = self.A_PBB | self.A_CENTRE
 
-        theItem = self.theProject.projTree[theHandle]
+        theItem = self.theProject.tree[theHandle]
         locNotes = self._localLookup("Notes")
         theTitle = f"{locNotes}: {theItem.itemName}"
         self._theTokens = []
@@ -301,7 +301,7 @@ class Tokenizer(ABC):
         not set, load it from the file.
         """
         self._theHandle = theHandle
-        self._theItem = self.theProject.projTree[theHandle]
+        self._theItem = self.theProject.tree[theHandle]
         if self._theItem is None:
             return False
 

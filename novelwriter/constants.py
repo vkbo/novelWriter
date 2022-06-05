@@ -34,7 +34,7 @@ def trConst(tString):
     return QCoreApplication.translate("Constant", tString)
 
 
-class nwConst():
+class nwConst:
 
     # Date and Time Formats
     FMT_TSTAMP = "%Y-%m-%d %H:%M:%S"  # Default format
@@ -48,7 +48,7 @@ class nwConst():
 # END Class nwConst
 
 
-class nwRegEx():
+class nwRegEx:
 
     FMT_EI = r"(?<![\w\\])(_)(?![\s_])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_EB = r"(?<![\w\\])([\*]{2})(?![\s\*])(.+?)(?<![\s\\])(\1)(?!\w)"
@@ -57,7 +57,7 @@ class nwRegEx():
 # END Class nwRegEx
 
 
-class nwFiles():
+class nwFiles:
 
     PROJ_FILE   = "nwProject.nwx"
     PROJ_DICT   = "wordlist.txt"
@@ -107,7 +107,7 @@ class nwKeyWords:
 # END Class nwKeyWords
 
 
-class nwLabels():
+class nwLabels:
 
     CLASS_NAME = {
         nwItemClass.NO_CLASS:  QT_TRANSLATE_NOOP("Constant", "None"),
@@ -185,7 +185,7 @@ class nwLabels():
 # END Class nwLabels
 
 
-class nwQuotes():
+class nwQuotes:
     """Allowed quotation marks.
     Source: https://en.wikipedia.org/wiki/Quotation_mark
     """

@@ -87,7 +87,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert outlineData.itemValue.text() == "Finished"
 
     # Click POV Link
-    assert outlineData.povKeyValue.text() == "<a href='#pov=Bod'>Bod</a>"
+    assert outlineData.povKeyValue.text() == "<a href='Bod'>Bod</a>"
     outlineData._tagClicked("#pov=Bod")
     assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
 

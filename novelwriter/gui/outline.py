@@ -227,7 +227,7 @@ class GuiOutlineToolBar(QToolBar):
         """Fill the novel combo box.
         """
         self.novelValue.clear()
-        for tHandle, nwItem in self.theProject.projTree.novelRoots().items():
+        for tHandle, nwItem in self.theProject.tree.novelRoots().items():
             self.novelValue.addItem(
                 self.theTheme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass]),
                 nwItem.itemName, tHandle
@@ -309,8 +309,6 @@ class GuiOutlineView(QTreeWidget):
         self.theParent  = theOutline.theParent
         self.theProject = theOutline.theParent.theProject
         self.theTheme   = theOutline.theParent.theTheme
-        self.theIndex   = theOutline.theParent.theIndex
-        self.optState   = theOutline.theParent.theProject.optState
 
         self.setFrameStyle(QFrame.NoFrame)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -410,7 +408,7 @@ class GuiOutlineView(QTreeWidget):
 
         # If the novel index or novel tree has changed since the tree
         # was last built, we rebuild the tree from the updated index.
-        indexChanged = self.theIndex.novelChangedSince(self._lastBuild)
+        indexChanged = self.theProject.index.novelChangedSince(self._lastBuild)
         doBuild = (novelChanged or indexChanged) and self.theProject.autoOutline
         if doBuild or overRide:
             logger.debug("Rebuilding Project Outline")
@@ -495,10 +493,12 @@ class GuiOutlineView(QTreeWidget):
         """Load the state of the main tree header, that is, column order
         and column width.
         """
+        pOptions = self.theProject.options
+
         # Load whatever we saved last time, regardless of wether it
         # contains the correct names or number of columns. The names
         # must be valid though.
-        tempOrder = self.optState.getValue("GuiOutline", "headerOrder", [])
+        tempOrder = pOptions.getValue("GuiOutline", "headerOrder", [])
         treeOrder = []
         for hName in tempOrder:
             try:
@@ -521,14 +521,14 @@ class GuiOutlineView(QTreeWidget):
 
         # We load whatever column widths and hidden states we find in
         # the file, and leave the rest in their default state.
-        tmpWidth = self.optState.getValue("GuiOutline", "columnWidth", {})
+        tmpWidth = pOptions.getValue("GuiOutline", "columnWidth", {})
         for hName in tmpWidth:
             try:
                 self._colWidth[nwOutline[hName]] = self.mainConf.pxInt(tmpWidth[hName])
             except Exception:
                 logger.warning("Ignored unknown outline column '%s'", str(hName))
 
-        tmpHidden = self.optState.getValue("GuiOutline", "columnHidden", {})
+        tmpHidden = pOptions.getValue("GuiOutline", "columnHidden", {})
         for hName in tmpHidden:
             try:
                 self._colHidden[nwOutline[hName]] = tmpHidden[hName]
@@ -569,10 +569,11 @@ class GuiOutlineView(QTreeWidget):
             if not logHidden and logWidth > 0:
                 colWidth[hName] = logWidth
 
-        self.optState.setValue("GuiOutline", "headerOrder",  treeOrder)
-        self.optState.setValue("GuiOutline", "columnWidth",  colWidth)
-        self.optState.setValue("GuiOutline", "columnHidden", colHidden)
-        self.optState.saveSettings()
+        pOptions = self.theProject.options
+        pOptions.setValue("GuiOutline", "headerOrder",  treeOrder)
+        pOptions.setValue("GuiOutline", "columnWidth",  colWidth)
+        pOptions.setValue("GuiOutline", "columnHidden", colHidden)
+        pOptions.saveSettings()
 
         return
 
@@ -609,11 +610,11 @@ class GuiOutlineView(QTreeWidget):
         currChapter = None
         currScene = None
 
-        for tKey, tHandle, sTitle, novIdx in self.theIndex.novelStructure(skipExcluded=True):
+        for _, tHandle, sTitle, novIdx in self.theProject.index.novelStructure(skipExcl=True):
 
             tItem = self._createTreeItem(tHandle, sTitle, novIdx)
 
-            tLevel = novIdx["level"]
+            tLevel = novIdx.level
             if tLevel == "H1":
                 self.addTopLevelItem(tItem)
                 currTitle = tItem
@@ -659,26 +660,26 @@ class GuiOutlineView(QTreeWidget):
     def _createTreeItem(self, tHandle, sTitle, novIdx):
         """Populate a tree item with all the column values.
         """
-        nwItem = self.theProject.projTree[tHandle]
+        nwItem = self.theProject.tree[tHandle]
         newItem = QTreeWidgetItem()
-        hIcon = "doc_%s" % novIdx["level"].lower()
+        hIcon = "doc_%s" % novIdx.level.lower()
 
-        hLevel = self.theIndex.getHandleHeaderLevel(tHandle)
+        hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
         dIcon = self.theTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, hLevel)
 
-        cC = int(novIdx["cCount"])
-        wC = int(novIdx["wCount"])
-        pC = int(novIdx["pCount"])
+        cC = int(novIdx.charCount)
+        wC = int(novIdx.wordCount)
+        pC = int(novIdx.paraCount)
 
-        newItem.setText(self._colIdx[nwOutline.TITLE],  novIdx["title"])
+        newItem.setText(self._colIdx[nwOutline.TITLE],  novIdx.title)
         newItem.setData(self._colIdx[nwOutline.TITLE],  Qt.UserRole, tHandle)
         newItem.setIcon(self._colIdx[nwOutline.TITLE],  self.theTheme.getIcon(hIcon))
-        newItem.setText(self._colIdx[nwOutline.LEVEL],  novIdx["level"])
+        newItem.setText(self._colIdx[nwOutline.LEVEL],  novIdx.level)
         newItem.setText(self._colIdx[nwOutline.LABEL],  nwItem.itemName)
         newItem.setIcon(self._colIdx[nwOutline.LABEL],  dIcon)
         newItem.setText(self._colIdx[nwOutline.LINE],   sTitle[1:].lstrip("0"))
         newItem.setData(self._colIdx[nwOutline.LINE],   Qt.UserRole, sTitle)
-        newItem.setText(self._colIdx[nwOutline.SYNOP],  novIdx["synopsis"])
+        newItem.setText(self._colIdx[nwOutline.SYNOP],  novIdx.synopsis)
         newItem.setText(self._colIdx[nwOutline.CCOUNT], f"{cC:n}")
         newItem.setText(self._colIdx[nwOutline.WCOUNT], f"{wC:n}")
         newItem.setText(self._colIdx[nwOutline.PCOUNT], f"{pC:n}")
@@ -686,7 +687,7 @@ class GuiOutlineView(QTreeWidget):
         newItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], Qt.AlignRight)
         newItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], Qt.AlignRight)
 
-        theRefs = self.theIndex.getReferences(tHandle, sTitle)
+        theRefs = self.theProject.index.getReferences(tHandle, sTitle)
         newItem.setText(self._colIdx[nwOutline.POV],    ", ".join(theRefs[nwKeyWords.POV_KEY]))
         newItem.setText(self._colIdx[nwOutline.FOCUS],  ", ".join(theRefs[nwKeyWords.FOCUS_KEY]))
         newItem.setText(self._colIdx[nwOutline.CHAR],   ", ".join(theRefs[nwKeyWords.CHAR_KEY]))
@@ -767,8 +768,6 @@ class GuiOutlineDetails(QScrollArea):
         self.theParent  = theOutline.theParent
         self.theProject = theOutline.theParent.theProject
         self.theTheme   = theOutline.theParent.theTheme
-        self.theIndex   = theOutline.theParent.theIndex
-        self.optState   = theOutline.theParent.theProject.optState
 
         # Sizes
         minTitle = 30*self.theTheme.textNWidth
@@ -1003,32 +1002,33 @@ class GuiOutlineDetails(QScrollArea):
         """Update the content of the tree with the given handle and line
         number pointing to a header.
         """
-        nwItem = self.theProject.projTree[tHandle]
-        novIdx = self.theIndex.getNovelData(tHandle, sTitle)
-        theRefs = self.theIndex.getReferences(tHandle, sTitle)
+        pIndex = self.theProject.index
+        nwItem = self.theProject.tree[tHandle]
+        novIdx = pIndex.getNovelData(tHandle, sTitle)
+        theRefs = pIndex.getReferences(tHandle, sTitle)
         if nwItem is None or novIdx is None:
             return False
 
-        if novIdx["level"] in self.LVL_MAP:
-            self.titleLabel.setText("<b>%s</b>" % self.tr(self.LVL_MAP[novIdx["level"]]))
+        if novIdx.level in self.LVL_MAP:
+            self.titleLabel.setText("<b>%s</b>" % self.tr(self.LVL_MAP[novIdx.level]))
         else:
             self.titleLabel.setText("<b>%s</b>" % self.tr("Title"))
-        self.titleValue.setText(novIdx["title"])
+        self.titleValue.setText(novIdx.title)
 
         itemStatus, _ = nwItem.getImportStatus()
 
         self.fileValue.setText(nwItem.itemName)
         self.itemValue.setText(itemStatus)
 
-        cC = checkInt(novIdx["cCount"], 0)
-        wC = checkInt(novIdx["wCount"], 0)
-        pC = checkInt(novIdx["pCount"], 0)
+        cC = checkInt(novIdx.charCount, 0)
+        wC = checkInt(novIdx.wordCount, 0)
+        pC = checkInt(novIdx.paraCount, 0)
 
         self.cCValue.setText(f"{cC:n}")
         self.wCValue.setText(f"{wC:n}")
         self.pCValue.setText(f"{pC:n}")
 
-        self.synopValue.setText(novIdx["synopsis"])
+        self.synopValue.setText(novIdx.synopsis)
 
         self.povKeyValue.setText(self._formatTags(theRefs, nwKeyWords.POV_KEY))
         self.focKeyValue.setText(self._formatTags(theRefs, nwKeyWords.FOCUS_KEY))
@@ -1046,7 +1046,7 @@ class GuiOutlineDetails(QScrollArea):
     def updateClasses(self):
         """Update the visibility status of class details.
         """
-        usedClasses = self.theProject.projTree.rootClasses()
+        usedClasses = self.theProject.tree.rootClasses()
 
         pltVisible = nwItemClass.PLOT in usedClasses
         timVisible = nwItemClass.TIMELINE in usedClasses

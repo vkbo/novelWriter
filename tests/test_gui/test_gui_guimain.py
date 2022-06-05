@@ -180,10 +180,10 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
 
-    assert len(nwGUI.theProject.projTree) == 0
-    assert len(nwGUI.theProject.projTree._treeOrder) == 0
-    assert len(nwGUI.theProject.projTree._treeRoots) == 0
-    assert nwGUI.theProject.projTree.trashRoot() is None
+    assert len(nwGUI.theProject.tree) == 0
+    assert len(nwGUI.theProject.tree._treeOrder) == 0
+    assert len(nwGUI.theProject.tree._treeRoots) == 0
+    assert nwGUI.theProject.tree.trashRoot() is None
     assert nwGUI.theProject.projPath is None
     assert nwGUI.theProject.projMeta is None
     assert nwGUI.theProject.projFile == "nwProject.nwx"
@@ -207,10 +207,10 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     qtbot.wait(stepDelay)
 
     # Check that we loaded the data
-    assert len(nwGUI.theProject.projTree) == 8
-    assert len(nwGUI.theProject.projTree._treeOrder) == 8
-    assert len(nwGUI.theProject.projTree._treeRoots) == 4
-    assert nwGUI.theProject.projTree.trashRoot() is None
+    assert len(nwGUI.theProject.tree) == 8
+    assert len(nwGUI.theProject.tree._treeOrder) == 8
+    assert len(nwGUI.theProject.tree._treeRoots) == 4
+    assert nwGUI.theProject.tree.trashRoot() is None
     assert nwGUI.theProject.projPath == fncProj
     assert nwGUI.theProject.projMeta == os.path.join(fncProj, "meta")
     assert nwGUI.theProject.projFile == "nwProject.nwx"
@@ -463,11 +463,11 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     # Check a Quick Create and Delete
     assert nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
     newHandle = nwGUI.treeView.getSelectedHandle()
-    assert nwGUI.theProject.projTree["0000000000020"] is not None
+    assert nwGUI.theProject.tree["0000000000020"] is not None
     assert nwGUI.treeView.deleteItem()
     assert nwGUI.treeView.setSelectedHandle(newHandle)
     assert nwGUI.treeView.deleteItem()
-    assert nwGUI.theProject.projTree["0000000000024"] is not None  # Trash
+    assert nwGUI.theProject.tree["0000000000024"] is not None  # Trash
     assert nwGUI.saveProject()
 
     # Check the files

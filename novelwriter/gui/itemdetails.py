@@ -227,7 +227,7 @@ class GuiItemDetails(QWidget):
             self.clearDetails()
             return
 
-        nwItem = self.theProject.projTree[tHandle]
+        nwItem = self.theProject.tree[tHandle]
         if nwItem is None:
             self.clearDetails()
             return
@@ -269,7 +269,7 @@ class GuiItemDetails(QWidget):
         # Layout
         # ======
 
-        hLevel = self.theParent.theIndex.getHandleHeaderLevel(tHandle)
+        hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
         usageIcon = self.theTheme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
         )

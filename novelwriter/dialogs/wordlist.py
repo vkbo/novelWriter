@@ -52,19 +52,19 @@ class GuiWordList(QDialog):
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theParent.theProject
-        self.optState   = theParent.theProject.optState
 
         self.setWindowTitle(self.tr("Project Word List"))
 
         mS = self.mainConf.pxInt(250)
         wW = self.mainConf.pxInt(320)
         wH = self.mainConf.pxInt(340)
+        pOptions = self.theProject.options
 
         self.setMinimumWidth(mS)
         self.setMinimumHeight(mS)
         self.resize(
-            self.mainConf.pxInt(self.optState.getInt("GuiWordList", "winWidth",  wW)),
-            self.mainConf.pxInt(self.optState.getInt("GuiWordList", "winHeight", wH))
+            self.mainConf.pxInt(pOptions.getInt("GuiWordList", "winWidth",  wW)),
+            self.mainConf.pxInt(pOptions.getInt("GuiWordList", "winHeight", wH))
         )
 
         # Main Widgets
@@ -207,8 +207,9 @@ class GuiWordList(QDialog):
         winWidth  = self.mainConf.rpxInt(self.width())
         winHeight = self.mainConf.rpxInt(self.height())
 
-        self.optState.setValue("GuiWordList", "winWidth",  winWidth)
-        self.optState.setValue("GuiWordList", "winHeight", winHeight)
+        pOptions = self.theProject.options
+        pOptions.setValue("GuiWordList", "winWidth",  winWidth)
+        pOptions.setValue("GuiWordList", "winHeight", winHeight)
 
         return
 

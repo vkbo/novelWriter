@@ -64,7 +64,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
     assert theDoc.readDocument() == "### New Scene\n\n"
 
     # Try to open a new (non-existent) file
-    nHandle = theProject.projTree.findRoot(nwItemClass.NOVEL)
+    nHandle = theProject.tree.findRoot(nwItemClass.NOVEL)
     assert nHandle is not None
     xHandle = theProject.newFile("New File", nHandle)
     theDoc = NWDoc(theProject, xHandle)

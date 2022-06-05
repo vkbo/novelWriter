@@ -47,8 +47,8 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
 
     # Rebuild the index
     nwGUI.mainMenu.aRebuildIndex.activate(QAction.Trigger)
-    assert nwGUI.theIndex._tagIndex != {}
-    assert nwGUI.theIndex._refIndex != {}
+    assert nwGUI.theProject.index._tagsIndex._tags != {}
+    assert nwGUI.theProject.index._itemIndex._items != {}
 
     # Select a document in the project tree
     nwGUI.treeView.setSelectedHandle("88243afbe5ed8")
@@ -140,7 +140,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.docViewer.reloadText()
 
     # Change document title
-    nwItem = nwGUI.theProject.projTree["4c4f28287af27"]
+    nwItem = nwGUI.theProject.tree["4c4f28287af27"]
     nwItem.setName("Test Title")
     assert nwItem.itemName == "Test Title"
     nwGUI.docViewer.updateDocInfo("4c4f28287af27")
