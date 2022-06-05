@@ -709,7 +709,6 @@ class GuiBuildNovel(QDialog):
             bldObj.initDocument()
 
         # Make sure the project and document is up to date
-        self.theParent.treeView.flushTreeOrder()
         self.theParent.saveDocument()
 
         self.buildProgress.setMaximum(len(self.theProject.tree))

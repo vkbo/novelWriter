@@ -146,7 +146,6 @@ class GuiNovelTree(QTreeWidget):
         if selItem:
             titleKey = selItem[0].data(self.C_TITLE, Qt.UserRole)[2]
 
-        self.theParent.treeView.flushTreeOrder()
         self._populateTree()
 
         if titleKey is not None and titleKey in self._treeMap:

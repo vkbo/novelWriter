@@ -246,17 +246,14 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
 
     # Move novel folder up
     assert nwTree.moveTreeItem(-1) is False
-    nwTree.flushTreeOrder()
     assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 0
 
     # Move novel folder down
     assert nwTree.moveTreeItem(1) is True
-    nwTree.flushTreeOrder()
     assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 1
 
     # Move novel folder up again
     assert nwTree.moveTreeItem(-1) is True
-    nwTree.flushTreeOrder()
     assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 0
 
     # Clean up
@@ -432,10 +429,8 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
         assert nwTree.emptyTrash() is False
 
     # Empty the trash proper
-    nwTree._setTreeChanged(False)
     assert nwTree.emptyTrash() is True
     assert nwTree.getTreeFromHandle(trashHandle) == [trashHandle]
-    assert nwTree._treeChanged is True
 
     # Try to delete a file, but block the underlying deletion of the file on disk
     assert os.path.isfile(os.path.join(fncDir, "project", "content", "000000000000e.nwd"))

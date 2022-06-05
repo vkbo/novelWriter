@@ -126,16 +126,20 @@ class GuiOutline(QWidget):
         return self.outlineView.setFocus()
 
     ##
-    #  Slots
+    #  Public Slots
     ##
 
-    @pyqtSlot()
-    def projectUpdated(self):
-        """Should be called whenever the number of root folders change.
+    @pyqtSlot(str)
+    def updateRootItem(self, tHandle):
+        """Should be called whenever a root folders changes.
         """
         self.outlineBar.populateNovelList()
         self.outlineData.updateClasses()
         return
+
+    ##
+    #  Private Slots
+    ##
 
     @pyqtSlot()
     def _updateMenuColumns(self):

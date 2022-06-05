@@ -44,9 +44,8 @@ from novelwriter.gui import (
     GuiViewsBar
 )
 from novelwriter.dialogs import (
-    GuiAbout, GuiDocMerge, GuiDocSplit, GuiItemEditor, GuiPreferences,
-    GuiProjectDetails, GuiProjectLoad, GuiProjectSettings, GuiUpdates,
-    GuiWordList
+    GuiAbout, GuiDocMerge, GuiDocSplit, GuiPreferences, GuiProjectDetails,
+    GuiProjectLoad, GuiProjectSettings, GuiUpdates, GuiWordList
 )
 from novelwriter.tools import (
     GuiBuildNovel, GuiLipsum, GuiProjectWizard, GuiWritingStats
@@ -123,7 +122,10 @@ class GuiMain(QMainWindow):
         self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
         self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
         self.treeView.wordCountsChanged.connect(self._updateStatusWordCount)
-        self.treeView.rootFoldersChanged.connect(self.projView.projectUpdated)
+        self.treeView.treeItemChanged.connect(self.docEditor.updateDocInfo)
+        self.treeView.treeItemChanged.connect(self.docViewer.updateDocInfo)
+        self.treeView.treeItemChanged.connect(self.treeMeta.updateViewBox)
+        self.treeView.rootFolderChanged.connect(self.projView.updateRootItem)
 
         self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
         self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
@@ -357,7 +359,7 @@ class GuiMain(QMainWindow):
             self.rebuildTrees()
             self.saveProject()
             self.docEditor.setDictionaries()
-            self.projView.projectUpdated()
+            self.projView.updateRootItem(None)
             self.rebuildIndex(beQuiet=True)
             self.statusBar.setRefTime(self.theProject.projOpened)
             self.statusBar.setProjectStatus(nwState.GOOD)
@@ -504,7 +506,7 @@ class GuiMain(QMainWindow):
         self.docEditor.setDictionaries()
         self.docEditor.toggleSpellCheck(self.theProject.spellCheck)
         self.statusBar.setRefTime(self.theProject.projOpened)
-        self.projView.projectUpdated()
+        self.projView.updateRootItem(None)
         self._updateStatusWordCount()
 
         # Restore previously open documents, if any
@@ -596,7 +598,6 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        self.treeView.flushTreeOrder()
         nHandle = None   # The next handle after tHandle
         fHandle = None   # The first file handle we encounter
         foundIt = False  # We've found tHandle, pick the next we see
@@ -813,27 +814,10 @@ class GuiMain(QMainWindow):
                 tHandle = self.docEditor.docHandle()
             else:
                 tHandle = self.treeView.getSelectedHandle()
+        if tHandle:
+            return self.treeView.editTreeItem(tHandle)
 
-        if tHandle is None:
-            logger.warning("No item selected")
-            return False
-
-        tItem = self.theProject.tree[tHandle]
-        if tItem is None:
-            return False
-        if tItem.itemType == nwItemType.NO_TYPE:
-            return False
-
-        logger.verbose("Requesting change to item '%s'", tHandle)
-        dlgProj = GuiItemEditor(self, tHandle)
-        dlgProj.exec_()
-        if dlgProj.result() == QDialog.Accepted:
-            self.treeView.setTreeItemValues(tHandle)
-            self.treeMeta.updateViewBox(tHandle)
-            self.docEditor.updateDocInfo(tHandle)
-            self.docViewer.updateDocInfo(tHandle)
-
-        return True
+        return False
 
     def rebuildTrees(self):
         """Rebuild the project tree.
@@ -965,8 +949,6 @@ class GuiMain(QMainWindow):
         if not self.hasProject:
             logger.error("No project open")
             return False
-
-        self.treeView.flushTreeOrder()
 
         dlgDetails = getGuiItem("GuiProjectDetails")
         if dlgDetails is None:
@@ -1583,7 +1565,6 @@ class GuiMain(QMainWindow):
         if self.mainStack.currentIndex() == self.idxOutlineView:
             logger.verbose("Novel tree changed while Outline tab active")
             if self.hasProject:
-                self.treeView.flushTreeOrder()
                 self.projView.refreshView(novelChanged=True)
 
         return

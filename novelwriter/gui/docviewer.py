@@ -322,15 +322,6 @@ class GuiDocViewer(QTextBrowser):
 
         return
 
-    def updateDocInfo(self, tHandle):
-        """Called when an item label is changed to check if the document
-        title bar needs updating,
-        """
-        if tHandle == self._docHandle:
-            self.docHeader.setTitleFromHandle(self._docHandle)
-            self.updateDocMargins()
-        return
-
     ##
     #  Properties
     ##
@@ -389,7 +380,21 @@ class GuiDocViewer(QTextBrowser):
         return 0
 
     ##
-    #  Slots
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str)
+    def updateDocInfo(self, tHandle):
+        """Called when an item label is changed to check if the document
+        title bar needs updating,
+        """
+        if tHandle == self._docHandle:
+            self.docHeader.setTitleFromHandle(self._docHandle)
+            self.updateDocMargins()
+        return
+
+    ##
+    #  Private Slots
     ##
 
     @pyqtSlot("QUrl")
