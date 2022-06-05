@@ -67,12 +67,10 @@ class NWIndex:
 
         self.theProject = theProject
 
-        # Internal
-        self._indexBroken = False
-
-        # Indices
+        # Storage and State
         self._tagsIndex = TagsIndex()
         self._itemIndex = ItemIndex(theProject)
+        self._indexBroken = False
 
         # TimeStamps
         self._timeNovel = 0
@@ -80,6 +78,9 @@ class NWIndex:
         self._timeIndex = 0
 
         return
+
+    def __repr__(self):
+        return f"<NWIndex project='{self.theProject.projName}'>"
 
     ##
     #  Properties
@@ -124,8 +125,7 @@ class NWIndex:
 
         logger.debug("Re-indexing item '%s'", tHandle)
         theDoc = NWDoc(self.theProject, tHandle)
-        theText = theDoc.readDocument()
-        self.scanText(tHandle, theText if theText is not None else "")
+        self.scanText(tHandle, theDoc.readDocument() or "")
 
         return True
 
@@ -316,7 +316,7 @@ class NWIndex:
         return True
 
     ##
-    #  Internal Indexers
+    #  Internal Indexer Helpers
     ##
 
     def _indexTitle(self, tHandle, aLine, nTitle):
@@ -613,11 +613,13 @@ class NWIndex:
 
 
 # =============================================================================================== #
-#  Indexer Objects
+#  The Tags Index Object
 # =============================================================================================== #
 
 class TagsIndex:
-    """A wrapper class that holds the reverse lookup tags index.
+    """A wrapper class that holds the reverse lookup tags index. This is
+    just a simple wrapper around a single dictionary to keep tighter
+    control of the keys.
     """
 
     def __init__(self):
@@ -719,8 +721,16 @@ class TagsIndex:
 # END Class TagsIndex
 
 
+# =============================================================================================== #
+#  The Item Index Objects
+# =============================================================================================== #
+
 class ItemIndex:
-    """A wrapper object holding the indexed items.
+    """A wrapper object holding the indexed items. This is a warapper
+    class around a single storage dictionary with a set of utility
+    functions for setting and accessing the index data. Each indexed
+    item is stored in an IndexItem object, which again holds an
+    IndexHeading object for each header of the text.
     """
 
     def __init__(self, theProject):
@@ -896,7 +906,8 @@ class IndexItem:
     """This object represents the index data of a project item (NWItem).
     It holds a record of all the headings in the text, and the meta data
     associated with each heading. It also holds a pointer to the project
-    item.
+    item. The main heading level of the item is also held here since it
+    must be reset each time the item is re-indexed.
     """
 
     def __init__(self, tHandle, tItem):
@@ -912,7 +923,7 @@ class IndexItem:
         return
 
     def __repr__(self):
-        return f"<IndexItem handle={self._handle}>"
+        return f"<IndexItem handle='{self._handle}'>"
 
     ##
     # Properties
@@ -1062,7 +1073,7 @@ class IndexHeading:
         return
 
     def __repr__(self):
-        return f"<IndexHeading key={self._key}>"
+        return f"<IndexHeading key='{self._key}'>"
 
     ##
     #  Properties
@@ -1165,8 +1176,11 @@ class IndexHeading:
 
     def packReferences(self):
         """Pack references into a dictionary for saving to cache.
+        Multiple types are packed into a sorted, comma separated string.
+        It is sorted to prevent creating unnecessary diffs as the order
+        of a set is not guaranteed.
         """
-        return {key: ",".join(value) for key, value in self._refs.items()}
+        return {key: ",".join(sorted(list(value))) for key, value in self._refs.items()}
 
     def unpackData(self, data):
         """Unpack a heading entry from a dictionary.
@@ -1189,7 +1203,7 @@ class IndexHeading:
             if not isinstance(tagKey, str):
                 raise ValueError("itemIndex reference key must be a string")
             if not isinstance(refTypes, str):
-                raise ValueError("itemIndex reference types must be a string")
+                raise ValueError("itemIndex reference type must be a string")
             for refType in refTypes.split(","):
                 if refType in nwKeyWords.VALID_KEYS:
                     self.addReference(tagKey, refType)

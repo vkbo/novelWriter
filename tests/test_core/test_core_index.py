@@ -29,7 +29,7 @@ from mock import causeException
 from tools import buildTestProject, cmpFiles, writeFile
 
 from novelwriter.core.project import NWProject
-from novelwriter.core.index import NWIndex, countWords
+from novelwriter.core.index import NWIndex, countWords, TagsIndex
 from novelwriter.enum import nwItemClass, nwItemLayout
 
 
@@ -46,6 +46,8 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     assert theProject.openProject(nwLipsum)
 
     theIndex = NWIndex(theProject)
+    assert repr(theIndex) == "<NWIndex project='Lorem Ipsum'>"
+
     notIndexable = {
         "b3643d0f92e32": False,  # Novel ROOT
         "45e6b01ca35c1": False,  # Chapter One FOLDER
@@ -762,6 +764,166 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
 
 
 @pytest.mark.core
+def testCoreIndex_TagsIndex():
+    """Check the TagsIndex class.
+    """
+    tagsIndex = TagsIndex()
+    assert tagsIndex._tags == {}
+
+    # Expected data
+    content = {
+        "Tag1": {
+            "handle": "0000000000001",
+            "heading": "T000001",
+            "class": nwItemClass.NOVEL.name,
+        },
+        "Tag2": {
+            "handle": "0000000000002",
+            "heading": "T000002",
+            "class": nwItemClass.CHARACTER.name,
+        },
+        "Tag3": {
+            "handle": "0000000000003",
+            "heading": "T000003",
+            "class": nwItemClass.PLOT.name,
+        },
+    }
+
+    # Add data
+    tagsIndex.add("Tag1", "0000000000001", "T000001", nwItemClass.NOVEL)
+    tagsIndex.add("Tag2", "0000000000002", "T000002", nwItemClass.CHARACTER)
+    tagsIndex.add("Tag3", "0000000000003", "T000003", nwItemClass.PLOT)
+    assert tagsIndex._tags == content
+
+    # Get items
+    assert tagsIndex["Tag1"] == content["Tag1"]
+    assert tagsIndex["Tag2"] == content["Tag2"]
+    assert tagsIndex["Tag3"] == content["Tag3"]
+    assert tagsIndex["Tag4"] is None
+
+    # Contains
+    assert "Tag1" in tagsIndex
+    assert "Tag2" in tagsIndex
+    assert "Tag3" in tagsIndex
+    assert "Tag4" not in tagsIndex
+
+    # Read back handles
+    assert tagsIndex.tagHandle("Tag1") == "0000000000001"
+    assert tagsIndex.tagHandle("Tag2") == "0000000000002"
+    assert tagsIndex.tagHandle("Tag3") == "0000000000003"
+    assert tagsIndex.tagHandle("Tag4") is None
+
+    # Read back headings
+    assert tagsIndex.tagHeading("Tag1") == "T000001"
+    assert tagsIndex.tagHeading("Tag2") == "T000002"
+    assert tagsIndex.tagHeading("Tag3") == "T000003"
+    assert tagsIndex.tagHeading("Tag4") == "T000000"
+
+    # Read back classes
+    assert tagsIndex.tagClass("Tag1") == nwItemClass.NOVEL.name
+    assert tagsIndex.tagClass("Tag2") == nwItemClass.CHARACTER.name
+    assert tagsIndex.tagClass("Tag3") == nwItemClass.PLOT.name
+    assert tagsIndex.tagClass("Tag4") is None
+
+    # Pack Data
+    assert tagsIndex.packData() == content
+
+    # Delete the second key and a nomn-existant key
+    del tagsIndex["Tag2"]
+    del tagsIndex["Tag4"]
+    assert "Tag1" in tagsIndex
+    assert "Tag2" not in tagsIndex
+    assert "Tag3" in tagsIndex
+    assert "Tag4" not in tagsIndex
+
+    # Clear and reload
+    tagsIndex.clear()
+    assert tagsIndex._tags == {}
+    assert tagsIndex.packData() == {}
+
+    tagsIndex.unpackData(content)
+    assert tagsIndex._tags == content
+    assert tagsIndex.packData() == content
+
+    # Unpack Errors
+    # =============
+    tagsIndex.clear()
+
+    # Invalid data type
+    with pytest.raises(ValueError):
+        tagsIndex.unpackData([])
+
+    # Invalid key
+    with pytest.raises(ValueError):
+        tagsIndex.unpackData({
+            1234: {
+                "handle": "0000000000001",
+                "heading": "T000001",
+                "class": "NOVEL",
+            }
+        })
+
+    # Missing handle
+    with pytest.raises(KeyError):
+        tagsIndex.unpackData({
+            "Tag1": {
+                "heading": "T000001",
+                "class": "NOVEL",
+            }
+        })
+
+    # Missing heading
+    with pytest.raises(KeyError):
+        tagsIndex.unpackData({
+            "Tag1": {
+                "handle": "0000000000001",
+                "class": "NOVEL",
+            }
+        })
+
+    # Missing class
+    with pytest.raises(KeyError):
+        tagsIndex.unpackData({
+            "Tag1": {
+                "handle": "0000000000001",
+                "heading": "T000001",
+            }
+        })
+
+    # Invalid handle
+    with pytest.raises(ValueError):
+        tagsIndex.unpackData({
+            "Tag1": {
+                "handle": "blablabla",
+                "heading": "T000001",
+                "class": "NOVEL",
+            }
+        })
+
+    # Invalid heading
+    with pytest.raises(ValueError):
+        tagsIndex.unpackData({
+            "Tag1": {
+                "handle": "0000000000001",
+                "heading": "blabla",
+                "class": "NOVEL",
+            }
+        })
+
+    # Invalid class
+    with pytest.raises(ValueError):
+        tagsIndex.unpackData({
+            "Tag1": {
+                "handle": "0000000000001",
+                "heading": "T000001",
+                "class": "blabla",
+            }
+        })
+
+# END Test testCoreIndex_TagsIndex
+
+
+@pytest.mark.core
 def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
     """Check the ItemIndex class.
     """
@@ -779,26 +941,6 @@ def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
     assert nHandle not in itemIndex
     assert cHandle not in itemIndex
     assert sHandle not in itemIndex
-
-    # Unpack Data
-    # ===========
-
-    # Data must be dictionary
-    with pytest.raises(ValueError):
-        itemIndex.unpackData("stuff")
-
-    # Keys must be valid handles
-    with pytest.raises(ValueError):
-        itemIndex.unpackData({"stuff": "more stuff"})
-
-    # Unknown keys should be skipped
-    itemIndex.unpackData({"0000000000000": {}})
-    assert itemIndex._items == {}
-
-    # Known keys can be added, even witout data
-    itemIndex.unpackData({nHandle: {}})
-    assert nHandle in itemIndex
-    itemIndex.clear()
 
     # Add Items
     # =========
@@ -820,7 +962,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
     # Set the remainig data values
     itemIndex.setHeadingCounts(cHandle, "T000001", 60, 10, 2)
     itemIndex.setHeadingSynopsis(cHandle, "T000001", "In the beginning ...")
-    itemIndex.setHeadingTag(cHandle, "T000001", "One")  # Although it isn't allowed to have a tag
+    itemIndex.setHeadingTag(cHandle, "T000001", "One")
     itemIndex.addHeadingReferences(cHandle, "T000001", ["Jane"], "@pov")
     itemIndex.addHeadingReferences(cHandle, "T000001", ["Jane"], "@focus")
     itemIndex.addHeadingReferences(cHandle, "T000001", ["Jane", "John"], "@char")
@@ -841,6 +983,37 @@ def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
     itemIndex.add(sHandle, theProject.tree[sHandle])
     itemIndex.addItemHeading(nHandle, "T000001", "H1", "Novel")
     itemIndex.addItemHeading(sHandle, "T000001", "H3", "Scene One")
+
+    # Check Item and Heading Direct Access
+    # ====================================
+
+    # Check repr strings
+    assert repr(itemIndex[nHandle]) == f"<IndexItem handle='{nHandle}'>"
+    assert repr(itemIndex[nHandle]["T000001"]) == "<IndexHeading key='T000001'>"
+
+    # Check content of a single item
+    assert "T000001" in itemIndex[nHandle]
+    assert itemIndex[cHandle].allTags() == ["One"]
+
+    # Check the content of a single heading
+    assert itemIndex[cHandle]["T000001"].key == "T000001"
+    assert itemIndex[cHandle]["T000001"].level == "H2"
+    assert itemIndex[cHandle]["T000001"].title == "Chapter One"
+    assert itemIndex[cHandle]["T000001"].tag == "One"
+    assert itemIndex[cHandle]["T000001"].charCount == 60
+    assert itemIndex[cHandle]["T000001"].wordCount == 10
+    assert itemIndex[cHandle]["T000001"].paraCount == 2
+    assert itemIndex[cHandle]["T000001"].synopsis == "In the beginning ..."
+    assert "Jane" in itemIndex[cHandle]["T000001"].references
+    assert "John" in itemIndex[cHandle]["T000001"].references
+
+    # Check heading level setter
+    itemIndex[cHandle]["T000001"].setLevel("H3")  # Change it
+    assert itemIndex[cHandle]["T000001"].level == "H3"
+    itemIndex[cHandle]["T000001"].setLevel("H2")  # Set it back
+    assert itemIndex[cHandle]["T000001"].level == "H2"
+    itemIndex[cHandle]["T000001"].setLevel("H5")  # Invalid level
+    assert itemIndex[cHandle]["T000001"].level == "H2"
 
     # Data Extraction
     # ===============
@@ -907,6 +1080,82 @@ def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
     # Delete new item
     del itemIndex[uHandle]
     assert uHandle not in itemIndex
+
+    # Unpack Error Handling
+    # =====================
+
+    # Pack/unpack should restore state
+    content = itemIndex.packData()
+    itemIndex.clear()
+    itemIndex.unpackData(content)
+    assert itemIndex.packData() == content
+    itemIndex.clear()
+
+    # Data must be dictionary
+    with pytest.raises(ValueError):
+        itemIndex.unpackData("stuff")
+
+    # Keys must be valid handles
+    with pytest.raises(ValueError):
+        itemIndex.unpackData({"stuff": "more stuff"})
+
+    # Unknown keys should be skipped
+    itemIndex.unpackData({"0000000000000": {}})
+    assert itemIndex._items == {}
+
+    # Known keys can be added, even witout data
+    itemIndex.unpackData({nHandle: {}})
+    assert nHandle in itemIndex
+
+    # Title tags must be valid
+    with pytest.raises(ValueError):
+        itemIndex.unpackData({cHandle: {"headings": {"TTTTTTT": {}}}})
+
+    # Reference without a heading should be rejected
+    itemIndex.unpackData({
+        cHandle: {
+            "headings": {"T000001": {}},
+            "references": {"T000001": {}, "T000002": {}},
+        }
+    })
+    assert "T000001" in itemIndex[cHandle]
+    assert "T000002" not in itemIndex[cHandle]
+    itemIndex.clear()
+
+    # Tag keys must be strings
+    with pytest.raises(ValueError):
+        itemIndex.unpackData({
+            cHandle: {
+                "headings": {"T000001": {}},
+                "references": {"T000001": {1234: "@pov"}},
+            }
+        })
+
+    # Type must be strings
+    with pytest.raises(ValueError):
+        itemIndex.unpackData({
+            cHandle: {
+                "headings": {"T000001": {}},
+                "references": {"T000001": {"John": []}},
+            }
+        })
+
+    # Types must be valid
+    with pytest.raises(ValueError):
+        itemIndex.unpackData({
+            cHandle: {
+                "headings": {"T000001": {}},
+                "references": {"T000001": {"John": "@pov,@char,@stuff"}},
+            }
+        })
+
+    # This should pass
+    itemIndex.unpackData({
+        cHandle: {
+            "headings": {"T000001": {}},
+            "references": {"T000001": {"John": "@pov,@char"}},
+        }
+    })
 
 # END Test testCoreIndex_ItemIndex
 
