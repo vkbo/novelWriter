@@ -220,6 +220,11 @@ class GuiItemDetails(QWidget):
         """
         self.updateViewBox(self._itemHandle)
 
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str)
     def updateViewBox(self, tHandle):
         """Populate the details box from a given handle.
         """
@@ -289,10 +294,6 @@ class GuiItemDetails(QWidget):
             self.pCountData.setText("–")
 
         return
-
-    ##
-    #  Slots
-    ##
 
     @pyqtSlot(str, int, int, int)
     def doUpdateCounts(self, tHandle, cC, wC, pC):

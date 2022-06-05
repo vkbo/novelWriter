@@ -136,7 +136,7 @@ class GuiNovelTree(QTreeWidget):
         """
         logger.verbose("Requesting refresh of the novel tree")
         treeChanged = self.theParent.treeView.changedSince(self._lastBuild)
-        indexChanged = self.theProject.index.novelChangedSince(self._lastBuild)
+        indexChanged = self.theProject.index.indexChangedSince(self._lastBuild)
         if not (treeChanged or indexChanged or overRide):
             logger.verbose("No changes have been made to the novel index")
             return
@@ -146,7 +146,6 @@ class GuiNovelTree(QTreeWidget):
         if selItem:
             titleKey = selItem[0].data(self.C_TITLE, Qt.UserRole)[2]
 
-        self.theParent.treeView.flushTreeOrder()
         self._populateTree()
 
         if titleKey is not None and titleKey in self._treeMap:

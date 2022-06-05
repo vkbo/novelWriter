@@ -265,6 +265,22 @@ class NWTree():
     #  Tree Root Methods
     ##
 
+    def rootClasses(self):
+        """Return a set of all root classes in use by the project.
+        """
+        rootClasses = set()
+        for nwItem in self._treeRoots.values():
+            rootClasses.add(nwItem.itemClass)
+        return rootClasses
+
+    def iterRoots(self, itemClass):
+        """Iterate over all items of a given class.
+        """
+        for tHandle, nwItem in self._treeRoots.items():
+            if nwItem.itemClass == itemClass:
+                yield tHandle, nwItem
+        return
+
     def isRoot(self, tHandle):
         """Check if a handle is a root item.
         """

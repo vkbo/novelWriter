@@ -61,7 +61,6 @@ def testGuiMain_ProjectBlocker(monkeypatch, nwGUI):
     assert nwGUI.editItem() is False
     assert nwGUI.requestNovelTreeRefresh() is False
     assert nwGUI.rebuildIndex() is False
-    assert nwGUI.rebuildOutline() is False
     assert nwGUI.showProjectSettingsDialog() is False
     assert nwGUI.showProjectDetailsDialog() is False
     assert nwGUI.showBuildProjectDialog() is False
@@ -149,12 +148,12 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Project Outline has focus
     nwGUI.switchFocus(nwWidget.OUTLINE)
     with monkeypatch.context() as mp:
-        mp.setattr(GuiOutline, "hasFocus", lambda *a: True)
+        mp.setattr(GuiOutline, "treeFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle() is None
-        actItem = nwGUI.projView.topLevelItem(0)
+        actItem = nwGUI.projView.outlineView.topLevelItem(0)
         chpItem = actItem.child(0)
         selItem = chpItem.child(0)
-        nwGUI.projView.setCurrentItem(selItem)
+        nwGUI.projView.outlineView.setCurrentItem(selItem)
         nwGUI._keyPressReturn()
         assert nwGUI.docEditor.docHandle() == sHandle
         assert nwGUI.closeDocument() is True

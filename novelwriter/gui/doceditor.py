@@ -33,6 +33,7 @@ import bisect
 import logging
 import novelwriter
 
+from enum import Enum
 from time import time
 
 from PyQt5.QtCore import (
@@ -50,7 +51,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import NWDoc, NWSpellEnchant, countWords
-from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert
+from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode
 from novelwriter.common import transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
 from novelwriter.gui.dochighlight import GuiDocHighlighter
@@ -69,6 +70,7 @@ class GuiDocEditor(QTextEdit):
     spellDictionaryChanged = pyqtSignal(str, str)
     docEditedStatusChanged = pyqtSignal(bool)
     docCountsChanged = pyqtSignal(str, int, int, int)
+    loadDocumentTagRequest = pyqtSignal(str, Enum)
 
     def __init__(self, theParent):
         QTextEdit.__init__(self, theParent)
@@ -567,16 +569,6 @@ class GuiDocEditor(QTextEdit):
 
         return
 
-    def updateDocInfo(self, tHandle):
-        """Called when an item label is changed to check if the document
-        title bar needs updating,
-        """
-        if tHandle == self._docHandle:
-            self.docHeader.setTitleFromHandle(self._docHandle)
-            self.docFooter.updateInfo()
-            self.updateDocMargins()
-        return
-
     ##
     #  Properties
     ##
@@ -1066,7 +1058,22 @@ class GuiDocEditor(QTextEdit):
         return
 
     ##
-    #  Slots
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str)
+    def updateDocInfo(self, tHandle):
+        """Called when an item label is changed to check if the document
+        title bar needs updating,
+        """
+        if tHandle == self._docHandle:
+            self.docHeader.setTitleFromHandle(self._docHandle)
+            self.docFooter.updateInfo()
+            self.updateDocMargins()
+        return
+
+    ##
+    #  Private Slots
     ##
 
     @pyqtSlot(int, int, int)
@@ -1894,7 +1901,7 @@ class GuiDocEditor(QTextEdit):
 
             if loadTag:
                 logger.verbose("Attempting to follow tag '%s'", theWord)
-                self.theParent.docViewer.loadFromTag(theWord)
+                self.loadDocumentTagRequest.emit(theWord, nwDocMode.VIEW)
             else:
                 logger.verbose("Potential tag '%s'", theWord)
 

@@ -197,8 +197,7 @@ def testCoreIndex_CheckThese(mockGUI, fncDir, mockRnd):
     nItem = theProject.tree[nHandle]
     cItem = theProject.tree[cHandle]
 
-    assert theIndex.novelChangedSince(0) is False
-    assert theIndex.notesChangedSince(0) is False
+    assert theIndex.rootChangedSince("0000000000010", 0) is False
     assert theIndex.indexChangedSince(0) is False
 
     assert theIndex.scanText(cHandle, (
@@ -228,12 +227,14 @@ def testCoreIndex_CheckThese(mockGUI, fncDir, mockRnd):
         "@time": []
     }
 
-    assert theIndex.novelChangedSince(0) is True
-    assert theIndex.notesChangedSince(0) is True
+    assert theIndex.rootChangedSince("0000000000010", 0) is True
     assert theIndex.indexChangedSince(0) is True
 
     assert theIndex.getHandleHeaderLevel(cHandle) == "H1"
     assert theIndex.getHandleHeaderLevel(nHandle) == "H1"
+    assert theIndex.getHandleHeaderIntLevel(cHandle) == 1
+    assert theIndex.getHandleHeaderIntLevel(nHandle) == 1
+    assert theIndex.getHandleHeaderIntLevel("stuff") == 0
 
     # Zero Items
     assert theIndex.checkThese([], cItem) == []

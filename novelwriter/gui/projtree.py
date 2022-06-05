@@ -32,11 +32,14 @@ from time import time
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
-    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction, QFrame
+    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction, QFrame,
+    QDialog
 )
 
 from novelwriter.core import NWDoc
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from novelwriter.common import minmax
+from novelwriter.dialogs.itemeditor import GuiItemEditor
 
 logger = logging.getLogger(__name__)
 
@@ -48,8 +51,9 @@ class GuiProjectTree(QTreeWidget):
     C_EXPORT = 2
     C_STATUS = 3
 
-    novelItemChanged = pyqtSignal()
-    noteItemChanged = pyqtSignal()
+    treeItemChanged = pyqtSignal(str)
+    novelItemChanged = pyqtSignal(str)
+    rootFolderChanged = pyqtSignal(str)
     wordCountsChanged = pyqtSignal()
 
     def __init__(self, theParent):
@@ -63,10 +67,9 @@ class GuiProjectTree(QTreeWidget):
         self.theProject = theParent.theProject
 
         # Internal Variables
-        self._treeMap     = {}
-        self._treeChanged = False
+        self._treeMap = {}
+        self._lastMove = {}
         self._timeChanged = 0
-        self._lastMove    = {}
 
         ##
         #  Build GUI
@@ -156,15 +159,15 @@ class GuiProjectTree(QTreeWidget):
         """
         self.clear()
         self._treeMap = {}
-        self._treeChanged = False
+        self._lastMove = {}
         self._timeChanged = 0
         return
 
     def newTreeItem(self, itemType, itemClass=None):
         """Add new item to the tree, with a given itemType (and
-        itemClass if Root), and attach it to the selected handle. Also make
-        sure the item is added in a place it can be added, and that other
-        meta data is set correctly to ensure a valid project tree.
+        itemClass if Root), and attach it to the selected handle. Also
+        make sure the item is added in a place it can be added, and that
+        other meta data is set correctly to ensure a valid project tree.
         """
         if not self.theParent.hasProject:
             logger.error("No project open")
@@ -186,9 +189,11 @@ class GuiProjectTree(QTreeWidget):
                 ), nwAlert.ERROR)
                 return False
 
-            # If the selected item is a file, the new item will be a sibling
+            # If the selected item is a file, the new item will be a
+            # sibling if the file has no children, otherwise a child
             pItem = self.theProject.tree[sHandle]
-            if pItem.itemType == nwItemType.FILE:
+            qItem = self._getTreeItem(sHandle)
+            if pItem.itemType == nwItemType.FILE and qItem.childCount() == 0:
                 nHandle = sHandle
                 sHandle = pItem.itemParent
                 if sHandle is None:
@@ -221,9 +226,9 @@ class GuiProjectTree(QTreeWidget):
         # Add the new item to the tree
         self.revealNewTreeItem(tHandle, nHandle)
         self.theParent.editItem(tHandle)
-        nwItem = self.theProject.tree[tHandle]
 
-        # If this is a folder, return here
+        # Handle new file creation
+        nwItem = self.theProject.tree[tHandle]
         if nwItem.itemType != nwItemType.FILE:
             return True
 
@@ -231,7 +236,9 @@ class GuiProjectTree(QTreeWidget):
         newDoc = NWDoc(self.theProject, tHandle)
         if not newDoc.readDocument():
             if nwItem.itemLayout == nwItemLayout.DOCUMENT:
-                newText = f"### {nwItem.itemName}\n\n"
+                iLvl = self.theProject.index.getHandleHeaderIntLevel(sHandle)
+                hLvl = "#"*minmax(iLvl + 1, 2, 4)
+                newText = f"{hLvl} {nwItem.itemName}\n\n"
             else:
                 newText = f"# {nwItem.itemName}\n\n"
 
@@ -266,7 +273,7 @@ class GuiProjectTree(QTreeWidget):
         if pHandle is not None and pHandle in self._treeMap:
             self._treeMap[pHandle].setExpanded(True)
 
-        self._emitItemChange(tHandle)
+        self._alertTreeChange(tHandle=tHandle, flush=True)
         self.clearSelection()
         trItem.setSelected(True)
 
@@ -308,10 +315,31 @@ class GuiProjectTree(QTreeWidget):
             pItem.insertChild(nIndex, cItem)
             self._recordLastMove(cItem, pItem, tIndex)
 
+        self._alertTreeChange(tHandle=tHandle, flush=True)
         self.clearSelection()
         cItem.setSelected(True)
-        self._setTreeChanged(True)
-        self._emitItemChange(tHandle)
+
+        return True
+
+    def editTreeItem(self, tHandle=None):
+        """Open the edit item dialog.
+        """
+        if tHandle is None:
+            logger.warning("No item selected")
+            return False
+
+        tItem = self.theProject.tree[tHandle]
+        if tItem is None:
+            return False
+        if tItem.itemType == nwItemType.NO_TYPE:
+            return False
+
+        logger.verbose("Requesting change to item '%s'", tHandle)
+        dlgProj = GuiItemEditor(self, tHandle)
+        dlgProj.exec_()
+        if dlgProj.result() == QDialog.Accepted:
+            self.setTreeItemValues(tHandle)
+            self._alertTreeChange(tHandle=tHandle, flush=False)
 
         return True
 
@@ -327,16 +355,6 @@ class GuiProjectTree(QTreeWidget):
         logger.debug("Saving project tree item order")
         self.theProject.setTreeOrder(theList)
         return True
-
-    def flushTreeOrder(self):
-        """Calls saveTreeOrder if there are unsaved changes, otherwise
-        does nothing.
-        """
-        if self._treeChanged:
-            logger.verbose("Flushing project tree to project class")
-            self.saveTreeOrder()
-            self._setTreeChanged(False)
-        return
 
     def getTreeFromHandle(self, tHandle):
         """Recursively return all the children items starting from a
@@ -409,7 +427,7 @@ class GuiProjectTree(QTreeWidget):
             self.deleteItem(tHandle, alreadyAsked=True, bulkAction=True)
 
         if nTrash > 0:
-            self._setTreeChanged(True)
+            self._alertTreeChange(tHandle=trashHandle, flush=True)
 
         return True
 
@@ -443,6 +461,7 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         wCount = self._getItemWordCount(tHandle)
+        autoFlush = not bulkAction
         if nwItemS.itemType == nwItemType.ROOT:
             # Only an empty ROOT folder can be deleted
             logger.debug("User requested a root folder '%s' deleted", tHandle)
@@ -450,7 +469,7 @@ class GuiProjectTree(QTreeWidget):
             if trItemS.childCount() == 0:
                 self.takeTopLevelItem(tIndex)
                 self._deleteTreeItem(tHandle)
-                self._setTreeChanged(True)
+                self._alertTreeChange(tHandle=tHandle, flush=True)
             else:
                 self.theParent.makeAlert(self.tr(
                     "Cannot delete root folder. It is not empty. "
@@ -466,7 +485,7 @@ class GuiProjectTree(QTreeWidget):
             tIndex = trItemP.indexOfChild(trItemS)
             trItemP.takeChild(tIndex)
             self._deleteTreeItem(tHandle)
-            self._setTreeChanged(True)
+            self._alertTreeChange(tHandle=tHandle, flush=autoFlush)
 
         else:
             # A populated FOLDER or a FILE requires confirmtation
@@ -502,7 +521,7 @@ class GuiProjectTree(QTreeWidget):
                             self.theParent.closeDocument()
                         self._deleteTreeItem(dHandle)
 
-                    self._setTreeChanged(True)
+                    self._alertTreeChange(tHandle=tHandle, flush=autoFlush)
                     self.wordCountsChanged.emit()
 
             else:
@@ -521,7 +540,7 @@ class GuiProjectTree(QTreeWidget):
                     trItemT.addChild(trItemC)
                     self._postItemMove(tHandle, wCount)
                     self._recordLastMove(trItemS, trItemP, tIndex)
-                    self._setTreeChanged(True)
+                    self._alertTreeChange(tHandle=tHandle, flush=autoFlush)
 
         return True
 
@@ -542,7 +561,7 @@ class GuiProjectTree(QTreeWidget):
             else:
                 expIcon = self.theTheme.getIcon("cross")
 
-        itempStatus, statusIcon = nwItem.getImportStatus()
+        itemStatus, statusIcon = nwItem.getImportStatus()
         hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
         itemIcon = self.theTheme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
@@ -552,7 +571,7 @@ class GuiProjectTree(QTreeWidget):
         trItem.setText(self.C_NAME, nwItem.itemName)
         trItem.setIcon(self.C_EXPORT, expIcon)
         trItem.setIcon(self.C_STATUS, statusIcon)
-        trItem.setToolTip(self.C_STATUS, itempStatus)
+        trItem.setToolTip(self.C_STATUS, itemStatus)
 
         if self.mainConf.emphLabels and nwItem.itemLayout == nwItemLayout.DOCUMENT:
             trFont = trItem.font(self.C_NAME)
@@ -657,6 +676,7 @@ class GuiProjectTree(QTreeWidget):
         dstItem.insertChild(dstIndex, movItem)
 
         self._postItemMove(sHandle, wCount)
+        self._alertTreeChange(tHandle=sHandle, flush=True)
 
         self.clearSelection()
         movItem.setSelected(True)
@@ -785,6 +805,7 @@ class GuiProjectTree(QTreeWidget):
         QTreeWidget.dropEvent(self, theEvent)
         self._postItemMove(sHandle, wCount)
         self._recordLastMove(sItem, pItem, pIndex)
+        self._alertTreeChange(tHandle=sHandle, flush=True)
         sItem.setExpanded(isExpanded)
 
         return
@@ -826,8 +847,6 @@ class GuiProjectTree(QTreeWidget):
 
         # Trigger dependent updates
         self.propagateCount(tHandle, wCount)
-        self._setTreeChanged(True)
-        self._emitItemChange(tHandle)
 
         return True
 
@@ -920,15 +939,13 @@ class GuiProjectTree(QTreeWidget):
                 except Exception:
                     logger.error("Failed to get index of item with handle '%s'", nHandle)
             if byIndex >= 0:
-                self._treeMap[pHandle].insertChild(byIndex+1, newItem)
+                self._treeMap[pHandle].insertChild(byIndex + 1, newItem)
             else:
                 self._treeMap[pHandle].addChild(newItem)
             self.propagateCount(tHandle, nwItem.wordCount, countChildren=True)
 
         self.setTreeItemValues(tHandle)
         newItem.setExpanded(nwItem.isExpanded)
-
-        self._setTreeChanged(True)
 
         return newItem
 
@@ -942,33 +959,34 @@ class GuiProjectTree(QTreeWidget):
 
         trItem = self._getTreeItem(trashHandle)
         if trItem is None:
-            trItem = self._addTreeItem(
-                self.theProject.tree[trashHandle]
-            )
+            trItem = self._addTreeItem(self.theProject.tree[trashHandle])
             if trItem is not None:
                 trItem.setExpanded(True)
-                self._setTreeChanged(True)
+                self._alertTreeChange(tHandle=trashHandle, flush=True)
 
         return trItem
 
-    def _setTreeChanged(self, theState):
-        """Set the tree change flag, and propagate to the project.
+    def _alertTreeChange(self, tHandle=None, flush=True):
+        """Update information on tree change state, and emit necessary
+        signals.
         """
-        self._treeChanged = theState
-        if theState:
-            self._timeChanged = time()
-            self.theProject.setProjectChanged(True)
-        return
+        self._timeChanged = time()
+        self.theProject.setProjectChanged(True)
+        if flush:
+            self.saveTreeOrder()
 
-    def _emitItemChange(self, tHandle):
-        """Emit an item change signal for a given handle.
-        """
-        if self.theProject.tree.checkType(tHandle, nwItemType.FILE):
-            nwItem = self.theProject.tree[tHandle]
-            if nwItem.isNovelLike():
-                self.novelItemChanged.emit()
-            else:
-                self.noteItemChanged.emit()
+        tItem = self.theProject.tree[tHandle]
+        if tItem is None:
+            return
+
+        itemType = tItem.itemType
+        if itemType == nwItemType.ROOT:
+            self.rootFolderChanged.emit(tHandle)
+        elif itemType == nwItemType.FILE and tItem.isNovelLike():
+            self.novelItemChanged.emit(tHandle)
+
+        self.treeItemChanged.emit(tHandle)
+
         return
 
     def _recordLastMove(self, srcItem, parItem, parIndex):
