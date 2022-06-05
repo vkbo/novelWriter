@@ -25,7 +25,6 @@ import pytest
 from tools import readFile
 
 from novelwriter.core import NWProject, ToMarkdown
-from novelwriter.core.index import NWIndex
 
 
 @pytest.mark.core
@@ -33,7 +32,6 @@ def testCoreToMarkdown_ConvertFormat(mockGUI):
     """Test the tokenizer and converter chain using the ToMarkdown class.
     """
     theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
     theMD = ToMarkdown(theProject)
 
     # Headers
@@ -162,7 +160,6 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
     """Test the converter directly using the ToMarkdown class.
     """
     theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
     theMD = ToMarkdown(theProject)
 
     theMD._isNovel = True
@@ -267,7 +264,6 @@ def testCoreToMarkdown_Format(mockGUI):
     """Test all the formatters for the ToMarkdown class.
     """
     theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
     theMD = ToMarkdown(theProject)
 
     assert theMD._formatKeywords("", theMD.A_NONE) == ""
