@@ -20,7 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 from novelwriter.core.document import NWDoc
-from novelwriter.core.index import NWIndex, countWords
+from novelwriter.core.index import countWords
 from novelwriter.core.project import NWProject
 from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.core.tohtml import ToHtml
@@ -30,7 +30,6 @@ from novelwriter.core.tomd import ToMarkdown
 __all__ = [
     "countWords",
     "NWDoc",
-    "NWIndex",
     "NWProject",
     "NWSpellEnchant",
     "ToHtml",

@@ -1,5 +1,5 @@
 %%~name: Chapter Two
-%%~path: e7ded148d6e4a/88706ddc78b1b
+%%~path: 7031beac91f75/88706ddc78b1b
 %%~kind: NOVEL/DOCUMENT
 ## Where has John Gone?
 
@@ -11,6 +11,7 @@
 ### Jane Cannot Find John
 
 @pov: Jane
+@focus: John
 @location: Space
 
 Jane has been looking all over for John. He’s nowhere to be found on Earth, so Jane goes to space.

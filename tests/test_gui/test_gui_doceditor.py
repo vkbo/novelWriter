@@ -185,10 +185,10 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
         assert "Could not save document." in caplog.text
 
     # Change header level
-    assert nwGUI.theProject.projTree[sHandle].itemLayout == nwItemLayout.DOCUMENT
+    assert nwGUI.theProject.tree[sHandle].itemLayout == nwItemLayout.DOCUMENT
     nwGUI.docEditor.replaceText(longText[1:])
     assert nwGUI.docEditor.saveText() is True
-    assert nwGUI.theProject.projTree[sHandle].itemLayout == nwItemLayout.DOCUMENT
+    assert nwGUI.theProject.tree[sHandle].itemLayout == nwItemLayout.DOCUMENT
 
     # Regular save
     assert nwGUI.docEditor.saveText() is True
@@ -236,9 +236,9 @@ def testGuiEditor_MetaData(qtbot, monkeypatch, nwGUI, nwMinimal):
     assert nwGUI.docEditor.setCursorPosition(None) is False
     assert nwGUI.docEditor.setCursorPosition(10) is True
     assert nwGUI.docEditor.getCursorPosition() == 10
-    assert nwGUI.theProject.projTree[sHandle].cursorPos != 10
+    assert nwGUI.theProject.tree[sHandle].cursorPos != 10
     nwGUI.docEditor.saveCursorPosition()
-    assert nwGUI.theProject.projTree[sHandle].cursorPos == 10
+    assert nwGUI.theProject.tree[sHandle].cursorPos == 10
 
     assert nwGUI.docEditor.setCursorLine(None) is False
     assert nwGUI.docEditor.setCursorLine(2) is True
@@ -1226,8 +1226,8 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ips
 
     # Open a document and populate it
     sHandle = "8c659a11cd429"
-    nwGUI.theProject.projTree[sHandle]._initCount = 0  # Clear item's count
-    nwGUI.theProject.projTree[sHandle]._wordCount = 0  # Clear item's count
+    nwGUI.theProject.tree[sHandle]._initCount = 0  # Clear item's count
+    nwGUI.theProject.tree[sHandle]._wordCount = 0  # Clear item's count
     assert nwGUI.openDocument(sHandle) is True
     qtbot.wait(stepDelay)
 
@@ -1253,9 +1253,9 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ips
     nwGUI.docEditor.wCounterDoc.run()
     # nwGUI.docEditor._updateDocCounts(cC, wC, pC)
     qtbot.wait(stepDelay)
-    assert nwGUI.theProject.projTree[sHandle]._charCount == cC
-    assert nwGUI.theProject.projTree[sHandle]._wordCount == wC
-    assert nwGUI.theProject.projTree[sHandle]._paraCount == pC
+    assert nwGUI.theProject.tree[sHandle]._charCount == cC
+    assert nwGUI.theProject.tree[sHandle]._wordCount == wC
+    assert nwGUI.theProject.tree[sHandle]._paraCount == pC
     assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} (+{wC})"
 
     # Select all text

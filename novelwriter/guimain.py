@@ -50,7 +50,7 @@ from novelwriter.dialogs import (
 from novelwriter.tools import (
     GuiBuildNovel, GuiLipsum, GuiProjectWizard, GuiWritingStats
 )
-from novelwriter.core import NWProject, NWIndex
+from novelwriter.core import NWProject
 from novelwriter.enum import (
     nwItemType, nwItemClass, nwAlert, nwWidget, nwState, nwView
 )
@@ -86,7 +86,6 @@ class GuiMain(QMainWindow):
         # Core Classes and Settings
         self.theTheme    = GuiTheme()
         self.theProject  = NWProject(self)
-        self.theIndex    = NWIndex(self.theProject)
         self.hasProject  = False
         self.isFocusMode = False
         self.idleRefTime = time()
@@ -420,7 +419,7 @@ class GuiMain(QMainWindow):
             self.idleRefTime = time()
             self.idleTime = 0.0
 
-            self.theIndex.clearIndex()
+            self.theProject.index.clearIndex()
             self.clearGUI()
             self.hasProject = False
             self._changeView(nwView.PROJECT)
@@ -497,7 +496,7 @@ class GuiMain(QMainWindow):
         self.idleTime = 0.0
 
         # Load the tag index
-        self.theIndex.loadIndex()
+        self.theProject.index.loadIndex()
 
         # Update GUI
         self._updateWindowTitle(self.theProject.projName)
@@ -516,7 +515,7 @@ class GuiMain(QMainWindow):
             self.viewDocument(self.theProject.lastViewed)
 
         # Check if we need to rebuild the index
-        if self.theIndex.indexBroken:
+        if self.theProject.index.indexBroken:
             self.makeAlert(self.tr(
                 "The project index is outdated or broken. Rebuilding index."
             ), nwAlert.INFO)
@@ -540,7 +539,7 @@ class GuiMain(QMainWindow):
 
         self.treeView.saveTreeOrder()
         if self.theProject.saveProject(autoSave=autoSave):
-            self.theIndex.saveIndex()
+            self.theProject.index.saveIndex()
 
         return True
 
@@ -573,7 +572,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        if not self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+        if not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
             logger.debug("Requested item '%s' is not a document", tHandle)
             return False
 
@@ -601,8 +600,8 @@ class GuiMain(QMainWindow):
         nHandle = None   # The next handle after tHandle
         fHandle = None   # The first file handle we encounter
         foundIt = False  # We've found tHandle, pick the next we see
-        for tItem in self.theProject.projTree:
-            if not self.theProject.projTree.checkType(tItem.itemHandle, nwItemType.FILE):
+        for tItem in self.theProject.tree:
+            if not self.theProject.tree.checkType(tItem.itemHandle, nwItemType.FILE):
                 continue
             if fHandle is None:
                 fHandle = tItem.itemHandle
@@ -819,7 +818,7 @@ class GuiMain(QMainWindow):
             logger.warning("No item selected")
             return False
 
-        tItem = self.theProject.projTree[tHandle]
+        tItem = self.theProject.tree[tHandle]
         if tItem is None:
             return False
         if tItem.itemType == nwItemType.NO_TYPE:
@@ -863,25 +862,16 @@ class GuiMain(QMainWindow):
         tStart = time()
 
         self.treeView.saveTreeOrder()
-        self.theIndex.clearIndex()
+        self.theProject.index.clearIndex()
 
-        for tItem in self.theProject.projTree:
+        for tItem in self.theProject.tree:
+            if tItem is None:  # pragma: no cover
+                continue  # This is a bug trap
 
-            if tItem is not None:
-                self.setStatus(self.tr("Indexing: '{0}'").format(tItem.itemName))
-            else:
-                self.setStatus(self.tr("Indexing: '{0}'").format(self.tr("Unknown item")))
-
-            if tItem is not None and tItem.itemType == nwItemType.FILE:
-                logger.verbose("Scanning '%s'", tItem.itemName)
-                self.theIndex.reIndexHandle(tItem.itemHandle)
-
-                # Get Word Counts
-                cC, wC, pC = self.theIndex.getCounts(tItem.itemHandle)
-                tItem.setCharCount(cC)
-                tItem.setWordCount(wC)
-                tItem.setParaCount(pC)
-                self.treeView.propagateCount(tItem.itemHandle, wC, countChildren=True)
+            logger.verbose("Indexing '%s'", tItem.itemName)
+            if self.theProject.index.reIndexHandle(tItem.itemHandle):
+                # Update Word Counts
+                self.treeView.propagateCount(tItem.itemHandle, tItem.wordCount, countChildren=True)
                 self.treeView.setTreeItemValues(tItem.itemHandle)
 
         tEnd = time()
@@ -1561,7 +1551,7 @@ class GuiMain(QMainWindow):
         """
         tHandle = self.treeView.getSelectedHandle()
         if tHandle is not None:
-            tItem = self.theProject.projTree[tHandle]
+            tItem = self.theProject.tree[tHandle]
             if tItem is None:
                 return
             if tItem.itemType == nwItemType.FILE:

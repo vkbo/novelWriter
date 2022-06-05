@@ -634,17 +634,17 @@ def testCoreProject_AccessItems(nwMinimal, mockGUI):
         "afb3043c7b2b3",  # ROOT: Characters
         "9d5247ab588e0",  # ROOT: World
     ]
-    assert theProject.projTree.handles() == oldOrder
+    assert theProject.tree.handles() == oldOrder
     assert theProject.setTreeOrder(newOrder)
-    assert theProject.projTree.handles() == newOrder
+    assert theProject.tree.handles() == newOrder
 
     # Add a non-existing item
-    theProject.projTree._treeOrder.append("01234567789abc")
+    theProject.tree._treeOrder.append("01234567789abc")
 
     # Add an item with a non-existent parent
     nHandle = theProject.newFile("Test File", "a6d311a93600a")
-    theProject.projTree[nHandle].setParent("cba9876543210")
-    assert theProject.projTree[nHandle].itemParent == "cba9876543210"
+    theProject.tree[nHandle].setParent("cba9876543210")
+    assert theProject.tree[nHandle].itemParent == "cba9876543210"
 
     retOrder = []
     for tItem in theProject.getProjectItems():
@@ -661,7 +661,7 @@ def testCoreProject_AccessItems(nwMinimal, mockGUI):
         "f5ab3e30151e1",  # FILE: New Chapter
         "8c659a11cd429",  # FILE: New Scene
     ]
-    assert theProject.projTree[nHandle].itemParent is None
+    assert theProject.tree[nHandle].itemParent is None
 
 # END Test testCoreProject_AccessItems
 
@@ -679,15 +679,15 @@ def testCoreProject_StatusImport(mockGUI, fncDir, mockRnd):
     # Change Status
     # =============
 
-    theProject.projTree["0000000000014"].setStatus("Finished")
-    theProject.projTree["0000000000015"].setStatus("Draft")
-    theProject.projTree["0000000000016"].setStatus("Note")
-    theProject.projTree["0000000000017"].setStatus("Finished")
+    theProject.tree["0000000000014"].setStatus("Finished")
+    theProject.tree["0000000000015"].setStatus("Draft")
+    theProject.tree["0000000000016"].setStatus("Note")
+    theProject.tree["0000000000017"].setStatus("Finished")
 
-    assert theProject.projTree["0000000000014"].itemStatus == statusKeys[3]
-    assert theProject.projTree["0000000000015"].itemStatus == statusKeys[2]
-    assert theProject.projTree["0000000000016"].itemStatus == statusKeys[1]
-    assert theProject.projTree["0000000000017"].itemStatus == statusKeys[3]
+    assert theProject.tree["0000000000014"].itemStatus == statusKeys[3]
+    assert theProject.tree["0000000000015"].itemStatus == statusKeys[2]
+    assert theProject.tree["0000000000016"].itemStatus == statusKeys[1]
+    assert theProject.tree["0000000000017"].itemStatus == statusKeys[3]
 
     newList = [
         {"key": statusKeys[0], "name": "New", "cols": (1, 1, 1)},
@@ -723,9 +723,9 @@ def testCoreProject_StatusImport(mockGUI, fncDir, mockRnd):
     # =================
 
     fHandle = theProject.newFile("Jane Doe", "8b9d2e465e150")
-    theProject.projTree[fHandle].setImport("Main")
+    theProject.tree[fHandle].setImport("Main")
 
-    assert theProject.projTree[fHandle].itemImport == importKeys[3]
+    assert theProject.tree[fHandle].itemImport == importKeys[3]
     newList = [
         {"key": importKeys[0], "name": "New", "cols": (1, 1, 1)},
         {"key": importKeys[1], "name": "Minor", "cols": (2, 2, 2)},
@@ -851,7 +851,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     # Trash folder
     # Should create on first call, and just returned on later calls
     hTrash = "0000000000018"
-    assert theProject.projTree[hTrash] is None
+    assert theProject.tree[hTrash] is None
     assert theProject.trashFolder() == hTrash
     assert theProject.trashFolder() == hTrash
 
@@ -929,11 +929,11 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
         "0000000000010", "0000000000011", "0000000000012",
         "0000000000016", "0000000000017",
     ]
-    assert theProject.projTree.handles() == oldOrder
+    assert theProject.tree.handles() == oldOrder
     assert theProject.setTreeOrder(newOrder)
-    assert theProject.projTree.handles() == newOrder
+    assert theProject.tree.handles() == newOrder
     assert theProject.setTreeOrder(oldOrder)
-    assert theProject.projTree.handles() == oldOrder
+    assert theProject.tree.handles() == oldOrder
 
     # Session stats
     theProject.currWCount = 200
@@ -1003,7 +1003,7 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
     theProject = NWProject(mockGUI)
 
     assert theProject.openProject(nwLipsum) is True
-    assert theProject.projTree["636b6aa9b697b"] is None
+    assert theProject.tree["636b6aa9b697b"] is None
 
     # Add a file with non-existent parent
     # This file will be renoved from the project on open
@@ -1041,11 +1041,11 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
 
     assert theProject.openProject(nwLipsum)
     assert theProject.projPath is not None
-    assert theProject.projTree["636b6aa9b697bb"] is None
-    assert theProject.projTree["abcdefghijklm"] is None
+    assert theProject.tree["636b6aa9b697bb"] is None
+    assert theProject.tree["abcdefghijklm"] is None
 
     # First Item with Meta Data
-    oItem = theProject.projTree["636b6aa9b697b"]
+    oItem = theProject.tree["636b6aa9b697b"]
     assert oItem is not None
     assert oItem.itemName == "[Recovered] Mars"
     assert oItem.itemHandle == "636b6aa9b697b"
@@ -1055,7 +1055,7 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
     assert oItem.itemLayout == nwItemLayout.NOTE
 
     # Second Item without Meta Data
-    oItem = theProject.projTree["736b6aa9b697b"]
+    oItem = theProject.tree["736b6aa9b697b"]
     assert oItem is not None
     assert oItem.itemName == "Recovered File 1"
     assert oItem.itemHandle == "736b6aa9b697b"

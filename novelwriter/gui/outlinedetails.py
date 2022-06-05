@@ -58,8 +58,6 @@ class GuiOutlineDetails(QScrollArea):
         self.theParent  = theParent
         self.theProject = theParent.theProject
         self.theTheme   = theParent.theTheme
-        self.theIndex   = theParent.theIndex
-        self.optState   = theParent.theProject.optState
 
         # Sizes
         minTitle = 30*self.theTheme.textNWidth
@@ -283,32 +281,33 @@ class GuiOutlineDetails(QScrollArea):
         """Update the content of the tree with the given handle and line
         number pointing to a header.
         """
-        nwItem = self.theProject.projTree[tHandle]
-        novIdx = self.theIndex.getNovelData(tHandle, sTitle)
-        theRefs = self.theIndex.getReferences(tHandle, sTitle)
+        pIndex = self.theProject.index
+        nwItem = self.theProject.tree[tHandle]
+        novIdx = pIndex.getNovelData(tHandle, sTitle)
+        theRefs = pIndex.getReferences(tHandle, sTitle)
         if nwItem is None or novIdx is None:
             return False
 
-        if novIdx["level"] in self.LVL_MAP:
-            self.titleLabel.setText("<b>%s</b>" % self.tr(self.LVL_MAP[novIdx["level"]]))
+        if novIdx.level in self.LVL_MAP:
+            self.titleLabel.setText("<b>%s</b>" % self.tr(self.LVL_MAP[novIdx.level]))
         else:
             self.titleLabel.setText("<b>%s</b>" % self.tr("Title"))
-        self.titleValue.setText(novIdx["title"])
+        self.titleValue.setText(novIdx.title)
 
         itemStatus, _ = nwItem.getImportStatus()
 
         self.fileValue.setText(nwItem.itemName)
         self.itemValue.setText(itemStatus)
 
-        cC = checkInt(novIdx["cCount"], 0)
-        wC = checkInt(novIdx["wCount"], 0)
-        pC = checkInt(novIdx["pCount"], 0)
+        cC = checkInt(novIdx.charCount, 0)
+        wC = checkInt(novIdx.wordCount, 0)
+        pC = checkInt(novIdx.paraCount, 0)
 
         self.cCValue.setText(f"{cC:n}")
         self.wCValue.setText(f"{wC:n}")
         self.pCValue.setText(f"{pC:n}")
 
-        self.synopValue.setText(novIdx["synopsis"])
+        self.synopValue.setText(novIdx.synopsis)
 
         self.povKeyValue.setText(self._formatTags(theRefs, nwKeyWords.POV_KEY))
         self.focKeyValue.setText(self._formatTags(theRefs, nwKeyWords.FOCUS_KEY))

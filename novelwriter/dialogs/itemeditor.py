@@ -55,7 +55,7 @@ class GuiItemEditor(QDialog):
         #  Build GUI
         ##
 
-        self.theItem = self.theProject.projTree[tHandle]
+        self.theItem = self.theProject.tree[tHandle]
         if self.theItem is None:
             self.close()
             return

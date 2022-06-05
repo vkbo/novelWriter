@@ -4,8 +4,10 @@ novelWriter – Project Index
 Data class for the project index of tags, headers and references
 
 File History:
-Created: 2019-04-22 [0.0.1] countWords
-Created: 2019-05-27 [0.1.4] NWIndex
+Created: 2019-04-22 [0.0.1]  countWords
+Created: 2019-05-27 [0.1.4]  NWIndex
+Created: 2022-05-28 [1.7rc1] IndexItem, IndexHeading
+Created: 2022-05-29 [1.7rc1] TagsIndex, ItemIndex
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -35,29 +37,40 @@ from novelwriter.error import logException
 from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode
 from novelwriter.core.document import NWDoc
 from novelwriter.common import (
-    isHandle, isTitleTag, isItemClass, isItemLayout, jsonEncode
+    checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
 )
 
 logger = logging.getLogger(__name__)
 
 H_VALID = ("H0", "H1", "H2", "H3", "H4")
 H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
+TT_NONE = "T000000"
 
 
-class NWIndex():
+class NWIndex:
+    """This class holds the entire index for a given project. The index
+    contains the data that isn't stored in the project items themselves.
+    The content of the index is updated every time a file item is saved.
+
+    The primary index data is contained in the ItemIndex class, which
+    contains an IndexItem representing each NWItem. Each IndexItem holds
+    an IndexHeading object for each heading of the item's text.
+
+    A reverse index of all tags is contained in the TagsIndex class.
+    This is duplicate information used for quicker lookups from the tags
+    and back to items where they are defined.
+
+    The index data is cached in a JSON file between writing sessions.
+    """
 
     def __init__(self, theProject):
 
         self.theProject = theProject
 
-        # Internal
+        # Storage and State
+        self._tagsIndex = TagsIndex()
+        self._itemIndex = ItemIndex(theProject)
         self._indexBroken = False
-
-        # Indices
-        self._tagIndex  = {}
-        self._refIndex  = {}
-        self._fileIndex = {}
-        self._fileMeta  = {}
 
         # TimeStamps
         self._timeNovel = 0
@@ -65,6 +78,13 @@ class NWIndex():
         self._timeIndex = 0
 
         return
+
+    def __repr__(self):
+        return f"<NWIndex project='{self.theProject.projName}'>"
+
+    ##
+    #  Properties
+    ##
 
     @property
     def indexBroken(self):
@@ -77,10 +97,8 @@ class NWIndex():
     def clearIndex(self):
         """Clear the index dictionaries and time stamps.
         """
-        self._tagIndex  = {}
-        self._refIndex  = {}
-        self._fileIndex = {}
-        self._fileMeta  = {}
+        self._tagsIndex.clear()
+        self._itemIndex.clear()
         self._timeNovel = 0
         self._timeNotes = 0
         self._timeIndex = 0
@@ -90,14 +108,10 @@ class NWIndex():
         """Delete all entries of a given document handle.
         """
         logger.debug("Removing item '%s' from the index", tHandle)
+        for tTag in self._itemIndex.allItemTags(tHandle):
+            del self._tagsIndex[tTag]
 
-        delTags = list(filter(lambda x: self._tagIndex[x][1] == tHandle, self._tagIndex))
-        for tTag in delTags:
-            self._tagIndex.pop(tTag, None)
-
-        self._refIndex.pop(tHandle, None)
-        self._fileIndex.pop(tHandle, None)
-        self._fileMeta.pop(tHandle, None)
+        del self._itemIndex[tHandle]
 
         return
 
@@ -106,13 +120,12 @@ class NWIndex():
         moved from the archive or trash folders back into the active
         project.
         """
-        logger.debug("Re-indexing item '%s'", tHandle)
-        if not self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+        if not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
             return False
 
+        logger.debug("Re-indexing item '%s'", tHandle)
         theDoc = NWDoc(self.theProject, tHandle)
-        theText = theDoc.readDocument()
-        self.scanText(tHandle, theText if theText is not None else "")
+        self.scanText(tHandle, theDoc.readDocument() or "")
 
         return True
 
@@ -142,31 +155,41 @@ class NWIndex():
         indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         tStart = time()
 
+        self._indexBroken = False
         if os.path.isfile(indexFile):
             logger.debug("Loading index file")
             try:
                 with open(indexFile, mode="r", encoding="utf-8") as inFile:
                     theData = json.load(inFile)
-
             except Exception:
                 logger.error("Failed to load index file")
                 logException()
                 self._indexBroken = True
                 return False
 
-            self._tagIndex = theData.get("tagIndex", {})
-            self._refIndex = theData.get("refIndex", {})
-            self._fileIndex = theData.get("fileIndex", {})
-            self._fileMeta = theData.get("fileMeta", {})
+            try:
+                self._tagsIndex.unpackData(theData["tagsIndex"])
+                self._itemIndex.unpackData(theData["itemIndex"])
+            except Exception:
+                logger.error("The index content is invalid")
+                logException()
+                self._indexBroken = True
+                return False
 
-            nowTime = round(time())
-            self._timeNovel = nowTime
-            self._timeNotes = nowTime
-            self._timeIndex = nowTime
+        logger.debug("Checking index")
+
+        # Check that all files are indexed
+        for fHandle in self.theProject.projFiles:
+            if fHandle not in self._itemIndex:
+                logger.warning("Item '%s' is not in the index", fHandle)
+                self.reIndexHandle(fHandle)
+
+        nowTime = round(time())
+        self._timeNovel = nowTime
+        self._timeNotes = nowTime
+        self._timeIndex = nowTime
 
         logger.verbose("Index loaded in %.3f ms", (time() - tStart)*1000)
-
-        self._checkIndex()
 
         return True
 
@@ -179,12 +202,12 @@ class NWIndex():
         tStart = time()
 
         try:
+            tagsIndex = self._tagsIndex.packData()
+            itemIndex = self._itemIndex.packData()
             with open(indexFile, mode="w+", encoding="utf-8") as outFile:
                 outFile.write("{\n")
-                outFile.write(f'  "tagIndex": {jsonEncode(self._tagIndex, n=1, nmax=2)},\n')
-                outFile.write(f'  "refIndex": {jsonEncode(self._refIndex, n=1, nmax=3)},\n')
-                outFile.write(f'  "fileIndex": {jsonEncode(self._fileIndex, n=1, nmax=3)},\n')
-                outFile.write(f'  "fileMeta": {jsonEncode(self._fileMeta, n=1, nmax=2)}\n')
+                outFile.write(f'  "tagsIndex": {jsonEncode(tagsIndex, n=1, nmax=2)},\n')
+                outFile.write(f'  "itemIndex": {jsonEncode(itemIndex, n=1, nmax=4)}\n')
                 outFile.write("}\n")
 
         except Exception:
@@ -204,10 +227,10 @@ class NWIndex():
         """Scan a piece of text associated with a handle. This will
         update the indices accordingly. This function takes the handle
         and text as separate inputs as we want to primarily scan the
-        files before we save them in which case we already have the
+        files before we save them, in which case we already have the
         text.
         """
-        theItem = self.theProject.projTree[tHandle]
+        theItem = self.theProject.tree[tHandle]
         if theItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
             return False
@@ -215,9 +238,15 @@ class NWIndex():
             logger.info("Not indexing non-file item '%s'", tHandle)
             return False
 
+        # Keep a record of existing tags, and create a new item entry
+        itemTags = dict.fromkeys(self._itemIndex.allItemTags(tHandle), False)
+        self._itemIndex.add(tHandle, theItem)
+
         # Run word counter for the whole text
         cC, wC, pC = countWords(theText)
-        self._fileMeta[tHandle] = ["H0", cC, wC, pC]
+        theItem.setCharCount(cC)
+        theItem.setWordCount(wC)
+        theItem.setParaCount(pC)
 
         # If the file's meta data is missing, or the file is out of the
         # main project, we don't index the content
@@ -231,19 +260,7 @@ class NWIndex():
             logger.debug("Not indexing inactive item '%s'", tHandle)
             return False
 
-        itemClass  = theItem.itemClass
-        itemLayout = theItem.itemLayout
-
         logger.debug("Indexing item with handle '%s'", tHandle)
-
-        # Delete or reset old entries for the file
-        self._refIndex.pop(tHandle, None)
-        self._fileIndex[tHandle] = {}
-
-        # Also clear references to the file in the tags index
-        clearTags = list(filter(lambda x: self._tagIndex[x][1] == tHandle, self._tagIndex))
-        for aTag in clearTags:
-            self._tagIndex.pop(aTag)
 
         # Scan the text content
         nTitle = 0
@@ -253,7 +270,7 @@ class NWIndex():
                 continue
 
             if aLine.startswith("#"):
-                isTitle = self._indexTitle(tHandle, aLine, nLine, itemLayout)
+                isTitle = self._indexTitle(tHandle, aLine, nLine)
                 if isTitle and nLine > 0:
                     if nTitle > 0:
                         lastText = "\n".join(theLines[nTitle-1:nLine-1])
@@ -261,7 +278,7 @@ class NWIndex():
                     nTitle = nLine
 
             elif aLine.startswith("@"):
-                self._indexKeyword(tHandle, aLine, nLine, nTitle, itemClass)
+                self._indexKeyword(tHandle, aLine, nTitle, theItem.itemClass, itemTags)
 
             elif aLine.startswith("%"):
                 if nTitle > 0:
@@ -278,15 +295,20 @@ class NWIndex():
             lastText = "\n".join(theLines[nTitle-1:])
             self._indexWordCounts(tHandle, lastText, nTitle)
 
-        # Index page with no titles and references
+        # Also count words on a page with no titles
         if nTitle == 0:
-            self._indexPage(tHandle, itemLayout)
             self._indexWordCounts(tHandle, theText, nTitle)
+
+        # Prune no longer used tags
+        for tTag, isActive in itemTags.items():
+            if not isActive:
+                logger.verbose("Deleting removed tag '%s'", tTag)
+                del self._tagsIndex[tTag]
 
         # Update timestamps for index changes
         nowTime = round(time())
         self._timeIndex = nowTime
-        if itemLayout == nwItemLayout.NOTE:
+        if theItem.itemLayout == nwItemLayout.NOTE:
             self._timeNotes = nowTime
         else:
             self._timeNovel = nowTime
@@ -294,10 +316,10 @@ class NWIndex():
         return True
 
     ##
-    #  Internal Indexers
+    #  Internal Indexer Helpers
     ##
 
-    def _indexTitle(self, tHandle, aLine, nLine, itemLayout):
+    def _indexTitle(self, tHandle, aLine, nTitle):
         """Save information about the title and its location in the
         file to the index.
         """
@@ -322,62 +344,31 @@ class NWIndex():
         else:
             return False
 
-        sTitle = f"T{nLine:06d}"
-        self._fileIndex[tHandle][sTitle] = {
-            "level": hDepth,
-            "title": hText,
-            "layout": itemLayout.name,
-            "cCount": 0,
-            "wCount": 0,
-            "pCount": 0,
-            "synopsis": "",
-        }
-
-        if self._fileMeta[tHandle][0] == "H0":
-            # Since this initialises to H0, this ensures that only the
-            # first header level is recorded in the file meta index
-            self._fileMeta[tHandle][0] = hDepth
+        sTitle = f"T{nTitle:06d}"
+        self._itemIndex.addItemHeading(tHandle, sTitle, hDepth, hText)
 
         return True
-
-    def _indexPage(self, tHandle, itemLayout):
-        """Index a page with no title.
-        """
-        self._fileIndex[tHandle]["T000000"] = {
-            "level": "H0",
-            "title": "",
-            "layout": itemLayout.name,
-            "cCount": 0,
-            "wCount": 0,
-            "pCount": 0,
-            "synopsis": "",
-        }
-        return
 
     def _indexWordCounts(self, tHandle, theText, nTitle):
         """Count text stats and save the counts to the index.
         """
-        cC, wC, pC = countWords(theText)
         sTitle = f"T{nTitle:06d}"
-        if tHandle in self._fileIndex:
-            if sTitle in self._fileIndex[tHandle]:
-                self._fileIndex[tHandle][sTitle]["cCount"] = cC
-                self._fileIndex[tHandle][sTitle]["wCount"] = wC
-                self._fileIndex[tHandle][sTitle]["pCount"] = pC
+        cC, wC, pC = countWords(theText)
+        self._itemIndex.setHeadingCounts(tHandle, sTitle,  cC, wC, pC)
         return
 
     def _indexSynopsis(self, tHandle, theText, nTitle):
         """Save the synopsis to the index.
         """
         sTitle = f"T{nTitle:06d}"
-        if tHandle in self._fileIndex:
-            if sTitle in self._fileIndex[tHandle]:
-                self._fileIndex[tHandle][sTitle]["synopsis"] = theText
+        self._itemIndex.setHeadingSynopsis(tHandle, sTitle, theText)
         return
 
-    def _indexKeyword(self, tHandle, aLine, nLine, nTitle, itemClass):
+    def _indexKeyword(self, tHandle, aLine, nTitle, itemClass, itemTags):
         """Validate and save the information about a reference to a tag
-        in another file.
+        in another file, or the setting of a tag in the file. A record
+        of active tags is updated so that no longer used tags can be
+        pruned later.
         """
         isValid, theBits, _ = self.scanThis(aLine)
         if not isValid or len(theBits) < 2:
@@ -390,15 +381,12 @@ class NWIndex():
 
         sTitle = f"T{nTitle:06d}"
         if theBits[0] == nwKeyWords.TAG_KEY:
-            self._tagIndex[theBits[1]] = [nLine, tHandle, itemClass.name, sTitle]
-
+            tagName = theBits[1]
+            self._tagsIndex.add(tagName, tHandle, sTitle, itemClass)
+            self._itemIndex.setHeadingTag(tHandle, sTitle, tagName)
+            itemTags[tagName] = True
         else:
-            if tHandle not in self._refIndex:
-                self._refIndex[tHandle] = {}
-            if sTitle not in self._refIndex[tHandle]:
-                self._refIndex[tHandle][sTitle] = []
-            for aVal in theBits[1:]:
-                self._refIndex[tHandle][sTitle].append([nLine, theBits[0], aVal])
+            self._itemIndex.addHeadingReferences(tHandle, sTitle, theBits[1:], theBits[0])
 
         return
 
@@ -460,8 +448,8 @@ class NWIndex():
 
         # For a tag, only the first value is accepted, the rest are ignored
         if theBits[0] == nwKeyWords.TAG_KEY and nBits > 1:
-            if theBits[1] in self._tagIndex:
-                isGood[1] = self._tagIndex[theBits[1]][1] == tItem.itemHandle
+            if theBits[1] in self._tagsIndex:
+                isGood[1] = self._tagsIndex.tagHandle(theBits[1]) == tItem.itemHandle
             else:
                 isGood[1] = True
             return isGood
@@ -469,8 +457,8 @@ class NWIndex():
         # If we're still here, we check that the references exist
         theKey = nwKeyWords.KEY_CLASS[theBits[0]].name
         for n in range(1, nBits):
-            if theBits[n] in self._tagIndex:
-                isGood[n] = theKey == self._tagIndex[theBits[n]][2]
+            if theBits[n] in self._tagsIndex:
+                isGood[n] = self._tagsIndex.tagClass(theBits[n]) == theKey
 
         return isGood
 
@@ -478,77 +466,74 @@ class NWIndex():
     #  Extract Data
     ##
 
-    def novelStructure(self, skipExcluded=True):
+    def novelStructure(self, skipExcl=True):
         """Iterate over all titles in the novel, in the correct order as
         they appear in the tree view and in the respective document
         files, but skipping all note files.
         """
-        for tHandle in self._listNovelHandles(skipExcluded):
-            for sTitle in sorted(self._fileIndex[tHandle]):
-                tKey = f"{tHandle}:{sTitle}"
-                yield tKey, tHandle, sTitle, self._fileIndex[tHandle][sTitle]
+        for tHandle, sTitle, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
+            tKey = f"{tHandle}:{sTitle}"
+            yield tKey, tHandle, sTitle, hItem
+        return
 
-    def getNovelWordCount(self, skipExcluded=True):
+    def getNovelWordCount(self, skipExcl=True):
         """Count the number of words in the novel project.
         """
         wCount = 0
-        for tHandle in self._listNovelHandles(skipExcluded):
-            for sTitle in self._fileIndex[tHandle]:
-                wCount += self._fileIndex[tHandle][sTitle]["wCount"]
-
+        for _, _, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
+            wCount += hItem.wordCount
         return wCount
 
-    def getNovelTitleCounts(self, skipExcluded=True):
+    def getNovelTitleCounts(self, skipExcl=True):
         """Count the number of titles in the novel project.
         """
         hCount = [0, 0, 0, 0, 0]
-        for tHandle in self._listNovelHandles(skipExcluded):
-            for sTitle in self._fileIndex[tHandle]:
-                iLevel = H_LEVEL.get(self._fileIndex[tHandle][sTitle]["level"], 0)
-                hCount[iLevel] += 1
-
+        for _, _, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
+            iLevel = H_LEVEL.get(hItem.level, 0)
+            hCount[iLevel] += 1
         return hCount
 
     def getHandleWordCounts(self, tHandle):
         """Get all header word counts for a specific handle.
         """
-        hRecord = self._fileIndex.get(tHandle, {})
-        return [(f"{tHandle}:{sTitle}", sData["wCount"]) for sTitle, sData in hRecord.items()]
+        return [
+            (f"{tHandle}:{sTitle}", hItem.wordCount)
+            for sTitle, hItem in self._itemIndex.iterItemHeaders(tHandle)
+        ]
 
     def getHandleHeaders(self, tHandle):
         """Get all headers for a specific handle.
         """
-        hRecord = self._fileIndex.get(tHandle, {})
-        return [(sTitle, sData["level"], sData["title"]) for sTitle, sData in hRecord.items()]
+        return [
+            (sTitle, hItem.level, hItem.title)
+            for sTitle, hItem in self._itemIndex.iterItemHeaders(tHandle)
+        ]
 
     def getHandleHeaderLevel(self, tHandle):
         """Get the header level of the first header of a handle.
         """
-        return self._fileMeta.get(tHandle, ["H0"])[0]
+        return self._itemIndex.mainItemHeader(tHandle)
 
-    def getTableOfContents(self, maxDepth, skipExcluded=True):
+    def getTableOfContents(self, maxDepth, skipExcl=True):
         """Generate a table of contents up to a maximum depth.
         """
         tOrder = []
         tData = {}
         pKey = None
-        for tHandle in self._listNovelHandles(skipExcluded):
-            for sTitle in sorted(self._fileIndex[tHandle]):
-                tKey = f"{tHandle}:{sTitle}"
-                theData = self._fileIndex[tHandle][sTitle]
-                iLevel = H_LEVEL.get(theData["level"], 0)
-                if iLevel > maxDepth:
-                    if pKey in tData:
-                        theData["wCount"]
-                        tData[pKey]["words"] += theData["wCount"]
-                else:
-                    pKey = tKey
-                    tOrder.append(tKey)
-                    tData[tKey] = {
-                        "level": iLevel,
-                        "title": theData["title"],
-                        "words": theData["wCount"],
-                    }
+        for tHandle, sTitle, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
+            tKey = f"{tHandle}:{sTitle}"
+            iLevel = H_LEVEL.get(hItem.level, 0)
+            if iLevel > maxDepth:
+                if pKey in tData:
+                    tData[pKey]["words"] += hItem.wordCount
+            else:
+                pKey = tKey
+                tOrder.append(tKey)
+                tData[tKey] = {
+                    "level": iLevel,
+                    "title": hItem.title,
+                    "words": hItem.wordCount,
+                }
 
         theToC = [(
             tKey,
@@ -563,254 +548,670 @@ class NWIndex():
         """Return the counts for a file, or a section of a file,
         starting at title sTitle if it is provided.
         """
-        cC = 0
-        wC = 0
-        pC = 0
+        tItem = self._itemIndex[tHandle]
+        if tItem is None:
+            return 0, 0, 0
 
         if sTitle is None:
-            if tHandle in self._fileMeta:
-                cC = self._fileMeta[tHandle][1]
-                wC = self._fileMeta[tHandle][2]
-                pC = self._fileMeta[tHandle][3]
+            cItem = tItem.item
         else:
-            if tHandle in self._fileIndex:
-                if sTitle in self._fileIndex[tHandle]:
-                    cC = self._fileIndex[tHandle][sTitle]["cCount"]
-                    wC = self._fileIndex[tHandle][sTitle]["wCount"]
-                    pC = self._fileIndex[tHandle][sTitle]["pCount"]
+            cItem = tItem[sTitle]
 
-        return cC, wC, pC
+        if cItem is not None:
+            return cItem.charCount, cItem.wordCount, cItem.paraCount
+
+        return 0, 0, 0
 
     def getReferences(self, tHandle, sTitle=None):
         """Extract all references made in a file, and optionally title
         section.
         """
         theRefs = {x: [] for x in nwKeyWords.KEY_CLASS}
-        if tHandle not in self._refIndex:
-            return theRefs
-
-        for refTitle in self._refIndex[tHandle]:
-            for aTag in self._refIndex[tHandle][refTitle]:
-                if len(aTag) == 3 and (sTitle is None or sTitle == refTitle):
-                    if aTag[1] in theRefs:
-                        theRefs[aTag[1]].append(aTag[2])
+        for rTitle, hItem in self._itemIndex.iterItemHeaders(tHandle):
+            if sTitle is None or sTitle == rTitle:
+                for aTag, refTypes in hItem.references.items():
+                    for refType in refTypes:
+                        if refType in theRefs:
+                            theRefs[refType].append(aTag)
 
         return theRefs
 
     def getNovelData(self, tHandle, sTitle):
         """Return the novel data of a given handle and title.
         """
-        if tHandle in self._fileIndex:
-            if sTitle in self._fileIndex[tHandle]:
-                return self._fileIndex[tHandle][sTitle]
+        if tHandle in self._itemIndex:
+            return self._itemIndex[tHandle][sTitle]
         return None
 
     def getBackReferenceList(self, tHandle):
         """Build a list of files referring back to our file, specified
         by tHandle.
         """
-        if tHandle is None:
+        if tHandle is None or tHandle not in self._itemIndex:
             return {}
 
         theRefs = {}
-        theTags = set(filter(lambda x: self._tagIndex[x][1] == tHandle, self._tagIndex))
-        if theTags:
-            for tHandle in self._refIndex:
-                for sTitle in self._refIndex[tHandle]:
-                    for _, _, tTag in self._refIndex[tHandle][sTitle]:
-                        if tTag in theTags and tHandle not in theRefs:
-                            theRefs[tHandle] = sTitle
+        theTags = self._itemIndex.allItemTags(tHandle)
+        if not theTags:
+            return theRefs
+
+        for aHandle, sTitle, hItem in self._itemIndex.iterAllHeaders():
+            for aTag in hItem.references:
+                if aTag in theTags and aHandle not in theRefs:
+                    theRefs[aHandle] = sTitle
 
         return theRefs
 
     def getTagSource(self, theTag):
         """Return the source location of a given tag.
         """
-        theRef = self._tagIndex.get(theTag, [])
-        if len(theRef) == 4:
-            return theRef[1], theRef[0], theRef[3]
-        return None, 0, "T000000"
+        tHandle = self._tagsIndex.tagHandle(theTag)
+        sTitle = self._tagsIndex.tagHeading(theTag)
+        return tHandle, sTitle
+
+# END Class NWIndex
+
+
+# =============================================================================================== #
+#  The Tags Index Object
+# =============================================================================================== #
+
+class TagsIndex:
+    """A wrapper class that holds the reverse lookup tags index. This is
+    just a simple wrapper around a single dictionary to keep tighter
+    control of the keys.
+    """
+
+    def __init__(self):
+        self._tags = {}
+        return
 
     ##
-    #  Internal Functions
+    #  Methods
     ##
 
-    def _listNovelHandles(self, skipExcluded):
-        """Return a list of all handles that exist in the novel index.
+    def clear(self):
+        """Clear the index.
         """
-        theHandles = []
-        for tItem in self.theProject.projTree:
+        self._tags = {}
+        return
+
+    def __contains__(self, tagKey):
+        """Check if a tag exists in the index,
+        """
+        return tagKey in self._tags
+
+    def __delitem__(self, tagKey):
+        """Delete an entry in the index.
+        """
+        self._tags.pop(tagKey, None)
+        return
+
+    def __getitem__(self, tagKey):
+        """Return a tag, or return None if it isn't found.
+        """
+        return self._tags.get(tagKey, None)
+
+    def add(self, tagKey, tHandle, sTitle, itemClass):
+        """Add a key to the index and set all values.
+        """
+        self._tags[tagKey] = {
+            "handle": tHandle, "heading": sTitle, "class": itemClass.name
+        }
+        return
+
+    def tagHandle(self, tagKey):
+        """Get the handle of a given tag.
+        """
+        if tagKey in self._tags:
+            return self._tags.get(tagKey).get("handle")
+        return None
+
+    def tagHeading(self, tagKey):
+        """Get the heading of a given tag.
+        """
+        if tagKey in self._tags:
+            return self._tags.get(tagKey).get("heading")
+        return TT_NONE
+
+    def tagClass(self, tagKey):
+        """Get the class of a given tag.
+        """
+        if tagKey in self._tags:
+            return self._tags.get(tagKey).get("class")
+        return None
+
+    ##
+    #  Pack/Unpack
+    ##
+
+    def packData(self):
+        """Pack all the data of the tags into a single dictionary.
+        """
+        return self._tags
+
+    def unpackData(self, data):
+        """Iterate through the tagsIndex loaded from cache and check
+        that it's valid.
+        """
+        self._tags = {}
+        if not isinstance(data, dict):
+            raise ValueError("tagsIndex is not a dict")
+
+        for tagKey, tagData in data.items():
+            if not isinstance(tagKey, str):
+                raise ValueError("tagsIndex keys must be a strings")
+            if "handle" not in tagData:
+                raise KeyError("A tagIndex item is missing a handle entry")
+            if "heading" not in tagData:
+                raise KeyError("A tagIndex item is missing a heading entry")
+            if "class" not in tagData:
+                raise KeyError("A tagIndex item is missing a class entry")
+            if not isHandle(tagData["handle"]):
+                raise ValueError("tagsIndex handle must be a handle")
+            if not isTitleTag(tagData["heading"]):
+                raise ValueError("tagsIndex heading must be a title tag")
+            if not isItemClass(tagData["class"]):
+                raise ValueError("tagsIndex handle must be an nwItemClass")
+
+        self._tags = data
+
+        return
+
+# END Class TagsIndex
+
+
+# =============================================================================================== #
+#  The Item Index Objects
+# =============================================================================================== #
+
+class ItemIndex:
+    """A wrapper object holding the indexed items. This is a warapper
+    class around a single storage dictionary with a set of utility
+    functions for setting and accessing the index data. Each indexed
+    item is stored in an IndexItem object, which again holds an
+    IndexHeading object for each header of the text.
+    """
+
+    def __init__(self, theProject):
+        self.theProject = theProject
+        self._items = {}
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def clear(self):
+        """Clear the index.
+        """
+        self._items = {}
+        return
+
+    def __contains__(self, tHandle):
+        """Check if an item exists in the index,
+        """
+        return tHandle in self._items
+
+    def __delitem__(self, tHandle):
+        """Delete an entry in the index.
+        """
+        self._items.pop(tHandle, None)
+        return
+
+    def __getitem__(self, tHandle):
+        """Return an item, or return None if it isn't found.
+        """
+        return self._items.get(tHandle, None)
+
+    def add(self, tHandle, tItem):
+        """Add a new item to the index. This will overwrite the item if
+        it already exists.
+        """
+        self._items[tHandle] = IndexItem(tHandle, tItem)
+        return
+
+    def mainItemHeader(self, tHandle):
+        """Return the primary item header for an item.
+        """
+        if tHandle in self._items:
+            return self._items[tHandle].level
+        return "H0"
+
+    def allItemTags(self, tHandle):
+        """Get all tags set for headings of an item.
+        """
+        if tHandle in self._items:
+            return self._items[tHandle].allTags()
+        return []
+
+    def iterItemHeaders(self, tHandle):
+        """Iterate over all item headers of an item.
+        """
+        if tHandle in self._items:
+            for sTitle, hItem in self._items[tHandle].items():
+                yield sTitle, hItem
+        return
+
+    def iterAllHeaders(self):
+        """Iterate through all items and headings in the index.
+        """
+        for tHandle, tItem in self._items.items():
+            for sTitle, hItem in tItem.items():
+                yield tHandle, sTitle, hItem
+        return
+
+    def iterNovelStructure(self, rootHandle=None, skipExcl=False):
+        """Iterate over all items and headers in the novel structure for
+        a given root handle, or for all if root handle is None.
+        """
+        for tItem in self.theProject.tree:
             if tItem is None:
-                continue
-            if not tItem.isExported and skipExcluded:
                 continue
             if tItem.itemLayout == nwItemLayout.NOTE:
                 continue
-            if tItem.itemHandle in self._fileIndex:
-                theHandles.append(tItem.itemHandle)
+            if skipExcl and not tItem.isExported:
+                continue
 
-        return theHandles
+            tHandle = tItem.itemHandle
+            if tHandle not in self._items:
+                continue
+
+            if rootHandle is None:
+                for sTitle in self._items[tHandle].headings():
+                    yield tHandle, sTitle, self._items[tHandle][sTitle]
+            elif tItem.itemRoot == rootHandle:
+                for sTitle in self._items[tHandle].headings():
+                    yield tHandle, sTitle, self._items[tHandle][sTitle]
+            else:
+                continue
+
+        return
 
     ##
-    #  Index Checkers
+    #  Setters
     ##
 
-    def _checkIndex(self):
-        """Check that the entries in the index are valid and contain the
-        elements it should. Also check that each file present in the
-        contents folder when the project was loaded are also present in
-        the fileMeta index.
+    def addItemHeading(self, tHandle, sTitle, hDepth, hText):
+        """Set the main heading level of an item.
         """
-        logger.debug("Checking index")
-        tStart = time()
-
-        try:
-            self._checkTagIndex()
-            self._checkRefIndex()
-            self._checkFileIndex()
-            self._checkFileMeta()
-            self._indexBroken = False
-
-        except Exception:
-            logger.error("Error while checking index")
-            logException()
-            self._indexBroken = True
-
-        if self._indexBroken:
-            self.clearIndex()
-            logger.verbose("Index check completed in %.3f ms", (time() - tStart)*1000)
-            return
-
-        # If the index was ok, we check that project files are indexed
-        for fHandle in self.theProject.projFiles:
-            if fHandle not in self._fileMeta:
-                logger.warning("Item '%s' is not in the index", fHandle)
-                self.reIndexHandle(fHandle)
-
-        logger.verbose("Index check completed in %.3f ms", (time() - tStart)*1000)
-
+        if tHandle in self._items:
+            tItem = self._items[tHandle]
+            tItem.updateLevel(hDepth)
+            tItem.addHeading(IndexHeading(sTitle, hDepth, hText))
         return
 
-    def _checkTagIndex(self):
-        """Scan the tag index for errors.
-        Warning: This function raises exceptions.
+    def setHeadingCounts(self, tHandle, sTitle, cC, wC, pC):
+        """Set the character, word and paragraph counts of a heading
+        on a given item.
         """
-        for tTag in self._tagIndex:
-            if not isinstance(tTag, str):
-                raise KeyError("tagIndex key is not a string")
-
-            tEntry = self._tagIndex[tTag]
-            if len(tEntry) != 4:
-                raise IndexError("tagIndex[a] expected 4 values")
-            if not isinstance(tEntry[0], int):
-                raise ValueError("tagIndex[a][0] is not an integer")
-            if not isHandle(tEntry[1]):
-                raise ValueError("tagIndex[a][1] is not a handle")
-            if not isItemClass(tEntry[2]):
-                raise ValueError("tagIndex[a][2] is not an nwItemClass")
-            if not isTitleTag(tEntry[3]):
-                raise ValueError("tagIndex[a][3] is not a title tag")
-
+        if tHandle in self._items:
+            self._items[tHandle].setHeadingCounts(sTitle, cC, wC, pC)
         return
 
-    def _checkRefIndex(self):
-        """Scan the reference index for errors.
-        Warning: This function raises exceptions.
+    def setHeadingSynopsis(self, tHandle, sTitle, sText):
+        """Set the synopsis text for a heading on a given item.
         """
-        for tHandle in self._refIndex:
+        if tHandle in self._items:
+            self._items[tHandle].setHeadingSynopsis(sTitle, sText)
+        return
+
+    def setHeadingTag(self, tHandle, sTitle, tagKey):
+        """Set the main tag for a heading on a given item.
+        """
+        if tHandle in self._items:
+            self._items[tHandle].setHeadingTag(sTitle, tagKey)
+        return
+
+    def addHeadingReferences(self, tHandle, sTitle, tagKeys, refType):
+        """Set the reference tags for a heading on a given item.
+        """
+        if tHandle in self._items:
+            self._items[tHandle].addHeadingReferences(sTitle, tagKeys, refType)
+        return
+
+    ##
+    #  Pack/Unpack
+    ##
+
+    def packData(self):
+        """Pack all the data of the index into a single dictionary.
+        """
+        return {handle: item.packData() for handle, item in self._items.items()}
+
+    def unpackData(self, data):
+        """Iterate through the itemIndex loaded from cache and check
+        that it's valid. This will raise errors if there is a problem.
+        """
+        self._items = {}
+        if not isinstance(data, dict):
+            raise ValueError("itemIndex is not a dict")
+
+        for tHandle, tData in data.items():
             if not isHandle(tHandle):
-                raise KeyError("refIndex key is not a handle")
+                raise ValueError("itemIndex keys must be handles")
 
-            hEntry = self._refIndex[tHandle]
-            for sTitle in hEntry:
-                if not isTitleTag(sTitle):
-                    raise KeyError("refIndex[a] key is not a title tag")
-
-                sEntry = hEntry[sTitle]
-                for tEntry in sEntry:
-                    if len(tEntry) != 3:
-                        raise IndexError("refIndex[a][b][i] expected 3 values")
-                    if not isinstance(tEntry[0], int):
-                        raise ValueError("refIndex[a][b][i][0] is not an integer")
-                    if not tEntry[1] in nwKeyWords.VALID_KEYS:
-                        raise ValueError("refIndex[a][b][i][1] is not a keyword")
-                    if not isinstance(tEntry[2], str):
-                        raise ValueError("refIndex[a][b][i][2] is not a string")
+            nwItem = self.theProject.tree[tHandle]
+            if nwItem is not None:
+                tItem = IndexItem(tHandle, nwItem)
+                tItem.unpackData(tData)
+                self._items[tHandle] = tItem
 
         return
 
-    def _checkFileIndex(self):
-        """Scan the file index for errors.
-        Warning: This function raises exceptions.
+# END Class ItemIndex
+
+
+class IndexItem:
+    """This object represents the index data of a project item (NWItem).
+    It holds a record of all the headings in the text, and the meta data
+    associated with each heading. It also holds a pointer to the project
+    item. The main heading level of the item is also held here since it
+    must be reset each time the item is re-indexed.
+    """
+
+    def __init__(self, tHandle, tItem):
+        self._handle = tHandle
+        self._item = tItem
+        self._level = "H0"
+        self._headings = {}
+        self._index = 0
+
+        # Add a placeholder heading
+        self._headings[TT_NONE] = IndexHeading(TT_NONE)
+
+        return
+
+    def __repr__(self):
+        return f"<IndexItem handle='{self._handle}'>"
+
+    ##
+    # Properties
+    ##
+
+    @property
+    def item(self):
+        return self._item
+
+    @property
+    def level(self):
+        return self._level
+
+    ##
+    #  Setters
+    ##
+
+    def updateLevel(self, level):
+        """Set the level only if it has not already been set.
         """
-        for tHandle in self._fileIndex:
-            if not isHandle(tHandle):
-                raise KeyError("fileIndex key is not a handle")
-
-            hEntry = self._fileIndex[tHandle]
-            for sTitle in self._fileIndex[tHandle]:
-                if not isTitleTag(sTitle):
-                    raise KeyError("fileIndex[a] key is not a title tag")
-
-                sEntry = hEntry[sTitle]
-                if len(sEntry) != 7:
-                    raise IndexError("fileIndex[a][b] expected 7 values")
-
-                if "level" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'level' key")
-                if "title" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'title' key")
-                if "layout" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'layout' key")
-                if "cCount" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'cCount' key")
-                if "wCount" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'wCount' key")
-                if "pCount" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'pCount' key")
-                if "synopsis" not in sEntry:
-                    raise KeyError("fileIndex[a][b] has no 'synopsis' key")
-
-                if not sEntry["level"] in H_VALID:
-                    raise ValueError("fileIndex[a][b][level] is not a header level")
-                if not isinstance(sEntry["title"], str):
-                    raise ValueError("fileIndex[a][b][title] is not a string")
-                if not isItemLayout(sEntry["layout"]):
-                    raise ValueError("fileIndex[a][b][layout] is not an nwItemLayout")
-                if not isinstance(sEntry["cCount"], int):
-                    raise ValueError("fileIndex[a][b][cCount] is not an integer")
-                if not isinstance(sEntry["wCount"], int):
-                    raise ValueError("fileIndex[a][b][wCount] is not an integer")
-                if not isinstance(sEntry["pCount"], int):
-                    raise ValueError("fileIndex[a][b][pCount] is not an integer")
-                if not isinstance(sEntry["synopsis"], str):
-                    raise ValueError("fileIndex[a][b][synopsis] is not a string")
-
+        if self._level == "H0":
+            self._level = level
         return
 
-    def _checkFileMeta(self):
-        """Scan the text counts index for errors.
-        Warning: This function raises exceptions.
+    def addHeading(self, tHeading):
+        """Add a heading to the item. Also remove the placeholder entry
+        if it exists.
         """
-        for tHandle in self._fileMeta:
-            if not isHandle(tHandle):
-                raise KeyError("fileMeta key is not a handle")
+        if TT_NONE in self._headings:
+            self._headings.pop(TT_NONE)
+        self._headings[tHeading.key] = tHeading
+        return
 
-            tEntry = self._fileMeta[tHandle]
-            if len(tEntry) != 4:
-                raise IndexError("fileMeta[a] expected 4 values")
-            if not tEntry[0] in H_VALID:
-                raise ValueError("fileMeta[a][0] is not a header level")
-            if not isinstance(tEntry[1], int):
-                raise ValueError("fileMeta[a][1] is not an integer")
-            if not isinstance(tEntry[2], int):
-                raise ValueError("fileMeta[a][2] is not an integer")
-            if not isinstance(tEntry[3], int):
-                raise ValueError("fileMeta[a][3] is not an integer")
+    def setHeadingCounts(self, sTitle, charCount, wordCount, paraCount):
+        """Set the character, word and paragraph count of a heading.
+        """
+        if sTitle in self._headings:
+            self._headings[sTitle].setCounts(charCount, wordCount, paraCount)
+        return
+
+    def setHeadingSynopsis(self, sTitle, synopText):
+        """Set the synopsis text of a heading.
+        """
+        if sTitle in self._headings:
+            self._headings[sTitle].setSynopsis(synopText)
+        return
+
+    def setHeadingTag(self, sTitle, tagKey):
+        """Set the tag of a heading.
+        """
+        if sTitle in self._headings:
+            self._headings[sTitle].setTag(tagKey)
+        return
+
+    def addHeadingReferences(self, sTitle, tagKeys, refType):
+        """Add a reference key and all its types to a heading.
+        """
+        if sTitle in self._headings:
+            for tagKey in tagKeys:
+                self._headings[sTitle].addReference(tagKey, refType)
+        return
+
+    ##
+    #  Data Methods
+    ##
+
+    def __getitem__(self, sTitle):
+        return self._headings.get(sTitle, None)
+
+    def __contains__(self, sTitle):
+        return sTitle in self._headings
+
+    def items(self):
+        return self._headings.items()
+
+    def headings(self):
+        return sorted(self._headings.keys())
+
+    def allTags(self):
+        """Return a list of all tags in the current item.
+        """
+        tags = []
+        for hItem in self._headings.values():
+            tag = hItem.tag
+            if tag:
+                tags.append(tag)
+        return tags
+
+    ##
+    #  Pack/Unpack
+    ##
+
+    def packData(self):
+        """Pack the indexed item's data into a dictionary.
+        """
+        heads = {}
+        refs = {}
+        for sTitle, hItem in self._headings.items():
+            heads[sTitle] = hItem.packData()
+            hRefs = hItem.packReferences()
+            if hRefs:
+                refs[sTitle] = hRefs
+
+        data = {"level": self._level}
+        data["headings"] = heads
+        if refs:
+            data["references"] = refs
+
+        return data
+
+    def unpackData(self, data):
+        """Unpack an item entry from the data.
+        """
+        self._level = data.get("level", "H0")
+        references = data.get("references", {})
+        for sTitle, hData in data.get("headings", {}).items():
+            if not isTitleTag(sTitle):
+                raise ValueError("The itemIndex contains an invalid title key")
+            tHeading = IndexHeading(sTitle)
+            tHeading.unpackData(hData)
+            tHeading.unpackReferences(references.get(sTitle, {}))
+            self.addHeading(tHeading)
+        return
+
+# END Class IndexItem
+
+
+class IndexHeading:
+    """This object represents a section of text in a project item
+    associated with a single (valid) heading. It holds a separate record
+    of all references made under each heading.
+    """
+
+    def __init__(self, key, level="H0", title=""):
+        self._key = key
+        self._level = level
+        self._title = title
+
+        self._charCount = 0
+        self._wordCount = 0
+        self._paraCount = 0
+        self._synopsis = ""
+
+        self._tag = ""
+        self._refs = {}
 
         return
 
-# END Class NWIndex
+    def __repr__(self):
+        return f"<IndexHeading key='{self._key}'>"
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def key(self):
+        return self._key
+
+    @property
+    def level(self):
+        return self._level
+
+    @property
+    def title(self):
+        return self._title
+
+    @property
+    def charCount(self):
+        return self._charCount
+
+    @property
+    def wordCount(self):
+        return self._wordCount
+
+    @property
+    def paraCount(self):
+        return self._paraCount
+
+    @property
+    def synopsis(self):
+        return self._synopsis
+
+    @property
+    def tag(self):
+        return self._tag
+
+    @property
+    def references(self):
+        return self._refs
+
+    ##
+    #  Setters
+    ##
+
+    def setLevel(self, level):
+        """Set the level of the header if it's a valid value.
+        """
+        if level in H_VALID:
+            self._level = level
+        return
+
+    def setCounts(self, charCount, wordCount, paraCount):
+        """Set the character, word and paragraph count. Make sure the
+        value is an integer and is not smaller than 0.
+        """
+        self._charCount = max(0, checkInt(charCount, 0))
+        self._wordCount = max(0, checkInt(wordCount, 0))
+        self._paraCount = max(0, checkInt(paraCount, 0))
+        return
+
+    def setSynopsis(self, synopText):
+        """Set the synopsis text and make sure it is a string.
+        """
+        self._synopsis = str(synopText)
+        return
+
+    def setTag(self, tagKey):
+        """Set the tag for references, and make sure it is a string.
+        """
+        self._tag = str(tagKey)
+        return
+
+    def addReference(self, tagKey, refType):
+        """Add a record of a reference tag, and what keyword types it is
+        associated with.
+        """
+        if refType in nwKeyWords.VALID_KEYS:
+            if tagKey not in self._refs:
+                self._refs[tagKey] = set()
+            self._refs[tagKey].add(refType)
+        return
+
+    ##
+    #  Data Methods
+    ##
+
+    def packData(self):
+        """Pack the values into a dictionary for saving to cache.
+        """
+        return {
+            "level": self._level,
+            "title": self._title,
+            "tag": self._tag,
+            "cCount": self._charCount,
+            "wCount": self._wordCount,
+            "pCount": self._paraCount,
+            "synopsis": self._synopsis,
+        }
+
+    def packReferences(self):
+        """Pack references into a dictionary for saving to cache.
+        Multiple types are packed into a sorted, comma separated string.
+        It is sorted to prevent creating unnecessary diffs as the order
+        of a set is not guaranteed.
+        """
+        return {key: ",".join(sorted(list(value))) for key, value in self._refs.items()}
+
+    def unpackData(self, data):
+        """Unpack a heading entry from a dictionary.
+        """
+        self.setLevel(data.get("level", "H0"))
+        self._title = str(data.get("title", ""))
+        self._tag = str(data.get("tag", ""))
+        self.setCounts(
+            data.get("cCount", 0),
+            data.get("wCount", 0),
+            data.get("pCount", 0),
+        )
+        self._synopsis = str(data.get("synopsis", ""))
+        return
+
+    def unpackReferences(self, data):
+        """Unpack a set of references from a dictionary.
+        """
+        for tagKey, refTypes in data.items():
+            if not isinstance(tagKey, str):
+                raise ValueError("itemIndex reference key must be a string")
+            if not isinstance(refTypes, str):
+                raise ValueError("itemIndex reference type must be a string")
+            for refType in refTypes.split(","):
+                if refType in nwKeyWords.VALID_KEYS:
+                    self.addReference(tagKey, refType)
+                else:
+                    raise ValueError("The itemIndex contains an invalid reference type")
+        return
+
+# END Class IndexHeading
 
 
 # =============================================================================================== #

@@ -160,7 +160,7 @@ class GuiDocViewer(QTextBrowser):
     def loadText(self, tHandle, updateHistory=True):
         """Load text into the viewer from an item handle.
         """
-        if not self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+        if not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
             logger.warning("Item not found")
             return False
 
@@ -245,7 +245,7 @@ class GuiDocViewer(QTextBrowser):
         index being up to date.
         """
         logger.debug("Loading document from tag '%s'", theTag)
-        tHandle, _, sTitle = self.theParent.theIndex.getTagSource(theTag)
+        tHandle, sTitle = self.theProject.index.getTagSource(theTag)
         if tHandle is None:
             self.theParent.makeAlert(self.tr(
                 "Could not find the reference for tag '{0}'. It either doesn't "
@@ -863,15 +863,15 @@ class GuiDocViewHeader(QWidget):
 
         if self.mainConf.showFullPath:
             tTitle = []
-            tTree = self.theProject.projTree.getItemPath(tHandle)
+            tTree = self.theProject.tree.getItemPath(tHandle)
             for aHandle in reversed(tTree):
-                nwItem = self.theProject.projTree[aHandle]
+                nwItem = self.theProject.tree[aHandle]
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
             sSep = "  %s  " % nwUnicode.U_RSAQUO
             self.theTitle.setText(sSep.join(tTitle))
         else:
-            nwItem = self.theProject.projTree[tHandle]
+            nwItem = self.theProject.tree[tHandle]
             if nwItem is None:
                 return False
             self.theTitle.setText(nwItem.itemName)
@@ -1199,10 +1199,10 @@ class GuiDocViewDetails(QScrollArea):
         if self.theParent.docViewer.stickyRef:
             return
 
-        theRefs = self.theParent.theIndex.getBackReferenceList(tHandle)
+        theRefs = self.theProject.index.getBackReferenceList(tHandle)
         theList = []
         for tHandle in theRefs:
-            tItem = self.theProject.projTree[tHandle]
+            tItem = self.theProject.tree[tHandle]
             if tItem is not None:
                 theList.append("<a href='%s#%s' %s>%s</a>" % (
                     tHandle, theRefs[tHandle], self.linkStyle, tItem.itemName

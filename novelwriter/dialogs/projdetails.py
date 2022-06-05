@@ -52,18 +52,18 @@ class GuiProjectDetails(PagedDialog):
         self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
-        self.optState   = theParent.theProject.optState
 
         self.setWindowTitle(self.tr("Project Details"))
 
         wW = self.mainConf.pxInt(600)
         wH = self.mainConf.pxInt(400)
+        pOptions = self.theProject.options
 
         self.setMinimumWidth(wW)
         self.setMinimumHeight(wH)
         self.resize(
-            self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "winWidth",  wW)),
-            self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "winHeight", wH))
+            self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "winWidth",  wW)),
+            self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "winHeight", wH))
         )
 
         self.tabMain = GuiProjectDetailsMain(self.theParent, self.theProject)
@@ -120,16 +120,17 @@ class GuiProjectDetails(PagedDialog):
         countFrom    = self.tabContents.poValue.value()
         clearDouble  = self.tabContents.dblValue.isChecked()
 
-        self.optState.setValue("GuiProjectDetails", "winWidth",     winWidth)
-        self.optState.setValue("GuiProjectDetails", "winHeight",    winHeight)
-        self.optState.setValue("GuiProjectDetails", "widthCol0",    widthCol0)
-        self.optState.setValue("GuiProjectDetails", "widthCol1",    widthCol1)
-        self.optState.setValue("GuiProjectDetails", "widthCol2",    widthCol2)
-        self.optState.setValue("GuiProjectDetails", "widthCol3",    widthCol3)
-        self.optState.setValue("GuiProjectDetails", "widthCol4",    widthCol4)
-        self.optState.setValue("GuiProjectDetails", "wordsPerPage", wordsPerPage)
-        self.optState.setValue("GuiProjectDetails", "countFrom",    countFrom)
-        self.optState.setValue("GuiProjectDetails", "clearDouble",  clearDouble)
+        pOptions = self.theProject.options
+        pOptions.setValue("GuiProjectDetails", "winWidth",     winWidth)
+        pOptions.setValue("GuiProjectDetails", "winHeight",    winHeight)
+        pOptions.setValue("GuiProjectDetails", "widthCol0",    widthCol0)
+        pOptions.setValue("GuiProjectDetails", "widthCol1",    widthCol1)
+        pOptions.setValue("GuiProjectDetails", "widthCol2",    widthCol2)
+        pOptions.setValue("GuiProjectDetails", "widthCol3",    widthCol3)
+        pOptions.setValue("GuiProjectDetails", "widthCol4",    widthCol4)
+        pOptions.setValue("GuiProjectDetails", "wordsPerPage", wordsPerPage)
+        pOptions.setValue("GuiProjectDetails", "countFrom",    countFrom)
+        pOptions.setValue("GuiProjectDetails", "clearDouble",  clearDouble)
 
         return
 
@@ -145,7 +146,6 @@ class GuiProjectDetailsMain(QWidget):
         self.theParent  = theParent
         self.theProject = theProject
         self.theTheme   = theParent.theTheme
-        self.theIndex   = theParent.theIndex
 
         fPx = self.theTheme.fontPixelSize
         fPt = self.theTheme.fontPointSize
@@ -245,8 +245,9 @@ class GuiProjectDetailsMain(QWidget):
     def updateValues(self):
         """Set all the values.
         """
-        hCounts = self.theIndex.getNovelTitleCounts()
-        nwCount = self.theIndex.getNovelWordCount()
+        pIndex = self.theProject.index
+        hCounts = pIndex.getNovelTitleCounts()
+        nwCount = pIndex.getNovelWordCount()
         edTime = self.theProject.getCurrentEditTime()
 
         self.wordCountVal.setText(f"{nwCount:n}")
@@ -277,8 +278,6 @@ class GuiProjectDetailsContents(QWidget):
         self.theParent  = theParent
         self.theProject = theProject
         self.theTheme   = theParent.theTheme
-        self.theIndex   = theParent.theIndex
-        self.optState   = theProject.optState
 
         # Internal
         self._theToC = []
@@ -286,6 +285,7 @@ class GuiProjectDetailsContents(QWidget):
         iPx = self.theTheme.baseIconSize
         hPx = self.mainConf.pxInt(12)
         vPx = self.mainConf.pxInt(4)
+        pOptions = self.theProject.options
 
         # Contents Tree
         # =============
@@ -314,11 +314,11 @@ class GuiProjectDetailsContents(QWidget):
         treeHeader.setStretchLastSection(True)
         treeHeader.setMinimumSectionSize(hPx)
 
-        wCol0 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol0", 200))
-        wCol1 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol1", 60))
-        wCol2 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol2", 60))
-        wCol3 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol3", 60))
-        wCol4 = self.mainConf.pxInt(self.optState.getInt("GuiProjectDetails", "widthCol4", 90))
+        wCol0 = self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol0", 200))
+        wCol1 = self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol1", 60))
+        wCol2 = self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol2", 60))
+        wCol3 = self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol3", 60))
+        wCol4 = self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol4", 90))
 
         self.tocTree.setColumnWidth(0, wCol0)
         self.tocTree.setColumnWidth(1, wCol1)
@@ -330,9 +330,9 @@ class GuiProjectDetailsContents(QWidget):
         # Options
         # =======
 
-        wordsPerPage = self.optState.getInt("GuiProjectDetails", "wordsPerPage", 350)
-        countFrom    = self.optState.getInt("GuiProjectDetails", "countFrom", 1)
-        clearDouble  = self.optState.getInt("GuiProjectDetails", "clearDouble", True)
+        wordsPerPage = pOptions.getInt("GuiProjectDetails", "wordsPerPage", 350)
+        countFrom    = pOptions.getInt("GuiProjectDetails", "countFrom", 1)
+        clearDouble  = pOptions.getInt("GuiProjectDetails", "clearDouble", True)
 
         wordsHelp = (
             self.tr("Typical word count for a 5 by 8 inch book page with 11 pt font is 350.")
@@ -424,7 +424,7 @@ class GuiProjectDetailsContents(QWidget):
         """Extract the data for the tree.
         """
         self._theToC = []
-        self._theToC = self.theIndex.getTableOfContents(2)
+        self._theToC = self.theProject.index.getTableOfContents(2)
         self._theToC.append(("", 0, self.tr("END"), 0))
         return
 

@@ -24,7 +24,8 @@ import pytest
 
 from tools import readFile
 
-from novelwriter.core import NWProject, NWIndex, ToMarkdown
+from novelwriter.core import NWProject, ToMarkdown
+from novelwriter.core.index import NWIndex
 
 
 @pytest.mark.core

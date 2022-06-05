@@ -67,33 +67,34 @@ class GuiWritingStats(QDialog):
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theParent.theProject
-        self.optState   = theParent.theProject.optState
 
         self.logData    = []
         self.filterData = []
         self.timeFilter = 0.0
         self.wordOffset = 0
 
+        pOptions = self.theProject.options
+
         self.setWindowTitle(self.tr("Writing Statistics"))
         self.setMinimumWidth(self.mainConf.pxInt(420))
         self.setMinimumHeight(self.mainConf.pxInt(400))
         self.resize(
-            self.mainConf.pxInt(self.optState.getInt("GuiWritingStats", "winWidth",  550)),
-            self.mainConf.pxInt(self.optState.getInt("GuiWritingStats", "winHeight", 500))
+            self.mainConf.pxInt(pOptions.getInt("GuiWritingStats", "winWidth",  550)),
+            self.mainConf.pxInt(pOptions.getInt("GuiWritingStats", "winHeight", 500))
         )
 
         # List Box
         wCol0 = self.mainConf.pxInt(
-            self.optState.getInt("GuiWritingStats", "widthCol0", 180)
+            pOptions.getInt("GuiWritingStats", "widthCol0", 180)
         )
         wCol1 = self.mainConf.pxInt(
-            self.optState.getInt("GuiWritingStats", "widthCol1", 80)
+            pOptions.getInt("GuiWritingStats", "widthCol1", 80)
         )
         wCol2 = self.mainConf.pxInt(
-            self.optState.getInt("GuiWritingStats", "widthCol2", 80)
+            pOptions.getInt("GuiWritingStats", "widthCol2", 80)
         )
         wCol3 = self.mainConf.pxInt(
-            self.optState.getInt("GuiWritingStats", "widthCol3", 80)
+            pOptions.getInt("GuiWritingStats", "widthCol3", 80)
         )
 
         self.listBox = QTreeWidget()
@@ -115,9 +116,9 @@ class GuiWritingStats(QDialog):
         hHeader.setTextAlignment(self.C_IDLE, Qt.AlignRight)
         hHeader.setTextAlignment(self.C_COUNT, Qt.AlignRight)
 
-        sortCol = checkIntRange(self.optState.getInt("GuiWritingStats", "sortCol", 0), 0, 2, 0)
+        sortCol = checkIntRange(pOptions.getInt("GuiWritingStats", "sortCol", 0), 0, 2, 0)
         sortOrder = checkIntTuple(
-            self.optState.getInt("GuiWritingStats", "sortOrder", Qt.DescendingOrder),
+            pOptions.getInt("GuiWritingStats", "sortOrder", Qt.DescendingOrder),
             (Qt.AscendingOrder, Qt.DescendingOrder), Qt.DescendingOrder
         )
         self.listBox.sortByColumn(sortCol, sortOrder)
@@ -190,37 +191,37 @@ class GuiWritingStats(QDialog):
 
         self.incNovel = QSwitch(width=2*sPx, height=sPx)
         self.incNovel.setChecked(
-            self.optState.getBool("GuiWritingStats", "incNovel", True)
+            pOptions.getBool("GuiWritingStats", "incNovel", True)
         )
         self.incNovel.clicked.connect(self._updateListBox)
 
         self.incNotes = QSwitch(width=2*sPx, height=sPx)
         self.incNotes.setChecked(
-            self.optState.getBool("GuiWritingStats", "incNotes", True)
+            pOptions.getBool("GuiWritingStats", "incNotes", True)
         )
         self.incNotes.clicked.connect(self._updateListBox)
 
         self.hideZeros = QSwitch(width=2*sPx, height=sPx)
         self.hideZeros.setChecked(
-            self.optState.getBool("GuiWritingStats", "hideZeros", True)
+            pOptions.getBool("GuiWritingStats", "hideZeros", True)
         )
         self.hideZeros.clicked.connect(self._updateListBox)
 
         self.hideNegative = QSwitch(width=2*sPx, height=sPx)
         self.hideNegative.setChecked(
-            self.optState.getBool("GuiWritingStats", "hideNegative", False)
+            pOptions.getBool("GuiWritingStats", "hideNegative", False)
         )
         self.hideNegative.clicked.connect(self._updateListBox)
 
         self.groupByDay = QSwitch(width=2*sPx, height=sPx)
         self.groupByDay.setChecked(
-            self.optState.getBool("GuiWritingStats", "groupByDay", False)
+            pOptions.getBool("GuiWritingStats", "groupByDay", False)
         )
         self.groupByDay.clicked.connect(self._updateListBox)
 
         self.showIdleTime = QSwitch(width=2*sPx, height=sPx)
         self.showIdleTime.setChecked(
-            self.optState.getBool("GuiWritingStats", "showIdleTime", False)
+            pOptions.getBool("GuiWritingStats", "showIdleTime", False)
         )
         self.showIdleTime.clicked.connect(self._updateListBox)
 
@@ -244,7 +245,7 @@ class GuiWritingStats(QDialog):
         self.histMax.setMaximum(100000)
         self.histMax.setSingleStep(100)
         self.histMax.setValue(
-            self.optState.getInt("GuiWritingStats", "histMax", 2000)
+            pOptions.getInt("GuiWritingStats", "histMax", 2000)
         )
         self.histMax.valueChanged.connect(self._updateListBox)
 
@@ -323,23 +324,23 @@ class GuiWritingStats(QDialog):
         showIdleTime = self.showIdleTime.isChecked()
         histMax      = self.histMax.value()
 
-        self.optState.setValue("GuiWritingStats", "winWidth",     winWidth)
-        self.optState.setValue("GuiWritingStats", "winHeight",    winHeight)
-        self.optState.setValue("GuiWritingStats", "widthCol0",    widthCol0)
-        self.optState.setValue("GuiWritingStats", "widthCol1",    widthCol1)
-        self.optState.setValue("GuiWritingStats", "widthCol2",    widthCol2)
-        self.optState.setValue("GuiWritingStats", "widthCol3",    widthCol3)
-        self.optState.setValue("GuiWritingStats", "sortCol",      sortCol)
-        self.optState.setValue("GuiWritingStats", "sortOrder",    sortOrder)
-        self.optState.setValue("GuiWritingStats", "incNovel",     incNovel)
-        self.optState.setValue("GuiWritingStats", "incNotes",     incNotes)
-        self.optState.setValue("GuiWritingStats", "hideZeros",    hideZeros)
-        self.optState.setValue("GuiWritingStats", "hideNegative", hideNegative)
-        self.optState.setValue("GuiWritingStats", "groupByDay",   groupByDay)
-        self.optState.setValue("GuiWritingStats", "showIdleTime", showIdleTime)
-        self.optState.setValue("GuiWritingStats", "histMax",      histMax)
-
-        self.optState.saveSettings()
+        pOptions = self.theProject.options
+        pOptions.setValue("GuiWritingStats", "winWidth",     winWidth)
+        pOptions.setValue("GuiWritingStats", "winHeight",    winHeight)
+        pOptions.setValue("GuiWritingStats", "widthCol0",    widthCol0)
+        pOptions.setValue("GuiWritingStats", "widthCol1",    widthCol1)
+        pOptions.setValue("GuiWritingStats", "widthCol2",    widthCol2)
+        pOptions.setValue("GuiWritingStats", "widthCol3",    widthCol3)
+        pOptions.setValue("GuiWritingStats", "sortCol",      sortCol)
+        pOptions.setValue("GuiWritingStats", "sortOrder",    sortOrder)
+        pOptions.setValue("GuiWritingStats", "incNovel",     incNovel)
+        pOptions.setValue("GuiWritingStats", "incNotes",     incNotes)
+        pOptions.setValue("GuiWritingStats", "hideZeros",    hideZeros)
+        pOptions.setValue("GuiWritingStats", "hideNegative", hideNegative)
+        pOptions.setValue("GuiWritingStats", "groupByDay",   groupByDay)
+        pOptions.setValue("GuiWritingStats", "showIdleTime", showIdleTime)
+        pOptions.setValue("GuiWritingStats", "histMax",      histMax)
+        pOptions.saveSettings()
         self.close()
 
         return
