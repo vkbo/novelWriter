@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-06-05 13:28:34">
+<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-06-05 15:03:00">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1331</saveCount>
-    <autoCount>220</autoCount>
-    <editTime>67108</editTime>
+    <saveCount>1334</saveCount>
+    <autoCount>225</autoCount>
+    <editTime>67746</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -15,10 +15,10 @@
     <spellCheck>True</spellCheck>
     <spellLang>None</spellLang>
     <autoOutline>True</autoOutline>
-    <lastEdited>636b6aa9b697b</lastEdited>
+    <lastEdited>a520879ca0b45</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
-    <lastWordCount>1303</lastWordCount>
-    <novelWordCount>894</novelWordCount>
+    <lastWordCount>1363</lastWordCount>
+    <novelWordCount>954</novelWordCount>
     <notesWordCount>409</notesWordCount>
     <autoReplace>
       <entry key="A">B</entry>
@@ -33,10 +33,10 @@
       <section></section>
     </titleFormat>
     <status>
-      <entry key="sf12341" count="5" red="100" green="100" blue="100">New</entry>
+      <entry key="sf12341" count="7" red="100" green="100" blue="100">New</entry>
       <entry key="sf24ce6" count="1" red="200" green="50" blue="0">Notes</entry>
       <entry key="sc24b8f" count="2" red="182" green="60" blue="0">Started</entry>
-      <entry key="s90e6c9" count="5" red="193" green="129" blue="0">1st Draft</entry>
+      <entry key="s90e6c9" count="6" red="193" green="129" blue="0">1st Draft</entry>
       <entry key="sd51c5b" count="1" red="193" green="129" blue="0">2nd Draft</entry>
       <entry key="s8ae72a" count="0" red="193" green="129" blue="0">3rd Draft</entry>
       <entry key="s78ea90" count="0" red="58" green="180" blue="58">Finished</entry>
@@ -48,13 +48,13 @@
       <entry key="i56be10" count="1" red="117" green="0" blue="175">Main</entry>
     </importance>
   </settings>
-  <content count="24">
+  <content count="27">
     <item handle="7031beac91f75" parent="None" root="7031beac91f75" order="0" type="ROOT" class="NOVEL">
       <meta expanded="True"/>
       <name status="sc24b8f" import="ia857f0">Novel</name>
     </item>
     <item handle="53b69b83cdafc" parent="7031beac91f75" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" charCount="93" wordCount="19" paraCount="2" cursorPos="2"/>
+      <meta expanded="False" charCount="93" wordCount="19" paraCount="2" cursorPos="119"/>
       <name status="sc24b8f" import="ia857f0" exported="True">Title Page</name>
     </item>
     <item handle="974e400180a99" parent="7031beac91f75" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
@@ -93,7 +93,19 @@
       <meta expanded="False" charCount="189" wordCount="37" paraCount="1" cursorPos="224"/>
       <name status="s90e6c9" import="ia857f0" exported="True">We Found John!</name>
     </item>
-    <item handle="f6622b4617424" parent="None" root="f6622b4617424" order="1" type="ROOT" class="CHARACTER">
+    <item handle="e5e47ebf63b1c" parent="None" root="e5e47ebf63b1c" order="1" type="ROOT" class="NOVEL">
+      <meta expanded="True"/>
+      <name status="sf12341" import="ia857f0">Sequel</name>
+    </item>
+    <item handle="bacb7059e3083" parent="e5e47ebf63b1c" root="e5e47ebf63b1c" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="False" charCount="27" wordCount="5" paraCount="1" cursorPos="100"/>
+      <name status="sf12341" import="ia857f0" exported="True">Title Page</name>
+    </item>
+    <item handle="a520879ca0b45" parent="e5e47ebf63b1c" root="e5e47ebf63b1c" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="False" charCount="299" wordCount="55" paraCount="2" cursorPos="104"/>
+      <name status="s90e6c9" import="ia857f0" exported="True">Chapter One</name>
+    </item>
+    <item handle="f6622b4617424" parent="None" root="f6622b4617424" order="2" type="ROOT" class="CHARACTER">
       <meta expanded="True"/>
       <name status="sf12341" import="ia857f0">Characters</name>
     </item>
@@ -109,7 +121,7 @@
       <meta expanded="False" charCount="55" wordCount="9" paraCount="1" cursorPos="25"/>
       <name status="sf12341" import="i2d7a54" exported="True">Jane Smith</name>
     </item>
-    <item handle="15c4492bd5107" parent="None" root="15c4492bd5107" order="2" type="ROOT" class="WORLD">
+    <item handle="15c4492bd5107" parent="None" root="15c4492bd5107" order="3" type="ROOT" class="WORLD">
       <meta expanded="True"/>
       <name status="sf12341" import="ia857f0">Locations</name>
     </item>
@@ -125,7 +137,7 @@
       <meta expanded="False" charCount="28" wordCount="6" paraCount="1" cursorPos="45"/>
       <name status="sf12341" import="i2d7a54" exported="True">Mars</name>
     </item>
-    <item handle="6827118336ac1" parent="None" root="6827118336ac1" order="3" type="ROOT" class="ARCHIVE">
+    <item handle="6827118336ac1" parent="None" root="6827118336ac1" order="4" type="ROOT" class="ARCHIVE">
       <meta expanded="True"/>
       <name status="sf12341" import="ia857f0">Archive</name>
     </item>
@@ -137,7 +149,7 @@
       <meta expanded="False" charCount="232" wordCount="42" paraCount="1" cursorPos="239"/>
       <name status="s90e6c9" import="ia857f0" exported="True">Old File</name>
     </item>
-    <item handle="98acd8c76c93a" parent="None" root="98acd8c76c93a" order="4" type="ROOT" class="TRASH">
+    <item handle="98acd8c76c93a" parent="None" root="98acd8c76c93a" order="5" type="ROOT" class="TRASH">
       <meta expanded="True"/>
       <name status="sf12341" import="ia857f0">Trash</name>
     </item>

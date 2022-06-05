@@ -83,6 +83,7 @@ class GuiOutline(QWidget):
         self.outlineView.hiddenStateChanged.connect(self._updateMenuColumns)
         self.outlineView.activeItemChanged.connect(self.outlineData.showItem)
         self.outlineData.itemTagClicked.connect(self._tagClicked)
+        self.outlineBar.novelRootChanged.connect(self._rootItemChanged)
         self.outlineBar.viewColumnToggled.connect(self.outlineView.menuColumnToggled)
         self.outlineBar.viewRefreshRequested.connect(
             lambda: self.outlineView.refreshTree(overRide=True)
@@ -151,6 +152,13 @@ class GuiOutline(QWidget):
         """
         if link:
             self.loadDocumentTagRequest.emit(link, nwDocMode.VIEW)
+        return
+
+    @pyqtSlot(str)
+    def _rootItemChanged(self, handle):
+        """The root novel handle has been changed.
+        """
+        self.outlineView.refreshTree(rootHandle=handle, overRide=True)
         return
 
 # END Class GuiOutline
@@ -394,7 +402,7 @@ class GuiOutlineView(QTreeWidget):
 
         return
 
-    def refreshTree(self, overRide=False, novelChanged=False):
+    def refreshTree(self, rootHandle=None, overRide=False, novelChanged=False):
         """Called whenever the Outline tab is activated and controls
         what data to load, and if necessary, force a rebuild of the
         tree.
@@ -402,17 +410,17 @@ class GuiOutlineView(QTreeWidget):
         # If it's the first time, we always build
         if self._firstView or self._firstView and overRide:
             self._loadHeaderState()
-            self._populateTree()
+            self._populateTree(rootHandle)
             self._firstView = False
             return
 
         # If the novel index or novel tree has changed since the tree
         # was last built, we rebuild the tree from the updated index.
-        indexChanged = self.theProject.index.novelChangedSince(self._lastBuild)
+        indexChanged = self.theProject.index.rootChangedSince(rootHandle, self._lastBuild)
         doBuild = (novelChanged or indexChanged) and self.theProject.autoOutline
         if doBuild or overRide:
             logger.debug("Rebuilding Project Outline")
-            self._populateTree()
+            self._populateTree(rootHandle)
 
         return
 
@@ -577,7 +585,7 @@ class GuiOutlineView(QTreeWidget):
 
         return
 
-    def _populateTree(self):
+    def _populateTree(self, rootHandle):
         """Build the tree based on the project index, and the header
         based on the defined constants, default values and user selected
         width, order and hidden state. All columns are populated, even
@@ -610,7 +618,8 @@ class GuiOutlineView(QTreeWidget):
         currChapter = None
         currScene = None
 
-        for _, tHandle, sTitle, novIdx in self.theProject.index.novelStructure(skipExcl=True):
+        novStruct = self.theProject.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
+        for _, tHandle, sTitle, novIdx in novStruct:
 
             tItem = self._createTreeItem(tHandle, sTitle, novIdx)
 

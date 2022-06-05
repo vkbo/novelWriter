@@ -73,9 +73,8 @@ class NWIndex:
         self._indexBroken = False
 
         # TimeStamps
-        self._timeNovel = 0
-        self._timeNotes = 0
-        self._timeIndex = 0
+        self._indexChange = 0
+        self._rootChange = {}
 
         return
 
@@ -99,9 +98,8 @@ class NWIndex:
         """
         self._tagsIndex.clear()
         self._itemIndex.clear()
-        self._timeNovel = 0
-        self._timeNotes = 0
-        self._timeIndex = 0
+        self._indexChange = 0
+        self._rootChange = {}
         return
 
     def deleteHandle(self, tHandle):
@@ -129,20 +127,16 @@ class NWIndex:
 
         return True
 
-    def novelChangedSince(self, checkTime):
-        """Check if the novel index has changed since a given time.
-        """
-        return self._timeNovel > checkTime
-
-    def notesChangedSince(self, checkTime):
-        """Check if the notes index has changed since a given time.
-        """
-        return self._timeNotes > checkTime
-
     def indexChangedSince(self, checkTime):
         """Check if the index has changed since a given time.
         """
-        return self._timeIndex > checkTime
+        return self._indexChange > checkTime
+
+    def rootChangedSince(self, rootHandle, checkTime):
+        """Check if the index has changed since a given time for a
+        given root item.
+        """
+        return self._rootChange.get(rootHandle, self._indexChange) > checkTime
 
     ##
     #  Load and Save Index to/from File
@@ -184,10 +178,7 @@ class NWIndex:
                 logger.warning("Item '%s' is not in the index", fHandle)
                 self.reIndexHandle(fHandle)
 
-        nowTime = round(time())
-        self._timeNovel = nowTime
-        self._timeNotes = nowTime
-        self._timeIndex = nowTime
+        self._indexChange = round(time())
 
         logger.verbose("Index loaded in %.3f ms", (time() - tStart)*1000)
 
@@ -307,11 +298,8 @@ class NWIndex:
 
         # Update timestamps for index changes
         nowTime = round(time())
-        self._timeIndex = nowTime
-        if theItem.itemLayout == nwItemLayout.NOTE:
-            self._timeNotes = nowTime
-        else:
-            self._timeNovel = nowTime
+        self._indexChange = nowTime
+        self._rootChange[theItem.itemRoot] = nowTime
 
         return True
 
@@ -466,14 +454,14 @@ class NWIndex:
     #  Extract Data
     ##
 
-    def novelStructure(self, skipExcl=True):
+    def novelStructure(self, rootHandle=None, skipExcl=True):
         """Iterate over all titles in the novel, in the correct order as
         they appear in the tree view and in the respective document
         files, but skipping all note files.
         """
-        for tHandle, sTitle, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
-            tKey = f"{tHandle}:{sTitle}"
-            yield tKey, tHandle, sTitle, hItem
+        novStruct = self._itemIndex.iterNovelStructure(rootHandle=rootHandle, skipExcl=skipExcl)
+        for tHandle, sTitle, hItem in novStruct:
+            yield f"{tHandle}:{sTitle}", tHandle, sTitle, hItem
         return
 
     def getNovelWordCount(self, skipExcl=True):
