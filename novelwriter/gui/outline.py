@@ -83,11 +83,8 @@ class GuiOutline(QWidget):
         self.outlineView.hiddenStateChanged.connect(self._updateMenuColumns)
         self.outlineView.activeItemChanged.connect(self.outlineData.showItem)
         self.outlineData.itemTagClicked.connect(self._tagClicked)
-        self.outlineBar.novelRootChanged.connect(self._rootItemChanged)
+        self.outlineBar.loadNovelRootRequest.connect(self._rootItemChanged)
         self.outlineBar.viewColumnToggled.connect(self.outlineView.menuColumnToggled)
-        self.outlineBar.viewRefreshRequested.connect(
-            lambda: self.outlineView.refreshTree(overRide=True)
-        )
 
         # Function Mappings
         self.getSelectedHandle = self.outlineView.getSelectedHandle
@@ -160,9 +157,9 @@ class GuiOutline(QWidget):
 
     @pyqtSlot(str)
     def _rootItemChanged(self, handle):
-        """The root novel handle has been changed.
+        """The root novel handle has changed or needs to be refreshed.
         """
-        self.outlineView.refreshTree(rootHandle=handle, overRide=True)
+        self.outlineView.refreshTree(rootHandle=(handle or None), overRide=True)
         return
 
 # END Class GuiOutline
@@ -170,8 +167,7 @@ class GuiOutline(QWidget):
 
 class GuiOutlineToolBar(QToolBar):
 
-    novelRootChanged = pyqtSignal(str)
-    viewRefreshRequested = pyqtSignal()
+    loadNovelRootRequest = pyqtSignal(str)
     viewColumnToggled = pyqtSignal(bool, Enum)
 
     def __init__(self, theOutline):
@@ -206,9 +202,7 @@ class GuiOutlineToolBar(QToolBar):
         # Actions
         self.aRefresh = QAction(self.tr("Refresh"), self)
         self.aRefresh.setIcon(self.theTheme.getIcon("refresh"))
-        self.aRefresh.triggered.connect(
-            lambda: self.viewRefreshRequested.emit()
-        )
+        self.aRefresh.triggered.connect(self._refreshRequested)
 
         # Column Menu
         self.mColumns = GuiOutlineHeaderMenu(self)
@@ -236,14 +230,14 @@ class GuiOutlineToolBar(QToolBar):
     ##
 
     def populateNovelList(self):
-        """Fill the novel combo box.
+        """Fill the novel combo box with a list of all novel folders.
         """
         self.novelValue.clear()
-        for tHandle, nwItem in self.theProject.tree.novelRoots().items():
-            self.novelValue.addItem(
-                self.theTheme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass]),
-                nwItem.itemName, tHandle
-            )
+        tIcon = self.theTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
+        for tHandle, nwItem in self.theProject.tree.iterRoots(nwItemClass.NOVEL):
+            self.novelValue.addItem(tIcon, nwItem.itemName, tHandle)
+        self.novelValue.insertSeparator(self.novelValue.count())
+        self.novelValue.addItem(tIcon, self.tr("All Novel Folders"), "")
         return
 
     def setColumnHiddenState(self, hiddenState):
@@ -253,7 +247,7 @@ class GuiOutlineToolBar(QToolBar):
         return
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
     @pyqtSlot(int)
@@ -261,7 +255,14 @@ class GuiOutlineToolBar(QToolBar):
         """Emit a signal containing the handle of the selected item.
         """
         if index >= 0:
-            self.novelRootChanged.emit(self.novelValue.currentData())
+            self.loadNovelRootRequest.emit(self.novelValue.currentData())
+        return
+
+    @pyqtSlot()
+    def _refreshRequested(self):
+        """Emit a signal containing the handle of the selected item.
+        """
+        self.loadNovelRootRequest.emit(self.novelValue.currentData())
         return
 
 # END Class GuiOutlineToolBar

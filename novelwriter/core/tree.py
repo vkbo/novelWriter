@@ -273,14 +273,13 @@ class NWTree():
             rootClasses.add(nwItem.itemClass)
         return rootClasses
 
-    def novelRoots(self):
-        """Return a doctionary of all novel-like root items.
+    def iterRoots(self, itemClass):
+        """Iterate over all items of a given class.
         """
-        novelItems = {}
         for tHandle, nwItem in self._treeRoots.items():
-            if nwItem.isNovelLike():
-                novelItems[tHandle] = nwItem
-        return novelItems
+            if nwItem.itemClass == itemClass:
+                yield tHandle, nwItem
+        return
 
     def isRoot(self, tHandle):
         """Check if a handle is a root item.

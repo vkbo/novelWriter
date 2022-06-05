@@ -939,7 +939,7 @@ class GuiProjectTree(QTreeWidget):
                 except Exception:
                     logger.error("Failed to get index of item with handle '%s'", nHandle)
             if byIndex >= 0:
-                self._treeMap[pHandle].insertChild(byIndex+1, newItem)
+                self._treeMap[pHandle].insertChild(byIndex + 1, newItem)
             else:
                 self._treeMap[pHandle].addChild(newItem)
             self.propagateCount(tHandle, nwItem.wordCount, countChildren=True)
