@@ -1453,7 +1453,7 @@ class GuiMain(QMainWindow):
         return
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
     @pyqtSlot(str, Enum)

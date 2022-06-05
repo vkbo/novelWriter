@@ -461,7 +461,7 @@ class GuiOutlineView(QTreeWidget):
         document editor.
         """
         tHandle, tLine = self.getSelectedHandle()
-        self.theParent.openDocument(tHandle, tLine=tLine-1, doScroll=True)
+        self.theParent.openDocument(tHandle, tLine=tLine - 1, doScroll=True)
         return
 
     @pyqtSlot()
