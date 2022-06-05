@@ -96,7 +96,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     assert nwGUI.theProject.tree["0000000000013"].itemRoot == "0000000000008"
     assert nwGUI.theProject.tree["0000000000013"].itemClass == nwItemClass.NOVEL
     assert nwGUI.openDocument("0000000000013")
-    assert nwGUI.docEditor.getText() == "### New Document\n\n"
+    assert nwGUI.docEditor.getText() == "## New Document\n\n"
 
     # Add a new file to the characters folder
     nwTree.setSelectedHandle("000000000000a")

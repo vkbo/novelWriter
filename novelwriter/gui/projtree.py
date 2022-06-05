@@ -38,6 +38,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.core import NWDoc
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from novelwriter.common import minmax
 from novelwriter.dialogs.itemeditor import GuiItemEditor
 
 logger = logging.getLogger(__name__)
@@ -188,9 +189,11 @@ class GuiProjectTree(QTreeWidget):
                 ), nwAlert.ERROR)
                 return False
 
-            # If the selected item is a file, the new item will be a sibling
+            # If the selected item is a file, the new item will be a
+            # sibling if the file has no children, otherwise a child
             pItem = self.theProject.tree[sHandle]
-            if pItem.itemType == nwItemType.FILE:
+            qItem = self._getTreeItem(sHandle)
+            if pItem.itemType == nwItemType.FILE and qItem.childCount() == 0:
                 nHandle = sHandle
                 sHandle = pItem.itemParent
                 if sHandle is None:
@@ -233,7 +236,9 @@ class GuiProjectTree(QTreeWidget):
         newDoc = NWDoc(self.theProject, tHandle)
         if not newDoc.readDocument():
             if nwItem.itemLayout == nwItemLayout.DOCUMENT:
-                newText = f"### {nwItem.itemName}\n\n"
+                iLvl = self.theProject.index.getHandleHeaderIntLevel(sHandle)
+                hLvl = "#"*minmax(iLvl + 1, 2, 4)
+                newText = f"{hLvl} {nwItem.itemName}\n\n"
             else:
                 newText = f"# {nwItem.itemName}\n\n"
 
