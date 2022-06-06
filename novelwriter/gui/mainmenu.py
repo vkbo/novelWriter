@@ -33,7 +33,7 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction
 
-from novelwriter.enum import nwItemType, nwItemClass, nwDocAction, nwDocInsert, nwWidget
+from novelwriter.enum import nwItemType, nwDocAction, nwDocInsert, nwWidget
 from novelwriter.constants import trConst, nwKeyWords, nwLabels, nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -160,33 +160,6 @@ class GuiMainMenu(QMenuBar):
         self.aProjectDetails.setShortcut("Shift+F6")
         self.aProjectDetails.triggered.connect(lambda: self.theParent.showProjectDetailsDialog())
         self.projMenu.addAction(self.aProjectDetails)
-
-        # Project > Separator
-        self.projMenu.addSeparator()
-
-        # Project > New Root
-        self.rootMenu = self.projMenu.addMenu(self.tr("Create Root Folder"))
-        self.rootItems = {}
-        self.rootItems[nwItemClass.NOVEL]     = QAction(self.tr("Novel Root"),     self.rootMenu)
-        self.rootItems[nwItemClass.PLOT]      = QAction(self.tr("Plot Root"),      self.rootMenu)
-        self.rootItems[nwItemClass.CHARACTER] = QAction(self.tr("Character Root"), self.rootMenu)
-        self.rootItems[nwItemClass.WORLD]     = QAction(self.tr("Location Root"),  self.rootMenu)
-        self.rootItems[nwItemClass.TIMELINE]  = QAction(self.tr("Timeline Root"),  self.rootMenu)
-        self.rootItems[nwItemClass.OBJECT]    = QAction(self.tr("Object Root"),    self.rootMenu)
-        self.rootItems[nwItemClass.ENTITY]    = QAction(self.tr("Entity Root"),    self.rootMenu)
-        self.rootItems[nwItemClass.CUSTOM]    = QAction(self.tr("Custom Root"),    self.rootMenu)
-        self.rootItems[nwItemClass.ARCHIVE]   = QAction(self.tr("Archive Root"),   self.rootMenu)
-        for n, itemClass in enumerate(self.rootItems.keys()):
-            self.rootItems[itemClass].triggered.connect(
-                lambda n, itemClass=itemClass: self._newTreeItem(nwItemType.ROOT, itemClass)
-            )
-            self.rootMenu.addAction(self.rootItems[itemClass])
-
-        # Project > New Folder
-        self.aCreateFolder = QAction(self.tr("Create Folder"), self)
-        self.aCreateFolder.setShortcut("Ctrl+Shift+N")
-        self.aCreateFolder.triggered.connect(lambda: self._newTreeItem(nwItemType.FOLDER))
-        self.projMenu.addAction(self.aCreateFolder)
 
         # Project > Separator
         self.projMenu.addSeparator()

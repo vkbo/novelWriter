@@ -167,7 +167,7 @@ class GuiProjectToolBar(QToolBar):
         self.setStyleSheet("QToolBar {border: 0px;}")
 
         # Tree Label
-        self.projLabel = QLabel(self.tr("Project"))
+        self.projLabel = QLabel("<b>%s</b>" % self.tr("Project Content"))
         self.projLabel.setContentsMargins(0, 0, mPx, 0)
         self.projLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
@@ -1235,14 +1235,6 @@ class GuiProjectTreeMenu(QMenu):
         self.toggleExp.triggered.connect(self._doToggleExported)
         self.addAction(self.toggleExp)
 
-        self.newFile = QAction(self.tr("New File"), self)
-        self.newFile.triggered.connect(self._doMakeFile)
-        self.addAction(self.newFile)
-
-        self.newFolder = QAction(self.tr("New Folder"), self)
-        self.newFolder.triggered.connect(self._doMakeFolder)
-        self.addAction(self.newFolder)
-
         self.deleteItem = QAction(self.tr("Delete Item"), self)
         self.deleteItem.triggered.connect(self._doDeleteItem)
         self.addAction(self.deleteItem)
@@ -1273,18 +1265,13 @@ class GuiProjectTreeMenu(QMenu):
 
         trashHandle = self.theTree.theProject.tree.trashRoot()
 
-        inTrash = self.theTree.theProject.tree.isTrash(theItem.itemHandle)
         isTrash = theItem.itemHandle == trashHandle and trashHandle is not None
         isFile = theItem.itemType == nwItemType.FILE
-
-        allowNew = not (isTrash or inTrash)
 
         self.editItem.setVisible(not isTrash)
         self.openItem.setVisible(isFile)
         self.viewItem.setVisible(isFile)
         self.toggleExp.setVisible(isFile)
-        self.newFile.setVisible(allowNew)
-        self.newFolder.setVisible(allowNew)
         self.deleteItem.setVisible(not isTrash)
         self.emptyTrash.setVisible(isTrash)
 
@@ -1316,22 +1303,6 @@ class GuiProjectTreeMenu(QMenu):
         """
         if self.theItem is not None:
             self.theTree.theParent.editItem()
-        return
-
-    @pyqtSlot()
-    def _doMakeFile(self):
-        """Forward the new file call to the project tree.
-        """
-        if self.theItem is not None:
-            self.theTree.newTreeItem(nwItemType.FILE)
-        return
-
-    @pyqtSlot()
-    def _doMakeFolder(self):
-        """Forward the new folder call to the project tree.
-        """
-        if self.theItem is not None:
-            self.theTree.newTreeItem(nwItemType.FOLDER)
         return
 
     @pyqtSlot()
