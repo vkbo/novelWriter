@@ -33,7 +33,7 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction
 
-from novelwriter.enum import nwItemType, nwDocAction, nwDocInsert, nwWidget
+from novelwriter.enum import nwDocAction, nwDocInsert, nwWidget
 from novelwriter.constants import trConst, nwKeyWords, nwLabels, nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -62,8 +62,6 @@ class GuiMainMenu(QMenuBar):
 
         # Function Pointers
         self._docAction     = self.theParent.passDocumentAction
-        self._moveTreeItem  = self.theParent.treeView.moveTreeItem
-        self._newTreeItem   = self.theParent.treeView.newTreeItem
         self._docInsert     = self.theParent.docEditor.insertText
         self._insertKeyWord = self.theParent.docEditor.insertKeyWord
 
@@ -176,18 +174,6 @@ class GuiMainMenu(QMenuBar):
         self.aDeleteItem.triggered.connect(lambda: self.theParent.treeView.deleteItem(None))
         self.projMenu.addAction(self.aDeleteItem)
 
-        # Project > Move Up
-        self.aMoveUp = QAction(self.tr("Move Item Up"), self)
-        self.aMoveUp.setShortcut("Ctrl+Up")
-        self.aMoveUp.triggered.connect(lambda: self._moveTreeItem(-1))
-        self.projMenu.addAction(self.aMoveUp)
-
-        # Project > Move Down
-        self.aMoveDown = QAction(self.tr("Move Item Down"), self)
-        self.aMoveDown.setShortcut("Ctrl+Down")
-        self.aMoveDown.triggered.connect(lambda: self._moveTreeItem(1))
-        self.projMenu.addAction(self.aMoveDown)
-
         # Project > Undo Last Action
         self.aMoveUndo = QAction(self.tr("Undo Last Move"), self)
         self.aMoveUndo.setShortcut("Ctrl+Shift+Z")
@@ -216,12 +202,6 @@ class GuiMainMenu(QMenuBar):
         """
         # Document
         self.docuMenu = self.addMenu(self.tr("&Document"))
-
-        # Document > New
-        self.aNewDoc = QAction(self.tr("New Document"), self)
-        self.aNewDoc.setShortcut("Ctrl+N")
-        self.aNewDoc.triggered.connect(lambda: self._newTreeItem(nwItemType.FILE))
-        self.docuMenu.addAction(self.aNewDoc)
 
         # Document > Open
         self.aOpenDoc = QAction(self.tr("Open Document"), self)

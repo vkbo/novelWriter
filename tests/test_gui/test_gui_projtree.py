@@ -26,7 +26,7 @@ from tools import buildTestProject
 
 from PyQt5.QtWidgets import QAction, QMessageBox, QInputDialog
 
-from novelwriter.gui.projtree import GuiProjectTree
+from novelwriter.gui.projtree import GuiProjectView, GuiProjectTree
 from novelwriter.enum import nwItemType, nwItemClass
 
 
@@ -163,11 +163,12 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
+    monkeypatch.setattr(GuiProjectView, "anyFocus", lambda *a: True)
 
     nwTree = nwGUI.treeView
 
     # Try to move item with no project
-    assert nwTree.moveTreeItem(1) is False
+    assert nwTree.projTree.moveTreeItem(1) is False
 
     # Create a project
     prjDir = os.path.join(fncDir, "project")
@@ -187,33 +188,33 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     ]
 
     # Move item without focus
-    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: False)
-    assert nwTree.moveTreeItem(1) is False
-    assert nwTree.getTreeFromHandle("000000000000d") == [
-        "000000000000d", "000000000000e", "000000000000f",
-        "0000000000010", "0000000000011", "0000000000012",
-    ]
-    monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiProjectView, "anyFocus", lambda *a: False)
+        assert nwTree.projTree.moveTreeItem(1) is False
+        assert nwTree.getTreeFromHandle("000000000000d") == [
+            "000000000000d", "000000000000e", "000000000000f",
+            "0000000000010", "0000000000011", "0000000000012",
+        ]
 
     # Move with no selections
     nwTree.projTree.clearSelection()
-    assert nwTree.moveTreeItem(1) is False
+    assert nwTree.projTree.moveTreeItem(1) is False
 
     # Move second item up twice (should give same result)
     nwTree.setSelectedHandle("000000000000f")
-    assert nwTree.moveTreeItem(-1) is True
+    assert nwTree.projTree.moveTreeItem(-1) is True
     assert nwTree.getTreeFromHandle("000000000000d") == [
         "000000000000d", "000000000000f", "000000000000e",
         "0000000000010", "0000000000011", "0000000000012",
     ]
-    assert nwTree.moveTreeItem(-1) is False
+    assert nwTree.projTree.moveTreeItem(-1) is False
     assert nwTree.getTreeFromHandle("000000000000d") == [
         "000000000000d", "000000000000f", "000000000000e",
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
-    # Restore via menu entry
-    nwGUI.mainMenu.aMoveDown.activate(QAction.Trigger)
+    # Restore
+    assert nwTree.projTree.moveTreeItem(1) is True
     assert nwTree.getTreeFromHandle("000000000000d") == [
         "000000000000d", "000000000000e", "000000000000f",
         "0000000000010", "0000000000011", "0000000000012",
@@ -221,19 +222,19 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
 
     # Move fifth item down twice (should give same result)
     nwTree.setSelectedHandle("0000000000011")
-    assert nwTree.moveTreeItem(1) is True
+    assert nwTree.projTree.moveTreeItem(1) is True
     assert nwTree.getTreeFromHandle("000000000000d") == [
         "000000000000d", "000000000000e", "000000000000f",
         "0000000000010", "0000000000012", "0000000000011",
     ]
-    assert nwTree.moveTreeItem(1) is False
+    assert nwTree.projTree.moveTreeItem(1) is False
     assert nwTree.getTreeFromHandle("000000000000d") == [
         "000000000000d", "000000000000e", "000000000000f",
         "0000000000010", "0000000000012", "0000000000011",
     ]
 
-    # Restore via menu entry
-    nwGUI.mainMenu.aMoveUp.activate(QAction.Trigger)
+    # Restore
+    assert nwTree.projTree.moveTreeItem(-1) is True
     assert nwTree.getTreeFromHandle("000000000000d") == [
         "000000000000d", "000000000000e", "000000000000f",
         "0000000000010", "0000000000011", "0000000000012",
@@ -241,7 +242,7 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
 
     # Move down again, and restore via undo
     nwTree.setSelectedHandle("0000000000011")
-    assert nwTree.moveTreeItem(1) is True
+    assert nwTree.projTree.moveTreeItem(1) is True
     assert nwTree.getTreeFromHandle("000000000000d") == [
         "000000000000d", "000000000000e", "000000000000f",
         "0000000000010", "0000000000012", "0000000000011",
@@ -259,15 +260,15 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 0
 
     # Move novel folder up
-    assert nwTree.moveTreeItem(-1) is False
+    assert nwTree.projTree.moveTreeItem(-1) is False
     assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 0
 
     # Move novel folder down
-    assert nwTree.moveTreeItem(1) is True
+    assert nwTree.projTree.moveTreeItem(1) is True
     assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 1
 
     # Move novel folder up again
-    assert nwTree.moveTreeItem(-1) is True
+    assert nwTree.projTree.moveTreeItem(-1) is True
     assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 0
 
     # Clean up

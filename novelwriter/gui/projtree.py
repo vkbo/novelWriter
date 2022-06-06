@@ -6,7 +6,7 @@ GUI classes for the main window project tree
 File History:
 Created: 2018-09-29 [0.0.1] GuiProjectTree
 Created: 2020-06-04 [0.7]   GuiProjectTreeMenu
-Created: 2022-06-06 [1.7b1] GuiProjectWiew
+Created: 2022-06-06 [1.7b1] GuiProjectView
 Created: 2022-06-06 [1.7b1] GuiProjectToolBar
 
 This file is a part of novelWriter
@@ -35,9 +35,9 @@ from time import time
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
-    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction, QFrame,
-    QDialog, QHeaderView, QWidget, QVBoxLayout, QToolBar, QLabel, QToolButton,
-    QSizePolicy, QInputDialog
+    qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction,
+    QFrame, QDialog, QHeaderView, QWidget, QVBoxLayout, QToolBar, QLabel,
+    QToolButton, QSizePolicy, QInputDialog
 )
 
 from novelwriter.core import NWDoc
@@ -48,7 +48,7 @@ from novelwriter.constants import trConst, nwLabels
 logger = logging.getLogger(__name__)
 
 
-class GuiProjectWiew(QWidget):
+class GuiProjectView(QWidget):
     """This is a wrapper class holding all the elements of the project
     tree. The core object is the project tree itself. Most methods
     available are mapped through to the project tree class.
@@ -87,7 +87,6 @@ class GuiProjectWiew(QWidget):
         # Function Mappings
         self.newTreeItem = self.projTree.newTreeItem
         self.revealNewTreeItem = self.projTree.revealNewTreeItem
-        self.moveTreeItem = self.projTree.moveTreeItem
         self.editTreeItem = self.projTree.editTreeItem
         self.getTreeFromHandle = self.projTree.getTreeFromHandle
         self.emptyTrash = self.projTree.emptyTrash
@@ -121,8 +120,25 @@ class GuiProjectWiew(QWidget):
         self.projTree.buildTree()
         return
 
+    def setFocus(self):
+        """Forward the set focus call to the tree widget.
+        """
+        self.projTree.setFocus()
+        return
+
     def treeFocus(self):
+        """Check if the project tree has focus.
+        """
         return self.projTree.hasFocus()
+
+    def anyFocus(self):
+        """Check if any widget or child widget has focus.
+        """
+        if self.hasFocus():
+            return True
+        if self.isAncestorOf(qApp.focusWidget()):
+            return True
+        return False
 
     ##
     #  Public Solts
@@ -136,7 +152,7 @@ class GuiProjectWiew(QWidget):
         self.wordCountsChanged.emit()
         return
 
-# END Class GuiProjectWiew
+# END Class GuiProjectView
 
 
 class GuiProjectToolBar(QToolBar):
@@ -170,6 +186,19 @@ class GuiProjectToolBar(QToolBar):
         self.projLabel = QLabel("<b>%s</b>" % self.tr("Project Content"))
         self.projLabel.setContentsMargins(0, 0, mPx, 0)
         self.projLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Move Buttons
+        self.tbMoveU = QToolButton(self)
+        self.tbMoveU.setToolTip("%s [Ctrl+Up]" % self.tr("Move Up"))
+        self.tbMoveU.setShortcut("Ctrl+Up")
+        self.tbMoveU.setIcon(self.theTheme.getIcon("up"))
+        self.tbMoveU.clicked.connect(lambda: self._forwardMoveItem(-1))
+
+        self.tbMoveD = QToolButton(self)
+        self.tbMoveD.setToolTip("%s [Ctrl+Down]" % self.tr("Move Down"))
+        self.tbMoveD.setShortcut("Ctrl+Down")
+        self.tbMoveD.setIcon(self.theTheme.getIcon("down"))
+        self.tbMoveD.clicked.connect(lambda: self._forwardMoveItem(1))
 
         # Items Menu
         self.mItems = QMenu()
@@ -207,6 +236,8 @@ class GuiProjectToolBar(QToolBar):
         self._addRootFolderEntry(nwItemClass.CUSTOM)
 
         self.tbItems = QToolButton(self)
+        self.tbItems.setToolTip("%s [Ctrl+N]" % self.tr("Add Item"))
+        self.tbItems.setShortcut("Ctrl+N")
         self.tbItems.setIcon(self.theTheme.getIcon("add"))
         self.tbItems.setMenu(self.mItems)
         self.tbItems.setPopupMode(QToolButton.InstantPopup)
@@ -219,6 +250,8 @@ class GuiProjectToolBar(QToolBar):
         # Assemble
         self.addWidget(self.projLabel)
         self.addSeparator()
+        self.addWidget(self.tbMoveU)
+        self.addWidget(self.tbMoveD)
         self.addWidget(self.tbItems)
         self.addWidget(self.tbSettings)
 
@@ -251,6 +284,13 @@ class GuiProjectToolBar(QToolBar):
             self.theWidget.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
         elif type == self.ADD_FOLDER:
             self.theWidget.projTree.newTreeItem(nwItemType.FOLDER)
+        return
+
+    @pyqtSlot(int)
+    def _forwardMoveItem(self, steps):
+        """Forward the request to move an item up or down.
+        """
+        self.theWidget.projTree.moveTreeItem(steps)
         return
 
     ##
@@ -492,7 +532,7 @@ class GuiProjectTree(QTreeWidget):
             logger.error("No project open")
             return False
 
-        if not self.hasFocus():
+        if not self.theWidget.anyFocus():
             return False
 
         tHandle = self.getSelectedHandle()
@@ -831,7 +871,7 @@ class GuiProjectTree(QTreeWidget):
         dstItem = self._lastMove.get("parent", None)
         dstIndex = self._lastMove.get("index", None)
 
-        if not self.hasFocus():
+        if not self.theWidget.anyFocus():
             return False
 
         if srcItem is None or dstItem is None or dstIndex is None:

@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.gui import (
     GuiDocEditor, GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiMainMenu,
-    GuiMainStatus, GuiNovelTree, GuiOutline, GuiProjectWiew, GuiTheme,
+    GuiMainStatus, GuiNovelTree, GuiOutline, GuiProjectView, GuiTheme,
     GuiViewsBar
 )
 from novelwriter.dialogs import (
@@ -105,7 +105,7 @@ class GuiMain(QMainWindow):
 
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
-        self.treeView  = GuiProjectWiew(self)
+        self.treeView  = GuiProjectView(self)
         self.novelView = GuiNovelTree(self)
         self.docEditor = GuiDocEditor(self)
         self.viewMeta  = GuiDocViewDetails(self)
