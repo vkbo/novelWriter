@@ -1161,7 +1161,6 @@ class GuiMain(QMainWindow):
                 self.mainConf.setViewPanePos(self.splitView.sizes())
 
         self.mainConf.setShowRefPanel(self.viewMeta.isVisible())
-        self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
         self.mainConf.setNovelColWidths(self.novelView.getColumnSizes())
         if not self.mainConf.isFullScreen:
             self.mainConf.setWinSize(self.width(), self.height())

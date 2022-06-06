@@ -34,7 +34,7 @@ from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction, QFrame,
-    QDialog
+    QDialog, QHeaderView
 )
 
 from novelwriter.core import NWDoc
@@ -88,28 +88,24 @@ class GuiProjectTree(QTreeWidget):
 
         # Tree Settings
         iPx = self.theTheme.baseIconSize
+        cMg = self.mainConf.pxInt(6)
         self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.NoFrame)
         self.setExpandsOnDoubleClick(False)
+        self.setHeaderHidden(True)
         self.setIndentation(iPx)
         self.setColumnCount(4)
-        self.setHeaderLabels([
-            self.tr("Project Tree"), self.tr("Words"), "", ""
-        ])
 
-        treeHeadItem = self.headerItem()
-        treeHeadItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
-        treeHeadItem.setToolTip(self.C_NAME, self.tr("Item label"))
-        treeHeadItem.setToolTip(self.C_COUNT, self.tr("Word count"))
-        treeHeadItem.setToolTip(self.C_EXPORT, self.tr("Include in build"))
-        treeHeadItem.setToolTip(self.C_STATUS, self.tr("Item status"))
-
-        # Let the last column stretch, and set the minimum size to the
-        # size of the icon as the default Qt font metrics approach fails
-        # for some fonts like the Ubuntu font.
+        # Lock the column sizes
         treeHeader = self.header()
-        treeHeader.setStretchLastSection(True)
-        treeHeader.setMinimumSectionSize(iPx + 6)
+        treeHeader.setStretchLastSection(False)
+        treeHeader.setMinimumSectionSize(iPx + cMg)
+        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.Stretch)
+        treeHeader.setSectionResizeMode(self.C_COUNT, QHeaderView.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_EXPORT, QHeaderView.Fixed)
+        treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.Fixed)
+        treeHeader.resizeSection(self.C_EXPORT, iPx + cMg)
+        treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
 
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
@@ -123,15 +119,6 @@ class GuiProjectTree(QTreeWidget):
         # Disabled for now, until the merge files option has been added
         # self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
-
-        # Get user's column width preferences for NAME and COUNT
-        treeColWidth = self.mainConf.getTreeColWidths()
-        if len(treeColWidth) <= 4:
-            for colN, colW in enumerate(treeColWidth):
-                self.setColumnWidth(colN, colW)
-
-        # The last column should just auto-scale
-        self.resizeColumnToContents(self.C_STATUS)
 
         # Connect signals
         self.itemDoubleClicked.connect(self._treeDoubleClick)
@@ -368,16 +355,6 @@ class GuiProjectTree(QTreeWidget):
         if theItem is not None:
             theList = self._scanChildren(theList, theItem, 0)
         return theList
-
-    def getColumnSizes(self):
-        """Return the column widths for the tree columns.
-        """
-        retVals = [
-            self.columnWidth(0),
-            self.columnWidth(1),
-            self.columnWidth(2),
-        ]
-        return retVals
 
     def emptyTrash(self):
         """Permanently delete all documents in the Trash folder. This
