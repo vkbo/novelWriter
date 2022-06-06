@@ -115,28 +115,6 @@ class GuiMain(QMainWindow):
         self.mainMenu  = GuiMainMenu(self)
         self.viewsBar  = GuiViewsBar(self)
 
-        # Connect Signals Between Main Elements
-        self.viewsBar.viewChangeRequested.connect(self._changeView)
-
-        self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
-        self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
-        self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
-        self.treeView.wordCountsChanged.connect(self._updateStatusWordCount)
-        self.treeView.treeItemChanged.connect(self.docEditor.updateDocInfo)
-        self.treeView.treeItemChanged.connect(self.docViewer.updateDocInfo)
-        self.treeView.treeItemChanged.connect(self.treeMeta.updateViewBox)
-        self.treeView.rootFolderChanged.connect(self.projView.updateRootItem)
-
-        self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
-        self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
-        self.docEditor.docCountsChanged.connect(self.treeMeta.doUpdateCounts)
-        self.docEditor.docCountsChanged.connect(self.treeView.doUpdateCounts)
-        self.docEditor.loadDocumentTagRequest.connect(self._followTag)
-
-        self.docViewer.loadDocumentTagRequest.connect(self._followTag)
-
-        self.projView.loadDocumentTagRequest.connect(self._followTag)
-
         # Project Tree Stack
         self.projStack = QStackedWidget()
         self.projStack.addWidget(self.treeView)
@@ -213,6 +191,30 @@ class GuiMain(QMainWindow):
         self.setCentralWidget(self.mainStack)
         self.setStatusBar(self.statusBar)
         self.addToolBar(Qt.LeftToolBarArea, self.viewsBar)
+
+        # Connect Signals
+        # ===============
+
+        self.viewsBar.viewChangeRequested.connect(self._changeView)
+
+        self.treeView.selectedItemChanged.connect(self.treeMeta.updateViewBox)
+        self.treeView.openDocumentRequest.connect(self._openDocument)
+        self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
+        self.treeView.wordCountsChanged.connect(self._updateStatusWordCount)
+        self.treeView.treeItemChanged.connect(self.docEditor.updateDocInfo)
+        self.treeView.treeItemChanged.connect(self.docViewer.updateDocInfo)
+        self.treeView.treeItemChanged.connect(self.treeMeta.updateViewBox)
+        self.treeView.rootFolderChanged.connect(self.projView.updateRootItem)
+
+        self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
+        self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
+        self.docEditor.docCountsChanged.connect(self.treeMeta.doUpdateCounts)
+        self.docEditor.docCountsChanged.connect(self.treeView.doUpdateCounts)
+        self.docEditor.loadDocumentTagRequest.connect(self._followTag)
+
+        self.docViewer.loadDocumentTagRequest.connect(self._followTag)
+
+        self.projView.loadDocumentTagRequest.connect(self._followTag)
 
         # Finalise Initialisation
         # =======================
@@ -1468,6 +1470,17 @@ class GuiMain(QMainWindow):
                 self.viewDocument(tHandle=tHandle, tAnchor=f"#{sTitle}")
         return
 
+    @pyqtSlot(str, Enum)
+    def _openDocument(self, tHandle, tMode):
+        """Handle an open document request.
+        """
+        if tHandle is not None:
+            if tMode == nwDocMode.EDIT:
+                self.openDocument(tHandle, changeFocus=False)
+            elif tMode == nwDocMode.VIEW:
+                self.viewDocument(tHandle=tHandle)
+        return
+
     @pyqtSlot(nwView)
     def _changeView(self, view):
         """Handle the requested change of view from the GuiViewBar.
@@ -1529,32 +1542,6 @@ class GuiMain(QMainWindow):
 
         self.statusBar.setProjectStats(currWords, diffWords)
 
-        return
-
-    @pyqtSlot()
-    def _treeSingleClick(self):
-        """Single click on a project tree item just updates the details
-        panel below the tree.
-        """
-        tHandle = self.treeView.getSelectedHandle()
-        if tHandle is not None:
-            self.treeMeta.updateViewBox(tHandle)
-        return
-
-    @pyqtSlot("QTreeWidgetItem*", int)
-    def _treeDoubleClick(self, tItem, colNo):
-        """The user double-clicked an item in the tree. If it is a file,
-        we open it. Otherwise, we toggle the expanded status.
-        """
-        tHandle = self.treeView.getSelectedHandle()
-        if tHandle is not None:
-            tItem = self.theProject.tree[tHandle]
-            if tItem is None:
-                return
-            if tItem.itemType == nwItemType.FILE:
-                self.openDocument(tHandle, changeFocus=False, doScroll=False)
-            else:
-                self.treeView.toggleExpanded(tHandle)
         return
 
     @pyqtSlot()

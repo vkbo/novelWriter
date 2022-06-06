@@ -27,6 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
+from enum import Enum
 from time import time
 
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
@@ -37,7 +38,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import NWDoc
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.common import minmax
 from novelwriter.dialogs.itemeditor import GuiItemEditor
 
@@ -51,10 +52,15 @@ class GuiProjectTree(QTreeWidget):
     C_EXPORT = 2
     C_STATUS = 3
 
+    # Signals triggered when the meta data values of items change
     treeItemChanged = pyqtSignal(str)
     novelItemChanged = pyqtSignal(str)
     rootFolderChanged = pyqtSignal(str)
     wordCountsChanged = pyqtSignal()
+
+    # Signals for user interaction with the project tree
+    selectedItemChanged = pyqtSignal(str)
+    openDocumentRequest = pyqtSignal(str, Enum)
 
     def __init__(self, theParent):
         QTreeWidget.__init__(self, theParent)
@@ -126,6 +132,10 @@ class GuiProjectTree(QTreeWidget):
 
         # The last column should just auto-scale
         self.resizeColumnToContents(self.C_STATUS)
+
+        # Connect signals
+        self.itemDoubleClicked.connect(self._treeDoubleClick)
+        self.itemSelectionChanged.connect(self._treeSelectionChange)
 
         # Set custom settings
         self.initTree()
@@ -223,9 +233,9 @@ class GuiProjectTree(QTreeWidget):
         if tHandle is None:  # pragma: no cover
             return True
 
-        # Add the new item to the tree
+        # Add the new item to the tree and open the editor dialog
         self.revealNewTreeItem(tHandle, nHandle)
-        self.theParent.editItem(tHandle)
+        self.editTreeItem(tHandle)
 
         # Handle new file creation
         nwItem = self.theProject.tree[tHandle]
@@ -249,10 +259,7 @@ class GuiProjectTree(QTreeWidget):
             pIndex.scanText(tHandle, newText)
 
             # Get Word Counts
-            cC, wC, pC = pIndex.getCounts(tHandle)
-            nwItem.setCharCount(cC)
-            nwItem.setWordCount(wC)
-            nwItem.setParaCount(pC)
+            _, wC, _ = pIndex.getCounts(tHandle)
             self.propagateCount(tHandle, wC)
             self.wordCountsChanged.emit()
 
@@ -280,8 +287,8 @@ class GuiProjectTree(QTreeWidget):
         return True
 
     def moveTreeItem(self, nStep):
-        """Move an item up or down in the tree, but only if the treeView
-        has focus. This also applies when the menu is used.
+        """Move an item up or down in the tree, but only if the project
+        tree has focus. This also applies when the menu is used.
         """
         if not self.theParent.hasProject:
             logger.error("No project open")
@@ -321,13 +328,9 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def editTreeItem(self, tHandle=None):
+    def editTreeItem(self, tHandle):
         """Open the edit item dialog.
         """
-        if tHandle is None:
-            logger.warning("No item selected")
-            return False
-
         tItem = self.theProject.tree[tHandle]
         if tItem is None:
             return False
@@ -357,22 +360,14 @@ class GuiProjectTree(QTreeWidget):
         return True
 
     def getTreeFromHandle(self, tHandle):
-        """Recursively return all the children items starting from a
-        given item handle.
+        """Recursively return all the child items starting from a given
+        item handle.
         """
         theList = []
         theItem = self._getTreeItem(tHandle)
         if theItem is not None:
             theList = self._scanChildren(theList, theItem, 0)
         return theList
-
-    def toggleExpanded(self, tHandle):
-        """Expand an item based on its handle.
-        """
-        trItem = self._getTreeItem(tHandle)
-        if trItem is not None:
-            trItem.setExpanded(not trItem.isExpanded())
-        return
 
     def getColumnSizes(self):
         """Return the column widths for the tree columns.
@@ -719,8 +714,51 @@ class GuiProjectTree(QTreeWidget):
         return self._timeChanged > checkTime
 
     ##
-    #  Slots
+    #  Public Solts
     ##
+
+    @pyqtSlot(str, int, int, int)
+    def doUpdateCounts(self, tHandle, cCount, wCount, pCount):
+        """Slot for updating the word count of a specific item.
+        """
+        self.propagateCount(tHandle, wCount, countChildren=True)
+        self.wordCountsChanged.emit()
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _treeSelectionChange(self):
+        """The user changed which item is selected.
+        """
+        tHandle = self.getSelectedHandle()
+        if tHandle is not None:
+            self.selectedItemChanged.emit(tHandle)
+        return
+
+    @pyqtSlot("QTreeWidgetItem*", int)
+    def _treeDoubleClick(self, tItem, colNo):
+        """Capture a double-click event and either request the document
+        for editing if it is a file, or expand/close the node it is not.
+        """
+        tHandle = self.getSelectedHandle()
+        if tHandle is None:
+            return
+
+        tItem = self.theProject.tree[tHandle]
+        if tItem is None:
+            return
+
+        if tItem.itemType == nwItemType.FILE:
+            self.openDocumentRequest.emit(tHandle, nwDocMode.EDIT)
+        else:
+            trItem = self._getTreeItem(tHandle)
+            if trItem is not None:
+                trItem.setExpanded(not trItem.isExpanded())
+
+        return
 
     @pyqtSlot("QPoint")
     def _rightClickMenu(self, clickPos):
@@ -737,14 +775,6 @@ class GuiProjectTree(QTreeWidget):
                     # Only open menu if any actions remain after filter
                     self.ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
 
-        return
-
-    @pyqtSlot(str, int, int, int)
-    def doUpdateCounts(self, tHandle, cCount, wCount, pCount):
-        """Slot for updating the word count of a specific item.
-        """
-        self.propagateCount(tHandle, wCount, countChildren=True)
-        self.wordCountsChanged.emit()
         return
 
     ##
@@ -774,7 +804,7 @@ class GuiProjectTree(QTreeWidget):
                 return
 
             if tItem.itemType == nwItemType.FILE:
-                self.theParent.viewDocument(tHandle)
+                self.openDocumentRequest.emit(tHandle, nwDocMode.VIEW)
 
         return
 
