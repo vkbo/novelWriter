@@ -25,7 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwOutline
+from novelwriter.enum import nwItemClass, nwItemLayout, nwOutline
 
 
 def trConst(tString):
@@ -34,7 +34,7 @@ def trConst(tString):
     return QCoreApplication.translate("Constant", tString)
 
 
-class nwConst():
+class nwConst:
 
     # Date and Time Formats
     FMT_TSTAMP = "%Y-%m-%d %H:%M:%S"  # Default format
@@ -42,32 +42,13 @@ class nwConst():
     FMT_DSTAMP = "%Y-%m-%d"           # Date only format
 
     # Various Hard Limits
-    MAX_DEPTH     = 30        # Maximum folder depth of a project
     MAX_DOCSIZE   = 5000000   # Maxium size of a single document
     MAX_BUILDSIZE = 10000000  # Maxium size of a project build
 
 # END Class nwConst
 
 
-class nwLists():
-    """Lists used for grouping various other constants.
-    """
-    # Regular user-accessible item types
-    REG_TYPES = {nwItemType.ROOT, nwItemType.FOLDER, nwItemType.FILE}
-
-    # Item classes where the full list of novel layouts are allowed
-    CLS_NOVEL = {nwItemClass.NOVEL, nwItemClass.ARCHIVE}
-
-    # Item classes which do not require items to have same class
-    FREE_CLASS = {nwItemClass.ARCHIVE, nwItemClass.TRASH}
-
-    # Deprecated nwItemLayout entries
-    DEP_LAYOUT = ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE")
-
-# END Class nwLists
-
-
-class nwRegEx():
+class nwRegEx:
 
     FMT_EI = r"(?<![\w\\])(_)(?![\s_])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_EB = r"(?<![\w\\])([\*]{2})(?![\s\*])(.+?)(?<![\s\\])(\1)(?!\w)"
@@ -76,7 +57,7 @@ class nwRegEx():
 # END Class nwRegEx
 
 
-class nwFiles():
+class nwFiles:
 
     PROJ_FILE   = "nwProject.nwx"
     PROJ_DICT   = "wordlist.txt"
@@ -126,7 +107,7 @@ class nwKeyWords:
 # END Class nwKeyWords
 
 
-class nwLabels():
+class nwLabels:
 
     CLASS_NAME = {
         nwItemClass.NO_CLASS:  QT_TRANSLATE_NOOP("Constant", "None"),
@@ -204,7 +185,7 @@ class nwLabels():
 # END Class nwLabels
 
 
-class nwQuotes():
+class nwQuotes:
     """Allowed quotation marks.
     Source: https://en.wikipedia.org/wiki/Quotation_mark
     """

@@ -30,17 +30,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
-from PyQt5.QtCore import Qt, QUrl, QSize, pyqtSlot
+from enum import Enum
+
+from PyQt5.QtCore import Qt, QUrl, QSize, pyqtSlot, pyqtSignal
 from PyQt5.QtGui import (
     QTextOption, QFont, QPalette, QColor, QTextCursor, QIcon, QCursor
 )
 from PyQt5.QtWidgets import (
     qApp, QTextBrowser, QWidget, QScrollArea, QLabel, QHBoxLayout, QToolButton,
-    QAction, QMenu
+    QAction, QMenu, QFrame
 )
 
 from novelwriter.core import ToHtml
-from novelwriter.enum import nwAlert, nwItemType, nwDocAction
+from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
 from novelwriter.error import logException
 from novelwriter.constants import nwUnicode
 
@@ -48,6 +50,8 @@ logger = logging.getLogger(__name__)
 
 
 class GuiDocViewer(QTextBrowser):
+
+    loadDocumentTagRequest = pyqtSignal(str, Enum)
 
     def __init__(self, theParent):
         QTextBrowser.__init__(self, theParent)
@@ -68,6 +72,7 @@ class GuiDocViewer(QTextBrowser):
         self.setAutoFillBackground(True)
         self.setOpenExternalLinks(False)
         self.setFocusPolicy(Qt.StrongFocus)
+        self.setFrameStyle(QFrame.NoFrame)
 
         # Document Header and Footer
         self.docHeader  = GuiDocViewHeader(self)
@@ -159,7 +164,7 @@ class GuiDocViewer(QTextBrowser):
     def loadText(self, tHandle, updateHistory=True):
         """Load text into the viewer from an item handle.
         """
-        if not self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+        if not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
             logger.warning("Item not found")
             return False
 
@@ -237,30 +242,6 @@ class GuiDocViewer(QTextBrowser):
         self.document().markContentsDirty(0, self.document().characterCount())
         self.updateDocMargins()
         return
-
-    def loadFromTag(self, theTag):
-        """Load text in the document from a reference given by a meta
-        tag rather than a known handle. This function depends on the
-        index being up to date.
-        """
-        logger.debug("Loading document from tag '%s'", theTag)
-        tHandle, _, sTitle = self.theParent.theIndex.getTagSource(theTag)
-        if tHandle is None:
-            self.theParent.makeAlert(self.tr(
-                "Could not find the reference for tag '{0}'. It either doesn't "
-                "exist, or the index is out of date. The index can be updated "
-                "from the Tools menu, or by pressing {1}."
-            ).format(
-                theTag, "F9"
-            ), nwAlert.ERROR)
-            return False
-        else:
-            # Let the parent handle the opening as it also ensures that
-            # the doc view panel is visible in case this request comes
-            # from outside this class.
-            logger.verbose("Tag points to '%s#%s'", tHandle, sTitle)
-            self.theParent.viewDocument(tHandle, "#%s" % sTitle)
-        return True
 
     def docAction(self, theAction):
         """Wrapper function for various document actions on the current
@@ -341,15 +322,6 @@ class GuiDocViewer(QTextBrowser):
 
         return
 
-    def updateDocInfo(self, tHandle):
-        """Called when an item label is changed to check if the document
-        title bar needs updating,
-        """
-        if tHandle == self._docHandle:
-            self.docHeader.setTitleFromHandle(self._docHandle)
-            self.updateDocMargins()
-        return
-
     ##
     #  Properties
     ##
@@ -408,19 +380,33 @@ class GuiDocViewer(QTextBrowser):
         return 0
 
     ##
-    #  Slots
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str)
+    def updateDocInfo(self, tHandle):
+        """Called when an item label is changed to check if the document
+        title bar needs updating,
+        """
+        if tHandle == self._docHandle:
+            self.docHeader.setTitleFromHandle(self._docHandle)
+            self.updateDocMargins()
+        return
+
+    ##
+    #  Private Slots
     ##
 
     @pyqtSlot("QUrl")
     def _linkClicked(self, theURL):
-        """Slot for a link in the document being clicked.
+        """Process a clicked link internally in the document.
         """
         theLink = theURL.url()
         logger.verbose("Clicked link: '%s'", theLink)
         if len(theLink) > 0:
             theBits = theLink.split("=")
             if len(theBits) == 2:
-                self.loadFromTag(theBits[1])
+                self.loadDocumentTagRequest.emit(theBits[1], nwDocMode.VIEW)
         return
 
     @pyqtSlot("QPoint")
@@ -862,15 +848,15 @@ class GuiDocViewHeader(QWidget):
 
         if self.mainConf.showFullPath:
             tTitle = []
-            tTree = self.theProject.projTree.getItemPath(tHandle)
+            tTree = self.theProject.tree.getItemPath(tHandle)
             for aHandle in reversed(tTree):
-                nwItem = self.theProject.projTree[aHandle]
+                nwItem = self.theProject.tree[aHandle]
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
             sSep = "  %s  " % nwUnicode.U_RSAQUO
             self.theTitle.setText(sSep.join(tTitle))
         else:
-            nwItem = self.theProject.projTree[tHandle]
+            nwItem = self.theProject.tree[tHandle]
             if nwItem is None:
                 return False
             self.theTitle.setText(nwItem.itemName)
@@ -1185,6 +1171,7 @@ class GuiDocViewDetails(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setWidgetResizable(True)
         self.setMinimumHeight(self.mainConf.pxInt(50))
+        self.setFrameStyle(QFrame.NoFrame)
 
         logger.debug("GuiDocViewDetails initialisation complete")
 
@@ -1197,10 +1184,10 @@ class GuiDocViewDetails(QScrollArea):
         if self.theParent.docViewer.stickyRef:
             return
 
-        theRefs = self.theParent.theIndex.getBackReferenceList(tHandle)
+        theRefs = self.theProject.index.getBackReferenceList(tHandle)
         theList = []
         for tHandle in theRefs:
-            tItem = self.theProject.projTree[tHandle]
+            tItem = self.theProject.tree[tHandle]
             if tItem is not None:
                 theList.append("<a href='%s#%s' %s>%s</a>" % (
                     tHandle, theRefs[tHandle], self.linkStyle, tItem.itemName

@@ -29,7 +29,9 @@ import novelwriter
 from time import time
 
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QAbstractItemView
+from PyQt5.QtWidgets import (
+    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QFrame
+)
 
 from novelwriter.common import checkInt
 from novelwriter.constants import nwKeyWords
@@ -52,7 +54,6 @@ class GuiNovelTree(QTreeWidget):
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
         self.theProject = theParent.theProject
-        self.theIndex   = theParent.theIndex
 
         # Internal Variables
         self._treeMap   = {}
@@ -60,6 +61,7 @@ class GuiNovelTree(QTreeWidget):
 
         # Build GUI
         iPx = self.theTheme.baseIconSize
+        self.setFrameStyle(QFrame.NoFrame)
         self.setIconSize(QSize(iPx, iPx))
         self.setIndentation(iPx)
         self.setColumnCount(3)
@@ -134,7 +136,7 @@ class GuiNovelTree(QTreeWidget):
         """
         logger.verbose("Requesting refresh of the novel tree")
         treeChanged = self.theParent.treeView.changedSince(self._lastBuild)
-        indexChanged = self.theIndex.novelChangedSince(self._lastBuild)
+        indexChanged = self.theProject.index.indexChangedSince(self._lastBuild)
         if not (treeChanged or indexChanged or overRide):
             logger.verbose("No changes have been made to the novel index")
             return
@@ -144,7 +146,6 @@ class GuiNovelTree(QTreeWidget):
         if selItem:
             titleKey = selItem[0].data(self.C_TITLE, Qt.UserRole)[2]
 
-        self.theParent.treeView.flushTreeOrder()
         self._populateTree()
 
         if titleKey is not None and titleKey in self._treeMap:
@@ -155,7 +156,7 @@ class GuiNovelTree(QTreeWidget):
     def updateWordCounts(self, tHandle):
         """Update the word count for a given handle.
         """
-        tHeaders = self.theIndex.getHandleWordCounts(tHandle)
+        tHeaders = self.theProject.index.getHandleWordCounts(tHandle)
         for titleKey, wCount in tHeaders:
             if titleKey in self._treeMap:
                 self._treeMap[titleKey].setText(self.C_WORDS, f"{wCount:n}")
@@ -249,12 +250,12 @@ class GuiNovelTree(QTreeWidget):
         currChapter = None
         currScene = None
 
-        for tKey, tHandle, sTitle, novIdx in self.theIndex.novelStructure(skipExcluded=True):
+        for tKey, tHandle, sTitle, novIdx in self.theProject.index.novelStructure(skipExcl=True):
 
             tItem = self._createTreeItem(tHandle, sTitle, tKey, novIdx)
             self._treeMap[tKey] = tItem
 
-            tLevel = novIdx["level"]
+            tLevel = novIdx.level
             if tLevel == "H1":
                 self.addTopLevelItem(tItem)
                 currTitle = tItem
@@ -301,18 +302,18 @@ class GuiNovelTree(QTreeWidget):
         """Populate a tree item with all the column values.
         """
         newItem = QTreeWidgetItem()
-        hIcon   = "doc_%s" % novIdx["level"].lower()
+        hIcon   = "doc_%s" % novIdx.level.lower()
         theData = (tHandle, sTitle[1:].lstrip("0"), titleKey)
 
-        wC = int(novIdx["wCount"])
+        wC = int(novIdx.wordCount)
 
-        newItem.setText(self.C_TITLE, novIdx["title"])
+        newItem.setText(self.C_TITLE, novIdx.title)
         newItem.setData(self.C_TITLE, Qt.UserRole, theData)
         newItem.setIcon(self.C_TITLE, self.theTheme.getIcon(hIcon))
         newItem.setText(self.C_WORDS, f"{wC:n}")
         newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
 
-        theRefs = self.theIndex.getReferences(tHandle, sTitle)
+        theRefs = self.theProject.index.getReferences(tHandle, sTitle)
         newItem.setText(self.C_POV, ", ".join(theRefs[nwKeyWords.POV_KEY]))
 
         return newItem

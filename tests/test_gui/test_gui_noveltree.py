@@ -37,7 +37,6 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
 
     nwGUI.openProject(nwMinimal)
-    nwGUI.theProject.projTree.setSeed(42)
     nwTree = nwGUI.novelView
 
     ##
@@ -60,7 +59,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     #  Populate Tree
     ##
 
-    nwGUI.projTabs.setCurrentIndex(nwGUI.idxNovelView)
+    nwGUI.projStack.setCurrentIndex(nwGUI.idxNovelView)
     nwGUI.rebuildIndex()
     nwTree._populateTree()
     assert nwTree.topLevelItemCount() == 1

@@ -181,6 +181,26 @@ def nwGUI(qtbot, monkeypatch, fncDir, fncConf):
 
 
 ##
+#  Python Objects
+##
+
+@pytest.fixture(scope="function")
+def mockRnd(monkeypatch):
+    """Create a mock random number generator that just counts upwards
+    from 0. This one will generate status/importance flags and handles
+    in a predictable sequence.
+    """
+    def rnd(n):
+        for x in range(n):
+            yield x
+
+    gen = rnd(1000)
+    monkeypatch.setattr("random.getrandbits", lambda *a: next(gen))
+
+    return
+
+
+##
 #  Temp Project Folders
 ##
 
@@ -247,10 +267,6 @@ def nwOldProj(tmpDir):
 
     return
 
-
-##
-#  Useful Fixtures
-##
 
 @pytest.fixture(scope="session")
 def ipsumText():

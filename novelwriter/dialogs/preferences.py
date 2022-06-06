@@ -203,6 +203,22 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Requires restart.")
         )
 
+        # Editor Theme
+        self.guiSyntax = QComboBox()
+        self.guiSyntax.setMinimumWidth(self.mainConf.pxInt(200))
+        self.theSyntaxes = self.theTheme.listSyntax()
+        for syntaxFile, syntaxName in self.theSyntaxes:
+            self.guiSyntax.addItem(syntaxName, syntaxFile)
+        syntaxIdx = self.guiSyntax.findData(self.mainConf.guiSyntax)
+        if syntaxIdx != -1:
+            self.guiSyntax.setCurrentIndex(syntaxIdx)
+
+        self.mainForm.addRow(
+            self.tr("Editor theme"),
+            self.guiSyntax,
+            self.tr("Colour theme for the editor and viewer.")
+        )
+
         # Font Family
         self.guiFont = QLineEdit()
         self.guiFont.setReadOnly(True)
@@ -275,6 +291,7 @@ class GuiPreferencesGeneral(QWidget):
         guiLang     = self.guiLang.currentData()
         guiTheme    = self.guiTheme.currentData()
         guiIcons    = self.guiIcons.currentData()
+        guiSyntax   = self.guiSyntax.currentData()
         guiFont     = self.guiFont.text()
         guiFontSize = self.guiFontSize.value()
         emphLabels  = self.emphLabels.isChecked()
@@ -294,6 +311,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainConf.guiLang      = guiLang
         self.mainConf.guiTheme     = guiTheme
         self.mainConf.guiIcons     = guiIcons
+        self.mainConf.guiSyntax    = guiSyntax
         self.mainConf.guiFont      = guiFont
         self.mainConf.guiFontSize  = guiFontSize
         self.mainConf.emphLabels   = emphLabels
@@ -834,25 +852,6 @@ class GuiPreferencesSyntax(QWidget):
         self.mainForm.setHelpTextStyle(self.theTheme.helpText)
         self.setLayout(self.mainForm)
 
-        # Highlighting Theme
-        # ==================
-        self.mainForm.addGroupLabel(self.tr("Highlighting Theme"))
-
-        self.guiSyntax = QComboBox()
-        self.guiSyntax.setMinimumWidth(self.mainConf.pxInt(200))
-        self.theSyntaxes = self.theTheme.listSyntax()
-        for syntaxFile, syntaxName in self.theSyntaxes:
-            self.guiSyntax.addItem(syntaxName, syntaxFile)
-        syntaxIdx = self.guiSyntax.findData(self.mainConf.guiSyntax)
-        if syntaxIdx != -1:
-            self.guiSyntax.setCurrentIndex(syntaxIdx)
-
-        self.mainForm.addRow(
-            self.tr("Highlighting theme"),
-            self.guiSyntax,
-            self.tr("Colour theme for the editor and viewer.")
-        )
-
         # Quotes & Dialogue
         # =================
         self.mainForm.addGroupLabel(self.tr("Quotes & Dialogue"))
@@ -902,7 +901,7 @@ class GuiPreferencesSyntax(QWidget):
         self.showMultiSpaces = QSwitch()
         self.showMultiSpaces.setChecked(self.mainConf.showMultiSpaces)
         self.mainForm.addRow(
-            self.tr("Highlight multiple spaces"),
+            self.tr("Highlight multiple or trailing spaces"),
             self.showMultiSpaces,
             self.tr("Applies to the document editor only.")
         )
@@ -912,9 +911,6 @@ class GuiPreferencesSyntax(QWidget):
     def saveValues(self):
         """Save the values set for this tab.
         """
-        # Highlighting Theme
-        self.mainConf.guiSyntax = self.guiSyntax.currentData()
-
         # Quotes & Dialogue
         self.mainConf.highlightQuotes = self.highlightQuotes.isChecked()
         self.mainConf.allowOpenSQuote = self.allowOpenSQuote.isChecked()

@@ -29,7 +29,7 @@ from PyQt5.QtWidgets import QAction, QMessageBox, qApp
 
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.core import countWords
-from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout
+from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout
 from novelwriter.constants import nwKeyWords, nwUnicode
 
 keyDelay = 2
@@ -43,6 +43,7 @@ def testGuiEditor_Init(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
 
     # Open project
     assert nwGUI.openProject(nwMinimal)
@@ -184,10 +185,10 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
         assert "Could not save document." in caplog.text
 
     # Change header level
-    assert nwGUI.theProject.projTree[sHandle].itemLayout == nwItemLayout.DOCUMENT
+    assert nwGUI.theProject.tree[sHandle].itemLayout == nwItemLayout.DOCUMENT
     nwGUI.docEditor.replaceText(longText[1:])
     assert nwGUI.docEditor.saveText() is True
-    assert nwGUI.theProject.projTree[sHandle].itemLayout == nwItemLayout.DOCUMENT
+    assert nwGUI.theProject.tree[sHandle].itemLayout == nwItemLayout.DOCUMENT
 
     # Regular save
     assert nwGUI.docEditor.saveText() is True
@@ -235,9 +236,9 @@ def testGuiEditor_MetaData(qtbot, monkeypatch, nwGUI, nwMinimal):
     assert nwGUI.docEditor.setCursorPosition(None) is False
     assert nwGUI.docEditor.setCursorPosition(10) is True
     assert nwGUI.docEditor.getCursorPosition() == 10
-    assert nwGUI.theProject.projTree[sHandle].cursorPos != 10
+    assert nwGUI.theProject.tree[sHandle].cursorPos != 10
     nwGUI.docEditor.saveCursorPosition()
-    assert nwGUI.theProject.projTree[sHandle].cursorPos == 10
+    assert nwGUI.theProject.tree[sHandle].cursorPos == 10
 
     assert nwGUI.docEditor.setCursorLine(None) is False
     assert nwGUI.docEditor.setCursorLine(2) is True
@@ -1142,7 +1143,7 @@ def testGuiEditor_Tags(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
 
     # Create Character
     theText = "### Jane Doe\n\n@tag: Jane\n\n" + ipsumText[1] + "\n\n"
-    cHandle = nwGUI.theProject.newFile("Jane Doe", nwItemClass.CHARACTER, "afb3043c7b2b3")
+    cHandle = nwGUI.theProject.newFile("Jane Doe", "afb3043c7b2b3")
     assert nwGUI.openDocument(cHandle) is True
     assert nwGUI.docEditor.replaceText(theText) is True
     assert nwGUI.saveDocument() is True
@@ -1225,8 +1226,8 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ips
 
     # Open a document and populate it
     sHandle = "8c659a11cd429"
-    nwGUI.theProject.projTree[sHandle]._initCount = 0  # Clear item's count
-    nwGUI.theProject.projTree[sHandle]._wordCount = 0  # Clear item's count
+    nwGUI.theProject.tree[sHandle]._initCount = 0  # Clear item's count
+    nwGUI.theProject.tree[sHandle]._wordCount = 0  # Clear item's count
     assert nwGUI.openDocument(sHandle) is True
     qtbot.wait(stepDelay)
 
@@ -1252,9 +1253,9 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ips
     nwGUI.docEditor.wCounterDoc.run()
     # nwGUI.docEditor._updateDocCounts(cC, wC, pC)
     qtbot.wait(stepDelay)
-    assert nwGUI.theProject.projTree[sHandle]._charCount == cC
-    assert nwGUI.theProject.projTree[sHandle]._wordCount == wC
-    assert nwGUI.theProject.projTree[sHandle]._paraCount == pC
+    assert nwGUI.theProject.tree[sHandle]._charCount == cC
+    assert nwGUI.theProject.tree[sHandle]._wordCount == wC
+    assert nwGUI.theProject.tree[sHandle]._paraCount == pC
     assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} (+{wC})"
 
     # Select all text
@@ -1285,7 +1286,6 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
-    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.openProject(nwLipsum) is True
     assert nwGUI.openDocument("4c4f28287af27") is True
     origText = nwGUI.docEditor.getText()

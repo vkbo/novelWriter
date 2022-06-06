@@ -29,7 +29,6 @@ class MockGuiMain():
     def __init__(self):
         self.mainConf = None
         self.hasProject = True
-        self.theIndex = None
         self.theProject = None
         self.statusBar = MockStatusBar()
 

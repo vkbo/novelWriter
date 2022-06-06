@@ -11,13 +11,15 @@
 
 ## Translations
 
+The default language is English (UK) with English (US) as an option.
+
+* Dutch: Martijn van der Kleijn (@mvdkleijn)
 * French: Jan Lüdke (@jyhelle)
+* German: Myian (@heymyian)
+* Latin American Spanish: Tommy Marplatt (@tmarplatt)
 * Norwegian: Veronica Berglyd Olsen (@vkbo)
 * Portuguese: Bruno Meneguello (@bkmeneguello)
 * Simplified Chinese: Qianzhi Long (@longqzh)
-* Latin American Spanish: Tommy Marplatt (@tmarplatt)
-* Dutch: Martijn van der Kleijn (@mvdkleijn)
-* German: Myian (@heymyian)
 
 ## Libraries
 
@@ -33,7 +35,7 @@ The following libraries are dependencies of novelWriter:
 
 Some of the assets bundled with novelWriter were adapted from the following sources:
 
-* Typicons icons by Stephen Hutchings (CC BY-SA 4.0)
+* Typicons icons by [Stephen Hutchings](https://github.com/stephenhutchings/typicons.font) (CC BY-SA 4.0)
 * Tomorrow syntax themes by Chris Kempson (MIT License)
 * Owl syntax themes by Sarah Drasner (MIT License)
 * Solarized themes by Ethan Schoonover, added by @nullbasis (MIT License)

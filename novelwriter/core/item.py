@@ -29,9 +29,9 @@ from lxml import etree
 
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
 from novelwriter.common import (
-    checkInt, isHandle, isItemClass, isItemLayout, isItemType
+    checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified
 )
-from novelwriter.constants import nwLabels, nwLists, trConst
+from novelwriter.constants import nwLabels, trConst
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +45,7 @@ class NWItem():
         self._name     = ""
         self._handle   = None
         self._parent   = None
+        self._root     = None
         self._order    = 0
         self._type     = nwItemType.NO_TYPE
         self._class    = nwItemClass.NO_CLASS
@@ -84,6 +85,10 @@ class NWItem():
     @property
     def itemParent(self):
         return self._parent
+
+    @property
+    def itemRoot(self):
+        return self._root
 
     @property
     def itemOrder(self):
@@ -147,6 +152,7 @@ class NWItem():
         itemAttrib = {}
         itemAttrib["handle"] = str(self._handle)
         itemAttrib["parent"] = str(self._parent)
+        itemAttrib["root"]   = str(self._root)
         itemAttrib["order"]  = str(self._order)
         itemAttrib["type"]   = str(self._type.name)
         itemAttrib["class"]  = str(self._class.name)
@@ -154,19 +160,18 @@ class NWItem():
             itemAttrib["layout"] = str(self._layout.name)
 
         metaAttrib = {}
+        metaAttrib["expanded"] = str(self._expanded)
         if self._type == nwItemType.FILE:
             metaAttrib["charCount"] = str(self._charCount)
             metaAttrib["wordCount"] = str(self._wordCount)
             metaAttrib["paraCount"] = str(self._paraCount)
             metaAttrib["cursorPos"] = str(self._cursorPos)
-        else:
-            metaAttrib["expanded"]  = str(self._expanded)
 
         nameAttrib = {}
         nameAttrib["status"] = str(self._status)
         nameAttrib["import"] = str(self._import)
         if self._type == nwItemType.FILE:
-            nameAttrib["exported"]  = str(self._exported)
+            nameAttrib["exported"] = str(self._exported)
 
         xPack = etree.SubElement(xParent, "item", attrib=itemAttrib)
         self._subPack(xPack, "meta", attrib=metaAttrib)
@@ -188,6 +193,7 @@ class NWItem():
             return False
 
         self.setParent(xItem.attrib.get("parent", None))
+        self.setRoot(xItem.attrib.get("root", None))
         self.setOrder(xItem.attrib.get("order", 0))
         self.setType(xItem.attrib.get("type", nwItemType.NO_TYPE))
         self.setClass(xItem.attrib.get("class", nwItemClass.NO_CLASS))
@@ -233,6 +239,17 @@ class NWItem():
                 # version of novelWriter that doesn't know the tag
                 logger.error("Unknown tag '%s'", xValue.tag)
 
+        # Make some checks to ensure consistency
+        if self._type == nwItemType.ROOT:
+            self._root = self._handle  # Root items are their own ancestor
+            self._parent = None        # Root items cannot have a parent
+
+        if self._type != nwItemType.FILE:
+            self._charCount = 0  # Only set for files
+            self._wordCount = 0  # Only set for files
+            self._paraCount = 0  # Only set for files
+            self._cursorPos = 0  # Only set for files
+
         return True
 
     @staticmethod
@@ -249,7 +266,7 @@ class NWItem():
         return
 
     ##
-    #  Methods
+    #  Lookup Methods
     ##
 
     def describeMe(self, hLevel=None):
@@ -275,168 +292,226 @@ class NWItem():
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
 
+    def isNovelLike(self):
+        """Returns true if the item is of a novel-like class.
+        """
+        return self._class in (nwItemClass.NOVEL, nwItemClass.ARCHIVE)
+
+    def documentAllowed(self):
+        """Returns true if the item is allowed to be of document layout.
+        """
+        return self._class in (nwItemClass.NOVEL, nwItemClass.ARCHIVE, nwItemClass.TRASH)
+
+    def isInactive(self):
+        """Returns true if the item is in an inactive class.
+        """
+        return self._class in (nwItemClass.NO_CLASS, nwItemClass.ARCHIVE, nwItemClass.TRASH)
+
     def getImportStatus(self):
         """Return the relevant importance or status label and icon for
         the current item based on its class.
         """
-        if self._class in nwLists.CLS_NOVEL:
-            stName = self.theProject.statusItems.checkEntry(self._status)
-            stIcon = self.theProject.statusItems.getIcon(stName)
+        if self.isNovelLike():
+            stName = self.theProject.statusItems.name(self._status)
+            stIcon = self.theProject.statusItems.icon(self._status)
         else:
-            stName = self.theProject.importItems.checkEntry(self._import)
-            stIcon = self.theProject.importItems.getIcon(stName)
+            stName = self.theProject.importItems.name(self._import)
+            stIcon = self.theProject.importItems.icon(self._import)
         return stName, stIcon
 
-    def setImportStatus(self, theLabel):
+    ##
+    #  Special Setters
+    ##
+
+    def setImportStatus(self, value):
         """Update the importance or status value based on class. This is
         a wrapper setter for setStatus and setImport.
         """
-        if self._class in nwLists.CLS_NOVEL:
-            self.setStatus(theLabel)
+        if self.isNovelLike():
+            self.setStatus(value)
         else:
-            self.setImport(theLabel)
+            self.setImport(value)
+        return
+
+    def setClassDefaults(self, itemClass):
+        """Set the default values based on the item's class and the
+        project settings.
+        """
+        if self._parent is not None:
+            # Only update for child items
+            self.setClass(itemClass)
+
+        if self._layout == nwItemLayout.NO_LAYOUT:
+            # If no layout is set, pick one
+            if self.isNovelLike():
+                self._layout = nwItemLayout.DOCUMENT
+            else:
+                self._layout = nwItemLayout.NOTE
+        elif not self.documentAllowed():
+            # Change layout to note if it is not in an allowed folder
+            self._layout = nwItemLayout.NOTE
+
+        if self._status is None:
+            self.setStatus("New")  # This forces a default value lookup
+
+        if self._import is None:
+            self.setImport("New")  # This forces a default value lookup
+
         return
 
     ##
     #  Set Item Values
     ##
 
-    def setName(self, theName):
+    def setName(self, name):
         """Set the item name.
         """
-        if isinstance(theName, str):
-            self._name = theName.strip()
+        if isinstance(name, str):
+            self._name = simplified(name)
         else:
             self._name = ""
         return
 
-    def setHandle(self, theHandle):
+    def setHandle(self, handle):
         """Set the item handle, and ensure it is valid.
         """
-        if isHandle(theHandle):
-            self._handle = theHandle
+        if isHandle(handle):
+            self._handle = handle
         else:
             self._handle = None
         return
 
-    def setParent(self, theParent):
+    def setParent(self, handle):
         """Set the parent handle, and ensure it is valid.
         """
-        if theParent is None:
+        if handle is None:
             self._parent = None
-        elif isHandle(theParent):
-            self._parent = theParent
+        elif isHandle(handle):
+            self._parent = handle
         else:
             self._parent = None
         return
 
-    def setOrder(self, theOrder):
+    def setRoot(self, handle):
+        """Set the root handle, and ensure it is valid.
+        """
+        if handle is None:
+            self._root = None
+        elif isHandle(handle):
+            self._root = handle
+        else:
+            self._root = None
+        return
+
+    def setOrder(self, order):
         """Set the item order, and ensure that it is valid. This value
         is purely a meta value, and not actually used by novelWriter at
         the moment.
         """
-        self._order = checkInt(theOrder, 0)
+        self._order = checkInt(order, 0)
         return
 
-    def setType(self, theType):
+    def setType(self, value):
         """Set the item type from either a proper nwItemType, or set it
         from a string representing an nwItemType.
         """
-        if isinstance(theType, nwItemType):
-            self._type = theType
-        elif isItemType(theType):
-            self._type = nwItemType[theType]
+        if isinstance(value, nwItemType):
+            self._type = value
+        elif isItemType(value):
+            self._type = nwItemType[value]
+        elif value == "TRASH":
+            self._type = nwItemType.ROOT
         else:
-            logger.error("Unrecognised item type '%s'", theType)
+            logger.error("Unrecognised item type '%s'", value)
             self._type = nwItemType.NO_TYPE
         return
 
-    def setClass(self, theClass):
+    def setClass(self, value):
         """Set the item class from either a proper nwItemClass, or set
         it from a string representing an nwItemClass.
         """
-        if isinstance(theClass, nwItemClass):
-            self._class = theClass
-        elif isItemClass(theClass):
-            self._class = nwItemClass[theClass]
+        if isinstance(value, nwItemClass):
+            self._class = value
+        elif isItemClass(value):
+            self._class = nwItemClass[value]
         else:
-            logger.error("Unrecognised item class '%s'", theClass)
+            logger.error("Unrecognised item class '%s'", value)
             self._class = nwItemClass.NO_CLASS
         return
 
-    def setLayout(self, theLayout):
+    def setLayout(self, value):
         """Set the item layout from either a proper nwItemLayout, or set
         it from a string representing an nwItemLayout.
         """
-        if isinstance(theLayout, nwItemLayout):
-            self._layout = theLayout
-        elif isItemLayout(theLayout):
-            self._layout = nwItemLayout[theLayout]
-        elif theLayout in nwLists.DEP_LAYOUT:
+        if isinstance(value, nwItemLayout):
+            self._layout = value
+        elif isItemLayout(value):
+            self._layout = nwItemLayout[value]
+        elif value in ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE"):
             self._layout = nwItemLayout.DOCUMENT
         else:
-            logger.error("Unrecognised item layout '%s'", theLayout)
+            logger.error("Unrecognised item layout '%s'", value)
             self._layout = nwItemLayout.NO_LAYOUT
         return
 
-    def setStatus(self, theStatus):
+    def setStatus(self, value):
         """Set the item status by looking it up in the valid status
         items of the current project.
         """
-        self._status = self.theProject.statusItems.checkEntry(theStatus)
+        self._status = self.theProject.statusItems.check(value)
         return
 
-    def setImport(self, theImport):
+    def setImport(self, value):
         """Set the item importance by looking it up in the valid import
         items of the current project.
         """
-        self._import = self.theProject.importItems.checkEntry(theImport)
+        self._import = self.theProject.importItems.check(value)
         return
 
-    def setExpanded(self, expState):
+    def setExpanded(self, state):
         """Set the expanded status of an item in the project tree.
         """
-        if isinstance(expState, str):
-            self._expanded = (expState == str(True))
+        if isinstance(state, str):
+            self._expanded = (state == str(True))
         else:
-            self._expanded = (expState is True)
+            self._expanded = (state is True)
         return
 
-    def setExported(self, expState):
+    def setExported(self, state):
         """Set the export flag.
         """
-        if isinstance(expState, str):
-            self._exported = (expState == str(True))
+        if isinstance(state, str):
+            self._exported = (state == str(True))
         else:
-            self._exported = (expState is True)
+            self._exported = (state is True)
         return
 
     ##
     #  Set Document Meta Data
     ##
 
-    def setCharCount(self, theCount):
+    def setCharCount(self, count):
         """Set the character count, and ensure that it is an integer.
         """
-        self._charCount = max(0, checkInt(theCount, 0))
+        self._charCount = max(0, checkInt(count, 0))
         return
 
-    def setWordCount(self, theCount):
+    def setWordCount(self, count):
         """Set the word count, and ensure that it is an integer.
         """
-        self._wordCount = max(0, checkInt(theCount, 0))
+        self._wordCount = max(0, checkInt(count, 0))
         return
 
-    def setParaCount(self, theCount):
+    def setParaCount(self, count):
         """Set the paragraph count, and ensure that it is an integer.
         """
-        self._paraCount = max(0, checkInt(theCount, 0))
+        self._paraCount = max(0, checkInt(count, 0))
         return
 
-    def setCursorPos(self, thePosition):
+    def setCursorPos(self, position):
         """Set the cursor position, and ensure that it is an integer.
         """
-        self._cursorPos = max(0, checkInt(thePosition, 0))
+        self._cursorPos = max(0, checkInt(position, 0))
         return
 
     def saveInitialCount(self):

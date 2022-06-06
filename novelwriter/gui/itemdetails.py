@@ -115,6 +115,7 @@ class GuiItemDetails(QWidget):
         self.usageData = QLabel("")
         self.usageData.setFont(fntValue)
         self.usageData.setAlignment(Qt.AlignLeft)
+        self.usageData.setWordWrap(True)
 
         # Character Count
         self.cCountName = QLabel("  "+self.tr("Characters"))
@@ -214,6 +215,16 @@ class GuiItemDetails(QWidget):
 
         return
 
+    def refreshDetails(self):
+        """Reload the content of the details panel.
+        """
+        self.updateViewBox(self._itemHandle)
+
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str)
     def updateViewBox(self, tHandle):
         """Populate the details box from a given handle.
         """
@@ -221,7 +232,7 @@ class GuiItemDetails(QWidget):
             self.clearDetails()
             return
 
-        nwItem = self.theProject.projTree[tHandle]
+        nwItem = self.theProject.tree[tHandle]
         if nwItem is None:
             self.clearDetails()
             return
@@ -263,7 +274,7 @@ class GuiItemDetails(QWidget):
         # Layout
         # ======
 
-        hLevel = self.theParent.theIndex.getHandleHeaderLevel(tHandle)
+        hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
         usageIcon = self.theTheme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
         )
@@ -283,10 +294,6 @@ class GuiItemDetails(QWidget):
             self.pCountData.setText("–")
 
         return
-
-    ##
-    #  Slots
-    ##
 
     @pyqtSlot(str, int, int, int)
     def doUpdateCounts(self, tHandle, cC, wC, pC):

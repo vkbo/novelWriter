@@ -33,6 +33,7 @@ import bisect
 import logging
 import novelwriter
 
+from enum import Enum
 from time import time
 
 from PyQt5.QtCore import (
@@ -50,7 +51,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import NWDoc, NWSpellEnchant, countWords
-from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert
+from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode
 from novelwriter.common import transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
 from novelwriter.gui.dochighlight import GuiDocHighlighter
@@ -69,6 +70,7 @@ class GuiDocEditor(QTextEdit):
     spellDictionaryChanged = pyqtSignal(str, str)
     docEditedStatusChanged = pyqtSignal(bool)
     docCountsChanged = pyqtSignal(str, int, int, int)
+    loadDocumentTagRequest = pyqtSignal(str, Enum)
 
     def __init__(self, theParent):
         QTextEdit.__init__(self, theParent)
@@ -79,7 +81,6 @@ class GuiDocEditor(QTextEdit):
         self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theTheme   = theParent.theTheme
-        self.theIndex   = theParent.theIndex
         self.theProject = theParent.theProject
 
         self._nwDocument = None
@@ -131,8 +132,9 @@ class GuiDocEditor(QTextEdit):
 
         # Editor Settings
         self.setMinimumWidth(self.mainConf.pxInt(300))
-        self.setAutoFillBackground(True)
         self.setAcceptRichText(False)
+        self.setAutoFillBackground(True)
+        self.setFrameStyle(QFrame.NoFrame)
 
         # Custom Shortcuts
         QShortcut(
@@ -400,7 +402,7 @@ class GuiDocEditor(QTextEdit):
             self.document().rootFrame().setFrameFormat(docFrame)
 
         self.docFooter.updateLineCount()
-        self._docHeaders = self.theIndex.getHandleHeaders(self._docHandle)
+        self._docHeaders = self.theProject.index.getHandleHeaders(self._docHandle)
 
         qApp.processEvents()
         self.document().clearUndoRedoStacks()
@@ -505,9 +507,9 @@ class GuiDocEditor(QTextEdit):
 
         self.setDocumentChanged(False)
 
-        oldHeader = self.theIndex.getHandleHeaderLevel(tHandle)
-        self.theIndex.scanText(tHandle, docText)
-        newHeader = self.theIndex.getHandleHeaderLevel(tHandle)
+        oldHeader = self.theProject.index.getHandleHeaderLevel(tHandle)
+        self.theProject.index.scanText(tHandle, docText)
+        newHeader = self.theProject.index.getHandleHeaderLevel(tHandle)
 
         if self._updateHeaders(checkLevel=True):
             self.theParent.requestNovelTreeRefresh()
@@ -565,16 +567,6 @@ class GuiDocEditor(QTextEdit):
         lM = max(cM, fH)
         self.setViewportMargins(tM, uM, tM, lM)
 
-        return
-
-    def updateDocInfo(self, tHandle):
-        """Called when an item label is changed to check if the document
-        title bar needs updating,
-        """
-        if tHandle == self._docHandle:
-            self.docHeader.setTitleFromHandle(self._docHandle)
-            self.docFooter.updateInfo()
-            self.updateDocMargins()
         return
 
     ##
@@ -1066,7 +1058,22 @@ class GuiDocEditor(QTextEdit):
         return
 
     ##
-    #  Slots
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str)
+    def updateDocInfo(self, tHandle):
+        """Called when an item label is changed to check if the document
+        title bar needs updating,
+        """
+        if tHandle == self._docHandle:
+            self.docHeader.setTitleFromHandle(self._docHandle)
+            self.docFooter.updateInfo()
+            self.updateDocMargins()
+        return
+
+    ##
+    #  Private Slots
     ##
 
     @pyqtSlot(int, int, int)
@@ -1894,7 +1901,7 @@ class GuiDocEditor(QTextEdit):
 
             if loadTag:
                 logger.verbose("Attempting to follow tag '%s'", theWord)
-                self.theParent.docViewer.loadFromTag(theWord)
+                self.loadDocumentTagRequest.emit(theWord, nwDocMode.VIEW)
             else:
                 logger.verbose("Potential tag '%s'", theWord)
 
@@ -2002,7 +2009,7 @@ class GuiDocEditor(QTextEdit):
         if self._docHandle is None:
             return False
 
-        newHeaders = self.theIndex.getHandleHeaders(self._docHandle)
+        newHeaders = self.theProject.index.getHandleHeaders(self._docHandle)
         if checkPos:
             newPos = [x[0] for x in newHeaders]
             oldPos = [x[0] for x in self._docHeaders]
@@ -2701,15 +2708,15 @@ class GuiDocEditHeader(QWidget):
 
         if self.mainConf.showFullPath:
             tTitle = []
-            tTree = self.theProject.projTree.getItemPath(tHandle)
+            tTree = self.theProject.tree.getItemPath(tHandle)
             for aHandle in reversed(tTree):
-                nwItem = self.theProject.projTree[aHandle]
+                nwItem = self.theProject.tree[aHandle]
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
             sSep = "  %s  " % nwUnicode.U_RSAQUO
             self.theTitle.setText(sSep.join(tTitle))
         else:
-            nwItem = self.theProject.projTree[tHandle]
+            nwItem = self.theProject.tree[tHandle]
             if nwItem is None:
                 return False
             self.theTitle.setText(nwItem.itemName)
@@ -2795,7 +2802,6 @@ class GuiDocEditFooter(QWidget):
         self.theParent  = docEditor.theParent
         self.theProject = docEditor.theProject
         self.theTheme   = docEditor.theTheme
-        self.optState   = docEditor.theProject.optState
 
         self._theItem   = None
         self._docHandle = None
@@ -2918,7 +2924,7 @@ class GuiDocEditFooter(QWidget):
             logger.verbose("No handle set, so clearing the editor footer")
             self._theItem = None
         else:
-            self._theItem = self.theProject.projTree[self._docHandle]
+            self._theItem = self.theProject.tree[self._docHandle]
 
         self.setHasSelection(False)
         self.updateInfo()
@@ -2942,7 +2948,7 @@ class GuiDocEditFooter(QWidget):
         else:
             theStatus, theIcon = self._theItem.getImportStatus()
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            hLevel = self.theParent.theIndex.getHandleHeaderLevel(self._docHandle)
+            hLevel = self.theProject.index.getHandleHeaderLevel(self._docHandle)
             sText = f"{theStatus} / {self._theItem.describeMe(hLevel)}"
 
         self.statusIcon.setPixmap(sIcon)

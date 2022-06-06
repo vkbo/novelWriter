@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import nwItemLayout, nwItemType
-from novelwriter.constants import trConst, nwLists, nwLabels
+from novelwriter.constants import trConst, nwLabels
 from novelwriter.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
@@ -55,7 +55,7 @@ class GuiItemEditor(QDialog):
         #  Build GUI
         ##
 
-        self.theItem = self.theProject.projTree[tHandle]
+        self.theItem = self.theProject.tree[tHandle]
         if self.theItem is None:
             self.close()
             return
@@ -74,19 +74,28 @@ class GuiItemEditor(QDialog):
         # Item Status
         self.editStatus = QComboBox()
         self.editStatus.setMinimumWidth(mVd)
-        if self.theItem.itemClass in nwLists.CLS_NOVEL:
-            for sLabel, _, _, sIcon in self.theProject.statusItems:
-                self.editStatus.addItem(sIcon, sLabel, sLabel)
+        if self.theItem.isNovelLike():
+            for key, entry in self.theProject.statusItems.items():
+                self.editStatus.addItem(entry["icon"], entry["name"], key)
+
+            index = self.editStatus.findData(self.theItem.itemStatus)
+            if index != -1:
+                self.editStatus.setCurrentIndex(index)
+
         else:
-            for sLabel, _, _, sIcon in self.theProject.importItems:
-                self.editStatus.addItem(sIcon, sLabel, sLabel)
+            for key, entry in self.theProject.importItems.items():
+                self.editStatus.addItem(entry["icon"], entry["name"], key)
+
+            index = self.editStatus.findData(self.theItem.itemImport)
+            if index != -1:
+                self.editStatus.setCurrentIndex(index)
 
         # Item Layout
         self.editLayout = QComboBox()
         self.editLayout.setMinimumWidth(mVd)
         validLayouts = []
         if self.theItem.itemType == nwItemType.FILE:
-            if self.theItem.itemClass in nwLists.CLS_NOVEL:
+            if self.theItem.documentAllowed():
                 validLayouts.append(nwItemLayout.DOCUMENT)
             validLayouts.append(nwItemLayout.NOTE)
         else:
@@ -96,6 +105,10 @@ class GuiItemEditor(QDialog):
         for itemLayout in nwItemLayout:
             if itemLayout in validLayouts:
                 self.editLayout.addItem(trConst(nwLabels.LAYOUT_NAME[itemLayout]), itemLayout)
+
+        index = self.editLayout.findData(self.theItem.itemLayout)
+        if index != -1:
+            self.editLayout.setCurrentIndex(index)
 
         # Export Switch
         self.textExport = QLabel(self.tr("Include when building project"))
@@ -115,15 +128,6 @@ class GuiItemEditor(QDialog):
         # Set Current Values
         self.editName.setText(self.theItem.itemName)
         self.editName.selectAll()
-
-        currStatus, _ = self.theItem.getImportStatus()
-        statusIdx = self.editStatus.findData(currStatus)
-        if statusIdx != -1:
-            self.editStatus.setCurrentIndex(statusIdx)
-
-        layoutIdx = self.editLayout.findData(self.theItem.itemLayout)
-        if layoutIdx != -1:
-            self.editLayout.setCurrentIndex(layoutIdx)
 
         ##
         #  Assemble

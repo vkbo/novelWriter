@@ -33,8 +33,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import NWDoc
-from novelwriter.enum import nwAlert, nwItemType, nwItemClass, nwItemLayout
-from novelwriter.constants import nwConst
+from novelwriter.enum import nwAlert, nwItemType
 from novelwriter.gui.custom import QHelpLabel
 
 logger = logging.getLogger(__name__)
@@ -51,7 +50,6 @@ class GuiDocSplit(QDialog):
         self.mainConf   = novelwriter.CONFIG
         self.theParent  = theParent
         self.theProject = theParent.theProject
-        self.optState   = theParent.theProject.optState
 
         self.sourceItem = None
         self.sourceText = []
@@ -76,7 +74,7 @@ class GuiDocSplit(QDialog):
         self.splitLevel.addItem(self.tr("Split up to Header Level 3 (Scene)"),   3)
         self.splitLevel.addItem(self.tr("Split up to Header Level 4 (Section)"), 4)
         spIndex = self.splitLevel.findData(
-            self.optState.getInt("GuiDocSplit", "spLevel", 3)
+            self.theProject.options.getInt("GuiDocSplit", "spLevel", 3)
         )
         if spIndex != -1:
             self.splitLevel.setCurrentIndex(spIndex)
@@ -122,7 +120,7 @@ class GuiDocSplit(QDialog):
             ), nwAlert.ERROR)
             return False
 
-        srcItem = self.theProject.projTree[self.sourceItem]
+        srcItem = self.theProject.tree[self.sourceItem]
         if srcItem is None:
             self.theParent.makeAlert(self.tr(
                 "Could not parse source document."
@@ -160,16 +158,6 @@ class GuiDocSplit(QDialog):
             ), nwAlert.ERROR)
             return False
 
-        # Check that another folder can be created
-        parTree = self.theProject.projTree.getItemPath(srcItem.itemParent)
-        if len(parTree) >= nwConst.MAX_DEPTH - 1:
-            self.theParent.makeAlert(self.tr(
-                "Cannot add new folder for the document split. "
-                "Maximum folder depth has been reached. "
-                "Please move the file to another level in the project tree."
-            ), nwAlert.ERROR)
-            return False
-
         msgYes = self.theParent.askQuestion(
             self.tr("Split Document"),
             "{0}<br><br>{1}".format(
@@ -186,22 +174,16 @@ class GuiDocSplit(QDialog):
             return False
 
         # Create the folder
-        fHandle = self.theProject.newFolder(
-            srcItem.itemName, srcItem.itemClass, srcItem.itemParent
-        )
+        fHandle = self.theProject.newFolder(srcItem.itemName, srcItem.itemParent)
         self.theParent.treeView.revealNewTreeItem(fHandle)
         logger.verbose("Creating folder '%s'", fHandle)
 
         # Loop through, and create the files
         for wTitle, iStart, iEnd in finalOrder:
 
-            isNovel = srcItem.itemClass == nwItemClass.NOVEL
-            itemLayout = nwItemLayout.DOCUMENT if isNovel else nwItemLayout.NOTE
-
             wTitle = wTitle.lstrip("#").strip()
-            nHandle = self.theProject.newFile(wTitle, srcItem.itemClass, fHandle)
-            newItem = self.theProject.projTree[nHandle]
-            newItem.setLayout(itemLayout)
+            nHandle = self.theProject.newFile(wTitle, fHandle)
+            newItem = self.theProject.tree[nHandle]
             newItem.setStatus(srcItem.itemStatus)
             newItem.setImport(srcItem.itemImport)
             logger.verbose(
@@ -228,7 +210,7 @@ class GuiDocSplit(QDialog):
     def _doClose(self):
         """Close the dialog window without doing anything.
         """
-        self.optState.saveSettings()
+        self.theProject.options.saveSettings()
         self.close()
         return
 
@@ -249,7 +231,7 @@ class GuiDocSplit(QDialog):
         if self.sourceItem is None:
             return False
 
-        nwItem = self.theProject.projTree[self.sourceItem]
+        nwItem = self.theProject.tree[self.sourceItem]
         if nwItem is None:
             return False
 
@@ -266,7 +248,7 @@ class GuiDocSplit(QDialog):
             return False
 
         spLevel = self.splitLevel.currentData()
-        self.optState.setValue("GuiDocSplit", "spLevel", spLevel)
+        self.theProject.options.setValue("GuiDocSplit", "spLevel", spLevel)
         logger.debug(
             "Scanning document '%s' for headings level <= %d",
             self.sourceItem, spLevel

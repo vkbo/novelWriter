@@ -2,6 +2,7 @@
 
 The maintenance of translations has been moved to the Crowdin service. The translation strings can
 be edited there at the [novelWriter project page](https://crowdin.com/project/novelwriter).
+However, please read the Translation Guidelines section below.
 
 You can still use the manual approach listed below, and then upload the file through the website's
 interface. The translation strings for that language will then be updated and queued for approval.
@@ -9,6 +10,22 @@ interface. The translation strings for that language will then be updated and qu
 To verify a language file translated through the Crowdin tool, download and extract it into the
 `i18n` folder in the novelWriter source and follow the instructions in
 [Generate an Updated Translation File](#generate-an-updated-translation-file) below.
+
+
+# Translation Guidelines
+
+When contributing translations, keep the following things in mind.
+
+* For descriptive labels and dialog boxes, make sure you do _not_ change the meaning of the text
+  when you translate it from English. The user must receive the same instructions or information
+  regardless of language. This is improtant, otherwise the documentation will be inconsistent with
+  the user interface and it will become a lot more difficult to handle user issues and questions.
+* If you think a label or description is misleading or incomplete, please file an issue report. The
+  correct way to handle such changes is to change the text in the code first, which will then be
+  forwarded to _all_ translators such that the GUI is consistent across all languages.
+* For very short labels, like button labels. it may be fine to replace the word with a similar
+  word, but only as long as the user understands what it is supposed to do. Some buttons and tabs
+  have limited space. If necessary, it is OK to use abbreviations.
 
 
 # Direct Approach Using Qt Linguist

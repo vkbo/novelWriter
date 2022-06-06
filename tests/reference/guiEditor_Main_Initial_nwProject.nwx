@@ -1,9 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-03 21:00:21">
+<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-05-21 17:25:41">
   <project>
     <name>New Project</name>
-    <title></title>
-    <saveCount>3</saveCount>
+    <title>New Novel</title>
+    <author>Jane Doe</author>
+    <saveCount>2</saveCount>
     <autoCount>1</autoCount>
     <editTime>0</editTime>
   </project>
@@ -15,8 +16,8 @@
     <autoOutline>True</autoOutline>
     <lastEdited>None</lastEdited>
     <lastViewed>None</lastViewed>
-    <lastWordCount>6</lastWordCount>
-    <novelWordCount>6</novelWordCount>
+    <lastWordCount>9</lastWordCount>
+    <novelWordCount>9</novelWordCount>
     <notesWordCount>0</notesWordCount>
     <autoReplace/>
     <titleFormat>
@@ -27,50 +28,50 @@
       <section></section>
     </titleFormat>
     <status>
-      <entry red="100" green="100" blue="100">New</entry>
-      <entry red="200" green="50" blue="0">Note</entry>
-      <entry red="200" green="150" blue="0">Draft</entry>
-      <entry red="50" green="200" blue="0">Finished</entry>
+      <entry key="s000000" count="5" red="100" green="100" blue="100">New</entry>
+      <entry key="s000001" count="0" red="200" green="50" blue="0">Note</entry>
+      <entry key="s000002" count="0" red="200" green="150" blue="0">Draft</entry>
+      <entry key="s000003" count="0" red="50" green="200" blue="0">Finished</entry>
     </status>
     <importance>
-      <entry red="100" green="100" blue="100">New</entry>
-      <entry red="200" green="50" blue="0">Minor</entry>
-      <entry red="200" green="150" blue="0">Major</entry>
-      <entry red="50" green="200" blue="0">Main</entry>
+      <entry key="i000004" count="3" red="100" green="100" blue="100">New</entry>
+      <entry key="i000005" count="0" red="200" green="50" blue="0">Minor</entry>
+      <entry key="i000006" count="0" red="200" green="150" blue="0">Major</entry>
+      <entry key="i000007" count="0" red="50" green="200" blue="0">Main</entry>
     </importance>
   </settings>
   <content count="8">
-    <item handle="73475cb40a568" parent="None" order="0" type="ROOT" class="NOVEL">
+    <item handle="0000000000008" parent="None" root="0000000000008" order="0" type="ROOT" class="NOVEL">
       <meta expanded="False"/>
-      <name status="New" import="None">Novel</name>
+      <name status="s000000" import="i000004">Novel</name>
     </item>
-    <item handle="25fc0e7096fc6" parent="73475cb40a568" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
-      <name status="New" import="None" exported="True">Title Page</name>
+    <item handle="000000000000c" parent="0000000000008" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="False" charCount="20" wordCount="5" paraCount="1" cursorPos="0"/>
+      <name status="s000000" import="i000004" exported="True">Title Page</name>
     </item>
-    <item handle="31489056e0916" parent="73475cb40a568" order="1" type="FOLDER" class="NOVEL">
+    <item handle="000000000000d" parent="0000000000008" root="0000000000008" order="1" type="FOLDER" class="NOVEL">
       <meta expanded="False"/>
-      <name status="New" import="None">New Chapter</name>
+      <name status="s000000" import="i000004">New Chapter</name>
     </item>
-    <item handle="98010bd9270f9" parent="31489056e0916" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
-      <name status="New" import="None" exported="True">New Chapter</name>
+    <item handle="000000000000e" parent="000000000000d" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="False" charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
+      <name status="s000000" import="i000004" exported="True">New Chapter</name>
     </item>
-    <item handle="0e17daca5f3e1" parent="31489056e0916" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta charCount="9" wordCount="2" paraCount="0" cursorPos="0"/>
-      <name status="New" import="None" exported="True">New Scene</name>
+    <item handle="000000000000f" parent="000000000000d" root="0000000000008" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="False" charCount="9" wordCount="2" paraCount="0" cursorPos="0"/>
+      <name status="s000000" import="i000004" exported="True">New Scene</name>
     </item>
-    <item handle="44cb730c42048" parent="None" order="1" type="ROOT" class="PLOT">
+    <item handle="0000000000009" parent="None" root="0000000000009" order="1" type="ROOT" class="PLOT">
       <meta expanded="False"/>
-      <name status="New" import="None">Plot</name>
+      <name status="s000000" import="i000004">Plot</name>
     </item>
-    <item handle="71ee45a3c0db9" parent="None" order="2" type="ROOT" class="CHARACTER">
+    <item handle="000000000000a" parent="None" root="000000000000a" order="2" type="ROOT" class="CHARACTER">
       <meta expanded="False"/>
-      <name status="New" import="None">Characters</name>
+      <name status="s000000" import="i000004">Characters</name>
     </item>
-    <item handle="811786ad1ae74" parent="None" order="3" type="ROOT" class="WORLD">
+    <item handle="000000000000b" parent="None" root="000000000000b" order="3" type="ROOT" class="WORLD">
       <meta expanded="False"/>
-      <name status="New" import="None">World</name>
+      <name status="s000000" import="i000004">World</name>
     </item>
   </content>
 </novelWriterXML>

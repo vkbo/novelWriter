@@ -21,7 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from tools import getGuiItem
+from tools import getGuiItem, buildTestProject
 
 from PyQt5.QtWidgets import QAction, QDialog, QMessageBox
 
@@ -30,9 +30,12 @@ from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.dialogs import GuiItemEditor
 from novelwriter.core.tree import NWTree
 
+statusKeys = ["s000000", "s000001", "s000002", "s000003"]
+importKeys = ["i000004", "i000005", "i000006", "i000007"]
+
 
 @pytest.mark.gui
-def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj):
+def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test launching the item editor dialog from GuiMain.
     """
     # Block message box
@@ -45,15 +48,15 @@ def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj):
     assert nwGUI.editItem() is False
 
     # Create and Open Project
-    nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
+    tHandle = "000000000000f"
 
     # No Selection
     nwGUI.treeView.clearSelection()
     assert nwGUI.editItem() is False
 
     # Force opening from editor
-    assert nwGUI.openDocument("0e17daca5f3e1")
+    assert nwGUI.openDocument(tHandle)
     nwGUI.isFocusMode = True
 
     # Block Tree Lookup
@@ -62,9 +65,9 @@ def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj):
         assert nwGUI.editItem() is False
 
     # Invalid Type
-    nwGUI.theProject.projTree["0e17daca5f3e1"]._type = nwItemType.NO_TYPE
+    nwGUI.theProject.tree[tHandle]._type = nwItemType.NO_TYPE
     assert nwGUI.editItem() is False
-    nwGUI.theProject.projTree["0e17daca5f3e1"]._type = nwItemType.FILE
+    nwGUI.theProject.tree[tHandle]._type = nwItemType.FILE
 
     # Open Properly
     assert nwGUI.editItem() is True
@@ -88,7 +91,7 @@ def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj):
 
 
 @pytest.mark.gui
-def testDlgItemEditor_Novel(qtbot, monkeypatch, nwGUI, fncProj):
+def testDlgItemEditor_Novel(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test the item editor dialog for a novel document.
     """
     # Block message box
@@ -96,9 +99,13 @@ def testDlgItemEditor_Novel(qtbot, monkeypatch, nwGUI, fncProj):
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
     # Create Project and Open Document
-    nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": fncProj})
-    assert nwGUI.openDocument("0e17daca5f3e1")
+    buildTestProject(nwGUI, fncProj)
+    tHandle = "000000000000f"
+
+    assert nwGUI.theProject.statusItems.name(statusKeys[0]) == "New"
+    assert nwGUI.theProject.statusItems.name(statusKeys[1]) == "Note"
+
+    assert nwGUI.openDocument(tHandle) is True
 
     # Check that an invalid handle is managed
     itemEdit = GuiItemEditor(nwGUI, "whatever")
@@ -106,12 +113,12 @@ def testDlgItemEditor_Novel(qtbot, monkeypatch, nwGUI, fncProj):
     itemEdit._doClose()
 
     # Edit a Document
-    itemEdit = GuiItemEditor(nwGUI, "0e17daca5f3e1")
+    itemEdit = GuiItemEditor(nwGUI, tHandle)
     itemEdit.show()
 
     # Check Existing Settings
     assert itemEdit.editName.text() == "New Scene"
-    assert itemEdit.editStatus.currentData() == "New"
+    assert itemEdit.editStatus.currentData() == statusKeys[0]
     assert itemEdit.editLayout.currentData() == nwItemLayout.DOCUMENT
     assert itemEdit.editExport.isChecked() is True
 
@@ -125,12 +132,12 @@ def testDlgItemEditor_Novel(qtbot, monkeypatch, nwGUI, fncProj):
     # Check New Settings
     itemEdit._doSave()
     assert itemEdit.theItem.itemName == "Great Scene"
-    assert itemEdit.theItem.itemStatus == "Note"
+    assert itemEdit.theItem.itemStatus == statusKeys[1]
     assert itemEdit.theItem.itemLayout == nwItemLayout.NOTE
     assert itemEdit.theItem.isExported is False
 
     # Check that the editor header is updated
-    nwGUI.docEditor.updateDocInfo("0e17daca5f3e1")
+    nwGUI.docEditor.updateDocInfo(tHandle)
     assert nwGUI.docEditor.docHeader.theTitle.text() == "Novel  ›  New Chapter  ›  Great Scene"
 
     itemEdit.close()
@@ -141,7 +148,7 @@ def testDlgItemEditor_Novel(qtbot, monkeypatch, nwGUI, fncProj):
 
 
 @pytest.mark.gui
-def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj):
+def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test the item editor dialog for a project note.
     """
     # Block message box
@@ -149,24 +156,27 @@ def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj):
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
     # Create Project and Open Document
-    nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
+    assert nwGUI.theProject.statusItems.name(statusKeys[0]) == "New"
+    assert nwGUI.theProject.statusItems.name(statusKeys[1]) == "Note"
+    assert nwGUI.theProject.importItems.name(importKeys[0]) == "New"
+    assert nwGUI.theProject.importItems.name(importKeys[1]) == "Minor"
 
     # Create Note
     nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem("71ee45a3c0db9").setSelected(True)
+    nwGUI.treeView._getTreeItem("000000000000a").setSelected(True)
     nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
 
     # Open Note
-    assert nwGUI.openDocument("1a6562590ef19")
+    assert nwGUI.openDocument("0000000000010")
 
     # Edit a Document
-    itemEdit = GuiItemEditor(nwGUI, "1a6562590ef19")
+    itemEdit = GuiItemEditor(nwGUI, "0000000000010")
     itemEdit.show()
 
     # Check Existing Settings
-    assert itemEdit.editName.text() == "New File"
-    assert itemEdit.editStatus.currentData() == "New"
+    assert itemEdit.editName.text() == "New Note"
+    assert itemEdit.editStatus.currentData() == importKeys[0]
     assert itemEdit.editLayout.currentData() == nwItemLayout.NOTE
     assert itemEdit.editExport.isChecked() is True
 
@@ -178,8 +188,8 @@ def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj):
 
     # Check New Settings
     assert itemEdit.theItem.itemName == "New Character"
-    assert itemEdit.theItem.itemStatus == "New"
-    assert itemEdit.theItem.itemImport == "Minor"
+    assert itemEdit.theItem.itemStatus == statusKeys[0]
+    assert itemEdit.theItem.itemImport == importKeys[1]
     assert itemEdit.theItem.itemLayout == nwItemLayout.NOTE
     assert itemEdit.theItem.isExported is False
 
@@ -191,7 +201,7 @@ def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj):
 
 
 @pytest.mark.gui
-def testDlgItemEditor_Folder(qtbot, monkeypatch, nwGUI, fncProj):
+def testDlgItemEditor_Folder(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test the item editor dialog for a folder.
     """
     # Block message box
@@ -199,16 +209,18 @@ def testDlgItemEditor_Folder(qtbot, monkeypatch, nwGUI, fncProj):
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
     # Create Project and Open Document
-    nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
 
     # Edit a Folder
-    itemEdit = GuiItemEditor(nwGUI, "31489056e0916")
+    itemEdit = GuiItemEditor(nwGUI, "000000000000d")
     itemEdit.show()
+
+    assert nwGUI.theProject.statusItems.name(statusKeys[0]) == "New"
+    assert nwGUI.theProject.statusItems.name(statusKeys[1]) == "Note"
 
     # Check Existing Settings
     assert itemEdit.editName.text() == "New Chapter"
-    assert itemEdit.editStatus.currentData() == "New"
+    assert itemEdit.editStatus.currentData() == statusKeys[0]
     assert itemEdit.editLayout.currentData() == nwItemLayout.NO_LAYOUT
     assert itemEdit.editExport.isChecked() is False
 
@@ -222,7 +234,7 @@ def testDlgItemEditor_Folder(qtbot, monkeypatch, nwGUI, fncProj):
     # Check New Settings
     itemEdit._doSave()
     assert itemEdit.theItem.itemName == "Chapter One"
-    assert itemEdit.theItem.itemStatus == "Note"
+    assert itemEdit.theItem.itemStatus == statusKeys[1]
     assert itemEdit.theItem.itemLayout == nwItemLayout.NO_LAYOUT
     assert itemEdit.theItem.isExported is False
 
