@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.gui import (
     GuiDocEditor, GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiMainMenu,
-    GuiMainStatus, GuiNovelTree, GuiOutline, GuiProjectTree, GuiTheme,
+    GuiMainStatus, GuiNovelTree, GuiOutline, GuiProjectWiew, GuiTheme,
     GuiViewsBar
 )
 from novelwriter.dialogs import (
@@ -105,7 +105,7 @@ class GuiMain(QMainWindow):
 
         # Main GUI Elements
         self.statusBar = GuiMainStatus(self)
-        self.treeView  = GuiProjectTree(self)
+        self.treeView  = GuiProjectWiew(self)
         self.novelView = GuiNovelTree(self)
         self.docEditor = GuiDocEditor(self)
         self.viewMeta  = GuiDocViewDetails(self)
@@ -208,8 +208,8 @@ class GuiMain(QMainWindow):
 
         self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
         self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
-        self.docEditor.docCountsChanged.connect(self.treeMeta.doUpdateCounts)
-        self.docEditor.docCountsChanged.connect(self.treeView.doUpdateCounts)
+        self.docEditor.docCountsChanged.connect(self.treeMeta.updateCounts)
+        self.docEditor.docCountsChanged.connect(self.treeView.updateCounts)
         self.docEditor.loadDocumentTagRequest.connect(self._followTag)
 
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
@@ -291,7 +291,7 @@ class GuiMain(QMainWindow):
         """Wrapper function to clear all sub-elements of the main GUI.
         """
         # Project Area
-        self.treeView.clearTree()
+        self.treeView.clearProject()
         self.novelView.clearTree()
         self.treeMeta.clearDetails()
 
@@ -541,7 +541,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        self.treeView.saveTreeOrder()
+        self.treeView.saveProjectTree()
         if self.theProject.saveProject(autoSave=autoSave):
             self.theProject.index.saveIndex()
 
@@ -789,7 +789,7 @@ class GuiMain(QMainWindow):
 
         tHandle = None
         tLine = None
-        if self.treeView.hasFocus():
+        if self.treeView.treeFocus():
             tHandle = self.treeView.getSelectedHandle()
         elif self.novelView.hasFocus():
             tHandle, tLine = self.novelView.getSelectedHandle()
@@ -824,7 +824,7 @@ class GuiMain(QMainWindow):
     def rebuildTrees(self):
         """Rebuild the project tree.
         """
-        self.treeView.buildTree()
+        self.treeView.populateTree()
         self.novelView.refreshTree()
         return
 
@@ -847,7 +847,7 @@ class GuiMain(QMainWindow):
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         tStart = time()
 
-        self.treeView.saveTreeOrder()
+        self.treeView.saveProjectTree()
         self.theProject.index.clearIndex()
 
         for tItem in self.theProject.tree:
@@ -919,7 +919,7 @@ class GuiMain(QMainWindow):
             self.saveDocument()
             self.docEditor.initEditor()
             self.docViewer.initViewer()
-            self.treeView.initTree()
+            self.treeView.initSettings()
             self.novelView.initTree()
             self.projView.initOutline()
             self._updateStatusWordCount()

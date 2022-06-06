@@ -6,6 +6,8 @@ GUI classes for the main window project tree
 File History:
 Created: 2018-09-29 [0.0.1] GuiProjectTree
 Created: 2020-06-04 [0.7]   GuiProjectTreeMenu
+Created: 2022-06-06 [1.7b1] GuiProjectWiew
+Created: 2022-06-06 [1.7b1] GuiProjectToolBar
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -34,7 +36,8 @@ from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction, QFrame,
-    QDialog, QHeaderView
+    QDialog, QHeaderView, QWidget, QVBoxLayout, QToolBar, QLabel, QToolButton,
+    QSizePolicy
 )
 
 from novelwriter.core import NWDoc
@@ -45,12 +48,11 @@ from novelwriter.dialogs.itemeditor import GuiItemEditor
 logger = logging.getLogger(__name__)
 
 
-class GuiProjectTree(QTreeWidget):
-
-    C_NAME   = 0
-    C_COUNT  = 1
-    C_EXPORT = 2
-    C_STATUS = 3
+class GuiProjectWiew(QWidget):
+    """This is a wrapper class holding all the elements of the project
+    tree. The core object is the project tree itself. Most methods
+    available are mapped through to the project tree class.
+    """
 
     # Signals triggered when the meta data values of items change
     treeItemChanged = pyqtSignal(str)
@@ -63,14 +65,143 @@ class GuiProjectTree(QTreeWidget):
     openDocumentRequest = pyqtSignal(str, Enum)
 
     def __init__(self, theParent):
-        QTreeWidget.__init__(self, theParent)
+        QWidget.__init__(self, theParent)
+
+        self.theParent = theParent
+
+        # Build GUI
+        self.projBar = GuiProjectToolBar(self)
+        self.projTree = GuiProjectTree(self)
+
+        # Assemble
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addWidget(self.projBar)
+        self.outerBox.addWidget(self.projTree)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
+        self.outerBox.setSpacing(0)
+
+        self.setLayout(self.outerBox)
+
+        # Function Mappings
+        self.newTreeItem = self.projTree.newTreeItem
+        self.revealNewTreeItem = self.projTree.revealNewTreeItem
+        self.moveTreeItem = self.projTree.moveTreeItem
+        self.editTreeItem = self.projTree.editTreeItem
+        self.getTreeFromHandle = self.projTree.getTreeFromHandle
+        self.emptyTrash = self.projTree.emptyTrash
+        self.deleteItem = self.projTree.deleteItem
+        self.setTreeItemValues = self.projTree.setTreeItemValues
+        self.propagateCount = self.projTree.propagateCount
+        self.undoLastMove = self.projTree.undoLastMove
+        self.getSelectedHandle = self.projTree.getSelectedHandle
+        self.setSelectedHandle = self.projTree.setSelectedHandle
+        self.changedSince = self.projTree.changedSince
+
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def initSettings(self):
+        self.projTree.initSettings()
+        return
+
+    def clearProject(self):
+        self.projTree.clearTree()
+        return
+
+    def saveProjectTree(self):
+        self.projTree.saveTreeOrder()
+        return
+
+    def populateTree(self):
+        self.projTree.buildTree()
+        return
+
+    def treeFocus(self):
+        return self.projTree.hasFocus()
+
+    ##
+    #  Public Solts
+    ##
+
+    @pyqtSlot(str, int, int, int)
+    def updateCounts(self, tHandle, cCount, wCount, pCount):
+        """Slot for updating the word count of a specific item.
+        """
+        self.projTree.propagateCount(tHandle, wCount, countChildren=True)
+        self.wordCountsChanged.emit()
+        return
+
+# END Class GuiProjectWiew
+
+
+class GuiProjectToolBar(QToolBar):
+
+    def __init__(self, theWidget):
+        QTreeWidget.__init__(self, theWidget)
+
+        logger.debug("Initialising GuiProjectToolBar ...")
+
+        self.mainConf   = novelwriter.CONFIG
+        self.theParent  = theWidget.theParent
+        self.theProject = theWidget.theParent.theProject
+        self.theTheme   = theWidget.theParent.theTheme
+
+        iPx = self.theTheme.baseIconSize
+        mPx = self.mainConf.pxInt(12)
+
+        self.setMovable(False)
+        self.setIconSize(QSize(iPx, iPx))
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setStyleSheet("QToolBar {border: 0px;}")
+
+        # Novel Selector
+        self.projLabel = QLabel(self.tr("Project"))
+        self.projLabel.setContentsMargins(0, 0, mPx, 0)
+        self.projLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Itemss Menu
+        self.tbItems = QToolButton(self)
+        self.tbItems.setIcon(self.theTheme.getIcon("add"))
+        self.tbItems.setPopupMode(QToolButton.InstantPopup)
+
+        # Settings Menu
+        self.tbSettings = QToolButton(self)
+        self.tbSettings.setIcon(self.theTheme.getIcon("menu"))
+        self.tbSettings.setPopupMode(QToolButton.InstantPopup)
+
+        # Assemble
+        self.addWidget(self.projLabel)
+        self.addSeparator()
+        self.addWidget(self.tbItems)
+        self.addWidget(self.tbSettings)
+
+        logger.debug("GuiProjectToolBar initialisation complete")
+
+        return
+
+# END Class GuiProjectToolBar
+
+
+class GuiProjectTree(QTreeWidget):
+
+    C_NAME   = 0
+    C_COUNT  = 1
+    C_EXPORT = 2
+    C_STATUS = 3
+
+    def __init__(self, theWidget):
+        QTreeWidget.__init__(self, theWidget)
 
         logger.debug("Initialising GuiProjectTree ...")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
+        self.theWidget  = theWidget
+        self.theParent  = theWidget.theParent
+        self.theTheme   = theWidget.theParent.theTheme
+        self.theProject = theWidget.theParent.theProject
 
         # Internal Variables
         self._treeMap = {}
@@ -125,13 +256,13 @@ class GuiProjectTree(QTreeWidget):
         self.itemSelectionChanged.connect(self._treeSelectionChange)
 
         # Set custom settings
-        self.initTree()
+        self.initSettings()
 
         logger.debug("GuiProjectTree initialisation complete")
 
         return
 
-    def initTree(self):
+    def initSettings(self):
         """Set or update tree widget settings.
         """
         # Scroll bars
@@ -248,7 +379,7 @@ class GuiProjectTree(QTreeWidget):
             # Get Word Counts
             _, wC, _ = pIndex.getCounts(tHandle)
             self.propagateCount(tHandle, wC)
-            self.wordCountsChanged.emit()
+            self.theWidget.wordCountsChanged.emit()
 
         return True
 
@@ -494,7 +625,7 @@ class GuiProjectTree(QTreeWidget):
                         self._deleteTreeItem(dHandle)
 
                     self._alertTreeChange(tHandle=tHandle, flush=autoFlush)
-                    self.wordCountsChanged.emit()
+                    self.theWidget.wordCountsChanged.emit()
 
             else:
                 # The item is not already in the trash folder, so we
@@ -691,18 +822,6 @@ class GuiProjectTree(QTreeWidget):
         return self._timeChanged > checkTime
 
     ##
-    #  Public Solts
-    ##
-
-    @pyqtSlot(str, int, int, int)
-    def doUpdateCounts(self, tHandle, cCount, wCount, pCount):
-        """Slot for updating the word count of a specific item.
-        """
-        self.propagateCount(tHandle, wCount, countChildren=True)
-        self.wordCountsChanged.emit()
-        return
-
-    ##
     #  Private Slots
     ##
 
@@ -712,7 +831,7 @@ class GuiProjectTree(QTreeWidget):
         """
         tHandle = self.getSelectedHandle()
         if tHandle is not None:
-            self.selectedItemChanged.emit(tHandle)
+            self.theWidget.selectedItemChanged.emit(tHandle)
         return
 
     @pyqtSlot("QTreeWidgetItem*", int)
@@ -729,7 +848,7 @@ class GuiProjectTree(QTreeWidget):
             return
 
         if tItem.itemType == nwItemType.FILE:
-            self.openDocumentRequest.emit(tHandle, nwDocMode.EDIT)
+            self.theWidget.openDocumentRequest.emit(tHandle, nwDocMode.EDIT)
         else:
             trItem = self._getTreeItem(tHandle)
             if trItem is not None:
@@ -781,7 +900,7 @@ class GuiProjectTree(QTreeWidget):
                 return
 
             if tItem.itemType == nwItemType.FILE:
-                self.openDocumentRequest.emit(tHandle, nwDocMode.VIEW)
+                self.theWidget.openDocumentRequest.emit(tHandle, nwDocMode.VIEW)
 
         return
 
@@ -988,11 +1107,11 @@ class GuiProjectTree(QTreeWidget):
 
         itemType = tItem.itemType
         if itemType == nwItemType.ROOT:
-            self.rootFolderChanged.emit(tHandle)
+            self.theWidget.rootFolderChanged.emit(tHandle)
         elif itemType == nwItemType.FILE and tItem.isNovelLike():
-            self.novelItemChanged.emit(tHandle)
+            self.theWidget.novelItemChanged.emit(tHandle)
 
-        self.treeItemChanged.emit(tHandle)
+        self.theWidget.treeItemChanged.emit(tHandle)
 
         return
 

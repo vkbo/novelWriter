@@ -52,7 +52,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     buildTestProject(nwGUI, prjDir)
 
     # No itemType set
-    nwTree.clearSelection()
+    nwTree.projTree.clearSelection()
     assert nwTree.newTreeItem(None) is False
 
     # Root Items
@@ -69,7 +69,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     # =================
 
     # No location selected for new item
-    nwTree.clearSelection()
+    nwTree.projTree.clearSelection()
     caplog.clear()
     assert nwTree.newTreeItem(nwItemType.FILE) is False
     assert nwTree.newTreeItem(nwItemType.FOLDER) is False
@@ -116,7 +116,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     nwGUI.theProject.tree["0000000000013"].setParent("0000000000011")
 
     # Get the trash folder
-    nwTree._addTrashRoot()
+    nwTree.projTree._addTrashRoot()
     trashHandle = nwGUI.theProject.trashFolder()
     nwTree.setSelectedHandle(trashHandle)
     assert nwTree.newTreeItem(nwItemType.FILE) is False
@@ -182,7 +182,7 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
     # Move with no selections
-    nwTree.clearSelection()
+    nwTree.projTree.clearSelection()
     assert nwTree.moveTreeItem(1) is False
 
     # Move second item up twice (should give same result)
@@ -304,13 +304,13 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
     # No selection made
-    nwTree.clearSelection()
+    nwTree.projTree.clearSelection()
     caplog.clear()
     assert nwTree.deleteItem() is False
     assert "no item to delete" in caplog.text
 
     # Not a valid handle
-    nwTree.clearSelection()
+    nwTree.projTree.clearSelection()
     caplog.clear()
     assert nwTree.deleteItem("0000000000000") is False
     assert "Could not find tree item" in caplog.text
@@ -326,10 +326,10 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     # ===========
 
     # Block adding trash folder
-    funcPointer = nwTree._addTrashRoot
-    nwTree._addTrashRoot = lambda *a: None
+    funcPointer = nwTree.projTree._addTrashRoot
+    nwTree.projTree._addTrashRoot = lambda *a: None
     assert nwTree.deleteItem("0000000000012") is False
-    nwTree._addTrashRoot = funcPointer
+    nwTree.projTree._addTrashRoot = funcPointer
 
     # Delete last two documents, which also adds the trash folder
     assert nwTree.deleteItem("0000000000012") is True
@@ -441,7 +441,7 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
         assert os.path.isfile(os.path.join(fncDir, "project", "content", "000000000000e.nwd"))
 
     # Delete proper
-    assert nwTree._deleteTreeItem("000000000000e") is True
+    assert nwTree.projTree._deleteTreeItem("000000000000e") is True
     assert not os.path.isfile(os.path.join(fncDir, "project", "content", "000000000000e.nwd"))
 
     # Clean up

@@ -54,9 +54,9 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.treeView.setSelectedHandle("88243afbe5ed8")
 
     # Middle-click the selected item
-    theItem = nwGUI.treeView._getTreeItem("88243afbe5ed8")
-    theRect = nwGUI.treeView.visualItemRect(theItem)
-    qtbot.mouseClick(nwGUI.treeView.viewport(), Qt.MidButton, pos=theRect.center())
+    theItem = nwGUI.treeView.projTree._getTreeItem("88243afbe5ed8")
+    theRect = nwGUI.treeView.projTree.visualItemRect(theItem)
+    qtbot.mouseClick(nwGUI.treeView.projTree.viewport(), Qt.MidButton, pos=theRect.center())
     assert nwGUI.docViewer.docHandle() == "88243afbe5ed8"
 
     # Reload the text

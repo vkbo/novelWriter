@@ -60,9 +60,9 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Add Project Content
     monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: QDialog.Accepted)
     nwGUI.switchFocus(nwWidget.TREE)
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hNovelRoot).setSelected(True)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE)
+    nwGUI.treeView.projTree.clearSelection()
+    nwGUI.treeView.projTree._getTreeItem(hNovelRoot).setSelected(True)
+    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE)
 
     assert nwGUI.saveProject() is True
     assert nwGUI.closeProject() is True
@@ -89,8 +89,8 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
 
     # Open the Split tool
     nwGUI.switchFocus(nwWidget.TREE)
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hToSplit).setSelected(True)
+    nwGUI.treeView.projTree.clearSelection()
+    nwGUI.treeView.projTree._getTreeItem(hToSplit).setSelected(True)
 
     monkeypatch.setattr(GuiDocSplit, "exec_", lambda *a: None)
     nwGUI.mainMenu.aSplitDoc.activate(QAction.Trigger)
@@ -109,7 +109,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
 
     # No item selected
     nwSplit.sourceItem = None
-    nwGUI.treeView.clearSelection()
+    nwGUI.treeView.projTree.clearSelection()
     assert nwSplit._populateList() is False
     assert nwSplit.listBox.count() == 0
 
@@ -117,15 +117,15 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     with monkeypatch.context() as mp:
         mp.setattr(NWTree, "__getitem__", lambda *a: None)
         nwSplit.sourceItem = None
-        nwGUI.treeView.clearSelection()
-        nwGUI.treeView._getTreeItem(hToSplit).setSelected(True)
+        nwGUI.treeView.projTree.clearSelection()
+        nwGUI.treeView.projTree._getTreeItem(hToSplit).setSelected(True)
         assert nwSplit._populateList() is False
         assert nwSplit.listBox.count() == 0
 
     # Select a non-file
     nwSplit.sourceItem = None
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
+    nwGUI.treeView.projTree.clearSelection()
+    nwGUI.treeView.projTree._getTreeItem(hChapterDir).setSelected(True)
     assert nwSplit._populateList() is False
     assert nwSplit.listBox.count() == 0
 

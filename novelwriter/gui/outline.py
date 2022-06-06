@@ -62,6 +62,7 @@ class GuiOutline(QWidget):
         self.mainConf  = novelwriter.CONFIG
         self.theParent = theParent
 
+        # Build GUI
         self.outlineBar  = GuiOutlineToolBar(self)
         self.outlineView = GuiOutlineView(self)
         self.outlineData = GuiOutlineDetails(self)
@@ -224,6 +225,8 @@ class GuiOutlineToolBar(QToolBar):
         self.addWidget(stretch)
 
         logger.debug("GuiOutlineToolBar initialisation complete")
+
+        return
 
     ##
     #  Methods
