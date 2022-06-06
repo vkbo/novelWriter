@@ -29,10 +29,14 @@ from lxml import etree
 from tools import cmpFiles, writeFile, readFile, buildTestProject, XML_IGNORE
 from mock import causeOSError
 
-from novelwriter.core.project import NWProject
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwFiles
+from novelwriter.core.tree import NWTree
+from novelwriter.core.index import NWIndex
+from novelwriter.core.project import NWProject
+from novelwriter.core.options import OptionState
+from novelwriter.core.document import NWDoc
 
 
 @pytest.mark.core
@@ -280,12 +284,12 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProject_NewFile(fncDir, outDir, refDir, mockGUI, mockRnd):
+def testCoreProject_NewFileFolder(fncDir, outDir, refDir, mockGUI, mockRnd):
     """Check that new files can be added to the project.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_NewFile_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_NewFile_nwProject.nwx")
+    testFile = os.path.join(outDir, "coreProject_NewFileFolder_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreProject_NewFileFolder_nwProject.nwx")
 
     theProject = NWProject(mockGUI)
     buildTestProject(theProject, fncDir)
@@ -295,9 +299,33 @@ def testCoreProject_NewFile(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.closeProject() is True
     assert theProject.openProject(projFile) is True
 
-    assert isinstance(theProject.newFile("Hello", "31489056e0916"), str)
-    assert isinstance(theProject.newFile("Jane", "71ee45a3c0db9"), str)
-    assert theProject.projChanged
+    # Invalid call
+    assert theProject.newFolder("New Folder", "1234567890abc") is None
+    assert theProject.newFile("New File", "1234567890abc") is None
+
+    # Add files properly
+    assert theProject.newFolder("Stuff", "0000000000015") == "0000000000028"
+    assert theProject.newFile("Hello", "0000000000015") == "0000000000029"
+    assert theProject.newFile("Jane", "0000000000012") == "000000000002a"
+
+    assert "0000000000028" in theProject.tree
+    assert "0000000000029" in theProject.tree
+    assert "000000000002a" in theProject.tree
+
+    # Write to file, failed
+    assert theProject.writeNewFile("blabla", 1, True) is False         # Not a handle
+    assert theProject.writeNewFile("0000000000028", 1, True) is False  # Not a file
+    assert theProject.writeNewFile("0000000000014", 1, True) is False  # Already has content
+
+    # Write to file, success
+    assert theProject.writeNewFile("0000000000029", 2, True) is True
+    assert NWDoc(theProject, "0000000000029").readDocument() == "## Hello\n\n"
+
+    assert theProject.writeNewFile("000000000002a", 1, False) is True
+    assert NWDoc(theProject, "000000000002a").readDocument() == "# Jane\n\n"
+
+    # Save, close and check
+    assert theProject.projChanged is True
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
 
@@ -305,7 +333,7 @@ def testCoreProject_NewFile(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
     assert theProject.projChanged is False
 
-# END Test testCoreProject_NewFile
+# END Test testCoreProject_NewFileFolder
 
 
 @pytest.mark.core
@@ -613,6 +641,11 @@ def testCoreProject_AccessItems(nwMinimal, mockGUI):
     theProject = NWProject(mockGUI)
     theProject.openProject(nwMinimal)
 
+    # Storage Objects
+    assert isinstance(theProject.index, NWIndex)
+    assert isinstance(theProject.tree, NWTree)
+    assert isinstance(theProject.options, OptionState)
+
     # Move Novel ROOT to after its files
     oldOrder = [
         "a508bb932959c",  # ROOT: Novel
@@ -722,7 +755,7 @@ def testCoreProject_StatusImport(mockGUI, fncDir, mockRnd):
     # Change Importance
     # =================
 
-    fHandle = theProject.newFile("Jane Doe", "8b9d2e465e150")
+    fHandle = theProject.newFile("Jane Doe", "0000000000012")
     theProject.tree[fHandle].setImport("Main")
 
     assert theProject.tree[fHandle].itemImport == importKeys[3]
@@ -894,6 +927,10 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     assert theProject.setProjectLang("en_GB") is True
     assert theProject.projLang == "en_GB"
 
+    # Language Lookup
+    assert theProject.localLookup(1) == "One"
+    assert theProject.localLookup(10) == "Ten"
+
     # Automatic outline update
     theProject.projChanged = False
     assert theProject.setAutoOutline(True)
@@ -1007,7 +1044,8 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
 
     # Add a file with non-existent parent
     # This file will be renoved from the project on open
-    assert theProject.newFile("Oops", "0000000000000")
+    oHandle = theProject.newFile("Oops", "b3643d0f92e32")
+    theProject.tree[oHandle].setParent("1234567890abc")
 
     # Save and close
     assert theProject.saveProject() is True

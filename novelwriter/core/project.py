@@ -45,7 +45,7 @@ from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.error import logException
 from novelwriter.common import (
     checkString, checkBool, checkInt, isHandle, formatTimeStamp,
-    makeFileNameSafe, hexToInt, simplified
+    makeFileNameSafe, hexToInt, minmax, simplified
 )
 from novelwriter.constants import trConst, nwFiles, nwLabels
 
@@ -154,6 +154,8 @@ class NWProject():
     def newFolder(self, label, pHandle):
         """Add a new folder with a given label and parent item.
         """
+        if pHandle not in self._projTree:
+            return None
         newItem = NWItem(self)
         newItem.setName(label)
         newItem.setType(nwItemType.FOLDER)
@@ -164,12 +166,40 @@ class NWProject():
     def newFile(self, label, pHandle):
         """Add a new file with a given label and parent item.
         """
+        if pHandle not in self._projTree:
+            return None
         newItem = NWItem(self)
         newItem.setName(label)
         newItem.setType(nwItemType.FILE)
         self._projTree.append(None, pHandle, newItem)
         self._projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
+
+    def writeNewFile(self, tHandle, hLevel, isDocument):
+        """Write content to a new document after it is created. This
+        will not run if the file exists and is not empty.
+        """
+        tItem = self._projTree[tHandle]
+        if tItem is None:
+            return False
+        if tItem.itemType != nwItemType.FILE:
+            return False
+
+        newDoc = NWDoc(self, tHandle)
+        if newDoc.readDocument().strip():
+            return False
+
+        hshText = "#"*minmax(hLevel, 1, 4)
+        newText = f"{hshText} {tItem.itemName}\n\n"
+        if tItem.isNovelLike() and isDocument:
+            tItem.setLayout(nwItemLayout.DOCUMENT)
+        else:
+            tItem.setLayout(nwItemLayout.NOTE)
+
+        newDoc.writeDocument(newText)
+        self._projIndex.scanText(tHandle, newText)
+
+        return True
 
     def trashFolder(self):
         """Add the special trash root folder to the project.
