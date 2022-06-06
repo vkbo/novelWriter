@@ -502,11 +502,6 @@ class NWIndex:
         """
         return self._itemIndex.mainItemHeader(tHandle)
 
-    def getHandleHeaderIntLevel(self, tHandle):
-        """Get the integer header level of the first header of a handle.
-        """
-        return H_LEVEL.get(self._itemIndex.mainItemHeader(tHandle), 0)
-
     def getTableOfContents(self, maxDepth, skipExcl=True):
         """Generate a table of contents up to a maximum depth.
         """

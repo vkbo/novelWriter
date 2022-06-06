@@ -24,9 +24,8 @@ import os
 
 from tools import buildTestProject
 
-from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt5.QtWidgets import QAction, QMessageBox, QInputDialog
 
-from novelwriter.guimain import GuiMain
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.enum import nwItemType, nwItemClass
 
@@ -40,7 +39,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(GuiMain, "editItem", lambda *a: None)
+    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
 
     nwTree = nwGUI.treeView
 
@@ -89,22 +88,31 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     assert nwGUI.theProject.tree["0000000000012"].itemRoot == "0000000000008"
     assert nwGUI.theProject.tree["0000000000012"].itemClass == nwItemClass.NOVEL
 
-    # Add a new file next to the other new file
+    # Add a new chapter next to the other new file
     nwTree.setSelectedHandle("0000000000012")
-    assert nwTree.newTreeItem(nwItemType.FILE) is True
+    assert nwTree.newTreeItem(nwItemType.FILE, hLevel=2) is True
     assert nwGUI.theProject.tree["0000000000013"].itemParent == "0000000000011"
     assert nwGUI.theProject.tree["0000000000013"].itemRoot == "0000000000008"
     assert nwGUI.theProject.tree["0000000000013"].itemClass == nwItemClass.NOVEL
     assert nwGUI.openDocument("0000000000013")
-    assert nwGUI.docEditor.getText() == "## New Document\n\n"
+    assert nwGUI.docEditor.getText() == "## New Chapter\n\n"
+
+    # Add a new scene next to the other new file
+    nwTree.setSelectedHandle("0000000000012")
+    assert nwTree.newTreeItem(nwItemType.FILE, hLevel=3) is True
+    assert nwGUI.theProject.tree["0000000000014"].itemParent == "0000000000011"
+    assert nwGUI.theProject.tree["0000000000014"].itemRoot == "0000000000008"
+    assert nwGUI.theProject.tree["0000000000014"].itemClass == nwItemClass.NOVEL
+    assert nwGUI.openDocument("0000000000014")
+    assert nwGUI.docEditor.getText() == "### New Scene\n\n"
 
     # Add a new file to the characters folder
     nwTree.setSelectedHandle("000000000000a")
-    assert nwTree.newTreeItem(nwItemType.FILE) is True
-    assert nwGUI.theProject.tree["0000000000014"].itemParent == "000000000000a"
-    assert nwGUI.theProject.tree["0000000000014"].itemRoot == "000000000000a"
-    assert nwGUI.theProject.tree["0000000000014"].itemClass == nwItemClass.CHARACTER
-    assert nwGUI.openDocument("0000000000014")
+    assert nwTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True) is True
+    assert nwGUI.theProject.tree["0000000000015"].itemParent == "000000000000a"
+    assert nwGUI.theProject.tree["0000000000015"].itemRoot == "000000000000a"
+    assert nwGUI.theProject.tree["0000000000015"].itemClass == nwItemClass.CHARACTER
+    assert nwGUI.openDocument("0000000000015")
     assert nwGUI.docEditor.getText() == "# New Note\n\n"
 
     # Make sure the sibling folder bug trap works
@@ -114,6 +122,12 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     assert nwTree.newTreeItem(nwItemType.FILE) is False
     assert "Internal error" in caplog.text
     nwGUI.theProject.tree["0000000000013"].setParent("0000000000011")
+
+    # Cancel during creation
+    with monkeypatch.context() as mp:
+        mp.setattr(QInputDialog, "getText", lambda *a, **k: ("", False))
+        nwTree.setSelectedHandle("0000000000013")
+        assert nwTree.newTreeItem(nwItemType.FILE) is False
 
     # Get the trash folder
     nwTree.projTree._addTrashRoot()
@@ -148,7 +162,7 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(GuiMain, "editItem", lambda *a: None)
+    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
 
     nwTree = nwGUI.treeView
 
@@ -272,7 +286,7 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(GuiMain, "editItem", lambda *a: None)
+    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
 
     nwTree = nwGUI.treeView
 

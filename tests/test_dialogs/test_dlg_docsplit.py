@@ -25,7 +25,7 @@ import pytest
 from mock import causeOSError
 from tools import getGuiItem, readFile, writeFile, buildTestProject
 
-from PyQt5.QtWidgets import QAction, QMessageBox, QDialog
+from PyQt5.QtWidgets import QAction, QMessageBox, QDialog, QInputDialog
 
 from novelwriter.enum import nwItemType, nwWidget
 from novelwriter.dialogs import GuiDocSplit, GuiItemEditor
@@ -40,6 +40,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
+    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
 
     # Create a new project
     buildTestProject(nwGUI, fncProj)

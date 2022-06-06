@@ -26,7 +26,7 @@ from shutil import copyfile
 from tools import cmpFiles, buildTestProject, XML_IGNORE, writeFile
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox, QDialog
+from PyQt5.QtWidgets import QMessageBox, QDialog, QInputDialog
 
 from novelwriter.gui import GuiDocEditor, GuiNovelTree, GuiOutline
 from novelwriter.enum import nwItemType, nwWidget
@@ -173,6 +173,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     monkeypatch.setattr(GuiItemEditor, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
+    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
 
     # Create new, save, close project
     buildTestProject(nwGUI, fncProj)
@@ -241,7 +242,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.treeView.projTree.clearSelection()
     nwGUI.treeView.projTree._getTreeItem("000000000000a").setSelected(True)
-    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE, None)
+    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
     assert nwGUI.openSelectedItem()
 
     # Type something into the document
@@ -263,7 +264,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.treeView.projTree.clearSelection()
     nwGUI.treeView.projTree._getTreeItem("0000000000009").setSelected(True)
-    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE, None)
+    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
     assert nwGUI.openSelectedItem()
 
     # Type something into the document
@@ -285,7 +286,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.treeView.projTree.clearSelection()
     nwGUI.treeView.projTree._getTreeItem("000000000000b").setSelected(True)
-    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE, None)
+    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
     assert nwGUI.openSelectedItem()
 
     # Add Some Text

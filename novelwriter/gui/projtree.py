@@ -37,13 +37,13 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction, QFrame,
     QDialog, QHeaderView, QWidget, QVBoxLayout, QToolBar, QLabel, QToolButton,
-    QSizePolicy
+    QSizePolicy, QInputDialog
 )
 
 from novelwriter.core import NWDoc
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.common import minmax
 from novelwriter.dialogs.itemeditor import GuiItemEditor
+from novelwriter.constants import trConst, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -81,6 +81,8 @@ class GuiProjectWiew(QWidget):
         self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
+
+        # Connect Signals
 
         # Function Mappings
         self.newTreeItem = self.projTree.newTreeItem
@@ -139,12 +141,19 @@ class GuiProjectWiew(QWidget):
 
 class GuiProjectToolBar(QToolBar):
 
+    ADD_PLAIN  = 0
+    ADD_CHAP   = 1
+    ADD_SCENE  = 2
+    ADD_NOTE   = 3
+    ADD_FOLDER = 4
+
     def __init__(self, theWidget):
         QTreeWidget.__init__(self, theWidget)
 
         logger.debug("Initialising GuiProjectToolBar ...")
 
         self.mainConf   = novelwriter.CONFIG
+        self.theWidget  = theWidget
         self.theParent  = theWidget.theParent
         self.theProject = theWidget.theParent.theProject
         self.theTheme   = theWidget.theParent.theTheme
@@ -157,14 +166,49 @@ class GuiProjectToolBar(QToolBar):
         self.setContentsMargins(0, 0, 0, 0)
         self.setStyleSheet("QToolBar {border: 0px;}")
 
-        # Novel Selector
+        # Tree Label
         self.projLabel = QLabel(self.tr("Project"))
         self.projLabel.setContentsMargins(0, 0, mPx, 0)
         self.projLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        # Itemss Menu
+        # Items Menu
+        self.mItems = QMenu()
+
+        self.aAddEmpty = self.mItems.addAction(self.tr("Plain Document"))
+        self.aAddEmpty.setIcon(self.theTheme.getIcon("proj_document"))
+        self.aAddEmpty.triggered.connect(lambda: self._forwardNewItem(self.ADD_PLAIN))
+
+        self.aAddChap = self.mItems.addAction(self.tr("Chapter Document"))
+        self.aAddChap.setIcon(self.theTheme.getIcon("proj_chapter"))
+        self.aAddChap.triggered.connect(lambda: self._forwardNewItem(self.ADD_CHAP))
+
+        self.aAddScene = self.mItems.addAction(self.tr("Scene Document"))
+        self.aAddScene.setIcon(self.theTheme.getIcon("proj_scene"))
+        self.aAddScene.triggered.connect(lambda: self._forwardNewItem(self.ADD_SCENE))
+
+        self.aAddNote = self.mItems.addAction(self.tr("Project Note"))
+        self.aAddNote.setIcon(self.theTheme.getIcon("proj_note"))
+        self.aAddNote.triggered.connect(lambda: self._forwardNewItem(self.ADD_NOTE))
+
+        self.aAddFolder = self.mItems.addAction(self.tr("Folder"))
+        self.aAddFolder.setIcon(self.theTheme.getIcon("proj_folder"))
+        self.aAddFolder.triggered.connect(lambda: self._forwardNewItem(self.ADD_FOLDER))
+
+        self.mAddRoot = self.mItems.addMenu(self.tr("Root Folder"))
+        self._addRootFolderEntry(nwItemClass.NOVEL)
+        self._addRootFolderEntry(nwItemClass.ARCHIVE)
+        self.mAddRoot.addSeparator()
+        self._addRootFolderEntry(nwItemClass.PLOT)
+        self._addRootFolderEntry(nwItemClass.CHARACTER)
+        self._addRootFolderEntry(nwItemClass.WORLD)
+        self._addRootFolderEntry(nwItemClass.ARCHIVE)
+        self._addRootFolderEntry(nwItemClass.OBJECT)
+        self._addRootFolderEntry(nwItemClass.ENTITY)
+        self._addRootFolderEntry(nwItemClass.CUSTOM)
+
         self.tbItems = QToolButton(self)
         self.tbItems.setIcon(self.theTheme.getIcon("add"))
+        self.tbItems.setMenu(self.mItems)
         self.tbItems.setPopupMode(QToolButton.InstantPopup)
 
         # Settings Menu
@@ -181,6 +225,45 @@ class GuiProjectToolBar(QToolBar):
         logger.debug("GuiProjectToolBar initialisation complete")
 
         return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(Enum)
+    def _forwardNewRootFolder(self, itemClass):
+        """Forward the request for a new root folder to the tree.
+        """
+        self.theWidget.projTree.newTreeItem(nwItemType.ROOT, itemClass)
+        return
+
+    @pyqtSlot(int)
+    def _forwardNewItem(self, type):
+        """Forward the request for a new item of a given type.
+        """
+        if type == self.ADD_PLAIN:
+            self.theWidget.projTree.newTreeItem(nwItemType.FILE, hLevel=0, isNote=False)
+        elif type == self.ADD_CHAP:
+            self.theWidget.projTree.newTreeItem(nwItemType.FILE, hLevel=2, isNote=False)
+        elif type == self.ADD_SCENE:
+            self.theWidget.projTree.newTreeItem(nwItemType.FILE, hLevel=3, isNote=False)
+        elif type == self.ADD_NOTE:
+            self.theWidget.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
+        elif type == self.ADD_FOLDER:
+            self.theWidget.projTree.newTreeItem(nwItemType.FOLDER)
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _addRootFolderEntry(self, itemClass):
+        """Add a menu entry for a root folder of a given class.
+        """
+        aNew = self.mAddRoot.addAction(trConst(nwLabels.CLASS_NAME[itemClass]))
+        aNew.setIcon(self.theTheme.getIcon(nwLabels.CLASS_ICON[itemClass]))
+        aNew.triggered.connect(lambda: self._forwardNewRootFolder(itemClass))
+        self.mAddRoot.addAction(aNew)
 
 # END Class GuiProjectToolBar
 
@@ -291,7 +374,7 @@ class GuiProjectTree(QTreeWidget):
         self._timeChanged = 0
         return
 
-    def newTreeItem(self, itemType, itemClass=None):
+    def newTreeItem(self, itemType, itemClass=None, hLevel=1, isNote=False):
         """Add new item to the tree, with a given itemType (and
         itemClass if Root), and attach it to the selected handle. Also
         make sure the item is added in a place it can be added, and that
@@ -334,52 +417,49 @@ class GuiProjectTree(QTreeWidget):
                 ), nwAlert.ERROR)
                 return False
 
+            # Ask for label
+            if itemType == nwItemType.FILE:
+                if isNote:
+                    newLabel = self.tr("New Note")
+                elif hLevel == 2:
+                    newLabel = self.tr("New Chapter")
+                elif hLevel == 3:
+                    newLabel = self.tr("New Scene")
+                else:
+                    newLabel = self.tr("New Document")
+            else:
+                newLabel = self.tr("New Folder")
+
+            newLabel, dlgOk = QInputDialog.getText(self, "", self.tr("Label:"), text=newLabel)
+            if not dlgOk:
+                logger.info("New item creation cancelled by user")
+                return False
+
             # Add the file or folder
             if itemType == nwItemType.FILE:
-                if pItem.isNovelLike():
-                    tHandle = self.theProject.newFile(self.tr("New Document"), sHandle)
-                else:
-                    tHandle = self.theProject.newFile(self.tr("New Note"), sHandle)
-            elif itemType == nwItemType.FOLDER:
-                tHandle = self.theProject.newFolder(self.tr("New Folder"), sHandle)
+                tHandle = self.theProject.newFile(newLabel, sHandle)
+            else:
+                tHandle = self.theProject.newFolder(newLabel, sHandle)
 
         else:
             logger.error("Failed to add new item")
             return False
 
-        # If there is no handle set, return here. This is a bug
+        # If there is no handle set, return here. This is a bug.
         if tHandle is None:  # pragma: no cover
+            logger.error("Internal error")
             return True
-
-        # Add the new item to the tree and open the editor dialog
-        self.revealNewTreeItem(tHandle, nHandle)
-        self.editTreeItem(tHandle)
 
         # Handle new file creation
-        nwItem = self.theProject.tree[tHandle]
-        if nwItem.itemType != nwItemType.FILE:
-            return True
+        if itemType == nwItemType.FILE and hLevel > 0:
+            if self.theProject.writeNewFile(tHandle, hLevel, not isNote):
+                # If successful, update word count
+                wC = self.theProject.index.getCounts(tHandle)[1]
+                self.propagateCount(tHandle, wC)
+                self.theWidget.wordCountsChanged.emit()
 
-        # This is a new file, so let's add some content
-        newDoc = NWDoc(self.theProject, tHandle)
-        if not newDoc.readDocument():
-            if nwItem.itemLayout == nwItemLayout.DOCUMENT:
-                iLvl = self.theProject.index.getHandleHeaderIntLevel(sHandle)
-                hLvl = "#"*minmax(iLvl + 1, 2, 4)
-                newText = f"{hLvl} {nwItem.itemName}\n\n"
-            else:
-                newText = f"# {nwItem.itemName}\n\n"
-
-            pIndex = self.theProject.index
-
-            # Save the text and index it
-            newDoc.writeDocument(newText)
-            pIndex.scanText(tHandle, newText)
-
-            # Get Word Counts
-            _, wC, _ = pIndex.getCounts(tHandle)
-            self.propagateCount(tHandle, wC)
-            self.theWidget.wordCountsChanged.emit()
+        # Add the new item to the project tree
+        self.revealNewTreeItem(tHandle, nHandle)
 
         return True
 

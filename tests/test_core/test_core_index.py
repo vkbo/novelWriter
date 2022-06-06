@@ -232,9 +232,6 @@ def testCoreIndex_CheckThese(mockGUI, fncDir, mockRnd):
 
     assert theIndex.getHandleHeaderLevel(cHandle) == "H1"
     assert theIndex.getHandleHeaderLevel(nHandle) == "H1"
-    assert theIndex.getHandleHeaderIntLevel(cHandle) == 1
-    assert theIndex.getHandleHeaderIntLevel(nHandle) == 1
-    assert theIndex.getHandleHeaderIntLevel("stuff") == 0
 
     # Zero Items
     assert theIndex.checkThese([], cItem) == []

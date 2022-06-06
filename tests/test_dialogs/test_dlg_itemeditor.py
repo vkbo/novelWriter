@@ -23,7 +23,7 @@ import pytest
 
 from tools import getGuiItem, buildTestProject
 
-from PyQt5.QtWidgets import QAction, QDialog, QMessageBox
+from PyQt5.QtWidgets import QAction, QDialog, QMessageBox, QInputDialog
 
 from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.dialogs import GuiItemEditor
@@ -154,6 +154,7 @@ def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
+    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
 
     # Create Project and Open Document
     buildTestProject(nwGUI, fncProj)
@@ -165,7 +166,7 @@ def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Create Note
     nwGUI.treeView.projTree.clearSelection()
     nwGUI.treeView.projTree._getTreeItem("000000000000a").setSelected(True)
-    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE, None)
+    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
 
     # Open Note
     assert nwGUI.openDocument("0000000000010")
