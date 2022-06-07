@@ -187,15 +187,6 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
-    # Move item without focus
-    with monkeypatch.context() as mp:
-        mp.setattr(GuiProjectView, "anyFocus", lambda *a: False)
-        assert nwTree.projTree.moveTreeItem(1) is False
-        assert nwTree.getTreeFromHandle("000000000000d") == [
-            "000000000000d", "000000000000e", "000000000000f",
-            "0000000000010", "0000000000011", "0000000000012",
-        ]
-
     # Move with no selections
     nwTree.projTree.clearSelection()
     assert nwTree.projTree.moveTreeItem(1) is False
