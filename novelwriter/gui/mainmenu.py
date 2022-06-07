@@ -174,12 +174,6 @@ class GuiMainMenu(QMenuBar):
         self.aDeleteItem.triggered.connect(lambda: self.theParent.treeView.deleteItem(None))
         self.projMenu.addAction(self.aDeleteItem)
 
-        # Project > Undo Last Action
-        self.aMoveUndo = QAction(self.tr("Undo Last Move"), self)
-        self.aMoveUndo.setShortcut("Ctrl+Shift+Z")
-        self.aMoveUndo.triggered.connect(lambda: self.theParent.treeView.undoLastMove())
-        self.projMenu.addAction(self.aMoveUndo)
-
         # Project > Empty Trash
         self.aEmptyTrash = QAction(self.tr("Empty Trash"), self)
         self.aEmptyTrash.triggered.connect(lambda: self.theParent.treeView.emptyTrash())

@@ -24,7 +24,7 @@ import os
 
 from tools import buildTestProject
 
-from PyQt5.QtWidgets import QAction, QMessageBox, QInputDialog
+from PyQt5.QtWidgets import QMessageBox, QInputDialog
 
 from novelwriter.gui.projtree import GuiProjectView, GuiProjectTree
 from novelwriter.enum import nwItemType, nwItemClass
@@ -44,7 +44,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     nwTree = nwGUI.treeView
 
     # Try to add item with no project
-    assert nwTree.newTreeItem(nwItemType.FILE) is False
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is False
 
     # Create a project
     prjDir = os.path.join(fncDir, "project")
@@ -52,16 +52,16 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
 
     # No itemType set
     nwTree.projTree.clearSelection()
-    assert nwTree.newTreeItem(None) is False
+    assert nwTree.projTree.newTreeItem(None) is False
 
     # Root Items
     # ==========
 
     # No class set
-    assert nwTree.newTreeItem(nwItemType.ROOT) is False
+    assert nwTree.projTree.newTreeItem(nwItemType.ROOT) is False
 
     # Create root item
-    assert nwTree.newTreeItem(nwItemType.ROOT, nwItemClass.WORLD) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.ROOT, nwItemClass.WORLD) is True
     assert "0000000000010" in nwGUI.theProject.tree
 
     # File/Folder Items
@@ -70,27 +70,27 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     # No location selected for new item
     nwTree.projTree.clearSelection()
     caplog.clear()
-    assert nwTree.newTreeItem(nwItemType.FILE) is False
-    assert nwTree.newTreeItem(nwItemType.FOLDER) is False
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is False
+    assert nwTree.projTree.newTreeItem(nwItemType.FOLDER) is False
     assert "Did not find anywhere" in caplog.text
 
     # Create new folder as child of Novel folder
     nwTree.setSelectedHandle("0000000000008")
-    assert nwTree.newTreeItem(nwItemType.FOLDER) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FOLDER) is True
     assert nwGUI.theProject.tree["0000000000011"].itemParent == "0000000000008"
     assert nwGUI.theProject.tree["0000000000011"].itemRoot == "0000000000008"
     assert nwGUI.theProject.tree["0000000000011"].itemClass == nwItemClass.NOVEL
 
     # Add a new file in the new folder
     nwTree.setSelectedHandle("0000000000011")
-    assert nwTree.newTreeItem(nwItemType.FILE) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
     assert nwGUI.theProject.tree["0000000000012"].itemParent == "0000000000011"
     assert nwGUI.theProject.tree["0000000000012"].itemRoot == "0000000000008"
     assert nwGUI.theProject.tree["0000000000012"].itemClass == nwItemClass.NOVEL
 
     # Add a new chapter next to the other new file
     nwTree.setSelectedHandle("0000000000012")
-    assert nwTree.newTreeItem(nwItemType.FILE, hLevel=2) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE, hLevel=2) is True
     assert nwGUI.theProject.tree["0000000000013"].itemParent == "0000000000011"
     assert nwGUI.theProject.tree["0000000000013"].itemRoot == "0000000000008"
     assert nwGUI.theProject.tree["0000000000013"].itemClass == nwItemClass.NOVEL
@@ -99,7 +99,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
 
     # Add a new scene next to the other new file
     nwTree.setSelectedHandle("0000000000012")
-    assert nwTree.newTreeItem(nwItemType.FILE, hLevel=3) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE, hLevel=3) is True
     assert nwGUI.theProject.tree["0000000000014"].itemParent == "0000000000011"
     assert nwGUI.theProject.tree["0000000000014"].itemRoot == "0000000000008"
     assert nwGUI.theProject.tree["0000000000014"].itemClass == nwItemClass.NOVEL
@@ -108,7 +108,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
 
     # Add a new file to the characters folder
     nwTree.setSelectedHandle("000000000000a")
-    assert nwTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True) is True
     assert nwGUI.theProject.tree["0000000000015"].itemParent == "000000000000a"
     assert nwGUI.theProject.tree["0000000000015"].itemRoot == "000000000000a"
     assert nwGUI.theProject.tree["0000000000015"].itemClass == nwItemClass.CHARACTER
@@ -119,7 +119,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     nwTree.setSelectedHandle("0000000000013")
     nwGUI.theProject.tree["0000000000013"].setParent(None)  # This should not happen
     caplog.clear()
-    assert nwTree.newTreeItem(nwItemType.FILE) is False
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is False
     assert "Internal error" in caplog.text
     nwGUI.theProject.tree["0000000000013"].setParent("0000000000011")
 
@@ -127,13 +127,13 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     with monkeypatch.context() as mp:
         mp.setattr(QInputDialog, "getText", lambda *a, **k: ("", False))
         nwTree.setSelectedHandle("0000000000013")
-        assert nwTree.newTreeItem(nwItemType.FILE) is False
+        assert nwTree.projTree.newTreeItem(nwItemType.FILE) is False
 
     # Get the trash folder
     nwTree.projTree._addTrashRoot()
     trashHandle = nwGUI.theProject.trashFolder()
     nwTree.setSelectedHandle(trashHandle)
-    assert nwTree.newTreeItem(nwItemType.FILE) is False
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is False
     assert "Cannot add new files or folders to the Trash folder" in caplog.text
 
     # Other Checks
@@ -179,9 +179,9 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
 
     # Add some files
     nwTree.setSelectedHandle("000000000000d")
-    assert nwTree.newTreeItem(nwItemType.FILE) is True
-    assert nwTree.newTreeItem(nwItemType.FILE) is True
-    assert nwTree.newTreeItem(nwItemType.FILE) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
     assert nwTree.getTreeFromHandle("000000000000d") == [
         "000000000000d", "000000000000e", "000000000000f",
         "0000000000010", "0000000000011", "0000000000012",
@@ -238,7 +238,7 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
         "000000000000d", "000000000000e", "000000000000f",
         "0000000000010", "0000000000012", "0000000000011",
     ]
-    nwGUI.mainMenu.aMoveUndo.activate(QAction.Trigger)
+    assert nwTree.projTree.undoLastMove() is True
     assert nwTree.getTreeFromHandle("000000000000d") == [
         "000000000000d", "000000000000e", "000000000000f",
         "0000000000010", "0000000000011", "0000000000012",
@@ -295,9 +295,9 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
 
     # Add some files
     nwTree.setSelectedHandle("000000000000d")
-    assert nwTree.newTreeItem(nwItemType.FILE) is True
-    assert nwTree.newTreeItem(nwItemType.FILE) is True
-    assert nwTree.newTreeItem(nwItemType.FILE) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
     assert nwTree.getTreeFromHandle("000000000000d") == [
         "000000000000d", "000000000000e", "000000000000f",
         "0000000000010", "0000000000011", "0000000000012",
@@ -379,10 +379,10 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
 
     # Add a folder with two files
     nwTree.setSelectedHandle("0000000000009")
-    assert nwTree.newTreeItem(nwItemType.FOLDER) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FOLDER) is True
     nwTree.setSelectedHandle("0000000000014")
-    assert nwTree.newTreeItem(nwItemType.FILE) is True
-    assert nwTree.newTreeItem(nwItemType.FILE) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
     assert os.path.isfile(os.path.join(fncDir, "project", "content", "0000000000015.nwd"))
     assert os.path.isfile(os.path.join(fncDir, "project", "content", "0000000000016.nwd"))
 
@@ -405,7 +405,7 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
 
     # Add an empty folder, which can be deleted with no further restrictions
     nwTree.setSelectedHandle("0000000000009")
-    assert nwTree.newTreeItem(nwItemType.FOLDER) is True
+    assert nwTree.projTree.newTreeItem(nwItemType.FOLDER) is True
     assert nwTree.getTreeFromHandle("0000000000009") == ["0000000000009", "0000000000017"]
 
     nwTree.setSelectedHandle("0000000000017")

@@ -461,7 +461,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     qtbot.wait(stepDelay)
 
     # Check a Quick Create and Delete
-    assert nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
+    assert nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE, None)
     newHandle = nwGUI.treeView.getSelectedHandle()
     assert nwGUI.theProject.tree["0000000000020"] is not None
     assert nwGUI.treeView.deleteItem()

@@ -70,8 +70,8 @@ class GuiProjectView(QWidget):
         self.theParent = theParent
 
         # Build GUI
-        self.projBar = GuiProjectToolBar(self)
         self.projTree = GuiProjectTree(self)
+        self.projBar = GuiProjectToolBar(self)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -83,20 +83,22 @@ class GuiProjectView(QWidget):
         self.setLayout(self.outerBox)
 
         # Keyboard Shortcuts
-        self.keyCtrlUp = QShortcut(self.projTree)
-        self.keyCtrlUp.setKey("Ctrl+Up")
-        self.keyCtrlUp.setContext(Qt.WidgetShortcut)
-        self.keyCtrlUp.activated.connect(lambda: self.projTree.moveTreeItem(-1))
+        self.keyMoveUp = QShortcut(self.projTree)
+        self.keyMoveUp.setKey("Ctrl+Up")
+        self.keyMoveUp.setContext(Qt.WidgetShortcut)
+        self.keyMoveUp.activated.connect(lambda: self.projTree.moveTreeItem(-1))
 
-        self.keyCtrlDown = QShortcut(self.projTree)
-        self.keyCtrlDown.setKey("Ctrl+Down")
-        self.keyCtrlDown.setContext(Qt.WidgetShortcut)
-        self.keyCtrlDown.activated.connect(lambda: self.projTree.moveTreeItem(1))
+        self.keyMoveDn = QShortcut(self.projTree)
+        self.keyMoveDn.setKey("Ctrl+Down")
+        self.keyMoveDn.setContext(Qt.WidgetShortcut)
+        self.keyMoveDn.activated.connect(lambda: self.projTree.moveTreeItem(1))
 
-        # Connect Signals
+        self.keyUndoMv = QShortcut(self.projTree)
+        self.keyUndoMv.setKey("Ctrl+Shift+Z")
+        self.keyUndoMv.setContext(Qt.WidgetShortcut)
+        self.keyUndoMv.activated.connect(lambda: self.projTree.undoLastMove())
 
         # Function Mappings
-        self.newTreeItem = self.projTree.newTreeItem
         self.revealNewTreeItem = self.projTree.revealNewTreeItem
         self.editTreeItem = self.projTree.editTreeItem
         self.getTreeFromHandle = self.projTree.getTreeFromHandle
@@ -104,7 +106,6 @@ class GuiProjectView(QWidget):
         self.deleteItem = self.projTree.deleteItem
         self.setTreeItemValues = self.projTree.setTreeItemValues
         self.propagateCount = self.projTree.propagateCount
-        self.undoLastMove = self.projTree.undoLastMove
         self.getSelectedHandle = self.projTree.getSelectedHandle
         self.setSelectedHandle = self.projTree.setSelectedHandle
         self.changedSince = self.projTree.changedSince
@@ -152,7 +153,7 @@ class GuiProjectView(QWidget):
         return False
 
     ##
-    #  Public Solts
+    #  Public Slots
     ##
 
     @pyqtSlot(str, int, int, int)
@@ -168,12 +169,6 @@ class GuiProjectView(QWidget):
 
 class GuiProjectToolBar(QWidget):
 
-    ADD_PLAIN  = 0
-    ADD_CHAP   = 1
-    ADD_SCENE  = 2
-    ADD_NOTE   = 3
-    ADD_FOLDER = 4
-
     def __init__(self, projView):
         QTreeWidget.__init__(self, projView)
 
@@ -181,6 +176,7 @@ class GuiProjectToolBar(QWidget):
 
         self.mainConf   = novelwriter.CONFIG
         self.projView   = projView
+        self.projTree   = projView.projTree
         self.theParent  = projView.theParent
         self.theProject = projView.theParent.theProject
         self.theTheme   = projView.theParent.theTheme
@@ -197,9 +193,9 @@ class GuiProjectToolBar(QWidget):
 
         fadeCol = qPalette.text().color()
         buttonStyle = (
-            "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(fadeCol.red(), fadeCol.green(), fadeCol.blue())
+            "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
+        ).format(mPx, fadeCol.red(), fadeCol.green(), fadeCol.blue())
 
         # Tree Label
         self.projLabel = QLabel("<b>%s</b>" % self.tr("Project Content"))
@@ -212,39 +208,49 @@ class GuiProjectToolBar(QWidget):
         self.tbMoveU.setIcon(self.theTheme.getIcon("up"))
         self.tbMoveU.setIconSize(QSize(iPx, iPx))
         self.tbMoveU.setStyleSheet(buttonStyle)
-        self.tbMoveU.clicked.connect(lambda: self.projView.projTree.moveTreeItem(-1))
+        self.tbMoveU.clicked.connect(lambda: self.projTree.moveTreeItem(-1))
 
         self.tbMoveD = QToolButton(self)
         self.tbMoveD.setToolTip("%s [Ctrl+Down]" % self.tr("Move Down"))
         self.tbMoveD.setIcon(self.theTheme.getIcon("down"))
         self.tbMoveD.setIconSize(QSize(iPx, iPx))
         self.tbMoveD.setStyleSheet(buttonStyle)
-        self.tbMoveD.clicked.connect(lambda: self.projView.projTree.moveTreeItem(1))
+        self.tbMoveD.clicked.connect(lambda: self.projTree.moveTreeItem(1))
 
-        # Items Menu
-        self.mItems = QMenu()
+        # Add Item Menu
+        self.mAdd = QMenu()
 
-        self.aAddEmpty = self.mItems.addAction(self.tr("Plain Document"))
+        self.aAddEmpty = self.mAdd.addAction(self.tr("Plain Document"))
         self.aAddEmpty.setIcon(self.theTheme.getIcon("proj_document"))
-        self.aAddEmpty.triggered.connect(lambda: self._forwardNewItem(self.ADD_PLAIN))
+        self.aAddEmpty.triggered.connect(
+            lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=0, isNote=False)
+        )
 
-        self.aAddChap = self.mItems.addAction(self.tr("Chapter Document"))
+        self.aAddChap = self.mAdd.addAction(self.tr("Chapter Document"))
         self.aAddChap.setIcon(self.theTheme.getIcon("proj_chapter"))
-        self.aAddChap.triggered.connect(lambda: self._forwardNewItem(self.ADD_CHAP))
+        self.aAddChap.triggered.connect(
+            lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=2, isNote=False)
+        )
 
-        self.aAddScene = self.mItems.addAction(self.tr("Scene Document"))
+        self.aAddScene = self.mAdd.addAction(self.tr("Scene Document"))
         self.aAddScene.setIcon(self.theTheme.getIcon("proj_scene"))
-        self.aAddScene.triggered.connect(lambda: self._forwardNewItem(self.ADD_SCENE))
+        self.aAddScene.triggered.connect(
+            lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=3, isNote=False)
+        )
 
-        self.aAddNote = self.mItems.addAction(self.tr("Project Note"))
+        self.aAddNote = self.mAdd.addAction(self.tr("Project Note"))
         self.aAddNote.setIcon(self.theTheme.getIcon("proj_note"))
-        self.aAddNote.triggered.connect(lambda: self._forwardNewItem(self.ADD_NOTE))
+        self.aAddNote.triggered.connect(
+            lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
+        )
 
-        self.aAddFolder = self.mItems.addAction(self.tr("Folder"))
+        self.aAddFolder = self.mAdd.addAction(self.tr("Folder"))
         self.aAddFolder.setIcon(self.theTheme.getIcon("proj_folder"))
-        self.aAddFolder.triggered.connect(lambda: self._forwardNewItem(self.ADD_FOLDER))
+        self.aAddFolder.triggered.connect(
+            lambda: self.projTree.newTreeItem(nwItemType.FOLDER)
+        )
 
-        self.mAddRoot = self.mItems.addMenu(self.tr("Root Folder"))
+        self.mAddRoot = self.mAdd.addMenu(self.tr("Root Folder"))
         self._addRootFolderEntry(nwItemClass.NOVEL)
         self._addRootFolderEntry(nwItemClass.ARCHIVE)
         self.mAddRoot.addSeparator()
@@ -256,63 +262,43 @@ class GuiProjectToolBar(QWidget):
         self._addRootFolderEntry(nwItemClass.ENTITY)
         self._addRootFolderEntry(nwItemClass.CUSTOM)
 
-        self.tbItems = QToolButton(self)
-        self.tbItems.setToolTip("%s [Ctrl+N]" % self.tr("Add Item"))
-        self.tbItems.setShortcut("Ctrl+N")
-        self.tbItems.setIcon(self.theTheme.getIcon("add"))
-        self.tbItems.setIconSize(QSize(iPx, iPx))
-        self.tbItems.setStyleSheet(buttonStyle)
-        self.tbItems.setMenu(self.mItems)
-        self.tbItems.setPopupMode(QToolButton.InstantPopup)
+        self.tbAdd = QToolButton(self)
+        self.tbAdd.setToolTip("%s [Ctrl+N]" % self.tr("Add Item"))
+        self.tbAdd.setShortcut("Ctrl+N")
+        self.tbAdd.setIcon(self.theTheme.getIcon("add"))
+        self.tbAdd.setIconSize(QSize(iPx, iPx))
+        self.tbAdd.setStyleSheet(buttonStyle)
+        self.tbAdd.setMenu(self.mAdd)
+        self.tbAdd.setPopupMode(QToolButton.InstantPopup)
 
-        # Settings Menu
-        self.tbSettings = QToolButton(self)
-        self.tbSettings.setIcon(self.theTheme.getIcon("menu"))
-        self.tbSettings.setIconSize(QSize(iPx, iPx))
-        self.tbSettings.setStyleSheet(buttonStyle)
-        self.tbSettings.setPopupMode(QToolButton.InstantPopup)
+        # More Options Menu
+        self.mMore = QMenu()
+
+        self.aMoreUndo = self.mMore.addAction(self.tr("Undo Move"))
+        self.aMoreUndo.triggered.connect(lambda: self.projTree.undoLastMove())
+
+        self.tbMore = QToolButton(self)
+        self.tbMore.setToolTip(self.tr("More Options"))
+        self.tbMore.setIcon(self.theTheme.getIcon("menu"))
+        self.tbMore.setIconSize(QSize(iPx, iPx))
+        self.tbMore.setStyleSheet(buttonStyle)
+        self.tbMore.setMenu(self.mMore)
+        self.tbMore.setPopupMode(QToolButton.InstantPopup)
 
         # Assemble
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.projLabel)
         self.outerBox.addWidget(self.tbMoveU)
         self.outerBox.addWidget(self.tbMoveD)
-        self.outerBox.addWidget(self.tbItems)
-        self.outerBox.addWidget(self.tbSettings)
+        self.outerBox.addWidget(self.tbAdd)
+        self.outerBox.addWidget(self.tbMore)
         self.outerBox.setContentsMargins(mPx, mPx, 0, mPx)
-        self.outerBox.setSpacing(mPx)
+        self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
 
         logger.debug("GuiProjectToolBar initialisation complete")
 
-        return
-
-    ##
-    #  Private Slots
-    ##
-
-    @pyqtSlot(Enum)
-    def _forwardNewRootFolder(self, itemClass):
-        """Forward the request for a new root folder to the tree.
-        """
-        self.projView.projTree.newTreeItem(nwItemType.ROOT, itemClass)
-        return
-
-    @pyqtSlot(int)
-    def _forwardNewItem(self, type):
-        """Forward the request for a new item of a given type.
-        """
-        if type == self.ADD_PLAIN:
-            self.projView.projTree.newTreeItem(nwItemType.FILE, hLevel=0, isNote=False)
-        elif type == self.ADD_CHAP:
-            self.projView.projTree.newTreeItem(nwItemType.FILE, hLevel=2, isNote=False)
-        elif type == self.ADD_SCENE:
-            self.projView.projTree.newTreeItem(nwItemType.FILE, hLevel=3, isNote=False)
-        elif type == self.ADD_NOTE:
-            self.projView.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
-        elif type == self.ADD_FOLDER:
-            self.projView.projTree.newTreeItem(nwItemType.FOLDER)
         return
 
     ##
@@ -324,7 +310,7 @@ class GuiProjectToolBar(QWidget):
         """
         aNew = self.mAddRoot.addAction(trConst(nwLabels.CLASS_NAME[itemClass]))
         aNew.setIcon(self.theTheme.getIcon(nwLabels.CLASS_ICON[itemClass]))
-        aNew.triggered.connect(lambda: self._forwardNewRootFolder(itemClass))
+        aNew.triggered.connect(lambda: self.projTree.newTreeItem(nwItemType.ROOT, itemClass))
         self.mAddRoot.addAction(aNew)
 
 # END Class GuiProjectToolBar
@@ -885,9 +871,6 @@ class GuiProjectTree(QTreeWidget):
         srcItem = self._lastMove.get("item", None)
         dstItem = self._lastMove.get("parent", None)
         dstIndex = self._lastMove.get("index", None)
-
-        if not self.projView.anyFocus():
-            return False
 
         if srcItem is None or dstItem is None or dstIndex is None:
             logger.verbose("No tree move to undo")
