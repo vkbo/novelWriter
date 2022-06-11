@@ -46,57 +46,57 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
     nwGUI.rebuildIndex()
     nwGUI._changeView(nwView.OUTLINE)
 
-    outlineMain = nwGUI.outlineView
-    outlineView = outlineMain.outlineView
-    outlineData = outlineMain.outlineData
-    outlineMenu = outlineMain.outlineBar.mColumns
+    outlineView = nwGUI.outlineView
+    outlineTree = outlineView.outlineTree
+    outlineData = outlineView.outlineData
+    outlineMenu = outlineView.outlineBar.mColumns
 
     # Toggle scrollbars
     nwGUI.mainConf.hideVScroll = True
     nwGUI.mainConf.hideHScroll = True
-    outlineMain.initOutline()
-    assert outlineView.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
-    assert outlineView.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    outlineView.initOutline()
+    assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert outlineData.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
 
     nwGUI.mainConf.hideVScroll = False
     nwGUI.mainConf.hideHScroll = False
-    outlineMain.initOutline()
-    assert outlineView.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
-    assert outlineView.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    outlineView.initOutline()
+    assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert outlineData.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
 
     # Check focus
     with monkeypatch.context() as mp:
         mp.setattr(QWidget, "hasFocus", lambda *a: True)
-        assert outlineMain.treeFocus() is True
+        assert outlineView.treeFocus() is True
 
-    outlineMain.setTreeFocus()  # Can't check. just ensures that it doesn't error
+    outlineView.setTreeFocus()  # Can't check. just ensures that it doesn't error
 
     # Option State
     # ============
     pOptions = nwGUI.theProject.options
     colNames = [h.name for h in nwOutline]
     colItems = [h for h in nwOutline]
-    colWidth = {h: outlineView.DEF_WIDTH[h] for h in nwOutline}
-    colHidden = {h: outlineView.DEF_HIDDEN[h] for h in nwOutline}
+    colWidth = {h: outlineTree.DEF_WIDTH[h] for h in nwOutline}
+    colHidden = {h: outlineTree.DEF_HIDDEN[h] for h in nwOutline}
 
-    assert outlineView.topLevelItemCount() > 0
+    assert outlineTree.topLevelItemCount() > 0
 
     # Save header state not allowed
-    outlineView._lastBuild = 0
-    outlineView._saveHeaderState()
+    outlineTree._lastBuild = 0
+    outlineTree._saveHeaderState()
     assert pOptions.getValue("GuiOutline", "headerOrder", []) == []
 
     # Allow saving header state
-    outlineView._lastBuild = time.time()
-    outlineView._saveHeaderState()
+    outlineTree._lastBuild = time.time()
+    outlineTree._saveHeaderState()
     assert pOptions.getValue("GuiOutline", "headerOrder", []) == colNames
-    assert outlineView._treeOrder == colItems
-    assert outlineView._colWidth == colWidth
-    assert outlineView._colHidden == colHidden
+    assert outlineTree._treeOrder == colItems
+    assert outlineTree._colWidth == colWidth
+    assert outlineTree._colHidden == colHidden
 
     # Get default values
     optItems = pOptions.getValue("GuiOutline", "headerOrder", [])
@@ -105,49 +105,49 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
 
     # Add invalid column name
     pOptions.setValue("GuiOutline", "headerOrder", optItems + ["blabla"])
-    outlineView._loadHeaderState()
-    assert outlineView._treeOrder == colItems
-    assert outlineView._colHidden == colHidden
+    outlineTree._loadHeaderState()
+    assert outlineTree._treeOrder == colItems
+    assert outlineTree._colHidden == colHidden
 
     # Add duplicate column name
     pOptions.setValue("GuiOutline", "headerOrder", optItems + [optItems[-1]])
-    outlineView._loadHeaderState()
-    assert outlineView._treeOrder == colItems
-    assert outlineView._colHidden == colHidden
+    outlineTree._loadHeaderState()
+    assert outlineTree._treeOrder == colItems
+    assert outlineTree._colHidden == colHidden
 
     # Invalid column width data
     pOptions.setValue("GuiOutline", "headerOrder", optItems)
     pOptions.setValue("GuiOutline", "columnWidth", {"blabla": None})
-    outlineView._loadHeaderState()
-    assert outlineView._treeOrder == colItems
-    assert outlineView._colHidden == colHidden
+    outlineTree._loadHeaderState()
+    assert outlineTree._treeOrder == colItems
+    assert outlineTree._colHidden == colHidden
 
     # Invalid column width data
     pOptions.setValue("GuiOutline", "headerOrder", optItems)
     pOptions.setValue("GuiOutline", "columnWidth", optWidth)
     pOptions.setValue("GuiOutline", "columnHidden", {"bloabla": None})
-    outlineView._loadHeaderState()
-    assert outlineView._treeOrder == colItems
-    assert outlineView._colHidden == colHidden
+    outlineTree._loadHeaderState()
+    assert outlineTree._treeOrder == colItems
+    assert outlineTree._colHidden == colHidden
 
     # Valid settings
     pOptions.setValue("GuiOutline", "headerOrder", optItems)
     pOptions.setValue("GuiOutline", "columnWidth", optWidth)
     pOptions.setValue("GuiOutline", "columnHidden", optHidden)
-    outlineView._loadHeaderState()
-    assert outlineView._treeOrder == colItems
-    assert outlineView._colHidden == colHidden
+    outlineTree._loadHeaderState()
+    assert outlineTree._treeOrder == colItems
+    assert outlineTree._colHidden == colHidden
 
     # Header Menu
     # ===========
 
     # Trigger the menu entry for all hidden columns
     for hItem in nwOutline:
-        if outlineView.DEF_HIDDEN[hItem]:
+        if outlineTree.DEF_HIDDEN[hItem]:
             outlineMenu.actionMap[hItem].activate(QAction.Trigger)
 
     # Now no columns should be hidden
-    outlineView._saveHeaderState()
+    outlineTree._saveHeaderState()
     assert not any(pOptions.getValue("GuiOutline", "columnHidden", None).values())
 
     # qtbot.stop()
@@ -169,10 +169,10 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.rebuildIndex()
     nwGUI._changeView(nwView.OUTLINE)
 
-    outlineMain = nwGUI.outlineView
-    outlineBar  = outlineMain.outlineBar
-    outlineView = outlineMain.outlineView
-    outlineData = outlineMain.outlineData
+    outlineView = nwGUI.outlineView
+    outlineBar  = outlineView.outlineBar
+    outlineTree = outlineView.outlineTree
+    outlineData = outlineView.outlineData
 
     lipHandle = "b3643d0f92e32"
 
@@ -218,10 +218,10 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
     # =============
 
     # First Item
-    outlineView.refreshTree()
-    selItem = outlineView.topLevelItem(0)
+    outlineTree.refreshTree()
+    selItem = outlineTree.topLevelItem(0)
 
-    outlineView.setCurrentItem(selItem)
+    outlineTree.setCurrentItem(selItem)
     assert outlineData.titleLabel.text() == "<b>Title</b>"
     assert outlineData.titleValue.text() == "Lorem Ipsum"
     assert outlineData.fileValue.text() == "Lorem Ipsum"
@@ -232,12 +232,12 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert outlineData.pCValue.text() == "3"
 
     # Scene One
-    actItem = outlineView.topLevelItem(1)
+    actItem = outlineTree.topLevelItem(1)
     chpItem = actItem.child(0)
     selItem = chpItem.child(0)
 
-    outlineView.setCurrentItem(selItem)
-    tHandle, tLine = outlineView.getSelectedHandle()
+    outlineTree.setCurrentItem(selItem)
+    tHandle, tLine = outlineTree.getSelectedHandle()
     assert tHandle == "88243afbe5ed8"
     assert tLine == 0
 
@@ -248,17 +248,17 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
 
     # Click POV Link
     assert outlineData.povKeyValue.text() == "<a href='Bod'>Bod</a>"
-    outlineMain._tagClicked("Bod")
+    outlineView._tagClicked("Bod")
     assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
 
     # Scene One, Section Two
-    actItem = outlineView.topLevelItem(1)
+    actItem = outlineTree.topLevelItem(1)
     chpItem = actItem.child(0)
     scnItem = chpItem.child(0)
     selItem = scnItem.child(0)
 
-    outlineView.setCurrentItem(selItem)
-    tHandle, tLine = outlineView.getSelectedHandle()
+    outlineTree.setCurrentItem(selItem)
+    tHandle, tLine = outlineTree.getSelectedHandle()
     assert tHandle == "88243afbe5ed8"
     assert tLine == 12
 
@@ -267,7 +267,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert outlineData.fileValue.text() == "Scene One"
     assert outlineData.itemValue.text() == "Finished"
 
-    outlineView._treeDoubleClick(selItem, 0)
+    outlineTree._treeDoubleClick(selItem, 0)
     assert nwGUI.docEditor.docHandle() == "88243afbe5ed8"
 
     # qtbot.stop()
