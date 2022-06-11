@@ -23,12 +23,12 @@ import pytest
 
 from tools import getGuiItem, buildTestProject
 
-from PyQt5.QtWidgets import QAction, QDialog, QMessageBox
+from PyQt5.QtWidgets import QAction, QDialog, QMessageBox, QInputDialog
 
-from novelwriter.gui import GuiProjectTree
 from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.dialogs import GuiItemEditor
 from novelwriter.core.tree import NWTree
+from novelwriter.gui.projtree import GuiProjectTree
 
 statusKeys = ["s000000", "s000001", "s000002", "s000003"]
 importKeys = ["i000004", "i000005", "i000006", "i000007"]
@@ -52,7 +52,7 @@ def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     tHandle = "000000000000f"
 
     # No Selection
-    nwGUI.treeView.clearSelection()
+    nwGUI.treeView.projTree.clearSelection()
     assert nwGUI.editItem() is False
 
     # Force opening from editor
@@ -154,6 +154,7 @@ def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
+    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
 
     # Create Project and Open Document
     buildTestProject(nwGUI, fncProj)
@@ -163,9 +164,9 @@ def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     assert nwGUI.theProject.importItems.name(importKeys[1]) == "Minor"
 
     # Create Note
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem("000000000000a").setSelected(True)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
+    nwGUI.treeView.projTree.clearSelection()
+    nwGUI.treeView.projTree._getTreeItem("000000000000a").setSelected(True)
+    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
 
     # Open Note
     assert nwGUI.openDocument("0000000000010")

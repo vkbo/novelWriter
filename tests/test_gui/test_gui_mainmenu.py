@@ -467,7 +467,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
 
     buildTestProject(nwGUI, fncProj)
 
-    assert nwGUI.treeView._getTreeItem("000000000000f") is not None
+    assert nwGUI.treeView.projTree._getTreeItem("000000000000f") is not None
     assert nwGUI.openDocument("000000000000f") is True
     nwGUI.docEditor.clear()
 
@@ -476,10 +476,10 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     assert nwGUI.docEditor.getText() == "hello world"
     nwGUI.docEditor.clear()
 
-    assert not nwGUI.docEditor.insertText(nwDocInsert.NO_INSERT)
+    assert nwGUI.docEditor.insertText(nwDocInsert.NO_INSERT) is False
     assert nwGUI.docEditor.isEmpty()
 
-    assert not nwGUI.docEditor.insertText(None)
+    assert nwGUI.docEditor.insertText(None) is False
     assert nwGUI.docEditor.isEmpty()
 
     # qtbot.stopForInteraction()

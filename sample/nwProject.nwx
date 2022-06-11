@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-06-05 15:03:00">
+<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-06-11 13:36:01">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1334</saveCount>
-    <autoCount>225</autoCount>
-    <editTime>67746</editTime>
+    <saveCount>1345</saveCount>
+    <autoCount>229</autoCount>
+    <editTime>68286</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -15,7 +15,7 @@
     <spellCheck>True</spellCheck>
     <spellLang>None</spellLang>
     <autoOutline>True</autoOutline>
-    <lastEdited>a520879ca0b45</lastEdited>
+    <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
     <lastWordCount>1363</lastWordCount>
     <novelWordCount>954</novelWordCount>
@@ -33,13 +33,13 @@
       <section></section>
     </titleFormat>
     <status>
-      <entry key="sf12341" count="7" red="100" green="100" blue="100">New</entry>
-      <entry key="sf24ce6" count="1" red="200" green="50" blue="0">Notes</entry>
+      <entry key="sf12341" count="5" red="100" green="100" blue="100">New</entry>
+      <entry key="sf24ce6" count="2" red="200" green="50" blue="0">Notes</entry>
       <entry key="sc24b8f" count="2" red="182" green="60" blue="0">Started</entry>
-      <entry key="s90e6c9" count="6" red="193" green="129" blue="0">1st Draft</entry>
-      <entry key="sd51c5b" count="1" red="193" green="129" blue="0">2nd Draft</entry>
+      <entry key="s90e6c9" count="7" red="193" green="129" blue="0">1st Draft</entry>
+      <entry key="sd51c5b" count="0" red="193" green="129" blue="0">2nd Draft</entry>
       <entry key="s8ae72a" count="0" red="193" green="129" blue="0">3rd Draft</entry>
-      <entry key="s78ea90" count="0" red="58" green="180" blue="58">Finished</entry>
+      <entry key="s78ea90" count="1" red="58" green="180" blue="58">Finished</entry>
     </status>
     <importance>
       <entry key="ia857f0" count="5" red="100" green="100" blue="100">None</entry>
@@ -63,7 +63,7 @@
     </item>
     <item handle="edca4be2fcaf8" parent="7031beac91f75" root="7031beac91f75" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="False" charCount="26" wordCount="6" paraCount="1" cursorPos="36"/>
-      <name status="sf12341" import="ia857f0" exported="True">Part One</name>
+      <name status="s90e6c9" import="ia857f0" exported="True">Part One</name>
     </item>
     <item handle="6a2d6d5f4f401" parent="7031beac91f75" root="7031beac91f75" order="3" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="True" charCount="95" wordCount="18" paraCount="1" cursorPos="291"/>
@@ -79,11 +79,11 @@
     </item>
     <item handle="ba8a28a246524" parent="7031beac91f75" root="7031beac91f75" order="4" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="False" charCount="617" wordCount="101" paraCount="3" cursorPos="310"/>
-      <name status="sf12341" import="ia857f0" exported="True">Interlude</name>
+      <name status="s78ea90" import="ia857f0" exported="True">Interlude</name>
     </item>
     <item handle="96b68994dfa3d" parent="7031beac91f75" root="7031beac91f75" order="5" type="FILE" class="NOVEL" layout="NOTE">
       <meta expanded="False" charCount="1909" wordCount="346" paraCount="7" cursorPos="0"/>
-      <name status="sd51c5b" import="ia857f0" exported="False">A Note on Structure</name>
+      <name status="sf24ce6" import="ia857f0" exported="False">A Note on Structure</name>
     </item>
     <item handle="88706ddc78b1b" parent="7031beac91f75" root="7031beac91f75" order="6" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="True" charCount="139" wordCount="28" paraCount="1" cursorPos="343"/>

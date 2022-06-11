@@ -296,7 +296,7 @@ class GuiItemDetails(QWidget):
         return
 
     @pyqtSlot(str, int, int, int)
-    def doUpdateCounts(self, tHandle, cC, wC, pC):
+    def updateCounts(self, tHandle, cC, wC, pC):
         """Update the counts if the handle is the same as the one we're
         already showing. Otherwise, do nothing.
         """
