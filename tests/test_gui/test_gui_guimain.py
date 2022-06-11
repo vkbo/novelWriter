@@ -57,7 +57,7 @@ def testGuiMain_ProjectBlocker(monkeypatch, nwGUI):
     assert nwGUI.mergeDocuments() is False
     assert nwGUI.splitDocument() is False
     assert nwGUI.openSelectedItem() is False
-    assert nwGUI.editItem() is False
+    assert nwGUI.editItemLabel() is False
     assert nwGUI.requestNovelTreeRefresh() is False
     assert nwGUI.rebuildIndex() is False
     assert nwGUI.showProjectSettingsDialog() is False

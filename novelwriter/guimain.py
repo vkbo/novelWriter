@@ -804,7 +804,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def editItem(self, tHandle=None):
+    def editItemLabel(self, tHandle=None):
         """Open the edit item dialog.
         """
         if not self.hasProject:
