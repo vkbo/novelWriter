@@ -26,7 +26,7 @@ from tools import buildTestProject
 
 from PyQt5.QtWidgets import QMessageBox, QInputDialog
 
-from novelwriter.gui.projtree import GuiProjectView, GuiProjectTree
+from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.enum import nwItemType, nwItemClass
 
 
@@ -163,7 +163,6 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
-    monkeypatch.setattr(GuiProjectView, "anyFocus", lambda *a: True)
 
     nwTree = nwGUI.treeView
 

@@ -35,9 +35,9 @@ from time import time
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon, QPalette
 from PyQt5.QtWidgets import (
-    qApp, QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction,
-    QFrame, QDialog, QHeaderView, QWidget, QVBoxLayout, QLabel, QToolButton,
-    QSizePolicy, QInputDialog, QHBoxLayout, QShortcut
+    QAbstractItemView, QAction, QDialog, QFrame, QHBoxLayout, QHeaderView,
+    QInputDialog, QLabel, QMenu, QShortcut, QSizePolicy, QToolButton,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter.core import NWDoc
@@ -142,15 +142,6 @@ class GuiProjectView(QWidget):
         """Check if the project tree has focus.
         """
         return self.projTree.hasFocus()
-
-    def anyFocus(self):
-        """Check if any widget or child widget has focus.
-        """
-        if self.hasFocus():
-            return True
-        if self.isAncestorOf(qApp.focusWidget()):
-            return True
-        return False
 
     ##
     #  Public Slots
@@ -536,34 +527,40 @@ class GuiProjectTree(QTreeWidget):
         """Move an item up or down in the tree.
         """
         tHandle = self.getSelectedHandle()
-        tItem = self._getTreeItem(tHandle)
-        if tItem is None:
+        trItem = self._getTreeItem(tHandle)
+        if trItem is None:
             logger.verbose("No item selected")
             return False
 
-        pItem = tItem.parent()
+        pItem = trItem.parent()
+        isExp = trItem.isExpanded()
         if pItem is None:
-            tIndex = self.indexOfTopLevelItem(tItem)
+            tIndex = self.indexOfTopLevelItem(trItem)
             nChild = self.topLevelItemCount()
+
             nIndex = tIndex + nStep
             if nIndex < 0 or nIndex >= nChild:
                 return False
+
             cItem = self.takeTopLevelItem(tIndex)
             self.insertTopLevelItem(nIndex, cItem)
 
         else:
-            tIndex = pItem.indexOfChild(tItem)
+            tIndex = pItem.indexOfChild(trItem)
             nChild = pItem.childCount()
+
             nIndex = tIndex + nStep
             if nIndex < 0 or nIndex >= nChild:
                 return False
+
             cItem = pItem.takeChild(tIndex)
             pItem.insertChild(nIndex, cItem)
             self._recordLastMove(cItem, pItem, tIndex)
 
         self._alertTreeChange(tHandle=tHandle, flush=True)
         self.clearSelection()
-        cItem.setSelected(True)
+        trItem.setSelected(True)
+        trItem.setExpanded(isExp)
 
         return True
 
