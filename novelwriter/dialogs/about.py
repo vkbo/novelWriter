@@ -49,9 +49,9 @@ class GuiAbout(QDialog):
         logger.debug("Initialising GuiAbout ...")
         self.setObjectName("GuiAbout")
 
-        self.mainConf = novelwriter.CONFIG
-        self.mainGui  = mainGui
-        self.theTheme = mainGui.theTheme
+        self.mainConf  = novelwriter.CONFIG
+        self.mainGui   = mainGui
+        self.mainTheme = mainGui.mainTheme
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
@@ -63,7 +63,7 @@ class GuiAbout(QDialog):
 
         nPx = self.mainConf.pxInt(96)
         self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(self.mainGui.theTheme.getPixmap("novelwriter", (nPx, nPx)))
+        self.nwIcon.setPixmap(self.mainGui.mainTheme.getPixmap("novelwriter", (nPx, nPx)))
         self.lblName = QLabel("<b>novelWriter</b>")
         self.lblVers = QLabel(f"v{novelwriter.__version__}")
         self.lblDate = QLabel(datetime.strptime(novelwriter.__date__, "%Y-%m-%d").strftime("%x"))
@@ -191,37 +191,37 @@ class GuiAbout(QDialog):
             ])
         )
 
-        theTheme = self.mainGui.theTheme
-        theIcons = self.mainGui.theTheme.theIcons
-        if theTheme.themeName and theTheme.themeAuthor != "N/A":
-            licURL = f"<a href='{theTheme.themeLicenseUrl}'>{theTheme.themeLicense}</a>"
+        mainTheme = self.mainGui.mainTheme
+        iconCache = self.mainGui.mainTheme.iconCache
+        if mainTheme.themeName and mainTheme.themeAuthor != "N/A":
+            licURL = f"<a href='{mainTheme.themeLicenseUrl}'>{mainTheme.themeLicense}</a>"
             aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
-                self.tr("Theme: {0}").format(theTheme.themeName),
+                self.tr("Theme: {0}").format(mainTheme.themeName),
                 self._wrapTable([
-                    (self.tr("Author"), theTheme.themeAuthor),
-                    (self.tr("Credit"), theTheme.themeCredit),
+                    (self.tr("Author"), mainTheme.themeAuthor),
+                    (self.tr("Credit"), mainTheme.themeCredit),
                     (self.tr("Licence"), licURL),
                 ])
             )
 
-        if theIcons.themeName:
-            licURL = f"<a href='{theIcons.themeLicenseUrl}'>{theIcons.themeLicense}</a>"
+        if iconCache.themeName:
+            licURL = f"<a href='{iconCache.themeLicenseUrl}'>{iconCache.themeLicense}</a>"
             aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
-                self.tr("Icons: {0}").format(theIcons.themeName),
+                self.tr("Icons: {0}").format(iconCache.themeName),
                 self._wrapTable([
-                    (self.tr("Author"), theIcons.themeAuthor),
-                    (self.tr("Credit"), theIcons.themeCredit),
+                    (self.tr("Author"), iconCache.themeAuthor),
+                    (self.tr("Credit"), iconCache.themeCredit),
                     (self.tr("Licence"), licURL),
                 ])
             )
 
-        if theTheme.syntaxName:
-            licURL = f"<a href='{theTheme.syntaxLicenseUrl}'>{theTheme.syntaxLicense}</a>"
+        if mainTheme.syntaxName:
+            licURL = f"<a href='{mainTheme.syntaxLicenseUrl}'>{mainTheme.syntaxLicense}</a>"
             aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
-                self.tr("Syntax: {0}").format(theTheme.syntaxName),
+                self.tr("Syntax: {0}").format(mainTheme.syntaxName),
                 self._wrapTable([
-                    (self.tr("Author"), theTheme.syntaxAuthor),
-                    (self.tr("Credit"), theTheme.syntaxCredit),
+                    (self.tr("Author"), mainTheme.syntaxAuthor),
+                    (self.tr("Credit"), mainTheme.syntaxCredit),
                     (self.tr("Licence"), licURL),
                 ])
             )
@@ -279,12 +279,12 @@ class GuiAbout(QDialog):
             "  padding-right: 0.8em;"
             "}}\n"
         ).format(
-            hColR=self.mainGui.theTheme.colHead[0],
-            hColG=self.mainGui.theTheme.colHead[1],
-            hColB=self.mainGui.theTheme.colHead[2],
-            kColR=self.theTheme.colKey[0],
-            kColG=self.theTheme.colKey[1],
-            kColB=self.theTheme.colKey[2],
+            hColR=self.mainGui.mainTheme.colHead[0],
+            hColG=self.mainGui.mainTheme.colHead[1],
+            hColB=self.mainGui.mainTheme.colHead[2],
+            kColR=self.mainTheme.colKey[0],
+            kColG=self.mainTheme.colKey[1],
+            kColB=self.mainTheme.colKey[2],
         )
         self.pageAbout.document().setDefaultStyleSheet(styleSheet)
         self.pageNotes.document().setDefaultStyleSheet(styleSheet)

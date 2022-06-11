@@ -60,7 +60,7 @@ class GuiDocSplit(QDialog):
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headers")))
         self.helpLabel = QHelpLabel(
             self.tr("Select the maximum level to split into files."),
-            self.mainGui.theTheme.helpText
+            self.mainGui.mainTheme.helpText
         )
 
         self.listBox = QListWidget()

@@ -145,10 +145,10 @@ class GuiProjectDetailsMain(QWidget):
         self.mainConf   = novelwriter.CONFIG
         self.theProject = theProject
         self.mainGui    = mainGui
-        self.theTheme   = mainGui.theTheme
+        self.mainTheme  = mainGui.mainTheme
 
-        fPx = self.theTheme.fontPixelSize
-        fPt = self.theTheme.fontPointSize
+        fPx = self.mainTheme.fontPixelSize
+        fPt = self.mainTheme.fontPointSize
         vPx = self.mainConf.pxInt(4)
         hPx = self.mainConf.pxInt(12)
 
@@ -277,12 +277,12 @@ class GuiProjectDetailsContents(QWidget):
         self.mainConf   = novelwriter.CONFIG
         self.theProject = theProject
         self.mainGui    = mainGui
-        self.theTheme   = mainGui.theTheme
+        self.mainTheme  = mainGui.mainTheme
 
         # Internal
         self._theToC = []
 
-        iPx = self.theTheme.baseIconSize
+        iPx = self.mainTheme.baseIconSize
         hPx = self.mainConf.pxInt(12)
         vPx = self.mainConf.pxInt(4)
         pOptions = self.theProject.options
@@ -469,7 +469,7 @@ class GuiProjectDetailsContents(QWidget):
             if tTitle.strip() == "":
                 tTitle = self.tr("Untitled")
 
-            newItem.setIcon(self.C_TITLE, self.theTheme.getIcon("doc_h%d" % tLevel))
+            newItem.setIcon(self.C_TITLE, self.mainTheme.getIcon("doc_h%d" % tLevel))
             newItem.setText(self.C_TITLE, tTitle)
             newItem.setText(self.C_WORDS, f"{wCount:n}")
             newItem.setText(self.C_PAGES, f"{pCount:n}")

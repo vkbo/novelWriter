@@ -52,7 +52,7 @@ class GuiNovelTree(QTreeWidget):
 
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
-        self.theTheme   = mainGui.theTheme
+        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
         # Internal Variables
@@ -60,7 +60,7 @@ class GuiNovelTree(QTreeWidget):
         self._lastBuild = 0
 
         # Build GUI
-        iPx = self.theTheme.baseIconSize
+        iPx = self.mainTheme.baseIconSize
         self.setFrameStyle(QFrame.NoFrame)
         self.setIconSize(QSize(iPx, iPx))
         self.setIndentation(iPx)
@@ -309,7 +309,7 @@ class GuiNovelTree(QTreeWidget):
 
         newItem.setText(self.C_TITLE, novIdx.title)
         newItem.setData(self.C_TITLE, Qt.UserRole, theData)
-        newItem.setIcon(self.C_TITLE, self.theTheme.getIcon(hIcon))
+        newItem.setIcon(self.C_TITLE, self.mainTheme.getIcon(hIcon))
         newItem.setText(self.C_WORDS, f"{wC:n}")
         newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
 

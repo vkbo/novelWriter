@@ -179,7 +179,7 @@ class GuiOutlineToolBar(QToolBar):
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = theOutline.mainGui
         self.theProject = theOutline.mainGui.theProject
-        self.theTheme   = theOutline.mainGui.theTheme
+        self.mainTheme  = theOutline.mainGui.mainTheme
 
         iPx = self.mainConf.pxInt(22)
         mPx = self.mainConf.pxInt(12)
@@ -202,7 +202,7 @@ class GuiOutlineToolBar(QToolBar):
 
         # Actions
         self.aRefresh = QAction(self.tr("Refresh"), self)
-        self.aRefresh.setIcon(self.theTheme.getIcon("refresh"))
+        self.aRefresh.setIcon(self.mainTheme.getIcon("refresh"))
         self.aRefresh.triggered.connect(self._refreshRequested)
 
         # Column Menu
@@ -212,7 +212,7 @@ class GuiOutlineToolBar(QToolBar):
         )
 
         self.tbColumns = QToolButton(self)
-        self.tbColumns.setIcon(self.theTheme.getIcon("menu"))
+        self.tbColumns.setIcon(self.mainTheme.getIcon("menu"))
         self.tbColumns.setMenu(self.mColumns)
         self.tbColumns.setPopupMode(QToolButton.InstantPopup)
 
@@ -236,7 +236,7 @@ class GuiOutlineToolBar(QToolBar):
         """Fill the novel combo box with a list of all novel folders.
         """
         self.novelValue.clear()
-        tIcon = self.theTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
+        tIcon = self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
         for tHandle, nwItem in self.theProject.tree.iterRoots(nwItemClass.NOVEL):
             self.novelValue.addItem(tIcon, nwItem.itemName, tHandle)
         self.novelValue.insertSeparator(self.novelValue.count())
@@ -324,7 +324,7 @@ class GuiOutlineTree(QTreeWidget):
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = theOutline.mainGui
         self.theProject = theOutline.mainGui.theProject
-        self.theTheme   = theOutline.mainGui.theTheme
+        self.mainTheme  = theOutline.mainGui.mainTheme
 
         self.setFrameStyle(QFrame.NoFrame)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -334,7 +334,7 @@ class GuiOutlineTree(QTreeWidget):
         self.itemDoubleClicked.connect(self._treeDoubleClick)
         self.itemSelectionChanged.connect(self._itemSelected)
 
-        iPx = self.theTheme.baseIconSize
+        iPx = self.mainTheme.baseIconSize
         self.setIconSize(QSize(iPx, iPx))
         self.setIndentation(iPx)
 
@@ -682,7 +682,7 @@ class GuiOutlineTree(QTreeWidget):
         hIcon = "doc_%s" % novIdx.level.lower()
 
         hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
-        dIcon = self.theTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, hLevel)
+        dIcon = self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, hLevel)
 
         cC = int(novIdx.charCount)
         wC = int(novIdx.wordCount)
@@ -690,7 +690,7 @@ class GuiOutlineTree(QTreeWidget):
 
         newItem.setText(self._colIdx[nwOutline.TITLE],  novIdx.title)
         newItem.setData(self._colIdx[nwOutline.TITLE],  Qt.UserRole, tHandle)
-        newItem.setIcon(self._colIdx[nwOutline.TITLE],  self.theTheme.getIcon(hIcon))
+        newItem.setIcon(self._colIdx[nwOutline.TITLE],  self.mainTheme.getIcon(hIcon))
         newItem.setText(self._colIdx[nwOutline.LEVEL],  novIdx.level)
         newItem.setText(self._colIdx[nwOutline.LABEL],  nwItem.itemName)
         newItem.setIcon(self._colIdx[nwOutline.LABEL],  dIcon)
@@ -784,12 +784,12 @@ class GuiOutlineDetails(QScrollArea):
         self.theOutline = theOutline
         self.mainGui    = theOutline.mainGui
         self.theProject = theOutline.mainGui.theProject
-        self.theTheme   = theOutline.mainGui.theTheme
+        self.mainTheme  = theOutline.mainGui.mainTheme
 
         # Sizes
-        minTitle = 30*self.theTheme.textNWidth
-        maxTitle = 40*self.theTheme.textNWidth
-        wCount = self.theTheme.getTextWidth("999,999")
+        minTitle = 30*self.mainTheme.textNWidth
+        maxTitle = 40*self.mainTheme.textNWidth
+        wCount = self.mainTheme.getTextWidth("999,999")
         hSpace = int(self.mainConf.pxInt(10))
         vSpace = int(self.mainConf.pxInt(4))
 

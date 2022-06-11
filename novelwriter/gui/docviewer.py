@@ -61,7 +61,7 @@ class GuiDocViewer(QTextBrowser):
         # Class Variables
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
-        self.theTheme   = mainGui.theTheme
+        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
         # Internal Variables
@@ -118,14 +118,14 @@ class GuiDocViewer(QTextBrowser):
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
-        mainPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        mainPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
-        mainPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        mainPalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        mainPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
+        mainPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
         self.setPalette(mainPalette)
 
         docPalette = self.viewport().palette()
-        docPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
-        docPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        docPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
+        docPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
         self.viewport().setPalette(docPalette)
 
         self.docHeader.matchColours()
@@ -539,27 +539,27 @@ class GuiDocViewer(QTextBrowser):
             "  text-align: center;"
             "}}\n"
         ).format(
-            tColR=self.theTheme.colText[0],
-            tColG=self.theTheme.colText[1],
-            tColB=self.theTheme.colText[2],
-            hColR=self.theTheme.colHead[0],
-            hColG=self.theTheme.colHead[1],
-            hColB=self.theTheme.colHead[2],
-            aColR=self.theTheme.colVal[0],
-            aColG=self.theTheme.colVal[1],
-            aColB=self.theTheme.colVal[2],
-            eColR=self.theTheme.colEmph[0],
-            eColG=self.theTheme.colEmph[1],
-            eColB=self.theTheme.colEmph[2],
-            kColR=self.theTheme.colKey[0],
-            kColG=self.theTheme.colKey[1],
-            kColB=self.theTheme.colKey[2],
-            cColR=self.theTheme.colHidden[0],
-            cColG=self.theTheme.colHidden[1],
-            cColB=self.theTheme.colHidden[2],
-            mColR=self.theTheme.colMod[0],
-            mColG=self.theTheme.colMod[1],
-            mColB=self.theTheme.colMod[2],
+            tColR=self.mainTheme.colText[0],
+            tColG=self.mainTheme.colText[1],
+            tColB=self.mainTheme.colText[2],
+            hColR=self.mainTheme.colHead[0],
+            hColG=self.mainTheme.colHead[1],
+            hColB=self.mainTheme.colHead[2],
+            aColR=self.mainTheme.colVal[0],
+            aColG=self.mainTheme.colVal[1],
+            aColB=self.mainTheme.colVal[2],
+            eColR=self.mainTheme.colEmph[0],
+            eColG=self.mainTheme.colEmph[1],
+            eColB=self.mainTheme.colEmph[2],
+            kColR=self.mainTheme.colKey[0],
+            kColG=self.mainTheme.colKey[1],
+            kColB=self.mainTheme.colKey[2],
+            cColR=self.mainTheme.colHidden[0],
+            cColG=self.mainTheme.colHidden[1],
+            cColB=self.mainTheme.colHidden[2],
+            mColR=self.mainTheme.colMod[0],
+            mColG=self.mainTheme.colMod[1],
+            mColB=self.mainTheme.colMod[2],
         )
         self.document().setDefaultStyleSheet(styleSheet)
 
@@ -716,12 +716,12 @@ class GuiDocViewHeader(QWidget):
         self.docViewer  = docViewer
         self.mainGui    = docViewer.mainGui
         self.theProject = docViewer.theProject
-        self.theTheme   = docViewer.theTheme
+        self.mainTheme  = docViewer.mainTheme
 
         # Internal Variables
         self._docHandle = None
 
-        fPx = int(0.9*self.theTheme.fontPixelSize)
+        fPx = int(0.9*self.mainTheme.fontPixelSize)
         hSp = self.mainConf.pxInt(6)
 
         # Main Widget Settings
@@ -738,17 +738,17 @@ class GuiDocViewHeader(QWidget):
         self.theTitle.setFixedHeight(fPx)
 
         lblFont = self.theTitle.font()
-        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
         self.theTitle.setFont(lblFont)
 
         buttonStyle = (
             "QToolButton {{border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*self.theTheme.colText)
+        ).format(*self.mainTheme.colText)
 
         # Buttons
         self.backButton = QToolButton(self)
-        self.backButton.setIcon(self.theTheme.getIcon("backward"))
+        self.backButton.setIcon(self.mainTheme.getIcon("backward"))
         self.backButton.setContentsMargins(0, 0, 0, 0)
         self.backButton.setIconSize(QSize(fPx, fPx))
         self.backButton.setFixedSize(fPx, fPx)
@@ -759,7 +759,7 @@ class GuiDocViewHeader(QWidget):
         self.backButton.clicked.connect(self.docViewer.navBackward)
 
         self.forwardButton = QToolButton(self)
-        self.forwardButton.setIcon(self.theTheme.getIcon("forward"))
+        self.forwardButton.setIcon(self.mainTheme.getIcon("forward"))
         self.forwardButton.setContentsMargins(0, 0, 0, 0)
         self.forwardButton.setIconSize(QSize(fPx, fPx))
         self.forwardButton.setFixedSize(fPx, fPx)
@@ -770,7 +770,7 @@ class GuiDocViewHeader(QWidget):
         self.forwardButton.clicked.connect(self.docViewer.navForward)
 
         self.refreshButton = QToolButton(self)
-        self.refreshButton.setIcon(self.theTheme.getIcon("refresh"))
+        self.refreshButton.setIcon(self.mainTheme.getIcon("refresh"))
         self.refreshButton.setContentsMargins(0, 0, 0, 0)
         self.refreshButton.setIconSize(QSize(fPx, fPx))
         self.refreshButton.setFixedSize(fPx, fPx)
@@ -781,7 +781,7 @@ class GuiDocViewHeader(QWidget):
         self.refreshButton.clicked.connect(self._refreshDocument)
 
         self.closeButton = QToolButton(self)
-        self.closeButton.setIcon(self.theTheme.getIcon("close"))
+        self.closeButton.setIcon(self.mainTheme.getIcon("close"))
         self.closeButton.setContentsMargins(0, 0, 0, 0)
         self.closeButton.setIconSize(QSize(fPx, fPx))
         self.closeButton.setFixedSize(fPx, fPx)
@@ -824,9 +824,9 @@ class GuiDocViewHeader(QWidget):
         theme rather than the main GUI.
         """
         thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.mainTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
 
         self.setPalette(thePalette)
         self.theTitle.setPalette(thePalette)
@@ -922,25 +922,25 @@ class GuiDocViewFooter(QWidget):
         self.mainConf  = novelwriter.CONFIG
         self.docViewer = docViewer
         self.mainGui   = docViewer.mainGui
-        self.theTheme  = docViewer.theTheme
+        self.mainTheme = docViewer.mainTheme
         self.viewMeta  = docViewer.mainGui.viewMeta
 
         # Internal Variables
         self._docHandle = None
 
-        fPx = int(0.9*self.theTheme.fontPixelSize)
+        fPx = int(0.9*self.mainTheme.fontPixelSize)
         bSp = self.mainConf.pxInt(2)
         hSp = self.mainConf.pxInt(8)
 
         # Icons
-        stickyOn  = self.theTheme.getPixmap("sticky-on", (fPx, fPx))
-        stickyOff = self.theTheme.getPixmap("sticky-off", (fPx, fPx))
+        stickyOn  = self.mainTheme.getPixmap("sticky-on", (fPx, fPx))
+        stickyOff = self.mainTheme.getPixmap("sticky-off", (fPx, fPx))
         stickyIcon = QIcon()
         stickyIcon.addPixmap(stickyOn, QIcon.Normal, QIcon.On)
         stickyIcon.addPixmap(stickyOff, QIcon.Normal, QIcon.Off)
 
-        bulletOn  = self.theTheme.getPixmap("bullet-on", (fPx, fPx))
-        bulletOff = self.theTheme.getPixmap("bullet-off", (fPx, fPx))
+        bulletOn  = self.mainTheme.getPixmap("bullet-on", (fPx, fPx))
+        bulletOff = self.mainTheme.getPixmap("bullet-off", (fPx, fPx))
         bulletIcon = QIcon()
         bulletIcon.addPixmap(bulletOn, QIcon.Normal, QIcon.On)
         bulletIcon.addPixmap(bulletOff, QIcon.Normal, QIcon.Off)
@@ -952,13 +952,13 @@ class GuiDocViewFooter(QWidget):
         buttonStyle = (
             "QToolButton {{border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*self.theTheme.colText)
+        ).format(*self.mainTheme.colText)
 
         # Show/Hide Details
         self.showHide = QToolButton(self)
         self.showHide.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.showHide.setStyleSheet(buttonStyle)
-        self.showHide.setIcon(self.theTheme.getIcon("reference"))
+        self.showHide.setIcon(self.mainTheme.getIcon("reference"))
         self.showHide.setIconSize(QSize(fPx, fPx))
         self.showHide.setFixedSize(QSize(fPx, fPx))
         self.showHide.clicked.connect(self._doShowHide)
@@ -1039,7 +1039,7 @@ class GuiDocViewFooter(QWidget):
         self.lblSynopsis.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
         lblFont = self.font()
-        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
         self.lblRefs.setFont(lblFont)
         self.lblSticky.setFont(lblFont)
         self.lblComments.setFont(lblFont)
@@ -1084,9 +1084,9 @@ class GuiDocViewFooter(QWidget):
         theme rather than the main GUI.
         """
         thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.mainTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
 
         self.setPalette(thePalette)
         self.lblRefs.setPalette(thePalette)
@@ -1147,7 +1147,7 @@ class GuiDocViewDetails(QScrollArea):
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
-        self.theTheme   = mainGui.theTheme
+        self.mainTheme  = mainGui.mainTheme
 
         self.refList = QLabel("")
         self.refList.setWordWrap(True)
@@ -1156,7 +1156,7 @@ class GuiDocViewDetails(QScrollArea):
         self.refList.linkActivated.connect(self._linkClicked)
 
         self.linkStyle = "style='color: rgb({0},{1},{2})'".format(
-            *self.theTheme.colLink
+            *self.mainTheme.colLink
         )
 
         # Assemble

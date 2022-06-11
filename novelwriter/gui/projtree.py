@@ -169,9 +169,9 @@ class GuiProjectToolBar(QWidget):
         self.projTree   = projView.projTree
         self.mainGui    = projView.mainGui
         self.theProject = projView.mainGui.theProject
-        self.theTheme   = projView.mainGui.theTheme
+        self.mainTheme  = projView.mainGui.mainTheme
 
-        iPx = self.theTheme.baseIconSize
+        iPx = self.mainTheme.baseIconSize
         mPx = self.mainConf.pxInt(4)
 
         self.setContentsMargins(0, 0, 0, 0)
@@ -195,14 +195,14 @@ class GuiProjectToolBar(QWidget):
         # Move Buttons
         self.tbMoveU = QToolButton(self)
         self.tbMoveU.setToolTip("%s [Ctrl+Up]" % self.tr("Move Up"))
-        self.tbMoveU.setIcon(self.theTheme.getIcon("up"))
+        self.tbMoveU.setIcon(self.mainTheme.getIcon("up"))
         self.tbMoveU.setIconSize(QSize(iPx, iPx))
         self.tbMoveU.setStyleSheet(buttonStyle)
         self.tbMoveU.clicked.connect(lambda: self.projTree.moveTreeItem(-1))
 
         self.tbMoveD = QToolButton(self)
         self.tbMoveD.setToolTip("%s [Ctrl+Down]" % self.tr("Move Down"))
-        self.tbMoveD.setIcon(self.theTheme.getIcon("down"))
+        self.tbMoveD.setIcon(self.mainTheme.getIcon("down"))
         self.tbMoveD.setIconSize(QSize(iPx, iPx))
         self.tbMoveD.setStyleSheet(buttonStyle)
         self.tbMoveD.clicked.connect(lambda: self.projTree.moveTreeItem(1))
@@ -211,31 +211,31 @@ class GuiProjectToolBar(QWidget):
         self.mAdd = QMenu()
 
         self.aAddEmpty = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["document"]))
-        self.aAddEmpty.setIcon(self.theTheme.getIcon("proj_document"))
+        self.aAddEmpty.setIcon(self.mainTheme.getIcon("proj_document"))
         self.aAddEmpty.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=0, isNote=False)
         )
 
         self.aAddChap = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["doc_h2"]))
-        self.aAddChap.setIcon(self.theTheme.getIcon("proj_chapter"))
+        self.aAddChap.setIcon(self.mainTheme.getIcon("proj_chapter"))
         self.aAddChap.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=2, isNote=False)
         )
 
         self.aAddScene = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["doc_h3"]))
-        self.aAddScene.setIcon(self.theTheme.getIcon("proj_scene"))
+        self.aAddScene.setIcon(self.mainTheme.getIcon("proj_scene"))
         self.aAddScene.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=3, isNote=False)
         )
 
         self.aAddNote = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["note"]))
-        self.aAddNote.setIcon(self.theTheme.getIcon("proj_note"))
+        self.aAddNote.setIcon(self.mainTheme.getIcon("proj_note"))
         self.aAddNote.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
         )
 
         self.aAddFolder = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["folder"]))
-        self.aAddFolder.setIcon(self.theTheme.getIcon("proj_folder"))
+        self.aAddFolder.setIcon(self.mainTheme.getIcon("proj_folder"))
         self.aAddFolder.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FOLDER)
         )
@@ -255,7 +255,7 @@ class GuiProjectToolBar(QWidget):
         self.tbAdd = QToolButton(self)
         self.tbAdd.setToolTip("%s [Ctrl+N]" % self.tr("Add Item"))
         self.tbAdd.setShortcut("Ctrl+N")
-        self.tbAdd.setIcon(self.theTheme.getIcon("add"))
+        self.tbAdd.setIcon(self.mainTheme.getIcon("add"))
         self.tbAdd.setIconSize(QSize(iPx, iPx))
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbAdd.setMenu(self.mAdd)
@@ -272,7 +272,7 @@ class GuiProjectToolBar(QWidget):
 
         self.tbMore = QToolButton(self)
         self.tbMore.setToolTip(self.tr("More Options"))
-        self.tbMore.setIcon(self.theTheme.getIcon("menu"))
+        self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
         self.tbMore.setIconSize(QSize(iPx, iPx))
         self.tbMore.setStyleSheet(buttonStyle)
         self.tbMore.setMenu(self.mMore)
@@ -302,7 +302,7 @@ class GuiProjectToolBar(QWidget):
         """Add a menu entry for a root folder of a given class.
         """
         aNew = self.mAddRoot.addAction(trConst(nwLabels.CLASS_NAME[itemClass]))
-        aNew.setIcon(self.theTheme.getIcon(nwLabels.CLASS_ICON[itemClass]))
+        aNew.setIcon(self.mainTheme.getIcon(nwLabels.CLASS_ICON[itemClass]))
         aNew.triggered.connect(lambda: self.projTree.newTreeItem(nwItemType.ROOT, itemClass))
         self.mAddRoot.addAction(aNew)
 
@@ -324,7 +324,7 @@ class GuiProjectTree(QTreeWidget):
         self.mainConf   = novelwriter.CONFIG
         self.projView   = projView
         self.mainGui    = projView.mainGui
-        self.theTheme   = projView.mainGui.theTheme
+        self.mainTheme   = projView.mainGui.mainTheme
         self.theProject = projView.mainGui.theProject
 
         # Internal Variables
@@ -341,7 +341,7 @@ class GuiProjectTree(QTreeWidget):
         self.customContextMenuRequested.connect(self._openContextMenu)
 
         # Tree Settings
-        iPx = self.theTheme.baseIconSize
+        iPx = self.mainTheme.baseIconSize
         cMg = self.mainConf.pxInt(6)
         self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.NoFrame)
@@ -779,13 +779,13 @@ class GuiProjectTree(QTreeWidget):
         expIcon = QIcon()
         if nwItem.itemType == nwItemType.FILE:
             if nwItem.isExported:
-                expIcon = self.theTheme.getIcon("check")
+                expIcon = self.mainTheme.getIcon("check")
             else:
-                expIcon = self.theTheme.getIcon("cross")
+                expIcon = self.mainTheme.getIcon("cross")
 
         itemStatus, statusIcon = nwItem.getImportStatus()
         hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
-        itemIcon = self.theTheme.getItemIcon(
+        itemIcon = self.mainTheme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
         )
 

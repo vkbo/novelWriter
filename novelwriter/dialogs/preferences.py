@@ -141,13 +141,13 @@ class GuiPreferencesGeneral(QWidget):
     def __init__(self, mainGui):
         QWidget.__init__(self, mainGui)
 
-        self.mainConf = novelwriter.CONFIG
-        self.mainGui  = mainGui
-        self.theTheme = mainGui.theTheme
+        self.mainConf  = novelwriter.CONFIG
+        self.mainGui   = mainGui
+        self.mainTheme = mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
-        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
         # Look and Feel
@@ -174,7 +174,7 @@ class GuiPreferencesGeneral(QWidget):
         # Select Theme
         self.guiTheme = QComboBox()
         self.guiTheme.setMinimumWidth(minWidth)
-        self.theThemes = self.theTheme.listThemes()
+        self.theThemes = self.mainTheme.listThemes()
         for themeDir, themeName in self.theThemes:
             self.guiTheme.addItem(themeName, themeDir)
         themeIdx = self.guiTheme.findData(self.mainConf.guiTheme)
@@ -190,8 +190,8 @@ class GuiPreferencesGeneral(QWidget):
         # Select Icon Theme
         self.guiIcons = QComboBox()
         self.guiIcons.setMinimumWidth(minWidth)
-        self.theIcons = self.theTheme.theIcons.listThemes()
-        for iconDir, iconName in self.theIcons:
+        self.iconCache = self.mainTheme.iconCache.listThemes()
+        for iconDir, iconName in self.iconCache:
             self.guiIcons.addItem(iconName, iconDir)
         iconIdx = self.guiIcons.findData(self.mainConf.guiIcons)
         if iconIdx != -1:
@@ -206,7 +206,7 @@ class GuiPreferencesGeneral(QWidget):
         # Editor Theme
         self.guiSyntax = QComboBox()
         self.guiSyntax.setMinimumWidth(self.mainConf.pxInt(200))
-        self.theSyntaxes = self.theTheme.listSyntax()
+        self.theSyntaxes = self.mainTheme.listSyntax()
         for syntaxFile, syntaxName in self.theSyntaxes:
             self.guiSyntax.addItem(syntaxName, syntaxFile)
         syntaxIdx = self.guiSyntax.findData(self.mainConf.guiSyntax)
@@ -225,7 +225,7 @@ class GuiPreferencesGeneral(QWidget):
         self.guiFont.setFixedWidth(self.mainConf.pxInt(162))
         self.guiFont.setText(self.mainConf.guiFont)
         self.fontButton = QPushButton("...")
-        self.fontButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
+        self.fontButton.setMaximumWidth(int(2.5*self.mainTheme.getTextWidth("...")))
         self.fontButton.clicked.connect(self._selectFont)
         self.mainForm.addRow(
             self.tr("Font family"),
@@ -347,13 +347,13 @@ class GuiPreferencesProjects(QWidget):
     def __init__(self, mainGui):
         QWidget.__init__(self, mainGui)
 
-        self.mainConf = novelwriter.CONFIG
-        self.mainGui  = mainGui
-        self.theTheme = mainGui.theTheme
+        self.mainConf  = novelwriter.CONFIG
+        self.mainGui   = mainGui
+        self.mainTheme = mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
-        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
         # Automatic Save
@@ -508,13 +508,13 @@ class GuiPreferencesDocuments(QWidget):
     def __init__(self, mainGui):
         QWidget.__init__(self, mainGui)
 
-        self.mainConf = novelwriter.CONFIG
-        self.mainGui  = mainGui
-        self.theTheme = mainGui.theTheme
+        self.mainConf  = novelwriter.CONFIG
+        self.mainGui   = mainGui
+        self.mainTheme = mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
-        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
         # Text Style
@@ -527,7 +527,7 @@ class GuiPreferencesDocuments(QWidget):
         self.textFont.setFixedWidth(self.mainConf.pxInt(162))
         self.textFont.setText(self.mainConf.textFont)
         self.fontButton = QPushButton("...")
-        self.fontButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
+        self.fontButton.setMaximumWidth(int(2.5*self.mainTheme.getTextWidth("...")))
         self.fontButton.clicked.connect(self._selectFont)
         self.mainForm.addRow(
             self.tr("Font family"),
@@ -669,13 +669,13 @@ class GuiPreferencesEditor(QWidget):
     def __init__(self, mainGui):
         QWidget.__init__(self, mainGui)
 
-        self.mainConf = novelwriter.CONFIG
-        self.mainGui  = mainGui
-        self.theTheme = mainGui.theTheme
+        self.mainConf  = novelwriter.CONFIG
+        self.mainGui   = mainGui
+        self.mainTheme = mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
-        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
         mW = self.mainConf.pxInt(250)
@@ -843,13 +843,13 @@ class GuiPreferencesSyntax(QWidget):
     def __init__(self, mainGui):
         QWidget.__init__(self, mainGui)
 
-        self.mainConf = novelwriter.CONFIG
-        self.mainGui  = mainGui
-        self.theTheme = mainGui.theTheme
+        self.mainConf  = novelwriter.CONFIG
+        self.mainGui   = mainGui
+        self.mainTheme = mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
-        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
         # Quotes & Dialogue
@@ -946,13 +946,13 @@ class GuiPreferencesAutomation(QWidget):
     def __init__(self, mainGui):
         QWidget.__init__(self, mainGui)
 
-        self.mainConf = novelwriter.CONFIG
-        self.mainGui  = mainGui
-        self.theTheme = mainGui.theTheme
+        self.mainConf  = novelwriter.CONFIG
+        self.mainGui   = mainGui
+        self.mainTheme = mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
-        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
         # Automatic Features
@@ -1103,13 +1103,13 @@ class GuiPreferencesQuotes(QWidget):
     def __init__(self, mainGui):
         QWidget.__init__(self, mainGui)
 
-        self.mainConf = novelwriter.CONFIG
-        self.mainGui  = mainGui
-        self.theTheme = mainGui.theTheme
+        self.mainConf  = novelwriter.CONFIG
+        self.mainGui   = mainGui
+        self.mainTheme = mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
-        self.mainForm.setHelpTextStyle(self.theTheme.helpText)
+        self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
         # Quotation Style
@@ -1117,7 +1117,7 @@ class GuiPreferencesQuotes(QWidget):
         self.mainForm.addGroupLabel(self.tr("Quotation Style"))
 
         qWidth = self.mainConf.pxInt(40)
-        bWidth = int(2.5*self.theTheme.getTextWidth("..."))
+        bWidth = int(2.5*self.mainTheme.getTextWidth("..."))
         self.quoteSym = {}
 
         # Single Quote Style

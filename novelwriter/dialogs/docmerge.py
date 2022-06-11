@@ -57,7 +57,7 @@ class GuiDocMerge(QDialog):
 
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Documents to Merge")))
         self.helpLabel = QHelpLabel(
-            self.tr("Drag and drop items to change the order."), self.mainGui.theTheme.helpText
+            self.tr("Drag and drop items to change the order."), self.mainGui.mainTheme.helpText
         )
 
         self.listBox = QListWidget()

@@ -48,9 +48,9 @@ class GuiLipsum(QDialog):
         logger.debug("Initialising GuiLipsum ...")
         self.setObjectName("GuiLipsum")
 
-        self.mainConf = novelwriter.CONFIG
-        self.mainGui  = mainGui
-        self.theTheme = mainGui.theTheme
+        self.mainConf  = novelwriter.CONFIG
+        self.mainGui   = mainGui
+        self.mainTheme = mainGui.mainTheme
 
         self.setWindowTitle(self.tr("Insert Placeholder Text"))
 
@@ -61,7 +61,7 @@ class GuiLipsum(QDialog):
         nPx = self.mainConf.pxInt(64)
         vSp = self.mainConf.pxInt(4)
         self.docIcon = QLabel()
-        self.docIcon.setPixmap(self.mainGui.theTheme.getPixmap("proj_document", (nPx, nPx)))
+        self.docIcon.setPixmap(self.mainTheme.getPixmap("proj_document", (nPx, nPx)))
 
         self.leftBox = QVBoxLayout()
         self.leftBox.setSpacing(vSp)

@@ -175,13 +175,13 @@ class GuiProjectEditMain(QWidget):
 
         # The Form
         self.mainForm = QConfigLayout()
-        self.mainForm.setHelpTextStyle(self.mainGui.theTheme.helpText)
+        self.mainForm.setHelpTextStyle(self.mainGui.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
         self.mainForm.addGroupLabel(self.tr("Project Settings"))
 
         xW = self.mainConf.pxInt(250)
-        xH = round(4.8*self.mainGui.theTheme.fontPixelSize)
+        xH = round(4.8*self.mainGui.mainTheme.fontPixelSize)
 
         self.editName = QLineEdit()
         self.editName.setMaxLength(200)
@@ -262,7 +262,7 @@ class GuiProjectEditStatus(QWidget):
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.theProject = theProject
-        self.theTheme   = mainGui.theTheme
+        self.mainTheme  = mainGui.mainTheme
 
         if isStatus:
             self.theStatus = self.theProject.statusItems
@@ -281,7 +281,7 @@ class GuiProjectEditStatus(QWidget):
         self.colChanged = False
         self.selColour  = QColor(100, 100, 100)
 
-        self.iPx = self.theTheme.baseIconSize
+        self.iPx = self.mainTheme.baseIconSize
 
         # The List
         # ========
@@ -300,16 +300,16 @@ class GuiProjectEditStatus(QWidget):
         # List Controls
         # =============
 
-        self.addButton = QPushButton(self.theTheme.getIcon("add"), "")
+        self.addButton = QPushButton(self.mainTheme.getIcon("add"), "")
         self.addButton.clicked.connect(self._newItem)
 
-        self.delButton = QPushButton(self.theTheme.getIcon("remove"), "")
+        self.delButton = QPushButton(self.mainTheme.getIcon("remove"), "")
         self.delButton.clicked.connect(self._delItem)
 
-        self.upButton = QPushButton(self.theTheme.getIcon("up"), "")
+        self.upButton = QPushButton(self.mainTheme.getIcon("up"), "")
         self.upButton.clicked.connect(lambda: self._moveItem(-1))
 
-        self.dnButton = QPushButton(self.theTheme.getIcon("down"), "")
+        self.dnButton = QPushButton(self.mainTheme.getIcon("down"), "")
         self.dnButton.clicked.connect(lambda: self._moveItem(1))
 
         # Edit Form
@@ -532,7 +532,7 @@ class GuiProjectEditReplace(QWidget):
 
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
-        self.theTheme   = mainGui.theTheme
+        self.mainTheme  = mainGui.mainTheme
         self.theProject = theProject
         self.arChanged  = False
 
@@ -563,10 +563,10 @@ class GuiProjectEditReplace(QWidget):
         # List Controls
         # =============
 
-        self.addButton = QPushButton(self.theTheme.getIcon("add"), "")
+        self.addButton = QPushButton(self.mainTheme.getIcon("add"), "")
         self.addButton.clicked.connect(self._addEntry)
 
-        self.delButton = QPushButton(self.theTheme.getIcon("remove"), "")
+        self.delButton = QPushButton(self.mainTheme.getIcon("remove"), "")
         self.delButton.clicked.connect(self._delEntry)
 
         # Edit Form

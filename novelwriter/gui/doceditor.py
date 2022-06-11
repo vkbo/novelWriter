@@ -80,7 +80,7 @@ class GuiDocEditor(QTextEdit):
         # Class Variables
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
-        self.theTheme   = mainGui.theTheme
+        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
         self._nwDocument = None
@@ -239,10 +239,10 @@ class GuiDocEditor(QTextEdit):
         if self.mainConf.textFont is None:
             # If none is defined, set a default font
             theFont = QFont()
-            if self.mainConf.osWindows and "Arial" in self.theTheme.guiFontDB.families():
+            if self.mainConf.osWindows and "Arial" in self.mainTheme.guiFontDB.families():
                 theFont.setFamily("Arial")
                 theFont.setPointSize(12)
-            elif self.mainConf.osDarwin and "Courier" in self.theTheme.guiFontDB.families():
+            elif self.mainConf.osDarwin and "Courier" in self.mainTheme.guiFontDB.families():
                 theFont.setFamily("Courier")
                 theFont.setPointSize(12)
             else:
@@ -257,14 +257,14 @@ class GuiDocEditor(QTextEdit):
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
-        mainPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        mainPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
-        mainPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        mainPalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        mainPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
+        mainPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
         self.setPalette(mainPalette)
 
         docPalette = self.viewport().palette()
-        docPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
-        docPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        docPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
+        docPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
         self.viewport().setPalette(docPalette)
 
         self.docHeader.matchColours()
@@ -2189,7 +2189,7 @@ class GuiDocEditSearch(QFrame):
         self.docEditor  = docEditor
         self.mainGui    = docEditor.mainGui
         self.theProject = docEditor.theProject
-        self.theTheme   = docEditor.theTheme
+        self.mainTheme  = docEditor.mainTheme
 
         self.repVisible  = False
         self.isCaseSense = self.mainConf.searchCase
@@ -2200,9 +2200,9 @@ class GuiDocEditSearch(QFrame):
         self.doMatchCap  = self.mainConf.searchMatchCap
 
         mPx = self.mainConf.pxInt(6)
-        tPx = int(0.8*self.theTheme.fontPixelSize)
-        self.boxFont = self.theTheme.guiFont
-        self.boxFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        tPx = int(0.8*self.mainTheme.fontPixelSize)
+        self.boxFont = self.mainTheme.guiFont
+        self.boxFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -2236,38 +2236,38 @@ class GuiDocEditSearch(QFrame):
 
         self.resultLabel = QLabel("?/?")
         self.resultLabel.setFont(self.boxFont)
-        self.resultLabel.setMinimumWidth(self.theTheme.getTextWidth("?/?", self.boxFont))
+        self.resultLabel.setMinimumWidth(self.mainTheme.getTextWidth("?/?", self.boxFont))
 
         self.toggleCase = QAction(self.tr("Case Sensitive"), self)
-        self.toggleCase.setIcon(self.theTheme.getIcon("search_case"))
+        self.toggleCase.setIcon(self.mainTheme.getIcon("search_case"))
         self.toggleCase.setCheckable(True)
         self.toggleCase.setChecked(self.isCaseSense)
         self.toggleCase.toggled.connect(self._doToggleCase)
         self.searchOpt.addAction(self.toggleCase)
 
         self.toggleWord = QAction(self.tr("Whole Words Only"), self)
-        self.toggleWord.setIcon(self.theTheme.getIcon("search_word"))
+        self.toggleWord.setIcon(self.mainTheme.getIcon("search_word"))
         self.toggleWord.setCheckable(True)
         self.toggleWord.setChecked(self.isWholeWord)
         self.toggleWord.toggled.connect(self._doToggleWord)
         self.searchOpt.addAction(self.toggleWord)
 
         self.toggleRegEx = QAction(self.tr("RegEx Mode"), self)
-        self.toggleRegEx.setIcon(self.theTheme.getIcon("search_regex"))
+        self.toggleRegEx.setIcon(self.mainTheme.getIcon("search_regex"))
         self.toggleRegEx.setCheckable(True)
         self.toggleRegEx.setChecked(self.isRegEx)
         self.toggleRegEx.toggled.connect(self._doToggleRegEx)
         self.searchOpt.addAction(self.toggleRegEx)
 
         self.toggleLoop = QAction(self.tr("Loop Search"), self)
-        self.toggleLoop.setIcon(self.theTheme.getIcon("search_loop"))
+        self.toggleLoop.setIcon(self.mainTheme.getIcon("search_loop"))
         self.toggleLoop.setCheckable(True)
         self.toggleLoop.setChecked(self.doLoop)
         self.toggleLoop.toggled.connect(self._doToggleLoop)
         self.searchOpt.addAction(self.toggleLoop)
 
         self.toggleProject = QAction(self.tr("Search Next File"), self)
-        self.toggleProject.setIcon(self.theTheme.getIcon("search_project"))
+        self.toggleProject.setIcon(self.mainTheme.getIcon("search_project"))
         self.toggleProject.setCheckable(True)
         self.toggleProject.setChecked(self.doNextFile)
         self.toggleProject.toggled.connect(self._doToggleProject)
@@ -2276,7 +2276,7 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addSeparator()
 
         self.toggleMatchCap = QAction(self.tr("Preserve Case"), self)
-        self.toggleMatchCap.setIcon(self.theTheme.getIcon("search_preserve"))
+        self.toggleMatchCap.setIcon(self.mainTheme.getIcon("search_preserve"))
         self.toggleMatchCap.setCheckable(True)
         self.toggleMatchCap.setChecked(self.doMatchCap)
         self.toggleMatchCap.toggled.connect(self._doToggleMatchCap)
@@ -2285,7 +2285,7 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addSeparator()
 
         self.cancelSearch = QAction(self.tr("Close Search"), self)
-        self.cancelSearch.setIcon(self.theTheme.getIcon("search_cancel"))
+        self.cancelSearch.setIcon(self.mainTheme.getIcon("search_cancel"))
         self.cancelSearch.triggered.connect(self._doClose)
         self.searchOpt.addAction(self.cancelSearch)
 
@@ -2300,12 +2300,12 @@ class GuiDocEditSearch(QFrame):
         self.showReplace.setStyleSheet("QToolButton {border: none; background: transparent;}")
         self.showReplace.toggled.connect(self._doToggleReplace)
 
-        self.searchButton = QPushButton(self.theTheme.getIcon("search"), "")
+        self.searchButton = QPushButton(self.mainTheme.getIcon("search"), "")
         self.searchButton.setFixedSize(QSize(bPx, bPx))
         self.searchButton.setToolTip(self.tr("Find in current document"))
         self.searchButton.clicked.connect(self._doSearch)
 
-        self.replaceButton = QPushButton(self.theTheme.getIcon("search_replace"), "")
+        self.replaceButton = QPushButton(self.mainTheme.getIcon("search_replace"), "")
         self.replaceButton.setFixedSize(QSize(bPx, bPx))
         self.replaceButton.setToolTip(self.tr("Find and replace in current document"))
         self.replaceButton.clicked.connect(self._doReplace)
@@ -2424,7 +2424,7 @@ class GuiDocEditSearch(QFrame):
         """
         currRes = "?" if currRes is None else currRes
         resCount = "?" if resCount is None else "1000+" if resCount > 1000 else resCount
-        minWidth = self.theTheme.getTextWidth(f"{resCount}//{resCount}", self.boxFont)
+        minWidth = self.mainTheme.getTextWidth(f"{resCount}//{resCount}", self.boxFont)
         self.resultLabel.setText(f"{currRes}/{resCount}")
         self.resultLabel.setMinimumWidth(minWidth)
         self.adjustSize()
@@ -2577,11 +2577,11 @@ class GuiDocEditHeader(QWidget):
         self.docEditor  = docEditor
         self.mainGui    = docEditor.mainGui
         self.theProject = docEditor.theProject
-        self.theTheme   = docEditor.theTheme
+        self.mainTheme  = docEditor.mainTheme
 
         self._docHandle = None
 
-        fPx = int(0.9*self.theTheme.fontPixelSize)
+        fPx = int(0.9*self.mainTheme.fontPixelSize)
         hSp = self.mainConf.pxInt(6)
 
         # Main Widget Settings
@@ -2598,17 +2598,17 @@ class GuiDocEditHeader(QWidget):
         self.theTitle.setFixedHeight(fPx)
 
         lblFont = self.theTitle.font()
-        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
         self.theTitle.setFont(lblFont)
 
         buttonStyle = (
             "QToolButton {{border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*self.theTheme.colText)
+        ).format(*self.mainTheme.colText)
 
         # Buttons
         self.editButton = QToolButton(self)
-        self.editButton.setIcon(self.theTheme.getIcon("edit"))
+        self.editButton.setIcon(self.mainTheme.getIcon("edit"))
         self.editButton.setContentsMargins(0, 0, 0, 0)
         self.editButton.setIconSize(QSize(fPx, fPx))
         self.editButton.setFixedSize(fPx, fPx)
@@ -2619,7 +2619,7 @@ class GuiDocEditHeader(QWidget):
         self.editButton.clicked.connect(self._editDocument)
 
         self.searchButton = QToolButton(self)
-        self.searchButton.setIcon(self.theTheme.getIcon("search"))
+        self.searchButton.setIcon(self.mainTheme.getIcon("search"))
         self.searchButton.setContentsMargins(0, 0, 0, 0)
         self.searchButton.setIconSize(QSize(fPx, fPx))
         self.searchButton.setFixedSize(fPx, fPx)
@@ -2630,7 +2630,7 @@ class GuiDocEditHeader(QWidget):
         self.searchButton.clicked.connect(self._searchDocument)
 
         self.minmaxButton = QToolButton(self)
-        self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
+        self.minmaxButton.setIcon(self.mainTheme.getIcon("maximise"))
         self.minmaxButton.setContentsMargins(0, 0, 0, 0)
         self.minmaxButton.setIconSize(QSize(fPx, fPx))
         self.minmaxButton.setFixedSize(fPx, fPx)
@@ -2641,7 +2641,7 @@ class GuiDocEditHeader(QWidget):
         self.minmaxButton.clicked.connect(self._minmaxDocument)
 
         self.closeButton = QToolButton(self)
-        self.closeButton.setIcon(self.theTheme.getIcon("close"))
+        self.closeButton.setIcon(self.mainTheme.getIcon("close"))
         self.closeButton.setContentsMargins(0, 0, 0, 0)
         self.closeButton.setIconSize(QSize(fPx, fPx))
         self.closeButton.setFixedSize(fPx, fPx)
@@ -2684,9 +2684,9 @@ class GuiDocEditHeader(QWidget):
         theme rather than the main GUI.
         """
         thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.mainTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
 
         self.setPalette(thePalette)
         self.theTitle.setPalette(thePalette)
@@ -2734,9 +2734,9 @@ class GuiDocEditHeader(QWidget):
         toggleFocusMode function and should not be activated directly.
         """
         if self.mainGui.isFocusMode:
-            self.minmaxButton.setIcon(self.theTheme.getIcon("minimise"))
+            self.minmaxButton.setIcon(self.mainTheme.getIcon("minimise"))
         else:
-            self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
+            self.minmaxButton.setIcon(self.mainTheme.getIcon("maximise"))
         return
 
     ##
@@ -2801,20 +2801,20 @@ class GuiDocEditFooter(QWidget):
         self.docEditor  = docEditor
         self.mainGui    = docEditor.mainGui
         self.theProject = docEditor.theProject
-        self.theTheme   = docEditor.theTheme
+        self.mainTheme  = docEditor.mainTheme
 
         self._theItem   = None
         self._docHandle = None
 
         self._docSelection = False
 
-        self.sPx = int(round(0.9*self.theTheme.baseIconSize))
-        fPx = int(0.9*self.theTheme.fontPixelSize)
+        self.sPx = int(round(0.9*self.mainTheme.baseIconSize))
+        fPx = int(0.9*self.mainTheme.fontPixelSize)
         bSp = self.mainConf.pxInt(4)
         hSp = self.mainConf.pxInt(6)
 
         lblFont = self.font()
-        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
 
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
@@ -2837,7 +2837,7 @@ class GuiDocEditFooter(QWidget):
 
         # Lines
         self.linesIcon = QLabel("")
-        self.linesIcon.setPixmap(self.theTheme.getPixmap("status_lines", (self.sPx, self.sPx)))
+        self.linesIcon.setPixmap(self.mainTheme.getPixmap("status_lines", (self.sPx, self.sPx)))
         self.linesIcon.setContentsMargins(0, 0, 0, 0)
         self.linesIcon.setFixedHeight(self.sPx)
         self.linesIcon.setAlignment(Qt.AlignLeft | Qt.AlignTop)
@@ -2853,7 +2853,7 @@ class GuiDocEditFooter(QWidget):
 
         # Words
         self.wordsIcon = QLabel("")
-        self.wordsIcon.setPixmap(self.theTheme.getPixmap("status_stats", (self.sPx, self.sPx)))
+        self.wordsIcon.setPixmap(self.mainTheme.getPixmap("status_stats", (self.sPx, self.sPx)))
         self.wordsIcon.setContentsMargins(0, 0, 0, 0)
         self.wordsIcon.setFixedHeight(self.sPx)
         self.wordsIcon.setAlignment(Qt.AlignLeft | Qt.AlignTop)
@@ -2905,9 +2905,9 @@ class GuiDocEditFooter(QWidget):
         theme rather than the main GUI.
         """
         thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.mainTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
 
         self.setPalette(thePalette)
         self.statusText.setPalette(thePalette)

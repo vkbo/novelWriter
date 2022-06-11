@@ -50,7 +50,7 @@ class GuiWordList(QDialog):
 
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
-        self.theTheme   = mainGui.theTheme
+        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
         self.setWindowTitle(self.tr("Project Word List"))
@@ -78,10 +78,10 @@ class GuiWordList(QDialog):
 
         self.newEntry = QLineEdit()
 
-        self.addButton = QPushButton(self.theTheme.getIcon("add"), "")
+        self.addButton = QPushButton(self.mainTheme.getIcon("add"), "")
         self.addButton.clicked.connect(self._doAdd)
 
-        self.delButton = QPushButton(self.theTheme.getIcon("remove"), "")
+        self.delButton = QPushButton(self.mainTheme.getIcon("remove"), "")
         self.delButton.clicked.connect(self._doDelete)
 
         self.editBox = QHBoxLayout()

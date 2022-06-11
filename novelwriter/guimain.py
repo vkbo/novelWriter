@@ -84,7 +84,7 @@ class GuiMain(QMainWindow):
         # ============
 
         # Core Classes and Settings
-        self.theTheme    = GuiTheme()
+        self.mainTheme   = GuiTheme()
         self.theProject  = NWProject(self)
         self.hasProject  = False
         self.isFocusMode = False
@@ -915,7 +915,7 @@ class GuiMain(QMainWindow):
         if dlgConf.result() == QDialog.Accepted:
             logger.debug("Applying new preferences")
             self.initMain()
-            self.theTheme.updateTheme()
+            self.mainTheme.updateTheme()
             self.saveDocument()
             self.docEditor.initEditor()
             self.docViewer.initViewer()

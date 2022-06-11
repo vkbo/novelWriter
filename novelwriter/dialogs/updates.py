@@ -61,7 +61,7 @@ class GuiUpdates(QDialog):
 
         # Left Box
         self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(self.mainGui.theTheme.getPixmap("novelwriter", (nPx, nPx)))
+        self.nwIcon.setPixmap(self.mainGui.mainTheme.getPixmap("novelwriter", (nPx, nPx)))
 
         self.leftBox = QVBoxLayout()
         self.leftBox.addWidget(self.nwIcon)
