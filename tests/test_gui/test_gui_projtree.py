@@ -24,10 +24,11 @@ import os
 
 from tools import buildTestProject
 
-from PyQt5.QtWidgets import QMessageBox, QInputDialog, QMenu
+from PyQt5.QtWidgets import QMessageBox, QMenu
 
-from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass
+from novelwriter.dialogs import GuiEditLabel
+from novelwriter.gui.projtree import GuiProjectTree
 
 
 @pytest.mark.gui
@@ -39,7 +40,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     nwTree = nwGUI.projView
 
@@ -125,7 +126,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
 
     # Cancel during creation
     with monkeypatch.context() as mp:
-        mp.setattr(QInputDialog, "getText", lambda *a, **k: ("", False))
+        mp.setattr(GuiEditLabel, "getLabel", lambda *a, **k: ("", False))
         nwTree.setSelectedHandle("0000000000013")
         assert nwTree.projTree.newTreeItem(nwItemType.FILE) is False
 
@@ -162,7 +163,7 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     nwTree = nwGUI.projView
 
@@ -277,7 +278,7 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     nwTree = nwGUI.projView
 
@@ -466,7 +467,7 @@ def testGuiProjTree_ContextMenu(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
     monkeypatch.setattr(QMenu, "exec_", lambda *a: None)
 
     # Create a project
@@ -509,6 +510,12 @@ def testGuiProjTree_ContextMenu(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     assert projTree._openContextMenu(itemPos(hChapterFile)) is True
     assert projTree._openContextMenu(itemPos(hCharRoot)) is True
     assert projTree._openContextMenu(itemPos(hCharNote)) is True
+
+    # Check the keyboard shortcut handler as well
+    projTree.setSelectedHandle(hNovelRoot)
+    assert projTree.openContextOnSelected() is True
+    projTree.clearSelection()
+    assert projTree.openContextOnSelected() is False
 
     # Direct Edit Functions
     # =====================

@@ -25,10 +25,10 @@ import pytest
 from mock import causeOSError
 from tools import getGuiItem, readFile, writeFile, buildTestProject
 
-from PyQt5.QtWidgets import QAction, QMessageBox, QDialog, QInputDialog
+from PyQt5.QtWidgets import QAction, QMessageBox
 
 from novelwriter.enum import nwItemType, nwWidget
-from novelwriter.dialogs import GuiDocMerge, GuiItemEditor
+from novelwriter.dialogs import GuiDocMerge, GuiEditLabel
 from novelwriter.core.tree import NWTree
 
 
@@ -39,7 +39,7 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
-    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     # Create a new project
     buildTestProject(nwGUI, fncProj)
@@ -55,7 +55,6 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     hMergedDoc  = "0000000000023"
 
     # Add Project Content
-    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: QDialog.Accepted)
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(hChapterDir).setSelected(True)

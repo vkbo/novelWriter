@@ -2746,7 +2746,7 @@ class GuiDocEditHeader(QWidget):
     def _editDocument(self):
         """Open the edit item dialog from the main GUI.
         """
-        self.mainGui.editItem(self._docHandle)
+        self.mainGui.editItemLabel(self._docHandle)
         return
 
     def _searchDocument(self):

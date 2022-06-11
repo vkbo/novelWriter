@@ -25,10 +25,10 @@ import pytest
 from mock import causeOSError
 from tools import getGuiItem, readFile, writeFile, buildTestProject
 
-from PyQt5.QtWidgets import QAction, QMessageBox, QDialog, QInputDialog
+from PyQt5.QtWidgets import QAction, QMessageBox
 
 from novelwriter.enum import nwItemType, nwWidget
-from novelwriter.dialogs import GuiDocSplit, GuiItemEditor
+from novelwriter.dialogs import GuiDocSplit, GuiEditLabel
 from novelwriter.core.tree import NWTree
 from novelwriter.core.document import NWDoc
 
@@ -40,7 +40,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
-    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     # Create a new project
     buildTestProject(nwGUI, fncProj)
@@ -59,7 +59,6 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     hSceneFive  = "0000000000028"
 
     # Add Project Content
-    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: QDialog.Accepted)
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(hNovelRoot).setSelected(True)

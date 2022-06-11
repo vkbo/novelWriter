@@ -34,15 +34,15 @@ from time import time
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon, QPalette
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QFrame, QHBoxLayout, QHeaderView, QInputDialog,
-    QLabel, QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget,
-    QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView, QFrame, QHBoxLayout, QHeaderView, QLabel,
+    QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter.core import NWDoc
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.dialogs.itemeditor import GuiItemEditor
 from novelwriter.constants import trConst, nwLabels
+from novelwriter.dialogs.editlabel import GuiEditLabel
 
 logger = logging.getLogger(__name__)
 
@@ -97,9 +97,14 @@ class GuiProjectView(QWidget):
         self.keyUndoMv.setContext(Qt.WidgetShortcut)
         self.keyUndoMv.activated.connect(lambda: self.projTree.undoLastMove())
 
+        self.keyContext = QShortcut(self.projTree)
+        self.keyContext.setKey("Ctrl+.")
+        self.keyContext.setContext(Qt.WidgetShortcut)
+        self.keyContext.activated.connect(lambda: self.projTree.openContextOnSelected())
+
         # Function Mappings
         self.revealNewTreeItem = self.projTree.revealNewTreeItem
-        self.editTreeItem = self.projTree.editTreeItem
+        self.renameTreeItem = self.projTree.renameTreeItem
         self.getTreeFromHandle = self.projTree.getTreeFromHandle
         self.emptyTrash = self.projTree.emptyTrash
         self.deleteItem = self.projTree.deleteItem
@@ -470,7 +475,7 @@ class GuiProjectTree(QTreeWidget):
             else:
                 newLabel = self.tr("New Folder")
 
-            newLabel, dlgOk = QInputDialog.getText(self, "", self.tr("Label:"), text=newLabel)
+            newLabel, dlgOk = GuiEditLabel.getLabel(self, text=newLabel)
             if not dlgOk:
                 logger.info("New item creation cancelled by user")
                 return False
@@ -565,23 +570,20 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def editTreeItem(self, tHandle):
-        """Open the edit item dialog.
+    def renameTreeItem(self, tHandle):
+        """Open a dialog to edit the label of an item.
         """
         tItem = self.theProject.tree[tHandle]
         if tItem is None:
             return False
-        if tItem.itemType == nwItemType.NO_TYPE:
-            return False
 
-        logger.verbose("Requesting change to item '%s'", tHandle)
-        dlgProj = GuiItemEditor(self, tHandle)
-        dlgProj.exec_()
-        if dlgProj.result() == QDialog.Accepted:
+        newLabel, dlgOk = GuiEditLabel.getLabel(self, text=tItem.itemName)
+        if dlgOk:
+            tItem.setName(newLabel)
             self.setTreeItemValues(tHandle)
             self._alertTreeChange(tHandle=tHandle, flush=False)
 
-        return True
+        return
 
     def saveTreeOrder(self):
         """Build a list of the items in the project tree and send them
@@ -916,9 +918,6 @@ class GuiProjectTree(QTreeWidget):
     def setSelectedHandle(self, tHandle, doScroll=False):
         """Set a specific handle as the selected item.
         """
-        if tHandle not in self._treeMap:
-            return False
-
         tItem = self._getTreeItem(tHandle)
         if tItem is None:
             return False
@@ -931,6 +930,15 @@ class GuiProjectTree(QTreeWidget):
             self.scrollTo(selItems[0], QAbstractItemView.PositionAtCenter)
 
         return True
+
+    def openContextOnSelected(self):
+        """Open the context menu on the current selected item.
+        """
+        selItem = self.selectedItems()
+        if selItem:
+            pos = self.visualItemRect(selItem[0]).center()
+            return self._openContextMenu(pos)
+        return False
 
     def changedSince(self, checkTime):
         """Check if the tree has changed since a given time.
@@ -1019,6 +1027,10 @@ class GuiProjectTree(QTreeWidget):
         # Edit Item Settings
         # ==================
 
+        ctxMenu.addAction(
+            self.tr("Change Label"), lambda: self.renameTreeItem(tHandle)
+        )
+
         if isFile:
             ctxMenu.addAction(
                 self.tr("Toggle Exported"), lambda: self._toggleItemExported(tHandle)
@@ -1057,12 +1069,8 @@ class GuiProjectTree(QTreeWidget):
 
         ctxMenu.addSeparator()
 
-        # Major Item Actions
-        # ==================
-
-        ctxMenu.addAction(
-            self.tr("Edit Item Settings"), lambda: self.editTreeItem(tHandle)
-        )
+        # Delete Item
+        # ===========
 
         if tItem.itemClass == nwItemClass.TRASH or tItem.itemType == nwItemType.ROOT:
             ctxMenu.addAction(

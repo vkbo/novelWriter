@@ -804,7 +804,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def editItem(self, tHandle=None):
+    def editItemLabel(self, tHandle=None):
         """Open the edit item dialog.
         """
         if not self.hasProject:
@@ -817,7 +817,7 @@ class GuiMain(QMainWindow):
             else:
                 tHandle = self.projView.getSelectedHandle()
         if tHandle:
-            return self.projView.editTreeItem(tHandle)
+            return self.projView.renameTreeItem(tHandle)
 
         return False
 

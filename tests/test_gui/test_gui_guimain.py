@@ -26,13 +26,13 @@ from shutil import copyfile
 from tools import cmpFiles, buildTestProject, XML_IGNORE, writeFile
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox, QDialog, QInputDialog
+from PyQt5.QtWidgets import QMessageBox, QInputDialog
 
 from novelwriter.gui import GuiDocEditor, GuiNovelTree, GuiOutlineView
 from novelwriter.enum import nwItemType, nwWidget
 from novelwriter.tools import GuiProjectWizard
 from novelwriter.gui.projtree import GuiProjectTree
-from novelwriter.dialogs.itemeditor import GuiItemEditor
+from novelwriter.dialogs import GuiEditLabel
 
 keyDelay = 2
 typeDelay = 1
@@ -57,7 +57,7 @@ def testGuiMain_ProjectBlocker(monkeypatch, nwGUI):
     assert nwGUI.mergeDocuments() is False
     assert nwGUI.splitDocument() is False
     assert nwGUI.openSelectedItem() is False
-    assert nwGUI.editItem() is False
+    assert nwGUI.editItemLabel() is False
     assert nwGUI.requestNovelTreeRefresh() is False
     assert nwGUI.rebuildIndex() is False
     assert nwGUI.showProjectSettingsDialog() is False
@@ -169,11 +169,10 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: None)
-    monkeypatch.setattr(GuiItemEditor, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
     monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     # Create new, save, close project
     buildTestProject(nwGUI, fncProj)

@@ -163,9 +163,9 @@ class GuiMainMenu(QMenuBar):
         self.projMenu.addSeparator()
 
         # Project > Edit
-        self.aEditItem = QAction(self.tr("Edit Item"), self)
-        self.aEditItem.setShortcuts(["Ctrl+E", "F2"])
-        self.aEditItem.triggered.connect(lambda: self.mainGui.editItem(None))
+        self.aEditItem = QAction(self.tr("Rename Item"), self)
+        self.aEditItem.setShortcuts(["F2"])
+        self.aEditItem.triggered.connect(lambda: self.mainGui.editItemLabel(None))
         self.projMenu.addAction(self.aEditItem)
 
         # Project > Delete
