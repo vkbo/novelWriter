@@ -57,11 +57,11 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Add Project Content
     monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: QDialog.Accepted)
     nwGUI.switchFocus(nwWidget.TREE)
-    nwGUI.treeView.projTree.clearSelection()
-    nwGUI.treeView.projTree._getTreeItem(hChapterDir).setSelected(True)
-    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE)
-    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE)
-    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE)
+    nwGUI.projView.projTree.clearSelection()
+    nwGUI.projView.projTree._getTreeItem(hChapterDir).setSelected(True)
+    nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)
+    nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)
+    nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)
 
     assert nwGUI.saveProject() is True
     assert nwGUI.closeProject() is True
@@ -83,8 +83,8 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
 
     # Open the Merge tool
     nwGUI.switchFocus(nwWidget.TREE)
-    nwGUI.treeView.projTree.clearSelection()
-    nwGUI.treeView.projTree._getTreeItem(hChapterDir).setSelected(True)
+    nwGUI.projView.projTree.clearSelection()
+    nwGUI.projView.projTree._getTreeItem(hChapterDir).setSelected(True)
 
     monkeypatch.setattr(GuiDocMerge, "exec_", lambda *a: None)
     nwGUI.mainMenu.aMergeDocs.activate(QAction.Trigger)
@@ -102,27 +102,27 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     assert nwMerge.listBox.count() == 0
 
     # No item selected
-    nwGUI.treeView.projTree.clearSelection()
+    nwGUI.projView.projTree.clearSelection()
     assert nwMerge._populateList() is False
     assert nwMerge.listBox.count() == 0
 
     # Non-existing item
     with monkeypatch.context() as mp:
         mp.setattr(NWTree, "__getitem__", lambda *a: None)
-        nwGUI.treeView.projTree.clearSelection()
-        nwGUI.treeView.projTree._getTreeItem(hChapterDir).setSelected(True)
+        nwGUI.projView.projTree.clearSelection()
+        nwGUI.projView.projTree._getTreeItem(hChapterDir).setSelected(True)
         assert nwMerge._populateList() is False
         assert nwMerge.listBox.count() == 0
 
     # Select a non-folder
-    nwGUI.treeView.projTree.clearSelection()
-    nwGUI.treeView.projTree._getTreeItem(hChapterOne).setSelected(True)
+    nwGUI.projView.projTree.clearSelection()
+    nwGUI.projView.projTree._getTreeItem(hChapterOne).setSelected(True)
     assert nwMerge._populateList() is False
     assert nwMerge.listBox.count() == 0
 
     # Select the chapter folder
-    nwGUI.treeView.projTree.clearSelection()
-    nwGUI.treeView.projTree._getTreeItem(hChapterDir).setSelected(True)
+    nwGUI.projView.projTree.clearSelection()
+    nwGUI.projView.projTree._getTreeItem(hChapterDir).setSelected(True)
     assert nwMerge._populateList() is True
     assert nwMerge.listBox.count() == 5
 

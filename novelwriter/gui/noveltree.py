@@ -135,7 +135,7 @@ class GuiNovelTree(QTreeWidget):
         """Called whenever the Novel tab is activated.
         """
         logger.verbose("Requesting refresh of the novel tree")
-        treeChanged = self.mainGui.treeView.changedSince(self._lastBuild)
+        treeChanged = self.mainGui.projView.changedSince(self._lastBuild)
         indexChanged = self.theProject.index.indexChangedSince(self._lastBuild)
         if not (treeChanged or indexChanged or overRide):
             logger.verbose("No changes have been made to the novel index")
@@ -233,7 +233,7 @@ class GuiNovelTree(QTreeWidget):
         selItems = self.selectedItems()
         if selItems:
             tHandle = selItems[0].data(self.C_TITLE, Qt.UserRole)[0]
-            self.mainGui.treeMeta.updateViewBox(tHandle)
+            self.mainGui.itemDetails.updateViewBox(tHandle)
 
         return
 

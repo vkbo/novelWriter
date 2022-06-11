@@ -467,7 +467,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
 
     buildTestProject(nwGUI, fncProj)
 
-    assert nwGUI.treeView.projTree._getTreeItem("000000000000f") is not None
+    assert nwGUI.projView.projTree._getTreeItem("000000000000f") is not None
     assert nwGUI.openDocument("000000000000f") is True
     nwGUI.docEditor.clear()
 

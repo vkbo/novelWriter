@@ -171,12 +171,12 @@ class GuiMainMenu(QMenuBar):
         # Project > Delete
         self.aDeleteItem = QAction(self.tr("Delete Item"), self)
         self.aDeleteItem.setShortcut("Ctrl+Shift+Del")
-        self.aDeleteItem.triggered.connect(lambda: self.mainGui.treeView.deleteItem(None))
+        self.aDeleteItem.triggered.connect(lambda: self.mainGui.projView.deleteItem(None))
         self.projMenu.addAction(self.aDeleteItem)
 
         # Project > Empty Trash
         self.aEmptyTrash = QAction(self.tr("Empty Trash"), self)
-        self.aEmptyTrash.triggered.connect(lambda: self.mainGui.treeView.emptyTrash())
+        self.aEmptyTrash.triggered.connect(lambda: self.mainGui.projView.emptyTrash())
         self.projMenu.addAction(self.aEmptyTrash)
 
         # Project > Separator

@@ -142,7 +142,7 @@ class GuiDocMerge(QDialog):
             ], nwAlert.ERROR)
             return False
 
-        self.mainGui.treeView.revealNewTreeItem(nHandle)
+        self.mainGui.projView.revealNewTreeItem(nHandle)
         self.mainGui.openDocument(nHandle, doScroll=True)
 
         self._doClose()
@@ -165,7 +165,7 @@ class GuiDocMerge(QDialog):
         are then added to the list view in order. The list itself can be
         reordered by the user.
         """
-        tHandle = self.mainGui.treeView.getSelectedHandle()
+        tHandle = self.mainGui.projView.getSelectedHandle()
         self.sourceItem = tHandle
         if tHandle is None:
             return False
@@ -180,7 +180,7 @@ class GuiDocMerge(QDialog):
             ), nwAlert.ERROR)
             return False
 
-        for sHandle in self.mainGui.treeView.getTreeFromHandle(tHandle):
+        for sHandle in self.mainGui.projView.getTreeFromHandle(tHandle):
             newItem = QListWidgetItem()
             nwItem  = self.theProject.tree[sHandle]
             if nwItem.itemType is not nwItemType.FILE:

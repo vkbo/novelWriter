@@ -46,7 +46,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
     nwGUI.rebuildIndex()
     nwGUI._changeView(nwView.OUTLINE)
 
-    outlineMain = nwGUI.projView
+    outlineMain = nwGUI.outlineView
     outlineView = outlineMain.outlineView
     outlineData = outlineMain.outlineData
     outlineMenu = outlineMain.outlineBar.mColumns
@@ -54,7 +54,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
     # Toggle scrollbars
     nwGUI.mainConf.hideVScroll = True
     nwGUI.mainConf.hideHScroll = True
-    nwGUI.projView.initOutline()
+    outlineMain.initOutline()
     assert outlineView.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert outlineView.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
@@ -62,7 +62,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
 
     nwGUI.mainConf.hideVScroll = False
     nwGUI.mainConf.hideHScroll = False
-    nwGUI.projView.initOutline()
+    outlineMain.initOutline()
     assert outlineView.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert outlineView.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
@@ -169,8 +169,8 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.rebuildIndex()
     nwGUI._changeView(nwView.OUTLINE)
 
-    outlineMain = nwGUI.projView
-    outlineBar = outlineMain.outlineBar
+    outlineMain = nwGUI.outlineView
+    outlineBar  = outlineMain.outlineBar
     outlineView = outlineMain.outlineView
     outlineData = outlineMain.outlineData
 
@@ -183,7 +183,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
 
     # Add a second novel folder
     newHandle = nwGUI.theProject.newRoot(nwItemClass.NOVEL)
-    nwGUI.treeView.revealNewTreeItem(newHandle)
+    nwGUI.projView.revealNewTreeItem(newHandle)
 
     # Check new values in dropdown list
     assert outlineBar.novelValue.itemData(0) == lipHandle
@@ -202,7 +202,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
         aHandle = nwGUI.theProject.newFile(dTitle, newHandle)
         hHash = "#"*hLevel
         writeFile(os.path.join(nwLipsum, "content", f"{aHandle}.nwd"), f"{hHash} {dTitle}\n\n")
-        nwGUI.treeView.revealNewTreeItem(aHandle)
+        nwGUI.projView.revealNewTreeItem(aHandle)
 
     nwGUI.rebuildIndex()
 
@@ -248,7 +248,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
 
     # Click POV Link
     assert outlineData.povKeyValue.text() == "<a href='Bod'>Bod</a>"
-    nwGUI.projView._tagClicked("Bod")
+    outlineMain._tagClicked("Bod")
     assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
 
     # Scene One, Section Two

@@ -41,7 +41,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
 
-    nwTree = nwGUI.treeView
+    nwTree = nwGUI.projView
 
     # Try to add item with no project
     assert nwTree.projTree.newTreeItem(nwItemType.FILE) is False
@@ -164,7 +164,7 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
 
-    nwTree = nwGUI.treeView
+    nwTree = nwGUI.projView
 
     # Try to move item with no project
     assert nwTree.projTree.moveTreeItem(1) is False
@@ -279,7 +279,7 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
 
-    nwTree = nwGUI.treeView
+    nwTree = nwGUI.projView
 
     # Try to run with no project
     assert nwTree.emptyTrash() is False
@@ -482,7 +482,7 @@ def testGuiProjTree_ContextMenu(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     hCharNote    = "0000000000011"
     hNovelNote   = "0000000000012"
 
-    projTree = nwGUI.treeView.projTree
+    projTree = nwGUI.projView.projTree
     projTree._getTreeItem(hNovelRoot).setExpanded(True)
     projTree._getTreeItem(hChapterDir).setExpanded(True)
 

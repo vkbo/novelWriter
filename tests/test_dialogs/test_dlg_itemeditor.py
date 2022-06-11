@@ -52,7 +52,7 @@ def testDlgItemEditor_Dialog(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     tHandle = "000000000000f"
 
     # No Selection
-    nwGUI.treeView.projTree.clearSelection()
+    nwGUI.projView.projTree.clearSelection()
     assert nwGUI.editItem() is False
 
     # Force opening from editor
@@ -164,9 +164,9 @@ def testDlgItemEditor_Note(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     assert nwGUI.theProject.importItems.name(importKeys[1]) == "Minor"
 
     # Create Note
-    nwGUI.treeView.projTree.clearSelection()
-    nwGUI.treeView.projTree._getTreeItem("000000000000a").setSelected(True)
-    nwGUI.treeView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
+    nwGUI.projView.projTree.clearSelection()
+    nwGUI.projView.projTree._getTreeItem("000000000000a").setSelected(True)
+    nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
 
     # Open Note
     assert nwGUI.openDocument("0000000000010")

@@ -901,7 +901,7 @@ class GuiDocViewHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.mainGui.treeView.setSelectedHandle(self._docHandle, doScroll=True)
+        self.mainGui.projView.setSelectedHandle(self._docHandle, doScroll=True)
         return
 
 # END Class GuiDocViewHeader

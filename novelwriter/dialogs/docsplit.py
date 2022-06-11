@@ -175,7 +175,7 @@ class GuiDocSplit(QDialog):
 
         # Create the folder
         fHandle = self.theProject.newFolder(srcItem.itemName, srcItem.itemParent)
-        self.mainGui.treeView.revealNewTreeItem(fHandle)
+        self.mainGui.projView.revealNewTreeItem(fHandle)
         logger.verbose("Creating folder '%s'", fHandle)
 
         # Loop through, and create the files
@@ -201,7 +201,7 @@ class GuiDocSplit(QDialog):
                 ], nwAlert.ERROR)
                 return False
 
-            self.mainGui.treeView.revealNewTreeItem(nHandle)
+            self.mainGui.projView.revealNewTreeItem(nHandle)
 
         self._doClose()
 
@@ -226,7 +226,7 @@ class GuiDocSplit(QDialog):
         """
         self.listBox.clear()
         if self.sourceItem is None:
-            self.sourceItem = self.mainGui.treeView.getSelectedHandle()
+            self.sourceItem = self.mainGui.projView.getSelectedHandle()
 
         if self.sourceItem is None:
             return False

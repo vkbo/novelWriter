@@ -517,8 +517,8 @@ class GuiDocEditor(QTextEdit):
             self.mainGui.novelView.updateWordCounts(tHandle)
 
         if oldHeader != newHeader:
-            self.mainGui.treeView.setTreeItemValues(tHandle)
-            self.mainGui.treeMeta.updateViewBox(tHandle)
+            self.mainGui.projView.setTreeItemValues(tHandle)
+            self.mainGui.itemDetails.updateViewBox(tHandle)
             self.docFooter.updateInfo()
 
         # Update the status bar
@@ -2779,7 +2779,7 @@ class GuiDocEditHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.mainGui.treeView.setSelectedHandle(self._docHandle, doScroll=True)
+        self.mainGui.projView.setSelectedHandle(self._docHandle, doScroll=True)
         return
 
 # END Class GuiDocEditHeader

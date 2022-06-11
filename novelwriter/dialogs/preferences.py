@@ -107,7 +107,7 @@ class GuiPreferences(PagedDialog):
             ), nwAlert.INFO)
 
         if refreshTree:
-            self.mainGui.treeView.populateTree()
+            self.mainGui.projView.populateTree()
 
         self._saveWindowSize()
         self.accept()
