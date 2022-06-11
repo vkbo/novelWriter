@@ -46,16 +46,16 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     BLOCK_META  = 2
     BLOCK_TITLE = 4
 
-    def __init__(self, theDoc, theParent, spEnchant):
+    def __init__(self, theDoc, mainGui, spEnchant):
         QSyntaxHighlighter.__init__(self, theDoc)
 
         logger.debug("Initialising GuiDocHighlighter ...")
         self.mainConf   = novelwriter.CONFIG
         self.theDoc     = theDoc
         self.spEnchant  = spEnchant
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.theTheme   = mainGui.theTheme
+        self.theProject = mainGui.theProject
         self.theHandle  = None
         self.spellCheck = False
         self.spellRx    = None
@@ -288,7 +288,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         if theText.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(self.BLOCK_META)
             pIndex = self.theProject.index
-            tItem = self.theParent.theProject.tree[self.theHandle]
+            tItem = self.mainGui.theProject.tree[self.theHandle]
             isValid, theBits, thePos = pIndex.scanThis(theText)
             isGood = pIndex.checkThese(theBits, tItem)
             if isValid:

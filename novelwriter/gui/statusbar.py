@@ -41,14 +41,14 @@ logger = logging.getLogger(__name__)
 
 class GuiMainStatus(QStatusBar):
 
-    def __init__(self, theParent):
-        QStatusBar.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QStatusBar.__init__(self, mainGui)
 
         logger.debug("Initialising GuiMainStatus ...")
 
         self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainGui   = mainGui
+        self.theTheme  = mainGui.theTheme
         self.refTime   = None
         self.userIdle  = False
 

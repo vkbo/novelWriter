@@ -56,11 +56,11 @@ class GuiOutline(QWidget):
 
     loadDocumentTagRequest = pyqtSignal(str, Enum)
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QWidget.__init__(self, mainGui)
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
+        self.mainConf = novelwriter.CONFIG
+        self.mainGui  = mainGui
 
         # Build GUI
         self.outlineBar  = GuiOutlineToolBar(self)
@@ -177,9 +177,9 @@ class GuiOutlineToolBar(QToolBar):
         logger.debug("Initialising GuiOutlineToolBar ...")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theOutline.theParent
-        self.theProject = theOutline.theParent.theProject
-        self.theTheme   = theOutline.theParent.theTheme
+        self.mainGui    = theOutline.mainGui
+        self.theProject = theOutline.mainGui.theProject
+        self.theTheme   = theOutline.mainGui.theTheme
 
         iPx = self.mainConf.pxInt(22)
         mPx = self.mainConf.pxInt(12)
@@ -322,9 +322,9 @@ class GuiOutlineView(QTreeWidget):
         logger.debug("Initialising GuiOutlineView ...")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theOutline.theParent
-        self.theProject = theOutline.theParent.theProject
-        self.theTheme   = theOutline.theParent.theTheme
+        self.mainGui    = theOutline.mainGui
+        self.theProject = theOutline.mainGui.theProject
+        self.theTheme   = theOutline.mainGui.theTheme
 
         self.setFrameStyle(QFrame.NoFrame)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -464,7 +464,7 @@ class GuiOutlineView(QTreeWidget):
         document editor.
         """
         tHandle, tLine = self.getSelectedHandle()
-        self.theParent.openDocument(tHandle, tLine=tLine - 1, doScroll=True)
+        self.mainGui.openDocument(tHandle, tLine=tLine - 1, doScroll=True)
         return
 
     @pyqtSlot()
@@ -782,9 +782,9 @@ class GuiOutlineDetails(QScrollArea):
 
         self.mainConf   = novelwriter.CONFIG
         self.theOutline = theOutline
-        self.theParent  = theOutline.theParent
-        self.theProject = theOutline.theParent.theProject
-        self.theTheme   = theOutline.theParent.theTheme
+        self.mainGui    = theOutline.mainGui
+        self.theProject = theOutline.mainGui.theProject
+        self.theTheme   = theOutline.mainGui.theTheme
 
         # Sizes
         minTitle = 30*self.theTheme.textNWidth

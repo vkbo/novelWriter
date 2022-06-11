@@ -65,16 +65,16 @@ class GuiBuildNovel(QDialog):
     FMT_JSON_H = 8  # HTML5 wrapped in JSON
     FMT_JSON_M = 9  # nW Markdown wrapped in JSON
 
-    def __init__(self, theParent):
-        QDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QDialog.__init__(self, mainGui)
 
         logger.debug("Initialising GuiBuildNovel ...")
         self.setObjectName("GuiBuildNovel")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.theTheme   = mainGui.theTheme
+        self.theProject = mainGui.theProject
 
         self.htmlText  = []  # List of html documents
         self.htmlStyle = []  # List of html styles
@@ -711,7 +711,7 @@ class GuiBuildNovel(QDialog):
             bldObj.initDocument()
 
         # Make sure the project and document is up to date
-        self.theParent.saveDocument()
+        self.mainGui.saveDocument()
 
         self.buildProgress.setMaximum(len(self.theProject.tree))
         self.buildProgress.setValue(0)
@@ -760,7 +760,7 @@ class GuiBuildNovel(QDialog):
         logger.debug("Built project in %.3f ms", 1000*(tEnd - tStart))
 
         if bldObj.errData:
-            self.theParent.makeAlert([
+            self.mainGui.makeAlert([
                 self.tr("There were problems when building the project:")
             ] + bldObj.errData, nwAlert.ERROR)
 
@@ -1003,11 +1003,11 @@ class GuiBuildNovel(QDialog):
         # ==============
 
         if wSuccess:
-            self.theParent.makeAlert([
+            self.mainGui.makeAlert([
                 self.tr("{0} file successfully written to:").format(textFmt), savePath
             ], nwAlert.INFO)
         else:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "Failed to write {0} file. {1}"
             ).format(textFmt, errMsg), nwAlert.ERROR)
 
@@ -1193,18 +1193,18 @@ class GuiBuildNovel(QDialog):
 
 class GuiBuildNovelDocView(QTextBrowser):
 
-    def __init__(self, theParent, theProject):
-        QTextBrowser.__init__(self, theParent)
+    def __init__(self, mainGui, theProject):
+        QTextBrowser.__init__(self, mainGui)
 
         logger.debug("Initialising GuiBuildNovelDocView ...")
 
         self.mainConf   = novelwriter.CONFIG
         self.theProject = theProject
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
+        self.mainGui    = mainGui
+        self.theTheme   = mainGui.theTheme
         self.buildTime  = 0
 
-        self.setMinimumWidth(40*self.theParent.theTheme.textNWidth)
+        self.setMinimumWidth(40*self.mainGui.theTheme.textNWidth)
         self.setOpenExternalLinks(False)
 
         self.document().setDocumentMargin(self.mainConf.getTextMargin())

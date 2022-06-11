@@ -41,15 +41,15 @@ logger = logging.getLogger(__name__)
 
 class GuiDocSplit(QDialog):
 
-    def __init__(self, theParent):
-        QDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QDialog.__init__(self, mainGui)
 
         logger.debug("Initialising GuiDocSplit ...")
         self.setObjectName("GuiDocSplit")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.theProject = mainGui.theProject
 
         self.sourceItem = None
         self.sourceText = []
@@ -60,7 +60,7 @@ class GuiDocSplit(QDialog):
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headers")))
         self.helpLabel = QHelpLabel(
             self.tr("Select the maximum level to split into files."),
-            self.theParent.theTheme.helpText
+            self.mainGui.theTheme.helpText
         )
 
         self.listBox = QListWidget()
@@ -115,14 +115,14 @@ class GuiDocSplit(QDialog):
         logger.verbose("GuiDocSplit split button clicked")
 
         if self.sourceItem is None:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "No source document selected. Nothing to do."
             ), nwAlert.ERROR)
             return False
 
         srcItem = self.theProject.tree[self.sourceItem]
         if srcItem is None:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "Could not parse source document."
             ), nwAlert.ERROR)
             return False
@@ -132,7 +132,7 @@ class GuiDocSplit(QDialog):
 
         docErr = inDoc.getError()
         if theText is None and docErr:
-            self.theParent.makeAlert([
+            self.mainGui.makeAlert([
                 self.tr("Failed to open document file."), docErr
             ], nwAlert.ERROR)
 
@@ -153,12 +153,12 @@ class GuiDocSplit(QDialog):
 
         nFiles = len(finalOrder)
         if nFiles == 0:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "No headers found. Nothing to do."
             ), nwAlert.ERROR)
             return False
 
-        msgYes = self.theParent.askQuestion(
+        msgYes = self.mainGui.askQuestion(
             self.tr("Split Document"),
             "{0}<br><br>{1}".format(
                 self.tr(
@@ -175,7 +175,7 @@ class GuiDocSplit(QDialog):
 
         # Create the folder
         fHandle = self.theProject.newFolder(srcItem.itemName, srcItem.itemParent)
-        self.theParent.treeView.revealNewTreeItem(fHandle)
+        self.mainGui.treeView.revealNewTreeItem(fHandle)
         logger.verbose("Creating folder '%s'", fHandle)
 
         # Loop through, and create the files
@@ -196,12 +196,12 @@ class GuiDocSplit(QDialog):
 
             outDoc = NWDoc(self.theProject, nHandle)
             if not outDoc.writeDocument(theText):
-                self.theParent.makeAlert([
+                self.mainGui.makeAlert([
                     self.tr("Could not save document."), outDoc.getError()
                 ], nwAlert.ERROR)
                 return False
 
-            self.theParent.treeView.revealNewTreeItem(nHandle)
+            self.mainGui.treeView.revealNewTreeItem(nHandle)
 
         self._doClose()
 
@@ -226,7 +226,7 @@ class GuiDocSplit(QDialog):
         """
         self.listBox.clear()
         if self.sourceItem is None:
-            self.sourceItem = self.theParent.treeView.getSelectedHandle()
+            self.sourceItem = self.mainGui.treeView.getSelectedHandle()
 
         if self.sourceItem is None:
             return False
@@ -236,7 +236,7 @@ class GuiDocSplit(QDialog):
             return False
 
         if nwItem.itemType is not nwItemType.FILE:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "Element selected in the project tree must be a file."
             ), nwAlert.ERROR)
             return False

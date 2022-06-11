@@ -57,16 +57,16 @@ class GuiWritingStats(QDialog):
     FMT_JSON = 0
     FMT_CSV  = 1
 
-    def __init__(self, theParent):
-        QDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QDialog.__init__(self, mainGui)
 
         logger.debug("Initialising GuiWritingStats ...")
         self.setObjectName("GuiWritingStats")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.theTheme   = mainGui.theTheme
+        self.theProject = mainGui.theProject
 
         self.logData    = []
         self.filterData = []
@@ -411,11 +411,11 @@ class GuiWritingStats(QDialog):
 
         # Report to user
         if wSuccess:
-            self.theParent.makeAlert([
+            self.mainGui.makeAlert([
                 self.tr("{0} file successfully written to:").format(textFmt), savePath
             ], nwAlert.INFO)
         else:
-            self.theParent.makeAlert([
+            self.mainGui.makeAlert([
                 self.tr("Failed to write {0} file.").format(textFmt), errMsg
             ], nwAlert.ERROR)
 
@@ -478,7 +478,7 @@ class GuiWritingStats(QDialog):
                     self.logData.append((dStart, sDiff, wcNovel, wcNotes, sIdle))
 
         except Exception as exc:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "Failed to read session log file."
             ), nwAlert.ERROR, exception=exc)
             return False

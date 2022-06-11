@@ -72,16 +72,16 @@ class GuiDocEditor(QTextEdit):
     docCountsChanged = pyqtSignal(str, int, int, int)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
 
-    def __init__(self, theParent):
-        QTextEdit.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QTextEdit.__init__(self, mainGui)
 
         logger.debug("Initialising GuiDocEditor ...")
 
         # Class Variables
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.theTheme   = mainGui.theTheme
+        self.theProject = mainGui.theProject
 
         self._nwDocument = None
         self._nwItem     = None
@@ -124,7 +124,7 @@ class GuiDocEditor(QTextEdit):
 
         # Syntax
         self.spEnchant = NWSpellEnchant()
-        self.highLight = GuiDocHighlighter(qDoc, self.theParent, self.spEnchant)
+        self.highLight = GuiDocHighlighter(qDoc, self.mainGui, self.spEnchant)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -341,7 +341,7 @@ class GuiDocEditor(QTextEdit):
 
         docSize = len(theDoc)
         if docSize > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "The document you are trying to open is too big. "
                 "The document size is {0} MB. "
                 "The maximum size allowed is {1} MB."
@@ -417,7 +417,7 @@ class GuiDocEditor(QTextEdit):
 
         # Update the status bar
         if self._nwItem is not None:
-            self.theParent.setStatus(
+            self.mainGui.setStatus(
                 self.tr("Opened Document: {0}").format(self._nwItem.itemName)
             )
 
@@ -442,7 +442,7 @@ class GuiDocEditor(QTextEdit):
         """
         docSize = len(theText)
         if docSize > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "The text you are trying to add is too big. "
                 "The text size is {0} MB. "
                 "The maximum size allowed is {1} MB."
@@ -488,7 +488,7 @@ class GuiDocEditor(QTextEdit):
         if not self._nwDocument.writeDocument(docText):
             saveOk = False
             if self._nwDocument._currHash != self._nwDocument._prevHash:
-                msgYes = self.theParent.askQuestion(
+                msgYes = self.mainGui.askQuestion(
                     self.tr("File Changed on Disk"),
                     self.tr(
                         "This document has been changed outside of novelWriter "
@@ -499,7 +499,7 @@ class GuiDocEditor(QTextEdit):
                     saveOk = self._nwDocument.writeDocument(docText, forceWrite=True)
 
             if not saveOk:
-                self.theParent.makeAlert([
+                self.mainGui.makeAlert([
                     self.tr("Could not save document."), self._nwDocument.getError()
                 ], nwAlert.ERROR)
 
@@ -512,17 +512,17 @@ class GuiDocEditor(QTextEdit):
         newHeader = self.theProject.index.getHandleHeaderLevel(tHandle)
 
         if self._updateHeaders(checkLevel=True):
-            self.theParent.requestNovelTreeRefresh()
+            self.mainGui.requestNovelTreeRefresh()
         else:
-            self.theParent.novelView.updateWordCounts(tHandle)
+            self.mainGui.novelView.updateWordCounts(tHandle)
 
         if oldHeader != newHeader:
-            self.theParent.treeView.setTreeItemValues(tHandle)
-            self.theParent.treeMeta.updateViewBox(tHandle)
+            self.mainGui.treeView.setTreeItemValues(tHandle)
+            self.mainGui.treeMeta.updateViewBox(tHandle)
             self.docFooter.updateInfo()
 
         # Update the status bar
-        self.theParent.setStatus(
+        self.mainGui.setStatus(
             self.tr("Saved Document: {0}").format(self._nwItem.itemName)
         )
 
@@ -544,8 +544,8 @@ class GuiDocEditor(QTextEdit):
         sH = hBar.height() if hBar.isVisible() else 0
 
         tM = cM
-        if self.mainConf.textWidth > 0 or self.theParent.isFocusMode:
-            tW = self.mainConf.getTextWidth(self.theParent.isFocusMode)
+        if self.mainConf.textWidth > 0 or self.mainGui.isFocusMode:
+            tW = self.mainConf.getTextWidth(self.mainGui.isFocusMode)
             tM = max((wW - sW - tW)//2, cM)
 
         tB = self.frameWidth()
@@ -704,7 +704,7 @@ class GuiDocEditor(QTextEdit):
 
         if not self.mainConf.hasEnchant:
             if theMode:
-                self.theParent.makeAlert(self.tr(
+                self.mainGui.makeAlert(self.tr(
                     "Spell checking requires the package PyEnchant. "
                     "It does not appear to be installed."
                 ), nwAlert.INFO)
@@ -714,7 +714,7 @@ class GuiDocEditor(QTextEdit):
             theMode = False
 
         self._spellCheck = theMode
-        self.theParent.mainMenu.setSpellCheck(theMode)
+        self.mainGui.mainMenu.setSpellCheck(theMode)
         self.theProject.setSpellCheck(theMode)
         self.highLight.setSpellCheck(theMode)
         if not self._bigDoc:
@@ -742,7 +742,7 @@ class GuiDocEditor(QTextEdit):
             qApp.restoreOverrideCursor()
             afTime = time()
             logger.debug("Document highlighted in %.3f ms", 1000*(afTime-bfTime))
-            self.theParent.statusBar.setStatus(self.tr("Spell check complete"))
+            self.mainGui.statusBar.setStatus(self.tr("Spell check complete"))
 
         return True
 
@@ -1085,7 +1085,7 @@ class GuiDocEditor(QTextEdit):
         self._lastFind = None
 
         if self.document().characterCount() > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "The document has grown too big and you cannot add more text to it. "
                 "The maximum size of a single novelWriter document is {0} MB."
             ).format(
@@ -1245,7 +1245,7 @@ class GuiDocEditor(QTextEdit):
 
         if time() - self._lastEdit < 5 * self.wcInterval:
             logger.verbose("Running word counter")
-            self.theParent.threadPool.start(self.wCounterDoc)
+            self.mainGui.threadPool.start(self.wCounterDoc)
 
         return
 
@@ -1302,7 +1302,7 @@ class GuiDocEditor(QTextEdit):
             logger.verbose("Selection word counter is busy")
             return
 
-        self.theParent.threadPool.start(self.wCounterSel)
+        self.mainGui.threadPool.start(self.wCounterSel)
 
         return
 
@@ -1381,7 +1381,7 @@ class GuiDocEditor(QTextEdit):
             self.docSearch.setResultCount(0, 0)
             self._lastFind = None
             if self.docSearch.doNextFile and not goBack:
-                self.theParent.openNextDocument(
+                self.mainGui.openNextDocument(
                     self._docHandle, wrapAround=self.docSearch.doLoop
                 )
                 self.beginSearch()
@@ -1401,7 +1401,7 @@ class GuiDocEditor(QTextEdit):
 
         if resIdx > maxIdx:
             if self.docSearch.doNextFile and not goBack:
-                self.theParent.openNextDocument(
+                self.mainGui.openNextDocument(
                     self._docHandle, wrapAround=self.docSearch.doLoop
                 )
                 self.beginSearch()
@@ -1645,7 +1645,7 @@ class GuiDocEditor(QTextEdit):
         """
         theCursor = self.textCursor()
         if not theCursor.hasSelection():
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "Please select some text before calling replace quotes."
             ), nwAlert.ERROR)
             return False
@@ -2187,7 +2187,7 @@ class GuiDocEditSearch(QFrame):
 
         self.mainConf   = novelwriter.CONFIG
         self.docEditor  = docEditor
-        self.theParent  = docEditor.theParent
+        self.mainGui    = docEditor.mainGui
         self.theProject = docEditor.theProject
         self.theTheme   = docEditor.theTheme
 
@@ -2575,7 +2575,7 @@ class GuiDocEditHeader(QWidget):
 
         self.mainConf   = novelwriter.CONFIG
         self.docEditor  = docEditor
-        self.theParent  = docEditor.theParent
+        self.mainGui    = docEditor.mainGui
         self.theProject = docEditor.theProject
         self.theTheme   = docEditor.theTheme
 
@@ -2733,7 +2733,7 @@ class GuiDocEditHeader(QWidget):
         This function is called by the GuiMain class via the
         toggleFocusMode function and should not be activated directly.
         """
-        if self.theParent.isFocusMode:
+        if self.mainGui.isFocusMode:
             self.minmaxButton.setIcon(self.theTheme.getIcon("minimise"))
         else:
             self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
@@ -2746,7 +2746,7 @@ class GuiDocEditHeader(QWidget):
     def _editDocument(self):
         """Open the edit item dialog from the main GUI.
         """
-        self.theParent.editItem(self._docHandle)
+        self.mainGui.editItem(self._docHandle)
         return
 
     def _searchDocument(self):
@@ -2758,7 +2758,7 @@ class GuiDocEditHeader(QWidget):
     def _closeDocument(self):
         """Trigger the close editor on the main window.
         """
-        self.theParent.closeDocEditor()
+        self.mainGui.closeDocEditor()
         self.editButton.setVisible(False)
         self.searchButton.setVisible(False)
         self.closeButton.setVisible(False)
@@ -2768,7 +2768,7 @@ class GuiDocEditHeader(QWidget):
     def _minmaxDocument(self):
         """Switch on or off Focus Mode.
         """
-        self.theParent.toggleFocusMode()
+        self.mainGui.toggleFocusMode()
         return
 
     ##
@@ -2779,7 +2779,7 @@ class GuiDocEditHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.theParent.treeView.setSelectedHandle(self._docHandle, doScroll=True)
+        self.mainGui.treeView.setSelectedHandle(self._docHandle, doScroll=True)
         return
 
 # END Class GuiDocEditHeader
@@ -2799,7 +2799,7 @@ class GuiDocEditFooter(QWidget):
 
         self.mainConf   = novelwriter.CONFIG
         self.docEditor  = docEditor
-        self.theParent  = docEditor.theParent
+        self.mainGui    = docEditor.mainGui
         self.theProject = docEditor.theProject
         self.theTheme   = docEditor.theTheme
 

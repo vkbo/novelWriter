@@ -63,10 +63,10 @@ class GuiProjectView(QWidget):
     selectedItemChanged = pyqtSignal(str)
     openDocumentRequest = pyqtSignal(str, Enum)
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QWidget.__init__(self, mainGui)
 
-        self.theParent = theParent
+        self.mainGui = mainGui
 
         # Build GUI
         self.projTree = GuiProjectTree(self)
@@ -167,9 +167,9 @@ class GuiProjectToolBar(QWidget):
         self.mainConf   = novelwriter.CONFIG
         self.projView   = projView
         self.projTree   = projView.projTree
-        self.theParent  = projView.theParent
-        self.theProject = projView.theParent.theProject
-        self.theTheme   = projView.theParent.theTheme
+        self.mainGui    = projView.mainGui
+        self.theProject = projView.mainGui.theProject
+        self.theTheme   = projView.mainGui.theTheme
 
         iPx = self.theTheme.baseIconSize
         mPx = self.mainConf.pxInt(4)
@@ -323,9 +323,9 @@ class GuiProjectTree(QTreeWidget):
 
         self.mainConf   = novelwriter.CONFIG
         self.projView   = projView
-        self.theParent  = projView.theParent
-        self.theTheme   = projView.theParent.theTheme
-        self.theProject = projView.theParent.theProject
+        self.mainGui    = projView.mainGui
+        self.theTheme   = projView.mainGui.theTheme
+        self.theProject = projView.mainGui.theProject
 
         # Internal Variables
         self._treeMap = {}
@@ -420,7 +420,7 @@ class GuiProjectTree(QTreeWidget):
         make sure the item is added in a place it can be added, and that
         other meta data is set correctly to ensure a valid project tree.
         """
-        if not self.theParent.hasProject:
+        if not self.mainGui.hasProject:
             logger.error("No project open")
             return False
 
@@ -435,7 +435,7 @@ class GuiProjectTree(QTreeWidget):
 
             sHandle = self.getSelectedHandle()
             if sHandle is None or sHandle not in self.theProject.tree:
-                self.theParent.makeAlert(self.tr(
+                self.mainGui.makeAlert(self.tr(
                     "Did not find anywhere to add the file or folder!"
                 ), nwAlert.ERROR)
                 return False
@@ -452,7 +452,7 @@ class GuiProjectTree(QTreeWidget):
                     return False
 
             if self.theProject.tree.isTrash(sHandle):
-                self.theParent.makeAlert(self.tr(
+                self.mainGui.makeAlert(self.tr(
                     "Cannot add new files or folders to the Trash folder."
                 ), nwAlert.ERROR)
                 return False
@@ -611,7 +611,7 @@ class GuiProjectTree(QTreeWidget):
         function only asks for confirmation once, and calls the regular
         deleteItem function for each document in the Trash folder.
         """
-        if not self.theParent.hasProject:
+        if not self.mainGui.hasProject:
             logger.error("No project open")
             return False
 
@@ -619,7 +619,7 @@ class GuiProjectTree(QTreeWidget):
 
         logger.debug("Emptying Trash folder")
         if trashHandle is None:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "There is currently no Trash folder in this project."
             ), nwAlert.INFO)
             return False
@@ -630,12 +630,12 @@ class GuiProjectTree(QTreeWidget):
 
         nTrash = len(theTrash)
         if nTrash == 0:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "The Trash folder is already empty."
             ), nwAlert.INFO)
             return False
 
-        msgYes = self.theParent.askQuestion(
+        msgYes = self.mainGui.askQuestion(
             self.tr("Empty Trash"),
             self.tr("Permanently delete {0} file(s) from Trash?").format(nTrash)
         )
@@ -660,7 +660,7 @@ class GuiProjectTree(QTreeWidget):
         delete the files on disk. Root folders are deleted if they're empty
         only, and the deletion is always permanent.
         """
-        if not self.theParent.hasProject:
+        if not self.mainGui.hasProject:
             logger.error("No project open")
             return False
 
@@ -693,7 +693,7 @@ class GuiProjectTree(QTreeWidget):
                 self._deleteTreeItem(tHandle)
                 self._alertTreeChange(tHandle=tHandle, flush=True)
             else:
-                self.theParent.makeAlert(self.tr(
+                self.mainGui.makeAlert(self.tr(
                     "Cannot delete root folder. It is not empty. "
                     "Recursive deletion is not supported. "
                     "Please delete the content first."
@@ -723,7 +723,7 @@ class GuiProjectTree(QTreeWidget):
                 # user if they want to permanently delete the file.
                 doPermanent = False
                 if not alreadyAsked:
-                    msgYes = self.theParent.askQuestion(
+                    msgYes = self.mainGui.askQuestion(
                         self.tr("Delete"),
                         self.tr("Permanently delete '{0}'?").format(nwItemS.itemName)
                     )
@@ -739,8 +739,8 @@ class GuiProjectTree(QTreeWidget):
                     tIndex = trItemP.indexOfChild(trItemS)
                     trItemC = trItemP.takeChild(tIndex)
                     for dHandle in reversed(self.getTreeFromHandle(tHandle)):
-                        if self.theParent.docEditor.docHandle() == dHandle:
-                            self.theParent.closeDocument()
+                        if self.mainGui.docEditor.docHandle() == dHandle:
+                            self.mainGui.closeDocument()
                         self._deleteTreeItem(dHandle)
 
                     self._alertTreeChange(tHandle=tHandle, flush=autoFlush)
@@ -749,7 +749,7 @@ class GuiProjectTree(QTreeWidget):
             else:
                 # The item is not already in the trash folder, so we
                 # move it there.
-                msgYes = self.theParent.askQuestion(
+                msgYes = self.mainGui.askQuestion(
                     self.tr("Delete"),
                     self.tr("Move '{0}' to Trash?").format(nwItemS.itemName),
                 )
@@ -1199,7 +1199,7 @@ class GuiProjectTree(QTreeWidget):
         if self.theProject.tree.checkType(tHandle, nwItemType.FILE):
             delDoc = NWDoc(self.theProject, tHandle)
             if not delDoc.deleteDocument():
-                self.theParent.makeAlert([
+                self.mainGui.makeAlert([
                     self.tr("Could not delete document file."), delDoc.getError()
                 ], nwAlert.ERROR)
                 return False
@@ -1295,7 +1295,7 @@ class GuiProjectTree(QTreeWidget):
                 newItem.setFlags(newItem.flags() ^ Qt.ItemIsDragEnabled)
                 self.addTopLevelItem(newItem)
             else:
-                self.theParent.makeAlert(self.tr(
+                self.mainGui.makeAlert(self.tr(
                     "There is nowhere to add item with name '{0}'."
                 ).format(nwItem.itemName), nwAlert.ERROR)
                 del self._treeMap[tHandle]

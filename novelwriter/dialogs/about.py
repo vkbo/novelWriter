@@ -43,15 +43,15 @@ logger = logging.getLogger(__name__)
 
 class GuiAbout(QDialog):
 
-    def __init__(self, theParent):
-        QDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QDialog.__init__(self, mainGui)
 
         logger.debug("Initialising GuiAbout ...")
         self.setObjectName("GuiAbout")
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainConf = novelwriter.CONFIG
+        self.mainGui  = mainGui
+        self.theTheme = mainGui.theTheme
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
@@ -63,7 +63,7 @@ class GuiAbout(QDialog):
 
         nPx = self.mainConf.pxInt(96)
         self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(self.theParent.theTheme.getPixmap("novelwriter", (nPx, nPx)))
+        self.nwIcon.setPixmap(self.mainGui.theTheme.getPixmap("novelwriter", (nPx, nPx)))
         self.lblName = QLabel("<b>novelWriter</b>")
         self.lblVers = QLabel(f"v{novelwriter.__version__}")
         self.lblDate = QLabel(datetime.strptime(novelwriter.__date__, "%Y-%m-%d").strftime("%x"))
@@ -191,8 +191,8 @@ class GuiAbout(QDialog):
             ])
         )
 
-        theTheme = self.theParent.theTheme
-        theIcons = self.theParent.theTheme.theIcons
+        theTheme = self.mainGui.theTheme
+        theIcons = self.mainGui.theTheme.theIcons
         if theTheme.themeName and theTheme.themeAuthor != "N/A":
             licURL = f"<a href='{theTheme.themeLicenseUrl}'>{theTheme.themeLicense}</a>"
             aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
@@ -279,9 +279,9 @@ class GuiAbout(QDialog):
             "  padding-right: 0.8em;"
             "}}\n"
         ).format(
-            hColR=self.theParent.theTheme.colHead[0],
-            hColG=self.theParent.theTheme.colHead[1],
-            hColB=self.theParent.theTheme.colHead[2],
+            hColR=self.mainGui.theTheme.colHead[0],
+            hColG=self.mainGui.theTheme.colHead[1],
+            hColB=self.mainGui.theTheme.colHead[2],
             kColR=self.theTheme.colKey[0],
             kColG=self.theTheme.colKey[1],
             kColB=self.theTheme.colKey[2],

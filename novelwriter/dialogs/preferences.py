@@ -43,25 +43,25 @@ logger = logging.getLogger(__name__)
 
 class GuiPreferences(PagedDialog):
 
-    def __init__(self, theParent):
-        PagedDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        PagedDialog.__init__(self, mainGui)
 
         logger.debug("Initialising GuiPreferences ...")
         self.setObjectName("GuiPreferences")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.theProject = mainGui.theProject
 
         self.setWindowTitle(self.tr("Preferences"))
 
-        self.tabGeneral  = GuiPreferencesGeneral(self.theParent)
-        self.tabProjects = GuiPreferencesProjects(self.theParent)
-        self.tabDocs     = GuiPreferencesDocuments(self.theParent)
-        self.tabEditor   = GuiPreferencesEditor(self.theParent)
-        self.tabSyntax   = GuiPreferencesSyntax(self.theParent)
-        self.tabAuto     = GuiPreferencesAutomation(self.theParent)
-        self.tabQuote    = GuiPreferencesQuotes(self.theParent)
+        self.tabGeneral  = GuiPreferencesGeneral(self.mainGui)
+        self.tabProjects = GuiPreferencesProjects(self.mainGui)
+        self.tabDocs     = GuiPreferencesDocuments(self.mainGui)
+        self.tabEditor   = GuiPreferencesEditor(self.mainGui)
+        self.tabSyntax   = GuiPreferencesSyntax(self.mainGui)
+        self.tabAuto     = GuiPreferencesAutomation(self.mainGui)
+        self.tabQuote    = GuiPreferencesQuotes(self.mainGui)
 
         self.addTab(self.tabGeneral,  self.tr("General"))
         self.addTab(self.tabProjects, self.tr("Projects"))
@@ -102,12 +102,12 @@ class GuiPreferences(PagedDialog):
         self.tabQuote.saveValues()
 
         if needsRestart:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "Some changes will not be applied until novelWriter has been restarted."
             ), nwAlert.INFO)
 
         if refreshTree:
-            self.theParent.treeView.populateTree()
+            self.mainGui.treeView.populateTree()
 
         self._saveWindowSize()
         self.accept()
@@ -138,12 +138,12 @@ class GuiPreferences(PagedDialog):
 
 class GuiPreferencesGeneral(QWidget):
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QWidget.__init__(self, mainGui)
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainConf = novelwriter.CONFIG
+        self.mainGui  = mainGui
+        self.theTheme = mainGui.theTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -344,12 +344,12 @@ class GuiPreferencesGeneral(QWidget):
 
 class GuiPreferencesProjects(QWidget):
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QWidget.__init__(self, mainGui)
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainConf = novelwriter.CONFIG
+        self.mainGui  = mainGui
+        self.theTheme = mainGui.theTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -505,12 +505,12 @@ class GuiPreferencesProjects(QWidget):
 
 class GuiPreferencesDocuments(QWidget):
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QWidget.__init__(self, mainGui)
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainConf = novelwriter.CONFIG
+        self.mainGui  = mainGui
+        self.theTheme = mainGui.theTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -666,12 +666,12 @@ class GuiPreferencesDocuments(QWidget):
 
 class GuiPreferencesEditor(QWidget):
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QWidget.__init__(self, mainGui)
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainConf = novelwriter.CONFIG
+        self.mainGui  = mainGui
+        self.theTheme = mainGui.theTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -688,7 +688,7 @@ class GuiPreferencesEditor(QWidget):
         self.spellLanguage = QComboBox(self)
         self.spellLanguage.setMaximumWidth(mW)
 
-        langAvail = self.theParent.docEditor.spEnchant.listDictionaries()
+        langAvail = self.mainGui.docEditor.spEnchant.listDictionaries()
         if self.mainConf.hasEnchant:
             if langAvail:
                 for spTag, spProv in langAvail:
@@ -840,12 +840,12 @@ class GuiPreferencesEditor(QWidget):
 
 class GuiPreferencesSyntax(QWidget):
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QWidget.__init__(self, mainGui)
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainConf = novelwriter.CONFIG
+        self.mainGui  = mainGui
+        self.theTheme = mainGui.theTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -943,12 +943,12 @@ class GuiPreferencesSyntax(QWidget):
 
 class GuiPreferencesAutomation(QWidget):
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QWidget.__init__(self, mainGui)
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainConf = novelwriter.CONFIG
+        self.mainGui  = mainGui
+        self.theTheme = mainGui.theTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -1100,12 +1100,12 @@ class GuiPreferencesAutomation(QWidget):
 
 class GuiPreferencesQuotes(QWidget):
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QWidget.__init__(self, mainGui)
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainConf = novelwriter.CONFIG
+        self.mainGui  = mainGui
+        self.theTheme = mainGui.theTheme
 
         # The Form
         self.mainForm = QConfigLayout()

@@ -40,14 +40,14 @@ class GuiViewsBar(QToolBar):
 
     viewChangeRequested = pyqtSignal(nwView)
 
-    def __init__(self, theParent):
-        QToolBar.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QToolBar.__init__(self, mainGui)
 
         logger.debug("Initialising GuiViewsBar ...")
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainConf = novelwriter.CONFIG
+        self.mainGui  = mainGui
+        self.theTheme = mainGui.theTheme
 
         # Style
         iPx = self.mainConf.pxInt(22)
@@ -89,29 +89,29 @@ class GuiViewsBar(QToolBar):
         self.aBuild.setFont(lblFont)
         self.aBuild.setToolTip(self.tr("Build novel project"))
         self.aBuild.setIcon(self.theTheme.getIcon("view_build"))
-        self.aBuild.triggered.connect(lambda: self.theParent.showBuildProjectDialog())
+        self.aBuild.triggered.connect(lambda: self.mainGui.showBuildProjectDialog())
 
         self.aDetails = QAction(self.tr("Details"))
         self.aDetails.setFont(lblFont)
         self.aDetails.setToolTip(self.tr("Show project details"))
         self.aDetails.setIcon(self.theTheme.getIcon("proj_details"))
-        self.aDetails.triggered.connect(lambda: self.theParent.showProjectDetailsDialog())
+        self.aDetails.triggered.connect(lambda: self.mainGui.showProjectDetailsDialog())
 
         self.aStats = QAction(self.tr("Stats"))
         self.aStats.setFont(lblFont)
         self.aStats.setToolTip(self.tr("Show project statistics"))
         self.aStats.setIcon(self.theTheme.getIcon("proj_stats"))
-        self.aStats.triggered.connect(lambda: self.theParent.showWritingStatsDialog())
+        self.aStats.triggered.connect(lambda: self.mainGui.showWritingStatsDialog())
 
         # Settings Menu
         self.mSettings = QMenu()
 
         self.aPrjSettings = QAction(self.tr("Project Settings"))
-        self.aPrjSettings.triggered.connect(lambda: self.theParent.showProjectSettingsDialog())
+        self.aPrjSettings.triggered.connect(lambda: self.mainGui.showProjectSettingsDialog())
         self.mSettings.addAction(self.aPrjSettings)
 
         self.aPreferences = QAction(self.tr("Preferences"))
-        self.aPreferences.triggered.connect(lambda: self.theParent.showPreferencesDialog())
+        self.aPreferences.triggered.connect(lambda: self.mainGui.showPreferencesDialog())
         self.mSettings.addAction(self.aPreferences)
 
         self.tbSettings = QToolButton(self)

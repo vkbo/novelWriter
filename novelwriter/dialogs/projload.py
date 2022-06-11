@@ -53,15 +53,15 @@ class GuiProjectLoad(QDialog):
     C_COUNT = 1
     C_TIME  = 2
 
-    def __init__(self, theParent):
-        QDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QDialog.__init__(self, mainGui)
 
         logger.debug("Initialising GuiProjectLoad ...")
         self.setObjectName("GuiProjectLoad")
 
         self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainGui   = mainGui
+        self.theTheme  = mainGui.theTheme
         self.openState = self.NONE_STATE
         self.openPath  = None
 
@@ -80,7 +80,7 @@ class GuiProjectLoad(QDialog):
         self.setModal(True)
 
         self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(self.theParent.theTheme.getPixmap("novelwriter", (nPx, nPx)))
+        self.nwIcon.setPixmap(self.mainGui.theTheme.getPixmap("novelwriter", (nPx, nPx)))
         self.innerBox.addWidget(self.nwIcon, 0, Qt.AlignTop)
 
         self.projectForm = QGridLayout()
@@ -225,7 +225,7 @@ class GuiProjectLoad(QDialog):
         selList = self.listBox.selectedItems()
         if selList:
             projName = selList[0].text(self.C_NAME)
-            msgYes = self.theParent.askQuestion(
+            msgYes = self.mainGui.askQuestion(
                 self.tr("Remove Entry"),
                 self.tr(
                     "Remove '{0}' from the recent projects list? "
@@ -280,7 +280,7 @@ class GuiProjectLoad(QDialog):
         sortList = sorted(dataList, key=lambda x: x[1], reverse=True)
         for theTitle, theTime, theWords, projPath in sortList:
             newItem = QTreeWidgetItem([""]*4)
-            newItem.setIcon(self.C_NAME,  self.theParent.theTheme.getIcon("proj_nwx"))
+            newItem.setIcon(self.C_NAME,  self.mainGui.theTheme.getIcon("proj_nwx"))
             newItem.setText(self.C_NAME,  theTitle)
             newItem.setData(self.C_NAME,  Qt.UserRole, projPath)
             newItem.setText(self.C_COUNT, formatInt(theWords))

@@ -53,16 +53,16 @@ class GuiDocViewer(QTextBrowser):
 
     loadDocumentTagRequest = pyqtSignal(str, Enum)
 
-    def __init__(self, theParent):
-        QTextBrowser.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QTextBrowser.__init__(self, mainGui)
 
         logger.debug("Initialising GuiDocViewer ...")
 
         # Class Variables
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.theTheme   = mainGui.theTheme
+        self.theProject = mainGui.theProject
 
         # Internal Variables
         self._docHandle = None
@@ -221,7 +221,7 @@ class GuiDocViewer(QTextBrowser):
         self.updateDocMargins()
 
         # Make sure the main GUI knows we changed the content
-        self.theParent.viewMeta.refreshReferences(tHandle)
+        self.mainGui.viewMeta.refreshReferences(tHandle)
 
         # Since we change the content while it may still be rendering, we mark
         # the document dirty again to make sure it's re-rendered properly.
@@ -714,7 +714,7 @@ class GuiDocViewHeader(QWidget):
 
         self.mainConf   = novelwriter.CONFIG
         self.docViewer  = docViewer
-        self.theParent  = docViewer.theParent
+        self.mainGui    = docViewer.mainGui
         self.theProject = docViewer.theProject
         self.theTheme   = docViewer.theTheme
 
@@ -882,14 +882,14 @@ class GuiDocViewHeader(QWidget):
     def _closeDocument(self):
         """Trigger the close editor/viewer on the main window.
         """
-        self.theParent.closeDocViewer()
+        self.mainGui.closeDocViewer()
         return
 
     def _refreshDocument(self):
         """Reload the content of the document.
         """
-        if self.docViewer.docHandle() == self.theParent.docEditor.docHandle():
-            self.theParent.saveDocument()
+        if self.docViewer.docHandle() == self.mainGui.docEditor.docHandle():
+            self.mainGui.saveDocument()
         self.docViewer.reloadText()
         return
 
@@ -901,7 +901,7 @@ class GuiDocViewHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.theParent.treeView.setSelectedHandle(self._docHandle, doScroll=True)
+        self.mainGui.treeView.setSelectedHandle(self._docHandle, doScroll=True)
         return
 
 # END Class GuiDocViewHeader
@@ -921,9 +921,9 @@ class GuiDocViewFooter(QWidget):
 
         self.mainConf  = novelwriter.CONFIG
         self.docViewer = docViewer
-        self.theParent = docViewer.theParent
+        self.mainGui   = docViewer.mainGui
         self.theTheme  = docViewer.theTheme
-        self.viewMeta  = docViewer.theParent.viewMeta
+        self.viewMeta  = docViewer.mainGui.viewMeta
 
         # Internal Variables
         self._docHandle = None
@@ -1140,14 +1140,14 @@ class GuiDocViewFooter(QWidget):
 
 class GuiDocViewDetails(QScrollArea):
 
-    def __init__(self, theParent):
-        QScrollArea.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QScrollArea.__init__(self, mainGui)
 
         logger.debug("Initialising GuiDocViewDetails ...")
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theProject = theParent.theProject
-        self.theTheme   = theParent.theTheme
+        self.mainGui    = mainGui
+        self.theProject = mainGui.theProject
+        self.theTheme   = mainGui.theTheme
 
         self.refList = QLabel("")
         self.refList.setWordWrap(True)
@@ -1181,7 +1181,7 @@ class GuiDocViewDetails(QScrollArea):
         """Update the current list of document references from the
         project index.
         """
-        if self.theParent.docViewer.stickyRef:
+        if self.mainGui.docViewer.stickyRef:
             return
 
         theRefs = self.theProject.index.getBackReferenceList(tHandle)
@@ -1209,7 +1209,7 @@ class GuiDocViewDetails(QScrollArea):
         if len(theLink) == 21:
             tHandle = theLink[:13]
             tAnchor = theLink[13:]
-            self.theParent.viewDocument(tHandle, tAnchor)
+            self.mainGui.viewDocument(tHandle, tAnchor)
         return
 
 # END Class GuiDocViewDetails

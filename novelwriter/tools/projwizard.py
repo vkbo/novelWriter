@@ -48,15 +48,15 @@ PAGE_FINAL  = 4
 
 class GuiProjectWizard(QWizard):
 
-    def __init__(self, theParent):
-        QWizard.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QWizard.__init__(self, mainGui)
 
         logger.debug("Initialising GuiProjectWizard ...")
         self.setObjectName("GuiProjectWizard")
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainConf = novelwriter.CONFIG
+        self.mainGui  = mainGui
+        self.theTheme = mainGui.theTheme
 
         self.sideImage = self.theTheme.loadDecoration(
             "wiz-back", None, self.mainConf.pxInt(370)
