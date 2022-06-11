@@ -5,7 +5,6 @@ GUI classes for the main window project tree
 
 File History:
 Created: 2018-09-29 [0.0.1] GuiProjectTree
-Created: 2020-06-04 [0.7]   GuiProjectTreeMenu
 Created: 2022-06-06 [1.7b1] GuiProjectView
 Created: 2022-06-06 [1.7b1] GuiProjectToolBar
 
@@ -35,9 +34,9 @@ from time import time
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon, QPalette
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QAction, QDialog, QFrame, QHBoxLayout, QHeaderView,
-    QInputDialog, QLabel, QMenu, QShortcut, QSizePolicy, QToolButton,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView, QDialog, QFrame, QHBoxLayout, QHeaderView, QInputDialog,
+    QLabel, QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter.core import NWDoc
@@ -211,37 +210,37 @@ class GuiProjectToolBar(QWidget):
         # Add Item Menu
         self.mAdd = QMenu()
 
-        self.aAddEmpty = self.mAdd.addAction(self.tr("Plain Document"))
+        self.aAddEmpty = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["document"]))
         self.aAddEmpty.setIcon(self.theTheme.getIcon("proj_document"))
         self.aAddEmpty.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=0, isNote=False)
         )
 
-        self.aAddChap = self.mAdd.addAction(self.tr("Chapter Document"))
+        self.aAddChap = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["doc_h2"]))
         self.aAddChap.setIcon(self.theTheme.getIcon("proj_chapter"))
         self.aAddChap.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=2, isNote=False)
         )
 
-        self.aAddScene = self.mAdd.addAction(self.tr("Scene Document"))
+        self.aAddScene = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["doc_h3"]))
         self.aAddScene.setIcon(self.theTheme.getIcon("proj_scene"))
         self.aAddScene.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=3, isNote=False)
         )
 
-        self.aAddNote = self.mAdd.addAction(self.tr("Project Note"))
+        self.aAddNote = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["note"]))
         self.aAddNote.setIcon(self.theTheme.getIcon("proj_note"))
         self.aAddNote.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
         )
 
-        self.aAddFolder = self.mAdd.addAction(self.tr("Folder"))
+        self.aAddFolder = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["folder"]))
         self.aAddFolder.setIcon(self.theTheme.getIcon("proj_folder"))
         self.aAddFolder.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FOLDER)
         )
 
-        self.mAddRoot = self.mAdd.addMenu(self.tr("Root Folder"))
+        self.mAddRoot = self.mAdd.addMenu(trConst(nwLabels.ITEM_DESCRIPTION["root"]))
         self._addRootFolderEntry(nwItemClass.NOVEL)
         self._addRootFolderEntry(nwItemClass.ARCHIVE)
         self.mAddRoot.addSeparator()
@@ -267,6 +266,9 @@ class GuiProjectToolBar(QWidget):
 
         self.aMoreUndo = self.mMore.addAction(self.tr("Undo Move"))
         self.aMoreUndo.triggered.connect(lambda: self.projTree.undoLastMove())
+
+        self.aEmptyTrash = self.mMore.addAction(self.tr("Empty Trash"))
+        self.aEmptyTrash.triggered.connect(lambda: self.projTree.emptyTrash())
 
         self.tbMore = QToolButton(self)
         self.tbMore.setToolTip(self.tr("More Options"))
@@ -335,9 +337,8 @@ class GuiProjectTree(QTreeWidget):
         ##
 
         # Context Menu
-        self.ctxMenu = GuiProjectTreeMenu(self)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.customContextMenuRequested.connect(self._rightClickMenu)
+        self.customContextMenuRequested.connect(self._openContextMenu)
 
         # Tree Settings
         iPx = self.theTheme.baseIconSize
@@ -972,19 +973,106 @@ class GuiProjectTree(QTreeWidget):
         return
 
     @pyqtSlot("QPoint")
-    def _rightClickMenu(self, clickPos):
+    def _openContextMenu(self, clickPos):
         """The user right clicked an element in the project tree, so we
         open a context menu in-place.
         """
+        tItem = None
         selItem = self.itemAt(clickPos)
         if isinstance(selItem, QTreeWidgetItem):
             tHandle = selItem.data(self.C_NAME, Qt.UserRole)
-            self.setSelectedHandle(tHandle)  # Just to be safe
             tItem = self.theProject.tree[tHandle]
-            if tItem is not None:
-                if self.ctxMenu.filterActions(tItem):
-                    # Only open menu if any actions remain after filter
-                    self.ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
+
+        if tItem is None:
+            logger.debug("No item found")
+
+        ctxMenu = QMenu()
+
+        # Trash Folder
+        # ============
+
+        trashHandle = self.theProject.tree.trashRoot()
+        if tItem.itemHandle == trashHandle and trashHandle is not None:
+            # The trash folder only has one option
+            ctxMenu.addAction(
+                self.tr("Empty Trash"), lambda: self.emptyTrash()
+            )
+            ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
+            return
+
+        # Document Actions
+        # ================
+
+        isFile = tItem.itemType == nwItemType.FILE
+        if isFile:
+            ctxMenu.addAction(
+                self.tr("Open Document"),
+                lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT)
+            )
+            ctxMenu.addAction(
+                self.tr("View Document"),
+                lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW)
+            )
+            ctxMenu.addSeparator()
+
+        # Edit Item Settings
+        # ==================
+
+        if isFile:
+            ctxMenu.addAction(
+                self.tr("Toggle Exported"), lambda: self._toggleItemExported(tHandle)
+            )
+
+        if tItem.isNovelLike():
+            mStatus = ctxMenu.addMenu(self.tr("Change Status"))
+            for n, (key, entry) in enumerate(self.theProject.statusItems.items()):
+                aStatus = mStatus.addAction(entry["icon"], entry["name"])
+                aStatus.triggered.connect(
+                    lambda n, key=key: self._changeItemStatus(tHandle, key)
+                )
+        else:
+            mImport = ctxMenu.addMenu(self.tr("Change Importance"))
+            for n, (key, entry) in enumerate(self.theProject.importItems.items()):
+                aImport = mImport.addAction(entry["icon"], entry["name"])
+                aImport.triggered.connect(
+                    lambda n, key=key: self._changeItemImport(tHandle, key)
+                )
+
+        if isFile and tItem.documentAllowed():
+            if tItem.itemLayout == nwItemLayout.NOTE:
+                ctxMenu.addAction(
+                    self.tr("Change to {0}").format(
+                        trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
+                    ),
+                    lambda: self._changeItemLayout(tHandle, nwItemLayout.DOCUMENT)
+                )
+            else:
+                ctxMenu.addAction(
+                    self.tr("Change to {0}").format(
+                        trConst(nwLabels.LAYOUT_NAME[nwItemLayout.NOTE])
+                    ),
+                    lambda: self._changeItemLayout(tHandle, nwItemLayout.NOTE)
+                )
+
+        ctxMenu.addSeparator()
+
+        # Major Item Actions
+        # ==================
+
+        ctxMenu.addAction(
+            self.tr("Edit Item Settings"), lambda: self.editTreeItem(tHandle)
+        )
+
+        if tItem.itemClass == nwItemClass.TRASH or tItem.itemType == nwItemType.ROOT:
+            ctxMenu.addAction(
+                self.tr("Delete Permanently"), lambda: self.deleteItem(tHandle)
+            )
+        else:
+            ctxMenu.addAction(
+                self.tr("Move to Trash"), lambda: self.deleteItem(tHandle)
+            )
+
+        ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
 
         return
 
@@ -1121,6 +1209,46 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
+    def _toggleItemExported(self, tHandle):
+        """Toggle the exported status of an item.
+        """
+        tItem = self.theProject.tree[tHandle]
+        if tItem is not None:
+            tItem.setExported(not tItem.isExported)
+            self.setTreeItemValues(tItem.itemHandle)
+        return
+
+    def _changeItemStatus(self, tHandle, tStatus):
+        """Set a new status value of an item.
+        """
+        tItem = self.theProject.tree[tHandle]
+        if tItem is not None:
+            tItem.setStatus(tStatus)
+            self.setTreeItemValues(tItem.itemHandle)
+        return
+
+    def _changeItemImport(self, tHandle, tImport):
+        """Set a new importance value of an item.
+        """
+        tItem = self.theProject.tree[tHandle]
+        if tItem is not None:
+            tItem.setImport(tImport)
+            self.setTreeItemValues(tItem.itemHandle)
+        return
+
+    def _changeItemLayout(self, tHandle, itemLayout):
+        """Set a new item layout value of an item.
+        """
+        tItem = self.theProject.tree[tHandle]
+        if tItem is not None:
+            if itemLayout == nwItemLayout.DOCUMENT and tItem.documentAllowed():
+                tItem.setLayout(nwItemLayout.DOCUMENT)
+                self.setTreeItemValues(tItem.itemHandle)
+            elif itemLayout == nwItemLayout.NOTE:
+                tItem.setLayout(nwItemLayout.NOTE)
+                self.setTreeItemValues(tItem.itemHandle)
+        return
+
     def _scanChildren(self, theList, tItem, tIndex):
         """This is a recursive function returning all items in a tree
         starting at a given QTreeWidgetItem.
@@ -1244,116 +1372,3 @@ class GuiProjectTree(QTreeWidget):
         return
 
 # END Class GuiProjectTree
-
-
-class GuiProjectTreeMenu(QMenu):
-
-    def __init__(self, theTree):
-        QMenu.__init__(self, theTree)
-
-        self.theTree = theTree
-        self.theItem = None
-
-        self.editItem = QAction(self.tr("Edit Project Item"), self)
-        self.editItem.triggered.connect(self._doEditItem)
-        self.addAction(self.editItem)
-
-        self.openItem = QAction(self.tr("Open Document"), self)
-        self.openItem.triggered.connect(self._doOpenItem)
-        self.addAction(self.openItem)
-
-        self.viewItem = QAction(self.tr("View Document"), self)
-        self.viewItem.triggered.connect(self._doViewItem)
-        self.addAction(self.viewItem)
-
-        self.toggleExp = QAction(self.tr("Toggle Included Flag"), self)
-        self.toggleExp.triggered.connect(self._doToggleExported)
-        self.addAction(self.toggleExp)
-
-        self.deleteItem = QAction(self.tr("Delete Item"), self)
-        self.deleteItem.triggered.connect(self._doDeleteItem)
-        self.addAction(self.deleteItem)
-
-        self.emptyTrash = QAction(self.tr("Empty Trash"), self)
-        self.emptyTrash.triggered.connect(self._doEmptyTrash)
-        self.addAction(self.emptyTrash)
-
-        return
-
-    def filterActions(self, theItem):
-        """Filter the menu entries available based on the properties of
-        the item the menu was activated on.
-        """
-        self.theItem = theItem
-
-        if theItem is None:
-            logger.error("Failed to extract information to build tree context menu")
-            return False
-
-        trashHandle = self.theTree.theProject.tree.trashRoot()
-
-        isTrash = theItem.itemHandle == trashHandle and trashHandle is not None
-        isFile = theItem.itemType == nwItemType.FILE
-
-        self.editItem.setVisible(not isTrash)
-        self.openItem.setVisible(isFile)
-        self.viewItem.setVisible(isFile)
-        self.toggleExp.setVisible(isFile)
-        self.deleteItem.setVisible(not isTrash)
-        self.emptyTrash.setVisible(isTrash)
-
-        return True
-
-    ##
-    #  Slots
-    ##
-
-    @pyqtSlot()
-    def _doOpenItem(self):
-        """Forward the open document call to the main GUI window.
-        """
-        if self.theItem is not None:
-            self.theTree.theParent.openDocument(self.theItem.itemHandle, doScroll=False)
-        return
-
-    @pyqtSlot()
-    def _doViewItem(self):
-        """Forward the view document call to the main GUI window.
-        """
-        if self.theItem is not None:
-            self.theTree.theParent.viewDocument(self.theItem.itemHandle)
-        return
-
-    @pyqtSlot()
-    def _doEditItem(self):
-        """Forward the edit item call to the main GUI window.
-        """
-        if self.theItem is not None:
-            self.theTree.theParent.editItem()
-        return
-
-    @pyqtSlot()
-    def _doToggleExported(self):
-        """Flip the isExported flag of the current item.
-        """
-        if self.theItem is not None:
-            self.theItem.setExported(not self.theItem.isExported)
-            self.theTree.setTreeItemValues(self.theItem.itemHandle)
-        return
-
-    @pyqtSlot()
-    def _doDeleteItem(self):
-        """Forward the delete item call to the project tree.
-        """
-        if self.theItem is not None:
-            self.theTree.deleteItem()
-        return
-
-    @pyqtSlot()
-    def _doEmptyTrash(self):
-        """Forward the empty trash call to the project tree.
-        """
-        self.theTree.emptyTrash()
-        return
-
-# END Class GuiProjectTreeMenu
