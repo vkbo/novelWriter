@@ -985,6 +985,7 @@ class GuiProjectTree(QTreeWidget):
 
         if tItem is None:
             logger.debug("No item found")
+            return False
 
         ctxMenu = QMenu()
 
@@ -998,7 +999,7 @@ class GuiProjectTree(QTreeWidget):
                 self.tr("Empty Trash"), lambda: self.emptyTrash()
             )
             ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
-            return
+            return True
 
         # Document Actions
         # ================
@@ -1074,7 +1075,7 @@ class GuiProjectTree(QTreeWidget):
 
         ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
 
-        return
+        return True
 
     ##
     #  Events

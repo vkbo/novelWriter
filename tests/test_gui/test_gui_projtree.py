@@ -24,10 +24,10 @@ import os
 
 from tools import buildTestProject
 
-from PyQt5.QtWidgets import QMessageBox, QInputDialog
+from PyQt5.QtWidgets import QMessageBox, QInputDialog, QMenu
 
 from novelwriter.gui.projtree import GuiProjectTree
-from novelwriter.enum import nwItemType, nwItemClass
+from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass
 
 
 @pytest.mark.gui
@@ -454,3 +454,89 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     nwGUI.closeProject()
 
 # END Test testGuiProjTree_DeleteItems
+
+
+@pytest.mark.gui
+def testGuiProjTree_ContextMenu(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd):
+    """Test the building of the project tree context menu. All this does
+    is test that the menu builds. It doesn't open the actual menu,
+    """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
+    monkeypatch.setattr(QMenu, "exec_", lambda *a: None)
+
+    # Create a project
+    prjDir = os.path.join(fncDir, "project")
+    buildTestProject(nwGUI, prjDir)
+
+    # Handles for new objects
+    hNovelRoot   = "0000000000008"
+    hTitlePage   = "000000000000c"
+    hChapterDir  = "000000000000d"
+    hChapterFile = "000000000000e"
+    hCharRoot    = "000000000000a"
+    hCharNote    = "0000000000011"
+    hNovelNote   = "0000000000012"
+
+    projTree = nwGUI.treeView.projTree
+    projTree._getTreeItem(hNovelRoot).setExpanded(True)
+    projTree._getTreeItem(hChapterDir).setExpanded(True)
+
+    projTree._addTrashRoot()
+    hTrashRoot = projTree.theProject.tree.trashRoot()
+
+    projTree.setSelectedHandle(hCharRoot)
+    projTree.newTreeItem(nwItemType.FILE)
+    projTree.setSelectedHandle(hNovelRoot)
+    projTree.newTreeItem(nwItemType.FILE, isNote=True)
+
+    def itemPos(tHandle):
+        return projTree.visualItemRect(projTree._getTreeItem(tHandle)).center()
+
+    # No item under menu
+    assert projTree._openContextMenu(projTree.viewport().rect().bottomRight()) is False
+
+    # Generate the possible menu combinarions
+    assert projTree._openContextMenu(itemPos(hTrashRoot)) is True
+    assert projTree._openContextMenu(itemPos(hNovelRoot)) is True
+    assert projTree._openContextMenu(itemPos(hNovelNote)) is True
+    assert projTree._openContextMenu(itemPos(hTitlePage)) is True
+    assert projTree._openContextMenu(itemPos(hChapterDir)) is True
+    assert projTree._openContextMenu(itemPos(hChapterFile)) is True
+    assert projTree._openContextMenu(itemPos(hCharRoot)) is True
+    assert projTree._openContextMenu(itemPos(hCharNote)) is True
+
+    # Direct Edit Functions
+    # =====================
+    # Trigger the dedicated functions the menu entries connect to
+    nwItem = projTree.theProject.tree[hNovelNote]
+
+    # Toggle exported flag
+    assert nwItem.isExported is True
+    projTree._toggleItemExported(hNovelNote)
+    assert nwItem.isExported is False
+
+    # Change item status
+    assert nwItem.itemStatus == "s000000"
+    projTree._changeItemStatus(hNovelNote, "s000001")
+    assert nwItem.itemStatus == "s000001"
+
+    # Change item importance
+    assert nwItem.itemImport == "i000004"
+    projTree._changeItemImport(hNovelNote, "i000005")
+    assert nwItem.itemImport == "i000005"
+
+    # Change item layout
+    assert nwItem.itemLayout == nwItemLayout.NOTE
+    projTree._changeItemLayout(hNovelNote, nwItemLayout.DOCUMENT)
+    assert nwItem.itemLayout == nwItemLayout.DOCUMENT
+    projTree._changeItemLayout(hNovelNote, nwItemLayout.NOTE)
+    assert nwItem.itemLayout == nwItemLayout.NOTE
+
+    # qtbot.stop()
+
+# END Test testGuiProjTree_ContextMenu
