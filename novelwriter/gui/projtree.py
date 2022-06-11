@@ -97,6 +97,11 @@ class GuiProjectView(QWidget):
         self.keyUndoMv.setContext(Qt.WidgetShortcut)
         self.keyUndoMv.activated.connect(lambda: self.projTree.undoLastMove())
 
+        self.keyContext = QShortcut(self.projTree)
+        self.keyContext.setKey("Ctrl+.")
+        self.keyContext.setContext(Qt.WidgetShortcut)
+        self.keyContext.activated.connect(lambda: self.projTree.openContextOnSelected())
+
         # Function Mappings
         self.revealNewTreeItem = self.projTree.revealNewTreeItem
         self.renameTreeItem = self.projTree.renameTreeItem
@@ -913,9 +918,6 @@ class GuiProjectTree(QTreeWidget):
     def setSelectedHandle(self, tHandle, doScroll=False):
         """Set a specific handle as the selected item.
         """
-        if tHandle not in self._treeMap:
-            return False
-
         tItem = self._getTreeItem(tHandle)
         if tItem is None:
             return False
@@ -928,6 +930,15 @@ class GuiProjectTree(QTreeWidget):
             self.scrollTo(selItems[0], QAbstractItemView.PositionAtCenter)
 
         return True
+
+    def openContextOnSelected(self):
+        """Open the context menu on the current selected item.
+        """
+        selItem = self.selectedItems()
+        if selItem:
+            pos = self.visualItemRect(selItem[0]).center()
+            return self._openContextMenu(pos)
+        return False
 
     def changedSince(self, checkTime):
         """Check if the tree has changed since a given time.

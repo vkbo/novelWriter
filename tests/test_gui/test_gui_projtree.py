@@ -511,6 +511,12 @@ def testGuiProjTree_ContextMenu(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     assert projTree._openContextMenu(itemPos(hCharRoot)) is True
     assert projTree._openContextMenu(itemPos(hCharNote)) is True
 
+    # Check the keyboard shortcut handler as well
+    projTree.setSelectedHandle(hNovelRoot)
+    assert projTree.openContextOnSelected() is True
+    projTree.clearSelection()
+    assert projTree.openContextOnSelected() is False
+
     # Direct Edit Functions
     # =====================
     # Trigger the dedicated functions the menu entries connect to
