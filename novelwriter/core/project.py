@@ -438,7 +438,7 @@ class NWProject():
         legacyList = []  # Cleanup is done later
         for projItem in os.listdir(self.projPath):
             logger.verbose("Project contains: %s", projItem)
-            if projItem.startswith("data_"):
+            if projItem.startswith("data_") and len(projItem) == 6:
                 legacyList.append(projItem)
 
         # Project Lock
@@ -500,7 +500,7 @@ class NWProject():
         # Check File Type
         # ===============
 
-        if not nwxRoot == "novelWriterXML":
+        if nwxRoot != "novelWriterXML":
             self.mainGui.makeAlert(self.tr(
                 "Project file does not appear to be a novelWriterXML file."
             ), nwAlert.ERROR)
@@ -642,11 +642,14 @@ class NWProject():
 
         # Sort out old file locations
         if legacyList:
-            errList = []
-            for projItem in legacyList:
-                errList = self._legacyDataFolder(projItem, errList)
-            if errList:
-                self.mainGui.makeAlert(errList, nwAlert.ERROR)
+            try:
+                for projItem in legacyList:
+                    self._legacyDataFolder(projItem)
+            except Exception:
+                self.mainGui.makeAlert(self.tr(
+                    "There was an error while converting project version 1.0. "
+                    "Some data may not have been preserved."
+                ), nwAlert.ERROR)
 
         # Clean up no longer used files
         self._deprecatedFiles()
@@ -1558,82 +1561,37 @@ class NWProject():
     #  Legacy Data Structure Handlers
     ##
 
-    def _legacyDataFolder(self, theFolder, errList):
+    def _legacyDataFolder(self, dataDir):
         """Clean up legacy data folders.
         """
-        theData = os.path.join(self.projPath, theFolder)
-        if not os.path.isdir(theData):
-            errList.append(self.tr("Not a folder: {0}").format(theData))
-            return errList
+        dataPath = os.path.join(self.projPath, dataDir)
+        if not os.path.isdir(dataPath):
+            return False
 
-        logger.info("Old data folder %s found", theFolder)
+        logger.info("Old data folder found: %s", dataDir)
 
         # Move Documents to Content
-        for dataItem in os.listdir(theData):
-            theFile = os.path.join(theData, dataItem)
-            if not os.path.isfile(theFile):
-                theErr = self._moveUnknownItem(theData, dataItem)
-                if theErr:
-                    errList.append(theErr)
+        for dataItem in os.listdir(dataPath):
+            dataFile = os.path.join(dataPath, dataItem)
+            if not os.path.isfile(dataFile):
                 continue
 
             if len(dataItem) == 21 and dataItem.endswith("_main.nwd"):
-                tHandle = theFolder[-1]+dataItem[:12]
-                newPath = os.path.join(self.projContent, tHandle+".nwd")
-                try:
-                    os.rename(theFile, newPath)
-                    logger.info("Moved file: %s", theFile)
-                    logger.info("New location: %s", newPath)
-                except Exception:
-                    errList.append(self.tr("Could not move: {0}").format(theFile))
-                    logger.error("Could not move: %s", theFile)
-                    logException()
+                tHandle = dataDir[-1] + dataItem[:12]
+                newPath = os.path.join(self.projContent, f"{tHandle}.nwd")
+                os.rename(dataFile, newPath)
+                logger.info("Moved file: %s", dataFile)
 
             elif len(dataItem) == 21 and dataItem.endswith("_main.bak"):
-                try:
-                    os.unlink(theFile)
-                    logger.info("Deleted file: %s", theFile)
-                except Exception:
-                    errList.append(self.tr("Could not delete: {0}").format(theFile))
-                    logger.error("Could not delete: %s", theFile)
-                    logException()
-
-            else:
-                theErr = self._moveUnknownItem(theData, dataItem)
-                if theErr:
-                    errList.append(theErr)
+                os.unlink(dataFile)
+                logger.info("Deleted file: %s", dataFile)
 
         # Remove Data Folder
-        try:
-            os.rmdir(theData)
-            logger.info("Deleted folder: %s", theFolder)
-        except Exception:
-            errList.append(self.tr("Could not delete: {0}").format(theFolder))
-            logger.error("Could not delete: %s", theFolder)
-            logException()
+        if not os.listdir(dataPath):
+            os.rmdir(dataPath)
+            logger.info("Deleted folder: %s", dataDir)
 
-        return errList
-
-    def _moveUnknownItem(self, theDir, theItem):
-        """Move an item that doesn't belong in the project folder to
-        a junk folder.
-        """
-        theJunk = os.path.join(self.projPath, "junk")
-        if not self._checkFolder(theJunk):
-            return self.tr("Could not make folder: {0}").format(theJunk)
-
-        theSrc = os.path.join(theDir, theItem)
-        theDst = os.path.join(theJunk, theItem)
-
-        try:
-            os.rename(theSrc, theDst)
-            logger.info("Moved to junk: %s", theSrc)
-        except Exception:
-            logger.error("Could not move item %s to junk", theSrc)
-            logException()
-            return self.tr("Could not move item {0} to {1}.").format(theSrc, theJunk)
-
-        return ""
+        return True
 
     def _deprecatedFiles(self):
         """Delete files that are no longer used by novelWriter.

@@ -463,12 +463,15 @@ def testCoreProject_Open(monkeypatch, nwMinimal, mockGUI):
     os.rename(oName, rName)
 
     # Add some legacy stuff that cannot be removed
-    writeFile(os.path.join(nwMinimal, "junk"), "stuff")
-    os.mkdir(os.path.join(nwMinimal, "data_0"))
-    writeFile(os.path.join(nwMinimal, "data_0", "junk"), "stuff")
-    mockGUI.clear()
-    assert theProject.openProject(nwMinimal) is True
-    assert "data_0" in mockGUI.lastAlert
+    with monkeypatch.context() as mp:
+        mp.setattr(theProject, "_legacyDataFolder", causeOSError)
+        os.mkdir(os.path.join(nwMinimal, "data_0"))
+        writeFile(os.path.join(nwMinimal, "data_0", "123456789abc_main.nwd"), "stuff")
+        writeFile(os.path.join(nwMinimal, "data_0", "123456789abc_main.bak"), "stuff")
+        mockGUI.clear()
+        assert theProject.openProject(nwMinimal) is True
+        assert "version 1.0" in mockGUI.lastAlert
+
     assert theProject.closeProject()
 
 # END Test testCoreProject_Open
@@ -1141,14 +1144,6 @@ def testCoreProject_OldFormat(mockGUI, nwOldProj):
         os.path.join(nwOldProj, "meta",  "sessionLogOptions.json"),
     ]
 
-    # Add some files that shouldn't be there
-    deleteFiles.append(os.path.join(nwOldProj, "data_f", "whatnow.nwd"))
-    deleteFiles.append(os.path.join(nwOldProj, "data_f", "whatnow.txt"))
-
-    # Add some folders that shouldn't be there
-    os.mkdir(os.path.join(nwOldProj, "stuff"))
-    os.mkdir(os.path.join(nwOldProj, "data_1", "stuff"))
-
     # Create mock files
     os.mkdir(os.path.join(nwOldProj, "cache"))
     for aFile in deleteFiles:
@@ -1162,19 +1157,12 @@ def testCoreProject_OldFormat(mockGUI, nwOldProj):
     for aFile in deleteFiles:
         assert not os.path.isfile(aFile)
 
-    assert not os.path.isdir(os.path.join(nwOldProj, "data_1", "stuff"))
     assert not os.path.isdir(os.path.join(nwOldProj, "data_1"))
     assert not os.path.isdir(os.path.join(nwOldProj, "data_7"))
     assert not os.path.isdir(os.path.join(nwOldProj, "data_8"))
     assert not os.path.isdir(os.path.join(nwOldProj, "data_9"))
     assert not os.path.isdir(os.path.join(nwOldProj, "data_a"))
     assert not os.path.isdir(os.path.join(nwOldProj, "data_f"))
-
-    # Check stuff that has been moved
-    assert os.path.isdir(os.path.join(nwOldProj, "junk"))
-    assert os.path.isdir(os.path.join(nwOldProj, "junk", "stuff"))
-    assert os.path.isfile(os.path.join(nwOldProj, "junk", "whatnow.nwd"))
-    assert os.path.isfile(os.path.join(nwOldProj, "junk", "whatnow.txt"))
 
     # Check that files we want to keep are in the right place
     assert os.path.isdir(os.path.join(nwOldProj, "cache"))
@@ -1217,7 +1205,7 @@ def testCoreProject_LegacyData(monkeypatch, mockGUI, fncDir):
 
     with monkeypatch.context() as mp:
         mp.setattr("os.unlink", causeOSError)
-        assert not theProject._deprecatedFiles()
+        assert theProject._deprecatedFiles() is False
 
     assert theProject._deprecatedFiles()
     assert not os.path.isfile(tstFile)
@@ -1226,63 +1214,36 @@ def testCoreProject_LegacyData(monkeypatch, mockGUI, fncDir):
     tstFile = os.path.join(fncDir, "data_0")
     writeFile(tstFile, "stuff")
     assert os.path.isfile(tstFile)
-
-    errList = []
-    errList = theProject._legacyDataFolder(tstFile, errList)
-    assert len(errList) > 0
-
-    # Move folder in data folder, shouldn't be there
-    tstData = os.path.join(fncDir, "data_1")
-    errItem = os.path.join(fncDir, "data_1", "stuff")
-    os.mkdir(tstData)
-    os.mkdir(errItem)
-    assert os.path.isdir(tstData)
-    assert os.path.isdir(errItem)
-
-    # This causes a failure to create the 'junk' folder
-    with monkeypatch.context() as mp:
-        mp.setattr("os.mkdir", causeOSError)
-        errList = []
-        errList = theProject._legacyDataFolder(tstData, errList)
-        assert len(errList) > 0
-
-    # This causes a failure to move 'stuff' to 'junk'
-    with monkeypatch.context() as mp:
-        mp.setattr("os.rename", causeOSError)
-        errList = []
-        errList = theProject._legacyDataFolder(tstData, errList)
-        assert len(errList) > 0
-
-    # This should be successful
-    errList = []
-    errList = theProject._legacyDataFolder(tstData, errList)
-    assert len(errList) == 0
-    assert os.path.isdir(os.path.join(fncDir, "junk", "stuff"))
+    assert theProject._legacyDataFolder(tstFile) is False
 
     # Check renaming/deleting of old document files
-    tstData = os.path.join(fncDir, "data_2")
-    tstDoc1m = os.path.join(tstData, "000000000001_main.nwd")
-    tstDoc1b = os.path.join(tstData, "000000000001_main.bak")
-    tstDoc2m = os.path.join(tstData, "000000000002_main.nwd")
-    tstDoc2b = os.path.join(tstData, "000000000002_main.bak")
-    tstDoc3m = os.path.join(tstData, "tooshort003_main.nwd")
-    tstDoc3b = os.path.join(tstData, "tooshort003_main.bak")
+    tstData2 = os.path.join(fncDir, "data_2")
+    tstData3 = os.path.join(fncDir, "data_3")
+    tstDoc1m = os.path.join(tstData2, "000000000001_main.nwd")
+    tstDoc1b = os.path.join(tstData2, "000000000001_main.bak")
+    tstDoc2m = os.path.join(tstData2, "000000000002_main.nwd")
+    tstDoc2b = os.path.join(tstData2, "000000000002_main.bak")
+    tstDoc3m = os.path.join(tstData3, "tooshort003_main.nwd")
+    tstDoc3b = os.path.join(tstData3, "tooshort003_main.bak")
+    tstDir4a = os.path.join(tstData3, "stuff")
 
-    os.mkdir(tstData)
+    os.mkdir(tstData2)
+    os.mkdir(tstData3)
     writeFile(tstDoc1m, "stuff")
     writeFile(tstDoc1b, "stuff")
     writeFile(tstDoc2m, "stuff")
     writeFile(tstDoc2b, "stuff")
     writeFile(tstDoc3m, "stuff")
     writeFile(tstDoc3b, "stuff")
+    os.mkdir(tstDir4a)
 
     # Make the above fail
     with monkeypatch.context() as mp:
         mp.setattr("os.rename", causeOSError)
         mp.setattr("os.unlink", causeOSError)
-        errList = []
-        errList = theProject._legacyDataFolder(tstData, errList)
-        assert len(errList) > 0
+        with pytest.raises(OSError):
+            theProject._legacyDataFolder(tstData2)
+            theProject._legacyDataFolder(tstData3)
         assert os.path.isfile(tstDoc1m)
         assert os.path.isfile(tstDoc1b)
         assert os.path.isfile(tstDoc2m)
@@ -1291,15 +1252,16 @@ def testCoreProject_LegacyData(monkeypatch, mockGUI, fncDir):
         assert os.path.isfile(tstDoc3b)
 
     # And succeed ...
-    errList = []
-    errList = theProject._legacyDataFolder(tstData, errList)
-    assert len(errList) == 0
+    assert theProject._legacyDataFolder(tstData2) is True
+    assert theProject._legacyDataFolder(tstData3) is True
 
-    assert not os.path.isdir(tstData)
+    assert not os.path.isdir(tstData2)
+    assert os.path.isdir(tstData3)
     assert os.path.isfile(os.path.join(fncDir, "content", "2000000000001.nwd"))
     assert os.path.isfile(os.path.join(fncDir, "content", "2000000000002.nwd"))
-    assert os.path.isfile(os.path.join(fncDir, "junk", "tooshort003_main.nwd"))
-    assert os.path.isfile(os.path.join(fncDir, "junk", "tooshort003_main.bak"))
+    assert os.path.isfile(os.path.join(fncDir, tstData3, "tooshort003_main.nwd"))
+    assert os.path.isfile(os.path.join(fncDir, tstData3, "tooshort003_main.bak"))
+    assert os.path.isdir(tstDir4a)
 
 # END Test testCoreProject_LegacyData
 
