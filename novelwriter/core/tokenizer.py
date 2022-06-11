@@ -82,7 +82,6 @@ class Tokenizer(ABC):
     def __init__(self, theProject):
 
         self.theProject = theProject
-        self.theParent  = theProject.theParent
         self.mainConf   = novelwriter.CONFIG
 
         # Data Variables

@@ -45,22 +45,22 @@ class GuiNovelTree(QTreeWidget):
     C_WORDS = 1
     C_POV   = 2
 
-    def __init__(self, theParent):
-        QTreeWidget.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QTreeWidget.__init__(self, mainGui)
 
         logger.debug("Initialising GuiNovelTree ...")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
+        self.theProject = mainGui.theProject
 
         # Internal Variables
         self._treeMap   = {}
         self._lastBuild = 0
 
         # Build GUI
-        iPx = self.theTheme.baseIconSize
+        iPx = self.mainTheme.baseIconSize
         self.setFrameStyle(QFrame.NoFrame)
         self.setIconSize(QSize(iPx, iPx))
         self.setIndentation(iPx)
@@ -135,7 +135,7 @@ class GuiNovelTree(QTreeWidget):
         """Called whenever the Novel tab is activated.
         """
         logger.verbose("Requesting refresh of the novel tree")
-        treeChanged = self.theParent.treeView.changedSince(self._lastBuild)
+        treeChanged = self.mainGui.projView.changedSince(self._lastBuild)
         indexChanged = self.theProject.index.indexChangedSince(self._lastBuild)
         if not (treeChanged or indexChanged or overRide):
             logger.verbose("No changes have been made to the novel index")
@@ -209,7 +209,7 @@ class GuiNovelTree(QTreeWidget):
             if tHandle is None:
                 return
 
-            self.theParent.viewDocument(tHandle)
+            self.mainGui.viewDocument(tHandle)
 
         return
 
@@ -223,7 +223,7 @@ class GuiNovelTree(QTreeWidget):
         document editor.
         """
         tHandle, tLine = self.getSelectedHandle()
-        self.theParent.openDocument(tHandle, tLine=tLine-1, doScroll=True)
+        self.mainGui.openDocument(tHandle, tLine=tLine-1, doScroll=True)
         return
 
     def _itemSelected(self):
@@ -233,7 +233,7 @@ class GuiNovelTree(QTreeWidget):
         selItems = self.selectedItems()
         if selItems:
             tHandle = selItems[0].data(self.C_TITLE, Qt.UserRole)[0]
-            self.theParent.treeMeta.updateViewBox(tHandle)
+            self.mainGui.itemDetails.updateViewBox(tHandle)
 
         return
 
@@ -309,7 +309,7 @@ class GuiNovelTree(QTreeWidget):
 
         newItem.setText(self.C_TITLE, novIdx.title)
         newItem.setData(self.C_TITLE, Qt.UserRole, theData)
-        newItem.setIcon(self.C_TITLE, self.theTheme.getIcon(hIcon))
+        newItem.setIcon(self.C_TITLE, self.mainTheme.getIcon(hIcon))
         newItem.setText(self.C_WORDS, f"{wC:n}")
         newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
 

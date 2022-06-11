@@ -38,14 +38,14 @@ logger = logging.getLogger(__name__)
 
 class GuiItemDetails(QWidget):
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QWidget.__init__(self, mainGui)
 
         logger.debug("Initialising GuiItemDetails ...")
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theProject = theParent.theProject
-        self.theTheme   = theParent.theTheme
+        self.mainGui    = mainGui
+        self.theProject = mainGui.theProject
+        self.mainTheme  = mainGui.mainTheme
 
         # Internal Variables
         self._itemHandle  = None
@@ -54,11 +54,11 @@ class GuiItemDetails(QWidget):
         hSp = self.mainConf.pxInt(6)
         vSp = self.mainConf.pxInt(1)
         mPx = self.mainConf.pxInt(6)
-        iPx = self.theTheme.baseIconSize
-        fPt = self.theTheme.fontPointSize
+        iPx = self.mainTheme.baseIconSize
+        fPt = self.mainTheme.fontPointSize
 
-        self._expCheck = self.theTheme.getPixmap("check", (iPx, iPx))
-        self._expCross = self.theTheme.getPixmap("cross", (iPx, iPx))
+        self._expCheck = self.mainTheme.getPixmap("check", (iPx, iPx))
+        self._expCross = self.mainTheme.getPixmap("cross", (iPx, iPx))
 
         fntLabel = QFont()
         fntLabel.setBold(True)
@@ -181,8 +181,8 @@ class GuiItemDetails(QWidget):
         self.setLayout(self.mainBox)
 
         # Make sure the columns for flags and counts don't resize too often
-        flagWidth  = self.theTheme.getTextWidth("Mm", fntValue)
-        countWidth = self.theTheme.getTextWidth("99,999", fntValue)
+        flagWidth  = self.mainTheme.getTextWidth("Mm", fntValue)
+        countWidth = self.mainTheme.getTextWidth("99,999", fntValue)
         self.mainBox.setColumnMinimumWidth(1, flagWidth)
         self.mainBox.setColumnMinimumWidth(4, countWidth)
 
@@ -238,7 +238,7 @@ class GuiItemDetails(QWidget):
             return
 
         self._itemHandle = tHandle
-        iPx = int(round(0.8*self.theTheme.baseIconSize))
+        iPx = int(round(0.8*self.mainTheme.baseIconSize))
 
         # Label
         # =====
@@ -267,7 +267,7 @@ class GuiItemDetails(QWidget):
         # Class
         # =====
 
-        classIcon = self.theTheme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass])
+        classIcon = self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass])
         self.classIcon.setPixmap(classIcon.pixmap(iPx, iPx))
         self.classData.setText(trConst(nwLabels.CLASS_NAME[nwItem.itemClass]))
 
@@ -275,7 +275,7 @@ class GuiItemDetails(QWidget):
         # ======
 
         hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
-        usageIcon = self.theTheme.getItemIcon(
+        usageIcon = self.mainTheme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
         )
         self.usageIcon.setPixmap(usageIcon.pixmap(iPx, iPx))

@@ -48,17 +48,17 @@ PAGE_FINAL  = 4
 
 class GuiProjectWizard(QWizard):
 
-    def __init__(self, theParent):
-        QWizard.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QWizard.__init__(self, mainGui)
 
         logger.debug("Initialising GuiProjectWizard ...")
         self.setObjectName("GuiProjectWizard")
 
         self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainGui   = mainGui
+        self.mainTheme = mainGui.mainTheme
 
-        self.sideImage = self.theTheme.loadDecoration(
+        self.sideImage = self.mainTheme.loadDecoration(
             "wiz-back", None, self.mainConf.pxInt(370)
         )
         self.setWizardStyle(QWizard.ModernStyle)
@@ -92,7 +92,7 @@ class ProjWizardIntroPage(QWizardPage):
 
         self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
-        self.theTheme  = theWizard.theTheme
+        self.mainTheme = theWizard.mainTheme
 
         self.setTitle(self.tr("Create New Project"))
         self.theText = QLabel(self.tr(
@@ -107,7 +107,7 @@ class ProjWizardIntroPage(QWizardPage):
             "Peter Mitterhofer", "CC BY-SA 4.0"
         ))
         lblFont = self.imgCredit.font()
-        lblFont.setPointSizeF(0.6*self.theTheme.fontPointSize)
+        lblFont.setPointSizeF(0.6*self.mainTheme.fontPointSize)
         self.imgCredit.setFont(lblFont)
 
         xW = self.mainConf.pxInt(300)
@@ -162,7 +162,7 @@ class ProjWizardFolderPage(QWizardPage):
 
         self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
-        self.theTheme  = theWizard.theTheme
+        self.mainTheme = theWizard.mainTheme
 
         self.setTitle(self.tr("Select Project Folder"))
         self.theText = QLabel(self.tr(
@@ -180,7 +180,7 @@ class ProjWizardFolderPage(QWizardPage):
         self.projPath.setPlaceholderText(self.tr("Required"))
 
         self.browseButton = QPushButton("...")
-        self.browseButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
+        self.browseButton.setMaximumWidth(int(2.5*self.mainTheme.getTextWidth("...")))
         self.browseButton.clicked.connect(self._doBrowse)
 
         self.errLabel = QLabel("")

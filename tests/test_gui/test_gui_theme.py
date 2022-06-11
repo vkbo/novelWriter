@@ -93,82 +93,82 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert thePalette.link().color()            == QColor(44, 152, 247)
     assert thePalette.linkVisited().color()     == QColor(44, 152, 247)
 
-    assert nwGUI.theTheme.statNone    == [150, 152, 150]
-    assert nwGUI.theTheme.statSaved   == [39, 135, 78]
-    assert nwGUI.theTheme.statUnsaved == [138, 32, 32]
+    assert nwGUI.mainTheme.statNone    == [150, 152, 150]
+    assert nwGUI.mainTheme.statSaved   == [39, 135, 78]
+    assert nwGUI.mainTheme.statUnsaved == [138, 32, 32]
 
     # Check Syntax Colours
-    assert nwGUI.theTheme.colBack   == [45, 45, 45]
-    assert nwGUI.theTheme.colText   == [204, 204, 204]
-    assert nwGUI.theTheme.colLink   == [102, 153, 204]
-    assert nwGUI.theTheme.colHead   == [102, 153, 204]
-    assert nwGUI.theTheme.colHeadH  == [102, 153, 204]
-    assert nwGUI.theTheme.colEmph   == [249, 145, 57]
-    assert nwGUI.theTheme.colDialN  == [242, 119, 122]
-    assert nwGUI.theTheme.colDialD  == [153, 204, 153]
-    assert nwGUI.theTheme.colDialS  == [255, 204, 102]
-    assert nwGUI.theTheme.colHidden == [153, 153, 153]
-    assert nwGUI.theTheme.colKey    == [242, 119, 122]
-    assert nwGUI.theTheme.colVal    == [204, 153, 204]
-    assert nwGUI.theTheme.colSpell  == [242, 119, 122]
-    assert nwGUI.theTheme.colError  == [153, 204, 153]
-    assert nwGUI.theTheme.colRepTag == [102, 204, 204]
-    assert nwGUI.theTheme.colMod    == [249, 145, 57]
+    assert nwGUI.mainTheme.colBack   == [45, 45, 45]
+    assert nwGUI.mainTheme.colText   == [204, 204, 204]
+    assert nwGUI.mainTheme.colLink   == [102, 153, 204]
+    assert nwGUI.mainTheme.colHead   == [102, 153, 204]
+    assert nwGUI.mainTheme.colHeadH  == [102, 153, 204]
+    assert nwGUI.mainTheme.colEmph   == [249, 145, 57]
+    assert nwGUI.mainTheme.colDialN  == [242, 119, 122]
+    assert nwGUI.mainTheme.colDialD  == [153, 204, 153]
+    assert nwGUI.mainTheme.colDialS  == [255, 204, 102]
+    assert nwGUI.mainTheme.colHidden == [153, 153, 153]
+    assert nwGUI.mainTheme.colKey    == [242, 119, 122]
+    assert nwGUI.mainTheme.colVal    == [204, 153, 204]
+    assert nwGUI.mainTheme.colSpell  == [242, 119, 122]
+    assert nwGUI.mainTheme.colError  == [153, 204, 153]
+    assert nwGUI.mainTheme.colRepTag == [102, 204, 204]
+    assert nwGUI.mainTheme.colMod    == [249, 145, 57]
 
     # Test Icon class
-    theIcons = nwGUI.theTheme.theIcons
+    iconCache = nwGUI.mainTheme.iconCache
     novelwriter.CONFIG.guiIcons = "invalid"
-    assert theIcons.updateTheme() is True
+    assert iconCache.updateTheme() is True
     assert novelwriter.CONFIG.guiIcons == "typicons_light"
 
     # Ask for a non-existent key
-    anImg = theIcons.loadDecoration("nonsense", 20, 20)
+    anImg = iconCache.loadDecoration("nonsense", 20, 20)
     assert isinstance(anImg, QPixmap)
     assert anImg.isNull()
 
     # Add a non-existent file and request it
-    theIcons.DECO_MAP["nonsense"] = "nofile.jpg"
-    anImg = theIcons.loadDecoration("nonsense", 20, 20)
+    iconCache.DECO_MAP["nonsense"] = "nofile.jpg"
+    anImg = iconCache.loadDecoration("nonsense", 20, 20)
     assert isinstance(anImg, QPixmap)
     assert anImg.isNull()
 
     # Get a real image, with different size parameters
-    anImg = theIcons.loadDecoration("wiz-back", 20, None)
+    anImg = iconCache.loadDecoration("wiz-back", 20, None)
     assert isinstance(anImg, QPixmap)
     assert not anImg.isNull()
     assert anImg.width() == 20
     assert anImg.height() >= 56
 
-    anImg = theIcons.loadDecoration("wiz-back", None, 70)
+    anImg = iconCache.loadDecoration("wiz-back", None, 70)
     assert isinstance(anImg, QPixmap)
     assert not anImg.isNull()
     assert anImg.height() == 70
     assert anImg.width() >= 24
 
-    anImg = theIcons.loadDecoration("wiz-back", 30, 70)
+    anImg = iconCache.loadDecoration("wiz-back", 30, 70)
     assert isinstance(anImg, QPixmap)
     assert not anImg.isNull()
     assert anImg.height() == 70
     assert anImg.width() == 30
 
-    anImg = theIcons.loadDecoration("wiz-back", None, None)
+    anImg = iconCache.loadDecoration("wiz-back", None, None)
     assert isinstance(anImg, QPixmap)
     assert not anImg.isNull()
     assert anImg.height() >= 1500
     assert anImg.width() >= 500
 
     # Load icons
-    anIcon = theIcons.getIcon("nonsense")
+    anIcon = iconCache.getIcon("nonsense")
     assert isinstance(anIcon, QIcon)
     assert anIcon.isNull()
 
-    anIcon = theIcons.getIcon("novelwriter")
+    anIcon = iconCache.getIcon("novelwriter")
     assert isinstance(anIcon, QIcon)
     assert not anIcon.isNull()
 
     # Check return empty icon if file not found
-    theIcons.ICON_KEYS.add("testicon3")
-    anIcon = theIcons.getIcon("testicon3")
+    iconCache.ICON_KEYS.add("testicon3")
+    anIcon = iconCache.getIcon("testicon3")
     assert isinstance(anIcon, QIcon)
     assert anIcon.isNull()
 

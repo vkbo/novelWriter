@@ -4,9 +4,9 @@ novelWriter – GUI Project Outline
 GUI class for the project outline view
 
 File History:
-Created: 2022-05-15 [1.7b1] GuiOutline
+Created: 2022-05-15 [1.7b1] GuiOutlineView
 Created: 2022-05-22 [1.7b1] GuiOutlineToolBar
-Created: 2019-11-16 [0.4.1] GuiOutlineView
+Created: 2019-11-16 [0.4.1] GuiOutlineTree
 Created: 2019-11-16 [0.4.1] GuiOutlineHeaderMenu
 Created: 2020-06-02 [0.7.0] GuiOutlineDetails
 
@@ -52,23 +52,23 @@ from novelwriter.constants import trConst, nwKeyWords, nwLabels
 logger = logging.getLogger(__name__)
 
 
-class GuiOutline(QWidget):
+class GuiOutlineView(QWidget):
 
     loadDocumentTagRequest = pyqtSignal(str, Enum)
 
-    def __init__(self, theParent):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QWidget.__init__(self, mainGui)
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
+        self.mainConf = novelwriter.CONFIG
+        self.mainGui  = mainGui
 
         # Build GUI
         self.outlineBar  = GuiOutlineToolBar(self)
-        self.outlineView = GuiOutlineView(self)
+        self.outlineTree = GuiOutlineTree(self)
         self.outlineData = GuiOutlineDetails(self)
 
         self.splitOutline = QSplitter(Qt.Vertical)
-        self.splitOutline.addWidget(self.outlineView)
+        self.splitOutline.addWidget(self.outlineTree)
         self.splitOutline.addWidget(self.outlineData)
         self.splitOutline.setSizes(self.mainConf.getOutlinePanePos())
 
@@ -81,14 +81,14 @@ class GuiOutline(QWidget):
         self.setLayout(self.outerBox)
 
         # Connect Signals
-        self.outlineView.hiddenStateChanged.connect(self._updateMenuColumns)
-        self.outlineView.activeItemChanged.connect(self.outlineData.showItem)
+        self.outlineTree.hiddenStateChanged.connect(self._updateMenuColumns)
+        self.outlineTree.activeItemChanged.connect(self.outlineData.showItem)
         self.outlineData.itemTagClicked.connect(self._tagClicked)
         self.outlineBar.loadNovelRootRequest.connect(self._rootItemChanged)
-        self.outlineBar.viewColumnToggled.connect(self.outlineView.menuColumnToggled)
+        self.outlineBar.viewColumnToggled.connect(self.outlineTree.menuColumnToggled)
 
         # Function Mappings
-        self.getSelectedHandle = self.outlineView.getSelectedHandle
+        self.getSelectedHandle = self.outlineTree.getSelectedHandle
 
         return
 
@@ -104,24 +104,24 @@ class GuiOutline(QWidget):
         return
 
     def initOutline(self):
-        self.outlineView.initOutline()
+        self.outlineTree.initOutline()
         self.outlineData.initDetails()
         return
 
     def closeOutline(self):
-        self.outlineView.closeOutline()
+        self.outlineTree.closeOutline()
         self.outlineData.updateClasses()
         return
 
     def refreshView(self, overRide=False, novelChanged=False):
-        self.outlineView.refreshTree(overRide=overRide, novelChanged=novelChanged)
+        self.outlineTree.refreshTree(overRide=overRide, novelChanged=novelChanged)
         return
 
     def treeFocus(self):
-        return self.outlineView.hasFocus()
+        return self.outlineTree.hasFocus()
 
     def setTreeFocus(self):
-        return self.outlineView.setFocus()
+        return self.outlineTree.setFocus()
 
     ##
     #  Public Slots
@@ -145,7 +145,7 @@ class GuiOutline(QWidget):
         checkboxes whenever a signal is received that the hidden state
         of columns has changed.
         """
-        self.outlineBar.setColumnHiddenState(self.outlineView.hiddenColumns)
+        self.outlineBar.setColumnHiddenState(self.outlineTree.hiddenColumns)
         return
 
     @pyqtSlot(str)
@@ -160,10 +160,10 @@ class GuiOutline(QWidget):
     def _rootItemChanged(self, handle):
         """The root novel handle has changed or needs to be refreshed.
         """
-        self.outlineView.refreshTree(rootHandle=(handle or None), overRide=True)
+        self.outlineTree.refreshTree(rootHandle=(handle or None), overRide=True)
         return
 
-# END Class GuiOutline
+# END Class GuiOutlineView
 
 
 class GuiOutlineToolBar(QToolBar):
@@ -177,9 +177,9 @@ class GuiOutlineToolBar(QToolBar):
         logger.debug("Initialising GuiOutlineToolBar ...")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theOutline.theParent
-        self.theProject = theOutline.theParent.theProject
-        self.theTheme   = theOutline.theParent.theTheme
+        self.mainGui    = theOutline.mainGui
+        self.theProject = theOutline.mainGui.theProject
+        self.mainTheme  = theOutline.mainGui.mainTheme
 
         iPx = self.mainConf.pxInt(22)
         mPx = self.mainConf.pxInt(12)
@@ -202,7 +202,7 @@ class GuiOutlineToolBar(QToolBar):
 
         # Actions
         self.aRefresh = QAction(self.tr("Refresh"), self)
-        self.aRefresh.setIcon(self.theTheme.getIcon("refresh"))
+        self.aRefresh.setIcon(self.mainTheme.getIcon("refresh"))
         self.aRefresh.triggered.connect(self._refreshRequested)
 
         # Column Menu
@@ -212,7 +212,7 @@ class GuiOutlineToolBar(QToolBar):
         )
 
         self.tbColumns = QToolButton(self)
-        self.tbColumns.setIcon(self.theTheme.getIcon("menu"))
+        self.tbColumns.setIcon(self.mainTheme.getIcon("menu"))
         self.tbColumns.setMenu(self.mColumns)
         self.tbColumns.setPopupMode(QToolButton.InstantPopup)
 
@@ -236,7 +236,7 @@ class GuiOutlineToolBar(QToolBar):
         """Fill the novel combo box with a list of all novel folders.
         """
         self.novelValue.clear()
-        tIcon = self.theTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
+        tIcon = self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
         for tHandle, nwItem in self.theProject.tree.iterRoots(nwItemClass.NOVEL):
             self.novelValue.addItem(tIcon, nwItem.itemName, tHandle)
         self.novelValue.insertSeparator(self.novelValue.count())
@@ -271,7 +271,7 @@ class GuiOutlineToolBar(QToolBar):
 # END Class GuiOutlineToolBar
 
 
-class GuiOutlineView(QTreeWidget):
+class GuiOutlineTree(QTreeWidget):
 
     DEF_WIDTH = {
         nwOutline.TITLE:  200,
@@ -319,12 +319,12 @@ class GuiOutlineView(QTreeWidget):
     def __init__(self, theOutline):
         QTreeWidget.__init__(self, theOutline)
 
-        logger.debug("Initialising GuiOutlineView ...")
+        logger.debug("Initialising GuiOutlineTree ...")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theOutline.theParent
-        self.theProject = theOutline.theParent.theProject
-        self.theTheme   = theOutline.theParent.theTheme
+        self.mainGui    = theOutline.mainGui
+        self.theProject = theOutline.mainGui.theProject
+        self.mainTheme  = theOutline.mainGui.mainTheme
 
         self.setFrameStyle(QFrame.NoFrame)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -334,7 +334,7 @@ class GuiOutlineView(QTreeWidget):
         self.itemDoubleClicked.connect(self._treeDoubleClick)
         self.itemSelectionChanged.connect(self._itemSelected)
 
-        iPx = self.theTheme.baseIconSize
+        iPx = self.mainTheme.baseIconSize
         self.setIconSize(QSize(iPx, iPx))
         self.setIndentation(iPx)
 
@@ -355,7 +355,7 @@ class GuiOutlineView(QTreeWidget):
 
         self.hiddenStateChanged.emit()
 
-        logger.debug("GuiOutlineView initialisation complete")
+        logger.debug("GuiOutlineTree initialisation complete")
 
         return
 
@@ -464,7 +464,7 @@ class GuiOutlineView(QTreeWidget):
         document editor.
         """
         tHandle, tLine = self.getSelectedHandle()
-        self.theParent.openDocument(tHandle, tLine=tLine - 1, doScroll=True)
+        self.mainGui.openDocument(tHandle, tLine=tLine - 1, doScroll=True)
         return
 
     @pyqtSlot()
@@ -682,7 +682,7 @@ class GuiOutlineView(QTreeWidget):
         hIcon = "doc_%s" % novIdx.level.lower()
 
         hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
-        dIcon = self.theTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, hLevel)
+        dIcon = self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, hLevel)
 
         cC = int(novIdx.charCount)
         wC = int(novIdx.wordCount)
@@ -690,7 +690,7 @@ class GuiOutlineView(QTreeWidget):
 
         newItem.setText(self._colIdx[nwOutline.TITLE],  novIdx.title)
         newItem.setData(self._colIdx[nwOutline.TITLE],  Qt.UserRole, tHandle)
-        newItem.setIcon(self._colIdx[nwOutline.TITLE],  self.theTheme.getIcon(hIcon))
+        newItem.setIcon(self._colIdx[nwOutline.TITLE],  self.mainTheme.getIcon(hIcon))
         newItem.setText(self._colIdx[nwOutline.LEVEL],  novIdx.level)
         newItem.setText(self._colIdx[nwOutline.LABEL],  nwItem.itemName)
         newItem.setIcon(self._colIdx[nwOutline.LABEL],  dIcon)
@@ -717,7 +717,7 @@ class GuiOutlineView(QTreeWidget):
 
         return newItem
 
-# END Class GuiOutlineView
+# END Class GuiOutlineTree
 
 
 class GuiOutlineHeaderMenu(QMenu):
@@ -782,14 +782,14 @@ class GuiOutlineDetails(QScrollArea):
 
         self.mainConf   = novelwriter.CONFIG
         self.theOutline = theOutline
-        self.theParent  = theOutline.theParent
-        self.theProject = theOutline.theParent.theProject
-        self.theTheme   = theOutline.theParent.theTheme
+        self.mainGui    = theOutline.mainGui
+        self.theProject = theOutline.mainGui.theProject
+        self.mainTheme  = theOutline.mainGui.mainTheme
 
         # Sizes
-        minTitle = 30*self.theTheme.textNWidth
-        maxTitle = 40*self.theTheme.textNWidth
-        wCount = self.theTheme.getTextWidth("999,999")
+        minTitle = 30*self.mainTheme.textNWidth
+        maxTitle = 40*self.mainTheme.textNWidth
+        wCount = self.mainTheme.getTextWidth("999,999")
         hSpace = int(self.mainConf.pxInt(10))
         vSpace = int(self.mainConf.pxInt(4))
 

@@ -54,7 +54,7 @@ class GuiTheme:
     def __init__(self):
 
         self.mainConf = novelwriter.CONFIG
-        self.theIcons = GuiIcons(self)
+        self.iconCache = GuiIcons(self)
 
         # Loaded Theme Settings
         # =====================
@@ -127,13 +127,13 @@ class GuiTheme:
 
         self.updateFont()
         self.updateTheme()
-        self.theIcons.updateTheme()
+        self.iconCache.updateTheme()
 
         # Icon Functions
-        self.getIcon = self.theIcons.getIcon
-        self.getPixmap = self.theIcons.getPixmap
-        self.getItemIcon = self.theIcons.getItemIcon
-        self.loadDecoration = self.theIcons.loadDecoration
+        self.getIcon = self.iconCache.getIcon
+        self.getPixmap = self.iconCache.getPixmap
+        self.getItemIcon = self.iconCache.getItemIcon
+        self.loadDecoration = self.iconCache.loadDecoration
 
         # Extract Other Info
         self.guiDPI = qApp.primaryScreen().logicalDotsPerInchX()
@@ -478,10 +478,10 @@ class GuiIcons:
         "wiz-back": "wizard-back.jpg",
     }
 
-    def __init__(self, theTheme):
+    def __init__(self, mainTheme):
 
         self.mainConf = novelwriter.CONFIG
-        self.theTheme = theTheme
+        self.mainTheme = mainTheme
 
         # Storage
         self._qIcons    = {}

@@ -24,7 +24,7 @@ from novelwriter.gui.docviewer import GuiDocViewer, GuiDocViewDetails
 from novelwriter.gui.itemdetails import GuiItemDetails
 from novelwriter.gui.mainmenu import GuiMainMenu
 from novelwriter.gui.noveltree import GuiNovelTree
-from novelwriter.gui.outline import GuiOutline
+from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectView
 from novelwriter.gui.statusbar import GuiMainStatus
 from novelwriter.gui.theme import GuiTheme
@@ -38,7 +38,7 @@ __all__ = [
     "GuiMainMenu",
     "GuiMainStatus",
     "GuiNovelTree",
-    "GuiOutline",
+    "GuiOutlineView",
     "GuiProjectView",
     "GuiTheme",
     "GuiViewsBar",

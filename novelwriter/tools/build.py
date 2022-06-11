@@ -65,16 +65,16 @@ class GuiBuildNovel(QDialog):
     FMT_JSON_H = 8  # HTML5 wrapped in JSON
     FMT_JSON_M = 9  # nW Markdown wrapped in JSON
 
-    def __init__(self, theParent):
-        QDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QDialog.__init__(self, mainGui)
 
         logger.debug("Initialising GuiBuildNovel ...")
         self.setObjectName("GuiBuildNovel")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
+        self.theProject = mainGui.theProject
 
         self.htmlText  = []  # List of html documents
         self.htmlStyle = []  # List of html styles
@@ -93,7 +93,7 @@ class GuiBuildNovel(QDialog):
 
         self.docView = GuiBuildNovelDocView(self, self.theProject)
 
-        hS = self.theTheme.fontPixelSize
+        hS = self.mainTheme.fontPixelSize
         wS = 2*hS
 
         # Title Formats
@@ -238,11 +238,11 @@ class GuiBuildNovel(QDialog):
             pOptions.getString("GuiBuildNovel", "textFont", self.mainConf.textFont)
         )
         self.fontButton = QPushButton("...")
-        self.fontButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
+        self.fontButton.setMaximumWidth(int(2.5*self.mainTheme.getTextWidth("...")))
         self.fontButton.clicked.connect(self._selectFont)
 
         self.textSize = QSpinBox(self)
-        self.textSize.setFixedWidth(6*self.theTheme.textNWidth)
+        self.textSize.setFixedWidth(6*self.mainTheme.textNWidth)
         self.textSize.setMinimum(6)
         self.textSize.setMaximum(72)
         self.textSize.setSingleStep(1)
@@ -251,7 +251,7 @@ class GuiBuildNovel(QDialog):
         )
 
         self.lineHeight = QDoubleSpinBox(self)
-        self.lineHeight.setFixedWidth(6*self.theTheme.textNWidth)
+        self.lineHeight.setFixedWidth(6*self.mainTheme.textNWidth)
         self.lineHeight.setMinimum(0.8)
         self.lineHeight.setMaximum(3.0)
         self.lineHeight.setSingleStep(0.05)
@@ -711,7 +711,7 @@ class GuiBuildNovel(QDialog):
             bldObj.initDocument()
 
         # Make sure the project and document is up to date
-        self.theParent.saveDocument()
+        self.mainGui.saveDocument()
 
         self.buildProgress.setMaximum(len(self.theProject.tree))
         self.buildProgress.setValue(0)
@@ -760,7 +760,7 @@ class GuiBuildNovel(QDialog):
         logger.debug("Built project in %.3f ms", 1000*(tEnd - tStart))
 
         if bldObj.errData:
-            self.theParent.makeAlert([
+            self.mainGui.makeAlert([
                 self.tr("There were problems when building the project:")
             ] + bldObj.errData, nwAlert.ERROR)
 
@@ -1003,11 +1003,11 @@ class GuiBuildNovel(QDialog):
         # ==============
 
         if wSuccess:
-            self.theParent.makeAlert([
+            self.mainGui.makeAlert([
                 self.tr("{0} file successfully written to:").format(textFmt), savePath
             ], nwAlert.INFO)
         else:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "Failed to write {0} file. {1}"
             ).format(textFmt, errMsg), nwAlert.ERROR)
 
@@ -1193,18 +1193,18 @@ class GuiBuildNovel(QDialog):
 
 class GuiBuildNovelDocView(QTextBrowser):
 
-    def __init__(self, theParent, theProject):
-        QTextBrowser.__init__(self, theParent)
+    def __init__(self, mainGui, theProject):
+        QTextBrowser.__init__(self, mainGui)
 
         logger.debug("Initialising GuiBuildNovelDocView ...")
 
         self.mainConf   = novelwriter.CONFIG
         self.theProject = theProject
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
+        self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
         self.buildTime  = 0
 
-        self.setMinimumWidth(40*self.theParent.theTheme.textNWidth)
+        self.setMinimumWidth(40*self.mainGui.mainTheme.textNWidth)
         self.setOpenExternalLinks(False)
 
         self.document().setDocumentMargin(self.mainConf.getTextMargin())
@@ -1238,9 +1238,9 @@ class GuiBuildNovelDocView(QTextBrowser):
         lblPalette.setColor(QPalette.Foreground, lblPalette.toolTipText().color())
 
         lblFont = self.font()
-        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
 
-        fPx = int(1.1*self.theTheme.fontPixelSize)
+        fPx = int(1.1*self.mainTheme.fontPixelSize)
 
         self.theTitle = QLabel("", self)
         self.theTitle.setIndent(0)

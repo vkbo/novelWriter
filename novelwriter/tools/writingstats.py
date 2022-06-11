@@ -57,16 +57,16 @@ class GuiWritingStats(QDialog):
     FMT_JSON = 0
     FMT_CSV  = 1
 
-    def __init__(self, theParent):
-        QDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QDialog.__init__(self, mainGui)
 
         logger.debug("Initialising GuiWritingStats ...")
         self.setObjectName("GuiWritingStats")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
+        self.theProject = mainGui.theProject
 
         self.logData    = []
         self.filterData = []
@@ -125,7 +125,7 @@ class GuiWritingStats(QDialog):
         self.listBox.setSortingEnabled(True)
 
         # Word Bar
-        self.barHeight = int(round(0.5*self.theTheme.fontPixelSize))
+        self.barHeight = int(round(0.5*self.mainTheme.fontPixelSize))
         self.barWidth = self.mainConf.pxInt(200)
         self.barImage = QPixmap(self.barHeight, self.barHeight)
         self.barImage.fill(self.palette().highlight().color())
@@ -136,27 +136,27 @@ class GuiWritingStats(QDialog):
         self.infoBox.setLayout(self.infoForm)
 
         self.labelTotal = QLabel(formatTime(0))
-        self.labelTotal.setFont(self.theTheme.guiFontFixed)
+        self.labelTotal.setFont(self.mainTheme.guiFontFixed)
         self.labelTotal.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.labelIdleT = QLabel(formatTime(0))
-        self.labelIdleT.setFont(self.theTheme.guiFontFixed)
+        self.labelIdleT.setFont(self.mainTheme.guiFontFixed)
         self.labelIdleT.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.labelFilter = QLabel(formatTime(0))
-        self.labelFilter.setFont(self.theTheme.guiFontFixed)
+        self.labelFilter.setFont(self.mainTheme.guiFontFixed)
         self.labelFilter.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.novelWords = QLabel("0")
-        self.novelWords.setFont(self.theTheme.guiFontFixed)
+        self.novelWords.setFont(self.mainTheme.guiFontFixed)
         self.novelWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.notesWords = QLabel("0")
-        self.notesWords.setFont(self.theTheme.guiFontFixed)
+        self.notesWords.setFont(self.mainTheme.guiFontFixed)
         self.notesWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.totalWords = QLabel("0")
-        self.totalWords.setFont(self.theTheme.guiFontFixed)
+        self.totalWords.setFont(self.mainTheme.guiFontFixed)
         self.totalWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         lblTTime   = QLabel(self.tr("Total Time:"))
@@ -183,7 +183,7 @@ class GuiWritingStats(QDialog):
         self.infoForm.setRowStretch(6, 1)
 
         # Filter Options
-        sPx = self.theTheme.baseIconSize
+        sPx = self.mainTheme.baseIconSize
 
         self.filterBox = QGroupBox(self.tr("Filters"), self)
         self.filterForm = QGridLayout(self)
@@ -411,11 +411,11 @@ class GuiWritingStats(QDialog):
 
         # Report to user
         if wSuccess:
-            self.theParent.makeAlert([
+            self.mainGui.makeAlert([
                 self.tr("{0} file successfully written to:").format(textFmt), savePath
             ], nwAlert.INFO)
         else:
-            self.theParent.makeAlert([
+            self.mainGui.makeAlert([
                 self.tr("Failed to write {0} file.").format(textFmt), errMsg
             ], nwAlert.ERROR)
 
@@ -478,7 +478,7 @@ class GuiWritingStats(QDialog):
                     self.logData.append((dStart, sDiff, wcNovel, wcNotes, sIdle))
 
         except Exception as exc:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "Failed to read session log file."
             ), nwAlert.ERROR, exception=exc)
             return False
@@ -605,13 +605,13 @@ class GuiWritingStats(QDialog):
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
             newItem.setTextAlignment(self.C_BAR, Qt.AlignLeft | Qt.AlignVCenter)
 
-            newItem.setFont(self.C_TIME, self.theTheme.guiFontFixed)
-            newItem.setFont(self.C_LENGTH, self.theTheme.guiFontFixed)
-            newItem.setFont(self.C_COUNT, self.theTheme.guiFontFixed)
+            newItem.setFont(self.C_TIME, self.mainTheme.guiFontFixed)
+            newItem.setFont(self.C_LENGTH, self.mainTheme.guiFontFixed)
+            newItem.setFont(self.C_COUNT, self.mainTheme.guiFontFixed)
             if showIdleTime:
-                newItem.setFont(self.C_IDLE, self.theTheme.guiFontFixed)
+                newItem.setFont(self.C_IDLE, self.mainTheme.guiFontFixed)
             else:
-                newItem.setFont(self.C_IDLE, self.theTheme.guiFont)
+                newItem.setFont(self.C_IDLE, self.mainTheme.guiFont)
 
             self.listBox.addTopLevelItem(newItem)
             self.timeFilter += sDiff
