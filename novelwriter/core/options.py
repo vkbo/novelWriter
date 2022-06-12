@@ -28,6 +28,8 @@ import os
 import json
 import logging
 
+from enum import Enum
+
 from novelwriter.error import logException
 from novelwriter.common import checkBool, checkFloat, checkInt, checkString
 from novelwriter.constants import nwFiles
@@ -138,7 +140,10 @@ class OptionState():
         if group not in self._theState:
             self._theState[group] = {}
 
-        self._theState[group][name] = value
+        if isinstance(value, Enum):
+            self._theState[group][name] = value.name
+        else:
+            self._theState[group][name] = value
 
         return True
 
@@ -185,6 +190,18 @@ class OptionState():
         if group in self._theState:
             if name in self._theState[group]:
                 return checkBool(self._theState[group].get(name, default), default)
+        return default
+
+    def getEnum(self, group, name, lookup, default):
+        """Return the value mapped to an enum. Otherwise return the
+        default value
+        """
+        if issubclass(lookup, Enum):
+            if group in self._theState:
+                if name in self._theState[group]:
+                    value = self._theState[group][name]
+                    if value in lookup.__members__:
+                        return lookup[value]
         return default
 
 # END Class OptionState

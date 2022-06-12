@@ -49,6 +49,7 @@ class NovelColumnType(Enum):
     HIDDEN = 0
     POV    = 1
     FOCUS  = 2
+    PLOT   = 3
 
 # END Enum NovelColumnType
 
@@ -216,6 +217,9 @@ class GuiNovelToolBar(QWidget):
         self.mCol3.addAction(self.tr("Focus Character")).triggered.connect(
             lambda: self.novelView.novelTree.setLastColType(NovelColumnType.FOCUS)
         )
+        self.mCol3.addAction(self.tr("Novel Plot")).triggered.connect(
+            lambda: self.novelView.novelTree.setLastColType(NovelColumnType.PLOT)
+        )
 
         self.tbMore = QToolButton(self)
         self.tbMore.setToolTip(self.tr("More Options"))
@@ -306,6 +310,7 @@ class GuiNovelTree(QTreeWidget):
         # Cached i18n Strings
         self._povLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY])
         self._focLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.FOCUS_KEY])
+        self._pltLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.PLOT_KEY])
 
         # Build GUI
         # =========
@@ -373,28 +378,17 @@ class GuiNovelTree(QTreeWidget):
     def loadOptions(self):
         """Load user options.
         """
-        try:
-            lastCol = NovelColumnType[self.theProject.options.getString(
-                "GuiNovelView", "lastCol", NovelColumnType.POV.name
-            )]
-        except Exception:
-            logger.error("Failed to load last column type from options")
-            return False
-
-        self._lastCol = lastCol
-        self.setColumnHidden(self.C_LAST, lastCol == NovelColumnType.HIDDEN)
-
+        self._lastCol = self.theProject.options.getEnum(
+            "GuiNovelView", "lastCol", NovelColumnType, NovelColumnType.POV
+        )
+        self.setColumnHidden(self.C_LAST, self._lastCol == NovelColumnType.HIDDEN)
         return True
 
     def saveOptions(self):
         """Save user options.
         """
-        try:
-            self.theProject.options.setValue("GuiNovelView", "lastCol", self._lastCol.name)
-        except Exception:
-            logger.error("Failed to save last column type to options")
-            return False
-        return True
+        self.theProject.options.setValue("GuiNovelView", "lastCol", self._lastCol)
+        return
 
     def refreshTree(self, rootHandle=None, overRide=False):
         """Called whenever the Novel tab is activated.
@@ -603,6 +597,11 @@ class GuiNovelTree(QTreeWidget):
                 newItem.setText(self.C_LAST, newText)
                 if newText:
                     newItem.setToolTip(self.C_LAST, f"{self._focLabel}: {newText}")
+            elif self._lastCol == NovelColumnType.PLOT:
+                newText = ", ".join(theRefs[nwKeyWords.PLOT_KEY])
+                newItem.setText(self.C_LAST, newText)
+                if newText:
+                    newItem.setToolTip(self.C_LAST, f"{self._pltLabel}: {newText}")
 
         return newItem
 
