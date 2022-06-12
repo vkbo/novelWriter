@@ -62,7 +62,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
 
     nwGUI.projStack.setCurrentIndex(nwGUI.idxNovelView)
     nwGUI.rebuildIndex()
-    novelTree._populateTree()
+    novelTree._populateTree(rootHandle=None)
     assert novelTree.topLevelItemCount() == 1
 
     # Rebuild should preserve selection
@@ -133,7 +133,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
         "#### Section\n\n"
     ))
     nwGUI.rebuildIndex()
-    novelTree._populateTree()
+    novelTree._populateTree(None)
     assert novelTree.topLevelItem(0).text(novelTree.C_TITLE) == "Section wo/Scene"
     assert novelTree.topLevelItem(1).text(novelTree.C_TITLE) == "Scene wo/Chapter"
     assert novelTree.topLevelItem(2).text(novelTree.C_TITLE) == "Chapter wo/Title"
