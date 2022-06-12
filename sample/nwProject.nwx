@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-06-11 13:36:01">
+<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-06-12 17:37:35">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1345</saveCount>
-    <autoCount>229</autoCount>
-    <editTime>68286</editTime>
+    <saveCount>1367</saveCount>
+    <autoCount>231</autoCount>
+    <editTime>68784</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -17,6 +17,8 @@
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
+    <lastNovel>7031beac91f75</lastNovel>
+    <lastOutline>None</lastOutline>
     <lastWordCount>1363</lastWordCount>
     <novelWordCount>954</novelWordCount>
     <notesWordCount>409</notesWordCount>
@@ -70,11 +72,11 @@
       <name status="sf24ce6" import="ia857f0" exported="True">Chapter One</name>
     </item>
     <item handle="636b6aa9b697b" parent="6a2d6d5f4f401" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" charCount="2687" wordCount="479" paraCount="14" cursorPos="61"/>
+      <meta expanded="False" charCount="2687" wordCount="479" paraCount="14" cursorPos="2183"/>
       <name status="s90e6c9" import="ia857f0" exported="True">Making a Scene</name>
     </item>
     <item handle="bc0cbd2a407f3" parent="6a2d6d5f4f401" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" charCount="548" wordCount="108" paraCount="3" cursorPos="649"/>
+      <meta expanded="False" charCount="548" wordCount="108" paraCount="3" cursorPos="465"/>
       <name status="s90e6c9" import="ia857f0" exported="True">Another Scene</name>
     </item>
     <item handle="ba8a28a246524" parent="7031beac91f75" root="7031beac91f75" order="4" type="FILE" class="NOVEL" layout="DOCUMENT">
@@ -86,7 +88,7 @@
       <name status="sf24ce6" import="ia857f0" exported="False">A Note on Structure</name>
     </item>
     <item handle="88706ddc78b1b" parent="7031beac91f75" root="7031beac91f75" order="6" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="True" charCount="139" wordCount="28" paraCount="1" cursorPos="343"/>
+      <meta expanded="True" charCount="139" wordCount="28" paraCount="1" cursorPos="188"/>
       <name status="s90e6c9" import="ia857f0" exported="True">Chapter Two</name>
     </item>
     <item handle="ae7339df26ded" parent="88706ddc78b1b" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">

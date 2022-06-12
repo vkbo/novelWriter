@@ -102,6 +102,8 @@ class NWProject():
         self.importItems = None   # Note file importance values
         self.lastEdited  = None   # The handle of the last file to be edited
         self.lastViewed  = None   # The handle of the last file to be viewed
+        self.lastNovel   = None   # The handle of the last novel root viewed
+        self.lastOutline = None   # The handle of the last outline root viewed
         self.lastWCount  = 0      # The project word count from last session
         self.lastNovelWC = 0      # The novel files word count from last session
         self.lastNotesWC = 0      # The note files word count from last session
@@ -612,6 +614,10 @@ class NWProject():
                         self.lastEdited = checkString(xItem.text, None, True)
                     elif xItem.tag == "lastViewed":
                         self.lastViewed = checkString(xItem.text, None, True)
+                    elif xItem.tag == "lastNovel":
+                        self.lastNovel = checkString(xItem.text, None, True)
+                    elif xItem.tag == "lastOutline":
+                        self.lastOutline = checkString(xItem.text, None, True)
                     elif xItem.tag == "lastWordCount":
                         self.lastWCount = checkInt(xItem.text, 0, False)
                     elif xItem.tag == "novelWordCount":
@@ -732,6 +738,8 @@ class NWProject():
         self._packProjectValue(xSettings, "autoOutline", self.autoOutline)
         self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
         self._packProjectValue(xSettings, "lastViewed", self.lastViewed)
+        self._packProjectValue(xSettings, "lastNovel", self.lastNovel)
+        self._packProjectValue(xSettings, "lastOutline", self.lastOutline)
         self._packProjectValue(xSettings, "lastWordCount", self.currWCount)
         self._packProjectValue(xSettings, "novelWordCount", self.currNovelWC)
         self._packProjectValue(xSettings, "notesWordCount", self.currNotesWC)
@@ -1120,6 +1128,14 @@ class NWProject():
         """
         if self.lastViewed != tHandle:
             self.lastViewed = tHandle
+            self.setProjectChanged(True)
+        return True
+
+    def setLastNovelViewed(self, tHandle):
+        """Set last viewed novel root in the novel tree.
+        """
+        if self.lastNovel != tHandle:
+            self.lastNovel = tHandle
             self.setProjectChanged(True)
         return True
 

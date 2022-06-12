@@ -27,25 +27,34 @@ import logging
 import novelwriter
 
 from time import time
+from enum import Enum
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, pyqtSlot, pyqtSignal
+from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QFrame, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView, QLabel,
+    QMenu, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
     QWidget
 )
 
+from novelwriter.enum import nwDocMode, nwItemClass
 from novelwriter.common import checkInt
-from novelwriter.constants import nwKeyWords
+from novelwriter.constants import nwKeyWords, nwLabels
 
 logger = logging.getLogger(__name__)
 
 
 class GuiNovelView(QWidget):
 
+    # Signals for user interaction with the novel tree
+    selectedItemChanged = pyqtSignal(str)
+    openDocumentRequest = pyqtSignal(str, Enum, int, str)
+
     def __init__(self, mainGui):
         QWidget.__init__(self, mainGui)
 
-        self.mainGui = mainGui
+        self.mainGui    = mainGui
+        self.theProject = mainGui.theProject
 
         # Build GUI
         self.novelTree = GuiNovelTree(self)
@@ -59,6 +68,11 @@ class GuiNovelView(QWidget):
         self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
+
+        # Connect Signals
+        self.novelBar.rootFolderSelectionChanged.connect(
+            lambda tHandle: self.novelTree.refreshTree(rootHandle=tHandle, overRide=True)
+        )
 
         # Function Mappings
         self.refreshTree = self.novelTree.refreshTree
@@ -79,6 +93,21 @@ class GuiNovelView(QWidget):
         self.novelTree.clearTree()
         return
 
+    def openProjectTasks(self):
+        """Run tasks related to opening a project.
+        """
+        lastNovel = self.theProject.lastNovel
+        if lastNovel is None:
+            lastNovel = self.theProject.tree.findRoot(nwItemClass.NOVEL)
+
+        logger.debug("Setting novel tree to root item '%s'", lastNovel)
+
+        self.clearProject()
+        self.novelBar.rebuildNovelRootMenu(selHandle=lastNovel)
+        self.novelTree.refreshTree(rootHandle=lastNovel, overRide=True)
+
+        return
+
     def setFocus(self):
         """Forward the set focus call to the tree widget.
         """
@@ -90,16 +119,114 @@ class GuiNovelView(QWidget):
         """
         return self.novelTree.hasFocus()
 
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str)
+    def updateRootItem(self, tHandle):
+        """Should be called whenever a root folders changes.
+        """
+        self.novelBar.rebuildNovelRootMenu()
+        return
+
 # END Class GuiNovelView
 
 
 class GuiNovelToolBar(QWidget):
 
+    rootFolderSelectionChanged = pyqtSignal(str)
+
     def __init__(self, novelView):
         QTreeWidget.__init__(self, novelView)
 
-        self.mainConf  = novelwriter.CONFIG
-        self.novelView = novelView
+        logger.debug("Initialising GuiNovelToolBar ...")
+
+        self.mainConf   = novelwriter.CONFIG
+        self.novelView  = novelView
+        self.theProject = novelView.mainGui.theProject
+        self.mainTheme  = novelView.mainGui.mainTheme
+
+        iPx = self.mainTheme.baseIconSize
+        mPx = self.mainConf.pxInt(4)
+
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setAutoFillBackground(True)
+
+        qPalette = self.palette()
+        qPalette.setBrush(QPalette.Window, qPalette.base())
+        self.setPalette(qPalette)
+
+        fadeCol = qPalette.text().color()
+        buttonStyle = (
+            "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
+        ).format(mPx, fadeCol.red(), fadeCol.green(), fadeCol.blue())
+
+        # Widget Label
+        self.viewLabel = QLabel("<b>%s</b>" % self.tr("Novel Outline"))
+        self.viewLabel.setContentsMargins(0, 0, 0, 0)
+        self.viewLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Novel Root Menu
+        self.mRoot = QMenu()
+
+        self.tbRoot = QToolButton(self)
+        self.tbRoot.setToolTip(self.tr("Novel Root"))
+        self.tbRoot.setIcon(self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL]))
+        self.tbRoot.setIconSize(QSize(iPx, iPx))
+        self.tbRoot.setStyleSheet(buttonStyle)
+        self.tbRoot.setMenu(self.mRoot)
+        self.tbRoot.setPopupMode(QToolButton.InstantPopup)
+
+        # More Options Menu
+        self.mMore = QMenu()
+
+        self.tbMore = QToolButton(self)
+        self.tbMore.setToolTip(self.tr("More Options"))
+        self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
+        self.tbMore.setIconSize(QSize(iPx, iPx))
+        self.tbMore.setStyleSheet(buttonStyle)
+        self.tbMore.setMenu(self.mMore)
+        self.tbMore.setPopupMode(QToolButton.InstantPopup)
+
+        # Assemble
+        self.outerBox = QHBoxLayout()
+        self.outerBox.addWidget(self.viewLabel)
+        self.outerBox.addWidget(self.tbRoot)
+        self.outerBox.addWidget(self.tbMore)
+        self.outerBox.setContentsMargins(mPx, mPx, 0, mPx)
+        self.outerBox.setSpacing(0)
+
+        self.setLayout(self.outerBox)
+
+        logger.debug("GuiNovelToolBar initialisation complete")
+
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def rebuildNovelRootMenu(self, selHandle=None):
+        """Build the novel root menu.
+        """
+        self.mRoot.clear()
+
+        agRoot = QActionGroup(self.mRoot)
+        for n, (tHandle, nwItem) in enumerate(self.theProject.tree.iterRoots(nwItemClass.NOVEL)):
+            aRoot = self.mRoot.addAction(nwItem.itemName)
+            aRoot.setData(tHandle)
+            aRoot.setCheckable(True)
+            aRoot.triggered.connect(
+                lambda n, tHandle=tHandle: self.rootFolderSelectionChanged.emit(tHandle)
+            )
+            agRoot.addAction(aRoot)
+
+            if n == 0:
+                aRoot.setChecked(True)
+            if selHandle == tHandle:
+                aRoot.setChecked(True)
 
         return
 
@@ -128,41 +255,32 @@ class GuiNovelTree(QTreeWidget):
         self._lastBuild = 0
 
         # Build GUI
+        # =========
+
         iPx = self.mainTheme.baseIconSize
-        self.setFrameStyle(QFrame.NoFrame)
+        cMg = self.mainConf.pxInt(6)
+
         self.setIconSize(QSize(iPx, iPx))
+        self.setFrameStyle(QFrame.NoFrame)
+        self.setHeaderHidden(True)
         self.setIndentation(iPx)
         self.setColumnCount(3)
-        self.setHeaderLabels([
-            self.tr("Novel Outline"),
-            self.tr("Words"),
-            self.tr("POV")
-        ])
-        self.itemDoubleClicked.connect(self._treeDoubleClick)
-        self.itemSelectionChanged.connect(self._itemSelected)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setExpandsOnDoubleClick(False)
         self.setDragEnabled(False)
 
-        treeHeadItem = self.headerItem()
-        treeHeadItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
-        treeHeadItem.setToolTip(self.C_TITLE, self.tr("Section title"))
-        treeHeadItem.setToolTip(self.C_WORDS, self.tr("Word count"))
-        treeHeadItem.setToolTip(self.C_POV,   self.tr("Point-of-view character"))
-
+        # Lock the column sizes
         treeHeader = self.header()
-        treeHeader.setStretchLastSection(True)
-        treeHeader.setMinimumSectionSize(iPx + 6)
+        treeHeader.setStretchLastSection(False)
+        treeHeader.setMinimumSectionSize(iPx + cMg)
+        treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.Stretch)
+        treeHeader.setSectionResizeMode(self.C_WORDS, QHeaderView.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_POV, QHeaderView.ResizeToContents)
 
-        # Get user's column width preferences for NAME and COUNT
-        treeColWidth = self.mainConf.getNovelColWidths()
-        if len(treeColWidth) <= 3:
-            for colN, colW in enumerate(treeColWidth):
-                self.setColumnWidth(colN, colW)
-
-        # The last column should just auto-scale
-        self.resizeColumnToContents(self.C_POV)
+        # Connect signals
+        self.itemDoubleClicked.connect(self._treeDoubleClick)
+        self.itemSelectionChanged.connect(self._treeSelectionChange)
 
         # Set custom settings
         self.initSettings()
@@ -199,12 +317,15 @@ class GuiNovelTree(QTreeWidget):
         self._lastBuild = 0
         return
 
-    def refreshTree(self, overRide=False):
+    def refreshTree(self, rootHandle=None, overRide=False):
         """Called whenever the Novel tab is activated.
         """
         logger.verbose("Requesting refresh of the novel tree")
+        if rootHandle is None:
+            rootHandle = self.theProject.tree.findRoot(nwItemClass.NOVEL)
+
         treeChanged = self.mainGui.projView.changedSince(self._lastBuild)
-        indexChanged = self.theProject.index.indexChangedSince(self._lastBuild)
+        indexChanged = self.theProject.index.rootChangedSince(rootHandle, self._lastBuild)
         if not (treeChanged or indexChanged or overRide):
             logger.verbose("No changes have been made to the novel index")
             return
@@ -214,7 +335,8 @@ class GuiNovelTree(QTreeWidget):
         if selItem:
             titleKey = selItem[0].data(self.C_TITLE, Qt.UserRole)[2]
 
-        self._populateTree()
+        self._populateTree(rootHandle)
+        self.theProject.setLastNovelViewed(rootHandle)
 
         if titleKey is not None and titleKey in self._treeMap:
             self._treeMap[titleKey].setSelected(True)
@@ -268,39 +390,39 @@ class GuiNovelTree(QTreeWidget):
             if tHandle is None:
                 return
 
-            self.mainGui.viewDocument(tHandle)
+            self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
 
         return
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
-    def _treeDoubleClick(self, tItem, tCol):
+    @pyqtSlot()
+    def _treeSelectionChange(self):
+        """Extract the handle and line number of the currently selected
+        title, and send it to the tree meta panel.
+        """
+        tHandle, _ = self.getSelectedHandle()
+        if tHandle is not None:
+            self.novelView.selectedItemChanged.emit(tHandle)
+        return
+
+    @pyqtSlot("QTreeWidgetItem*", int)
+    def _treeDoubleClick(self, tItem, colNo):
         """Extract the handle and line number of the title double-
         clicked, and send it to the main gui class for opening in the
         document editor.
         """
         tHandle, tLine = self.getSelectedHandle()
-        self.mainGui.openDocument(tHandle, tLine=tLine-1, doScroll=True)
-        return
-
-    def _itemSelected(self):
-        """Extract the handle and line number of the currently selected
-        title, and send it to the tree meta panel.
-        """
-        selItems = self.selectedItems()
-        if selItems:
-            tHandle = selItems[0].data(self.C_TITLE, Qt.UserRole)[0]
-            self.mainGui.itemDetails.updateViewBox(tHandle)
-
+        self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, tLine, "")
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _populateTree(self):
+    def _populateTree(self, rootHandle):
         """Build the tree based on the project index.
         """
         self.clearTree()
@@ -309,7 +431,9 @@ class GuiNovelTree(QTreeWidget):
         currChapter = None
         currScene = None
 
-        for tKey, tHandle, sTitle, novIdx in self.theProject.index.novelStructure(skipExcl=True):
+        logger.verbose("Building novel tree for root item '%s'", rootHandle)
+        novStruct = self.theProject.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
+        for tKey, tHandle, sTitle, novIdx in novStruct:
 
             tItem = self._createTreeItem(tHandle, sTitle, tKey, novIdx)
             self._treeMap[tKey] = tItem

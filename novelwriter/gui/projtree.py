@@ -61,7 +61,7 @@ class GuiProjectView(QWidget):
 
     # Signals for user interaction with the project tree
     selectedItemChanged = pyqtSignal(str)
-    openDocumentRequest = pyqtSignal(str, Enum)
+    openDocumentRequest = pyqtSignal(str, Enum, int, str)
 
     def __init__(self, mainGui):
         QWidget.__init__(self, mainGui)
@@ -192,10 +192,10 @@ class GuiProjectToolBar(QWidget):
             "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
         ).format(mPx, fadeCol.red(), fadeCol.green(), fadeCol.blue())
 
-        # Tree Label
-        self.projLabel = QLabel("<b>%s</b>" % self.tr("Project Content"))
-        self.projLabel.setContentsMargins(0, 0, 0, 0)
-        self.projLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # Widget Label
+        self.viewLabel = QLabel("<b>%s</b>" % self.tr("Project Content"))
+        self.viewLabel.setContentsMargins(0, 0, 0, 0)
+        self.viewLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         # Move Buttons
         self.tbMoveU = QToolButton(self)
@@ -285,7 +285,7 @@ class GuiProjectToolBar(QWidget):
 
         # Assemble
         self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.projLabel)
+        self.outerBox.addWidget(self.viewLabel)
         self.outerBox.addWidget(self.tbMoveU)
         self.outerBox.addWidget(self.tbMoveD)
         self.outerBox.addWidget(self.tbAdd)
@@ -337,9 +337,8 @@ class GuiProjectTree(QTreeWidget):
         self._lastMove = {}
         self._timeChanged = 0
 
-        ##
-        #  Build GUI
-        ##
+        # Build GUI
+        # =========
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -348,6 +347,7 @@ class GuiProjectTree(QTreeWidget):
         # Tree Settings
         iPx = self.mainTheme.baseIconSize
         cMg = self.mainConf.pxInt(6)
+
         self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.NoFrame)
         self.setExpandsOnDoubleClick(False)
@@ -972,7 +972,7 @@ class GuiProjectTree(QTreeWidget):
             return
 
         if tItem.itemType == nwItemType.FILE:
-            self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT)
+            self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, -1, "")
         else:
             trItem = self._getTreeItem(tHandle)
             if trItem is not None:
@@ -1016,11 +1016,11 @@ class GuiProjectTree(QTreeWidget):
         if isFile:
             ctxMenu.addAction(
                 self.tr("Open Document"),
-                lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT)
+                lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, -1, "")
             )
             ctxMenu.addAction(
                 self.tr("View Document"),
-                lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW)
+                lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
             )
             ctxMenu.addSeparator()
 
@@ -1112,7 +1112,7 @@ class GuiProjectTree(QTreeWidget):
                 return
 
             if tItem.itemType == nwItemType.FILE:
-                self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW)
+                self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
 
         return
 

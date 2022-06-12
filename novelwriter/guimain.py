@@ -205,6 +205,10 @@ class GuiMain(QMainWindow):
         self.projView.treeItemChanged.connect(self.docViewer.updateDocInfo)
         self.projView.treeItemChanged.connect(self.itemDetails.updateViewBox)
         self.projView.rootFolderChanged.connect(self.outlineView.updateRootItem)
+        self.projView.rootFolderChanged.connect(self.novelView.updateRootItem)
+
+        self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
+        self.novelView.openDocumentRequest.connect(self._openDocument)
 
         self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
         self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
@@ -362,6 +366,7 @@ class GuiMain(QMainWindow):
             self.saveProject()
             self.docEditor.setDictionaries()
             self.outlineView.updateRootItem(None)
+            self.novelView.openProjectTasks()
             self.rebuildIndex(beQuiet=True)
             self.statusBar.setRefTime(self.theProject.projOpened)
             self.statusBar.setProjectStatus(nwState.GOOD)
@@ -509,6 +514,7 @@ class GuiMain(QMainWindow):
         self.docEditor.toggleSpellCheck(self.theProject.spellCheck)
         self.statusBar.setRefTime(self.theProject.projOpened)
         self.outlineView.updateRootItem(None)
+        self.novelView.openProjectTasks()
         self._updateStatusWordCount()
 
         # Restore previously open documents, if any
@@ -825,7 +831,7 @@ class GuiMain(QMainWindow):
         """Rebuild the project tree.
         """
         self.projView.populateTree()
-        self.novelView.refreshTree()
+        # self.novelView.refreshTree()
         return
 
     def requestNovelTreeRefresh(self):
@@ -1468,15 +1474,15 @@ class GuiMain(QMainWindow):
                 self.viewDocument(tHandle=tHandle, tAnchor=f"#{sTitle}")
         return
 
-    @pyqtSlot(str, Enum)
-    def _openDocument(self, tHandle, tMode):
-        """Handle an open document request.
+    @pyqtSlot(str, Enum, int, str)
+    def _openDocument(self, tHandle, tMode, tLine, tAnchor):
+        """Handle an open document request from one of the tree views.
         """
         if tHandle is not None:
             if tMode == nwDocMode.EDIT:
-                self.openDocument(tHandle, changeFocus=False)
+                self.openDocument(tHandle, tLine=tLine, changeFocus=False)
             elif tMode == nwDocMode.VIEW:
-                self.viewDocument(tHandle=tHandle)
+                self.viewDocument(tHandle=tHandle, tAnchor=(tAnchor or None))
         return
 
     @pyqtSlot(nwView)
