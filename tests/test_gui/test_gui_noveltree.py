@@ -37,23 +37,24 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
 
     nwGUI.openProject(nwMinimal)
-    nwTree = nwGUI.novelView
+    novelView = nwGUI.novelView
+    novelTree = novelView.novelTree
 
     ##
     #  Show/Hide Scrollbars
     ##
 
-    nwTree.mainConf.hideVScroll = True
-    nwTree.mainConf.hideHScroll = True
-    nwTree.initTree()
-    assert not nwTree.verticalScrollBar().isVisible()
-    assert not nwTree.horizontalScrollBar().isVisible()
+    nwGUI.mainConf.hideVScroll = True
+    nwGUI.mainConf.hideHScroll = True
+    novelView.initSettings()
+    assert not novelTree.verticalScrollBar().isVisible()
+    assert not novelTree.horizontalScrollBar().isVisible()
 
-    nwTree.mainConf.hideVScroll = False
-    nwTree.mainConf.hideHScroll = False
-    nwTree.initTree()
-    assert nwTree.verticalScrollBar().isEnabled()
-    assert nwTree.horizontalScrollBar().isEnabled()
+    nwGUI.mainConf.hideVScroll = False
+    nwGUI.mainConf.hideHScroll = False
+    novelView.initSettings()
+    assert novelTree.verticalScrollBar().isEnabled()
+    assert novelTree.horizontalScrollBar().isEnabled()
 
     ##
     #  Populate Tree
@@ -61,31 +62,31 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
 
     nwGUI.projStack.setCurrentIndex(nwGUI.idxNovelView)
     nwGUI.rebuildIndex()
-    nwTree._populateTree()
-    assert nwTree.topLevelItemCount() == 1
+    novelTree._populateTree()
+    assert novelTree.topLevelItemCount() == 1
 
     # Rebuild should preserve selection
-    topItem = nwTree.topLevelItem(0)
+    topItem = novelTree.topLevelItem(0)
     assert not topItem.isSelected()
     topItem.setSelected(True)
-    assert nwTree.selectedItems()[0] == topItem
-    assert nwTree.getSelectedHandle() == ("a35baf2e93843", 0)
+    assert novelTree.selectedItems()[0] == topItem
+    assert novelView.getSelectedHandle() == ("a35baf2e93843", 0)
 
-    nwTree.refreshTree()
-    assert nwTree.topLevelItem(0).isSelected()
+    novelView.refreshTree()
+    assert novelTree.topLevelItem(0).isSelected()
 
     ##
     #  Open Items
     ##
 
     # Clear selection
-    nwTree.clearSelection()
-    scItem = nwTree.topLevelItem(0).child(0).child(0)
+    novelTree.clearSelection()
+    scItem = novelTree.topLevelItem(0).child(0).child(0)
     scItem.setSelected(True)
     assert scItem.isSelected()
 
     # Clear selection with mouse
-    vPort = nwTree.viewport()
+    vPort = novelTree.viewport()
     qtbot.mouseClick(vPort, Qt.LeftButton, pos=vPort.rect().center(), delay=10)
     assert not scItem.isSelected()
 
@@ -93,7 +94,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     scItem.setSelected(True)
     assert scItem.isSelected()
     assert nwGUI.docEditor.docHandle() is None
-    nwTree._treeDoubleClick(scItem, 0)
+    novelTree._treeDoubleClick(scItem, 0)
     assert nwGUI.docEditor.docHandle() == "8c659a11cd429"
 
     # Open item with middle mouse button
@@ -103,13 +104,13 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=vPort.rect().center(), delay=10)
     assert nwGUI.docViewer.docHandle() is None
 
-    scRect = nwTree.visualItemRect(scItem)
-    oldData = scItem.data(nwTree.C_TITLE, Qt.UserRole)
-    scItem.setData(nwTree.C_TITLE, Qt.UserRole, (None, "", ""))
+    scRect = novelTree.visualItemRect(scItem)
+    oldData = scItem.data(novelTree.C_TITLE, Qt.UserRole)
+    scItem.setData(novelTree.C_TITLE, Qt.UserRole, (None, "", ""))
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
     assert nwGUI.docViewer.docHandle() is None
 
-    scItem.setData(nwTree.C_TITLE, Qt.UserRole, oldData)
+    scItem.setData(novelTree.C_TITLE, Qt.UserRole, oldData)
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
     assert nwGUI.docViewer.docHandle() == "8c659a11cd429"
 
@@ -132,23 +133,23 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
         "#### Section\n\n"
     ))
     nwGUI.rebuildIndex()
-    nwTree._populateTree()
-    assert nwTree.topLevelItem(0).text(nwTree.C_TITLE) == "Section wo/Scene"
-    assert nwTree.topLevelItem(1).text(nwTree.C_TITLE) == "Scene wo/Chapter"
-    assert nwTree.topLevelItem(2).text(nwTree.C_TITLE) == "Chapter wo/Title"
-    assert nwTree.topLevelItem(3).text(nwTree.C_TITLE) == "Title"
+    novelTree._populateTree()
+    assert novelTree.topLevelItem(0).text(novelTree.C_TITLE) == "Section wo/Scene"
+    assert novelTree.topLevelItem(1).text(novelTree.C_TITLE) == "Scene wo/Chapter"
+    assert novelTree.topLevelItem(2).text(novelTree.C_TITLE) == "Chapter wo/Title"
+    assert novelTree.topLevelItem(3).text(novelTree.C_TITLE) == "Title"
 
-    tTitle = nwTree.topLevelItem(3)
-    assert tTitle.child(0).text(nwTree.C_TITLE) == "Section w/Title, wo/Scene"
-    assert tTitle.child(1).text(nwTree.C_TITLE) == "Scene w/Title, wo/Chapter"
-    assert tTitle.child(2).text(nwTree.C_TITLE) == "Chapter"
+    tTitle = novelTree.topLevelItem(3)
+    assert tTitle.child(0).text(novelTree.C_TITLE) == "Section w/Title, wo/Scene"
+    assert tTitle.child(1).text(novelTree.C_TITLE) == "Scene w/Title, wo/Chapter"
+    assert tTitle.child(2).text(novelTree.C_TITLE) == "Chapter"
 
     tChap = tTitle.child(2)
-    assert tChap.child(0).text(nwTree.C_TITLE) == "Section w/Chapter, wo/Scene"
-    assert tChap.child(1).text(nwTree.C_TITLE) == "Scene"
+    assert tChap.child(0).text(novelTree.C_TITLE) == "Section w/Chapter, wo/Scene"
+    assert tChap.child(1).text(novelTree.C_TITLE) == "Scene"
 
     tScene = tChap.child(1)
-    assert tScene.child(0).text(nwTree.C_TITLE) == "Section"
+    assert tScene.child(0).text(novelTree.C_TITLE) == "Section"
 
     ##
     #  Close

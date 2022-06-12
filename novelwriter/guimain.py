@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.gui import (
     GuiDocEditor, GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiMainMenu,
-    GuiMainStatus, GuiNovelTree, GuiOutlineView, GuiProjectView, GuiTheme,
+    GuiMainStatus, GuiNovelView, GuiOutlineView, GuiProjectView, GuiTheme,
     GuiViewsBar
 )
 from novelwriter.dialogs import (
@@ -106,7 +106,7 @@ class GuiMain(QMainWindow):
         # Main GUI Elements
         self.statusBar   = GuiMainStatus(self)
         self.projView    = GuiProjectView(self)
-        self.novelView   = GuiNovelTree(self)
+        self.novelView   = GuiNovelView(self)
         self.docEditor   = GuiDocEditor(self)
         self.viewMeta    = GuiDocViewDetails(self)
         self.docViewer   = GuiDocViewer(self)
@@ -292,7 +292,7 @@ class GuiMain(QMainWindow):
         """
         # Project Area
         self.projView.clearProject()
-        self.novelView.clearTree()
+        self.novelView.clearProject()
         self.itemDetails.clearDetails()
 
         # Work Area
@@ -791,7 +791,7 @@ class GuiMain(QMainWindow):
         tLine = None
         if self.projView.treeFocus():
             tHandle = self.projView.getSelectedHandle()
-        elif self.novelView.hasFocus():
+        elif self.novelView.treeFocus():
             tHandle, tLine = self.novelView.getSelectedHandle()
         elif self.outlineView.treeFocus():
             tHandle, tLine = self.outlineView.getSelectedHandle()
@@ -920,7 +920,7 @@ class GuiMain(QMainWindow):
             self.docEditor.initEditor()
             self.docViewer.initViewer()
             self.projView.initSettings()
-            self.novelView.initTree()
+            self.novelView.initSettings()
             self.outlineView.initOutline()
             self._updateStatusWordCount()
 
@@ -1161,7 +1161,6 @@ class GuiMain(QMainWindow):
                 self.mainConf.setViewPanePos(self.splitView.sizes())
 
         self.mainConf.setShowRefPanel(self.viewMeta.isVisible())
-        self.mainConf.setNovelColWidths(self.novelView.getColumnSizes())
         if not self.mainConf.isFullScreen:
             self.mainConf.setWinSize(self.width(), self.height())
 

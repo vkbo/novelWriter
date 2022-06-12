@@ -28,7 +28,7 @@ from tools import cmpFiles, buildTestProject, XML_IGNORE, writeFile
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QInputDialog
 
-from novelwriter.gui import GuiDocEditor, GuiNovelTree, GuiOutlineView
+from novelwriter.gui import GuiDocEditor, GuiNovelView, GuiOutlineView
 from novelwriter.enum import nwItemType, nwWidget
 from novelwriter.tools import GuiProjectWizard
 from novelwriter.gui.projtree import GuiProjectTree
@@ -134,12 +134,12 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     nwGUI.projStack.setCurrentIndex(1)
     nwGUI.novelView.refreshTree(True)
     with monkeypatch.context() as mp:
-        mp.setattr(GuiNovelTree, "hasFocus", lambda *a: True)
+        mp.setattr(GuiNovelView, "treeFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle() is None
-        actItem = nwGUI.novelView.topLevelItem(0)
+        actItem = nwGUI.novelView.novelTree.topLevelItem(0)
         chpItem = actItem.child(0)
         selItem = chpItem.child(0)
-        nwGUI.novelView.setCurrentItem(selItem)
+        nwGUI.novelView.novelTree.setCurrentItem(selItem)
         nwGUI._keyPressReturn()
         assert nwGUI.docEditor.docHandle() == sHandle
         assert nwGUI.closeDocument() is True

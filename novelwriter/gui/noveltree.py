@@ -30,7 +30,8 @@ from time import time
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import (
-    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QFrame
+    QAbstractItemView, QFrame, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter.common import checkInt
@@ -39,21 +40,88 @@ from novelwriter.constants import nwKeyWords
 logger = logging.getLogger(__name__)
 
 
+class GuiNovelView(QWidget):
+
+    def __init__(self, mainGui):
+        QWidget.__init__(self, mainGui)
+
+        self.mainGui = mainGui
+
+        # Build GUI
+        self.novelTree = GuiNovelTree(self)
+        self.novelBar = GuiNovelToolBar(self)
+
+        # Assemble
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addWidget(self.novelBar, 0)
+        self.outerBox.addWidget(self.novelTree, 1)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
+        self.outerBox.setSpacing(0)
+
+        self.setLayout(self.outerBox)
+
+        # Function Mappings
+        self.refreshTree = self.novelTree.refreshTree
+        self.updateWordCounts = self.novelTree.updateWordCounts
+        self.getSelectedHandle = self.novelTree.getSelectedHandle
+
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def initSettings(self):
+        self.novelTree.initSettings()
+        return
+
+    def clearProject(self):
+        self.novelTree.clearTree()
+        return
+
+    def setFocus(self):
+        """Forward the set focus call to the tree widget.
+        """
+        self.novelTree.setFocus()
+        return
+
+    def treeFocus(self):
+        """Check if the novel tree has focus.
+        """
+        return self.novelTree.hasFocus()
+
+# END Class GuiNovelView
+
+
+class GuiNovelToolBar(QWidget):
+
+    def __init__(self, novelView):
+        QTreeWidget.__init__(self, novelView)
+
+        self.mainConf  = novelwriter.CONFIG
+        self.novelView = novelView
+
+        return
+
+# END Class GuiNovelToolBar
+
+
 class GuiNovelTree(QTreeWidget):
 
     C_TITLE = 0
     C_WORDS = 1
     C_POV   = 2
 
-    def __init__(self, mainGui):
-        QTreeWidget.__init__(self, mainGui)
+    def __init__(self, novelView):
+        QTreeWidget.__init__(self, novelView)
 
         logger.debug("Initialising GuiNovelTree ...")
 
         self.mainConf   = novelwriter.CONFIG
-        self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
-        self.theProject = mainGui.theProject
+        self.novelView  = novelView
+        self.mainGui    = novelView.mainGui
+        self.mainTheme  = novelView.mainGui.mainTheme
+        self.theProject = novelView.mainGui.theProject
 
         # Internal Variables
         self._treeMap   = {}
@@ -97,13 +165,13 @@ class GuiNovelTree(QTreeWidget):
         self.resizeColumnToContents(self.C_POV)
 
         # Set custom settings
-        self.initTree()
+        self.initSettings()
 
         logger.debug("GuiNovelTree initialisation complete")
 
         return
 
-    def initTree(self):
+    def initSettings(self):
         """Set or update tree widget settings.
         """
         # Scroll bars
@@ -161,15 +229,6 @@ class GuiNovelTree(QTreeWidget):
             if titleKey in self._treeMap:
                 self._treeMap[titleKey].setText(self.C_WORDS, f"{wCount:n}")
         return
-
-    def getColumnSizes(self):
-        """Return the column widths for the tree columns.
-        """
-        retVals = [
-            self.columnWidth(0),
-            self.columnWidth(1),
-        ]
-        return retVals
 
     def getSelectedHandle(self):
         """Get the currently selected handle. If multiple items are
