@@ -56,7 +56,8 @@ VALID_MAP = {
         "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
         "widthCol3", "widthCol4", "wordsPerPage", "countFrom", "clearDouble"
     },
-    "GuiWordList": {"winWidth", "winHeight"}
+    "GuiWordList": {"winWidth", "winHeight"},
+    "GuiNovelView": {"lastCol"},
 }
 
 

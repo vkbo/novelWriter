@@ -423,6 +423,7 @@ class GuiMain(QMainWindow):
             self.closeDocument()
             self.docViewer.clearNavHistory()
             self.outlineView.closeOutline()
+            self.novelView.closeProjectTasks()
 
             self.theProject.closeProject(self.idleTime)
             self.idleRefTime = time()

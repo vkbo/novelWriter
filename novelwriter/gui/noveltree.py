@@ -39,9 +39,18 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.enum import nwDocMode, nwItemClass
 from novelwriter.common import checkInt
-from novelwriter.constants import nwKeyWords, nwLabels
+from novelwriter.constants import nwKeyWords, nwLabels, trConst
 
 logger = logging.getLogger(__name__)
+
+
+class NovelColumnType(Enum):
+
+    HIDDEN = 0
+    POV    = 1
+    FOCUS  = 2
+
+# END Enum NovelColumnType
 
 
 class GuiNovelView(QWidget):
@@ -94,7 +103,7 @@ class GuiNovelView(QWidget):
         return
 
     def openProjectTasks(self):
-        """Run tasks related to opening a project.
+        """Run tasks when opening a project.
         """
         lastNovel = self.theProject.lastNovel
         if lastNovel is None:
@@ -104,8 +113,15 @@ class GuiNovelView(QWidget):
 
         self.clearProject()
         self.novelBar.rebuildNovelRootMenu(selHandle=lastNovel)
+        self.novelTree.loadOptions()
         self.novelTree.refreshTree(rootHandle=lastNovel, overRide=True)
 
+        return
+
+    def closeProjectTasks(self):
+        """Run tasks when closing a project.
+        """
+        self.novelTree.saveOptions()
         return
 
     def setFocus(self):
@@ -168,6 +184,14 @@ class GuiNovelToolBar(QWidget):
         self.viewLabel.setContentsMargins(0, 0, 0, 0)
         self.viewLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
+        # Refresh Button
+        self.tbRefresh = QToolButton(self)
+        self.tbRefresh.setToolTip(self.tr("Refresh"))
+        self.tbRefresh.setIcon(self.mainTheme.getIcon("refresh"))
+        self.tbRefresh.setIconSize(QSize(iPx, iPx))
+        self.tbRefresh.setStyleSheet(buttonStyle)
+        self.tbRefresh.clicked.connect(self._refreshNovelTree)
+
         # Novel Root Menu
         self.mRoot = QMenu()
 
@@ -182,6 +206,17 @@ class GuiNovelToolBar(QWidget):
         # More Options Menu
         self.mMore = QMenu()
 
+        self.mCol3 = self.mMore.addMenu(self.tr("Third Column"))
+        self.mCol3.addAction(self.tr("Hide Column")).triggered.connect(
+            lambda: self.novelView.novelTree.setLastColType(NovelColumnType.HIDDEN)
+        )
+        self.mCol3.addAction(self.tr("Point of View Character")).triggered.connect(
+            lambda: self.novelView.novelTree.setLastColType(NovelColumnType.POV)
+        )
+        self.mCol3.addAction(self.tr("Focus Character")).triggered.connect(
+            lambda: self.novelView.novelTree.setLastColType(NovelColumnType.FOCUS)
+        )
+
         self.tbMore = QToolButton(self)
         self.tbMore.setToolTip(self.tr("More Options"))
         self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
@@ -193,6 +228,7 @@ class GuiNovelToolBar(QWidget):
         # Assemble
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.viewLabel)
+        self.outerBox.addWidget(self.tbRefresh)
         self.outerBox.addWidget(self.tbRoot)
         self.outerBox.addWidget(self.tbMore)
         self.outerBox.setContentsMargins(mPx, mPx, 0, mPx)
@@ -230,6 +266,18 @@ class GuiNovelToolBar(QWidget):
 
         return
 
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _refreshNovelTree(self):
+        """Rebuild the current tree.
+        """
+        rootHandle = self.theProject.lastNovel
+        self.novelView.novelTree.refreshTree(rootHandle=rootHandle, overRide=True)
+        return
+
 # END Class GuiNovelToolBar
 
 
@@ -237,7 +285,7 @@ class GuiNovelTree(QTreeWidget):
 
     C_TITLE = 0
     C_WORDS = 1
-    C_POV   = 2
+    C_LAST  = 2
 
     def __init__(self, novelView):
         QTreeWidget.__init__(self, novelView)
@@ -253,6 +301,11 @@ class GuiNovelTree(QTreeWidget):
         # Internal Variables
         self._treeMap   = {}
         self._lastBuild = 0
+        self._lastCol   = NovelColumnType.POV
+
+        # Cached i18n Strings
+        self._povLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY])
+        self._focLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.FOCUS_KEY])
 
         # Build GUI
         # =========
@@ -276,7 +329,7 @@ class GuiNovelTree(QTreeWidget):
         treeHeader.setMinimumSectionSize(iPx + cMg)
         treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.Stretch)
         treeHeader.setSectionResizeMode(self.C_WORDS, QHeaderView.ResizeToContents)
-        treeHeader.setSectionResizeMode(self.C_POV, QHeaderView.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_LAST, QHeaderView.ResizeToContents)
 
         # Connect signals
         self.itemDoubleClicked.connect(self._treeDoubleClick)
@@ -316,6 +369,32 @@ class GuiNovelTree(QTreeWidget):
         self._treeMap = {}
         self._lastBuild = 0
         return
+
+    def loadOptions(self):
+        """Load user options.
+        """
+        try:
+            lastCol = NovelColumnType[self.theProject.options.getString(
+                "GuiNovelView", "lastCol", NovelColumnType.POV.name
+            )]
+        except Exception:
+            logger.error("Failed to load last column type from options")
+            return False
+
+        self._lastCol = lastCol
+        self.setColumnHidden(self.C_LAST, lastCol == NovelColumnType.HIDDEN)
+
+        return True
+
+    def saveOptions(self):
+        """Save user options.
+        """
+        try:
+            self.theProject.options.setValue("GuiNovelView", "lastCol", self._lastCol.name)
+        except Exception:
+            logger.error("Failed to save last column type to options")
+            return False
+        return True
 
     def refreshTree(self, rootHandle=None, overRide=False):
         """Called whenever the Novel tab is activated.
@@ -364,6 +443,16 @@ class GuiNovelTree(QTreeWidget):
             tLine = checkInt(selItem[0].data(self.C_TITLE, Qt.UserRole)[1], 1) - 1
 
         return tHandle, tLine
+
+    def setLastColType(self, colType):
+        """Change the content type of the last column and rebuild.
+        """
+        if self._lastCol != colType:
+            logger.debug("Changing last column to %s", colType.name)
+            self._lastCol = colType
+            self.setColumnHidden(self.C_LAST, colType == NovelColumnType.HIDDEN)
+            self.refreshTree(rootHandle=self.theProject.lastNovel, overRide=True)
+        return
 
     ##
     #  Events
@@ -431,6 +520,8 @@ class GuiNovelTree(QTreeWidget):
         currChapter = None
         currScene = None
 
+        tStart = time()
+
         logger.verbose("Building novel tree for root item '%s'", rootHandle)
         novStruct = self.theProject.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
         for tKey, tHandle, sTitle, novIdx in novStruct:
@@ -477,6 +568,8 @@ class GuiNovelTree(QTreeWidget):
 
             tItem.setExpanded(True)
 
+        logger.verbose("Novel Tree built in %.3f ms", (time() - tStart)*1000)
+
         self._lastBuild = time()
 
         return
@@ -496,8 +589,20 @@ class GuiNovelTree(QTreeWidget):
         newItem.setText(self.C_WORDS, f"{wC:n}")
         newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
 
-        theRefs = self.theProject.index.getReferences(tHandle, sTitle)
-        newItem.setText(self.C_POV, ", ".join(theRefs[nwKeyWords.POV_KEY]))
+        if self._lastCol == NovelColumnType.HIDDEN:
+            newItem.setText(self.C_LAST, "")
+        else:
+            theRefs = self.theProject.index.getReferences(tHandle, sTitle)
+            if self._lastCol == NovelColumnType.POV:
+                newText = ", ".join(theRefs[nwKeyWords.POV_KEY])
+                newItem.setText(self.C_LAST, newText)
+                if newText:
+                    newItem.setToolTip(self.C_LAST, f"{self._povLabel}: {newText}")
+            elif self._lastCol == NovelColumnType.FOCUS:
+                newText = ", ".join(theRefs[nwKeyWords.FOCUS_KEY])
+                newItem.setText(self.C_LAST, newText)
+                if newText:
+                    newItem.setToolTip(self.C_LAST, f"{self._focLabel}: {newText}")
 
         return newItem
 
