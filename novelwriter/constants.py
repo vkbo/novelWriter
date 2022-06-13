@@ -57,6 +57,15 @@ class nwRegEx:
 # END Class nwRegEx
 
 
+class nwHeaders:
+
+    H_VALID = ("H0", "H1", "H2", "H3", "H4")
+    H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
+    TT_NONE = "T000000"
+
+# END Class nwHeaders
+
+
 class nwFiles:
 
     PROJ_FILE   = "nwProject.nwx"

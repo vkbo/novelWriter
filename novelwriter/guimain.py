@@ -1582,30 +1582,30 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot(int)
-    def _mainStackChanged(self, tabIndex):
+    def _mainStackChanged(self, stIndex):
         """Activated when the main window tab is changed.
         """
-        if tabIndex == self.idxEditorView:
-            logger.verbose("Editor tab activated")
-        elif tabIndex == self.idxOutlineView:
-            logger.verbose("Project outline tab activated")
+        if stIndex == self.idxEditorView:
+            logger.verbose("Editor View activated")
+        elif stIndex == self.idxOutlineView:
+            logger.verbose("Outline View activated")
             if self.hasProject:
                 self.outlineView.refreshView()
 
         return
 
     @pyqtSlot(int)
-    def _projStackChanged(self, tabIndex):
+    def _projStackChanged(self, stIndex):
         """Activated when the project view tab is changed.
         """
         sHandle = None
 
-        if tabIndex == self.idxProjView:
-            logger.verbose("Project tree tab activated")
+        if stIndex == self.idxProjView:
+            logger.verbose("Project Tree View activated")
             sHandle = self.projView.getSelectedHandle()
 
-        elif tabIndex == self.idxNovelView:
-            logger.verbose("Novel tree tab activated")
+        elif stIndex == self.idxNovelView:
+            logger.verbose("Novel Tree View activated")
             if self.hasProject:
                 self.novelView.refreshTree()
                 sHandle, _ = self.novelView.getSelectedHandle()

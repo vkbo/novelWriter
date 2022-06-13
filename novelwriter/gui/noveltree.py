@@ -4,7 +4,9 @@ novelWriter – GUI Novel Tree
 GUI classe for the main window novel tree
 
 File History:
-Created: 2020-12-20 [1.1a0]
+Created: 2020-12-20 [1.1a0] GuiNovelTree
+Created: 2022-06-12 [1.7b1] GuiNovelView
+Created: 2022-06-12 [1.7b1] GuiNovelToolBar
 
 This file is a part of novelWriter
 Copyright 2018–2020, Veronica Berglyd Olsen
@@ -30,7 +32,7 @@ from time import time
 from enum import Enum
 
 from PyQt5.QtCore import Qt, QSize, pyqtSlot, pyqtSignal
-from PyQt5.QtGui import QPalette
+from PyQt5.QtGui import QPalette, QPixmap, QColor
 from PyQt5.QtWidgets import (
     QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView, QLabel,
     QMenu, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
@@ -39,19 +41,19 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.enum import nwDocMode, nwItemClass
 from novelwriter.common import checkInt
-from novelwriter.constants import nwKeyWords, nwLabels, trConst
+from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
 
 logger = logging.getLogger(__name__)
 
 
-class NovelColumnType(Enum):
+class NovelTreeColumn(Enum):
 
     HIDDEN = 0
     POV    = 1
     FOCUS  = 2
     PLOT   = 3
 
-# END Enum NovelColumnType
+# END Enum NovelTreeColumn
 
 
 class GuiNovelView(QWidget):
@@ -209,16 +211,16 @@ class GuiNovelToolBar(QWidget):
 
         self.mCol3 = self.mMore.addMenu(self.tr("Third Column"))
         self.mCol3.addAction(self.tr("Hide Column")).triggered.connect(
-            lambda: self.novelView.novelTree.setLastColType(NovelColumnType.HIDDEN)
+            lambda: self.novelView.novelTree.setLastColType(NovelTreeColumn.HIDDEN)
         )
         self.mCol3.addAction(self.tr("Point of View Character")).triggered.connect(
-            lambda: self.novelView.novelTree.setLastColType(NovelColumnType.POV)
+            lambda: self.novelView.novelTree.setLastColType(NovelTreeColumn.POV)
         )
         self.mCol3.addAction(self.tr("Focus Character")).triggered.connect(
-            lambda: self.novelView.novelTree.setLastColType(NovelColumnType.FOCUS)
+            lambda: self.novelView.novelTree.setLastColType(NovelTreeColumn.FOCUS)
         )
         self.mCol3.addAction(self.tr("Novel Plot")).triggered.connect(
-            lambda: self.novelView.novelTree.setLastColType(NovelColumnType.PLOT)
+            lambda: self.novelView.novelTree.setLastColType(NovelTreeColumn.PLOT)
         )
 
         self.tbMore = QToolButton(self)
@@ -305,9 +307,9 @@ class GuiNovelTree(QTreeWidget):
         # Internal Variables
         self._treeMap   = {}
         self._lastBuild = 0
-        self._lastCol   = NovelColumnType.POV
+        self._lastCol   = NovelTreeColumn.POV
 
-        # Cached i18n Strings
+        # Cached Strings
         self._povLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY])
         self._focLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.FOCUS_KEY])
         self._pltLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.PLOT_KEY])
@@ -316,12 +318,15 @@ class GuiNovelTree(QTreeWidget):
         # =========
 
         iPx = self.mainTheme.baseIconSize
+        nPx = self.mainTheme.textNWidth
         cMg = self.mainConf.pxInt(6)
+        mPx = self.mainConf.pxInt(4)
+        nMg = self.mainConf.pxInt(6)
 
-        self.setIconSize(QSize(iPx, iPx))
+        # self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.NoFrame)
         self.setHeaderHidden(True)
-        self.setIndentation(iPx)
+        self.setIndentation(mPx)
         self.setColumnCount(3)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -335,6 +340,25 @@ class GuiNovelTree(QTreeWidget):
         treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.Stretch)
         treeHeader.setSectionResizeMode(self.C_WORDS, QHeaderView.ResizeToContents)
         treeHeader.setSectionResizeMode(self.C_LAST, QHeaderView.ResizeToContents)
+
+        # Pre-Generate Tree Formatting
+        fH1 = self.font()
+        fH1.setBold(True)
+        fH1.setUnderline(True)
+
+        fH2 = self.font()
+        fH2.setBold(True)
+
+        self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
+        self._hIndent = ["", "", "", "\u2022\u00a0", "\u00bb\u00a0"]
+        self._pIndent = [QPixmap(), QPixmap()]
+
+        hPix = QPixmap(QSize(iPx, iPx))
+        hPix.fill(QColor(0, 0, 0, 0))
+        for m in range(1, 4):
+            self._pIndent.append(hPix.scaled(
+                max(nPx*m - nMg, nMg), 2, Qt.IgnoreAspectRatio, Qt.FastTransformation
+            ))
 
         # Connect signals
         self.itemDoubleClicked.connect(self._treeDoubleClick)
@@ -379,9 +403,9 @@ class GuiNovelTree(QTreeWidget):
         """Load user options.
         """
         self._lastCol = self.theProject.options.getEnum(
-            "GuiNovelView", "lastCol", NovelColumnType, NovelColumnType.POV
+            "GuiNovelView", "lastCol", NovelTreeColumn, NovelTreeColumn.POV
         )
-        self.setColumnHidden(self.C_LAST, self._lastCol == NovelColumnType.HIDDEN)
+        self.setColumnHidden(self.C_LAST, self._lastCol == NovelTreeColumn.HIDDEN)
         return True
 
     def saveOptions(self):
@@ -444,7 +468,7 @@ class GuiNovelTree(QTreeWidget):
         if self._lastCol != colType:
             logger.debug("Changing last column to %s", colType.name)
             self._lastCol = colType
-            self.setColumnHidden(self.C_LAST, colType == NovelColumnType.HIDDEN)
+            self.setColumnHidden(self.C_LAST, colType == NovelTreeColumn.HIDDEN)
             self.refreshTree(rootHandle=self.theProject.lastNovel, overRide=True)
         return
 
@@ -509,100 +533,58 @@ class GuiNovelTree(QTreeWidget):
         """Build the tree based on the project index.
         """
         self.clearTree()
-
-        currTitle = None
-        currChapter = None
-        currScene = None
-
         tStart = time()
-
         logger.verbose("Building novel tree for root item '%s'", rootHandle)
+
         novStruct = self.theProject.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
         for tKey, tHandle, sTitle, novIdx in novStruct:
 
-            tItem = self._createTreeItem(tHandle, sTitle, tKey, novIdx)
-            self._treeMap[tKey] = tItem
+            iLevel = nwHeaders.H_LEVEL.get(novIdx.level, 0)
+            if iLevel == 0:
+                continue
 
-            tLevel = novIdx.level
-            if tLevel == "H1":
-                self.addTopLevelItem(tItem)
-                currTitle = tItem
-                currChapter = None
-                currScene = None
+            newItem = QTreeWidgetItem()
+            theData = (tHandle, sTitle[1:].lstrip("0"), tKey)
 
-            elif tLevel == "H2":
-                if currTitle is None:
-                    self.addTopLevelItem(tItem)
-                else:
-                    currTitle.addChild(tItem)
-                currChapter = tItem
-                currScene = None
+            newItem.setData(self.C_TITLE, Qt.DecorationRole, self._pIndent[iLevel])
+            newItem.setText(self.C_TITLE, self._hIndent[iLevel] + novIdx.title)
+            newItem.setData(self.C_TITLE, Qt.UserRole, theData)
+            newItem.setFont(self.C_TITLE, self._hFonts[iLevel])
+            newItem.setText(self.C_WORDS, f"{novIdx.wordCount:n}")
+            newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
 
-            elif tLevel == "H3":
-                if currChapter is None:
-                    if currTitle is None:
-                        self.addTopLevelItem(tItem)
-                    else:
-                        currTitle.addChild(tItem)
-                else:
-                    currChapter.addChild(tItem)
-                currScene = tItem
+            lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
+            newItem.setText(self.C_LAST, lastText)
+            if lastText:
+                newItem.setToolTip(self.C_LAST, toolTip)
 
-            elif tLevel == "H4":
-                if currScene is None:
-                    if currChapter is None:
-                        if currTitle is None:
-                            self.addTopLevelItem(tItem)
-                        else:
-                            currTitle.addChild(tItem)
-                    else:
-                        currChapter.addChild(tItem)
-                else:
-                    currScene.addChild(tItem)
-
-            tItem.setExpanded(True)
+            self._treeMap[tKey] = newItem
+            self.addTopLevelItem(newItem)
 
         logger.verbose("Novel Tree built in %.3f ms", (time() - tStart)*1000)
-
         self._lastBuild = time()
 
         return
 
-    def _createTreeItem(self, tHandle, sTitle, titleKey, novIdx):
-        """Populate a tree item with all the column values.
+    def _getLastColumnText(self, tHandle, sTitle):
+        """Generate the text for the last column based on user settings.
         """
-        newItem = QTreeWidgetItem()
-        hIcon   = "doc_%s" % novIdx.level.lower()
-        theData = (tHandle, sTitle[1:].lstrip("0"), titleKey)
+        if self._lastCol == NovelTreeColumn.HIDDEN:
+            return "", ""
 
-        wC = int(novIdx.wordCount)
+        theRefs = self.theProject.index.getReferences(tHandle, sTitle)
+        if self._lastCol == NovelTreeColumn.POV:
+            newText = ", ".join(theRefs[nwKeyWords.POV_KEY])
+            return newText, f"{self._povLabel}: {newText}"
 
-        newItem.setText(self.C_TITLE, novIdx.title)
-        newItem.setData(self.C_TITLE, Qt.UserRole, theData)
-        newItem.setIcon(self.C_TITLE, self.mainTheme.getIcon(hIcon))
-        newItem.setText(self.C_WORDS, f"{wC:n}")
-        newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
+        elif self._lastCol == NovelTreeColumn.FOCUS:
+            newText = ", ".join(theRefs[nwKeyWords.FOCUS_KEY])
+            return newText, f"{self._focLabel}: {newText}"
 
-        if self._lastCol == NovelColumnType.HIDDEN:
-            newItem.setText(self.C_LAST, "")
-        else:
-            theRefs = self.theProject.index.getReferences(tHandle, sTitle)
-            if self._lastCol == NovelColumnType.POV:
-                newText = ", ".join(theRefs[nwKeyWords.POV_KEY])
-                newItem.setText(self.C_LAST, newText)
-                if newText:
-                    newItem.setToolTip(self.C_LAST, f"{self._povLabel}: {newText}")
-            elif self._lastCol == NovelColumnType.FOCUS:
-                newText = ", ".join(theRefs[nwKeyWords.FOCUS_KEY])
-                newItem.setText(self.C_LAST, newText)
-                if newText:
-                    newItem.setToolTip(self.C_LAST, f"{self._focLabel}: {newText}")
-            elif self._lastCol == NovelColumnType.PLOT:
-                newText = ", ".join(theRefs[nwKeyWords.PLOT_KEY])
-                newItem.setText(self.C_LAST, newText)
-                if newText:
-                    newItem.setToolTip(self.C_LAST, f"{self._pltLabel}: {newText}")
+        elif self._lastCol == NovelTreeColumn.PLOT:
+            newText = ", ".join(theRefs[nwKeyWords.PLOT_KEY])
+            return newText, f"{self._pltLabel}: {newText}"
 
-        return newItem
+        return "", ""
 
 # END Class GuiNovelTree

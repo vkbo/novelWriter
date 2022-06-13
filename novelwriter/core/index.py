@@ -34,17 +34,13 @@ from time import time
 
 from novelwriter.enum import nwItemType, nwItemLayout
 from novelwriter.error import logException
-from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode
+from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode, nwHeaders
 from novelwriter.core.document import NWDoc
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
 )
 
 logger = logging.getLogger(__name__)
-
-H_VALID = ("H0", "H1", "H2", "H3", "H4")
-H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
-TT_NONE = "T000000"
 
 
 class NWIndex:
@@ -477,7 +473,7 @@ class NWIndex:
         """
         hCount = [0, 0, 0, 0, 0]
         for _, _, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
-            iLevel = H_LEVEL.get(hItem.level, 0)
+            iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0)
             hCount[iLevel] += 1
         return hCount
 
@@ -510,7 +506,7 @@ class NWIndex:
         pKey = None
         for tHandle, sTitle, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
             tKey = f"{tHandle}:{sTitle}"
-            iLevel = H_LEVEL.get(hItem.level, 0)
+            iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0)
             if iLevel > maxDepth:
                 if pKey in tData:
                     tData[pKey]["words"] += hItem.wordCount
@@ -660,7 +656,7 @@ class TagsIndex:
         """
         if tagKey in self._tags:
             return self._tags.get(tagKey).get("heading")
-        return TT_NONE
+        return nwHeaders.TT_NONE
 
     def tagClass(self, tagKey):
         """Get the class of a given tag.
@@ -906,7 +902,7 @@ class IndexItem:
         self._index = 0
 
         # Add a placeholder heading
-        self._headings[TT_NONE] = IndexHeading(TT_NONE)
+        self._headings[nwHeaders.TT_NONE] = IndexHeading(nwHeaders.TT_NONE)
 
         return
 
@@ -940,8 +936,8 @@ class IndexItem:
         """Add a heading to the item. Also remove the placeholder entry
         if it exists.
         """
-        if TT_NONE in self._headings:
-            self._headings.pop(TT_NONE)
+        if nwHeaders.TT_NONE in self._headings:
+            self._headings.pop(nwHeaders.TT_NONE)
         self._headings[tHeading.key] = tHeading
         return
 
@@ -1110,7 +1106,7 @@ class IndexHeading:
     def setLevel(self, level):
         """Set the level of the header if it's a valid value.
         """
-        if level in H_VALID:
+        if level in nwHeaders.H_VALID:
             self._level = level
         return
 

@@ -653,7 +653,7 @@ class NWProject():
                     self._legacyDataFolder(projItem)
             except Exception:
                 self.mainGui.makeAlert(self.tr(
-                    "There was an error while converting project version 1.0. "
+                    "There was an error updating the project. "
                     "Some data may not have been preserved."
                 ), nwAlert.ERROR)
 
