@@ -254,7 +254,6 @@ class GuiNovelToolBar(QWidget):
         """Build the novel root menu.
         """
         self.mRoot.clear()
-
         agRoot = QActionGroup(self.mRoot)
         for n, (tHandle, nwItem) in enumerate(self.theProject.tree.iterRoots(nwItemClass.NOVEL)):
             aRoot = self.mRoot.addAction(nwItem.itemName)

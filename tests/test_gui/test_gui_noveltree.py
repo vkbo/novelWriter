@@ -20,9 +20,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import pytest
-import os
-
-from tools import writeFile
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox
@@ -40,9 +37,8 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     novelView = nwGUI.novelView
     novelTree = novelView.novelTree
 
-    ##
-    #  Show/Hide Scrollbars
-    ##
+    # Show/Hide Scrollbars
+    # ====================
 
     nwGUI.mainConf.hideVScroll = True
     nwGUI.mainConf.hideHScroll = True
@@ -56,14 +52,13 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     assert novelTree.verticalScrollBar().isEnabled()
     assert novelTree.horizontalScrollBar().isEnabled()
 
-    ##
-    #  Populate Tree
-    ##
+    # Populate Tree
+    # =============
 
     nwGUI.projStack.setCurrentIndex(nwGUI.idxNovelView)
     nwGUI.rebuildIndex()
     novelTree._populateTree(rootHandle=None)
-    assert novelTree.topLevelItemCount() == 1
+    assert novelTree.topLevelItemCount() == 3
 
     # Rebuild should preserve selection
     topItem = novelTree.topLevelItem(0)
@@ -75,13 +70,12 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     novelView.refreshTree()
     assert novelTree.topLevelItem(0).isSelected()
 
-    ##
-    #  Open Items
-    ##
+    # Open Items
+    # ==========
 
     # Clear selection
     novelTree.clearSelection()
-    scItem = novelTree.topLevelItem(0).child(0).child(0)
+    scItem = novelTree.topLevelItem(2)
     scItem.setSelected(True)
     assert scItem.isSelected()
 
@@ -114,48 +108,10 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
     assert nwGUI.docViewer.docHandle() == "8c659a11cd429"
 
-    ##
-    #  Populate Tree
-    ##
+    # Close
+    # =====
 
-    # Add weird titles to first file to check hnadling of non-standard
-    # order of title levels.
-    writeFile(os.path.join(nwMinimal, "content", "a35baf2e93843.nwd"), (
-        "#### Section wo/Scene\n\n"
-        "### Scene wo/Chapter\n\n"
-        "## Chapter wo/Title\n\n"
-        "# Title\n\n"
-        "#### Section w/Title, wo/Scene\n\n"
-        "### Scene w/Title, wo/Chapter\n\n"
-        "## Chapter\n\n"
-        "#### Section w/Chapter, wo/Scene\n\n"
-        "### Scene\n\n"
-        "#### Section\n\n"
-    ))
-    nwGUI.rebuildIndex()
-    novelTree._populateTree(None)
-    assert novelTree.topLevelItem(0).text(novelTree.C_TITLE) == "Section wo/Scene"
-    assert novelTree.topLevelItem(1).text(novelTree.C_TITLE) == "Scene wo/Chapter"
-    assert novelTree.topLevelItem(2).text(novelTree.C_TITLE) == "Chapter wo/Title"
-    assert novelTree.topLevelItem(3).text(novelTree.C_TITLE) == "Title"
-
-    tTitle = novelTree.topLevelItem(3)
-    assert tTitle.child(0).text(novelTree.C_TITLE) == "Section w/Title, wo/Scene"
-    assert tTitle.child(1).text(novelTree.C_TITLE) == "Scene w/Title, wo/Chapter"
-    assert tTitle.child(2).text(novelTree.C_TITLE) == "Chapter"
-
-    tChap = tTitle.child(2)
-    assert tChap.child(0).text(novelTree.C_TITLE) == "Section w/Chapter, wo/Scene"
-    assert tChap.child(1).text(novelTree.C_TITLE) == "Scene"
-
-    tScene = tChap.child(1)
-    assert tScene.child(0).text(novelTree.C_TITLE) == "Section"
-
-    ##
-    #  Close
-    ##
-
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
     nwGUI.closeProject()
 
 # END Test testGuiNovelTree_TreeItems
