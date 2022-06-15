@@ -558,7 +558,7 @@ class GuiMain(QMainWindow):
     #  Document Actions
     ##
 
-    def closeDocument(self):
+    def closeDocument(self, beforeOpen=False):
         """Close the document and clear the editor and title field.
         """
         if not self.hasProject:
@@ -573,7 +573,8 @@ class GuiMain(QMainWindow):
         if self.docEditor.docChanged():
             self.saveDocument()
         self.docEditor.clearEditor()
-        self.novelView.setActiveHandle(None)
+        if not beforeOpen:
+            self.novelView.setActiveHandle(None)
 
         return True
 
@@ -588,7 +589,7 @@ class GuiMain(QMainWindow):
             logger.debug("Requested item '%s' is not a document", tHandle)
             return False
 
-        self.closeDocument()
+        self.closeDocument(beforeOpen=True)
         self._changeView(nwView.EDITOR)
         if self.docEditor.loadText(tHandle, tLine):
             if changeFocus:

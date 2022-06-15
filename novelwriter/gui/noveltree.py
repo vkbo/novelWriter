@@ -345,6 +345,7 @@ class GuiNovelTree(QTreeWidget):
         self._treeMap   = {}
         self._lastBuild = 0
         self._lastCol   = NovelTreeColumn.POV
+        self._actHandle = None
 
         # Cached Strings
         self._povLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY])
@@ -509,6 +510,9 @@ class GuiNovelTree(QTreeWidget):
     def setActiveHandle(self, tHandle):
         """Highlight the rows associated with a given handle.
         """
+        tStart = time()
+
+        self._actHandle = tHandle
         for i in range(self.topLevelItemCount()):
             tItem = self.topLevelItem(i)
             if tItem.data(self.C_TITLE, self.D_HANDLE) == tHandle:
@@ -521,6 +525,9 @@ class GuiNovelTree(QTreeWidget):
                 tItem.setBackground(self.C_WORDS, self.palette().base())
                 tItem.setBackground(self.C_EXTRA, self.palette().base())
                 tItem.setBackground(self.C_MORE, self.palette().base())
+
+        logger.verbose("Highlighted Novel Tree in %.3f ms", (time() - tStart)*1000)
+
         return
 
     ##
@@ -631,6 +638,8 @@ class GuiNovelTree(QTreeWidget):
 
             self._treeMap[tKey] = newItem
             self.addTopLevelItem(newItem)
+
+        self.setActiveHandle(self._actHandle)
 
         logger.verbose("Novel Tree built in %.3f ms", (time() - tStart)*1000)
         self._lastBuild = time()
