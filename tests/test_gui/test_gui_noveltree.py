@@ -19,23 +19,47 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
 import pytest
+
+from tools import buildTestProject, writeFile
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox
 
+from novelwriter.enum import nwWidget, nwItemType
+from novelwriter.dialogs import GuiEditLabel
+from novelwriter.gui.noveltree import NovelTreeColumn
+
 
 @pytest.mark.gui
-def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
+def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test navigating the novel tree.
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
-    nwGUI.openProject(nwMinimal)
+    buildTestProject(nwGUI, fncProj)
+
+    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI.projView.projTree.clearSelection()
+    nwGUI.projView.projTree._getTreeItem("000000000000a").setSelected(True)
+    nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)
+
+    writeFile(
+        os.path.join(nwGUI.theProject.projContent, "0000000000010.nwd"),
+        "# Jane Doe\n\n@tag: Jane\n\n"
+    )
+    writeFile(
+        os.path.join(nwGUI.theProject.projContent, "000000000000f.nwd"),
+        "### Scene One\n\n@pov: Jane\n@focus: Jane\n\n"
+    )
+
     novelView = nwGUI.novelView
     novelTree = novelView.novelTree
+    novelBar  = novelView.novelBar
 
     # Show/Hide Scrollbars
     # ====================
@@ -65,9 +89,10 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     assert not topItem.isSelected()
     topItem.setSelected(True)
     assert novelTree.selectedItems()[0] == topItem
-    assert novelView.getSelectedHandle() == ("a35baf2e93843", 0)
+    assert novelView.getSelectedHandle() == ("000000000000c", 0)
 
-    novelView.refreshTree()
+    # Refresh using the slot for the butoom
+    novelBar._refreshNovelTree()
     assert novelTree.topLevelItem(0).isSelected()
 
     # Open Items
@@ -89,7 +114,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
     assert scItem.isSelected()
     assert nwGUI.docEditor.docHandle() is None
     novelTree._treeDoubleClick(scItem, 0)
-    assert nwGUI.docEditor.docHandle() == "8c659a11cd429"
+    assert nwGUI.docEditor.docHandle() == "000000000000f"
 
     # Open item with middle mouse button
     scItem.setSelected(True)
@@ -106,7 +131,39 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, nwMinimal):
 
     scItem.setData(novelTree.C_TITLE, Qt.UserRole, oldData)
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
-    assert nwGUI.docViewer.docHandle() == "8c659a11cd429"
+    assert nwGUI.docViewer.docHandle() == "000000000000f"
+
+    # Last Column
+    # ===========
+
+    novelBar.setLastColType(NovelTreeColumn.HIDDEN)
+    assert novelTree.isColumnHidden(novelTree.C_LAST) is True
+    assert novelTree.lastColType == NovelTreeColumn.HIDDEN
+    assert novelTree._getLastColumnText("000000000000f", "T000001") == ("", "")
+
+    novelBar.setLastColType(NovelTreeColumn.POV)
+    assert novelTree.isColumnHidden(novelTree.C_LAST) is False
+    assert novelTree.lastColType == NovelTreeColumn.POV
+    assert novelTree._getLastColumnText("000000000000f", "T000001") == (
+        "Jane", "Point of View: Jane"
+    )
+
+    novelBar.setLastColType(NovelTreeColumn.FOCUS)
+    assert novelTree.isColumnHidden(novelTree.C_LAST) is False
+    assert novelTree.lastColType == NovelTreeColumn.FOCUS
+    assert novelTree._getLastColumnText("000000000000f", "T000001") == (
+        "Jane", "Focus: Jane"
+    )
+
+    novelBar.setLastColType(NovelTreeColumn.PLOT)
+    assert novelTree.isColumnHidden(novelTree.C_LAST) is False
+    assert novelTree.lastColType == NovelTreeColumn.PLOT
+    assert novelTree._getLastColumnText("000000000000f", "T000001") == (
+        "", "Plot: "
+    )
+
+    novelTree._lastCol = None
+    assert novelTree._getLastColumnText("0000000000000", "T000000") == ("", "")
 
     # Close
     # =====

@@ -133,7 +133,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
 
     # Novel Tree has focus
     nwGUI._changeView(nwView.NOVEL)
-    nwGUI.novelView.refreshTree(rootHandle=None, overRide=True)
+    nwGUI.novelView.novelTree.refreshTree(rootHandle=None, overRide=True)
     with monkeypatch.context() as mp:
         mp.setattr(GuiNovelView, "treeHasFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle() is None
