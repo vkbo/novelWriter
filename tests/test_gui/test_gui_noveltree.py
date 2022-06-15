@@ -124,12 +124,12 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     assert nwGUI.docViewer.docHandle() is None
 
     scRect = novelTree.visualItemRect(scItem)
-    oldData = scItem.data(novelTree.C_TITLE, Qt.UserRole)
-    scItem.setData(novelTree.C_TITLE, Qt.UserRole, (None, "", ""))
+    oldData = scItem.data(novelTree.C_TITLE, novelTree.D_HANDLE)
+    scItem.setData(novelTree.C_TITLE, novelTree.D_HANDLE, None)
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
     assert nwGUI.docViewer.docHandle() is None
 
-    scItem.setData(novelTree.C_TITLE, Qt.UserRole, oldData)
+    scItem.setData(novelTree.C_TITLE, novelTree.D_HANDLE, oldData)
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
     assert nwGUI.docViewer.docHandle() == "000000000000f"
 
