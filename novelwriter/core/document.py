@@ -52,7 +52,7 @@ class NWDoc():
             self._docHandle = theHandle
 
         if self._docHandle is not None:
-            self._theItem = self.theProject.projTree[theHandle]
+            self._theItem = self.theProject.tree[theHandle]
 
         return
 

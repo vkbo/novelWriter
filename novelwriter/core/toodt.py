@@ -330,7 +330,7 @@ class ToOdt(Tokenizer):
 
         # Meta Data
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "creation-date"))
-        xMeta.text = datetime.now().strftime(r"%Y-%m-%dT%H:%M:%S")
+        xMeta.text = datetime.now().isoformat(sep="T", timespec="seconds")
 
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "generator"))
         xMeta.text = f"novelWriter/{novelwriter.__version__}"
@@ -550,7 +550,7 @@ class ToOdt(Tokenizer):
     def _formatKeywords(self, tText):
         """Apply formatting to keywords.
         """
-        isValid, theBits, _ = self.theParent.theIndex.scanThis("@"+tText)
+        isValid, theBits, _ = self.theProject.index.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 

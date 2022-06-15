@@ -35,6 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import nwAlert
+from novelwriter.common import simplified
 from novelwriter.gui.custom import QSwitch, PagedDialog, QConfigLayout
 
 logger = logging.getLogger(__name__)
@@ -42,34 +43,34 @@ logger = logging.getLogger(__name__)
 
 class GuiProjectSettings(PagedDialog):
 
-    def __init__(self, theParent):
-        PagedDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        PagedDialog.__init__(self, mainGui)
 
         logger.debug("Initialising GuiProjectSettings ...")
         self.setObjectName("GuiProjectSettings")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theProject = theParent.theProject
-        self.optState   = theParent.theProject.optState
+        self.mainGui    = mainGui
+        self.theProject = mainGui.theProject
 
         self.theProject.countStatus()
         self.setWindowTitle(self.tr("Project Settings"))
 
         wW = self.mainConf.pxInt(570)
         wH = self.mainConf.pxInt(375)
+        pOptions = self.theProject.options
 
         self.setMinimumWidth(wW)
         self.setMinimumHeight(wH)
         self.resize(
-            self.mainConf.pxInt(self.optState.getInt("GuiProjectSettings", "winWidth",  wW)),
-            self.mainConf.pxInt(self.optState.getInt("GuiProjectSettings", "winHeight", wH))
+            self.mainConf.pxInt(pOptions.getInt("GuiProjectSettings", "winWidth",  wW)),
+            self.mainConf.pxInt(pOptions.getInt("GuiProjectSettings", "winHeight", wH))
         )
 
-        self.tabMain    = GuiProjectEditMain(self.theParent, self.theProject)
-        self.tabStatus  = GuiProjectEditStatus(self.theParent, self.theProject, True)
-        self.tabImport  = GuiProjectEditStatus(self.theParent, self.theProject, False)
-        self.tabReplace = GuiProjectEditReplace(self.theParent, self.theProject)
+        self.tabMain    = GuiProjectEditMain(self.mainGui, self.theProject)
+        self.tabStatus  = GuiProjectEditStatus(self.mainGui, self.theProject, True)
+        self.tabImport  = GuiProjectEditStatus(self.mainGui, self.theProject, False)
+        self.tabReplace = GuiProjectEditReplace(self.mainGui, self.theProject)
 
         self.addTab(self.tabMain,    self.tr("Settings"))
         self.addTab(self.tabStatus,  self.tr("Status"))
@@ -80,6 +81,9 @@ class GuiProjectSettings(PagedDialog):
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
+
+        # Flags
+        self.spellChanged = False
 
         logger.debug("GuiProjectSettings initialisation complete")
 
@@ -103,19 +107,21 @@ class GuiProjectSettings(PagedDialog):
         self.theProject.setProjectName(projName)
         self.theProject.setBookTitle(bookTitle)
         self.theProject.setBookAuthors(bookAuthors)
-        self.theProject.setSpellLang(spellLang)
         self.theProject.setProjBackup(doBackup)
 
+        # Remember this as updating spell dictionary can be expensive
+        self.spellChanged = self.theProject.setSpellLang(spellLang)
+
         if self.tabStatus.colChanged:
-            statusCol = self.tabStatus.getNewList()
-            self.theProject.setStatusColours(statusCol)
+            newList, delList = self.tabStatus.getNewList()
+            self.theProject.setStatusColours(newList, delList)
 
         if self.tabImport.colChanged:
-            importCol = self.tabImport.getNewList()
-            self.theProject.setImportColours(importCol)
+            newList, delList = self.tabImport.getNewList()
+            self.theProject.setImportColours(newList, delList)
 
         if self.tabStatus.colChanged or self.tabImport.colChanged:
-            self.theParent.rebuildTrees()
+            self.mainGui.rebuildTrees()
 
         if self.tabReplace.arChanged:
             newList = self.tabReplace.getNewList()
@@ -146,11 +152,12 @@ class GuiProjectSettings(PagedDialog):
         statusColW  = self.mainConf.rpxInt(self.tabStatus.listBox.columnWidth(0))
         importColW  = self.mainConf.rpxInt(self.tabImport.listBox.columnWidth(0))
 
-        self.optState.setValue("GuiProjectSettings", "winWidth",    winWidth)
-        self.optState.setValue("GuiProjectSettings", "winHeight",   winHeight)
-        self.optState.setValue("GuiProjectSettings", "replaceColW", replaceColW)
-        self.optState.setValue("GuiProjectSettings", "statusColW",  statusColW)
-        self.optState.setValue("GuiProjectSettings", "importColW",  importColW)
+        pOptions = self.theProject.options
+        pOptions.setValue("GuiProjectSettings", "winWidth",    winWidth)
+        pOptions.setValue("GuiProjectSettings", "winHeight",   winHeight)
+        pOptions.setValue("GuiProjectSettings", "replaceColW", replaceColW)
+        pOptions.setValue("GuiProjectSettings", "statusColW",  statusColW)
+        pOptions.setValue("GuiProjectSettings", "importColW",  importColW)
 
         return
 
@@ -159,29 +166,29 @@ class GuiProjectSettings(PagedDialog):
 
 class GuiProjectEditMain(QWidget):
 
-    def __init__(self, theParent, theProject):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui, theProject):
+        QWidget.__init__(self, mainGui)
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
+        self.mainGui    = mainGui
         self.theProject = theProject
 
         # The Form
         self.mainForm = QConfigLayout()
-        self.mainForm.setHelpTextStyle(self.theParent.theTheme.helpText)
+        self.mainForm.setHelpTextStyle(self.mainGui.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
         self.mainForm.addGroupLabel(self.tr("Project Settings"))
 
         xW = self.mainConf.pxInt(250)
-        xH = round(4.8*self.theParent.theTheme.fontPixelSize)
+        xH = round(4.8*self.mainGui.mainTheme.fontPixelSize)
 
         self.editName = QLineEdit()
         self.editName.setMaxLength(200)
         self.editName.setMaximumWidth(xW)
         self.editName.setText(self.theProject.projName)
         self.mainForm.addRow(
-            self.tr("Working title"),
+            self.tr("Project name"),
             self.editName,
             self.tr("Should be set only once.")
         )
@@ -209,7 +216,7 @@ class GuiProjectEditMain(QWidget):
         self.spellLang = QComboBox(self)
         self.spellLang.setMaximumWidth(xW)
         self.spellLang.addItem(self.tr("Default"), "None")
-        langAvail = self.theParent.docEditor.spEnchant.listDictionaries()
+        langAvail = self.mainGui.docEditor.spEnchant.listDictionaries()
         for spTag, spProv in langAvail:
             qLocal = QLocale(spTag)
             spLang = qLocal.nativeLanguageName().title()
@@ -245,14 +252,17 @@ class GuiProjectEditStatus(QWidget):
     COL_LABEL = 0
     COL_USAGE = 1
 
-    def __init__(self, theParent, theProject, isStatus):
-        QWidget.__init__(self, theParent)
+    KEY_ROLE = Qt.UserRole
+    COL_ROLE = Qt.UserRole + 1
+    NUM_ROLE = Qt.UserRole + 2
+
+    def __init__(self, mainGui, theProject, isStatus):
+        QWidget.__init__(self, mainGui)
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
+        self.mainGui    = mainGui
         self.theProject = theProject
-        self.optState   = theProject.optState
-        self.theTheme   = theParent.theTheme
+        self.mainTheme  = mainGui.mainTheme
 
         if isStatus:
             self.theStatus = self.theProject.statusItems
@@ -264,15 +274,14 @@ class GuiProjectEditStatus(QWidget):
             colSetting = "importColW"
 
         wCol0 = self.mainConf.pxInt(
-            self.optState.getInt("GuiProjectSettings", colSetting, 130)
+            self.theProject.options.getInt("GuiProjectSettings", colSetting, 130)
         )
 
-        self.colData    = []
-        self.colCounts  = []
+        self.colDeleted = []
         self.colChanged = False
-        self.selColour  = None
+        self.selColour  = QColor(100, 100, 100)
 
-        self.iPx = self.theTheme.baseIconSize
+        self.iPx = self.mainTheme.baseIconSize
 
         # The List
         # ========
@@ -285,17 +294,23 @@ class GuiProjectEditStatus(QWidget):
         self.listBox.setColumnWidth(self.COL_LABEL, wCol0)
         self.listBox.setIndentation(0)
 
-        for iName, iCol, nUse in self.theStatus:
-            self._addItem(iName, iCol, iName, nUse)
+        for key, entry in self.theStatus.items():
+            self._addItem(key, entry["name"], entry["cols"], entry["count"])
 
         # List Controls
         # =============
 
-        self.addButton = QPushButton(self.theTheme.getIcon("add"), "")
+        self.addButton = QPushButton(self.mainTheme.getIcon("add"), "")
         self.addButton.clicked.connect(self._newItem)
 
-        self.delButton = QPushButton(self.theTheme.getIcon("remove"), "")
+        self.delButton = QPushButton(self.mainTheme.getIcon("remove"), "")
         self.delButton.clicked.connect(self._delItem)
+
+        self.upButton = QPushButton(self.mainTheme.getIcon("up"), "")
+        self.upButton.clicked.connect(lambda: self._moveItem(-1))
+
+        self.dnButton = QPushButton(self.mainTheme.getIcon("down"), "")
+        self.dnButton.clicked.connect(lambda: self._moveItem(1))
 
         # Edit Form
         # =========
@@ -306,7 +321,7 @@ class GuiProjectEditStatus(QWidget):
         self.editName.setPlaceholderText(self.tr("Select item to edit"))
 
         self.colPixmap = QPixmap(self.iPx, self.iPx)
-        self.colPixmap.fill(QColor(120, 120, 120))
+        self.colPixmap.fill(QColor(100, 100, 100))
         self.colButton = QPushButton(QIcon(self.colPixmap), self.tr("Colour"))
         self.colButton.setIconSize(self.colPixmap.rect().size())
         self.colButton.clicked.connect(self._selectColour)
@@ -320,6 +335,8 @@ class GuiProjectEditStatus(QWidget):
         self.listControls = QVBoxLayout()
         self.listControls.addWidget(self.addButton)
         self.listControls.addWidget(self.delButton)
+        self.listControls.addWidget(self.upButton)
+        self.listControls.addWidget(self.dnButton)
         self.listControls.addStretch(1)
 
         self.editBox = QHBoxLayout()
@@ -349,12 +366,15 @@ class GuiProjectEditStatus(QWidget):
         if self.colChanged:
             newList = []
             for n in range(self.listBox.topLevelItemCount()):
-                nItem = self.listBox.topLevelItem(n)
-                nIdx  = nItem.data(self.COL_LABEL, Qt.UserRole)
-                newList.append(self.colData[nIdx])
-            return newList
+                item = self.listBox.topLevelItem(n)
+                newList.append({
+                    "key":  item.data(self.COL_LABEL, self.KEY_ROLE),
+                    "name": item.text(self.COL_LABEL),
+                    "cols": item.data(self.COL_LABEL, self.COL_ROLE),
+                })
+            return newList, self.colDeleted
 
-        return None
+        return [], []
 
     ##
     #  User Actions
@@ -369,16 +389,16 @@ class GuiProjectEditStatus(QWidget):
             )
             if newCol.isValid():
                 self.selColour = newCol
-                colPixmap = QPixmap(self.iPx, self.iPx)
-                colPixmap.fill(newCol)
-                self.colButton.setIcon(QIcon(colPixmap))
-                self.colButton.setIconSize(colPixmap.rect().size())
+                pixmap = QPixmap(self.iPx, self.iPx)
+                pixmap.fill(newCol)
+                self.colButton.setIcon(QIcon(pixmap))
+                self.colButton.setIconSize(pixmap.rect().size())
         return
 
     def _newItem(self):
         """Create a new status item.
         """
-        newItem = self._addItem(self.tr("New Item"), (0, 0, 0), None, 0)
+        newItem = self._addItem(None, self.tr("New Item"), (100, 100, 100), 0)
         newItem.setBackground(self.COL_LABEL, QBrush(QColor(0, 255, 0, 70)))
         newItem.setBackground(self.COL_USAGE, QBrush(QColor(0, 255, 0, 70)))
         self.colChanged = True
@@ -390,14 +410,14 @@ class GuiProjectEditStatus(QWidget):
         selItem = self._getSelectedItem()
         if selItem is not None:
             iRow = self.listBox.indexOfTopLevelItem(selItem)
-            selIdx = selItem.data(self.COL_LABEL, Qt.UserRole)
-            if self.colCounts[selIdx] == 0:
-                self.listBox.takeTopLevelItem(iRow)
-                self.colChanged = True
-            else:
-                self.theParent.makeAlert(self.tr(
+            if selItem.data(self.COL_LABEL, self.NUM_ROLE) > 0:
+                self.mainGui.makeAlert(self.tr(
                     "Cannot delete a status item that is in use."
                 ), nwAlert.ERROR)
+            else:
+                self.listBox.takeTopLevelItem(iRow)
+                self.colDeleted.append(selItem.data(self.COL_LABEL, self.KEY_ROLE))
+                self.colChanged = True
         return
 
     def _saveItem(self):
@@ -405,53 +425,75 @@ class GuiProjectEditStatus(QWidget):
         """
         selItem = self._getSelectedItem()
         if selItem is not None:
-            selIdx = selItem.data(self.COL_LABEL, Qt.UserRole)
-            self.colData[selIdx] = (
-                self.editName.text().strip(),
-                self.selColour.red(),
-                self.selColour.green(),
-                self.selColour.blue(),
-                self.colData[selIdx][4]
-            )
-            selItem.setText(self.COL_LABEL, self.colData[selIdx][0])
-            selItem.setText(self.COL_USAGE, self._usageString(self.colCounts[selIdx]))
+            selItem.setText(self.COL_LABEL, simplified(self.editName.text()))
             selItem.setIcon(self.COL_LABEL, self.colButton.icon())
+            selItem.setData(self.COL_LABEL, self.COL_ROLE, (
+                self.selColour.red(), self.selColour.green(), self.selColour.blue()
+            ))
             self.editName.setEnabled(False)
             self.colChanged = True
 
         return
 
-    def _addItem(self, iName, iCol, oName, nUse):
+    def _addItem(self, key, name, cols, count):
         """Add a status item to the list.
         """
-        newIcon = QPixmap(self.iPx, self.iPx)
-        newIcon.fill(QColor(*iCol))
-        newItem = QTreeWidgetItem()
-        newItem.setText(self.COL_LABEL, iName)
-        newItem.setText(self.COL_USAGE, self._usageString(nUse))
-        newItem.setIcon(self.COL_LABEL, QIcon(newIcon))
-        newItem.setData(self.COL_LABEL, Qt.UserRole, len(self.colData))
-        self.listBox.addTopLevelItem(newItem)
-        self.colData.append((iName, iCol[0], iCol[1], iCol[2], oName))
-        self.colCounts.append(nUse)
-        return newItem
+        pixmap = QPixmap(self.iPx, self.iPx)
+        pixmap.fill(QColor(*cols))
+
+        item = QTreeWidgetItem()
+        item.setText(self.COL_LABEL, name)
+        item.setIcon(self.COL_LABEL, QIcon(pixmap))
+        item.setData(self.COL_LABEL, self.KEY_ROLE, key)
+        item.setData(self.COL_LABEL, self.COL_ROLE, cols)
+        item.setData(self.COL_LABEL, self.NUM_ROLE, count)
+        item.setText(self.COL_USAGE, self._usageString(count))
+
+        self.listBox.addTopLevelItem(item)
+
+        return item
+
+    def _moveItem(self, step):
+        """Move and item up or down step.
+        """
+        selItem = self._getSelectedItem()
+        if selItem is None:
+            return
+
+        tIndex = self.listBox.indexOfTopLevelItem(selItem)
+        nChild = self.listBox.topLevelItemCount()
+        nIndex = tIndex + step
+        if nIndex < 0 or nIndex >= nChild:
+            return
+
+        cItem = self.listBox.takeTopLevelItem(tIndex)
+        self.listBox.insertTopLevelItem(nIndex, cItem)
+        self.listBox.clearSelection()
+
+        cItem.setSelected(True)
+        self.colChanged = True
+
+        return
 
     def _selectedItem(self):
         """Extract the info of a selected item and populate the settings
         boxes and button.
         """
         selItem = self._getSelectedItem()
-        if selItem is not None:
-            selIdx = selItem.data(self.COL_LABEL, Qt.UserRole)
-            selVal = self.colData[selIdx]
-            self.selColour = QColor(selVal[1], selVal[2], selVal[3])
-            newIcon = QPixmap(self.iPx, self.iPx)
-            newIcon.fill(self.selColour)
-            self.editName.setText(selVal[0])
-            self.colButton.setIcon(QIcon(newIcon))
-            self.editName.setEnabled(True)
-            self.editName.selectAll()
-            self.editName.setFocus()
+        if selItem is None:
+            return
+
+        cols = selItem.data(self.COL_LABEL, self.COL_ROLE)
+        name = selItem.text(self.COL_LABEL)
+
+        pixmap = QPixmap(self.iPx, self.iPx)
+        pixmap.fill(QColor(*cols))
+        self.selColour = QColor(*cols)
+        self.editName.setText(name)
+        self.colButton.setIcon(QIcon(pixmap))
+        self.editName.setEnabled(True)
+        self.editName.selectAll()
+        self.editName.setFocus()
 
         return
 
@@ -466,12 +508,6 @@ class GuiProjectEditStatus(QWidget):
         if len(selItem) > 0:
             return selItem[0]
         return None
-
-    def _rowsMoved(self):
-        """A row has been moved, so set the changed flag.
-        """
-        self.colChanged = True
-        return
 
     def _usageString(self, nUse):
         """Generate usage string.
@@ -491,18 +527,17 @@ class GuiProjectEditReplace(QWidget):
     COL_KEY  = 0
     COL_REPL = 1
 
-    def __init__(self, theParent, theProject):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui, theProject):
+        QWidget.__init__(self, mainGui)
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
+        self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
         self.theProject = theProject
-        self.optState   = theProject.optState
         self.arChanged  = False
 
         wCol0 = self.mainConf.pxInt(
-            self.optState.getInt("GuiProjectSettings", "replaceColW", 130)
+            self.theProject.options.getInt("GuiProjectSettings", "replaceColW", 130)
         )
         pageLabel = self.tr("Text Replace List for Preview and Export")
 
@@ -528,10 +563,10 @@ class GuiProjectEditReplace(QWidget):
         # List Controls
         # =============
 
-        self.addButton = QPushButton(self.theTheme.getIcon("add"), "")
+        self.addButton = QPushButton(self.mainTheme.getIcon("add"), "")
         self.addButton.clicked.connect(self._addEntry)
 
-        self.delButton = QPushButton(self.theTheme.getIcon("remove"), "")
+        self.delButton = QPushButton(self.mainTheme.getIcon("remove"), "")
         self.delButton.clicked.connect(self._delEntry)
 
         # Edit Form
