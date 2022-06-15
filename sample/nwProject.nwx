@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-06-12 17:37:35">
+<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-06-15 13:07:17">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1367</saveCount>
-    <autoCount>231</autoCount>
-    <editTime>68784</editTime>
+    <saveCount>1371</saveCount>
+    <autoCount>236</autoCount>
+    <editTime>69222</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -35,9 +35,9 @@
       <section></section>
     </titleFormat>
     <status>
-      <entry key="sf12341" count="5" red="100" green="100" blue="100">New</entry>
+      <entry key="sf12341" count="4" red="100" green="100" blue="100">New</entry>
       <entry key="sf24ce6" count="2" red="200" green="50" blue="0">Notes</entry>
-      <entry key="sc24b8f" count="2" red="182" green="60" blue="0">Started</entry>
+      <entry key="sc24b8f" count="3" red="182" green="60" blue="0">Started</entry>
       <entry key="s90e6c9" count="7" red="193" green="129" blue="0">1st Draft</entry>
       <entry key="sd51c5b" count="0" red="193" green="129" blue="0">2nd Draft</entry>
       <entry key="s8ae72a" count="0" red="193" green="129" blue="0">3rd Draft</entry>
@@ -92,7 +92,7 @@
       <name status="s90e6c9" import="ia857f0" exported="True">Chapter Two</name>
     </item>
     <item handle="ae7339df26ded" parent="88706ddc78b1b" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" charCount="189" wordCount="37" paraCount="1" cursorPos="224"/>
+      <meta expanded="False" charCount="189" wordCount="37" paraCount="1" cursorPos="0"/>
       <name status="s90e6c9" import="ia857f0" exported="True">We Found John!</name>
     </item>
     <item handle="e5e47ebf63b1c" parent="None" root="e5e47ebf63b1c" order="1" type="ROOT" class="NOVEL">
@@ -101,7 +101,7 @@
     </item>
     <item handle="bacb7059e3083" parent="e5e47ebf63b1c" root="e5e47ebf63b1c" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="False" charCount="27" wordCount="5" paraCount="1" cursorPos="100"/>
-      <name status="sf12341" import="ia857f0" exported="True">Title Page</name>
+      <name status="sc24b8f" import="ia857f0" exported="True">Title Page</name>
     </item>
     <item handle="a520879ca0b45" parent="e5e47ebf63b1c" root="e5e47ebf63b1c" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="False" charCount="299" wordCount="55" paraCount="2" cursorPos="104"/>

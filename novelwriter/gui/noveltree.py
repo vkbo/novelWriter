@@ -31,7 +31,7 @@ import novelwriter
 from enum import Enum
 from time import time
 
-from PyQt5.QtGui import QPalette, QPixmap, QColor
+from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import Qt, QSize, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import (
     QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView, QLabel,
@@ -349,11 +349,9 @@ class GuiNovelTree(QTreeWidget):
         # =========
 
         iPx = self.mainTheme.baseIconSize
-        nPx = self.mainTheme.textNWidth
         cMg = self.mainConf.pxInt(6)
-        nMg = self.mainConf.pxInt(6)
 
-        # self.setIconSize(QSize(iPx, iPx))
+        self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.NoFrame)
         self.setHeaderHidden(True)
         self.setIndentation(0)
@@ -380,15 +378,13 @@ class GuiNovelTree(QTreeWidget):
         fH2.setBold(True)
 
         self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
-        self._hIndent = ["", "", "", "\u203a\u00a0", "\u00bb\u00a0"]
-        self._pIndent = [QPixmap(), QPixmap()]
-
-        hPix = QPixmap(QSize(iPx, iPx))
-        hPix.fill(QColor(0, 0, 0, 0))
-        for m in range(1, 4):
-            self._pIndent.append(hPix.scaled(
-                max(nPx*m - nMg, nMg), 2, Qt.IgnoreAspectRatio, Qt.FastTransformation
-            ))
+        self._pIndent = [
+            self.mainTheme.loadDecoration("deco_doc_h0", pxH=iPx),
+            self.mainTheme.loadDecoration("deco_doc_h1", pxH=iPx),
+            self.mainTheme.loadDecoration("deco_doc_h2", pxH=iPx),
+            self.mainTheme.loadDecoration("deco_doc_h3", pxH=iPx),
+            self.mainTheme.loadDecoration("deco_doc_h4", pxH=iPx),
+        ]
 
         # Connect signals
         self.itemDoubleClicked.connect(self._treeDoubleClick)
@@ -571,7 +567,7 @@ class GuiNovelTree(QTreeWidget):
             theData = (tHandle, sTitle[1:].lstrip("0"), tKey)
 
             newItem.setData(self.C_TITLE, Qt.DecorationRole, self._pIndent[iLevel])
-            newItem.setText(self.C_TITLE, self._hIndent[iLevel] + novIdx.title)
+            newItem.setText(self.C_TITLE, novIdx.title)
             newItem.setData(self.C_TITLE, Qt.UserRole, theData)
             newItem.setFont(self.C_TITLE, self._hFonts[iLevel])
             newItem.setText(self.C_WORDS, f"{novIdx.wordCount:n}")
