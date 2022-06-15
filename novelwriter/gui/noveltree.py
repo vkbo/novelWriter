@@ -28,11 +28,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
-from time import time
 from enum import Enum
+from time import time
 
-from PyQt5.QtCore import Qt, QSize, pyqtSlot, pyqtSignal
 from PyQt5.QtGui import QPalette, QPixmap, QColor
+from PyQt5.QtCore import Qt, QSize, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import (
     QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView, QLabel,
     QMenu, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
@@ -81,13 +81,7 @@ class GuiNovelView(QWidget):
 
         self.setLayout(self.outerBox)
 
-        # Connect Signals
-        self.novelBar.rootFolderSelectionChanged.connect(
-            lambda tHandle: self.novelTree.refreshTree(rootHandle=tHandle, overRide=True)
-        )
-
         # Function Mappings
-        self.refreshTree = self.novelTree.refreshTree
         self.updateWordCounts = self.novelTree.updateWordCounts
         self.getSelectedHandle = self.novelTree.getSelectedHandle
 
@@ -101,30 +95,44 @@ class GuiNovelView(QWidget):
         self.novelTree.initSettings()
         return
 
+    def refreshTree(self):
+        """Refresh the current tree.
+        """
+        self.novelTree.refreshTree(rootHandle=self.theProject.lastNovel)
+        return
+
     def clearProject(self):
-        self.novelTree.clearTree()
+        """Clear project-related GUI content.
+        """
+        self.novelTree.clearContent()
+        self.novelBar.clearContent()
         return
 
     def openProjectTasks(self):
-        """Run tasks when opening a project.
+        """Run opening project tasks.
         """
         lastNovel = self.theProject.lastNovel
-        if lastNovel is None:
+        if lastNovel not in self.theProject.tree:
             lastNovel = self.theProject.tree.findRoot(nwItemClass.NOVEL)
 
         logger.debug("Setting novel tree to root item '%s'", lastNovel)
 
+        lastCol = self.theProject.options.getEnum(
+            "GuiNovelView", "lastCol", NovelTreeColumn, NovelTreeColumn.HIDDEN
+        )
+
         self.clearProject()
-        self.novelBar.rebuildNovelRootMenu(selHandle=lastNovel)
-        self.novelTree.loadOptions()
-        self.novelTree.refreshTree(rootHandle=lastNovel, overRide=True)
+        self.novelBar.buildNovelRootMenu()
+        self.novelBar.setLastColType(lastCol, doRefresh=False)
+        self.novelBar.setCurrentRoot(lastNovel)
 
         return
 
     def closeProjectTasks(self):
-        """Run tasks when closing a project.
+        """Run closing project tasks.
         """
-        self.novelTree.saveOptions()
+        lastColType = self.novelTree.lastColType
+        self.theProject.options.setValue("GuiNovelView", "lastCol", lastColType)
         return
 
     def setFocus(self):
@@ -133,7 +141,7 @@ class GuiNovelView(QWidget):
         self.novelTree.setFocus()
         return
 
-    def treeFocus(self):
+    def treeHasFocus(self):
         """Check if the novel tree has focus.
         """
         return self.novelTree.hasFocus()
@@ -144,17 +152,15 @@ class GuiNovelView(QWidget):
 
     @pyqtSlot(str)
     def updateRootItem(self, tHandle):
-        """Should be called whenever a root folders changes.
+        """If any root item changes, rebuild the novel root menu.
         """
-        self.novelBar.rebuildNovelRootMenu()
+        self.novelBar.buildNovelRootMenu()
         return
 
 # END Class GuiNovelView
 
 
 class GuiNovelToolBar(QWidget):
-
-    rootFolderSelectionChanged = pyqtSignal(str)
 
     def __init__(self, novelView):
         QTreeWidget.__init__(self, novelView)
@@ -167,7 +173,7 @@ class GuiNovelToolBar(QWidget):
         self.mainTheme  = novelView.mainGui.mainTheme
 
         iPx = self.mainTheme.baseIconSize
-        mPx = self.mainConf.pxInt(4)
+        mPx = self.mainConf.pxInt(3)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -197,6 +203,8 @@ class GuiNovelToolBar(QWidget):
 
         # Novel Root Menu
         self.mRoot = QMenu()
+        self.gRoot = QActionGroup(self.mRoot)
+        self.aRoot = {}
 
         self.tbRoot = QToolButton(self)
         self.tbRoot.setToolTip(self.tr("Novel Root"))
@@ -209,19 +217,13 @@ class GuiNovelToolBar(QWidget):
         # More Options Menu
         self.mMore = QMenu()
 
-        self.mCol3 = self.mMore.addMenu(self.tr("Third Column"))
-        self.mCol3.addAction(self.tr("Hide Column")).triggered.connect(
-            lambda: self.novelView.novelTree.setLastColType(NovelTreeColumn.HIDDEN)
-        )
-        self.mCol3.addAction(self.tr("Point of View Character")).triggered.connect(
-            lambda: self.novelView.novelTree.setLastColType(NovelTreeColumn.POV)
-        )
-        self.mCol3.addAction(self.tr("Focus Character")).triggered.connect(
-            lambda: self.novelView.novelTree.setLastColType(NovelTreeColumn.FOCUS)
-        )
-        self.mCol3.addAction(self.tr("Novel Plot")).triggered.connect(
-            lambda: self.novelView.novelTree.setLastColType(NovelTreeColumn.PLOT)
-        )
+        self.mLastCol = self.mMore.addMenu(self.tr("Last Column"))
+        self.gLastCol = QActionGroup(self.mMore)
+        self.aLastCol = {}
+        self._addLastColAction(NovelTreeColumn.HIDDEN, self.tr("Hidden"))
+        self._addLastColAction(NovelTreeColumn.POV,    self.tr("Point of View Character"))
+        self._addLastColAction(NovelTreeColumn.FOCUS,  self.tr("Focus Character"))
+        self._addLastColAction(NovelTreeColumn.PLOT,   self.tr("Novel Plot"))
 
         self.tbMore = QToolButton(self)
         self.tbMore.setToolTip(self.tr("More Options"))
@@ -250,25 +252,41 @@ class GuiNovelToolBar(QWidget):
     #  Methods
     ##
 
-    def rebuildNovelRootMenu(self, selHandle=None):
+    def clearContent(self):
+        """Run clearing project tasks.
+        """
+        self.mRoot.clear()
+        self.aRoot = {}
+        return
+
+    def buildNovelRootMenu(self):
         """Build the novel root menu.
         """
         self.mRoot.clear()
-        agRoot = QActionGroup(self.mRoot)
+        self.aRoot = {}
         for n, (tHandle, nwItem) in enumerate(self.theProject.tree.iterRoots(nwItemClass.NOVEL)):
             aRoot = self.mRoot.addAction(nwItem.itemName)
             aRoot.setData(tHandle)
             aRoot.setCheckable(True)
-            aRoot.triggered.connect(
-                lambda n, tHandle=tHandle: self.rootFolderSelectionChanged.emit(tHandle)
-            )
-            agRoot.addAction(aRoot)
+            aRoot.triggered.connect(lambda n, tHandle=tHandle: self.setCurrentRoot(tHandle))
+            self.gRoot.addAction(aRoot)
+            self.aRoot[tHandle] = aRoot
 
-            if n == 0:
-                aRoot.setChecked(True)
-            if selHandle == tHandle:
-                aRoot.setChecked(True)
+        return
 
+    def setCurrentRoot(self, rootHandle):
+        """Set the current active root handle.
+        """
+        if rootHandle in self.aRoot:
+            self.aRoot[rootHandle].setChecked(True)
+            self.novelView.novelTree.refreshTree(rootHandle=rootHandle, overRide=True)
+        return
+
+    def setLastColType(self, colType, doRefresh=True):
+        """Set the last column type.
+        """
+        self.aLastCol[colType].setChecked(True)
+        self.novelView.novelTree.setLastColType(colType, doRefresh=doRefresh)
         return
 
     ##
@@ -281,6 +299,20 @@ class GuiNovelToolBar(QWidget):
         """
         rootHandle = self.theProject.lastNovel
         self.novelView.novelTree.refreshTree(rootHandle=rootHandle, overRide=True)
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _addLastColAction(self, colType, actionLabel):
+        """Add a column selection entry to the last column menu.
+        """
+        aLast = self.mLastCol.addAction(actionLabel)
+        aLast.setCheckable(True)
+        aLast.setActionGroup(self.gLastCol)
+        aLast.triggered.connect(lambda: self.setLastColType(colType))
+        self.aLastCol[colType] = aLast
         return
 
 # END Class GuiNovelToolBar
@@ -319,13 +351,12 @@ class GuiNovelTree(QTreeWidget):
         iPx = self.mainTheme.baseIconSize
         nPx = self.mainTheme.textNWidth
         cMg = self.mainConf.pxInt(6)
-        mPx = self.mainConf.pxInt(4)
         nMg = self.mainConf.pxInt(6)
 
         # self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.NoFrame)
         self.setHeaderHidden(True)
-        self.setIndentation(mPx)
+        self.setIndentation(0)
         self.setColumnCount(3)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -349,7 +380,7 @@ class GuiNovelTree(QTreeWidget):
         fH2.setBold(True)
 
         self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
-        self._hIndent = ["", "", "", "\u2022\u00a0", "\u00bb\u00a0"]
+        self._hIndent = ["", "", "", "\u203a\u00a0", "\u00bb\u00a0"]
         self._pIndent = [QPixmap(), QPixmap()]
 
         hPix = QPixmap(QSize(iPx, iPx))
@@ -387,30 +418,23 @@ class GuiNovelTree(QTreeWidget):
         return
 
     ##
+    #  Properties
+    ##
+
+    @property
+    def lastColType(self):
+        return self._lastCol
+
+    ##
     #  Class Methods
     ##
 
-    def clearTree(self):
+    def clearContent(self):
         """Clear the GUI content and the related maps.
         """
         self.clear()
         self._treeMap = {}
         self._lastBuild = 0
-        return
-
-    def loadOptions(self):
-        """Load user options.
-        """
-        self._lastCol = self.theProject.options.getEnum(
-            "GuiNovelView", "lastCol", NovelTreeColumn, NovelTreeColumn.POV
-        )
-        self.setColumnHidden(self.C_LAST, self._lastCol == NovelTreeColumn.HIDDEN)
-        return True
-
-    def saveOptions(self):
-        """Save user options.
-        """
-        self.theProject.options.setValue("GuiNovelView", "lastCol", self._lastCol)
         return
 
     def refreshTree(self, rootHandle=None, overRide=False):
@@ -461,14 +485,15 @@ class GuiNovelTree(QTreeWidget):
 
         return tHandle, tLine
 
-    def setLastColType(self, colType):
+    def setLastColType(self, colType, doRefresh=True):
         """Change the content type of the last column and rebuild.
         """
         if self._lastCol != colType:
             logger.debug("Changing last column to %s", colType.name)
             self._lastCol = colType
             self.setColumnHidden(self.C_LAST, colType == NovelTreeColumn.HIDDEN)
-            self.refreshTree(rootHandle=self.theProject.lastNovel, overRide=True)
+            if doRefresh:
+                self.refreshTree(rootHandle=self.theProject.lastNovel, overRide=True)
         return
 
     ##
@@ -531,7 +556,7 @@ class GuiNovelTree(QTreeWidget):
     def _populateTree(self, rootHandle):
         """Build the tree based on the project index.
         """
-        self.clearTree()
+        self.clearContent()
         tStart = time()
         logger.verbose("Building novel tree for root item '%s'", rootHandle)
 

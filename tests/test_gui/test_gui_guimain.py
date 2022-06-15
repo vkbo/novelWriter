@@ -135,7 +135,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     nwGUI._changeView(nwView.NOVEL)
     nwGUI.novelView.refreshTree(rootHandle=None, overRide=True)
     with monkeypatch.context() as mp:
-        mp.setattr(GuiNovelView, "treeFocus", lambda *a: True)
+        mp.setattr(GuiNovelView, "treeHasFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle() is None
         selItem = nwGUI.novelView.novelTree.topLevelItem(2)
         nwGUI.novelView.novelTree.setCurrentItem(selItem)
@@ -147,7 +147,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     nwGUI._changeView(nwView.OUTLINE)
     nwGUI.switchFocus(nwWidget.OUTLINE)
     with monkeypatch.context() as mp:
-        mp.setattr(GuiOutlineView, "treeFocus", lambda *a: True)
+        mp.setattr(GuiOutlineView, "treeHasFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle() is None
         actItem = nwGUI.outlineView.outlineTree.topLevelItem(0)
         chpItem = actItem.child(0)

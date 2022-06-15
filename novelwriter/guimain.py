@@ -796,11 +796,11 @@ class GuiMain(QMainWindow):
 
         tHandle = None
         tLine = None
-        if self.projView.treeFocus():
+        if self.projView.treeHasFocus():
             tHandle = self.projView.getSelectedHandle()
-        elif self.novelView.treeFocus():
+        elif self.novelView.treeHasFocus():
             tHandle, tLine = self.novelView.getSelectedHandle()
-        elif self.outlineView.treeFocus():
+        elif self.outlineView.treeHasFocus():
             tHandle, tLine = self.outlineView.getSelectedHandle()
         else:
             logger.warning("No item selected")

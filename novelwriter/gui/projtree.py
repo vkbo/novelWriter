@@ -31,8 +31,8 @@ import novelwriter
 from enum import Enum
 from time import time
 
+from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QIcon, QPalette
 from PyQt5.QtWidgets import (
     QAbstractItemView, QFrame, QHBoxLayout, QHeaderView, QLabel,
     QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem,
@@ -142,7 +142,7 @@ class GuiProjectView(QWidget):
         self.projTree.setFocus()
         return
 
-    def treeFocus(self):
+    def treeHasFocus(self):
         """Check if the project tree has focus.
         """
         return self.projTree.hasFocus()
@@ -177,7 +177,7 @@ class GuiProjectToolBar(QWidget):
         self.mainTheme  = projView.mainGui.mainTheme
 
         iPx = self.mainTheme.baseIconSize
-        mPx = self.mainConf.pxInt(4)
+        mPx = self.mainConf.pxInt(3)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -252,7 +252,7 @@ class GuiProjectToolBar(QWidget):
         self._addRootFolderEntry(nwItemClass.PLOT)
         self._addRootFolderEntry(nwItemClass.CHARACTER)
         self._addRootFolderEntry(nwItemClass.WORLD)
-        self._addRootFolderEntry(nwItemClass.ARCHIVE)
+        self._addRootFolderEntry(nwItemClass.TIMELINE)
         self._addRootFolderEntry(nwItemClass.OBJECT)
         self._addRootFolderEntry(nwItemClass.ENTITY)
         self._addRootFolderEntry(nwItemClass.CUSTOM)
@@ -778,13 +778,6 @@ class GuiProjectTree(QTreeWidget):
         if trItem is None or nwItem is None:
             return
 
-        expIcon = QIcon()
-        if nwItem.itemType == nwItemType.FILE:
-            if nwItem.isExported:
-                expIcon = self.mainTheme.getIcon("check")
-            else:
-                expIcon = self.mainTheme.getIcon("cross")
-
         itemStatus, statusIcon = nwItem.getImportStatus()
         hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
         itemIcon = self.mainTheme.getItemIcon(
@@ -793,18 +786,18 @@ class GuiProjectTree(QTreeWidget):
 
         trItem.setIcon(self.C_NAME, itemIcon)
         trItem.setText(self.C_NAME, nwItem.itemName)
-        trItem.setIcon(self.C_EXPORT, expIcon)
         trItem.setIcon(self.C_STATUS, statusIcon)
         trItem.setToolTip(self.C_STATUS, itemStatus)
 
+        if nwItem.itemType == nwItemType.FILE:
+            trItem.setIcon(
+                self.C_EXPORT, self.mainTheme.getIcon("check" if nwItem.isExported else "cross")
+            )
+
         if self.mainConf.emphLabels and nwItem.itemLayout == nwItemLayout.DOCUMENT:
             trFont = trItem.font(self.C_NAME)
-            if hLevel in ("H1", "H2"):
-                trFont.setBold(True)
-                trFont.setUnderline(True)
-            else:
-                trFont.setBold(False)
-                trFont.setUnderline(False)
+            trFont.setBold(hLevel == "H1" or hLevel == "H2")
+            trFont.setUnderline(hLevel == "H1")
             trItem.setFont(self.C_NAME, trFont)
 
         return

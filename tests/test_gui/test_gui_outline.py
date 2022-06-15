@@ -71,7 +71,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
     # Check focus
     with monkeypatch.context() as mp:
         mp.setattr(QWidget, "hasFocus", lambda *a: True)
-        assert outlineView.treeFocus() is True
+        assert outlineView.treeHasFocus() is True
 
     outlineView.setTreeFocus()  # Can't check. just ensures that it doesn't error
 
