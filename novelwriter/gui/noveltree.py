@@ -353,6 +353,8 @@ class GuiNovelTree(QTreeWidget):
 
         self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.NoFrame)
+        self.setUniformRowHeights(True)
+        self.setAllColumnsShowFocus(True)
         self.setHeaderHidden(True)
         self.setIndentation(0)
         self.setColumnCount(3)

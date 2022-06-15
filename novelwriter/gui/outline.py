@@ -326,6 +326,7 @@ class GuiOutlineTree(QTreeWidget):
         self.theProject = theOutline.mainGui.theProject
         self.mainTheme  = theOutline.mainGui.mainTheme
 
+        self.setUniformRowHeights(True)
         self.setFrameStyle(QFrame.NoFrame)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSelectionMode(QAbstractItemView.SingleSelection)

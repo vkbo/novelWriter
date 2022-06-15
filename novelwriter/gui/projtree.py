@@ -350,7 +350,10 @@ class GuiProjectTree(QTreeWidget):
 
         self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.NoFrame)
+        self.setUniformRowHeights(True)
+        self.setAllColumnsShowFocus(True)
         self.setExpandsOnDoubleClick(False)
+        self.setAutoExpandDelay(1000)
         self.setHeaderHidden(True)
         self.setIndentation(iPx)
         self.setColumnCount(4)
