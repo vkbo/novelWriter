@@ -81,7 +81,7 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert thePalette.window().color()          == QColor(54, 54, 54)
     assert thePalette.windowText().color()      == QColor(174, 174, 174)
     assert thePalette.base().color()            == QColor(62, 62, 62)
-    assert thePalette.alternateBase().color()   == QColor(67, 67, 67)
+    assert thePalette.alternateBase().color()   == QColor(78, 78, 78)
     assert thePalette.text().color()            == QColor(174, 174, 174)
     assert thePalette.toolTipBase().color()     == QColor(255, 255, 192)
     assert thePalette.toolTipText().color()     == QColor(21, 21, 13)

@@ -24,8 +24,9 @@ import pytest
 
 from tools import buildTestProject, writeFile
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtGui import QFocusEvent
+from PyQt5.QtCore import Qt, QEvent
+from PyQt5.QtWidgets import QMessageBox, QToolTip
 
 from novelwriter.enum import nwWidget, nwItemType
 from novelwriter.dialogs import GuiEditLabel
@@ -53,8 +54,12 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
         "# Jane Doe\n\n@tag: Jane\n\n"
     )
     writeFile(
-        os.path.join(nwGUI.theProject.projContent, "000000000000f.nwd"),
-        "### Scene One\n\n@pov: Jane\n@focus: Jane\n\n"
+        os.path.join(nwGUI.theProject.projContent, "000000000000f.nwd"), (
+            "### Scene One\n\n"
+            "@pov: Jane\n"
+            "@focus: Jane\n\n"
+            "% Synopsis: This is a scene."
+        )
     )
 
     novelView = nwGUI.novelView
@@ -124,12 +129,12 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     assert nwGUI.docViewer.docHandle() is None
 
     scRect = novelTree.visualItemRect(scItem)
-    oldData = scItem.data(novelTree.C_TITLE, Qt.UserRole)
-    scItem.setData(novelTree.C_TITLE, Qt.UserRole, (None, "", ""))
+    oldData = scItem.data(novelTree.C_TITLE, novelTree.D_HANDLE)
+    scItem.setData(novelTree.C_TITLE, novelTree.D_HANDLE, None)
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
     assert nwGUI.docViewer.docHandle() is None
 
-    scItem.setData(novelTree.C_TITLE, Qt.UserRole, oldData)
+    scItem.setData(novelTree.C_TITLE, novelTree.D_HANDLE, oldData)
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
     assert nwGUI.docViewer.docHandle() == "000000000000f"
 
@@ -137,26 +142,26 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # ===========
 
     novelBar.setLastColType(NovelTreeColumn.HIDDEN)
-    assert novelTree.isColumnHidden(novelTree.C_LAST) is True
+    assert novelTree.isColumnHidden(novelTree.C_EXTRA) is True
     assert novelTree.lastColType == NovelTreeColumn.HIDDEN
     assert novelTree._getLastColumnText("000000000000f", "T000001") == ("", "")
 
     novelBar.setLastColType(NovelTreeColumn.POV)
-    assert novelTree.isColumnHidden(novelTree.C_LAST) is False
+    assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
     assert novelTree.lastColType == NovelTreeColumn.POV
     assert novelTree._getLastColumnText("000000000000f", "T000001") == (
         "Jane", "Point of View: Jane"
     )
 
     novelBar.setLastColType(NovelTreeColumn.FOCUS)
-    assert novelTree.isColumnHidden(novelTree.C_LAST) is False
+    assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
     assert novelTree.lastColType == NovelTreeColumn.FOCUS
     assert novelTree._getLastColumnText("000000000000f", "T000001") == (
         "Jane", "Focus: Jane"
     )
 
     novelBar.setLastColType(NovelTreeColumn.PLOT)
-    assert novelTree.isColumnHidden(novelTree.C_LAST) is False
+    assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
     assert novelTree.lastColType == NovelTreeColumn.PLOT
     assert novelTree._getLastColumnText("000000000000f", "T000001") == (
         "", "Plot: "
@@ -164,6 +169,33 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
 
     novelTree._lastCol = None
     assert novelTree._getLastColumnText("0000000000000", "T000000") == ("", "")
+
+    # Item Meta
+    # =========
+
+    ttText = ""
+
+    def showText(pos, text):
+        nonlocal ttText
+        ttText = text
+
+    mIndex = novelTree.model().index(2, novelTree.C_MORE)
+    with monkeypatch.context() as mp:
+        mp.setattr(QToolTip, "showText", showText)
+        novelTree._treeItemClicked(mIndex)
+        assert ttText == (
+            "<p><b>Point of View</b>: Jane<br><b>Focus</b>: Jane</p>"
+            "<p><b>Synopsis</b>: This is a scene.</p>"
+        )
+
+    # Other Checks
+    # ============
+
+    scItem = novelTree.topLevelItem(2)
+    scItem.setSelected(True)
+    assert scItem.isSelected()
+    novelTree.focusOutEvent(QFocusEvent(QEvent.None_, Qt.MouseFocusReason))
+    assert not scItem.isSelected()
 
     # Close
     # =====

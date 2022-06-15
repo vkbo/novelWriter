@@ -474,7 +474,7 @@ class GuiIcons:
         "bullet-on", "bullet-off",
 
         # Decorations
-        "deco_doc_h0", "deco_doc_h1", "deco_doc_h2", "deco_doc_h3", "deco_doc_h4",
+        "deco_doc_h0", "deco_doc_h1", "deco_doc_h2", "deco_doc_h3", "deco_doc_h4", "deco_doc_more",
     }
 
     IMAGE_MAP = {

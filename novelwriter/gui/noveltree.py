@@ -35,11 +35,11 @@ from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import Qt, QSize, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import (
     QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView, QLabel,
-    QMenu, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget
+    QMenu, QSizePolicy, QToolButton, QToolTip, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
-from novelwriter.enum import nwDocMode, nwItemClass
+from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
 from novelwriter.common import checkInt
 from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
 
@@ -84,6 +84,7 @@ class GuiNovelView(QWidget):
         # Function Mappings
         self.updateWordCounts = self.novelTree.updateWordCounts
         self.getSelectedHandle = self.novelTree.getSelectedHandle
+        self.setActiveHandle = self.novelTree.setActiveHandle
 
         return
 
@@ -322,7 +323,12 @@ class GuiNovelTree(QTreeWidget):
 
     C_TITLE = 0
     C_WORDS = 1
-    C_LAST  = 2
+    C_EXTRA = 2
+    C_MORE  = 3
+
+    D_HANDLE = Qt.UserRole
+    D_TITLE  = Qt.UserRole + 1
+    D_KEY    = Qt.UserRole + 2
 
     def __init__(self, novelView):
         QTreeWidget.__init__(self, novelView)
@@ -339,6 +345,7 @@ class GuiNovelTree(QTreeWidget):
         self._treeMap   = {}
         self._lastBuild = 0
         self._lastCol   = NovelTreeColumn.POV
+        self._actHandle = None
 
         # Cached Strings
         self._povLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY])
@@ -353,9 +360,11 @@ class GuiNovelTree(QTreeWidget):
 
         self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.NoFrame)
+        self.setUniformRowHeights(True)
+        self.setAllColumnsShowFocus(True)
         self.setHeaderHidden(True)
         self.setIndentation(0)
-        self.setColumnCount(3)
+        self.setColumnCount(4)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setExpandsOnDoubleClick(False)
@@ -367,7 +376,8 @@ class GuiNovelTree(QTreeWidget):
         treeHeader.setMinimumSectionSize(iPx + cMg)
         treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.Stretch)
         treeHeader.setSectionResizeMode(self.C_WORDS, QHeaderView.ResizeToContents)
-        treeHeader.setSectionResizeMode(self.C_LAST, QHeaderView.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_EXTRA, QHeaderView.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_MORE, QHeaderView.ResizeToContents)
 
         # Pre-Generate Tree Formatting
         fH1 = self.font()
@@ -385,8 +395,12 @@ class GuiNovelTree(QTreeWidget):
             self.mainTheme.loadDecoration("deco_doc_h3", pxH=iPx),
             self.mainTheme.loadDecoration("deco_doc_h4", pxH=iPx),
         ]
+        self._pMore = self.mainTheme.loadDecoration("deco_doc_more", pxH=iPx)
+        self._pActive = self.mainTheme.loadDecoration("deco_more_on", pxH=iPx)
+        self._pInactive = self.mainTheme.loadDecoration("deco_more_off", pxH=iPx)
 
         # Connect signals
+        self.clicked.connect(self._treeItemClicked)
         self.itemDoubleClicked.connect(self._treeDoubleClick)
         self.itemSelectionChanged.connect(self._treeSelectionChange)
 
@@ -449,7 +463,7 @@ class GuiNovelTree(QTreeWidget):
         selItem = self.selectedItems()
         titleKey = None
         if selItem:
-            titleKey = selItem[0].data(self.C_TITLE, Qt.UserRole)[2]
+            titleKey = selItem[0].data(self.C_TITLE, self.D_KEY)
 
         self._populateTree(rootHandle)
         self.theProject.setLastNovelViewed(rootHandle)
@@ -476,8 +490,9 @@ class GuiNovelTree(QTreeWidget):
         tHandle = None
         tLine = 0
         if selItem:
-            tHandle = selItem[0].data(self.C_TITLE, Qt.UserRole)[0]
-            tLine = checkInt(selItem[0].data(self.C_TITLE, Qt.UserRole)[1], 1) - 1
+            tHandle = selItem[0].data(self.C_TITLE, self.D_HANDLE)
+            sTitle = selItem[0].data(self.C_TITLE, self.D_TITLE)
+            tLine = checkInt(sTitle[1:], 1) - 1
 
         return tHandle, tLine
 
@@ -487,9 +502,32 @@ class GuiNovelTree(QTreeWidget):
         if self._lastCol != colType:
             logger.debug("Changing last column to %s", colType.name)
             self._lastCol = colType
-            self.setColumnHidden(self.C_LAST, colType == NovelTreeColumn.HIDDEN)
+            self.setColumnHidden(self.C_EXTRA, colType == NovelTreeColumn.HIDDEN)
             if doRefresh:
                 self.refreshTree(rootHandle=self.theProject.lastNovel, overRide=True)
+        return
+
+    def setActiveHandle(self, tHandle):
+        """Highlight the rows associated with a given handle.
+        """
+        tStart = time()
+
+        self._actHandle = tHandle
+        for i in range(self.topLevelItemCount()):
+            tItem = self.topLevelItem(i)
+            if tItem.data(self.C_TITLE, self.D_HANDLE) == tHandle:
+                tItem.setBackground(self.C_TITLE, self.palette().alternateBase())
+                tItem.setBackground(self.C_WORDS, self.palette().alternateBase())
+                tItem.setBackground(self.C_EXTRA, self.palette().alternateBase())
+                tItem.setBackground(self.C_MORE, self.palette().alternateBase())
+            else:
+                tItem.setBackground(self.C_TITLE, self.palette().base())
+                tItem.setBackground(self.C_WORDS, self.palette().base())
+                tItem.setBackground(self.C_EXTRA, self.palette().base())
+                tItem.setBackground(self.C_MORE, self.palette().base())
+
+        logger.verbose("Highlighted Novel Tree in %.3f ms", (time() - tStart)*1000)
+
         return
 
     ##
@@ -521,9 +559,27 @@ class GuiNovelTree(QTreeWidget):
 
         return
 
+    def focusOutEvent(self, theEvent):
+        """Clear the selection when the tree no longer has focus.
+        """
+        QTreeWidget.focusOutEvent(self, theEvent)
+        self.clearSelection()
+        return
+
     ##
     #  Private Slots
     ##
+
+    @pyqtSlot("QModelIndex")
+    def _treeItemClicked(self, mIndex):
+        """The user clicked on an item in the tree.
+        """
+        if mIndex.column() == self.C_MORE:
+            tHandle = mIndex.siblingAtColumn(self.C_TITLE).data(self.D_HANDLE)
+            sTitle = mIndex.siblingAtColumn(self.C_TITLE).data(self.D_TITLE)
+            tipPos = self.mapToGlobal(self.visualRect(mIndex).topRight())
+            self._popMetaBox(tipPos, tHandle, sTitle)
+        return
 
     @pyqtSlot()
     def _treeSelectionChange(self):
@@ -564,22 +620,26 @@ class GuiNovelTree(QTreeWidget):
                 continue
 
             newItem = QTreeWidgetItem()
-            theData = (tHandle, sTitle[1:].lstrip("0"), tKey)
-
             newItem.setData(self.C_TITLE, Qt.DecorationRole, self._pIndent[iLevel])
             newItem.setText(self.C_TITLE, novIdx.title)
-            newItem.setData(self.C_TITLE, Qt.UserRole, theData)
+            newItem.setData(self.C_TITLE, self.D_HANDLE, tHandle)
+            newItem.setData(self.C_TITLE, self.D_TITLE, sTitle)
+            newItem.setData(self.C_TITLE, self.D_KEY, tKey)
             newItem.setFont(self.C_TITLE, self._hFonts[iLevel])
             newItem.setText(self.C_WORDS, f"{novIdx.wordCount:n}")
             newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
+            newItem.setData(self.C_MORE, Qt.DecorationRole, self._pMore)
 
+            # Custom column
             lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
-            newItem.setText(self.C_LAST, lastText)
+            newItem.setText(self.C_EXTRA, lastText)
             if lastText:
-                newItem.setToolTip(self.C_LAST, toolTip)
+                newItem.setToolTip(self.C_EXTRA, toolTip)
 
             self._treeMap[tKey] = newItem
             self.addTopLevelItem(newItem)
+
+        self.setActiveHandle(self._actHandle)
 
         logger.verbose("Novel Tree built in %.3f ms", (time() - tStart)*1000)
         self._lastBuild = time()
@@ -606,5 +666,50 @@ class GuiNovelTree(QTreeWidget):
             return newText, f"{self._pltLabel}: {newText}"
 
         return "", ""
+
+    def _popMetaBox(self, qPos, tHandle, sTitle):
+        """Show the novel meta data box.
+        """
+        logger.debug("Generating meta data tooltip for '%s:%s'", tHandle, sTitle)
+
+        pIndex = self.theProject.index
+        novIdx = pIndex.getNovelData(tHandle, sTitle)
+        refTags = pIndex.getReferences(tHandle, sTitle)
+
+        synopText = novIdx.synopsis
+        if synopText:
+            synopLabel = trConst(nwLabels.OUTLINE_COLS[nwOutline.SYNOP])
+            synopText = f"<p><b>{synopLabel}</b>: {synopText}</p>"
+
+        refLines = []
+        refLines = self._appendMetaTag(refTags, nwKeyWords.POV_KEY, refLines)
+        refLines = self._appendMetaTag(refTags, nwKeyWords.FOCUS_KEY, refLines)
+        refLines = self._appendMetaTag(refTags, nwKeyWords.CHAR_KEY, refLines)
+        refLines = self._appendMetaTag(refTags, nwKeyWords.PLOT_KEY, refLines)
+        refLines = self._appendMetaTag(refTags, nwKeyWords.TIME_KEY, refLines)
+        refLines = self._appendMetaTag(refTags, nwKeyWords.WORLD_KEY, refLines)
+        refLines = self._appendMetaTag(refTags, nwKeyWords.OBJECT_KEY, refLines)
+        refLines = self._appendMetaTag(refTags, nwKeyWords.ENTITY_KEY, refLines)
+        refLines = self._appendMetaTag(refTags, nwKeyWords.CUSTOM_KEY, refLines)
+
+        refText = ""
+        if refLines:
+            refList = "<br>".join(refLines)
+            refText = f"<p>{refList}</p>"
+
+        ttText = refText + synopText or self.tr("No meta data")
+        if ttText:
+            QToolTip.showText(qPos, ttText)
+
+        return
+
+    @staticmethod
+    def _appendMetaTag(refs, key, lines):
+        """Generate a reference list for a given reference key.
+        """
+        tags = ", ".join(refs.get(key, []))
+        if tags:
+            lines.append(f"<b>{trConst(nwLabels.KEY_NAME[key])}</b>: {tags}")
+        return lines
 
 # END Class GuiNovelTree
