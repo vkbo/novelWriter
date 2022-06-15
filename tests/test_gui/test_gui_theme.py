@@ -127,7 +127,7 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert anImg.isNull()
 
     # Add a non-existent file and request it
-    iconCache.DECO_MAP["nonsense"] = "nofile.jpg"
+    iconCache.IMAGE_MAP["nonsense"] = "nofile.jpg"
     anImg = iconCache.loadDecoration("nonsense", 20, 20)
     assert isinstance(anImg, QPixmap)
     assert anImg.isNull()

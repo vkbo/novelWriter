@@ -28,8 +28,8 @@ from tools import cmpFiles, buildTestProject, XML_IGNORE, writeFile
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QInputDialog
 
-from novelwriter.gui import GuiDocEditor, GuiNovelTree, GuiOutlineView
-from novelwriter.enum import nwItemType, nwWidget
+from novelwriter.gui import GuiDocEditor, GuiNovelView, GuiOutlineView
+from novelwriter.enum import nwItemType, nwView, nwWidget
 from novelwriter.tools import GuiProjectWizard
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.dialogs import GuiEditLabel
@@ -120,6 +120,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     assert nwGUI.openSelectedItem() is False
 
     # Project Tree has focus
+    nwGUI._changeView(nwView.PROJECT)
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.projStack.setCurrentIndex(0)
     with monkeypatch.context() as mp:
@@ -131,23 +132,22 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
         assert nwGUI.closeDocument() is True
 
     # Novel Tree has focus
-    nwGUI.projStack.setCurrentIndex(1)
-    nwGUI.novelView.refreshTree(True)
+    nwGUI._changeView(nwView.NOVEL)
+    nwGUI.novelView.novelTree.refreshTree(rootHandle=None, overRide=True)
     with monkeypatch.context() as mp:
-        mp.setattr(GuiNovelTree, "hasFocus", lambda *a: True)
+        mp.setattr(GuiNovelView, "treeHasFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle() is None
-        actItem = nwGUI.novelView.topLevelItem(0)
-        chpItem = actItem.child(0)
-        selItem = chpItem.child(0)
-        nwGUI.novelView.setCurrentItem(selItem)
+        selItem = nwGUI.novelView.novelTree.topLevelItem(2)
+        nwGUI.novelView.novelTree.setCurrentItem(selItem)
         nwGUI._keyPressReturn()
         assert nwGUI.docEditor.docHandle() == sHandle
         assert nwGUI.closeDocument() is True
 
     # Project Outline has focus
+    nwGUI._changeView(nwView.OUTLINE)
     nwGUI.switchFocus(nwWidget.OUTLINE)
     with monkeypatch.context() as mp:
-        mp.setattr(GuiOutlineView, "treeFocus", lambda *a: True)
+        mp.setattr(GuiOutlineView, "treeHasFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle() is None
         actItem = nwGUI.outlineView.outlineTree.topLevelItem(0)
         chpItem = actItem.child(0)
@@ -157,7 +157,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
         assert nwGUI.docEditor.docHandle() == sHandle
         assert nwGUI.closeDocument() is True
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiMain_ProjectTreeItems
 

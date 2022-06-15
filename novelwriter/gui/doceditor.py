@@ -511,11 +511,13 @@ class GuiDocEditor(QTextEdit):
         self.theProject.index.scanText(tHandle, docText)
         newHeader = self.theProject.index.getHandleHeaderLevel(tHandle)
 
+        # ToDo: This should be a signal
         if self._updateHeaders(checkLevel=True):
             self.mainGui.requestNovelTreeRefresh()
         else:
             self.mainGui.novelView.updateWordCounts(tHandle)
 
+        # ToDo: This should be a signal
         if oldHeader != newHeader:
             self.mainGui.projView.setTreeItemValues(tHandle)
             self.mainGui.itemDetails.updateViewBox(tHandle)

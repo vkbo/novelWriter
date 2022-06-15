@@ -470,7 +470,7 @@ def testCoreProject_Open(monkeypatch, nwMinimal, mockGUI):
         writeFile(os.path.join(nwMinimal, "data_0", "123456789abc_main.bak"), "stuff")
         mockGUI.clear()
         assert theProject.openProject(nwMinimal) is True
-        assert "version 1.0" in mockGUI.lastAlert
+        assert "There was an error updating the project." in mockGUI.lastAlert
 
     assert theProject.closeProject()
 

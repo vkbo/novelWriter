@@ -117,7 +117,7 @@ class GuiOutlineView(QWidget):
         self.outlineTree.refreshTree(overRide=overRide, novelChanged=novelChanged)
         return
 
-    def treeFocus(self):
+    def treeHasFocus(self):
         return self.outlineTree.hasFocus()
 
     def setTreeFocus(self):
