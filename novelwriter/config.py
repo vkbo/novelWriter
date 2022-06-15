@@ -96,8 +96,6 @@ class Config:
         # Sizes
         self.winGeometry   = [1200, 650]
         self.prefGeometry  = [700, 615]
-        self.treeColWidth  = [200, 50, 30]
-        self.novelColWidth = [200, 50]
         self.projColWidth  = [200, 60, 140]
         self.mainPanePos   = [300, 800]
         self.docPanePos    = [400, 400]
@@ -117,7 +115,7 @@ class Config:
         # Text Editor
         self.textFont        = None   # Editor font
         self.textSize        = 12     # Editor font size
-        self.textWidth       = 600    # Editor text width
+        self.textWidth       = 700    # Editor text width
         self.textMargin      = 40     # Editor/viewer text margin
         self.tabWidth        = 40     # Editor tabulator width
 
@@ -460,8 +458,6 @@ class Config:
         cnfSec = "Sizes"
         self.winGeometry   = theConf.rdIntList(cnfSec, "geometry", self.winGeometry)
         self.prefGeometry  = theConf.rdIntList(cnfSec, "preferences", self.prefGeometry)
-        self.treeColWidth  = theConf.rdIntList(cnfSec, "treecols", self.treeColWidth)
-        self.novelColWidth = theConf.rdIntList(cnfSec, "novelcols", self.novelColWidth)
         self.projColWidth  = theConf.rdIntList(cnfSec, "projcols", self.projColWidth)
         self.mainPanePos   = theConf.rdIntList(cnfSec, "mainpane", self.mainPanePos)
         self.docPanePos    = theConf.rdIntList(cnfSec, "docpane", self.docPanePos)
@@ -581,8 +577,6 @@ class Config:
         theConf["Sizes"] = {
             "geometry":    self._packList(self.winGeometry),
             "preferences": self._packList(self.prefGeometry),
-            "treecols":    self._packList(self.treeColWidth),
-            "novelcols":   self._packList(self.novelColWidth),
             "projcols":    self._packList(self.projColWidth),
             "mainpane":    self._packList(self.mainPanePos),
             "docpane":     self._packList(self.docPanePos),
@@ -811,20 +805,6 @@ class Config:
         self.confChanged = True
         return True
 
-    def setTreeColWidths(self, colWidths):
-        """Set the column widths of the main project tree.
-        """
-        self.treeColWidth = [int(x/self.guiScale) for x in colWidths]
-        self.confChanged = True
-        return True
-
-    def setNovelColWidths(self, colWidths):
-        """Set the column widths of the novel tree.
-        """
-        self.novelColWidth = [int(x/self.guiScale) for x in colWidths]
-        self.confChanged = True
-        return True
-
     def setProjColWidths(self, colWidths):
         """Set the column widths of the Load Project dialog.
         """
@@ -909,12 +889,6 @@ class Config:
 
     def getPreferencesSize(self):
         return [int(x*self.guiScale) for x in self.prefGeometry]
-
-    def getTreeColWidths(self):
-        return [int(x*self.guiScale) for x in self.treeColWidth]
-
-    def getNovelColWidths(self):
-        return [int(x*self.guiScale) for x in self.novelColWidth]
 
     def getProjColWidths(self):
         return [int(x*self.guiScale) for x in self.projColWidth]
