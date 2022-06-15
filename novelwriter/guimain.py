@@ -573,6 +573,7 @@ class GuiMain(QMainWindow):
         if self.docEditor.docChanged():
             self.saveDocument()
         self.docEditor.clearEditor()
+        self.novelView.setActiveHandle(None)
 
         return True
 
@@ -594,6 +595,7 @@ class GuiMain(QMainWindow):
                 self.docEditor.setFocus()
             self.theProject.setLastEdited(tHandle)
             self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
+            self.novelView.setActiveHandle(tHandle)
         else:
             return False
 

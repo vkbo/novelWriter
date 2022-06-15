@@ -84,6 +84,7 @@ class GuiNovelView(QWidget):
         # Function Mappings
         self.updateWordCounts = self.novelTree.updateWordCounts
         self.getSelectedHandle = self.novelTree.getSelectedHandle
+        self.setActiveHandle = self.novelTree.setActiveHandle
 
         return
 
@@ -505,6 +506,23 @@ class GuiNovelTree(QTreeWidget):
                 self.refreshTree(rootHandle=self.theProject.lastNovel, overRide=True)
         return
 
+    def setActiveHandle(self, tHandle):
+        """Highlight the rows associated with a given handle.
+        """
+        for i in range(self.topLevelItemCount()):
+            tItem = self.topLevelItem(i)
+            if tItem.data(self.C_TITLE, self.D_HANDLE) == tHandle:
+                tItem.setBackground(self.C_TITLE, self.palette().alternateBase())
+                tItem.setBackground(self.C_WORDS, self.palette().alternateBase())
+                tItem.setBackground(self.C_EXTRA, self.palette().alternateBase())
+                tItem.setBackground(self.C_MORE, self.palette().alternateBase())
+            else:
+                tItem.setBackground(self.C_TITLE, self.palette().base())
+                tItem.setBackground(self.C_WORDS, self.palette().base())
+                tItem.setBackground(self.C_EXTRA, self.palette().base())
+                tItem.setBackground(self.C_MORE, self.palette().base())
+        return
+
     ##
     #  Events
     ##
@@ -532,6 +550,13 @@ class GuiNovelTree(QTreeWidget):
 
             self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
 
+        return
+
+    def focusOutEvent(self, theEvent):
+        """Clear the selection when the tree no longer has focus.
+        """
+        QTreeWidget.focusOutEvent(self, theEvent)
+        self.clearSelection()
         return
 
     ##
@@ -596,13 +621,13 @@ class GuiNovelTree(QTreeWidget):
             newItem.setFont(self.C_TITLE, self._hFonts[iLevel])
             newItem.setText(self.C_WORDS, f"{novIdx.wordCount:n}")
             newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
+            newItem.setData(self.C_MORE, Qt.DecorationRole, self._pMore)
 
+            # Custom column
             lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
             newItem.setText(self.C_EXTRA, lastText)
             if lastText:
                 newItem.setToolTip(self.C_EXTRA, toolTip)
-
-            newItem.setData(self.C_MORE, Qt.DecorationRole, self._pMore)
 
             self._treeMap[tKey] = newItem
             self.addTopLevelItem(newItem)
