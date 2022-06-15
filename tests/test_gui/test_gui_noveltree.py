@@ -137,26 +137,26 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # ===========
 
     novelBar.setLastColType(NovelTreeColumn.HIDDEN)
-    assert novelTree.isColumnHidden(novelTree.C_LAST) is True
+    assert novelTree.isColumnHidden(novelTree.C_EXTRA) is True
     assert novelTree.lastColType == NovelTreeColumn.HIDDEN
     assert novelTree._getLastColumnText("000000000000f", "T000001") == ("", "")
 
     novelBar.setLastColType(NovelTreeColumn.POV)
-    assert novelTree.isColumnHidden(novelTree.C_LAST) is False
+    assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
     assert novelTree.lastColType == NovelTreeColumn.POV
     assert novelTree._getLastColumnText("000000000000f", "T000001") == (
         "Jane", "Point of View: Jane"
     )
 
     novelBar.setLastColType(NovelTreeColumn.FOCUS)
-    assert novelTree.isColumnHidden(novelTree.C_LAST) is False
+    assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
     assert novelTree.lastColType == NovelTreeColumn.FOCUS
     assert novelTree._getLastColumnText("000000000000f", "T000001") == (
         "Jane", "Focus: Jane"
     )
 
     novelBar.setLastColType(NovelTreeColumn.PLOT)
-    assert novelTree.isColumnHidden(novelTree.C_LAST) is False
+    assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
     assert novelTree.lastColType == NovelTreeColumn.PLOT
     assert novelTree._getLastColumnText("000000000000f", "T000001") == (
         "", "Plot: "
