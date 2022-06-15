@@ -226,7 +226,7 @@ class GuiMain(QMainWindow):
         self.splitMain.setCollapsible(self.idxTree, False)
         self.splitMain.setCollapsible(self.idxMain, False)
         self.splitDocs.setCollapsible(self.idxEditor, False)
-        self.splitDocs.setCollapsible(self.idxViewer, True)
+        self.splitDocs.setCollapsible(self.idxViewer, False)
         self.splitView.setCollapsible(self.idxViewDoc, False)
         self.splitView.setCollapsible(self.idxViewMeta, False)
 
