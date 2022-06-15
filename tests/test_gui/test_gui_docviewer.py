@@ -51,12 +51,12 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.theProject.index._itemIndex._items != {}
 
     # Select a document in the project tree
-    nwGUI.treeView.setSelectedHandle("88243afbe5ed8")
+    nwGUI.projView.setSelectedHandle("88243afbe5ed8")
 
     # Middle-click the selected item
-    theItem = nwGUI.treeView._getTreeItem("88243afbe5ed8")
-    theRect = nwGUI.treeView.visualItemRect(theItem)
-    qtbot.mouseClick(nwGUI.treeView.viewport(), Qt.MidButton, pos=theRect.center())
+    theItem = nwGUI.projView.projTree._getTreeItem("88243afbe5ed8")
+    theRect = nwGUI.projView.projTree.visualItemRect(theItem)
+    qtbot.mouseClick(nwGUI.projView.projTree.viewport(), Qt.MidButton, pos=theRect.center())
     assert nwGUI.docViewer.docHandle() == "88243afbe5ed8"
 
     # Reload the text
@@ -117,7 +117,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docViewer.docAction(nwDocAction.COPY) is False
 
     # Open again via menu
-    assert nwGUI.treeView.setSelectedHandle("88243afbe5ed8")
+    assert nwGUI.projView.setSelectedHandle("88243afbe5ed8")
     nwGUI.mainMenu.aViewDoc.activate(QAction.Trigger)
 
     # Select "Bod" link

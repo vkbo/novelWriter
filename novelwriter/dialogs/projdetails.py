@@ -43,15 +43,15 @@ logger = logging.getLogger(__name__)
 
 class GuiProjectDetails(PagedDialog):
 
-    def __init__(self, theParent):
-        PagedDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        PagedDialog.__init__(self, mainGui)
 
         logger.debug("Initialising GuiProjectDetails ...")
         self.setObjectName("GuiProjectDetails")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.theProject = mainGui.theProject
 
         self.setWindowTitle(self.tr("Project Details"))
 
@@ -66,8 +66,8 @@ class GuiProjectDetails(PagedDialog):
             self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "winHeight", wH))
         )
 
-        self.tabMain = GuiProjectDetailsMain(self.theParent, self.theProject)
-        self.tabContents = GuiProjectDetailsContents(self.theParent, self.theProject)
+        self.tabMain = GuiProjectDetailsMain(self.mainGui, self.theProject)
+        self.tabContents = GuiProjectDetailsContents(self.mainGui, self.theProject)
 
         self.addTab(self.tabMain, self.tr("Overview"))
         self.addTab(self.tabContents, self.tr("Contents"))
@@ -139,16 +139,16 @@ class GuiProjectDetails(PagedDialog):
 
 class GuiProjectDetailsMain(QWidget):
 
-    def __init__(self, theParent, theProject):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui, theProject):
+        QWidget.__init__(self, mainGui)
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
         self.theProject = theProject
-        self.theTheme   = theParent.theTheme
+        self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
 
-        fPx = self.theTheme.fontPixelSize
-        fPt = self.theTheme.fontPointSize
+        fPx = self.mainTheme.fontPixelSize
+        fPt = self.mainTheme.fontPointSize
         vPx = self.mainConf.pxInt(4)
         hPx = self.mainConf.pxInt(12)
 
@@ -271,18 +271,18 @@ class GuiProjectDetailsContents(QWidget):
     C_PAGE  = 3
     C_PROG  = 4
 
-    def __init__(self, theParent, theProject):
-        QWidget.__init__(self, theParent)
+    def __init__(self, mainGui, theProject):
+        QWidget.__init__(self, mainGui)
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
         self.theProject = theProject
-        self.theTheme   = theParent.theTheme
+        self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
 
         # Internal
         self._theToC = []
 
-        iPx = self.theTheme.baseIconSize
+        iPx = self.mainTheme.baseIconSize
         hPx = self.mainConf.pxInt(12)
         vPx = self.mainConf.pxInt(4)
         pOptions = self.theProject.options
@@ -469,7 +469,7 @@ class GuiProjectDetailsContents(QWidget):
             if tTitle.strip() == "":
                 tTitle = self.tr("Untitled")
 
-            newItem.setIcon(self.C_TITLE, self.theTheme.getIcon("doc_h%d" % tLevel))
+            newItem.setIcon(self.C_TITLE, self.mainTheme.getIcon("doc_h%d" % tLevel))
             newItem.setText(self.C_TITLE, tTitle)
             newItem.setText(self.C_WORDS, f"{wCount:n}")
             newItem.setText(self.C_PAGES, f"{pCount:n}")

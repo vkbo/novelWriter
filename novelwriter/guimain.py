@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.gui import (
     GuiDocEditor, GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiMainMenu,
-    GuiMainStatus, GuiNovelTree, GuiOutline, GuiProjectTree, GuiTheme,
+    GuiMainStatus, GuiNovelView, GuiOutlineView, GuiProjectView, GuiTheme,
     GuiViewsBar
 )
 from novelwriter.dialogs import (
@@ -84,7 +84,7 @@ class GuiMain(QMainWindow):
         # ============
 
         # Core Classes and Settings
-        self.theTheme    = GuiTheme()
+        self.mainTheme   = GuiTheme()
         self.theProject  = NWProject(self)
         self.hasProject  = False
         self.isFocusMode = False
@@ -104,42 +104,20 @@ class GuiMain(QMainWindow):
         hWd = self.mainConf.pxInt(4)
 
         # Main GUI Elements
-        self.statusBar = GuiMainStatus(self)
-        self.treeView  = GuiProjectTree(self)
-        self.novelView = GuiNovelTree(self)
-        self.docEditor = GuiDocEditor(self)
-        self.viewMeta  = GuiDocViewDetails(self)
-        self.docViewer = GuiDocViewer(self)
-        self.treeMeta  = GuiItemDetails(self)
-        self.projView  = GuiOutline(self)
-        self.mainMenu  = GuiMainMenu(self)
-        self.viewsBar  = GuiViewsBar(self)
-
-        # Connect Signals Between Main Elements
-        self.viewsBar.viewChangeRequested.connect(self._changeView)
-
-        self.treeView.itemSelectionChanged.connect(self._treeSingleClick)
-        self.treeView.itemDoubleClicked.connect(self._treeDoubleClick)
-        self.treeView.novelItemChanged.connect(self._treeNovelItemChanged)
-        self.treeView.wordCountsChanged.connect(self._updateStatusWordCount)
-        self.treeView.treeItemChanged.connect(self.docEditor.updateDocInfo)
-        self.treeView.treeItemChanged.connect(self.docViewer.updateDocInfo)
-        self.treeView.treeItemChanged.connect(self.treeMeta.updateViewBox)
-        self.treeView.rootFolderChanged.connect(self.projView.updateRootItem)
-
-        self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
-        self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
-        self.docEditor.docCountsChanged.connect(self.treeMeta.doUpdateCounts)
-        self.docEditor.docCountsChanged.connect(self.treeView.doUpdateCounts)
-        self.docEditor.loadDocumentTagRequest.connect(self._followTag)
-
-        self.docViewer.loadDocumentTagRequest.connect(self._followTag)
-
-        self.projView.loadDocumentTagRequest.connect(self._followTag)
+        self.statusBar   = GuiMainStatus(self)
+        self.projView    = GuiProjectView(self)
+        self.novelView   = GuiNovelView(self)
+        self.docEditor   = GuiDocEditor(self)
+        self.viewMeta    = GuiDocViewDetails(self)
+        self.docViewer   = GuiDocViewer(self)
+        self.itemDetails = GuiItemDetails(self)
+        self.outlineView = GuiOutlineView(self)
+        self.mainMenu    = GuiMainMenu(self)
+        self.viewsBar    = GuiViewsBar(self)
 
         # Project Tree Stack
         self.projStack = QStackedWidget()
-        self.projStack.addWidget(self.treeView)
+        self.projStack.addWidget(self.projView)
         self.projStack.addWidget(self.novelView)
         self.projStack.currentChanged.connect(self._projStackChanged)
 
@@ -149,7 +127,7 @@ class GuiMain(QMainWindow):
         self.treeBox.setContentsMargins(0, 0, 0, 0)
         self.treeBox.setSpacing(mPx)
         self.treeBox.addWidget(self.projStack)
-        self.treeBox.addWidget(self.treeMeta)
+        self.treeBox.addWidget(self.itemDetails)
         self.treePane.setLayout(self.treeBox)
 
         # Splitter : Document Viewer / Document Meta
@@ -176,7 +154,7 @@ class GuiMain(QMainWindow):
         # Main Stack : Editor / Outline
         self.mainStack = QStackedWidget()
         self.mainStack.addWidget(self.splitMain)
-        self.mainStack.addWidget(self.projView)
+        self.mainStack.addWidget(self.outlineView)
         self.mainStack.currentChanged.connect(self._mainStackChanged)
 
         # Indices of Splitter Widgets
@@ -189,15 +167,15 @@ class GuiMain(QMainWindow):
 
         # Indices of Tab Widgets
         self.idxEditorView  = self.mainStack.indexOf(self.splitMain)
-        self.idxOutlineView = self.mainStack.indexOf(self.projView)
-        self.idxTreeView    = self.projStack.indexOf(self.treeView)
+        self.idxOutlineView = self.mainStack.indexOf(self.outlineView)
+        self.idxProjView    = self.projStack.indexOf(self.projView)
         self.idxNovelView   = self.projStack.indexOf(self.novelView)
 
         # Splitter Behaviour
         self.splitMain.setCollapsible(self.idxTree, False)
         self.splitMain.setCollapsible(self.idxMain, False)
         self.splitDocs.setCollapsible(self.idxEditor, False)
-        self.splitDocs.setCollapsible(self.idxViewer, True)
+        self.splitDocs.setCollapsible(self.idxViewer, False)
         self.splitView.setCollapsible(self.idxViewDoc, False)
         self.splitView.setCollapsible(self.idxViewMeta, False)
 
@@ -213,6 +191,34 @@ class GuiMain(QMainWindow):
         self.setCentralWidget(self.mainStack)
         self.setStatusBar(self.statusBar)
         self.addToolBar(Qt.LeftToolBarArea, self.viewsBar)
+
+        # Connect Signals
+        # ===============
+
+        self.viewsBar.viewChangeRequested.connect(self._changeView)
+
+        self.projView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
+        self.projView.openDocumentRequest.connect(self._openDocument)
+        self.projView.novelItemChanged.connect(self._treeNovelItemChanged)
+        self.projView.wordCountsChanged.connect(self._updateStatusWordCount)
+        self.projView.treeItemChanged.connect(self.docEditor.updateDocInfo)
+        self.projView.treeItemChanged.connect(self.docViewer.updateDocInfo)
+        self.projView.treeItemChanged.connect(self.itemDetails.updateViewBox)
+        self.projView.rootFolderChanged.connect(self.outlineView.updateRootItem)
+        self.projView.rootFolderChanged.connect(self.novelView.updateRootItem)
+
+        self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
+        self.novelView.openDocumentRequest.connect(self._openDocument)
+
+        self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
+        self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
+        self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
+        self.docEditor.docCountsChanged.connect(self.projView.updateCounts)
+        self.docEditor.loadDocumentTagRequest.connect(self._followTag)
+
+        self.docViewer.loadDocumentTagRequest.connect(self._followTag)
+
+        self.outlineView.loadDocumentTagRequest.connect(self._followTag)
 
         # Finalise Initialisation
         # =======================
@@ -289,15 +295,15 @@ class GuiMain(QMainWindow):
         """Wrapper function to clear all sub-elements of the main GUI.
         """
         # Project Area
-        self.treeView.clearTree()
-        self.novelView.clearTree()
-        self.treeMeta.clearDetails()
+        self.projView.clearProject()
+        self.novelView.clearProject()
+        self.itemDetails.clearDetails()
 
         # Work Area
         self.docEditor.clearEditor()
         self.docEditor.setDictionaries()
         self.closeDocViewer()
-        self.projView.clearOutline()
+        self.outlineView.clearOutline()
 
         # General
         self.statusBar.clearStatus()
@@ -359,7 +365,8 @@ class GuiMain(QMainWindow):
             self.rebuildTrees()
             self.saveProject()
             self.docEditor.setDictionaries()
-            self.projView.updateRootItem(None)
+            self.outlineView.updateRootItem(None)
+            self.novelView.openProjectTasks()
             self.rebuildIndex(beQuiet=True)
             self.statusBar.setRefTime(self.theProject.projOpened)
             self.statusBar.setProjectStatus(nwState.GOOD)
@@ -415,7 +422,8 @@ class GuiMain(QMainWindow):
         if saveOK:
             self.closeDocument()
             self.docViewer.clearNavHistory()
-            self.projView.closeOutline()
+            self.outlineView.closeOutline()
+            self.novelView.closeProjectTasks()
 
             self.theProject.closeProject(self.idleTime)
             self.idleRefTime = time()
@@ -506,7 +514,8 @@ class GuiMain(QMainWindow):
         self.docEditor.setDictionaries()
         self.docEditor.toggleSpellCheck(self.theProject.spellCheck)
         self.statusBar.setRefTime(self.theProject.projOpened)
-        self.projView.updateRootItem(None)
+        self.outlineView.updateRootItem(None)
+        self.novelView.openProjectTasks()
         self._updateStatusWordCount()
 
         # Restore previously open documents, if any
@@ -539,7 +548,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        self.treeView.saveTreeOrder()
+        self.projView.saveProjectTree()
         if self.theProject.saveProject(autoSave=autoSave):
             self.theProject.index.saveIndex()
 
@@ -584,7 +593,7 @@ class GuiMain(QMainWindow):
             if changeFocus:
                 self.docEditor.setFocus()
             self.theProject.setLastEdited(tHandle)
-            self.treeView.setSelectedHandle(tHandle, doScroll=doScroll)
+            self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
         else:
             return False
 
@@ -650,7 +659,7 @@ class GuiMain(QMainWindow):
                 self.saveDocument()
             else:
                 logger.verbose("Trying selected document")
-                tHandle = self.treeView.getSelectedHandle()
+                tHandle = self.projView.getSelectedHandle()
 
             if tHandle is None:
                 logger.verbose("Trying last viewed document")
@@ -787,12 +796,12 @@ class GuiMain(QMainWindow):
 
         tHandle = None
         tLine = None
-        if self.treeView.hasFocus():
-            tHandle = self.treeView.getSelectedHandle()
-        elif self.novelView.hasFocus():
+        if self.projView.treeHasFocus():
+            tHandle = self.projView.getSelectedHandle()
+        elif self.novelView.treeHasFocus():
             tHandle, tLine = self.novelView.getSelectedHandle()
-        elif self.projView.treeFocus():
-            tHandle, tLine = self.projView.getSelectedHandle()
+        elif self.outlineView.treeHasFocus():
+            tHandle, tLine = self.outlineView.getSelectedHandle()
         else:
             logger.warning("No item selected")
             return False
@@ -802,7 +811,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def editItem(self, tHandle=None):
+    def editItemLabel(self, tHandle=None):
         """Open the edit item dialog.
         """
         if not self.hasProject:
@@ -813,17 +822,17 @@ class GuiMain(QMainWindow):
             if self.docEditor.anyFocus() or self.isFocusMode:
                 tHandle = self.docEditor.docHandle()
             else:
-                tHandle = self.treeView.getSelectedHandle()
+                tHandle = self.projView.getSelectedHandle()
         if tHandle:
-            return self.treeView.editTreeItem(tHandle)
+            return self.projView.renameTreeItem(tHandle)
 
         return False
 
     def rebuildTrees(self):
         """Rebuild the project tree.
         """
-        self.treeView.buildTree()
-        self.novelView.refreshTree()
+        self.projView.populateTree()
+        # self.novelView.refreshTree()
         return
 
     def requestNovelTreeRefresh(self):
@@ -845,7 +854,7 @@ class GuiMain(QMainWindow):
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         tStart = time()
 
-        self.treeView.saveTreeOrder()
+        self.projView.saveProjectTree()
         self.theProject.index.clearIndex()
 
         for tItem in self.theProject.tree:
@@ -855,8 +864,8 @@ class GuiMain(QMainWindow):
             logger.verbose("Indexing '%s'", tItem.itemName)
             if self.theProject.index.reIndexHandle(tItem.itemHandle):
                 # Update Word Counts
-                self.treeView.propagateCount(tItem.itemHandle, tItem.wordCount, countChildren=True)
-                self.treeView.setTreeItemValues(tItem.itemHandle)
+                self.projView.propagateCount(tItem.itemHandle, tItem.wordCount, countChildren=True)
+                self.projView.setTreeItemValues(tItem.itemHandle)
 
         tEnd = time()
         self.setStatus(
@@ -913,13 +922,13 @@ class GuiMain(QMainWindow):
         if dlgConf.result() == QDialog.Accepted:
             logger.debug("Applying new preferences")
             self.initMain()
-            self.theTheme.updateTheme()
+            self.mainTheme.updateTheme()
             self.saveDocument()
             self.docEditor.initEditor()
             self.docViewer.initViewer()
-            self.treeView.initTree()
-            self.novelView.initTree()
-            self.projView.initOutline()
+            self.projView.initSettings()
+            self.novelView.initSettings()
+            self.outlineView.initOutline()
             self._updateStatusWordCount()
 
         return
@@ -938,7 +947,7 @@ class GuiMain(QMainWindow):
             logger.debug("Applying new project settings")
             if dlgProj.spellChanged:
                 self.docEditor.setDictionaries()
-            self.treeMeta.refreshDetails()
+            self.itemDetails.refreshDetails()
             self._updateWindowTitle(self.theProject.projName)
 
         return True
@@ -1154,13 +1163,11 @@ class GuiMain(QMainWindow):
         if not self.isFocusMode:
             self.mainConf.setMainPanePos(self.splitMain.sizes())
             self.mainConf.setDocPanePos(self.splitDocs.sizes())
-            self.mainConf.setOutlinePanePos(self.projView.splitSizes())
+            self.mainConf.setOutlinePanePos(self.outlineView.splitSizes())
             if self.viewMeta.isVisible():
                 self.mainConf.setViewPanePos(self.splitView.sizes())
 
         self.mainConf.setShowRefPanel(self.viewMeta.isVisible())
-        self.mainConf.setTreeColWidths(self.treeView.getColumnSizes())
-        self.mainConf.setNovelColWidths(self.novelView.getColumnSizes())
         if not self.mainConf.isFullScreen:
             self.mainConf.setWinSize(self.width(), self.height())
 
@@ -1179,8 +1186,8 @@ class GuiMain(QMainWindow):
         """
         if paneNo == nwWidget.TREE:
             tabIdx = self.projStack.currentIndex()
-            if tabIdx == self.idxTreeView:
-                self.treeView.setFocus()
+            if tabIdx == self.idxProjView:
+                self.projView.setFocus()
             elif tabIdx == self.idxNovelView:
                 self.novelView.setFocus()
         elif paneNo == nwWidget.EDITOR:
@@ -1191,7 +1198,7 @@ class GuiMain(QMainWindow):
             self.docViewer.setFocus()
         elif paneNo == nwWidget.OUTLINE:
             self._changeView(nwView.OUTLINE)
-            self.projView.setTreeFocus()
+            self.outlineView.setTreeFocus()
         return
 
     def closeDocEditor(self):
@@ -1468,6 +1475,17 @@ class GuiMain(QMainWindow):
                 self.viewDocument(tHandle=tHandle, tAnchor=f"#{sTitle}")
         return
 
+    @pyqtSlot(str, Enum, int, str)
+    def _openDocument(self, tHandle, tMode, tLine, tAnchor):
+        """Handle an open document request from one of the tree views.
+        """
+        if tHandle is not None:
+            if tMode == nwDocMode.EDIT:
+                self.openDocument(tHandle, tLine=tLine, changeFocus=False)
+            elif tMode == nwDocMode.VIEW:
+                self.viewDocument(tHandle=tHandle, tAnchor=(tAnchor or None))
+        return
+
     @pyqtSlot(nwView)
     def _changeView(self, view):
         """Handle the requested change of view from the GuiViewBar.
@@ -1478,14 +1496,14 @@ class GuiMain(QMainWindow):
 
         elif view == nwView.PROJECT:
             self.mainStack.setCurrentWidget(self.splitMain)
-            self.projStack.setCurrentWidget(self.treeView)
+            self.projStack.setCurrentWidget(self.projView)
 
         elif view == nwView.NOVEL:
             self.mainStack.setCurrentWidget(self.splitMain)
             self.projStack.setCurrentWidget(self.novelView)
 
         elif view == nwView.OUTLINE:
-            self.mainStack.setCurrentWidget(self.projView)
+            self.mainStack.setCurrentWidget(self.outlineView)
 
         return
 
@@ -1532,32 +1550,6 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot()
-    def _treeSingleClick(self):
-        """Single click on a project tree item just updates the details
-        panel below the tree.
-        """
-        tHandle = self.treeView.getSelectedHandle()
-        if tHandle is not None:
-            self.treeMeta.updateViewBox(tHandle)
-        return
-
-    @pyqtSlot("QTreeWidgetItem*", int)
-    def _treeDoubleClick(self, tItem, colNo):
-        """The user double-clicked an item in the tree. If it is a file,
-        we open it. Otherwise, we toggle the expanded status.
-        """
-        tHandle = self.treeView.getSelectedHandle()
-        if tHandle is not None:
-            tItem = self.theProject.tree[tHandle]
-            if tItem is None:
-                return
-            if tItem.itemType == nwItemType.FILE:
-                self.openDocument(tHandle, changeFocus=False, doScroll=False)
-            else:
-                self.treeView.toggleExpanded(tHandle)
-        return
-
-    @pyqtSlot()
     def _treeNovelItemChanged(self):
         """Triggered when there is a change to a novel item in the
         project tree.
@@ -1565,7 +1557,7 @@ class GuiMain(QMainWindow):
         if self.mainStack.currentIndex() == self.idxOutlineView:
             logger.verbose("Novel tree changed while Outline tab active")
             if self.hasProject:
-                self.projView.refreshView(novelChanged=True)
+                self.outlineView.refreshView(novelChanged=True)
 
         return
 
@@ -1590,35 +1582,35 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot(int)
-    def _mainStackChanged(self, tabIndex):
+    def _mainStackChanged(self, stIndex):
         """Activated when the main window tab is changed.
         """
-        if tabIndex == self.idxEditorView:
-            logger.verbose("Editor tab activated")
-        elif tabIndex == self.idxOutlineView:
-            logger.verbose("Project outline tab activated")
+        if stIndex == self.idxEditorView:
+            logger.verbose("Editor View activated")
+        elif stIndex == self.idxOutlineView:
+            logger.verbose("Outline View activated")
             if self.hasProject:
-                self.projView.refreshView()
+                self.outlineView.refreshView()
 
         return
 
     @pyqtSlot(int)
-    def _projStackChanged(self, tabIndex):
+    def _projStackChanged(self, stIndex):
         """Activated when the project view tab is changed.
         """
         sHandle = None
 
-        if tabIndex == self.idxTreeView:
-            logger.verbose("Project tree tab activated")
-            sHandle = self.treeView.getSelectedHandle()
+        if stIndex == self.idxProjView:
+            logger.verbose("Project Tree View activated")
+            sHandle = self.projView.getSelectedHandle()
 
-        elif tabIndex == self.idxNovelView:
-            logger.verbose("Novel tree tab activated")
+        elif stIndex == self.idxNovelView:
+            logger.verbose("Novel Tree View activated")
             if self.hasProject:
                 self.novelView.refreshTree()
                 sHandle, _ = self.novelView.getSelectedHandle()
 
-        self.treeMeta.updateViewBox(sHandle)
+        self.itemDetails.updateViewBox(sHandle)
 
         return
 

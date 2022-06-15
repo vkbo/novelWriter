@@ -5,7 +5,8 @@ GUI classes for the main window project tree
 
 File History:
 Created: 2018-09-29 [0.0.1] GuiProjectTree
-Created: 2020-06-04 [0.7]   GuiProjectTreeMenu
+Created: 2022-06-06 [1.7b1] GuiProjectView
+Created: 2022-06-06 [1.7b1] GuiProjectToolBar
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -27,21 +28,290 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
+from enum import Enum
 from time import time
 
+from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
-    QTreeWidget, QTreeWidgetItem, QAbstractItemView, QMenu, QAction, QFrame,
-    QDialog
+    QAbstractItemView, QFrame, QHBoxLayout, QHeaderView, QLabel,
+    QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter.core import NWDoc
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.common import minmax
-from novelwriter.dialogs.itemeditor import GuiItemEditor
+from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
+from novelwriter.constants import trConst, nwLabels
+from novelwriter.dialogs.editlabel import GuiEditLabel
 
 logger = logging.getLogger(__name__)
+
+
+class GuiProjectView(QWidget):
+    """This is a wrapper class holding all the elements of the project
+    tree. The core object is the project tree itself. Most methods
+    available are mapped through to the project tree class.
+    """
+
+    # Signals triggered when the meta data values of items change
+    treeItemChanged = pyqtSignal(str)
+    novelItemChanged = pyqtSignal(str)
+    rootFolderChanged = pyqtSignal(str)
+    wordCountsChanged = pyqtSignal()
+
+    # Signals for user interaction with the project tree
+    selectedItemChanged = pyqtSignal(str)
+    openDocumentRequest = pyqtSignal(str, Enum, int, str)
+
+    def __init__(self, mainGui):
+        QWidget.__init__(self, mainGui)
+
+        self.mainGui = mainGui
+
+        # Build GUI
+        self.projTree = GuiProjectTree(self)
+        self.projBar = GuiProjectToolBar(self)
+
+        # Assemble
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addWidget(self.projBar, 0)
+        self.outerBox.addWidget(self.projTree, 1)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
+        self.outerBox.setSpacing(0)
+
+        self.setLayout(self.outerBox)
+
+        # Keyboard Shortcuts
+        self.keyMoveUp = QShortcut(self.projTree)
+        self.keyMoveUp.setKey("Ctrl+Up")
+        self.keyMoveUp.setContext(Qt.WidgetShortcut)
+        self.keyMoveUp.activated.connect(lambda: self.projTree.moveTreeItem(-1))
+
+        self.keyMoveDn = QShortcut(self.projTree)
+        self.keyMoveDn.setKey("Ctrl+Down")
+        self.keyMoveDn.setContext(Qt.WidgetShortcut)
+        self.keyMoveDn.activated.connect(lambda: self.projTree.moveTreeItem(1))
+
+        self.keyUndoMv = QShortcut(self.projTree)
+        self.keyUndoMv.setKey("Ctrl+Shift+Z")
+        self.keyUndoMv.setContext(Qt.WidgetShortcut)
+        self.keyUndoMv.activated.connect(lambda: self.projTree.undoLastMove())
+
+        self.keyContext = QShortcut(self.projTree)
+        self.keyContext.setKey("Ctrl+.")
+        self.keyContext.setContext(Qt.WidgetShortcut)
+        self.keyContext.activated.connect(lambda: self.projTree.openContextOnSelected())
+
+        # Function Mappings
+        self.revealNewTreeItem = self.projTree.revealNewTreeItem
+        self.renameTreeItem = self.projTree.renameTreeItem
+        self.getTreeFromHandle = self.projTree.getTreeFromHandle
+        self.emptyTrash = self.projTree.emptyTrash
+        self.deleteItem = self.projTree.deleteItem
+        self.setTreeItemValues = self.projTree.setTreeItemValues
+        self.propagateCount = self.projTree.propagateCount
+        self.getSelectedHandle = self.projTree.getSelectedHandle
+        self.setSelectedHandle = self.projTree.setSelectedHandle
+        self.changedSince = self.projTree.changedSince
+
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def initSettings(self):
+        self.projTree.initSettings()
+        return
+
+    def clearProject(self):
+        self.projTree.clearTree()
+        return
+
+    def saveProjectTree(self):
+        self.projTree.saveTreeOrder()
+        return
+
+    def populateTree(self):
+        self.projTree.buildTree()
+        return
+
+    def setFocus(self):
+        """Forward the set focus call to the tree widget.
+        """
+        self.projTree.setFocus()
+        return
+
+    def treeHasFocus(self):
+        """Check if the project tree has focus.
+        """
+        return self.projTree.hasFocus()
+
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str, int, int, int)
+    def updateCounts(self, tHandle, cCount, wCount, pCount):
+        """Slot for updating the word count of a specific item.
+        """
+        self.projTree.propagateCount(tHandle, wCount, countChildren=True)
+        self.wordCountsChanged.emit()
+        return
+
+# END Class GuiProjectView
+
+
+class GuiProjectToolBar(QWidget):
+
+    def __init__(self, projView):
+        QTreeWidget.__init__(self, projView)
+
+        logger.debug("Initialising GuiProjectToolBar ...")
+
+        self.mainConf   = novelwriter.CONFIG
+        self.projView   = projView
+        self.projTree   = projView.projTree
+        self.mainGui    = projView.mainGui
+        self.theProject = projView.mainGui.theProject
+        self.mainTheme  = projView.mainGui.mainTheme
+
+        iPx = self.mainTheme.baseIconSize
+        mPx = self.mainConf.pxInt(3)
+
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setAutoFillBackground(True)
+
+        qPalette = self.palette()
+        qPalette.setBrush(QPalette.Window, qPalette.base())
+        self.setPalette(qPalette)
+
+        fadeCol = qPalette.text().color()
+        buttonStyle = (
+            "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
+        ).format(mPx, fadeCol.red(), fadeCol.green(), fadeCol.blue())
+
+        # Widget Label
+        self.viewLabel = QLabel("<b>%s</b>" % self.tr("Project Content"))
+        self.viewLabel.setContentsMargins(0, 0, 0, 0)
+        self.viewLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Move Buttons
+        self.tbMoveU = QToolButton(self)
+        self.tbMoveU.setToolTip("%s [Ctrl+Up]" % self.tr("Move Up"))
+        self.tbMoveU.setIcon(self.mainTheme.getIcon("up"))
+        self.tbMoveU.setIconSize(QSize(iPx, iPx))
+        self.tbMoveU.setStyleSheet(buttonStyle)
+        self.tbMoveU.clicked.connect(lambda: self.projTree.moveTreeItem(-1))
+
+        self.tbMoveD = QToolButton(self)
+        self.tbMoveD.setToolTip("%s [Ctrl+Down]" % self.tr("Move Down"))
+        self.tbMoveD.setIcon(self.mainTheme.getIcon("down"))
+        self.tbMoveD.setIconSize(QSize(iPx, iPx))
+        self.tbMoveD.setStyleSheet(buttonStyle)
+        self.tbMoveD.clicked.connect(lambda: self.projTree.moveTreeItem(1))
+
+        # Add Item Menu
+        self.mAdd = QMenu()
+
+        self.aAddEmpty = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["document"]))
+        self.aAddEmpty.setIcon(self.mainTheme.getIcon("proj_document"))
+        self.aAddEmpty.triggered.connect(
+            lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=0, isNote=False)
+        )
+
+        self.aAddChap = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["doc_h2"]))
+        self.aAddChap.setIcon(self.mainTheme.getIcon("proj_chapter"))
+        self.aAddChap.triggered.connect(
+            lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=2, isNote=False)
+        )
+
+        self.aAddScene = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["doc_h3"]))
+        self.aAddScene.setIcon(self.mainTheme.getIcon("proj_scene"))
+        self.aAddScene.triggered.connect(
+            lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=3, isNote=False)
+        )
+
+        self.aAddNote = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["note"]))
+        self.aAddNote.setIcon(self.mainTheme.getIcon("proj_note"))
+        self.aAddNote.triggered.connect(
+            lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
+        )
+
+        self.aAddFolder = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["folder"]))
+        self.aAddFolder.setIcon(self.mainTheme.getIcon("proj_folder"))
+        self.aAddFolder.triggered.connect(
+            lambda: self.projTree.newTreeItem(nwItemType.FOLDER)
+        )
+
+        self.mAddRoot = self.mAdd.addMenu(trConst(nwLabels.ITEM_DESCRIPTION["root"]))
+        self._addRootFolderEntry(nwItemClass.NOVEL)
+        self._addRootFolderEntry(nwItemClass.ARCHIVE)
+        self.mAddRoot.addSeparator()
+        self._addRootFolderEntry(nwItemClass.PLOT)
+        self._addRootFolderEntry(nwItemClass.CHARACTER)
+        self._addRootFolderEntry(nwItemClass.WORLD)
+        self._addRootFolderEntry(nwItemClass.TIMELINE)
+        self._addRootFolderEntry(nwItemClass.OBJECT)
+        self._addRootFolderEntry(nwItemClass.ENTITY)
+        self._addRootFolderEntry(nwItemClass.CUSTOM)
+
+        self.tbAdd = QToolButton(self)
+        self.tbAdd.setToolTip("%s [Ctrl+N]" % self.tr("Add Item"))
+        self.tbAdd.setShortcut("Ctrl+N")
+        self.tbAdd.setIcon(self.mainTheme.getIcon("add"))
+        self.tbAdd.setIconSize(QSize(iPx, iPx))
+        self.tbAdd.setStyleSheet(buttonStyle)
+        self.tbAdd.setMenu(self.mAdd)
+        self.tbAdd.setPopupMode(QToolButton.InstantPopup)
+
+        # More Options Menu
+        self.mMore = QMenu()
+
+        self.aMoreUndo = self.mMore.addAction(self.tr("Undo Move"))
+        self.aMoreUndo.triggered.connect(lambda: self.projTree.undoLastMove())
+
+        self.aEmptyTrash = self.mMore.addAction(self.tr("Empty Trash"))
+        self.aEmptyTrash.triggered.connect(lambda: self.projTree.emptyTrash())
+
+        self.tbMore = QToolButton(self)
+        self.tbMore.setToolTip(self.tr("More Options"))
+        self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
+        self.tbMore.setIconSize(QSize(iPx, iPx))
+        self.tbMore.setStyleSheet(buttonStyle)
+        self.tbMore.setMenu(self.mMore)
+        self.tbMore.setPopupMode(QToolButton.InstantPopup)
+
+        # Assemble
+        self.outerBox = QHBoxLayout()
+        self.outerBox.addWidget(self.viewLabel)
+        self.outerBox.addWidget(self.tbMoveU)
+        self.outerBox.addWidget(self.tbMoveD)
+        self.outerBox.addWidget(self.tbAdd)
+        self.outerBox.addWidget(self.tbMore)
+        self.outerBox.setContentsMargins(mPx, mPx, 0, mPx)
+        self.outerBox.setSpacing(0)
+
+        self.setLayout(self.outerBox)
+
+        logger.debug("GuiProjectToolBar initialisation complete")
+
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _addRootFolderEntry(self, itemClass):
+        """Add a menu entry for a root folder of a given class.
+        """
+        aNew = self.mAddRoot.addAction(trConst(nwLabels.CLASS_NAME[itemClass]))
+        aNew.setIcon(self.mainTheme.getIcon(nwLabels.CLASS_ICON[itemClass]))
+        aNew.triggered.connect(lambda: self.projTree.newTreeItem(nwItemType.ROOT, itemClass))
+        self.mAddRoot.addAction(aNew)
+
+# END Class GuiProjectToolBar
 
 
 class GuiProjectTree(QTreeWidget):
@@ -51,59 +321,50 @@ class GuiProjectTree(QTreeWidget):
     C_EXPORT = 2
     C_STATUS = 3
 
-    treeItemChanged = pyqtSignal(str)
-    novelItemChanged = pyqtSignal(str)
-    rootFolderChanged = pyqtSignal(str)
-    wordCountsChanged = pyqtSignal()
-
-    def __init__(self, theParent):
-        QTreeWidget.__init__(self, theParent)
+    def __init__(self, projView):
+        QTreeWidget.__init__(self, projView)
 
         logger.debug("Initialising GuiProjectTree ...")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
+        self.projView   = projView
+        self.mainGui    = projView.mainGui
+        self.mainTheme   = projView.mainGui.mainTheme
+        self.theProject = projView.mainGui.theProject
 
         # Internal Variables
         self._treeMap = {}
         self._lastMove = {}
         self._timeChanged = 0
 
-        ##
-        #  Build GUI
-        ##
+        # Build GUI
+        # =========
 
         # Context Menu
-        self.ctxMenu = GuiProjectTreeMenu(self)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.customContextMenuRequested.connect(self._rightClickMenu)
+        self.customContextMenuRequested.connect(self._openContextMenu)
 
         # Tree Settings
-        iPx = self.theTheme.baseIconSize
+        iPx = self.mainTheme.baseIconSize
+        cMg = self.mainConf.pxInt(6)
+
         self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.NoFrame)
         self.setExpandsOnDoubleClick(False)
+        self.setHeaderHidden(True)
         self.setIndentation(iPx)
         self.setColumnCount(4)
-        self.setHeaderLabels([
-            self.tr("Project Tree"), self.tr("Words"), "", ""
-        ])
 
-        treeHeadItem = self.headerItem()
-        treeHeadItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
-        treeHeadItem.setToolTip(self.C_NAME, self.tr("Item label"))
-        treeHeadItem.setToolTip(self.C_COUNT, self.tr("Word count"))
-        treeHeadItem.setToolTip(self.C_EXPORT, self.tr("Include in build"))
-        treeHeadItem.setToolTip(self.C_STATUS, self.tr("Item status"))
-
-        # Let the last column stretch, and set the minimum size to the
-        # size of the icon as the default Qt font metrics approach fails
-        # for some fonts like the Ubuntu font.
+        # Lock the column sizes
         treeHeader = self.header()
-        treeHeader.setStretchLastSection(True)
-        treeHeader.setMinimumSectionSize(iPx + 6)
+        treeHeader.setStretchLastSection(False)
+        treeHeader.setMinimumSectionSize(iPx + cMg)
+        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.Stretch)
+        treeHeader.setSectionResizeMode(self.C_COUNT, QHeaderView.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_EXPORT, QHeaderView.Fixed)
+        treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.Fixed)
+        treeHeader.resizeSection(self.C_EXPORT, iPx + cMg)
+        treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
 
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
@@ -118,23 +379,18 @@ class GuiProjectTree(QTreeWidget):
         # self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-        # Get user's column width preferences for NAME and COUNT
-        treeColWidth = self.mainConf.getTreeColWidths()
-        if len(treeColWidth) <= 4:
-            for colN, colW in enumerate(treeColWidth):
-                self.setColumnWidth(colN, colW)
-
-        # The last column should just auto-scale
-        self.resizeColumnToContents(self.C_STATUS)
+        # Connect signals
+        self.itemDoubleClicked.connect(self._treeDoubleClick)
+        self.itemSelectionChanged.connect(self._treeSelectionChange)
 
         # Set custom settings
-        self.initTree()
+        self.initSettings()
 
         logger.debug("GuiProjectTree initialisation complete")
 
         return
 
-    def initTree(self):
+    def initSettings(self):
         """Set or update tree widget settings.
         """
         # Scroll bars
@@ -163,13 +419,13 @@ class GuiProjectTree(QTreeWidget):
         self._timeChanged = 0
         return
 
-    def newTreeItem(self, itemType, itemClass=None):
+    def newTreeItem(self, itemType, itemClass=None, hLevel=1, isNote=False):
         """Add new item to the tree, with a given itemType (and
         itemClass if Root), and attach it to the selected handle. Also
         make sure the item is added in a place it can be added, and that
         other meta data is set correctly to ensure a valid project tree.
         """
-        if not self.theParent.hasProject:
+        if not self.mainGui.hasProject:
             logger.error("No project open")
             return False
 
@@ -184,7 +440,7 @@ class GuiProjectTree(QTreeWidget):
 
             sHandle = self.getSelectedHandle()
             if sHandle is None or sHandle not in self.theProject.tree:
-                self.theParent.makeAlert(self.tr(
+                self.mainGui.makeAlert(self.tr(
                     "Did not find anywhere to add the file or folder!"
                 ), nwAlert.ERROR)
                 return False
@@ -201,60 +457,54 @@ class GuiProjectTree(QTreeWidget):
                     return False
 
             if self.theProject.tree.isTrash(sHandle):
-                self.theParent.makeAlert(self.tr(
+                self.mainGui.makeAlert(self.tr(
                     "Cannot add new files or folders to the Trash folder."
                 ), nwAlert.ERROR)
                 return False
 
+            # Ask for label
+            if itemType == nwItemType.FILE:
+                if isNote:
+                    newLabel = self.tr("New Note")
+                elif hLevel == 2:
+                    newLabel = self.tr("New Chapter")
+                elif hLevel == 3:
+                    newLabel = self.tr("New Scene")
+                else:
+                    newLabel = self.tr("New Document")
+            else:
+                newLabel = self.tr("New Folder")
+
+            newLabel, dlgOk = GuiEditLabel.getLabel(self, text=newLabel)
+            if not dlgOk:
+                logger.info("New item creation cancelled by user")
+                return False
+
             # Add the file or folder
             if itemType == nwItemType.FILE:
-                if pItem.isNovelLike():
-                    tHandle = self.theProject.newFile(self.tr("New Document"), sHandle)
-                else:
-                    tHandle = self.theProject.newFile(self.tr("New Note"), sHandle)
-            elif itemType == nwItemType.FOLDER:
-                tHandle = self.theProject.newFolder(self.tr("New Folder"), sHandle)
+                tHandle = self.theProject.newFile(newLabel, sHandle)
+            else:
+                tHandle = self.theProject.newFolder(newLabel, sHandle)
 
         else:
             logger.error("Failed to add new item")
             return False
 
-        # If there is no handle set, return here. This is a bug
+        # If there is no handle set, return here. This is a bug.
         if tHandle is None:  # pragma: no cover
+            logger.error("Internal error")
             return True
-
-        # Add the new item to the tree
-        self.revealNewTreeItem(tHandle, nHandle)
-        self.theParent.editItem(tHandle)
 
         # Handle new file creation
-        nwItem = self.theProject.tree[tHandle]
-        if nwItem.itemType != nwItemType.FILE:
-            return True
+        if itemType == nwItemType.FILE and hLevel > 0:
+            if self.theProject.writeNewFile(tHandle, hLevel, not isNote):
+                # If successful, update word count
+                wC = self.theProject.index.getCounts(tHandle)[1]
+                self.propagateCount(tHandle, wC)
+                self.projView.wordCountsChanged.emit()
 
-        # This is a new file, so let's add some content
-        newDoc = NWDoc(self.theProject, tHandle)
-        if not newDoc.readDocument():
-            if nwItem.itemLayout == nwItemLayout.DOCUMENT:
-                iLvl = self.theProject.index.getHandleHeaderIntLevel(sHandle)
-                hLvl = "#"*minmax(iLvl + 1, 2, 4)
-                newText = f"{hLvl} {nwItem.itemName}\n\n"
-            else:
-                newText = f"# {nwItem.itemName}\n\n"
-
-            pIndex = self.theProject.index
-
-            # Save the text and index it
-            newDoc.writeDocument(newText)
-            pIndex.scanText(tHandle, newText)
-
-            # Get Word Counts
-            cC, wC, pC = pIndex.getCounts(tHandle)
-            nwItem.setCharCount(cC)
-            nwItem.setWordCount(wC)
-            nwItem.setParaCount(pC)
-            self.propagateCount(tHandle, wC)
-            self.wordCountsChanged.emit()
+        # Add the new item to the project tree
+        self.revealNewTreeItem(tHandle, nHandle)
 
         return True
 
@@ -280,68 +530,60 @@ class GuiProjectTree(QTreeWidget):
         return True
 
     def moveTreeItem(self, nStep):
-        """Move an item up or down in the tree, but only if the treeView
-        has focus. This also applies when the menu is used.
+        """Move an item up or down in the tree.
         """
-        if not self.theParent.hasProject:
-            logger.error("No project open")
-            return False
-
-        if not self.hasFocus():
-            return False
-
         tHandle = self.getSelectedHandle()
-        tItem = self._getTreeItem(tHandle)
-        if tItem is None:
+        trItem = self._getTreeItem(tHandle)
+        if trItem is None:
+            logger.verbose("No item selected")
             return False
 
-        pItem = tItem.parent()
+        pItem = trItem.parent()
+        isExp = trItem.isExpanded()
         if pItem is None:
-            tIndex = self.indexOfTopLevelItem(tItem)
+            tIndex = self.indexOfTopLevelItem(trItem)
             nChild = self.topLevelItemCount()
+
             nIndex = tIndex + nStep
             if nIndex < 0 or nIndex >= nChild:
                 return False
+
             cItem = self.takeTopLevelItem(tIndex)
             self.insertTopLevelItem(nIndex, cItem)
 
         else:
-            tIndex = pItem.indexOfChild(tItem)
+            tIndex = pItem.indexOfChild(trItem)
             nChild = pItem.childCount()
+
             nIndex = tIndex + nStep
             if nIndex < 0 or nIndex >= nChild:
                 return False
+
             cItem = pItem.takeChild(tIndex)
             pItem.insertChild(nIndex, cItem)
             self._recordLastMove(cItem, pItem, tIndex)
 
         self._alertTreeChange(tHandle=tHandle, flush=True)
         self.clearSelection()
-        cItem.setSelected(True)
+        trItem.setSelected(True)
+        trItem.setExpanded(isExp)
 
         return True
 
-    def editTreeItem(self, tHandle=None):
-        """Open the edit item dialog.
+    def renameTreeItem(self, tHandle):
+        """Open a dialog to edit the label of an item.
         """
-        if tHandle is None:
-            logger.warning("No item selected")
-            return False
-
         tItem = self.theProject.tree[tHandle]
         if tItem is None:
             return False
-        if tItem.itemType == nwItemType.NO_TYPE:
-            return False
 
-        logger.verbose("Requesting change to item '%s'", tHandle)
-        dlgProj = GuiItemEditor(self, tHandle)
-        dlgProj.exec_()
-        if dlgProj.result() == QDialog.Accepted:
+        newLabel, dlgOk = GuiEditLabel.getLabel(self, text=tItem.itemName)
+        if dlgOk:
+            tItem.setName(newLabel)
             self.setTreeItemValues(tHandle)
             self._alertTreeChange(tHandle=tHandle, flush=False)
 
-        return True
+        return
 
     def saveTreeOrder(self):
         """Build a list of the items in the project tree and send them
@@ -357,8 +599,8 @@ class GuiProjectTree(QTreeWidget):
         return True
 
     def getTreeFromHandle(self, tHandle):
-        """Recursively return all the children items starting from a
-        given item handle.
+        """Recursively return all the child items starting from a given
+        item handle.
         """
         theList = []
         theItem = self._getTreeItem(tHandle)
@@ -366,30 +608,12 @@ class GuiProjectTree(QTreeWidget):
             theList = self._scanChildren(theList, theItem, 0)
         return theList
 
-    def toggleExpanded(self, tHandle):
-        """Expand an item based on its handle.
-        """
-        trItem = self._getTreeItem(tHandle)
-        if trItem is not None:
-            trItem.setExpanded(not trItem.isExpanded())
-        return
-
-    def getColumnSizes(self):
-        """Return the column widths for the tree columns.
-        """
-        retVals = [
-            self.columnWidth(0),
-            self.columnWidth(1),
-            self.columnWidth(2),
-        ]
-        return retVals
-
     def emptyTrash(self):
         """Permanently delete all documents in the Trash folder. This
         function only asks for confirmation once, and calls the regular
         deleteItem function for each document in the Trash folder.
         """
-        if not self.theParent.hasProject:
+        if not self.mainGui.hasProject:
             logger.error("No project open")
             return False
 
@@ -397,7 +621,7 @@ class GuiProjectTree(QTreeWidget):
 
         logger.debug("Emptying Trash folder")
         if trashHandle is None:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "There is currently no Trash folder in this project."
             ), nwAlert.INFO)
             return False
@@ -408,12 +632,12 @@ class GuiProjectTree(QTreeWidget):
 
         nTrash = len(theTrash)
         if nTrash == 0:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "The Trash folder is already empty."
             ), nwAlert.INFO)
             return False
 
-        msgYes = self.theParent.askQuestion(
+        msgYes = self.mainGui.askQuestion(
             self.tr("Empty Trash"),
             self.tr("Permanently delete {0} file(s) from Trash?").format(nTrash)
         )
@@ -438,7 +662,7 @@ class GuiProjectTree(QTreeWidget):
         delete the files on disk. Root folders are deleted if they're empty
         only, and the deletion is always permanent.
         """
-        if not self.theParent.hasProject:
+        if not self.mainGui.hasProject:
             logger.error("No project open")
             return False
 
@@ -471,7 +695,7 @@ class GuiProjectTree(QTreeWidget):
                 self._deleteTreeItem(tHandle)
                 self._alertTreeChange(tHandle=tHandle, flush=True)
             else:
-                self.theParent.makeAlert(self.tr(
+                self.mainGui.makeAlert(self.tr(
                     "Cannot delete root folder. It is not empty. "
                     "Recursive deletion is not supported. "
                     "Please delete the content first."
@@ -501,7 +725,7 @@ class GuiProjectTree(QTreeWidget):
                 # user if they want to permanently delete the file.
                 doPermanent = False
                 if not alreadyAsked:
-                    msgYes = self.theParent.askQuestion(
+                    msgYes = self.mainGui.askQuestion(
                         self.tr("Delete"),
                         self.tr("Permanently delete '{0}'?").format(nwItemS.itemName)
                     )
@@ -517,17 +741,17 @@ class GuiProjectTree(QTreeWidget):
                     tIndex = trItemP.indexOfChild(trItemS)
                     trItemC = trItemP.takeChild(tIndex)
                     for dHandle in reversed(self.getTreeFromHandle(tHandle)):
-                        if self.theParent.docEditor.docHandle() == dHandle:
-                            self.theParent.closeDocument()
+                        if self.mainGui.docEditor.docHandle() == dHandle:
+                            self.mainGui.closeDocument()
                         self._deleteTreeItem(dHandle)
 
                     self._alertTreeChange(tHandle=tHandle, flush=autoFlush)
-                    self.wordCountsChanged.emit()
+                    self.projView.wordCountsChanged.emit()
 
             else:
                 # The item is not already in the trash folder, so we
                 # move it there.
-                msgYes = self.theParent.askQuestion(
+                msgYes = self.mainGui.askQuestion(
                     self.tr("Delete"),
                     self.tr("Move '{0}' to Trash?").format(nwItemS.itemName),
                 )
@@ -554,33 +778,26 @@ class GuiProjectTree(QTreeWidget):
         if trItem is None or nwItem is None:
             return
 
-        expIcon = QIcon()
-        if nwItem.itemType == nwItemType.FILE:
-            if nwItem.isExported:
-                expIcon = self.theTheme.getIcon("check")
-            else:
-                expIcon = self.theTheme.getIcon("cross")
-
         itemStatus, statusIcon = nwItem.getImportStatus()
         hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
-        itemIcon = self.theTheme.getItemIcon(
+        itemIcon = self.mainTheme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
         )
 
         trItem.setIcon(self.C_NAME, itemIcon)
         trItem.setText(self.C_NAME, nwItem.itemName)
-        trItem.setIcon(self.C_EXPORT, expIcon)
         trItem.setIcon(self.C_STATUS, statusIcon)
         trItem.setToolTip(self.C_STATUS, itemStatus)
 
+        if nwItem.itemType == nwItemType.FILE:
+            trItem.setIcon(
+                self.C_EXPORT, self.mainTheme.getIcon("check" if nwItem.isExported else "cross")
+            )
+
         if self.mainConf.emphLabels and nwItem.itemLayout == nwItemLayout.DOCUMENT:
             trFont = trItem.font(self.C_NAME)
-            if hLevel in ("H1", "H2"):
-                trFont.setBold(True)
-                trFont.setUnderline(True)
-            else:
-                trFont.setBold(False)
-                trFont.setUnderline(False)
+            trFont.setBold(hLevel == "H1" or hLevel == "H2")
+            trFont.setUnderline(hLevel == "H1")
             trItem.setFont(self.C_NAME, trFont)
 
         return
@@ -648,9 +865,6 @@ class GuiProjectTree(QTreeWidget):
         dstItem = self._lastMove.get("parent", None)
         dstIndex = self._lastMove.get("index", None)
 
-        if not self.hasFocus():
-            return False
-
         if srcItem is None or dstItem is None or dstIndex is None:
             logger.verbose("No tree move to undo")
             return False
@@ -697,9 +911,6 @@ class GuiProjectTree(QTreeWidget):
     def setSelectedHandle(self, tHandle, doScroll=False):
         """Set a specific handle as the selected item.
         """
-        if tHandle not in self._treeMap:
-            return False
-
         tItem = self._getTreeItem(tHandle)
         if tItem is None:
             return False
@@ -713,39 +924,159 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
+    def openContextOnSelected(self):
+        """Open the context menu on the current selected item.
+        """
+        selItem = self.selectedItems()
+        if selItem:
+            pos = self.visualItemRect(selItem[0]).center()
+            return self._openContextMenu(pos)
+        return False
+
     def changedSince(self, checkTime):
         """Check if the tree has changed since a given time.
         """
         return self._timeChanged > checkTime
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
+    @pyqtSlot()
+    def _treeSelectionChange(self):
+        """The user changed which item is selected.
+        """
+        tHandle = self.getSelectedHandle()
+        if tHandle is not None:
+            self.projView.selectedItemChanged.emit(tHandle)
+        return
+
+    @pyqtSlot("QTreeWidgetItem*", int)
+    def _treeDoubleClick(self, tItem, colNo):
+        """Capture a double-click event and either request the document
+        for editing if it is a file, or expand/close the node it is not.
+        """
+        tHandle = self.getSelectedHandle()
+        if tHandle is None:
+            return
+
+        tItem = self.theProject.tree[tHandle]
+        if tItem is None:
+            return
+
+        if tItem.itemType == nwItemType.FILE:
+            self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, -1, "")
+        else:
+            trItem = self._getTreeItem(tHandle)
+            if trItem is not None:
+                trItem.setExpanded(not trItem.isExpanded())
+
+        return
+
     @pyqtSlot("QPoint")
-    def _rightClickMenu(self, clickPos):
+    def _openContextMenu(self, clickPos):
         """The user right clicked an element in the project tree, so we
         open a context menu in-place.
         """
+        tItem = None
         selItem = self.itemAt(clickPos)
         if isinstance(selItem, QTreeWidgetItem):
             tHandle = selItem.data(self.C_NAME, Qt.UserRole)
-            self.setSelectedHandle(tHandle)  # Just to be safe
             tItem = self.theProject.tree[tHandle]
-            if tItem is not None:
-                if self.ctxMenu.filterActions(tItem):
-                    # Only open menu if any actions remain after filter
-                    self.ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
 
-        return
+        if tItem is None:
+            logger.debug("No item found")
+            return False
 
-    @pyqtSlot(str, int, int, int)
-    def doUpdateCounts(self, tHandle, cCount, wCount, pCount):
-        """Slot for updating the word count of a specific item.
-        """
-        self.propagateCount(tHandle, wCount, countChildren=True)
-        self.wordCountsChanged.emit()
-        return
+        ctxMenu = QMenu()
+
+        # Trash Folder
+        # ============
+
+        trashHandle = self.theProject.tree.trashRoot()
+        if tItem.itemHandle == trashHandle and trashHandle is not None:
+            # The trash folder only has one option
+            ctxMenu.addAction(
+                self.tr("Empty Trash"), lambda: self.emptyTrash()
+            )
+            ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
+            return True
+
+        # Document Actions
+        # ================
+
+        isFile = tItem.itemType == nwItemType.FILE
+        if isFile:
+            ctxMenu.addAction(
+                self.tr("Open Document"),
+                lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, -1, "")
+            )
+            ctxMenu.addAction(
+                self.tr("View Document"),
+                lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
+            )
+            ctxMenu.addSeparator()
+
+        # Edit Item Settings
+        # ==================
+
+        ctxMenu.addAction(
+            self.tr("Change Label"), lambda: self.renameTreeItem(tHandle)
+        )
+
+        if isFile:
+            ctxMenu.addAction(
+                self.tr("Toggle Exported"), lambda: self._toggleItemExported(tHandle)
+            )
+
+        if tItem.isNovelLike():
+            mStatus = ctxMenu.addMenu(self.tr("Change Status"))
+            for n, (key, entry) in enumerate(self.theProject.statusItems.items()):
+                aStatus = mStatus.addAction(entry["icon"], entry["name"])
+                aStatus.triggered.connect(
+                    lambda n, key=key: self._changeItemStatus(tHandle, key)
+                )
+        else:
+            mImport = ctxMenu.addMenu(self.tr("Change Importance"))
+            for n, (key, entry) in enumerate(self.theProject.importItems.items()):
+                aImport = mImport.addAction(entry["icon"], entry["name"])
+                aImport.triggered.connect(
+                    lambda n, key=key: self._changeItemImport(tHandle, key)
+                )
+
+        if isFile and tItem.documentAllowed():
+            if tItem.itemLayout == nwItemLayout.NOTE:
+                ctxMenu.addAction(
+                    self.tr("Change to {0}").format(
+                        trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
+                    ),
+                    lambda: self._changeItemLayout(tHandle, nwItemLayout.DOCUMENT)
+                )
+            else:
+                ctxMenu.addAction(
+                    self.tr("Change to {0}").format(
+                        trConst(nwLabels.LAYOUT_NAME[nwItemLayout.NOTE])
+                    ),
+                    lambda: self._changeItemLayout(tHandle, nwItemLayout.NOTE)
+                )
+
+        ctxMenu.addSeparator()
+
+        # Delete Item
+        # ===========
+
+        if tItem.itemClass == nwItemClass.TRASH or tItem.itemType == nwItemType.ROOT:
+            ctxMenu.addAction(
+                self.tr("Delete Permanently"), lambda: self.deleteItem(tHandle)
+            )
+        else:
+            ctxMenu.addAction(
+                self.tr("Move to Trash"), lambda: self.deleteItem(tHandle)
+            )
+
+        ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
+
+        return True
 
     ##
     #  Events
@@ -774,7 +1105,7 @@ class GuiProjectTree(QTreeWidget):
                 return
 
             if tItem.itemType == nwItemType.FILE:
-                self.theParent.viewDocument(tHandle)
+                self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
 
         return
 
@@ -869,7 +1200,7 @@ class GuiProjectTree(QTreeWidget):
         if self.theProject.tree.checkType(tHandle, nwItemType.FILE):
             delDoc = NWDoc(self.theProject, tHandle)
             if not delDoc.deleteDocument():
-                self.theParent.makeAlert([
+                self.mainGui.makeAlert([
                     self.tr("Could not delete document file."), delDoc.getError()
                 ], nwAlert.ERROR)
                 return False
@@ -879,6 +1210,46 @@ class GuiProjectTree(QTreeWidget):
         self._treeMap.pop(tHandle, None)
 
         return True
+
+    def _toggleItemExported(self, tHandle):
+        """Toggle the exported status of an item.
+        """
+        tItem = self.theProject.tree[tHandle]
+        if tItem is not None:
+            tItem.setExported(not tItem.isExported)
+            self.setTreeItemValues(tItem.itemHandle)
+        return
+
+    def _changeItemStatus(self, tHandle, tStatus):
+        """Set a new status value of an item.
+        """
+        tItem = self.theProject.tree[tHandle]
+        if tItem is not None:
+            tItem.setStatus(tStatus)
+            self.setTreeItemValues(tItem.itemHandle)
+        return
+
+    def _changeItemImport(self, tHandle, tImport):
+        """Set a new importance value of an item.
+        """
+        tItem = self.theProject.tree[tHandle]
+        if tItem is not None:
+            tItem.setImport(tImport)
+            self.setTreeItemValues(tItem.itemHandle)
+        return
+
+    def _changeItemLayout(self, tHandle, itemLayout):
+        """Set a new item layout value of an item.
+        """
+        tItem = self.theProject.tree[tHandle]
+        if tItem is not None:
+            if itemLayout == nwItemLayout.DOCUMENT and tItem.documentAllowed():
+                tItem.setLayout(nwItemLayout.DOCUMENT)
+                self.setTreeItemValues(tItem.itemHandle)
+            elif itemLayout == nwItemLayout.NOTE:
+                tItem.setLayout(nwItemLayout.NOTE)
+                self.setTreeItemValues(tItem.itemHandle)
+        return
 
     def _scanChildren(self, theList, tItem, tIndex):
         """This is a recursive function returning all items in a tree
@@ -925,7 +1296,7 @@ class GuiProjectTree(QTreeWidget):
                 newItem.setFlags(newItem.flags() ^ Qt.ItemIsDragEnabled)
                 self.addTopLevelItem(newItem)
             else:
-                self.theParent.makeAlert(self.tr(
+                self.mainGui.makeAlert(self.tr(
                     "There is nowhere to add item with name '{0}'."
                 ).format(nwItem.itemName), nwAlert.ERROR)
                 del self._treeMap[tHandle]
@@ -981,11 +1352,11 @@ class GuiProjectTree(QTreeWidget):
 
         itemType = tItem.itemType
         if itemType == nwItemType.ROOT:
-            self.rootFolderChanged.emit(tHandle)
+            self.projView.rootFolderChanged.emit(tHandle)
         elif itemType == nwItemType.FILE and tItem.isNovelLike():
-            self.novelItemChanged.emit(tHandle)
+            self.projView.novelItemChanged.emit(tHandle)
 
-        self.treeItemChanged.emit(tHandle)
+        self.projView.treeItemChanged.emit(tHandle)
 
         return
 
@@ -1003,167 +1374,3 @@ class GuiProjectTree(QTreeWidget):
         return
 
 # END Class GuiProjectTree
-
-
-class GuiProjectTreeMenu(QMenu):
-
-    def __init__(self, theTree):
-        QMenu.__init__(self, theTree)
-
-        self.theTree = theTree
-        self.theItem = None
-
-        self.editItem = QAction(self.tr("Edit Project Item"), self)
-        self.editItem.triggered.connect(self._doEditItem)
-        self.addAction(self.editItem)
-
-        self.openItem = QAction(self.tr("Open Document"), self)
-        self.openItem.triggered.connect(self._doOpenItem)
-        self.addAction(self.openItem)
-
-        self.viewItem = QAction(self.tr("View Document"), self)
-        self.viewItem.triggered.connect(self._doViewItem)
-        self.addAction(self.viewItem)
-
-        self.toggleExp = QAction(self.tr("Toggle Included Flag"), self)
-        self.toggleExp.triggered.connect(self._doToggleExported)
-        self.addAction(self.toggleExp)
-
-        self.newFile = QAction(self.tr("New File"), self)
-        self.newFile.triggered.connect(self._doMakeFile)
-        self.addAction(self.newFile)
-
-        self.newFolder = QAction(self.tr("New Folder"), self)
-        self.newFolder.triggered.connect(self._doMakeFolder)
-        self.addAction(self.newFolder)
-
-        self.deleteItem = QAction(self.tr("Delete Item"), self)
-        self.deleteItem.triggered.connect(self._doDeleteItem)
-        self.addAction(self.deleteItem)
-
-        self.emptyTrash = QAction(self.tr("Empty Trash"), self)
-        self.emptyTrash.triggered.connect(self._doEmptyTrash)
-        self.addAction(self.emptyTrash)
-
-        self.moveUp = QAction(self.tr("Move Item Up"), self)
-        self.moveUp.triggered.connect(self._doMoveUp)
-        self.addAction(self.moveUp)
-
-        self.moveDown = QAction(self.tr("Move Item Down"), self)
-        self.moveDown.triggered.connect(self._doMoveDown)
-        self.addAction(self.moveDown)
-
-        return
-
-    def filterActions(self, theItem):
-        """Filter the menu entries available based on the properties of
-        the item the menu was activated on.
-        """
-        self.theItem = theItem
-
-        if theItem is None:
-            logger.error("Failed to extract information to build tree context menu")
-            return False
-
-        trashHandle = self.theTree.theProject.tree.trashRoot()
-
-        inTrash = self.theTree.theProject.tree.isTrash(theItem.itemHandle)
-        isTrash = theItem.itemHandle == trashHandle and trashHandle is not None
-        isFile = theItem.itemType == nwItemType.FILE
-
-        allowNew = not (isTrash or inTrash)
-
-        self.editItem.setVisible(not isTrash)
-        self.openItem.setVisible(isFile)
-        self.viewItem.setVisible(isFile)
-        self.toggleExp.setVisible(isFile)
-        self.newFile.setVisible(allowNew)
-        self.newFolder.setVisible(allowNew)
-        self.deleteItem.setVisible(not isTrash)
-        self.emptyTrash.setVisible(isTrash)
-
-        return True
-
-    ##
-    #  Slots
-    ##
-
-    @pyqtSlot()
-    def _doOpenItem(self):
-        """Forward the open document call to the main GUI window.
-        """
-        if self.theItem is not None:
-            self.theTree.theParent.openDocument(self.theItem.itemHandle, doScroll=False)
-        return
-
-    @pyqtSlot()
-    def _doViewItem(self):
-        """Forward the view document call to the main GUI window.
-        """
-        if self.theItem is not None:
-            self.theTree.theParent.viewDocument(self.theItem.itemHandle)
-        return
-
-    @pyqtSlot()
-    def _doEditItem(self):
-        """Forward the edit item call to the main GUI window.
-        """
-        if self.theItem is not None:
-            self.theTree.theParent.editItem()
-        return
-
-    @pyqtSlot()
-    def _doMakeFile(self):
-        """Forward the new file call to the project tree.
-        """
-        if self.theItem is not None:
-            self.theTree.newTreeItem(nwItemType.FILE)
-        return
-
-    @pyqtSlot()
-    def _doMakeFolder(self):
-        """Forward the new folder call to the project tree.
-        """
-        if self.theItem is not None:
-            self.theTree.newTreeItem(nwItemType.FOLDER)
-        return
-
-    @pyqtSlot()
-    def _doToggleExported(self):
-        """Flip the isExported flag of the current item.
-        """
-        if self.theItem is not None:
-            self.theItem.setExported(not self.theItem.isExported)
-            self.theTree.setTreeItemValues(self.theItem.itemHandle)
-        return
-
-    @pyqtSlot()
-    def _doDeleteItem(self):
-        """Forward the delete item call to the project tree.
-        """
-        if self.theItem is not None:
-            self.theTree.deleteItem()
-        return
-
-    @pyqtSlot()
-    def _doEmptyTrash(self):
-        """Forward the empty trash call to the project tree.
-        """
-        self.theTree.emptyTrash()
-        return
-
-    @pyqtSlot()
-    def _doMoveUp(self):
-        """Forward the move item call to the project tree.
-        """
-        self.theTree.moveTreeItem(-1)
-        return
-
-    @pyqtSlot()
-    def _doMoveDown(self):
-        """Forward the move item call to the project tree.
-        """
-        self.theTree.moveTreeItem(1)
-        return
-
-# END Class GuiProjectTreeMenu

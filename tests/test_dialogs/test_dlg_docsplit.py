@@ -25,10 +25,10 @@ import pytest
 from mock import causeOSError
 from tools import getGuiItem, readFile, writeFile, buildTestProject
 
-from PyQt5.QtWidgets import QAction, QMessageBox, QDialog
+from PyQt5.QtWidgets import QAction, QMessageBox
 
 from novelwriter.enum import nwItemType, nwWidget
-from novelwriter.dialogs import GuiDocSplit, GuiItemEditor
+from novelwriter.dialogs import GuiDocSplit, GuiEditLabel
 from novelwriter.core.tree import NWTree
 from novelwriter.core.document import NWDoc
 
@@ -40,6 +40,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     # Create a new project
     buildTestProject(nwGUI, fncProj)
@@ -58,11 +59,10 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     hSceneFive  = "0000000000028"
 
     # Add Project Content
-    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: QDialog.Accepted)
     nwGUI.switchFocus(nwWidget.TREE)
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hNovelRoot).setSelected(True)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE)
+    nwGUI.projView.projTree.clearSelection()
+    nwGUI.projView.projTree._getTreeItem(hNovelRoot).setSelected(True)
+    nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)
 
     assert nwGUI.saveProject() is True
     assert nwGUI.closeProject() is True
@@ -89,8 +89,8 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
 
     # Open the Split tool
     nwGUI.switchFocus(nwWidget.TREE)
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hToSplit).setSelected(True)
+    nwGUI.projView.projTree.clearSelection()
+    nwGUI.projView.projTree._getTreeItem(hToSplit).setSelected(True)
 
     monkeypatch.setattr(GuiDocSplit, "exec_", lambda *a: None)
     nwGUI.mainMenu.aSplitDoc.activate(QAction.Trigger)
@@ -109,7 +109,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
 
     # No item selected
     nwSplit.sourceItem = None
-    nwGUI.treeView.clearSelection()
+    nwGUI.projView.projTree.clearSelection()
     assert nwSplit._populateList() is False
     assert nwSplit.listBox.count() == 0
 
@@ -117,15 +117,15 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     with monkeypatch.context() as mp:
         mp.setattr(NWTree, "__getitem__", lambda *a: None)
         nwSplit.sourceItem = None
-        nwGUI.treeView.clearSelection()
-        nwGUI.treeView._getTreeItem(hToSplit).setSelected(True)
+        nwGUI.projView.projTree.clearSelection()
+        nwGUI.projView.projTree._getTreeItem(hToSplit).setSelected(True)
         assert nwSplit._populateList() is False
         assert nwSplit.listBox.count() == 0
 
     # Select a non-file
     nwSplit.sourceItem = None
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
+    nwGUI.projView.projTree.clearSelection()
+    nwGUI.projView.projTree._getTreeItem(hChapterDir).setSelected(True)
     assert nwSplit._populateList() is False
     assert nwSplit.listBox.count() == 0
 

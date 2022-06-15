@@ -54,7 +54,7 @@ class GuiTheme:
     def __init__(self):
 
         self.mainConf = novelwriter.CONFIG
-        self.theIcons = GuiIcons(self)
+        self.iconCache = GuiIcons(self)
 
         # Loaded Theme Settings
         # =====================
@@ -127,13 +127,13 @@ class GuiTheme:
 
         self.updateFont()
         self.updateTheme()
-        self.theIcons.updateTheme()
+        self.iconCache.updateTheme()
 
         # Icon Functions
-        self.getIcon = self.theIcons.getIcon
-        self.getPixmap = self.theIcons.getPixmap
-        self.getItemIcon = self.theIcons.getItemIcon
-        self.loadDecoration = self.theIcons.loadDecoration
+        self.getIcon = self.iconCache.getIcon
+        self.getPixmap = self.iconCache.getPixmap
+        self.getItemIcon = self.iconCache.getItemIcon
+        self.loadDecoration = self.iconCache.loadDecoration
 
         # Extract Other Info
         self.guiDPI = qApp.primaryScreen().logicalDotsPerInchX()
@@ -472,16 +472,19 @@ class GuiIcons:
         # Switches
         "sticky-on", "sticky-off",
         "bullet-on", "bullet-off",
+
+        # Decorations
+        "deco_doc_h0", "deco_doc_h1", "deco_doc_h2", "deco_doc_h3", "deco_doc_h4",
     }
 
-    DECO_MAP = {
+    IMAGE_MAP = {
         "wiz-back": "wizard-back.jpg",
     }
 
-    def __init__(self, theTheme):
+    def __init__(self, mainTheme):
 
         self.mainConf = novelwriter.CONFIG
-        self.theTheme = theTheme
+        self.mainTheme = mainTheme
 
         # Storage
         self._qIcons    = {}
@@ -573,19 +576,22 @@ class GuiIcons:
     #  Access Functions
     ##
 
-    def loadDecoration(self, decoKey, pxW, pxH):
+    def loadDecoration(self, decoKey, pxW=None, pxH=None):
         """Load graphical decoration element based on the decoration
-        map. This function always returns a QSwgWidget.
+        map or the icon map. This function always returns a QPixmap.
         """
-        if decoKey not in self.DECO_MAP:
+        if decoKey in self._themeMap:
+            imgPath = self._themeMap[decoKey]
+        elif decoKey in self.IMAGE_MAP:
+            imgPath = os.path.join(
+                self.mainConf.assetPath, "images", self.IMAGE_MAP[decoKey]
+            )
+        else:
             logger.error("Decoration with name '%s' does not exist", decoKey)
             return QPixmap()
 
-        imgPath = os.path.join(
-            self.mainConf.assetPath, "images", self.DECO_MAP[decoKey]
-        )
         if not os.path.isfile(imgPath):
-            logger.error("Decoration file '%s' not in assets folder", self.DECO_MAP[decoKey])
+            logger.error("Asset '%s' not found", self.IMAGE_MAP[decoKey])
             return QPixmap()
 
         theDeco = QPixmap(imgPath)

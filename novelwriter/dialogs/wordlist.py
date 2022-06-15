@@ -42,16 +42,16 @@ logger = logging.getLogger(__name__)
 
 class GuiWordList(QDialog):
 
-    def __init__(self, theParent):
-        QDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QDialog.__init__(self, mainGui)
 
         logger.debug("Initialising GuiWordList ...")
         self.setObjectName("GuiWordList")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
+        self.theProject = mainGui.theProject
 
         self.setWindowTitle(self.tr("Project Word List"))
 
@@ -78,10 +78,10 @@ class GuiWordList(QDialog):
 
         self.newEntry = QLineEdit()
 
-        self.addButton = QPushButton(self.theTheme.getIcon("add"), "")
+        self.addButton = QPushButton(self.mainTheme.getIcon("add"), "")
         self.addButton.clicked.connect(self._doAdd)
 
-        self.delButton = QPushButton(self.theTheme.getIcon("remove"), "")
+        self.delButton = QPushButton(self.mainTheme.getIcon("remove"), "")
         self.delButton.clicked.connect(self._doDelete)
 
         self.editBox = QHBoxLayout()
@@ -121,13 +121,13 @@ class GuiWordList(QDialog):
         """
         newWord = self.newEntry.text().strip()
         if newWord == "":
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "Cannot add a blank word."
             ), nwAlert.ERROR)
             return False
 
         if self.listBox.findItems(newWord, Qt.MatchExactly):
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "The word '{0}' is already in the word list."
             ).format(newWord), nwAlert.ERROR)
             return False

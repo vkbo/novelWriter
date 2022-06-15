@@ -376,8 +376,8 @@ class QSwitch(QAbstractButton):
 
 class PagedDialog(QDialog):
 
-    def __init__(self, theParent=None):
-        QDialog.__init__(self, parent=theParent)
+    def __init__(self, parent=None):
+        QDialog.__init__(self, parent=parent)
 
         self._tabBar = VerticalTabBar(self)
         self._tabBar.setExpanding(False)
@@ -426,8 +426,8 @@ class PagedDialog(QDialog):
 
 class VerticalTabBar(QTabBar):
 
-    def __init__(self, theParent=None):
-        QTabBar.__init__(self, parent=theParent)
+    def __init__(self, parent=None):
+        QTabBar.__init__(self, parent=parent)
         self._mW = novelwriter.CONFIG.pxInt(150)
         return
 
