@@ -836,8 +836,223 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
 
 
 ##
+#  Make Appimage (build-appimage)
+##
+
+def makeAppimage(sysArgs):
+    """Build an Appimage
+    """
+
+    import argparse
+    import platform
+    import glob
+
+    try:
+        import python_appimage
+    except ImportError:
+        print(
+            "ERROR: Package 'python-appimage' is missing on this system.\n"
+            "       Please run 'pip install --user python-appimage' to install it.\n"
+        )
+        sys.exit(1)
+
+    print("")
+    print("Build Appimage")
+    print("==============")
+    print("")
+
+    plat = platform.machine()
+
+    parser = argparse.ArgumentParser(prog='build_appimage',
+                                     description='Build an Appimage',
+                                     epilog='see https://appimage.org/ for more details')
+    parser.add_argument('-l', '--linux-tag', nargs='?', default=f"manylinux2014_{plat}",
+                        help=(
+                            'linux compatibility tag (e.g. manylinux1_x86_64) \n'
+                            'see https://python-appimage.readthedocs.io/en/latest/#available-python-appimages \n'
+                            'and https://github.com/pypa/manylinux for a list of valid tags'
+                        ))
+    parser.add_argument('-p', '--python-version', nargs='?', default='3.11',
+                        help='python version (e.g. 3.11)')
+
+    args, unknown = parser.parse_known_args(sysArgs)
+
+    linuxTag = args.linux_tag
+    pythonVer = args.python_version
+
+    # Version Info
+    # ============
+
+    numVers, hexVers, relDate = extractVersion()
+    pkgVers = compactVersion(numVers)
+    relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
+    print("")
+
+    # Set Up Folder
+    # =============
+
+    bldDir = "dist_appimage"
+    bldPkg = f"novelwriter_{pkgVers}"
+    outDir = f"{bldDir}/{bldPkg}"
+    imageDir = f"{bldDir}/appimage"
+
+    # Set Up Folders
+    # ==============
+
+    if not os.path.isdir(bldDir):
+        os.mkdir(bldDir)
+
+    if os.path.isdir(outDir):
+        print("Removing old build files ...")
+        print("")
+        shutil.rmtree(outDir)
+
+    os.mkdir(outDir)
+
+    if os.path.isdir(imageDir):
+        print("Removing old build metadata files ...")
+        print("")
+        shutil.rmtree(imageDir)
+
+    os.mkdir(imageDir)
+
+    # Remove old Appimages
+    outFiles = glob.glob(f"{bldDir}/*.AppImage")
+
+    if outFiles:
+        print("Removing old Appimages")
+        print("")
+        for image in outFiles:
+            try:
+                os.remove(image)
+            except OSError:
+                print("Error while deleting file : ", image)
+
+    # Build Additional Assets
+    # =======================
+
+    buildQtI18n()
+    buildSampleZip()
+    buildPdfManual()
+
+    # Copy novelWriter Source
+    # =======================
+
+    print("Copying novelWriter source ...")
+    print("")
+
+    for nPath, _, nFiles in os.walk("novelwriter"):
+        if nPath.endswith("__pycache__"):
+            print("Skipped: %s" % nPath)
+            continue
+
+        pPath = f"{outDir}/{nPath}"
+        if not os.path.isdir(pPath):
+            os.mkdir(pPath)
+
+        fCount = 0
+        for fFile in nFiles:
+            nFile = f"{nPath}/{fFile}"
+            pFile = f"{pPath}/{fFile}"
+
+            if fFile.endswith(".pyc"):
+                print("Skipped: %s" % nFile)
+                continue
+
+            shutil.copyfile(nFile, pFile)
+            fCount += 1
+
+        print("Copied: %s/*  [Files: %d]" % (nPath, fCount))
+
+    print("")
+    print("Copying or generating additional files ...")
+    print("")
+
+    # Copy/Write Root Files
+    # =====================
+
+    copyFiles = ["LICENSE.md", "CREDITS.md", "CHANGELOG.md", "pyproject.toml"]
+    for copyFile in copyFiles:
+        shutil.copyfile(copyFile, f"{outDir}/{copyFile}")
+        print("Copied: %s" % copyFile)
+
+    writeFile(f"{outDir}/MANIFEST.in", (
+        "include LICENSE.md\n"
+        "include CREDITS.md\n"
+        "include CHANGELOG.md\n"
+        "include data/*\n"
+        "recursive-include novelwriter/assets *\n"
+    ))
+    print("Wrote:  MANIFEST.in")
+
+    writeFile(f"{outDir}/setup.py", (
+        "import setuptools\n"
+        "setuptools.setup()\n"
+    ))
+    print("Wrote:  setup.py")
+
+    setupCfg = readFile("setup.cfg").replace(
+        "file: setup/description_pypi.md", "file: data/description_short.txt"
+    )
+    writeFile(f"{outDir}/setup.cfg", setupCfg)
+    print("Wrote:  setup.cfg")
+
+    # Write Metadata
+    # ==============
+
+    appDescription = readFile("setup/description_short.txt")
+    appdataXML = readFile("setup/novelwriter.appdata.xml").format(description=appDescription)
+    writeFile(f"{imageDir}/novelwriter.appdata.xml", appdataXML)
+    print("Wrote:  novelwriter.appdata.xml")
+
+    writeFile(f"{imageDir}/entrypoint.sh", (
+        '#! /bin/bash \n'
+        '{{ python-executable }} -sE ${APPDIR}/opt/python{{ python-version }}/bin/novelwriter "$@"'
+    ))
+    print("Wrote:  entrypoint.sh")
+
+    writeFile(f"{imageDir}/requirements.txt", os.path.abspath(outDir))
+    print("Wrote:  requirements.txt")
+
+    shutil.copyfile("setup/data/novelwriter.desktop", f"{imageDir}/novelwriter.desktop")
+    print("Copied: setup/data/novelwriter.desktop")
+
+    shutil.copyfile("setup/icons/novelwriter.svg", f"{imageDir}/novelwriter.svg")
+    print("Copied: setup/icons/novelwriter.svg")
+
+    shutil.copyfile("setup/data/hicolor/256x256/apps/novelwriter.png",
+                    f"{imageDir}/novelwriter.png")
+    print("Copied: setup/data/hicolor/256x256/apps/novelwriter.png")
+
+    # Build Appimage
+    # ==============
+
+    try:
+        subprocess.call(
+            ["python", "-m", "python_appimage", "build", "app",
+             "-l", linuxTag, "-p", pythonVer, "appimage"], cwd=bldDir)
+    except Exception as exc:
+        print("Appimage build: FAILED")
+        print("")
+        print(str(exc))
+        print("")
+        print("Dependencies:")
+        print(" * pip install python-appimage")
+        print("")
+        sys.exit(1)
+
+    outFile = glob.glob(f"{bldDir}/*.AppImage")[0]
+    shaFile = makeCheckSum(os.path.basename(outFile), cwd=bldDir)
+
+    toUpload(outFile)
+    toUpload(shaFile)
+
+    return
+
+##
 #  Make Windows Setup EXE (build-win-exe)
 ##
+
 
 def makeWindowsEmbedded(sysArgs):
     """Set up a package with embedded Python and dependencies for
@@ -1678,6 +1893,14 @@ if __name__ == "__main__":
         sys.argv.remove("build-win-exe")
         makeWindowsEmbedded(sys.argv)
         sys.exit(0)  # Don't continue execution
+
+    if "build-appimage" in sys.argv:
+        sys.argv.remove("build-appimage")
+        if hostOS == OS_LINUX:
+            makeAppimage(sys.argv)
+        else:
+            print("ERROR: Command 'build-ubuntu' can only be used on Linux")
+            sys.exit(1)
 
     # General Installers
     # ==================
