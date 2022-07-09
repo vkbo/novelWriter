@@ -197,6 +197,7 @@ def cleanBuildDirs():
     removeFolder("dist")
     removeFolder("dist_deb")
     removeFolder("dist_minimal")
+    removeFolder("dist_appimage")
     removeFolder("novelWriter.egg-info")
 
     print("")
@@ -863,17 +864,24 @@ def makeAppimage(sysArgs):
 
     plat = platform.machine()
 
-    parser = argparse.ArgumentParser(prog='build_appimage',
-                                     description='Build an Appimage',
-                                     epilog='see https://appimage.org/ for more details')
-    parser.add_argument('--linux-tag', nargs='?', default=f"manylinux2010_{plat}",
-                        help=(
-                            'linux compatibility tag (e.g. manylinux1_x86_64) \n'
-                            'see https://python-appimage.readthedocs.io/en/latest/#available-python-appimages \n'
-                            'and https://github.com/pypa/manylinux for a list of valid tags'
-                        ))
-    parser.add_argument('--python-version', nargs='?', default='3.10',
-                        help='python version (e.g. 3.10)')
+    parser = argparse.ArgumentParser(
+        prog="build_appimage",
+        description="Build an Appimage",
+        epilog="see https://appimage.org/ for more details",
+    )
+    parser.add_argument(
+        "--linux-tag",
+        nargs="?",
+        default=f"manylinux2010_{plat}",
+        help=(
+            "linux compatibility tag (e.g. manylinux1_x86_64) \n"
+            "see https://python-appimage.readthedocs.io/en/latest/#available-python-appimages \n"
+            "and https://github.com/pypa/manylinux for a list of valid tags"
+        ),
+    )
+    parser.add_argument(
+        "--python-version", nargs="?", default="3.10", help="python version (e.g. 3.10)"
+    )
 
     args, unparsedArgs = parser.parse_known_args(sysArgs)
 
