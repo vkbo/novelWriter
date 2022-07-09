@@ -866,16 +866,16 @@ def makeAppimage(sysArgs):
     parser = argparse.ArgumentParser(prog='build_appimage',
                                      description='Build an Appimage',
                                      epilog='see https://appimage.org/ for more details')
-    parser.add_argument('-l', '--linux-tag', nargs='?', default=f"manylinux2014_{plat}",
+    parser.add_argument('--linux-tag', nargs='?', default=f"manylinux2010_{plat}",
                         help=(
                             'linux compatibility tag (e.g. manylinux1_x86_64) \n'
                             'see https://python-appimage.readthedocs.io/en/latest/#available-python-appimages \n'
                             'and https://github.com/pypa/manylinux for a list of valid tags'
                         ))
-    parser.add_argument('-p', '--python-version', nargs='?', default='3.11',
-                        help='python version (e.g. 3.11)')
+    parser.add_argument('--python-version', nargs='?', default='3.10',
+                        help='python version (e.g. 3.10)')
 
-    args, unknown = parser.parse_known_args(sysArgs)
+    args, unparsedArgs = parser.parse_known_args(sysArgs)
 
     linuxTag = args.linux_tag
     pythonVer = args.python_version
@@ -1047,7 +1047,7 @@ def makeAppimage(sysArgs):
     toUpload(outFile)
     toUpload(shaFile)
 
-    return
+    return unparsedArgs
 
 ##
 #  Make Windows Setup EXE (build-win-exe)
@@ -1897,9 +1897,9 @@ if __name__ == "__main__":
     if "build-appimage" in sys.argv:
         sys.argv.remove("build-appimage")
         if hostOS == OS_LINUX:
-            makeAppimage(sys.argv)
+            sys.argv = makeAppimage(sys.argv)  # Build appimage and prune it's args
         else:
-            print("ERROR: Command 'build-ubuntu' can only be used on Linux")
+            print("ERROR: Command 'build-appimage' can only be used on Linux")
             sys.exit(1)
 
     # General Installers
