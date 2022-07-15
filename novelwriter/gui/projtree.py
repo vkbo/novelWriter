@@ -177,7 +177,7 @@ class GuiProjectToolBar(QWidget):
         self.mainTheme  = projView.mainGui.mainTheme
 
         iPx = self.mainTheme.baseIconSize
-        mPx = self.mainConf.pxInt(3)
+        mPx = self.mainConf.pxInt(2)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)

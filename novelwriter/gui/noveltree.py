@@ -174,7 +174,7 @@ class GuiNovelToolBar(QWidget):
         self.mainTheme  = novelView.mainGui.mainTheme
 
         iPx = self.mainTheme.baseIconSize
-        mPx = self.mainConf.pxInt(3)
+        mPx = self.mainConf.pxInt(2)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -396,8 +396,6 @@ class GuiNovelTree(QTreeWidget):
             self.mainTheme.loadDecoration("deco_doc_h4", pxH=iPx),
         ]
         self._pMore = self.mainTheme.loadDecoration("deco_doc_more", pxH=iPx)
-        self._pActive = self.mainTheme.loadDecoration("deco_more_on", pxH=iPx)
-        self._pInactive = self.mainTheme.loadDecoration("deco_more_off", pxH=iPx)
 
         # Connect signals
         self.clicked.connect(self._treeItemClicked)
