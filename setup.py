@@ -837,19 +837,19 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
 
 
 ##
-#  Make Appimage (build-appimage)
+#  Make AppImage (build-appimage)
 ##
 
-def makeAppimage(sysArgs):
+def makeAppImage(sysArgs):
     """Build an Appimage
     """
 
+    import glob
     import argparse
     import platform
-    import glob
 
     try:
-        import python_appimage
+        import python_appimage  # noqa F401
     except ImportError:
         print(
             "ERROR: Package 'python-appimage' is missing on this system.\n"
@@ -858,21 +858,19 @@ def makeAppimage(sysArgs):
         sys.exit(1)
 
     print("")
-    print("Build Appimage")
+    print("Build AppImage")
     print("==============")
     print("")
 
-    plat = platform.machine()
-
     parser = argparse.ArgumentParser(
         prog="build_appimage",
-        description="Build an Appimage",
+        description="Build an AppImage",
         epilog="see https://appimage.org/ for more details",
     )
     parser.add_argument(
         "--linux-tag",
         nargs="?",
-        default=f"manylinux2010_{plat}",
+        default=f"manylinux2010_{platform.machine()}",
         help=(
             "linux compatibility tag (e.g. manylinux1_x86_64) \n"
             "see https://python-appimage.readthedocs.io/en/latest/#available-python-appimages \n"
@@ -891,7 +889,7 @@ def makeAppimage(sysArgs):
     # Version Info
     # ============
 
-    numVers, hexVers, relDate = extractVersion()
+    numVers, _, relDate = extractVersion()
     pkgVers = compactVersion(numVers)
     relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
     print("")
@@ -928,7 +926,7 @@ def makeAppimage(sysArgs):
     outFiles = glob.glob(f"{bldDir}/*.AppImage")
 
     if outFiles:
-        print("Removing old Appimages")
+        print("Removing old AppImages")
         print("")
         for image in outFiles:
             try:
@@ -1036,11 +1034,12 @@ def makeAppimage(sysArgs):
     # ==============
 
     try:
-        subprocess.call(
-            ["python", "-m", "python_appimage", "build", "app",
-             "-l", linuxTag, "-p", pythonVer, "appimage"], cwd=bldDir)
+        subprocess.call([
+            sys.executable, "-m", "python_appimage", "build", "app",
+            "-l", linuxTag, "-p", pythonVer, "appimage"
+        ], cwd=bldDir)
     except Exception as exc:
-        print("Appimage build: FAILED")
+        print("AppImage build: FAILED")
         print("")
         print(str(exc))
         print("")
@@ -1804,6 +1803,8 @@ if __name__ == "__main__":
         "                   Add --snapshot to make a snapshot package.",
         "    build-win-exe  Build a setup.exe file with Python embedded for Windows.",
         "                   The package must be built from a minimal windows zip file.",
+        "    build-appimage Build an AppImage. Argument --linux-tag defaults to",
+        "                   manylinux1_x86_64 / i386, and --python-version to 3.10.",
         "",
         "System Install:",
         "",
@@ -1905,7 +1906,7 @@ if __name__ == "__main__":
     if "build-appimage" in sys.argv:
         sys.argv.remove("build-appimage")
         if hostOS == OS_LINUX:
-            sys.argv = makeAppimage(sys.argv)  # Build appimage and prune it's args
+            sys.argv = makeAppImage(sys.argv)  # Build appimage and prune its args
         else:
             print("ERROR: Command 'build-appimage' can only be used on Linux")
             sys.exit(1)
