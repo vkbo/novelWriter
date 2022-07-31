@@ -199,7 +199,6 @@ class GuiMain(QMainWindow):
 
         self.projView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.projView.openDocumentRequest.connect(self._openDocument)
-        self.projView.novelItemChanged.connect(self._treeNovelItemChanged)
         self.projView.wordCountsChanged.connect(self._updateStatusWordCount)
         self.projView.treeItemChanged.connect(self.docEditor.updateDocInfo)
         self.projView.treeItemChanged.connect(self.docViewer.updateDocInfo)
@@ -303,7 +302,7 @@ class GuiMain(QMainWindow):
         self.docEditor.clearEditor()
         self.docEditor.setDictionaries()
         self.closeDocViewer()
-        self.outlineView.clearOutline()
+        self.outlineView.clearProject()
 
         # General
         self.statusBar.clearStatus()
@@ -365,8 +364,8 @@ class GuiMain(QMainWindow):
             self.rebuildTrees()
             self.saveProject()
             self.docEditor.setDictionaries()
-            self.outlineView.updateRootItem(None)
             self.novelView.openProjectTasks()
+            self.outlineView.openProjectTasks()
             self.rebuildIndex(beQuiet=True)
             self.statusBar.setRefTime(self.theProject.projOpened)
             self.statusBar.setProjectStatus(nwState.GOOD)
@@ -514,8 +513,8 @@ class GuiMain(QMainWindow):
         self.docEditor.setDictionaries()
         self.docEditor.toggleSpellCheck(self.theProject.spellCheck)
         self.statusBar.setRefTime(self.theProject.projOpened)
-        self.outlineView.updateRootItem(None)
         self.novelView.openProjectTasks()
+        self.outlineView.openProjectTasks()
         self._updateStatusWordCount()
 
         # Restore previously open documents, if any
@@ -1553,18 +1552,6 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot()
-    def _treeNovelItemChanged(self):
-        """Triggered when there is a change to a novel item in the
-        project tree.
-        """
-        if self.mainStack.currentIndex() == self.idxOutlineView:
-            logger.verbose("Novel tree changed while Outline tab active")
-            if self.hasProject:
-                self.outlineView.refreshView(novelChanged=True)
-
-        return
-
-    @pyqtSlot()
     def _keyPressReturn(self):
         """Forward the return/enter keypress to the function that opens
         the currently selected item.
@@ -1593,7 +1580,7 @@ class GuiMain(QMainWindow):
         elif stIndex == self.idxOutlineView:
             logger.verbose("Outline View activated")
             if self.hasProject:
-                self.outlineView.refreshView()
+                self.outlineView.refreshTree()
 
         return
 

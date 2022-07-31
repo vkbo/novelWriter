@@ -59,8 +59,9 @@ class GuiOutlineView(QWidget):
     def __init__(self, mainGui):
         QWidget.__init__(self, mainGui)
 
-        self.mainConf = novelwriter.CONFIG
-        self.mainGui  = mainGui
+        self.mainConf   = novelwriter.CONFIG
+        self.mainGui    = mainGui
+        self.theProject = mainGui.theProject
 
         # Build GUI
         self.outlineBar  = GuiOutlineToolBar(self)
@@ -96,16 +97,34 @@ class GuiOutlineView(QWidget):
     #  Methods
     ##
 
-    def splitSizes(self):
-        return self.splitOutline.sizes()
-
-    def clearOutline(self):
-        self.outlineData.clearDetails()
-        return
-
     def initOutline(self):
         self.outlineTree.initOutline()
         self.outlineData.initDetails()
+        return
+
+    def refreshTree(self):
+        """Refresh the current tree.
+        """
+        self.outlineTree.refreshTree(rootHandle=self.theProject.lastOutline)
+        return
+
+    def clearProject(self):
+        self.outlineData.clearDetails()
+        return
+
+    def openProjectTasks(self):
+        """Run opening project tasks.
+        """
+        lastOutline = self.theProject.lastOutline
+        if not (lastOutline in self.theProject.tree or lastOutline is None):
+            lastOutline = self.theProject.tree.findRoot(nwItemClass.NOVEL)
+
+        logger.debug("Setting outline tree to root item '%s'", lastOutline)
+
+        self.clearProject()
+        self.outlineBar.populateNovelList()
+        self.outlineBar.setCurrentRoot(lastOutline)
+
         return
 
     def closeOutline(self):
@@ -113,9 +132,8 @@ class GuiOutlineView(QWidget):
         self.outlineData.updateClasses()
         return
 
-    def refreshView(self, overRide=False, novelChanged=False):
-        self.outlineTree.refreshTree(overRide=overRide, novelChanged=novelChanged)
-        return
+    def splitSizes(self):
+        return self.splitOutline.sizes()
 
     def treeHasFocus(self):
         return self.outlineTree.hasFocus()
@@ -241,6 +259,17 @@ class GuiOutlineToolBar(QToolBar):
             self.novelValue.addItem(tIcon, nwItem.itemName, tHandle)
         self.novelValue.insertSeparator(self.novelValue.count())
         self.novelValue.addItem(tIcon, self.tr("All Novel Folders"), "")
+        return
+
+    def setCurrentRoot(self, rootHandle):
+        """Set the current active root handle.
+        """
+        if rootHandle is None:
+            rootIdx = self.novelValue.count() - 1
+        else:
+            rootIdx = self.novelValue.findData(rootHandle)
+        if rootIdx >= 0:
+            self.novelValue.setCurrentIndex(rootIdx)
         return
 
     def setColumnHiddenState(self, hiddenState):
@@ -379,7 +408,7 @@ class GuiOutlineTree(QTreeWidget):
         self._lastBuild = 0
 
         self.initOutline()
-        self.clearOutline()
+        self.clearContent()
 
         self.hiddenStateChanged.emit()
 
@@ -415,7 +444,7 @@ class GuiOutlineTree(QTreeWidget):
 
         return
 
-    def clearOutline(self):
+    def clearContent(self):
         """Clear the tree and header and set the default values for the
         columns arrays.
         """
@@ -453,10 +482,12 @@ class GuiOutlineTree(QTreeWidget):
         # If the novel index or novel tree has changed since the tree
         # was last built, we rebuild the tree from the updated index.
         indexChanged = self.theProject.index.rootChangedSince(rootHandle, self._lastBuild)
-        doBuild = (novelChanged or indexChanged) and self.theProject.autoOutline
-        if doBuild or overRide:
-            logger.debug("Rebuilding Project Outline")
-            self._populateTree(rootHandle)
+        if not (novelChanged or indexChanged or overRide):
+            logger.verbose("No changes have been made to the novel index")
+            return
+
+        self._populateTree(rootHandle)
+        self.theProject.setLastOutlineViewed(rootHandle or None)
 
         return
 
@@ -464,7 +495,7 @@ class GuiOutlineTree(QTreeWidget):
         """Called before a project is closed.
         """
         self._saveHeaderState()
-        self.clearOutline()
+        self.clearContent()
         self._firstView = True
         return
 
