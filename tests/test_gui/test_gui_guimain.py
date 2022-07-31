@@ -149,9 +149,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     with monkeypatch.context() as mp:
         mp.setattr(GuiOutlineView, "treeHasFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle() is None
-        actItem = nwGUI.outlineView.outlineTree.topLevelItem(0)
-        chpItem = actItem.child(0)
-        selItem = chpItem.child(0)
+        selItem = nwGUI.outlineView.outlineTree.topLevelItem(2)
         nwGUI.outlineView.outlineTree.setCurrentItem(selItem)
         nwGUI._keyPressReturn()
         assert nwGUI.docEditor.docHandle() == sHandle

@@ -232,9 +232,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert outlineData.pCValue.text() == "3"
 
     # Scene One
-    actItem = outlineTree.topLevelItem(1)
-    chpItem = actItem.child(0)
-    selItem = chpItem.child(0)
+    selItem = outlineTree.topLevelItem(4)
 
     outlineTree.setCurrentItem(selItem)
     tHandle, tLine = outlineTree.getSelectedHandle()
@@ -252,10 +250,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
 
     # Scene One, Section Two
-    actItem = outlineTree.topLevelItem(1)
-    chpItem = actItem.child(0)
-    scnItem = chpItem.child(0)
-    selItem = scnItem.child(0)
+    selItem = outlineTree.topLevelItem(5)
 
     outlineTree.setCurrentItem(selItem)
     tHandle, tLine = outlineTree.getSelectedHandle()

@@ -934,12 +934,6 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     assert theProject.localLookup(1) == "One"
     assert theProject.localLookup(10) == "Ten"
 
-    # Automatic outline update
-    theProject.projChanged = False
-    assert theProject.setAutoOutline(True)
-    assert not theProject.setAutoOutline(False)
-    assert theProject.projChanged
-
     # Last edited
     theProject.projChanged = False
     assert theProject.setLastEdited("0123456789abc")
