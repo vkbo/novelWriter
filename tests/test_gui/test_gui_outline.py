@@ -54,7 +54,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
     # Toggle scrollbars
     nwGUI.mainConf.hideVScroll = True
     nwGUI.mainConf.hideHScroll = True
-    outlineView.initOutline()
+    outlineView.initSettings()
     assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
@@ -62,7 +62,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
 
     nwGUI.mainConf.hideVScroll = False
     nwGUI.mainConf.hideHScroll = False
-    outlineView.initOutline()
+    outlineView.initSettings()
     assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded

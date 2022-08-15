@@ -421,7 +421,7 @@ class GuiMain(QMainWindow):
         if saveOK:
             self.closeDocument()
             self.docViewer.clearNavHistory()
-            self.outlineView.closeOutline()
+            self.outlineView.closeProjectTasks()
             self.novelView.closeProjectTasks()
 
             self.theProject.closeProject(self.idleTime)
@@ -930,7 +930,7 @@ class GuiMain(QMainWindow):
             self.docViewer.initViewer()
             self.projView.initSettings()
             self.novelView.initSettings()
-            self.outlineView.initOutline()
+            self.outlineView.initSettings()
             self._updateStatusWordCount()
 
         return
@@ -1191,7 +1191,7 @@ class GuiMain(QMainWindow):
             if tabIdx == self.idxProjView:
                 self.projView.setFocus()
             elif tabIdx == self.idxNovelView:
-                self.novelView.setFocus()
+                self.novelView.setTreeFocus()
         elif paneNo == nwWidget.EDITOR:
             self._changeView(nwView.EDITOR)
             self.docEditor.setFocus()

@@ -97,9 +97,11 @@ class GuiOutlineView(QWidget):
     #  Methods
     ##
 
-    def initOutline(self):
-        self.outlineTree.initOutline()
-        self.outlineData.initDetails()
+    def initSettings(self):
+        """Initialise GUI elements that depend on specific settings.
+        """
+        self.outlineTree.initSettings()
+        self.outlineData.initSettings()
         return
 
     def refreshTree(self):
@@ -109,11 +111,13 @@ class GuiOutlineView(QWidget):
         return
 
     def clearProject(self):
+        """Clear project-related GUI content.
+        """
         self.outlineData.clearDetails()
         return
 
     def openProjectTasks(self):
-        """Run opening project tasks.
+        """Run open project tasks.
         """
         lastOutline = self.theProject.lastOutline
         if not (lastOutline in self.theProject.tree or lastOutline is None):
@@ -127,19 +131,23 @@ class GuiOutlineView(QWidget):
 
         return
 
-    def closeOutline(self):
-        self.outlineTree.closeOutline()
+    def closeProjectTasks(self):
+        self.outlineTree.closeProjectTasks()
         self.outlineData.updateClasses()
         return
 
     def splitSizes(self):
         return self.splitOutline.sizes()
 
-    def treeHasFocus(self):
-        return self.outlineTree.hasFocus()
-
     def setTreeFocus(self):
+        """Set the focus to the tree widget.
+        """
         return self.outlineTree.setFocus()
+
+    def treeHasFocus(self):
+        """Check if the outline tree has focus.
+        """
+        return self.outlineTree.hasFocus()
 
     ##
     #  Public Slots
@@ -407,7 +415,7 @@ class GuiOutlineTree(QTreeWidget):
         self._firstView = True
         self._lastBuild = 0
 
-        self.initOutline()
+        self.initSettings()
         self.clearContent()
 
         self.hiddenStateChanged.emit()
@@ -428,7 +436,7 @@ class GuiOutlineTree(QTreeWidget):
     #  Methods
     ##
 
-    def initOutline(self):
+    def initSettings(self):
         """Set or update outline settings.
         """
         # Scroll bars
@@ -491,7 +499,7 @@ class GuiOutlineTree(QTreeWidget):
 
         return
 
-    def closeOutline(self):
+    def closeProjectTasks(self):
         """Called before a project is closed.
         """
         self._saveHeaderState()
@@ -971,13 +979,13 @@ class GuiOutlineDetails(QScrollArea):
         self.setWidgetResizable(True)
         self.setFrameStyle(QFrame.NoFrame)
 
-        self.initDetails()
+        self.initSettings()
 
         logger.debug("GuiOutlineDetails initialisation complete")
 
         return
 
-    def initDetails(self):
+    def initSettings(self):
         """Set or update outline settings.
         """
         # Scroll bars

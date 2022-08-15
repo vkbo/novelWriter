@@ -69,8 +69,8 @@ class GuiNovelView(QWidget):
         self.theProject = mainGui.theProject
 
         # Build GUI
-        self.novelTree = GuiNovelTree(self)
         self.novelBar = GuiNovelToolBar(self)
+        self.novelTree = GuiNovelTree(self)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -93,6 +93,8 @@ class GuiNovelView(QWidget):
     ##
 
     def initSettings(self):
+        """Initialise GUI elements that depend on specific settings.
+        """
         self.novelTree.initSettings()
         return
 
@@ -110,7 +112,7 @@ class GuiNovelView(QWidget):
         return
 
     def openProjectTasks(self):
-        """Run opening project tasks.
+        """Run open project tasks.
         """
         lastNovel = self.theProject.lastNovel
         if lastNovel not in self.theProject.tree:
@@ -136,8 +138,8 @@ class GuiNovelView(QWidget):
         self.theProject.options.setValue("GuiNovelView", "lastCol", lastColType)
         return
 
-    def setFocus(self):
-        """Forward the set focus call to the tree widget.
+    def setTreeFocus(self):
+        """Set the focus to the tree widget.
         """
         self.novelTree.setFocus()
         return
