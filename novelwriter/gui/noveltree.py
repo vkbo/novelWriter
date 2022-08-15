@@ -69,8 +69,8 @@ class GuiNovelView(QWidget):
         self.theProject = mainGui.theProject
 
         # Build GUI
-        self.novelTree = GuiNovelTree(self)
         self.novelBar = GuiNovelToolBar(self)
+        self.novelTree = GuiNovelTree(self)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -93,6 +93,8 @@ class GuiNovelView(QWidget):
     ##
 
     def initSettings(self):
+        """Initialise GUI elements that depend on specific settings.
+        """
         self.novelTree.initSettings()
         return
 
@@ -110,7 +112,7 @@ class GuiNovelView(QWidget):
         return
 
     def openProjectTasks(self):
-        """Run opening project tasks.
+        """Run open project tasks.
         """
         lastNovel = self.theProject.lastNovel
         if lastNovel not in self.theProject.tree:
@@ -136,8 +138,8 @@ class GuiNovelView(QWidget):
         self.theProject.options.setValue("GuiNovelView", "lastCol", lastColType)
         return
 
-    def setFocus(self):
-        """Forward the set focus call to the tree widget.
+    def setTreeFocus(self):
+        """Set the focus to the tree widget.
         """
         self.novelTree.setFocus()
         return
@@ -174,7 +176,7 @@ class GuiNovelToolBar(QWidget):
         self.mainTheme  = novelView.mainGui.mainTheme
 
         iPx = self.mainTheme.baseIconSize
-        mPx = self.mainConf.pxInt(3)
+        mPx = self.mainConf.pxInt(2)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -396,8 +398,6 @@ class GuiNovelTree(QTreeWidget):
             self.mainTheme.loadDecoration("deco_doc_h4", pxH=iPx),
         ]
         self._pMore = self.mainTheme.loadDecoration("deco_doc_more", pxH=iPx)
-        self._pActive = self.mainTheme.loadDecoration("deco_more_on", pxH=iPx)
-        self._pInactive = self.mainTheme.loadDecoration("deco_more_off", pxH=iPx)
 
         # Connect signals
         self.clicked.connect(self._treeItemClicked)

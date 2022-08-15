@@ -97,7 +97,6 @@ class NWProject():
         self.autoReplace = {}     # Text to auto-replace on exports
         self.titleFormat = {}     # The formatting of titles for exports
         self.spellCheck  = False  # Controls the spellcheck-as-you-type feature
-        self.autoOutline = True   # If true, the Project Outline is updated automatically
         self.statusItems = None   # Novel file progress status values
         self.importItems = None   # Note file importance values
         self.lastEdited  = None   # The handle of the last file to be edited
@@ -258,7 +257,6 @@ class NWProject():
             "section":    "",
         }
         self.spellCheck  = False
-        self.autoOutline = True
         self.statusItems = NWStatus(NWStatus.STATUS)
         self.statusItems.write(None, self.tr("New"),      (100, 100, 100))
         self.statusItems.write(None, self.tr("Note"),     (200, 50,  0))
@@ -608,8 +606,6 @@ class NWProject():
                         self.spellCheck = checkBool(xItem.text, False)
                     elif xItem.tag == "spellLang":
                         self.projSpell = checkString(xItem.text, None, True)
-                    elif xItem.tag == "autoOutline":
-                        self.autoOutline = checkBool(xItem.text, True)
                     elif xItem.tag == "lastEdited":
                         self.lastEdited = checkString(xItem.text, None, True)
                     elif xItem.tag == "lastViewed":
@@ -735,7 +731,6 @@ class NWProject():
         self._packProjectValue(xSettings, "language", self.projLang)
         self._packProjectValue(xSettings, "spellCheck", self.spellCheck)
         self._packProjectValue(xSettings, "spellLang", self.projSpell)
-        self._packProjectValue(xSettings, "autoOutline", self.autoOutline)
         self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
         self._packProjectValue(xSettings, "lastViewed", self.lastViewed)
         self._packProjectValue(xSettings, "lastNovel", self.lastNovel)
@@ -1096,14 +1091,6 @@ class NWProject():
             self.setProjectChanged(True)
         return True
 
-    def setAutoOutline(self, theMode):
-        """Enable/disable automatic update of project outline.
-        """
-        if self.autoOutline != theMode:
-            self.autoOutline = theMode
-            self.setProjectChanged(True)
-        return self.autoOutline
-
     def setTreeOrder(self, newOrder):
         """A list representing the linear/flattened order of project
         items in the GUI project tree. The user can rearrange the order
@@ -1136,6 +1123,14 @@ class NWProject():
         """
         if self.lastNovel != tHandle:
             self.lastNovel = tHandle
+            self.setProjectChanged(True)
+        return True
+
+    def setLastOutlineViewed(self, tHandle):
+        """Set last viewed novel root in the outline view.
+        """
+        if self.lastOutline != tHandle:
+            self.lastOutline = tHandle
             self.setProjectChanged(True)
         return True
 

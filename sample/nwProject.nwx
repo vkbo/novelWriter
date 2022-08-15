@@ -1,24 +1,23 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-06-15 13:07:17">
+<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-07-31 18:38:08">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1371</saveCount>
+    <saveCount>1378</saveCount>
     <autoCount>236</autoCount>
-    <editTime>69222</editTime>
+    <editTime>69273</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
     <language>en_GB</language>
     <spellCheck>True</spellCheck>
     <spellLang>None</spellLang>
-    <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
     <lastViewed>636b6aa9b697b</lastViewed>
     <lastNovel>7031beac91f75</lastNovel>
-    <lastOutline>None</lastOutline>
+    <lastOutline>7031beac91f75</lastOutline>
     <lastWordCount>1363</lastWordCount>
     <novelWordCount>954</novelWordCount>
     <notesWordCount>409</notesWordCount>

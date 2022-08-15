@@ -55,7 +55,6 @@ class GuiProjectView(QWidget):
 
     # Signals triggered when the meta data values of items change
     treeItemChanged = pyqtSignal(str)
-    novelItemChanged = pyqtSignal(str)
     rootFolderChanged = pyqtSignal(str)
     wordCountsChanged = pyqtSignal()
 
@@ -177,7 +176,7 @@ class GuiProjectToolBar(QWidget):
         self.mainTheme  = projView.mainGui.mainTheme
 
         iPx = self.mainTheme.baseIconSize
-        mPx = self.mainConf.pxInt(3)
+        mPx = self.mainConf.pxInt(2)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -1356,8 +1355,6 @@ class GuiProjectTree(QTreeWidget):
         itemType = tItem.itemType
         if itemType == nwItemType.ROOT:
             self.projView.rootFolderChanged.emit(tHandle)
-        elif itemType == nwItemType.FILE and tItem.isNovelLike():
-            self.projView.novelItemChanged.emit(tHandle)
 
         self.projView.treeItemChanged.emit(tHandle)
 

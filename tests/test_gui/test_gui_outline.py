@@ -54,7 +54,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
     # Toggle scrollbars
     nwGUI.mainConf.hideVScroll = True
     nwGUI.mainConf.hideHScroll = True
-    outlineView.initOutline()
+    outlineView.initSettings()
     assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
@@ -62,7 +62,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
 
     nwGUI.mainConf.hideVScroll = False
     nwGUI.mainConf.hideHScroll = False
-    outlineView.initOutline()
+    outlineView.initSettings()
     assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
@@ -232,9 +232,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert outlineData.pCValue.text() == "3"
 
     # Scene One
-    actItem = outlineTree.topLevelItem(1)
-    chpItem = actItem.child(0)
-    selItem = chpItem.child(0)
+    selItem = outlineTree.topLevelItem(4)
 
     outlineTree.setCurrentItem(selItem)
     tHandle, tLine = outlineTree.getSelectedHandle()
@@ -252,10 +250,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
 
     # Scene One, Section Two
-    actItem = outlineTree.topLevelItem(1)
-    chpItem = actItem.child(0)
-    scnItem = chpItem.child(0)
-    selItem = scnItem.child(0)
+    selItem = outlineTree.topLevelItem(5)
 
     outlineTree.setCurrentItem(selItem)
     tHandle, tLine = outlineTree.getSelectedHandle()
