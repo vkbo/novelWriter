@@ -33,12 +33,7 @@ from datetime import datetime
 from configparser import ConfigParser
 import sys
 
-if sys.version_info >= (3, 10):
-    from typing import Literal, TypeGuard
-else:
-    from typing_extensions import Literal, TypeGuard
-
-from typing import Any, AnyStr, TypeVar, overload
+from typing import TYPE_CHECKING, overload
 
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import qApp, QWidget
@@ -48,14 +43,21 @@ from novelwriter.error import logException
 from novelwriter.constants import nwConst, nwUnicode
 from novelwriter.logging import getLogger
 
+if TYPE_CHECKING:
+    if sys.version_info >= (3, 10):
+        from typing import Final, Literal, TypeGuard
+    else:
+        from typing_extensions import Final, Literal, TypeGuard
+
+    from typing import Any, AnyStr, TypeVar
+    _DefaultT = TypeVar('_DefaultT')
+
 logger = getLogger(__name__)
 
 
 # =============================================================================================== #
 #  Checker Functions
 # =============================================================================================== #
-_DefaultT = TypeVar('_DefaultT')
-
 
 @overload
 def checkString(
@@ -633,12 +635,12 @@ def getGuiItem(objName: str) -> QWidget | None:
 
 class NWConfigParser(ConfigParser):
 
-    CNF_STR:   Literal[0] = 0
-    CNF_INT:   Literal[1] = 1
-    CNF_FLOAT: Literal[2] = 2
-    CNF_BOOL:  Literal[3] = 3
-    CNF_S_LST: Literal[4] = 4
-    CNF_I_LST: Literal[5] = 5
+    CNF_STR:   Final[Literal[0]] = 0
+    CNF_INT:   Final[Literal[1]] = 1
+    CNF_FLOAT: Final[Literal[2]] = 2
+    CNF_BOOL:  Final[Literal[3]] = 3
+    CNF_S_LST: Final[Literal[4]] = 4
+    CNF_I_LST: Final[Literal[5]] = 5
 
     def __init__(self) -> None:
         super().__init__()

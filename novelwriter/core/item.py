@@ -27,11 +27,6 @@ from __future__ import annotations
 
 import sys
 
-if sys.version_info >= (3, 10):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
-
 from typing import TYPE_CHECKING
 
 from lxml import etree
@@ -44,6 +39,11 @@ from novelwriter.constants import nwLabels, trConst
 from novelwriter.logging import getLogger, VerboseLogger
 
 if TYPE_CHECKING:
+    if sys.version_info >= (3, 10):
+        from typing import Literal
+    else:
+        from typing_extensions import Literal
+
     from PyQt5.QtGui import QIcon
     from novelwriter.core.project import NWProject
 

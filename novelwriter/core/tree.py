@@ -27,8 +27,9 @@ from __future__ import annotations
 
 import os
 import random
+import sys
 
-from typing import Generator
+from typing import TYPE_CHECKING
 
 from lxml import etree
 
@@ -40,14 +41,22 @@ from novelwriter.core.item import NWItem
 
 from novelwriter.logging import getLogger
 
+if TYPE_CHECKING:
+    if sys.version_info >= (3, 10):
+        from typing import Final, Literal
+    else:
+        from typing_extensions import Final, Literal
+
+    from typing import Generator
+
 logger = getLogger(__name__)
 
 
 class NWTree():
 
-    MAX_DEPTH = 1000  # Cap of tree traversing for loops
+    MAX_DEPTH: Final[Literal[1000]] = 1000  # Cap of tree traversing for loops
 
-    def __init__(self, theProject):
+    def __init__(self, theProject) -> None:
 
         self.theProject = theProject
 

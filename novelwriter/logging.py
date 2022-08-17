@@ -48,17 +48,19 @@ from typing import cast
 VERBOSE = 5
 logging.addLevelName(VERBOSE, "VERBOSE")
 
+
 class VerboseLogger(logging.Logger):
 
     def verbose(self, message: object, *args, **kws) -> None:
         if self.isEnabledFor(VERBOSE):
             self._log(VERBOSE, message, args, **kws)
 
-logging.setLoggerClass(VerboseLogger)
 
+logging.setLoggerClass(VerboseLogger)
 
 # Initiating logging
 logger: VerboseLogger = cast(VerboseLogger, logging.getLogger())
+
 
 def getLogger(suffix: str) -> VerboseLogger:
     return logger.getChild(suffix)

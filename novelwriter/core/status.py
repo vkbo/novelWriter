@@ -29,12 +29,7 @@ from __future__ import annotations
 import random
 import sys
 
-if sys.version_info >= (3, 10):
-    from typing import Final, Literal, TypeAlias, TypedDict, TypeGuard
-else:
-    from typing_extensions import Final, Literal, TypeAlias, TypedDict, TypeGuard
-
-from typing import Dict, Iterator, NamedTuple, Sequence, Tuple, Union
+from typing import TYPE_CHECKING
 
 import novelwriter
 from lxml import etree
@@ -42,24 +37,27 @@ from novelwriter.common import checkInt, checkString, minmax, simplified
 from novelwriter.logging import VerboseLogger, getLogger
 from PyQt5.QtGui import QColor, QIcon, QPixmap
 
+if TYPE_CHECKING:
+    if sys.version_info >= (3, 10):
+        from typing import Final, Literal, TypeAlias, TypedDict, TypeGuard
+    else:
+        from typing_extensions import (Final, Literal, TypeAlias, TypedDict,
+                                       TypeGuard)
+
+    from typing import Dict, Iterator,  Sequence, Tuple
+
+    NWStatusColour: TypeAlias = Tuple[int, int, int]
+
+    class NWStatusData(TypedDict):
+        name: str
+        icon: QIcon
+        cols: NWStatusColour
+        count: int
+
+    NWStatusStore: TypeAlias = Dict[str, NWStatusData]
+
+
 logger: VerboseLogger = getLogger(__name__)
-
-
-class NWColour(NamedTuple):
-    red: int
-    green: int
-    blue: int
-
-
-class NWStatusData(TypedDict):
-    name: str
-    icon: QIcon
-    cols: NWStatusColour
-    count: int
-
-
-NWStatusStore: TypeAlias = Dict[str, NWStatusData]
-NWStatusColour: TypeAlias = Union[NWColour, Tuple[int, int, int]]
 
 
 class NWStatus():
@@ -96,9 +94,9 @@ class NWStatus():
         if not self._isKey(key):
             key = self._newKey()
         if not isinstance(cols, tuple):
-            cols = NWColour(100, 100, 100)
+            cols = (100, 100, 100)
         if len(cols) != 3:
-            cols = NWColour(100, 100, 100)
+            cols = (100, 100, 100)
 
         pixmap: QPixmap = QPixmap(self._iconSize, self._iconSize)
         pixmap.fill(QColor(*cols))
@@ -171,7 +169,7 @@ class NWStatus():
         elif self._default is not None:
             return self._store[self._default]["cols"]
         else:
-            return NWColour(100, 100, 100)
+            return (100, 100, 100)
 
     def count(self, key) -> int:
         """Return the count associated with a given key.
@@ -265,7 +263,7 @@ class NWStatus():
             red: int   = minmax(checkInt(str(xChild.attrib.get("red")), 100), 0, 255)
             green: int = minmax(checkInt(str(xChild.attrib.get("green")), 100), 0, 255)
             blue: int  = minmax(checkInt(str(xChild.attrib.get("blue")), 100), 0, 255)
-            self.write(key, name, NWColour(red, green, blue), count)
+            self.write(key, name, (red, green, blue), count)
 
         return True
 

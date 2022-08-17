@@ -30,12 +30,7 @@ import json
 import shutil
 import sys
 
-if sys.version_info >= (3, 10):
-    from typing import Final, TypedDict
-else:
-    from typing_extensions import Final, TypedDict
-
-from typing import TYPE_CHECKING, Any, Generator
+from typing import TYPE_CHECKING
 
 import novelwriter
 
@@ -61,15 +56,20 @@ from novelwriter.constants import trConst, nwFiles, nwLabels
 from novelwriter.logging import getLogger
 
 if TYPE_CHECKING:
+    if sys.version_info >= (3, 10):
+        from typing import Final, TypedDict
+    else:
+        from typing_extensions import Final, TypedDict
+    from typing import Any, Generator
+
+    class NWStatusImportData(TypedDict):
+        key: str | None
+        name: str
+        cols: tuple[int, int, int]
+
     from novelwriter.guimain import GuiMain
 
 logger = getLogger(__name__)
-
-
-class NWStatusImportData(TypedDict):
-    key: str | None
-    name: str
-    cols: tuple[int, int, int]
 
 
 class NWProject():
