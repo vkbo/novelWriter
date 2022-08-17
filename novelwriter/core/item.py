@@ -23,7 +23,16 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
+from __future__ import annotations
+
+import sys
+
+if sys.version_info >= (3, 10):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
+
+from typing import TYPE_CHECKING
 
 from lxml import etree
 
@@ -32,42 +41,47 @@ from novelwriter.common import (
     checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified
 )
 from novelwriter.constants import nwLabels, trConst
+from novelwriter.logging import getLogger, VerboseLogger
 
-logger = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    from PyQt5.QtGui import QIcon
+    from novelwriter.core.project import NWProject
+
+logger: VerboseLogger = getLogger(__name__)
 
 
 class NWItem():
 
-    def __init__(self, theProject):
+    def __init__(self, theProject) -> None:
 
-        self.theProject = theProject
+        self.theProject: NWProject = theProject
 
-        self._name     = ""
-        self._handle   = None
-        self._parent   = None
-        self._root     = None
-        self._order    = 0
-        self._type     = nwItemType.NO_TYPE
-        self._class    = nwItemClass.NO_CLASS
-        self._layout   = nwItemLayout.NO_LAYOUT
-        self._status   = None
-        self._import   = None
-        self._expanded = False
-        self._exported = True
+        self._name: str     = ""
+        self._handle: str | None = None
+        self._parent: str | None = None
+        self._root:   str | None = None
+        self._order: int    = 0
+        self._type: nwItemType     = nwItemType.NO_TYPE
+        self._class: nwItemClass   = nwItemClass.NO_CLASS
+        self._layout: nwItemLayout = nwItemLayout.NO_LAYOUT
+        self._status: str | None = None
+        self._import: str | None = None
+        self._expanded: bool = False
+        self._exported: bool = True
 
         # Document Meta Data
-        self._charCount = 0  # Current character count
-        self._wordCount = 0  # Current word count
-        self._paraCount = 0  # Current paragraph count
-        self._cursorPos = 0  # Last cursor position
-        self._initCount = 0  # Initial word count
+        self._charCount: int = 0  # Current character count
+        self._wordCount: int = 0  # Current word count
+        self._paraCount: int = 0  # Current paragraph count
+        self._cursorPos: int = 0  # Last cursor position
+        self._initCount: int = 0  # Initial word count
 
         return
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<NWItem handle={self._handle}, parent={self._parent}, name='{self._name}'>"
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return self._handle is not None
 
     ##
@@ -75,81 +89,81 @@ class NWItem():
     ##
 
     @property
-    def itemName(self):
+    def itemName(self) -> str:
         return self._name
 
     @property
-    def itemHandle(self):
+    def itemHandle(self) -> str | None:
         return self._handle
 
     @property
-    def itemParent(self):
+    def itemParent(self) -> str | None:
         return self._parent
 
     @property
-    def itemRoot(self):
+    def itemRoot(self) -> str | None:
         return self._root
 
     @property
-    def itemOrder(self):
+    def itemOrder(self) -> int:
         return self._order
 
     @property
-    def itemType(self):
+    def itemType(self) -> nwItemType:
         return self._type
 
     @property
-    def itemClass(self):
+    def itemClass(self) -> nwItemClass:
         return self._class
 
     @property
-    def itemLayout(self):
+    def itemLayout(self) -> nwItemLayout:
         return self._layout
 
     @property
-    def itemStatus(self):
+    def itemStatus(self) -> str | None:
         return self._status
 
     @property
-    def itemImport(self):
+    def itemImport(self) -> str | None:
         return self._import
 
     @property
-    def isExpanded(self):
+    def isExpanded(self) -> bool:
         return self._expanded
 
     @property
-    def isExported(self):
+    def isExported(self) -> bool:
         return self._exported
 
     @property
-    def charCount(self):
+    def charCount(self) -> int:
         return self._charCount
 
     @property
-    def wordCount(self):
+    def wordCount(self) -> int:
         return self._wordCount
 
     @property
-    def paraCount(self):
+    def paraCount(self) -> int:
         return self._paraCount
 
     @property
-    def initCount(self):
+    def initCount(self) -> int:
         return self._initCount
 
     @property
-    def cursorPos(self):
+    def cursorPos(self) -> int:
         return self._cursorPos
 
     ##
     #  XML Pack/Unpack
     ##
 
-    def packXML(self, xParent):
+    def packXML(self, xParent: etree._Element) -> None:
         """Pack all the data in the class instance into an XML object.
         """
-        itemAttrib = {}
+        itemAttrib: dict[str, str] = {}
         itemAttrib["handle"] = str(self._handle)
         itemAttrib["parent"] = str(self._parent)
         itemAttrib["root"]   = str(self._root)
@@ -159,7 +173,7 @@ class NWItem():
         if self._type == nwItemType.FILE:
             itemAttrib["layout"] = str(self._layout.name)
 
-        metaAttrib = {}
+        metaAttrib: dict[str, str] = {}
         metaAttrib["expanded"] = str(self._expanded)
         if self._type == nwItemType.FILE:
             metaAttrib["charCount"] = str(self._charCount)
@@ -167,19 +181,19 @@ class NWItem():
             metaAttrib["paraCount"] = str(self._paraCount)
             metaAttrib["cursorPos"] = str(self._cursorPos)
 
-        nameAttrib = {}
+        nameAttrib: dict[str, str] = {}
         nameAttrib["status"] = str(self._status)
         nameAttrib["import"] = str(self._import)
         if self._type == nwItemType.FILE:
             nameAttrib["exported"] = str(self._exported)
 
-        xPack = etree.SubElement(xParent, "item", attrib=itemAttrib)
+        xPack: etree._Element = etree.SubElement(xParent, "item", attrib=itemAttrib)
         self._subPack(xPack, "meta", attrib=metaAttrib)
         self._subPack(xPack, "name", text=str(self._name), attrib=nameAttrib)
 
         return
 
-    def unpackXML(self, xItem):
+    def unpackXML(self, xItem: etree._Element) -> bool:
         """Set the values from an XML entry of type 'item'.
         """
         if xItem.tag != "item":
@@ -187,40 +201,40 @@ class NWItem():
             return False
 
         if "handle" in xItem.attrib:
-            self.setHandle(xItem.attrib["handle"])
+            self.setHandle(str(xItem.attrib["handle"]))
         else:
             logger.error("XML item entry does not have a handle")
             return False
 
-        self.setParent(xItem.attrib.get("parent", None))
-        self.setRoot(xItem.attrib.get("root", None))
-        self.setOrder(xItem.attrib.get("order", 0))
-        self.setType(xItem.attrib.get("type", nwItemType.NO_TYPE))
-        self.setClass(xItem.attrib.get("class", nwItemClass.NO_CLASS))
-        self.setLayout(xItem.attrib.get("layout", nwItemLayout.NO_LAYOUT))
+        self.setParent(xItem.attrib.get("parent", None))                    # type: ignore
+        self.setRoot(xItem.attrib.get("root", None))                        # type: ignore
+        self.setOrder(xItem.attrib.get("order", 0))                         # type: ignore
+        self.setType(xItem.attrib.get("type", nwItemType.NO_TYPE))          # type: ignore
+        self.setClass(xItem.attrib.get("class", nwItemClass.NO_CLASS))      # type: ignore
+        self.setLayout(xItem.attrib.get("layout", nwItemLayout.NO_LAYOUT))  # type: ignore
 
         for xValue in xItem:
             if xValue.tag == "meta":
-                self.setExpanded(xValue.attrib.get("expanded", False))
-                self.setCharCount(xValue.attrib.get("charCount", 0))
-                self.setWordCount(xValue.attrib.get("wordCount", 0))
-                self.setParaCount(xValue.attrib.get("paraCount", 0))
-                self.setCursorPos(xValue.attrib.get("cursorPos", 0))
+                self.setExpanded(xValue.attrib.get("expanded", False))  # type: ignore
+                self.setCharCount(xValue.attrib.get("charCount", 0))    # type: ignore
+                self.setWordCount(xValue.attrib.get("wordCount", 0))    # type: ignore
+                self.setParaCount(xValue.attrib.get("paraCount", 0))    # type: ignore
+                self.setCursorPos(xValue.attrib.get("cursorPos", 0))    # type: ignore
             elif xValue.tag == "name":
                 self.setName(xValue.text)
-                self.setStatus(xValue.attrib.get("status", None))
-                self.setImport(xValue.attrib.get("import", None))
-                self.setExported(xValue.attrib.get("exported", True))
+                self.setStatus(xValue.attrib.get("status", None))      # type: ignore
+                self.setImport(xValue.attrib.get("import", None))      # type: ignore
+                self.setExported(xValue.attrib.get("exported", True))  # type: ignore
 
             # Legacy Format (1.3 and earlier)
             elif xValue.tag == "status":
                 self.setImportStatus(xValue.text)
             elif xValue.tag == "type":
-                self.setType(xValue.text)
+                self.setType(str(xValue.text))
             elif xValue.tag == "class":
-                self.setClass(xValue.text)
+                self.setClass(xValue.text or "")
             elif xValue.tag == "layout":
-                self.setLayout(xValue.text)
+                self.setLayout(xValue.text or "")
             elif xValue.tag == "expanded":
                 self.setExpanded(xValue.text)
             elif xValue.tag == "exported":
@@ -253,13 +267,18 @@ class NWItem():
         return True
 
     @staticmethod
-    def _subPack(xParent, name, attrib=None, text=None, none=True):
+    def _subPack(
+        xParent: etree._Element, name,
+        attrib: dict[str, str] | None = None,
+        text: str | None = None,
+        none: bool = True
+    ) -> None:
         """Pack the values into an XML element.
         """
         if not none and (text is None or text == "None"):
             return None
-        xAttr = {} if attrib is None else attrib
-        xSub = etree.SubElement(xParent, name, attrib=xAttr)
+        xAttr: dict[str, str] = {} if attrib is None else attrib
+        xSub: etree._Element = etree.SubElement(xParent, name, attrib=xAttr)
         if text is not None:
             xSub.text = text
 
@@ -269,10 +288,10 @@ class NWItem():
     #  Lookup Methods
     ##
 
-    def describeMe(self, hLevel=None):
+    def describeMe(self, hLevel: Literal["H1", "H2", "H3"] | None = None) -> str:
         """Return a string description of the item.
         """
-        descKey = "none"
+        descKey: str = "none"
         if self._type == nwItemType.ROOT:
             descKey = "root"
         elif self._type == nwItemType.FOLDER:
@@ -292,38 +311,42 @@ class NWItem():
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
 
-    def isNovelLike(self):
+    def isNovelLike(self) -> bool:
         """Returns true if the item is of a novel-like class.
         """
         return self._class in (nwItemClass.NOVEL, nwItemClass.ARCHIVE)
 
-    def documentAllowed(self):
+    def documentAllowed(self) -> bool:
         """Returns true if the item is allowed to be of document layout.
         """
         return self._class in (nwItemClass.NOVEL, nwItemClass.ARCHIVE, nwItemClass.TRASH)
 
-    def isInactive(self):
+    def isInactive(self) -> bool:
         """Returns true if the item is in an inactive class.
         """
         return self._class in (nwItemClass.NO_CLASS, nwItemClass.ARCHIVE, nwItemClass.TRASH)
 
-    def getImportStatus(self):
+    def getImportStatus(self) -> tuple[str, QIcon]:
         """Return the relevant importance or status label and icon for
         the current item based on its class.
         """
-        if self.isNovelLike():
-            stName = self.theProject.statusItems.name(self._status)
-            stIcon = self.theProject.statusItems.icon(self._status)
+        if self.isNovelLike() and self.theProject.statusItems is not None:
+            assert self._status is not None
+            stName: str = self.theProject.statusItems.name(self._status)
+            stIcon: QIcon = self.theProject.statusItems.icon(self._status)
+        elif self.theProject.importItems is not None:
+            assert self._import is not None
+            stName: str = self.theProject.importItems.name(self._import)
+            stIcon: QIcon = self.theProject.importItems.icon(self._import)
         else:
-            stName = self.theProject.importItems.name(self._import)
-            stIcon = self.theProject.importItems.icon(self._import)
+            raise Exception("This is a bug!")
         return stName, stIcon
 
     ##
     #  Special Setters
     ##
 
-    def setImportStatus(self, value):
+    def setImportStatus(self, value: str | None) -> None:
         """Update the importance or status value based on class. This is
         a wrapper setter for setStatus and setImport.
         """
@@ -333,7 +356,7 @@ class NWItem():
             self.setImport(value)
         return
 
-    def setClassDefaults(self, itemClass):
+    def setClassDefaults(self, itemClass: str | nwItemClass) -> None:
         """Set the default values based on the item's class and the
         project settings.
         """
@@ -363,7 +386,7 @@ class NWItem():
     #  Set Item Values
     ##
 
-    def setName(self, name):
+    def setName(self, name: str | None) -> None:
         """Set the item name.
         """
         if isinstance(name, str):
@@ -372,7 +395,7 @@ class NWItem():
             self._name = ""
         return
 
-    def setHandle(self, handle):
+    def setHandle(self, handle: str | None) -> None:
         """Set the item handle, and ensure it is valid.
         """
         if isHandle(handle):
@@ -381,7 +404,7 @@ class NWItem():
             self._handle = None
         return
 
-    def setParent(self, handle):
+    def setParent(self, handle: str | None) -> None:
         """Set the parent handle, and ensure it is valid.
         """
         if handle is None:
@@ -392,7 +415,7 @@ class NWItem():
             self._parent = None
         return
 
-    def setRoot(self, handle):
+    def setRoot(self, handle:  str | None) -> None:
         """Set the root handle, and ensure it is valid.
         """
         if handle is None:
@@ -403,7 +426,7 @@ class NWItem():
             self._root = None
         return
 
-    def setOrder(self, order):
+    def setOrder(self, order: int | None) -> None:
         """Set the item order, and ensure that it is valid. This value
         is purely a meta value, and not actually used by novelWriter at
         the moment.
@@ -411,7 +434,7 @@ class NWItem():
         self._order = checkInt(order, 0)
         return
 
-    def setType(self, value):
+    def setType(self, value: str | nwItemType) -> None:
         """Set the item type from either a proper nwItemType, or set it
         from a string representing an nwItemType.
         """
@@ -426,7 +449,7 @@ class NWItem():
             self._type = nwItemType.NO_TYPE
         return
 
-    def setClass(self, value):
+    def setClass(self, value: str | nwItemClass) -> None:
         """Set the item class from either a proper nwItemClass, or set
         it from a string representing an nwItemClass.
         """
@@ -439,7 +462,7 @@ class NWItem():
             self._class = nwItemClass.NO_CLASS
         return
 
-    def setLayout(self, value):
+    def setLayout(self, value: str | nwItemLayout) -> None:
         """Set the item layout from either a proper nwItemLayout, or set
         it from a string representing an nwItemLayout.
         """
@@ -454,21 +477,23 @@ class NWItem():
             self._layout = nwItemLayout.NO_LAYOUT
         return
 
-    def setStatus(self, value):
+    def setStatus(self, value: str | None) -> None:
         """Set the item status by looking it up in the valid status
         items of the current project.
         """
+        assert self.theProject.statusItems is not None
         self._status = self.theProject.statusItems.check(value)
         return
 
-    def setImport(self, value):
+    def setImport(self, value: str | None) -> None:
         """Set the item importance by looking it up in the valid import
         items of the current project.
         """
+        assert self.theProject.importItems is not None
         self._import = self.theProject.importItems.check(value)
         return
 
-    def setExpanded(self, state):
+    def setExpanded(self, state: str | bool | None) -> None:
         """Set the expanded status of an item in the project tree.
         """
         if isinstance(state, str):
@@ -477,7 +502,7 @@ class NWItem():
             self._expanded = (state is True)
         return
 
-    def setExported(self, state):
+    def setExported(self, state: str | bool | None) -> None:
         """Set the export flag.
         """
         if isinstance(state, str):
@@ -490,31 +515,31 @@ class NWItem():
     #  Set Document Meta Data
     ##
 
-    def setCharCount(self, count):
+    def setCharCount(self, count: str | int | None) -> None:
         """Set the character count, and ensure that it is an integer.
         """
         self._charCount = max(0, checkInt(count, 0))
         return
 
-    def setWordCount(self, count):
+    def setWordCount(self, count: str | int | None) -> None:
         """Set the word count, and ensure that it is an integer.
         """
         self._wordCount = max(0, checkInt(count, 0))
         return
 
-    def setParaCount(self, count):
+    def setParaCount(self, count: str | int | None) -> None:
         """Set the paragraph count, and ensure that it is an integer.
         """
         self._paraCount = max(0, checkInt(count, 0))
         return
 
-    def setCursorPos(self, position):
+    def setCursorPos(self, position: str | int | None) -> None:
         """Set the cursor position, and ensure that it is an integer.
         """
         self._cursorPos = max(0, checkInt(position, 0))
         return
 
-    def saveInitialCount(self):
+    def saveInitialCount(self) -> None:
         """Save the initial word count.
         """
         self._initCount = self._wordCount

@@ -22,16 +22,20 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
+import logging as _logging
 import sys
 import getopt
-import logging
+
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
 from novelwriter.error import exceptionHandler, logException
 from novelwriter.config import Config
+
+from novelwriter.logging import getLogger, VERBOSE
 
 ##
 #  Version Scheme
@@ -72,34 +76,8 @@ __helpurl__    = "https://github.com/vkbo/novelWriter/discussions"
 __releaseurl__ = "https://github.com/vkbo/novelWriter/releases/latest"
 __docurl__     = "https://novelwriter.readthedocs.io"
 
-##
-#  Logging
-# =========
-#  Standard used for logging levels in novelWriter:
-#    CRITICAL  Use for errors that result in termination of the program
-#    ERROR     Use when an action fails, but execution continues
-#    WARNING   When something unexpected, but non-critical happens
-#    INFO      Any useful user information like open, save, exit initiated
-#  ----------- SPAM Threshold : Output above should be minimal -----------------
-#    DEBUG     Use for descriptions of main program flow
-#    VERBOSE   Use for outputting values and program flow details
-##
 
-# Add verbose logging level
-VERBOSE = 5
-logging.addLevelName(VERBOSE, "VERBOSE")
-
-
-def logVerbose(self, message, *args, **kws):
-    if self.isEnabledFor(VERBOSE):
-        self._log(VERBOSE, message, args, **kws)
-
-
-logging.Logger.verbose = logVerbose
-
-# Initiating logging
-logger = logging.getLogger(__name__)
-
+logger = getLogger(__name__)
 
 ##
 #  Main Program
@@ -109,7 +87,7 @@ logger = logging.getLogger(__name__)
 CONFIG = Config()
 
 
-def main(sysArgs=None):
+def main(sysArgs: list[str] | None = None):
     """Parse command line, set up logging, and launch main GUI.
     """
     if sysArgs is None:
@@ -150,7 +128,7 @@ def main(sysArgs=None):
     )
 
     # Defaults
-    logLevel = logging.WARN
+    logLevel = _logging.WARN
     logFormat = "{levelname:8}  {message:}"
     confPath = None
     dataPath = None
@@ -177,9 +155,9 @@ def main(sysArgs=None):
             print("novelWriter Version %s [%s]" % (__version__, __date__))
             sys.exit(0)
         elif inOpt == "--info":
-            logLevel = logging.INFO
+            logLevel = _logging.INFO
         elif inOpt == "--debug":
-            logLevel = logging.DEBUG
+            logLevel = _logging.DEBUG
             logFormat  = "[{asctime:}]  {filename:>17}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--verbose":
             logLevel = VERBOSE
@@ -197,10 +175,10 @@ def main(sysArgs=None):
     CONFIG.cmdOpen = cmdOpen
 
     # Set Logging
-    cHandle = logging.StreamHandler()
-    cHandle.setFormatter(logging.Formatter(fmt=logFormat, style="{"))
+    cHandle = _logging.StreamHandler()
+    cHandle.setFormatter(_logging.Formatter(fmt=logFormat, style="{"))
 
-    pkgLogger = logging.getLogger(__package__)
+    pkgLogger = _logging.getLogger(__package__)
     pkgLogger.addHandler(cHandle)
     pkgLogger.setLevel(logLevel)
 
@@ -253,7 +231,7 @@ def main(sysArgs=None):
 
     if CONFIG.osDarwin:
         try:
-            from Foundation import NSBundle
+            from Foundation import NSBundle  # type: ignore
             bundle = NSBundle.mainBundle()
             info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
             info["CFBundleName"] = "novelWriter"
@@ -265,7 +243,7 @@ def main(sysArgs=None):
         try:
             import ctypes
             appID = f"io.novelwriter.{__version__}"
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)  # type: ignore
         except Exception:
             logger.error("Failed to set application name")
             logException()

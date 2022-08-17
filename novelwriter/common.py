@@ -23,27 +23,57 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from __future__ import annotations
+
 import os
 import json
 import hashlib
-import logging
 
 from datetime import datetime
 from configparser import ConfigParser
+import sys
+
+if sys.version_info >= (3, 10):
+    from typing import Literal, TypeGuard
+else:
+    from typing_extensions import Literal, TypeGuard
+
+from typing import Any, AnyStr, TypeVar, overload
 
 from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import qApp
+from PyQt5.QtWidgets import qApp, QWidget
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.constants import nwConst, nwUnicode
+from novelwriter.logging import getLogger
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 # =============================================================================================== #
 #  Checker Functions
 # =============================================================================================== #
+_DefaultT = TypeVar('_DefaultT')
+
+
+@overload
+def checkString(
+    value: str | None,
+    default: _DefaultT,
+    allowNone: Literal[False] = False
+) -> str | _DefaultT:
+    ...
+
+
+@overload
+def checkString(
+    value: str | None,
+    default: _DefaultT,
+    allowNone: Literal[True]
+) -> str | _DefaultT | None:
+    ...
+
 
 def checkString(value, default, allowNone=False):
     """Check if a variable is a string or a None.
@@ -55,15 +85,53 @@ def checkString(value, default, allowNone=False):
     return default
 
 
+@overload
+def checkInt(
+    value: int | str | None,
+    default: _DefaultT,
+    allowNone: Literal[False] = False
+) -> int | _DefaultT:
+    ...
+
+
+@overload
+def checkInt(
+    value: int | str | None,
+    default: _DefaultT,
+    allowNone: Literal[True]
+) -> int | _DefaultT | None:
+    ...
+
+
 def checkInt(value, default, allowNone=False):
     """Check if a variable is an integer or a None.
     """
     if allowNone and (value is None or value == "None"):
         return None
+    elif (value is None or value == "None"):
+        return default
     try:
         return int(value)
     except Exception:
         return default
+
+
+@overload
+def checkFloat(
+    value: float | str | None,
+    default: _DefaultT,
+    allowNone: Literal[False] = False
+) -> float | _DefaultT:
+    ...
+
+
+@overload
+def checkFloat(
+    value: float | str | None,
+    default: _DefaultT,
+    allowNone: Literal[True]
+) -> float | _DefaultT | None:
+    ...
 
 
 def checkFloat(value, default, allowNone=False):
@@ -71,10 +139,30 @@ def checkFloat(value, default, allowNone=False):
     """
     if allowNone and (value is None or value == "None"):
         return None
+    elif value is None or value == "None":
+        return default
     try:
         return float(value)
     except Exception:
         return default
+
+
+@overload
+def checkBool(
+    value: bool | str | None,
+    default: _DefaultT,
+    allowNone: Literal[False] = False
+) -> bool | _DefaultT:
+    ...
+
+
+@overload
+def checkBool(
+    value: bool | str | None,
+    default: _DefaultT,
+    allowNone: Literal[True]
+) -> bool | _DefaultT | None:
+    ...
 
 
 def checkBool(value, default, allowNone=False):
@@ -82,6 +170,8 @@ def checkBool(value, default, allowNone=False):
     """
     if allowNone and (value is None or value == "None"):
         return None
+    elif value is None or value == "None":
+        return default
 
     if isinstance(value, str):
         if value == "True":
@@ -102,11 +192,31 @@ def checkBool(value, default, allowNone=False):
     return default
 
 
+@overload
+def checkHandle(
+    value: str | None,
+    default: _DefaultT,
+    allowNone: Literal[False] = False
+) -> str | _DefaultT:
+    ...
+
+
+@overload
+def checkHandle(
+    value: str | None,
+    default: _DefaultT,
+    allowNone: Literal[True]
+) -> str | _DefaultT | None:
+    ...
+
+
 def checkHandle(value, default, allowNone=False):
     """Check if a value is a handle.
     """
     if allowNone and (value is None or value == "None"):
         return None
+    elif value is None or value == "None":
+        return default
     if isHandle(value):
         return str(value)
     return default
@@ -116,7 +226,7 @@ def checkHandle(value, default, allowNone=False):
 #  Validator Functions
 # =============================================================================================== #
 
-def isHandle(value):
+def isHandle(value: str | None) -> TypeGuard[str]:
     """Check if a string is a valid novelWriter handle.
     Note: This is case sensitive. Must be lower case!
     """
@@ -130,7 +240,7 @@ def isHandle(value):
     return True
 
 
-def isTitleTag(value):
+def isTitleTag(value: str) -> TypeGuard[str]:
     """Check if a string is a valid title string.
     """
     if not isinstance(value, str):
@@ -145,25 +255,25 @@ def isTitleTag(value):
     return True
 
 
-def isItemClass(value):
+def isItemClass(value: str) -> bool:
     """Check if a string is a valid nwItemClass identifier.
     """
     return value in nwItemClass.__members__
 
 
-def isItemType(value):
+def isItemType(value: str) -> bool:
     """Check if a string is a valid nwItemType identifier.
     """
     return value in nwItemType.__members__
 
 
-def isItemLayout(value):
+def isItemLayout(value: str) -> bool:
     """Check if a string is a valid nwItemLayout identifier.
     """
     return value in nwItemLayout.__members__
 
 
-def hexToInt(value, default=0):
+def hexToInt(value: str, default: _DefaultT = 0) -> int | _DefaultT:
     """Convert a hex string to an integer.
     """
     if isinstance(value, str):
@@ -174,7 +284,7 @@ def hexToInt(value, default=0):
     return default
 
 
-def checkIntRange(value, first, last, default):
+def checkIntRange(value: int, first: int, last: int, default: _DefaultT) -> int | _DefaultT:
     """Check that an int is in a given range. If it isn't, return the
     default value.
     """
@@ -184,13 +294,13 @@ def checkIntRange(value, first, last, default):
     return default
 
 
-def minmax(value, minVal, maxVal):
+def minmax(value: int, minVal: int, maxVal: int) -> int:
     """Make sure an integer is between min and max value (inclusive).
     """
     return min(maxVal, max(minVal, value))
 
 
-def checkIntTuple(value, valid, default):
+def checkIntTuple(value: int, valid: tuple[int], default: _DefaultT) -> int | _DefaultT:
     """Check that an int is an element of a tuple. If it isn't, return
     the default value.
     """
@@ -204,13 +314,13 @@ def checkIntTuple(value, valid, default):
 #  Formatting Functions
 # =============================================================================================== #
 
-def formatInt(value):
+def formatInt(value: int) -> str:
     """Formats an integer with k, M, G etc.
     """
     if not isinstance(value, int):
         return "ERR"
 
-    theVal = float(value)
+    theVal: float = float(value)
     if theVal > 1000.0:
         for pF in ["k", "M", "G", "T", "P", "E"]:
             theVal /= 1000.0
@@ -225,7 +335,7 @@ def formatInt(value):
     return str(value)
 
 
-def formatTimeStamp(theTime, fileSafe=False):
+def formatTimeStamp(theTime: float, fileSafe=False) -> str:
     """Take a number (on the format returned by time.time()) and convert
     it to a timestamp string.
     """
@@ -235,7 +345,7 @@ def formatTimeStamp(theTime, fileSafe=False):
         return datetime.fromtimestamp(theTime).strftime(nwConst.FMT_TSTAMP)
 
 
-def formatTime(tS):
+def formatTime(tS: int) -> str:
     """Format a time in seconds in HH:MM:SS format or d-HH:MM:SS format
     if a full day or longer.
     """
@@ -251,27 +361,27 @@ def formatTime(tS):
 #  String Functions
 # =============================================================================================== #
 
-def simplified(string):
+def simplified(string: str) -> str:
     """Take a string an strip leading and trailing whitespaces, and
     replace all occurences of (multiple) whitespaces with a 0x20 space.
     """
     return " ".join(str(string).strip().split())
 
 
-def splitVersionNumber(value):
+def splitVersionNumber(value: str) -> list[int]:
     """Split a version string on the form aa.bb.cc into major, minor
     and patch, and computes an integer value aabbcc.
     """
     if not isinstance(value, str):
         return [0, 0, 0, 0]
 
-    vMajor = 0
-    vMinor = 0
-    vPatch = 0
-    vInt = 0
+    vMajor: int = 0
+    vMinor: int = 0
+    vPatch: int = 0
+    vInt: int = 0
 
-    vBits = value.split(".")
-    nBits = len(vBits)
+    vBits: list[str] = value.split(".")
+    nBits: int = len(vBits)
 
     if nBits > 0:
         vMajor = checkInt(vBits[0], 0)
@@ -285,11 +395,11 @@ def splitVersionNumber(value):
     return [vMajor, vMinor, vPatch, vInt]
 
 
-def transferCase(theSource, theTarget):
+def transferCase(theSource: str, theTarget: str) -> str:
     """Transfers the case of the source word to the target word. This
     will consider all upper or lower, and first char capitalisation.
     """
-    theResult = theTarget
+    theResult: str = theTarget
 
     if not isinstance(theSource, str) or not isinstance(theTarget, str):
         return theResult
@@ -307,7 +417,7 @@ def transferCase(theSource, theTarget):
     return theResult
 
 
-def fuzzyTime(secDiff):
+def fuzzyTime(secDiff: int | float) -> str:
     """Converts a time difference in seconds into a fuzzy time string.
     """
     if secDiff < 0:
@@ -368,7 +478,7 @@ def fuzzyTime(secDiff):
         ).format(int(round(secDiff/31557600)))
 
 
-def numberToRoman(numVal, toLower=False):
+def numberToRoman(numVal: int, toLower=False) -> str:
     """Convert an integer to a Roman number.
     """
     if not isinstance(numVal, int):
@@ -376,14 +486,14 @@ def numberToRoman(numVal, toLower=False):
     if numVal < 1 or numVal > 4999:
         return "OOR"
 
-    theValues = [
+    theValues: list[tuple[int, str]] = [
         (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"), (100, "C"), (90, "XC"),
         (50, "L"), (40, "XL"), (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I"),
     ]
 
-    romNum = ""
+    romNum: str = ""
     for theDiv, theSym in theValues:
-        n = numVal//theDiv
+        n: int = numVal//theDiv
         romNum += n*theSym
         numVal -= n*theDiv
         if numVal <= 0:
@@ -396,22 +506,22 @@ def numberToRoman(numVal, toLower=False):
 #  Encoder Functions
 # =============================================================================================== #
 
-def jsonEncode(data, n=0, nmax=0):
+def jsonEncode(data: dict | list | tuple, n=0, nmax=0) -> str:
     """Encode a dictionary, list or tuple as a json object or array, and
     indent from level n up to a max level nmax if nmax is larger than 0.
     """
     if not isinstance(data, (dict, list, tuple)):
         return "[]"
 
-    buffer = []
-    indent = ""
+    buffer: list[str] = []
+    indent: str = ""
 
     for chunk in json.JSONEncoder().iterencode(data):
         if chunk == "":  # pragma: no cover
             # Just a precaution
             continue
 
-        first = chunk[0]
+        first: str = chunk[0]
         if chunk in ("{}", "[]"):
             buffer.append(chunk)
 
@@ -447,13 +557,13 @@ def jsonEncode(data, n=0, nmax=0):
 #  File and File System Functions
 # =============================================================================================== #
 
-def readTextFile(filePath):
+def readTextFile(filePath: AnyStr) -> str:
     """Read the content of a text file in a robust manner.
     """
     if not os.path.isfile(filePath):
         return ""
 
-    fileText = ""
+    fileText: str = ""
     try:
         with open(filePath, mode="r", encoding="utf-8") as inFile:
             fileText = inFile.read()
@@ -465,23 +575,23 @@ def readTextFile(filePath):
     return fileText
 
 
-def makeFileNameSafe(value):
+def makeFileNameSafe(value: object) -> str:
     """Returns a filename safe string of the value.
     """
-    cleanName = ""
+    cleanName: str = ""
     for c in str(value).strip():
         if c.isalpha() or c.isdigit() or c == " ":
             cleanName += c
     return cleanName
 
 
-def sha256sum(filePath):
+def sha256sum(filePath: AnyStr) -> str | None:
     """Make a shasum of a file using a buffer.
     Based on: https://stackoverflow.com/a/44873382/5825851
     """
-    hDigest = hashlib.sha256()
-    bData = bytearray(65536)
-    mData = memoryview(bData)
+    hDigest: hashlib._Hash = hashlib.sha256()
+    bData: bytearray = bytearray(65536)
+    mData: memoryview = memoryview(bData)
     try:
         with open(filePath, mode="rb", buffering=0) as inFile:
             for n in iter(lambda: inFile.readinto(mData), 0):
@@ -494,11 +604,21 @@ def sha256sum(filePath):
     return hDigest.hexdigest()
 
 
+def isStrList(val: list[Any]) -> TypeGuard[list[str]]:
+    """Determines whether all objects in the list are strings"""
+    return all(isinstance(x, str) for x in val)
+
+
+def isIntList(val: list[Any]) -> TypeGuard[list[int]]:
+    """Determines whether all objects in the list are integers"""
+    return all(isinstance(x, int) for x in val)
+
+
 # =============================================================================================== #
 #  Other Functions
 # =============================================================================================== #
 
-def getGuiItem(objName):
+def getGuiItem(objName: str) -> QWidget | None:
     """Returns a QtWidget based on its objectName.
     """
     for qWidget in qApp.topLevelWidgets():
@@ -513,42 +633,42 @@ def getGuiItem(objName):
 
 class NWConfigParser(ConfigParser):
 
-    CNF_STR   = 0
-    CNF_INT   = 1
-    CNF_FLOAT = 2
-    CNF_BOOL  = 3
-    CNF_S_LST = 4
-    CNF_I_LST = 5
+    CNF_STR:   Literal[0] = 0
+    CNF_INT:   Literal[1] = 1
+    CNF_FLOAT: Literal[2] = 2
+    CNF_BOOL:  Literal[3] = 3
+    CNF_S_LST: Literal[4] = 4
+    CNF_I_LST: Literal[5] = 5
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-    def rdStr(self, section, option, default):
+    def rdStr(self, section: str, option: str, default: str) -> str:
         """Read string value.
         """
         return self._parseLine(section, option, default, self.CNF_STR)
 
-    def rdInt(self, section, option, default):
+    def rdInt(self, section: str, option: str, default: int) -> int:
         """Read integer value.
         """
         return self._parseLine(section, option, default, self.CNF_INT)
 
-    def rdFlt(self, section, option, default):
+    def rdFlt(self, section: str, option: str, default: float) -> float:
         """Read float value.
         """
         return self._parseLine(section, option, default, self.CNF_FLOAT)
 
-    def rdBool(self, section, option, default):
+    def rdBool(self, section: str, option: str, default: bool) -> bool:
         """Read boolean value.
         """
         return self._parseLine(section, option, default, self.CNF_BOOL)
 
-    def rdStrList(self, section, option, default):
+    def rdStrList(self, section: str, option: str, default: list[str]) -> list[str]:
         """Read string list.
         """
         return self._parseLine(section, option, default, self.CNF_S_LST)
 
-    def rdIntList(self, section, option, default):
+    def rdIntList(self, section: str, option: str, default: list[int]) -> list[int]:
         """Read integer list.
         """
         return self._parseLine(section, option, default, self.CNF_I_LST)
@@ -557,11 +677,21 @@ class NWConfigParser(ConfigParser):
     #  Internal Functions
     ##
 
-    def _unpackList(self, value, default, type):
+    @overload
+    def _unpackList(self, value: str, default: _DefaultT, type: Literal[4]) -> list[str]:
+        ...
+
+    @overload
+    def _unpackList(self, value: str, default: _DefaultT, type: Literal[5]) -> list[str]:
+        ...
+
+    def _unpackList(self, value: str, default: _DefaultT, type: int) -> list[str] | list[int]:
         """Unpack a comma-separated string of items into a list.
         """
-        inList = value.split(",")
-        outList = []
+        inList: list[str] = value.split(",")
+
+        outList: list[Any] = []
+
         if isinstance(default, list):
             outList = default.copy()
         for i in range(min(len(inList), len(outList))):
@@ -574,7 +704,73 @@ class NWConfigParser(ConfigParser):
                 continue
         return outList
 
-    def _parseLine(self, section, option, default, type):
+    @overload
+    def _parseLine(
+        self,
+        section: str,
+        option: str,
+        default: _DefaultT,
+        type: Literal[0]
+    ) -> str | _DefaultT:
+        ...
+
+    @overload
+    def _parseLine(
+        self,
+        section: str,
+        option: str,
+        default: _DefaultT,
+        type: Literal[1]
+    ) -> int | _DefaultT:
+        ...
+
+    @overload
+    def _parseLine(
+        self,
+        section: str,
+        option: str,
+        default: _DefaultT,
+        type: Literal[2]
+    ) -> float | _DefaultT:
+        ...
+
+    @overload
+    def _parseLine(
+        self,
+        section: str,
+        option: str,
+        default: _DefaultT,
+        type: Literal[3]
+    ) -> bool | _DefaultT:
+        ...
+
+    @overload
+    def _parseLine(
+        self,
+        section: str,
+        option: str,
+        default: _DefaultT,
+        type: Literal[4]
+    ) -> list[str] | _DefaultT:
+        ...
+
+    @overload
+    def _parseLine(
+        self,
+        section: str,
+        option: str,
+        default: _DefaultT,
+        type: Literal[5]
+    ) -> list[int] | _DefaultT:
+        ...
+
+    def _parseLine(
+        self,
+        section: str,
+        option: str,
+        default: _DefaultT,
+        type: int
+    ) -> str | int | float | bool | list[str] | list[int] | _DefaultT:
         """Parse a line and return the correct datatype.
         """
         if self.has_option(section, option):

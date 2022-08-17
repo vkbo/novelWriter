@@ -23,10 +23,20 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from __future__ import annotations
+
 import os
 import json
 import shutil
-import logging
+import sys
+
+if sys.version_info >= (3, 10):
+    from typing import Final, TypedDict
+else:
+    from typing_extensions import Final, TypedDict
+
+from typing import TYPE_CHECKING, Any, Generator
+
 import novelwriter
 
 from time import time
@@ -48,71 +58,87 @@ from novelwriter.common import (
     makeFileNameSafe, hexToInt, minmax, simplified
 )
 from novelwriter.constants import trConst, nwFiles, nwLabels
+from novelwriter.logging import getLogger
 
-logger = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    from novelwriter.guimain import GuiMain
+
+logger = getLogger(__name__)
+
+
+class NWStatusImportData(TypedDict):
+    key: str | None
+    name: str
+    cols: tuple[int, int, int]
 
 
 class NWProject():
 
-    FILE_VERSION = "1.4"  # The current project file format version
+    FILE_VERSION: Final[str] = "1.4"  # The current project file format version
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui) -> None:
 
         # Internal
-        self.mainConf = novelwriter.CONFIG
-        self.mainGui  = mainGui
+        self.mainConf: novelwriter.Config = novelwriter.CONFIG
+        self.mainGui: GuiMain  = mainGui
 
         # Core Elements
-        self._optState  = OptionState(self)  # Project-specific GUI options
-        self._projTree  = NWTree(self)       # The project tree
-        self._projIndex = NWIndex(self)      # The projecty index
-        self._langData  = {}                 # Localisation data
+        self._optState: OptionState = OptionState(self)  # Project-specific GUI options
+        self._projTree: NWTree      = NWTree(self)       # The project tree
+        self._projIndex: NWIndex    = NWIndex(self)      # The projecty index
+        self._langData: dict[str, str] = {}              # Localisation data
 
         # Project Status
-        self.projOpened  = 0      # The time stamp of when the project file was opened
-        self.projChanged = False  # The project has unsaved changes
-        self.projAltered = False  # The project has been altered this session
-        self.lockedBy    = None   # Data on which computer has the project open
-        self.saveCount   = 0      # Meta data: number of saves
-        self.autoCount   = 0      # Meta data: number of automatic saves
-        self.editTime    = 0      # The accumulated edit time read from the project file
+        self.projOpened: float = 0      # The time stamp of when the project file was opened
+        self.projChanged: bool = False  # The project has unsaved changes
+        self.projAltered: bool = False  # The project has been altered this session
+        self.lockedBy: list[str] | None = None   # Data on which computer has the project open
+        self.saveCount: int    = 0      # Meta data: number of saves
+        self.autoCount: int    = 0      # Meta data: number of automatic saves
+        self.editTime: float   = 0      # The accumulated edit time read from the project file
 
         # Class Settings
-        self.projPath    = None  # The full path to where the currently open project is saved
-        self.projMeta    = None  # The full path to the project's meta data folder
-        self.projCache   = None  # The full path to the project's cache folder
-        self.projContent = None  # The full path to the project's content folder
-        self.projDict    = None  # The spell check dictionary
-        self.projSpell   = None  # The spell check language, if different than default
-        self.projLang    = None  # The project language, used for builds
-        self.projFile    = None  # The file name of the project main XML file
-        self.projFiles   = []    # A list of all files in the content folder on load
+
+        # The full path to where the currently open project is saved
+        self.projPath: str | None    = None
+
+        self.projMeta: str | None    = None  # The full path to the project's meta data folder
+        self.projCache: str | None   = None  # The full path to the project's cache folder
+        self.projContent: str | None = None  # The full path to the project's content folder
+        self.projDict: str | None    = None  # The spell check dictionary
+
+        # The spell check language, if different than default
+        self.projSpell: str | None   = None
+
+        self.projLang: str | None    = None  # The project language, used for builds
+        self.projFile: str | None    = None  # The file name of the project main XML file
+        self.projFiles: list[str]       = []    # A list of all files in the content folder on load
 
         # Project Meta
-        self.projName    = ""  # Project name
-        self.bookTitle   = ""  # The final title; should only be used for exports
-        self.bookAuthors = []  # A list of book authors
+        self.projName: str    = ""  # Project name
+        self.bookTitle: str   = ""  # The final title; should only be used for exports
+        self.bookAuthors: list[str] = []  # A list of book authors
 
         # Project Settings
-        self.autoReplace = {}     # Text to auto-replace on exports
-        self.titleFormat = {}     # The formatting of titles for exports
-        self.spellCheck  = False  # Controls the spellcheck-as-you-type feature
-        self.statusItems = None   # Novel file progress status values
-        self.importItems = None   # Note file importance values
-        self.lastEdited  = None   # The handle of the last file to be edited
-        self.lastViewed  = None   # The handle of the last file to be viewed
-        self.lastNovel   = None   # The handle of the last novel root viewed
-        self.lastOutline = None   # The handle of the last outline root viewed
-        self.lastWCount  = 0      # The project word count from last session
-        self.lastNovelWC = 0      # The novel files word count from last session
-        self.lastNotesWC = 0      # The note files word count from last session
-        self.currWCount  = 0      # The project word count in current session
-        self.currNovelWC = 0      # The novel files word count in cutrent session
-        self.currNotesWC = 0      # The note files word count in cutrent session
-        self.doBackup    = True   # Run project backup on exit
+        self.autoReplace: dict[str, str | None] = {}     # Text to auto-replace on exports
+        self.titleFormat: dict[str, str] = {}     # The formatting of titles for exports
+        self.spellCheck: bool  = False  # Controls the spellcheck-as-you-type feature
+        self.statusItems: NWStatus | None = None   # Novel file progress status values
+        self.importItems: NWStatus | None = None   # Note file importance values
+        self.lastEdited: str | None  = None   # The handle of the last file to be edited
+        self.lastViewed: str | None  = None   # The handle of the last file to be viewed
+        self.lastNovel: str | None   = None   # The handle of the last novel root viewed
+        self.lastOutline: str | None = None   # The handle of the last outline root viewed
+        self.lastWCount: int  = 0      # The project word count from last session
+        self.lastNovelWC: int = 0      # The novel files word count from last session
+        self.lastNotesWC: int = 0      # The note files word count from last session
+        self.currWCount: int  = 0      # The project word count in current session
+        self.currNovelWC: int = 0      # The novel files word count in cutrent session
+        self.currNotesWC: int = 0      # The note files word count in cutrent session
+        self.doBackup: bool   = True   # Run project backup on exit
 
         # Internal Mapping
-        self.tr = partial(QCoreApplication.translate, "NWProject")
+        self.tr: partial[str] = partial(QCoreApplication.translate, "NWProject")
 
         # Set Defaults
         self.clearProject()
@@ -124,74 +150,77 @@ class NWProject():
     ##
 
     @property
-    def index(self):
+    def index(self) -> NWIndex:
         return self._projIndex
 
     @property
-    def tree(self):
+    def tree(self) -> NWTree:
         return self._projTree
 
     @property
-    def options(self):
+    def options(self) -> OptionState:
         return self._optState
 
     ##
     #  Item Methods
     ##
 
-    def newRoot(self, itemClass, label=None):
+    def newRoot(self, itemClass: nwItemClass, label: str | None = None) -> str:
         """Add a new root item. If label is None, use the class label.
         """
         if label is None:
             label = trConst(nwLabels.CLASS_NAME[itemClass])
-        newItem = NWItem(self)
+        newItem: NWItem = NWItem(self)
         newItem.setName(label)
         newItem.setType(nwItemType.ROOT)
         newItem.setClass(itemClass)
         self._projTree.append(None, None, newItem)
+        assert newItem.itemHandle is not None
         self._projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
-    def newFolder(self, label, pHandle):
+    def newFolder(self, label: str, pHandle: str) -> str | None:
         """Add a new folder with a given label and parent item.
         """
         if pHandle not in self._projTree:
             return None
-        newItem = NWItem(self)
+        newItem: NWItem = NWItem(self)
         newItem.setName(label)
         newItem.setType(nwItemType.FOLDER)
         self._projTree.append(None, pHandle, newItem)
+        assert newItem.itemHandle is not None
         self._projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
-    def newFile(self, label, pHandle):
+    def newFile(self, label: str, pHandle: str) -> str | None:
         """Add a new file with a given label and parent item.
         """
         if pHandle not in self._projTree:
             return None
-        newItem = NWItem(self)
+        newItem: NWItem = NWItem(self)
         newItem.setName(label)
         newItem.setType(nwItemType.FILE)
         self._projTree.append(None, pHandle, newItem)
+        assert newItem.itemHandle is not None
         self._projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
-    def writeNewFile(self, tHandle, hLevel, isDocument):
+    def writeNewFile(self, tHandle, hLevel, isDocument) -> bool:
         """Write content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
-        tItem = self._projTree[tHandle]
+        tItem: NWItem | None = self._projTree[tHandle]
         if tItem is None:
             return False
         if tItem.itemType != nwItemType.FILE:
             return False
 
-        newDoc = NWDoc(self, tHandle)
+        newDoc: NWDoc = NWDoc(self, tHandle)
         if newDoc.readDocument().strip():
             return False
 
-        hshText = "#"*minmax(hLevel, 1, 4)
-        newText = f"{hshText} {tItem.itemName}\n\n"
+        hshText: str = "#"*minmax(hLevel, 1, 4)
+        newText: str = f"{hshText} {tItem.itemName}\n\n"
         if tItem.isNovelLike() and isDocument:
             tItem.setLayout(nwItemLayout.DOCUMENT)
         else:
@@ -202,16 +231,17 @@ class NWProject():
 
         return True
 
-    def trashFolder(self):
+    def trashFolder(self) -> str | None:
         """Add the special trash root folder to the project.
         """
-        trashHandle = self._projTree.trashRoot()
+        trashHandle: str | None = self._projTree.trashRoot()
         if trashHandle is None:
-            newItem = NWItem(self)
+            newItem: NWItem = NWItem(self)
             newItem.setName(trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH]))
             newItem.setType(nwItemType.ROOT)
             newItem.setClass(nwItemClass.TRASH)
             self._projTree.append(None, None, newItem)
+            assert newItem.itemHandle is not None
             self._projTree.updateItemData(newItem.itemHandle)
             return newItem.itemHandle
 
@@ -221,7 +251,7 @@ class NWProject():
     #  Project Methods
     ##
 
-    def clearProject(self):
+    def clearProject(self) -> None:
         """Clear the data for the current project, and set them to
         default values.
         """
@@ -278,7 +308,7 @@ class NWProject():
 
         return
 
-    def newProject(self, projData):
+    def newProject(self, projData: dict[str, Any]) -> bool:
         """Create a new project by populating the project tree with a
         few starter items.
         """
@@ -286,9 +316,9 @@ class NWProject():
             logger.error("Invalid call to newProject function")
             return False
 
-        popMinimal = projData.get("popMinimal", True)
-        popCustom = projData.get("popCustom", False)
-        popSample = projData.get("popSample", False)
+        popMinimal: bool = projData.get("popMinimal", True)
+        popCustom: bool = projData.get("popCustom", False)
+        popSample: bool = projData.get("popSample", False)
 
         # Check if we're extracting the sample project. This is handled
         # differently as it isn't actually a new project, so we forward
@@ -297,10 +327,10 @@ class NWProject():
             return self.extractSampleProject(projData)
 
         # Project Settings
-        projPath = projData.get("projPath", None)
-        projName = projData.get("projName", self.tr("New Project"))
-        projTitle = projData.get("projTitle", "")
-        projAuthors = projData.get("projAuthors", "")
+        projPath: str | None = projData.get("projPath", None)
+        projName: str = projData.get("projName", self.tr("New Project"))
+        projTitle: str = projData.get("projTitle", "")
+        projAuthors: str = projData.get("projAuthors", "")
 
         if projPath is None:
             logger.error("No project path set for the new project")
@@ -314,25 +344,26 @@ class NWProject():
         self.setBookTitle(projTitle)
         self.setBookAuthors(projAuthors)
 
-        hNovelRoot = self.newRoot(nwItemClass.NOVEL)
-        hTitlePage = self.newFile(self.tr("Title Page"), hNovelRoot)
+        hNovelRoot: str = self.newRoot(nwItemClass.NOVEL)
+        hTitlePage: str | None = self.newFile(self.tr("Title Page"), hNovelRoot)
 
-        titlePage = "#! %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
+        titlePage: str = "#! %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
         if self.bookAuthors:
-            titlePage = "%s>> %s %s <<\n" % (titlePage, self.tr("By"), self.getAuthors())
+            titlePage: str = "%s>> %s %s <<\n" % (titlePage, self.tr("By"), self.getAuthors())
 
-        aDoc = NWDoc(self, hTitlePage)
+        aDoc: NWDoc = NWDoc(self, hTitlePage)
         aDoc.writeDocument(titlePage)
 
         if popMinimal:
             # Creating a minimal project with a few root folders and a
             # single chapter with a single scene.
-            hChapter = self.newFile(self.tr("New Chapter"), hNovelRoot)
-            aDoc = NWDoc(self, hChapter)
+            hChapter: str | None = self.newFile(self.tr("New Chapter"), hNovelRoot)
+            assert hChapter is not None
+            aDoc: NWDoc = NWDoc(self, hChapter)
             aDoc.writeDocument("## %s\n\n" % self.tr("New Chapter"))
 
-            hScene = self.newFile(self.tr("New Scene"), hChapter)
-            aDoc = NWDoc(self, hScene)
+            hScene: str | None = self.newFile(self.tr("New Scene"), hChapter)
+            aDoc: NWDoc = NWDoc(self, hScene)
             aDoc.writeDocument("### %s\n\n" % self.tr("New Scene"))
 
             self.newRoot(nwItemClass.PLOT)
@@ -346,51 +377,54 @@ class NWProject():
             # wizard's custom page.
 
             # Create chapters and scenes
-            numChapters = projData.get("numChapters", 0)
-            numScenes = projData.get("numScenes", 0)
+            numChapters: int = projData.get("numChapters", 0)
+            numScenes: int = projData.get("numScenes", 0)
 
-            chSynop = self.tr("Summary of the chapter.")
-            scSynop = self.tr("Summary of the scene.")
+            chSynop: str = self.tr("Summary of the chapter.")
+            scSynop: str = self.tr("Summary of the scene.")
 
             # Create chapters
             if numChapters > 0:
                 for ch in range(numChapters):
-                    chTitle = self.tr("Chapter {0}").format(f"{ch+1:d}")
-                    cHandle = self.newFile(chTitle, hNovelRoot)
-                    aDoc = NWDoc(self, cHandle)
+                    chTitle: str = self.tr("Chapter {0}").format(f"{ch+1:d}")
+                    cHandle: str | None = self.newFile(chTitle, hNovelRoot)
+                    assert cHandle is not None
+                    aDoc: NWDoc = NWDoc(self, cHandle)
                     aDoc.writeDocument(f"## {chTitle}\n\n% Synopsis: {chSynop}\n\n")
 
                     # Create chapter scenes
                     if numScenes > 0:
                         for sc in range(numScenes):
-                            scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
-                            sHandle = self.newFile(scTitle, cHandle)
-                            aDoc = NWDoc(self, sHandle)
+                            scTitle: str = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
+                            sHandle: str | None = self.newFile(scTitle, cHandle)
+                            assert sHandle is not None
+                            aDoc: NWDoc = NWDoc(self, sHandle)
                             aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
 
             # Create scenes (no chapters)
             elif numScenes > 0:
                 for sc in range(numScenes):
-                    scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
-                    sHandle = self.newFile(scTitle, hNovelRoot)
-                    aDoc = NWDoc(self, sHandle)
+                    scTitle: str = self.tr("Scene {0}").format(f"{sc+1:d}")
+                    sHandle: str | None = self.newFile(scTitle, hNovelRoot)
+                    assert sHandle is not None
+                    aDoc: NWDoc = NWDoc(self, sHandle)
                     aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
 
             # Create notes folders
-            noteTitles = {
+            noteTitles: dict[nwItemClass, str] = {
                 nwItemClass.PLOT: self.tr("Main Plot"),
                 nwItemClass.CHARACTER: self.tr("Protagonist"),
                 nwItemClass.WORLD: self.tr("Main Location"),
             }
 
-            addNotes = projData.get("addNotes", False)
+            addNotes: bool = projData.get("addNotes", False)
             for newRoot in projData.get("addRoots", []):
                 if newRoot in nwItemClass:
-                    rHandle = self.newRoot(newRoot)
+                    rHandle: str = self.newRoot(newRoot)
                     if addNotes:
-                        aHandle = self.newFile(noteTitles[newRoot], rHandle)
-                        ntTag = simplified(noteTitles[newRoot]).replace(" ", "")
-                        aDoc = NWDoc(self, aHandle)
+                        aHandle: str | None = self.newFile(noteTitles[newRoot], rHandle)
+                        ntTag: str = simplified(noteTitles[newRoot]).replace(" ", "")
+                        aDoc: NWDoc = NWDoc(self, aHandle)
                         aDoc.writeDocument(f"# {noteTitles[newRoot]}\n\n@tag: {ntTag}\n\n")
 
             # Also add the archive and trash folders
@@ -405,7 +439,7 @@ class NWProject():
 
         return True
 
-    def openProject(self, fileName, overrideLock=False):
+    def openProject(self, fileName: str, overrideLock=False) -> bool:
         """Open the project file provided. If it doesn't exist, assume
         it is a folder and look for the file within it. If successful,
         parse the XML of the file and populate the project variables and
@@ -420,6 +454,10 @@ class NWProject():
                 return False
 
         self.clearProject()
+
+        assert self.statusItems is not None
+        assert self.importItems is not None
+
         self.projPath = os.path.abspath(os.path.dirname(fileName))
         logger.info("Opening project: %s", self.projPath)
 
@@ -430,12 +468,13 @@ class NWProject():
             self.clearProject()
             return False
 
+        assert self.projMeta is not None
         self.projDict = os.path.join(self.projMeta, nwFiles.PROJ_DICT)
 
         # Check for Old Legacy Data
         # =========================
 
-        legacyList = []  # Cleanup is done later
+        legacyList: list[str] = []  # Cleanup is done later
         for projItem in os.listdir(self.projPath):
             logger.verbose("Project contains: %s", projItem)
             if projItem.startswith("data_") and len(projItem) == 6:
@@ -447,7 +486,7 @@ class NWProject():
         if overrideLock:
             self._clearLockFile()
 
-        lockStatus = self._readLockFile()
+        lockStatus: list[str] = self._readLockFile()
         if len(lockStatus) > 0:
             if lockStatus[0] == "ERROR":
                 logger.warning("Failed to check lock file")
@@ -463,20 +502,20 @@ class NWProject():
         # =========================
 
         try:
-            nwXML = etree.parse(fileName)
+            nwXML: etree._ElementTree = etree.parse(fileName)
         except Exception as exc:
             self.mainGui.makeAlert(self.tr(
                 "Failed to parse project xml."
             ), nwAlert.ERROR, exception=exc)
 
             # Trying to open backup file instead
-            backFile = fileName[:-3]+"bak"
+            backFile: str = fileName[:-3]+"bak"
             if os.path.isfile(backFile):
                 self.mainGui.makeAlert(self.tr(
                     "Attempting to open backup project file instead."
                 ), nwAlert.INFO)
                 try:
-                    nwXML = etree.parse(backFile)
+                    nwXML: etree._ElementTree = etree.parse(backFile)
                 except Exception as exc:
                     self.mainGui.makeAlert(self.tr(
                         "Failed to parse project xml."
@@ -487,12 +526,12 @@ class NWProject():
                 self.clearProject()
                 return False
 
-        xRoot = nwXML.getroot()
-        nwxRoot = xRoot.tag
+        xRoot: etree._Element = nwXML.getroot()
+        nwxRoot: str = xRoot.tag
 
-        appVersion  = xRoot.attrib.get("appVersion", self.tr("Unknown"))
-        hexVersion  = xRoot.attrib.get("hexVersion", "0x0")
-        fileVersion = xRoot.attrib.get("fileVersion", self.tr("Unknown"))
+        appVersion: str  = xRoot.attrib.get("appVersion", self.tr("Unknown"))   # type: ignore
+        hexVersion: str  = xRoot.attrib.get("hexVersion", "0x0")                # type: ignore
+        fileVersion: str = xRoot.attrib.get("fileVersion", self.tr("Unknown"))  # type: ignore
 
         logger.verbose("XML root is '%s'", nwxRoot)
         logger.verbose("File version is '%s'", fileVersion)
@@ -536,7 +575,7 @@ class NWProject():
             return False
 
         if fileVersion != self.FILE_VERSION:
-            msgYes = self.mainGui.askQuestion(
+            msgYes: bool = self.mainGui.askQuestion(
                 self.tr("File Version"),
                 self.tr(
                     "The file format of your project is about to be updated. "
@@ -552,7 +591,7 @@ class NWProject():
         # =========================
 
         if hexToInt(hexVersion) > hexToInt(novelwriter.__hexversion__):
-            msgYes = self.mainGui.askQuestion(
+            msgYes: bool = self.mainGui.askQuestion(
                 self.tr("Version Conflict"),
                 self.tr(
                     "This project was saved by a newer version of "
@@ -582,7 +621,7 @@ class NWProject():
                         self.bookTitle = checkString(simplified(xItem.text), "")
                         logger.verbose("Title is '%s'", self.bookTitle)
                     elif xItem.tag == "author":
-                        author = checkString(simplified(xItem.text), "")
+                        author: str = checkString(simplified(xItem.text), "")
                         if author:
                             self.bookAuthors.append(author)
                             logger.verbose("Author: '%s'", author)
@@ -627,11 +666,11 @@ class NWProject():
                     elif xItem.tag == "autoReplace":
                         for xEntry in xItem:
                             if xEntry.tag == "entry" and "key" in xEntry.attrib:
-                                self.autoReplace[xEntry.attrib["key"]] = checkString(
+                                self.autoReplace[str(xEntry.attrib["key"])] = checkString(
                                     xEntry.text, None, False
                                 )
                     elif xItem.tag == "titleFormat":
-                        titleFormat = self.titleFormat.copy()
+                        titleFormat: dict[str, str] = self.titleFormat.copy()
                         for xEntry in xItem:
                             titleFormat[xEntry.tag] = checkString(xEntry.text, "", False)
                         self.setTitleFormat(titleFormat)
@@ -662,11 +701,12 @@ class NWProject():
 
         # Check the project tree consistency
         for tItem in self._projTree:
-            tHandle = tItem.itemHandle
-            logger.verbose("Checking item '%s'", tHandle)
-            if not self._projTree.updateItemData(tHandle):
-                logger.error("There was a problem item '%s', and it has been removed", tHandle)
-                del self._projTree[tHandle]  # The file will be re-added as orphaned
+            if tItem is not None:
+                tHandle: str | None = tItem.itemHandle
+                logger.verbose("Checking item '%s'", tHandle)
+                if not self._projTree.updateItemData(tHandle):
+                    logger.error("There was a problem item '%s', and it has been removed", tHandle)
+                    del self._projTree[tHandle]  # The file will be re-added as orphaned
 
         self._scanProjectFolder()
         self._loadProjectLocalisation()
@@ -681,7 +721,7 @@ class NWProject():
 
         return True
 
-    def saveProject(self, autoSave=False):
+    def saveProject(self, autoSave=False) -> bool:
         """Save the project main XML file. The saving command itself
         uses a temporary filename, and the file is replaced afterwards
         to make sure if the save fails, we're not left with a truncated
@@ -693,7 +733,7 @@ class NWProject():
             ), nwAlert.ERROR)
             return False
 
-        saveTime = time()
+        saveTime: float = time()
         if not self.ensureFolderStructure():
             return False
 
@@ -706,7 +746,7 @@ class NWProject():
 
         # Root element and project details
         logger.debug("Writing project meta")
-        nwXML = etree.Element("novelWriterXML", attrib={
+        nwXML: etree._Element = etree.Element("novelWriterXML", attrib={
             "appVersion":  str(novelwriter.__version__),
             "hexVersion":  str(novelwriter.__hexversion__),
             "fileVersion": self.FILE_VERSION,
@@ -714,10 +754,10 @@ class NWProject():
         })
 
         self.updateWordCounts()
-        editTime = int(self.editTime + saveTime - self.projOpened)
+        editTime: int = int(self.editTime + saveTime - self.projOpened)
 
         # Save Project Meta
-        xProject = etree.SubElement(nwXML, "project")
+        xProject: etree._Element = etree.SubElement(nwXML, "project")
         self._packProjectValue(xProject, "name", self.projName)
         self._packProjectValue(xProject, "title", self.bookTitle)
         self._packProjectValue(xProject, "author", self.bookAuthors)
@@ -726,7 +766,7 @@ class NWProject():
         self._packProjectValue(xProject, "editTime", str(editTime))
 
         # Save Project Settings
-        xSettings = etree.SubElement(nwXML, "settings")
+        xSettings: etree._Element = etree.SubElement(nwXML, "settings")
         self._packProjectValue(xSettings, "doBackup", self.doBackup)
         self._packProjectValue(xSettings, "language", self.projLang)
         self._packProjectValue(xSettings, "spellCheck", self.spellCheck)
@@ -740,14 +780,19 @@ class NWProject():
         self._packProjectValue(xSettings, "notesWordCount", self.currNotesWC)
         self._packProjectKeyValue(xSettings, "autoReplace", self.autoReplace)
 
-        xTitleFmt = etree.SubElement(xSettings, "titleFormat")
+        xTitleFmt: etree._Element = etree.SubElement(xSettings, "titleFormat")
         for aKey, aValue in self.titleFormat.items():
             if len(aKey) > 0:
                 self._packProjectValue(xTitleFmt, aKey, aValue)
 
         # Save Status/Importance
         self.countStatus()
-        xStatus = etree.SubElement(xSettings, "status")
+
+        # TODO are these sane? or is a check needed
+        assert self.statusItems is not None
+        assert self.importItems is not None
+
+        xStatus: etree._Element = etree.SubElement(xSettings, "status")
         self.statusItems.packXML(xStatus)
         xStatus = etree.SubElement(xSettings, "importance")
         self.importItems.packXML(xStatus)
@@ -756,10 +801,14 @@ class NWProject():
         logger.debug("Writing project content")
         self._projTree.packXML(nwXML)
 
+        # TODO are these sane? or is a check needed
+        assert self.projFile is not None
+        assert self.projPath is not None
+
         # Write the xml tree to file
-        tempFile = os.path.join(self.projPath, self.projFile+"~")
-        saveFile = os.path.join(self.projPath, self.projFile)
-        backFile = os.path.join(self.projPath, self.projFile[:-3]+"bak")
+        tempFile: str = os.path.join(self.projPath, self.projFile+"~")
+        saveFile: str = os.path.join(self.projPath, self.projFile)
+        backFile: str = os.path.join(self.projPath, self.projFile[:-3]+"bak")
         try:
             with open(tempFile, mode="wb") as outFile:
                 outFile.write(etree.tostring(
@@ -799,7 +848,7 @@ class NWProject():
 
         return True
 
-    def closeProject(self, idleTime=0):
+    def closeProject(self, idleTime=0) -> bool:
         """Close the current project and clear all meta data.
         """
         logger.info("Closing project: %s", self.projPath)
@@ -811,7 +860,7 @@ class NWProject():
         self.lockedBy = None
         return True
 
-    def ensureFolderStructure(self):
+    def ensureFolderStructure(self) -> bool:
         """Ensure that all necessary folders exist in the project
         folder.
         """
@@ -839,7 +888,7 @@ class NWProject():
     #  Zip/Unzip Project
     ##
 
-    def zipIt(self, doNotify):
+    def zipIt(self, doNotify: bool) -> bool:
         """Create a zip file of the entire project.
         """
         if not self.mainGui.hasProject:
@@ -863,8 +912,8 @@ class NWProject():
             ), nwAlert.ERROR)
             return False
 
-        cleanName = makeFileNameSafe(self.projName)
-        baseDir = os.path.abspath(os.path.join(self.mainConf.backupPath, cleanName))
+        cleanName: str = makeFileNameSafe(self.projName)
+        baseDir: str = os.path.abspath(os.path.join(self.mainConf.backupPath, cleanName))
         if not os.path.isdir(baseDir):
             try:
                 os.mkdir(baseDir)
@@ -875,6 +924,8 @@ class NWProject():
                 ), nwAlert.ERROR, exception=exc)
                 return False
 
+        assert self.projPath is not None
+
         if baseDir and baseDir.startswith(self.projPath):
             self.mainGui.makeAlert(self.tr(
                 "Cannot backup project because the backup path is within the "
@@ -883,8 +934,8 @@ class NWProject():
             ), nwAlert.ERROR)
             return False
 
-        archName = self.tr("Backup from {0}").format(formatTimeStamp(time(), fileSafe=True))
-        baseName = os.path.join(baseDir, archName)
+        archName: str = self.tr("Backup from {0}").format(formatTimeStamp(time(), fileSafe=True))
+        baseName: str = os.path.join(baseDir, archName)
 
         try:
             self._clearLockFile()
@@ -908,21 +959,23 @@ class NWProject():
 
         return True
 
-    def extractSampleProject(self, projData):
+    def extractSampleProject(self, projData: dict[str, Any]) -> bool:
         """Make a copy of the sample project.
         First, look for the sample.zip file in the assets folder and
         unpack it. If it doesn't exist, try to copy the content of the
         sample folder to the new project path. If neither exits, error.
         """
-        projPath = projData.get("projPath", None)
+        projPath: str = projData.get("projPath", None)
         if projPath is None:
             logger.error("No project path set for the example project")
             return False
 
-        srcSample = os.path.abspath(os.path.join(self.mainConf.appRoot, "sample"))
-        pkgSample = os.path.join(self.mainConf.assetPath, "sample.zip")
+        assert self.mainConf.appRoot is not None
+        assert self.mainConf.assetPath is not None
+        srcSample: str = os.path.abspath(os.path.join(self.mainConf.appRoot, "sample"))
+        pkgSample: str = os.path.join(self.mainConf.assetPath, "sample.zip")
 
-        isSuccess = False
+        isSuccess: bool = False
         if os.path.isfile(pkgSample):
 
             self.setProjectPath(projPath, newProject=True)
@@ -938,12 +991,12 @@ class NWProject():
 
             self.setProjectPath(projPath, newProject=True)
             try:
-                srcProj = os.path.join(srcSample, nwFiles.PROJ_FILE)
-                dstProj = os.path.join(projPath, nwFiles.PROJ_FILE)
+                srcProj: str = os.path.join(srcSample, nwFiles.PROJ_FILE)
+                dstProj: str = os.path.join(projPath, nwFiles.PROJ_FILE)
                 shutil.copyfile(srcProj, dstProj)
 
-                srcContent = os.path.join(srcSample, "content")
-                dstContent = os.path.join(projPath, "content")
+                srcContent: str = os.path.join(srcSample, "content")
+                dstContent: str = os.path.join(projPath, "content")
                 for srcFile in os.listdir(srcContent):
                     srcDoc = os.path.join(srcContent, srcFile)
                     dstDoc = os.path.join(dstContent, srcFile)
@@ -974,7 +1027,7 @@ class NWProject():
     #  Setters
     ##
 
-    def setProjectPath(self, projPath, newProject=False):
+    def setProjectPath(self, projPath: str, newProject: bool = False) -> bool:
         """Set the project storage path, and also expand ~ to the user
         directory using the path library.
         """
@@ -1009,7 +1062,7 @@ class NWProject():
 
         return True
 
-    def setProjectName(self, projName):
+    def setProjectName(self, projName: str) -> bool:
         """Set the project name, This is the the name used for backup
         files etc.
         """
@@ -1017,14 +1070,14 @@ class NWProject():
         self.setProjectChanged(True)
         return True
 
-    def setBookTitle(self, bookTitle):
+    def setBookTitle(self, bookTitle: str) -> bool:
         """Set the book title, that is, the title to include in exports.
         """
         self.bookTitle = simplified(bookTitle)
         self.setProjectChanged(True)
         return True
 
-    def setBookAuthors(self, bookAuthors):
+    def setBookAuthors(self, bookAuthors: str) -> bool:
         """A line-separated list of authors, parsed into an array.
         """
         if not isinstance(bookAuthors, str):
@@ -1041,7 +1094,7 @@ class NWProject():
 
         return True
 
-    def setProjBackup(self, doBackup):
+    def setProjBackup(self, doBackup: bool) -> bool:
         """Set whether projects should be backed up or not. The user
         will be notified in case required settings are missing.
         """
@@ -1063,7 +1116,7 @@ class NWProject():
 
         return True
 
-    def setSpellCheck(self, theMode):
+    def setSpellCheck(self, theMode: bool) -> bool:
         """Enable/disable spell checking.
         """
         if self.spellCheck != theMode:
@@ -1071,7 +1124,7 @@ class NWProject():
             self.setProjectChanged(True)
         return self.spellCheck
 
-    def setSpellLang(self, theLang):
+    def setSpellLang(self, theLang: str | None) -> bool:
         """Set the project-specific spell check language.
         """
         theLang = checkString(theLang, None, True)
@@ -1081,7 +1134,7 @@ class NWProject():
             return True
         return False
 
-    def setProjectLang(self, theLang):
+    def setProjectLang(self, theLang: str | None) -> bool:
         """Set the project-specific language.
         """
         theLang = checkString(theLang, None, True)
@@ -1091,7 +1144,7 @@ class NWProject():
             self.setProjectChanged(True)
         return True
 
-    def setTreeOrder(self, newOrder):
+    def setTreeOrder(self, newOrder: list[str]) -> bool:
         """A list representing the linear/flattened order of project
         items in the GUI project tree. The user can rearrange the order
         by drag-and-drop. Forwarded to the NWTree class.
@@ -1102,7 +1155,7 @@ class NWProject():
         self.setProjectChanged(True)
         return True
 
-    def setLastEdited(self, tHandle):
+    def setLastEdited(self, tHandle: str) -> bool:
         """Set last edited project item.
         """
         if self.lastEdited != tHandle:
@@ -1110,7 +1163,7 @@ class NWProject():
             self.setProjectChanged(True)
         return True
 
-    def setLastViewed(self, tHandle):
+    def setLastViewed(self, tHandle: str) -> bool:
         """Set last viewed project item.
         """
         if self.lastViewed != tHandle:
@@ -1118,7 +1171,7 @@ class NWProject():
             self.setProjectChanged(True)
         return True
 
-    def setLastNovelViewed(self, tHandle):
+    def setLastNovelViewed(self, tHandle: str) -> bool:
         """Set last viewed novel root in the novel tree.
         """
         if self.lastNovel != tHandle:
@@ -1126,7 +1179,7 @@ class NWProject():
             self.setProjectChanged(True)
         return True
 
-    def setLastOutlineViewed(self, tHandle):
+    def setLastOutlineViewed(self, tHandle: str) -> bool:
         """Set last viewed novel root in the outline view.
         """
         if self.lastOutline != tHandle:
@@ -1134,17 +1187,19 @@ class NWProject():
             self.setProjectChanged(True)
         return True
 
-    def setStatusColours(self, newCols, delCols):
+    def setStatusColours(self, newCols: list[NWStatusImportData], delCols: list[str]) -> bool:
         """Update the list of novel file status flags.
         """
+        assert self.statusItems is not None
         return self._setStatusImport(newCols, delCols, self.statusItems)
 
-    def setImportColours(self, newCols, delCols):
+    def setImportColours(self, newCols: list[NWStatusImportData], delCols: list[str]) -> bool:
         """Update the list of note file importance flags.
         """
+        assert self.importItems is not None
         return self._setStatusImport(newCols, delCols, self.importItems)
 
-    def setAutoReplace(self, autoReplace):
+    def setAutoReplace(self, autoReplace) -> bool:
         """Update the auto-replace dictionary.
         """
         self.autoReplace = {}
@@ -1153,7 +1208,7 @@ class NWProject():
         self.setProjectChanged(True)
         return True
 
-    def setTitleFormat(self, titleFormat):
+    def setTitleFormat(self, titleFormat) -> bool:
         """Set the formatting of titles in the project.
         """
         for valKey, valEntry in titleFormat.items():
@@ -1163,7 +1218,7 @@ class NWProject():
                 )
         return True
 
-    def setProjectChanged(self, bValue):
+    def setProjectChanged(self, bValue: bool) -> bool:
         """Toggle the project changed flag, and propagate the
         information to the GUI statusbar.
         """
@@ -1178,11 +1233,11 @@ class NWProject():
     #  Getters
     ##
 
-    def getAuthors(self):
+    def getAuthors(self) -> str:
         """Return a formatted string of authors.
         """
-        nAuth = len(self.bookAuthors)
-        authString = ""
+        nAuth: int = len(self.bookAuthors)
+        authString: str = ""
 
         if nAuth == 1:
             authString = self.bookAuthors[0]
@@ -1193,13 +1248,13 @@ class NWProject():
 
         return authString
 
-    def getCurrentEditTime(self):
+    def getCurrentEditTime(self) -> int:
         """Get the total project edit time, including the time spent in
         the current session.
         """
         return round(self.editTime + time() - self.projOpened)
 
-    def getProjectItems(self):
+    def getProjectItems(self) -> Generator[NWItem, None, None]:
         """This function ensures that the item tree loaded is sent to
         the GUI tree view in such a way that the tree can be built. That
         is, the parent item must be sent before its child. In principle,
@@ -1207,13 +1262,13 @@ class NWProject():
         order has been altered, or a file is orphaned, this function is
         capable of handling it.
         """
-        sentItems = []
-        iterItems = self._projTree.handles()
-        n = 0
-        nMax = min(len(iterItems), 10000)
+        sentItems: list[str] = []
+        iterItems: list[str] = self._projTree.handles()
+        n: int = 0
+        nMax: int = min(len(iterItems), 10000)
         while n < nMax:
-            tHandle = iterItems[n]
-            tItem = self._projTree[tHandle]
+            tHandle: str = iterItems[n]
+            tItem: NWItem | None = self._projTree[tHandle]
             n += 1
             if tItem is None:
                 # Technically a bug since treeOrder is built from the
@@ -1234,7 +1289,7 @@ class NWProject():
                 # out hand, so we cap at 10000 items
                 logger.warning("Item '%s' found before its parent", tHandle)
                 iterItems.append(tHandle)
-                nMax = min(len(iterItems), 10000)
+                nMax: int = min(len(iterItems), 10000)
             else:
                 # Item is orphaned
                 logger.error("Item '%s' has no parent in current tree", tHandle)
@@ -1245,7 +1300,7 @@ class NWProject():
     #  Class Methods
     ##
 
-    def updateWordCounts(self):
+    def updateWordCounts(self) -> None:
         """Update the total word count values.
         """
         wcNovel, wcNotes = self._projTree.sumWords()
@@ -1257,21 +1312,28 @@ class NWProject():
             self.setProjectChanged(True)
         return
 
-    def countStatus(self):
+    def countStatus(self) -> None:
         """Count how many times the various status flags are used in the
         project tree. The counts themselves are kept in the NWStatus
         objects. This is essentially a refresh.
         """
+
+        assert self.statusItems is not None
+        assert self.importItems is not None
+
         self.statusItems.resetCounts()
         self.importItems.resetCounts()
         for nwItem in self._projTree:
-            if nwItem.isNovelLike():
-                self.statusItems.increment(nwItem.itemStatus)
-            else:
-                self.importItems.increment(nwItem.itemImport)
+            if nwItem is not None:
+                if nwItem.isNovelLike():
+                    assert nwItem.itemStatus is not None
+                    self.statusItems.increment(nwItem.itemStatus)
+                else:
+                    assert nwItem.itemImport is not None
+                    self.importItems.increment(nwItem.itemImport)
         return
 
-    def localLookup(self, theWord):
+    def localLookup(self, theWord: Any) -> str:
         """Look up a word in the translation map for the project and
         return it. The variable is cast to a string before lookup. If
         the word does not exist, it returns itself.
@@ -1282,18 +1344,19 @@ class NWProject():
     #  Internal Functions
     ##
 
-    def _setStatusImport(self, new, delete, target):
+    def _setStatusImport(self, new: list[NWStatusImportData],
+                         delete: list[str], target: NWStatus) -> bool:
         """Update the list of novel file status or importance flags, and
         delete those that have been requested deleted.
         """
         if not (new or delete):
             return False
 
-        order = []
+        order: list[str] = []
         for entry in new:
-            key = entry.get("key", None)
-            name = entry.get("name", "")
-            cols = entry.get("cols", (100, 100, 100))
+            key: str | None = entry.get("key", None)
+            name: str = entry.get("name", "")
+            cols: tuple[int, int, int] = entry.get("cols", (100, 100, 100))
             if name:
                 order.append(target.write(key, name, cols))
 
@@ -1304,16 +1367,18 @@ class NWProject():
 
         return True
 
-    def _loadProjectLocalisation(self):
+    def _loadProjectLocalisation(self) -> bool:
         """Load the language data for the current project language.
         """
         if self.projLang is None:
             self._langData = {}
             return False
 
-        langFile = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self.projLang)
+        assert self.mainConf.nwLangPath is not None
+
+        langFile: str = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self.projLang)
         if not os.path.isfile(langFile):
-            langFile = os.path.join(self.mainConf.nwLangPath, "project_en_GB.json")
+            langFile: str = os.path.join(self.mainConf.nwLangPath, "project_en_GB.json")
 
         try:
             with open(langFile, mode="r", encoding="utf-8") as inFile:
@@ -1327,20 +1392,20 @@ class NWProject():
 
         return True
 
-    def _readLockFile(self):
+    def _readLockFile(self) -> list[str]:
         """Reads the lock file in the project folder.
         """
         if self.projPath is None:
             return ["ERROR"]
 
-        lockFile = os.path.join(self.projPath, nwFiles.PROJ_LOCK)
+        lockFile: str = os.path.join(self.projPath, nwFiles.PROJ_LOCK)
         if not os.path.isfile(lockFile):
             return []
 
-        theLines = []
+        theLines: list[str] = []
         try:
             with open(lockFile, mode="r", encoding="utf-8") as inFile:
-                theData = inFile.read()
+                theData: str = inFile.read()
                 theLines = theData.splitlines()
                 if len(theLines) != 4:
                     return ["ERROR"]
@@ -1352,13 +1417,13 @@ class NWProject():
 
         return theLines
 
-    def _writeLockFile(self):
+    def _writeLockFile(self) -> bool:
         """Writes a lock file to the project folder.
         """
         if self.projPath is None:
             return False
 
-        lockFile = os.path.join(self.projPath, nwFiles.PROJ_LOCK)
+        lockFile: str = os.path.join(self.projPath, nwFiles.PROJ_LOCK)
         try:
             with open(lockFile, mode="w+", encoding="utf-8") as outFile:
                 outFile.write("%s\n" % self.mainConf.hostName)
@@ -1373,13 +1438,13 @@ class NWProject():
 
         return True
 
-    def _clearLockFile(self):
+    def _clearLockFile(self) -> bool:
         """Remove the lock file, if it exists.
         """
         if self.projPath is None:
             return False
 
-        lockFile = os.path.join(self.projPath, nwFiles.PROJ_LOCK)
+        lockFile: str = os.path.join(self.projPath, nwFiles.PROJ_LOCK)
         if os.path.isfile(lockFile):
             try:
                 os.unlink(lockFile)
@@ -1390,7 +1455,7 @@ class NWProject():
 
         return True
 
-    def _checkFolder(self, thePath):
+    def _checkFolder(self, thePath) -> bool:
         """Check if a folder exists, and if it doesn't, create it.
         """
         if not os.path.isdir(thePath):
@@ -1404,7 +1469,8 @@ class NWProject():
                 return False
         return True
 
-    def _packProjectValue(self, xParent, theName, theValue, allowNone=True):
+    def _packProjectValue(self, xParent: etree._Element, theName: str,
+                          theValue: Any, allowNone: bool = True):
         """Pack a list of values into an xml element.
         """
         if not isinstance(theValue, list):
@@ -1412,21 +1478,21 @@ class NWProject():
         for aValue in theValue:
             if (aValue == "" or aValue is None) and not allowNone:
                 continue
-            xItem = etree.SubElement(xParent, theName)
+            xItem: etree._Element = etree.SubElement(xParent, theName)
             xItem.text = str(aValue)
         return
 
-    def _packProjectKeyValue(self, xParent, theName, theDict):
+    def _packProjectKeyValue(self, xParent, theName, theDict) -> None:
         """Pack the entries of a dictionary into an xml element.
         """
-        xAutoRep = etree.SubElement(xParent, theName)
+        xAutoRep: etree._Element = etree.SubElement(xParent, theName)
         for aKey, aValue in theDict.items():
             if len(aKey) > 0:
-                xEntry = etree.SubElement(xAutoRep, "entry", attrib={"key": aKey})
+                xEntry: etree._Element = etree.SubElement(xAutoRep, "entry", attrib={"key": aKey})
                 xEntry.text = aValue
         return
 
-    def _scanProjectFolder(self):
+    def _scanProjectFolder(self) -> bool | None:
         """Scan the project folder and check that the files in it are
         also in the project XML file. If they aren't, import them as
         orphaned files so the user can either delete them, or put them
@@ -1437,7 +1503,7 @@ class NWProject():
 
         # Then check the files in the data folder
         logger.debug("Checking files in project content folder")
-        orphanFiles = []
+        orphanFiles: list[str] = []
         self.projFiles = []
         for fileItem in os.listdir(self.projContent):
             if not fileItem.endswith(".nwd"):
@@ -1447,7 +1513,7 @@ class NWProject():
                 logger.warning("Skipping file: %s", fileItem)
                 continue
 
-            fHandle = fileItem[:13]
+            fHandle: str = fileItem[:13]
             if not isHandle(fHandle):
                 logger.warning("Skipping file: %s", fileItem)
                 continue
@@ -1469,18 +1535,18 @@ class NWProject():
             return
 
         # Handle orphans
-        nOrph = 0
-        noWhere = False
-        oPrefix = self.tr("Recovered")
+        nOrph: int = 0
+        noWhere: bool = False
+        oPrefix: str = self.tr("Recovered")
         for oHandle in orphanFiles:
 
             # Look for meta data
-            oName = ""
-            oParent = None
-            oClass = None
-            oLayout = None
+            oName: str = ""
+            oParent: str | None = None
+            oClass: nwItemClass | None = None
+            oLayout: nwItemLayout | None = None
 
-            aDoc = NWDoc(self, oHandle)
+            aDoc: NWDoc = NWDoc(self, oHandle)
             if aDoc.readDocument(isOrphan=True) is not None:
                 oName, oParent, oClass, oLayout = aDoc.getMeta()
 
@@ -1506,10 +1572,10 @@ class NWProject():
 
             # If the file still has no parent item, skip it
             if oParent is None:
-                noWhere = True
+                noWhere: bool = True
                 continue
 
-            orphItem = NWItem(self)
+            orphItem: NWItem = NWItem(self)
             orphItem.setName(oName)
             orphItem.setType(nwItemType.FILE)
             orphItem.setClass(oClass)
@@ -1525,18 +1591,20 @@ class NWProject():
 
         return True
 
-    def _appendSessionStats(self, idleTime):
+    def _appendSessionStats(self, idleTime) -> bool:
         """Append session statistics to the sessions log file.
         """
         if not self.ensureFolderStructure():
             return False
 
-        sessionFile = os.path.join(self.projMeta, nwFiles.SESS_STATS)
-        isFile = os.path.isfile(sessionFile)
+        assert self.projMeta is not None
 
-        nowTime = time()
-        sessDiff = self.currWCount - self.lastWCount
-        sessTime = nowTime - self.projOpened
+        sessionFile: str = os.path.join(self.projMeta, nwFiles.SESS_STATS)
+        isFile: bool = os.path.isfile(sessionFile)
+
+        nowTime: float = time()
+        sessDiff: int = self.currWCount - self.lastWCount
+        sessTime: float = nowTime - self.projOpened
 
         logger.info("The session lasted %d sec and added %d words", int(sessTime), sessDiff)
         if sessTime < 300 and sessDiff == 0:
@@ -1572,10 +1640,12 @@ class NWProject():
     #  Legacy Data Structure Handlers
     ##
 
-    def _legacyDataFolder(self, dataDir):
+    def _legacyDataFolder(self, dataDir: str) -> bool:
         """Clean up legacy data folders.
         """
-        dataPath = os.path.join(self.projPath, dataDir)
+
+        assert self.projPath is not None
+        dataPath: str = os.path.join(self.projPath, dataDir)
         if not os.path.isdir(dataPath):
             return False
 
@@ -1583,13 +1653,14 @@ class NWProject():
 
         # Move Documents to Content
         for dataItem in os.listdir(dataPath):
-            dataFile = os.path.join(dataPath, dataItem)
+            dataFile: str = os.path.join(dataPath, dataItem)
             if not os.path.isfile(dataFile):
                 continue
 
             if len(dataItem) == 21 and dataItem.endswith("_main.nwd"):
-                tHandle = dataDir[-1] + dataItem[:12]
-                newPath = os.path.join(self.projContent, f"{tHandle}.nwd")
+                tHandle: str = dataDir[-1] + dataItem[:12]
+                assert self.projContent is not None
+                newPath: str = os.path.join(self.projContent, f"{tHandle}.nwd")
                 os.rename(dataFile, newPath)
                 logger.info("Moved file: %s", dataFile)
 
@@ -1604,9 +1675,12 @@ class NWProject():
 
         return True
 
-    def _deprecatedFiles(self):
+    def _deprecatedFiles(self) -> bool:
         """Delete files that are no longer used by novelWriter.
         """
+        assert self.projCache is not None
+        assert self.projMeta is not None
+        assert self.projPath is not None
         rmList = [
             os.path.join(self.projCache, "nwProject.nwx.0"),
             os.path.join(self.projCache, "nwProject.nwx.1"),
