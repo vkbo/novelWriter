@@ -2010,7 +2010,7 @@ class GuiDocEditor(QTextEdit):
     def _allowSpaceBeforeColon(text, char):
         """Special checker function only used by the insert space
         feature for French, Spanish, etc, so it doesn't insert a
-        sapce before colons in meta data lines.
+        space before colons in meta data lines. See issue #1090.
         """
         if char == ":" and len(text) > 1:
             if text[0] == "@":
