@@ -53,5 +53,16 @@ empty documents would trigger a rebuild of the index each time the project was o
 been fixed. Another fix resolves an error message being written to the console logging output when
 a new document was created. Both errors were harmless.</p>
 
+<h3>Patch 1.6.3 &ndash; 18 August 2022</h3>
+
+<p>This is a bugfix release that fixes a rare problem causing novelWriter to crash if the spell
+checker language setting was configured to an empty value.</p>
+<p>A few other minor issues have also been fixed: The project language setting is now properly
+exported to ODT documents. Spaces are no longer inserted automatically in front of colons in
+certain meta data settings when the feature is enabled (it is primarily used for French). Lastly,
+the slider splitting the editor and viewer panels can no longer be dragged until the viewer
+disappears. It was not necessarily obvious how the viewer panel could be restored in such cases.
+</p>
+
 </body>
 </html>
