@@ -37,7 +37,7 @@ def testCoreSpell_FakeEnchant(monkeypatch):
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "enchant", None)
         spChk = NWSpellEnchant()
-        spChk.setLanguage("en", "")
+        spChk.setLanguage("en_US", "")
         assert isinstance(spChk._theDict, FakeEnchant)
 
     # Request a non-existent dictionary
@@ -85,9 +85,9 @@ def testCoreSpell_Enchant(monkeypatch, fncDir):
 
     # Load the proper enchant package (twice)
     spChk = NWSpellEnchant()
-    spChk.setLanguage("en", wList)
-    spChk.setLanguage("en", wList)
-    assert spChk.spellLanguage == "en"
+    spChk.setLanguage("en_US", wList)
+    spChk.setLanguage("en_US", wList)
+    assert spChk.spellLanguage == "en_US"
 
     # Add a word to the user's dictionary
     assert spChk._readProjectDictionary("stuff") is False
@@ -127,7 +127,7 @@ def testCoreSpell_Enchant(monkeypatch, fncDir):
     assert len(dList) > 0
 
     aTag, aName = spChk.describeDict()
-    assert aTag == "en"
+    assert aTag == "en_US"
     assert aName != ""
 
 # END Test testCoreSpell_Enchant
@@ -146,7 +146,7 @@ def testCoreSpell_SessionWords(fncDir):
 
     spChk = NWSpellEnchant()
 
-    spChk.setLanguage("en", wList1)
+    spChk.setLanguage("en_US", wList1)
     assert spChk.checkWord("a_word") is True
     assert spChk.checkWord("b_word") is True
     assert spChk.checkWord("c_word") is True
@@ -154,7 +154,7 @@ def testCoreSpell_SessionWords(fncDir):
     assert spChk.checkWord("e_word") is False
     assert spChk.checkWord("f_word") is False
 
-    spChk.setLanguage("en", wList2)
+    spChk.setLanguage("en_US", wList2)
     assert spChk.checkWord("a_word") is False
     assert spChk.checkWord("b_word") is False
     assert spChk.checkWord("c_word") is False
