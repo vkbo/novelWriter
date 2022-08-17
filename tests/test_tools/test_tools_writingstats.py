@@ -23,8 +23,8 @@ import pytest
 import json
 import os
 
-from tools import getGuiItem, writeFile
 from mock import causeOSError
+from tools import getGuiItem, writeFile, buildTestProject
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
@@ -48,7 +48,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
 
     # Create a project to work on
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
     qtbot.wait(100)
     assert nwGUI.saveProject()
     sessFile = os.path.join(fncProj, "meta", nwFiles.SESS_STATS)

@@ -20,11 +20,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 from novelwriter.tools.build import GuiBuildNovel
+from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.tools.projwizard import GuiProjectWizard
 from novelwriter.tools.writingstats import GuiWritingStats
 
 __all__ = [
     "GuiBuildNovel",
+    "GuiLipsum",
     "GuiProjectWizard",
     "GuiWritingStats",
 ]

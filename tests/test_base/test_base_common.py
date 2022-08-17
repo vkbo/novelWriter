@@ -24,8 +24,6 @@ import os
 import time
 import pytest
 
-from datetime import datetime
-
 from mock import causeOSError
 from tools import writeFile
 
@@ -33,7 +31,7 @@ from novelwriter.guimain import GuiMain
 from novelwriter.common import (
     checkString, checkInt, checkFloat, checkBool, checkHandle, isHandle,
     isTitleTag, isItemClass, isItemType, isItemLayout, hexToInt, checkIntRange,
-    checkIntTuple, formatInt, formatTimeStamp, formatTime, parseTimeStamp,
+    minmax, checkIntTuple, formatInt, formatTimeStamp, formatTime, simplified,
     splitVersionNumber, transferCase, fuzzyTime, numberToRoman, jsonEncode,
     readTextFile, makeFileNameSafe, sha256sum, getGuiItem, NWConfigParser
 )
@@ -163,6 +161,7 @@ def testBaseCommon_IsItemClass():
     assert isItemClass("ARCHIVE") is True
     assert isItemClass("TRASH") is True
 
+    # Invalid
     assert isItemClass("None") is False
     assert isItemClass(None) is False
     assert isItemClass("STUFF") is False
@@ -178,8 +177,11 @@ def testBaseCommon_IsItemType():
     assert isItemType("ROOT") is True
     assert isItemType("FOLDER") is True
     assert isItemType("FILE") is True
-    assert isItemType("TRASH") is True
 
+    # Deprecated Type
+    assert isItemType("TRASH") is False
+
+    # Invalid
     assert isItemType("None") is False
     assert isItemType(None) is False
     assert isItemType("STUFF") is False
@@ -195,6 +197,16 @@ def testBaseCommon_IsItemLayout():
     assert isItemLayout("DOCUMENT") is True
     assert isItemLayout("NOTE") is True
 
+    # Deprecated Layouts
+    assert isItemLayout("TITLE") is False
+    assert isItemLayout("PAGE") is False
+    assert isItemLayout("BOOK") is False
+    assert isItemLayout("PARTITION") is False
+    assert isItemLayout("UNNUMBERED") is False
+    assert isItemLayout("CHAPTER") is False
+    assert isItemLayout("SCENE") is False
+
+    # Invalid
     assert isItemLayout("None") is False
     assert isItemLayout(None) is False
     assert isItemLayout("STUFF") is False
@@ -226,6 +238,16 @@ def testBaseCommon_CheckIntRange():
     assert checkIntRange(0, 0, 5, 3) == 0
 
 # END Test testBaseCommon_CheckIntRange
+
+
+@pytest.mark.base
+def testBaseCommon_MinMax():
+    """Test the minmax function.
+    """
+    for i in range(-5, 15):
+        assert 0 <= minmax(i, 0, 10) <= 10
+
+# END Test testBaseCommon_MinMax
 
 
 @pytest.mark.base
@@ -273,18 +295,14 @@ def testBaseCommon_FormatTime():
 
 
 @pytest.mark.base
-def testBaseCommon_ParseTimeStamp():
-    """Test the parseTimeStamp function.
+def testBaseCommon_Simplified():
+    """Test the simplified function.
     """
-    localEpoch = datetime(2000, 1, 1).timestamp()
-    assert parseTimeStamp(None, 0.0, allowNone=True) is None
-    assert parseTimeStamp("None", 0.0, allowNone=True) is None
-    assert parseTimeStamp("None", 0.0) == 0.0
-    assert parseTimeStamp("2000-01-01 00:00:00", 123.0) == localEpoch
-    assert parseTimeStamp("2000-13-01 00:00:00", 123.0) == 123.0
-    assert parseTimeStamp("2000-01-32 00:00:00", 123.0) == 123.0
+    assert simplified("Hello World") == "Hello World"
+    assert simplified("  Hello    World   ") == "Hello World"
+    assert simplified("\tHello\n\r\tWorld") == "Hello World"
 
-# END Test testBaseCommon_ParseTimeStamp
+# END Test testBaseCommon_Simplified
 
 
 @pytest.mark.base

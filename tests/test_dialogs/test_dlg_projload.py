@@ -42,7 +42,8 @@ def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test the load project wizard.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
 
     assert nwGUI.openProject(nwMinimal)
     assert nwGUI.closeProject()

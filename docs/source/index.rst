@@ -39,11 +39,13 @@ too. novelWriter can be run directly from the Python source, installed from the 
 
 * Website: https://novelwriter.io
 * Documentation: https://novelwriter.readthedocs.io
+* Internationalisation: https://crowdin.com/project/novelwriter
 * Source Code: https://github.com/vkbo/novelWriter
 * Source Releases: https://github.com/vkbo/novelWriter/releases
 * Issue Tracker: https://github.com/vkbo/novelWriter/issues
 * Feature Discussions: https://github.com/vkbo/novelWriter/discussions
 * PyPi Project: https://pypi.org/project/novelWriter
+* Social Media: https://fosstodon.org/@novelwriter
 
 .. toctree::
    :maxdepth: 1

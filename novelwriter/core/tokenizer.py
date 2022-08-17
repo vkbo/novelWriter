@@ -1,7 +1,7 @@
 """
 novelWriter – Text Tokenizer
 ============================
-Splits a piece of novelWriter markdown text into its elements
+Split novelWriter plain text into its elements
 
 File History:
 Created: 2019-05-05 [0.0.1]
@@ -27,6 +27,7 @@ import re
 import logging
 import novelwriter
 
+from abc import ABC, abstractmethod
 from operator import itemgetter
 from functools import partial
 
@@ -40,7 +41,7 @@ from novelwriter.core.document import NWDoc
 logger = logging.getLogger(__name__)
 
 
-class Tokenizer():
+class Tokenizer(ABC):
 
     # In-Text Format
     FMT_B_B = 1  # Begin bold
@@ -81,7 +82,6 @@ class Tokenizer():
     def __init__(self, theProject):
 
         self.theProject = theProject
-        self.theParent  = theProject.theParent
         self.mainConf   = novelwriter.CONFIG
 
         # Data Variables
@@ -267,10 +267,14 @@ class Tokenizer():
     #  Class Methods
     ##
 
+    @abstractmethod
+    def doConvert(self):
+        raise NotImplementedError
+
     def addRootHeading(self, theHandle):
         """Add a heading at the start of a new root folder.
         """
-        if not self.theProject.projTree.checkType(theHandle, nwItemType.ROOT):
+        if not self.theProject.tree.checkType(theHandle, nwItemType.ROOT):
             return False
 
         if self._isFirst:
@@ -279,7 +283,7 @@ class Tokenizer():
         else:
             textAlign = self.A_PBB | self.A_CENTRE
 
-        theItem = self.theProject.projTree[theHandle]
+        theItem = self.theProject.tree[theHandle]
         locNotes = self._localLookup("Notes")
         theTitle = f"{locNotes}: {theItem.itemName}"
         self._theTokens = []
@@ -296,7 +300,7 @@ class Tokenizer():
         not set, load it from the file.
         """
         self._theHandle = theHandle
-        self._theItem = self.theProject.projTree[theHandle]
+        self._theItem = self.theProject.tree[theHandle]
         if self._theItem is None:
             return False
 

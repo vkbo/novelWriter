@@ -410,32 +410,6 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
 
     assert tmpConf.setPreferencesSize(700, 615)
 
-    # Project Tree Columns
-    tmpConf.guiScale = 2.0
-    assert tmpConf.setTreeColWidths([10, 20, 25])
-    assert tmpConf.getTreeColWidths() == [10, 20, 24]
-    assert tmpConf.treeColWidth == [5, 10, 12]
-
-    tmpConf.guiScale = 1.0
-    assert tmpConf.setTreeColWidths([10, 20, 25])
-    assert tmpConf.getTreeColWidths() == [10, 20, 25]
-    assert tmpConf.treeColWidth == [10, 20, 25]
-
-    assert tmpConf.setTreeColWidths([200, 50, 30])
-
-    # Novel Tree Columns
-    tmpConf.guiScale = 2.0
-    assert tmpConf.setNovelColWidths([10, 20])
-    assert tmpConf.getNovelColWidths() == [10, 20]
-    assert tmpConf.novelColWidth == [5, 10]
-
-    tmpConf.guiScale = 1.0
-    assert tmpConf.setNovelColWidths([10, 20])
-    assert tmpConf.getNovelColWidths() == [10, 20]
-    assert tmpConf.novelColWidth == [10, 20]
-
-    assert tmpConf.setNovelColWidths([200, 50])
-
     # Project Settings Tree Columns
     tmpConf.guiScale = 2.0
     assert tmpConf.setProjColWidths([10, 20, 30])
@@ -505,13 +479,13 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     # ============
 
     tmpConf.guiScale = 1.0
-    assert tmpConf.getTextWidth(False) == 600
+    assert tmpConf.getTextWidth(False) == 700
     assert tmpConf.getTextWidth(True) == 800
     assert tmpConf.getTextMargin() == 40
     assert tmpConf.getTabWidth() == 40
 
     tmpConf.guiScale = 2.0
-    assert tmpConf.getTextWidth(False) == 1200
+    assert tmpConf.getTextWidth(False) == 1400
     assert tmpConf.getTextWidth(True) == 1600
     assert tmpConf.getTextMargin() == 80
     assert tmpConf.getTabWidth() == 80
