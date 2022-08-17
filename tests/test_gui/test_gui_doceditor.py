@@ -1190,7 +1190,7 @@ def testGuiEditor_Tags(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
 
 
 @pytest.mark.gui
-def testGuiEditor_WordCounters(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumText):
+def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     """Test saving text from the editor.
     """
     # Block message box
@@ -1488,3 +1488,30 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     # qtbot.stopForInteraction()
 
 # END Test testGuiEditor_Search
+
+
+@pytest.mark.gui
+def testGuiEditor_StaticMethods():
+    """Test the document editor's static methods.
+    """
+    # Check the method that decides if it is allowed to insert a space
+    # before a colon using the French, Spanish, etc language feature
+    assert GuiDocEditor._allowSpaceBeforeColon("", "") is True
+    assert GuiDocEditor._allowSpaceBeforeColon("", ":") is True
+    assert GuiDocEditor._allowSpaceBeforeColon("some text", ":") is True
+
+    assert GuiDocEditor._allowSpaceBeforeColon("@:", ":") is False
+    assert GuiDocEditor._allowSpaceBeforeColon("@>", ">") is True
+
+    assert GuiDocEditor._allowSpaceBeforeColon("%", ":") is True
+    assert GuiDocEditor._allowSpaceBeforeColon("%:", ":") is True
+    assert GuiDocEditor._allowSpaceBeforeColon("%synopsis:", ":") is False
+    assert GuiDocEditor._allowSpaceBeforeColon("%Synopsis:", ":") is False
+    assert GuiDocEditor._allowSpaceBeforeColon("% synopsis:", ":") is False
+    assert GuiDocEditor._allowSpaceBeforeColon("% Synopsis:", ":") is False
+    assert GuiDocEditor._allowSpaceBeforeColon("%  synopsis:", ":") is False
+    assert GuiDocEditor._allowSpaceBeforeColon("%  Synopsis:", ":") is False
+    assert GuiDocEditor._allowSpaceBeforeColon("%synopsis :", ":") is True
+    assert GuiDocEditor._allowSpaceBeforeColon("%Synopsis :", ":") is True
+
+# END Test testGuiEditor_StaticMethods

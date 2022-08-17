@@ -472,7 +472,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     testFile = os.path.join(outDir, "guiEditor_Main_Final_nwProject.nwx")
     compFile = os.path.join(refDir, "guiEditor_Main_Final_nwProject.nwx")
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile, ignoreStart=(*XML_IGNORE, "<spellCheck"))
 
     projFile = os.path.join(fncProj, "content", "000000000000f.nwd")
     testFile = os.path.join(outDir, "guiEditor_Main_Final_000000000000f.nwd")

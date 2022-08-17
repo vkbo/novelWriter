@@ -712,7 +712,7 @@ class GuiDocEditor(QTextEdit):
                 ), nwAlert.INFO)
             theMode = False
 
-        if self.spEnchant.spellLanguage() is None:
+        if self.spEnchant.spellLanguage is None:
             theMode = False
 
         self._spellCheck = theMode
@@ -1991,18 +1991,34 @@ class GuiDocEditor(QTextEdit):
 
         tCheck = tInsert
         if tCheck in self.mainConf.fmtPadBefore:
-            nDelete = max(nDelete, 1)
-            tInsert = self._typPadChar + tInsert
+            if self.allowSpaceBeforeColon(theText, tCheck):
+                nDelete = max(nDelete, 1)
+                tInsert = self._typPadChar + tInsert
 
         if tCheck in self.mainConf.fmtPadAfter:
-            nDelete = max(nDelete, 1)
-            tInsert = tInsert + self._typPadChar
+            if self.allowSpaceBeforeColon(theText, tCheck):
+                nDelete = max(nDelete, 1)
+                tInsert = tInsert + self._typPadChar
 
         if nDelete > 0:
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, nDelete)
             theCursor.insertText(tInsert)
 
         return
+
+    @staticmethod
+    def _allowSpaceBeforeColon(text, char):
+        """Special checker function only used by the insert space
+        feature for French, Spanish, etc, so it doesn't insert a
+        space before colons in meta data lines. See issue #1090.
+        """
+        if char == ":" and len(text) > 1:
+            if text[0] == "@":
+                return False
+            if text[0] == "%":
+                if text[1:].lstrip()[:9].lower() == "synopsis:":
+                    return False
+        return True
 
     def _updateHeaders(self, checkPos=False, checkLevel=False):
         """Update the headers record and return True if anything

@@ -358,7 +358,7 @@ class Config:
         # Check the availability of optional packages
         self._checkOptionalPackages()
 
-        if self.spellLanguage is None:
+        if not self.spellLanguage:
             self.spellLanguage = "en"
 
         # Look for a PDF version of the manual
