@@ -439,7 +439,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir):
     testFile = os.path.join(outDir, "guiEditor_Main_Final_nwProject.nwx")
     compFile = os.path.join(refDir, "guiEditor_Main_Final_nwProject.nwx")
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 6, 7, 8])
+    assert cmpFiles(testFile, compFile, [2, 6, 7, 8, 13])
 
     projFile = os.path.join(fncProj, "content", "031b4af5197ec.nwd")
     testFile = os.path.join(outDir, "guiEditor_Main_Final_031b4af5197ec.nwd")
