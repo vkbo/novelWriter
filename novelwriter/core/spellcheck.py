@@ -26,6 +26,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import logging
 
+from collections import namedtuple
+
 from novelwriter.error import logException
 
 logger = logging.getLogger(__name__)
@@ -46,36 +48,47 @@ class NWSpellEnchant():
         return
 
     ##
-    #  Getters and Setters
+    #  Properties
     ##
 
+    @property
     def spellLanguage(self):
         return self._spellLanguage
+
+    ##
+    #  Setters
+    ##
 
     def setLanguage(self, theLang, projectDict=None):
         """Load a dictionary for the language specified in the config.
         If that fails, we load a mock dictionary so that lookups don't
-        crash.
+        crash. Note that enchant will allow loading an empty string as
+        a tag, but this will fail later on. See issue #1096.
         """
+        self._theBroker = None
+        self._theDict = None
+        self._spellLanguage = None
+
         try:
             import enchant
-            if self._theBroker is not None:
-                logger.debug("Deleting old pyenchant broker")
-                del self._theBroker
 
-            self._theBroker = enchant.Broker()
-            self._theDict = self._theBroker.request_dict(theLang)
-            self._spellLanguage = theLang
-            logger.debug("Enchant spell checking for language '%s' loaded", theLang)
+            if theLang and enchant.dict_exists(theLang):
+                self._theBroker = enchant.Broker()
+                self._theDict = self._theBroker.request_dict(theLang)
+                self._spellLanguage = theLang
+                logger.debug("Enchant spell checking for language '%s' loaded", theLang)
+            else:
+                logger.warning("Enchant found no dictionary for language '%s'", theLang)
 
         except Exception:
             logger.error("Failed to load enchant spell checking for language '%s'", theLang)
-            self._theDict = FakeEnchant()
-            self._spellLanguage = None
 
-        self._readProjectDictionary(projectDict)
-        for pWord in self._projDict:
-            self._theDict.add_to_session(pWord)
+        if self._theDict is None:
+            self._theDict = FakeEnchant()
+        else:
+            self._readProjectDictionary(projectDict)
+            for pWord in self._projDict:
+                self._theDict.add_to_session(pWord)
 
         return
 
@@ -189,6 +202,9 @@ class FakeEnchant:
     """Fallback for when Enchant is selected, but not installed.
     """
     def __init__(self):
+        self.tag = ""
+        self.provider = namedtuple("provider", "name")
+        self.provider.name = ""
         return
 
     def check(self, theWord):

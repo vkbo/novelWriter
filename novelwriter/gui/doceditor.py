@@ -718,7 +718,7 @@ class GuiDocEditor(QTextEdit):
                 ), nwAlert.INFO)
             theMode = False
 
-        if self.spEnchant.spellLanguage() is None:
+        if self.spEnchant.spellLanguage is None:
             theMode = False
 
         self._spellCheck = theMode
