@@ -1514,4 +1514,4 @@ def testGuiEditor_StaticMethods():
     assert GuiDocEditor._allowSpaceBeforeColon("%synopsis :", ":") is True
     assert GuiDocEditor._allowSpaceBeforeColon("%Synopsis :", ":") is True
 
-# END Test testGuiEditor_MinorMethods
+# END Test testGuiEditor_StaticMethods
