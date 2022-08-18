@@ -1,6 +1,6 @@
 # novelWriter Changelog
 
-## Version 1.6.2 [2022-08-18]
+## Version 1.6.3 [2022-08-18]
 
 ### Release Notes
 
