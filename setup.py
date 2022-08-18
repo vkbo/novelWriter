@@ -223,23 +223,20 @@ def buildPdfManual():
     buildFile = os.path.join("docs", "build", "latex", "manual.pdf")
     finalFile = os.path.join("novelwriter", "assets", "manual.pdf")
 
+    if os.path.isfile(finalFile):
+        # Make sure a new file is always generated
+        os.unlink(finalFile)
+
     try:
         subprocess.call(["make", "clean"], cwd="docs")
-        stdOut, stdErr, exCode = sysCall(["make latexpdf"], cwd="docs")
+        exCode = subprocess.call(["make", "latexpdf"], cwd="docs")
         if exCode == 0:
             if os.path.isfile(finalFile):
                 os.unlink(finalFile)
-            outLines = stdOut.splitlines()
-            for aLine in outLines:
-                if aLine.startswith("processing manual.tex..."):
-                    break
-                print(aLine)
-            print("\n[LaTeX output truncated ...]\n")
-            print("\n".join(outLines[-6:]))
             print("")
             os.rename(buildFile, finalFile)
         else:
-            raise Exception(stdErr)
+            raise Exception(f"Build returned error code {exCode}")
 
         print("PDF manual build: OK")
         print("")
@@ -253,6 +250,13 @@ def buildPdfManual():
         print(" * pip install sphinx")
         print(" * Package latexmk")
         print(" * LaTeX build system")
+        print("")
+        print(" On Debian/Ubuntu, install: python3-sphinx latexmk texlive texlive-latex-extra")
+        print("")
+        sys.exit(1)
+
+    if not os.path.isfile(finalFile):
+        print("No output file was found!")
         print("")
         sys.exit(1)
 
@@ -431,6 +435,63 @@ def buildSampleZip():
     return
 
 
+def cleanBuiltAssets():
+    """Remove assets built by this script.
+    """
+    print("")
+    print("Removing Built Assets")
+    print("=====================")
+    print("")
+
+    sampleZip = os.path.join("novelwriter", "assets", "sample.zip")
+    if os.path.isfile(sampleZip):
+        print(f"Deleted: {sampleZip}")
+        os.unlink(sampleZip)
+
+    pdfManual = os.path.join("novelwriter", "assets", "manual.pdf")
+    if os.path.isfile(pdfManual):
+        print(f"Deleted: {pdfManual}")
+        os.unlink(pdfManual)
+
+    i18nAssets = os.path.join("novelwriter", "assets", "i18n")
+    for i18nItem in os.listdir(i18nAssets):
+        i18nPath = os.path.join(i18nAssets, i18nItem)
+        if os.path.isfile(i18nPath) and i18nPath.endswith(".qm"):
+            print(f"Deleted: {i18nPath}")
+            os.unlink(i18nPath)
+
+    print("")
+
+    return
+
+
+def checkAssetsExist():
+    """Check that the necessary compiled assets exist ahead of a build.
+    """
+    hasSample = False
+    hasManual = False
+    hasQmData = False
+
+    sampleZip = os.path.join("novelwriter", "assets", "sample.zip")
+    if os.path.isfile(sampleZip):
+        print(f"Found: {sampleZip}")
+        hasSample = True
+
+    pdfManual = os.path.join("novelwriter", "assets", "manual.pdf")
+    if os.path.isfile(pdfManual):
+        print(f"Found: {pdfManual}")
+        hasManual = True
+
+    i18nAssets = os.path.join("novelwriter", "assets", "i18n")
+    for i18nItem in os.listdir(i18nAssets):
+        i18nPath = os.path.join(i18nAssets, i18nItem)
+        if os.path.isfile(i18nPath) and i18nPath.endswith(".qm"):
+            print(f"Found: {i18nPath}")
+            hasQmData = True
+
+    return hasSample and hasManual and hasQmData
+
+
 # =============================================================================================== #
 #  Python Packaging
 # =============================================================================================== #
@@ -506,12 +567,12 @@ def makeMinimalPackage(targetOS):
         targName = ""
     print("")
 
-    # Build Additional Assets
+    # Check Additional Assets
     # =======================
 
-    buildQtI18n()
-    buildSampleZip()
-    buildPdfManual()
+    if not checkAssetsExist():
+        print("ERROR: Missing build assets")
+        sys.exit(1)
 
     # Build Minimal Zip
     # =================
@@ -603,6 +664,7 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
     print("")
     print("Build Debian Package")
     print("====================")
+    print("On Debian/Ubuntu install: dh-python python3-all debhelper devscripts")
     print("")
 
     # Version Info
@@ -636,12 +698,12 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
 
     os.mkdir(outDir)
 
-    # Build Additional Assets
+    # Check Additional Assets
     # =======================
 
-    buildQtI18n()
-    buildSampleZip()
-    buildPdfManual()
+    if not checkAssetsExist():
+        print("ERROR: Missing build assets")
+        sys.exit(1)
 
     # Copy novelWriter Source
     # =======================
@@ -788,7 +850,6 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
     distLoop = [
         ("18.04", "bionic"),
         ("20.04", "focal"),
-        ("21.10", "impish"),
         ("22.04", "jammy"),
     ]
 
@@ -1056,6 +1117,13 @@ def makeWindowsEmbedded(sysArgs):
         print("Inno Setup failed with error:")
         print(str(exc))
         sys.exit(1)
+
+    issName = os.path.join("dist", f"novelwriter-{packVersion}-win10-amd64-setup.exe")
+    newName = os.path.join("dist", f"novelwriter-{packVersion}-py{pyVers}-win10-amd64-setup.exe")
+    os.replace(issName, newName)
+
+    print(f"Installer: {newName}")
+    print("")
 
     return
 
@@ -1567,6 +1635,7 @@ if __name__ == "__main__":
         "    qtlupdate      Update translation files for internationalisation.",
         "                   The files to be updated must be provided as arguments.",
         "    qtlrelease     Build the language files for internationalisation.",
+        "    clean-assets   Delete assets built by manual, sample and qtlrelease.",
         "",
         "Python Packaging:",
         "",
@@ -1642,6 +1711,10 @@ if __name__ == "__main__":
     if "sample" in sys.argv:
         sys.argv.remove("sample")
         buildSampleZip()
+
+    if "clean-assets" in sys.argv:
+        sys.argv.remove("clean-assets")
+        cleanBuiltAssets()
 
     # Python Packaging
     # ================

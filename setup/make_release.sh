@@ -7,6 +7,13 @@ if [ ! -f setup.py ]; then
 fi
 
 echo ""
+echo " Building Dependencies"
+echo "================================================================================"
+echo ""
+python3 setup.py clean-assets
+python3 setup.py qtlrelease manual sample
+
+echo ""
 echo " Building Minimal Packages"
 echo "================================================================================"
 echo ""
