@@ -80,7 +80,7 @@ class NWStatus():
         if self._type == self.STATUS:
             self._prefix: str = "s"
         elif self._type == self.IMPORT:
-            self._prefix: str = "i"
+            self._prefix = "i"
         else:
             raise Exception("This is a bug!")
 

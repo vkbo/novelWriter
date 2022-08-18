@@ -177,7 +177,7 @@ class NWTree():
                     tItem.itemName,
                 )
                 tocList.append(tocLine)
-                tocLen: int = max(tocLen, len(tocLine))
+                tocLen = max(tocLen, len(tocLine))
 
         try:
             # Dump the text
@@ -237,7 +237,7 @@ class NWTree():
                 tItem.setClassDefaults(iItem.itemClass)
                 return True
             else:
-                iItem: NWItem | None = self.__getitem__(iItem.itemParent)
+                iItem = self.__getitem__(iItem.itemParent)
                 if iItem is None:
                     return False
         else:
@@ -267,7 +267,7 @@ class NWTree():
                     return tTree
                 else:
                     tHandle = tItem.itemParent
-                    tItem: NWItem | None = self.__getitem__(tHandle)
+                    tItem = self.__getitem__(tHandle)
                     if tItem is None:
                         return tTree
                     else:

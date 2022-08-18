@@ -349,7 +349,7 @@ class NWProject():
 
         titlePage: str = "#! %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
         if self.bookAuthors:
-            titlePage: str = "%s>> %s %s <<\n" % (titlePage, self.tr("By"), self.getAuthors())
+            titlePage = "%s>> %s %s <<\n" % (titlePage, self.tr("By"), self.getAuthors())
 
         aDoc: NWDoc = NWDoc(self, hTitlePage)
         aDoc.writeDocument(titlePage)
@@ -359,11 +359,11 @@ class NWProject():
             # single chapter with a single scene.
             hChapter: str | None = self.newFile(self.tr("New Chapter"), hNovelRoot)
             assert hChapter is not None
-            aDoc: NWDoc = NWDoc(self, hChapter)
+            aDoc = NWDoc(self, hChapter)
             aDoc.writeDocument("## %s\n\n" % self.tr("New Chapter"))
 
             hScene: str | None = self.newFile(self.tr("New Scene"), hChapter)
-            aDoc: NWDoc = NWDoc(self, hScene)
+            aDoc = NWDoc(self, hScene)
             aDoc.writeDocument("### %s\n\n" % self.tr("New Scene"))
 
             self.newRoot(nwItemClass.PLOT)
@@ -389,7 +389,7 @@ class NWProject():
                     chTitle: str = self.tr("Chapter {0}").format(f"{ch+1:d}")
                     cHandle: str | None = self.newFile(chTitle, hNovelRoot)
                     assert cHandle is not None
-                    aDoc: NWDoc = NWDoc(self, cHandle)
+                    aDoc = NWDoc(self, cHandle)
                     aDoc.writeDocument(f"## {chTitle}\n\n% Synopsis: {chSynop}\n\n")
 
                     # Create chapter scenes
@@ -398,16 +398,16 @@ class NWProject():
                             scTitle: str = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
                             sHandle: str | None = self.newFile(scTitle, cHandle)
                             assert sHandle is not None
-                            aDoc: NWDoc = NWDoc(self, sHandle)
+                            aDoc = NWDoc(self, sHandle)
                             aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
 
             # Create scenes (no chapters)
             elif numScenes > 0:
                 for sc in range(numScenes):
-                    scTitle: str = self.tr("Scene {0}").format(f"{sc+1:d}")
-                    sHandle: str | None = self.newFile(scTitle, hNovelRoot)
+                    scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
+                    sHandle = self.newFile(scTitle, hNovelRoot)
                     assert sHandle is not None
-                    aDoc: NWDoc = NWDoc(self, sHandle)
+                    aDoc = NWDoc(self, sHandle)
                     aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
 
             # Create notes folders
@@ -424,7 +424,7 @@ class NWProject():
                     if addNotes:
                         aHandle: str | None = self.newFile(noteTitles[newRoot], rHandle)
                         ntTag: str = simplified(noteTitles[newRoot]).replace(" ", "")
-                        aDoc: NWDoc = NWDoc(self, aHandle)
+                        aDoc = NWDoc(self, aHandle)
                         aDoc.writeDocument(f"# {noteTitles[newRoot]}\n\n@tag: {ntTag}\n\n")
 
             # Also add the archive and trash folders
@@ -515,7 +515,7 @@ class NWProject():
                     "Attempting to open backup project file instead."
                 ), nwAlert.INFO)
                 try:
-                    nwXML: etree._ElementTree = etree.parse(backFile)
+                    nwXML = etree.parse(backFile)
                 except Exception as exc:
                     self.mainGui.makeAlert(self.tr(
                         "Failed to parse project xml."
@@ -591,7 +591,7 @@ class NWProject():
         # =========================
 
         if hexToInt(hexVersion) > hexToInt(novelwriter.__hexversion__):
-            msgYes: bool = self.mainGui.askQuestion(
+            msgYes = self.mainGui.askQuestion(
                 self.tr("Version Conflict"),
                 self.tr(
                     "This project was saved by a newer version of "
@@ -1289,7 +1289,7 @@ class NWProject():
                 # out hand, so we cap at 10000 items
                 logger.warning("Item '%s' found before its parent", tHandle)
                 iterItems.append(tHandle)
-                nMax: int = min(len(iterItems), 10000)
+                nMax = min(len(iterItems), 10000)
             else:
                 # Item is orphaned
                 logger.error("Item '%s' has no parent in current tree", tHandle)
@@ -1378,7 +1378,7 @@ class NWProject():
 
         langFile: str = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self.projLang)
         if not os.path.isfile(langFile):
-            langFile: str = os.path.join(self.mainConf.nwLangPath, "project_en_GB.json")
+            langFile = os.path.join(self.mainConf.nwLangPath, "project_en_GB.json")
 
         try:
             with open(langFile, mode="r", encoding="utf-8") as inFile:
@@ -1532,7 +1532,7 @@ class NWProject():
             ).format(len(orphanFiles)), nwAlert.WARN)
         else:
             logger.debug("File check OK")
-            return
+            return True
 
         # Handle orphans
         nOrph: int = 0
@@ -1572,7 +1572,7 @@ class NWProject():
 
             # If the file still has no parent item, skip it
             if oParent is None:
-                noWhere: bool = True
+                noWhere = True
                 continue
 
             orphItem: NWItem = NWItem(self)

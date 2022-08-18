@@ -336,8 +336,8 @@ class NWItem():
             stIcon: QIcon = self.theProject.statusItems.icon(self._status)
         elif self.theProject.importItems is not None:
             assert self._import is not None
-            stName: str = self.theProject.importItems.name(self._import)
-            stIcon: QIcon = self.theProject.importItems.icon(self._import)
+            stName = self.theProject.importItems.name(self._import)
+            stIcon = self.theProject.importItems.icon(self._import)
         else:
             raise Exception("This is a bug!")
         return stName, stIcon

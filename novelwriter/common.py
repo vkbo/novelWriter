@@ -50,6 +50,7 @@ if TYPE_CHECKING:
         from typing_extensions import Final, Literal, TypeGuard
 
     from typing import Any, AnyStr, TypeVar
+
     _DefaultT = TypeVar('_DefaultT')
 
 logger = getLogger(__name__)
@@ -61,7 +62,7 @@ logger = getLogger(__name__)
 
 @overload
 def checkString(
-    value: str | None,
+    value: Any,
     default: _DefaultT,
     allowNone: Literal[False] = False
 ) -> str | _DefaultT:
@@ -70,10 +71,10 @@ def checkString(
 
 @overload
 def checkString(
-    value: str | None,
-    default: _DefaultT,
-    allowNone: Literal[True]
-) -> str | _DefaultT | None:
+    value: Any,
+    default: str | None,
+    allowNone: bool
+) -> str | None:
     ...
 
 
@@ -89,7 +90,7 @@ def checkString(value, default, allowNone=False):
 
 @overload
 def checkInt(
-    value: int | str | None,
+    value: Any,
     default: _DefaultT,
     allowNone: Literal[False] = False
 ) -> int | _DefaultT:
@@ -98,10 +99,10 @@ def checkInt(
 
 @overload
 def checkInt(
-    value: int | str | None,
-    default: _DefaultT,
-    allowNone: Literal[True]
-) -> int | _DefaultT | None:
+    value: Any,
+    default: int | None,
+    allowNone: bool
+) -> int | None:
     ...
 
 
@@ -120,7 +121,7 @@ def checkInt(value, default, allowNone=False):
 
 @overload
 def checkFloat(
-    value: float | str | None,
+    value: Any,
     default: _DefaultT,
     allowNone: Literal[False] = False
 ) -> float | _DefaultT:
@@ -129,10 +130,10 @@ def checkFloat(
 
 @overload
 def checkFloat(
-    value: float | str | None,
-    default: _DefaultT,
-    allowNone: Literal[True]
-) -> float | _DefaultT | None:
+    value: Any,
+    default: float | None,
+    allowNone: bool
+) -> float | None:
     ...
 
 
@@ -151,7 +152,7 @@ def checkFloat(value, default, allowNone=False):
 
 @overload
 def checkBool(
-    value: bool | str | None,
+    value: Any,
     default: _DefaultT,
     allowNone: Literal[False] = False
 ) -> bool | _DefaultT:
@@ -160,10 +161,10 @@ def checkBool(
 
 @overload
 def checkBool(
-    value: bool | str | None,
-    default: _DefaultT,
-    allowNone: Literal[True]
-) -> bool | _DefaultT | None:
+    value: Any,
+    default: bool | None,
+    allowNone: bool
+) -> bool | None:
     ...
 
 
@@ -196,7 +197,7 @@ def checkBool(value, default, allowNone=False):
 
 @overload
 def checkHandle(
-    value: str | None,
+    value: Any,
     default: _DefaultT,
     allowNone: Literal[False] = False
 ) -> str | _DefaultT:
@@ -205,10 +206,10 @@ def checkHandle(
 
 @overload
 def checkHandle(
-    value: str | None,
-    default: _DefaultT,
-    allowNone: Literal[True]
-) -> str | _DefaultT | None:
+    value: Any,
+    default: str | None,
+    allowNone: bool
+) -> str | None:
     ...
 
 
@@ -228,7 +229,7 @@ def checkHandle(value, default, allowNone=False):
 #  Validator Functions
 # =============================================================================================== #
 
-def isHandle(value: str | None) -> TypeGuard[str]:
+def isHandle(value: Any) -> TypeGuard[str]:
     """Check if a string is a valid novelWriter handle.
     Note: This is case sensitive. Must be lower case!
     """
@@ -242,7 +243,7 @@ def isHandle(value: str | None) -> TypeGuard[str]:
     return True
 
 
-def isTitleTag(value: str) -> TypeGuard[str]:
+def isTitleTag(value: Any) -> TypeGuard[str]:
     """Check if a string is a valid title string.
     """
     if not isinstance(value, str):
@@ -275,7 +276,7 @@ def isItemLayout(value: str) -> bool:
     return value in nwItemLayout.__members__
 
 
-def hexToInt(value: str, default: _DefaultT = 0) -> int | _DefaultT:
+def hexToInt(value: Any, default: int = 0) -> int:
     """Convert a hex string to an integer.
     """
     if isinstance(value, str):
@@ -286,7 +287,7 @@ def hexToInt(value: str, default: _DefaultT = 0) -> int | _DefaultT:
     return default
 
 
-def checkIntRange(value: int, first: int, last: int, default: _DefaultT) -> int | _DefaultT:
+def checkIntRange(value: Any, first: int, last: int, default: int) -> int:
     """Check that an int is in a given range. If it isn't, return the
     default value.
     """
@@ -302,7 +303,7 @@ def minmax(value: int, minVal: int, maxVal: int) -> int:
     return min(maxVal, max(minVal, value))
 
 
-def checkIntTuple(value: int, valid: tuple[int], default: _DefaultT) -> int | _DefaultT:
+def checkIntTuple(value: Any, valid: tuple[int, ...], default: _DefaultT) -> int | _DefaultT:
     """Check that an int is an element of a tuple. If it isn't, return
     the default value.
     """
@@ -680,14 +681,14 @@ class NWConfigParser(ConfigParser):
     ##
 
     @overload
-    def _unpackList(self, value: str, default: _DefaultT, type: Literal[4]) -> list[str]:
+    def _unpackList(self, value: str, default: Any, type: Literal[4]) -> list[str]:
         ...
 
     @overload
-    def _unpackList(self, value: str, default: _DefaultT, type: Literal[5]) -> list[str]:
+    def _unpackList(self, value: str, default: Any, type: Literal[5]) -> list[str]:
         ...
 
-    def _unpackList(self, value: str, default: _DefaultT, type: int) -> list[str] | list[int]:
+    def _unpackList(self, value, default, type):
         """Unpack a comma-separated string of items into a list.
         """
         inList: list[str] = value.split(",")
@@ -751,9 +752,9 @@ class NWConfigParser(ConfigParser):
         self,
         section: str,
         option: str,
-        default: _DefaultT,
+        default: Any,
         type: Literal[4]
-    ) -> list[str] | _DefaultT:
+    ) -> list[str]:
         ...
 
     @overload
@@ -761,18 +762,12 @@ class NWConfigParser(ConfigParser):
         self,
         section: str,
         option: str,
-        default: _DefaultT,
+        default: Any,
         type: Literal[5]
-    ) -> list[int] | _DefaultT:
+    ) -> list[int]:
         ...
 
-    def _parseLine(
-        self,
-        section: str,
-        option: str,
-        default: _DefaultT,
-        type: int
-    ) -> str | int | float | bool | list[str] | list[int] | _DefaultT:
+    def _parseLine(self, section, option, default, type):
         """Parse a line and return the correct datatype.
         """
         if self.has_option(section, option):
