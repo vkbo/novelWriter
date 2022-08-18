@@ -1,5 +1,35 @@
 # novelWriter Changelog
 
+## Version 1.6.2 [2022-08-18]
+
+### Release Notes
+
+This is a bugfix release that fixes a rare problem causing novelWriter to crash if the spell
+checker language setting was configured to an empty value.
+
+A few other minor issues have also been fixed: The project language setting is now properly
+exported to ODT documents. Spaces are no longer inserted automatically in front of colons in
+certain meta data settings when the feature is enabled (it is primarily used for French). Lastly,
+the slider splitting the editor and viewer panels can no longer be dragged until the viewer
+disappears. It was not necessarily obvious how the viewer panel could be restored in such cases.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where the project language setting was not exported when building Open Document
+  files. Issue #1073. PR #1087.
+* Fixed an issue where the splitter in the main window could be dragged until it hid the document
+  viewer panel. This is no longer possible. Issue #1085. PR #1087.
+* Fixed an issue where an empty spell check language setting would crash novelWriter. Issue #1096.
+  PR #1098.
+* Added a checker that blocks the automatic insertion of spaces in front of special characters in
+  the cases where the character is a colon in either a meta tag, or as part of the synopsis
+  keyword. This feature is used for certain languages like French and Spanish. Issue #1090.
+  PR #1099.
+
+----
+
 ## Version 1.6.2 [2022-03-20]
 
 ### Release Notes
