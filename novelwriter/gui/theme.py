@@ -54,7 +54,7 @@ class GuiTheme:
     def __init__(self):
 
         self.mainConf = novelwriter.CONFIG
-        self.theIcons = GuiIcons(self)
+        self.iconCache = GuiIcons(self)
 
         # Loaded Theme Settings
         # =====================
@@ -127,13 +127,13 @@ class GuiTheme:
 
         self.updateFont()
         self.updateTheme()
-        self.theIcons.updateTheme()
+        self.iconCache.updateTheme()
 
         # Icon Functions
-        self.getIcon = self.theIcons.getIcon
-        self.getPixmap = self.theIcons.getPixmap
-        self.getItemIcon = self.theIcons.getItemIcon
-        self.loadDecoration = self.theIcons.loadDecoration
+        self.getIcon = self.iconCache.getIcon
+        self.getPixmap = self.iconCache.getPixmap
+        self.getItemIcon = self.iconCache.getItemIcon
+        self.loadDecoration = self.iconCache.loadDecoration
 
         # Extract Other Info
         self.guiDPI = qApp.primaryScreen().logicalDotsPerInchX()
@@ -456,34 +456,35 @@ class GuiIcons:
 
     ICON_KEYS = {
         # Project and GUI icons
-        "novelwriter", "proj_nwx",
-        "cls_none", "cls_novel", "cls_plot", "cls_character", "cls_world",
-        "cls_timeline", "cls_object", "cls_entity", "cls_custom", "cls_archive", "cls_trash",
-        "proj_document", "proj_title", "proj_chapter", "proj_scene", "proj_note", "proj_folder",
-        "status_lang", "status_time", "status_idle", "status_stats", "status_lines",
-        "doc_h0", "doc_h1", "doc_h2", "doc_h3", "doc_h4",
-        "search_case", "search_regex", "search_word", "search_loop", "search_project",
-        "search_cancel", "search_preserve",
+        "novelwriter", "cls_archive", "cls_character", "cls_custom", "cls_entity", "cls_none",
+        "cls_novel", "cls_object", "cls_plot", "cls_timeline", "cls_trash", "cls_world", "doc_h0",
+        "doc_h1", "doc_h2", "doc_h3", "doc_h4", "proj_chapter", "proj_details", "proj_document",
+        "proj_folder", "proj_note", "proj_nwx", "proj_scene", "proj_stats", "proj_title",
+        "search_cancel", "search_case", "search_loop", "search_preserve", "search_project",
+        "search_regex", "search_word", "status_idle", "status_lang", "status_lines",
+        "status_stats", "status_time", "view_build", "view_editor", "view_novel", "view_outline",
 
         # General Button Icons
-        "delete", "close", "done", "clear", "save", "add", "remove",
-        "search", "search_replace", "edit", "check", "cross", "hash",
-        "maximise", "minimise", "refresh", "reference", "backward",
-        "forward", "settings",
+        "add", "backward", "check", "clear", "close", "cross", "delete", "done", "down", "edit",
+        "forward", "hash", "maximise", "menu", "minimise", "reference", "refresh", "remove",
+        "save", "search_replace", "search", "settings", "up",
 
         # Switches
         "sticky-on", "sticky-off",
         "bullet-on", "bullet-off",
+
+        # Decorations
+        "deco_doc_h0", "deco_doc_h1", "deco_doc_h2", "deco_doc_h3", "deco_doc_h4", "deco_doc_more",
     }
 
-    DECO_MAP = {
+    IMAGE_MAP = {
         "wiz-back": "wizard-back.jpg",
     }
 
-    def __init__(self, theTheme):
+    def __init__(self, mainTheme):
 
         self.mainConf = novelwriter.CONFIG
-        self.theTheme = theTheme
+        self.mainTheme = mainTheme
 
         # Storage
         self._qIcons    = {}
@@ -575,19 +576,22 @@ class GuiIcons:
     #  Access Functions
     ##
 
-    def loadDecoration(self, decoKey, pxW, pxH):
+    def loadDecoration(self, decoKey, pxW=None, pxH=None):
         """Load graphical decoration element based on the decoration
-        map. This function always returns a QSwgWidget.
+        map or the icon map. This function always returns a QPixmap.
         """
-        if decoKey not in self.DECO_MAP:
+        if decoKey in self._themeMap:
+            imgPath = self._themeMap[decoKey]
+        elif decoKey in self.IMAGE_MAP:
+            imgPath = os.path.join(
+                self.mainConf.assetPath, "images", self.IMAGE_MAP[decoKey]
+            )
+        else:
             logger.error("Decoration with name '%s' does not exist", decoKey)
             return QPixmap()
 
-        imgPath = os.path.join(
-            self.mainConf.assetPath, "images", self.DECO_MAP[decoKey]
-        )
         if not os.path.isfile(imgPath):
-            logger.error("Decoration file '%s' not in assets folder", self.DECO_MAP[decoKey])
+            logger.error("Asset '%s' not found", self.IMAGE_MAP[decoKey])
             return QPixmap()
 
         theDeco = QPixmap(imgPath)
@@ -639,9 +643,6 @@ class GuiIcons:
                     iconName = "proj_scene"
             elif tLayout == nwItemLayout.NOTE:
                 iconName = "proj_note"
-        elif tType == nwItemType.TRASH:
-            iconName = nwLabels.CLASS_ICON[tClass]
-
         if iconName is None:
             return QIcon()
 

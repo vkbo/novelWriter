@@ -19,20 +19,144 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
+import time
 import pytest
 
-from PyQt5.QtCore import Qt, QPoint
-from PyQt5.QtWidgets import QAction, QTreeWidgetItem, QMessageBox
+from tools import buildTestProject, writeFile
 
-from novelwriter.enum import nwOutline
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QWidget, QMessageBox, QAction
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
+from novelwriter.enum import nwItemClass, nwOutline, nwView
 
 
 @pytest.mark.gui
-def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
+def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
+    """Test the outline view.
+    """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
+
+    # Create a project
+    prjDir = os.path.join(fncDir, "project")
+    buildTestProject(nwGUI, prjDir)
+
+    nwGUI.rebuildIndex()
+    nwGUI._changeView(nwView.OUTLINE)
+
+    outlineView = nwGUI.outlineView
+    outlineTree = outlineView.outlineTree
+    outlineData = outlineView.outlineData
+    outlineMenu = outlineView.outlineBar.mColumns
+
+    # Toggle scrollbars
+    nwGUI.mainConf.hideVScroll = True
+    nwGUI.mainConf.hideHScroll = True
+    outlineView.initSettings()
+    assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert outlineData.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+
+    nwGUI.mainConf.hideVScroll = False
+    nwGUI.mainConf.hideHScroll = False
+    outlineView.initSettings()
+    assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    assert outlineData.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+
+    # Check focus
+    with monkeypatch.context() as mp:
+        mp.setattr(QWidget, "hasFocus", lambda *a: True)
+        assert outlineView.treeHasFocus() is True
+
+    outlineView.setTreeFocus()  # Can't check. just ensures that it doesn't error
+
+    # Option State
+    # ============
+    pOptions = nwGUI.theProject.options
+    colNames = [h.name for h in nwOutline]
+    colItems = [h for h in nwOutline]
+    colWidth = {h: outlineTree.DEF_WIDTH[h] for h in nwOutline}
+    colHidden = {h: outlineTree.DEF_HIDDEN[h] for h in nwOutline}
+
+    assert outlineTree.topLevelItemCount() > 0
+
+    # Save header state not allowed
+    outlineTree._lastBuild = 0
+    outlineTree._saveHeaderState()
+    assert pOptions.getValue("GuiOutline", "headerOrder", []) == []
+
+    # Allow saving header state
+    outlineTree._lastBuild = time.time()
+    outlineTree._saveHeaderState()
+    assert pOptions.getValue("GuiOutline", "headerOrder", []) == colNames
+    assert outlineTree._treeOrder == colItems
+    assert outlineTree._colWidth == colWidth
+    assert outlineTree._colHidden == colHidden
+
+    # Get default values
+    optItems = pOptions.getValue("GuiOutline", "headerOrder", [])
+    optWidth = pOptions.getValue("GuiOutline", "columnWidth", {})
+    optHidden = pOptions.getValue("GuiOutline", "columnHidden", {})
+
+    # Add invalid column name
+    pOptions.setValue("GuiOutline", "headerOrder", optItems + ["blabla"])
+    outlineTree._loadHeaderState()
+    assert outlineTree._treeOrder == colItems
+    assert outlineTree._colHidden == colHidden
+
+    # Add duplicate column name
+    pOptions.setValue("GuiOutline", "headerOrder", optItems + [optItems[-1]])
+    outlineTree._loadHeaderState()
+    assert outlineTree._treeOrder == colItems
+    assert outlineTree._colHidden == colHidden
+
+    # Invalid column width data
+    pOptions.setValue("GuiOutline", "headerOrder", optItems)
+    pOptions.setValue("GuiOutline", "columnWidth", {"blabla": None})
+    outlineTree._loadHeaderState()
+    assert outlineTree._treeOrder == colItems
+    assert outlineTree._colHidden == colHidden
+
+    # Invalid column width data
+    pOptions.setValue("GuiOutline", "headerOrder", optItems)
+    pOptions.setValue("GuiOutline", "columnWidth", optWidth)
+    pOptions.setValue("GuiOutline", "columnHidden", {"bloabla": None})
+    outlineTree._loadHeaderState()
+    assert outlineTree._treeOrder == colItems
+    assert outlineTree._colHidden == colHidden
+
+    # Valid settings
+    pOptions.setValue("GuiOutline", "headerOrder", optItems)
+    pOptions.setValue("GuiOutline", "columnWidth", optWidth)
+    pOptions.setValue("GuiOutline", "columnHidden", optHidden)
+    outlineTree._loadHeaderState()
+    assert outlineTree._treeOrder == colItems
+    assert outlineTree._colHidden == colHidden
+
+    # Header Menu
+    # ===========
+
+    # Trigger the menu entry for all hidden columns
+    for hItem in nwOutline:
+        if outlineTree.DEF_HIDDEN[hItem]:
+            outlineMenu.actionMap[hItem].activate(QAction.Trigger)
+
+    # Now no columns should be hidden
+    outlineTree._saveHeaderState()
+    assert not any(pOptions.getValue("GuiOutline", "columnHidden", None).values())
+
+    # qtbot.stop()
+
+# END Test testGuiOutline_Main
+
+
+@pytest.mark.gui
+def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
     """Test the outline view.
     """
     # Block message box
@@ -43,73 +167,104 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.mainConf.lastPath = nwLipsum
 
     nwGUI.rebuildIndex()
-    nwGUI.mainTabs.setCurrentIndex(nwGUI.idxTabProj)
+    nwGUI._changeView(nwView.OUTLINE)
 
-    assert nwGUI.projView.topLevelItemCount() > 0
+    outlineView = nwGUI.outlineView
+    outlineBar  = outlineView.outlineBar
+    outlineTree = outlineView.outlineTree
+    outlineData = outlineView.outlineData
 
-    # Context Menu
-    nwGUI.projView._headerRightClick(QPoint(1, 1))
-    nwGUI.projView.headerMenu.actionMap[nwOutline.CCOUNT].activate(QAction.Trigger)
-    nwGUI.projView.headerMenu.close()
-    qtbot.mouseClick(nwGUI.projView, Qt.LeftButton)
+    lipHandle = "b3643d0f92e32"
 
-    nwGUI.projView._loadHeaderState()
-    assert not nwGUI.projView._colHidden[nwOutline.CCOUNT]
+    # Check defaults in dropdown list
+    assert outlineBar.novelValue.itemData(0) == lipHandle
+    assert outlineBar.novelValue.itemData(1) is None  # Separator
+    assert outlineBar.novelValue.itemData(2) == ""    # All novels
+
+    # Add a second novel folder
+    newHandle = nwGUI.theProject.newRoot(nwItemClass.NOVEL)
+    nwGUI.projView.revealNewTreeItem(newHandle)
+
+    # Check new values in dropdown list
+    assert outlineBar.novelValue.itemData(0) == lipHandle
+    assert outlineBar.novelValue.itemData(1) == newHandle
+    assert outlineBar.novelValue.itemData(2) is None  # Separator
+    assert outlineBar.novelValue.itemData(3) == ""    # All novels
+
+    # Add a bunch of files in a header order that hits all tree combos
+    docList = [
+        ("Section 1", 4), ("Scene 1", 3), ("Chapter 1", 2), ("Part 1", 1),
+        ("Section 2", 4), ("Scene 2", 3), ("Chapter 2", 2),
+        ("Section 3", 4), ("Scene 3", 3),
+        ("Section 4", 4),
+    ]
+    for dTitle, hLevel in docList:
+        aHandle = nwGUI.theProject.newFile(dTitle, newHandle)
+        hHash = "#"*hLevel
+        writeFile(os.path.join(nwLipsum, "content", f"{aHandle}.nwd"), f"{hHash} {dTitle}\n\n")
+        nwGUI.projView.revealNewTreeItem(aHandle)
+
+    nwGUI.rebuildIndex()
+
+    # Build the second novel
+    outlineBar.novelValue.setCurrentIndex(1)
+    outlineBar._refreshRequested()
+
+    # Go back to Lipsum
+    outlineBar.novelValue.setCurrentIndex(0)
+    outlineBar._refreshRequested()
+
+    # Check Details
+    # =============
 
     # First Item
-    nwGUI.rebuildOutline()
-    selItem = nwGUI.projView.topLevelItem(0)
-    assert isinstance(selItem, QTreeWidgetItem)
+    outlineTree.refreshTree()
+    selItem = outlineTree.topLevelItem(0)
 
-    nwGUI.projView.setCurrentItem(selItem)
-    assert nwGUI.projMeta.titleLabel.text() == "<b>Title</b>"
-    assert nwGUI.projMeta.titleValue.text() == "Lorem Ipsum"
-    assert nwGUI.projMeta.fileValue.text() == "Lorem Ipsum"
-    assert nwGUI.projMeta.itemValue.text() == "Finished"
+    outlineTree.setCurrentItem(selItem)
+    assert outlineData.titleLabel.text() == "<b>Title</b>"
+    assert outlineData.titleValue.text() == "Lorem Ipsum"
+    assert outlineData.fileValue.text() == "Lorem Ipsum"
+    assert outlineData.itemValue.text() == "Finished"
 
-    assert nwGUI.projMeta.cCValue.text() == "230"
-    assert nwGUI.projMeta.wCValue.text() == "40"
-    assert nwGUI.projMeta.pCValue.text() == "3"
+    assert outlineData.cCValue.text() == "230"
+    assert outlineData.wCValue.text() == "40"
+    assert outlineData.pCValue.text() == "3"
 
     # Scene One
-    actItem = nwGUI.projView.topLevelItem(1)
-    chpItem = actItem.child(0)
-    selItem = chpItem.child(0)
+    selItem = outlineTree.topLevelItem(4)
 
-    nwGUI.projView.setCurrentItem(selItem)
-    tHandle, tLine = nwGUI.projView.getSelectedHandle()
+    outlineTree.setCurrentItem(selItem)
+    tHandle, tLine = outlineTree.getSelectedHandle()
     assert tHandle == "88243afbe5ed8"
     assert tLine == 0
 
-    assert nwGUI.projMeta.titleLabel.text() == "<b>Scene</b>"
-    assert nwGUI.projMeta.titleValue.text() == "Scene One"
-    assert nwGUI.projMeta.fileValue.text() == "Scene One"
-    assert nwGUI.projMeta.itemValue.text() == "Finished"
+    assert outlineData.titleLabel.text() == "<b>Scene</b>"
+    assert outlineData.titleValue.text() == "Scene One"
+    assert outlineData.fileValue.text() == "Scene One"
+    assert outlineData.itemValue.text() == "Finished"
 
     # Click POV Link
-    assert nwGUI.projMeta.povKeyValue.text() == "<a href='#pov=Bod'>Bod</a>"
-    nwGUI.projMeta._tagClicked("#pov=Bod")
+    assert outlineData.povKeyValue.text() == "<a href='Bod'>Bod</a>"
+    outlineView._tagClicked("Bod")
     assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
 
     # Scene One, Section Two
-    actItem = nwGUI.projView.topLevelItem(1)
-    chpItem = actItem.child(0)
-    scnItem = chpItem.child(0)
-    selItem = scnItem.child(0)
+    selItem = outlineTree.topLevelItem(5)
 
-    nwGUI.projView.setCurrentItem(selItem)
-    tHandle, tLine = nwGUI.projView.getSelectedHandle()
+    outlineTree.setCurrentItem(selItem)
+    tHandle, tLine = outlineTree.getSelectedHandle()
     assert tHandle == "88243afbe5ed8"
     assert tLine == 12
 
-    assert nwGUI.projMeta.titleLabel.text() == "<b>Section</b>"
-    assert nwGUI.projMeta.titleValue.text() == "Scene One, Section Two"
-    assert nwGUI.projMeta.fileValue.text() == "Scene One"
-    assert nwGUI.projMeta.itemValue.text() == "Finished"
+    assert outlineData.titleLabel.text() == "<b>Section</b>"
+    assert outlineData.titleValue.text() == "Scene One, Section Two"
+    assert outlineData.fileValue.text() == "Scene One"
+    assert outlineData.itemValue.text() == "Finished"
 
-    nwGUI.projView._treeDoubleClick(selItem, 0)
+    outlineTree._treeDoubleClick(selItem, 0)
     assert nwGUI.docEditor.docHandle() == "88243afbe5ed8"
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
-# END Test testGuiOutline_Main
+# END Test testGuiOutline_Content

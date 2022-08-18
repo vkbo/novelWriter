@@ -32,7 +32,6 @@ class nwItemType(Enum):
     ROOT    = 1
     FOLDER  = 2
     FILE    = 3
-    TRASH   = 4
 
 # END Enum nwItemType
 
@@ -61,6 +60,14 @@ class nwItemLayout(Enum):
     NOTE      = 2
 
 # END Enum nwItemLayout
+
+
+class nwDocMode(Enum):
+
+    VIEW = 0
+    EDIT = 1
+
+# END Enum nwDocMode
 
 
 class nwDocAction(Enum):
@@ -129,6 +136,16 @@ class nwState(Enum):
     GOOD = 2
 
 # END Enum nwState
+
+
+class nwView(Enum):
+
+    EDITOR  = 0
+    PROJECT = 1
+    NOVEL   = 2
+    OUTLINE = 3
+
+# END Enum nwView
 
 
 class nwWidget(Enum):

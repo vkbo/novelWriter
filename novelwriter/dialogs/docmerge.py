@@ -41,15 +41,15 @@ logger = logging.getLogger(__name__)
 
 class GuiDocMerge(QDialog):
 
-    def __init__(self, theParent):
-        QDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        QDialog.__init__(self, mainGui)
 
         logger.debug("Initialising GuiDocMerge ...")
         self.setObjectName("GuiDocMerge")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.theProject = mainGui.theProject
         self.sourceItem = None
 
         self.outerBox = QVBoxLayout()
@@ -57,7 +57,7 @@ class GuiDocMerge(QDialog):
 
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Documents to Merge")))
         self.helpLabel = QHelpLabel(
-            self.tr("Drag and drop items to change the order."), self.theParent.theTheme.helpText
+            self.tr("Drag and drop items to change the order."), self.mainGui.mainTheme.helpText
         )
 
         self.listBox = QListWidget()
@@ -102,7 +102,7 @@ class GuiDocMerge(QDialog):
             finalOrder.append(self.listBox.item(i).data(Qt.UserRole))
 
         if len(finalOrder) == 0:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "No source documents found. Nothing to do."
             ), nwAlert.ERROR)
             return False
@@ -113,36 +113,37 @@ class GuiDocMerge(QDialog):
             docText = inDoc.readDocument()
             docErr = inDoc.getError()
             if docText is None and docErr:
-                self.theParent.makeAlert([
+                self.mainGui.makeAlert([
                     self.tr("Failed to open document file."), docErr
                 ], nwAlert.ERROR)
             if docText:
                 theText += docText.rstrip("\n")+"\n\n"
 
         if self.sourceItem is None:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "No source folder selected. Nothing to do."
             ), nwAlert.ERROR)
             return False
 
-        srcItem = self.theProject.projTree[self.sourceItem]
+        srcItem = self.theProject.tree[self.sourceItem]
         if srcItem is None:
-            self.theParent.makeAlert(self.tr("Internal error."), nwAlert.ERROR)
+            self.mainGui.makeAlert(self.tr("Internal error."), nwAlert.ERROR)
             return False
 
-        nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemClass, srcItem.itemParent)
-        newItem = self.theProject.projTree[nHandle]
+        nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemParent)
+        newItem = self.theProject.tree[nHandle]
         newItem.setStatus(srcItem.itemStatus)
+        newItem.setImport(srcItem.itemImport)
 
         outDoc = NWDoc(self.theProject, nHandle)
         if not outDoc.writeDocument(theText):
-            self.theParent.makeAlert([
+            self.mainGui.makeAlert([
                 self.tr("Could not save document."), outDoc.getError()
             ], nwAlert.ERROR)
             return False
 
-        self.theParent.treeView.revealNewTreeItem(nHandle)
-        self.theParent.openDocument(nHandle, doScroll=True)
+        self.mainGui.projView.revealNewTreeItem(nHandle)
+        self.mainGui.openDocument(nHandle, doScroll=True)
 
         self._doClose()
 
@@ -164,24 +165,24 @@ class GuiDocMerge(QDialog):
         are then added to the list view in order. The list itself can be
         reordered by the user.
         """
-        tHandle = self.theParent.treeView.getSelectedHandle()
+        tHandle = self.mainGui.projView.getSelectedHandle()
         self.sourceItem = tHandle
         if tHandle is None:
             return False
 
-        nwItem = self.theProject.projTree[tHandle]
+        nwItem = self.theProject.tree[tHandle]
         if nwItem is None:
             return False
 
         if nwItem.itemType is not nwItemType.FOLDER:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "Element selected in the project tree must be a folder."
             ), nwAlert.ERROR)
             return False
 
-        for sHandle in self.theParent.treeView.getTreeFromHandle(tHandle):
+        for sHandle in self.mainGui.projView.getTreeFromHandle(tHandle):
             newItem = QListWidgetItem()
-            nwItem  = self.theProject.projTree[sHandle]
+            nwItem  = self.theProject.tree[sHandle]
             if nwItem.itemType is not nwItemType.FILE:
                 continue
             newItem.setText(nwItem.itemName)

@@ -19,48 +19,48 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import pytest
 import os
+import pytest
 
-from tools import getGuiItem, readFile, writeFile
 from mock import causeOSError
+from tools import getGuiItem, readFile, writeFile, buildTestProject
 
-from PyQt5.QtWidgets import QAction, QMessageBox, QDialog
+from PyQt5.QtWidgets import QAction, QMessageBox
 
-from novelwriter.dialogs import GuiDocMerge, GuiItemEditor
 from novelwriter.enum import nwItemType, nwWidget
+from novelwriter.dialogs import GuiDocMerge, GuiEditLabel
 from novelwriter.core.tree import NWTree
 
 
 @pytest.mark.gui
-def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj):
+def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test the merge documents tool.
     """
     # Block message box
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     # Create a new project
-    nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
 
     # Handles for new objects
-    hChapterDir = "31489056e0916"
-    hChapterOne = "98010bd9270f9"
-    hSceneOne   = "0e17daca5f3e1"
-    hSceneTwo   = "1a6562590ef19"
-    hSceneThree = "031b4af5197ec"
-    hSceneFour  = "41cfc0d1f2d12"
-    hMergedDoc  = "2858dcd1057d3"
+    hNovelRoot  = "0000000000008"
+    hChapterDir = "000000000000d"
+    hChapterOne = "000000000000e"
+    hSceneOne   = "000000000000f"
+    hSceneTwo   = "0000000000010"
+    hSceneThree = "0000000000011"
+    hSceneFour  = "0000000000012"
+    hMergedDoc  = "0000000000023"
 
     # Add Project Content
-    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: QDialog.Accepted)
     nwGUI.switchFocus(nwWidget.TREE)
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
+    nwGUI.projView.projTree.clearSelection()
+    nwGUI.projView.projTree._getTreeItem(hChapterDir).setSelected(True)
+    nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)
+    nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)
+    nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)
 
     assert nwGUI.saveProject() is True
     assert nwGUI.closeProject() is True
@@ -82,8 +82,8 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj):
 
     # Open the Merge tool
     nwGUI.switchFocus(nwWidget.TREE)
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
+    nwGUI.projView.projTree.clearSelection()
+    nwGUI.projView.projTree._getTreeItem(hChapterDir).setSelected(True)
 
     monkeypatch.setattr(GuiDocMerge, "exec_", lambda *a: None)
     nwGUI.mainMenu.aMergeDocs.activate(QAction.Trigger)
@@ -101,27 +101,27 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj):
     assert nwMerge.listBox.count() == 0
 
     # No item selected
-    nwGUI.treeView.clearSelection()
+    nwGUI.projView.projTree.clearSelection()
     assert nwMerge._populateList() is False
     assert nwMerge.listBox.count() == 0
 
     # Non-existing item
     with monkeypatch.context() as mp:
         mp.setattr(NWTree, "__getitem__", lambda *a: None)
-        nwGUI.treeView.clearSelection()
-        nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
+        nwGUI.projView.projTree.clearSelection()
+        nwGUI.projView.projTree._getTreeItem(hChapterDir).setSelected(True)
         assert nwMerge._populateList() is False
         assert nwMerge.listBox.count() == 0
 
     # Select a non-folder
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hChapterOne).setSelected(True)
+    nwGUI.projView.projTree.clearSelection()
+    nwGUI.projView.projTree._getTreeItem(hChapterOne).setSelected(True)
     assert nwMerge._populateList() is False
     assert nwMerge.listBox.count() == 0
 
     # Select the chapter folder
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
+    nwGUI.projView.projTree.clearSelection()
+    nwGUI.projView.projTree._getTreeItem(hChapterDir).setSelected(True)
     assert nwMerge._populateList() is True
     assert nwMerge.listBox.count() == 5
 
@@ -137,7 +137,7 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj):
         assert os.path.isfile(mergedFile)
         assert readFile(mergedFile) == (
             "%%%%~name: New Chapter\n"
-            "%%%%~path: 73475cb40a568/2858dcd1057d3\n"
+            "%%%%~path: %s/%s\n"
             "%%%%~kind: NOVEL/DOCUMENT\n"
             "%s\n\n"
             "%s\n\n"
@@ -145,6 +145,8 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj):
             "%s\n\n"
             "%s\n\n"
         ) % (
+            hNovelRoot,
+            hMergedDoc,
             tChapterOne.strip(),
             tSceneOne.strip(),
             tSceneTwo.strip(),

@@ -10,9 +10,9 @@ synchronisation tools. All text is saved as plain text files with a meta data he
 project structure is stored in a single project XML file, and other meta data is primarily saved as
 JSON files.
 
-The application is written in Python 3 (3.6+) using Qt5 and PyQt5 (5.3+). It is developed on Linux,
-but should in principle work fine on other operating systems as well as long as dependencies are
-met. It is regularly tested on Debian and Ubuntu Linux, Windows, and macOS.
+The application is written with Python 3 (3.7+) using Qt5 and PyQt5 (5.3+). It is developed on
+Linux, but should in principle work fine on other operating systems as well as long as dependencies
+are met. It is regularly tested on Debian and Ubuntu Linux, Windows, and macOS.
 
 novelWriter is developed and maintained by [Veronica Berglyd Olsen](https://github.com/vkbo).
 

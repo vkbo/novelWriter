@@ -239,8 +239,8 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     copyfile(projFile, testFile)
     ignTuple = (
         "timestamp", "guifont", "lastnotes", "guilang", "geometry",
-        "preferences", "treecols", "novelcols", "projcols", "mainpane",
-        "docpane", "viewpane", "outlinepane", "textfont", "textsize"
+        "preferences", "projcols", "mainpane", "docpane", "viewpane",
+        "outlinepane", "textfont", "textsize"
     )
     assert cmpFiles(testFile, compFile, ignoreStart=ignTuple)
 

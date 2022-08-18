@@ -6,4 +6,4 @@
 
 This is a plain page with some text on it.
 
-If you want the text to start on a fresh page, add the [NEW PAGE] code above the text. You can also add empty paragraphs with the [VSPACE] code.
+If you want the text to start on a fresh page, add the [NEW PAGE] code above the text. You can also add empty paragraphs with the [VSPACE] code. The above code adds two empty paragraphs before the text starts.
