@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.core import NWDoc
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.constants import trConst, nwLabels
+from novelwriter.constants import nwHeaders, trConst, nwLabels
 from novelwriter.dialogs.editlabel import GuiEditLabel
 
 logger = logging.getLogger(__name__)
@@ -447,16 +447,11 @@ class GuiProjectTree(QTreeWidget):
                 ), nwAlert.ERROR)
                 return False
 
-            # If the selected item is a file, the new item will be a
-            # sibling if the file has no children, otherwise a child
+            # Collect some information about the selected item that
             pItem = self.theProject.tree[sHandle]
             qItem = self._getTreeItem(sHandle)
-            if pItem.itemType == nwItemType.FILE and qItem.childCount() == 0:
-                nHandle = sHandle
-                sHandle = pItem.itemParent
-                if sHandle is None:
-                    logger.error("Internal error")  # Bug
-                    return False
+            sLevel = nwHeaders.H_LEVEL.get(self.theProject.index.getHandleHeaderLevel(sHandle), 0)
+            sIsParent = False if qItem is None else qItem.childCount() > 0
 
             if self.theProject.tree.isTrash(sHandle):
                 self.mainGui.makeAlert(self.tr(
@@ -464,19 +459,36 @@ class GuiProjectTree(QTreeWidget):
                 ), nwAlert.ERROR)
                 return False
 
-            # Ask for label
+            # Set default label and determine if new item is to be added
+            # as child or sibling to the selected item
             if itemType == nwItemType.FILE:
                 if isNote:
                     newLabel = self.tr("New Note")
+                    asChild = sIsParent
                 elif hLevel == 2:
                     newLabel = self.tr("New Chapter")
+                    asChild = sIsParent and pItem.isDocumentLayout() and sLevel < 2
                 elif hLevel == 3:
                     newLabel = self.tr("New Scene")
+                    asChild = sIsParent and pItem.isDocumentLayout() and sLevel < 3
                 else:
                     newLabel = self.tr("New Document")
+                    asChild = sIsParent and pItem.isDocumentLayout()
             else:
                 newLabel = self.tr("New Folder")
+                asChild = False
 
+            if not (asChild or pItem.isFolderType() or pItem.isRootType()):
+                # Move to the parent item so that the new item is added
+                # as a sibling instead
+                nHandle = sHandle
+                sHandle = pItem.itemParent
+                if sHandle is None:
+                    # Bug: We have a condition that is unhandled
+                    logger.error("Internal error")
+                    return False
+
+            # Ask for label
             newLabel, dlgOk = GuiEditLabel.getLabel(self, text=newLabel)
             if not dlgOk:
                 logger.info("New item creation cancelled by user")
