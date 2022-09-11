@@ -1019,7 +1019,11 @@ class GuiProjectTree(QTreeWidget):
         # Document Actions
         # ================
 
+        isRoot = tItem.isRootType()
+        isFolder = tItem.isFolderType()
         isFile = tItem.isFileType()
+        isEmpty = selItem.childCount() == 0
+
         if isFile:
             ctxMenu.addAction(
                 self.tr("Open Document"),
@@ -1079,7 +1083,7 @@ class GuiProjectTree(QTreeWidget):
         # Delete Item
         # ===========
 
-        if tItem.itemClass == nwItemClass.TRASH or tItem.isRootType():
+        if tItem.itemClass == nwItemClass.TRASH or isRoot or (isFolder and isEmpty):
             ctxMenu.addAction(
                 self.tr("Delete Permanently"), lambda: self.deleteItem(tHandle)
             )
