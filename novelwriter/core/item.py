@@ -292,6 +292,22 @@ class NWItem():
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
 
+    def getImportStatus(self):
+        """Return the relevant importance or status label and icon for
+        the current item based on its class.
+        """
+        if self.isNovelLike():
+            stName = self.theProject.statusItems.name(self._status)
+            stIcon = self.theProject.statusItems.icon(self._status)
+        else:
+            stName = self.theProject.importItems.name(self._import)
+            stIcon = self.theProject.importItems.icon(self._import)
+        return stName, stIcon
+
+    ##
+    #  Checker Methods
+    ##
+
     def isNovelLike(self):
         """Returns true if the item is of a novel-like class.
         """
@@ -307,17 +323,20 @@ class NWItem():
         """
         return self._class in (nwItemClass.NO_CLASS, nwItemClass.ARCHIVE, nwItemClass.TRASH)
 
-    def getImportStatus(self):
-        """Return the relevant importance or status label and icon for
-        the current item based on its class.
-        """
-        if self.isNovelLike():
-            stName = self.theProject.statusItems.name(self._status)
-            stIcon = self.theProject.statusItems.icon(self._status)
-        else:
-            stName = self.theProject.importItems.name(self._import)
-            stIcon = self.theProject.importItems.icon(self._import)
-        return stName, stIcon
+    def isRootType(self):
+        return self._type == nwItemType.ROOT
+
+    def isFolderType(self):
+        return self._type == nwItemType.FOLDER
+
+    def isFileType(self):
+        return self._type == nwItemType.FILE
+
+    def isNoteLayout(self):
+        return self._layout == nwItemLayout.NOTE
+
+    def isDocumentLayout(self):
+        return self._layout == nwItemLayout.DOCUMENT
 
     ##
     #  Special Setters
