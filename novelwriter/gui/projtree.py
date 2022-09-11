@@ -700,7 +700,7 @@ class GuiProjectTree(QTreeWidget):
 
         wCount = self._getItemWordCount(tHandle)
         autoFlush = not bulkAction
-        if nwItemS.itemType == nwItemType.ROOT:
+        if nwItemS.isRootType():
             # Only an empty ROOT folder can be deleted
             logger.debug("User requested a root folder '%s' deleted", tHandle)
             tIndex = self.indexOfTopLevelItem(trItemS)
@@ -716,7 +716,7 @@ class GuiProjectTree(QTreeWidget):
                 ), nwAlert.ERROR)
                 return False
 
-        elif nwItemS.itemType == nwItemType.FOLDER and trItemS.childCount() == 0:
+        elif nwItemS.isFolderType() and trItemS.childCount() == 0:
             # An empty FOLDER is just deleted without any further checks
             logger.debug("User requested an empty folder '%s' deleted", tHandle)
             trItemP = trItemS.parent()
@@ -803,12 +803,12 @@ class GuiProjectTree(QTreeWidget):
         trItem.setIcon(self.C_STATUS, statusIcon)
         trItem.setToolTip(self.C_STATUS, itemStatus)
 
-        if nwItem.itemType == nwItemType.FILE:
+        if nwItem.isFileType():
             trItem.setIcon(
                 self.C_EXPORT, self.mainTheme.getIcon("check" if nwItem.isExported else "cross")
             )
 
-        if self.mainConf.emphLabels and nwItem.itemLayout == nwItemLayout.DOCUMENT:
+        if self.mainConf.emphLabels and nwItem.isDocumentLayout():
             trFont = trItem.font(self.C_NAME)
             trFont.setBold(hLevel == "H1" or hLevel == "H2")
             trFont.setUnderline(hLevel == "H1")
@@ -978,7 +978,7 @@ class GuiProjectTree(QTreeWidget):
         if tItem is None:
             return
 
-        if tItem.itemType == nwItemType.FILE:
+        if tItem.isFileType():
             self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, -1, "")
         else:
             trItem = self._getTreeItem(tHandle)
@@ -1019,7 +1019,7 @@ class GuiProjectTree(QTreeWidget):
         # Document Actions
         # ================
 
-        isFile = tItem.itemType == nwItemType.FILE
+        isFile = tItem.isFileType()
         if isFile:
             ctxMenu.addAction(
                 self.tr("Open Document"),
@@ -1059,7 +1059,7 @@ class GuiProjectTree(QTreeWidget):
                 )
 
         if isFile and tItem.documentAllowed():
-            if tItem.itemLayout == nwItemLayout.NOTE:
+            if tItem.isNoteLayout():
                 ctxMenu.addAction(
                     self.tr("Change to {0}").format(
                         trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
@@ -1079,7 +1079,7 @@ class GuiProjectTree(QTreeWidget):
         # Delete Item
         # ===========
 
-        if tItem.itemClass == nwItemClass.TRASH or tItem.itemType == nwItemType.ROOT:
+        if tItem.itemClass == nwItemClass.TRASH or tItem.isRootType():
             ctxMenu.addAction(
                 self.tr("Delete Permanently"), lambda: self.deleteItem(tHandle)
             )
@@ -1118,7 +1118,7 @@ class GuiProjectTree(QTreeWidget):
             if tItem is None:
                 return
 
-            if tItem.itemType == nwItemType.FILE:
+            if tItem.isFileType():
                 self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
 
         return
@@ -1306,7 +1306,7 @@ class GuiProjectTree(QTreeWidget):
 
         self._treeMap[tHandle] = newItem
         if pHandle is None:
-            if nwItem.itemType == nwItemType.ROOT:
+            if nwItem.isRootType():
                 newItem.setFlags(newItem.flags() ^ Qt.ItemIsDragEnabled)
                 self.addTopLevelItem(newItem)
             else:

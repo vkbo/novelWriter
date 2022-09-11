@@ -183,7 +183,7 @@ class GuiDocMerge(QDialog):
         for sHandle in self.mainGui.projView.getTreeFromHandle(tHandle):
             newItem = QListWidgetItem()
             nwItem  = self.theProject.tree[sHandle]
-            if nwItem.itemType is not nwItemType.FILE:
+            if not nwItem.isFileType():
                 continue
             newItem.setText(nwItem.itemName)
             newItem.setData(Qt.UserRole, sHandle)

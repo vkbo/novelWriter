@@ -29,7 +29,7 @@ import logging
 
 from lxml import etree
 
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
+from novelwriter.enum import nwItemClass, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.common import checkHandle
 from novelwriter.constants import nwFiles
@@ -94,7 +94,7 @@ class NWTree():
         nwItem.setHandle(tHandle)
         nwItem.setParent(pHandle)
 
-        if nwItem.itemType == nwItemType.ROOT:
+        if nwItem.isRootType():
             logger.verbose("Item '%s' is a root item", str(tHandle))
             self._treeRoots[tHandle] = nwItem
             if nwItem.itemClass == nwItemClass.ARCHIVE:
@@ -357,7 +357,7 @@ class NWTree():
         tItem = self.__getitem__(tHandle)
         if tItem is None:
             return False
-        if tItem.itemType != nwItemType.FILE:
+        if not tItem.isFileType():
             logger.error("Item '%s' is not a file", tHandle)
             return False
         if not isinstance(itemLayout, nwItemLayout):

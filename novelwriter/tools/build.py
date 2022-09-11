@@ -784,11 +784,11 @@ class GuiBuildNovel(QDialog):
         if not (theItem.isExported or ignoreFlag):
             return False
 
-        isNone  = theItem.itemType != nwItemType.FILE
+        isNone  = not theItem.isFileType()
         isNone |= theItem.itemLayout == nwItemLayout.NO_LAYOUT
         isNone |= theItem.isInactive()
         isNone |= theItem.itemParent is None
-        isNote  = theItem.itemLayout == nwItemLayout.NOTE
+        isNote  = theItem.isNoteLayout()
         isNovel = not isNone and not isNote
 
         if isNone:

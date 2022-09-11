@@ -30,7 +30,6 @@ from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 
-from novelwriter.enum import nwItemType
 from novelwriter.constants import trConst, nwLabels
 
 logger = logging.getLogger(__name__)
@@ -247,7 +246,7 @@ class GuiItemDetails(QWidget):
         if len(theLabel) > 100:
             theLabel = theLabel[:96].rstrip()+" ..."
 
-        if nwItem.itemType == nwItemType.FILE:
+        if nwItem.isFileType():
             if nwItem.isExported:
                 self.labelIcon.setPixmap(self._expCheck)
             else:
@@ -284,7 +283,7 @@ class GuiItemDetails(QWidget):
         # Counts
         # ======
 
-        if nwItem.itemType == nwItemType.FILE:
+        if nwItem.isFileType():
             self.cCountData.setText(f"{nwItem.charCount:n}")
             self.wCountData.setText(f"{nwItem.wordCount:n}")
             self.pCountData.setText(f"{nwItem.paraCount:n}")

@@ -183,7 +183,7 @@ class NWProject():
         tItem = self._projTree[tHandle]
         if tItem is None:
             return False
-        if tItem.itemType != nwItemType.FILE:
+        if not tItem.isFileType():
             return False
 
         newDoc = NWDoc(self, tHandle)
