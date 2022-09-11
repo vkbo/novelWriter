@@ -221,7 +221,7 @@ class NWIndex:
         if theItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
             return False
-        if theItem.itemType != nwItemType.FILE:
+        if not theItem.isFileType():
             logger.info("Not indexing non-file item '%s'", tHandle)
             return False
 
@@ -792,7 +792,7 @@ class ItemIndex:
         for tItem in self.theProject.tree:
             if tItem is None:
                 continue
-            if tItem.itemLayout == nwItemLayout.NOTE:
+            if tItem.isNoteLayout():
                 continue
             if skipExcl and not tItem.isExported:
                 continue

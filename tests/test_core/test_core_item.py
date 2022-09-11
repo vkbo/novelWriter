@@ -203,12 +203,16 @@ def testCoreItem_Methods(mockGUI):
 
     theItem.setType("ROOT")
     assert theItem.describeMe() == "Root Folder"
+    assert theItem.isRootType() is True
 
     theItem.setType("FOLDER")
     assert theItem.describeMe() == "Folder"
+    assert theItem.isFolderType() is True
 
     theItem.setType("FILE")
     theItem.setLayout("DOCUMENT")
+    assert theItem.isFileType() is True
+    assert theItem.isDocumentLayout() is True
     assert theItem.describeMe() == "Novel Document"
     assert theItem.describeMe("H0") == "Novel Document"
     assert theItem.describeMe("H1") == "Novel Title Page"
@@ -217,6 +221,7 @@ def testCoreItem_Methods(mockGUI):
     assert theItem.describeMe("H4") == "Novel Document"
 
     theItem.setLayout("NOTE")
+    assert theItem.isNoteLayout() is True
     assert theItem.describeMe() == "Project Note"
 
     # Status + Icon

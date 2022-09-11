@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.core import NWDoc
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.constants import trConst, nwLabels
+from novelwriter.constants import nwHeaders, trConst, nwLabels
 from novelwriter.dialogs.editlabel import GuiEditLabel
 
 logger = logging.getLogger(__name__)
@@ -447,16 +447,11 @@ class GuiProjectTree(QTreeWidget):
                 ), nwAlert.ERROR)
                 return False
 
-            # If the selected item is a file, the new item will be a
-            # sibling if the file has no children, otherwise a child
+            # Collect some information about the selected item that
             pItem = self.theProject.tree[sHandle]
             qItem = self._getTreeItem(sHandle)
-            if pItem.itemType == nwItemType.FILE and qItem.childCount() == 0:
-                nHandle = sHandle
-                sHandle = pItem.itemParent
-                if sHandle is None:
-                    logger.error("Internal error")  # Bug
-                    return False
+            sLevel = nwHeaders.H_LEVEL.get(self.theProject.index.getHandleHeaderLevel(sHandle), 0)
+            sIsParent = False if qItem is None else qItem.childCount() > 0
 
             if self.theProject.tree.isTrash(sHandle):
                 self.mainGui.makeAlert(self.tr(
@@ -464,19 +459,36 @@ class GuiProjectTree(QTreeWidget):
                 ), nwAlert.ERROR)
                 return False
 
-            # Ask for label
+            # Set default label and determine if new item is to be added
+            # as child or sibling to the selected item
             if itemType == nwItemType.FILE:
                 if isNote:
                     newLabel = self.tr("New Note")
+                    asChild = sIsParent
                 elif hLevel == 2:
                     newLabel = self.tr("New Chapter")
+                    asChild = sIsParent and pItem.isDocumentLayout() and sLevel < 2
                 elif hLevel == 3:
                     newLabel = self.tr("New Scene")
+                    asChild = sIsParent and pItem.isDocumentLayout() and sLevel < 3
                 else:
                     newLabel = self.tr("New Document")
+                    asChild = sIsParent and pItem.isDocumentLayout()
             else:
                 newLabel = self.tr("New Folder")
+                asChild = False
 
+            if not (asChild or pItem.isFolderType() or pItem.isRootType()):
+                # Move to the parent item so that the new item is added
+                # as a sibling instead
+                nHandle = sHandle
+                sHandle = pItem.itemParent
+                if sHandle is None:
+                    # Bug: We have a condition that is unhandled
+                    logger.error("Internal error")
+                    return False
+
+            # Ask for label
             newLabel, dlgOk = GuiEditLabel.getLabel(self, text=newLabel)
             if not dlgOk:
                 logger.info("New item creation cancelled by user")
@@ -688,7 +700,7 @@ class GuiProjectTree(QTreeWidget):
 
         wCount = self._getItemWordCount(tHandle)
         autoFlush = not bulkAction
-        if nwItemS.itemType == nwItemType.ROOT:
+        if nwItemS.isRootType():
             # Only an empty ROOT folder can be deleted
             logger.debug("User requested a root folder '%s' deleted", tHandle)
             tIndex = self.indexOfTopLevelItem(trItemS)
@@ -704,7 +716,7 @@ class GuiProjectTree(QTreeWidget):
                 ), nwAlert.ERROR)
                 return False
 
-        elif nwItemS.itemType == nwItemType.FOLDER and trItemS.childCount() == 0:
+        elif nwItemS.isFolderType() and trItemS.childCount() == 0:
             # An empty FOLDER is just deleted without any further checks
             logger.debug("User requested an empty folder '%s' deleted", tHandle)
             trItemP = trItemS.parent()
@@ -791,12 +803,12 @@ class GuiProjectTree(QTreeWidget):
         trItem.setIcon(self.C_STATUS, statusIcon)
         trItem.setToolTip(self.C_STATUS, itemStatus)
 
-        if nwItem.itemType == nwItemType.FILE:
+        if nwItem.isFileType():
             trItem.setIcon(
                 self.C_EXPORT, self.mainTheme.getIcon("check" if nwItem.isExported else "cross")
             )
 
-        if self.mainConf.emphLabels and nwItem.itemLayout == nwItemLayout.DOCUMENT:
+        if self.mainConf.emphLabels and nwItem.isDocumentLayout():
             trFont = trItem.font(self.C_NAME)
             trFont.setBold(hLevel == "H1" or hLevel == "H2")
             trFont.setUnderline(hLevel == "H1")
@@ -966,7 +978,7 @@ class GuiProjectTree(QTreeWidget):
         if tItem is None:
             return
 
-        if tItem.itemType == nwItemType.FILE:
+        if tItem.isFileType():
             self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, -1, "")
         else:
             trItem = self._getTreeItem(tHandle)
@@ -1007,7 +1019,7 @@ class GuiProjectTree(QTreeWidget):
         # Document Actions
         # ================
 
-        isFile = tItem.itemType == nwItemType.FILE
+        isFile = tItem.isFileType()
         if isFile:
             ctxMenu.addAction(
                 self.tr("Open Document"),
@@ -1047,7 +1059,7 @@ class GuiProjectTree(QTreeWidget):
                 )
 
         if isFile and tItem.documentAllowed():
-            if tItem.itemLayout == nwItemLayout.NOTE:
+            if tItem.isNoteLayout():
                 ctxMenu.addAction(
                     self.tr("Change to {0}").format(
                         trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
@@ -1067,7 +1079,7 @@ class GuiProjectTree(QTreeWidget):
         # Delete Item
         # ===========
 
-        if tItem.itemClass == nwItemClass.TRASH or tItem.itemType == nwItemType.ROOT:
+        if tItem.itemClass == nwItemClass.TRASH or tItem.isRootType():
             ctxMenu.addAction(
                 self.tr("Delete Permanently"), lambda: self.deleteItem(tHandle)
             )
@@ -1106,7 +1118,7 @@ class GuiProjectTree(QTreeWidget):
             if tItem is None:
                 return
 
-            if tItem.itemType == nwItemType.FILE:
+            if tItem.isFileType():
                 self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
 
         return
@@ -1294,7 +1306,7 @@ class GuiProjectTree(QTreeWidget):
 
         self._treeMap[tHandle] = newItem
         if pHandle is None:
-            if nwItem.itemType == nwItemType.ROOT:
+            if nwItem.isRootType():
                 newItem.setFlags(newItem.flags() ^ Qt.ItemIsDragEnabled)
                 self.addTopLevelItem(newItem)
             else:

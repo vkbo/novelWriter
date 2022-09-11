@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import NWDoc
-from novelwriter.enum import nwAlert, nwItemType
+from novelwriter.enum import nwAlert
 from novelwriter.gui.custom import QHelpLabel
 
 logger = logging.getLogger(__name__)
@@ -235,7 +235,7 @@ class GuiDocSplit(QDialog):
         if nwItem is None:
             return False
 
-        if nwItem.itemType is not nwItemType.FILE:
+        if not nwItem.isFileType():
             self.mainGui.makeAlert(self.tr(
                 "Element selected in the project tree must be a file."
             ), nwAlert.ERROR)
