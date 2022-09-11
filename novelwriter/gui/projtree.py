@@ -1019,7 +1019,11 @@ class GuiProjectTree(QTreeWidget):
         # Document Actions
         # ================
 
+        isRoot = tItem.isRootType()
+        isFolder = tItem.isFolderType()
         isFile = tItem.isFileType()
+        isEmpty = selItem.childCount() == 0
+
         if isFile:
             ctxMenu.addAction(
                 self.tr("Open Document"),
@@ -1044,14 +1048,14 @@ class GuiProjectTree(QTreeWidget):
             )
 
         if tItem.isNovelLike():
-            mStatus = ctxMenu.addMenu(self.tr("Change Status"))
+            mStatus = ctxMenu.addMenu(self.tr("Set Status to ..."))
             for n, (key, entry) in enumerate(self.theProject.statusItems.items()):
                 aStatus = mStatus.addAction(entry["icon"], entry["name"])
                 aStatus.triggered.connect(
                     lambda n, key=key: self._changeItemStatus(tHandle, key)
                 )
         else:
-            mImport = ctxMenu.addMenu(self.tr("Change Importance"))
+            mImport = ctxMenu.addMenu(self.tr("Set Importance to ..."))
             for n, (key, entry) in enumerate(self.theProject.importItems.items()):
                 aImport = mImport.addAction(entry["icon"], entry["name"])
                 aImport.triggered.connect(
@@ -1061,14 +1065,14 @@ class GuiProjectTree(QTreeWidget):
         if isFile and tItem.documentAllowed():
             if tItem.isNoteLayout():
                 ctxMenu.addAction(
-                    self.tr("Change to {0}").format(
+                    self.tr("Convert to {0}").format(
                         trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
                     ),
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.DOCUMENT)
                 )
             else:
                 ctxMenu.addAction(
-                    self.tr("Change to {0}").format(
+                    self.tr("Convert to {0}").format(
                         trConst(nwLabels.LAYOUT_NAME[nwItemLayout.NOTE])
                     ),
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.NOTE)
@@ -1079,7 +1083,7 @@ class GuiProjectTree(QTreeWidget):
         # Delete Item
         # ===========
 
-        if tItem.itemClass == nwItemClass.TRASH or tItem.isRootType():
+        if tItem.itemClass == nwItemClass.TRASH or isRoot or (isFolder and isEmpty):
             ctxMenu.addAction(
                 self.tr("Delete Permanently"), lambda: self.deleteItem(tHandle)
             )
