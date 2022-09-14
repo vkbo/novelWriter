@@ -851,6 +851,7 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
     distLoop = [
         ("20.04", "focal"),
         ("22.04", "jammy"),
+        ("22.10", "kinetic"),
     ]
 
     tStamp = datetime.datetime.now().strftime("%Y%m%d~%H%M%S")
