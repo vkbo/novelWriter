@@ -1077,6 +1077,20 @@ class GuiProjectTree(QTreeWidget):
                     ),
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.NOTE)
                 )
+        elif isFolder:
+            if tItem.documentAllowed():
+                ctxMenu.addAction(
+                    self.tr("Convert to {0}").format(
+                        trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
+                    ),
+                    lambda: self._covertFolderToFile(tHandle, nwItemLayout.DOCUMENT)
+                )
+            ctxMenu.addAction(
+                self.tr("Convert to {0}").format(
+                    trConst(nwLabels.LAYOUT_NAME[nwItemLayout.NOTE])
+                ),
+                lambda: self._covertFolderToFile(tHandle, nwItemLayout.NOTE)
+            )
 
         ctxMenu.addSeparator()
 
@@ -1269,6 +1283,32 @@ class GuiProjectTree(QTreeWidget):
                 self.setTreeItemValues(tItem.itemHandle)
         return
 
+    def _covertFolderToFile(self, tHandle, itemLayout):
+        """Convert a folder to a note or document.
+        """
+        tItem = self.theProject.tree[tHandle]
+        if tItem is not None and tItem.isFolderType():
+            msgYes = self.mainGui.askQuestion(
+                self.tr("Convert Folder"),
+                self.tr(
+                    "Do you want to convert the folder to a {0}? "
+                    "This action cannot be reversed."
+                ).format(trConst(nwLabels.LAYOUT_NAME[itemLayout]))
+            )
+            if msgYes and itemLayout == nwItemLayout.DOCUMENT and tItem.documentAllowed():
+                tItem.setType(nwItemType.FILE)
+                tItem.setLayout(nwItemLayout.DOCUMENT)
+                self.setTreeItemValues(tItem.itemHandle)
+                self._alertTreeChange(tHandle, flush=True)
+            elif msgYes and itemLayout == nwItemLayout.NOTE:
+                tItem.setType(nwItemType.FILE)
+                tItem.setLayout(nwItemLayout.NOTE)
+                self.setTreeItemValues(tItem.itemHandle)
+                self._alertTreeChange(tHandle, flush=True)
+            else:
+                logger.info("Folder conversion cancelled")
+        return
+
     def _scanChildren(self, theList, tItem, tIndex):
         """This is a recursive function returning all items in a tree
         starting at a given QTreeWidgetItem.
@@ -1364,12 +1404,14 @@ class GuiProjectTree(QTreeWidget):
         if flush:
             self.saveTreeOrder()
 
+        if tHandle is None:
+            return
+
         tItem = self.theProject.tree[tHandle]
         if tItem is None:
             return
 
-        itemType = tItem.itemType
-        if itemType == nwItemType.ROOT:
+        if tItem.isRootType():
             self.projView.rootFolderChanged.emit(tHandle)
 
         self.projView.treeItemChanged.emit(tHandle)
