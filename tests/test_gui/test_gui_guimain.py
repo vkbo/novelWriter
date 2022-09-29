@@ -373,6 +373,9 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
+    # Auto-Replace
+    # ============
+
     for c in (
         "This is another paragraph of much longer nonsense text. "
         "It is in fact 1 very very NONSENSICAL nonsense text! "
@@ -405,6 +408,41 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
         qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    # Insert spaces before and after quotes
+    nwGUI.mainConf.fmtPadBefore = "\u201d"
+    nwGUI.mainConf.fmtPadAfter = "\u201c"
+
+    for c in "Some \"double quoted text with spaces padded\".":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    nwGUI.mainConf.fmtPadBefore = ""
+    nwGUI.mainConf.fmtPadAfter = ""
+
+    # Insert spaces before colon, but ignore tags and synopsis
+    nwGUI.mainConf.fmtPadBefore = ":"
+
+    for c in "@object: NoSpaceAdded":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    for c in "% synopsis: No space before this colon.":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    for c in "Add space before this colon: See?":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
+    nwGUI.mainConf.fmtPadBefore = ""
+
+    # Indent and Align
+    # ================
 
     for c in "\t\"Tab-indented text\"":
         qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
