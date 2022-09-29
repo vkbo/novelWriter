@@ -20,9 +20,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import os
+import time
 import shutil
 
 from PyQt5.QtWidgets import qApp
+
+XML_IGNORE = ("<novelWriterXML", "<saveCount", "<autoCount", "<editTime")
 
 
 def cmpFiles(fileOne, fileTwo, ignoreLines=None, ignoreStart=None):
@@ -117,5 +120,58 @@ def cleanProject(projPath):
     tocFile = os.path.join(projPath, "ToC.txt")
     if os.path.isfile(tocFile):
         os.unlink(tocFile)
+
+    return
+
+
+def buildTestProject(theObject, projPath):
+    """Build a standard test project in projPath using theProject
+    object as the parent.
+    """
+    from novelwriter.enum import nwItemClass
+    from novelwriter.core import NWProject, NWDoc
+
+    if isinstance(theObject, NWProject):
+        theGUI = None
+        theProject = theObject
+    else:
+        theGUI = theObject
+        theProject = theObject.theProject
+
+    theProject.clearProject()
+    theProject.setProjectPath(projPath, newProject=True)
+    theProject.setProjectName("New Project")
+    theProject.setBookTitle("New Novel")
+    theProject.setBookAuthors("Jane Doe")
+
+    # Creating a minimal project with a few root folders and a
+    # single chapter folder with a single file.
+    xHandle = {}
+    xHandle[1] = theProject.newRoot(nwItemClass.NOVEL, "Novel")
+    xHandle[2] = theProject.newRoot(nwItemClass.PLOT, "Plot")
+    xHandle[3] = theProject.newRoot(nwItemClass.CHARACTER, "Characters")
+    xHandle[4] = theProject.newRoot(nwItemClass.WORLD, "World")
+    xHandle[5] = theProject.newFile("Title Page", xHandle[1])
+    xHandle[6] = theProject.newFolder("New Chapter", xHandle[1])
+    xHandle[7] = theProject.newFile("New Chapter", xHandle[6])
+    xHandle[8] = theProject.newFile("New Scene", xHandle[6])
+
+    aDoc = NWDoc(theProject, xHandle[5])
+    aDoc.writeDocument("#! New Novel\n\n>> By Jane DOe <<\n")
+
+    aDoc = NWDoc(theProject, xHandle[7])
+    aDoc.writeDocument("## %s\n\n" % theProject.tr("New Chapter"))
+
+    aDoc = NWDoc(theProject, xHandle[8])
+    aDoc.writeDocument("### %s\n\n" % theProject.tr("New Scene"))
+
+    theProject.projOpened = time.time()
+    theProject.setProjectChanged(True)
+    theProject.saveProject(autoSave=True)
+
+    if theGUI is not None:
+        theGUI.hasProject = True
+        theGUI.rebuildTrees()
+        theGUI.rebuildIndex(beQuiet=True)
 
     return

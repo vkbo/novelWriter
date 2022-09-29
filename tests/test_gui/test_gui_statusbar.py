@@ -22,24 +22,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import time
 import pytest
 
+from tools import buildTestProject
+
 from PyQt5.QtWidgets import QMessageBox
 
 from novelwriter.core import NWDoc
-from novelwriter.enum import nwItemClass, nwState
+from novelwriter.enum import nwState
 
 
 @pytest.mark.gui
-def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, fncProj):
+def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test the the various features of the status bar.
     """
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
-    nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": fncProj}) is True
-    cHandle = nwGUI.theProject.newFile("A Note", nwItemClass.CHARACTER, "71ee45a3c0db9")
+    buildTestProject(nwGUI, fncProj)
+    cHandle = nwGUI.theProject.newFile("A Note", "000000000000a")
     newDoc = NWDoc(nwGUI.theProject, cHandle)
     newDoc.writeDocument("# A Note\n\n")
-    nwGUI.treeView.revealNewTreeItem(cHandle)
+    nwGUI.projView.revealNewTreeItem(cHandle)
     nwGUI.rebuildIndex(beQuiet=True)
 
     # Reference Time
@@ -90,10 +91,10 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, fncProj):
     # Project Stats
     nwGUI.statusBar.mainConf.incNotesWCount = False
     nwGUI._updateStatusWordCount()
-    assert nwGUI.statusBar.statsText.text() == "Words: 6 (+6)"
+    assert nwGUI.statusBar.statsText.text() == "Words: 9 (+9)"
     nwGUI.statusBar.mainConf.incNotesWCount = True
     nwGUI._updateStatusWordCount()
-    assert nwGUI.statusBar.statsText.text() == "Words: 8 (+8)"
+    assert nwGUI.statusBar.statsText.text() == "Words: 11 (+11)"
 
     # qtbot.stopForInteraction()
 
