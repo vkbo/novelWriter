@@ -1982,12 +1982,12 @@ class GuiDocEditor(QTextEdit):
 
         tCheck = tInsert
         if tCheck in self.mainConf.fmtPadBefore:
-            if self.allowSpaceBeforeColon(theText, tCheck):
+            if self._allowSpaceBeforeColon(theText, tCheck):
                 nDelete = max(nDelete, 1)
                 tInsert = self._typPadChar + tInsert
 
         if tCheck in self.mainConf.fmtPadAfter:
-            if self.allowSpaceBeforeColon(theText, tCheck):
+            if self._allowSpaceBeforeColon(theText, tCheck):
                 nDelete = max(nDelete, 1)
                 tInsert = tInsert + self._typPadChar
 
