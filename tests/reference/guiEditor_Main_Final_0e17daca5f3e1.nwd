@@ -27,6 +27,14 @@ This is another paragraph of much longer nonsense text. It is in fact 1 very ver
 
 ‘Full line single quoted text.’
 
+Some “ double quoted text with spaces padded ”.
+
+@object: NoSpaceAdded
+
+% synopsis: No space before this colon.
+
+Add space before this colon : See?
+
 	“Tab-indented text”
 
 >“Paragraph-indented text”
