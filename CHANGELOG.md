@@ -6,16 +6,16 @@
 
 This is a bugfix release that fixes a critical bug in the insert non-breaking spaces feature. It
 basically no longer worked in the 1.6.3 release. This release also fixes a minor issue where the
-text cursor sometimes dissappears when reaching the right-hand edge of the text editor window.
+text cursor sometimes disappears when reaching the right-hand edge of the text editor window.
 
 ### Detailed Changelog
 
 **Bugfixes**
 
 * Fixed a bug in the auto-replace feature of the editor that caused a crash when using the insert
-  non-breaking spaces feature was used. Issue #1118. PR #1120.
-* Backported a bugfix from 1.7 RC1 that resolves an issue with the text cursor sometimes
-  dissappearing at the right-hand edge of the text editor. Issues #1112 and #1119. PR #1120.
+non-breaking spaces feature was used. Issue #1118. PR #1120.
+* Back ported a bugfix from 1.7 RC1 that resolves an issue with the text cursor sometimes
+disappearing at the right-hand edge of the text editor. Issues #1112 and #1119. PR #1120.
 
 ----
 
