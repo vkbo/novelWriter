@@ -91,6 +91,7 @@ class GuiDocEditor(QTextEdit):
 
         self._spellCheck = False  # Flag for spell checking enabled
         self._nonWord    = "\"'"  # Characters to not include in spell checking
+        self._vpMargin   = 0      # The editor viewport margin, set during init
 
         # Document Variables
         self._charCount  = 0      # Character count
@@ -268,10 +269,12 @@ class GuiDocEditor(QTextEdit):
         self.docHeader.matchColours()
         self.docFooter.matchColours()
 
-        # Set default text margins
-        cM = self.mainConf.getTextMargin()
-        qDoc.setDocumentMargin(0)
-        self.setViewportMargins(cM, cM, cM, cM)
+        # Due to cursor visibility, a part of the margin must be
+        # allocated to the document itself. See issue #1112.
+        cW = self.cursorWidth()
+        qDoc.setDocumentMargin(cW)
+        self._vpMargin = max(self.mainConf.getTextMargin() - cW, 0)
+        self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)
 
         # Also set the document text options for the document text flow
         theOpt = QTextOption()
@@ -533,7 +536,6 @@ class GuiDocEditor(QTextEdit):
         """
         wW = self.width()
         wH = self.height()
-        cM = self.mainConf.getTextMargin()
 
         vBar = self.verticalScrollBar()
         sW = vBar.width() if vBar.isVisible() else 0
@@ -541,10 +543,10 @@ class GuiDocEditor(QTextEdit):
         hBar = self.horizontalScrollBar()
         sH = hBar.height() if hBar.isVisible() else 0
 
-        tM = cM
+        tM = self._vpMargin
         if self.mainConf.textWidth > 0 or self.theParent.isFocusMode:
             tW = self.mainConf.getTextWidth(self.theParent.isFocusMode)
-            tM = max((wW - sW - tW)//2, cM)
+            tM = max((wW - sW - tW)//2, self._vpMargin)
 
         tB = self.frameWidth()
         tW = wW - 2*tB - sW
@@ -561,8 +563,8 @@ class GuiDocEditor(QTextEdit):
             rL = wW - sW - rW - 2*tB
             self.docSearch.move(rL, 2*tB)
 
-        uM = max(cM, tH, rH)
-        lM = max(cM, fH)
+        uM = max(self._vpMargin, tH, rH)
+        lM = max(self._vpMargin, fH)
         self.setViewportMargins(tM, uM, tM, lM)
 
         return
@@ -1982,12 +1984,12 @@ class GuiDocEditor(QTextEdit):
 
         tCheck = tInsert
         if tCheck in self.mainConf.fmtPadBefore:
-            if self.allowSpaceBeforeColon(theText, tCheck):
+            if self._allowSpaceBeforeColon(theText, tCheck):
                 nDelete = max(nDelete, 1)
                 tInsert = self._typPadChar + tInsert
 
         if tCheck in self.mainConf.fmtPadAfter:
-            if self.allowSpaceBeforeColon(theText, tCheck):
+            if self._allowSpaceBeforeColon(theText, tCheck):
                 nDelete = max(nDelete, 1)
                 tInsert = tInsert + self._typPadChar
 
