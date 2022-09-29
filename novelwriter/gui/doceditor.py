@@ -271,10 +271,7 @@ class GuiDocEditor(QTextEdit):
         self.docHeader.matchColours()
         self.docFooter.matchColours()
 
-<<<<<<< HEAD
-=======
         # Set default text margins
->>>>>>> main
         # Due to cursor visibility, a part of the margin must be
         # allocated to the document itself. See issue #1112.
         cW = self.cursorWidth()
@@ -552,13 +549,8 @@ class GuiDocEditor(QTextEdit):
         sH = hBar.height() if hBar.isVisible() else 0
 
         tM = self._vpMargin
-<<<<<<< HEAD
-        if self.mainConf.textWidth > 0 or self.theParent.isFocusMode:
-            tW = self.mainConf.getTextWidth(self.theParent.isFocusMode)
-=======
         if self.mainConf.textWidth > 0 or self.mainGui.isFocusMode:
             tW = self.mainConf.getTextWidth(self.mainGui.isFocusMode)
->>>>>>> main
             tM = max((wW - sW - tW)//2, self._vpMargin)
 
         tB = self.frameWidth()
