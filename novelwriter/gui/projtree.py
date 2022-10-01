@@ -268,6 +268,12 @@ class GuiProjectToolBar(QWidget):
         # More Options Menu
         self.mMore = QMenu()
 
+        self.aExpand = self.mMore.addAction(self.tr("Expand All"))
+        self.aExpand.triggered.connect(lambda: self.projTree.setExpandedFromHandle(None, True))
+
+        self.aCollapse = self.mMore.addAction(self.tr("Collapse All"))
+        self.aCollapse.triggered.connect(lambda: self.projTree.setExpandedFromHandle(None, False))
+
         self.aMoreUndo = self.mMore.addAction(self.tr("Undo Move"))
         self.aMoreUndo.triggered.connect(lambda: self.projTree.undoLastMove())
 
@@ -938,6 +944,15 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
+    def setExpandedFromHandle(self, tHandle, isExpanded):
+        """Iterate through items below tHandle and change expanded
+        status for all child items. If tHandle is None, it affects the
+        entire tree.
+        """
+        trItem = self._getTreeItem(tHandle) or self.invisibleRootItem()
+        self._recursiveSetExpanded(trItem, isExpanded)
+        return
+
     def openContextOnSelected(self):
         """Open the context menu on the current selected item.
         """
@@ -1022,7 +1037,7 @@ class GuiProjectTree(QTreeWidget):
         isRoot = tItem.isRootType()
         isFolder = tItem.isFolderType()
         isFile = tItem.isFileType()
-        isEmpty = selItem.childCount() == 0
+        hasChild = selItem.childCount() > 0
 
         if isFile:
             ctxMenu.addAction(
@@ -1094,10 +1109,24 @@ class GuiProjectTree(QTreeWidget):
 
         ctxMenu.addSeparator()
 
+        # Expand/Collapse
+        # ===============
+
+        if hasChild:
+            ctxMenu.addSeparator()
+            ctxMenu.addAction(
+                self.tr("Expand All"),
+                lambda: self.setExpandedFromHandle(tHandle, True)
+            )
+            ctxMenu.addAction(
+                self.tr("Collapse All"),
+                lambda: self.setExpandedFromHandle(tHandle, False)
+            )
+
         # Delete Item
         # ===========
 
-        if tItem.itemClass == nwItemClass.TRASH or isRoot or (isFolder and isEmpty):
+        if tItem.itemClass == nwItemClass.TRASH or isRoot or (isFolder and not hasChild):
             ctxMenu.addAction(
                 self.tr("Delete Permanently"), lambda: self.deleteItem(tHandle)
             )
@@ -1253,6 +1282,18 @@ class GuiProjectTree(QTreeWidget):
             self._alertTreeChange(tHandle, flush=False)
         return
 
+    def _recursiveSetExpanded(self, trItem, isExpanded):
+        """Recursive function to set expanded status starting from (and
+        not including) a given item.
+        """
+        if isinstance(trItem, QTreeWidgetItem):
+            chCount = trItem.childCount()
+            for i in range(chCount):
+                chItem = trItem.child(i)
+                chItem.setExpanded(isExpanded)
+                self._recursiveSetExpanded(chItem, isExpanded)
+        return
+
     def _changeItemStatus(self, tHandle, tStatus):
         """Set a new status value of an item.
         """
@@ -1323,8 +1364,9 @@ class GuiProjectTree(QTreeWidget):
 
         # Update tree-related meta data
         nwItem = self.theProject.tree[tHandle]
-        nwItem.setExpanded(tItem.isExpanded() and cCount > 0)
-        nwItem.setOrder(tIndex)
+        if nwItem is not None:
+            nwItem.setExpanded(tItem.isExpanded() and cCount > 0)
+            nwItem.setOrder(tIndex)
 
         theList.append(tHandle)
         for i in range(cCount):

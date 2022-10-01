@@ -486,8 +486,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     hNovelNote   = "0000000000012"
 
     projTree = nwGUI.projView.projTree
-    projTree._getTreeItem(hNovelRoot).setExpanded(True)
-    projTree._getTreeItem(hChapterDir).setExpanded(True)
+    projTree.setExpandedFromHandle(None, True)
 
     projTree._addTrashRoot()
     hTrashRoot = projTree.theProject.tree.trashRoot()
