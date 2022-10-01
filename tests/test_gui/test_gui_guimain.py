@@ -439,6 +439,11 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
+    for c in "But don't add a double space : See?":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
     nwGUI.mainConf.fmtPadBefore = ""
 
     # Indent and Align

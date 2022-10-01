@@ -1993,12 +1993,16 @@ class GuiDocEditor(QTextEdit):
             tInsert = nwUnicode.U_HELLIP
 
         tCheck = tInsert
-        if tCheck in self.mainConf.fmtPadBefore:
+        if self.mainConf.fmtPadBefore and tCheck in self.mainConf.fmtPadBefore:
             if self._allowSpaceBeforeColon(theText, tCheck):
                 nDelete = max(nDelete, 1)
+                chkPos = thePos - nDelete - 1
+                if chkPos >= 0 and theText[chkPos].isspace():
+                    # Strip existing space before inserting a new (#1061)
+                    nDelete += 1
                 tInsert = self._typPadChar + tInsert
 
-        if tCheck in self.mainConf.fmtPadAfter:
+        if self.mainConf.fmtPadAfter and tCheck in self.mainConf.fmtPadAfter:
             if self._allowSpaceBeforeColon(theText, tCheck):
                 nDelete = max(nDelete, 1)
                 tInsert = tInsert + self._typPadChar
