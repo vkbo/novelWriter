@@ -537,7 +537,7 @@ class GuiProjectTree(QTreeWidget):
         if pHandle is not None and pHandle in self._treeMap:
             self._treeMap[pHandle].setExpanded(True)
 
-        self._alertTreeChange(tHandle=tHandle, flush=True)
+        self._alertTreeChange(tHandle, flush=True)
         self.clearSelection()
         trItem.setSelected(True)
 
@@ -577,7 +577,7 @@ class GuiProjectTree(QTreeWidget):
             pItem.insertChild(nIndex, cItem)
             self._recordLastMove(cItem, pItem, tIndex)
 
-        self._alertTreeChange(tHandle=tHandle, flush=True)
+        self._alertTreeChange(tHandle, flush=True)
         self.clearSelection()
         trItem.setSelected(True)
         trItem.setExpanded(isExp)
@@ -595,7 +595,7 @@ class GuiProjectTree(QTreeWidget):
         if dlgOk:
             tItem.setName(newLabel)
             self.setTreeItemValues(tHandle)
-            self._alertTreeChange(tHandle=tHandle, flush=False)
+            self._alertTreeChange(tHandle, flush=False)
 
         return
 
@@ -665,7 +665,7 @@ class GuiProjectTree(QTreeWidget):
             self.deleteItem(tHandle, alreadyAsked=True, bulkAction=True)
 
         if nTrash > 0:
-            self._alertTreeChange(tHandle=trashHandle, flush=True)
+            self._alertTreeChange(trashHandle, flush=True)
 
         return True
 
@@ -707,7 +707,7 @@ class GuiProjectTree(QTreeWidget):
             if trItemS.childCount() == 0:
                 self.takeTopLevelItem(tIndex)
                 self._deleteTreeItem(tHandle)
-                self._alertTreeChange(tHandle=tHandle, flush=True)
+                self._alertTreeChange(tHandle, flush=True)
             else:
                 self.mainGui.makeAlert(self.tr(
                     "Cannot delete root folder. It is not empty. "
@@ -723,7 +723,7 @@ class GuiProjectTree(QTreeWidget):
             tIndex = trItemP.indexOfChild(trItemS)
             trItemP.takeChild(tIndex)
             self._deleteTreeItem(tHandle)
-            self._alertTreeChange(tHandle=tHandle, flush=autoFlush)
+            self._alertTreeChange(tHandle, flush=autoFlush)
 
         else:
             # A populated FOLDER or a FILE requires confirmtation
@@ -759,7 +759,7 @@ class GuiProjectTree(QTreeWidget):
                             self.mainGui.closeDocument()
                         self._deleteTreeItem(dHandle)
 
-                    self._alertTreeChange(tHandle=tHandle, flush=autoFlush)
+                    self._alertTreeChange(tHandle, flush=autoFlush)
                     self.projView.wordCountsChanged.emit()
 
             else:
@@ -778,7 +778,7 @@ class GuiProjectTree(QTreeWidget):
                     trItemT.addChild(trItemC)
                     self._postItemMove(tHandle, wCount)
                     self._recordLastMove(trItemS, trItemP, tIndex)
-                    self._alertTreeChange(tHandle=tHandle, flush=autoFlush)
+                    self._alertTreeChange(tHandle, flush=autoFlush)
 
         return True
 
@@ -904,7 +904,7 @@ class GuiProjectTree(QTreeWidget):
         dstItem.insertChild(dstIndex, movItem)
 
         self._postItemMove(sHandle, wCount)
-        self._alertTreeChange(tHandle=sHandle, flush=True)
+        self._alertTreeChange(sHandle, flush=True)
 
         self.clearSelection()
         movItem.setSelected(True)
@@ -1077,6 +1077,20 @@ class GuiProjectTree(QTreeWidget):
                     ),
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.NOTE)
                 )
+        elif isFolder:
+            if tItem.documentAllowed():
+                ctxMenu.addAction(
+                    self.tr("Convert to {0}").format(
+                        trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
+                    ),
+                    lambda: self._covertFolderToFile(tHandle, nwItemLayout.DOCUMENT)
+                )
+            ctxMenu.addAction(
+                self.tr("Convert to {0}").format(
+                    trConst(nwLabels.LAYOUT_NAME[nwItemLayout.NOTE])
+                ),
+                lambda: self._covertFolderToFile(tHandle, nwItemLayout.NOTE)
+            )
 
         ctxMenu.addSeparator()
 
@@ -1154,7 +1168,7 @@ class GuiProjectTree(QTreeWidget):
         QTreeWidget.dropEvent(self, theEvent)
         self._postItemMove(sHandle, wCount)
         self._recordLastMove(sItem, pItem, pIndex)
-        self._alertTreeChange(tHandle=sHandle, flush=True)
+        self._alertTreeChange(sHandle, flush=True)
         sItem.setExpanded(isExpanded)
 
         return
@@ -1236,6 +1250,7 @@ class GuiProjectTree(QTreeWidget):
         if tItem is not None:
             tItem.setExported(not tItem.isExported)
             self.setTreeItemValues(tItem.itemHandle)
+            self._alertTreeChange(tHandle, flush=False)
         return
 
     def _changeItemStatus(self, tHandle, tStatus):
@@ -1245,6 +1260,7 @@ class GuiProjectTree(QTreeWidget):
         if tItem is not None:
             tItem.setStatus(tStatus)
             self.setTreeItemValues(tItem.itemHandle)
+            self._alertTreeChange(tHandle, flush=False)
         return
 
     def _changeItemImport(self, tHandle, tImport):
@@ -1254,6 +1270,7 @@ class GuiProjectTree(QTreeWidget):
         if tItem is not None:
             tItem.setImport(tImport)
             self.setTreeItemValues(tItem.itemHandle)
+            self._alertTreeChange(tHandle, flush=False)
         return
 
     def _changeItemLayout(self, tHandle, itemLayout):
@@ -1263,10 +1280,38 @@ class GuiProjectTree(QTreeWidget):
         if tItem is not None:
             if itemLayout == nwItemLayout.DOCUMENT and tItem.documentAllowed():
                 tItem.setLayout(nwItemLayout.DOCUMENT)
-                self.setTreeItemValues(tItem.itemHandle)
+                self.setTreeItemValues(tHandle)
+                self._alertTreeChange(tHandle, flush=False)
             elif itemLayout == nwItemLayout.NOTE:
                 tItem.setLayout(nwItemLayout.NOTE)
-                self.setTreeItemValues(tItem.itemHandle)
+                self.setTreeItemValues(tHandle)
+                self._alertTreeChange(tHandle, flush=False)
+        return
+
+    def _covertFolderToFile(self, tHandle, itemLayout):
+        """Convert a folder to a note or document.
+        """
+        tItem = self.theProject.tree[tHandle]
+        if tItem is not None and tItem.isFolderType():
+            msgYes = self.mainGui.askQuestion(
+                self.tr("Convert Folder"),
+                self.tr(
+                    "Do you want to convert the folder to a {0}? "
+                    "This action cannot be reversed."
+                ).format(trConst(nwLabels.LAYOUT_NAME[itemLayout]))
+            )
+            if msgYes and itemLayout == nwItemLayout.DOCUMENT and tItem.documentAllowed():
+                tItem.setType(nwItemType.FILE)
+                tItem.setLayout(nwItemLayout.DOCUMENT)
+                self.setTreeItemValues(tHandle)
+                self._alertTreeChange(tHandle, flush=False)
+            elif msgYes and itemLayout == nwItemLayout.NOTE:
+                tItem.setType(nwItemType.FILE)
+                tItem.setLayout(nwItemLayout.NOTE)
+                self.setTreeItemValues(tHandle)
+                self._alertTreeChange(tHandle, flush=False)
+            else:
+                logger.info("Folder conversion cancelled")
         return
 
     def _scanChildren(self, theList, tItem, tIndex):
@@ -1351,25 +1396,28 @@ class GuiProjectTree(QTreeWidget):
             trItem = self._addTreeItem(self.theProject.tree[trashHandle])
             if trItem is not None:
                 trItem.setExpanded(True)
-                self._alertTreeChange(tHandle=trashHandle, flush=True)
+                self._alertTreeChange(trashHandle, flush=True)
 
         return trItem
 
-    def _alertTreeChange(self, tHandle=None, flush=True):
+    def _alertTreeChange(self, tHandle, flush=False):
         """Update information on tree change state, and emit necessary
-        signals.
+        signals. A flush is only needed if an item is moved, created or
+        deleted.
         """
         self._timeChanged = time()
         self.theProject.setProjectChanged(True)
         if flush:
             self.saveTreeOrder()
 
+        if tHandle is None:
+            return
+
         tItem = self.theProject.tree[tHandle]
         if tItem is None:
             return
 
-        itemType = tItem.itemType
-        if itemType == nwItemType.ROOT:
+        if tItem.isRootType():
             self.projView.rootFolderChanged.emit(tHandle)
 
         self.projView.treeItemChanged.emit(tHandle)
