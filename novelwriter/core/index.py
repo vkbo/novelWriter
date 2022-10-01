@@ -498,13 +498,15 @@ class NWIndex:
         """
         return self._itemIndex.mainItemHeader(tHandle)
 
-    def getTableOfContents(self, maxDepth, skipExcl=True):
+    def getTableOfContents(self, rootHandle, maxDepth, skipExcl=True):
         """Generate a table of contents up to a maximum depth.
         """
         tOrder = []
         tData = {}
         pKey = None
-        for tHandle, sTitle, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
+        for tHandle, sTitle, hItem in self._itemIndex.iterNovelStructure(
+            rootHandle=rootHandle, skipExcl=skipExcl
+        ):
             tKey = f"{tHandle}:{sTitle}"
             iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0)
             if iLevel > maxDepth:

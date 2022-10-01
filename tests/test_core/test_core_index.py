@@ -709,16 +709,16 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
     assert theIndex.getNovelTitleCounts(skipExcl=True) == [0, 1, 2, 3, 0]
 
     # Table of Contents
-    assert theIndex.getTableOfContents(0, skipExcl=True) == []
-    assert theIndex.getTableOfContents(1, skipExcl=True) == [
+    assert theIndex.getTableOfContents("0000000000010", 0, skipExcl=True) == []
+    assert theIndex.getTableOfContents("0000000000010", 1, skipExcl=True) == [
         ("0000000000014:T000001", 1, "New Novel", 15),
     ]
-    assert theIndex.getTableOfContents(2, skipExcl=True) == [
+    assert theIndex.getTableOfContents("0000000000010", 2, skipExcl=True) == [
         ("0000000000014:T000001", 1, "New Novel", 5),
         ("0000000000016:T000001", 2, "New Chapter", 4),
         ("%s:T000001" % hHandle, 2, "Chapter One", 6),
     ]
-    assert theIndex.getTableOfContents(3, skipExcl=True) == [
+    assert theIndex.getTableOfContents("0000000000010", 3, skipExcl=True) == [
         ("0000000000014:T000001", 1, "New Novel", 5),
         ("0000000000016:T000001", 2, "New Chapter", 2),
         ("0000000000017:T000001", 3, "New Scene", 2),
@@ -727,8 +727,8 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
         ("%s:T000001" % tHandle, 3, "Scene Two", 2),
     ]
 
-    assert theIndex.getTableOfContents(0, skipExcl=False) == []
-    assert theIndex.getTableOfContents(1, skipExcl=False) == [
+    assert theIndex.getTableOfContents("0000000000010", 0, skipExcl=False) == []
+    assert theIndex.getTableOfContents("0000000000010", 1, skipExcl=False) == [
         ("0000000000014:T000001", 1, "New Novel", 9),
         ("%s:T000001" % nHandle, 1, "Hello World!", 12),
         ("%s:T000011" % nHandle, 1, "Hello World!", 22),
