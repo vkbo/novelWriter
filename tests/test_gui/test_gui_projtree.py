@@ -458,7 +458,7 @@ def testGuiProjTree_DeleteItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
 
 
 @pytest.mark.gui
-def testGuiProjTree_ContextMenu(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd):
+def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     """Test the building of the project tree context menu. All this does
     is test that the menu builds. It doesn't open the actual menu,
     """
@@ -469,6 +469,8 @@ def testGuiProjTree_ContextMenu(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
     monkeypatch.setattr(QMenu, "exec_", lambda *a: None)
+
+    nwTree = nwGUI.projView
 
     # Create a project
     prjDir = os.path.join(fncDir, "project")
@@ -543,6 +545,38 @@ def testGuiProjTree_ContextMenu(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockR
     assert nwItem.itemLayout == nwItemLayout.DOCUMENT
     projTree._changeItemLayout(hNovelNote, nwItemLayout.NOTE)
     assert nwItem.itemLayout == nwItemLayout.NOTE
+
+    # Convert Folders to Documents
+    # ============================
+
+    hNewFolderOne = "0000000000013"
+    hNewFolderTwo = "0000000000015"
+
+    nwTree.setSelectedHandle(hNovelNote)
+    assert nwTree.projTree.newTreeItem(nwItemType.FOLDER) is True
+    nwTree.setSelectedHandle(hNewFolderOne)
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
+
+    nwTree.setSelectedHandle(hNovelNote)
+    assert nwTree.projTree.newTreeItem(nwItemType.FOLDER) is True
+    nwTree.setSelectedHandle(hNewFolderTwo)
+    assert nwTree.projTree.newTreeItem(nwItemType.FILE, isNote=True) is True
+
+    # Click no on the dialog
+    with monkeypatch.context() as mp:
+        mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
+        projTree._covertFolderToFile(hNewFolderOne, nwItemLayout.DOCUMENT)
+        assert nwGUI.theProject.tree[hNewFolderOne].isFolderType()
+
+    # Convert the first folder to a document
+    projTree._covertFolderToFile(hNewFolderOne, nwItemLayout.DOCUMENT)
+    assert nwGUI.theProject.tree[hNewFolderOne].isFileType()
+    assert nwGUI.theProject.tree[hNewFolderOne].isDocumentLayout()
+
+    # Convert the second folder to a note
+    projTree._covertFolderToFile(hNewFolderTwo, nwItemLayout.NOTE)
+    assert nwGUI.theProject.tree[hNewFolderTwo].isFileType()
+    assert nwGUI.theProject.tree[hNewFolderTwo].isNoteLayout()
 
     # qtbot.stop()
 
