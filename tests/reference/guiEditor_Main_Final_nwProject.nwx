@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-07-31 18:44:39">
+<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-09-29 19:57:40">
   <project>
     <name>New Project</name>
     <title>New Novel</title>
     <author>Jane Doe</author>
     <saveCount>4</saveCount>
     <autoCount>2</autoCount>
-    <editTime>3</editTime>
+    <editTime>4</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
@@ -17,8 +17,8 @@
     <lastViewed>None</lastViewed>
     <lastNovel>0000000000008</lastNovel>
     <lastOutline>0000000000008</lastOutline>
-    <lastWordCount>129</lastWordCount>
-    <novelWordCount>102</novelWordCount>
+    <lastWordCount>145</lastWordCount>
+    <novelWordCount>118</novelWordCount>
     <notesWordCount>27</notesWordCount>
     <autoReplace/>
     <titleFormat>
@@ -59,7 +59,7 @@
       <name status="s000000" import="i000004" exported="True">New Chapter</name>
     </item>
     <item handle="000000000000f" parent="000000000000d" root="0000000000008" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" charCount="612" wordCount="95" paraCount="10" cursorPos="768"/>
+      <meta expanded="False" charCount="693" wordCount="111" paraCount="12" cursorPos="917"/>
       <name status="s000000" import="i000004" exported="True">New Scene</name>
     </item>
     <item handle="0000000000009" parent="None" root="0000000000009" order="1" type="ROOT" class="PLOT">
