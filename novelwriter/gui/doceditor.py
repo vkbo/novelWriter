@@ -111,7 +111,6 @@ class GuiDocEditor(QTextEdit):
         self._typSQOpen  = "'"
         self._typSQClose = "'"
         self._typPadChar = " "
-        self._doSpacePad = False
 
         # Core Elements and Signals
         qDoc = self.document()
@@ -222,7 +221,6 @@ class GuiDocEditor(QTextEdit):
         self._nonWord += "".join(self.mainConf.fmtSingleQuotes)
 
         # Typography
-        self._doSpacePad = bool(self.mainConf.fmtPadBefore) or bool(self.mainConf.fmtPadAfter)
         if self.mainConf.fmtPadThin:
             self._typPadChar = nwUnicode.U_THNBSP
         else:
@@ -1994,21 +1992,20 @@ class GuiDocEditor(QTextEdit):
             nDelete = 3
             tInsert = nwUnicode.U_HELLIP
 
-        if self._doSpacePad:
-            tCheck = tInsert
-            if tCheck in self.mainConf.fmtPadBefore:
-                if self._allowSpaceBeforeColon(theText, tCheck):
-                    nDelete = max(nDelete, 1)
-                    chkPos = thePos - nDelete - 1
-                    if chkPos >= 0 and theText[chkPos].isspace():
-                        # Strip existing space before inserting a new (#1061)
-                        nDelete += 1
-                    tInsert = self._typPadChar + tInsert
+        tCheck = tInsert
+        if self.mainConf.fmtPadBefore and tCheck in self.mainConf.fmtPadBefore:
+            if self._allowSpaceBeforeColon(theText, tCheck):
+                nDelete = max(nDelete, 1)
+                chkPos = thePos - nDelete - 1
+                if chkPos >= 0 and theText[chkPos].isspace():
+                    # Strip existing space before inserting a new (#1061)
+                    nDelete += 1
+                tInsert = self._typPadChar + tInsert
 
-            if tCheck in self.mainConf.fmtPadAfter:
-                if self._allowSpaceBeforeColon(theText, tCheck):
-                    nDelete = max(nDelete, 1)
-                    tInsert = tInsert + self._typPadChar
+        if self.mainConf.fmtPadAfter and tCheck in self.mainConf.fmtPadAfter:
+            if self._allowSpaceBeforeColon(theText, tCheck):
+                nDelete = max(nDelete, 1)
+                tInsert = tInsert + self._typPadChar
 
         if nDelete > 0:
             theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, nDelete)
