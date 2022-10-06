@@ -2,6 +2,8 @@
 
 ## Version 1.7 Beta 1 [2022-05-17]
 
+**Note:** The 1.7 release was renamed to 2.0 on 2022-10-06. See #1144.
+
 ### Release Notes
 
 This is a beta release of the next release version, and is intended for testing purposes. Please be
