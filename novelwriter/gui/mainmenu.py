@@ -171,7 +171,7 @@ class GuiMainMenu(QMenuBar):
         # Project > Delete
         self.aDeleteItem = QAction(self.tr("Delete Item"), self)
         self.aDeleteItem.setShortcut("Ctrl+Shift+Del")
-        self.aDeleteItem.triggered.connect(lambda: self.mainGui.projView.deleteItem(None))
+        self.aDeleteItem.triggered.connect(lambda: self.mainGui.projView.requestDeleteItem(None))
         self.projMenu.addAction(self.aDeleteItem)
 
         # Project > Empty Trash

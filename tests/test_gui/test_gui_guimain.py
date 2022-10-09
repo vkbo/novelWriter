@@ -504,9 +504,9 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None)
     newHandle = nwGUI.projView.getSelectedHandle()
     assert nwGUI.theProject.tree["0000000000020"] is not None
-    assert nwGUI.projView.deleteItem()
+    assert nwGUI.projView.requestDeleteItem()
     assert nwGUI.projView.setSelectedHandle(newHandle)
-    assert nwGUI.projView.deleteItem()
+    assert nwGUI.projView.requestDeleteItem()
     assert nwGUI.theProject.tree["0000000000024"] is not None  # Trash
     assert nwGUI.saveProject()
 

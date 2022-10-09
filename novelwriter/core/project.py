@@ -202,6 +202,23 @@ class NWProject():
 
         return True
 
+    def removeItem(self, tHandle):
+        """Remove an item from the project. This will delete both the
+        project entry and a document file if it exists.
+        """
+        if self._projTree.checkType(tHandle, nwItemType.FILE):
+            delDoc = NWDoc(self, tHandle)
+            if not delDoc.deleteDocument():
+                self.mainGui.makeAlert([
+                    self.tr("Could not delete document file."), delDoc.getError()
+                ], nwAlert.ERROR)
+                return False
+
+        self._projIndex.deleteHandle(tHandle)
+        del self._projTree[tHandle]
+
+        return True
+
     def trashFolder(self):
         """Add the special trash root folder to the project.
         """
