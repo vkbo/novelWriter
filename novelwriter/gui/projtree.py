@@ -39,7 +39,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QWidget
 )
 
-from novelwriter.core import NWDoc
+from novelwriter.core import NWDoc, DocMerger
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.dialogs import GuiDocMerge, GuiEditLabel
 from novelwriter.constants import nwHeaders, trConst, nwLabels
@@ -770,10 +770,14 @@ class GuiProjectTree(QTreeWidget):
             else:
                 # The item is not already in the trash folder, so we
                 # move it there.
-                msgYes = self.mainGui.askQuestion(
-                    self.tr("Delete"),
-                    self.tr("Move '{0}' to Trash?").format(nwItemS.itemName),
-                )
+                if not alreadyAsked:
+                    msgYes = self.mainGui.askQuestion(
+                        self.tr("Delete"),
+                        self.tr("Move '{0}' to Trash?").format(nwItemS.itemName),
+                    )
+                else:
+                    msgYes = True
+
                 if msgYes:
                     logger.debug("Moving item '%s' to trash", tHandle)
 
@@ -1114,13 +1118,17 @@ class GuiProjectTree(QTreeWidget):
         if hasChild:
             if isFile:
                 mTrans.addAction(
-                    self.tr("Merge Child Documents"),
-                    lambda: self._mergeDocuments(tHandle, isFile)
+                    self.tr("Merge Child Items into Self"),
+                    lambda: self._mergeDocuments(tHandle, False)
+                )
+                mTrans.addAction(
+                    self.tr("Merge Child Items into New"),
+                    lambda: self._mergeDocuments(tHandle, True)
                 )
             else:
                 mTrans.addAction(
                     self.tr("Combine Documents in Folder"),
-                    lambda: self._mergeDocuments(tHandle, isFile)
+                    lambda: self._mergeDocuments(tHandle, True)
                 )
 
         if isFile:
@@ -1377,18 +1385,63 @@ class GuiProjectTree(QTreeWidget):
                 logger.info("Folder conversion cancelled")
         return
 
-    def _mergeDocuments(self, tHandle, isFile):
+    def _mergeDocuments(self, tHandle, newFile):
         """Merge an item's child documents into a single document.
         """
         logger.info("Request to merge items under handle '%s'", tHandle)
         itemList = self.getTreeFromHandle(tHandle)
-        itemList.remove(tHandle)
+
+        tItem = self.theProject.tree[tHandle]
+        if tItem is None:
+            return
+
+        if not newFile:
+            itemList.remove(tHandle)
 
         dlgMerge = GuiDocMerge(self.mainGui, tHandle, itemList)
         dlgMerge.exec_()
 
         if dlgMerge.result() == QDialog.Accepted:
-            print(dlgMerge.getData())
+            # Save the open document first, in case it's part of this
+            self.mainGui.saveDocument()
+
+            # Set up the merge job
+            mrgData = dlgMerge.getData()
+            docMerger = DocMerger(self.theProject)
+            mLabel = self.tr("Merged")
+
+            if newFile:
+                docLabel = f"[{mLabel}] {tItem.itemName}"
+                mHandle = docMerger.newTargetDoc(tHandle, docLabel)
+            elif tItem.isFileType():
+                docMerger.setTargetDoc(tHandle)
+                mHandle = tHandle
+            else:
+                return
+
+            for sHandle in mrgData.get("finalItems", []):
+                docMerger.appendText(sHandle, True, mLabel)
+
+            if not docMerger.writeTargetDoc():
+                self.mainGui.makeAlert([
+                    self.tr("Could not save document."), docMerger.getError()
+                ], nwAlert.ERROR)
+                return
+
+            if newFile:
+                self.mainGui.projView.revealNewTreeItem(mHandle, tHandle)
+
+            self.theProject.index.reIndexHandle(mHandle)
+            self.mainGui.openDocument(mHandle, doScroll=True)
+
+            if mrgData.get("moveToTrash", False):
+                for sHandle in reversed(mrgData.get("finalItems", [])):
+                    trItem = self._getTreeItem(sHandle)
+                    if isinstance(trItem, QTreeWidgetItem) and trItem.childCount() == 0:
+                        self.deleteItem(sHandle, alreadyAsked=True, bulkAction=True)
+                        self._alertTreeChange(sHandle, flush=False)
+
+            self._alertTreeChange(mHandle, flush=True)
 
         return
 

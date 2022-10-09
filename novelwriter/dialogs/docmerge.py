@@ -88,6 +88,9 @@ class GuiDocMerge(QDialog):
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
+        self.resetButton = self.buttonBox.addButton(QDialogButtonBox.Reset)
+        self.resetButton.clicked.connect(self._resetList)
+
         # Assemble
         self.outerBox = QVBoxLayout()
         self.outerBox.setSpacing(0)
@@ -121,6 +124,19 @@ class GuiDocMerge(QDialog):
         self._data["finalItems"] = finalItems
 
         return self._data
+
+    ##
+    #  Slots
+    ##
+
+    def _resetList(self):
+        """Reset the content of the list box to its original state.
+        """
+        logger.debug("Resetting list box content")
+        sHandle = self._data.get("sHandle", None)
+        itemList = self._data.get("origItems", [])
+        self._loadContent(sHandle, itemList)
+        return
 
     ##
     #  Internal Functions
