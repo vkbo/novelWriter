@@ -602,7 +602,7 @@ class GuiProjectTree(QTreeWidget):
             self.setTreeItemValues(tHandle)
             self._alertTreeChange(tHandle, flush=False)
 
-        return
+        return True
 
     def saveTreeOrder(self):
         """Build a list of the items in the project tree and send them
@@ -657,11 +657,11 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         if self.theProject.tree.isTrash(tHandle) or nwItem.isRootType():
-            self.permanentlyDeleteItem(tHandle)
+            status = self.permanentlyDeleteItem(tHandle)
         else:
-            self.moveItemToTrash(tHandle)
+            status = self.moveItemToTrash(tHandle)
 
-        return True
+        return status
 
     def emptyTrash(self):
         """Permanently delete all documents in the Trash folder. This
@@ -697,6 +697,7 @@ class GuiProjectTree(QTreeWidget):
             self.tr("Permanently delete {0} file(s) from Trash?").format(nTrash)
         )
         if not msgYes:
+            logger.info("Action cancelled by user")
             return False
 
         logger.verbose("Deleting %d file(s) from Trash", nTrash)
@@ -761,7 +762,7 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def permanentlyDeleteItem(self, tHandle, askFirst=True, flush=False):
+    def permanentlyDeleteItem(self, tHandle, askFirst=True, flush=True):
         """Permanently delete a tree item from the project and the map.
         Root items are handled a little different than other items.
         """
