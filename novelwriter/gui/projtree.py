@@ -34,15 +34,15 @@ from time import time
 from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QFrame, QHBoxLayout, QHeaderView, QLabel,
+    QAbstractItemView, QFrame, QHBoxLayout, QHeaderView, QLabel, QDialog,
     QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem,
     QVBoxLayout, QWidget
 )
 
 from novelwriter.core import NWDoc
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
+from novelwriter.dialogs import GuiDocMerge, GuiEditLabel
 from novelwriter.constants import nwHeaders, trConst, nwLabels
-from novelwriter.dialogs.editlabel import GuiEditLabel
 
 logger = logging.getLogger(__name__)
 
@@ -334,7 +334,7 @@ class GuiProjectTree(QTreeWidget):
         self.mainConf   = novelwriter.CONFIG
         self.projView   = projView
         self.mainGui    = projView.mainGui
-        self.mainTheme   = projView.mainGui.mainTheme
+        self.mainTheme  = projView.mainGui.mainTheme
         self.theProject = projView.mainGui.theProject
 
         # Internal Variables
@@ -382,9 +382,8 @@ class GuiProjectTree(QTreeWidget):
         trRoot = self.invisibleRootItem()
         trRoot.setFlags(trRoot.flags() ^ Qt.ItemIsDropEnabled)
 
-        # Set Multiple Selection by CTRL
-        # Disabled for now, until the merge files option has been added
-        # self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        # Set selection options
+        self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         # Connect signals
@@ -1077,16 +1076,21 @@ class GuiProjectTree(QTreeWidget):
                     lambda n, key=key: self._changeItemImport(tHandle, key)
                 )
 
+        # Transform Item
+        # ==============
+
+        mTrans = ctxMenu.addMenu(self.tr("Transform"))
+
         if isFile and tItem.documentAllowed():
             if tItem.isNoteLayout():
-                ctxMenu.addAction(
+                mTrans.addAction(
                     self.tr("Convert to {0}").format(
                         trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
                     ),
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.DOCUMENT)
                 )
             else:
-                ctxMenu.addAction(
+                mTrans.addAction(
                     self.tr("Convert to {0}").format(
                         trConst(nwLabels.LAYOUT_NAME[nwItemLayout.NOTE])
                     ),
@@ -1094,17 +1098,35 @@ class GuiProjectTree(QTreeWidget):
                 )
         elif isFolder:
             if tItem.documentAllowed():
-                ctxMenu.addAction(
+                mTrans.addAction(
                     self.tr("Convert to {0}").format(
                         trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
                     ),
                     lambda: self._covertFolderToFile(tHandle, nwItemLayout.DOCUMENT)
                 )
-            ctxMenu.addAction(
+            mTrans.addAction(
                 self.tr("Convert to {0}").format(
                     trConst(nwLabels.LAYOUT_NAME[nwItemLayout.NOTE])
                 ),
                 lambda: self._covertFolderToFile(tHandle, nwItemLayout.NOTE)
+            )
+
+        if hasChild:
+            if isFile:
+                mTrans.addAction(
+                    self.tr("Merge Child Documents"),
+                    lambda: self._mergeDocuments(tHandle, isFile)
+                )
+            else:
+                mTrans.addAction(
+                    self.tr("Combine Documents in Folder"),
+                    lambda: self._mergeDocuments(tHandle, isFile)
+                )
+
+        if isFile:
+            mTrans.addAction(
+                self.tr("Split Document by Header"),
+                lambda: self._splitDocument(tHandle)
             )
 
         ctxMenu.addSeparator()
@@ -1355,6 +1377,24 @@ class GuiProjectTree(QTreeWidget):
                 logger.info("Folder conversion cancelled")
         return
 
+    def _mergeDocuments(self, tHandle, isFile):
+        """Merge an item's child documents into a single document.
+        """
+        logger.info("Request to merge items under handle '%s'", tHandle)
+        itemList = self.getTreeFromHandle(tHandle)
+        itemList.remove(tHandle)
+
+        dlgMerge = GuiDocMerge(self.mainGui, tHandle, itemList)
+        dlgMerge.exec_()
+
+        if dlgMerge.result() == QDialog.Accepted:
+            print(dlgMerge.getData())
+
+        return
+
+    def _splitDocument(self, tHandle):
+        return
+
     def _scanChildren(self, theList, tItem, tIndex):
         """This is a recursive function returning all items in a tree
         starting at a given QTreeWidgetItem.
@@ -1380,7 +1420,7 @@ class GuiProjectTree(QTreeWidget):
         """
         tHandle = nwItem.itemHandle
         pHandle = nwItem.itemParent
-        newItem = QTreeWidgetItem([""]*4)
+        newItem = QTreeWidgetItem()
 
         newItem.setText(self.C_NAME, "")
         newItem.setText(self.C_COUNT, "0")
