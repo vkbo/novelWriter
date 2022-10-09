@@ -1116,8 +1116,8 @@ class GuiProjectTree(QTreeWidget):
             trDoc = trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
             trNote = trConst(nwLabels.LAYOUT_NAME[nwItemLayout.NOTE])
 
-            isDocFile = tItem.isDocumentLayout() and isFile
-            isNoteFile = tItem.isNoteLayout() and isFile
+            isDocFile = isFile and tItem.isDocumentLayout()
+            isNoteFile = isFile and tItem.isNoteLayout()
 
             if (isNoteFile or isFolder) and tItem.documentAllowed():
                 mTrans.addAction(
@@ -1131,21 +1131,21 @@ class GuiProjectTree(QTreeWidget):
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.NOTE)
                 )
 
-            if hasChild:
-                if isFile:
-                    mTrans.addAction(
-                        self.tr("Merge Child Items into Self"),
-                        lambda: self._mergeDocuments(tHandle, False)
-                    )
-                    mTrans.addAction(
-                        self.tr("Merge Child Items into New"),
-                        lambda: self._mergeDocuments(tHandle, True)
-                    )
-                elif isFolder:
-                    mTrans.addAction(
-                        self.tr("Combine Documents in Folder"),
-                        lambda: self._mergeDocuments(tHandle, True)
-                    )
+            if hasChild and isFile:
+                mTrans.addAction(
+                    self.tr("Merge Child Items into Self"),
+                    lambda: self._mergeDocuments(tHandle, False)
+                )
+                mTrans.addAction(
+                    self.tr("Merge Child Items into New"),
+                    lambda: self._mergeDocuments(tHandle, True)
+                )
+
+            if hasChild and isFolder:
+                mTrans.addAction(
+                    self.tr("Combine Documents in Folder"),
+                    lambda: self._mergeDocuments(tHandle, True)
+                )
 
             if isFile:
                 mTrans.addAction(
@@ -1401,12 +1401,20 @@ class GuiProjectTree(QTreeWidget):
         dlgMerge = GuiDocMerge(self.mainGui, tHandle, itemList)
         dlgMerge.exec_()
 
-        if dlgMerge.result() == QDialog.Accepted:
-            # Save the open document first, in case it's part of this
+        if dlgMerge.result() != QDialog.Accepted:
+
+            mrgData = dlgMerge.getData()
+            mrgList = mrgData.get("finalItems", [])
+            if not mrgList:
+                self.mainGui.makeAlert([
+                    self.tr("No documents selected for merging.")
+                ], nwAlert.INFO)
+                return False
+
+            # Save the open document first, in case it's part of merge
             self.mainGui.saveDocument()
 
-            # Set up the merge job
-            mrgData = dlgMerge.getData()
+            # Create merge object, and append docs
             docMerger = DocMerger(self.theProject)
             mLabel = self.tr("Merged")
 
@@ -1419,7 +1427,7 @@ class GuiProjectTree(QTreeWidget):
             else:
                 return False
 
-            for sHandle in mrgData.get("finalItems", []):
+            for sHandle in mrgList:
                 docMerger.appendText(sHandle, True, mLabel)
 
             if not docMerger.writeTargetDoc():
@@ -1442,6 +1450,10 @@ class GuiProjectTree(QTreeWidget):
 
             self._alertTreeChange(mHandle, flush=True)
             self.projView.wordCountsChanged.emit()
+
+        else:
+            logger.info("Action cancelled by user")
+            return False
 
         return True
 
