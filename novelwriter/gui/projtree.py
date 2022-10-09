@@ -1110,67 +1110,55 @@ class GuiProjectTree(QTreeWidget):
         # Transform Item
         # ==============
 
-        mTrans = ctxMenu.addMenu(self.tr("Transform"))
+        if not isRoot:
+            mTrans = ctxMenu.addMenu(self.tr("Transform"))
 
-        if isFile and tItem.documentAllowed():
-            if tItem.isNoteLayout():
+            trDoc = trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
+            trNote = trConst(nwLabels.LAYOUT_NAME[nwItemLayout.NOTE])
+
+            isDocFile = tItem.isDocumentLayout() and isFile
+            isNoteFile = tItem.isNoteLayout() and isFile
+
+            if (isNoteFile or isFolder) and tItem.documentAllowed():
                 mTrans.addAction(
-                    self.tr("Convert to {0}").format(
-                        trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
-                    ),
+                    self.tr("Convert to {0}").format(trDoc),
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.DOCUMENT)
                 )
-            else:
+
+            if isDocFile or isFolder:
                 mTrans.addAction(
-                    self.tr("Convert to {0}").format(
-                        trConst(nwLabels.LAYOUT_NAME[nwItemLayout.NOTE])
-                    ),
+                    self.tr("Convert to {0}").format(trNote),
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.NOTE)
                 )
-        elif isFolder:
-            if tItem.documentAllowed():
-                mTrans.addAction(
-                    self.tr("Convert to {0}").format(
-                        trConst(nwLabels.LAYOUT_NAME[nwItemLayout.DOCUMENT])
-                    ),
-                    lambda: self._covertFolderToFile(tHandle, nwItemLayout.DOCUMENT)
-                )
-            mTrans.addAction(
-                self.tr("Convert to {0}").format(
-                    trConst(nwLabels.LAYOUT_NAME[nwItemLayout.NOTE])
-                ),
-                lambda: self._covertFolderToFile(tHandle, nwItemLayout.NOTE)
-            )
 
-        if hasChild:
+            if hasChild:
+                if isFile:
+                    mTrans.addAction(
+                        self.tr("Merge Child Items into Self"),
+                        lambda: self._mergeDocuments(tHandle, False)
+                    )
+                    mTrans.addAction(
+                        self.tr("Merge Child Items into New"),
+                        lambda: self._mergeDocuments(tHandle, True)
+                    )
+                elif isFolder:
+                    mTrans.addAction(
+                        self.tr("Combine Documents in Folder"),
+                        lambda: self._mergeDocuments(tHandle, True)
+                    )
+
             if isFile:
                 mTrans.addAction(
-                    self.tr("Merge Child Items into Self"),
-                    lambda: self._mergeDocuments(tHandle, False)
-                )
-                mTrans.addAction(
-                    self.tr("Merge Child Items into New"),
-                    lambda: self._mergeDocuments(tHandle, True)
-                )
-            else:
-                mTrans.addAction(
-                    self.tr("Combine Documents in Folder"),
-                    lambda: self._mergeDocuments(tHandle, True)
+                    self.tr("Split Document by Header"),
+                    lambda: self._splitDocument(tHandle)
                 )
 
-        if isFile:
-            mTrans.addAction(
-                self.tr("Split Document by Header"),
-                lambda: self._splitDocument(tHandle)
-            )
+        # Expand/Collapse/Delete
+        # ======================
 
         ctxMenu.addSeparator()
 
-        # Expand/Collapse
-        # ===============
-
         if hasChild:
-            ctxMenu.addSeparator()
             ctxMenu.addAction(
                 self.tr("Expand All"),
                 lambda: self.setExpandedFromHandle(tHandle, True)
@@ -1179,9 +1167,6 @@ class GuiProjectTree(QTreeWidget):
                 self.tr("Collapse All"),
                 lambda: self.setExpandedFromHandle(tHandle, False)
             )
-
-        # Delete Item
-        # ===========
 
         if tItem.itemClass == nwItemClass.TRASH or isRoot or (isFolder and not hasChild):
             ctxMenu.addAction(
@@ -1192,6 +1177,7 @@ class GuiProjectTree(QTreeWidget):
                 self.tr("Move to Trash"), lambda: self.moveItemToTrash(tHandle)
             )
 
+        # Show Context Menu
         ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
 
         return True
@@ -1403,7 +1389,11 @@ class GuiProjectTree(QTreeWidget):
 
         tItem = self.theProject.tree[tHandle]
         if tItem is None:
-            return
+            return False
+
+        if tItem.isRootType():
+            logger.error("Cannot merge root item")
+            return False
 
         if not newFile:
             itemList.remove(tHandle)
@@ -1427,7 +1417,7 @@ class GuiProjectTree(QTreeWidget):
                 docMerger.setTargetDoc(tHandle)
                 mHandle = tHandle
             else:
-                return
+                return False
 
             for sHandle in mrgData.get("finalItems", []):
                 docMerger.appendText(sHandle, True, mLabel)
@@ -1436,7 +1426,7 @@ class GuiProjectTree(QTreeWidget):
                 self.mainGui.makeAlert([
                     self.tr("Could not save document."), docMerger.getError()
                 ], nwAlert.ERROR)
-                return
+                return False
 
             if newFile:
                 self.mainGui.projView.revealNewTreeItem(mHandle, tHandle)
@@ -1453,7 +1443,7 @@ class GuiProjectTree(QTreeWidget):
             self._alertTreeChange(mHandle, flush=True)
             self.projView.wordCountsChanged.emit()
 
-        return
+        return True
 
     def _splitDocument(self, tHandle):
         return
