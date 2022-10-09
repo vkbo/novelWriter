@@ -244,11 +244,6 @@ class GuiMainMenu(QMenuBar):
         self.aImportFile.triggered.connect(lambda: self.mainGui.importDocument())
         self.docuMenu.addAction(self.aImportFile)
 
-        # Document > Merge Documents
-        self.aMergeDocs = QAction(self.tr("Merge Folder to Document"), self)
-        self.aMergeDocs.triggered.connect(lambda: self.mainGui.mergeDocuments())
-        self.docuMenu.addAction(self.aMergeDocs)
-
         # Document > Split Document
         self.aSplitDoc = QAction(self.tr("Split Document to Folder"), self)
         self.aSplitDoc.triggered.connect(lambda: self.mainGui.splitDocument())
