@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import pytest
 
-from tools import buildTestProject
+from tools import C, buildTestProject
 
 from PyQt5.QtWidgets import QMessageBox, QMenu
 
@@ -78,24 +78,24 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     assert "Did not find anywhere" in caplog.text
 
     # Create new folder as child of Novel folder
-    projView.setSelectedHandle("0000000000008")
+    projView.setSelectedHandle(C.hNovelRoot)
     assert projView.projTree.newTreeItem(nwItemType.FOLDER) is True
-    assert theProject.tree["0000000000011"].itemParent == "0000000000008"
-    assert theProject.tree["0000000000011"].itemRoot == "0000000000008"
+    assert theProject.tree["0000000000011"].itemParent == C.hNovelRoot
+    assert theProject.tree["0000000000011"].itemRoot == C.hNovelRoot
     assert theProject.tree["0000000000011"].itemClass == nwItemClass.NOVEL
 
     # Add a new file in the new folder
     projView.setSelectedHandle("0000000000011")
     assert projView.projTree.newTreeItem(nwItemType.FILE) is True
     assert theProject.tree["0000000000012"].itemParent == "0000000000011"
-    assert theProject.tree["0000000000012"].itemRoot == "0000000000008"
+    assert theProject.tree["0000000000012"].itemRoot == C.hNovelRoot
     assert theProject.tree["0000000000012"].itemClass == nwItemClass.NOVEL
 
     # Add a new chapter next to the other new file
     projView.setSelectedHandle("0000000000012")
     assert projView.projTree.newTreeItem(nwItemType.FILE, hLevel=2) is True
     assert theProject.tree["0000000000013"].itemParent == "0000000000011"
-    assert theProject.tree["0000000000013"].itemRoot == "0000000000008"
+    assert theProject.tree["0000000000013"].itemRoot == C.hNovelRoot
     assert theProject.tree["0000000000013"].itemClass == nwItemClass.NOVEL
     assert nwGUI.openDocument("0000000000013")
     assert nwGUI.docEditor.getText() == "## New Chapter\n\n"
@@ -104,16 +104,16 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     projView.setSelectedHandle("0000000000012")
     assert projView.projTree.newTreeItem(nwItemType.FILE, hLevel=3) is True
     assert theProject.tree["0000000000014"].itemParent == "0000000000011"
-    assert theProject.tree["0000000000014"].itemRoot == "0000000000008"
+    assert theProject.tree["0000000000014"].itemRoot == C.hNovelRoot
     assert theProject.tree["0000000000014"].itemClass == nwItemClass.NOVEL
     assert nwGUI.openDocument("0000000000014")
     assert nwGUI.docEditor.getText() == "### New Scene\n\n"
 
     # Add a new file to the characters folder
-    projView.setSelectedHandle("000000000000a")
+    projView.setSelectedHandle(C.hCharRoot)
     assert projView.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True) is True
-    assert theProject.tree["0000000000015"].itemParent == "000000000000a"
-    assert theProject.tree["0000000000015"].itemRoot == "000000000000a"
+    assert theProject.tree["0000000000015"].itemParent == C.hCharRoot
+    assert theProject.tree["0000000000015"].itemRoot == C.hCharRoot
     assert theProject.tree["0000000000015"].itemClass == nwItemClass.CHARACTER
     assert nwGUI.openDocument("0000000000015")
     assert nwGUI.docEditor.getText() == "# New Note\n\n"
@@ -145,8 +145,8 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     # Rename plot folder
     with monkeypatch.context() as mp:
         mp.setattr(GuiEditLabel, "getLabel", lambda *a, **k: ("Stuff", True))
-        projTree.renameTreeItem("0000000000009") is True
-        assert theProject.tree["0000000000009"].itemName == "Stuff"
+        projTree.renameTreeItem(C.hPlotRoot) is True
+        assert theProject.tree[C.hPlotRoot].itemName == "Stuff"
 
     # Rename invalid folder
     projTree.renameTreeItem("0000000000000") is False
@@ -192,12 +192,12 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     # ==============
 
     # Add some files
-    nwTree.setSelectedHandle("000000000000d")
+    nwTree.setSelectedHandle(C.hChapterDir)
     assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
     assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
     assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
-    assert nwTree.getTreeFromHandle("000000000000d") == [
-        "000000000000d", "000000000000e", "000000000000f",
+    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+        C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
@@ -206,75 +206,75 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     assert nwTree.projTree.moveTreeItem(1) is False
 
     # Move second item up twice (should give same result)
-    nwTree.setSelectedHandle("000000000000f")
+    nwTree.setSelectedHandle(C.hSceneDoc)
     assert nwTree.projTree.moveTreeItem(-1) is True
-    assert nwTree.getTreeFromHandle("000000000000d") == [
-        "000000000000d", "000000000000f", "000000000000e",
+    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+        C.hChapterDir, C.hSceneDoc, C.hChapterDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
     assert nwTree.projTree.moveTreeItem(-1) is False
-    assert nwTree.getTreeFromHandle("000000000000d") == [
-        "000000000000d", "000000000000f", "000000000000e",
+    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+        C.hChapterDir, C.hSceneDoc, C.hChapterDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
     # Restore
     assert nwTree.projTree.moveTreeItem(1) is True
-    assert nwTree.getTreeFromHandle("000000000000d") == [
-        "000000000000d", "000000000000e", "000000000000f",
+    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+        C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
     # Move fifth item down twice (should give same result)
     nwTree.setSelectedHandle("0000000000011")
     assert nwTree.projTree.moveTreeItem(1) is True
-    assert nwTree.getTreeFromHandle("000000000000d") == [
-        "000000000000d", "000000000000e", "000000000000f",
+    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+        C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000012", "0000000000011",
     ]
     assert nwTree.projTree.moveTreeItem(1) is False
-    assert nwTree.getTreeFromHandle("000000000000d") == [
-        "000000000000d", "000000000000e", "000000000000f",
+    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+        C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000012", "0000000000011",
     ]
 
     # Restore
     assert nwTree.projTree.moveTreeItem(-1) is True
-    assert nwTree.getTreeFromHandle("000000000000d") == [
-        "000000000000d", "000000000000e", "000000000000f",
+    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+        C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
     # Move down again, and restore via undo
     nwTree.setSelectedHandle("0000000000011")
     assert nwTree.projTree.moveTreeItem(1) is True
-    assert nwTree.getTreeFromHandle("000000000000d") == [
-        "000000000000d", "000000000000e", "000000000000f",
+    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+        C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000012", "0000000000011",
     ]
     assert nwTree.projTree.undoLastMove() is True
-    assert nwTree.getTreeFromHandle("000000000000d") == [
-        "000000000000d", "000000000000e", "000000000000f",
+    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+        C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
     # Root Folder
     # ===========
 
-    nwTree.setSelectedHandle("0000000000008")
-    assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 0
+    nwTree.setSelectedHandle(C.hNovelRoot)
+    assert nwGUI.theProject.tree._treeOrder.index(C.hNovelRoot) == 0
 
     # Move novel folder up
     assert nwTree.projTree.moveTreeItem(-1) is False
-    assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 0
+    assert nwGUI.theProject.tree._treeOrder.index(C.hNovelRoot) == 0
 
     # Move novel folder down
     assert nwTree.projTree.moveTreeItem(1) is True
-    assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 1
+    assert nwGUI.theProject.tree._treeOrder.index(C.hNovelRoot) == 1
 
     # Move novel folder up again
     assert nwTree.projTree.moveTreeItem(-1) is True
-    assert nwGUI.theProject.tree._treeOrder.index("0000000000008") == 0
+    assert nwGUI.theProject.tree._treeOrder.index(C.hNovelRoot) == 0
 
     # Clean up
     # qtbot.stopForInteraction()
@@ -307,12 +307,12 @@ def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fncDir,
     assert nwView.emptyTrash() is False
 
     # Add some files
-    nwView.setSelectedHandle("000000000000d")
+    nwView.setSelectedHandle(C.hChapterDir)
     assert nwView.projTree.newTreeItem(nwItemType.FILE) is True
     assert nwView.projTree.newTreeItem(nwItemType.FILE) is True
     assert nwView.projTree.newTreeItem(nwItemType.FILE) is True
-    assert nwView.getTreeFromHandle("000000000000d") == [
-        "000000000000d", "000000000000e", "000000000000f",
+    assert nwView.getTreeFromHandle(C.hChapterDir) == [
+        C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
@@ -337,8 +337,8 @@ def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fncDir,
     # Delete Root Folders
     # ===================
 
-    assert nwView.requestDeleteItem("0000000000008") is False  # Novel Root is blocked
-    assert nwView.requestDeleteItem("000000000000a") is True   # Character Root
+    assert nwView.requestDeleteItem(C.hNovelRoot) is False  # Novel Root is blocked
+    assert nwView.requestDeleteItem(C.hCharRoot) is True   # Character Root
 
     # Delete File
     # ===========
@@ -352,8 +352,8 @@ def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fncDir,
     # Delete last two documents, which also adds the trash folder
     assert nwView.requestDeleteItem("0000000000012") is True
     assert nwView.requestDeleteItem("0000000000011") is True
-    assert nwView.getTreeFromHandle("000000000000d") == [
-        "000000000000d", "000000000000e", "000000000000f",
+    assert nwView.getTreeFromHandle(C.hChapterDir) == [
+        C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010"
     ]
     trashHandle = nwGUI.theProject.tree.trashRoot()
@@ -389,18 +389,14 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, fncDir, m
     prjDir = os.path.join(fncDir, "project")
     buildTestProject(nwGUI, prjDir)
 
-    hInvalid   = "0000000000000"
-    hNovelRoot = "0000000000008"
-    hTitlePage = "000000000000c"
-
     # Invalid item
     caplog.clear()
-    assert projTree.moveItemToTrash(hInvalid) is False
+    assert projTree.moveItemToTrash(C.hInvalid) is False
     assert "Could not find tree item for deletion" in caplog.text
 
     # Root folders cannot be moved to Trash
     caplog.clear()
-    assert projTree.moveItemToTrash(hNovelRoot) is False
+    assert projTree.moveItemToTrash(C.hNovelRoot) is False
     assert "Root folders cannot be moved to Trash" in caplog.text
 
     # Block adding trash folder
@@ -408,8 +404,8 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, fncDir, m
     projTree._addTrashRoot = lambda *a: None
 
     caplog.clear()
-    assert projTree.moveItemToTrash(hTitlePage) is False
-    assert theProject.tree.isTrash(hTitlePage) is False
+    assert projTree.moveItemToTrash(C.hTitlePage) is False
+    assert theProject.tree.isTrash(C.hTitlePage) is False
     assert "Could not delete item" in caplog.text
 
     projTree._addTrashRoot = funcPointer
@@ -417,16 +413,16 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, fncDir, m
     # User cancels action
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
-        assert projTree.moveItemToTrash(hTitlePage) is False
-        assert theProject.tree.isTrash(hTitlePage) is False
+        assert projTree.moveItemToTrash(C.hTitlePage) is False
+        assert theProject.tree.isTrash(C.hTitlePage) is False
 
     # Move a document to Trash
-    assert projTree.moveItemToTrash(hTitlePage) is True
-    assert theProject.tree.isTrash(hTitlePage) is True
+    assert projTree.moveItemToTrash(C.hTitlePage) is True
+    assert theProject.tree.isTrash(C.hTitlePage) is True
 
     # Cannot be moved again
     caplog.clear()
-    assert projTree.moveItemToTrash(hTitlePage) is False
+    assert projTree.moveItemToTrash(C.hTitlePage) is False
     assert "Item is already in the Trash folder" in caplog.text
 
     nwGUI.closeProject()
@@ -452,48 +448,40 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fnc
     prjDir = os.path.join(fncDir, "project")
     buildTestProject(nwGUI, prjDir)
 
-    hInvalid    = "0000000000000"
-    hNovelRoot  = "0000000000008"
-    hPlotRoot   = "0000000000009"
-    hTitlePage  = "000000000000c"
-    hChapterDir = "000000000000d"
-    hChapterDoc = "000000000000e"
-    hSceneDoc   = "000000000000f"
-
     # Invalid item
     caplog.clear()
-    assert projTree.permanentlyDeleteItem(hInvalid) is False
+    assert projTree.permanentlyDeleteItem(C.hInvalid) is False
     assert "Could not find tree item for deletion" in caplog.text
 
     # Not deleting root item in use
     caplog.clear()
-    assert projTree.permanentlyDeleteItem(hNovelRoot) is False
+    assert projTree.permanentlyDeleteItem(C.hNovelRoot) is False
     assert "Root folders can only be deleted when they are empty" in caplog.text
-    assert hNovelRoot in theProject.tree
+    assert C.hNovelRoot in theProject.tree
 
     # Deleting unused root item is allowed
     caplog.clear()
-    assert projTree.permanentlyDeleteItem(hPlotRoot) is True
-    assert hPlotRoot not in theProject.tree
+    assert projTree.permanentlyDeleteItem(C.hPlotRoot) is True
+    assert C.hPlotRoot not in theProject.tree
 
     # User cancels action
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
-        assert projTree.permanentlyDeleteItem(hTitlePage) is False
-        assert hTitlePage in theProject.tree
+        assert projTree.permanentlyDeleteItem(C.hTitlePage) is False
+        assert C.hTitlePage in theProject.tree
 
     # Deleting file is OK, and if it is open, it should close
-    assert nwGUI.openDocument(hTitlePage) is True
-    assert nwGUI.docEditor.docHandle() == hTitlePage
-    assert projTree.permanentlyDeleteItem(hTitlePage) is True
-    assert hTitlePage not in theProject.tree
+    assert nwGUI.openDocument(C.hTitlePage) is True
+    assert nwGUI.docEditor.docHandle() == C.hTitlePage
+    assert projTree.permanentlyDeleteItem(C.hTitlePage) is True
+    assert C.hTitlePage not in theProject.tree
     assert nwGUI.docEditor.docHandle() is None
 
     # Deleting folder + files recursiely is ok
-    assert projTree.permanentlyDeleteItem(hChapterDir) is True
-    assert hChapterDir not in theProject.tree
-    assert hChapterDoc not in theProject.tree
-    assert hSceneDoc not in theProject.tree
+    assert projTree.permanentlyDeleteItem(C.hChapterDir) is True
+    assert C.hChapterDir not in theProject.tree
+    assert C.hChapterDoc not in theProject.tree
+    assert C.hSceneDoc not in theProject.tree
 
     nwGUI.closeProject()
 
@@ -523,38 +511,33 @@ def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRn
     prjDir = os.path.join(fncDir, "project")
     buildTestProject(nwGUI, prjDir)
 
-    hTitlePage  = "000000000000c"
-    hChapterDir = "000000000000d"
-    hChapterDoc = "000000000000e"
-    hSceneDoc   = "000000000000f"
-
     # No Trash folder
     assert projTree.emptyTrash() is False
 
     # Move some documents to Trash
-    assert projTree.moveItemToTrash(hTitlePage) is True
-    assert projTree.moveItemToTrash(hChapterDir) is True
+    assert projTree.moveItemToTrash(C.hTitlePage) is True
+    assert projTree.moveItemToTrash(C.hChapterDir) is True
 
-    assert theProject.tree.isTrash(hTitlePage) is True
-    assert theProject.tree.isTrash(hChapterDir) is True
-    assert theProject.tree.isTrash(hChapterDoc) is True
-    assert theProject.tree.isTrash(hSceneDoc) is True
+    assert theProject.tree.isTrash(C.hTitlePage) is True
+    assert theProject.tree.isTrash(C.hChapterDir) is True
+    assert theProject.tree.isTrash(C.hChapterDoc) is True
+    assert theProject.tree.isTrash(C.hSceneDoc) is True
 
     # User cancels
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
         assert projTree.emptyTrash() is False
-        assert hTitlePage in theProject.tree
-        assert hChapterDir in theProject.tree
-        assert hChapterDoc in theProject.tree
-        assert hSceneDoc in theProject.tree
+        assert C.hTitlePage in theProject.tree
+        assert C.hChapterDir in theProject.tree
+        assert C.hChapterDoc in theProject.tree
+        assert C.hSceneDoc in theProject.tree
 
     # Run again to empty all items
     assert projTree.emptyTrash() is True
-    assert hTitlePage not in theProject.tree
-    assert hChapterDir not in theProject.tree
-    assert hChapterDoc not in theProject.tree
-    assert hSceneDoc not in theProject.tree
+    assert C.hTitlePage not in theProject.tree
+    assert C.hChapterDir not in theProject.tree
+    assert C.hChapterDoc not in theProject.tree
+    assert C.hSceneDoc not in theProject.tree
 
     # Running Emtpy Trash again is cancelled due to empty folder
     assert projTree.emptyTrash() is False
@@ -584,13 +567,8 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     buildTestProject(nwGUI, prjDir)
 
     # Handles for new objects
-    hNovelRoot   = "0000000000008"
-    hTitlePage   = "000000000000c"
-    hChapterDir  = "000000000000d"
-    hChapterFile = "000000000000e"
-    hCharRoot    = "000000000000a"
-    hCharNote    = "0000000000011"
-    hNovelNote   = "0000000000012"
+    hCharNote  = "0000000000011"
+    hNovelNote = "0000000000012"
 
     projTree = nwGUI.projView.projTree
     projTree.setExpandedFromHandle(None, True)
@@ -598,9 +576,9 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     projTree._addTrashRoot()
     hTrashRoot = projTree.theProject.tree.trashRoot()
 
-    projTree.setSelectedHandle(hCharRoot)
+    projTree.setSelectedHandle(C.hCharRoot)
     projTree.newTreeItem(nwItemType.FILE)
-    projTree.setSelectedHandle(hNovelRoot)
+    projTree.setSelectedHandle(C.hNovelRoot)
     projTree.newTreeItem(nwItemType.FILE, isNote=True)
 
     def itemPos(tHandle):
@@ -611,16 +589,16 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
 
     # Generate the possible menu combinarions
     assert projTree._openContextMenu(itemPos(hTrashRoot)) is True
-    assert projTree._openContextMenu(itemPos(hNovelRoot)) is True
+    assert projTree._openContextMenu(itemPos(C.hNovelRoot)) is True
     assert projTree._openContextMenu(itemPos(hNovelNote)) is True
-    assert projTree._openContextMenu(itemPos(hTitlePage)) is True
-    assert projTree._openContextMenu(itemPos(hChapterDir)) is True
-    assert projTree._openContextMenu(itemPos(hChapterFile)) is True
-    assert projTree._openContextMenu(itemPos(hCharRoot)) is True
+    assert projTree._openContextMenu(itemPos(C.hTitlePage)) is True
+    assert projTree._openContextMenu(itemPos(C.hChapterDir)) is True
+    assert projTree._openContextMenu(itemPos(C.hChapterDoc)) is True
+    assert projTree._openContextMenu(itemPos(C.hCharRoot)) is True
     assert projTree._openContextMenu(itemPos(hCharNote)) is True
 
     # Check the keyboard shortcut handler as well
-    projTree.setSelectedHandle(hNovelRoot)
+    projTree.setSelectedHandle(C.hNovelRoot)
     assert projTree.openContextOnSelected() is True
     projTree.clearSelection()
     assert projTree.openContextOnSelected() is False

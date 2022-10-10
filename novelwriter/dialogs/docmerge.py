@@ -29,8 +29,8 @@ import novelwriter
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QListWidget, QAbstractItemView,
-    QListWidgetItem, QDialogButtonBox, QGridLayout
+    QAbstractItemView, QDialog, QDialogButtonBox, QGridLayout, QLabel,
+    QListWidget, QListWidgetItem, QVBoxLayout,
 )
 
 from novelwriter.gui.custom import QHelpLabel, QSwitch

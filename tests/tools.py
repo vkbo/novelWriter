@@ -28,6 +28,22 @@ from PyQt5.QtWidgets import qApp
 XML_IGNORE = ("<novelWriterXML", "<saveCount", "<autoCount", "<editTime")
 
 
+class C:
+
+    # Handles from test project when random generator is mocked
+    hInvalid    = "0000000000000"
+    hNovelRoot  = "0000000000008"
+    hPlotRoot   = "0000000000009"
+    hCharRoot   = "000000000000a"
+    hWorldRoot  = "000000000000b"
+    hTitlePage  = "000000000000c"
+    hChapterDir = "000000000000d"
+    hChapterDoc = "000000000000e"
+    hSceneDoc   = "000000000000f"
+
+# END Class C
+
+
 def cmpFiles(fileOne, fileTwo, ignoreLines=None, ignoreStart=None):
     """Compare two files, but optionally ignore lines given by a list.
     """

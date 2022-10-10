@@ -21,7 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from tools import buildTestProject
+from tools import buildTestProject, C
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox
@@ -40,20 +40,15 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Create a new project
     buildTestProject(nwGUI, fncProj)
 
-    hInvalid    = "0000000000000"
-    hChapterDir = "000000000000d"
-    hChapterDoc = "000000000000e"
-    hSceneDoc   = "000000000000f"
-
     # Check that the dialog kan handle invalid items
-    nwMerge = GuiDocMerge(nwGUI, hInvalid, [hInvalid])
+    nwMerge = GuiDocMerge(nwGUI, C.hInvalid, [C.hInvalid])
     qtbot.addWidget(nwMerge)
     nwMerge.show()
     assert nwMerge.listBox.count() == 0
     nwMerge.reject()
 
     # Load items from chapter dir
-    nwMerge = GuiDocMerge(nwGUI, hChapterDir, [hChapterDir, hChapterDoc, hSceneDoc])
+    nwMerge = GuiDocMerge(nwGUI, C.hChapterDir, [C.hChapterDir, C.hChapterDoc, C.hSceneDoc])
     qtbot.addWidget(nwMerge)
     nwMerge.show()
 
@@ -62,36 +57,36 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     itemOne = nwMerge.listBox.item(0)
     itemTwo = nwMerge.listBox.item(1)
 
-    assert itemOne.data(Qt.UserRole) == hChapterDoc
-    assert itemTwo.data(Qt.UserRole) == hSceneDoc
+    assert itemOne.data(Qt.UserRole) == C.hChapterDoc
+    assert itemTwo.data(Qt.UserRole) == C.hSceneDoc
 
     assert itemOne.checkState() == Qt.Checked
     assert itemTwo.checkState() == Qt.Checked
 
     data = nwMerge.getData()
-    assert data["sHandle"] == hChapterDir
-    assert data["origItems"] == [hChapterDir, hChapterDoc, hSceneDoc]
+    assert data["sHandle"] == C.hChapterDir
+    assert data["origItems"] == [C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
     assert data["moveToTrash"] is False
-    assert data["finalItems"] == [hChapterDoc, hSceneDoc]
+    assert data["finalItems"] == [C.hChapterDoc, C.hSceneDoc]
 
     # Uncheck second item and toggle trash switch
     itemTwo.setCheckState(Qt.Unchecked)
     nwMerge.trashSwitch.setChecked(True)
 
     data = nwMerge.getData()
-    assert data["sHandle"] == hChapterDir
-    assert data["origItems"] == [hChapterDir, hChapterDoc, hSceneDoc]
+    assert data["sHandle"] == C.hChapterDir
+    assert data["origItems"] == [C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
     assert data["moveToTrash"] is True
-    assert data["finalItems"] == [hChapterDoc]
+    assert data["finalItems"] == [C.hChapterDoc]
 
     # Restore default values
     nwMerge._resetList()
 
     data = nwMerge.getData()
-    assert data["sHandle"] == hChapterDir
-    assert data["origItems"] == [hChapterDir, hChapterDoc, hSceneDoc]
+    assert data["sHandle"] == C.hChapterDir
+    assert data["origItems"] == [C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
     assert data["moveToTrash"] is True
-    assert data["finalItems"] == [hChapterDoc, hSceneDoc]
+    assert data["finalItems"] == [C.hChapterDoc, C.hSceneDoc]
 
     # qtbot.stop()
 

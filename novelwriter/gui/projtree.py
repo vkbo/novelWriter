@@ -34,7 +34,7 @@ from time import time
 from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QFrame, QHBoxLayout, QHeaderView, QLabel, QDialog,
+    QAbstractItemView, QDialog, QFrame, QHBoxLayout, QHeaderView, QLabel,
     QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem,
     QVBoxLayout, QWidget
 )

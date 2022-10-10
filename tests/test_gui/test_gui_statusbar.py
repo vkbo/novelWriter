@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import time
 import pytest
 
-from tools import buildTestProject
+from tools import C, buildTestProject
 
 from PyQt5.QtWidgets import QMessageBox
 
@@ -37,7 +37,7 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
     buildTestProject(nwGUI, fncProj)
-    cHandle = nwGUI.theProject.newFile("A Note", "000000000000a")
+    cHandle = nwGUI.theProject.newFile("A Note", C.hCharRoot)
     newDoc = NWDoc(nwGUI.theProject, cHandle)
     newDoc.writeDocument("# A Note\n\n")
     nwGUI.projView.revealNewTreeItem(cHandle)
