@@ -110,7 +110,7 @@ class DocMerger:
         if docText:
             self._targetText.insert(0, docText)
 
-        status = outDoc.writeDocument("\n\n".join(self._targetText))
+        status = outDoc.writeDocument("\n\n".join(self._targetText) + "\n\n")
         if not status:
             self._error = outDoc.getError()
 

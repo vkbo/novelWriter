@@ -176,7 +176,7 @@ class NWProject():
         self._projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
-    def writeNewFile(self, tHandle, hLevel, isDocument):
+    def writeNewFile(self, tHandle, hLevel, isDocument, addText=""):
         """Write content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
@@ -191,7 +191,7 @@ class NWProject():
             return False
 
         hshText = "#"*minmax(hLevel, 1, 4)
-        newText = f"{hshText} {tItem.itemName}\n\n"
+        newText = f"{hshText} {tItem.itemName}\n\n{addText}"
         if tItem.isNovelLike() and isDocument:
             tItem.setLayout(nwItemLayout.DOCUMENT)
         else:

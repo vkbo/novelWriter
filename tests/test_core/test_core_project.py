@@ -22,9 +22,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import pytest
 
+from lxml import etree
 from shutil import copyfile
 from zipfile import ZipFile
-from lxml import etree
 
 from tools import cmpFiles, writeFile, readFile, buildTestProject, XML_IGNORE
 from mock import causeOSError

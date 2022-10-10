@@ -190,14 +190,20 @@ def mockRnd(monkeypatch):
     from 0. This one will generate status/importance flags and handles
     in a predictable sequence.
     """
-    def rnd(n):
-        for x in range(n):
-            yield x
+    class MockRnd:
 
-    gen = rnd(1000)
-    monkeypatch.setattr("random.getrandbits", lambda *a: next(gen))
+        def __init__(self):
+            self.reset()
 
-    return
+        def _rnd(self, n):
+            for x in range(n):
+                yield x
+
+        def reset(self):
+            gen = self._rnd(1000)
+            monkeypatch.setattr("random.getrandbits", lambda *a: next(gen))
+
+    return MockRnd()
 
 
 ##
