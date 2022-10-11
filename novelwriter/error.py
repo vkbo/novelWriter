@@ -61,7 +61,7 @@ def formatException(exc):
 class NWErrorMessage(QDialog):
 
     def __init__(self, parent):
-        QDialog.__init__(self, parent=parent)
+        super().__init__(parent=parent)
         self.setObjectName("NWErrorMessage")
 
         # Widgets
