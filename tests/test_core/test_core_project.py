@@ -26,7 +26,7 @@ from lxml import etree
 from shutil import copyfile
 from zipfile import ZipFile
 
-from tools import cmpFiles, writeFile, readFile, buildTestProject, XML_IGNORE
+from tools import cmpFiles, writeFile, readFile, buildTestProject, XML_IGNORE, C
 from mock import causeOSError
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
@@ -256,6 +256,7 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
     compFile = os.path.join(refDir, "coreProject_NewRoot_nwProject.nwx")
 
     theProject = NWProject(mockGUI)
+    mockRnd.reset()
     buildTestProject(theProject, fncDir)
 
     assert theProject.setProjectPath(fncDir) is True
@@ -263,14 +264,14 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.closeProject() is True
     assert theProject.openProject(projFile) is True
 
-    assert isinstance(theProject.newRoot(nwItemClass.NOVEL),     str)
-    assert isinstance(theProject.newRoot(nwItemClass.PLOT),      str)
-    assert isinstance(theProject.newRoot(nwItemClass.CHARACTER), str)
-    assert isinstance(theProject.newRoot(nwItemClass.WORLD),     str)
-    assert isinstance(theProject.newRoot(nwItemClass.TIMELINE),  str)
-    assert isinstance(theProject.newRoot(nwItemClass.OBJECT),    str)
-    assert isinstance(theProject.newRoot(nwItemClass.CUSTOM),    str)
-    assert isinstance(theProject.newRoot(nwItemClass.CUSTOM),    str)
+    assert theProject.newRoot(nwItemClass.NOVEL) == "0000000000020"
+    assert theProject.newRoot(nwItemClass.PLOT) == "0000000000021"
+    assert theProject.newRoot(nwItemClass.CHARACTER) == "0000000000022"
+    assert theProject.newRoot(nwItemClass.WORLD) == "0000000000023"
+    assert theProject.newRoot(nwItemClass.TIMELINE) == "0000000000024"
+    assert theProject.newRoot(nwItemClass.OBJECT) == "0000000000025"
+    assert theProject.newRoot(nwItemClass.CUSTOM) == "0000000000026"
+    assert theProject.newRoot(nwItemClass.CUSTOM) == "0000000000027"
 
     assert theProject.projChanged is True
     assert theProject.saveProject() is True
@@ -280,11 +281,30 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
     assert theProject.projChanged is False
 
+    # Delete the new items
+    assert theProject.removeItem("0000000000020") is True
+    assert theProject.removeItem("0000000000021") is True
+    assert theProject.removeItem("0000000000022") is True
+    assert theProject.removeItem("0000000000023") is True
+    assert theProject.removeItem("0000000000024") is True
+    assert theProject.removeItem("0000000000025") is True
+    assert theProject.removeItem("0000000000026") is True
+    assert theProject.removeItem("0000000000027") is True
+
+    assert "0000000000020" not in theProject.tree
+    assert "0000000000021" not in theProject.tree
+    assert "0000000000022" not in theProject.tree
+    assert "0000000000023" not in theProject.tree
+    assert "0000000000024" not in theProject.tree
+    assert "0000000000025" not in theProject.tree
+    assert "0000000000026" not in theProject.tree
+    assert "0000000000027" not in theProject.tree
+
 # END Test testCoreProject_NewRoot
 
 
 @pytest.mark.core
-def testCoreProject_NewFileFolder(fncDir, outDir, refDir, mockGUI, mockRnd):
+def testCoreProject_NewFileFolder(monkeypatch, fncDir, outDir, refDir, mockGUI, mockRnd):
     """Check that new files can be added to the project.
     """
     projFile = os.path.join(fncDir, "nwProject.nwx")
@@ -292,6 +312,7 @@ def testCoreProject_NewFileFolder(fncDir, outDir, refDir, mockGUI, mockRnd):
     compFile = os.path.join(refDir, "coreProject_NewFileFolder_nwProject.nwx")
 
     theProject = NWProject(mockGUI)
+    mockRnd.reset()
     buildTestProject(theProject, fncDir)
 
     assert theProject.setProjectPath(fncDir) is True
@@ -304,34 +325,57 @@ def testCoreProject_NewFileFolder(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.newFile("New File", "1234567890abc") is None
 
     # Add files properly
-    assert theProject.newFolder("Stuff", "0000000000015") == "0000000000028"
-    assert theProject.newFile("Hello", "0000000000015") == "0000000000029"
-    assert theProject.newFile("Jane", "0000000000012") == "000000000002a"
+    assert theProject.newFolder("Stuff", C.hNovelRoot) == "0000000000020"
+    assert theProject.newFile("Hello", "0000000000020") == "0000000000021"
+    assert theProject.newFile("Jane", C.hCharRoot) == "0000000000022"
 
-    assert "0000000000028" in theProject.tree
-    assert "0000000000029" in theProject.tree
-    assert "000000000002a" in theProject.tree
+    assert "0000000000020" in theProject.tree
+    assert "0000000000021" in theProject.tree
+    assert "0000000000022" in theProject.tree
 
     # Write to file, failed
     assert theProject.writeNewFile("blabla", 1, True) is False         # Not a handle
-    assert theProject.writeNewFile("0000000000028", 1, True) is False  # Not a file
-    assert theProject.writeNewFile("0000000000014", 1, True) is False  # Already has content
+    assert theProject.writeNewFile("0000000000020", 1, True) is False  # Not a file
+    assert theProject.writeNewFile(C.hTitlePage, 1, True) is False  # Already has content
 
     # Write to file, success
-    assert theProject.writeNewFile("0000000000029", 2, True) is True
-    assert NWDoc(theProject, "0000000000029").readDocument() == "## Hello\n\n"
+    assert theProject.writeNewFile("0000000000021", 2, True) is True
+    assert NWDoc(theProject, "0000000000021").readDocument() == "## Hello\n\n"
 
-    assert theProject.writeNewFile("000000000002a", 1, False) is True
-    assert NWDoc(theProject, "000000000002a").readDocument() == "# Jane\n\n"
+    # Write to file with additional text, success
+    assert theProject.writeNewFile("0000000000022", 1, False, "Hi Jane\n\n") is True
+    assert NWDoc(theProject, "0000000000022").readDocument() == "# Jane\n\nHi Jane\n\n"
 
     # Save, close and check
     assert theProject.projChanged is True
     assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
 
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
     assert theProject.projChanged is False
+
+    # Delete new file, but block access
+    with monkeypatch.context() as mp:
+        mp.setattr("os.unlink", causeOSError)
+        assert theProject.removeItem("0000000000021") is False
+        assert "0000000000021" in theProject.tree
+
+    # Delete new files and folders
+    assert os.path.isfile(os.path.join(fncDir, "content", "0000000000022.nwd"))
+    assert os.path.isfile(os.path.join(fncDir, "content", "0000000000021.nwd"))
+
+    assert theProject.removeItem("0000000000022") is True
+    assert theProject.removeItem("0000000000021") is True
+    assert theProject.removeItem("0000000000020") is True
+
+    assert not os.path.isfile(os.path.join(fncDir, "content", "0000000000022.nwd"))
+    assert not os.path.isfile(os.path.join(fncDir, "content", "0000000000021.nwd"))
+
+    assert "0000000000020" not in theProject.tree
+    assert "0000000000021" not in theProject.tree
+    assert "0000000000022" not in theProject.tree
+
+    assert theProject.closeProject() is True
 
 # END Test testCoreProject_NewFileFolder
 
