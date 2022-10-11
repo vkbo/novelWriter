@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-beta1" hexVersion="0x010700b1" fileVersion="1.4" timeStamp="2022-07-31 18:38:08">
+<novelWriterXML appVersion="2.0-beta1" hexVersion="0x020000b1" fileVersion="1.4" timeStamp="2022-10-11 22:07:39">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1378</saveCount>
+    <saveCount>1380</saveCount>
     <autoCount>236</autoCount>
-    <editTime>69273</editTime>
+    <editTime>69335</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
@@ -71,7 +71,7 @@
       <name status="sf24ce6" import="ia857f0" exported="True">Chapter One</name>
     </item>
     <item handle="636b6aa9b697b" parent="6a2d6d5f4f401" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" charCount="2687" wordCount="479" paraCount="14" cursorPos="2183"/>
+      <meta expanded="False" charCount="2687" wordCount="479" paraCount="14" cursorPos="67"/>
       <name status="s90e6c9" import="ia857f0" exported="True">Making a Scene</name>
     </item>
     <item handle="bc0cbd2a407f3" parent="6a2d6d5f4f401" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">

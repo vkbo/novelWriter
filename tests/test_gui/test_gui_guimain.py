@@ -22,8 +22,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import pytest
 
-from shutil import copyfile
 from tools import C, cmpFiles, buildTestProject, XML_IGNORE, writeFile
+from shutil import copyfile
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QInputDialog
@@ -31,8 +31,8 @@ from PyQt5.QtWidgets import QMessageBox, QInputDialog
 from novelwriter.gui import GuiDocEditor, GuiNovelView, GuiOutlineView
 from novelwriter.enum import nwItemType, nwView, nwWidget
 from novelwriter.tools import GuiProjectWizard
-from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.dialogs import GuiEditLabel
+from novelwriter.gui.projtree import GuiProjectTree
 
 keyDelay = 2
 typeDelay = 1
@@ -195,8 +195,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
     qtbot.wait(stepDelay)
-
-    # qtbot.stopForInteraction()
 
     # Re-open project
     assert nwGUI.openProject(fncProj)
@@ -372,6 +370,15 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
 
+    # Don't allow Shift+Enter to insert a line separator (issue #1150)
+    for c in "This is another paragraph":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Enter, modifier=Qt.ShiftModifier, delay=typeDelay)
+    for c in "with a line separator in it.":
+        qtbot.keyClick(nwGUI.docEditor, c, delay=typeDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=keyDelay)
+
     # Auto-Replace
     # ============
 
@@ -540,7 +547,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiMain_Editing
 
