@@ -54,7 +54,6 @@ def testGuiMain_ProjectBlocker(monkeypatch, nwGUI):
     assert nwGUI.saveDocument() is False
     assert nwGUI.viewDocument(None) is False
     assert nwGUI.importDocument() is False
-    assert nwGUI.splitDocument() is False
     assert nwGUI.openSelectedItem() is False
     assert nwGUI.editItemLabel() is False
     assert nwGUI.requestNovelTreeRefresh() is False
