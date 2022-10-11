@@ -23,7 +23,7 @@ import os
 import pytest
 
 from shutil import copyfile
-from tools import cmpFiles, buildTestProject, XML_IGNORE, writeFile
+from tools import C, cmpFiles, buildTestProject, XML_IGNORE, writeFile
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QInputDialog
@@ -54,7 +54,6 @@ def testGuiMain_ProjectBlocker(monkeypatch, nwGUI):
     assert nwGUI.saveDocument() is False
     assert nwGUI.viewDocument(None) is False
     assert nwGUI.importDocument() is False
-    assert nwGUI.mergeDocuments() is False
     assert nwGUI.splitDocument() is False
     assert nwGUI.openSelectedItem() is False
     assert nwGUI.editItemLabel() is False
@@ -217,14 +216,14 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert nwGUI.theProject.spellCheck is False
 
     # Check that tree items have been created
-    assert nwGUI.projView.projTree._getTreeItem("0000000000008") is not None
-    assert nwGUI.projView.projTree._getTreeItem("0000000000009") is not None
-    assert nwGUI.projView.projTree._getTreeItem("000000000000a") is not None
-    assert nwGUI.projView.projTree._getTreeItem("000000000000b") is not None
-    assert nwGUI.projView.projTree._getTreeItem("000000000000c") is not None
-    assert nwGUI.projView.projTree._getTreeItem("000000000000d") is not None
-    assert nwGUI.projView.projTree._getTreeItem("000000000000e") is not None
-    assert nwGUI.projView.projTree._getTreeItem("000000000000f") is not None
+    assert nwGUI.projView.projTree._getTreeItem(C.hNovelRoot) is not None
+    assert nwGUI.projView.projTree._getTreeItem(C.hPlotRoot) is not None
+    assert nwGUI.projView.projTree._getTreeItem(C.hCharRoot) is not None
+    assert nwGUI.projView.projTree._getTreeItem(C.hWorldRoot) is not None
+    assert nwGUI.projView.projTree._getTreeItem(C.hTitlePage) is not None
+    assert nwGUI.projView.projTree._getTreeItem(C.hChapterDir) is not None
+    assert nwGUI.projView.projTree._getTreeItem(C.hChapterDoc) is not None
+    assert nwGUI.projView.projTree._getTreeItem(C.hSceneDoc) is not None
 
     nwGUI.mainMenu.aSpellCheck.setChecked(True)
     assert nwGUI.mainMenu._toggleSpellCheck()
@@ -238,7 +237,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     # Add a Character File
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.projView.projTree.clearSelection()
-    nwGUI.projView.projTree._getTreeItem("000000000000a").setSelected(True)
+    nwGUI.projView.projTree._getTreeItem(C.hCharRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
     assert nwGUI.openSelectedItem()
 
@@ -260,7 +259,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     # Add a Plot File
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.projView.projTree.clearSelection()
-    nwGUI.projView.projTree._getTreeItem("0000000000009").setSelected(True)
+    nwGUI.projView.projTree._getTreeItem(C.hPlotRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
     assert nwGUI.openSelectedItem()
 
@@ -282,7 +281,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     # Add a World File
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.projView.projTree.clearSelection()
-    nwGUI.projView.projTree._getTreeItem("000000000000b").setSelected(True)
+    nwGUI.projView.projTree._getTreeItem(C.hWorldRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
     assert nwGUI.openSelectedItem()
 
@@ -313,9 +312,9 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     # Select the 'New Scene' file
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.projView.projTree.clearSelection()
-    nwGUI.projView.projTree._getTreeItem("0000000000008").setExpanded(True)
-    nwGUI.projView.projTree._getTreeItem("000000000000d").setExpanded(True)
-    nwGUI.projView.projTree._getTreeItem("000000000000f").setSelected(True)
+    nwGUI.projView.projTree._getTreeItem(C.hNovelRoot).setExpanded(True)
+    nwGUI.projView.projTree._getTreeItem(C.hChapterDir).setExpanded(True)
+    nwGUI.projView.projTree._getTreeItem(C.hSceneDoc).setSelected(True)
     assert nwGUI.openSelectedItem()
 
     # Type something into the document
@@ -493,8 +492,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
 
     # Open and view the edited document
     nwGUI.switchFocus(nwWidget.VIEWER)
-    assert nwGUI.openDocument("000000000000f")
-    assert nwGUI.viewDocument("000000000000f")
+    assert nwGUI.openDocument(C.hSceneDoc)
+    assert nwGUI.viewDocument(C.hSceneDoc)
     qtbot.wait(stepDelay)
     assert nwGUI.saveProject()
     assert nwGUI.closeDocViewer()
@@ -504,9 +503,9 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None)
     newHandle = nwGUI.projView.getSelectedHandle()
     assert nwGUI.theProject.tree["0000000000020"] is not None
-    assert nwGUI.projView.deleteItem()
+    assert nwGUI.projView.requestDeleteItem()
     assert nwGUI.projView.setSelectedHandle(newHandle)
-    assert nwGUI.projView.deleteItem()
+    assert nwGUI.projView.requestDeleteItem()
     assert nwGUI.theProject.tree["0000000000024"] is not None  # Trash
     assert nwGUI.saveProject()
 
@@ -562,8 +561,8 @@ def testGuiMain_FocusFullMode(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     assert nwGUI.toggleFocusMode() is False
 
     # Open a file in editor and viewer
-    assert nwGUI.openDocument("000000000000f")
-    assert nwGUI.viewDocument("000000000000f")
+    assert nwGUI.openDocument(C.hSceneDoc)
+    assert nwGUI.viewDocument(C.hSceneDoc)
 
     # Enable focus mode
     assert nwGUI.toggleFocusMode() is True

@@ -1,10 +1,11 @@
 """
-novelWriter – GUI Doc Merge Tool
-================================
-GUI class for merging multiple documents to one document
+novelWriter – GUI Doc Merge Dialog
+==================================
+Custom dialog class for merging documents.
 
 File History:
-Created: 2020-01-23 [0.4.3]
+Created:   2020-01-23 [0.4.3]
+Rewritten: 2022-10-06 [2.0b1]
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -26,169 +27,147 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QListWidget, QAbstractItemView,
-    QListWidgetItem, QDialogButtonBox
+    QAbstractItemView, QDialog, QDialogButtonBox, QGridLayout, QLabel,
+    QListWidget, QListWidgetItem, QVBoxLayout,
 )
 
-from novelwriter.core import NWDoc
-from novelwriter.enum import nwAlert, nwItemType
-from novelwriter.gui.custom import QHelpLabel
+from novelwriter.gui.custom import QHelpLabel, QSwitch
 
 logger = logging.getLogger(__name__)
 
 
 class GuiDocMerge(QDialog):
 
-    def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+    def __init__(self, mainGui, sHandle, itemList):
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiDocMerge ...")
         self.setObjectName("GuiDocMerge")
 
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
-        self.sourceItem = None
 
-        self.outerBox = QVBoxLayout()
+        self._data = {}
+
         self.setWindowTitle(self.tr("Merge Documents"))
 
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Documents to Merge")))
-        self.helpLabel = QHelpLabel(
-            self.tr("Drag and drop items to change the order."), self.mainGui.mainTheme.helpText
-        )
+        self.helpLabel = QHelpLabel(self.tr(
+            "Drag and drop items to change the order, or uncheck to exclude."
+        ), self.mainTheme.helpText)
+
+        iPx = self.mainTheme.baseIconSize
+        hSp = self.mainConf.pxInt(12)
+        vSp = self.mainConf.pxInt(8)
+        bSp = self.mainConf.pxInt(12)
 
         self.listBox = QListWidget()
-        self.listBox.setDragDropMode(QAbstractItemView.InternalMove)
+        self.listBox.setIconSize(QSize(iPx, iPx))
         self.listBox.setMinimumWidth(self.mainConf.pxInt(400))
         self.listBox.setMinimumHeight(self.mainConf.pxInt(180))
+        self.listBox.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.listBox.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.listBox.setDragDropMode(QAbstractItemView.InternalMove)
 
+        # Merge Options
+        self.trashLabel = QLabel(self.tr("Move merged items to Trash"))
+        self.trashSwitch = QSwitch()
+
+        self.optBox = QGridLayout()
+        self.optBox.addWidget(self.trashLabel,  0, 0)
+        self.optBox.addWidget(self.trashSwitch, 0, 1)
+        self.optBox.setHorizontalSpacing(hSp)
+        self.optBox.setColumnStretch(2, 1)
+
+        # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self._doMerge)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
 
+        self.resetButton = self.buttonBox.addButton(QDialogButtonBox.Reset)
+        self.resetButton.clicked.connect(self._resetList)
+
+        # Assemble
+        self.outerBox = QVBoxLayout()
         self.outerBox.setSpacing(0)
         self.outerBox.addWidget(self.headLabel)
         self.outerBox.addWidget(self.helpLabel)
-        self.outerBox.addSpacing(self.mainConf.pxInt(8))
+        self.outerBox.addSpacing(vSp)
         self.outerBox.addWidget(self.listBox)
-        self.outerBox.addSpacing(self.mainConf.pxInt(12))
+        self.outerBox.addSpacing(vSp)
+        self.outerBox.addLayout(self.optBox)
+        self.outerBox.addSpacing(bSp)
         self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
 
-        self.rejected.connect(self._doClose)
-
-        self._populateList()
+        # Load Content
+        self._loadContent(sHandle, itemList)
 
         logger.debug("GuiDocMerge initialisation complete")
 
         return
 
-    ##
-    #  Buttons
-    ##
-
-    def _doMerge(self):
-        """Perform the merge of the files in the selected folder, and
-        create a new file in the same parent folder. The old files are
-        not removed in the merge process, and must be deleted manually.
+    def getData(self):
+        """Return the user's choices.
         """
-        logger.verbose("GuiDocMerge merge button clicked")
-
-        finalOrder = []
+        finalItems = []
         for i in range(self.listBox.count()):
-            finalOrder.append(self.listBox.item(i).data(Qt.UserRole))
+            item = self.listBox.item(i)
+            if item.checkState() == Qt.Checked:
+                finalItems.append(item.data(Qt.UserRole))
 
-        if len(finalOrder) == 0:
-            self.mainGui.makeAlert(self.tr(
-                "No source documents found. Nothing to do."
-            ), nwAlert.ERROR)
-            return False
+        self._data["moveToTrash"] = self.trashSwitch.isChecked()
+        self._data["finalItems"] = finalItems
 
-        theText = ""
-        for tHandle in finalOrder:
-            inDoc = NWDoc(self.theProject, tHandle)
-            docText = inDoc.readDocument()
-            docErr = inDoc.getError()
-            if docText is None and docErr:
-                self.mainGui.makeAlert([
-                    self.tr("Failed to open document file."), docErr
-                ], nwAlert.ERROR)
-            if docText:
-                theText += docText.rstrip("\n")+"\n\n"
+        return self._data
 
-        if self.sourceItem is None:
-            self.mainGui.makeAlert(self.tr(
-                "No source folder selected. Nothing to do."
-            ), nwAlert.ERROR)
-            return False
+    ##
+    #  Slots
+    ##
 
-        srcItem = self.theProject.tree[self.sourceItem]
-        if srcItem is None:
-            self.mainGui.makeAlert(self.tr("Internal error."), nwAlert.ERROR)
-            return False
-
-        nHandle = self.theProject.newFile(srcItem.itemName, srcItem.itemParent)
-        newItem = self.theProject.tree[nHandle]
-        newItem.setStatus(srcItem.itemStatus)
-        newItem.setImport(srcItem.itemImport)
-
-        outDoc = NWDoc(self.theProject, nHandle)
-        if not outDoc.writeDocument(theText):
-            self.mainGui.makeAlert([
-                self.tr("Could not save document."), outDoc.getError()
-            ], nwAlert.ERROR)
-            return False
-
-        self.mainGui.projView.revealNewTreeItem(nHandle)
-        self.mainGui.openDocument(nHandle, doScroll=True)
-
-        self._doClose()
-
-        return True
-
-    def _doClose(self):
-        """Close the dialog window without doing anything.
+    def _resetList(self):
+        """Reset the content of the list box to its original state.
         """
-        self.close()
+        logger.debug("Resetting list box content")
+        sHandle = self._data.get("sHandle", None)
+        itemList = self._data.get("origItems", [])
+        self._loadContent(sHandle, itemList)
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _populateList(self):
-        """Get the item selected in the tree, check that it is a folder,
-        and try to find all files associated with it. The valid files
-        are then added to the list view in order. The list itself can be
-        reordered by the user.
+    def _loadContent(self, sHandle, itemList):
+        """Load content from a given list of items.
         """
-        tHandle = self.mainGui.projView.getSelectedHandle()
-        self.sourceItem = tHandle
-        if tHandle is None:
-            return False
+        self._data = {}
+        self._data["sHandle"] = sHandle
+        self._data["origItems"] = itemList
 
-        nwItem = self.theProject.tree[tHandle]
-        if nwItem is None:
-            return False
-
-        if nwItem.itemType is not nwItemType.FOLDER:
-            self.mainGui.makeAlert(self.tr(
-                "Element selected in the project tree must be a folder."
-            ), nwAlert.ERROR)
-            return False
-
-        for sHandle in self.mainGui.projView.getTreeFromHandle(tHandle):
-            newItem = QListWidgetItem()
-            nwItem  = self.theProject.tree[sHandle]
-            if not nwItem.isFileType():
+        self.listBox.clear()
+        for tHandle in itemList:
+            nwItem = self.theProject.tree[tHandle]
+            if nwItem is None or not nwItem.isFileType():
                 continue
+
+            hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
+            itemIcon = self.mainTheme.getItemIcon(
+                nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
+            )
+
+            newItem = QListWidgetItem()
+            newItem.setIcon(itemIcon)
             newItem.setText(nwItem.itemName)
-            newItem.setData(Qt.UserRole, sHandle)
+            newItem.setData(Qt.UserRole, tHandle)
+            newItem.setCheckState(Qt.Checked)
+
             self.listBox.addItem(newItem)
 
-        return True
+        return
 
 # END Class GuiDocMerge

@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import pytest
 
-from tools import buildTestProject, writeFile
+from tools import C, buildTestProject, writeFile
 
 from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtCore import Qt, QEvent
@@ -46,7 +46,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
 
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.projView.projTree.clearSelection()
-    nwGUI.projView.projTree._getTreeItem("000000000000a").setSelected(True)
+    nwGUI.projView.projTree._getTreeItem(C.hCharRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)
 
     writeFile(
@@ -94,7 +94,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     assert not topItem.isSelected()
     topItem.setSelected(True)
     assert novelTree.selectedItems()[0] == topItem
-    assert novelView.getSelectedHandle() == ("000000000000c", 0)
+    assert novelView.getSelectedHandle() == (C.hTitlePage, 0)
 
     # Refresh using the slot for the butoom
     novelBar._refreshNovelTree()
@@ -119,7 +119,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     assert scItem.isSelected()
     assert nwGUI.docEditor.docHandle() is None
     novelTree._treeDoubleClick(scItem, 0)
-    assert nwGUI.docEditor.docHandle() == "000000000000f"
+    assert nwGUI.docEditor.docHandle() == C.hSceneDoc
 
     # Open item with middle mouse button
     scItem.setSelected(True)
@@ -136,7 +136,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
 
     scItem.setData(novelTree.C_TITLE, novelTree.D_HANDLE, oldData)
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
-    assert nwGUI.docViewer.docHandle() == "000000000000f"
+    assert nwGUI.docViewer.docHandle() == C.hSceneDoc
 
     # Last Column
     # ===========
@@ -144,26 +144,26 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     novelBar.setLastColType(NovelTreeColumn.HIDDEN)
     assert novelTree.isColumnHidden(novelTree.C_EXTRA) is True
     assert novelTree.lastColType == NovelTreeColumn.HIDDEN
-    assert novelTree._getLastColumnText("000000000000f", "T000001") == ("", "")
+    assert novelTree._getLastColumnText(C.hSceneDoc, "T000001") == ("", "")
 
     novelBar.setLastColType(NovelTreeColumn.POV)
     assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
     assert novelTree.lastColType == NovelTreeColumn.POV
-    assert novelTree._getLastColumnText("000000000000f", "T000001") == (
+    assert novelTree._getLastColumnText(C.hSceneDoc, "T000001") == (
         "Jane", "Point of View: Jane"
     )
 
     novelBar.setLastColType(NovelTreeColumn.FOCUS)
     assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
     assert novelTree.lastColType == NovelTreeColumn.FOCUS
-    assert novelTree._getLastColumnText("000000000000f", "T000001") == (
+    assert novelTree._getLastColumnText(C.hSceneDoc, "T000001") == (
         "Jane", "Focus: Jane"
     )
 
     novelBar.setLastColType(NovelTreeColumn.PLOT)
     assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
     assert novelTree.lastColType == NovelTreeColumn.PLOT
-    assert novelTree._getLastColumnText("000000000000f", "T000001") == (
+    assert novelTree._getLastColumnText(C.hSceneDoc, "T000001") == (
         "", "Plot: "
     )
 

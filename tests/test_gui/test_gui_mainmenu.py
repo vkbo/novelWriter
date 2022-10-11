@@ -26,7 +26,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor, QTextBlock
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
-from tools import writeFile, buildTestProject
+from tools import C, writeFile, buildTestProject
 
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.enum import nwDocAction, nwDocInsert
@@ -467,8 +467,8 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
 
     buildTestProject(nwGUI, fncProj)
 
-    assert nwGUI.projView.projTree._getTreeItem("000000000000f") is not None
-    assert nwGUI.openDocument("000000000000f") is True
+    assert nwGUI.projView.projTree._getTreeItem(C.hSceneDoc) is not None
+    assert nwGUI.openDocument(C.hSceneDoc) is True
     nwGUI.docEditor.clear()
 
     # Test Faulty Inserts
@@ -677,7 +677,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     assert not nwGUI.importDocument()
 
     # Open the document from before, and add some text to it
-    nwGUI.openDocument("000000000000f")
+    nwGUI.openDocument(C.hSceneDoc)
     nwGUI.docEditor.setText("Bar")
     assert nwGUI.docEditor.getText() == "Bar"
 

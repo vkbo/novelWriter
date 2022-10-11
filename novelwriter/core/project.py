@@ -176,7 +176,7 @@ class NWProject():
         self._projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
-    def writeNewFile(self, tHandle, hLevel, isDocument):
+    def writeNewFile(self, tHandle, hLevel, isDocument, addText=""):
         """Write content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
@@ -191,7 +191,7 @@ class NWProject():
             return False
 
         hshText = "#"*minmax(hLevel, 1, 4)
-        newText = f"{hshText} {tItem.itemName}\n\n"
+        newText = f"{hshText} {tItem.itemName}\n\n{addText}"
         if tItem.isNovelLike() and isDocument:
             tItem.setLayout(nwItemLayout.DOCUMENT)
         else:
@@ -199,6 +199,23 @@ class NWProject():
 
         newDoc.writeDocument(newText)
         self._projIndex.scanText(tHandle, newText)
+
+        return True
+
+    def removeItem(self, tHandle):
+        """Remove an item from the project. This will delete both the
+        project entry and a document file if it exists.
+        """
+        if self._projTree.checkType(tHandle, nwItemType.FILE):
+            delDoc = NWDoc(self, tHandle)
+            if not delDoc.deleteDocument():
+                self.mainGui.makeAlert([
+                    self.tr("Could not delete document file."), delDoc.getError()
+                ], nwAlert.ERROR)
+                return False
+
+        self._projIndex.deleteHandle(tHandle)
+        del self._projTree[tHandle]
 
         return True
 

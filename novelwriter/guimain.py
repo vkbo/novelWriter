@@ -44,8 +44,8 @@ from novelwriter.gui import (
     GuiViewsBar
 )
 from novelwriter.dialogs import (
-    GuiAbout, GuiDocMerge, GuiDocSplit, GuiPreferences, GuiProjectDetails,
-    GuiProjectLoad, GuiProjectSettings, GuiUpdates, GuiWordList
+    GuiAbout, GuiDocSplit, GuiPreferences, GuiProjectDetails, GuiProjectLoad,
+    GuiProjectSettings, GuiUpdates, GuiWordList
 )
 from novelwriter.tools import (
     GuiBuildNovel, GuiLipsum, GuiProjectWizard, GuiWritingStats
@@ -742,18 +742,6 @@ class GuiMain(QMainWindow):
                 return False
 
         self.docEditor.replaceText(theText)
-
-        return True
-
-    def mergeDocuments(self):
-        """Merge multiple documents to one single new document.
-        """
-        if not self.hasProject:
-            logger.error("No project open")
-            return False
-
-        dlgMerge = GuiDocMerge(self)
-        dlgMerge.exec_()
 
         return True
 

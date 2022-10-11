@@ -171,7 +171,7 @@ class GuiMainMenu(QMenuBar):
         # Project > Delete
         self.aDeleteItem = QAction(self.tr("Delete Item"), self)
         self.aDeleteItem.setShortcut("Ctrl+Shift+Del")
-        self.aDeleteItem.triggered.connect(lambda: self.mainGui.projView.deleteItem(None))
+        self.aDeleteItem.triggered.connect(lambda: self.mainGui.projView.requestDeleteItem(None))
         self.projMenu.addAction(self.aDeleteItem)
 
         # Project > Empty Trash
@@ -243,11 +243,6 @@ class GuiMainMenu(QMenuBar):
         self.aImportFile.setShortcut("Ctrl+Shift+I")
         self.aImportFile.triggered.connect(lambda: self.mainGui.importDocument())
         self.docuMenu.addAction(self.aImportFile)
-
-        # Document > Merge Documents
-        self.aMergeDocs = QAction(self.tr("Merge Folder to Document"), self)
-        self.aMergeDocs.triggered.connect(lambda: self.mainGui.mergeDocuments())
-        self.docuMenu.addAction(self.aMergeDocs)
 
         # Document > Split Document
         self.aSplitDoc = QAction(self.tr("Split Document to Folder"), self)

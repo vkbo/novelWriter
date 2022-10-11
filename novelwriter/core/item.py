@@ -292,16 +292,16 @@ class NWItem():
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
 
-    def getImportStatus(self):
+    def getImportStatus(self, incIcon=True):
         """Return the relevant importance or status label and icon for
         the current item based on its class.
         """
         if self.isNovelLike():
             stName = self.theProject.statusItems.name(self._status)
-            stIcon = self.theProject.statusItems.icon(self._status)
+            stIcon = self.theProject.statusItems.icon(self._status) if incIcon else None
         else:
             stName = self.theProject.importItems.name(self._import)
-            stIcon = self.theProject.importItems.icon(self._import)
+            stIcon = self.theProject.importItems.icon(self._import) if incIcon else None
         return stName, stIcon
 
     ##
