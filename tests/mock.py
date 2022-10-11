@@ -24,7 +24,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #  Mock GUI
 # =========================================================================== #
 
-class MockGuiMain():
+class MockGuiMain:
 
     def __init__(self):
         self.mainConf = None
@@ -81,7 +81,7 @@ class MockGuiMain():
 # END Class MockGuiMain
 
 
-class MockStatusBar():
+class MockStatusBar:
 
     def __init__(self):
         return

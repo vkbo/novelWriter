@@ -37,7 +37,7 @@ from novelwriter.common import checkInt, minmax, simplified
 logger = logging.getLogger(__name__)
 
 
-class NWStatus():
+class NWStatus:
 
     STATUS = 1
     IMPORT = 2

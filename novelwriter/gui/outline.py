@@ -57,7 +57,7 @@ class GuiOutlineView(QWidget):
     loadDocumentTagRequest = pyqtSignal(str, Enum)
 
     def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
@@ -198,7 +198,7 @@ class GuiOutlineToolBar(QToolBar):
     viewColumnToggled = pyqtSignal(bool, Enum)
 
     def __init__(self, theOutline):
-        QTreeWidget.__init__(self, theOutline)
+        super().__init__(parent=theOutline)
 
         logger.debug("Initialising GuiOutlineToolBar ...")
 
@@ -357,7 +357,7 @@ class GuiOutlineTree(QTreeWidget):
     activeItemChanged = pyqtSignal(str, str)
 
     def __init__(self, theOutline):
-        QTreeWidget.__init__(self, theOutline)
+        super().__init__(parent=theOutline)
 
         logger.debug("Initialising GuiOutlineTree ...")
 
@@ -741,7 +741,7 @@ class GuiOutlineHeaderMenu(QMenu):
     columnToggled = pyqtSignal(bool, Enum)
 
     def __init__(self, theOutline):
-        QMenu.__init__(self, theOutline)
+        super().__init__(parent=theOutline)
 
         self.acceptToggle = True
 
@@ -792,7 +792,7 @@ class GuiOutlineDetails(QScrollArea):
     itemTagClicked = pyqtSignal(str)
 
     def __init__(self, theOutline):
-        QScrollArea.__init__(self, theOutline)
+        super().__init__(parent=theOutline)
 
         logger.debug("Initialising GuiOutlineDetails ...")
 

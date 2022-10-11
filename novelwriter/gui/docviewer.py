@@ -54,7 +54,7 @@ class GuiDocViewer(QTextBrowser):
     loadDocumentTagRequest = pyqtSignal(str, Enum)
 
     def __init__(self, mainGui):
-        QTextBrowser.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiDocViewer ...")
 
@@ -461,7 +461,7 @@ class GuiDocViewer(QTextBrowser):
         has its margins adjusted according to user preferences.
         """
         self.updateDocMargins()
-        QTextBrowser.resizeEvent(self, theEvent)
+        super().resizeEvent(theEvent)
         return
 
     def mouseReleaseEvent(self, theEvent):
@@ -472,7 +472,7 @@ class GuiDocViewer(QTextBrowser):
         elif theEvent.button() == Qt.ForwardButton:
             self.navForward()
         else:
-            QTextBrowser.mouseReleaseEvent(self, theEvent)
+            super().mouseReleaseEvent(theEvent)
         return
 
     ##
@@ -568,7 +568,7 @@ class GuiDocViewer(QTextBrowser):
 # END Class GuiDocViewer
 
 
-class GuiDocViewHistory():
+class GuiDocViewHistory:
 
     def __init__(self, docViewer):
 
@@ -708,7 +708,7 @@ class GuiDocViewHistory():
 class GuiDocViewHeader(QWidget):
 
     def __init__(self, docViewer):
-        QWidget.__init__(self, docViewer)
+        super().__init__(parent=docViewer)
 
         logger.debug("Initialising GuiDocViewHeader ...")
 
@@ -915,7 +915,7 @@ class GuiDocViewHeader(QWidget):
 class GuiDocViewFooter(QWidget):
 
     def __init__(self, docViewer):
-        QWidget.__init__(self, docViewer)
+        super().__init__(parent=docViewer)
 
         logger.debug("Initialising GuiDocViewFooter ...")
 
@@ -1141,7 +1141,7 @@ class GuiDocViewFooter(QWidget):
 class GuiDocViewDetails(QScrollArea):
 
     def __init__(self, mainGui):
-        QScrollArea.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiDocViewDetails ...")
         self.mainConf   = novelwriter.CONFIG

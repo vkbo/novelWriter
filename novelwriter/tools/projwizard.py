@@ -49,7 +49,7 @@ PAGE_FINAL  = 4
 class GuiProjectWizard(QWizard):
 
     def __init__(self, mainGui):
-        QWizard.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiProjectWizard ...")
         self.setObjectName("GuiProjectWizard")
@@ -88,7 +88,7 @@ class GuiProjectWizard(QWizard):
 class ProjWizardIntroPage(QWizardPage):
 
     def __init__(self, theWizard):
-        QWizardPage.__init__(self)
+        super().__init__()
 
         self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
@@ -158,7 +158,7 @@ class ProjWizardIntroPage(QWizardPage):
 class ProjWizardFolderPage(QWizardPage):
 
     def __init__(self, theWizard):
-        QWizardPage.__init__(self)
+        super().__init__()
 
         self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
@@ -209,7 +209,7 @@ class ProjWizardFolderPage(QWizardPage):
         """Check that the selected path isn't already being used.
         """
         self.errLabel.setText("")
-        if not QWizardPage.isComplete(self):
+        if not super().isComplete():
             return False
 
         setPath = os.path.abspath(os.path.expanduser(self.projPath.text()))
@@ -259,7 +259,7 @@ class ProjWizardFolderPage(QWizardPage):
 class ProjWizardPopulatePage(QWizardPage):
 
     def __init__(self, theWizard):
-        QWizardPage.__init__(self)
+        super().__init__()
 
         self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
@@ -315,7 +315,7 @@ class ProjWizardPopulatePage(QWizardPage):
 class ProjWizardCustomPage(QWizardPage):
 
     def __init__(self, theWizard):
-        QWizardPage.__init__(self)
+        super().__init__()
 
         self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
@@ -397,7 +397,7 @@ class ProjWizardCustomPage(QWizardPage):
 class ProjWizardFinalPage(QWizardPage):
 
     def __init__(self, theWizard):
-        QWizardPage.__init__(self)
+        super().__init__()
 
         self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
@@ -418,7 +418,7 @@ class ProjWizardFinalPage(QWizardPage):
     def initializePage(self):
         """Update the summary information on the final page.
         """
-        QWizardPage.initializePage(self)
+        super().initializePage()
 
         sumList = []
         sumList.append(self.tr("Project Name: {0}").format(self.field("projName")))

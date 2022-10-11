@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 class GuiProjectDetails(PagedDialog):
 
     def __init__(self, mainGui):
-        PagedDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiProjectDetails ...")
         self.setObjectName("GuiProjectDetails")
@@ -142,7 +142,7 @@ class GuiProjectDetails(PagedDialog):
 class GuiProjectDetailsMain(QWidget):
 
     def __init__(self, mainGui, theProject):
-        QWidget.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         self.mainConf   = novelwriter.CONFIG
         self.theProject = theProject
@@ -274,7 +274,7 @@ class GuiProjectDetailsContents(QWidget):
     C_PROG  = 4
 
     def __init__(self, mainGui, theProject):
-        QWidget.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         self.mainConf   = novelwriter.CONFIG
         self.theProject = theProject

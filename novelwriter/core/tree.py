@@ -38,7 +38,7 @@ from novelwriter.core.item import NWItem
 logger = logging.getLogger(__name__)
 
 
-class NWTree():
+class NWTree:
 
     MAX_DEPTH = 1000  # Cap of tree traversing for loops
 

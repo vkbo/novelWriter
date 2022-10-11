@@ -63,7 +63,7 @@ VALID_MAP = {
 }
 
 
-class OptionState():
+class OptionState:
 
     def __init__(self, theProject):
         self.theProject = theProject

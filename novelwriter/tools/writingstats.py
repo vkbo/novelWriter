@@ -58,7 +58,7 @@ class GuiWritingStats(QDialog):
     FMT_CSV  = 1
 
     def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiWritingStats ...")
         self.setObjectName("GuiWritingStats")

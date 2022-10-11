@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 class GuiItemDetails(QWidget):
 
     def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiItemDetails ...")
         self.mainConf   = novelwriter.CONFIG

@@ -36,7 +36,7 @@ from novelwriter.constants import nwLabels, trConst
 logger = logging.getLogger(__name__)
 
 
-class NWItem():
+class NWItem:
 
     def __init__(self, theProject):
 

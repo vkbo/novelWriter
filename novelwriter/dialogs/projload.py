@@ -54,7 +54,7 @@ class GuiProjectLoad(QDialog):
     C_TIME  = 2
 
     def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiProjectLoad ...")
         self.setObjectName("GuiProjectLoad")

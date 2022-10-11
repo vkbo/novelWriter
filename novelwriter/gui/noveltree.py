@@ -63,7 +63,7 @@ class GuiNovelView(QWidget):
     openDocumentRequest = pyqtSignal(str, Enum, int, str)
 
     def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
@@ -166,7 +166,7 @@ class GuiNovelView(QWidget):
 class GuiNovelToolBar(QWidget):
 
     def __init__(self, novelView):
-        QTreeWidget.__init__(self, novelView)
+        super().__init__(parent=novelView)
 
         logger.debug("Initialising GuiNovelToolBar ...")
 
@@ -333,7 +333,7 @@ class GuiNovelTree(QTreeWidget):
     D_KEY    = Qt.UserRole + 2
 
     def __init__(self, novelView):
-        QTreeWidget.__init__(self, novelView)
+        super().__init__(parent=novelView)
 
         logger.debug("Initialising GuiNovelTree ...")
 
@@ -539,7 +539,7 @@ class GuiNovelTree(QTreeWidget):
         mouse in a blank area of the tree view, and to load a document
         for viewing if the user middle-clicked.
         """
-        QTreeWidget.mousePressEvent(self, theEvent)
+        super().mousePressEvent(theEvent)
 
         if theEvent.button() == Qt.LeftButton:
             selItem = self.indexAt(theEvent.pos())
@@ -562,7 +562,7 @@ class GuiNovelTree(QTreeWidget):
     def focusOutEvent(self, theEvent):
         """Clear the selection when the tree no longer has focus.
         """
-        QTreeWidget.focusOutEvent(self, theEvent)
+        super().focusOutEvent(theEvent)
         self.clearSelection()
         return
 

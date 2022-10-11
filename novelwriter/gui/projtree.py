@@ -63,7 +63,7 @@ class GuiProjectView(QWidget):
     openDocumentRequest = pyqtSignal(str, Enum, int, str)
 
     def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         self.mainGui = mainGui
 
@@ -164,7 +164,7 @@ class GuiProjectView(QWidget):
 class GuiProjectToolBar(QWidget):
 
     def __init__(self, projView):
-        QTreeWidget.__init__(self, projView)
+        super().__init__(parent=projView)
 
         logger.debug("Initialising GuiProjectToolBar ...")
 
@@ -327,7 +327,7 @@ class GuiProjectTree(QTreeWidget):
     C_STATUS = 3
 
     def __init__(self, projView):
-        QTreeWidget.__init__(self, projView)
+        super().__init__(parent=projView)
 
         logger.debug("Initialising GuiProjectTree ...")
 
@@ -1191,7 +1191,7 @@ class GuiProjectTree(QTreeWidget):
         mouse in a blank area of the tree view, and to load a document
         for viewing if the user middle-clicked.
         """
-        QTreeWidget.mousePressEvent(self, theEvent)
+        super().mousePressEvent(theEvent)
 
         if theEvent.button() == Qt.LeftButton:
             selItem = self.indexAt(theEvent.pos())
@@ -1237,7 +1237,7 @@ class GuiProjectTree(QTreeWidget):
         wCount = self._getItemWordCount(sHandle)
         self.propagateCount(sHandle, 0)
 
-        QTreeWidget.dropEvent(self, theEvent)
+        super().dropEvent(theEvent)
         self._postItemMove(sHandle, wCount)
         self._recordLastMove(sItem, pItem, pIndex)
         self._alertTreeChange(sHandle, flush=True)
