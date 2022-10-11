@@ -22,12 +22,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import pytest
 
+from mock import causeOSError
 from tools import C, buildTestProject
 
-from PyQt5.QtWidgets import QMessageBox, QMenu
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidgetItem, QDialog
 
 from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass
-from novelwriter.dialogs import GuiEditLabel
+from novelwriter.core import NWDoc
+from novelwriter.dialogs import GuiEditLabel, GuiDocMerge
 from novelwriter.gui.projtree import GuiProjectTree
 
 
@@ -560,16 +563,18 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
     monkeypatch.setattr(QMenu, "exec_", lambda *a: None)
 
-    nwTree = nwGUI.projView
-
     # Create a project
     prjDir = os.path.join(fncDir, "project")
     buildTestProject(nwGUI, prjDir)
 
     # Handles for new objects
-    hCharNote  = "0000000000011"
-    hNovelNote = "0000000000012"
+    hCharNote     = "0000000000011"
+    hNovelNote    = "0000000000012"
+    hSubNote      = "0000000000013"
+    hNewFolderOne = "0000000000014"
+    hNewFolderTwo = "0000000000016"
 
+    projView = nwGUI.projView
     projTree = nwGUI.projView.projTree
     projTree.setExpandedFromHandle(None, True)
 
@@ -580,6 +585,10 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     projTree.newTreeItem(nwItemType.FILE)
     projTree.setSelectedHandle(C.hNovelRoot)
     projTree.newTreeItem(nwItemType.FILE, isNote=True)
+
+    nwGUI.theProject.newFile("SubNote", hNovelNote)
+    projTree.revealNewTreeItem(hSubNote)
+    assert nwGUI.theProject.tree[hSubNote].itemParent == hNovelNote
 
     def itemPos(tHandle):
         return projTree.visualItemRect(projTree._getTreeItem(tHandle)).center()
@@ -596,6 +605,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     assert projTree._openContextMenu(itemPos(C.hChapterDoc)) is True
     assert projTree._openContextMenu(itemPos(C.hCharRoot)) is True
     assert projTree._openContextMenu(itemPos(hCharNote)) is True
+    assert projTree._openContextMenu(itemPos(hNovelNote)) is True
 
     # Check the keyboard shortcut handler as well
     projTree.setSelectedHandle(C.hNovelRoot)
@@ -633,18 +643,15 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     # Convert Folders to Documents
     # ============================
 
-    hNewFolderOne = "0000000000013"
-    hNewFolderTwo = "0000000000015"
+    projView.setSelectedHandle(hNovelNote)
+    assert projView.projTree.newTreeItem(nwItemType.FOLDER) is True
+    projView.setSelectedHandle(hNewFolderOne)
+    assert projView.projTree.newTreeItem(nwItemType.FILE) is True
 
-    nwTree.setSelectedHandle(hNovelNote)
-    assert nwTree.projTree.newTreeItem(nwItemType.FOLDER) is True
-    nwTree.setSelectedHandle(hNewFolderOne)
-    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
-
-    nwTree.setSelectedHandle(hNovelNote)
-    assert nwTree.projTree.newTreeItem(nwItemType.FOLDER) is True
-    nwTree.setSelectedHandle(hNewFolderTwo)
-    assert nwTree.projTree.newTreeItem(nwItemType.FILE, isNote=True) is True
+    projView.setSelectedHandle(hNovelNote)
+    assert projView.projTree.newTreeItem(nwItemType.FOLDER) is True
+    projView.setSelectedHandle(hNewFolderTwo)
+    assert projView.projTree.newTreeItem(nwItemType.FILE, isNote=True) is True
 
     # Click no on the dialog
     with monkeypatch.context() as mp:
@@ -665,3 +672,205 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     # qtbot.stop()
 
 # END Test testGuiProjTree_ContextMenu
+
+
+@pytest.mark.gui
+def testGuiProjTree_MergeDocument(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ipsumText):
+    """Test the merge document function.
+    """
+    mergeData = {}
+
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
+
+    monkeypatch.setattr(GuiDocMerge, "__init__", lambda *a: None)
+    monkeypatch.setattr(GuiDocMerge, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiDocMerge, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiDocMerge, "getData", lambda *a: mergeData)
+
+    # Create a project
+    prjDir = os.path.join(fncDir, "project")
+    buildTestProject(nwGUI, prjDir)
+
+    theProject = nwGUI.theProject
+    projTree = nwGUI.projView.projTree
+
+    mergedDoc1 = "0000000000014"
+
+    # Create File to Merge
+    hChapter1 = theProject.newFile("Chapter 1", C.hNovelRoot)
+    hSceneOne11 = theProject.newFile("Scene 1.1", hChapter1)
+    hSceneOne12 = theProject.newFile("Scene 1.2", hChapter1)
+    hSceneOne13 = theProject.newFile("Scene 1.3", hChapter1)
+
+    docText1 = "\n\n".join(ipsumText[0:2]) + "\n\n"
+    docText2 = "\n\n".join(ipsumText[1:3]) + "\n\n"
+    docText3 = "\n\n".join(ipsumText[2:4]) + "\n\n"
+    docText4 = "\n\n".join(ipsumText[3:5]) + "\n\n"
+
+    lenText1 = len(docText1)
+    lenText2 = len(docText2)
+    lenText3 = len(docText3)
+    lenText4 = len(docText4)
+    lenAll = lenText1 + lenText2 + lenText3 + lenText4
+
+    theProject.writeNewFile(hChapter1, 2, True, docText1)
+    theProject.writeNewFile(hSceneOne11, 3, True, docText2)
+    theProject.writeNewFile(hSceneOne12, 3, True, docText3)
+    theProject.writeNewFile(hSceneOne13, 3, True, docText4)
+
+    projTree.revealNewTreeItem(hChapter1)
+    projTree.revealNewTreeItem(hSceneOne11)
+    projTree.revealNewTreeItem(hSceneOne12)
+    projTree.revealNewTreeItem(hSceneOne13)
+
+    # Invalid file handle
+    assert projTree._mergeDocuments(C.hInvalid, False) is False
+
+    # Cannot merge root item
+    assert projTree._mergeDocuments(C.hNovelRoot, False) is False
+
+    # Merge to new file, but there is now merge data
+    mergeData.clear()
+    assert projTree._mergeDocuments(hChapter1, True) is False
+
+    # Merge to New Doc
+    # ================
+
+    # Set merge job for new documents
+    mergeData["finalItems"] = [hChapter1, hSceneOne11, hSceneOne12, hSceneOne13]
+    mergeData["moveToTrash"] = False
+
+    # User cancels merge
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiDocMerge, "result", lambda *a: QDialog.Rejected)
+        assert projTree._mergeDocuments(hChapter1, True) is False
+
+    # The merge goes through
+    assert projTree._mergeDocuments(hChapter1, True) is True
+    assert len(NWDoc(theProject, mergedDoc1).readDocument()) > lenAll
+
+    # Merge to Existing Doc
+    # =====================
+
+    # Set merge job for parent document
+    mergeData["finalItems"] = [hSceneOne11, hSceneOne12, hSceneOne13]
+    mergeData["moveToTrash"] = False
+
+    # Merging to a folder is not allowed
+    assert projTree._mergeDocuments(C.hChapterDir, False) is False
+
+    # Block writing and check error handling
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert projTree._mergeDocuments(hChapter1, False) is False
+
+    # Successful merge, and move to trash
+    mergeData["moveToTrash"] = True
+    assert len(NWDoc(theProject, hChapter1).readDocument()) < lenAll
+    assert projTree._mergeDocuments(hChapter1, False) is True
+    assert len(NWDoc(theProject, hChapter1).readDocument()) > lenAll
+
+    assert theProject.tree.isTrash(hSceneOne11)
+    assert theProject.tree.isTrash(hSceneOne12)
+    assert theProject.tree.isTrash(hSceneOne13)
+
+    # qtbot.stop()
+
+# END Test testGuiProjTree_MergeDocument
+
+
+@pytest.mark.gui
+def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
+    """Test various parts of the project tree class not covered by
+    other tests.
+    """
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
+
+    # Create a project
+    prjDir = os.path.join(fncDir, "project")
+    buildTestProject(nwGUI, prjDir)
+
+    projView = nwGUI.projView
+    projTree = nwGUI.projView.projTree
+
+    # Method: initSettings
+    # ====================
+
+    # Test that the scrollbar setting works
+    nwGUI.mainConf.hideVScroll = True
+    nwGUI.mainConf.hideHScroll = True
+    projView.initSettings()
+    assert projTree.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert projTree.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+
+    nwGUI.mainConf.hideVScroll = False
+    nwGUI.mainConf.hideHScroll = False
+    projView.initSettings()
+    assert projTree.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    assert projTree.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+
+    # Method: revealNewTreeItem
+    # =========================
+
+    # Send invalid handle
+    assert projTree.revealNewTreeItem(C.hInvalid) is False
+
+    # Try to add an oprhaned file to the tree
+    nHandle = nwGUI.theProject.newFile("Test", C.hNovelRoot)
+    nwGUI.theProject.tree[nHandle].setParent(None)
+    assert projTree.revealNewTreeItem(nHandle) is False
+
+    # Method: undoLastMove
+    # ====================
+
+    # Nothing to move
+    assert projTree.undoLastMove() is False
+
+    projTree._lastMove["item"] = QTreeWidgetItem()
+    projTree._lastMove["parent"] = QTreeWidgetItem()
+    projTree._lastMove["index"] = 0
+    assert projTree.undoLastMove() is False
+
+    projTree._lastMove["item"] = projTree._treeMap[C.hTitlePage]
+    projTree._lastMove["parent"] = QTreeWidgetItem()
+    projTree._lastMove["index"] = 0
+    assert projTree.undoLastMove() is False
+
+    # Slot: _treeDoubleClick
+    # ======================
+
+    # Try to open a file with nothings selected
+    projTree.clearSelection()
+    projTree._treeDoubleClick(QTreeWidgetItem(), 0)
+    assert nwGUI.docEditor.docHandle() is None
+
+    # When the item cannot be found
+    projTree._getTreeItem(C.hTitlePage).setSelected(True)
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.tree.NWTree.__getitem__", lambda *a: None)
+        projTree._treeDoubleClick(QTreeWidgetItem(), 0)
+        assert nwGUI.docEditor.docHandle() is None
+
+    # Successfully open a file
+    projTree._treeDoubleClick(projTree._getTreeItem(C.hTitlePage), 0)
+    assert nwGUI.docEditor.docHandle() == C.hTitlePage
+    projTree._getTreeItem(C.hTitlePage).setSelected(False)
+
+    # A non-file item should be expanded instead
+    projTree._getTreeItem(C.hNovelRoot).setExpanded(False)
+    projTree._getTreeItem(C.hNovelRoot).setSelected(True)
+    projTree._treeDoubleClick(projTree._getTreeItem(C.hNovelRoot), 1)
+    assert nwGUI.docEditor.docHandle() == C.hTitlePage
+    assert projTree._getTreeItem(C.hNovelRoot).isExpanded() is True
+
+    # qtbot.stop()
+
+# END Test testGuiProjTree_Other

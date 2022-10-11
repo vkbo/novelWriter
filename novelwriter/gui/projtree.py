@@ -915,7 +915,9 @@ class GuiProjectTree(QTreeWidget):
         dstItem = self._lastMove.get("parent", None)
         dstIndex = self._lastMove.get("index", None)
 
-        if srcItem is None or dstItem is None or dstIndex is None:
+        srcOK = isinstance(srcItem, QTreeWidgetItem)
+        dstOk = isinstance(dstItem, QTreeWidgetItem)
+        if not srcOK or not dstOk or dstIndex is None:
             logger.verbose("No tree move to undo")
             return False
 
@@ -1011,7 +1013,7 @@ class GuiProjectTree(QTreeWidget):
         return
 
     @pyqtSlot("QTreeWidgetItem*", int)
-    def _treeDoubleClick(self, tItem, colNo):
+    def _treeDoubleClick(self, trItem, colNo):
         """Capture a double-click event and either request the document
         for editing if it is a file, or expand/close the node it is not.
         """
@@ -1026,9 +1028,7 @@ class GuiProjectTree(QTreeWidget):
         if tItem.isFileType():
             self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, -1, "")
         else:
-            trItem = self._getTreeItem(tHandle)
-            if trItem is not None:
-                trItem.setExpanded(not trItem.isExpanded())
+            trItem.setExpanded(not trItem.isExpanded())
 
         return
 
@@ -1401,7 +1401,7 @@ class GuiProjectTree(QTreeWidget):
         dlgMerge = GuiDocMerge(self.mainGui, tHandle, itemList)
         dlgMerge.exec_()
 
-        if dlgMerge.result() != QDialog.Accepted:
+        if dlgMerge.result() == QDialog.Accepted:
 
             mrgData = dlgMerge.getData()
             mrgList = mrgData.get("finalItems", [])
