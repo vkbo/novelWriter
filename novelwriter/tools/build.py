@@ -66,7 +66,7 @@ class GuiBuildNovel(QDialog):
     FMT_JSON_M = 9  # nW Markdown wrapped in JSON
 
     def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiBuildNovel ...")
         self.setObjectName("GuiBuildNovel")
@@ -1194,7 +1194,7 @@ class GuiBuildNovel(QDialog):
 class GuiBuildNovelDocView(QTextBrowser):
 
     def __init__(self, mainGui, theProject):
-        QTextBrowser.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiBuildNovelDocView ...")
 
@@ -1343,7 +1343,7 @@ class GuiBuildNovelDocView(QTextBrowser):
     def resizeEvent(self, theEvent):
         """Make sure the document title is the same width as the window.
         """
-        QTextBrowser.resizeEvent(self, theEvent)
+        super().resizeEvent(theEvent)
         self._updateDocMargins()
         return
 

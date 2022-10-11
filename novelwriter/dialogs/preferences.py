@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 class GuiPreferences(PagedDialog):
 
     def __init__(self, mainGui):
-        PagedDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiPreferences ...")
         self.setObjectName("GuiPreferences")
@@ -55,13 +55,13 @@ class GuiPreferences(PagedDialog):
 
         self.setWindowTitle(self.tr("Preferences"))
 
-        self.tabGeneral  = GuiPreferencesGeneral(self.mainGui)
-        self.tabProjects = GuiPreferencesProjects(self.mainGui)
-        self.tabDocs     = GuiPreferencesDocuments(self.mainGui)
-        self.tabEditor   = GuiPreferencesEditor(self.mainGui)
-        self.tabSyntax   = GuiPreferencesSyntax(self.mainGui)
-        self.tabAuto     = GuiPreferencesAutomation(self.mainGui)
-        self.tabQuote    = GuiPreferencesQuotes(self.mainGui)
+        self.tabGeneral  = GuiPreferencesGeneral(self, self.mainGui)
+        self.tabProjects = GuiPreferencesProjects(self, self.mainGui)
+        self.tabDocs     = GuiPreferencesDocuments(self, self.mainGui)
+        self.tabEditor   = GuiPreferencesEditor(self, self.mainGui)
+        self.tabSyntax   = GuiPreferencesSyntax(self, self.mainGui)
+        self.tabAuto     = GuiPreferencesAutomation(self, self.mainGui)
+        self.tabQuote    = GuiPreferencesQuotes(self, self.mainGui)
 
         self.addTab(self.tabGeneral,  self.tr("General"))
         self.addTab(self.tabProjects, self.tr("Projects"))
@@ -138,8 +138,8 @@ class GuiPreferences(PagedDialog):
 
 class GuiPreferencesGeneral(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui, mainGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui
@@ -344,8 +344,8 @@ class GuiPreferencesGeneral(QWidget):
 
 class GuiPreferencesProjects(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui, mainGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui
@@ -505,8 +505,8 @@ class GuiPreferencesProjects(QWidget):
 
 class GuiPreferencesDocuments(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui, mainGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui
@@ -666,8 +666,8 @@ class GuiPreferencesDocuments(QWidget):
 
 class GuiPreferencesEditor(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui, mainGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui
@@ -840,8 +840,8 @@ class GuiPreferencesEditor(QWidget):
 
 class GuiPreferencesSyntax(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui, mainGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui
@@ -943,8 +943,8 @@ class GuiPreferencesSyntax(QWidget):
 
 class GuiPreferencesAutomation(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui, mainGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui
@@ -1100,8 +1100,8 @@ class GuiPreferencesAutomation(QWidget):
 
 class GuiPreferencesQuotes(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui, mainGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui

@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 class GuiDocSplit(QDialog):
 
     def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiDocSplit ...")
         self.setObjectName("GuiDocSplit")

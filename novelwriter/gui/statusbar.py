@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 class GuiMainStatus(QStatusBar):
 
     def __init__(self, mainGui):
-        QStatusBar.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiMainStatus ...")
 

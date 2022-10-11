@@ -33,7 +33,7 @@ from novelwriter.common import isHandle, sha256sum
 logger = logging.getLogger(__name__)
 
 
-class NWDoc():
+class NWDoc:
 
     def __init__(self, theProject, theHandle):
 

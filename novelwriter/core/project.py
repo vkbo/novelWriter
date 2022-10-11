@@ -52,7 +52,7 @@ from novelwriter.constants import trConst, nwFiles, nwLabels
 logger = logging.getLogger(__name__)
 
 
-class NWProject():
+class NWProject:
 
     FILE_VERSION = "1.4"  # The current project file format version
 

@@ -62,7 +62,7 @@ logger = logging.getLogger(__name__)
 class GuiMain(QMainWindow):
 
     def __init__(self):
-        QMainWindow.__init__(self)
+        super().__init__()
 
         logger.debug("Initialising GUI ...")
         self.setObjectName("GuiMain")

@@ -47,7 +47,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     BLOCK_TITLE = 4
 
     def __init__(self, theDoc, mainGui, spEnchant):
-        QSyntaxHighlighter.__init__(self, theDoc)
+        super().__init__(theDoc)
 
         logger.debug("Initialising GuiDocHighlighter ...")
         self.mainConf   = novelwriter.CONFIG

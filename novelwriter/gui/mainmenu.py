@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 class GuiMainMenu(QMenuBar):
 
     def __init__(self, mainGui):
-        QMenuBar.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiMainMenu ...")
         self.mainConf   = novelwriter.CONFIG

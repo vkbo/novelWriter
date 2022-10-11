@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 class GuiUpdates(QDialog):
 
     def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiUpdates ...")
         self.setObjectName("GuiUpdates")

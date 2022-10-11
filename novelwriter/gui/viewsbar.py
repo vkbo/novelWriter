@@ -41,7 +41,7 @@ class GuiViewsBar(QToolBar):
     viewChangeRequested = pyqtSignal(nwView)
 
     def __init__(self, mainGui):
-        QToolBar.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiViewsBar ...")
 

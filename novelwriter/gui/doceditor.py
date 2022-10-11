@@ -73,7 +73,7 @@ class GuiDocEditor(QTextEdit):
     loadDocumentTagRequest = pyqtSignal(str, Enum)
 
     def __init__(self, mainGui):
-        QTextEdit.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiDocEditor ...")
 
@@ -1003,7 +1003,7 @@ class GuiDocEditor(QTextEdit):
         if self.mainConf.autoScroll:
 
             cOld = self.cursorRect().center().y()
-            QTextEdit.keyPressEvent(self, keyEvent)
+            super().keyPressEvent(keyEvent)
 
             kMod = keyEvent.modifiers()
             okMod = kMod == Qt.NoModifier or kMod == Qt.ShiftModifier
@@ -1022,7 +1022,7 @@ class GuiDocEditor(QTextEdit):
                     doAnim.start()
 
         else:
-            QTextEdit.keyPressEvent(self, keyEvent)
+            super().keyPressEvent(keyEvent)
 
         self.docFooter.updateLineCount()
 
@@ -1049,7 +1049,7 @@ class GuiDocEditor(QTextEdit):
             theCursor = self.cursorForPosition(theEvent.pos())
             self._followTag(theCursor)
 
-        QTextEdit.mouseReleaseEvent(self, theEvent)
+        super().mouseReleaseEvent(theEvent)
         self.docFooter.updateLineCount()
 
         return
@@ -1059,7 +1059,7 @@ class GuiDocEditor(QTextEdit):
         has its margins adjusted according to user preferences.
         """
         self.updateDocMargins()
-        QTextEdit.resizeEvent(self, theEvent)
+        super().resizeEvent(theEvent)
         return
 
     ##
@@ -2161,7 +2161,7 @@ class GuiDocEditor(QTextEdit):
 class BackgroundWordCounter(QRunnable):
 
     def __init__(self, docEditor, forSelection=False):
-        QRunnable.__init__(self)
+        super().__init__()
 
         self._docEditor = docEditor
         self._forSelection = forSelection
@@ -2211,7 +2211,7 @@ class BackgroundWordCounterSignals(QObject):
 class GuiDocEditSearch(QFrame):
 
     def __init__(self, docEditor):
-        QFrame.__init__(self, docEditor)
+        super().__init__(parent=docEditor)
 
         logger.debug("Initialising GuiDocEditSearch ...")
 
@@ -2599,7 +2599,7 @@ class GuiDocEditSearch(QFrame):
 class GuiDocEditHeader(QWidget):
 
     def __init__(self, docEditor):
-        QWidget.__init__(self, docEditor)
+        super().__init__(parent=docEditor)
 
         logger.debug("Initialising GuiDocEditHeader ...")
 
@@ -2823,7 +2823,7 @@ class GuiDocEditHeader(QWidget):
 class GuiDocEditFooter(QWidget):
 
     def __init__(self, docEditor):
-        QWidget.__init__(self, docEditor)
+        super().__init__(parent=docEditor)
 
         logger.debug("Initialising GuiDocEditFooter ...")
 

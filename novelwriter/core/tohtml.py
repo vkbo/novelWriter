@@ -38,7 +38,7 @@ class ToHtml(Tokenizer):
     M_EBOOK   = 2  # Tweak output for converting to epub
 
     def __init__(self, theProject):
-        Tokenizer.__init__(self, theProject)
+        super().__init__(theProject)
 
         self._genMode = self.M_EXPORT
         self._cssStyles = True
@@ -107,7 +107,7 @@ class ToHtml(Tokenizer):
         """Extend the auto-replace to also properly encode some unicode
         characters into their respective HTML entities.
         """
-        Tokenizer.doPreProcessing(self)
+        super().doPreProcessing()
         self._theText = self._theText.translate(self._trMap)
         return
 

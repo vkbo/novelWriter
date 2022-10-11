@@ -33,7 +33,7 @@ from novelwriter.error import logException
 logger = logging.getLogger(__name__)
 
 
-class NWSpellEnchant():
+class NWSpellEnchant:
 
     def __init__(self):
 
