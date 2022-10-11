@@ -191,6 +191,7 @@ class GuiMain(QMainWindow):
         self.setCentralWidget(self.mainStack)
         self.setStatusBar(self.statusBar)
         self.addToolBar(Qt.LeftToolBarArea, self.viewsBar)
+        self.setContextMenuPolicy(Qt.NoContextMenu)  # Issue #1147
 
         # Connect Signals
         # ===============
