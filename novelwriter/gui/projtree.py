@@ -40,6 +40,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import DocMerger
+from novelwriter.core.doctools import DocSplitter
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.dialogs import GuiDocMerge, GuiDocSplit, GuiEditLabel
 from novelwriter.constants import nwHeaders, trConst, nwLabels
@@ -1475,7 +1476,18 @@ class GuiProjectTree(QTreeWidget):
 
         if dlgSplit.result() == QDialog.Accepted:
 
-            print(dlgSplit.getData())
+            splitData, splitText = dlgSplit.getData()
+            print(splitData)
+
+            headerList = splitData.get("headerList", [])
+
+            docSplit = DocSplitter(self.theProject, tHandle)
+            docSplit.setParentItem(tItem.itemParent)
+            docSplit.splitDocument(headerList, splitText)
+
+            for dHandle, _, nHandle in docSplit.writeDocuments():
+                self.mainGui.projView.revealNewTreeItem(dHandle, nHandle)
+                self._alertTreeChange(dHandle, flush=False)
 
         else:
             logger.info("Action cancelled by user")

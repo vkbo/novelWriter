@@ -4,7 +4,8 @@ novelWriter – Project Document Tools
 A collection of tools to create and manipulate documents
 
 File History:
-Created: 2022-10-02 [2.0b1]
+Created: 2022-10-02 [2.0b1] DocMerger
+Created: 2022-10-11 [2.0b1] DocSplitter
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -117,3 +118,90 @@ class DocMerger:
         return status
 
 # END Class DocMerger
+
+
+class DocSplitter:
+
+    def __init__(self, theProject, sHandle):
+
+        self.theProject = theProject
+
+        self._error = ""
+        self._parHandle = None
+        self._srcHandle = None
+        self._srcItem = None
+
+        self._rawData = []
+
+        srcItem = self.theProject.tree[sHandle]
+        if srcItem is not None and srcItem.isFileType():
+            self._srcHandle = sHandle
+            self._srcItem = srcItem
+
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def getError(self):
+        """Return any collected errors.
+        """
+        return self._error
+
+    def setParentItem(self, pHandle):
+        """Set the item that will be the top level parent item for the
+        new documents.
+        """
+        self._parHandle = pHandle
+        return
+
+    def newParentFolder(self, pHandle, folderLabel):
+        """Create a new folder that will be the top level parent item
+        for the new documents.
+        """
+        if self._srcItem is None:
+            return None
+
+        newHandle = self.theProject.newFolder(folderLabel, pHandle)
+        newItem = self.theProject.tree[self._parHandle]
+        newItem.setStatus(self._srcItem.itemStatus)
+        newItem.setImport(self._srcItem.itemImport)
+
+        self._parHandle = newHandle
+
+        return newHandle
+
+    def splitDocument(self, splitData, splitText):
+        """Loop through the split data record and perform the split job.
+        """
+        self._rawData = []
+        buffer = splitText.copy()
+        for lineNo, hLevel, hLabel in reversed(splitData):
+            chunk = buffer[lineNo:]
+            buffer = buffer[:lineNo]
+            self._rawData.insert(0, (chunk, hLevel, hLabel))
+
+        return True
+
+    def writeDocuments(self):
+        """An iterator that will write each document in the buffer, and
+        return its new handle, parent handle, and sibling handle.
+        """
+        nearHandle = self._parHandle
+        for docText, hLevel, docLabel in self._rawData:
+
+            newHandle = self.theProject.newFile(docLabel, self._parHandle)
+
+            outDoc = NWDoc(self.theProject, newHandle)
+            status = outDoc.writeDocument("\n".join(docText))
+            if not status:
+                self._error = outDoc.getError()
+
+            yield newHandle, self._parHandle, nearHandle
+
+            nearHandle = newHandle
+
+        return
+
+# END Class DocSplitter

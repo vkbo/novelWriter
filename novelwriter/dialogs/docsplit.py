@@ -41,6 +41,10 @@ logger = logging.getLogger(__name__)
 
 class GuiDocSplit(QDialog):
 
+    LINE_ROLE = Qt.UserRole
+    LEVEL_ROLE = Qt.UserRole + 1
+    LABEL_ROLE = Qt.UserRole + 2
+
     def __init__(self, mainGui, sHandle):
         super().__init__(parent=mainGui)
 
@@ -141,7 +145,9 @@ class GuiDocSplit(QDialog):
         headerList = []
         for i in range(self.listBox.count()):
             item = self.listBox.item(i)
-            headerList.append((item.text(), item.data(Qt.UserRole)))
+            headerList.append(
+                (item.data(self.LINE_ROLE), item.data(self.LEVEL_ROLE), item.data(self.LABEL_ROLE))
+            )
 
         spLevel = self.splitLevel.currentData()
         intoFolder = self.folderSwitch.isChecked()
@@ -157,7 +163,7 @@ class GuiDocSplit(QDialog):
         pOptions.setValue("GuiDocSplit", "intoFolder", intoFolder)
         pOptions.setValue("GuiDocSplit", "docHierarchy", docHierarchy)
 
-        return self._data
+        return self._data, self._text
 
     ##
     #  Slots
@@ -193,19 +199,38 @@ class GuiDocSplit(QDialog):
         for lineNo, aLine in enumerate(self._text):
 
             onLine = -1
-            if aLine.startswith(("# ", "#! ")) and spLevel >= 1:
+            hLevel = 0
+            if aLine.startswith("# ") and spLevel >= 1:
                 onLine = lineNo
-            elif aLine.startswith(("## ", "##! ")) and spLevel >= 2:
+                hLevel = 1
+                hLabel = aLine[2:].strip()
+            elif aLine.startswith("## ") and spLevel >= 2:
                 onLine = lineNo
+                hLevel = 2
+                hLabel = aLine[3:].strip()
             elif aLine.startswith("### ") and spLevel >= 3:
                 onLine = lineNo
+                hLevel = 3
+                hLabel = aLine[4:].strip()
             elif aLine.startswith("#### ") and spLevel >= 4:
                 onLine = lineNo
+                hLevel = 4
+                hLabel = aLine[5:].strip()
+            elif aLine.startswith("#! ") and spLevel >= 1:
+                onLine = lineNo
+                hLevel = 1
+                hLabel = aLine[3:].strip()
+            elif aLine.startswith("##! ") and spLevel >= 2:
+                onLine = lineNo
+                hLevel = 2
+                hLabel = aLine[4:].strip()
 
-            if onLine >= 0:
+            if onLine >= 0 and hLevel > 0:
                 newItem = QListWidgetItem()
                 newItem.setText(aLine.strip())
-                newItem.setData(Qt.UserRole, onLine)
+                newItem.setData(self.LINE_ROLE, onLine)
+                newItem.setData(self.LEVEL_ROLE, hLevel)
+                newItem.setData(self.LABEL_ROLE, hLabel)
                 self.listBox.addItem(newItem)
 
         return True
