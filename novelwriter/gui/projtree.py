@@ -1485,7 +1485,7 @@ class GuiProjectTree(QTreeWidget):
             docSplit.setParentItem(tItem.itemParent)
             docSplit.splitDocument(headerList, splitText)
 
-            for dHandle, _, nHandle in docSplit.writeDocuments():
+            for writeOk, dHandle, nHandle in docSplit.writeDocuments():
                 self.mainGui.projView.revealNewTreeItem(dHandle, nHandle)
                 self._alertTreeChange(dHandle, flush=False)
 

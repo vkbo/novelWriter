@@ -198,7 +198,7 @@ class DocSplitter:
             if not status:
                 self._error = outDoc.getError()
 
-            yield newHandle, self._parHandle, nearHandle
+            yield status, newHandle, nearHandle
 
             nearHandle = newHandle
 

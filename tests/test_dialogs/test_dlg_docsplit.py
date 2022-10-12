@@ -34,6 +34,7 @@ from novelwriter.core.document import NWDoc
 
 
 @pytest.mark.gui
+@pytest.mark.skip
 def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test the split document tool.
     """
