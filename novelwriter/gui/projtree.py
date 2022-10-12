@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.core import DocMerger
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.dialogs import GuiDocMerge, GuiEditLabel
+from novelwriter.dialogs import GuiDocMerge, GuiDocSplit, GuiEditLabel
 from novelwriter.constants import nwHeaders, trConst, nwLabels
 
 logger = logging.getLogger(__name__)
@@ -1458,7 +1458,30 @@ class GuiProjectTree(QTreeWidget):
         return True
 
     def _splitDocument(self, tHandle):
-        return
+        """Split a document into multiple documents.
+        """
+        logger.info("Request to split items with handle '%s'", tHandle)
+
+        tItem = self.theProject.tree[tHandle]
+        if tItem is None:
+            return False
+
+        if not tItem.isFileType():
+            logger.error("Only documents can be split")
+            return False
+
+        dlgSplit = GuiDocSplit(self.mainGui, tHandle)
+        dlgSplit.exec_()
+
+        if dlgSplit.result() == QDialog.Accepted:
+
+            print(dlgSplit.getData())
+
+        else:
+            logger.info("Action cancelled by user")
+            return False
+
+        return True
 
     def _scanChildren(self, theList, tItem, tIndex):
         """This is a recursive function returning all items in a tree

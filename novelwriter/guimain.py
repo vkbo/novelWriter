@@ -44,7 +44,7 @@ from novelwriter.gui import (
     GuiViewsBar
 )
 from novelwriter.dialogs import (
-    GuiAbout, GuiDocSplit, GuiPreferences, GuiProjectDetails, GuiProjectLoad,
+    GuiAbout, GuiPreferences, GuiProjectDetails, GuiProjectLoad,
     GuiProjectSettings, GuiUpdates, GuiWordList
 )
 from novelwriter.tools import (
@@ -751,18 +751,6 @@ class GuiMain(QMainWindow):
                 return False
 
         self.docEditor.replaceText(theText)
-
-        return True
-
-    def splitDocument(self):
-        """Split a single document into multiple documents.
-        """
-        if not self.hasProject:
-            logger.error("No project open")
-            return False
-
-        dlgSplit = GuiDocSplit(self)
-        dlgSplit.exec_()
 
         return True
 

@@ -75,7 +75,7 @@ class GuiDocMerge(QDialog):
 
         # Merge Options
         self.trashLabel = QLabel(self.tr("Move merged items to Trash"))
-        self.trashSwitch = QSwitch()
+        self.trashSwitch = QSwitch(width=2*iPx, height=iPx)
 
         self.optBox = QGridLayout()
         self.optBox.addWidget(self.trashLabel,  0, 0)
