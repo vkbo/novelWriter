@@ -192,6 +192,9 @@ class DocSplitter:
         """An iterator that will write each document in the buffer, and
         return its new handle, parent handle, and sibling handle.
         """
+        if self._srcHandle is None:
+            return
+
         pHandle = self._parHandle
         nHandle = self._parHandle if self._inFolder else self._srcHandle
         hHandle = [self._parHandle, None, None, None, None]
