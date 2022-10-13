@@ -42,29 +42,29 @@ logger = logging.getLogger(__name__)
 
 class GuiWordList(QDialog):
 
-    def __init__(self, theParent):
-        QDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiWordList ...")
         self.setObjectName("GuiWordList")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
-        self.optState   = theParent.theProject.optState
+        self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
+        self.theProject = mainGui.theProject
 
         self.setWindowTitle(self.tr("Project Word List"))
 
         mS = self.mainConf.pxInt(250)
         wW = self.mainConf.pxInt(320)
         wH = self.mainConf.pxInt(340)
+        pOptions = self.theProject.options
 
         self.setMinimumWidth(mS)
         self.setMinimumHeight(mS)
         self.resize(
-            self.mainConf.pxInt(self.optState.getInt("GuiWordList", "winWidth",  wW)),
-            self.mainConf.pxInt(self.optState.getInt("GuiWordList", "winHeight", wH))
+            self.mainConf.pxInt(pOptions.getInt("GuiWordList", "winWidth",  wW)),
+            self.mainConf.pxInt(pOptions.getInt("GuiWordList", "winHeight", wH))
         )
 
         # Main Widgets
@@ -78,10 +78,10 @@ class GuiWordList(QDialog):
 
         self.newEntry = QLineEdit()
 
-        self.addButton = QPushButton(self.theTheme.getIcon("add"), "")
+        self.addButton = QPushButton(self.mainTheme.getIcon("add"), "")
         self.addButton.clicked.connect(self._doAdd)
 
-        self.delButton = QPushButton(self.theTheme.getIcon("remove"), "")
+        self.delButton = QPushButton(self.mainTheme.getIcon("remove"), "")
         self.delButton.clicked.connect(self._doDelete)
 
         self.editBox = QHBoxLayout()
@@ -121,13 +121,13 @@ class GuiWordList(QDialog):
         """
         newWord = self.newEntry.text().strip()
         if newWord == "":
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "Cannot add a blank word."
             ), nwAlert.ERROR)
             return False
 
         if self.listBox.findItems(newWord, Qt.MatchExactly):
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "The word '{0}' is already in the word list."
             ).format(newWord), nwAlert.ERROR)
             return False
@@ -207,8 +207,9 @@ class GuiWordList(QDialog):
         winWidth  = self.mainConf.rpxInt(self.width())
         winHeight = self.mainConf.rpxInt(self.height())
 
-        self.optState.setValue("GuiWordList", "winWidth",  winWidth)
-        self.optState.setValue("GuiWordList", "winHeight", winHeight)
+        pOptions = self.theProject.options
+        pOptions.setValue("GuiWordList", "winWidth",  winWidth)
+        pOptions.setValue("GuiWordList", "winHeight", winHeight)
 
         return
 

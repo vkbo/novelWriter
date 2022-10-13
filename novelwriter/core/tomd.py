@@ -37,7 +37,7 @@ class ToMarkdown(Tokenizer):
     M_GH  = 1  # GitHub Markdown
 
     def __init__(self, theProject):
-        Tokenizer.__init__(self, theProject)
+        super().__init__(theProject)
 
         self._genMode = self.M_STD
         self._fullMD = []
@@ -193,7 +193,7 @@ class ToMarkdown(Tokenizer):
     def _formatKeywords(self, tText, tStyle):
         """Apply Markdown formatting to keywords.
         """
-        isValid, theBits, _ = self.theParent.theIndex.scanThis("@"+tText)
+        isValid, theBits, _ = self.theProject.index.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 

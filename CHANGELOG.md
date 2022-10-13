@@ -1,5 +1,96 @@
 # novelWriter Changelog
 
+## Version 1.7 Beta 1 [2022-05-17]
+
+**Note:** The 1.7 release was renamed to 2.0 on 2022-10-06. See #1144.
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+Please check the changelog for an overview of changes. The full release notes will be added to the
+final release.
+
+### Detailed Changelog
+
+**Features**
+
+* A simple tool to add Lorem Ipsum placeholder text has been added to the Insert menu. PR #1028.
+* Status and Importance flags can now be reorganised in Project Settings. Issue #1035. PR #1040.
+* It is now possible to create multiple Root Folders of the same kind. This makes it possible to
+  add multiple Novel root folders in a project, for instance. Issue #967. PR #1031.
+* All documents can now be dragged and dropped anywhere in the project tree. The document layout
+  may be converted in the process. PR #1031.
+* Documents in the project tree can now have other documents as child documents. Issue #1002.
+  PR #1047.
+* Folders in the project tree that are not empty, can now be moved to trash. PR #1048.
+* Empty folders are deleted on request, and not moved to trash. Issue #1052. PR #1055.
+
+**User Interface**
+
+* The tabs under the project tree and to the right of the main window have been replaced with a
+  toolbar on the left hand side. The toolbar has a set of buttons to change view between Project,
+  Novel and Outline. The three buttons that were available under the project tree have been moved
+  to the bottom of the new toolbar. Issue #1056. PR #1057.
+* When a document changes from a project document to a note, and back again, the Status flag
+  setting is preserved. Previously, the Importance setting would overwrite it during the
+  conversion. PR #1030.
+* Item labels, Status labels, and other labels on the GUI are now run through a "simplify" function
+  before being accepted. This functions strips out all whitespaces and consecutive whitespaces and
+  replace them with single plain whitespaces. This is a safer format to store in XML, and also
+  makes sure there aren't invisible characters floating around in the labels. PR #1038.
+* Due to the changes to how drag and drop works, there are no longer any restrictions on folders
+  and documents. Only root folders remain restricted in terms of moving. Root folders can only be
+  reordered with the Move Up and Move Down commands. PR #1047.
+* The label for the highlighting of redundant spaces in the Preferences dialog has been updated to
+  better reflect what it does. Issue #1043. PR #1046.
+* The New Project Wizard will now try to check if the path selected for the new project can
+  actually be used before letting the user proceed to the next page. Issue #1058. PR #1062.
+
+**Internationalisation**
+
+* Dutch translations have been added by Martijn van der Kleijn (@mvdkleijn). PR #1027.
+
+**Functionality**
+
+* Documents that are missing in the project index when a project is opened are automatically
+  re-indexed. This also handles cases where the cached index is missing. PR #1039.
+
+**Installation and Packaging**
+
+* Python 3.6 is no longer supported. PR #1004.
+* Ubuntu 18.04 packages will no longer be released, due to dropping Python 3.6. Issue #1005.
+  PR #1014.
+
+**Project File Format**
+
+* The item nodes in the content section of the main project XML file have been compacted. It now
+  consists of a main item node and meta and a name node. All settings have been made attributes of
+  one of these three nodes, except the item label which is the text value of the name node. The
+  file format version has been bumped to 1.4. Issue #995. PR #993.
+* Both Importance and Status flag values are now saved to the project file. This means if a
+  document changes layout, the value is no longer lost. PR #1030.
+
+**Code Improvements**
+
+* The linting settings have been updated to select between mutually exclusive options in
+  pycodestyle. PR #1014.
+* The Tokenizer class has been converted to an abstract base class. PR #1026.
+* The class handling Status and Importance flags has been completely rewritten. The flags are now
+  handled using a unique random key as reference rather than relying on the text of the label
+  itself. This makes it a lot easier to rename them as there is no need to update project items.
+  PR #1034.
+* Many of the decisions regarding where items are allowed to belong has been delegated to the
+  NWItem class that holds the item. Some is also handled by the NWTree class that holds the project
+  tree. A new maintenance function in the NWTree class will also ensure that the meta data of an
+  item is correct and up to date. This is especially important after an item has been moved, but is
+  also checked when items are initially loaded. PRs #1031 and #1054.
+* Item handles are now generated using the standard library random number generator. The new
+  handles have the same format as the old algorithm, so they are compatible. PR #1044.
+
+----
+
 ## Version 1.6.5 [2022-10-13]
 
 ### Release Notes

@@ -202,7 +202,7 @@ class QConfigLayout(QGridLayout):
 class QHelpLabel(QLabel):
 
     def __init__(self, theText, textCol, fontSize=0.9):
-        QLabel.__init__(self, theText)
+        super().__init__(theText)
 
         if isinstance(textCol, QColor):
             qCol = textCol
@@ -376,8 +376,8 @@ class QSwitch(QAbstractButton):
 
 class PagedDialog(QDialog):
 
-    def __init__(self, theParent=None):
-        QDialog.__init__(self, parent=theParent)
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
 
         self._tabBar = VerticalTabBar(self)
         self._tabBar.setExpanding(False)
@@ -409,14 +409,14 @@ class PagedDialog(QDialog):
 
         return
 
-    def addTab(self, tabWidget, tabLabel):
-        """Forwards the adding of tabs to the QTabWidget.
+    def addTab(self, widget, label):
+        """Forward the adding of tabs to the QTabWidget.
         """
-        self._tabBox.addTab(tabWidget, tabLabel)
+        self._tabBox.addTab(widget, label)
         return
 
     def addControls(self, buttonBar):
-        """Adds a button bar to the dialog.
+        """Add a button bar to the dialog.
         """
         self._buttonBox.addWidget(buttonBar)
         return
@@ -426,20 +426,20 @@ class PagedDialog(QDialog):
 
 class VerticalTabBar(QTabBar):
 
-    def __init__(self, theParent=None):
-        QTabBar.__init__(self, parent=theParent)
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
         self._mW = novelwriter.CONFIG.pxInt(150)
         return
 
-    def tabSizeHint(self, theIndex):
-        """Returns a transposed size hint for the rotated bar.
+    def tabSizeHint(self, index):
+        """Return a transposed size hint for the rotated bar.
         """
-        tSize = QTabBar.tabSizeHint(self, theIndex)
+        tSize = super().tabSizeHint(index)
         tSize.transpose()
         tSize.setWidth(min(tSize.width(), self._mW))
         return tSize
 
-    def paintEvent(self, theEvent):
+    def paintEvent(self, event):
         """Custom implementation of the label painter that rotates the
         label 90 degrees.
         """

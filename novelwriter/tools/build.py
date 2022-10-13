@@ -65,17 +65,16 @@ class GuiBuildNovel(QDialog):
     FMT_JSON_H = 8  # HTML5 wrapped in JSON
     FMT_JSON_M = 9  # nW Markdown wrapped in JSON
 
-    def __init__(self, theParent):
-        QDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiBuildNovel ...")
         self.setObjectName("GuiBuildNovel")
 
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
-        self.optState   = theParent.theProject.optState
+        self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
+        self.theProject = mainGui.theProject
 
         self.htmlText  = []  # List of html documents
         self.htmlStyle = []  # List of html styles
@@ -86,14 +85,15 @@ class GuiBuildNovel(QDialog):
         self.setMinimumWidth(self.mainConf.pxInt(700))
         self.setMinimumHeight(self.mainConf.pxInt(600))
 
+        pOptions = self.theProject.options
         self.resize(
-            self.mainConf.pxInt(self.optState.getInt("GuiBuildNovel", "winWidth",  900)),
-            self.mainConf.pxInt(self.optState.getInt("GuiBuildNovel", "winHeight", 800))
+            self.mainConf.pxInt(pOptions.getInt("GuiBuildNovel", "winWidth",  900)),
+            self.mainConf.pxInt(pOptions.getInt("GuiBuildNovel", "winHeight", 800))
         )
 
         self.docView = GuiBuildNovelDocView(self, self.theProject)
 
-        hS = self.theTheme.fontPixelSize
+        hS = self.mainTheme.fontPixelSize
         wS = 2*hS
 
         # Title Formats
@@ -174,12 +174,12 @@ class GuiBuildNovel(QDialog):
 
         self.hideScene = QSwitch(width=wS, height=hS)
         self.hideScene.setChecked(
-            self.optState.getBool("GuiBuildNovel", "hideScene", False)
+            pOptions.getBool("GuiBuildNovel", "hideScene", False)
         )
 
         self.hideSection = QSwitch(width=wS, height=hS)
         self.hideSection.setChecked(
-            self.optState.getBool("GuiBuildNovel", "hideSection", True)
+            pOptions.getBool("GuiBuildNovel", "hideSection", True)
         )
 
         # Wrapper boxes due to QGridView and QLineEdit expand bug
@@ -235,29 +235,29 @@ class GuiBuildNovel(QDialog):
         self.textFont.setReadOnly(True)
         self.textFont.setMinimumWidth(xFmt)
         self.textFont.setText(
-            self.optState.getString("GuiBuildNovel", "textFont", self.mainConf.textFont)
+            pOptions.getString("GuiBuildNovel", "textFont", self.mainConf.textFont)
         )
         self.fontButton = QPushButton("...")
-        self.fontButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
+        self.fontButton.setMaximumWidth(int(2.5*self.mainTheme.getTextWidth("...")))
         self.fontButton.clicked.connect(self._selectFont)
 
         self.textSize = QSpinBox(self)
-        self.textSize.setFixedWidth(6*self.theTheme.textNWidth)
+        self.textSize.setFixedWidth(6*self.mainTheme.textNWidth)
         self.textSize.setMinimum(6)
         self.textSize.setMaximum(72)
         self.textSize.setSingleStep(1)
         self.textSize.setValue(
-            self.optState.getInt("GuiBuildNovel", "textSize", self.mainConf.textSize)
+            pOptions.getInt("GuiBuildNovel", "textSize", self.mainConf.textSize)
         )
 
         self.lineHeight = QDoubleSpinBox(self)
-        self.lineHeight.setFixedWidth(6*self.theTheme.textNWidth)
+        self.lineHeight.setFixedWidth(6*self.mainTheme.textNWidth)
         self.lineHeight.setMinimum(0.8)
         self.lineHeight.setMaximum(3.0)
         self.lineHeight.setSingleStep(0.05)
         self.lineHeight.setDecimals(2)
         self.lineHeight.setValue(
-            self.optState.getFloat("GuiBuildNovel", "lineHeight", 1.15)
+            pOptions.getFloat("GuiBuildNovel", "lineHeight", 1.15)
         )
 
         # Wrapper box due to QGridView and QLineEdit expand bug
@@ -291,12 +291,12 @@ class GuiBuildNovel(QDialog):
 
         self.justifyText = QSwitch(width=wS, height=hS)
         self.justifyText.setChecked(
-            self.optState.getBool("GuiBuildNovel", "justifyText", False)
+            pOptions.getBool("GuiBuildNovel", "justifyText", False)
         )
 
         self.noStyling = QSwitch(width=wS, height=hS)
         self.noStyling.setChecked(
-            self.optState.getBool("GuiBuildNovel", "noStyling", False)
+            pOptions.getBool("GuiBuildNovel", "noStyling", False)
         )
 
         self.styleForm.addWidget(justifyLabel,     1, 0, 1, 1, Qt.AlignLeft)
@@ -316,22 +316,22 @@ class GuiBuildNovel(QDialog):
 
         self.includeSynopsis = QSwitch(width=wS, height=hS)
         self.includeSynopsis.setChecked(
-            self.optState.getBool("GuiBuildNovel", "incSynopsis", False)
+            pOptions.getBool("GuiBuildNovel", "incSynopsis", False)
         )
 
         self.includeComments = QSwitch(width=wS, height=hS)
         self.includeComments.setChecked(
-            self.optState.getBool("GuiBuildNovel", "incComments", False)
+            pOptions.getBool("GuiBuildNovel", "incComments", False)
         )
 
         self.includeKeywords = QSwitch(width=wS, height=hS)
         self.includeKeywords.setChecked(
-            self.optState.getBool("GuiBuildNovel", "incKeywords", False)
+            pOptions.getBool("GuiBuildNovel", "incKeywords", False)
         )
 
         self.includeBody = QSwitch(width=wS, height=hS)
         self.includeBody.setChecked(
-            self.optState.getBool("GuiBuildNovel", "incBodyText", True)
+            pOptions.getBool("GuiBuildNovel", "incBodyText", True)
         )
 
         synopsisLabel = QLabel(self.tr("Include synopsis"))
@@ -360,17 +360,17 @@ class GuiBuildNovel(QDialog):
 
         self.novelFiles = QSwitch(width=wS, height=hS)
         self.novelFiles.setChecked(
-            self.optState.getBool("GuiBuildNovel", "addNovel", True)
+            pOptions.getBool("GuiBuildNovel", "addNovel", True)
         )
 
         self.noteFiles = QSwitch(width=wS, height=hS)
         self.noteFiles.setChecked(
-            self.optState.getBool("GuiBuildNovel", "addNotes", False)
+            pOptions.getBool("GuiBuildNovel", "addNotes", False)
         )
 
         self.ignoreFlag = QSwitch(width=wS, height=hS)
         self.ignoreFlag.setChecked(
-            self.optState.getBool("GuiBuildNovel", "ignoreFlag", False)
+            pOptions.getBool("GuiBuildNovel", "ignoreFlag", False)
         )
 
         novelLabel  = QLabel(self.tr("Include novel files"))
@@ -396,12 +396,12 @@ class GuiBuildNovel(QDialog):
 
         self.replaceTabs = QSwitch(width=wS, height=hS)
         self.replaceTabs.setChecked(
-            self.optState.getBool("GuiBuildNovel", "replaceTabs", False)
+            pOptions.getBool("GuiBuildNovel", "replaceTabs", False)
         )
 
         self.replaceUCode = QSwitch(width=wS, height=hS)
         self.replaceUCode.setChecked(
-            self.optState.getBool("GuiBuildNovel", "replaceUCode", False)
+            pOptions.getBool("GuiBuildNovel", "replaceUCode", False)
         )
 
         tabsLabel  = QLabel(self.tr("Replace tabs with spaces"))
@@ -493,9 +493,9 @@ class GuiBuildNovel(QDialog):
 
         # Splitter Position
         boxWidth = self.mainConf.pxInt(350)
-        boxWidth = self.optState.getInt("GuiBuildNovel", "boxWidth", boxWidth)
+        boxWidth = pOptions.getInt("GuiBuildNovel", "boxWidth", boxWidth)
         docWidth = max(self.width() - boxWidth, 100)
-        docWidth = self.optState.getInt("GuiBuildNovel", "docWidth", docWidth)
+        docWidth = pOptions.getInt("GuiBuildNovel", "docWidth", docWidth)
 
         # The Tool Box
         self.toolsBox = QVBoxLayout()
@@ -677,7 +677,7 @@ class GuiBuildNovel(QDialog):
         replaceUCode  = self.replaceUCode.isChecked()
 
         # The language lookup dict is reloaded if needed
-        self.theProject.setProjectLang(self.buildLang.currentData())
+        self.theProject.setProjectLang(buildLang)
 
         # Get font information
         fontInfo = QFontInfo(QFont(textFont, textSize))
@@ -711,13 +711,12 @@ class GuiBuildNovel(QDialog):
             bldObj.initDocument()
 
         # Make sure the project and document is up to date
-        self.theParent.treeView.flushTreeOrder()
-        self.theParent.saveDocument()
+        self.mainGui.saveDocument()
 
-        self.buildProgress.setMaximum(len(self.theProject.projTree))
+        self.buildProgress.setMaximum(len(self.theProject.tree))
         self.buildProgress.setValue(0)
 
-        for nItt, tItem in enumerate(self.theProject.projTree):
+        for nItt, tItem in enumerate(self.theProject.tree):
 
             noteRoot = noteFiles
             noteRoot &= tItem.itemType == nwItemType.ROOT
@@ -761,7 +760,7 @@ class GuiBuildNovel(QDialog):
         logger.debug("Built project in %.3f ms", 1000*(tEnd - tStart))
 
         if bldObj.errData:
-            self.theParent.makeAlert([
+            self.mainGui.makeAlert([
                 self.tr("There were problems when building the project:")
             ] + bldObj.errData, nwAlert.ERROR)
 
@@ -782,16 +781,14 @@ class GuiBuildNovel(QDialog):
         if theItem is None:
             return False
 
-        if not theItem.isExported and not ignoreFlag:
+        if not (theItem.isExported or ignoreFlag):
             return False
 
-        isNone  = theItem.itemType != nwItemType.FILE
+        isNone  = not theItem.isFileType()
         isNone |= theItem.itemLayout == nwItemLayout.NO_LAYOUT
-        isNone |= theItem.itemClass == nwItemClass.NO_CLASS
-        isNone |= theItem.itemClass == nwItemClass.TRASH
-        isNone |= theItem.itemParent == self.theProject.projTree.trashRoot()
+        isNone |= theItem.isInactive()
         isNone |= theItem.itemParent is None
-        isNote  = theItem.itemLayout == nwItemLayout.NOTE
+        isNote  = theItem.isNoteLayout()
         isNovel = not isNone and not isNote
 
         if isNone:
@@ -799,10 +796,6 @@ class GuiBuildNovel(QDialog):
         if isNote and not noteFiles:
             return False
         if isNovel and not novelFiles:
-            return False
-
-        rootItem = self.theProject.projTree.getRootItem(theItem.itemHandle)
-        if rootItem.itemClass == nwItemClass.ARCHIVE:
             return False
 
         return True
@@ -1010,11 +1003,11 @@ class GuiBuildNovel(QDialog):
         # ==============
 
         if wSuccess:
-            self.theParent.makeAlert([
+            self.mainGui.makeAlert([
                 self.tr("{0} file successfully written to:").format(textFmt), savePath
             ], nwAlert.INFO)
         else:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "Failed to write {0} file. {1}"
             ).format(textFmt, errMsg), nwAlert.ERROR)
 
@@ -1161,28 +1154,28 @@ class GuiBuildNovel(QDialog):
         self.theProject.setProjectLang(buildLang)
 
         # GUI Settings
-        self.optState.setValue("GuiBuildNovel", "hideScene",    hideScene)
-        self.optState.setValue("GuiBuildNovel", "hideSection",  hideSection)
-        self.optState.setValue("GuiBuildNovel", "winWidth",     winWidth)
-        self.optState.setValue("GuiBuildNovel", "winHeight",    winHeight)
-        self.optState.setValue("GuiBuildNovel", "boxWidth",     boxWidth)
-        self.optState.setValue("GuiBuildNovel", "docWidth",     docWidth)
-        self.optState.setValue("GuiBuildNovel", "justifyText",  justifyText)
-        self.optState.setValue("GuiBuildNovel", "noStyling",    noStyling)
-        self.optState.setValue("GuiBuildNovel", "textFont",     textFont)
-        self.optState.setValue("GuiBuildNovel", "textSize",     textSize)
-        self.optState.setValue("GuiBuildNovel", "lineHeight",   lineHeight)
-        self.optState.setValue("GuiBuildNovel", "addNovel",     novelFiles)
-        self.optState.setValue("GuiBuildNovel", "addNotes",     noteFiles)
-        self.optState.setValue("GuiBuildNovel", "ignoreFlag",   ignoreFlag)
-        self.optState.setValue("GuiBuildNovel", "incSynopsis",  incSynopsis)
-        self.optState.setValue("GuiBuildNovel", "incComments",  incComments)
-        self.optState.setValue("GuiBuildNovel", "incKeywords",  incKeywords)
-        self.optState.setValue("GuiBuildNovel", "incBodyText",  incBodyText)
-        self.optState.setValue("GuiBuildNovel", "replaceTabs",  replaceTabs)
-        self.optState.setValue("GuiBuildNovel", "replaceUCode", replaceUCode)
-
-        self.optState.saveSettings()
+        pOptions = self.theProject.options
+        pOptions.setValue("GuiBuildNovel", "hideScene",    hideScene)
+        pOptions.setValue("GuiBuildNovel", "hideSection",  hideSection)
+        pOptions.setValue("GuiBuildNovel", "winWidth",     winWidth)
+        pOptions.setValue("GuiBuildNovel", "winHeight",    winHeight)
+        pOptions.setValue("GuiBuildNovel", "boxWidth",     boxWidth)
+        pOptions.setValue("GuiBuildNovel", "docWidth",     docWidth)
+        pOptions.setValue("GuiBuildNovel", "justifyText",  justifyText)
+        pOptions.setValue("GuiBuildNovel", "noStyling",    noStyling)
+        pOptions.setValue("GuiBuildNovel", "textFont",     textFont)
+        pOptions.setValue("GuiBuildNovel", "textSize",     textSize)
+        pOptions.setValue("GuiBuildNovel", "lineHeight",   lineHeight)
+        pOptions.setValue("GuiBuildNovel", "addNovel",     novelFiles)
+        pOptions.setValue("GuiBuildNovel", "addNotes",     noteFiles)
+        pOptions.setValue("GuiBuildNovel", "ignoreFlag",   ignoreFlag)
+        pOptions.setValue("GuiBuildNovel", "incSynopsis",  incSynopsis)
+        pOptions.setValue("GuiBuildNovel", "incComments",  incComments)
+        pOptions.setValue("GuiBuildNovel", "incKeywords",  incKeywords)
+        pOptions.setValue("GuiBuildNovel", "incBodyText",  incBodyText)
+        pOptions.setValue("GuiBuildNovel", "replaceTabs",  replaceTabs)
+        pOptions.setValue("GuiBuildNovel", "replaceUCode", replaceUCode)
+        pOptions.saveSettings()
 
         return
 
@@ -1200,18 +1193,18 @@ class GuiBuildNovel(QDialog):
 
 class GuiBuildNovelDocView(QTextBrowser):
 
-    def __init__(self, theParent, theProject):
-        QTextBrowser.__init__(self, theParent)
+    def __init__(self, mainGui, theProject):
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiBuildNovelDocView ...")
 
         self.mainConf   = novelwriter.CONFIG
         self.theProject = theProject
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
+        self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
         self.buildTime  = 0
 
-        self.setMinimumWidth(40*self.theParent.theTheme.textNWidth)
+        self.setMinimumWidth(40*self.mainGui.mainTheme.textNWidth)
         self.setOpenExternalLinks(False)
 
         self.document().setDocumentMargin(self.mainConf.getTextMargin())
@@ -1245,9 +1238,9 @@ class GuiBuildNovelDocView(QTextBrowser):
         lblPalette.setColor(QPalette.Foreground, lblPalette.toolTipText().color())
 
         lblFont = self.font()
-        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
 
-        fPx = int(1.1*self.theTheme.fontPixelSize)
+        fPx = int(1.1*self.mainTheme.fontPixelSize)
 
         self.theTitle = QLabel("", self)
         self.theTitle.setIndent(0)
@@ -1350,7 +1343,7 @@ class GuiBuildNovelDocView(QTextBrowser):
     def resizeEvent(self, theEvent):
         """Make sure the document title is the same width as the window.
         """
-        QTextBrowser.resizeEvent(self, theEvent)
+        super().resizeEvent(theEvent)
         self._updateDocMargins()
         return
 

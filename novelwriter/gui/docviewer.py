@@ -30,17 +30,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
-from PyQt5.QtCore import Qt, QUrl, QSize, pyqtSlot
+from enum import Enum
+
+from PyQt5.QtCore import Qt, QUrl, QSize, pyqtSlot, pyqtSignal
 from PyQt5.QtGui import (
     QTextOption, QFont, QPalette, QColor, QTextCursor, QIcon, QCursor
 )
 from PyQt5.QtWidgets import (
     qApp, QTextBrowser, QWidget, QScrollArea, QLabel, QHBoxLayout, QToolButton,
-    QAction, QMenu
+    QAction, QMenu, QFrame
 )
 
 from novelwriter.core import ToHtml
-from novelwriter.enum import nwAlert, nwItemType, nwDocAction
+from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
 from novelwriter.error import logException
 from novelwriter.constants import nwUnicode
 
@@ -49,16 +51,18 @@ logger = logging.getLogger(__name__)
 
 class GuiDocViewer(QTextBrowser):
 
-    def __init__(self, theParent):
-        QTextBrowser.__init__(self, theParent)
+    loadDocumentTagRequest = pyqtSignal(str, Enum)
+
+    def __init__(self, mainGui):
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiDocViewer ...")
 
         # Class Variables
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
+        self.theProject = mainGui.theProject
 
         # Internal Variables
         self._docHandle = None
@@ -68,6 +72,7 @@ class GuiDocViewer(QTextBrowser):
         self.setAutoFillBackground(True)
         self.setOpenExternalLinks(False)
         self.setFocusPolicy(Qt.StrongFocus)
+        self.setFrameStyle(QFrame.NoFrame)
 
         # Document Header and Footer
         self.docHeader  = GuiDocViewHeader(self)
@@ -113,14 +118,14 @@ class GuiDocViewer(QTextBrowser):
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
-        mainPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        mainPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
-        mainPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        mainPalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        mainPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
+        mainPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
         self.setPalette(mainPalette)
 
         docPalette = self.viewport().palette()
-        docPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
-        docPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        docPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
+        docPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
         self.viewport().setPalette(docPalette)
 
         self.docHeader.matchColours()
@@ -159,7 +164,7 @@ class GuiDocViewer(QTextBrowser):
     def loadText(self, tHandle, updateHistory=True):
         """Load text into the viewer from an item handle.
         """
-        if not self.theProject.projTree.checkType(tHandle, nwItemType.FILE):
+        if not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
             logger.warning("Item not found")
             return False
 
@@ -216,7 +221,7 @@ class GuiDocViewer(QTextBrowser):
         self.updateDocMargins()
 
         # Make sure the main GUI knows we changed the content
-        self.theParent.viewMeta.refreshReferences(tHandle)
+        self.mainGui.viewMeta.refreshReferences(tHandle)
 
         # Since we change the content while it may still be rendering, we mark
         # the document dirty again to make sure it's re-rendered properly.
@@ -237,30 +242,6 @@ class GuiDocViewer(QTextBrowser):
         self.document().markContentsDirty(0, self.document().characterCount())
         self.updateDocMargins()
         return
-
-    def loadFromTag(self, theTag):
-        """Load text in the document from a reference given by a meta
-        tag rather than a known handle. This function depends on the
-        index being up to date.
-        """
-        logger.debug("Loading document from tag '%s'", theTag)
-        tHandle, _, sTitle = self.theParent.theIndex.getTagSource(theTag)
-        if tHandle is None:
-            self.theParent.makeAlert(self.tr(
-                "Could not find the reference for tag '{0}'. It either doesn't "
-                "exist, or the index is out of date. The index can be updated "
-                "from the Tools menu, or by pressing {1}."
-            ).format(
-                theTag, "F9"
-            ), nwAlert.ERROR)
-            return False
-        else:
-            # Let the parent handle the opening as it also ensures that
-            # the doc view panel is visible in case this request comes
-            # from outside this class.
-            logger.verbose("Tag points to '%s#%s'", tHandle, sTitle)
-            self.theParent.viewDocument(tHandle, "#%s" % sTitle)
-        return True
 
     def docAction(self, theAction):
         """Wrapper function for various document actions on the current
@@ -341,15 +322,6 @@ class GuiDocViewer(QTextBrowser):
 
         return
 
-    def updateDocInfo(self, tHandle):
-        """Called when an item label is changed to check if the document
-        title bar needs updating,
-        """
-        if tHandle == self._docHandle:
-            self.docHeader.setTitleFromHandle(self._docHandle)
-            self.updateDocMargins()
-        return
-
     ##
     #  Properties
     ##
@@ -408,19 +380,33 @@ class GuiDocViewer(QTextBrowser):
         return 0
 
     ##
-    #  Slots
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str)
+    def updateDocInfo(self, tHandle):
+        """Called when an item label is changed to check if the document
+        title bar needs updating,
+        """
+        if tHandle == self._docHandle:
+            self.docHeader.setTitleFromHandle(self._docHandle)
+            self.updateDocMargins()
+        return
+
+    ##
+    #  Private Slots
     ##
 
     @pyqtSlot("QUrl")
     def _linkClicked(self, theURL):
-        """Slot for a link in the document being clicked.
+        """Process a clicked link internally in the document.
         """
         theLink = theURL.url()
         logger.verbose("Clicked link: '%s'", theLink)
         if len(theLink) > 0:
             theBits = theLink.split("=")
             if len(theBits) == 2:
-                self.loadFromTag(theBits[1])
+                self.loadDocumentTagRequest.emit(theBits[1], nwDocMode.VIEW)
         return
 
     @pyqtSlot("QPoint")
@@ -475,7 +461,7 @@ class GuiDocViewer(QTextBrowser):
         has its margins adjusted according to user preferences.
         """
         self.updateDocMargins()
-        QTextBrowser.resizeEvent(self, theEvent)
+        super().resizeEvent(theEvent)
         return
 
     def mouseReleaseEvent(self, theEvent):
@@ -486,7 +472,7 @@ class GuiDocViewer(QTextBrowser):
         elif theEvent.button() == Qt.ForwardButton:
             self.navForward()
         else:
-            QTextBrowser.mouseReleaseEvent(self, theEvent)
+            super().mouseReleaseEvent(theEvent)
         return
 
     ##
@@ -553,27 +539,27 @@ class GuiDocViewer(QTextBrowser):
             "  text-align: center;"
             "}}\n"
         ).format(
-            tColR=self.theTheme.colText[0],
-            tColG=self.theTheme.colText[1],
-            tColB=self.theTheme.colText[2],
-            hColR=self.theTheme.colHead[0],
-            hColG=self.theTheme.colHead[1],
-            hColB=self.theTheme.colHead[2],
-            aColR=self.theTheme.colVal[0],
-            aColG=self.theTheme.colVal[1],
-            aColB=self.theTheme.colVal[2],
-            eColR=self.theTheme.colEmph[0],
-            eColG=self.theTheme.colEmph[1],
-            eColB=self.theTheme.colEmph[2],
-            kColR=self.theTheme.colKey[0],
-            kColG=self.theTheme.colKey[1],
-            kColB=self.theTheme.colKey[2],
-            cColR=self.theTheme.colHidden[0],
-            cColG=self.theTheme.colHidden[1],
-            cColB=self.theTheme.colHidden[2],
-            mColR=self.theTheme.colMod[0],
-            mColG=self.theTheme.colMod[1],
-            mColB=self.theTheme.colMod[2],
+            tColR=self.mainTheme.colText[0],
+            tColG=self.mainTheme.colText[1],
+            tColB=self.mainTheme.colText[2],
+            hColR=self.mainTheme.colHead[0],
+            hColG=self.mainTheme.colHead[1],
+            hColB=self.mainTheme.colHead[2],
+            aColR=self.mainTheme.colVal[0],
+            aColG=self.mainTheme.colVal[1],
+            aColB=self.mainTheme.colVal[2],
+            eColR=self.mainTheme.colEmph[0],
+            eColG=self.mainTheme.colEmph[1],
+            eColB=self.mainTheme.colEmph[2],
+            kColR=self.mainTheme.colKey[0],
+            kColG=self.mainTheme.colKey[1],
+            kColB=self.mainTheme.colKey[2],
+            cColR=self.mainTheme.colHidden[0],
+            cColG=self.mainTheme.colHidden[1],
+            cColB=self.mainTheme.colHidden[2],
+            mColR=self.mainTheme.colMod[0],
+            mColG=self.mainTheme.colMod[1],
+            mColB=self.mainTheme.colMod[2],
         )
         self.document().setDefaultStyleSheet(styleSheet)
 
@@ -582,7 +568,7 @@ class GuiDocViewer(QTextBrowser):
 # END Class GuiDocViewer
 
 
-class GuiDocViewHistory():
+class GuiDocViewHistory:
 
     def __init__(self, docViewer):
 
@@ -722,20 +708,20 @@ class GuiDocViewHistory():
 class GuiDocViewHeader(QWidget):
 
     def __init__(self, docViewer):
-        QWidget.__init__(self, docViewer)
+        super().__init__(parent=docViewer)
 
         logger.debug("Initialising GuiDocViewHeader ...")
 
         self.mainConf   = novelwriter.CONFIG
         self.docViewer  = docViewer
-        self.theParent  = docViewer.theParent
+        self.mainGui    = docViewer.mainGui
         self.theProject = docViewer.theProject
-        self.theTheme   = docViewer.theTheme
+        self.mainTheme  = docViewer.mainTheme
 
         # Internal Variables
         self._docHandle = None
 
-        fPx = int(0.9*self.theTheme.fontPixelSize)
+        fPx = int(0.9*self.mainTheme.fontPixelSize)
         hSp = self.mainConf.pxInt(6)
 
         # Main Widget Settings
@@ -752,17 +738,17 @@ class GuiDocViewHeader(QWidget):
         self.theTitle.setFixedHeight(fPx)
 
         lblFont = self.theTitle.font()
-        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
         self.theTitle.setFont(lblFont)
 
         buttonStyle = (
             "QToolButton {{border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*self.theTheme.colText)
+        ).format(*self.mainTheme.colText)
 
         # Buttons
         self.backButton = QToolButton(self)
-        self.backButton.setIcon(self.theTheme.getIcon("backward"))
+        self.backButton.setIcon(self.mainTheme.getIcon("backward"))
         self.backButton.setContentsMargins(0, 0, 0, 0)
         self.backButton.setIconSize(QSize(fPx, fPx))
         self.backButton.setFixedSize(fPx, fPx)
@@ -773,7 +759,7 @@ class GuiDocViewHeader(QWidget):
         self.backButton.clicked.connect(self.docViewer.navBackward)
 
         self.forwardButton = QToolButton(self)
-        self.forwardButton.setIcon(self.theTheme.getIcon("forward"))
+        self.forwardButton.setIcon(self.mainTheme.getIcon("forward"))
         self.forwardButton.setContentsMargins(0, 0, 0, 0)
         self.forwardButton.setIconSize(QSize(fPx, fPx))
         self.forwardButton.setFixedSize(fPx, fPx)
@@ -784,7 +770,7 @@ class GuiDocViewHeader(QWidget):
         self.forwardButton.clicked.connect(self.docViewer.navForward)
 
         self.refreshButton = QToolButton(self)
-        self.refreshButton.setIcon(self.theTheme.getIcon("refresh"))
+        self.refreshButton.setIcon(self.mainTheme.getIcon("refresh"))
         self.refreshButton.setContentsMargins(0, 0, 0, 0)
         self.refreshButton.setIconSize(QSize(fPx, fPx))
         self.refreshButton.setFixedSize(fPx, fPx)
@@ -795,7 +781,7 @@ class GuiDocViewHeader(QWidget):
         self.refreshButton.clicked.connect(self._refreshDocument)
 
         self.closeButton = QToolButton(self)
-        self.closeButton.setIcon(self.theTheme.getIcon("close"))
+        self.closeButton.setIcon(self.mainTheme.getIcon("close"))
         self.closeButton.setContentsMargins(0, 0, 0, 0)
         self.closeButton.setIconSize(QSize(fPx, fPx))
         self.closeButton.setFixedSize(fPx, fPx)
@@ -838,9 +824,9 @@ class GuiDocViewHeader(QWidget):
         theme rather than the main GUI.
         """
         thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.mainTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
 
         self.setPalette(thePalette)
         self.theTitle.setPalette(thePalette)
@@ -862,15 +848,15 @@ class GuiDocViewHeader(QWidget):
 
         if self.mainConf.showFullPath:
             tTitle = []
-            tTree = self.theProject.projTree.getItemPath(tHandle)
+            tTree = self.theProject.tree.getItemPath(tHandle)
             for aHandle in reversed(tTree):
-                nwItem = self.theProject.projTree[aHandle]
+                nwItem = self.theProject.tree[aHandle]
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
             sSep = "  %s  " % nwUnicode.U_RSAQUO
             self.theTitle.setText(sSep.join(tTitle))
         else:
-            nwItem = self.theProject.projTree[tHandle]
+            nwItem = self.theProject.tree[tHandle]
             if nwItem is None:
                 return False
             self.theTitle.setText(nwItem.itemName)
@@ -896,14 +882,14 @@ class GuiDocViewHeader(QWidget):
     def _closeDocument(self):
         """Trigger the close editor/viewer on the main window.
         """
-        self.theParent.closeDocViewer()
+        self.mainGui.closeDocViewer()
         return
 
     def _refreshDocument(self):
         """Reload the content of the document.
         """
-        if self.docViewer.docHandle() == self.theParent.docEditor.docHandle():
-            self.theParent.saveDocument()
+        if self.docViewer.docHandle() == self.mainGui.docEditor.docHandle():
+            self.mainGui.saveDocument()
         self.docViewer.reloadText()
         return
 
@@ -915,7 +901,7 @@ class GuiDocViewHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.theParent.treeView.setSelectedHandle(self._docHandle, doScroll=True)
+        self.mainGui.projView.setSelectedHandle(self._docHandle, doScroll=True)
         return
 
 # END Class GuiDocViewHeader
@@ -929,32 +915,32 @@ class GuiDocViewHeader(QWidget):
 class GuiDocViewFooter(QWidget):
 
     def __init__(self, docViewer):
-        QWidget.__init__(self, docViewer)
+        super().__init__(parent=docViewer)
 
         logger.debug("Initialising GuiDocViewFooter ...")
 
         self.mainConf  = novelwriter.CONFIG
         self.docViewer = docViewer
-        self.theParent = docViewer.theParent
-        self.theTheme  = docViewer.theTheme
-        self.viewMeta  = docViewer.theParent.viewMeta
+        self.mainGui   = docViewer.mainGui
+        self.mainTheme = docViewer.mainTheme
+        self.viewMeta  = docViewer.mainGui.viewMeta
 
         # Internal Variables
         self._docHandle = None
 
-        fPx = int(0.9*self.theTheme.fontPixelSize)
+        fPx = int(0.9*self.mainTheme.fontPixelSize)
         bSp = self.mainConf.pxInt(2)
         hSp = self.mainConf.pxInt(8)
 
         # Icons
-        stickyOn  = self.theTheme.getPixmap("sticky-on", (fPx, fPx))
-        stickyOff = self.theTheme.getPixmap("sticky-off", (fPx, fPx))
+        stickyOn  = self.mainTheme.getPixmap("sticky-on", (fPx, fPx))
+        stickyOff = self.mainTheme.getPixmap("sticky-off", (fPx, fPx))
         stickyIcon = QIcon()
         stickyIcon.addPixmap(stickyOn, QIcon.Normal, QIcon.On)
         stickyIcon.addPixmap(stickyOff, QIcon.Normal, QIcon.Off)
 
-        bulletOn  = self.theTheme.getPixmap("bullet-on", (fPx, fPx))
-        bulletOff = self.theTheme.getPixmap("bullet-off", (fPx, fPx))
+        bulletOn  = self.mainTheme.getPixmap("bullet-on", (fPx, fPx))
+        bulletOff = self.mainTheme.getPixmap("bullet-off", (fPx, fPx))
         bulletIcon = QIcon()
         bulletIcon.addPixmap(bulletOn, QIcon.Normal, QIcon.On)
         bulletIcon.addPixmap(bulletOff, QIcon.Normal, QIcon.Off)
@@ -966,13 +952,13 @@ class GuiDocViewFooter(QWidget):
         buttonStyle = (
             "QToolButton {{border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*self.theTheme.colText)
+        ).format(*self.mainTheme.colText)
 
         # Show/Hide Details
         self.showHide = QToolButton(self)
         self.showHide.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.showHide.setStyleSheet(buttonStyle)
-        self.showHide.setIcon(self.theTheme.getIcon("reference"))
+        self.showHide.setIcon(self.mainTheme.getIcon("reference"))
         self.showHide.setIconSize(QSize(fPx, fPx))
         self.showHide.setFixedSize(QSize(fPx, fPx))
         self.showHide.clicked.connect(self._doShowHide)
@@ -1053,7 +1039,7 @@ class GuiDocViewFooter(QWidget):
         self.lblSynopsis.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
         lblFont = self.font()
-        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
         self.lblRefs.setFont(lblFont)
         self.lblSticky.setFont(lblFont)
         self.lblComments.setFont(lblFont)
@@ -1098,9 +1084,9 @@ class GuiDocViewFooter(QWidget):
         theme rather than the main GUI.
         """
         thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.mainTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
 
         self.setPalette(thePalette)
         self.lblRefs.setPalette(thePalette)
@@ -1154,14 +1140,14 @@ class GuiDocViewFooter(QWidget):
 
 class GuiDocViewDetails(QScrollArea):
 
-    def __init__(self, theParent):
-        QScrollArea.__init__(self, theParent)
+    def __init__(self, mainGui):
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiDocViewDetails ...")
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theProject = theParent.theProject
-        self.theTheme   = theParent.theTheme
+        self.mainGui    = mainGui
+        self.theProject = mainGui.theProject
+        self.mainTheme  = mainGui.mainTheme
 
         self.refList = QLabel("")
         self.refList.setWordWrap(True)
@@ -1170,7 +1156,7 @@ class GuiDocViewDetails(QScrollArea):
         self.refList.linkActivated.connect(self._linkClicked)
 
         self.linkStyle = "style='color: rgb({0},{1},{2})'".format(
-            *self.theTheme.colLink
+            *self.mainTheme.colLink
         )
 
         # Assemble
@@ -1185,6 +1171,7 @@ class GuiDocViewDetails(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setWidgetResizable(True)
         self.setMinimumHeight(self.mainConf.pxInt(50))
+        self.setFrameStyle(QFrame.NoFrame)
 
         logger.debug("GuiDocViewDetails initialisation complete")
 
@@ -1194,13 +1181,13 @@ class GuiDocViewDetails(QScrollArea):
         """Update the current list of document references from the
         project index.
         """
-        if self.theParent.docViewer.stickyRef:
+        if self.mainGui.docViewer.stickyRef:
             return
 
-        theRefs = self.theParent.theIndex.getBackReferenceList(tHandle)
+        theRefs = self.theProject.index.getBackReferenceList(tHandle)
         theList = []
         for tHandle in theRefs:
-            tItem = self.theProject.projTree[tHandle]
+            tItem = self.theProject.tree[tHandle]
             if tItem is not None:
                 theList.append("<a href='%s#%s' %s>%s</a>" % (
                     tHandle, theRefs[tHandle], self.linkStyle, tItem.itemName
@@ -1222,7 +1209,7 @@ class GuiDocViewDetails(QScrollArea):
         if len(theLink) == 21:
             tHandle = theLink[:13]
             tAnchor = theLink[13:]
-            self.theParent.viewDocument(tHandle, tAnchor)
+            self.mainGui.viewDocument(tHandle, tAnchor)
         return
 
 # END Class GuiDocViewDetails

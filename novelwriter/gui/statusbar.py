@@ -41,22 +41,22 @@ logger = logging.getLogger(__name__)
 
 class GuiMainStatus(QStatusBar):
 
-    def __init__(self, theParent):
-        QStatusBar.__init__(self, theParent)
+    def __init__(self, mainGui):
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiMainStatus ...")
 
         self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainGui   = mainGui
+        self.mainTheme = mainGui.mainTheme
         self.refTime   = None
         self.userIdle  = False
 
-        colNone = QColor(*self.theTheme.statNone)
-        colTrue = QColor(*self.theTheme.statUnsaved)
-        colFalse = QColor(*self.theTheme.statSaved)
+        colNone = QColor(*self.mainTheme.statNone)
+        colTrue = QColor(*self.mainTheme.statUnsaved)
+        colFalse = QColor(*self.mainTheme.statSaved)
 
-        iPx = self.theTheme.baseIconSize
+        iPx = self.mainTheme.baseIconSize
 
         # Permanent Widgets
         # =================
@@ -66,7 +66,7 @@ class GuiMainStatus(QStatusBar):
         # The Spell Checker Language
         self.langIcon = QLabel("")
         self.langText = QLabel(self.tr("None"))
-        self.langIcon.setPixmap(self.theTheme.getPixmap("status_lang", (iPx, iPx)))
+        self.langIcon.setPixmap(self.mainTheme.getPixmap("status_lang", (iPx, iPx)))
         self.langIcon.setContentsMargins(0, 0, 0, 0)
         self.langText.setContentsMargins(0, 0, xM, 0)
         self.addPermanentWidget(self.langIcon)
@@ -91,7 +91,7 @@ class GuiMainStatus(QStatusBar):
         # The Project and Session Stats
         self.statsIcon = QLabel()
         self.statsText = QLabel("")
-        self.statsIcon.setPixmap(self.theTheme.getPixmap("status_stats", (iPx, iPx)))
+        self.statsIcon.setPixmap(self.mainTheme.getPixmap("status_stats", (iPx, iPx)))
         self.statsIcon.setContentsMargins(0, 0, 0, 0)
         self.statsText.setContentsMargins(0, 0, xM, 0)
         self.addPermanentWidget(self.statsIcon)
@@ -99,14 +99,14 @@ class GuiMainStatus(QStatusBar):
 
         # The Session Clock
         # Set the mimimum width so the label doesn't rescale every second
-        self.timePixmap = self.theTheme.getPixmap("status_time", (iPx, iPx))
-        self.idlePixmap = self.theTheme.getPixmap("status_idle", (iPx, iPx))
+        self.timePixmap = self.mainTheme.getPixmap("status_time", (iPx, iPx))
+        self.idlePixmap = self.mainTheme.getPixmap("status_idle", (iPx, iPx))
 
         self.timeIcon = QLabel()
         self.timeText = QLabel("")
         self.timeIcon.setPixmap(self.timePixmap)
         self.timeText.setToolTip(self.tr("Session Time"))
-        self.timeText.setMinimumWidth(self.theTheme.getTextWidth("00:00:00:"))
+        self.timeText.setMinimumWidth(self.mainTheme.getTextWidth("00:00:00:"))
         self.timeIcon.setContentsMargins(0, 0, 0, 0)
         self.timeText.setContentsMargins(0, 0, 0, 0)
         self.addPermanentWidget(self.timeIcon)

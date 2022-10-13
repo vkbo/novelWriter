@@ -1,5 +1,5 @@
 %%~name: New Scene
-%%~path: 31489056e0916/0e17daca5f3e1
+%%~path: 000000000000d/000000000000f
 %%~kind: NOVEL/DOCUMENT
 # Novel
 
@@ -21,6 +21,9 @@
 
 This is a paragraph of nonsense text.
 
+This is another paragraph
+with a line separator in it.
+
 This is another paragraph of much longer nonsense text. It is in fact 1 very very NONSENSICAL nonsense text! We can also try replacing “quotes”, even single ‘quotes’ are replaced. Isn’t that nice? We can hyphen-ate, make dashes – and even longer dashes — if we want. Ellipsis? Not a problem either … How about three hyphens — for long dash? It works too.
 
 “Full line double quoted text.”
@@ -34,6 +37,8 @@ Some “ double quoted text with spaces padded ”.
 % synopsis: No space before this colon.
 
 Add space before this colon : See?
+
+But don’t add a double space : See?
 
 	“Tab-indented text”
 

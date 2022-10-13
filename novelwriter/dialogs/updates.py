@@ -43,14 +43,14 @@ logger = logging.getLogger(__name__)
 
 class GuiUpdates(QDialog):
 
-    def __init__(self, theParent):
-        QDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiUpdates ...")
         self.setObjectName("GuiUpdates")
 
-        self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
+        self.mainConf = novelwriter.CONFIG
+        self.mainGui  = mainGui
 
         self.setWindowTitle(self.tr("Check for Updates"))
 
@@ -61,7 +61,7 @@ class GuiUpdates(QDialog):
 
         # Left Box
         self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(self.theParent.theTheme.getPixmap("novelwriter", (nPx, nPx)))
+        self.nwIcon.setPixmap(self.mainGui.mainTheme.getPixmap("novelwriter", (nPx, nPx)))
 
         self.leftBox = QVBoxLayout()
         self.leftBox.addWidget(self.nwIcon)

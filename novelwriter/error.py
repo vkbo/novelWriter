@@ -61,7 +61,7 @@ def formatException(exc):
 class NWErrorMessage(QDialog):
 
     def __init__(self, parent):
-        QDialog.__init__(self, parent=parent)
+        super().__init__(parent=parent)
         self.setObjectName("NWErrorMessage")
 
         # Widgets
@@ -87,6 +87,8 @@ class NWErrorMessage(QDialog):
         self.mainBox.addWidget(self.btnBox,  2, 0, 1, 2)
         self.mainBox.setSpacing(16)
 
+        # Pick a random window title from a set of error messages by
+        # Hex, the computer, from Discworld
         self.setWindowTitle([
             "+++ Out of Cheese Error +++",
             "+++ Divide by Cucumber Error +++",
