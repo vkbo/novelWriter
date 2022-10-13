@@ -27,8 +27,7 @@ from shutil import copyfile
 from mock import causeOSError
 from tools import C, buildTestProject, cmpFiles
 
-from novelwriter.core.project import NWProject
-from novelwriter.core.doctools import DocMerger
+from novelwriter.core import NWProject, DocMerger, DocSplitter, NWDoc
 
 
 @pytest.mark.core
@@ -39,8 +38,8 @@ def testCoreDocTools_DocMerger(monkeypatch, mockGUI, fncDir, outDir, refDir, moc
     mockRnd.reset()
     buildTestProject(theProject, fncDir)
 
-    # Create File to Merge
-    # ====================
+    # Create Files to Merge
+    # =====================
 
     hChapter1 = theProject.newFile("Chapter 1", C.hNovelRoot)
     hSceneOne11 = theProject.newFile("Scene 1.1", hChapter1)
@@ -118,3 +117,136 @@ def testCoreDocTools_DocMerger(monkeypatch, mockGUI, fncDir, outDir, refDir, moc
     docMerger.writeTargetDoc()
 
 # END Test testCoreDocTools_DocMerger
+
+
+@pytest.mark.core
+def testCoreDocTools_DocSplitter(monkeypatch, mockGUI, fncDir, outDir, refDir, mockRnd, ipsumText):
+    """Test the DocSplitter utility.
+    """
+    theProject = NWProject(mockGUI)
+    mockRnd.reset()
+    buildTestProject(theProject, fncDir)
+
+    # Create File to Split
+    # ====================
+
+    hSplitDoc = theProject.newFile("Split Doc", C.hNovelRoot)
+
+    docData = [
+        "# Part One", ipsumText[0],
+        "## Chapter One", ipsumText[1],
+        "### Scene One", ipsumText[2],
+        "#### Section One", ipsumText[3],
+        "#### Section Two", ipsumText[4],
+        "### Scene Two", ipsumText[0],
+        "## Chapter Two", ipsumText[1],
+        "### Scene Three", ipsumText[2],
+        "### Scene Four", ipsumText[3],
+        "### Scene Five", ipsumText[4],
+    ]
+    splitData = [
+        (0, 1,  "Part One"),
+        (4, 2,  "Chapter One"),
+        (8, 3,  "Scene One"),
+        (12, 4, "Section One"),
+        (16, 4, "Section Two"),
+        (20, 3, "Scene Two"),
+        (24, 2, "Chapter Two"),
+        (28, 3, "Scene Three"),
+        (32, 3, "Scene Four"),
+        (36, 3, "Scene Five"),
+    ]
+
+    docText = "\n\n".join(docData)
+    docRaw = docText.splitlines()
+    assert NWDoc(theProject, hSplitDoc).writeDocument(docText) is True
+
+    docSplitter = DocSplitter(theProject, hSplitDoc)
+    assert docSplitter._srcItem.isFileType()
+    assert docSplitter.getError() == ""
+
+    # Run the split algorithm
+    docSplitter.splitDocument(splitData, docRaw)
+    for i, (lineNo, hLevel, hLabel) in enumerate(splitData):
+        assert docSplitter._rawData[i] == (docRaw[lineNo:lineNo+4], hLevel, hLabel)
+
+    # Test flat split into same parent
+    docSplitter.setParentItem(C.hNovelRoot)
+    assert docSplitter._inFolder is False
+
+    # Cause write error on all chunks
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        resStatus = []
+        for status, _, _ in docSplitter.writeDocuments(False):
+            resStatus.append(status)
+        assert not any(resStatus)
+        assert docSplitter.getError() == "OSError: Mock OSError"
+
+    # Generate as flat structure in root folder
+    resStatus = []
+    resDocHandle = []
+    resNearHandle = []
+    for status, dHandle, nHandle in docSplitter.writeDocuments(False):
+        resStatus.append(status)
+        resDocHandle.append(dHandle)
+        resNearHandle.append(nHandle)
+
+    assert all(resStatus)
+    assert resDocHandle == [
+        "000000000001b", "000000000001c", "000000000001d", "000000000001e", "000000000001f",
+        "0000000000020", "0000000000021", "0000000000022", "0000000000023", "0000000000024",
+    ]
+    assert resNearHandle == [  # Each document should be next to the previous one
+        hSplitDoc,       "000000000001b", "000000000001c", "000000000001d", "000000000001e",
+        "000000000001f", "0000000000020", "0000000000021", "0000000000022", "0000000000023",
+    ]
+
+    # Generate as hierarchy in new folder
+    hSplitFolder = docSplitter.newParentFolder(C.hNovelRoot, "Split Folder")
+    assert docSplitter._inFolder is True
+
+    resStatus = []
+    resDocHandle = []
+    resNearHandle = []
+    for status, dHandle, nHandle in docSplitter.writeDocuments(True):
+        resStatus.append(status)
+        resDocHandle.append(dHandle)
+        resNearHandle.append(nHandle)
+
+    assert all(resStatus)
+    assert resDocHandle == [
+        "0000000000026",  # Part One
+        "0000000000027",  # Chapter One
+        "0000000000028",  # Scene One
+        "0000000000029",  # Section One
+        "000000000002a",  # Section Two
+        "000000000002b",  # Scene Two
+        "000000000002c",  # Chapter Two
+        "000000000002d",  # Scene Three
+        "000000000002e",  # Scene Four
+        "000000000002f",  # Scene Five
+    ]
+    assert resNearHandle == [
+        hSplitFolder,     # Part One is after Split Folder
+        "0000000000026",  # Chapter One is after Part One
+        "0000000000027",  # Scene One is after Chapter One
+        "0000000000028",  # Section One is after Scene One
+        "0000000000029",  # Section Two is after Section One
+        "0000000000028",  # Scene Two is after Scene One
+        "0000000000027",  # Chapter Two is after Chapter One
+        "000000000002c",  # Scene Three is after Chapter Two
+        "000000000002d",  # Scene Four is after Scene Three
+        "000000000002e",  # Scene Five is after Scene Four
+    ]
+
+    # Check handling of improper initialisation
+    docSplitter = DocSplitter(theProject, C.hInvalid)
+    assert docSplitter._srcHandle is None
+    assert docSplitter._srcItem is None
+    assert docSplitter.newParentFolder(C.hNovelRoot, "Split Folder") is None
+    assert list(docSplitter.writeDocuments(False)) == []
+
+    theProject.saveProject()
+
+# END Test testCoreDocTools_DocSplitter

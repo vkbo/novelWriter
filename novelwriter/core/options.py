@@ -42,7 +42,7 @@ VALID_MAP = {
         "widthCol3", "sortCol", "sortOrder", "incNovel", "incNotes",
         "hideZeros", "hideNegative", "groupByDay", "showIdleTime", "histMax"
     },
-    "GuiDocSplit": {"spLevel"},
+    "GuiDocSplit": {"spLevel", "intoFolder", "docHierarchy"},
     "GuiBuildNovel": {
         "winWidth", "winHeight", "boxWidth", "docWidth", "hideScene",
         "hideSection", "addNovel", "addNotes", "ignoreFlag", "justifyText",

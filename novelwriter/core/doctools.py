@@ -4,7 +4,8 @@ novelWriter – Project Document Tools
 A collection of tools to create and manipulate documents
 
 File History:
-Created: 2022-10-02 [2.0b1]
+Created: 2022-10-02 [2.0b1] DocMerger
+Created: 2022-10-11 [2.0b1] DocSplitter
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -25,6 +26,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 
+from novelwriter.common import minmax
 from novelwriter.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
@@ -117,3 +119,122 @@ class DocMerger:
         return status
 
 # END Class DocMerger
+
+
+class DocSplitter:
+
+    def __init__(self, theProject, sHandle):
+
+        self.theProject = theProject
+
+        self._error = ""
+        self._parHandle = None
+        self._srcHandle = None
+        self._srcItem = None
+
+        self._inFolder = False
+        self._rawData = []
+
+        srcItem = self.theProject.tree[sHandle]
+        if srcItem is not None and srcItem.isFileType():
+            self._srcHandle = sHandle
+            self._srcItem = srcItem
+
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def getError(self):
+        """Return any collected errors.
+        """
+        return self._error
+
+    def setParentItem(self, pHandle):
+        """Set the item that will be the top level parent item for the
+        new documents.
+        """
+        self._parHandle = pHandle
+        self._inFolder = False
+        return
+
+    def newParentFolder(self, pHandle, folderLabel):
+        """Create a new folder that will be the top level parent item
+        for the new documents.
+        """
+        if self._srcItem is None:
+            return None
+
+        newHandle = self.theProject.newFolder(folderLabel, pHandle)
+        newItem = self.theProject.tree[newHandle]
+        newItem.setStatus(self._srcItem.itemStatus)
+        newItem.setImport(self._srcItem.itemImport)
+
+        self._parHandle = newHandle
+        self._inFolder = True
+
+        return newHandle
+
+    def splitDocument(self, splitData, splitText):
+        """Loop through the split data record and perform the split job.
+        """
+        self._rawData = []
+        buffer = splitText.copy()
+        for lineNo, hLevel, hLabel in reversed(splitData):
+            chunk = buffer[lineNo:]
+            buffer = buffer[:lineNo]
+            self._rawData.insert(0, (chunk, hLevel, hLabel))
+
+        return True
+
+    def writeDocuments(self, docHierarchy):
+        """An iterator that will write each document in the buffer, and
+        return its new handle, parent handle, and sibling handle.
+        """
+        if self._srcHandle is None:
+            return
+
+        pHandle = self._parHandle
+        nHandle = self._parHandle if self._inFolder else self._srcHandle
+        hHandle = [self._parHandle, None, None, None, None]
+
+        pLevel = 0
+        for docText, hLevel, docLabel in self._rawData:
+
+            hLevel = minmax(hLevel, 1, 4)
+            if pLevel == 0:
+                pLevel = hLevel
+
+            if docHierarchy:
+                if hLevel == 1:
+                    pHandle = self._parHandle
+                elif hLevel == 2:
+                    pHandle = hHandle[1] or hHandle[0]
+                elif hLevel == 3:
+                    pHandle = hHandle[2] or hHandle[1] or hHandle[0]
+                elif hLevel == 4:
+                    pHandle = hHandle[3] or hHandle[2] or hHandle[1] or hHandle[0]
+
+                if hLevel < pLevel:
+                    nHandle = hHandle[hLevel] or hHandle[0]
+                elif hLevel > pLevel:
+                    nHandle = pHandle
+
+            dHandle = self.theProject.newFile(docLabel, pHandle)
+            hHandle[hLevel] = dHandle
+
+            outDoc = NWDoc(self.theProject, dHandle)
+            status = outDoc.writeDocument("\n".join(docText))
+            if not status:
+                self._error = outDoc.getError()
+
+            yield status, dHandle, nHandle
+
+            hHandle[hLevel] = dHandle
+            nHandle = dHandle
+            pLevel = hLevel
+
+        return
+
+# END Class DocSplitter

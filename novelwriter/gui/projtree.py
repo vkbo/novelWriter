@@ -40,8 +40,9 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import DocMerger
+from novelwriter.core.doctools import DocSplitter
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.dialogs import GuiDocMerge, GuiEditLabel
+from novelwriter.dialogs import GuiDocMerge, GuiDocSplit, GuiEditLabel
 from novelwriter.constants import nwHeaders, trConst, nwLabels
 
 logger = logging.getLogger(__name__)
@@ -516,18 +517,14 @@ class GuiProjectTree(QTreeWidget):
 
         # Handle new file creation
         if itemType == nwItemType.FILE and hLevel > 0:
-            if self.theProject.writeNewFile(tHandle, hLevel, not isNote):
-                # If successful, update word count
-                wC = self.theProject.index.getCounts(tHandle)[1]
-                self.propagateCount(tHandle, wC)
-                self.projView.wordCountsChanged.emit()
+            self.theProject.writeNewFile(tHandle, hLevel, not isNote)
 
         # Add the new item to the project tree
-        self.revealNewTreeItem(tHandle, nHandle)
+        self.revealNewTreeItem(tHandle, nHandle=nHandle, wordCount=True)
 
         return True
 
-    def revealNewTreeItem(self, tHandle, nHandle=None):
+    def revealNewTreeItem(self, tHandle, nHandle=None, wordCount=False):
         """Reveal a newly added project item in the project tree.
         """
         nwItem = self.theProject.tree[tHandle]
@@ -537,6 +534,11 @@ class GuiProjectTree(QTreeWidget):
         trItem = self._addTreeItem(nwItem, nHandle)
         if trItem is None:
             return False
+
+        if nwItem.isFileType() and wordCount:
+            wC = self.theProject.index.getCounts(tHandle)[1]
+            self.propagateCount(tHandle, wC)
+            self.projView.wordCountsChanged.emit()
 
         pHandle = nwItem.itemParent
         if pHandle is not None and pHandle in self._treeMap:
@@ -801,17 +803,16 @@ class GuiProjectTree(QTreeWidget):
             logger.debug("Permanently deleting item '%s'", tHandle)
 
             self.propagateCount(tHandle, 0)
-            itemList = self.getTreeFromHandle(tHandle)
 
             trItemP = trItemS.parent()
             tIndex = trItemP.indexOfChild(trItemS)
             trItemP.takeChild(tIndex)
 
-            for dHandle in reversed(itemList):
+            for dHandle in reversed(self.getTreeFromHandle(tHandle)):
                 if self.mainGui.docEditor.docHandle() == dHandle:
                     self.mainGui.closeDocument()
-                self.theProject.removeItem(tHandle)
-                self._treeMap.pop(tHandle, None)
+                self.theProject.removeItem(dHandle)
+                self._treeMap.pop(dHandle, None)
 
             self._alertTreeChange(tHandle, flush=flush)
             self.projView.wordCountsChanged.emit()
@@ -1432,14 +1433,14 @@ class GuiProjectTree(QTreeWidget):
 
             if not docMerger.writeTargetDoc():
                 self.mainGui.makeAlert([
-                    self.tr("Could not save document."), docMerger.getError()
+                    self.tr("Could not write document content."), docMerger.getError()
                 ], nwAlert.ERROR)
                 return False
 
-            if newFile:
-                self.mainGui.projView.revealNewTreeItem(mHandle, tHandle)
-
             self.theProject.index.reIndexHandle(mHandle)
+            if newFile:
+                self.revealNewTreeItem(mHandle, nHandle=tHandle, wordCount=True)
+
             self.mainGui.openDocument(mHandle, doScroll=True)
 
             if mrgData.get("moveToTrash", False):
@@ -1458,7 +1459,54 @@ class GuiProjectTree(QTreeWidget):
         return True
 
     def _splitDocument(self, tHandle):
-        return
+        """Split a document into multiple documents.
+        """
+        logger.info("Request to split items with handle '%s'", tHandle)
+
+        tItem = self.theProject.tree[tHandle]
+        if tItem is None:
+            return False
+
+        if not tItem.isFileType():
+            logger.error("Only documents can be split")
+            return False
+
+        dlgSplit = GuiDocSplit(self.mainGui, tHandle)
+        dlgSplit.exec_()
+
+        if dlgSplit.result() == QDialog.Accepted:
+
+            splitData, splitText = dlgSplit.getData()
+
+            headerList = splitData.get("headerList", [])
+            intoFolder = splitData.get("intoFolder", False)
+            docHierarchy = splitData.get("docHierarchy", False)
+
+            docSplit = DocSplitter(self.theProject, tHandle)
+            if intoFolder:
+                fHandle = docSplit.newParentFolder(tItem.itemParent, tItem.itemName)
+                self.revealNewTreeItem(fHandle, nHandle=tHandle)
+                self._alertTreeChange(fHandle, flush=False)
+            else:
+                docSplit.setParentItem(tItem.itemParent)
+
+            docSplit.splitDocument(headerList, splitText)
+            for writeOk, dHandle, nHandle in docSplit.writeDocuments(docHierarchy):
+                self.theProject.index.reIndexHandle(dHandle)
+                self.revealNewTreeItem(dHandle, nHandle=nHandle, wordCount=True)
+                self._alertTreeChange(dHandle, flush=False)
+                if not writeOk:
+                    self.mainGui.makeAlert([
+                        self.tr("Could not write document content."), docSplit.getError()
+                    ], nwAlert.ERROR)
+
+            self.saveTreeOrder()
+
+        else:
+            logger.info("Action cancelled by user")
+            return False
+
+        return True
 
     def _scanChildren(self, theList, tItem, tIndex):
         """This is a recursive function returning all items in a tree

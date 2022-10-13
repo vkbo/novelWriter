@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidgetItem, QDialog
 
 from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass
 from novelwriter.core import NWDoc
-from novelwriter.dialogs import GuiEditLabel, GuiDocMerge
+from novelwriter.dialogs import GuiEditLabel, GuiDocMerge, GuiDocSplit
 from novelwriter.gui.projtree import GuiProjectTree
 
 
@@ -675,7 +675,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
 
 
 @pytest.mark.gui
-def testGuiProjTree_MergeDocument(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ipsumText):
+def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ipsumText):
     """Test the merge document function.
     """
     mergeData = {}
@@ -780,7 +780,122 @@ def testGuiProjTree_MergeDocument(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ip
 
     # qtbot.stop()
 
-# END Test testGuiProjTree_MergeDocument
+# END Test testGuiProjTree_MergeDocuments
+
+
+@pytest.mark.gui
+def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ipsumText):
+    """Test the split document function.
+    """
+    splitData = {}
+    splitText = []
+
+    # Block message box
+    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
+
+    monkeypatch.setattr(GuiDocSplit, "__init__", lambda *a: None)
+    monkeypatch.setattr(GuiDocSplit, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiDocSplit, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiDocSplit, "getData", lambda *a: (splitData, splitText))
+
+    # Create a project
+    prjDir = os.path.join(fncDir, "project")
+    buildTestProject(nwGUI, prjDir)
+
+    theProject = nwGUI.theProject
+    projTree = nwGUI.projView.projTree
+
+    docText = (
+        "Text\n\n"
+        "##! Prologue\n\nText\n\n"
+        "## Chapter One\n\nText\n\n"
+        "### Scene One\n\nText\n\n"
+        "### Scene Two\n\nText\n\n"
+        "## Chapter Two\n\nText\n\n"
+        "### Scene Three\n\nText\n\n"
+        "### Scene Four\n\nText\n\n"
+        "#! New Title\n\nText\n\n"
+        "## New Chapter\n\nText\n\n"
+        "### New Scene\n\nText\n\n"
+        "#### New Section\n\nText\n\n"
+    )
+
+    hSplitDoc = theProject.newFile("Split Doc", C.hNovelRoot)
+    theProject.writeNewFile(hSplitDoc, 1, True, docText)
+    projTree.revealNewTreeItem(hSplitDoc, nHandle=C.hNovelRoot, wordCount=True)
+
+    docText = f"# Split Doc\n\n{docText}"
+    splitData["headerList"] = [
+        (0, 1, "Split Doc"),
+        (4, 2, "Prologue"),
+        (8, 2, "Chapter One"),
+        (12, 3, "Scene One"),
+        (16, 3, "Scene Two"),
+        (20, 2, "Chapter Two"),
+        (24, 3, "Scene Three"),
+        (28, 3, "Scene Four"),
+        (32, 1, "New Title"),
+        (36, 2, "New Chapter"),
+        (40, 3, "New Scene"),
+        (44, 4, "New Section"),
+    ]
+
+    fstSet = [
+        "0000000000011", "0000000000012", "0000000000013", "0000000000014",
+        "0000000000015", "0000000000016", "0000000000017", "0000000000018",
+        "0000000000019", "000000000001a", "000000000001b", "000000000001c",
+    ]
+    sndSet = [
+        "000000000001d", "000000000001e", "000000000001f", "0000000000020",
+        "0000000000021", "0000000000022", "0000000000023", "0000000000024",
+        "0000000000025", "0000000000026", "0000000000027", "0000000000028",
+    ]
+    trdSet = [
+        "000000000002a", "000000000002b", "000000000002c", "000000000002d",
+        "000000000002e", "000000000002f", "0000000000030", "0000000000031",
+        "0000000000032", "0000000000033", "0000000000034", "0000000000035",
+    ]
+
+    # Try to split an invalid document and a non-document
+    assert projTree._splitDocument(C.hInvalid) is False
+    assert projTree._splitDocument(C.hNovelRoot) is False
+
+    # Split into same root folder
+    splitData["intoFolder"] = False
+
+    # Writing fails
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert projTree._splitDocument(hSplitDoc) is True
+        for tHandle in fstSet:
+            assert tHandle in theProject.tree
+            assert not os.path.isfile(os.path.join(prjDir, "content", f"{tHandle}.nwd"))
+
+    # Writing succeeds
+    assert projTree._splitDocument(hSplitDoc) is True
+    for tHandle in sndSet:
+        assert tHandle in theProject.tree
+        assert os.path.isfile(os.path.join(prjDir, "content", f"{tHandle}.nwd"))
+
+    # Add to a folder
+    splitData["intoFolder"] = True
+    assert projTree._splitDocument(hSplitDoc) is True
+    assert "0000000000029" in theProject.tree  # The folder
+    for tHandle in trdSet:
+        assert tHandle in theProject.tree
+        assert os.path.isfile(os.path.join(prjDir, "content", f"{tHandle}.nwd"))
+
+    # Cancelled by user
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiDocSplit, "result", lambda *a: QDialog.Rejected)
+        assert projTree._splitDocument(hSplitDoc) is False
+
+    # qtbot.stop()
+
+# END Test testGuiProjTree_SplitDocument
 
 
 @pytest.mark.gui

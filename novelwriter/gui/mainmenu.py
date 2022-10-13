@@ -244,11 +244,6 @@ class GuiMainMenu(QMenuBar):
         self.aImportFile.triggered.connect(lambda: self.mainGui.importDocument())
         self.docuMenu.addAction(self.aImportFile)
 
-        # Document > Split Document
-        self.aSplitDoc = QAction(self.tr("Split Document to Folder"), self)
-        self.aSplitDoc.triggered.connect(lambda: self.mainGui.splitDocument())
-        self.docuMenu.addAction(self.aSplitDoc)
-
         return
 
     def _buildEditMenu(self):
