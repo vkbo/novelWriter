@@ -45,22 +45,17 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
 
     docText = (
         "Text\n\n"
-        "##! Prologue\n\n"
-        "Text\n\n"
-        "## Chapter One\n\n"
-        "### Scene One\n\n"
-        "Text\n\n"
-        "### Scene Two\n\n"
-        "Text\n\n"
-        "## Chapter Two\n\n"
-        "### Scene Three\n\n"
-        "Text\n\n"
-        "### Scene Four\n\n"
-        "Text\n\n"
-        "#! New Title\n\n"
-        "## New Chapter\n\n"
-        "### New Scene\n\n"
-        "#### New Section\n\n"
+        "##! Prologue\n\nText\n\n"
+        "## Chapter One\n\nText\n\n"
+        "### Scene One\n\nText\n\n"
+        "### Scene Two\n\nText\n\n"
+        "## Chapter Two\n\nText\n\n"
+        "### Scene Three\n\nText\n\n"
+        "### Scene Four\n\nText\n\n"
+        "#! New Title\n\nText\n\n"
+        "## New Chapter\n\nText\n\n"
+        "### New Scene\n\nText\n\n"
+        "#### New Section\n\nText\n\n"
     )
 
     hSplitDoc = theProject.newFile("Split Doc", C.hNovelRoot)
@@ -90,15 +85,15 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     assert data["headerList"][0] == (0, 1, "Split Doc")
     assert data["headerList"][1] == (4, 2, "Prologue")
     assert data["headerList"][2] == (8, 2, "Chapter One")
-    assert data["headerList"][3] == (10, 3, "Scene One")
-    assert data["headerList"][4] == (14, 3, "Scene Two")
-    assert data["headerList"][5] == (18, 2, "Chapter Two")
-    assert data["headerList"][6] == (20, 3, "Scene Three")
-    assert data["headerList"][7] == (24, 3, "Scene Four")
-    assert data["headerList"][8] == (28, 1, "New Title")
-    assert data["headerList"][9] == (30, 2, "New Chapter")
-    assert data["headerList"][10] == (32, 3, "New Scene")
-    assert data["headerList"][11] == (34, 4, "New Section")
+    assert data["headerList"][3] == (12, 3, "Scene One")
+    assert data["headerList"][4] == (16, 3, "Scene Two")
+    assert data["headerList"][5] == (20, 2, "Chapter Two")
+    assert data["headerList"][6] == (24, 3, "Scene Three")
+    assert data["headerList"][7] == (28, 3, "Scene Four")
+    assert data["headerList"][8] == (32, 1, "New Title")
+    assert data["headerList"][9] == (36, 2, "New Chapter")
+    assert data["headerList"][10] == (40, 3, "New Scene")
+    assert data["headerList"][11] == (44, 4, "New Section")
 
     # Loading the dialog on a non-file item produces an empty list
     nwSplit._loadContent(C.hNovelRoot)
