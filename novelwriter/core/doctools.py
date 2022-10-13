@@ -26,6 +26,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 
+from novelwriter.common import minmax
 from novelwriter.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
@@ -131,6 +132,7 @@ class DocSplitter:
         self._srcHandle = None
         self._srcItem = None
 
+        self._inFolder = False
         self._rawData = []
 
         srcItem = self.theProject.tree[sHandle]
@@ -154,6 +156,7 @@ class DocSplitter:
         new documents.
         """
         self._parHandle = pHandle
+        self._inFolder = False
         return
 
     def newParentFolder(self, pHandle, folderLabel):
@@ -164,11 +167,12 @@ class DocSplitter:
             return None
 
         newHandle = self.theProject.newFolder(folderLabel, pHandle)
-        newItem = self.theProject.tree[self._parHandle]
+        newItem = self.theProject.tree[newHandle]
         newItem.setStatus(self._srcItem.itemStatus)
         newItem.setImport(self._srcItem.itemImport)
 
         self._parHandle = newHandle
+        self._inFolder = True
 
         return newHandle
 
@@ -184,23 +188,49 @@ class DocSplitter:
 
         return True
 
-    def writeDocuments(self):
+    def writeDocuments(self, docHierarchy):
         """An iterator that will write each document in the buffer, and
         return its new handle, parent handle, and sibling handle.
         """
-        nearHandle = self._parHandle
+        pHandle = self._parHandle
+        nHandle = self._parHandle if self._inFolder else self._srcHandle
+        hHandle = [self._parHandle, None, None, None, None]
+
+        pLevel = 0
         for docText, hLevel, docLabel in self._rawData:
 
-            newHandle = self.theProject.newFile(docLabel, self._parHandle)
+            hLevel = minmax(hLevel, 1, 4)
+            if pLevel == 0:
+                pLevel = hLevel
 
-            outDoc = NWDoc(self.theProject, newHandle)
+            if docHierarchy:
+                if hLevel == 1:
+                    pHandle = self._parHandle
+                elif hLevel == 2:
+                    pHandle = hHandle[1] or hHandle[0]
+                elif hLevel == 3:
+                    pHandle = hHandle[2] or hHandle[1] or hHandle[0]
+                elif hLevel == 4:
+                    pHandle = hHandle[3] or hHandle[2] or hHandle[1] or hHandle[0]
+
+                if hLevel < pLevel:
+                    nHandle = hHandle[hLevel] or hHandle[0]
+                elif hLevel > pLevel:
+                    nHandle = pHandle
+
+            dHandle = self.theProject.newFile(docLabel, pHandle)
+            hHandle[hLevel] = dHandle
+
+            outDoc = NWDoc(self.theProject, dHandle)
             status = outDoc.writeDocument("\n".join(docText))
             if not status:
                 self._error = outDoc.getError()
 
-            yield status, newHandle, nearHandle
+            yield status, dHandle, nHandle
 
-            nearHandle = newHandle
+            hHandle[hLevel] = dHandle
+            nHandle = dHandle
+            pLevel = hLevel
 
         return
 
