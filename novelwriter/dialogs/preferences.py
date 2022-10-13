@@ -128,9 +128,7 @@ class GuiPreferences(PagedDialog):
     def _saveWindowSize(self):
         """Save the dialog window size.
         """
-        winWidth = self.mainConf.rpxInt(self.width())
-        winHeight = self.mainConf.rpxInt(self.height())
-        self.mainConf.setPreferencesSize(winWidth, winHeight)
+        self.mainConf.setPreferencesSize(self.width(), self.height())
         return
 
 # END Class GuiPreferences

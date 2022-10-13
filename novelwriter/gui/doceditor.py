@@ -1982,6 +1982,11 @@ class GuiDocEditor(QTextEdit):
             nDelete = 3
             tInsert = nwUnicode.U_HELLIP
 
+        elif theOne == nwUnicode.U_LSEP:
+            # This resolves issue #1150
+            nDelete = 1
+            tInsert = nwUnicode.U_PSEP
+
         tCheck = tInsert
         if tCheck in self.mainConf.fmtPadBefore:
             if self._allowSpaceBeforeColon(theText, tCheck):

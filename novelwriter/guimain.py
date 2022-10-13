@@ -383,16 +383,24 @@ class GuiMain(QMainWindow):
 
         logger.info("Creating new project")
         if self.theProject.newProject(projData):
+
             self.hasProject = True
+            self.idleRefTime = time()
+            self.idleTime = 0.0
+
             self.rebuildTrees()
             self.saveProject()
+
             self.docEditor.setDictionaries()
             self.rebuildIndex(beQuiet=True)
+
             self.statusBar.setRefTime(self.theProject.projOpened)
             self.statusBar.setProjectStatus(nwState.GOOD)
             self.statusBar.setDocumentStatus(nwState.NONE)
             self.statusBar.setStatus(self.tr("New project created ..."))
+
             self._updateWindowTitle(self.theProject.projName)
+
         else:
             self.theProject.clearProject()
             return False
