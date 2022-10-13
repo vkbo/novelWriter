@@ -186,16 +186,17 @@ class GuiDocSplit(QDialog):
         self._data = {}
         self._data["sHandle"] = sHandle
 
+        self.listBox.clear()
+
         nwItem = self.theProject.tree[sHandle]
         if nwItem is None or not nwItem.isFileType():
-            return False
+            return
 
         spLevel = self.splitLevel.currentData()
         if not self._text:
             inDoc = NWDoc(self.theProject, sHandle)
             self._text = (inDoc.readDocument() or "").splitlines()
 
-        self.listBox.clear()
         for lineNo, aLine in enumerate(self._text):
 
             onLine = -1
@@ -233,6 +234,6 @@ class GuiDocSplit(QDialog):
                 newItem.setData(self.LABEL_ROLE, hLabel)
                 self.listBox.addItem(newItem)
 
-        return True
+        return
 
 # END Class GuiDocSplit
