@@ -91,6 +91,39 @@ final release.
 
 ----
 
+## Version 1.6.5 [2022-10-13]
+
+### Release Notes
+
+This is a bugfix release that fixes a a few minor issues. The idle time for new projects would be
+artificially inflated as the clock was not reset when the project was first created. This only
+affects the first entry in the writing statistics. A scaling issue for the Preferences dialog has
+also been fixed. It only affected screens with UI scaling enabled. Lastly, typing `Shift+Enter` in
+the text editor now creates a regular line break instead of a special line separator. The line
+separator serves no purpose in plain text, and was producing inconsistencies in how text is
+processed and displayed.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed a bug where the idle time was not properly zeroed when a new project was generated after
+  the wizard was closed. The idle time would be calculated from the time the previous project
+  closed, thus inflating the value. Issue #1149. PR #1159.
+* Fixes an issue where the window size of the Preferences dialog would have the GUI scaling factor
+  applied twice when the dialog was closed, resulting in the dialog growing in size each time it is
+  opened. Issue #989. PR #1159.
+
+**Other Changes**
+
+* The text editor no longer creates a Unicode line separator (U+2028) when the user presses
+  `Shift+Enter`. The line separator serves no purpose in a plain text editor, and the code in
+  general treats them as regular line break. This caused the line separator to display differently
+  before and after saving. The line separator character is now automatically replaced by a
+  paragraph separator. Issue #1150. PR #1159.
+
+----
+
 ## Version 1.6.4 [2022-09-29]
 
 ### Release Notes
