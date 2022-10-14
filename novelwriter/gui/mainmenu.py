@@ -40,6 +40,10 @@ logger = logging.getLogger(__name__)
 
 
 class GuiMainMenu(QMenuBar):
+    """The GUI main menu. All menu actions are defined here with the
+    main menu as the owner. Each widget that need them elsewhere need to
+    add them from this class.
+    """
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -77,12 +81,6 @@ class GuiMainMenu(QMenuBar):
         """Forward spell check check state to its action.
         """
         self.aSpellCheck.setChecked(theMode)
-        return
-
-    def setFocusMode(self, theMode):
-        """Forward focus mode check state to its action.
-        """
-        self.aFocusMode.setChecked(theMode)
         return
 
     ##
@@ -164,7 +162,7 @@ class GuiMainMenu(QMenuBar):
 
         # Project > Edit
         self.aEditItem = QAction(self.tr("Rename Item"), self)
-        self.aEditItem.setShortcuts(["F2"])
+        self.aEditItem.setShortcut("F2")
         self.aEditItem.triggered.connect(lambda: self.mainGui.editItemLabel(None))
         self.projMenu.addAction(self.aEditItem)
 
@@ -365,8 +363,6 @@ class GuiMainMenu(QMenuBar):
         # View > Focus Mode
         self.aFocusMode = QAction(self.tr("Focus Mode"), self)
         self.aFocusMode.setShortcut("F8")
-        self.aFocusMode.setCheckable(True)
-        self.aFocusMode.setChecked(self.mainGui.isFocusMode)
         self.aFocusMode.triggered.connect(lambda: self.mainGui.toggleFocusMode())
         self.viewMenu.addAction(self.aFocusMode)
 

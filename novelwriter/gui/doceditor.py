@@ -2645,7 +2645,7 @@ class GuiDocEditHeader(QWidget):
         self.editButton.setStyleSheet(buttonStyle)
         self.editButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.editButton.setVisible(False)
-        self.editButton.setToolTip(self.tr("Edit document meta"))
+        self.editButton.setToolTip(self.tr("Edit document label"))
         self.editButton.clicked.connect(self._editDocument)
 
         self.searchButton = QToolButton(self)

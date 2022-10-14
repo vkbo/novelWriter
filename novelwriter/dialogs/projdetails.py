@@ -450,8 +450,6 @@ class GuiProjectDetailsContents(QWidget):
         for tHandle, nwItem in self.theProject.tree.iterRoots(nwItemClass.NOVEL):
             self.novelValue.addItem(tIcon, nwItem.itemName, tHandle)
 
-        self.novelValue.setVisible(self.novelValue.count() > 1)
-
         return
 
     def _prepareData(self, rootHandle):
