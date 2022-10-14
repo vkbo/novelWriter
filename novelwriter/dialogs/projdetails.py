@@ -37,8 +37,8 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.enum import nwItemClass
 from novelwriter.common import numberToRoman
+from novelwriter.custom import PagedDialog, QSwitch
 from novelwriter.constants import nwLabels, nwUnicode
-from novelwriter.gui.custom import PagedDialog, QSwitch
 
 logger = logging.getLogger(__name__)
 

@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import nwAlert
-from novelwriter.gui.custom import QSwitch, QConfigLayout, PagedDialog
+from novelwriter.custom import QSwitch, QConfigLayout, PagedDialog
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 
 logger = logging.getLogger(__name__)

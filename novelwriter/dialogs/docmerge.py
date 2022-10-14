@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import (
     QListWidget, QListWidgetItem, QVBoxLayout,
 )
 
-from novelwriter.gui.custom import QHelpLabel, QSwitch
+from novelwriter.custom import QHelpLabel, QSwitch
 
 logger = logging.getLogger(__name__)
 
