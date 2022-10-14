@@ -38,7 +38,7 @@ from PyQt5.QtGui import (
 
 from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.error import logException
-from novelwriter.common import NWConfigParser, readTextFile
+from novelwriter.common import NWConfigParser, minmax, readTextFile
 from novelwriter.constants import nwLabels
 
 logger = logging.getLogger(__name__)
@@ -134,6 +134,7 @@ class GuiTheme:
         self.getPixmap = self.iconCache.getPixmap
         self.getItemIcon = self.iconCache.getItemIcon
         self.loadDecoration = self.iconCache.loadDecoration
+        self.getHeaderDecoration = self.iconCache.getHeaderDecoration
 
         # Extract Other Info
         self.guiDPI = qApp.primaryScreen().logicalDotsPerInchX()
@@ -457,13 +458,12 @@ class GuiIcons:
     ICON_KEYS = {
         # Project and GUI icons
         "novelwriter", "cls_archive", "cls_character", "cls_custom", "cls_entity", "cls_none",
-        "cls_novel", "cls_object", "cls_plot", "cls_timeline", "cls_trash", "cls_world", "doc_h0",
-        "doc_h1", "doc_h2", "doc_h3", "doc_h4", "proj_chapter", "proj_details", "proj_document",
-        "proj_folder", "proj_note", "proj_nwx", "proj_section", "proj_scene", "proj_stats",
-        "proj_title", "search_cancel", "search_case", "search_loop", "search_preserve",
-        "search_project", "search_regex", "search_word", "status_idle", "status_lang",
-        "status_lines", "status_stats", "status_time", "view_build", "view_editor", "view_novel",
-        "view_outline",
+        "cls_novel", "cls_object", "cls_plot", "cls_timeline", "cls_trash", "cls_world",
+        "proj_chapter", "proj_details", "proj_document", "proj_folder", "proj_note", "proj_nwx",
+        "proj_section", "proj_scene", "proj_stats", "proj_title", "search_cancel", "search_case",
+        "search_loop", "search_preserve", "search_project", "search_regex", "search_word",
+        "status_idle", "status_lang", "status_lines", "status_stats", "status_time", "view_build",
+        "view_editor", "view_novel", "view_outline",
 
         # General Button Icons
         "add", "backward", "check", "close", "cross", "down", "edit", "forward", "maximise",
@@ -491,6 +491,7 @@ class GuiIcons:
         self._qIcons    = {}
         self._themeMap  = {}
         self._themeList = []
+        self._headerDec = []
         self._confName  = "icons.conf"
 
         # Icon Theme Path
@@ -650,6 +651,20 @@ class GuiIcons:
             return QIcon()
 
         return self.getIcon(iconName)
+
+    def getHeaderDecoration(self, hLevel):
+        """Get the decoration for a specific header level.
+        """
+        if not self._headerDec:
+            iPx = self.mainTheme.baseIconSize
+            self._headerDec = [
+                self.loadDecoration("deco_doc_h0", pxH=iPx),
+                self.loadDecoration("deco_doc_h1", pxH=iPx),
+                self.loadDecoration("deco_doc_h2", pxH=iPx),
+                self.loadDecoration("deco_doc_h3", pxH=iPx),
+                self.loadDecoration("deco_doc_h4", pxH=iPx),
+            ]
+        return self._headerDec[minmax(hLevel, 0, 4)]
 
     def listThemes(self):
         """Scan the icons themes folder and list all themes.
