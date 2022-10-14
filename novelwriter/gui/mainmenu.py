@@ -40,6 +40,10 @@ logger = logging.getLogger(__name__)
 
 
 class GuiMainMenu(QMenuBar):
+    """The GUI main menu. All menu actions are defined here with the
+    main menu as the owner. Each widget that need them elsewhere need to
+    add them from this class.
+    """
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -164,7 +168,7 @@ class GuiMainMenu(QMenuBar):
 
         # Project > Edit
         self.aEditItem = QAction(self.tr("Rename Item"), self)
-        self.aEditItem.setShortcuts(["F2"])
+        self.aEditItem.setShortcut("F2")
         self.aEditItem.triggered.connect(lambda: self.mainGui.editItemLabel(None))
         self.projMenu.addAction(self.aEditItem)
 
