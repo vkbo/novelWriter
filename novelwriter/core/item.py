@@ -285,6 +285,8 @@ class NWItem:
                     descKey = "doc_h2"
                 elif hLevel == "H3":
                     descKey = "doc_h3"
+                elif hLevel == "H4":
+                    descKey = "doc_h4"
                 else:
                     descKey = "document"
             elif self._layout == nwItemLayout.NOTE:

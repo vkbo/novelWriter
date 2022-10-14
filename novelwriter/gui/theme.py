@@ -459,10 +459,11 @@ class GuiIcons:
         "novelwriter", "cls_archive", "cls_character", "cls_custom", "cls_entity", "cls_none",
         "cls_novel", "cls_object", "cls_plot", "cls_timeline", "cls_trash", "cls_world", "doc_h0",
         "doc_h1", "doc_h2", "doc_h3", "doc_h4", "proj_chapter", "proj_details", "proj_document",
-        "proj_folder", "proj_note", "proj_nwx", "proj_scene", "proj_stats", "proj_title",
-        "search_cancel", "search_case", "search_loop", "search_preserve", "search_project",
-        "search_regex", "search_word", "status_idle", "status_lang", "status_lines",
-        "status_stats", "status_time", "view_build", "view_editor", "view_novel", "view_outline",
+        "proj_folder", "proj_note", "proj_nwx", "proj_section", "proj_scene", "proj_stats",
+        "proj_title", "search_cancel", "search_case", "search_loop", "search_preserve",
+        "search_project", "search_regex", "search_word", "status_idle", "status_lang",
+        "status_lines", "status_stats", "status_time", "view_build", "view_editor", "view_novel",
+        "view_outline",
 
         # General Button Icons
         "add", "backward", "check", "close", "cross", "down", "edit", "forward", "maximise",
@@ -641,6 +642,8 @@ class GuiIcons:
                     iconName = "proj_chapter"
                 elif hLevel == "H3":
                     iconName = "proj_scene"
+                elif hLevel == "H4":
+                    iconName = "proj_section"
             elif tLayout == nwItemLayout.NOTE:
                 iconName = "proj_note"
         if iconName is None:

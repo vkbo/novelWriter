@@ -218,7 +218,8 @@ def testCoreItem_Methods(mockGUI):
     assert theItem.describeMe("H1") == "Novel Title Page"
     assert theItem.describeMe("H2") == "Novel Chapter"
     assert theItem.describeMe("H3") == "Novel Scene"
-    assert theItem.describeMe("H4") == "Novel Document"
+    assert theItem.describeMe("H4") == "Novel Section"
+    assert theItem.describeMe("H5") == "Novel Document"
 
     theItem.setLayout("NOTE")
     assert theItem.isNoteLayout() is True
