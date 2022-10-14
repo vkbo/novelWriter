@@ -465,9 +465,9 @@ class GuiIcons:
         "status_stats", "status_time", "view_build", "view_editor", "view_novel", "view_outline",
 
         # General Button Icons
-        "add", "backward", "check", "clear", "close", "cross", "delete", "done", "down", "edit",
-        "forward", "hash", "maximise", "menu", "minimise", "reference", "refresh", "remove",
-        "save", "search_replace", "search", "settings", "up",
+        "add", "backward", "check", "close", "cross", "down", "edit", "forward", "maximise",
+        "menu", "minimise", "reference", "refresh", "remove", "search_replace", "search",
+        "settings", "up",
 
         # Switches
         "sticky-on", "sticky-off",
