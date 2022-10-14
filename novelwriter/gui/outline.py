@@ -391,13 +391,6 @@ class GuiOutlineTree(QTreeWidget):
         fH2.setBold(True)
 
         self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
-        self._pIndent = [
-            self.mainTheme.loadDecoration("deco_doc_h0", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h1", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h2", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h3", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h4", pxH=iPx),
-        ]
         self._dIcon = {
             "H0": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H0"),
             "H1": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H1"),
@@ -698,8 +691,9 @@ class GuiOutlineTree(QTreeWidget):
 
             trItem = QTreeWidgetItem()
             nwItem = self.theProject.tree[tHandle]
+            hDec = self.mainTheme.getHeaderDecoration(iLevel)
 
-            trItem.setData(self._colIdx[nwOutline.TITLE], Qt.DecorationRole, self._pIndent[iLevel])
+            trItem.setData(self._colIdx[nwOutline.TITLE], Qt.DecorationRole, hDec)
             trItem.setText(self._colIdx[nwOutline.TITLE], novIdx.title)
             trItem.setData(self._colIdx[nwOutline.TITLE], self.D_HANDLE, tHandle)
             trItem.setData(self._colIdx[nwOutline.TITLE], self.D_TITLE, sTitle)

@@ -390,13 +390,6 @@ class GuiNovelTree(QTreeWidget):
         fH2.setBold(True)
 
         self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
-        self._pIndent = [
-            self.mainTheme.loadDecoration("deco_doc_h0", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h1", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h2", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h3", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h4", pxH=iPx),
-        ]
         self._pMore = self.mainTheme.loadDecoration("deco_doc_more", pxH=iPx)
 
         # Connect signals
@@ -619,8 +612,10 @@ class GuiNovelTree(QTreeWidget):
             if iLevel == 0:
                 continue
 
+            hDec = self.mainTheme.getHeaderDecoration(iLevel)
+
             newItem = QTreeWidgetItem()
-            newItem.setData(self.C_TITLE, Qt.DecorationRole, self._pIndent[iLevel])
+            newItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
             newItem.setText(self.C_TITLE, novIdx.title)
             newItem.setData(self.C_TITLE, self.D_HANDLE, tHandle)
             newItem.setData(self.C_TITLE, self.D_TITLE, sTitle)

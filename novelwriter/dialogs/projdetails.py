@@ -512,10 +512,11 @@ class GuiProjectDetailsContents(QWidget):
                 progPage = f"{cPage:n}"
                 progText = f"{pgProg:.1f}{nwUnicode.U_THSP}%"
 
+            hDec = self.mainTheme.getHeaderDecoration(tLevel)
             if tTitle.strip() == "":
                 tTitle = self.tr("Untitled")
 
-            newItem.setIcon(self.C_TITLE, self.mainTheme.getIcon("doc_h%d" % tLevel))
+            newItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
             newItem.setText(self.C_TITLE, tTitle)
             newItem.setText(self.C_WORDS, f"{wCount:n}")
             newItem.setText(self.C_PAGES, f"{pCount:n}")
