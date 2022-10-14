@@ -71,5 +71,5 @@ On Windows, file extensions may not be visible by default, so make sure you only
 extension, and don't end up with two.
 
 The QSS files are Qt Style Sheet files. See Qt's
-`The Style Sheet Syntax <https://doc.qt.io/qt-5/stylesheet-syntax.html>`_` documentation for more
+`The Style Sheet Syntax <https://doc.qt.io/qt-5/stylesheet-syntax.html>`_ documentation for more
 details.
