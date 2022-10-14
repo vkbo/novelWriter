@@ -28,9 +28,9 @@ from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
 from tools import C, writeFile, buildTestProject
 
-from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.constants import nwKeyWords, nwUnicode
+from novelwriter.gui.doceditor import GuiDocEditor
 
 keyDelay = 2
 typeDelay = 1

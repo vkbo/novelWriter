@@ -30,8 +30,10 @@ from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidgetItem, QDialog
 
 from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass
 from novelwriter.core import NWDoc
-from novelwriter.dialogs import GuiEditLabel, GuiDocMerge, GuiDocSplit
 from novelwriter.gui.projtree import GuiProjectTree
+from novelwriter.dialogs.docmerge import GuiDocMerge
+from novelwriter.dialogs.docsplit import GuiDocSplit
+from novelwriter.dialogs.editlabel import GuiEditLabel
 
 
 @pytest.mark.gui

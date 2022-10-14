@@ -25,7 +25,7 @@ from tools import getGuiItem
 
 from PyQt5.QtWidgets import QAction, QMessageBox
 
-from novelwriter.dialogs import GuiAbout
+from novelwriter.dialogs.about import GuiAbout
 
 
 @pytest.mark.gui

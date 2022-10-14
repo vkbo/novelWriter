@@ -28,8 +28,8 @@ from PyQt5.QtWidgets import QDialog, QMessageBox, QAction
 from tools import writeFile, readFile, getGuiItem
 from mock import causeOSError
 
-from novelwriter.dialogs import GuiWordList
 from novelwriter.constants import nwFiles
+from novelwriter.dialogs.wordlist import GuiWordList
 
 keyDelay = 2
 typeDelay = 1

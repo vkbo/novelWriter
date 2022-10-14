@@ -25,8 +25,8 @@ from lxml import etree
 
 from PyQt5.QtGui import QIcon
 
-from novelwriter.core import NWProject
 from novelwriter.core.item import NWItem
+from novelwriter.core.project import NWProject
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 
 

@@ -27,10 +27,10 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtWidgets import QAction, QMessageBox, qApp
 
-from novelwriter.gui.doceditor import GuiDocEditor
-from novelwriter.core import countWords
 from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout
 from novelwriter.constants import nwKeyWords, nwUnicode
+from novelwriter.core.index import countWords
+from novelwriter.gui.doceditor import GuiDocEditor
 
 keyDelay = 2
 typeDelay = 1

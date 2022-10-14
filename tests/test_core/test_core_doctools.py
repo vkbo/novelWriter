@@ -27,7 +27,9 @@ from shutil import copyfile
 from mock import causeOSError
 from tools import C, buildTestProject, cmpFiles
 
-from novelwriter.core import NWProject, DocMerger, DocSplitter, NWDoc
+from novelwriter.core.project import NWProject
+from novelwriter.core.doctools import DocMerger, DocSplitter
+from novelwriter.core.document import NWDoc
 
 
 @pytest.mark.core

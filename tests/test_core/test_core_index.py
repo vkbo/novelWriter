@@ -28,9 +28,9 @@ from shutil import copyfile
 from mock import causeException
 from tools import buildTestProject, cmpFiles, writeFile
 
-from novelwriter.core.project import NWProject
-from novelwriter.core.index import NWIndex, countWords, TagsIndex
 from novelwriter.enum import nwItemClass, nwItemLayout
+from novelwriter.core.index import NWIndex, countWords, TagsIndex
+from novelwriter.core.project import NWProject
 
 
 @pytest.mark.core

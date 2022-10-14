@@ -24,7 +24,9 @@ import pytest
 from PyQt5.QtCore import QItemSelectionModel
 from PyQt5.QtWidgets import QAction, QListWidgetItem, QDialog, QMessageBox
 
-from novelwriter.dialogs import GuiQuoteSelect, GuiUpdates, GuiEditLabel
+from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.dialogs.updates import GuiUpdates
+from novelwriter.dialogs.editlabel import GuiEditLabel
 
 
 @pytest.mark.gui

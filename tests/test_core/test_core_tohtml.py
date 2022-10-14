@@ -24,7 +24,8 @@ import pytest
 
 from tools import readFile
 
-from novelwriter.core import NWProject, ToHtml
+from novelwriter.core.tohtml import ToHtml
+from novelwriter.core.project import NWProject
 
 
 @pytest.mark.core
