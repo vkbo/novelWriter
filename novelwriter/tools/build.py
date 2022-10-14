@@ -351,6 +351,36 @@ class GuiBuildNovel(QDialog):
         self.textForm.setColumnStretch(0, 1)
         self.textForm.setColumnStretch(1, 0)
 
+        # Root Filter Options
+        # ===================
+
+        self.rootGroup = QGroupBox(self.tr("Root Filter Options"), self)
+        self.rootForm  = QGridLayout(self)
+        self.rootGroup.setLayout(self.rootForm)
+
+        rootFilter = pOptions.getValue("GuiBuildNovel", "rootFilter", [])
+        if not isinstance(rootFilter, list):
+            rootFilter = []
+
+        iRow = 0
+        self.rootSelection = {}
+        for tHandle, nwItem in self.theProject.tree.iterRoots(None):
+            if not nwItem.isInactive():
+                rootLabel = QLabel(nwItem.itemName)
+                rootLabel.setWordWrap(True)
+
+                rootValue = QSwitch(width=wS, height=hS)
+                rootValue.setChecked(tHandle not in rootFilter)
+
+                self.rootSelection[tHandle] = rootValue
+                self.rootForm.addWidget(rootLabel, iRow, 0, 1, 1, Qt.AlignLeft)
+                self.rootForm.addWidget(rootValue, iRow, 1, 1, 1, Qt.AlignRight)
+
+                iRow += 1
+
+        self.rootForm.setColumnStretch(0, 1)
+        self.rootForm.setColumnStretch(1, 0)
+
         # File Filter Options
         # ===================
 
@@ -503,6 +533,7 @@ class GuiBuildNovel(QDialog):
         self.toolsBox.addWidget(self.fontGroup)
         self.toolsBox.addWidget(self.styleGroup)
         self.toolsBox.addWidget(self.textGroup)
+        self.toolsBox.addWidget(self.rootGroup)
         self.toolsBox.addWidget(self.fileGroup)
         self.toolsBox.addWidget(self.exportGroup)
         self.toolsBox.addStretch(1)
@@ -716,6 +747,7 @@ class GuiBuildNovel(QDialog):
         self.buildProgress.setMaximum(len(self.theProject.tree))
         self.buildProgress.setValue(0)
 
+        rootFilter = set(self._generateRootFilter())
         for nItt, tItem in enumerate(self.theProject.tree):
 
             noteRoot = noteFiles
@@ -730,7 +762,7 @@ class GuiBuildNovel(QDialog):
                     if doConvert:
                         bldObj.doConvert()
 
-                elif self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
+                elif self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag, rootFilter):
                     bldObj.setText(tItem.itemHandle)
                     bldObj.doPreProcessing()
                     bldObj.tokenizeText()
@@ -766,7 +798,7 @@ class GuiBuildNovel(QDialog):
 
         return
 
-    def _checkInclude(self, theItem, noteFiles, novelFiles, ignoreFlag):
+    def _checkInclude(self, theItem, noteFiles, novelFiles, ignoreFlag, rootFilter):
         """This function checks whether a file should be included in the
         export or not. For standard note and novel files, this is
         controlled by the options selected by the user. For other files
@@ -782,6 +814,9 @@ class GuiBuildNovel(QDialog):
             return False
 
         if not (theItem.isExported or ignoreFlag):
+            return False
+
+        if theItem.itemRoot in rootFilter:
             return False
 
         isNone  = not theItem.isFileType()
@@ -1045,6 +1080,11 @@ class GuiBuildNovel(QDialog):
 
         return
 
+    def _generateRootFilter(self):
+        """Return a list of all root folders that are filtered out.
+        """
+        return [h for h, s in self.rootSelection.items() if not s.isChecked()]
+
     def _loadCache(self):
         """Save the current data to cache.
         """
@@ -1146,6 +1186,7 @@ class GuiBuildNovel(QDialog):
         incBodyText  = self.includeBody.isChecked()
         replaceTabs  = self.replaceTabs.isChecked()
         replaceUCode = self.replaceUCode.isChecked()
+        rootFilter   = self._generateRootFilter()
 
         mainSplit = self.mainSplit.sizes()
         boxWidth  = self.mainConf.rpxInt(mainSplit[0])
@@ -1175,6 +1216,7 @@ class GuiBuildNovel(QDialog):
         pOptions.setValue("GuiBuildNovel", "incBodyText",  incBodyText)
         pOptions.setValue("GuiBuildNovel", "replaceTabs",  replaceTabs)
         pOptions.setValue("GuiBuildNovel", "replaceUCode", replaceUCode)
+        pOptions.setValue("GuiBuildNovel", "rootFilter",   rootFilter)
         pOptions.saveSettings()
 
         return

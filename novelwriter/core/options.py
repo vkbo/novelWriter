@@ -40,7 +40,7 @@ VALID_MAP = {
     "GuiWritingStats": {
         "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
         "widthCol3", "sortCol", "sortOrder", "incNovel", "incNotes",
-        "hideZeros", "hideNegative", "groupByDay", "showIdleTime", "histMax"
+        "hideZeros", "hideNegative", "groupByDay", "showIdleTime", "histMax",
     },
     "GuiDocSplit": {"spLevel", "intoFolder", "docHierarchy"},
     "GuiBuildNovel": {
@@ -48,15 +48,15 @@ VALID_MAP = {
         "hideSection", "addNovel", "addNotes", "ignoreFlag", "justifyText",
         "excludeBody", "textFont", "textSize", "lineHeight", "noStyling",
         "incSynopsis", "incComments", "incKeywords", "incBodyText",
-        "replaceTabs", "replaceUCode"
+        "replaceTabs", "replaceUCode", "rootFilter",
     },
     "GuiOutline": {"headerOrder", "columnWidth", "columnHidden"},
     "GuiProjectSettings": {
-        "winWidth", "winHeight", "replaceColW", "statusColW", "importColW"
+        "winWidth", "winHeight", "replaceColW", "statusColW", "importColW",
     },
     "GuiProjectDetails": {
         "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
-        "widthCol3", "widthCol4", "wordsPerPage", "countFrom", "clearDouble"
+        "widthCol3", "widthCol4", "wordsPerPage", "countFrom", "clearDouble",
     },
     "GuiWordList": {"winWidth", "winHeight"},
     "GuiNovelView": {"lastCol"},
