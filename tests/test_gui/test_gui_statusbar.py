@@ -26,8 +26,8 @@ from tools import C, buildTestProject
 
 from PyQt5.QtWidgets import QMessageBox
 
-from novelwriter.core import NWDoc
 from novelwriter.enum import nwState
+from novelwriter.core.document import NWDoc
 
 
 @pytest.mark.gui

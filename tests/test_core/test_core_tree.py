@@ -27,9 +27,11 @@ from lxml import etree
 
 from tools import readFile
 
-from novelwriter.core.project import NWProject, NWItem, NWTree
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.constants import nwFiles
+from novelwriter.core.item import NWItem
+from novelwriter.core.tree import NWTree
+from novelwriter.core.project import NWProject
 
 
 @pytest.fixture(scope="function")

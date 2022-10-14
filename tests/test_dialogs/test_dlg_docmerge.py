@@ -26,7 +26,7 @@ from tools import buildTestProject, C
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox
 
-from novelwriter.dialogs import GuiDocMerge
+from novelwriter.dialogs.docmerge import GuiDocMerge
 
 
 @pytest.mark.gui

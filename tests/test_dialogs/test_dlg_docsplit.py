@@ -25,7 +25,8 @@ from tools import C, buildTestProject
 
 from PyQt5.QtWidgets import QMessageBox
 
-from novelwriter.dialogs import GuiDocSplit, GuiEditLabel
+from novelwriter.dialogs.docsplit import GuiDocSplit
+from novelwriter.dialogs.editlabel import GuiEditLabel
 
 
 @pytest.mark.gui

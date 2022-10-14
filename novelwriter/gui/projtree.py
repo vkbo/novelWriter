@@ -39,8 +39,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QWidget
 )
 
-from novelwriter.core import DocMerger
-from novelwriter.core.doctools import DocSplitter
+from novelwriter.core import DocMerger, DocSplitter
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.dialogs import GuiDocMerge, GuiDocSplit, GuiEditLabel
 from novelwriter.constants import nwHeaders, trConst, nwLabels

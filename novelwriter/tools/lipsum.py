@@ -34,8 +34,8 @@ from PyQt5.QtWidgets import (
     QSpinBox
 )
 
-from novelwriter.gui.custom import QSwitch
 from novelwriter.common import readTextFile
+from novelwriter.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 

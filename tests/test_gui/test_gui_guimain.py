@@ -28,11 +28,13 @@ from shutil import copyfile
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QInputDialog
 
-from novelwriter.gui import GuiDocEditor, GuiNovelView, GuiOutlineView
 from novelwriter.enum import nwItemType, nwView, nwWidget
 from novelwriter.tools import GuiProjectWizard
 from novelwriter.dialogs import GuiEditLabel
+from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectTree
+from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.gui.noveltree import GuiNovelView
 
 keyDelay = 2
 typeDelay = 1

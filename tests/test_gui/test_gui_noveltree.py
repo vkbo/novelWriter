@@ -29,8 +29,8 @@ from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QMessageBox, QToolTip
 
 from novelwriter.enum import nwWidget, nwItemType
-from novelwriter.dialogs import GuiEditLabel
 from novelwriter.gui.noveltree import NovelTreeColumn
+from novelwriter.dialogs.editlabel import GuiEditLabel
 
 
 @pytest.mark.gui

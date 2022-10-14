@@ -40,8 +40,8 @@ from PyQt5.QtWidgets import (
 from novelwriter.enum import nwAlert
 from novelwriter.error import formatException
 from novelwriter.common import formatTime, checkInt, checkIntRange, checkIntTuple
+from novelwriter.custom import QSwitch
 from novelwriter.constants import nwConst, nwFiles
-from novelwriter.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 

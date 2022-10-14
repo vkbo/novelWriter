@@ -47,8 +47,8 @@ from novelwriter.core import ToHtml, ToOdt, ToMarkdown
 from novelwriter.enum import nwAlert, nwItemType, nwItemLayout, nwItemClass
 from novelwriter.error import formatException, logException
 from novelwriter.common import fuzzyTime, makeFileNameSafe
+from novelwriter.custom import QSwitch
 from novelwriter.constants import nwConst, nwFiles
-from novelwriter.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 

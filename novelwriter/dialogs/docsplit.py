@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import NWDoc
-from novelwriter.gui.custom import QHelpLabel, QSwitch
+from novelwriter.custom import QHelpLabel, QSwitch
 
 logger = logging.getLogger(__name__)
 

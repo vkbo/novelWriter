@@ -27,7 +27,7 @@ from PyQt5.QtWidgets import qApp, QAction, QMessageBox
 from mock import causeException
 
 from novelwriter.enum import nwDocAction
-from novelwriter.core import ToHtml
+from novelwriter.core.tohtml import ToHtml
 
 keyDelay = 2
 typeDelay = 1
