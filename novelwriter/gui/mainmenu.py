@@ -83,12 +83,6 @@ class GuiMainMenu(QMenuBar):
         self.aSpellCheck.setChecked(theMode)
         return
 
-    def setFocusMode(self, theMode):
-        """Forward focus mode check state to its action.
-        """
-        self.aFocusMode.setChecked(theMode)
-        return
-
     ##
     #  Slots
     ##
@@ -369,8 +363,6 @@ class GuiMainMenu(QMenuBar):
         # View > Focus Mode
         self.aFocusMode = QAction(self.tr("Focus Mode"), self)
         self.aFocusMode.setShortcut("F8")
-        self.aFocusMode.setCheckable(True)
-        self.aFocusMode.setChecked(self.mainGui.isFocusMode)
         self.aFocusMode.triggered.connect(lambda: self.mainGui.toggleFocusMode())
         self.viewMenu.addAction(self.aFocusMode)
 
