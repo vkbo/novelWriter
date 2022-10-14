@@ -206,6 +206,7 @@ class GuiMain(QMainWindow):
         self.projView.treeItemChanged.connect(self.itemDetails.updateViewBox)
         self.projView.rootFolderChanged.connect(self.outlineView.updateRootItem)
         self.projView.rootFolderChanged.connect(self.novelView.updateRootItem)
+        self.projView.rootFolderChanged.connect(self.projView.updateRootItem)
 
         self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.novelView.openDocumentRequest.connect(self._openDocument)
@@ -370,6 +371,7 @@ class GuiMain(QMainWindow):
             self.saveProject()
 
             self.docEditor.setDictionaries()
+            self.projView.openProjectTasks()
             self.novelView.openProjectTasks()
             self.outlineView.openProjectTasks()
             self.rebuildIndex(beQuiet=True)
@@ -522,6 +524,7 @@ class GuiMain(QMainWindow):
         self.docEditor.setDictionaries()
         self.docEditor.toggleSpellCheck(self.theProject.spellCheck)
         self.statusBar.setRefTime(self.theProject.projOpened)
+        self.projView.openProjectTasks()
         self.novelView.openProjectTasks()
         self.outlineView.openProjectTasks()
         self._updateStatusWordCount()
@@ -556,7 +559,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        self.projView.saveProjectTree()
+        self.projView.saveProjectTasks()
         if self.theProject.saveProject(autoSave=autoSave):
             self.theProject.index.saveIndex()
 
@@ -841,7 +844,7 @@ class GuiMain(QMainWindow):
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         tStart = time()
 
-        self.projView.saveProjectTree()
+        self.projView.saveProjectTasks()
         self.theProject.index.clearIndex()
 
         for tItem in self.theProject.tree:

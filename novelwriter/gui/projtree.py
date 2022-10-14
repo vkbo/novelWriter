@@ -121,18 +121,33 @@ class GuiProjectView(QWidget):
     ##
 
     def initSettings(self):
+        """Initialise GUI elements that depend on specific settings.
+        """
         self.projTree.initSettings()
         return
 
     def clearProject(self):
+        """Clear project-related GUI content.
+        """
+        self.projBar.clearContent()
         self.projTree.clearTree()
         return
 
-    def saveProjectTree(self):
+    def openProjectTasks(self):
+        """Run open project tasks.
+        """
+        self.projBar.buildQuickLinkMenu()
+        return
+
+    def saveProjectTasks(self):
+        """Run save project tasks.
+        """
         self.projTree.saveTreeOrder()
         return
 
     def populateTree(self):
+        """Build the tree structure from project data.
+        """
         self.projTree.buildTree()
         return
 
@@ -157,6 +172,13 @@ class GuiProjectView(QWidget):
         """
         self.projTree.propagateCount(tHandle, wCount, countChildren=True)
         self.wordCountsChanged.emit()
+        return
+
+    @pyqtSlot(str)
+    def updateRootItem(self, tHandle):
+        """If any root item changes, rebuild the quick link root menu.
+        """
+        self.projBar.buildQuickLinkMenu()
         return
 
 # END Class GuiProjectView
@@ -196,6 +218,18 @@ class GuiProjectToolBar(QWidget):
         self.viewLabel = QLabel("<b>%s</b>" % self.tr("Project Content"))
         self.viewLabel.setContentsMargins(0, 0, 0, 0)
         self.viewLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Quick Links
+        self.mQuick = QMenu()
+
+        self.tbQuick = QToolButton(self)
+        self.tbQuick.setToolTip("%s [Ctrl+L]" % self.tr("Quick Links"))
+        self.tbQuick.setShortcut("Ctrl+L")
+        self.tbQuick.setIcon(self.mainTheme.getIcon("bookmark"))
+        self.tbQuick.setIconSize(QSize(iPx, iPx))
+        self.tbQuick.setStyleSheet(buttonStyle)
+        self.tbQuick.setMenu(self.mQuick)
+        self.tbQuick.setPopupMode(QToolButton.InstantPopup)
 
         # Move Buttons
         self.tbMoveU = QToolButton(self)
@@ -292,6 +326,7 @@ class GuiProjectToolBar(QWidget):
         # Assemble
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.viewLabel)
+        self.outerBox.addWidget(self.tbQuick)
         self.outerBox.addWidget(self.tbMoveU)
         self.outerBox.addWidget(self.tbMoveD)
         self.outerBox.addWidget(self.tbAdd)
@@ -302,6 +337,32 @@ class GuiProjectToolBar(QWidget):
         self.setLayout(self.outerBox)
 
         logger.debug("GuiProjectToolBar initialisation complete")
+
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def clearContent(self):
+        """Clear dynamic content on the tool bar.
+        """
+        self.mQuick.clear()
+        return
+
+    def buildQuickLinkMenu(self):
+        """Build the quick link menu.
+        """
+        logger.verbose("Rebuilding quick links menu")
+
+        self.mQuick.clear()
+        for n, (tHandle, nwItem) in enumerate(self.theProject.tree.iterRoots(None)):
+            aRoot = self.mQuick.addAction(nwItem.itemName)
+            aRoot.setData(tHandle)
+            aRoot.setIcon(self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass]))
+            aRoot.triggered.connect(
+                lambda n, tHandle=tHandle: self.projView.setSelectedHandle(tHandle, doScroll=True)
+            )
 
         return
 
@@ -545,8 +606,7 @@ class GuiProjectTree(QTreeWidget):
             self._treeMap[pHandle].setExpanded(True)
 
         self._alertTreeChange(tHandle, flush=True)
-        self.clearSelection()
-        trItem.setSelected(True)
+        self.setCurrentItem(trItem)
 
         return True
 
@@ -585,8 +645,7 @@ class GuiProjectTree(QTreeWidget):
             self._recordLastMove(cItem, pItem, tIndex)
 
         self._alertTreeChange(tHandle, flush=True)
-        self.clearSelection()
-        trItem.setSelected(True)
+        self.setCurrentItem(trItem)
         trItem.setExpanded(isExp)
 
         return True
@@ -790,6 +849,11 @@ class GuiProjectTree(QTreeWidget):
             self._treeMap.pop(tHandle, None)
             self._alertTreeChange(tHandle, flush=True)
 
+            # These are not emitted by the alert function because the
+            # item has already been deleted
+            self.projView.rootFolderChanged.emit(tHandle)
+            self.projView.treeItemChanged.emit(tHandle)
+
         else:
             if askFirst:
                 msgYes = self.mainGui.askQuestion(
@@ -816,6 +880,10 @@ class GuiProjectTree(QTreeWidget):
 
             self._alertTreeChange(tHandle, flush=flush)
             self.projView.wordCountsChanged.emit()
+
+            # This is not emitted by the alert function because the item
+            # has already been deleted
+            self.projView.treeItemChanged.emit(tHandle)
 
         return True
 
@@ -945,8 +1013,7 @@ class GuiProjectTree(QTreeWidget):
         self._postItemMove(sHandle, wCount)
         self._alertTreeChange(sHandle, flush=True)
 
-        self.clearSelection()
-        movItem.setSelected(True)
+        self.setCurrentItem(movItem)
         self._lastMove = {}
 
         return True
@@ -968,12 +1035,13 @@ class GuiProjectTree(QTreeWidget):
         if tItem is None:
             return False
 
-        self.clearSelection()
-        self._treeMap[tHandle].setSelected(True)
+        self.setFocus()
+        if tHandle in self._treeMap:
+            self.setCurrentItem(self._treeMap[tHandle])
 
-        selItems = self.selectedIndexes()
-        if selItems and doScroll:
-            self.scrollTo(selItems[0], QAbstractItemView.PositionAtCenter)
+        selIndex = self.selectedIndexes()
+        if selIndex and doScroll:
+            self.scrollTo(selIndex[0], QAbstractItemView.PositionAtCenter)
 
         return True
 
