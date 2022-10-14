@@ -47,6 +47,7 @@ The main shorcuts are as follows:
    ":kbd:`Ctrl`:kbd:`H`",                "Open the search and replace bar and search for the selected word, if any is selected. (On Mac, this is :kbd:`Cmd`:kbd:`=`.)"
    ":kbd:`Ctrl`:kbd:`I`",                "Format selected text, or word under cursor, with emphasis (italic)."
    ":kbd:`Ctrl`:kbd:`K`",                "Activate the insert commands. The commands are listed in :ref:`a_kb_ins`."
+   ":kbd:`Ctrl`:kbd:`L`",                "Open the :guilabel:`Quick Links` menu in the Project Tree."
    ":kbd:`Ctrl`:kbd:`N`",                "Create new project item."
    ":kbd:`Ctrl`:kbd:`O`",                "Open selected document."
    ":kbd:`Ctrl`:kbd:`Q`",                "Exit novelWriter."

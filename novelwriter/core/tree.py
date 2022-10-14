@@ -274,11 +274,13 @@ class NWTree:
         return rootClasses
 
     def iterRoots(self, itemClass):
-        """Iterate over all items of a given class.
+        """Iterate over all root items of a given class in order.
         """
-        for tHandle, nwItem in self._treeRoots.items():
-            if nwItem.itemClass == itemClass:
-                yield tHandle, nwItem
+        for tHandle in self._treeOrder:
+            nwItem = self.__getitem__(tHandle)
+            if nwItem is not None and nwItem.isRootType():
+                if itemClass is None or nwItem.itemClass == itemClass:
+                    yield tHandle, nwItem
         return
 
     def isRoot(self, tHandle):
