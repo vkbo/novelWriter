@@ -152,7 +152,7 @@ class GuiDocViewer(QTextBrowser):
         # Refresh the tab stops
         if self.mainConf.verQtValue >= 51000:
             self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:
+        else:  # pragma: no cover
             self.setTabStopWidth(self.mainConf.getTabWidth())
 
         # If we have a document open, we should reload it in case the font changed
@@ -195,7 +195,7 @@ class GuiDocViewer(QTextBrowser):
         # Refresh the tab stops
         if self.mainConf.verQtValue >= 51000:
             self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:
+        else:  # pragma: no cover
             self.setTabStopWidth(self.mainConf.getTabWidth())
 
         # Must be before setHtml

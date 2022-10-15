@@ -2474,7 +2474,8 @@ class GuiDocEditSearch(QFrame):
                 self._alertSearchValid(theRegEx.isValid())
                 return theRegEx
 
-            else:  # >= 50300 to < 51300
+            else:  # pragma: no cover
+                # >= 50300 to < 51300
                 if self.isCaseSense:
                     rxOpt = Qt.CaseSensitive
                 else:
