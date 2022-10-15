@@ -11,6 +11,8 @@ backups.
 Please check the changelog for an overview of changes. The full release notes will be added to the
 final release.
 
+**Note:** As of the 2.0 release, novelWriter requires Qt 5.10 or higher and Python 3.7 or higher.
+
 ### Detailed Changelog
 
 **Note:** This will no longer be release 1.7, but 2.0 instead due to the major changes to the User
@@ -125,6 +127,7 @@ Interface. PR #1146.
   of code and number of translation labels needed for it. It now produces a single error if
   something went wrong. PR #1083.
 * A number of unused icons have been removed from the code base. PR #1164.
+* All checks for Qt versions below 5.10 have been removed. PR #1174.
 
 **Not Implemented**
 
