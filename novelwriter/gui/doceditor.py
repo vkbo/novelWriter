@@ -303,10 +303,7 @@ class GuiDocEditor(QTextEdit):
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Refresh the tab stops
-        if self.mainConf.verQtValue >= 51000:
-            self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:  # pragma: no cover
-            self.setTabStopWidth(self.mainConf.getTabWidth())
+        self.setTabStopDistance(self.mainConf.getTabWidth())
 
         # Initialise the syntax highlighter
         self.highLight.initHighlighter()

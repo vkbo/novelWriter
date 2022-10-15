@@ -150,10 +150,7 @@ class GuiDocViewer(QTextBrowser):
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Refresh the tab stops
-        if self.mainConf.verQtValue >= 51000:
-            self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:  # pragma: no cover
-            self.setTabStopWidth(self.mainConf.getTabWidth())
+        self.setTabStopDistance(self.mainConf.getTabWidth())
 
         # If we have a document open, we should reload it in case the font changed
         if self._docHandle is not None:
@@ -193,10 +190,7 @@ class GuiDocViewer(QTextBrowser):
             return False
 
         # Refresh the tab stops
-        if self.mainConf.verQtValue >= 51000:
-            self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:  # pragma: no cover
-            self.setTabStopWidth(self.mainConf.getTabWidth())
+        self.setTabStopDistance(self.mainConf.getTabWidth())
 
         # Must be before setHtml
         if updateHistory:

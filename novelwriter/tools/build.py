@@ -1265,10 +1265,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.setFont(theFont)
 
         # Set the tab stops
-        if self.mainConf.verQtValue >= 51000:
-            self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:  # pragma: no cover
-            self.setTabStopWidth(self.mainConf.getTabWidth())
+        self.setTabStopDistance(self.mainConf.getTabWidth())
 
         docPalette = self.palette()
         docPalette.setColor(QPalette.Base, QColor(255, 255, 255))
