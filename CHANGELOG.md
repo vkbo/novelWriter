@@ -55,6 +55,10 @@ Interface. PR #1146.
   newer versions of Nautilus don't seem to display the correct icon due to some changes in the way
   icons are extracted from the theme. The icon displays fine in other places. PR #1068.
 
+**Internationalisation**
+
+* Norwegian and US English translations have been updated. PR #1170.
+
 **User Interface**
 
 * The New Project Wizard has been updated based on user feedback. The "Working Title" setting is
