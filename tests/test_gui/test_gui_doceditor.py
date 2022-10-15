@@ -213,7 +213,8 @@ def testGuiEditor_MetaData(qtbot, monkeypatch, nwGUI, nwMinimal):
     qtbot.wait(stepDelay)
 
     # Get Text
-    # Both methods should return the same result for line breaks, but not for spaces
+    # This should replace line and paragraph separators, but preserve
+    # non-breaking spaces.
     newText = (
         "### New Scene\u2029\u2029"
         "Some\u2028text.\u2029"
@@ -221,10 +222,6 @@ def testGuiEditor_MetaData(qtbot, monkeypatch, nwGUI, nwMinimal):
     )
     assert nwGUI.docEditor.replaceText(newText)
     assert nwGUI.docEditor.getText() == "### New Scene\n\nSome\ntext.\nMore\u00a0text.\n"
-    verQtValue = nwGUI.mainConf.verQtValue
-    nwGUI.mainConf.verQtValue = 50800
-    assert nwGUI.docEditor.getText() == "### New Scene\n\nSome\ntext.\nMore text.\n"
-    nwGUI.mainConf.verQtValue = verQtValue
 
     # Check Propertoes
     assert nwGUI.docEditor.docChanged() is True
@@ -250,7 +247,7 @@ def testGuiEditor_MetaData(qtbot, monkeypatch, nwGUI, nwMinimal):
         nwGUI.docEditor.setDocumentChanged(True)
     assert nwGUI.docEditor._docChanged is True
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiEditor_MetaData
 

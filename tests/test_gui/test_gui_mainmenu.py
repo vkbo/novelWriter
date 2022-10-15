@@ -566,10 +566,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsNBSpace.activate(QAction.Trigger)
-    if nwGUI.mainConf.verQtValue >= 50900:
-        assert nwGUI.docEditor.getText() == nwUnicode.U_NBSP
-    else:
-        assert nwGUI.docEditor.getText() == " "
+    assert nwGUI.docEditor.getText() == nwUnicode.U_NBSP
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsThinSpace.activate(QAction.Trigger)
@@ -577,10 +574,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsThinNBSpace.activate(QAction.Trigger)
-    if nwGUI.mainConf.verQtValue >= 50900:
-        assert nwGUI.docEditor.getText() == nwUnicode.U_THNBSP
-    else:
-        assert nwGUI.docEditor.getText() == " "
+    assert nwGUI.docEditor.getText() == nwUnicode.U_THNBSP
     nwGUI.docEditor.clear()
 
     ##
