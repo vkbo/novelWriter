@@ -96,12 +96,6 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     # Let the config class figure out the path
     with monkeypatch.context() as mp:
         mp.setattr("PyQt5.QtCore.QStandardPaths.writableLocation", lambda *a: fncDir)
-        tstConf.verQtValue = 50600
-        tstConf.initConfig()
-        assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
-        assert tstConf.dataPath == os.path.join(fncDir, tstConf.appHandle)
-        assert not os.path.isfile(confFile)
-        tstConf.verQtValue = 50000
         tstConf.initConfig()
         assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
         assert tstConf.dataPath == os.path.join(fncDir, tstConf.appHandle)

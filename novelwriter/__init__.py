@@ -214,14 +214,14 @@ def main(sysArgs=None):
             "At least Python 3.7 is required, found %s" % CONFIG.verPyString
         )
         errorCode |= 0x04
-    if CONFIG.verQtValue < 50300:
+    if CONFIG.verQtValue < 51000:
         errorData.append(
-            "At least Qt5 version 5.3 is required, found %s" % CONFIG.verQtString
+            "At least Qt5 version 5.10 is required, found %s" % CONFIG.verQtString
         )
         errorCode |= 0x08
-    if CONFIG.verPyQtValue < 50300:
+    if CONFIG.verPyQtValue < 51000:
         errorData.append(
-            "At least PyQt5 version 5.3 is required, found %s" % CONFIG.verPyQtString
+            "At least PyQt5 version 5.10 is required, found %s" % CONFIG.verPyQtString
         )
         errorCode |= 0x10
 

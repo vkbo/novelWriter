@@ -220,8 +220,8 @@ class Config:
             self.osUnknown = True
 
         # Other System Info
-        self.hostName  = "Unknown"
-        self.kernelVer = "Unknown"
+        self.hostName  = QSysInfo.machineHostName()
+        self.kernelVer = QSysInfo.kernelVersion()
 
         # Packages
         self.hasEnchant = False  # The pyenchant package
@@ -264,10 +264,7 @@ class Config:
             self.confPath = confPath
 
         if dataPath is None:
-            if self.verQtValue >= 50400:
-                dataRoot = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
-            else:
-                dataRoot = QStandardPaths.writableLocation(QStandardPaths.DataLocation)
+            dataRoot = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
             self.dataPath = os.path.join(os.path.abspath(dataRoot), self.appHandle)
         else:
             logger.info("Setting data path from alternative path: %s", dataPath)
@@ -346,11 +343,6 @@ class Config:
                     self.errData.append("Could not create folder: %s" % self.dataPath)
                     self.errData.append(formatException(exc))
                     self.dataPath = None
-
-        # Host and Kernel
-        if self.verQtValue >= 50600:
-            self.hostName  = QSysInfo.machineHostName()
-            self.kernelVer = QSysInfo.kernelVersion()
 
         # Load recent projects cache
         self.loadRecentCache()
