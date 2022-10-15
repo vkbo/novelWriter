@@ -604,19 +604,15 @@ class GuiDocEditor(QTextEdit):
     ##
 
     def getText(self):
-        """Get the text content of the current document. This method
-        uses QTextEdit->toPlainText for Qt versions lower than 5.9, and
-        the QTextDocument->toRawText for higher version. The latter
-        preserves non-breaking spaces, which the former does not.
-        We still want to get rid of page and line separators though.
+        """Get the text content of the current document. This method uses
+        QTextDocument->toRawText instead of toPlainText(). The former preserves
+        non-breaking spaces, the latter does not. We still want to get rid of
+        page and line separators though.
         See: https://doc.qt.io/qt-5/qtextdocument.html#toPlainText
         """
-        if self.mainConf.verQtValue >= 50900:
-            theText = self.document().toRawText()
-            theText = theText.replace(nwUnicode.U_LSEP, "\n")  # Line separators
-            theText = theText.replace(nwUnicode.U_PSEP, "\n")  # Paragraph separators
-        else:
-            theText = self.toPlainText()
+        theText = self.document().toRawText()
+        theText = theText.replace(nwUnicode.U_LSEP, "\n")  # Line separators
+        theText = theText.replace(nwUnicode.U_PSEP, "\n")  # Paragraph separators
         return theText
 
     def getCursorPosition(self):
