@@ -1022,10 +1022,6 @@ class IndexItem:
     def unpackData(self, data):
         """Unpack an item entry from the data.
         """
-        if "level" in data:
-            # This value is now tracked as NWItem.mainHeading
-            raise ValueError("Outdated value found in index")
-
         references = data.get("references", {})
         for sTitle, hData in data.get("headings", {}).items():
             if not isTitleTag(sTitle):
