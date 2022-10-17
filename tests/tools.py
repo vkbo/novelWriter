@@ -173,13 +173,16 @@ def buildTestProject(theObject, projPath):
     xHandle[8] = theProject.newFile("New Scene", xHandle[6])
 
     aDoc = NWDoc(theProject, xHandle[5])
-    aDoc.writeDocument("#! New Novel\n\n>> By Jane DOe <<\n")
+    aDoc.writeDocument("#! New Novel\n\n>> By Jane Doe <<\n")
+    theProject.index.reIndexHandle(xHandle[5])
 
     aDoc = NWDoc(theProject, xHandle[7])
     aDoc.writeDocument("## %s\n\n" % theProject.tr("New Chapter"))
+    theProject.index.reIndexHandle(xHandle[7])
 
     aDoc = NWDoc(theProject, xHandle[8])
     aDoc.writeDocument("### %s\n\n" % theProject.tr("New Scene"))
+    theProject.index.reIndexHandle(xHandle[8])
 
     theProject.projOpened = time.time()
     theProject.setProjectChanged(True)
@@ -188,6 +191,5 @@ def buildTestProject(theObject, projPath):
     if theGUI is not None:
         theGUI.hasProject = True
         theGUI.rebuildTrees()
-        theGUI.rebuildIndex(beQuiet=True)
 
     return
