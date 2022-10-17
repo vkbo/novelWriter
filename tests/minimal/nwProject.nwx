@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.7-alpha0" hexVersion="0x010700a0" fileVersion="1.4" timeStamp="2022-04-23 15:34:21">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-17 20:32:06">
   <project>
     <name>Test Minimal</name>
     <title>Minimal</title>
     <author>Jane Doe</author>
     <author>John Doh</author>
-    <saveCount>17</saveCount>
+    <saveCount>19</saveCount>
     <autoCount>2</autoCount>
-    <editTime>150</editTime>
+    <editTime>167</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
@@ -16,7 +16,7 @@
     <spellLang>None</spellLang>
     <lastEdited>None</lastEdited>
     <lastViewed>None</lastViewed>
-    <lastNovel>None</lastNovel>
+    <lastNovel>a508bb932959c</lastNovel>
     <lastOutline>None</lastOutline>
     <lastWordCount>10</lastWordCount>
     <novelWordCount>10</novelWordCount>
@@ -48,7 +48,7 @@
       <name status="s72322d" import="iffcacb">Novel</name>
     </item>
     <item handle="a35baf2e93843" parent="a508bb932959c" root="a508bb932959c" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" charCount="28" wordCount="6" paraCount="1" cursorPos="33"/>
+      <meta expanded="False" mainHeading="H1" charCount="28" wordCount="6" paraCount="1" cursorPos="33"/>
       <name status="s72322d" import="iffcacb" exported="True">Title Page</name>
     </item>
     <item handle="a6d311a93600a" parent="a508bb932959c" root="a508bb932959c" order="1" type="FOLDER" class="NOVEL">
@@ -56,11 +56,11 @@
       <name status="s72322d" import="iffcacb">New Chapter</name>
     </item>
     <item handle="f5ab3e30151e1" parent="a6d311a93600a" root="a508bb932959c" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" charCount="11" wordCount="2" paraCount="0" cursorPos="16"/>
+      <meta expanded="False" mainHeading="H2" charCount="11" wordCount="2" paraCount="0" cursorPos="16"/>
       <name status="s72322d" import="iffcacb" exported="True">New Chapter</name>
     </item>
     <item handle="8c659a11cd429" parent="a6d311a93600a" root="a508bb932959c" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" charCount="9" wordCount="2" paraCount="0" cursorPos="15"/>
+      <meta expanded="False" mainHeading="H3" charCount="9" wordCount="2" paraCount="0" cursorPos="15"/>
       <name status="s72322d" import="iffcacb" exported="True">New Scene</name>
     </item>
     <item handle="7695ce551d265" parent="None" root="7695ce551d265" order="1" type="ROOT" class="PLOT">

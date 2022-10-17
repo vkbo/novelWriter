@@ -516,7 +516,7 @@ class GuiProjectTree(QTreeWidget):
             # Collect some information about the selected item that
             pItem = self.theProject.tree[sHandle]
             qItem = self._getTreeItem(sHandle)
-            sLevel = nwHeaders.H_LEVEL.get(self.theProject.index.getHandleHeaderLevel(sHandle), 0)
+            sLevel = nwHeaders.H_LEVEL.get(pItem.mainHeading, 0)
             sIsParent = False if qItem is None else qItem.childCount() > 0
 
             if self.theProject.tree.isTrash(sHandle):
@@ -897,7 +897,7 @@ class GuiProjectTree(QTreeWidget):
             return
 
         itemStatus, statusIcon = nwItem.getImportStatus()
-        hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
+        hLevel = nwItem.mainHeading
         itemIcon = self.mainTheme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
         )

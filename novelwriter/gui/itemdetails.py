@@ -273,12 +273,11 @@ class GuiItemDetails(QWidget):
         # Layout
         # ======
 
-        hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
         usageIcon = self.mainTheme.getItemIcon(
-            nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
+            nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, nwItem.mainHeading
         )
         self.usageIcon.setPixmap(usageIcon.pixmap(iPx, iPx))
-        self.usageData.setText(nwItem.describeMe(hLevel))
+        self.usageData.setText(nwItem.describeMe())
 
         # Counts
         # ======

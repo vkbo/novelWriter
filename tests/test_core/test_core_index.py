@@ -26,7 +26,7 @@ import pytest
 from shutil import copyfile
 
 from mock import causeException
-from tools import buildTestProject, cmpFiles, writeFile
+from tools import C, buildTestProject, cmpFiles, writeFile
 
 from novelwriter.enum import nwItemClass, nwItemLayout
 from novelwriter.core.index import NWIndex, countWords, TagsIndex
@@ -189,15 +189,17 @@ def testCoreIndex_CheckThese(mockGUI, fncDir, mockRnd):
     """Test the tag checker function checkThese.
     """
     theProject = NWProject(mockGUI)
+    mockRnd.reset()
     buildTestProject(theProject, fncDir)
     theIndex = theProject.index
+    theIndex.clearIndex()
 
-    nHandle = theProject.newFile("Hello", "0000000000010")
-    cHandle = theProject.newFile("Jane",  "0000000000012")
+    nHandle = theProject.newFile("Hello", C.hNovelRoot)
+    cHandle = theProject.newFile("Jane",  C.hCharRoot)
     nItem = theProject.tree[nHandle]
     cItem = theProject.tree[cHandle]
 
-    assert theIndex.rootChangedSince("0000000000010", 0) is False
+    assert theIndex.rootChangedSince(C.hNovelRoot, 0) is False
     assert theIndex.indexChangedSince(0) is False
 
     assert theIndex.scanText(cHandle, (
@@ -227,11 +229,11 @@ def testCoreIndex_CheckThese(mockGUI, fncDir, mockRnd):
         "@time": []
     }
 
-    assert theIndex.rootChangedSince("0000000000010", 0) is True
+    assert theIndex.rootChangedSince(C.hNovelRoot, 0) is True
     assert theIndex.indexChangedSince(0) is True
 
-    assert theIndex.getHandleHeaderLevel(cHandle) == "H1"
-    assert theIndex.getHandleHeaderLevel(nHandle) == "H1"
+    assert cItem.mainHeading == "H1"
+    assert nItem.mainHeading == "H1"
 
     # Zero Items
     assert theIndex.checkThese([], cItem) == []
@@ -265,12 +267,13 @@ def testCoreIndex_ScanText(mockGUI, fncDir, mockRnd):
     """Check the index text scanner.
     """
     theProject = NWProject(mockGUI)
+    mockRnd.reset()
     buildTestProject(theProject, fncDir)
     theIndex = theProject.index
 
     # Some items for fail to scan tests
-    dHandle = theProject.newFolder("Folder", "0000000000010")
-    xHandle = theProject.newFile("No Layout", "0000000000010")
+    dHandle = theProject.newFolder("Folder", C.hNovelRoot)
+    xHandle = theProject.newFile("No Layout", C.hNovelRoot)
     xItem = theProject.tree[xHandle]
     xItem.setLayout(nwItemLayout.NO_LAYOUT)
 
@@ -290,21 +293,23 @@ def testCoreIndex_ScanText(mockGUI, fncDir, mockRnd):
     theProject.tree.updateItemData(xItem.itemHandle)
     assert xItem.itemRoot == tHandle
     assert xItem.itemClass == nwItemClass.TRASH
-    assert theIndex.scanText(xHandle, "Hello World!") is False
+    assert theIndex.scanText(xHandle, "## Hello World!") is True
+    assert xItem.mainHeading == "H2"
 
     # Create the archive root
     aHandle = theProject.newRoot(nwItemClass.ARCHIVE)
     assert theProject.tree[aHandle] is not None
     xItem.setParent(aHandle)
     theProject.tree.updateItemData(xItem.itemHandle)
-    assert theIndex.scanText(xHandle, "Hello World!") is False
+    assert theIndex.scanText(xHandle, "### Hello World!") is True
+    assert xItem.mainHeading == "H3"
 
     # Make some usable items
-    tHandle = theProject.newFile("Title", "0000000000010")
-    pHandle = theProject.newFile("Page",  "0000000000010")
-    nHandle = theProject.newFile("Hello", "0000000000010")
-    cHandle = theProject.newFile("Jane",  "0000000000012")
-    sHandle = theProject.newFile("Scene", "0000000000010")
+    tHandle = theProject.newFile("Title", C.hNovelRoot)
+    pHandle = theProject.newFile("Page",  C.hNovelRoot)
+    nHandle = theProject.newFile("Hello", C.hNovelRoot)
+    cHandle = theProject.newFile("Jane",  C.hCharRoot)
+    sHandle = theProject.newFile("Scene", C.hNovelRoot)
 
     # Text Indexing
     # =============
@@ -474,23 +479,24 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
     """Check the index data extraction functions.
     """
     theProject = NWProject(mockGUI)
+    mockRnd.reset()
     buildTestProject(theProject, fncDir)
 
     theIndex = theProject.index
-    theIndex.reIndexHandle("0000000000010")
-    theIndex.reIndexHandle("0000000000011")
-    theIndex.reIndexHandle("0000000000012")
-    theIndex.reIndexHandle("0000000000013")
-    theIndex.reIndexHandle("0000000000014")
-    theIndex.reIndexHandle("0000000000015")
-    theIndex.reIndexHandle("0000000000016")
-    theIndex.reIndexHandle("0000000000017")
+    theIndex.reIndexHandle(C.hNovelRoot)
+    theIndex.reIndexHandle(C.hPlotRoot)
+    theIndex.reIndexHandle(C.hCharRoot)
+    theIndex.reIndexHandle(C.hWorldRoot)
+    theIndex.reIndexHandle(C.hTitlePage)
+    theIndex.reIndexHandle(C.hChapterDir)
+    theIndex.reIndexHandle(C.hChapterDoc)
+    theIndex.reIndexHandle(C.hSceneDoc)
 
-    nHandle = theProject.newFile("Hello", "0000000000010")
-    cHandle = theProject.newFile("Jane",  "0000000000012")
+    nHandle = theProject.newFile("Hello", C.hNovelRoot)
+    cHandle = theProject.newFile("Jane",  C.hCharRoot)
 
     assert theIndex.getNovelData("", "") is None
-    assert theIndex.getNovelData("0000000000010", "") is None
+    assert theIndex.getNovelData(C.hNovelRoot, "") is None
 
     assert theIndex.scanText(cHandle, (
         "# Jane Smith\n"
@@ -511,10 +517,10 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
         theKeys.append(aKey)
 
     assert theKeys == [
-        "0000000000014:T000001",
-        "0000000000016:T000001",
-        "0000000000017:T000001",
-        "%s:T000001" % nHandle,
+        f"{C.hTitlePage}:T000001",
+        f"{C.hChapterDoc}:T000001",
+        f"{C.hSceneDoc}:T000001",
+        f"{nHandle}:T000001",
     ]
 
     # Check that excluded files can be skipped
@@ -525,10 +531,10 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
         theKeys.append(aKey)
 
     assert theKeys == [
-        "0000000000014:T000001",
-        "0000000000016:T000001",
-        "0000000000017:T000001",
-        "%s:T000001" % nHandle,
+        f"{C.hTitlePage}:T000001",
+        f"{C.hChapterDoc}:T000001",
+        f"{C.hSceneDoc}:T000001",
+        f"{nHandle}:T000001",
     ]
 
     theKeys = []
@@ -536,9 +542,9 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
         theKeys.append(aKey)
 
     assert theKeys == [
-        "0000000000014:T000001",
-        "0000000000016:T000001",
-        "0000000000017:T000001",
+        f"{C.hTitlePage}:T000001",
+        f"{C.hChapterDoc}:T000001",
+        f"{C.hSceneDoc}:T000001",
     ]
 
     # The novel file should have the correct counts
@@ -567,7 +573,7 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
     assert theIndex.getBackReferenceList(None) == {}
 
     # The Title Page file should have no references as it has no tag
-    assert theIndex.getBackReferenceList("0000000000014") == {}
+    assert theIndex.getBackReferenceList(C.hTitlePage) == {}
 
     # The character file should have a record of the reference from the novel file
     theRefs = theIndex.getBackReferenceList(cHandle)
@@ -656,9 +662,9 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
     # Novel Stats
     # ===========
 
-    hHandle = theProject.newFile("Chapter", "0000000000010")
-    sHandle = theProject.newFile("Scene One", "0000000000010")
-    tHandle = theProject.newFile("Scene Two", "0000000000010")
+    hHandle = theProject.newFile("Chapter", C.hNovelRoot)
+    sHandle = theProject.newFile("Scene One", C.hNovelRoot)
+    tHandle = theProject.newFile("Scene Two", C.hNovelRoot)
 
     theProject.tree[hHandle].itemLayout == nwItemLayout.DOCUMENT
     theProject.tree[sHandle].itemLayout == nwItemLayout.DOCUMENT
@@ -669,9 +675,9 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
     assert theIndex.scanText(tHandle, "### Scene Two\n\n")
 
     assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=False)] == [
-        ("0000000000014", "T000001"),
-        ("0000000000016", "T000001"),
-        ("0000000000017", "T000001"),
+        (C.hTitlePage, "T000001"),
+        (C.hChapterDoc, "T000001"),
+        (C.hSceneDoc, "T000001"),
         (nHandle, "T000001"),
         (nHandle, "T000011"),
         (hHandle, "T000001"),
@@ -680,9 +686,9 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
     ]
 
     assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=True)] == [
-        ("0000000000014", "T000001"),
-        ("0000000000016", "T000001"),
-        ("0000000000017", "T000001"),
+        (C.hTitlePage, "T000001"),
+        (C.hChapterDoc, "T000001"),
+        (C.hSceneDoc, "T000001"),
         (hHandle, "T000001"),
         (sHandle, "T000001"),
         (tHandle, "T000001"),
@@ -691,9 +697,9 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
     # Add a fake handle to the tree and check that it's ignored
     theProject.tree._treeOrder.append("0000000000000")
     assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=False)] == [
-        ("0000000000014", "T000001"),
-        ("0000000000016", "T000001"),
-        ("0000000000017", "T000001"),
+        (C.hTitlePage, "T000001"),
+        (C.hChapterDoc, "T000001"),
+        (C.hSceneDoc, "T000001"),
         (nHandle, "T000001"),
         (nHandle, "T000011"),
         (hHandle, "T000001"),
@@ -709,29 +715,29 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
     assert theIndex.getNovelTitleCounts(skipExcl=True) == [0, 1, 2, 3, 0]
 
     # Table of Contents
-    assert theIndex.getTableOfContents("0000000000010", 0, skipExcl=True) == []
-    assert theIndex.getTableOfContents("0000000000010", 1, skipExcl=True) == [
-        ("0000000000014:T000001", 1, "New Novel", 15),
+    assert theIndex.getTableOfContents(C.hNovelRoot, 0, skipExcl=True) == []
+    assert theIndex.getTableOfContents(C.hNovelRoot, 1, skipExcl=True) == [
+        (f"{C.hTitlePage}:T000001", 1, "New Novel", 15),
     ]
-    assert theIndex.getTableOfContents("0000000000010", 2, skipExcl=True) == [
-        ("0000000000014:T000001", 1, "New Novel", 5),
-        ("0000000000016:T000001", 2, "New Chapter", 4),
-        ("%s:T000001" % hHandle, 2, "Chapter One", 6),
+    assert theIndex.getTableOfContents(C.hNovelRoot, 2, skipExcl=True) == [
+        (f"{C.hTitlePage}:T000001", 1, "New Novel", 5),
+        (f"{C.hChapterDoc}:T000001", 2, "New Chapter", 4),
+        (f"{hHandle}:T000001", 2, "Chapter One", 6),
     ]
-    assert theIndex.getTableOfContents("0000000000010", 3, skipExcl=True) == [
-        ("0000000000014:T000001", 1, "New Novel", 5),
-        ("0000000000016:T000001", 2, "New Chapter", 2),
-        ("0000000000017:T000001", 3, "New Scene", 2),
-        ("%s:T000001" % hHandle, 2, "Chapter One", 2),
-        ("%s:T000001" % sHandle, 3, "Scene One", 2),
-        ("%s:T000001" % tHandle, 3, "Scene Two", 2),
+    assert theIndex.getTableOfContents(C.hNovelRoot, 3, skipExcl=True) == [
+        (f"{C.hTitlePage}:T000001", 1, "New Novel", 5),
+        (f"{C.hChapterDoc}:T000001", 2, "New Chapter", 2),
+        (f"{C.hSceneDoc}:T000001", 3, "New Scene", 2),
+        (f"{hHandle}:T000001", 2, "Chapter One", 2),
+        (f"{sHandle}:T000001", 3, "Scene One", 2),
+        (f"{tHandle}:T000001", 3, "Scene Two", 2),
     ]
 
-    assert theIndex.getTableOfContents("0000000000010", 0, skipExcl=False) == []
-    assert theIndex.getTableOfContents("0000000000010", 1, skipExcl=False) == [
-        ("0000000000014:T000001", 1, "New Novel", 9),
-        ("%s:T000001" % nHandle, 1, "Hello World!", 12),
-        ("%s:T000011" % nHandle, 1, "Hello World!", 22),
+    assert theIndex.getTableOfContents(C.hNovelRoot, 0, skipExcl=False) == []
+    assert theIndex.getTableOfContents(C.hNovelRoot, 1, skipExcl=False) == [
+        (f"{C.hTitlePage}:T000001", 1, "New Novel", 9),
+        (f"{nHandle}:T000001", 1, "Hello World!", 12),
+        (f"{nHandle}:T000011", 1, "Hello World!", 22),
     ]
 
     # Header Word Counts
@@ -741,7 +747,7 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
     assert theIndex.getHandleWordCounts(sHandle) == [("%s:T000001" % sHandle, 2)]
     assert theIndex.getHandleWordCounts(tHandle) == [("%s:T000001" % tHandle, 2)]
     assert theIndex.getHandleWordCounts(nHandle) == [
-        ("%s:T000001" % nHandle, 12), ("%s:T000011" % nHandle, 16)
+        (f"{nHandle}:T000001", 12), (f"{nHandle}:T000011", 16)
     ]
 
     assert theIndex.saveIndex() is True
@@ -926,11 +932,13 @@ def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
     """Check the ItemIndex class.
     """
     theProject = NWProject(mockGUI)
+    mockRnd.reset()
     buildTestProject(theProject, fncDir)
+    theProject.index.clearIndex()
 
-    nHandle = "0000000000014"
-    cHandle = "0000000000016"
-    sHandle = "0000000000017"
+    nHandle = C.hTitlePage
+    cHandle = C.hChapterDoc
+    sHandle = C.hSceneDoc
 
     assert theProject.index.saveIndex() is True
     itemIndex = theProject.index._itemIndex
@@ -948,13 +956,11 @@ def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
     itemIndex.add(cHandle, theProject.tree[cHandle])
     assert cHandle in itemIndex
     assert itemIndex[cHandle].item == theProject.tree[cHandle]
-    assert itemIndex.mainItemHeader(cHandle) == "H0"
     assert itemIndex.allItemTags(cHandle) == []
     assert list(itemIndex.iterItemHeaders(cHandle))[0][0] == "T000000"
 
     # Add a heading to the item, which should replace the T000000 heading
     itemIndex.addItemHeading(cHandle, "T000001", "H2", "Chapter One")
-    assert itemIndex.mainItemHeader(cHandle) == "H2"
     assert list(itemIndex.iterItemHeaders(cHandle))[0][0] == "T000001"
 
     # Set the remainig data values
@@ -966,7 +972,6 @@ def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
     itemIndex.addHeadingReferences(cHandle, "T000001", ["Jane", "John"], "@char")
     idxData = itemIndex.packData()
 
-    assert idxData[cHandle]["level"] == "H2"
     assert idxData[cHandle]["headings"]["T000001"] == {
         "level": "H2", "title": "Chapter One", "tag": "One",
         "cCount": 60, "wCount": 10, "pCount": 2, "synopsis": "In the beginning ...",
@@ -1026,7 +1031,6 @@ def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
     assert allHeads[2][1] == "T000001"
 
     # Ask for stuff that doesn't exist
-    assert itemIndex.mainItemHeader("blablabla") == "H0"
     assert itemIndex.allItemTags("blablabla") == []
 
     # Novel Structure
@@ -1048,7 +1052,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
     assert nStruct[3][0] == uHandle
 
     # Novel structure with root handle set
-    nStruct = list(itemIndex.iterNovelStructure(rootHandle="0000000000010"))
+    nStruct = list(itemIndex.iterNovelStructure(rootHandle=C.hNovelRoot))
     assert len(nStruct) == 3
     assert nStruct[0][0] == nHandle
     assert nStruct[1][0] == cHandle
@@ -1098,7 +1102,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
         itemIndex.unpackData({"stuff": "more stuff"})
 
     # Unknown keys should be skipped
-    itemIndex.unpackData({"0000000000000": {}})
+    itemIndex.unpackData({C.hInvalid: {}})
     assert itemIndex._items == {}
 
     # Known keys can be added, even witout data

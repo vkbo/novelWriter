@@ -243,20 +243,43 @@ class NWIndex:
         if theItem.itemParent is None:
             logger.info("Not indexing orphaned item '%s'", tHandle)
             return False
-        if theItem.isInactive():
-            logger.debug("Not indexing inactive item '%s'", tHandle)
-            return False
 
         logger.debug("Indexing item with handle '%s'", tHandle)
+        if theItem.isInactive():
+            self._scanInactive(theItem, theText)
+        else:
+            self._scanActive(tHandle, theItem, theText, itemTags)
 
-        # Scan the text content
+        # Update timestamps for index changes
+        nowTime = round(time())
+        self._indexChange = nowTime
+        self._rootChange[theItem.itemRoot] = nowTime
+
+        return True
+
+    ##
+    #  Internal Indexer Helpers
+    ##
+
+    def _scanActive(self, tHandle, theItem, theText, itemTags):
+        """Scan an active document for meta data.
+        """
         nTitle = 0
+        findHeader = True
         theLines = theText.splitlines()
+
         for nLine, aLine in enumerate(theLines, start=1):
+
             if len(aLine.strip()) == 0:
                 continue
 
             if aLine.startswith("#"):
+                if findHeader:
+                    hDepth, _ = self._splitHeading(aLine)
+                    if hDepth != "H0":
+                        theItem.setMainHeading(hDepth)
+                        findHeader = False
+
                 isTitle = self._indexTitle(tHandle, aLine, nLine)
                 if isTitle and nLine > 0:
                     if nTitle > 0:
@@ -292,45 +315,46 @@ class NWIndex:
                 logger.verbose("Deleting removed tag '%s'", tTag)
                 del self._tagsIndex[tTag]
 
-        # Update timestamps for index changes
-        nowTime = round(time())
-        self._indexChange = nowTime
-        self._rootChange[theItem.itemRoot] = nowTime
+        return
 
-        return True
+    def _scanInactive(self, theItem, theText):
+        """Scan an inactive document for meta data.
+        """
+        for aLine in theText.splitlines():
+            if aLine.startswith("#"):
+                hDepth, _ = self._splitHeading(aLine)
+                if hDepth != "H0":
+                    theItem.setMainHeading(hDepth)
+                    break
+        return
 
-    ##
-    #  Internal Indexer Helpers
-    ##
+    def _splitHeading(self, aLine):
+        """Split a heading into its header level and text value.
+        """
+        if aLine.startswith("# "):
+            return "H1", aLine[2:].strip()
+        elif aLine.startswith("## "):
+            return "H2", aLine[3:].strip()
+        elif aLine.startswith("### "):
+            return "H3", aLine[4:].strip()
+        elif aLine.startswith("#### "):
+            return "H4", aLine[5:].strip()
+        elif aLine.startswith("#! "):
+            return "H1", aLine[3:].strip()
+        elif aLine.startswith("##! "):
+            return "H2", aLine[4:].strip()
+        return "H0", ""
 
     def _indexTitle(self, tHandle, aLine, nTitle):
         """Save information about the title and its location in the
         file to the index.
         """
-        if aLine.startswith("# "):
-            hDepth = "H1"
-            hText = aLine[2:].strip()
-        elif aLine.startswith("## "):
-            hDepth = "H2"
-            hText = aLine[3:].strip()
-        elif aLine.startswith("### "):
-            hDepth = "H3"
-            hText = aLine[4:].strip()
-        elif aLine.startswith("#### "):
-            hDepth = "H4"
-            hText = aLine[5:].strip()
-        elif aLine.startswith("#! "):
-            hDepth = "H1"
-            hText = aLine[3:].strip()
-        elif aLine.startswith("##! "):
-            hDepth = "H2"
-            hText = aLine[4:].strip()
-        else:
+        hDepth, hText = self._splitHeading(aLine)
+        if hDepth == "H0":
             return False
 
         sTitle = f"T{nTitle:06d}"
         self._itemIndex.addItemHeading(tHandle, sTitle, hDepth, hText)
-
         return True
 
     def _indexWordCounts(self, tHandle, theText, nTitle):
@@ -492,11 +516,6 @@ class NWIndex:
             (sTitle, hItem.level, hItem.title)
             for sTitle, hItem in self._itemIndex.iterItemHeaders(tHandle)
         ]
-
-    def getHandleHeaderLevel(self, tHandle):
-        """Get the header level of the first header of a handle.
-        """
-        return self._itemIndex.mainItemHeader(tHandle)
 
     def getTableOfContents(self, rootHandle, maxDepth, skipExcl=True):
         """Generate a table of contents up to a maximum depth.
@@ -757,13 +776,6 @@ class ItemIndex:
         self._items[tHandle] = IndexItem(tHandle, tItem)
         return
 
-    def mainItemHeader(self, tHandle):
-        """Return the primary item header for an item.
-        """
-        if tHandle in self._items:
-            return self._items[tHandle].level
-        return "H0"
-
     def allItemTags(self, tHandle):
         """Get all tags set for headings of an item.
         """
@@ -823,7 +835,6 @@ class ItemIndex:
         """
         if tHandle in self._items:
             tItem = self._items[tHandle]
-            tItem.updateLevel(hDepth)
             tItem.addHeading(IndexHeading(sTitle, hDepth, hText))
         return
 
@@ -899,7 +910,6 @@ class IndexItem:
     def __init__(self, tHandle, tItem):
         self._handle = tHandle
         self._item = tItem
-        self._level = "H0"
         self._headings = {}
         self._index = 0
 
@@ -919,20 +929,9 @@ class IndexItem:
     def item(self):
         return self._item
 
-    @property
-    def level(self):
-        return self._level
-
     ##
     #  Setters
     ##
-
-    def updateLevel(self, level):
-        """Set the level only if it has not already been set.
-        """
-        if self._level == "H0":
-            self._level = level
-        return
 
     def addHeading(self, tHeading):
         """Add a heading to the item. Also remove the placeholder entry
@@ -1013,7 +1012,7 @@ class IndexItem:
             if hRefs:
                 refs[sTitle] = hRefs
 
-        data = {"level": self._level}
+        data = {}
         data["headings"] = heads
         if refs:
             data["references"] = refs
@@ -1023,7 +1022,6 @@ class IndexItem:
     def unpackData(self, data):
         """Unpack an item entry from the data.
         """
-        self._level = data.get("level", "H0")
         references = data.get("references", {})
         for sTitle, hData in data.get("headings", {}).items():
             if not isTitleTag(sTitle):
@@ -1032,6 +1030,7 @@ class IndexItem:
             tHeading.unpackData(hData)
             tHeading.unpackReferences(references.get(sTitle, {}))
             self.addHeading(tHeading)
+
         return
 
 # END Class IndexItem

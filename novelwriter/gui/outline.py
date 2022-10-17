@@ -685,7 +685,6 @@ class GuiOutlineTree(QTreeWidget):
         for _, tHandle, sTitle, novIdx in novStruct:
 
             iLevel = nwHeaders.H_LEVEL.get(novIdx.level, 0)
-            dLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
             if iLevel == 0:
                 continue
 
@@ -699,7 +698,7 @@ class GuiOutlineTree(QTreeWidget):
             trItem.setData(self._colIdx[nwOutline.TITLE], self.D_TITLE, sTitle)
             trItem.setFont(self._colIdx[nwOutline.TITLE], self._hFonts[iLevel])
             trItem.setText(self._colIdx[nwOutline.LEVEL], novIdx.level)
-            trItem.setIcon(self._colIdx[nwOutline.LABEL], self._dIcon[dLevel])
+            trItem.setIcon(self._colIdx[nwOutline.LABEL], self._dIcon[nwItem.mainHeading])
             trItem.setText(self._colIdx[nwOutline.LABEL], nwItem.itemName)
             trItem.setText(self._colIdx[nwOutline.LINE], sTitle[1:].lstrip("0"))
             trItem.setText(self._colIdx[nwOutline.SYNOP], novIdx.synopsis)

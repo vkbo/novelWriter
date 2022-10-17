@@ -31,7 +31,7 @@ from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified
 )
-from novelwriter.constants import nwLabels, trConst
+from novelwriter.constants import nwHeaders, nwLabels, trConst
 
 logger = logging.getLogger(__name__)
 
@@ -56,11 +56,12 @@ class NWItem:
         self._exported = True
 
         # Document Meta Data
-        self._charCount = 0  # Current character count
-        self._wordCount = 0  # Current word count
-        self._paraCount = 0  # Current paragraph count
-        self._cursorPos = 0  # Last cursor position
-        self._initCount = 0  # Initial word count
+        self._heading   = "H0"  # The main heading
+        self._charCount = 0     # Current character count
+        self._wordCount = 0     # Current word count
+        self._paraCount = 0     # Current paragraph count
+        self._cursorPos = 0     # Last cursor position
+        self._initCount = 0     # Initial word count
 
         return
 
@@ -123,6 +124,10 @@ class NWItem:
         return self._exported
 
     @property
+    def mainHeading(self):
+        return self._heading
+
+    @property
     def charCount(self):
         return self._charCount
 
@@ -162,6 +167,7 @@ class NWItem:
         metaAttrib = {}
         metaAttrib["expanded"] = str(self._expanded)
         if self._type == nwItemType.FILE:
+            metaAttrib["mainHeading"] = str(self._heading)
             metaAttrib["charCount"] = str(self._charCount)
             metaAttrib["wordCount"] = str(self._wordCount)
             metaAttrib["paraCount"] = str(self._paraCount)
@@ -202,6 +208,7 @@ class NWItem:
         for xValue in xItem:
             if xValue.tag == "meta":
                 self.setExpanded(xValue.attrib.get("expanded", False))
+                self.setMainHeading(xValue.attrib.get("mainHeading", "H0"))
                 self.setCharCount(xValue.attrib.get("charCount", 0))
                 self.setWordCount(xValue.attrib.get("wordCount", 0))
                 self.setParaCount(xValue.attrib.get("paraCount", 0))
@@ -269,7 +276,7 @@ class NWItem:
     #  Lookup Methods
     ##
 
-    def describeMe(self, hLevel=None):
+    def describeMe(self):
         """Return a string description of the item.
         """
         descKey = "none"
@@ -279,13 +286,13 @@ class NWItem:
             descKey = "folder"
         elif self._type == nwItemType.FILE:
             if self._layout == nwItemLayout.DOCUMENT:
-                if hLevel == "H1":
+                if self._heading == "H1":
                     descKey = "doc_h1"
-                elif hLevel == "H2":
+                elif self._heading == "H2":
                     descKey = "doc_h2"
-                elif hLevel == "H3":
+                elif self._heading == "H3":
                     descKey = "doc_h3"
-                elif hLevel == "H4":
+                elif self._heading == "H4":
                     descKey = "doc_h4"
                 else:
                     descKey = "document"
@@ -510,6 +517,13 @@ class NWItem:
     ##
     #  Set Document Meta Data
     ##
+
+    def setMainHeading(self, value):
+        """Set the main heading level.
+        """
+        if value in nwHeaders.H_LEVEL:
+            self._heading = value
+        return
 
     def setCharCount(self, count):
         """Set the character count, and ensure that it is an integer.

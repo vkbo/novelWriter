@@ -1,7 +1,7 @@
 %%~name: All of Chapter 1
 %%~path: 0000000000008/0000000000014
 %%~kind: NOVEL/DOCUMENT
-% Merge Novel Document: Chapter 1 [New]
+% Merge Novel Chapter: Chapter 1 [New]
 
 ## Chapter 1
 
@@ -9,7 +9,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc maximus justo non 
 
 Nullam laoreet lorem nec malesuada vehicula. Vivamus tempus sodales lectus sed viverra. Aenean lacinia sollicitudin quam, quis tempus eros suscipit id. Duis sed rutrum nisi, ut pulvinar magna. Nam et cursus tortor. Phasellus ac odio tellus. Nullam in iaculis ipsum. Vivamus ante sem, ultricies sed varius quis, tristique nec tellus. Nullam eu urna vitae lacus hendrerit gravida. Quisque pulvinar erat ex, id efficitur velit sodales vitae. Proin vestibulum, sapien eget mattis euismod, tortor quam viverra risus, at congue mauris tortor eu nunc. Mauris pellentesque elit leo, quis eleifend sem placerat a. Vivamus iaculis dui eget tellus volutpat, ac varius nisi facilisis.
 
-% Merge Novel Document: Scene 1.1 [New]
+% Merge Novel Scene: Scene 1.1 [New]
 
 ### Scene 1.1
 
@@ -17,7 +17,7 @@ Nullam laoreet lorem nec malesuada vehicula. Vivamus tempus sodales lectus sed v
 
 Nullam a nisl magna. Praesent commodo nec diam aliquet vestibulum. In sapien velit, sodales feugiat porta ut, rhoncus a elit. Quisque egestas nisi eu eros laoreet, quis facilisis est pretium. Nullam bibendum sed tellus nec lobortis. Duis elit massa, volutpat a lacinia a, ullamcorper in dui. Suspendisse ac laoreet dui. Curabitur elementum, tortor elementum ultricies laoreet, nunc massa vulputate augue, vitae tincidunt nunc enim eget nisl.
 
-% Merge Novel Document: Scene 1.2 [New]
+% Merge Novel Scene: Scene 1.2 [New]
 
 ### Scene 1.2
 
@@ -25,7 +25,7 @@ Nullam a nisl magna. Praesent commodo nec diam aliquet vestibulum. In sapien vel
 
 Pellentesque nibh urna, volutpat et feugiat porta, rutrum sed lectus. Aliquam eget risus id orci tincidunt condimentum et sit amet purus. Curabitur tincidunt odio vel ante feugiat feugiat. Proin nunc lorem, molestie a sapien et, varius elementum nunc. Donec non fermentum nisl. In et massa placerat, faucibus felis eu, congue nisi. Proin sed tortor non lorem mattis cursus. Vestibulum magna neque, bibendum vel nibh et, tincidunt rhoncus nisi. Duis pulvinar mi a quam rutrum maximus. Nunc sollicitudin, urna in cursus facilisis, augue neque imperdiet metus, ac finibus lorem ante id nulla. Sed maximus eleifend justo id feugiat. Cras eget diam vel est blandit tempor nec a leo. Mauris risus est, fringilla in aliquam a, sagittis vel enim. Nullam sodales id erat placerat lobortis.
 
-% Merge Novel Document: Scene 1.3 [New]
+% Merge Novel Scene: Scene 1.3 [New]
 
 ### Scene 1.3
 

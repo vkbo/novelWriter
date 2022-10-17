@@ -91,7 +91,7 @@ class DocMerger:
         docText = (inDoc.readDocument() or "").rstrip("\n")
 
         if addComment:
-            docInfo = srcItem.describeMe("H0")
+            docInfo = srcItem.describeMe()
             docSt, _ = srcItem.getImportStatus(incIcon=False)
             cmtLine = f"% {cmtPrefix} {docInfo}: {srcItem.itemName} [{docSt}]\n\n"
             docText = cmtLine + docText
