@@ -508,9 +508,9 @@ class GuiDocEditor(QTextEdit):
 
         self.setDocumentChanged(False)
 
-        oldHeader = self.theProject.index.getHandleHeaderLevel(tHandle)
+        oldHeader = self._nwItem.mainHeading
         self.theProject.index.scanText(tHandle, docText)
-        newHeader = self.theProject.index.getHandleHeaderLevel(tHandle)
+        newHeader = self._nwItem.mainHeading
 
         # ToDo: This should be a signal
         if self._updateHeaders(checkLevel=True):
@@ -2972,8 +2972,7 @@ class GuiDocEditFooter(QWidget):
         else:
             theStatus, theIcon = self._theItem.getImportStatus()
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            hLevel = self.theProject.index.getHandleHeaderLevel(self._docHandle)
-            sText = f"{theStatus} / {self._theItem.describeMe(hLevel)}"
+            sText = f"{theStatus} / {self._theItem.describeMe()}"
 
         self.statusIcon.setPixmap(sIcon)
         self.statusText.setText(sText)

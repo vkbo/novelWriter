@@ -276,7 +276,7 @@ class NWItem:
     #  Lookup Methods
     ##
 
-    def describeMe(self, hLevel=None):
+    def describeMe(self):
         """Return a string description of the item.
         """
         descKey = "none"
@@ -286,13 +286,13 @@ class NWItem:
             descKey = "folder"
         elif self._type == nwItemType.FILE:
             if self._layout == nwItemLayout.DOCUMENT:
-                if hLevel == "H1":
+                if self._heading == "H1":
                     descKey = "doc_h1"
-                elif hLevel == "H2":
+                elif self._heading == "H2":
                     descKey = "doc_h2"
-                elif hLevel == "H3":
+                elif self._heading == "H3":
                     descKey = "doc_h3"
-                elif hLevel == "H4":
+                elif self._heading == "H4":
                     descKey = "doc_h4"
                 else:
                     descKey = "document"

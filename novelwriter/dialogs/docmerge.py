@@ -155,9 +155,8 @@ class GuiDocMerge(QDialog):
             if nwItem is None or not nwItem.isFileType():
                 continue
 
-            hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
             itemIcon = self.mainTheme.getItemIcon(
-                nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
+                nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, nwItem.mainHeading
             )
 
             newItem = QListWidgetItem()
