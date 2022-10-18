@@ -668,23 +668,17 @@ class TagsIndex:
     def tagHandle(self, tagKey):
         """Get the handle of a given tag.
         """
-        if tagKey in self._tags:
-            return self._tags.get(tagKey).get("handle")
-        return None
+        return self._tags.get(tagKey, {}).get("handle", None)
 
     def tagHeading(self, tagKey):
         """Get the heading of a given tag.
         """
-        if tagKey in self._tags:
-            return self._tags.get(tagKey).get("heading")
-        return nwHeaders.TT_NONE
+        return self._tags.get(tagKey, {}).get("heading", nwHeaders.TT_NONE)
 
     def tagClass(self, tagKey):
         """Get the class of a given tag.
         """
-        if tagKey in self._tags:
-            return self._tags.get(tagKey).get("class")
-        return None
+        return self._tags.get(tagKey, {}).get("class", None)
 
     ##
     #  Pack/Unpack
