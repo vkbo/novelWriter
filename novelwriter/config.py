@@ -37,7 +37,7 @@ from PyQt5.QtCore import (
 )
 
 from novelwriter.error import logException, formatException
-from novelwriter.common import splitVersionNumber, formatTimeStamp, NWConfigParser
+from novelwriter.common import ensureFolder, splitVersionNumber, formatTimeStamp, NWConfigParser
 from novelwriter.constants import nwFiles, nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -54,23 +54,21 @@ class Config:
         self.appName   = "novelWriter"
         self.appHandle = self.appName.lower()
 
-        # Config Error Handling
-        self.hasError  = False  # True if the config class encountered an error
-        self.errData   = []     # List of error messages
-
         # Set Paths
-        self.cmdOpen   = None   # Path from command line for project to be opened on launch
-        self.confPath  = None   # Folder where the config is saved
-        self.confFile  = None   # The config file name
-        self.dataPath  = None   # Folder where app data is stored
-        self.lastPath  = None   # The last user-selected folder (browse dialogs)
-        self.appPath   = None   # The full path to the novelwriter package folder
-        self.appRoot   = None   # The full path to the novelwriter root folder
-        self.appIcon   = None   # The full path to the novelwriter icon file
-        self.assetPath = None   # The full path to the novelwriter/assets folder
-        self.pdfDocs   = None   # The location of the PDF manual, if it exists
+        self.cmdOpen   = None  # Path from command line for project to be opened on launch
+        self.confPath  = None  # Folder where the config is saved
+        self.confFile  = None  # The config file name
+        self.dataPath  = None  # Folder where app data is stored
+        self.lastPath  = None  # The last user-selected folder (browse dialogs)
+        self.appPath   = None  # The full path to the novelwriter package folder
+        self.appRoot   = None  # The full path to the novelwriter root folder
+        self.appIcon   = None  # The full path to the novelwriter icon file
+        self.assetPath = None  # The full path to the novelwriter/assets folder
+        self.pdfDocs   = None  # The location of the PDF manual, if it exists
 
         # Runtime Settings and Variables
+        self.hasError = False     # True if the config class encountered an error
+        self.errData  = []        # List of error messages
         self.confChanged = False  # True whenever the config has chenged, false after save
 
         # General
@@ -94,14 +92,14 @@ class Config:
         self.qtTrans    = {}
 
         # Sizes
-        self.winGeometry   = [1200, 650]
-        self.prefGeometry  = [700, 615]
-        self.projColWidth  = [200, 60, 140]
-        self.mainPanePos   = [300, 800]
-        self.docPanePos    = [400, 400]
-        self.viewPanePos   = [500, 150]
-        self.outlnPanePos  = [500, 150]
-        self.isFullScreen  = False
+        self.winGeometry  = [1200, 650]
+        self.prefGeometry = [700, 615]
+        self.projColWidth = [200, 60, 140]
+        self.mainPanePos  = [300, 800]
+        self.docPanePos   = [400, 400]
+        self.viewPanePos  = [500, 150]
+        self.outlnPanePos = [500, 150]
+        self.isFullScreen = False
 
         # Features
         self.hideVScroll = False  # Hide vertical scroll bars on main widgets
@@ -270,20 +268,8 @@ class Config:
             logger.info("Setting data path from alternative path: %s", dataPath)
             self.dataPath = dataPath
 
-        logger.verbose("Config path: %s", self.confPath)
-        logger.verbose("Data path: %s", self.dataPath)
-
-        # Check Data Path Subdirs
-        dataDirs = ["syntax", "themes"]
-        for dataDir in dataDirs:
-            dirPath = os.path.join(self.dataPath, dataDir)
-            if not os.path.isdir(dirPath):
-                try:
-                    os.mkdir(dirPath)
-                    logger.info("Created folder: %s", dirPath)
-                except Exception:
-                    logger.error("Could not create folder: %s", dirPath)
-                    logException()
+        logger.debug("Config path: %s", self.confPath)
+        logger.debug("Data path: %s", self.dataPath)
 
         self.confFile = self.appHandle+".conf"
         self.lastPath = os.path.expanduser("~")
@@ -308,18 +294,20 @@ class Config:
         logger.verbose("App path: %s", self.appPath)
         logger.verbose("Last path: %s", self.lastPath)
 
-        # If the config folder does not exist, create it.
-        # This assumes that the os config folder itself exists.
-        if not os.path.isdir(self.confPath):
-            try:
-                os.mkdir(self.confPath)
-            except Exception as exc:
-                logger.error("Could not create folder: %s", self.confPath)
-                logException()
-                self.hasError = True
-                self.errData.append("Could not create folder: %s" % self.confPath)
-                self.errData.append(formatException(exc))
-                self.confPath = None
+        # If the config and data folders don't not exist, create them
+        # This assumes that the os config and data folders exist
+        if not ensureFolder(self.confPath, errLog=self.errData):
+            self.hasError = True
+            self.confPath = None
+
+        if not ensureFolder(self.dataPath, errLog=self.errData):
+            self.hasError = True
+            self.dataPath = None
+
+        # We don't error on these failing since they are not essential
+        if self.dataPath is not None:
+            ensureFolder("syntax", parentPath=self.dataPath)
+            ensureFolder("themes", parentPath=self.dataPath)
 
         # Check if config file exists
         if self.confPath is not None:
@@ -329,20 +317,6 @@ class Config:
             else:
                 # If it does not exist, save a copy of the default values
                 self.saveConfig()
-
-        # If the data folder does not exist, create it.
-        # This assumes that the os data folder itself exists.
-        if self.dataPath is not None:
-            if not os.path.isdir(self.dataPath):
-                try:
-                    os.mkdir(self.dataPath)
-                except Exception as exc:
-                    logger.error("Could not create folder: %s", self.dataPath)
-                    logException()
-                    self.hasError = True
-                    self.errData.append("Could not create folder: %s" % self.dataPath)
-                    self.errData.append(formatException(exc))
-                    self.dataPath = None
 
         # Load recent projects cache
         self.loadRecentCache()
@@ -389,7 +363,7 @@ class Config:
 
     def listLanguages(self, lngSet):
         """List localisation files in the i18n folder. The default GUI
-        language 'en_GB' is British English.
+        language is British English (en_GB).
         """
         if lngSet == self.LANG_NW:
             fPre = "nw_"
@@ -740,29 +714,6 @@ class Config:
     ##
     #  Setters
     ##
-
-    def setConfPath(self, newPath):
-        """Set the path and filename to the config file.
-        """
-        if newPath is None:
-            return True
-        if not os.path.isfile(newPath):
-            logger.error("File not found, using default config path instead")
-            return False
-        self.confPath = os.path.dirname(newPath)
-        self.confFile = os.path.basename(newPath)
-        return True
-
-    def setDataPath(self, newPath):
-        """Set the data path.
-        """
-        if newPath is None:
-            return True
-        if not os.path.isdir(newPath):
-            logger.error("Path not found, using default data path instead")
-            return False
-        self.dataPath = os.path.abspath(newPath)
-        return True
 
     def setLastPath(self, lastPath):
         """Set the last used path (by the user).

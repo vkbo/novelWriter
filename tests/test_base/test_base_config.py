@@ -317,38 +317,6 @@ def testBaseConfig_RecentCache(monkeypatch, tmpConf, tmpDir, fncDir):
 
 
 @pytest.mark.base
-def testBaseConfig_SetPath(tmpConf, tmpDir):
-    """Test path setters.
-    """
-    # Conf Path
-    assert tmpConf.setConfPath(None)
-    assert not tmpConf.setConfPath(os.path.join("somewhere", "over", "the", "rainbow"))
-    assert tmpConf.setConfPath(os.path.join(tmpDir, "novelwriter.conf"))
-    assert tmpConf.confPath == tmpDir
-    assert tmpConf.confFile == "novelwriter.conf"
-    assert not tmpConf.confChanged
-
-    # Data Path
-    assert tmpConf.setDataPath(None)
-    assert not tmpConf.setDataPath(os.path.join("somewhere", "over", "the", "rainbow"))
-    assert tmpConf.setDataPath(tmpDir)
-    assert tmpConf.dataPath == tmpDir
-    assert not tmpConf.confChanged
-
-    # Last Path
-    assert tmpConf.setLastPath(None)
-    assert tmpConf.lastPath == ""
-
-    assert tmpConf.setLastPath(os.path.join(tmpDir, "file.tmp"))
-    assert tmpConf.lastPath == tmpDir
-
-    assert tmpConf.setLastPath("")
-    assert tmpConf.lastPath == ""
-
-# END Test testBaseConfig_SetPath
-
-
-@pytest.mark.base
 def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     """Set various sizes and positions
     """

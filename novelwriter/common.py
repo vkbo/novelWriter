@@ -35,7 +35,7 @@ from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import qApp
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
-from novelwriter.error import logException
+from novelwriter.error import formatException, logException
 from novelwriter.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -473,6 +473,25 @@ def makeFileNameSafe(value):
         if c.isalpha() or c.isdigit() or c == " ":
             cleanName += c
     return cleanName
+
+
+def ensureFolder(dirPath, parentPath=None, errLog=None):
+    """Make sure a folder exists, and if it doesn't, create it.
+    """
+    try:
+        if parentPath:
+            dirPath = os.path.join(parentPath, dirPath)
+        if not os.path.isdir(dirPath):
+            os.mkdir(dirPath)
+    except Exception as exc:
+        logger.error("Could not create folder: %s", dirPath)
+        logException()
+        if isinstance(errLog, list):
+            errLog.append(f"Could not create folder: {dirPath}")
+            errLog.append(formatException(exc))
+        return False
+
+    return True
 
 
 def sha256sum(filePath):

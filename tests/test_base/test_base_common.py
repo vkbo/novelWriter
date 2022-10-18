@@ -33,7 +33,8 @@ from novelwriter.common import (
     isTitleTag, isItemClass, isItemType, isItemLayout, hexToInt, checkIntRange,
     minmax, checkIntTuple, formatInt, formatTimeStamp, formatTime, simplified,
     splitVersionNumber, transferCase, fuzzyTime, numberToRoman, jsonEncode,
-    readTextFile, makeFileNameSafe, sha256sum, getGuiItem, NWConfigParser
+    readTextFile, makeFileNameSafe, ensureFolder, sha256sum, getGuiItem,
+    NWConfigParser
 )
 
 
@@ -539,6 +540,32 @@ def testBaseCommon_MakeFileNameSafe():
     assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
 
 # END Test testBaseCommon_MakeFileNameSafe
+
+
+@pytest.mark.base
+def testBaseCommon_EnsureFolder(monkeypatch, fncDir):
+    """Test the ensureFolder function.
+    """
+    newDir1 = os.path.join(fncDir, "newDir1")
+    newDir2 = os.path.join(fncDir, "newDir2")
+    newDir3 = os.path.join(fncDir, "newDir3")
+
+    assert ensureFolder(None) is False
+
+    assert ensureFolder(newDir1) is True
+    assert os.path.isdir(newDir1)
+
+    assert ensureFolder("newDir2", parentPath=fncDir) is True
+    assert os.path.isdir(newDir2)
+
+    with monkeypatch.context() as mp:
+        mp.setattr("os.mkdir", causeOSError)
+        errLog = []
+        assert ensureFolder("newDir3", parentPath=fncDir, errLog=errLog) is False
+        assert errLog[0] == f"Could not create folder: {newDir3}"
+        assert not os.path.isdir(newDir3)
+
+# END Test testBaseCommon_EnsureFolder
 
 
 @pytest.mark.base
