@@ -120,10 +120,12 @@ class GuiTheme:
         self._availThemes = {}
         self._availSyntax = {}
 
-        self._listConf(self._availSyntax, os.path.join(self.mainConf.dataPath, "syntax"))
         self._listConf(self._availSyntax, os.path.join(self.mainConf.assetPath, "syntax"))
-        self._listConf(self._availThemes, os.path.join(self.mainConf.dataPath, "themes"))
         self._listConf(self._availThemes, os.path.join(self.mainConf.assetPath, "themes"))
+
+        if self.mainConf.dataPath:  # Not guaranteed to be set
+            self._listConf(self._availSyntax, os.path.join(self.mainConf.dataPath, "syntax"))
+            self._listConf(self._availThemes, os.path.join(self.mainConf.dataPath, "themes"))
 
         self.updateFont()
         self.updateTheme()
