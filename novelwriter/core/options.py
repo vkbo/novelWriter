@@ -188,8 +188,7 @@ class OptionState:
         the default value.
         """
         if group in self._theState:
-            if name in self._theState[group]:
-                return checkBool(self._theState[group].get(name, default), default)
+            return checkBool(self._theState[group].get(name, default), default)
         return default
 
     def getEnum(self, group, name, lookup, default):

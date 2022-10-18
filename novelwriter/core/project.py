@@ -44,7 +44,7 @@ from novelwriter.core.document import NWDoc
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.error import logException
 from novelwriter.common import (
-    checkString, checkBool, checkInt, isHandle, formatTimeStamp,
+    checkString, checkBool, checkInt, checkStringNone, isHandle, formatTimeStamp,
     makeFileNameSafe, hexToInt, minmax, simplified
 )
 from novelwriter.constants import trConst, nwFiles, nwLabels
@@ -187,7 +187,7 @@ class NWProject:
             return False
 
         newDoc = NWDoc(self, tHandle)
-        if newDoc.readDocument().strip():
+        if (newDoc.readDocument() or "").strip():
             return False
 
         hshText = "#"*minmax(hLevel, 1, 4)
@@ -593,13 +593,13 @@ class NWProject:
                     if xItem.text is None:
                         continue
                     if xItem.tag == "name":
-                        self.projName = checkString(simplified(xItem.text), "")
+                        self.projName = simplified(checkString(xItem.text, ""))
                         logger.verbose("Working Title: '%s'", self.projName)
                     elif xItem.tag == "title":
-                        self.bookTitle = checkString(simplified(xItem.text), "")
+                        self.bookTitle = simplified(checkString(xItem.text, ""))
                         logger.verbose("Title is '%s'", self.bookTitle)
                     elif xItem.tag == "author":
-                        author = checkString(simplified(xItem.text), "")
+                        author = simplified(checkString(xItem.text, ""))
                         if author:
                             self.bookAuthors.append(author)
                             logger.verbose("Author: '%s'", author)
@@ -618,25 +618,25 @@ class NWProject:
                     if xItem.tag == "doBackup":
                         self.doBackup = checkBool(xItem.text, False)
                     elif xItem.tag == "language":
-                        self.projLang = checkString(xItem.text, None, True)
+                        self.projLang = checkStringNone(xItem.text, None)
                     elif xItem.tag == "spellCheck":
                         self.spellCheck = checkBool(xItem.text, False)
                     elif xItem.tag == "spellLang":
-                        self.projSpell = checkString(xItem.text, None, True)
+                        self.projSpell = checkStringNone(xItem.text, None)
                     elif xItem.tag == "lastEdited":
-                        self.lastEdited = checkString(xItem.text, None, True)
+                        self.lastEdited = checkStringNone(xItem.text, None)
                     elif xItem.tag == "lastViewed":
-                        self.lastViewed = checkString(xItem.text, None, True)
+                        self.lastViewed = checkStringNone(xItem.text, None)
                     elif xItem.tag == "lastNovel":
-                        self.lastNovel = checkString(xItem.text, None, True)
+                        self.lastNovel = checkStringNone(xItem.text, None)
                     elif xItem.tag == "lastOutline":
-                        self.lastOutline = checkString(xItem.text, None, True)
+                        self.lastOutline = checkStringNone(xItem.text, None)
                     elif xItem.tag == "lastWordCount":
-                        self.lastWCount = checkInt(xItem.text, 0, False)
+                        self.lastWCount = checkInt(xItem.text, 0)
                     elif xItem.tag == "novelWordCount":
-                        self.lastNovelWC = checkInt(xItem.text, 0, False)
+                        self.lastNovelWC = checkInt(xItem.text, 0)
                     elif xItem.tag == "notesWordCount":
-                        self.lastNotesWC = checkInt(xItem.text, 0, False)
+                        self.lastNotesWC = checkInt(xItem.text, 0)
                     elif xItem.tag == "status":
                         self.statusItems.unpackXML(xItem)
                     elif xItem.tag == "importance":
@@ -645,12 +645,12 @@ class NWProject:
                         for xEntry in xItem:
                             if xEntry.tag == "entry" and "key" in xEntry.attrib:
                                 self.autoReplace[xEntry.attrib["key"]] = checkString(
-                                    xEntry.text, None, False
+                                    xEntry.text, "ERROR"
                                 )
                     elif xItem.tag == "titleFormat":
                         titleFormat = self.titleFormat.copy()
                         for xEntry in xItem:
-                            titleFormat[xEntry.tag] = checkString(xEntry.text, "", False)
+                            titleFormat[xEntry.tag] = checkString(xEntry.text, "")
                         self.setTitleFormat(titleFormat)
 
             elif xChild.tag == "content":
@@ -1091,7 +1091,7 @@ class NWProject:
     def setSpellLang(self, theLang):
         """Set the project-specific spell check language.
         """
-        theLang = checkString(theLang, None, True)
+        theLang = checkStringNone(theLang, None)
         if self.projSpell != theLang:
             self.projSpell = theLang
             self.setProjectChanged(True)
@@ -1101,7 +1101,7 @@ class NWProject:
     def setProjectLang(self, theLang):
         """Set the project-specific language.
         """
-        theLang = checkString(theLang, None, True)
+        theLang = checkStringNone(theLang, None)
         if self.projLang != theLang:
             self.projLang = theLang
             self._loadProjectLocalisation()
