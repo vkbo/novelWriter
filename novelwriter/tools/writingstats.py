@@ -39,7 +39,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.enum import nwAlert
 from novelwriter.error import formatException
-from novelwriter.common import formatTime, checkInt, checkIntRange, checkIntTuple
+from novelwriter.common import formatTime, checkInt, checkIntTuple, minmax
 from novelwriter.custom import QSwitch
 from novelwriter.constants import nwConst, nwFiles
 
@@ -116,7 +116,7 @@ class GuiWritingStats(QDialog):
         hHeader.setTextAlignment(self.C_IDLE, Qt.AlignRight)
         hHeader.setTextAlignment(self.C_COUNT, Qt.AlignRight)
 
-        sortCol = checkIntRange(pOptions.getInt("GuiWritingStats", "sortCol", 0), 0, 2, 0)
+        sortCol = minmax(pOptions.getInt("GuiWritingStats", "sortCol", 0), 0, 2)
         sortOrder = checkIntTuple(
             pOptions.getInt("GuiWritingStats", "sortOrder", Qt.DescendingOrder),
             (Qt.AscendingOrder, Qt.DescendingOrder), Qt.DescendingOrder

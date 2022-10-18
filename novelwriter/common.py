@@ -45,52 +45,54 @@ logger = logging.getLogger(__name__)
 #  Checker Functions
 # =============================================================================================== #
 
-def checkString(value, default, allowNone=False):
+def checkStringNone(value, default):
     """Check if a variable is a string or a None.
     """
-    if allowNone and (value is None or value == "None"):
+    if value is None or value == "None":
         return None
     if isinstance(value, str):
         return str(value)
     return default
 
 
-def checkInt(value, default, allowNone=False):
-    """Check if a variable is an integer or a None.
+def checkString(value, default):
+    """Check if a variable is a string.
     """
-    if allowNone and (value is None or value == "None"):
-        return None
+    if isinstance(value, str):
+        return str(value)
+    return default
+
+
+def checkInt(value, default):
+    """Check if a variable is an integer.
+    """
     try:
         return int(value)
     except Exception:
         return default
 
 
-def checkFloat(value, default, allowNone=False):
-    """Check if a variable is a float or a None.
+def checkFloat(value, default):
+    """Check if a variable is a float.
     """
-    if allowNone and (value is None or value == "None"):
-        return None
     try:
         return float(value)
     except Exception:
         return default
 
 
-def checkBool(value, default, allowNone=False):
-    """Check if a variable is a boolean or a None.
+def checkBool(value, default):
+    """Check if a variable is a boolean.
     """
-    if allowNone and (value is None or value == "None"):
-        return None
-
-    if isinstance(value, str):
+    if isinstance(value, bool):
+        return value
+    elif isinstance(value, str):
         if value == "True":
             return True
         elif value == "False":
             return False
         else:
             return default
-
     elif isinstance(value, int):
         if value == 1:
             return True
@@ -98,7 +100,6 @@ def checkBool(value, default, allowNone=False):
             return False
         else:
             return default
-
     return default
 
 
@@ -171,16 +172,6 @@ def hexToInt(value, default=0):
             return int(value, 16)
         except Exception:
             return default
-    return default
-
-
-def checkIntRange(value, first, last, default):
-    """Check that an int is in a given range. If it isn't, return the
-    default value.
-    """
-    if isinstance(value, int):
-        if value >= first and value <= last:
-            return value
     return default
 
 
@@ -263,7 +254,7 @@ def splitVersionNumber(value):
     and patch, and computes an integer value aabbcc.
     """
     if not isinstance(value, str):
-        return [0, 0, 0, 0]
+        return 0, 0, 0, 0
 
     vMajor = 0
     vMinor = 0
@@ -282,7 +273,7 @@ def splitVersionNumber(value):
 
     vInt = vMajor*10000 + vMinor*100 + vPatch
 
-    return [vMajor, vMinor, vPatch, vInt]
+    return vMajor, vMinor, vPatch, vInt
 
 
 def transferCase(theSource, theTarget):
