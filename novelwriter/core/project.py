@@ -187,7 +187,7 @@ class NWProject:
             return False
 
         newDoc = NWDoc(self, tHandle)
-        if newDoc.readDocument().strip():
+        if (newDoc.readDocument() or "").strip():
             return False
 
         hshText = "#"*minmax(hLevel, 1, 4)
