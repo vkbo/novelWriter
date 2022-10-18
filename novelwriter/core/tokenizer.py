@@ -304,16 +304,10 @@ class Tokenizer(ABC):
         if self._theItem is None:
             return False
 
-        self._theText = ""
-        if theText is not None:
-            # If the text is set, just use that
-            self._theText = theText
-        else:
-            # Otherwise, load it from file
-            theDoc  = NWDoc(self.theProject, theHandle)
-            theText = theDoc.readDocument()
-            if theText:
-                self._theText = theText
+        if theText is None:
+            theText = NWDoc(self.theProject, theHandle).readDocument() or ""
+
+        self._theText = theText
 
         docSize = len(self._theText)
         if docSize > nwConst.MAX_DOCSIZE:
