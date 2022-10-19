@@ -740,7 +740,7 @@ class GuiDocEditor(QTextEdit):
             qApp.restoreOverrideCursor()
             afTime = time()
             logger.debug("Document highlighted in %.3f ms", 1000*(afTime-bfTime))
-            self.mainGui.statusBar.setStatus(self.tr("Spell check complete"))
+            self.mainGui.mainStatus.setStatus(self.tr("Spell check complete"))
 
         return True
 

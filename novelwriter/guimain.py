@@ -104,7 +104,7 @@ class GuiMain(QMainWindow):
         hWd = self.mainConf.pxInt(4)
 
         # Main GUI Elements
-        self.statusBar   = GuiMainStatus(self)
+        self.mainStatus  = GuiMainStatus(self)
         self.projView    = GuiProjectView(self)
         self.novelView   = GuiNovelView(self)
         self.docEditor   = GuiDocEditor(self)
@@ -189,7 +189,7 @@ class GuiMain(QMainWindow):
         # Set Main Window Elements
         self.setMenuBar(self.mainMenu)
         self.setCentralWidget(self.mainStack)
-        self.setStatusBar(self.statusBar)
+        self.setStatusBar(self.mainStatus)
         self.addToolBar(Qt.LeftToolBarArea, self.viewsBar)
         self.setContextMenuPolicy(Qt.NoContextMenu)  # Issue #1147
 
@@ -211,8 +211,8 @@ class GuiMain(QMainWindow):
         self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.novelView.openDocumentRequest.connect(self._openDocument)
 
-        self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
-        self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
+        self.docEditor.spellDictionaryChanged.connect(self.mainStatus.setLanguage)
+        self.docEditor.docEditedStatusChanged.connect(self.mainStatus.doUpdateDocumentStatus)
         self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
         self.docEditor.docCountsChanged.connect(self.projView.updateCounts)
         self.docEditor.loadDocumentTagRequest.connect(self._followTag)
@@ -254,7 +254,7 @@ class GuiMain(QMainWindow):
         keyEscape.activated.connect(self._keyPressEscape)
 
         # Forward Functions
-        self.setStatus = self.statusBar.setStatus
+        self.setStatus = self.mainStatus.setStatus
 
         # Force a show of the GUI
         self.show()
@@ -266,7 +266,7 @@ class GuiMain(QMainWindow):
         self.initMain()
         self.asProjTimer.start()
         self.asDocTimer.start()
-        self.statusBar.clearStatus()
+        self.mainStatus.clearStatus()
 
         # Handle Windows Mode
         self.showNormal()
@@ -307,7 +307,7 @@ class GuiMain(QMainWindow):
         self.outlineView.clearProject()
 
         # General
-        self.statusBar.clearStatus()
+        self.mainStatus.clearStatus()
         self._updateWindowTitle()
 
         return True
@@ -376,10 +376,10 @@ class GuiMain(QMainWindow):
             self.outlineView.openProjectTasks()
             self.rebuildIndex(beQuiet=True)
 
-            self.statusBar.setRefTime(self.theProject.projOpened)
-            self.statusBar.setProjectStatus(nwState.GOOD)
-            self.statusBar.setDocumentStatus(nwState.NONE)
-            self.statusBar.setStatus(self.tr("New project created ..."))
+            self.mainStatus.setRefTime(self.theProject.projOpened)
+            self.mainStatus.setProjectStatus(nwState.GOOD)
+            self.mainStatus.setDocumentStatus(nwState.NONE)
+            self.mainStatus.setStatus(self.tr("New project created ..."))
 
             self._updateWindowTitle(self.theProject.projName)
 
@@ -523,7 +523,7 @@ class GuiMain(QMainWindow):
         self.rebuildTrees()
         self.docEditor.setDictionaries()
         self.docEditor.toggleSpellCheck(self.theProject.spellCheck)
-        self.statusBar.setRefTime(self.theProject.projOpened)
+        self.mainStatus.setRefTime(self.theProject.projOpened)
         self.projView.openProjectTasks()
         self.novelView.openProjectTasks()
         self.outlineView.openProjectTasks()
@@ -1221,7 +1221,7 @@ class GuiMain(QMainWindow):
 
         isVisible = not self.isFocusMode
         self.treePane.setVisible(isVisible)
-        self.statusBar.setVisible(isVisible)
+        self.mainStatus.setVisible(isVisible)
         self.mainMenu.setVisible(isVisible)
         self.viewsBar.setVisible(isVisible)
 
@@ -1505,12 +1505,12 @@ class GuiMain(QMainWindow):
 
         if editIdle or userIdle:
             self.idleTime += currTime - self.idleRefTime
-            self.statusBar.setUserIdle(True)
+            self.mainStatus.setUserIdle(True)
         else:
-            self.statusBar.setUserIdle(False)
+            self.mainStatus.setUserIdle(False)
 
         self.idleRefTime = currTime
-        self.statusBar.updateTime(idleTime=self.idleTime)
+        self.mainStatus.updateTime(idleTime=self.idleTime)
 
         return
 
@@ -1519,7 +1519,7 @@ class GuiMain(QMainWindow):
         """Update the word count on the status bar.
         """
         if not self.hasProject:
-            self.statusBar.setProjectStats(0, 0)
+            self.mainStatus.setProjectStats(0, 0)
 
         self.theProject.updateWordCounts()
         if self.mainConf.incNotesWCount:
@@ -1529,7 +1529,7 @@ class GuiMain(QMainWindow):
             currWords = self.theProject.currNovelWC
             diffWords = currWords - self.theProject.lastNovelWC
 
-        self.statusBar.setProjectStats(currWords, diffWords)
+        self.mainStatus.setProjectStats(currWords, diffWords)
 
         return
 

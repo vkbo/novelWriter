@@ -30,7 +30,7 @@ class MockGuiMain:
         self.mainConf = None
         self.hasProject = True
         self.theProject = None
-        self.statusBar = MockStatusBar()
+        self.mainStatus = MockStatusBar()
 
         # Test Variables
         self.askResponse = True

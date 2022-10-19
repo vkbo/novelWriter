@@ -575,7 +575,7 @@ def testGuiMain_FocusFullMode(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Enable focus mode
     assert nwGUI.toggleFocusMode() is True
     assert nwGUI.treePane.isVisible() is False
-    assert nwGUI.statusBar.isVisible() is False
+    assert nwGUI.mainStatus.isVisible() is False
     assert nwGUI.mainMenu.isVisible() is False
     assert nwGUI.viewsBar.isVisible() is False
     assert nwGUI.splitView.isVisible() is False
@@ -583,7 +583,7 @@ def testGuiMain_FocusFullMode(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Disable focus mode
     assert nwGUI.toggleFocusMode() is True
     assert nwGUI.treePane.isVisible() is True
-    assert nwGUI.statusBar.isVisible() is True
+    assert nwGUI.mainStatus.isVisible() is True
     assert nwGUI.mainMenu.isVisible() is True
     assert nwGUI.viewsBar.isVisible() is True
     assert nwGUI.splitView.isVisible() is True
