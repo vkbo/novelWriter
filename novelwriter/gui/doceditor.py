@@ -513,7 +513,7 @@ class GuiDocEditor(QTextEdit):
         newHeader = self._nwItem.mainHeading
 
         # ToDo: This should be a signal
-        if self._updateHeaders(checkLevel=True):
+        if self._updateHeaders():
             self.mainGui.requestNovelTreeRefresh()
         else:
             self.mainGui.novelView.updateWordCounts(tHandle)
@@ -2025,7 +2025,7 @@ class GuiDocEditor(QTextEdit):
                     return False
         return True
 
-    def _updateHeaders(self, checkPos=False, checkLevel=False):
+    def _updateHeaders(self):
         """Update the headers record and return True if anything
         changed, if a check flag was provided.
         """
@@ -2033,21 +2033,12 @@ class GuiDocEditor(QTextEdit):
             return False
 
         newHeaders = self.theProject.index.getHandleHeaders(self._docHandle)
-        if checkPos:
-            newPos = [x[0] for x in newHeaders]
-            oldPos = [x[0] for x in self._docHeaders]
-        if checkLevel:
-            newLev = [x[1] for x in newHeaders]
-            oldLev = [x[1] for x in self._docHeaders]
+        newLev = [x[1] for x in newHeaders]
+        oldLev = [x[1] for x in self._docHeaders]
 
         self._docHeaders = newHeaders
 
-        if checkPos:
-            return newPos != oldPos
-        if checkLevel:
-            return newLev != oldLev
-
-        return False
+        return newLev != oldLev
 
     def _checkDocSize(self, theSize):
         """Check if document size crosses the big document limit set in
