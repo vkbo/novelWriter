@@ -664,7 +664,7 @@ class GuiDocEditor(QTextEdit):
             if theBlock:
                 self.setCursorPosition(theBlock.position())
                 self.docFooter.updateLineCount()
-                logger.verbose("Cursor moved to line %d", theLine)
+                logger.debug("Cursor moved to line %d", theLine)
 
         return True
 
@@ -718,7 +718,7 @@ class GuiDocEditor(QTextEdit):
         if not self._bigDoc:
             self.spellCheckDocument()
 
-        logger.verbose("Spell check is set to '%s'", str(theMode))
+        logger.debug("Spell check is set to '%s'", str(theMode))
 
         return True
 
@@ -728,7 +728,7 @@ class GuiDocEditor(QTextEdit):
         of Qt 5.13, is to clear the text and put it back. This clears
         the undo stack, so we only do it for big documents.
         """
-        logger.verbose("Running spell checker")
+        logger.debug("Running spell checker")
         if self._spellCheck:
             bfTime = time()
             qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -763,7 +763,7 @@ class GuiDocEditor(QTextEdit):
             logger.error("Not a document action")
             return False
 
-        logger.verbose("Requesting action: %s", theAction.name)
+        logger.debug("Requesting action: %s", theAction.name)
 
         self._allowAutoReplace(False)
         if theAction == nwDocAction.UNDO:
@@ -944,7 +944,7 @@ class GuiDocEditor(QTextEdit):
             logger.error("Invalid keyword '%s'", keyWord)
             return False
 
-        logger.verbose("Inserting keyword '%s'", keyWord)
+        logger.debug("Inserting keyword '%s'", keyWord)
         theState = self.insertNewBlock("%s: " % keyWord)
 
         return theState
@@ -1172,7 +1172,7 @@ class GuiDocEditor(QTextEdit):
             spellCheck &= theWord != ""
 
         if spellCheck:
-            logger.verbose("Looking up '%s' in the dictionary", theWord)
+            logger.debug("Looking up '%s' in the dictionary", theWord)
             spellCheck &= not self.spEnchant.checkWord(theWord)
 
         if spellCheck:
@@ -1238,11 +1238,11 @@ class GuiDocEditor(QTextEdit):
             return
 
         if self.wCounterDoc.isRunning():
-            logger.verbose("Word counter is busy")
+            logger.debug("Word counter is busy")
             return
 
         if time() - self._lastEdit < 5 * self.wcInterval:
-            logger.verbose("Running word counter")
+            logger.debug("Running word counter")
             self.mainGui.threadPool.start(self.wCounterDoc)
 
         return
@@ -1254,7 +1254,7 @@ class GuiDocEditor(QTextEdit):
         if self._docHandle is None or self._nwItem is None:
             return
 
-        logger.verbose("Updating word count")
+        logger.debug("Updating word count")
 
         self._charCount = cCount
         self._wordCount = wCount
@@ -1297,7 +1297,7 @@ class GuiDocEditor(QTextEdit):
             return
 
         if self.wCounterSel.isRunning():
-            logger.verbose("Selection word counter is busy")
+            logger.debug("Selection word counter is busy")
             return
 
         self.mainGui.threadPool.start(self.wCounterSel)
@@ -1311,7 +1311,7 @@ class GuiDocEditor(QTextEdit):
         if self._docHandle is None or self._nwItem is None:
             return
 
-        logger.verbose("User selectee %d words", wCount)
+        logger.debug("User selectee %d words", wCount)
         self.docFooter.updateCounts(wCount=wCount, cCount=cCount)
         self.wcTimerSel.stop()
 
@@ -1329,11 +1329,11 @@ class GuiDocEditor(QTextEdit):
                 QPointF(theSize.width(), theSize.height()), Qt.FuzzyHit
             )
             if self._queuePos <= thePos:
-                logger.verbose("Allowed cursor move to %d <= %d", self._queuePos, thePos)
+                logger.debug("Allowed cursor move to %d <= %d", self._queuePos, thePos)
                 self.setCursorPosition(self._queuePos)
                 self._queuePos = None
             else:
-                logger.verbose("Denied cursor move to %d > %d", self._queuePos, thePos)
+                logger.debug("Denied cursor move to %d > %d", self._queuePos, thePos)
 
         return
 
@@ -1520,7 +1520,7 @@ class GuiDocEditor(QTextEdit):
             theCursor.endEditBlock()
             theCursor.setPosition(theCursor.selectionEnd())
             self.setTextCursor(theCursor)
-            logger.verbose(
+            logger.debug(
                 "Replaced occurrence of '%s' with '%s' on line %d",
                 searchFor, replWith, theCursor.blockNumber()
             )
@@ -1898,10 +1898,10 @@ class GuiDocEditor(QTextEdit):
                 return False
 
             if loadTag:
-                logger.verbose("Attempting to follow tag '%s'", theWord)
+                logger.debug("Attempting to follow tag '%s'", theWord)
                 self.loadDocumentTagRequest.emit(theWord, nwDocMode.VIEW)
             else:
-                logger.verbose("Potential tag '%s'", theWord)
+                logger.debug("Potential tag '%s'", theWord)
 
             return True
 
@@ -2431,7 +2431,6 @@ class GuiDocEditSearch(QFrame):
         self.searchBox.selectAll()
         if self.isRegEx:
             self._alertSearchValid(True)
-        logger.verbose("Setting search text to '%s'", theText)
         return True
 
     def setReplaceText(self, theText):
@@ -2945,7 +2944,7 @@ class GuiDocEditFooter(QWidget):
         """
         self._docHandle = tHandle
         if self._docHandle is None:
-            logger.verbose("No handle set, so clearing the editor footer")
+            logger.debug("No handle set, so clearing the editor footer")
             self._theItem = None
         else:
             self._theItem = self.theProject.tree[self._docHandle]

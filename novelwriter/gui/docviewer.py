@@ -241,7 +241,7 @@ class GuiDocViewer(QTextBrowser):
         """Wrapper function for various document actions on the current
         document.
         """
-        logger.verbose("Requesting action: '%s'", theAction.name)
+        logger.debug("Requesting action: '%s'", theAction.name)
         if self._docHandle is None:
             logger.error("No document open")
             return False
@@ -264,7 +264,7 @@ class GuiDocViewer(QTextBrowser):
         if not isinstance(tAnchor, str):
             return False
         if tAnchor.startswith("#"):
-            logger.verbose("Moving to anchor '%s'", tAnchor)
+            logger.debug("Moving to anchor '%s'", tAnchor)
             self.setSource(QUrl(tAnchor))
         return True
 
@@ -350,7 +350,7 @@ class GuiDocViewer(QTextBrowser):
             theBlock = self.document().findBlockByLineNumber(theLine)
             if theBlock:
                 self.setCursorPosition(theBlock.position())
-                logger.verbose("Cursor moved to line %d", theLine)
+                logger.debug("Cursor moved to line %d", theLine)
         return True
 
     def setScrollPosition(self, thePos):
@@ -396,7 +396,7 @@ class GuiDocViewer(QTextBrowser):
         """Process a clicked link internally in the document.
         """
         theLink = theURL.url()
-        logger.verbose("Clicked link: '%s'", theLink)
+        logger.debug("Clicked link: '%s'", theLink)
         if len(theLink) > 0:
             theBits = theLink.split("=")
             if len(theBits) == 2:
@@ -578,7 +578,7 @@ class GuiDocViewHistory:
     def clear(self):
         """Clear the view history.
         """
-        logger.verbose("View history cleared")
+        logger.debug("View history cleared")
         self._navHistory = []
         self._posHistory = []
         self._currPos = -1
@@ -592,7 +592,7 @@ class GuiDocViewHistory:
         """
         if self._currPos >= 0 and self._currPos < len(self._navHistory):
             if tHandle == self._navHistory[self._currPos]:
-                logger.verbose("Not updating view hsitory")
+                logger.debug("Not updating view hsitory")
                 return False
 
         self._truncateHistory(self._currPos)
@@ -607,7 +607,7 @@ class GuiDocViewHistory:
 
         self._dumpHistory()
 
-        logger.verbose("Added '%s' to view history", tHandle)
+        logger.debug("Added '%s' to view history", tHandle)
 
         return True
 
@@ -616,7 +616,7 @@ class GuiDocViewHistory:
         """
         newPos = self._currPos + 1
         if newPos < len(self._navHistory):
-            logger.verbose("Move forward in view history")
+            logger.debug("Move forward in view history")
             self._prevPos = self._currPos
             self._updateScrollBar()
 
@@ -634,7 +634,7 @@ class GuiDocViewHistory:
         """
         newPos = self._currPos - 1
         if newPos >= 0:
-            logger.verbose("Move backward in view history")
+            logger.debug("Move backward in view history")
             self._prevPos = self._currPos
             self._updateScrollBar()
 
@@ -680,11 +680,11 @@ class GuiDocViewHistory:
 
     def _dumpHistory(self):
         """Debug function to dump history to the logger. Since it is a
-        for loop, it is skipped entirely if log level isn't VERBOSE.
+        for loop, it is skipped entirely if log level isn't DEBUG.
         """
-        if logger.getEffectiveLevel() < logging.DEBUG:
+        if logger.getEffectiveLevel() == logging.DEBUG:
             for i, (h, p) in enumerate(zip(self._navHistory, self._posHistory)):
-                logger.verbose(
+                logger.debug(
                     "History %02d: %s %13s [x:%d]" % (
                         i + 1, ">" if i == self._currPos else " ", h, p
                     )
@@ -1104,7 +1104,7 @@ class GuiDocViewFooter(QWidget):
     def _doToggleSticky(self, theState):
         """Toggle the sticky flag for the reference panel.
         """
-        logger.verbose("Reference sticky is %s", str(theState))
+        logger.debug("Reference sticky is %s", str(theState))
         self.docViewer.stickyRef = theState
         if not theState and self.docViewer.docHandle() is not None:
             self.viewMeta.refreshReferences(self.docViewer.docHandle())
@@ -1199,7 +1199,7 @@ class GuiDocViewDetails(QScrollArea):
         """Capture the link-click and forward it to the document viewer
         class for handling.
         """
-        logger.verbose("Clicked link: '%s'", theLink)
+        logger.debug("Clicked link: '%s'", theLink)
         if len(theLink) == 21:
             tHandle = theLink[:13]
             tAnchor = theLink[13:]

@@ -158,7 +158,6 @@ class GuiProjectLoad(QDialog):
     def _doOpenRecent(self):
         """Close the dialog window with a recent project selected.
         """
-        logger.verbose("GuiProjectLoad open button clicked")
         self._saveSettings()
 
         self.openPath = None
@@ -183,7 +182,6 @@ class GuiProjectLoad(QDialog):
     def _doBrowse(self):
         """Browse for a folder path.
         """
-        logger.verbose("GuiProjectLoad browse button clicked")
         extFilter = [
             self.tr("novelWriter Project File ({0})").format(nwFiles.PROJ_FILE),
             self.tr("All files ({0})").format("*"),
@@ -203,7 +201,6 @@ class GuiProjectLoad(QDialog):
     def _doCancel(self):
         """Close the dialog window without doing anything.
         """
-        logger.verbose("GuiProjectLoad close button clicked")
         self.openPath = None
         self.openState = self.NONE_STATE
         self.close()
@@ -212,7 +209,6 @@ class GuiProjectLoad(QDialog):
     def _doNewProject(self):
         """Create a new project.
         """
-        logger.verbose("GuiProjectLoad new project button clicked")
         self._saveSettings()
         self.openPath = None
         self.openState = self.NEW_STATE

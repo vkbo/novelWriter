@@ -201,6 +201,7 @@ class GuiDocSplit(QDialog):
 
             onLine = -1
             hLevel = 0
+            hLabel = aLine.strip()
             if aLine.startswith("# ") and spLevel >= 1:
                 onLine = lineNo
                 hLevel = 1

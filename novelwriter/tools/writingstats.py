@@ -449,7 +449,7 @@ class GuiWritingStats(QDialog):
                     if inLine.startswith("#"):
                         if inLine.startswith("# Offset"):
                             self.wordOffset = checkInt(inLine[9:].strip(), 0)
-                            logger.verbose(
+                            logger.debug(
                                 "Initial word count when log was started is %d" % self.wordOffset
                             )
                         continue

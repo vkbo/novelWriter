@@ -111,12 +111,6 @@ def testBaseInit_Options(monkeypatch, tmpDir):
     assert novelwriter.logger.getEffectiveLevel() == logging.DEBUG
     assert nwGUI.closeMain() == "closeMain"
 
-    nwGUI = novelwriter.main(
-        ["--testmode", "--verbose", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
-    )
-    assert novelwriter.logger.getEffectiveLevel() == 5
-    assert nwGUI.closeMain() == "closeMain"
-
     # Help and Version
     with pytest.raises(SystemExit) as ex:
         nwGUI = novelwriter.main(

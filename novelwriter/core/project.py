@@ -454,7 +454,7 @@ class NWProject:
 
         legacyList = []  # Cleanup is done later
         for projItem in os.listdir(self.projPath):
-            logger.verbose("Project contains: %s", projItem)
+            logger.debug("Project contains: %s", projItem)
             if projItem.startswith("data_") and len(projItem) == 6:
                 legacyList.append(projItem)
 
@@ -474,7 +474,7 @@ class NWProject:
                 self.clearProject()
                 return False
         else:
-            logger.verbose("Project is not locked")
+            logger.debug("Project is not locked")
 
         # Open The Project XML File
         # =========================
@@ -511,8 +511,8 @@ class NWProject:
         hexVersion  = xRoot.attrib.get("hexVersion", "0x0")
         fileVersion = xRoot.attrib.get("fileVersion", self.tr("Unknown"))
 
-        logger.verbose("XML root is '%s'", nwxRoot)
-        logger.verbose("File version is '%s'", fileVersion)
+        logger.debug("XML root is '%s'", nwxRoot)
+        logger.debug("File version is '%s'", fileVersion)
 
         # Check File Type
         # ===============
@@ -594,15 +594,15 @@ class NWProject:
                         continue
                     if xItem.tag == "name":
                         self.projName = simplified(checkString(xItem.text, ""))
-                        logger.verbose("Working Title: '%s'", self.projName)
+                        logger.info("Project Name: '%s'", self.projName)
                     elif xItem.tag == "title":
                         self.bookTitle = simplified(checkString(xItem.text, ""))
-                        logger.verbose("Title is '%s'", self.bookTitle)
+                        logger.info("Project Title: '%s'", self.bookTitle)
                     elif xItem.tag == "author":
                         author = simplified(checkString(xItem.text, ""))
                         if author:
                             self.bookAuthors.append(author)
-                            logger.verbose("Author: '%s'", author)
+                            logger.debug("Author: '%s'", author)
                     elif xItem.tag == "saveCount":
                         self.saveCount = checkInt(xItem.text, 0)
                     elif xItem.tag == "autoCount":
@@ -680,7 +680,7 @@ class NWProject:
         # Check the project tree consistency
         for tItem in self._projTree:
             tHandle = tItem.itemHandle
-            logger.verbose("Checking item '%s'", tHandle)
+            logger.debug("Checking item '%s'", tHandle)
             if not self._projTree.updateItemData(tHandle):
                 logger.error("There was a problem item '%s', and it has been removed", tHandle)
                 del self._projTree[tHandle]  # The file will be re-added as orphaned

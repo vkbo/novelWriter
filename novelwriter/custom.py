@@ -267,8 +267,8 @@ class QSwitch(QAbstractButton):
         return self._offset
 
     @offset.setter
-    def offset(self, theOffset):
-        self._offset = theOffset
+    def offset(self, offset):
+        self._offset = offset
         self.update()
         return
 
@@ -276,11 +276,11 @@ class QSwitch(QAbstractButton):
     #  Getters and Setters
     ##
 
-    def setChecked(self, isChecked):
+    def setChecked(self, checked):
         """Overload setChecked to also alter the offset.
         """
-        super().setChecked(isChecked)
-        if isChecked:
+        super().setChecked(checked)
+        if checked:
             self.offset = self._xW - self._xR
         else:
             self.offset = self._xR
@@ -290,10 +290,10 @@ class QSwitch(QAbstractButton):
     #  Events
     ##
 
-    def resizeEvent(self, theEvent):
+    def resizeEvent(self, event):
         """Overload resize to ensure correct offset.
         """
-        super().resizeEvent(theEvent)
+        super().resizeEvent(event)
         if self.isChecked():
             self.offset = self._xW - self._xR
         else:

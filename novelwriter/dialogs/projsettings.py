@@ -96,8 +96,6 @@ class GuiProjectSettings(PagedDialog):
     def _doSave(self):
         """Save settings and close dialog.
         """
-        logger.verbose("GuiProjectSettings save button clicked")
-
         projName    = self.tabMain.editName.text()
         bookTitle   = self.tabMain.editTitle.text()
         bookAuthors = self.tabMain.editAuthors.toPlainText()

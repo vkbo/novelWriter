@@ -44,7 +44,8 @@ def logException():
     """Log the content of an exception message.
     """
     exType, exValue, _ = sys.exc_info()
-    logger.error("%s: %s", exType.__name__, str(exValue))
+    if exType is not None:
+        logger.error("%s: %s", exType.__name__, str(exValue))
 
 
 def formatException(exc):
@@ -131,7 +132,7 @@ class NWErrorMessage(QDialog):
 
         try:
             import lxml
-            lxmlVersion = lxml.__version__
+            lxmlVersion = lxml.__version__  # type: ignore
         except Exception:
             lxmlVersion = "Unknown"
 

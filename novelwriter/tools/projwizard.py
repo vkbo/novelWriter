@@ -214,7 +214,7 @@ class ProjWizardFolderPage(QWizardPage):
 
         setPath = os.path.abspath(os.path.expanduser(self.projPath.text()))
         parPath = os.path.dirname(setPath)
-        logger.verbose("Path is: %s", setPath)
+        logger.debug("Path is: %s", setPath)
         if parPath and not os.path.isdir(parPath):
             self.errLabel.setText(self.tr(
                 "Error: A project folder cannot be created using this path."

@@ -89,20 +89,20 @@ class NWTree:
             logger.warning("Duplicate handle '%s' detected, skipping", tHandle)
             return False
 
-        logger.verbose("Adding item '%s' with parent '%s'", str(tHandle), str(pHandle))
+        logger.debug("Adding item '%s' with parent '%s'", str(tHandle), str(pHandle))
 
         nwItem.setHandle(tHandle)
         nwItem.setParent(pHandle)
 
         if nwItem.isRootType():
-            logger.verbose("Item '%s' is a root item", str(tHandle))
+            logger.debug("Item '%s' is a root item", str(tHandle))
             self._treeRoots[tHandle] = nwItem
             if nwItem.itemClass == nwItemClass.ARCHIVE:
-                logger.verbose("Item '%s' is the archive folder", str(tHandle))
+                logger.debug("Item '%s' is the archive folder", str(tHandle))
                 self._archRoot = tHandle
             elif nwItem.itemClass == nwItemClass.TRASH:
                 if self._trashRoot is None:
-                    logger.verbose("Item '%s' is the trash folder", str(tHandle))
+                    logger.debug("Item '%s' is the trash folder", str(tHandle))
                     self._trashRoot = tHandle
                 else:
                     logger.error("Only one trash folder allowed")
@@ -349,7 +349,7 @@ class NWTree:
         # Save the temp list
         self._treeOrder = tmpOrder
         self._setTreeChanged(True)
-        logger.verbose("Project tree order updated")
+        logger.debug("Project tree order updated")
 
         return
 
@@ -459,7 +459,7 @@ class NWTree:
         """Generate a unique item handle. In the event that the key
         already exists, generate a new one.
         """
-        logger.verbose("Generating new handle")
+        logger.debug("Generating new handle")
         handle = f"{random.getrandbits(52):013x}"
         if handle in self._projTree:
             logger.warning("Duplicate handle encountered! Retrying ...")
