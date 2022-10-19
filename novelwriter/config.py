@@ -306,8 +306,8 @@ class Config:
 
         # We don't error on these failing since they are not essential
         if self.dataPath is not None:
-            ensureFolder("syntax", parentPath=self.dataPath)
-            ensureFolder("themes", parentPath=self.dataPath)
+            ensureFolder("syntax", parent=self.dataPath)
+            ensureFolder("themes", parent=self.dataPath)
 
         # Check if config file exists
         if self.confPath is not None:
