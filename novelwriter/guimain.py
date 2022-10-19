@@ -666,21 +666,18 @@ class GuiMain(QMainWindow):
             logger.debug("Viewing document, but no handle provided")
 
             if self.docEditor.hasFocus():
-                logger.verbose("Trying editor document")
                 tHandle = self.docEditor.docHandle()
 
             if tHandle is not None:
                 self.saveDocument()
             else:
-                logger.verbose("Trying selected document")
                 tHandle = self.projView.getSelectedHandle()
 
             if tHandle is None:
-                logger.verbose("Trying last viewed document")
                 tHandle = self.theProject.lastViewed
 
             if tHandle is None:
-                logger.verbose("No document to view, giving up")
+                logger.debug("No document to view, giving up")
                 return False
 
         # Make sure main tab is in Editor view
@@ -851,7 +848,7 @@ class GuiMain(QMainWindow):
             if tItem is None:  # pragma: no cover
                 continue  # This is a bug trap
 
-            logger.verbose("Indexing '%s'", tItem.itemName)
+            logger.debug("Indexing '%s'", tItem.itemName)
             if self.theProject.index.reIndexHandle(tItem.itemHandle):
                 # Update Word Counts
                 self.projView.propagateCount(tItem.itemHandle, tItem.wordCount, countChildren=True)
@@ -1524,7 +1521,6 @@ class GuiMain(QMainWindow):
         if not self.hasProject:
             self.statusBar.setProjectStats(0, 0)
 
-        logger.verbose("Updating total word count")
         self.theProject.updateWordCounts()
         if self.mainConf.incNotesWCount:
             currWords = self.theProject.currWCount
@@ -1561,13 +1557,9 @@ class GuiMain(QMainWindow):
     def _mainStackChanged(self, stIndex):
         """Activated when the main window tab is changed.
         """
-        if stIndex == self.idxEditorView:
-            logger.verbose("Editor View activated")
-        elif stIndex == self.idxOutlineView:
-            logger.verbose("Outline View activated")
+        if stIndex == self.idxOutlineView:
             if self.hasProject:
                 self.outlineView.refreshTree()
-
         return
 
     @pyqtSlot(int)
@@ -1577,11 +1569,9 @@ class GuiMain(QMainWindow):
         sHandle = None
 
         if stIndex == self.idxProjView:
-            logger.verbose("Project Tree View activated")
             sHandle = self.projView.getSelectedHandle()
 
         elif stIndex == self.idxNovelView:
-            logger.verbose("Novel Tree View activated")
             if self.hasProject:
                 self.novelView.refreshTree()
                 sHandle, _ = self.novelView.getSelectedHandle()

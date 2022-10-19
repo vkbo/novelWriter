@@ -352,7 +352,7 @@ class GuiProjectToolBar(QWidget):
     def buildQuickLinkMenu(self):
         """Build the quick link menu.
         """
-        logger.verbose("Rebuilding quick links menu")
+        logger.debug("Rebuilding quick links menu")
 
         self.mQuick.clear()
         for n, (tHandle, nwItem) in enumerate(self.theProject.tree.iterRoots(None)):
@@ -615,7 +615,7 @@ class GuiProjectTree(QTreeWidget):
         tHandle = self.getSelectedHandle()
         trItem = self._getTreeItem(tHandle)
         if trItem is None:
-            logger.verbose("No item selected")
+            logger.debug("No item selected")
             return False
 
         pItem = trItem.parent()
@@ -760,7 +760,7 @@ class GuiProjectTree(QTreeWidget):
             logger.info("Action cancelled by user")
             return False
 
-        logger.verbose("Deleting %d file(s) from Trash", nTrash)
+        logger.debug("Deleting %d file(s) from Trash", nTrash)
         for tHandle in reversed(self.getTreeFromHandle(trashHandle)):
             if tHandle == trashHandle:
                 continue
@@ -986,7 +986,7 @@ class GuiProjectTree(QTreeWidget):
         srcOK = isinstance(srcItem, QTreeWidgetItem)
         dstOk = isinstance(dstItem, QTreeWidgetItem)
         if not srcOK or not dstOk or dstIndex is None:
-            logger.verbose("No tree move to undo")
+            logger.debug("No tree move to undo")
             return False
 
         if srcItem not in self._treeMap.values():

@@ -291,8 +291,8 @@ class Config:
         self.nwLangPath = os.path.join(self.assetPath, "i18n")
 
         logger.debug("Assets: %s", self.assetPath)
-        logger.verbose("App path: %s", self.appPath)
-        logger.verbose("Last path: %s", self.lastPath)
+        logger.debug("App path: %s", self.appPath)
+        logger.debug("Last path: %s", self.lastPath)
 
         # If the config and data folders don't not exist, create them
         # This assumes that the os config and data folders exist
@@ -704,7 +704,7 @@ class Config:
         """
         if thePath in self.recentProj:
             del self.recentProj[thePath]
-            logger.verbose("Removed recent: %s", thePath)
+            logger.debug("Removed recent: %s", thePath)
             self.saveRecentCache()
         else:
             logger.error("Unknown recent: %s", thePath)

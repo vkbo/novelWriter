@@ -142,8 +142,8 @@ class GuiTheme:
         self.guiDPI = qApp.primaryScreen().logicalDotsPerInchX()
         self.guiScale = qApp.primaryScreen().logicalDotsPerInchX()/96.0
         self.mainConf.guiScale = self.guiScale
-        logger.verbose("GUI DPI: %.1f", self.guiDPI)
-        logger.verbose("GUI Scale: %.2f", self.guiScale)
+        logger.debug("GUI DPI: %.1f", self.guiDPI)
+        logger.debug("GUI Scale: %.2f", self.guiScale)
 
         # Fonts
         self.guiFont = qApp.font()
@@ -160,12 +160,12 @@ class GuiTheme:
         self.guiFontFixed.setPointSizeF(0.95*self.fontPointSize)
         self.guiFontFixed.setFamily(QFontDatabase.systemFont(QFontDatabase.FixedFont).family())
 
-        logger.verbose("GUI Font Family: %s", self.guiFont.family())
-        logger.verbose("GUI Font Point Size: %.2f", self.fontPointSize)
-        logger.verbose("GUI Font Pixel Size: %d", self.fontPixelSize)
-        logger.verbose("GUI Base Icon Size: %d", self.baseIconSize)
-        logger.verbose("Text 'N' Height: %d", self.textNHeight)
-        logger.verbose("Text 'N' Width: %d", self.textNWidth)
+        logger.debug("GUI Font Family: %s", self.guiFont.family())
+        logger.debug("GUI Font Point Size: %.2f", self.fontPointSize)
+        logger.debug("GUI Font Pixel Size: %d", self.fontPixelSize)
+        logger.debug("GUI Base Icon Size: %d", self.baseIconSize)
+        logger.debug("Text 'N' Height: %d", self.textNHeight)
+        logger.debug("Text 'N' Width: %d", self.textNWidth)
 
         return
 
@@ -358,7 +358,7 @@ class GuiTheme:
 
         confParser = NWConfigParser()
         for themeKey, themePath in self._availThemes.items():
-            logger.verbose("Checking theme config for '%s'", themeKey)
+            logger.debug("Checking theme config for '%s'", themeKey)
             themeName = _loadInternalName(confParser, themePath)
             if themeName:
                 self._themeList.append((themeKey, themeName))
@@ -375,7 +375,7 @@ class GuiTheme:
 
         confParser = NWConfigParser()
         for syntaxKey, syntaxPath in self._availSyntax.items():
-            logger.verbose("Checking theme syntax for '%s'", syntaxKey)
+            logger.debug("Checking theme syntax for '%s'", syntaxKey)
             syntaxName = _loadInternalName(confParser, syntaxPath)
             if syntaxName:
                 self._syntaxList.append((syntaxKey, syntaxName))
@@ -561,7 +561,7 @@ class GuiIcons:
                     iconPath = os.path.join(self._themePath, iconFile)
                     if os.path.isfile(iconPath):
                         self._themeMap[iconName] = iconPath
-                        logger.verbose("Icon slot '%s' using file '%s'", iconName, iconFile)
+                        logger.debug("Icon slot '%s' using file '%s'", iconName, iconFile)
                     else:
                         logger.error("Icon file '%s' not in theme folder", iconFile)
 
@@ -680,7 +680,7 @@ class GuiIcons:
             if not os.path.isdir(themePath):
                 continue
 
-            logger.verbose("Checking icon theme config for '%s'", themeDir)
+            logger.debug("Checking icon theme config for '%s'", themeDir)
             themeConf = os.path.join(themePath, self._confName)
             themeName = _loadInternalName(confParser, themeConf)
             if themeName:
@@ -728,7 +728,7 @@ class GuiIcons:
         # Otherwise, we load from the theme folder
         if iconKey in self._themeMap:
             relPath = os.path.relpath(self._themeMap[iconKey], self._iconPath)
-            logger.verbose("Loading: %s", relPath)
+            logger.debug("Loading: %s", relPath)
             return QIcon(self._themeMap[iconKey])
 
         # If we didn't find one, give up and return an empty icon

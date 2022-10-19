@@ -443,14 +443,14 @@ class GuiNovelTree(QTreeWidget):
     def refreshTree(self, rootHandle=None, overRide=False):
         """Called whenever the Novel tab is activated.
         """
-        logger.verbose("Requesting refresh of the novel tree")
+        logger.debug("Requesting refresh of the novel tree")
         if rootHandle is None:
             rootHandle = self.theProject.tree.findRoot(nwItemClass.NOVEL)
 
         treeChanged = self.mainGui.projView.changedSince(self._lastBuild)
         indexChanged = self.theProject.index.rootChangedSince(rootHandle, self._lastBuild)
         if not (treeChanged or indexChanged or overRide):
-            logger.verbose("No changes have been made to the novel index")
+            logger.debug("No changes have been made to the novel index")
             return
 
         selItem = self.selectedItems()
@@ -519,7 +519,7 @@ class GuiNovelTree(QTreeWidget):
                 tItem.setBackground(self.C_EXTRA, self.palette().base())
                 tItem.setBackground(self.C_MORE, self.palette().base())
 
-        logger.verbose("Highlighted Novel Tree in %.3f ms", (time() - tStart)*1000)
+        logger.debug("Highlighted Novel Tree in %.3f ms", (time() - tStart)*1000)
 
         return
 
@@ -603,7 +603,7 @@ class GuiNovelTree(QTreeWidget):
         """
         self.clearContent()
         tStart = time()
-        logger.verbose("Building novel tree for root item '%s'", rootHandle)
+        logger.debug("Building novel tree for root item '%s'", rootHandle)
 
         novStruct = self.theProject.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
         for tKey, tHandle, sTitle, novIdx in novStruct:
@@ -636,7 +636,7 @@ class GuiNovelTree(QTreeWidget):
 
         self.setActiveHandle(self._actHandle)
 
-        logger.verbose("Novel Tree built in %.3f ms", (time() - tStart)*1000)
+        logger.debug("Novel Tree built in %.3f ms", (time() - tStart)*1000)
         self._lastBuild = time()
 
         return

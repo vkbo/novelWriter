@@ -484,7 +484,7 @@ class GuiOutlineTree(QTreeWidget):
         # was last built, we rebuild the tree from the updated index.
         indexChanged = self.theProject.index.rootChangedSince(rootHandle, self._lastBuild)
         if not (novelChanged or indexChanged or overRide):
-            logger.verbose("No changes have been made to the novel index")
+            logger.debug("No changes have been made to the novel index")
             return
 
         self._populateTree(rootHandle)
@@ -554,11 +554,9 @@ class GuiOutlineTree(QTreeWidget):
         """Receive the changes to column visibility forwarded by the
         column selection menu.
         """
-        logger.verbose("User toggled Outline column '%s'", theItem.name)
         if theItem in self._colIdx:
             self.setColumnHidden(self._colIdx[theItem], not isChecked)
             self._saveHeaderState()
-
         return
 
     ##

@@ -176,7 +176,7 @@ class NWIndex:
 
         self._indexChange = round(time())
 
-        logger.verbose("Index loaded in %.3f ms", (time() - tStart)*1000)
+        logger.debug("Index loaded in %.3f ms", (time() - tStart)*1000)
 
         return True
 
@@ -202,7 +202,7 @@ class NWIndex:
             logException()
             return False
 
-        logger.verbose("Index saved in %.3f ms", (time() - tStart)*1000)
+        logger.debug("Index saved in %.3f ms", (time() - tStart)*1000)
 
         return True
 
@@ -312,7 +312,7 @@ class NWIndex:
         # Prune no longer used tags
         for tTag, isActive in itemTags.items():
             if not isActive:
-                logger.verbose("Deleting removed tag '%s'", tTag)
+                logger.debug("Deleting removed tag '%s'", tTag)
                 del self._tagsIndex[tTag]
 
         return
