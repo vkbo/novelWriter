@@ -508,16 +508,17 @@ class GuiNovelTree(QTreeWidget):
         self._actHandle = tHandle
         for i in range(self.topLevelItemCount()):
             tItem = self.topLevelItem(i)
-            if tItem.data(self.C_TITLE, self.D_HANDLE) == tHandle:
-                tItem.setBackground(self.C_TITLE, self.palette().alternateBase())
-                tItem.setBackground(self.C_WORDS, self.palette().alternateBase())
-                tItem.setBackground(self.C_EXTRA, self.palette().alternateBase())
-                tItem.setBackground(self.C_MORE, self.palette().alternateBase())
-            else:
-                tItem.setBackground(self.C_TITLE, self.palette().base())
-                tItem.setBackground(self.C_WORDS, self.palette().base())
-                tItem.setBackground(self.C_EXTRA, self.palette().base())
-                tItem.setBackground(self.C_MORE, self.palette().base())
+            if tItem is not None:
+                if tItem.data(self.C_TITLE, self.D_HANDLE) == tHandle:
+                    tItem.setBackground(self.C_TITLE, self.palette().alternateBase())
+                    tItem.setBackground(self.C_WORDS, self.palette().alternateBase())
+                    tItem.setBackground(self.C_EXTRA, self.palette().alternateBase())
+                    tItem.setBackground(self.C_MORE, self.palette().alternateBase())
+                else:
+                    tItem.setBackground(self.C_TITLE, self.palette().base())
+                    tItem.setBackground(self.C_WORDS, self.palette().base())
+                    tItem.setBackground(self.C_EXTRA, self.palette().base())
+                    tItem.setBackground(self.C_MORE, self.palette().base())
 
         logger.debug("Highlighted Novel Tree in %.3f ms", (time() - tStart)*1000)
 

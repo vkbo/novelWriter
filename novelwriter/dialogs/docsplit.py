@@ -145,9 +145,12 @@ class GuiDocSplit(QDialog):
         headerList = []
         for i in range(self.listBox.count()):
             item = self.listBox.item(i)
-            headerList.append(
-                (item.data(self.LINE_ROLE), item.data(self.LEVEL_ROLE), item.data(self.LABEL_ROLE))
-            )
+            if item is not None:
+                headerList.append((
+                    item.data(self.LINE_ROLE),
+                    item.data(self.LEVEL_ROLE),
+                    item.data(self.LABEL_ROLE),
+                ))
 
         spLevel = self.splitLevel.currentData()
         intoFolder = self.folderSwitch.isChecked()

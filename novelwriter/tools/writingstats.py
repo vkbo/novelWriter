@@ -112,9 +112,10 @@ class GuiWritingStats(QDialog):
         self.listBox.setColumnWidth(self.C_COUNT, wCol3)
 
         hHeader = self.listBox.headerItem()
-        hHeader.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
-        hHeader.setTextAlignment(self.C_IDLE, Qt.AlignRight)
-        hHeader.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+        if hHeader is not None:
+            hHeader.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
+            hHeader.setTextAlignment(self.C_IDLE, Qt.AlignRight)
+            hHeader.setTextAlignment(self.C_COUNT, Qt.AlignRight)
 
         sortCol = minmax(pOptions.getInt("GuiWritingStats", "sortCol", 0), 0, 2)
         sortOrder = checkIntTuple(

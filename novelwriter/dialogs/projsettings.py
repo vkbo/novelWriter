@@ -365,11 +365,12 @@ class GuiProjectEditStatus(QWidget):
             newList = []
             for n in range(self.listBox.topLevelItemCount()):
                 item = self.listBox.topLevelItem(n)
-                newList.append({
-                    "key":  item.data(self.COL_LABEL, self.KEY_ROLE),
-                    "name": item.text(self.COL_LABEL),
-                    "cols": item.data(self.COL_LABEL, self.COL_ROLE),
-                })
+                if item is not None:
+                    newList.append({
+                        "key":  item.data(self.COL_LABEL, self.KEY_ROLE),
+                        "name": item.text(self.COL_LABEL),
+                        "cols": item.data(self.COL_LABEL, self.COL_ROLE),
+                    })
             return newList, self.colDeleted
 
         return [], []
@@ -468,7 +469,8 @@ class GuiProjectEditStatus(QWidget):
         self.listBox.insertTopLevelItem(nIndex, cItem)
         self.listBox.clearSelection()
 
-        cItem.setSelected(True)
+        if cItem is not None:
+            cItem.setSelected(True)
         self.colChanged = True
 
         return
@@ -617,10 +619,11 @@ class GuiProjectEditReplace(QWidget):
         newList = {}
         for n in range(self.listBox.topLevelItemCount()):
             tItem = self.listBox.topLevelItem(n)
-            aKey = self._stripNotAllowed(tItem.text(0))
-            aVal = tItem.text(1)
-            if len(aKey) > 0:
-                newList[aKey] = aVal
+            if tItem is not None:
+                aKey = self._stripNotAllowed(tItem.text(0))
+                aVal = tItem.text(1)
+                if len(aKey) > 0:
+                    newList[aKey] = aVal
 
         return newList
 

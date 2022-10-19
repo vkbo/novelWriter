@@ -675,9 +675,10 @@ class GuiOutlineTree(QTreeWidget):
             self.setColumnHidden(self._colIdx[nwOutline.TITLE], False)
 
             headItem = self.headerItem()
-            headItem.setTextAlignment(self._colIdx[nwOutline.CCOUNT], Qt.AlignRight)
-            headItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], Qt.AlignRight)
-            headItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], Qt.AlignRight)
+            if headItem is not None:
+                headItem.setTextAlignment(self._colIdx[nwOutline.CCOUNT], Qt.AlignRight)
+                headItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], Qt.AlignRight)
+                headItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], Qt.AlignRight)
 
         novStruct = self.theProject.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
         for _, tHandle, sTitle, novIdx in novStruct:
