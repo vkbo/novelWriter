@@ -52,8 +52,8 @@ class NWItem:
         self._layout   = nwItemLayout.NO_LAYOUT
         self._status   = None
         self._import   = None
+        self._active   = True
         self._expanded = False
-        self._exported = True
 
         # Document Meta Data
         self._heading   = "H0"  # The main heading
@@ -116,12 +116,12 @@ class NWItem:
         return self._import
 
     @property
-    def isExpanded(self):
-        return self._expanded
+    def isActive(self):
+        return self._active
 
     @property
-    def isActive(self):
-        return self._exported
+    def isExpanded(self):
+        return self._expanded
 
     @property
     def mainHeading(self):
@@ -177,7 +177,7 @@ class NWItem:
         nameAttrib["status"] = str(self._status)
         nameAttrib["import"] = str(self._import)
         if self._type == nwItemType.FILE:
-            nameAttrib["exported"] = str(self._exported)
+            nameAttrib["active"] = str(self._active)
 
         xPack = etree.SubElement(xParent, "item", attrib=itemAttrib)
         self._subPack(xPack, "meta", attrib=metaAttrib)
@@ -217,7 +217,11 @@ class NWItem:
                 self.setName(xValue.text)
                 self.setStatus(xValue.attrib.get("status", None))
                 self.setImport(xValue.attrib.get("import", None))
-                self.setActive(xValue.attrib.get("exported", True))
+                self.setActive(xValue.attrib.get("active", True))
+
+                # ToDo: Remove before 2.0 release. Only needed for 2.0 pre-releases.
+                if "exported" in xValue.attrib:
+                    self.setActive(xValue.attrib.get("exported", True))
 
             # Legacy Format (1.3 and earlier)
             elif xValue.tag == "status":
@@ -496,6 +500,15 @@ class NWItem:
         self._import = self.theProject.importItems.check(value)
         return
 
+    def setActive(self, state):
+        """Set the export flag.
+        """
+        if isinstance(state, str):
+            self._active = (state == str(True))
+        else:
+            self._active = (state is True)
+        return
+
     def setExpanded(self, state):
         """Set the expanded status of an item in the project tree.
         """
@@ -503,15 +516,6 @@ class NWItem:
             self._expanded = (state == str(True))
         else:
             self._expanded = (state is True)
-        return
-
-    def setActive(self, state):
-        """Set the export flag.
-        """
-        if isinstance(state, str):
-            self._exported = (state == str(True))
-        else:
-            self._exported = (state is True)
         return
 
     ##

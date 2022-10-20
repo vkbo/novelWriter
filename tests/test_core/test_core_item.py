@@ -527,7 +527,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, mockRnd):
         b'<item handle="0123456789abc" parent="0123456789abc" root="0123456789abc" order="1" '
         b'type="FILE" class="NOVEL" layout="NOTE"><meta expanded="False" mainHeading="H0" '
         b'charCount="7" wordCount="5" paraCount="3" cursorPos="11"/><name status="None" '
-        b'import="%s" exported="False">A Name</name></item>'
+        b'import="%s" active="False">A Name</name></item>'
         b'</content>'
     ) % bytes(importKeys[3], encoding="utf8")
 
