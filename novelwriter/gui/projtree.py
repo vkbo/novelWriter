@@ -909,7 +909,7 @@ class GuiProjectTree(QTreeWidget):
 
         if nwItem.isFileType():
             trItem.setIcon(
-                self.C_EXPORT, self.mainTheme.getIcon("check" if nwItem.isExported else "cross")
+                self.C_EXPORT, self.mainTheme.getIcon("check" if nwItem.isActive else "cross")
             )
 
         if self.mainConf.emphLabels and nwItem.isDocumentLayout():
@@ -1157,7 +1157,7 @@ class GuiProjectTree(QTreeWidget):
 
         if isFile:
             ctxMenu.addAction(
-                self.tr("Toggle Exported"), lambda: self._toggleItemExported(tHandle)
+                self.tr("Toggle Exported"), lambda: self._toggleItemActive(tHandle)
             )
 
         if tItem.isNovelLike():
@@ -1367,12 +1367,12 @@ class GuiProjectTree(QTreeWidget):
         """
         return self._treeMap.get(tHandle, None)
 
-    def _toggleItemExported(self, tHandle):
-        """Toggle the exported status of an item.
+    def _toggleItemActive(self, tHandle):
+        """Toggle the active status of an item.
         """
         tItem = self.theProject.tree[tHandle]
         if tItem is not None:
-            tItem.setExported(not tItem.isExported)
+            tItem.setActive(not tItem.isActive)
             self.setTreeItemValues(tItem.itemHandle)
             self._alertTreeChange(tHandle, flush=False)
         return

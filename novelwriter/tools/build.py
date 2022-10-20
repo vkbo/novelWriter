@@ -813,7 +813,7 @@ class GuiBuildNovel(QDialog):
         if theItem is None:
             return False
 
-        if not (theItem.isExported or ignoreFlag):
+        if not (theItem.isActive or ignoreFlag):
             return False
 
         if theItem.itemRoot in rootFilter:

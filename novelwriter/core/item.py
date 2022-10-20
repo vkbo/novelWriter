@@ -120,7 +120,7 @@ class NWItem:
         return self._expanded
 
     @property
-    def isExported(self):
+    def isActive(self):
         return self._exported
 
     @property
@@ -217,7 +217,7 @@ class NWItem:
                 self.setName(xValue.text)
                 self.setStatus(xValue.attrib.get("status", None))
                 self.setImport(xValue.attrib.get("import", None))
-                self.setExported(xValue.attrib.get("exported", True))
+                self.setActive(xValue.attrib.get("exported", True))
 
             # Legacy Format (1.3 and earlier)
             elif xValue.tag == "status":
@@ -231,7 +231,7 @@ class NWItem:
             elif xValue.tag == "expanded":
                 self.setExpanded(xValue.text)
             elif xValue.tag == "exported":
-                self.setExported(xValue.text)
+                self.setActive(xValue.text)
             elif xValue.tag == "charCount":
                 self.setCharCount(xValue.text)
             elif xValue.tag == "wordCount":
@@ -505,7 +505,7 @@ class NWItem:
             self._expanded = (state is True)
         return
 
-    def setExported(self, state):
+    def setActive(self, state):
         """Set the export flag.
         """
         if isinstance(state, str):

@@ -802,7 +802,7 @@ class ItemIndex:
                 continue
             if tItem.isNoteLayout():
                 continue
-            if skipExcl and not tItem.isExported:
+            if skipExcl and not tItem.isActive:
                 continue
 
             tHandle = tItem.itemHandle
