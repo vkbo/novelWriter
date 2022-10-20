@@ -85,7 +85,6 @@ class NWProject:
         self.projDict    = None  # The spell check dictionary
         self.projSpell   = None  # The spell check language, if different than default
         self.projLang    = None  # The project language, used for builds
-        self.projFile    = None  # The file name of the project main XML file
         self.projFiles   = []    # A list of all files in the content folder on load
 
         # Project Meta
@@ -260,7 +259,6 @@ class NWProject:
         self.projDict    = None
         self.projSpell   = None
         self.projLang    = None
-        self.projFile    = nwFiles.PROJ_FILE
         self.projFiles   = []
         self.projName    = ""
         self.bookTitle   = ""
@@ -774,9 +772,9 @@ class NWProject:
         self._projTree.packXML(nwXML)
 
         # Write the xml tree to file
-        tempFile = os.path.join(self.projPath, self.projFile+"~")
-        saveFile = os.path.join(self.projPath, self.projFile)
-        backFile = os.path.join(self.projPath, self.projFile[:-3]+"bak")
+        tempFile = os.path.join(self.projPath, nwFiles.PROJ_FILE+"~")
+        saveFile = os.path.join(self.projPath, nwFiles.PROJ_FILE)
+        backFile = os.path.join(self.projPath, nwFiles.PROJ_FILE[:-3]+"bak")
         try:
             with open(tempFile, mode="wb") as outFile:
                 outFile.write(etree.tostring(
@@ -816,7 +814,7 @@ class NWProject:
 
         return True
 
-    def closeProject(self, idleTime=0):
+    def closeProject(self, idleTime=0.0):
         """Close the current project and clear all meta data.
         """
         logger.info("Closing project: %s", self.projPath)
@@ -1185,7 +1183,7 @@ class NWProject:
         information to the GUI statusbar.
         """
         self.projChanged = bValue
-        self.mainGui.statusBar.doUpdateProjectStatus(bValue)
+        self.mainGui.mainStatus.doUpdateProjectStatus(bValue)
         if bValue:
             # If we've changed the project at all, this should be True
             self.projAltered = True

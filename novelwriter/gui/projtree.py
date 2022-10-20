@@ -1211,13 +1211,13 @@ class GuiProjectTree(QTreeWidget):
 
             if hasChild and isFolder:
                 mTrans.addAction(
-                    self.tr("Combine Documents in Folder"),
+                    self.tr("Merge Documents in Folder"),
                     lambda: self._mergeDocuments(tHandle, True)
                 )
 
             if isFile:
                 mTrans.addAction(
-                    self.tr("Split Document by Header"),
+                    self.tr("Split Document by Headers"),
                     lambda: self._splitDocument(tHandle)
                 )
 
@@ -1309,7 +1309,8 @@ class GuiProjectTree(QTreeWidget):
         self._postItemMove(sHandle, wCount)
         self._recordLastMove(sItem, pItem, pIndex)
         self._alertTreeChange(sHandle, flush=True)
-        sItem.setExpanded(isExpanded)
+        if sItem is not None:
+            sItem.setExpanded(isExpanded)
 
         return
 

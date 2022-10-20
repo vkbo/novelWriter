@@ -556,13 +556,13 @@ def testBaseCommon_EnsureFolder(monkeypatch, fncDir):
     assert ensureFolder(newDir1) is True
     assert os.path.isdir(newDir1)
 
-    assert ensureFolder("newDir2", parentPath=fncDir) is True
+    assert ensureFolder("newDir2", parent=fncDir) is True
     assert os.path.isdir(newDir2)
 
     with monkeypatch.context() as mp:
         mp.setattr("os.mkdir", causeOSError)
         errLog = []
-        assert ensureFolder("newDir3", parentPath=fncDir, errLog=errLog) is False
+        assert ensureFolder("newDir3", parent=fncDir, errLog=errLog) is False
         assert errLog[0] == f"Could not create folder: {newDir3}"
         assert not os.path.isdir(newDir3)
 
@@ -673,10 +673,10 @@ def testBaseCommon_NWConfigParser(fncDir):
     # Read Float
     assert cfgParser.rdFlt("main", "intopt1", 13.0) == 42.0
     assert cfgParser.rdFlt("main", "float1",  13.0) == 4.2
-    assert cfgParser.rdInt("main", "stropt",  13.0) == 13.0
+    assert cfgParser.rdFlt("main", "stropt",  13.0) == 13.0
 
-    assert cfgParser.rdInt("nope", "intopt1", 13.0) == 13.0
-    assert cfgParser.rdInt("main", "blabla",  13.0) == 13.0
+    assert cfgParser.rdFlt("nope", "intopt1", 13.0) == 13.0
+    assert cfgParser.rdFlt("main", "blabla",  13.0) == 13.0
 
     # Read String List
     assert cfgParser.rdStrList("main", "list1", []) == []
@@ -703,10 +703,5 @@ def testBaseCommon_NWConfigParser(fncDir):
 
     assert cfgParser.rdIntList("nope", "list2", [1]) == [1]
     assert cfgParser.rdIntList("main", "blabla", [1]) == [1]
-
-    # Internal
-    # ========
-
-    assert cfgParser._parseLine("main", "stropt", None, 999) is None
 
 # END Test testBaseCommon_NWConfigParser

@@ -45,57 +45,57 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
 
     # Reference Time
     refTime = time.time()
-    nwGUI.statusBar.setRefTime(refTime)
-    assert nwGUI.statusBar.refTime == refTime
+    nwGUI.mainStatus.setRefTime(refTime)
+    assert nwGUI.mainStatus.refTime == refTime
 
     # Project Status
-    nwGUI.statusBar.setProjectStatus(nwState.NONE)
-    assert nwGUI.statusBar.projIcon._theCol == nwGUI.statusBar.projIcon._colNone
-    nwGUI.statusBar.setProjectStatus(nwState.BAD)
-    assert nwGUI.statusBar.projIcon._theCol == nwGUI.statusBar.projIcon._colBad
-    nwGUI.statusBar.setProjectStatus(nwState.GOOD)
-    assert nwGUI.statusBar.projIcon._theCol == nwGUI.statusBar.projIcon._colGood
+    nwGUI.mainStatus.setProjectStatus(nwState.NONE)
+    assert nwGUI.mainStatus.projIcon._theCol == nwGUI.mainStatus.projIcon._colNone
+    nwGUI.mainStatus.setProjectStatus(nwState.BAD)
+    assert nwGUI.mainStatus.projIcon._theCol == nwGUI.mainStatus.projIcon._colBad
+    nwGUI.mainStatus.setProjectStatus(nwState.GOOD)
+    assert nwGUI.mainStatus.projIcon._theCol == nwGUI.mainStatus.projIcon._colGood
 
     # Document Status
-    nwGUI.statusBar.setDocumentStatus(nwState.NONE)
-    assert nwGUI.statusBar.docIcon._theCol == nwGUI.statusBar.docIcon._colNone
-    nwGUI.statusBar.setDocumentStatus(nwState.BAD)
-    assert nwGUI.statusBar.docIcon._theCol == nwGUI.statusBar.docIcon._colBad
-    nwGUI.statusBar.setDocumentStatus(nwState.GOOD)
-    assert nwGUI.statusBar.docIcon._theCol == nwGUI.statusBar.docIcon._colGood
+    nwGUI.mainStatus.setDocumentStatus(nwState.NONE)
+    assert nwGUI.mainStatus.docIcon._theCol == nwGUI.mainStatus.docIcon._colNone
+    nwGUI.mainStatus.setDocumentStatus(nwState.BAD)
+    assert nwGUI.mainStatus.docIcon._theCol == nwGUI.mainStatus.docIcon._colBad
+    nwGUI.mainStatus.setDocumentStatus(nwState.GOOD)
+    assert nwGUI.mainStatus.docIcon._theCol == nwGUI.mainStatus.docIcon._colGood
 
     # Idle Status
-    nwGUI.statusBar.mainConf.stopWhenIdle = False
-    nwGUI.statusBar.setUserIdle(True)
-    nwGUI.statusBar.updateTime()
-    assert nwGUI.statusBar.userIdle is False
-    assert nwGUI.statusBar.timeText.text() == "00:00:00"
+    nwGUI.mainStatus.mainConf.stopWhenIdle = False
+    nwGUI.mainStatus.setUserIdle(True)
+    nwGUI.mainStatus.updateTime()
+    assert nwGUI.mainStatus.userIdle is False
+    assert nwGUI.mainStatus.timeText.text() == "00:00:00"
 
-    nwGUI.statusBar.mainConf.stopWhenIdle = True
-    nwGUI.statusBar.setUserIdle(True)
-    nwGUI.statusBar.updateTime(5)
-    assert nwGUI.statusBar.userIdle is True
-    assert nwGUI.statusBar.timeText.text() != "00:00:00"
+    nwGUI.mainStatus.mainConf.stopWhenIdle = True
+    nwGUI.mainStatus.setUserIdle(True)
+    nwGUI.mainStatus.updateTime(5)
+    assert nwGUI.mainStatus.userIdle is True
+    assert nwGUI.mainStatus.timeText.text() != "00:00:00"
 
-    nwGUI.statusBar.setUserIdle(False)
-    nwGUI.statusBar.updateTime(5)
-    assert nwGUI.statusBar.userIdle is False
-    assert nwGUI.statusBar.timeText.text() != "00:00:00"
+    nwGUI.mainStatus.setUserIdle(False)
+    nwGUI.mainStatus.updateTime(5)
+    assert nwGUI.mainStatus.userIdle is False
+    assert nwGUI.mainStatus.timeText.text() != "00:00:00"
 
     # Language
-    nwGUI.statusBar.setLanguage("None", "None")
-    assert nwGUI.statusBar.langText.text() == "None"
-    nwGUI.statusBar.setLanguage("en", "None")
-    assert nwGUI.statusBar.langText.text() == "American English"
+    nwGUI.mainStatus.setLanguage("None", "None")
+    assert nwGUI.mainStatus.langText.text() == "None"
+    nwGUI.mainStatus.setLanguage("en", "None")
+    assert nwGUI.mainStatus.langText.text() == "American English"
 
     # Project Stats
-    nwGUI.statusBar.mainConf.incNotesWCount = False
+    nwGUI.mainStatus.mainConf.incNotesWCount = False
     nwGUI._updateStatusWordCount()
-    assert nwGUI.statusBar.statsText.text() == "Words: 9 (+9)"
-    nwGUI.statusBar.mainConf.incNotesWCount = True
+    assert nwGUI.mainStatus.statsText.text() == "Words: 9 (+9)"
+    nwGUI.mainStatus.mainConf.incNotesWCount = True
     nwGUI._updateStatusWordCount()
-    assert nwGUI.statusBar.statsText.text() == "Words: 11 (+11)"
+    assert nwGUI.mainStatus.statsText.text() == "Words: 11 (+11)"
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiStatusBar_Init

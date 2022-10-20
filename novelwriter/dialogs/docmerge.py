@@ -117,7 +117,7 @@ class GuiDocMerge(QDialog):
         finalItems = []
         for i in range(self.listBox.count()):
             item = self.listBox.item(i)
-            if item.checkState() == Qt.Checked:
+            if item is not None and item.checkState() == Qt.Checked:
                 finalItems.append(item.data(Qt.UserRole))
 
         self._data["moveToTrash"] = self.trashSwitch.isChecked()

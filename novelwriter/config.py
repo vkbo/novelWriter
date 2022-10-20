@@ -52,12 +52,11 @@ class Config:
 
         # Set Application Variables
         self.appName   = "novelWriter"
-        self.appHandle = self.appName.lower()
+        self.appHandle = "novelwriter"
 
         # Set Paths
         self.cmdOpen   = None  # Path from command line for project to be opened on launch
         self.confPath  = None  # Folder where the config is saved
-        self.confFile  = None  # The config file name
         self.dataPath  = None  # Folder where app data is stored
         self.lastPath  = None  # The last user-selected folder (browse dialogs)
         self.appPath   = None  # The full path to the novelwriter package folder
@@ -271,7 +270,6 @@ class Config:
         logger.debug("Config path: %s", self.confPath)
         logger.debug("Data path: %s", self.dataPath)
 
-        self.confFile = self.appHandle+".conf"
         self.lastPath = os.path.expanduser("~")
         self.appPath = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
         self.appRoot = os.path.abspath(os.path.join(self.appPath, os.path.pardir))
@@ -306,12 +304,12 @@ class Config:
 
         # We don't error on these failing since they are not essential
         if self.dataPath is not None:
-            ensureFolder("syntax", parentPath=self.dataPath)
-            ensureFolder("themes", parentPath=self.dataPath)
+            ensureFolder("syntax", parent=self.dataPath)
+            ensureFolder("themes", parent=self.dataPath)
 
         # Check if config file exists
         if self.confPath is not None:
-            if os.path.isfile(os.path.join(self.confPath, self.confFile)):
+            if os.path.isfile(os.path.join(self.confPath, nwFiles.CONF_FILE)):
                 # If it exists, load it
                 self.loadConfig()
             else:
@@ -396,7 +394,7 @@ class Config:
             return False
 
         theConf = NWConfigParser()
-        cnfPath = os.path.join(self.confPath, self.confFile)
+        cnfPath = os.path.join(self.confPath, nwFiles.CONF_FILE)
         try:
             with open(cnfPath, mode="r", encoding="utf-8") as inFile:
                 theConf.read_file(inFile)
@@ -619,7 +617,7 @@ class Config:
         }
 
         # Write config file
-        cnfPath = os.path.join(self.confPath, self.confFile)
+        cnfPath = os.path.join(self.confPath, nwFiles.CONF_FILE)
         try:
             with open(cnfPath, mode="w", encoding="utf-8") as outFile:
                 theConf.write(outFile)

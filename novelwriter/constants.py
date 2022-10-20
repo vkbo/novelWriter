@@ -68,6 +68,7 @@ class nwHeaders:
 
 class nwFiles:
 
+    CONF_FILE   = "novelwriter.conf"
     PROJ_FILE   = "nwProject.nwx"
     PROJ_DICT   = "wordlist.txt"
     PROJ_LOCK   = "nwProject.lock"
