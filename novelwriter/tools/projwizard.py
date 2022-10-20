@@ -334,13 +334,18 @@ class ProjWizardCustomPage(QWizardPage):
 
         # Root Folders
         self.addPlot = QSwitch()
-        self.addChar = QSwitch()
-        self.addWorld = QSwitch()
-        self.addNotes = QSwitch()
-
         self.addPlot.setChecked(True)
+        self.addPlot.clicked.connect(self._syncSwitches)
+
+        self.addChar = QSwitch()
         self.addChar.setChecked(True)
+        self.addChar.clicked.connect(self._syncSwitches)
+
+        self.addWorld = QSwitch()
         self.addWorld.setChecked(False)
+        self.addWorld.clicked.connect(self._syncSwitches)
+
+        self.addNotes = QSwitch()
         self.addNotes.setChecked(False)
 
         # Generate Content
@@ -389,6 +394,20 @@ class ProjWizardCustomPage(QWizardPage):
         self.outerBox.addStretch(1)
         self.setLayout(self.outerBox)
 
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _syncSwitches(self):
+        """Check if the add notes option should also be switched off.
+        """
+        addPlot = self.addPlot.isChecked()
+        addChar = self.addChar.isChecked()
+        addWorld = self.addWorld.isChecked()
+        if not (addPlot or addChar or addWorld):
+            self.addNotes.setChecked(False)
         return
 
 # END Class ProjWizardCustomPage
