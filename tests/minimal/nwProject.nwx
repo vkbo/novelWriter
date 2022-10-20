@@ -49,7 +49,7 @@
     </item>
     <item handle="a35baf2e93843" parent="a508bb932959c" root="a508bb932959c" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="False" mainHeading="H1" charCount="28" wordCount="6" paraCount="1" cursorPos="33"/>
-      <name status="s72322d" import="iffcacb" exported="True">Title Page</name>
+      <name status="s72322d" import="iffcacb" active="True">Title Page</name>
     </item>
     <item handle="a6d311a93600a" parent="a508bb932959c" root="a508bb932959c" order="1" type="FOLDER" class="NOVEL">
       <meta expanded="True"/>
@@ -57,11 +57,11 @@
     </item>
     <item handle="f5ab3e30151e1" parent="a6d311a93600a" root="a508bb932959c" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="False" mainHeading="H2" charCount="11" wordCount="2" paraCount="0" cursorPos="16"/>
-      <name status="s72322d" import="iffcacb" exported="True">New Chapter</name>
+      <name status="s72322d" import="iffcacb" active="True">New Chapter</name>
     </item>
     <item handle="8c659a11cd429" parent="a6d311a93600a" root="a508bb932959c" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
       <meta expanded="False" mainHeading="H3" charCount="9" wordCount="2" paraCount="0" cursorPos="15"/>
-      <name status="s72322d" import="iffcacb" exported="True">New Scene</name>
+      <name status="s72322d" import="iffcacb" active="True">New Scene</name>
     </item>
     <item handle="7695ce551d265" parent="None" root="7695ce551d265" order="1" type="ROOT" class="PLOT">
       <meta expanded="False"/>

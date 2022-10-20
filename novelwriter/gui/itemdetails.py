@@ -247,7 +247,7 @@ class GuiItemDetails(QWidget):
             theLabel = theLabel[:96].rstrip()+" ..."
 
         if nwItem.isFileType():
-            if nwItem.isExported:
+            if nwItem.isActive:
                 self.labelIcon.setPixmap(self._expCheck)
             else:
                 self.labelIcon.setPixmap(self._expCross)

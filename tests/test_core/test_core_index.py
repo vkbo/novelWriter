@@ -524,7 +524,7 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
     ]
 
     # Check that excluded files can be skipped
-    theProject.tree[nHandle].setExported(False)
+    theProject.tree[nHandle].setActive(False)
 
     theKeys = []
     for aKey, _, _, _ in theIndex.novelStructure(skipExcl=False):
@@ -1072,7 +1072,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
     assert nStruct[3][0] == uHandle
 
     # Skip excluded
-    theProject.tree[sHandle].setExported(False)
+    theProject.tree[sHandle].setActive(False)
     nStruct = list(itemIndex.iterNovelStructure(skipExcl=True))
     assert len(nStruct) == 3
     assert nStruct[0][0] == nHandle

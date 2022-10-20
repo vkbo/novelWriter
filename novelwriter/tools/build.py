@@ -405,13 +405,13 @@ class GuiBuildNovel(QDialog):
 
         novelLabel  = QLabel(self.tr("Include novel files"))
         notesLabel  = QLabel(self.tr("Include note files"))
-        exportLabel = QLabel(self.tr("Ignore export flag"))
+        activeLabel = QLabel(self.tr("Include inactive files"))
 
         self.fileForm.addWidget(novelLabel,      0, 0, 1, 1, Qt.AlignLeft)
         self.fileForm.addWidget(self.novelFiles, 0, 1, 1, 1, Qt.AlignRight)
         self.fileForm.addWidget(notesLabel,      1, 0, 1, 1, Qt.AlignLeft)
         self.fileForm.addWidget(self.noteFiles,  1, 1, 1, 1, Qt.AlignRight)
-        self.fileForm.addWidget(exportLabel,     2, 0, 1, 1, Qt.AlignLeft)
+        self.fileForm.addWidget(activeLabel,     2, 0, 1, 1, Qt.AlignLeft)
         self.fileForm.addWidget(self.ignoreFlag, 2, 1, 1, 1, Qt.AlignRight)
 
         self.fileForm.setColumnStretch(0, 1)
@@ -813,7 +813,7 @@ class GuiBuildNovel(QDialog):
         if theItem is None:
             return False
 
-        if not (theItem.isExported or ignoreFlag):
+        if not (theItem.isActive or ignoreFlag):
             return False
 
         if theItem.itemRoot in rootFilter:

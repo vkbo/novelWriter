@@ -384,7 +384,7 @@ class GuiProjectTree(QTreeWidget):
 
     C_NAME   = 0
     C_COUNT  = 1
-    C_EXPORT = 2
+    C_ACTIVE = 2
     C_STATUS = 3
 
     def __init__(self, projView):
@@ -430,9 +430,9 @@ class GuiProjectTree(QTreeWidget):
         treeHeader.setMinimumSectionSize(iPx + cMg)
         treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.Stretch)
         treeHeader.setSectionResizeMode(self.C_COUNT, QHeaderView.ResizeToContents)
-        treeHeader.setSectionResizeMode(self.C_EXPORT, QHeaderView.Fixed)
+        treeHeader.setSectionResizeMode(self.C_ACTIVE, QHeaderView.Fixed)
         treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.Fixed)
-        treeHeader.resizeSection(self.C_EXPORT, iPx + cMg)
+        treeHeader.resizeSection(self.C_ACTIVE, iPx + cMg)
         treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
 
         # Allow Move by Drag & Drop
@@ -442,6 +442,10 @@ class GuiProjectTree(QTreeWidget):
         # But don't allow drop on root level
         trRoot = self.invisibleRootItem()
         trRoot.setFlags(trRoot.flags() ^ Qt.ItemIsDropEnabled)
+
+        # Cached values
+        self._lblActive = self.tr("Active")
+        self._lblInactive = self.tr("Inactive")
 
         # Set selection options
         self.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -908,9 +912,10 @@ class GuiProjectTree(QTreeWidget):
         trItem.setToolTip(self.C_STATUS, itemStatus)
 
         if nwItem.isFileType():
-            trItem.setIcon(
-                self.C_EXPORT, self.mainTheme.getIcon("check" if nwItem.isExported else "cross")
-            )
+            iconName = "check" if nwItem.isActive else "cross"
+            toolTip = self._lblActive if nwItem.isActive else self._lblInactive
+            trItem.setIcon(self.C_ACTIVE, self.mainTheme.getIcon(iconName))
+            trItem.setToolTip(self.C_ACTIVE, toolTip)
 
         if self.mainConf.emphLabels and nwItem.isDocumentLayout():
             trFont = trItem.font(self.C_NAME)
@@ -1157,7 +1162,7 @@ class GuiProjectTree(QTreeWidget):
 
         if isFile:
             ctxMenu.addAction(
-                self.tr("Toggle Exported"), lambda: self._toggleItemExported(tHandle)
+                self.tr("Toggle Active"), lambda: self._toggleItemActive(tHandle)
             )
 
         if tItem.isNovelLike():
@@ -1367,12 +1372,12 @@ class GuiProjectTree(QTreeWidget):
         """
         return self._treeMap.get(tHandle, None)
 
-    def _toggleItemExported(self, tHandle):
-        """Toggle the exported status of an item.
+    def _toggleItemActive(self, tHandle):
+        """Toggle the active status of an item.
         """
         tItem = self.theProject.tree[tHandle]
         if tItem is not None:
-            tItem.setExported(not tItem.isExported)
+            tItem.setActive(not tItem.isActive)
             self.setTreeItemValues(tItem.itemHandle)
             self._alertTreeChange(tHandle, flush=False)
         return
@@ -1605,12 +1610,12 @@ class GuiProjectTree(QTreeWidget):
 
         newItem.setText(self.C_NAME, "")
         newItem.setText(self.C_COUNT, "0")
-        newItem.setText(self.C_EXPORT, "")
+        newItem.setText(self.C_ACTIVE, "")
         newItem.setText(self.C_STATUS, "")
 
         newItem.setTextAlignment(self.C_NAME, Qt.AlignLeft)
         newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
-        newItem.setTextAlignment(self.C_EXPORT, Qt.AlignLeft)
+        newItem.setTextAlignment(self.C_ACTIVE, Qt.AlignLeft)
         newItem.setTextAlignment(self.C_STATUS, Qt.AlignLeft)
 
         newItem.setData(self.C_NAME, Qt.UserRole, tHandle)
