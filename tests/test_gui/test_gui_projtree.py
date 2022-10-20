@@ -620,7 +620,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     # Trigger the dedicated functions the menu entries connect to
     nwItem = projTree.theProject.tree[hNovelNote]
 
-    # Toggle exported flag
+    # Toggle active flag
     assert nwItem.isActive is True
     projTree._toggleItemActive(hNovelNote)
     assert nwItem.isActive is False
