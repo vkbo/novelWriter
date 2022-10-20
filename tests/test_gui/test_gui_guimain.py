@@ -31,6 +31,7 @@ from PyQt5.QtWidgets import QMessageBox, QInputDialog
 from novelwriter.enum import nwItemType, nwView, nwWidget
 from novelwriter.tools import GuiProjectWizard
 from novelwriter.dialogs import GuiEditLabel
+from novelwriter.constants import nwFiles
 from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.gui.doceditor import GuiDocEditor
@@ -91,7 +92,7 @@ def testGuiMain_NewProject(monkeypatch, nwGUI, fncProj):
     assert nwGUI.newProject(projData={}) is False
 
     # Project file already exists
-    projFile = os.path.join(fncProj, nwGUI.theProject.projFile)
+    projFile = os.path.join(fncProj, nwFiles.PROJ_FILE)
     writeFile(projFile, "Stuff")
     assert nwGUI.newProject(projData={"projPath": fncProj}) is False
     os.unlink(projFile)
@@ -102,7 +103,7 @@ def testGuiMain_NewProject(monkeypatch, nwGUI, fncProj):
 
     # This one should work just fine
     assert nwGUI.newProject(projData={"projPath": fncProj}) is True
-    assert os.path.isfile(os.path.join(fncProj, nwGUI.theProject.projFile))
+    assert os.path.isfile(os.path.join(fncProj, nwFiles.PROJ_FILE))
     assert os.path.isdir(os.path.join(fncProj, "content"))
 
 # END Test testGuiMain_NewProject
@@ -183,7 +184,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert nwGUI.theProject.tree.trashRoot() is None
     assert nwGUI.theProject.projPath is None
     assert nwGUI.theProject.projMeta is None
-    assert nwGUI.theProject.projFile == "nwProject.nwx"
     assert nwGUI.theProject.projName == ""
     assert nwGUI.theProject.bookTitle == ""
     assert len(nwGUI.theProject.bookAuthors) == 0
@@ -208,7 +208,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert nwGUI.theProject.tree.trashRoot() is None
     assert nwGUI.theProject.projPath == fncProj
     assert nwGUI.theProject.projMeta == os.path.join(fncProj, "meta")
-    assert nwGUI.theProject.projFile == "nwProject.nwx"
     assert nwGUI.theProject.projName == "New Project"
     assert nwGUI.theProject.bookTitle == "New Novel"
     assert len(nwGUI.theProject.bookAuthors) == 1

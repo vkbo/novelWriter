@@ -55,6 +55,7 @@ from novelwriter.enum import (
     nwDocMode, nwItemType, nwItemClass, nwAlert, nwWidget, nwState, nwView
 )
 from novelwriter.common import getGuiItem, hexToInt
+from novelwriter.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -353,7 +354,7 @@ class GuiMain(QMainWindow):
             logger.error("No projData or projPath set")
             return False
 
-        if os.path.isfile(os.path.join(projPath, self.theProject.projFile)):
+        if os.path.isfile(os.path.join(projPath, nwFiles.PROJ_FILE)):
             self.makeAlert(self.tr(
                 "A project already exists in that location. "
                 "Please choose another folder."
