@@ -202,6 +202,14 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
         assert isinstance(customPage, ProjWizardCustomPage)
         assert nwWiz.button(QWizard.NextButton).isEnabled()
 
+        # Make sure the fourth option is also turned off
+        customPage.addPlot.setChecked(False)
+        customPage.addChar.setChecked(False)
+        customPage.addWorld.setChecked(False)
+        customPage._syncSwitches()
+        assert not customPage.addNotes.isChecked()
+
+        # Switch everything back on again
         customPage.addPlot.setChecked(True)
         customPage.addChar.setChecked(True)
         customPage.addWorld.setChecked(True)
