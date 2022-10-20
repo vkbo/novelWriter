@@ -1211,13 +1211,13 @@ class GuiProjectTree(QTreeWidget):
 
             if hasChild and isFolder:
                 mTrans.addAction(
-                    self.tr("Combine Documents in Folder"),
+                    self.tr("Merge Documents in Folder"),
                     lambda: self._mergeDocuments(tHandle, True)
                 )
 
             if isFile:
                 mTrans.addAction(
-                    self.tr("Split Document by Header"),
+                    self.tr("Split Document by Headers"),
                     lambda: self._splitDocument(tHandle)
                 )
 
