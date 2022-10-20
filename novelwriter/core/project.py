@@ -814,7 +814,7 @@ class NWProject:
 
         return True
 
-    def closeProject(self, idleTime=0):
+    def closeProject(self, idleTime=0.0):
         """Close the current project and clear all meta data.
         """
         logger.info("Closing project: %s", self.projPath)

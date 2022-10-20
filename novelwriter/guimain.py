@@ -626,7 +626,7 @@ class GuiMain(QMainWindow):
         fHandle = None   # The first file handle we encounter
         foundIt = False  # We've found tHandle, pick the next we see
         for tItem in self.theProject.tree:
-            if not self.theProject.tree.checkType(tItem.itemHandle, nwItemType.FILE):
+            if tItem is None or not tItem.isFileType():
                 continue
             if fHandle is None:
                 fHandle = tItem.itemHandle
@@ -950,6 +950,7 @@ class GuiMain(QMainWindow):
         dlgDetails = getGuiItem("GuiProjectDetails")
         if dlgDetails is None:
             dlgDetails = GuiProjectDetails(self)
+        assert isinstance(dlgDetails, GuiProjectDetails)
 
         dlgDetails.setModal(False)
         dlgDetails.show()
@@ -968,6 +969,7 @@ class GuiMain(QMainWindow):
         dlgBuild = getGuiItem("GuiBuildNovel")
         if dlgBuild is None:
             dlgBuild = GuiBuildNovel(self)
+        assert isinstance(dlgBuild, GuiBuildNovel)
 
         dlgBuild.setModal(False)
         dlgBuild.show()
@@ -987,6 +989,7 @@ class GuiMain(QMainWindow):
         dlgLipsum = getGuiItem("GuiLipsum")
         if dlgLipsum is None:
             dlgLipsum = GuiLipsum(self)
+        assert isinstance(dlgLipsum, GuiLipsum)
 
         dlgLipsum.setModal(False)
         dlgLipsum.show()
@@ -1021,6 +1024,7 @@ class GuiMain(QMainWindow):
         dlgStats = getGuiItem("GuiWritingStats")
         if dlgStats is None:
             dlgStats = GuiWritingStats(self)
+        assert isinstance(dlgStats, GuiWritingStats)
 
         dlgStats.setModal(False)
         dlgStats.show()
@@ -1036,6 +1040,7 @@ class GuiMain(QMainWindow):
         dlgAbout = getGuiItem("GuiAbout")
         if dlgAbout is None:
             dlgAbout = GuiAbout(self)
+        assert isinstance(dlgAbout, GuiAbout)
 
         dlgAbout.setModal(True)
         dlgAbout.show()
@@ -1061,6 +1066,7 @@ class GuiMain(QMainWindow):
         dlgUpdate = getGuiItem("GuiUpdates")
         if dlgUpdate is None:
             dlgUpdate = GuiUpdates(self)
+        assert isinstance(dlgUpdate, GuiUpdates)
 
         dlgUpdate.setModal(True)
         dlgUpdate.show()

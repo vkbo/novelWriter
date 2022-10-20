@@ -199,8 +199,8 @@ def exceptionHandler(exType, exValue, exTrace):
 
         try:
             # Try a controlled shutdown
-            nwGUI.closeProject(isYes=True)
-            nwGUI.closeMain()
+            nwGUI.closeProject(isYes=True)  # type: ignore
+            nwGUI.closeMain()  # type: ignore
             logger.info("Emergency shutdown successful")
 
         except Exception as exc:
