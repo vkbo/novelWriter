@@ -27,9 +27,11 @@ from lxml import etree
 
 from tools import readFile
 
-from novelwriter.core.project import NWProject, NWItem, NWTree
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.constants import nwFiles
+from novelwriter.core.item import NWItem
+from novelwriter.core.tree import NWTree
+from novelwriter.core.project import NWProject
 
 
 @pytest.fixture(scope="function")
@@ -418,13 +420,13 @@ def testCoreTree_XMLPackUnpack(mockGUI, mockItems):
         b'type="FOLDER" class="NOVEL"><meta expanded="True"/><name status="s000000" '
         b'import="i000004">Act One</name></item>'
         b'<item handle="c000000000001" parent="b000000000001" root="a000000000001" order="0" '
-        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta expanded="False" charCount="300" '
-        b'wordCount="50" paraCount="2" cursorPos="0"/><name status="s000000" import="i000004" '
-        b'exported="True">Chapter One</name></item>'
+        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta expanded="False" mainHeading="H0" '
+        b'charCount="300" wordCount="50" paraCount="2" cursorPos="0"/><name status="s000000" '
+        b'import="i000004" active="True">Chapter One</name></item>'
         b'<item handle="c000000000002" parent="b000000000001" root="a000000000001" order="0" '
-        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta expanded="False" charCount="3000" '
-        b'wordCount="500" paraCount="20" cursorPos="0"/><name status="s000000" import="i000004" '
-        b'exported="True">Scene One</name></item>'
+        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta expanded="False" mainHeading="H0" '
+        b'charCount="3000" wordCount="500" paraCount="20" cursorPos="0"/><name status="s000000" '
+        b'import="i000004" active="True">Scene One</name></item>'
         b'<item handle="a000000000002" parent="None" root="a000000000002" order="0" type="ROOT" '
         b'class="ARCHIVE"><meta expanded="False"/><name status="s000000" '
         b'import="i000004">Outtakes</name></item>'
@@ -435,9 +437,9 @@ def testCoreTree_XMLPackUnpack(mockGUI, mockItems):
         b'class="CHARACTER"><meta expanded="True"/><name status="s000000" '
         b'import="i000004">Characters</name></item>'
         b'<item handle="b000000000002" parent="a000000000004" root="a000000000004" order="0" '
-        b'type="FILE" class="CHARACTER" layout="NOTE"><meta expanded="False" charCount="2000" '
-        b'wordCount="400" paraCount="16" cursorPos="0"/><name status="s000000" import="i000004" '
-        b'exported="True">Jane Doe</name></item>'
+        b'type="FILE" class="CHARACTER" layout="NOTE"><meta expanded="False" mainHeading="H0" '
+        b'charCount="2000" wordCount="400" paraCount="16" cursorPos="0"/><name status="s000000" '
+        b'import="i000004" active="True">Jane Doe</name></item>'
         b'</content>'
         b'</novelWriterXML>'
     )

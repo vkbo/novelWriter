@@ -73,7 +73,7 @@ class GuiDocEditor(QTextEdit):
     loadDocumentTagRequest = pyqtSignal(str, Enum)
 
     def __init__(self, mainGui):
-        QTextEdit.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiDocEditor ...")
 
@@ -303,10 +303,7 @@ class GuiDocEditor(QTextEdit):
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Refresh the tab stops
-        if self.mainConf.verQtValue >= 51000:
-            self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:  # pragma: no cover
-            self.setTabStopWidth(self.mainConf.getTabWidth())
+        self.setTabStopDistance(self.mainConf.getTabWidth())
 
         # Initialise the syntax highlighter
         self.highLight.initHighlighter()
@@ -511,12 +508,12 @@ class GuiDocEditor(QTextEdit):
 
         self.setDocumentChanged(False)
 
-        oldHeader = self.theProject.index.getHandleHeaderLevel(tHandle)
+        oldHeader = self._nwItem.mainHeading
         self.theProject.index.scanText(tHandle, docText)
-        newHeader = self.theProject.index.getHandleHeaderLevel(tHandle)
+        newHeader = self._nwItem.mainHeading
 
         # ToDo: This should be a signal
-        if self._updateHeaders(checkLevel=True):
+        if self._updateHeaders():
             self.mainGui.requestNovelTreeRefresh()
         else:
             self.mainGui.novelView.updateWordCounts(tHandle)
@@ -604,19 +601,15 @@ class GuiDocEditor(QTextEdit):
     ##
 
     def getText(self):
-        """Get the text content of the current document. This method
-        uses QTextEdit->toPlainText for Qt versions lower than 5.9, and
-        the QTextDocument->toRawText for higher version. The latter
-        preserves non-breaking spaces, which the former does not.
-        We still want to get rid of page and line separators though.
+        """Get the text content of the current document. This method uses
+        QTextDocument->toRawText instead of toPlainText(). The former preserves
+        non-breaking spaces, the latter does not. We still want to get rid of
+        page and line separators though.
         See: https://doc.qt.io/qt-5/qtextdocument.html#toPlainText
         """
-        if self.mainConf.verQtValue >= 50900:
-            theText = self.document().toRawText()
-            theText = theText.replace(nwUnicode.U_LSEP, "\n")  # Line separators
-            theText = theText.replace(nwUnicode.U_PSEP, "\n")  # Paragraph separators
-        else:
-            theText = self.toPlainText()
+        theText = self.document().toRawText()
+        theText = theText.replace(nwUnicode.U_LSEP, "\n")  # Line separators
+        theText = theText.replace(nwUnicode.U_PSEP, "\n")  # Paragraph separators
         return theText
 
     def getCursorPosition(self):
@@ -671,7 +664,7 @@ class GuiDocEditor(QTextEdit):
             if theBlock:
                 self.setCursorPosition(theBlock.position())
                 self.docFooter.updateLineCount()
-                logger.verbose("Cursor moved to line %d", theLine)
+                logger.debug("Cursor moved to line %d", theLine)
 
         return True
 
@@ -725,7 +718,7 @@ class GuiDocEditor(QTextEdit):
         if not self._bigDoc:
             self.spellCheckDocument()
 
-        logger.verbose("Spell check is set to '%s'", str(theMode))
+        logger.debug("Spell check is set to '%s'", str(theMode))
 
         return True
 
@@ -735,7 +728,7 @@ class GuiDocEditor(QTextEdit):
         of Qt 5.13, is to clear the text and put it back. This clears
         the undo stack, so we only do it for big documents.
         """
-        logger.verbose("Running spell checker")
+        logger.debug("Running spell checker")
         if self._spellCheck:
             bfTime = time()
             qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -747,7 +740,7 @@ class GuiDocEditor(QTextEdit):
             qApp.restoreOverrideCursor()
             afTime = time()
             logger.debug("Document highlighted in %.3f ms", 1000*(afTime-bfTime))
-            self.mainGui.statusBar.setStatus(self.tr("Spell check complete"))
+            self.mainGui.mainStatus.setStatus(self.tr("Spell check complete"))
 
         return True
 
@@ -770,7 +763,7 @@ class GuiDocEditor(QTextEdit):
             logger.error("Not a document action")
             return False
 
-        logger.verbose("Requesting action: %s", theAction.name)
+        logger.debug("Requesting action: %s", theAction.name)
 
         self._allowAutoReplace(False)
         if theAction == nwDocAction.UNDO:
@@ -951,7 +944,7 @@ class GuiDocEditor(QTextEdit):
             logger.error("Invalid keyword '%s'", keyWord)
             return False
 
-        logger.verbose("Inserting keyword '%s'", keyWord)
+        logger.debug("Inserting keyword '%s'", keyWord)
         theState = self.insertNewBlock("%s: " % keyWord)
 
         return theState
@@ -1003,7 +996,7 @@ class GuiDocEditor(QTextEdit):
         if self.mainConf.autoScroll:
 
             cOld = self.cursorRect().center().y()
-            QTextEdit.keyPressEvent(self, keyEvent)
+            super().keyPressEvent(keyEvent)
 
             kMod = keyEvent.modifiers()
             okMod = kMod == Qt.NoModifier or kMod == Qt.ShiftModifier
@@ -1022,7 +1015,7 @@ class GuiDocEditor(QTextEdit):
                     doAnim.start()
 
         else:
-            QTextEdit.keyPressEvent(self, keyEvent)
+            super().keyPressEvent(keyEvent)
 
         self.docFooter.updateLineCount()
 
@@ -1049,7 +1042,7 @@ class GuiDocEditor(QTextEdit):
             theCursor = self.cursorForPosition(theEvent.pos())
             self._followTag(theCursor)
 
-        QTextEdit.mouseReleaseEvent(self, theEvent)
+        super().mouseReleaseEvent(theEvent)
         self.docFooter.updateLineCount()
 
         return
@@ -1059,7 +1052,7 @@ class GuiDocEditor(QTextEdit):
         has its margins adjusted according to user preferences.
         """
         self.updateDocMargins()
-        QTextEdit.resizeEvent(self, theEvent)
+        super().resizeEvent(theEvent)
         return
 
     ##
@@ -1179,7 +1172,7 @@ class GuiDocEditor(QTextEdit):
             spellCheck &= theWord != ""
 
         if spellCheck:
-            logger.verbose("Looking up '%s' in the dictionary", theWord)
+            logger.debug("Looking up '%s' in the dictionary", theWord)
             spellCheck &= not self.spEnchant.checkWord(theWord)
 
         if spellCheck:
@@ -1245,11 +1238,11 @@ class GuiDocEditor(QTextEdit):
             return
 
         if self.wCounterDoc.isRunning():
-            logger.verbose("Word counter is busy")
+            logger.debug("Word counter is busy")
             return
 
         if time() - self._lastEdit < 5 * self.wcInterval:
-            logger.verbose("Running word counter")
+            logger.debug("Running word counter")
             self.mainGui.threadPool.start(self.wCounterDoc)
 
         return
@@ -1261,7 +1254,7 @@ class GuiDocEditor(QTextEdit):
         if self._docHandle is None or self._nwItem is None:
             return
 
-        logger.verbose("Updating word count")
+        logger.debug("Updating word count")
 
         self._charCount = cCount
         self._wordCount = wCount
@@ -1304,7 +1297,7 @@ class GuiDocEditor(QTextEdit):
             return
 
         if self.wCounterSel.isRunning():
-            logger.verbose("Selection word counter is busy")
+            logger.debug("Selection word counter is busy")
             return
 
         self.mainGui.threadPool.start(self.wCounterSel)
@@ -1318,7 +1311,7 @@ class GuiDocEditor(QTextEdit):
         if self._docHandle is None or self._nwItem is None:
             return
 
-        logger.verbose("User selectee %d words", wCount)
+        logger.debug("User selectee %d words", wCount)
         self.docFooter.updateCounts(wCount=wCount, cCount=cCount)
         self.wcTimerSel.stop()
 
@@ -1336,11 +1329,11 @@ class GuiDocEditor(QTextEdit):
                 QPointF(theSize.width(), theSize.height()), Qt.FuzzyHit
             )
             if self._queuePos <= thePos:
-                logger.verbose("Allowed cursor move to %d <= %d", self._queuePos, thePos)
+                logger.debug("Allowed cursor move to %d <= %d", self._queuePos, thePos)
                 self.setCursorPosition(self._queuePos)
                 self._queuePos = None
             else:
-                logger.verbose("Denied cursor move to %d > %d", self._queuePos, thePos)
+                logger.debug("Denied cursor move to %d > %d", self._queuePos, thePos)
 
         return
 
@@ -1527,7 +1520,7 @@ class GuiDocEditor(QTextEdit):
             theCursor.endEditBlock()
             theCursor.setPosition(theCursor.selectionEnd())
             self.setTextCursor(theCursor)
-            logger.verbose(
+            logger.debug(
                 "Replaced occurrence of '%s' with '%s' on line %d",
                 searchFor, replWith, theCursor.blockNumber()
             )
@@ -1905,10 +1898,10 @@ class GuiDocEditor(QTextEdit):
                 return False
 
             if loadTag:
-                logger.verbose("Attempting to follow tag '%s'", theWord)
+                logger.debug("Attempting to follow tag '%s'", theWord)
                 self.loadDocumentTagRequest.emit(theWord, nwDocMode.VIEW)
             else:
-                logger.verbose("Potential tag '%s'", theWord)
+                logger.debug("Potential tag '%s'", theWord)
 
             return True
 
@@ -1992,13 +1985,22 @@ class GuiDocEditor(QTextEdit):
             nDelete = 3
             tInsert = nwUnicode.U_HELLIP
 
+        elif theOne == nwUnicode.U_LSEP:
+            # This resolves issue #1150
+            nDelete = 1
+            tInsert = nwUnicode.U_PSEP
+
         tCheck = tInsert
-        if tCheck in self.mainConf.fmtPadBefore:
+        if self.mainConf.fmtPadBefore and tCheck in self.mainConf.fmtPadBefore:
             if self._allowSpaceBeforeColon(theText, tCheck):
                 nDelete = max(nDelete, 1)
+                chkPos = thePos - nDelete - 1
+                if chkPos >= 0 and theText[chkPos].isspace():
+                    # Strip existing space before inserting a new (#1061)
+                    nDelete += 1
                 tInsert = self._typPadChar + tInsert
 
-        if tCheck in self.mainConf.fmtPadAfter:
+        if self.mainConf.fmtPadAfter and tCheck in self.mainConf.fmtPadAfter:
             if self._allowSpaceBeforeColon(theText, tCheck):
                 nDelete = max(nDelete, 1)
                 tInsert = tInsert + self._typPadChar
@@ -2023,7 +2025,7 @@ class GuiDocEditor(QTextEdit):
                     return False
         return True
 
-    def _updateHeaders(self, checkPos=False, checkLevel=False):
+    def _updateHeaders(self):
         """Update the headers record and return True if anything
         changed, if a check flag was provided.
         """
@@ -2031,21 +2033,12 @@ class GuiDocEditor(QTextEdit):
             return False
 
         newHeaders = self.theProject.index.getHandleHeaders(self._docHandle)
-        if checkPos:
-            newPos = [x[0] for x in newHeaders]
-            oldPos = [x[0] for x in self._docHeaders]
-        if checkLevel:
-            newLev = [x[1] for x in newHeaders]
-            oldLev = [x[1] for x in self._docHeaders]
+        newLev = [x[1] for x in newHeaders]
+        oldLev = [x[1] for x in self._docHeaders]
 
         self._docHeaders = newHeaders
 
-        if checkPos:
-            return newPos != oldPos
-        if checkLevel:
-            return newLev != oldLev
-
-        return False
+        return newLev != oldLev
 
     def _checkDocSize(self, theSize):
         """Check if document size crosses the big document limit set in
@@ -2152,7 +2145,7 @@ class GuiDocEditor(QTextEdit):
 class BackgroundWordCounter(QRunnable):
 
     def __init__(self, docEditor, forSelection=False):
-        QRunnable.__init__(self)
+        super().__init__()
 
         self._docEditor = docEditor
         self._forSelection = forSelection
@@ -2202,7 +2195,7 @@ class BackgroundWordCounterSignals(QObject):
 class GuiDocEditSearch(QFrame):
 
     def __init__(self, docEditor):
-        QFrame.__init__(self, docEditor)
+        super().__init__(parent=docEditor)
 
         logger.debug("Initialising GuiDocEditSearch ...")
 
@@ -2429,7 +2422,6 @@ class GuiDocEditSearch(QFrame):
         self.searchBox.selectAll()
         if self.isRegEx:
             self._alertSearchValid(True)
-        logger.verbose("Setting search text to '%s'", theText)
         return True
 
     def setReplaceText(self, theText):
@@ -2469,7 +2461,8 @@ class GuiDocEditSearch(QFrame):
                 self._alertSearchValid(theRegEx.isValid())
                 return theRegEx
 
-            else:  # >= 50300 to < 51300
+            else:  # pragma: no cover
+                # >= 50300 to < 51300
                 if self.isCaseSense:
                     rxOpt = Qt.CaseSensitive
                 else:
@@ -2590,7 +2583,7 @@ class GuiDocEditSearch(QFrame):
 class GuiDocEditHeader(QWidget):
 
     def __init__(self, docEditor):
-        QWidget.__init__(self, docEditor)
+        super().__init__(parent=docEditor)
 
         logger.debug("Initialising GuiDocEditHeader ...")
 
@@ -2636,7 +2629,7 @@ class GuiDocEditHeader(QWidget):
         self.editButton.setStyleSheet(buttonStyle)
         self.editButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.editButton.setVisible(False)
-        self.editButton.setToolTip(self.tr("Edit document meta"))
+        self.editButton.setToolTip(self.tr("Edit document label"))
         self.editButton.clicked.connect(self._editDocument)
 
         self.searchButton = QToolButton(self)
@@ -2814,7 +2807,7 @@ class GuiDocEditHeader(QWidget):
 class GuiDocEditFooter(QWidget):
 
     def __init__(self, docEditor):
-        QWidget.__init__(self, docEditor)
+        super().__init__(parent=docEditor)
 
         logger.debug("Initialising GuiDocEditFooter ...")
 
@@ -2942,7 +2935,7 @@ class GuiDocEditFooter(QWidget):
         """
         self._docHandle = tHandle
         if self._docHandle is None:
-            logger.verbose("No handle set, so clearing the editor footer")
+            logger.debug("No handle set, so clearing the editor footer")
             self._theItem = None
         else:
             self._theItem = self.theProject.tree[self._docHandle]
@@ -2969,8 +2962,7 @@ class GuiDocEditFooter(QWidget):
         else:
             theStatus, theIcon = self._theItem.getImportStatus()
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            hLevel = self.theProject.index.getHandleHeaderLevel(self._docHandle)
-            sText = f"{theStatus} / {self._theItem.describeMe(hLevel)}"
+            sText = f"{theStatus} / {self._theItem.describeMe()}"
 
         self.statusIcon.setPixmap(sIcon)
         self.statusText.setText(sText)

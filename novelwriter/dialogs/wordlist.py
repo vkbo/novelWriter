@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 class GuiWordList(QDialog):
 
     def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiWordList ...")
         self.setObjectName("GuiWordList")
@@ -156,7 +156,9 @@ class GuiWordList(QDialog):
         try:
             with open(tmpFile, mode="w", encoding="utf-8") as outFile:
                 for i in range(self.listBox.count()):
-                    outFile.write(self.listBox.item(i).text() + "\n")
+                    item = self.listBox.item(i)
+                    if item is not None:
+                        outFile.write(item.text() + "\n")
 
         except Exception:
             logger.error("Could not save new word list")

@@ -34,8 +34,8 @@ from PyQt5.QtWidgets import (
     QSpinBox
 )
 
-from novelwriter.gui.custom import QSwitch
 from novelwriter.common import readTextFile
+from novelwriter.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 class GuiLipsum(QDialog):
 
     def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiLipsum ...")
         self.setObjectName("GuiLipsum")

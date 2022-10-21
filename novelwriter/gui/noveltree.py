@@ -63,7 +63,7 @@ class GuiNovelView(QWidget):
     openDocumentRequest = pyqtSignal(str, Enum, int, str)
 
     def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
@@ -166,7 +166,7 @@ class GuiNovelView(QWidget):
 class GuiNovelToolBar(QWidget):
 
     def __init__(self, novelView):
-        QTreeWidget.__init__(self, novelView)
+        super().__init__(parent=novelView)
 
         logger.debug("Initialising GuiNovelToolBar ...")
 
@@ -333,7 +333,7 @@ class GuiNovelTree(QTreeWidget):
     D_KEY    = Qt.UserRole + 2
 
     def __init__(self, novelView):
-        QTreeWidget.__init__(self, novelView)
+        super().__init__(parent=novelView)
 
         logger.debug("Initialising GuiNovelTree ...")
 
@@ -390,13 +390,6 @@ class GuiNovelTree(QTreeWidget):
         fH2.setBold(True)
 
         self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
-        self._pIndent = [
-            self.mainTheme.loadDecoration("deco_doc_h0", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h1", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h2", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h3", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h4", pxH=iPx),
-        ]
         self._pMore = self.mainTheme.loadDecoration("deco_doc_more", pxH=iPx)
 
         # Connect signals
@@ -450,14 +443,14 @@ class GuiNovelTree(QTreeWidget):
     def refreshTree(self, rootHandle=None, overRide=False):
         """Called whenever the Novel tab is activated.
         """
-        logger.verbose("Requesting refresh of the novel tree")
+        logger.debug("Requesting refresh of the novel tree")
         if rootHandle is None:
             rootHandle = self.theProject.tree.findRoot(nwItemClass.NOVEL)
 
         treeChanged = self.mainGui.projView.changedSince(self._lastBuild)
         indexChanged = self.theProject.index.rootChangedSince(rootHandle, self._lastBuild)
         if not (treeChanged or indexChanged or overRide):
-            logger.verbose("No changes have been made to the novel index")
+            logger.debug("No changes have been made to the novel index")
             return
 
         selItem = self.selectedItems()
@@ -515,18 +508,19 @@ class GuiNovelTree(QTreeWidget):
         self._actHandle = tHandle
         for i in range(self.topLevelItemCount()):
             tItem = self.topLevelItem(i)
-            if tItem.data(self.C_TITLE, self.D_HANDLE) == tHandle:
-                tItem.setBackground(self.C_TITLE, self.palette().alternateBase())
-                tItem.setBackground(self.C_WORDS, self.palette().alternateBase())
-                tItem.setBackground(self.C_EXTRA, self.palette().alternateBase())
-                tItem.setBackground(self.C_MORE, self.palette().alternateBase())
-            else:
-                tItem.setBackground(self.C_TITLE, self.palette().base())
-                tItem.setBackground(self.C_WORDS, self.palette().base())
-                tItem.setBackground(self.C_EXTRA, self.palette().base())
-                tItem.setBackground(self.C_MORE, self.palette().base())
+            if tItem is not None:
+                if tItem.data(self.C_TITLE, self.D_HANDLE) == tHandle:
+                    tItem.setBackground(self.C_TITLE, self.palette().alternateBase())
+                    tItem.setBackground(self.C_WORDS, self.palette().alternateBase())
+                    tItem.setBackground(self.C_EXTRA, self.palette().alternateBase())
+                    tItem.setBackground(self.C_MORE, self.palette().alternateBase())
+                else:
+                    tItem.setBackground(self.C_TITLE, self.palette().base())
+                    tItem.setBackground(self.C_WORDS, self.palette().base())
+                    tItem.setBackground(self.C_EXTRA, self.palette().base())
+                    tItem.setBackground(self.C_MORE, self.palette().base())
 
-        logger.verbose("Highlighted Novel Tree in %.3f ms", (time() - tStart)*1000)
+        logger.debug("Highlighted Novel Tree in %.3f ms", (time() - tStart)*1000)
 
         return
 
@@ -539,7 +533,7 @@ class GuiNovelTree(QTreeWidget):
         mouse in a blank area of the tree view, and to load a document
         for viewing if the user middle-clicked.
         """
-        QTreeWidget.mousePressEvent(self, theEvent)
+        super().mousePressEvent(theEvent)
 
         if theEvent.button() == Qt.LeftButton:
             selItem = self.indexAt(theEvent.pos())
@@ -562,7 +556,7 @@ class GuiNovelTree(QTreeWidget):
     def focusOutEvent(self, theEvent):
         """Clear the selection when the tree no longer has focus.
         """
-        QTreeWidget.focusOutEvent(self, theEvent)
+        super().focusOutEvent(theEvent)
         self.clearSelection()
         return
 
@@ -610,7 +604,7 @@ class GuiNovelTree(QTreeWidget):
         """
         self.clearContent()
         tStart = time()
-        logger.verbose("Building novel tree for root item '%s'", rootHandle)
+        logger.debug("Building novel tree for root item '%s'", rootHandle)
 
         novStruct = self.theProject.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
         for tKey, tHandle, sTitle, novIdx in novStruct:
@@ -619,8 +613,10 @@ class GuiNovelTree(QTreeWidget):
             if iLevel == 0:
                 continue
 
+            hDec = self.mainTheme.getHeaderDecoration(iLevel)
+
             newItem = QTreeWidgetItem()
-            newItem.setData(self.C_TITLE, Qt.DecorationRole, self._pIndent[iLevel])
+            newItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
             newItem.setText(self.C_TITLE, novIdx.title)
             newItem.setData(self.C_TITLE, self.D_HANDLE, tHandle)
             newItem.setData(self.C_TITLE, self.D_TITLE, sTitle)
@@ -641,7 +637,7 @@ class GuiNovelTree(QTreeWidget):
 
         self.setActiveHandle(self._actHandle)
 
-        logger.verbose("Novel Tree built in %.3f ms", (time() - tStart)*1000)
+        logger.debug("Novel Tree built in %.3f ms", (time() - tStart)*1000)
         self._lastBuild = time()
 
         return

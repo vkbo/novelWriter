@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.enum import nwAlert
 from novelwriter.common import simplified
-from novelwriter.gui.custom import QSwitch, PagedDialog, QConfigLayout
+from novelwriter.custom import QSwitch, PagedDialog, QConfigLayout
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 class GuiProjectSettings(PagedDialog):
 
     def __init__(self, mainGui):
-        PagedDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiProjectSettings ...")
         self.setObjectName("GuiProjectSettings")
@@ -67,10 +67,10 @@ class GuiProjectSettings(PagedDialog):
             self.mainConf.pxInt(pOptions.getInt("GuiProjectSettings", "winHeight", wH))
         )
 
-        self.tabMain    = GuiProjectEditMain(self.mainGui, self.theProject)
-        self.tabStatus  = GuiProjectEditStatus(self.mainGui, self.theProject, True)
-        self.tabImport  = GuiProjectEditStatus(self.mainGui, self.theProject, False)
-        self.tabReplace = GuiProjectEditReplace(self.mainGui, self.theProject)
+        self.tabMain    = GuiProjectEditMain(self)
+        self.tabStatus  = GuiProjectEditStatus(self, True)
+        self.tabImport  = GuiProjectEditStatus(self, False)
+        self.tabReplace = GuiProjectEditReplace(self)
 
         self.addTab(self.tabMain,    self.tr("Settings"))
         self.addTab(self.tabStatus,  self.tr("Status"))
@@ -96,8 +96,6 @@ class GuiProjectSettings(PagedDialog):
     def _doSave(self):
         """Save settings and close dialog.
         """
-        logger.verbose("GuiProjectSettings save button clicked")
-
         projName    = self.tabMain.editName.text()
         bookTitle   = self.tabMain.editTitle.text()
         bookAuthors = self.tabMain.editAuthors.toPlainText()
@@ -166,12 +164,12 @@ class GuiProjectSettings(PagedDialog):
 
 class GuiProjectEditMain(QWidget):
 
-    def __init__(self, mainGui, theProject):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, projGui):
+        super().__init__(parent=projGui)
 
         self.mainConf   = novelwriter.CONFIG
-        self.mainGui    = mainGui
-        self.theProject = theProject
+        self.mainGui    = projGui.mainGui
+        self.theProject = projGui.theProject
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -256,13 +254,13 @@ class GuiProjectEditStatus(QWidget):
     COL_ROLE = Qt.UserRole + 1
     NUM_ROLE = Qt.UserRole + 2
 
-    def __init__(self, mainGui, theProject, isStatus):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, projGui, isStatus):
+        super().__init__(parent=projGui)
 
         self.mainConf   = novelwriter.CONFIG
-        self.mainGui    = mainGui
-        self.theProject = theProject
-        self.mainTheme  = mainGui.mainTheme
+        self.mainGui    = projGui.mainGui
+        self.theProject = projGui.theProject
+        self.mainTheme  = projGui.mainGui.mainTheme
 
         if isStatus:
             self.theStatus = self.theProject.statusItems
@@ -367,11 +365,12 @@ class GuiProjectEditStatus(QWidget):
             newList = []
             for n in range(self.listBox.topLevelItemCount()):
                 item = self.listBox.topLevelItem(n)
-                newList.append({
-                    "key":  item.data(self.COL_LABEL, self.KEY_ROLE),
-                    "name": item.text(self.COL_LABEL),
-                    "cols": item.data(self.COL_LABEL, self.COL_ROLE),
-                })
+                if item is not None:
+                    newList.append({
+                        "key":  item.data(self.COL_LABEL, self.KEY_ROLE),
+                        "name": item.text(self.COL_LABEL),
+                        "cols": item.data(self.COL_LABEL, self.COL_ROLE),
+                    })
             return newList, self.colDeleted
 
         return [], []
@@ -470,7 +469,8 @@ class GuiProjectEditStatus(QWidget):
         self.listBox.insertTopLevelItem(nIndex, cItem)
         self.listBox.clearSelection()
 
-        cItem.setSelected(True)
+        if cItem is not None:
+            cItem.setSelected(True)
         self.colChanged = True
 
         return
@@ -527,13 +527,13 @@ class GuiProjectEditReplace(QWidget):
     COL_KEY  = 0
     COL_REPL = 1
 
-    def __init__(self, mainGui, theProject):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, projGui):
+        super().__init__(parent=projGui)
 
         self.mainConf   = novelwriter.CONFIG
-        self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
-        self.theProject = theProject
+        self.mainGui    = projGui.mainGui
+        self.mainTheme  = projGui.mainGui.mainTheme
+        self.theProject = projGui.theProject
         self.arChanged  = False
 
         wCol0 = self.mainConf.pxInt(
@@ -619,10 +619,11 @@ class GuiProjectEditReplace(QWidget):
         newList = {}
         for n in range(self.listBox.topLevelItemCount()):
             tItem = self.listBox.topLevelItem(n)
-            aKey = self._stripNotAllowed(tItem.text(0))
-            aVal = tItem.text(1)
-            if len(aKey) > 0:
-                newList[aKey] = aVal
+            if tItem is not None:
+                aKey = self._stripNotAllowed(tItem.text(0))
+                aVal = tItem.text(1)
+                if len(aKey) > 0:
+                    newList[aKey] = aVal
 
         return newList
 

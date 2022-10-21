@@ -38,7 +38,7 @@ from novelwriter.core.item import NWItem
 logger = logging.getLogger(__name__)
 
 
-class NWTree():
+class NWTree:
 
     MAX_DEPTH = 1000  # Cap of tree traversing for loops
 
@@ -89,20 +89,20 @@ class NWTree():
             logger.warning("Duplicate handle '%s' detected, skipping", tHandle)
             return False
 
-        logger.verbose("Adding item '%s' with parent '%s'", str(tHandle), str(pHandle))
+        logger.debug("Adding item '%s' with parent '%s'", str(tHandle), str(pHandle))
 
         nwItem.setHandle(tHandle)
         nwItem.setParent(pHandle)
 
         if nwItem.isRootType():
-            logger.verbose("Item '%s' is a root item", str(tHandle))
+            logger.debug("Item '%s' is a root item", str(tHandle))
             self._treeRoots[tHandle] = nwItem
             if nwItem.itemClass == nwItemClass.ARCHIVE:
-                logger.verbose("Item '%s' is the archive folder", str(tHandle))
+                logger.debug("Item '%s' is the archive folder", str(tHandle))
                 self._archRoot = tHandle
             elif nwItem.itemClass == nwItemClass.TRASH:
                 if self._trashRoot is None:
-                    logger.verbose("Item '%s' is the trash folder", str(tHandle))
+                    logger.debug("Item '%s' is the trash folder", str(tHandle))
                     self._trashRoot = tHandle
                 else:
                     logger.error("Only one trash folder allowed")
@@ -274,11 +274,13 @@ class NWTree():
         return rootClasses
 
     def iterRoots(self, itemClass):
-        """Iterate over all items of a given class.
+        """Iterate over all root items of a given class in order.
         """
-        for tHandle, nwItem in self._treeRoots.items():
-            if nwItem.itemClass == itemClass:
-                yield tHandle, nwItem
+        for tHandle in self._treeOrder:
+            nwItem = self.__getitem__(tHandle)
+            if nwItem is not None and nwItem.isRootType():
+                if itemClass is None or nwItem.itemClass == itemClass:
+                    yield tHandle, nwItem
         return
 
     def isRoot(self, tHandle):
@@ -347,7 +349,7 @@ class NWTree():
         # Save the temp list
         self._treeOrder = tmpOrder
         self._setTreeChanged(True)
-        logger.verbose("Project tree order updated")
+        logger.debug("Project tree order updated")
 
         return
 
@@ -457,7 +459,7 @@ class NWTree():
         """Generate a unique item handle. In the event that the key
         already exists, generate a new one.
         """
-        logger.verbose("Generating new handle")
+        logger.debug("Generating new handle")
         handle = f"{random.getrandbits(52):013x}"
         if handle in self._projTree:
             logger.warning("Duplicate handle encountered! Retrying ...")

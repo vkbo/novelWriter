@@ -28,6 +28,22 @@ from PyQt5.QtWidgets import qApp
 XML_IGNORE = ("<novelWriterXML", "<saveCount", "<autoCount", "<editTime")
 
 
+class C:
+
+    # Handles from test project when random generator is mocked
+    hInvalid    = "0000000000000"
+    hNovelRoot  = "0000000000008"
+    hPlotRoot   = "0000000000009"
+    hCharRoot   = "000000000000a"
+    hWorldRoot  = "000000000000b"
+    hTitlePage  = "000000000000c"
+    hChapterDir = "000000000000d"
+    hChapterDoc = "000000000000e"
+    hSceneDoc   = "000000000000f"
+
+# END Class C
+
+
 def cmpFiles(fileOne, fileTwo, ignoreLines=None, ignoreStart=None):
     """Compare two files, but optionally ignore lines given by a list.
     """
@@ -157,13 +173,16 @@ def buildTestProject(theObject, projPath):
     xHandle[8] = theProject.newFile("New Scene", xHandle[6])
 
     aDoc = NWDoc(theProject, xHandle[5])
-    aDoc.writeDocument("#! New Novel\n\n>> By Jane DOe <<\n")
+    aDoc.writeDocument("#! New Novel\n\n>> By Jane Doe <<\n")
+    theProject.index.reIndexHandle(xHandle[5])
 
     aDoc = NWDoc(theProject, xHandle[7])
     aDoc.writeDocument("## %s\n\n" % theProject.tr("New Chapter"))
+    theProject.index.reIndexHandle(xHandle[7])
 
     aDoc = NWDoc(theProject, xHandle[8])
     aDoc.writeDocument("### %s\n\n" % theProject.tr("New Scene"))
+    theProject.index.reIndexHandle(xHandle[8])
 
     theProject.projOpened = time.time()
     theProject.setProjectChanged(True)
@@ -172,6 +191,5 @@ def buildTestProject(theObject, projPath):
     if theGUI is not None:
         theGUI.hasProject = True
         theGUI.rebuildTrees()
-        theGUI.rebuildIndex(beQuiet=True)
 
     return

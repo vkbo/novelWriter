@@ -40,9 +40,13 @@ logger = logging.getLogger(__name__)
 
 
 class GuiMainMenu(QMenuBar):
+    """The GUI main menu. All menu actions are defined here with the
+    main menu as the owner. Each widget that need them elsewhere need to
+    add them from this class.
+    """
 
     def __init__(self, mainGui):
-        QMenuBar.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiMainMenu ...")
         self.mainConf   = novelwriter.CONFIG
@@ -77,12 +81,6 @@ class GuiMainMenu(QMenuBar):
         """Forward spell check check state to its action.
         """
         self.aSpellCheck.setChecked(theMode)
-        return
-
-    def setFocusMode(self, theMode):
-        """Forward focus mode check state to its action.
-        """
-        self.aFocusMode.setChecked(theMode)
         return
 
     ##
@@ -164,14 +162,14 @@ class GuiMainMenu(QMenuBar):
 
         # Project > Edit
         self.aEditItem = QAction(self.tr("Rename Item"), self)
-        self.aEditItem.setShortcuts(["F2"])
+        self.aEditItem.setShortcut("F2")
         self.aEditItem.triggered.connect(lambda: self.mainGui.editItemLabel(None))
         self.projMenu.addAction(self.aEditItem)
 
         # Project > Delete
         self.aDeleteItem = QAction(self.tr("Delete Item"), self)
         self.aDeleteItem.setShortcut("Ctrl+Shift+Del")
-        self.aDeleteItem.triggered.connect(lambda: self.mainGui.projView.deleteItem(None))
+        self.aDeleteItem.triggered.connect(lambda: self.mainGui.projView.requestDeleteItem(None))
         self.projMenu.addAction(self.aDeleteItem)
 
         # Project > Empty Trash
@@ -243,16 +241,6 @@ class GuiMainMenu(QMenuBar):
         self.aImportFile.setShortcut("Ctrl+Shift+I")
         self.aImportFile.triggered.connect(lambda: self.mainGui.importDocument())
         self.docuMenu.addAction(self.aImportFile)
-
-        # Document > Merge Documents
-        self.aMergeDocs = QAction(self.tr("Merge Folder to Document"), self)
-        self.aMergeDocs.triggered.connect(lambda: self.mainGui.mergeDocuments())
-        self.docuMenu.addAction(self.aMergeDocs)
-
-        # Document > Split Document
-        self.aSplitDoc = QAction(self.tr("Split Document to Folder"), self)
-        self.aSplitDoc.triggered.connect(lambda: self.mainGui.splitDocument())
-        self.docuMenu.addAction(self.aSplitDoc)
 
         return
 
@@ -375,8 +363,6 @@ class GuiMainMenu(QMenuBar):
         # View > Focus Mode
         self.aFocusMode = QAction(self.tr("Focus Mode"), self)
         self.aFocusMode.setShortcut("F8")
-        self.aFocusMode.setCheckable(True)
-        self.aFocusMode.setChecked(self.mainGui.isFocusMode)
         self.aFocusMode.triggered.connect(lambda: self.mainGui.toggleFocusMode())
         self.viewMenu.addAction(self.aFocusMode)
 

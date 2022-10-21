@@ -25,8 +25,8 @@ from lxml import etree
 
 from PyQt5.QtGui import QIcon
 
-from novelwriter.core import NWProject
 from novelwriter.core.item import NWItem
+from novelwriter.core.project import NWProject
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 
 
@@ -136,18 +136,18 @@ def testCoreItem_Setters(mockGUI, mockRnd):
     assert theItem.isExpanded is True
 
     # Exported
-    theItem.setExported(8)
-    assert theItem.isExported is False
-    theItem.setExported(None)
-    assert theItem.isExported is False
-    theItem.setExported("None")
-    assert theItem.isExported is False
-    theItem.setExported("What?")
-    assert theItem.isExported is False
-    theItem.setExported("True")
-    assert theItem.isExported is True
-    theItem.setExported(True)
-    assert theItem.isExported is True
+    theItem.setActive(8)
+    assert theItem.isActive is False
+    theItem.setActive(None)
+    assert theItem.isActive is False
+    theItem.setActive("None")
+    assert theItem.isActive is False
+    theItem.setActive("What?")
+    assert theItem.isActive is False
+    theItem.setActive("True")
+    assert theItem.isActive is True
+    theItem.setActive(True)
+    assert theItem.isActive is True
 
     # CharCount
     theItem.setCharCount(None)
@@ -213,12 +213,34 @@ def testCoreItem_Methods(mockGUI):
     theItem.setLayout("DOCUMENT")
     assert theItem.isFileType() is True
     assert theItem.isDocumentLayout() is True
+
+    theItem.setMainHeading("HH")
+    assert theItem.mainHeading == "H0"
     assert theItem.describeMe() == "Novel Document"
-    assert theItem.describeMe("H0") == "Novel Document"
-    assert theItem.describeMe("H1") == "Novel Title Page"
-    assert theItem.describeMe("H2") == "Novel Chapter"
-    assert theItem.describeMe("H3") == "Novel Scene"
-    assert theItem.describeMe("H4") == "Novel Document"
+
+    theItem.setMainHeading("H0")
+    assert theItem.mainHeading == "H0"
+    assert theItem.describeMe() == "Novel Document"
+
+    theItem.setMainHeading("H1")
+    assert theItem.mainHeading == "H1"
+    assert theItem.describeMe() == "Novel Title Page"
+
+    theItem.setMainHeading("H2")
+    assert theItem.mainHeading == "H2"
+    assert theItem.describeMe() == "Novel Chapter"
+
+    theItem.setMainHeading("H3")
+    assert theItem.mainHeading == "H3"
+    assert theItem.describeMe() == "Novel Scene"
+
+    theItem.setMainHeading("H4")
+    assert theItem.mainHeading == "H4"
+    assert theItem.describeMe() == "Novel Section"
+
+    theItem.setMainHeading("H5")
+    assert theItem.mainHeading == "H4"
+    assert theItem.describeMe() == "Novel Section"
 
     theItem.setLayout("NOTE")
     assert theItem.isNoteLayout() is True
@@ -491,7 +513,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, mockRnd):
     theItem.setType("FILE")
     theItem.setImport(importKeys[3])
     theItem.setLayout("NOTE")
-    theItem.setExported(False)
+    theItem.setActive(False)
     theItem.setParaCount(3)
     theItem.setWordCount(5)
     theItem.setCharCount(7)
@@ -503,9 +525,9 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, mockRnd):
     assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
         b'<content>'
         b'<item handle="0123456789abc" parent="0123456789abc" root="0123456789abc" order="1" '
-        b'type="FILE" class="NOVEL" layout="NOTE"><meta expanded="False" charCount="7" '
-        b'wordCount="5" paraCount="3" cursorPos="11"/><name status="None" import="%s" '
-        b'exported="False">A Name</name></item>'
+        b'type="FILE" class="NOVEL" layout="NOTE"><meta expanded="False" mainHeading="H0" '
+        b'charCount="7" wordCount="5" paraCount="3" cursorPos="11"/><name status="None" '
+        b'import="%s" active="False">A Name</name></item>'
         b'</content>'
     ) % bytes(importKeys[3], encoding="utf8")
 
@@ -516,7 +538,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, mockRnd):
     assert theItem.itemParent == "0123456789abc"
     assert theItem.itemRoot == "0123456789abc"
     assert theItem.itemOrder == 1
-    assert theItem.isExported is False
+    assert theItem.isActive is False
     assert theItem.paraCount == 3
     assert theItem.wordCount == 5
     assert theItem.charCount == 7
@@ -541,7 +563,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, mockRnd):
     theItem.setStatus(statusKeys[1])
     theItem.setLayout("NOTE")
     theItem.setExpanded(True)
-    theItem.setExported(False)
+    theItem.setActive(False)
     theItem.setParaCount(3)
     theItem.setWordCount(5)
     theItem.setCharCount(7)
@@ -566,7 +588,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, mockRnd):
     assert theItem.itemRoot == "0123456789abc"
     assert theItem.itemOrder == 1
     assert theItem.isExpanded is True
-    assert theItem.isExported is True
+    assert theItem.isActive is True
     assert theItem.paraCount == 0
     assert theItem.wordCount == 0
     assert theItem.charCount == 0
@@ -673,7 +695,7 @@ def testCoreItem_ConvertFromFmt13(mockGUI):
     assert theItem.itemParent == "b000000000001"
     assert theItem.itemOrder == 1
     assert theItem.isExpanded is True
-    assert theItem.isExported is True
+    assert theItem.isActive is True
     assert theItem.charCount == 0
     assert theItem.wordCount == 0
     assert theItem.paraCount == 0
@@ -706,7 +728,7 @@ def testCoreItem_ConvertFromFmt13(mockGUI):
     assert theItem.itemParent == "a000000000001"
     assert theItem.itemOrder == 2
     assert theItem.isExpanded is False
-    assert theItem.isExported is True
+    assert theItem.isActive is True
     assert theItem.charCount == 600
     assert theItem.wordCount == 100
     assert theItem.paraCount == 6

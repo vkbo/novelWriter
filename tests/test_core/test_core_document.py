@@ -25,8 +25,9 @@ import pytest
 from mock import causeOSError
 from tools import readFile, writeFile
 
-from novelwriter.core import NWProject, NWDoc
 from novelwriter.enum import nwItemClass, nwItemLayout
+from novelwriter.core.project import NWProject
+from novelwriter.core.document import NWDoc
 
 
 @pytest.mark.core

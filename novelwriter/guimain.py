@@ -44,8 +44,8 @@ from novelwriter.gui import (
     GuiViewsBar
 )
 from novelwriter.dialogs import (
-    GuiAbout, GuiDocMerge, GuiDocSplit, GuiPreferences, GuiProjectDetails,
-    GuiProjectLoad, GuiProjectSettings, GuiUpdates, GuiWordList
+    GuiAbout, GuiPreferences, GuiProjectDetails, GuiProjectLoad,
+    GuiProjectSettings, GuiUpdates, GuiWordList
 )
 from novelwriter.tools import (
     GuiBuildNovel, GuiLipsum, GuiProjectWizard, GuiWritingStats
@@ -55,6 +55,7 @@ from novelwriter.enum import (
     nwDocMode, nwItemType, nwItemClass, nwAlert, nwWidget, nwState, nwView
 )
 from novelwriter.common import getGuiItem, hexToInt
+from novelwriter.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ logger = logging.getLogger(__name__)
 class GuiMain(QMainWindow):
 
     def __init__(self):
-        QMainWindow.__init__(self)
+        super().__init__()
 
         logger.debug("Initialising GUI ...")
         self.setObjectName("GuiMain")
@@ -104,7 +105,7 @@ class GuiMain(QMainWindow):
         hWd = self.mainConf.pxInt(4)
 
         # Main GUI Elements
-        self.statusBar   = GuiMainStatus(self)
+        self.mainStatus  = GuiMainStatus(self)
         self.projView    = GuiProjectView(self)
         self.novelView   = GuiNovelView(self)
         self.docEditor   = GuiDocEditor(self)
@@ -189,8 +190,9 @@ class GuiMain(QMainWindow):
         # Set Main Window Elements
         self.setMenuBar(self.mainMenu)
         self.setCentralWidget(self.mainStack)
-        self.setStatusBar(self.statusBar)
+        self.setStatusBar(self.mainStatus)
         self.addToolBar(Qt.LeftToolBarArea, self.viewsBar)
+        self.setContextMenuPolicy(Qt.NoContextMenu)  # Issue #1147
 
         # Connect Signals
         # ===============
@@ -205,12 +207,13 @@ class GuiMain(QMainWindow):
         self.projView.treeItemChanged.connect(self.itemDetails.updateViewBox)
         self.projView.rootFolderChanged.connect(self.outlineView.updateRootItem)
         self.projView.rootFolderChanged.connect(self.novelView.updateRootItem)
+        self.projView.rootFolderChanged.connect(self.projView.updateRootItem)
 
         self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.novelView.openDocumentRequest.connect(self._openDocument)
 
-        self.docEditor.spellDictionaryChanged.connect(self.statusBar.setLanguage)
-        self.docEditor.docEditedStatusChanged.connect(self.statusBar.doUpdateDocumentStatus)
+        self.docEditor.spellDictionaryChanged.connect(self.mainStatus.setLanguage)
+        self.docEditor.docEditedStatusChanged.connect(self.mainStatus.doUpdateDocumentStatus)
         self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
         self.docEditor.docCountsChanged.connect(self.projView.updateCounts)
         self.docEditor.loadDocumentTagRequest.connect(self._followTag)
@@ -252,7 +255,7 @@ class GuiMain(QMainWindow):
         keyEscape.activated.connect(self._keyPressEscape)
 
         # Forward Functions
-        self.setStatus = self.statusBar.setStatus
+        self.setStatus = self.mainStatus.setStatus
 
         # Force a show of the GUI
         self.show()
@@ -264,7 +267,7 @@ class GuiMain(QMainWindow):
         self.initMain()
         self.asProjTimer.start()
         self.asDocTimer.start()
-        self.statusBar.clearStatus()
+        self.mainStatus.clearStatus()
 
         # Handle Windows Mode
         self.showNormal()
@@ -305,7 +308,7 @@ class GuiMain(QMainWindow):
         self.outlineView.clearProject()
 
         # General
-        self.statusBar.clearStatus()
+        self.mainStatus.clearStatus()
         self._updateWindowTitle()
 
         return True
@@ -351,7 +354,7 @@ class GuiMain(QMainWindow):
             logger.error("No projData or projPath set")
             return False
 
-        if os.path.isfile(os.path.join(projPath, self.theProject.projFile)):
+        if os.path.isfile(os.path.join(projPath, nwFiles.PROJ_FILE)):
             self.makeAlert(self.tr(
                 "A project already exists in that location. "
                 "Please choose another folder."
@@ -360,18 +363,27 @@ class GuiMain(QMainWindow):
 
         logger.info("Creating new project")
         if self.theProject.newProject(projData):
+
             self.hasProject = True
+            self.idleRefTime = time()
+            self.idleTime = 0.0
+
             self.rebuildTrees()
             self.saveProject()
+
             self.docEditor.setDictionaries()
+            self.projView.openProjectTasks()
             self.novelView.openProjectTasks()
             self.outlineView.openProjectTasks()
             self.rebuildIndex(beQuiet=True)
-            self.statusBar.setRefTime(self.theProject.projOpened)
-            self.statusBar.setProjectStatus(nwState.GOOD)
-            self.statusBar.setDocumentStatus(nwState.NONE)
-            self.statusBar.setStatus(self.tr("New project created ..."))
+
+            self.mainStatus.setRefTime(self.theProject.projOpened)
+            self.mainStatus.setProjectStatus(nwState.GOOD)
+            self.mainStatus.setDocumentStatus(nwState.NONE)
+            self.mainStatus.setStatus(self.tr("New project created ..."))
+
             self._updateWindowTitle(self.theProject.projName)
+
         else:
             self.theProject.clearProject()
             return False
@@ -512,7 +524,8 @@ class GuiMain(QMainWindow):
         self.rebuildTrees()
         self.docEditor.setDictionaries()
         self.docEditor.toggleSpellCheck(self.theProject.spellCheck)
-        self.statusBar.setRefTime(self.theProject.projOpened)
+        self.mainStatus.setRefTime(self.theProject.projOpened)
+        self.projView.openProjectTasks()
         self.novelView.openProjectTasks()
         self.outlineView.openProjectTasks()
         self._updateStatusWordCount()
@@ -547,7 +560,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        self.projView.saveProjectTree()
+        self.projView.saveProjectTasks()
         if self.theProject.saveProject(autoSave=autoSave):
             self.theProject.index.saveIndex()
 
@@ -613,7 +626,7 @@ class GuiMain(QMainWindow):
         fHandle = None   # The first file handle we encounter
         foundIt = False  # We've found tHandle, pick the next we see
         for tItem in self.theProject.tree:
-            if not self.theProject.tree.checkType(tItem.itemHandle, nwItemType.FILE):
+            if tItem is None or not tItem.isFileType():
                 continue
             if fHandle is None:
                 fHandle = tItem.itemHandle
@@ -654,21 +667,18 @@ class GuiMain(QMainWindow):
             logger.debug("Viewing document, but no handle provided")
 
             if self.docEditor.hasFocus():
-                logger.verbose("Trying editor document")
                 tHandle = self.docEditor.docHandle()
 
             if tHandle is not None:
                 self.saveDocument()
             else:
-                logger.verbose("Trying selected document")
                 tHandle = self.projView.getSelectedHandle()
 
             if tHandle is None:
-                logger.verbose("Trying last viewed document")
                 tHandle = self.theProject.lastViewed
 
             if tHandle is None:
-                logger.verbose("No document to view, giving up")
+                logger.debug("No document to view, giving up")
                 return False
 
         # Make sure main tab is in Editor view
@@ -742,30 +752,6 @@ class GuiMain(QMainWindow):
                 return False
 
         self.docEditor.replaceText(theText)
-
-        return True
-
-    def mergeDocuments(self):
-        """Merge multiple documents to one single new document.
-        """
-        if not self.hasProject:
-            logger.error("No project open")
-            return False
-
-        dlgMerge = GuiDocMerge(self)
-        dlgMerge.exec_()
-
-        return True
-
-    def splitDocument(self):
-        """Split a single document into multiple documents.
-        """
-        if not self.hasProject:
-            logger.error("No project open")
-            return False
-
-        dlgSplit = GuiDocSplit(self)
-        dlgSplit.exec_()
 
         return True
 
@@ -856,14 +842,14 @@ class GuiMain(QMainWindow):
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         tStart = time()
 
-        self.projView.saveProjectTree()
+        self.projView.saveProjectTasks()
         self.theProject.index.clearIndex()
 
         for tItem in self.theProject.tree:
             if tItem is None:  # pragma: no cover
                 continue  # This is a bug trap
 
-            logger.verbose("Indexing '%s'", tItem.itemName)
+            logger.debug("Indexing '%s'", tItem.itemName)
             if self.theProject.index.reIndexHandle(tItem.itemHandle):
                 # Update Word Counts
                 self.projView.propagateCount(tItem.itemHandle, tItem.wordCount, countChildren=True)
@@ -964,6 +950,7 @@ class GuiMain(QMainWindow):
         dlgDetails = getGuiItem("GuiProjectDetails")
         if dlgDetails is None:
             dlgDetails = GuiProjectDetails(self)
+        assert isinstance(dlgDetails, GuiProjectDetails)
 
         dlgDetails.setModal(False)
         dlgDetails.show()
@@ -982,6 +969,7 @@ class GuiMain(QMainWindow):
         dlgBuild = getGuiItem("GuiBuildNovel")
         if dlgBuild is None:
             dlgBuild = GuiBuildNovel(self)
+        assert isinstance(dlgBuild, GuiBuildNovel)
 
         dlgBuild.setModal(False)
         dlgBuild.show()
@@ -1001,6 +989,7 @@ class GuiMain(QMainWindow):
         dlgLipsum = getGuiItem("GuiLipsum")
         if dlgLipsum is None:
             dlgLipsum = GuiLipsum(self)
+        assert isinstance(dlgLipsum, GuiLipsum)
 
         dlgLipsum.setModal(False)
         dlgLipsum.show()
@@ -1035,6 +1024,7 @@ class GuiMain(QMainWindow):
         dlgStats = getGuiItem("GuiWritingStats")
         if dlgStats is None:
             dlgStats = GuiWritingStats(self)
+        assert isinstance(dlgStats, GuiWritingStats)
 
         dlgStats.setModal(False)
         dlgStats.show()
@@ -1050,6 +1040,7 @@ class GuiMain(QMainWindow):
         dlgAbout = getGuiItem("GuiAbout")
         if dlgAbout is None:
             dlgAbout = GuiAbout(self)
+        assert isinstance(dlgAbout, GuiAbout)
 
         dlgAbout.setModal(True)
         dlgAbout.show()
@@ -1075,6 +1066,7 @@ class GuiMain(QMainWindow):
         dlgUpdate = getGuiItem("GuiUpdates")
         if dlgUpdate is None:
             dlgUpdate = GuiUpdates(self)
+        assert isinstance(dlgUpdate, GuiUpdates)
 
         dlgUpdate.setModal(True)
         dlgUpdate.show()
@@ -1225,11 +1217,9 @@ class GuiMain(QMainWindow):
         """
         if self.docEditor.docHandle() is None:
             logger.error("No document open, so not activating Focus Mode")
-            self.mainMenu.setFocusMode(self.isFocusMode)
             return False
 
         self.isFocusMode = not self.isFocusMode
-        self.mainMenu.setFocusMode(self.isFocusMode)
         if self.isFocusMode:
             logger.debug("Activating Focus Mode")
             self.switchFocus(nwWidget.EDITOR)
@@ -1238,7 +1228,7 @@ class GuiMain(QMainWindow):
 
         isVisible = not self.isFocusMode
         self.treePane.setVisible(isVisible)
-        self.statusBar.setVisible(isVisible)
+        self.mainStatus.setVisible(isVisible)
         self.mainMenu.setVisible(isVisible)
         self.viewsBar.setVisible(isVisible)
 
@@ -1522,12 +1512,12 @@ class GuiMain(QMainWindow):
 
         if editIdle or userIdle:
             self.idleTime += currTime - self.idleRefTime
-            self.statusBar.setUserIdle(True)
+            self.mainStatus.setUserIdle(True)
         else:
-            self.statusBar.setUserIdle(False)
+            self.mainStatus.setUserIdle(False)
 
         self.idleRefTime = currTime
-        self.statusBar.updateTime(idleTime=self.idleTime)
+        self.mainStatus.updateTime(idleTime=self.idleTime)
 
         return
 
@@ -1536,9 +1526,8 @@ class GuiMain(QMainWindow):
         """Update the word count on the status bar.
         """
         if not self.hasProject:
-            self.statusBar.setProjectStats(0, 0)
+            self.mainStatus.setProjectStats(0, 0)
 
-        logger.verbose("Updating total word count")
         self.theProject.updateWordCounts()
         if self.mainConf.incNotesWCount:
             currWords = self.theProject.currWCount
@@ -1547,7 +1536,7 @@ class GuiMain(QMainWindow):
             currWords = self.theProject.currNovelWC
             diffWords = currWords - self.theProject.lastNovelWC
 
-        self.statusBar.setProjectStats(currWords, diffWords)
+        self.mainStatus.setProjectStats(currWords, diffWords)
 
         return
 
@@ -1575,13 +1564,9 @@ class GuiMain(QMainWindow):
     def _mainStackChanged(self, stIndex):
         """Activated when the main window tab is changed.
         """
-        if stIndex == self.idxEditorView:
-            logger.verbose("Editor View activated")
-        elif stIndex == self.idxOutlineView:
-            logger.verbose("Outline View activated")
+        if stIndex == self.idxOutlineView:
             if self.hasProject:
                 self.outlineView.refreshTree()
-
         return
 
     @pyqtSlot(int)
@@ -1591,11 +1576,9 @@ class GuiMain(QMainWindow):
         sHandle = None
 
         if stIndex == self.idxProjView:
-            logger.verbose("Project Tree View activated")
             sHandle = self.projView.getSelectedHandle()
 
         elif stIndex == self.idxNovelView:
-            logger.verbose("Novel Tree View activated")
             if self.hasProject:
                 self.novelView.refreshTree()
                 sHandle, _ = self.novelView.getSelectedHandle()

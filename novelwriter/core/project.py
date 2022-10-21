@@ -44,7 +44,7 @@ from novelwriter.core.document import NWDoc
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.error import logException
 from novelwriter.common import (
-    checkString, checkBool, checkInt, isHandle, formatTimeStamp,
+    checkString, checkBool, checkInt, checkStringNone, isHandle, formatTimeStamp,
     makeFileNameSafe, hexToInt, minmax, simplified
 )
 from novelwriter.constants import trConst, nwFiles, nwLabels
@@ -52,7 +52,7 @@ from novelwriter.constants import trConst, nwFiles, nwLabels
 logger = logging.getLogger(__name__)
 
 
-class NWProject():
+class NWProject:
 
     FILE_VERSION = "1.4"  # The current project file format version
 
@@ -85,7 +85,6 @@ class NWProject():
         self.projDict    = None  # The spell check dictionary
         self.projSpell   = None  # The spell check language, if different than default
         self.projLang    = None  # The project language, used for builds
-        self.projFile    = None  # The file name of the project main XML file
         self.projFiles   = []    # A list of all files in the content folder on load
 
         # Project Meta
@@ -176,7 +175,7 @@ class NWProject():
         self._projTree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
-    def writeNewFile(self, tHandle, hLevel, isDocument):
+    def writeNewFile(self, tHandle, hLevel, isDocument, addText=""):
         """Write content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
@@ -187,11 +186,11 @@ class NWProject():
             return False
 
         newDoc = NWDoc(self, tHandle)
-        if newDoc.readDocument().strip():
+        if (newDoc.readDocument() or "").strip():
             return False
 
         hshText = "#"*minmax(hLevel, 1, 4)
-        newText = f"{hshText} {tItem.itemName}\n\n"
+        newText = f"{hshText} {tItem.itemName}\n\n{addText}"
         if tItem.isNovelLike() and isDocument:
             tItem.setLayout(nwItemLayout.DOCUMENT)
         else:
@@ -199,6 +198,23 @@ class NWProject():
 
         newDoc.writeDocument(newText)
         self._projIndex.scanText(tHandle, newText)
+
+        return True
+
+    def removeItem(self, tHandle):
+        """Remove an item from the project. This will delete both the
+        project entry and a document file if it exists.
+        """
+        if self._projTree.checkType(tHandle, nwItemType.FILE):
+            delDoc = NWDoc(self, tHandle)
+            if not delDoc.deleteDocument():
+                self.mainGui.makeAlert([
+                    self.tr("Could not delete document file."), delDoc.getError()
+                ], nwAlert.ERROR)
+                return False
+
+        self._projIndex.deleteHandle(tHandle)
+        del self._projTree[tHandle]
 
         return True
 
@@ -243,7 +259,6 @@ class NWProject():
         self.projDict    = None
         self.projSpell   = None
         self.projLang    = None
-        self.projFile    = nwFiles.PROJ_FILE
         self.projFiles   = []
         self.projName    = ""
         self.bookTitle   = ""
@@ -437,7 +452,7 @@ class NWProject():
 
         legacyList = []  # Cleanup is done later
         for projItem in os.listdir(self.projPath):
-            logger.verbose("Project contains: %s", projItem)
+            logger.debug("Project contains: %s", projItem)
             if projItem.startswith("data_") and len(projItem) == 6:
                 legacyList.append(projItem)
 
@@ -457,7 +472,7 @@ class NWProject():
                 self.clearProject()
                 return False
         else:
-            logger.verbose("Project is not locked")
+            logger.debug("Project is not locked")
 
         # Open The Project XML File
         # =========================
@@ -494,8 +509,8 @@ class NWProject():
         hexVersion  = xRoot.attrib.get("hexVersion", "0x0")
         fileVersion = xRoot.attrib.get("fileVersion", self.tr("Unknown"))
 
-        logger.verbose("XML root is '%s'", nwxRoot)
-        logger.verbose("File version is '%s'", fileVersion)
+        logger.debug("XML root is '%s'", nwxRoot)
+        logger.debug("File version is '%s'", fileVersion)
 
         # Check File Type
         # ===============
@@ -576,16 +591,16 @@ class NWProject():
                     if xItem.text is None:
                         continue
                     if xItem.tag == "name":
-                        self.projName = checkString(simplified(xItem.text), "")
-                        logger.verbose("Working Title: '%s'", self.projName)
+                        self.projName = simplified(checkString(xItem.text, ""))
+                        logger.info("Project Name: '%s'", self.projName)
                     elif xItem.tag == "title":
-                        self.bookTitle = checkString(simplified(xItem.text), "")
-                        logger.verbose("Title is '%s'", self.bookTitle)
+                        self.bookTitle = simplified(checkString(xItem.text, ""))
+                        logger.info("Project Title: '%s'", self.bookTitle)
                     elif xItem.tag == "author":
-                        author = checkString(simplified(xItem.text), "")
+                        author = simplified(checkString(xItem.text, ""))
                         if author:
                             self.bookAuthors.append(author)
-                            logger.verbose("Author: '%s'", author)
+                            logger.debug("Author: '%s'", author)
                     elif xItem.tag == "saveCount":
                         self.saveCount = checkInt(xItem.text, 0)
                     elif xItem.tag == "autoCount":
@@ -601,25 +616,25 @@ class NWProject():
                     if xItem.tag == "doBackup":
                         self.doBackup = checkBool(xItem.text, False)
                     elif xItem.tag == "language":
-                        self.projLang = checkString(xItem.text, None, True)
+                        self.projLang = checkStringNone(xItem.text, None)
                     elif xItem.tag == "spellCheck":
                         self.spellCheck = checkBool(xItem.text, False)
                     elif xItem.tag == "spellLang":
-                        self.projSpell = checkString(xItem.text, None, True)
+                        self.projSpell = checkStringNone(xItem.text, None)
                     elif xItem.tag == "lastEdited":
-                        self.lastEdited = checkString(xItem.text, None, True)
+                        self.lastEdited = checkStringNone(xItem.text, None)
                     elif xItem.tag == "lastViewed":
-                        self.lastViewed = checkString(xItem.text, None, True)
+                        self.lastViewed = checkStringNone(xItem.text, None)
                     elif xItem.tag == "lastNovel":
-                        self.lastNovel = checkString(xItem.text, None, True)
+                        self.lastNovel = checkStringNone(xItem.text, None)
                     elif xItem.tag == "lastOutline":
-                        self.lastOutline = checkString(xItem.text, None, True)
+                        self.lastOutline = checkStringNone(xItem.text, None)
                     elif xItem.tag == "lastWordCount":
-                        self.lastWCount = checkInt(xItem.text, 0, False)
+                        self.lastWCount = checkInt(xItem.text, 0)
                     elif xItem.tag == "novelWordCount":
-                        self.lastNovelWC = checkInt(xItem.text, 0, False)
+                        self.lastNovelWC = checkInt(xItem.text, 0)
                     elif xItem.tag == "notesWordCount":
-                        self.lastNotesWC = checkInt(xItem.text, 0, False)
+                        self.lastNotesWC = checkInt(xItem.text, 0)
                     elif xItem.tag == "status":
                         self.statusItems.unpackXML(xItem)
                     elif xItem.tag == "importance":
@@ -628,12 +643,12 @@ class NWProject():
                         for xEntry in xItem:
                             if xEntry.tag == "entry" and "key" in xEntry.attrib:
                                 self.autoReplace[xEntry.attrib["key"]] = checkString(
-                                    xEntry.text, None, False
+                                    xEntry.text, "ERROR"
                                 )
                     elif xItem.tag == "titleFormat":
                         titleFormat = self.titleFormat.copy()
                         for xEntry in xItem:
-                            titleFormat[xEntry.tag] = checkString(xEntry.text, "", False)
+                            titleFormat[xEntry.tag] = checkString(xEntry.text, "")
                         self.setTitleFormat(titleFormat)
 
             elif xChild.tag == "content":
@@ -663,7 +678,7 @@ class NWProject():
         # Check the project tree consistency
         for tItem in self._projTree:
             tHandle = tItem.itemHandle
-            logger.verbose("Checking item '%s'", tHandle)
+            logger.debug("Checking item '%s'", tHandle)
             if not self._projTree.updateItemData(tHandle):
                 logger.error("There was a problem item '%s', and it has been removed", tHandle)
                 del self._projTree[tHandle]  # The file will be re-added as orphaned
@@ -757,9 +772,9 @@ class NWProject():
         self._projTree.packXML(nwXML)
 
         # Write the xml tree to file
-        tempFile = os.path.join(self.projPath, self.projFile+"~")
-        saveFile = os.path.join(self.projPath, self.projFile)
-        backFile = os.path.join(self.projPath, self.projFile[:-3]+"bak")
+        tempFile = os.path.join(self.projPath, nwFiles.PROJ_FILE+"~")
+        saveFile = os.path.join(self.projPath, nwFiles.PROJ_FILE)
+        backFile = os.path.join(self.projPath, nwFiles.PROJ_FILE[:-3]+"bak")
         try:
             with open(tempFile, mode="wb") as outFile:
                 outFile.write(etree.tostring(
@@ -799,7 +814,7 @@ class NWProject():
 
         return True
 
-    def closeProject(self, idleTime=0):
+    def closeProject(self, idleTime=0.0):
         """Close the current project and clear all meta data.
         """
         logger.info("Closing project: %s", self.projPath)
@@ -1074,7 +1089,7 @@ class NWProject():
     def setSpellLang(self, theLang):
         """Set the project-specific spell check language.
         """
-        theLang = checkString(theLang, None, True)
+        theLang = checkStringNone(theLang, None)
         if self.projSpell != theLang:
             self.projSpell = theLang
             self.setProjectChanged(True)
@@ -1084,7 +1099,7 @@ class NWProject():
     def setProjectLang(self, theLang):
         """Set the project-specific language.
         """
-        theLang = checkString(theLang, None, True)
+        theLang = checkStringNone(theLang, None)
         if self.projLang != theLang:
             self.projLang = theLang
             self._loadProjectLocalisation()
@@ -1168,7 +1183,7 @@ class NWProject():
         information to the GUI statusbar.
         """
         self.projChanged = bValue
-        self.mainGui.statusBar.doUpdateProjectStatus(bValue)
+        self.mainGui.mainStatus.doUpdateProjectStatus(bValue)
         if bValue:
             # If we've changed the project at all, this should be True
             self.projAltered = True

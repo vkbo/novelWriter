@@ -26,11 +26,11 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor, QTextBlock
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
-from tools import writeFile, buildTestProject
+from tools import C, writeFile, buildTestProject
 
-from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.constants import nwKeyWords, nwUnicode
+from novelwriter.gui.doceditor import GuiDocEditor
 
 keyDelay = 2
 typeDelay = 1
@@ -467,8 +467,8 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
 
     buildTestProject(nwGUI, fncProj)
 
-    assert nwGUI.projView.projTree._getTreeItem("000000000000f") is not None
-    assert nwGUI.openDocument("000000000000f") is True
+    assert nwGUI.projView.projTree._getTreeItem(C.hSceneDoc) is not None
+    assert nwGUI.openDocument(C.hSceneDoc) is True
     nwGUI.docEditor.clear()
 
     # Test Faulty Inserts
@@ -566,10 +566,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsNBSpace.activate(QAction.Trigger)
-    if nwGUI.mainConf.verQtValue >= 50900:
-        assert nwGUI.docEditor.getText() == nwUnicode.U_NBSP
-    else:
-        assert nwGUI.docEditor.getText() == " "
+    assert nwGUI.docEditor.getText() == nwUnicode.U_NBSP
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsThinSpace.activate(QAction.Trigger)
@@ -577,10 +574,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsThinNBSpace.activate(QAction.Trigger)
-    if nwGUI.mainConf.verQtValue >= 50900:
-        assert nwGUI.docEditor.getText() == nwUnicode.U_THNBSP
-    else:
-        assert nwGUI.docEditor.getText() == " "
+    assert nwGUI.docEditor.getText() == nwUnicode.U_THNBSP
     nwGUI.docEditor.clear()
 
     ##
@@ -677,7 +671,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     assert not nwGUI.importDocument()
 
     # Open the document from before, and add some text to it
-    nwGUI.openDocument("000000000000f")
+    nwGUI.openDocument(C.hSceneDoc)
     nwGUI.docEditor.setText("Bar")
     assert nwGUI.docEditor.getText() == "Bar"
 

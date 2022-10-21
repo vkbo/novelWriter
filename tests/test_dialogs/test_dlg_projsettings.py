@@ -29,7 +29,7 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QAction, QMessageBox, QColorDialog
 
-from novelwriter.dialogs import GuiProjectSettings
+from novelwriter.dialogs.projsettings import GuiProjectSettings
 
 keyDelay = 2
 typeDelay = 1

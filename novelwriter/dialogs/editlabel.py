@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 class GuiEditLabel(QDialog):
 
     def __init__(self, parent, text=""):
-        QDialog.__init__(self, parent=parent)
+        super().__init__(parent=parent)
 
         self.setObjectName("GuiEditLabel")
         self.setWindowTitle(self.tr("Item Label"))

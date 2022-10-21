@@ -24,7 +24,8 @@ import pytest
 
 from tools import readFile
 
-from novelwriter.core import NWProject, NWDoc
+from novelwriter.core.project import NWProject
+from novelwriter.core.document import NWDoc
 from novelwriter.core.tokenizer import Tokenizer
 
 

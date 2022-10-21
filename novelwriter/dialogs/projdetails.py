@@ -27,16 +27,18 @@ import math
 import logging
 import novelwriter
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    QWidget, QDialogButtonBox, QVBoxLayout, QTreeWidget, QTreeWidgetItem,
-    QLabel, QSpinBox, QGridLayout, QHBoxLayout, QLineEdit, QAbstractItemView
+    QAbstractItemView, QComboBox, QDialogButtonBox, QGridLayout, QHBoxLayout,
+    QLabel, QLineEdit, QSpinBox, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget
 )
 
+from novelwriter.enum import nwItemClass
 from novelwriter.common import numberToRoman
-from novelwriter.constants import nwUnicode
-from novelwriter.gui.custom import PagedDialog, QSwitch
+from novelwriter.custom import PagedDialog, QSwitch
+from novelwriter.constants import nwLabels, nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +46,7 @@ logger = logging.getLogger(__name__)
 class GuiProjectDetails(PagedDialog):
 
     def __init__(self, mainGui):
-        PagedDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiProjectDetails ...")
         self.setObjectName("GuiProjectDetails")
@@ -140,7 +142,7 @@ class GuiProjectDetails(PagedDialog):
 class GuiProjectDetailsMain(QWidget):
 
     def __init__(self, mainGui, theProject):
-        QWidget.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         self.mainConf   = novelwriter.CONFIG
         self.theProject = theProject
@@ -272,7 +274,7 @@ class GuiProjectDetailsContents(QWidget):
     C_PROG  = 4
 
     def __init__(self, mainGui, theProject):
-        QWidget.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         self.mainConf   = novelwriter.CONFIG
         self.theProject = theProject
@@ -281,11 +283,25 @@ class GuiProjectDetailsContents(QWidget):
 
         # Internal
         self._theToC = []
+        self._currentRoot = None
 
         iPx = self.mainTheme.baseIconSize
         hPx = self.mainConf.pxInt(12)
         vPx = self.mainConf.pxInt(4)
         pOptions = self.theProject.options
+
+        # Header
+        # ======
+
+        self.tocLabel = QLabel("<b>%s</b>" % self.tr("Table of Contents"))
+
+        self.novelValue = QComboBox(self)
+        self.novelValue.setMinimumWidth(self.mainConf.pxInt(200))
+        self.novelValue.currentIndexChanged.connect(self._novelValueChanged)
+
+        self.headBox = QHBoxLayout()
+        self.headBox.addWidget(self.tocLabel)
+        self.headBox.addWidget(self.novelValue)
 
         # Contents Tree
         # =============
@@ -389,7 +405,7 @@ class GuiProjectDetailsContents(QWidget):
         # ========
 
         self.outerBox = QVBoxLayout()
-        self.outerBox.addWidget(QLabel("<b>%s</b>" % self.tr("Table of Contents")))
+        self.outerBox.addLayout(self.headBox)
         self.outerBox.addWidget(self.tocTree)
         self.outerBox.addLayout(self.optionsBox)
 
@@ -412,19 +428,35 @@ class GuiProjectDetailsContents(QWidget):
     def updateValues(self):
         """Populate the tree.
         """
-        self._prepareData()
+        self._currentRoot = None
+        self._populateNovelList()
+
+        rootHandle = self.novelValue.currentData()
+        self._prepareData(rootHandle)
         self._populateTree()
+
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _prepareData(self):
-        """Extract the data for the tree.
+    def _populateNovelList(self):
+        """Fill the novel combo box with a list of all novel folders.
         """
-        self._theToC = []
-        self._theToC = self.theProject.index.getTableOfContents(2)
+        self.novelValue.clear()
+
+        tIcon = self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
+        for tHandle, nwItem in self.theProject.tree.iterRoots(nwItemClass.NOVEL):
+            self.novelValue.addItem(tIcon, nwItem.itemName, tHandle)
+
+        return
+
+    def _prepareData(self, rootHandle):
+        """Extract the information from the project index.
+        """
+        logger.debug("Populating ToC from handle '%s'", rootHandle)
+        self._theToC = self.theProject.index.getTableOfContents(rootHandle, 2)
         self._theToC.append(("", 0, self.tr("END"), 0))
         return
 
@@ -432,6 +464,18 @@ class GuiProjectDetailsContents(QWidget):
     #  Slots
     ##
 
+    @pyqtSlot()
+    def _novelValueChanged(self):
+        """Refresh the tree with another root item.
+        """
+        rootHandle = self.novelValue.currentData()
+        if rootHandle != self._currentRoot:
+            self._prepareData(rootHandle)
+            self._populateTree()
+            self._currentRoot = rootHandle
+        return
+
+    @pyqtSlot()
     def _populateTree(self):
         """Set the content of the chapter/page tree.
         """
@@ -466,10 +510,11 @@ class GuiProjectDetailsContents(QWidget):
                 progPage = f"{cPage:n}"
                 progText = f"{pgProg:.1f}{nwUnicode.U_THSP}%"
 
+            hDec = self.mainTheme.getHeaderDecoration(tLevel)
             if tTitle.strip() == "":
                 tTitle = self.tr("Untitled")
 
-            newItem.setIcon(self.C_TITLE, self.mainTheme.getIcon("doc_h%d" % tLevel))
+            newItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
             newItem.setText(self.C_TITLE, tTitle)
             newItem.setText(self.C_WORDS, f"{wCount:n}")
             newItem.setText(self.C_PAGES, f"{pCount:n}")

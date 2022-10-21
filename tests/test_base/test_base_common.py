@@ -29,25 +29,38 @@ from tools import writeFile
 
 from novelwriter.guimain import GuiMain
 from novelwriter.common import (
-    checkString, checkInt, checkFloat, checkBool, checkHandle, isHandle,
-    isTitleTag, isItemClass, isItemType, isItemLayout, hexToInt, checkIntRange,
+    checkStringNone, checkString, checkInt, checkFloat, checkBool, checkHandle,
+    isHandle, isTitleTag, isItemClass, isItemType, isItemLayout, hexToInt,
     minmax, checkIntTuple, formatInt, formatTimeStamp, formatTime, simplified,
     splitVersionNumber, transferCase, fuzzyTime, numberToRoman, jsonEncode,
-    readTextFile, makeFileNameSafe, sha256sum, getGuiItem, NWConfigParser
+    readTextFile, makeFileNameSafe, ensureFolder, sha256sum, getGuiItem,
+    NWConfigParser
 )
+
+
+@pytest.mark.base
+def testBaseCommon_CheckStringNone():
+    """Test the checkStringNone function.
+    """
+    assert checkStringNone("Stuff", "NotNone") == "Stuff"
+    assert checkStringNone("None", "NotNone") is None
+    assert checkStringNone(None, "NotNone") is None
+    assert checkStringNone(1, "NotNone") == "NotNone"
+    assert checkStringNone(1.0, "NotNone") == "NotNone"
+    assert checkStringNone(True, "NotNone") == "NotNone"
+
+# END Test testBaseCommon_CheckStringNone
 
 
 @pytest.mark.base
 def testBaseCommon_CheckString():
     """Test the checkString function.
     """
-    assert checkString(None, "NotNone", True) is None
-    assert checkString("None", "NotNone", True) is None
-    assert checkString("None", "NotNone", False) == "None"
-    assert checkString(None, "NotNone", False) == "NotNone"
-    assert checkString(1, "NotNone", False) == "NotNone"
-    assert checkString(1.0, "NotNone", False) == "NotNone"
-    assert checkString(True, "NotNone", False) == "NotNone"
+    assert checkString("None", "NotNone") == "None"
+    assert checkString(None, "NotNone") == "NotNone"
+    assert checkString(1, "NotNone") == "NotNone"
+    assert checkString(1.0, "NotNone") == "NotNone"
+    assert checkString(True, "NotNone") == "NotNone"
 
 # END Test testBaseCommon_CheckString
 
@@ -56,12 +69,12 @@ def testBaseCommon_CheckString():
 def testBaseCommon_CheckInt():
     """Test the checkInt function.
     """
-    assert checkInt(None, 3, True) is None
-    assert checkInt("None", 3, True) is None
-    assert checkInt(None, 3, False) == 3
-    assert checkInt(1, 3, False) == 1
-    assert checkInt(1.0, 3, False) == 1
-    assert checkInt(True, 3, False) == 1
+    assert checkInt(None, 3) == 3
+    assert checkInt("1", 3) == 1
+    assert checkInt("1.0", 3) == 3
+    assert checkInt(1, 3) == 1
+    assert checkInt(1.0, 3) == 1
+    assert checkInt(True, 3) == 1
 
 # END Test testBaseCommon_CheckInt
 
@@ -70,12 +83,12 @@ def testBaseCommon_CheckInt():
 def testBaseCommon_CheckFloat():
     """Test the checkFloat function.
     """
-    assert checkFloat(None, 3.0, True) is None
-    assert checkFloat("None", 3.0, True) is None
-    assert checkFloat(None, 3.0, False) == 3.0
-    assert checkFloat(1, 3.0, False) == 1.0
-    assert checkFloat(1.0, 3.0, False) == 1.0
-    assert checkFloat(True, 3.0, False) == 1.0
+    assert checkFloat(None, 3.0) == 3.0
+    assert checkFloat("1", 3.0) == 1.0
+    assert checkFloat("1.0", 3.0) == 1.0
+    assert checkFloat(1, 3.0) == 1.0
+    assert checkFloat(1.0, 3.0) == 1.0
+    assert checkFloat(True, 3.0) == 1.0
 
 # END Test testBaseCommon_CheckInt
 
@@ -84,17 +97,18 @@ def testBaseCommon_CheckFloat():
 def testBaseCommon_CheckBool():
     """Test the checkBool function.
     """
-    assert checkBool(None, 3, True) is None
-    assert checkBool("None", 3, True) is None
-    assert checkBool("True", False, False) is True
-    assert checkBool("False", True, False) is False
-    assert checkBool("Boo", None, False) is None
-    assert checkBool(0, None, False) is False
-    assert checkBool(1, None, False) is True
-    assert checkBool(2, None, False) is None
-    assert checkBool(0.0, None, False) is None
-    assert checkBool(1.0, None, False) is None
-    assert checkBool(2.0, None, False) is None
+    assert checkBool("True", False) is True
+    assert checkBool("False", True) is False
+    assert checkBool("Boo", False) is False
+    assert checkBool("Boo", True) is True
+    assert checkBool(0, True) is False
+    assert checkBool(1, False) is True
+    assert checkBool(2, True) is True
+    assert checkBool(2, False) is False
+    assert checkBool(0.0, True) is True
+    assert checkBool(1.0, False) is False
+    assert checkBool(2.0, True) is True
+    assert checkBool(2.0, False) is False
 
 # END Test testBaseCommon_CheckBool
 
@@ -229,18 +243,6 @@ def testBaseCommon_HexToInt():
 
 
 @pytest.mark.base
-def testBaseCommon_CheckIntRange():
-    """Test the checkIntRange function.
-    """
-    assert checkIntRange(5, 0, 9, 3) == 5
-    assert checkIntRange(5, 0, 4, 3) == 3
-    assert checkIntRange(5, 0, 5, 3) == 5
-    assert checkIntRange(0, 0, 5, 3) == 0
-
-# END Test testBaseCommon_CheckIntRange
-
-
-@pytest.mark.base
 def testBaseCommon_MinMax():
     """Test the minmax function.
     """
@@ -310,16 +312,16 @@ def testBaseCommon_SplitVersionNumber():
     """Test the splitVersionNumber function.
     """
     # OK Values
-    assert splitVersionNumber("1") == [1, 0, 0, 10000]
-    assert splitVersionNumber("1.2") == [1, 2, 0, 10200]
-    assert splitVersionNumber("1.2.3") == [1, 2, 3, 10203]
-    assert splitVersionNumber("1.2.3.4") == [1, 2, 3, 10203]
-    assert splitVersionNumber("99.99.99") == [99, 99, 99, 999999]
+    assert splitVersionNumber("1") == (1, 0, 0, 10000)
+    assert splitVersionNumber("1.2") == (1, 2, 0, 10200)
+    assert splitVersionNumber("1.2.3") == (1, 2, 3, 10203)
+    assert splitVersionNumber("1.2.3.4") == (1, 2, 3, 10203)
+    assert splitVersionNumber("99.99.99") == (99, 99, 99, 999999)
 
     # Failed Values
-    assert splitVersionNumber(None) == [0, 0, 0, 0]
-    assert splitVersionNumber(1234) == [0, 0, 0, 0]
-    assert splitVersionNumber("1.2abc") == [1, 0, 0, 10000]
+    assert splitVersionNumber(None) == (0, 0, 0, 0)
+    assert splitVersionNumber(1234) == (0, 0, 0, 0)
+    assert splitVersionNumber("1.2abc") == (1, 0, 0, 10000)
 
 # END Test testBaseCommon_SplitVersionNumber
 
@@ -542,6 +544,32 @@ def testBaseCommon_MakeFileNameSafe():
 
 
 @pytest.mark.base
+def testBaseCommon_EnsureFolder(monkeypatch, fncDir):
+    """Test the ensureFolder function.
+    """
+    newDir1 = os.path.join(fncDir, "newDir1")
+    newDir2 = os.path.join(fncDir, "newDir2")
+    newDir3 = os.path.join(fncDir, "newDir3")
+
+    assert ensureFolder(None) is False
+
+    assert ensureFolder(newDir1) is True
+    assert os.path.isdir(newDir1)
+
+    assert ensureFolder("newDir2", parent=fncDir) is True
+    assert os.path.isdir(newDir2)
+
+    with monkeypatch.context() as mp:
+        mp.setattr("os.mkdir", causeOSError)
+        errLog = []
+        assert ensureFolder("newDir3", parent=fncDir, errLog=errLog) is False
+        assert errLog[0] == f"Could not create folder: {newDir3}"
+        assert not os.path.isdir(newDir3)
+
+# END Test testBaseCommon_EnsureFolder
+
+
+@pytest.mark.base
 def testBaseCommon_Sha256Sum(monkeypatch, fncDir, ipsumText):
     """Test the sha256sum function.
     """
@@ -645,10 +673,10 @@ def testBaseCommon_NWConfigParser(fncDir):
     # Read Float
     assert cfgParser.rdFlt("main", "intopt1", 13.0) == 42.0
     assert cfgParser.rdFlt("main", "float1",  13.0) == 4.2
-    assert cfgParser.rdInt("main", "stropt",  13.0) == 13.0
+    assert cfgParser.rdFlt("main", "stropt",  13.0) == 13.0
 
-    assert cfgParser.rdInt("nope", "intopt1", 13.0) == 13.0
-    assert cfgParser.rdInt("main", "blabla",  13.0) == 13.0
+    assert cfgParser.rdFlt("nope", "intopt1", 13.0) == 13.0
+    assert cfgParser.rdFlt("main", "blabla",  13.0) == 13.0
 
     # Read String List
     assert cfgParser.rdStrList("main", "list1", []) == []
@@ -675,10 +703,5 @@ def testBaseCommon_NWConfigParser(fncDir):
 
     assert cfgParser.rdIntList("nope", "list2", [1]) == [1]
     assert cfgParser.rdIntList("main", "blabla", [1]) == [1]
-
-    # Internal
-    # ========
-
-    assert cfgParser._parseLine("main", "stropt", None, 999) is None
 
 # END Test testBaseCommon_NWConfigParser

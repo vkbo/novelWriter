@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import nwAlert
-from novelwriter.gui.custom import QSwitch, QConfigLayout, PagedDialog
+from novelwriter.custom import QSwitch, QConfigLayout, PagedDialog
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 
 logger = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 class GuiPreferences(PagedDialog):
 
     def __init__(self, mainGui):
-        PagedDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiPreferences ...")
         self.setObjectName("GuiPreferences")
@@ -55,13 +55,13 @@ class GuiPreferences(PagedDialog):
 
         self.setWindowTitle(self.tr("Preferences"))
 
-        self.tabGeneral  = GuiPreferencesGeneral(self.mainGui)
-        self.tabProjects = GuiPreferencesProjects(self.mainGui)
-        self.tabDocs     = GuiPreferencesDocuments(self.mainGui)
-        self.tabEditor   = GuiPreferencesEditor(self.mainGui)
-        self.tabSyntax   = GuiPreferencesSyntax(self.mainGui)
-        self.tabAuto     = GuiPreferencesAutomation(self.mainGui)
-        self.tabQuote    = GuiPreferencesQuotes(self.mainGui)
+        self.tabGeneral  = GuiPreferencesGeneral(self)
+        self.tabProjects = GuiPreferencesProjects(self)
+        self.tabDocs     = GuiPreferencesDocuments(self)
+        self.tabEditor   = GuiPreferencesEditor(self)
+        self.tabSyntax   = GuiPreferencesSyntax(self)
+        self.tabAuto     = GuiPreferencesAutomation(self)
+        self.tabQuote    = GuiPreferencesQuotes(self)
 
         self.addTab(self.tabGeneral,  self.tr("General"))
         self.addTab(self.tabProjects, self.tr("Projects"))
@@ -128,9 +128,7 @@ class GuiPreferences(PagedDialog):
     def _saveWindowSize(self):
         """Save the dialog window size.
         """
-        winWidth = self.mainConf.rpxInt(self.width())
-        winHeight = self.mainConf.rpxInt(self.height())
-        self.mainConf.setPreferencesSize(winWidth, winHeight)
+        self.mainConf.setPreferencesSize(self.width(), self.height())
         return
 
 # END Class GuiPreferences
@@ -138,12 +136,12 @@ class GuiPreferences(PagedDialog):
 
 class GuiPreferencesGeneral(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -344,12 +342,12 @@ class GuiPreferencesGeneral(QWidget):
 
 class GuiPreferencesProjects(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -505,12 +503,12 @@ class GuiPreferencesProjects(QWidget):
 
 class GuiPreferencesDocuments(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -666,12 +664,12 @@ class GuiPreferencesDocuments(QWidget):
 
 class GuiPreferencesEditor(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -840,12 +838,12 @@ class GuiPreferencesEditor(QWidget):
 
 class GuiPreferencesSyntax(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -943,12 +941,12 @@ class GuiPreferencesSyntax(QWidget):
 
 class GuiPreferencesAutomation(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -1100,12 +1098,12 @@ class GuiPreferencesAutomation(QWidget):
 
 class GuiPreferencesQuotes(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()

@@ -26,8 +26,8 @@ import pytest
 from mock import causeOSError
 from tools import writeFile
 
-from novelwriter.core import NWProject
 from novelwriter.core.options import OptionState
+from novelwriter.core.project import NWProject
 from novelwriter.constants import nwFiles
 
 

@@ -37,7 +37,7 @@ class ToMarkdown(Tokenizer):
     M_GH  = 1  # GitHub Markdown
 
     def __init__(self, theProject):
-        Tokenizer.__init__(self, theProject)
+        super().__init__(theProject)
 
         self._genMode = self.M_STD
         self._fullMD = []

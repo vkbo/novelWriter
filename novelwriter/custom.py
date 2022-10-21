@@ -202,7 +202,7 @@ class QConfigLayout(QGridLayout):
 class QHelpLabel(QLabel):
 
     def __init__(self, theText, textCol, fontSize=0.9):
-        QLabel.__init__(self, theText)
+        super().__init__(theText)
 
         if isinstance(textCol, QColor):
             qCol = textCol
@@ -267,8 +267,8 @@ class QSwitch(QAbstractButton):
         return self._offset
 
     @offset.setter
-    def offset(self, theOffset):
-        self._offset = theOffset
+    def offset(self, offset):
+        self._offset = offset
         self.update()
         return
 
@@ -276,11 +276,11 @@ class QSwitch(QAbstractButton):
     #  Getters and Setters
     ##
 
-    def setChecked(self, isChecked):
+    def setChecked(self, checked):
         """Overload setChecked to also alter the offset.
         """
-        super().setChecked(isChecked)
-        if isChecked:
+        super().setChecked(checked)
+        if checked:
             self.offset = self._xW - self._xR
         else:
             self.offset = self._xR
@@ -290,10 +290,10 @@ class QSwitch(QAbstractButton):
     #  Events
     ##
 
-    def resizeEvent(self, theEvent):
+    def resizeEvent(self, event):
         """Overload resize to ensure correct offset.
         """
-        super().resizeEvent(theEvent)
+        super().resizeEvent(event)
         if self.isChecked():
             self.offset = self._xW - self._xR
         else:
@@ -377,7 +377,7 @@ class QSwitch(QAbstractButton):
 class PagedDialog(QDialog):
 
     def __init__(self, parent=None):
-        QDialog.__init__(self, parent=parent)
+        super().__init__(parent=parent)
 
         self._tabBar = VerticalTabBar(self)
         self._tabBar.setExpanding(False)
@@ -410,13 +410,13 @@ class PagedDialog(QDialog):
         return
 
     def addTab(self, widget, label):
-        """Forwards the adding of tabs to the QTabWidget.
+        """Forward the adding of tabs to the QTabWidget.
         """
         self._tabBox.addTab(widget, label)
         return
 
     def addControls(self, buttonBar):
-        """Adds a button bar to the dialog.
+        """Add a button bar to the dialog.
         """
         self._buttonBox.addWidget(buttonBar)
         return
@@ -427,14 +427,14 @@ class PagedDialog(QDialog):
 class VerticalTabBar(QTabBar):
 
     def __init__(self, parent=None):
-        QTabBar.__init__(self, parent=parent)
+        super().__init__(parent=parent)
         self._mW = novelwriter.CONFIG.pxInt(150)
         return
 
     def tabSizeHint(self, index):
-        """Returns a transposed size hint for the rotated bar.
+        """Return a transposed size hint for the rotated bar.
         """
-        tSize = QTabBar.tabSizeHint(self, index)
+        tSize = super().tabSizeHint(index)
         tSize.transpose()
         tSize.setWidth(min(tSize.width(), self._mW))
         return tSize

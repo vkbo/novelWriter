@@ -60,9 +60,9 @@ __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "1.7-beta1"
-__hexversion__ = "0x010700b1"
-__date__       = "2022-05-17"
+__version__    = "2.0-rc1"
+__hexversion__ = "0x020000c1"
+__date__       = "2022-10-17"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 __url__        = "https://novelwriter.io"
@@ -72,32 +72,6 @@ __helpurl__    = "https://github.com/vkbo/novelWriter/discussions"
 __releaseurl__ = "https://github.com/vkbo/novelWriter/releases/latest"
 __docurl__     = "https://novelwriter.readthedocs.io"
 
-##
-#  Logging
-# =========
-#  Standard used for logging levels in novelWriter:
-#    CRITICAL  Use for errors that result in termination of the program
-#    ERROR     Use when an action fails, but execution continues
-#    WARNING   When something unexpected, but non-critical happens
-#    INFO      Any useful user information like open, save, exit initiated
-#  ----------- SPAM Threshold : Output above should be minimal -----------------
-#    DEBUG     Use for descriptions of main program flow
-#    VERBOSE   Use for outputting values and program flow details
-##
-
-# Add verbose logging level
-VERBOSE = 5
-logging.addLevelName(VERBOSE, "VERBOSE")
-
-
-def logVerbose(self, message, *args, **kws):
-    if self.isEnabledFor(VERBOSE):
-        self._log(VERBOSE, message, args, **kws)
-
-
-logging.Logger.verbose = logVerbose
-
-# Initiating logging
 logger = logging.getLogger(__name__)
 
 
@@ -122,7 +96,6 @@ def main(sysArgs=None):
         "version",
         "info",
         "debug",
-        "verbose",
         "style=",
         "config=",
         "data=",
@@ -143,7 +116,6 @@ def main(sysArgs=None):
         " -v, --version  Print program version and exit.\n"
         "     --info     Print additional runtime information.\n"
         "     --debug    Print debug output. Includes --info.\n"
-        "     --verbose  Increase verbosity of debug output. Includes --debug.\n"
         "     --style=   Sets Qt5 style flag. Defaults to 'Fusion'.\n"
         "     --config=  Alternative config file.\n"
         "     --data=    Alternative user data path.\n"
@@ -181,9 +153,6 @@ def main(sysArgs=None):
         elif inOpt == "--debug":
             logLevel = logging.DEBUG
             logFormat  = "[{asctime:}]  {filename:>17}:{lineno:<4d}  {levelname:8}  {message:}"
-        elif inOpt == "--verbose":
-            logLevel = VERBOSE
-            logFormat  = "[{asctime:}]  {filename:>17}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--style":
             qtStyle = inArg
         elif inOpt == "--config":
@@ -214,14 +183,14 @@ def main(sysArgs=None):
             "At least Python 3.7 is required, found %s" % CONFIG.verPyString
         )
         errorCode |= 0x04
-    if CONFIG.verQtValue < 50300:
+    if CONFIG.verQtValue < 51000:
         errorData.append(
-            "At least Qt5 version 5.3 is required, found %s" % CONFIG.verQtString
+            "At least Qt5 version 5.10 is required, found %s" % CONFIG.verQtString
         )
         errorCode |= 0x08
-    if CONFIG.verPyQtValue < 50300:
+    if CONFIG.verPyQtValue < 51000:
         errorData.append(
-            "At least PyQt5 version 5.3 is required, found %s" % CONFIG.verPyQtString
+            "At least PyQt5 version 5.10 is required, found %s" % CONFIG.verPyQtString
         )
         errorCode |= 0x10
 

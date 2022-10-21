@@ -40,30 +40,30 @@ VALID_MAP = {
     "GuiWritingStats": {
         "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
         "widthCol3", "sortCol", "sortOrder", "incNovel", "incNotes",
-        "hideZeros", "hideNegative", "groupByDay", "showIdleTime", "histMax"
+        "hideZeros", "hideNegative", "groupByDay", "showIdleTime", "histMax",
     },
-    "GuiDocSplit": {"spLevel"},
+    "GuiDocSplit": {"spLevel", "intoFolder", "docHierarchy"},
     "GuiBuildNovel": {
         "winWidth", "winHeight", "boxWidth", "docWidth", "hideScene",
         "hideSection", "addNovel", "addNotes", "ignoreFlag", "justifyText",
         "excludeBody", "textFont", "textSize", "lineHeight", "noStyling",
         "incSynopsis", "incComments", "incKeywords", "incBodyText",
-        "replaceTabs", "replaceUCode"
+        "replaceTabs", "replaceUCode", "rootFilter",
     },
     "GuiOutline": {"headerOrder", "columnWidth", "columnHidden"},
     "GuiProjectSettings": {
-        "winWidth", "winHeight", "replaceColW", "statusColW", "importColW"
+        "winWidth", "winHeight", "replaceColW", "statusColW", "importColW",
     },
     "GuiProjectDetails": {
         "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
-        "widthCol3", "widthCol4", "wordsPerPage", "countFrom", "clearDouble"
+        "widthCol3", "widthCol4", "wordsPerPage", "countFrom", "clearDouble",
     },
     "GuiWordList": {"winWidth", "winHeight"},
     "GuiNovelView": {"lastCol"},
 }
 
 
-class OptionState():
+class OptionState:
 
     def __init__(self, theProject):
         self.theProject = theProject
@@ -188,8 +188,7 @@ class OptionState():
         the default value.
         """
         if group in self._theState:
-            if name in self._theState[group]:
-                return checkBool(self._theState[group].get(name, default), default)
+            return checkBool(self._theState[group].get(name, default), default)
         return default
 
     def getEnum(self, group, name, lookup, default):

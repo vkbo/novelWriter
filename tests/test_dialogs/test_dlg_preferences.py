@@ -32,7 +32,8 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.config import Config
-from novelwriter.dialogs import GuiPreferences, GuiQuoteSelect
+from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.dialogs.preferences import GuiPreferences
 
 keyDelay = 2
 typeDelay = 1

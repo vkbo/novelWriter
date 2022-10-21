@@ -31,12 +31,12 @@ from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified
 )
-from novelwriter.constants import nwLabels, trConst
+from novelwriter.constants import nwHeaders, nwLabels, trConst
 
 logger = logging.getLogger(__name__)
 
 
-class NWItem():
+class NWItem:
 
     def __init__(self, theProject):
 
@@ -52,15 +52,16 @@ class NWItem():
         self._layout   = nwItemLayout.NO_LAYOUT
         self._status   = None
         self._import   = None
+        self._active   = True
         self._expanded = False
-        self._exported = True
 
         # Document Meta Data
-        self._charCount = 0  # Current character count
-        self._wordCount = 0  # Current word count
-        self._paraCount = 0  # Current paragraph count
-        self._cursorPos = 0  # Last cursor position
-        self._initCount = 0  # Initial word count
+        self._heading   = "H0"  # The main heading
+        self._charCount = 0     # Current character count
+        self._wordCount = 0     # Current word count
+        self._paraCount = 0     # Current paragraph count
+        self._cursorPos = 0     # Last cursor position
+        self._initCount = 0     # Initial word count
 
         return
 
@@ -115,12 +116,16 @@ class NWItem():
         return self._import
 
     @property
+    def isActive(self):
+        return self._active
+
+    @property
     def isExpanded(self):
         return self._expanded
 
     @property
-    def isExported(self):
-        return self._exported
+    def mainHeading(self):
+        return self._heading
 
     @property
     def charCount(self):
@@ -162,6 +167,7 @@ class NWItem():
         metaAttrib = {}
         metaAttrib["expanded"] = str(self._expanded)
         if self._type == nwItemType.FILE:
+            metaAttrib["mainHeading"] = str(self._heading)
             metaAttrib["charCount"] = str(self._charCount)
             metaAttrib["wordCount"] = str(self._wordCount)
             metaAttrib["paraCount"] = str(self._paraCount)
@@ -171,7 +177,7 @@ class NWItem():
         nameAttrib["status"] = str(self._status)
         nameAttrib["import"] = str(self._import)
         if self._type == nwItemType.FILE:
-            nameAttrib["exported"] = str(self._exported)
+            nameAttrib["active"] = str(self._active)
 
         xPack = etree.SubElement(xParent, "item", attrib=itemAttrib)
         self._subPack(xPack, "meta", attrib=metaAttrib)
@@ -202,6 +208,7 @@ class NWItem():
         for xValue in xItem:
             if xValue.tag == "meta":
                 self.setExpanded(xValue.attrib.get("expanded", False))
+                self.setMainHeading(xValue.attrib.get("mainHeading", "H0"))
                 self.setCharCount(xValue.attrib.get("charCount", 0))
                 self.setWordCount(xValue.attrib.get("wordCount", 0))
                 self.setParaCount(xValue.attrib.get("paraCount", 0))
@@ -210,7 +217,11 @@ class NWItem():
                 self.setName(xValue.text)
                 self.setStatus(xValue.attrib.get("status", None))
                 self.setImport(xValue.attrib.get("import", None))
-                self.setExported(xValue.attrib.get("exported", True))
+                self.setActive(xValue.attrib.get("active", True))
+
+                # ToDo: Remove before 2.0 release. Only needed for 2.0 pre-releases.
+                if "exported" in xValue.attrib:
+                    self.setActive(xValue.attrib.get("exported", True))
 
             # Legacy Format (1.3 and earlier)
             elif xValue.tag == "status":
@@ -224,7 +235,7 @@ class NWItem():
             elif xValue.tag == "expanded":
                 self.setExpanded(xValue.text)
             elif xValue.tag == "exported":
-                self.setExported(xValue.text)
+                self.setActive(xValue.text)
             elif xValue.tag == "charCount":
                 self.setCharCount(xValue.text)
             elif xValue.tag == "wordCount":
@@ -269,7 +280,7 @@ class NWItem():
     #  Lookup Methods
     ##
 
-    def describeMe(self, hLevel=None):
+    def describeMe(self):
         """Return a string description of the item.
         """
         descKey = "none"
@@ -279,12 +290,14 @@ class NWItem():
             descKey = "folder"
         elif self._type == nwItemType.FILE:
             if self._layout == nwItemLayout.DOCUMENT:
-                if hLevel == "H1":
+                if self._heading == "H1":
                     descKey = "doc_h1"
-                elif hLevel == "H2":
+                elif self._heading == "H2":
                     descKey = "doc_h2"
-                elif hLevel == "H3":
+                elif self._heading == "H3":
                     descKey = "doc_h3"
+                elif self._heading == "H4":
+                    descKey = "doc_h4"
                 else:
                     descKey = "document"
             elif self._layout == nwItemLayout.NOTE:
@@ -292,16 +305,16 @@ class NWItem():
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
 
-    def getImportStatus(self):
+    def getImportStatus(self, incIcon=True):
         """Return the relevant importance or status label and icon for
         the current item based on its class.
         """
         if self.isNovelLike():
             stName = self.theProject.statusItems.name(self._status)
-            stIcon = self.theProject.statusItems.icon(self._status)
+            stIcon = self.theProject.statusItems.icon(self._status) if incIcon else None
         else:
             stName = self.theProject.importItems.name(self._import)
-            stIcon = self.theProject.importItems.icon(self._import)
+            stIcon = self.theProject.importItems.icon(self._import) if incIcon else None
         return stName, stIcon
 
     ##
@@ -487,6 +500,15 @@ class NWItem():
         self._import = self.theProject.importItems.check(value)
         return
 
+    def setActive(self, state):
+        """Set the export flag.
+        """
+        if isinstance(state, str):
+            self._active = (state == str(True))
+        else:
+            self._active = (state is True)
+        return
+
     def setExpanded(self, state):
         """Set the expanded status of an item in the project tree.
         """
@@ -496,18 +518,16 @@ class NWItem():
             self._expanded = (state is True)
         return
 
-    def setExported(self, state):
-        """Set the export flag.
-        """
-        if isinstance(state, str):
-            self._exported = (state == str(True))
-        else:
-            self._exported = (state is True)
-        return
-
     ##
     #  Set Document Meta Data
     ##
+
+    def setMainHeading(self, value):
+        """Set the main heading level.
+        """
+        if value in nwHeaders.H_LEVEL:
+            self._heading = value
+        return
 
     def setCharCount(self, count):
         """Set the character count, and ensure that it is an integer.

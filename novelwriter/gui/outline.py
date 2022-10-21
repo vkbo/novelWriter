@@ -57,7 +57,7 @@ class GuiOutlineView(QWidget):
     loadDocumentTagRequest = pyqtSignal(str, Enum)
 
     def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
@@ -198,7 +198,7 @@ class GuiOutlineToolBar(QToolBar):
     viewColumnToggled = pyqtSignal(bool, Enum)
 
     def __init__(self, theOutline):
-        QTreeWidget.__init__(self, theOutline)
+        super().__init__(parent=theOutline)
 
         logger.debug("Initialising GuiOutlineToolBar ...")
 
@@ -357,7 +357,7 @@ class GuiOutlineTree(QTreeWidget):
     activeItemChanged = pyqtSignal(str, str)
 
     def __init__(self, theOutline):
-        QTreeWidget.__init__(self, theOutline)
+        super().__init__(parent=theOutline)
 
         logger.debug("Initialising GuiOutlineTree ...")
 
@@ -391,13 +391,6 @@ class GuiOutlineTree(QTreeWidget):
         fH2.setBold(True)
 
         self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
-        self._pIndent = [
-            self.mainTheme.loadDecoration("deco_doc_h0", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h1", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h2", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h3", pxH=iPx),
-            self.mainTheme.loadDecoration("deco_doc_h4", pxH=iPx),
-        ]
         self._dIcon = {
             "H0": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H0"),
             "H1": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H1"),
@@ -491,7 +484,7 @@ class GuiOutlineTree(QTreeWidget):
         # was last built, we rebuild the tree from the updated index.
         indexChanged = self.theProject.index.rootChangedSince(rootHandle, self._lastBuild)
         if not (novelChanged or indexChanged or overRide):
-            logger.verbose("No changes have been made to the novel index")
+            logger.debug("No changes have been made to the novel index")
             return
 
         self._populateTree(rootHandle)
@@ -561,11 +554,9 @@ class GuiOutlineTree(QTreeWidget):
         """Receive the changes to column visibility forwarded by the
         column selection menu.
         """
-        logger.verbose("User toggled Outline column '%s'", theItem.name)
         if theItem in self._colIdx:
             self.setColumnHidden(self._colIdx[theItem], not isChecked)
             self._saveHeaderState()
-
         return
 
     ##
@@ -684,28 +675,29 @@ class GuiOutlineTree(QTreeWidget):
             self.setColumnHidden(self._colIdx[nwOutline.TITLE], False)
 
             headItem = self.headerItem()
-            headItem.setTextAlignment(self._colIdx[nwOutline.CCOUNT], Qt.AlignRight)
-            headItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], Qt.AlignRight)
-            headItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], Qt.AlignRight)
+            if headItem is not None:
+                headItem.setTextAlignment(self._colIdx[nwOutline.CCOUNT], Qt.AlignRight)
+                headItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], Qt.AlignRight)
+                headItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], Qt.AlignRight)
 
         novStruct = self.theProject.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
         for _, tHandle, sTitle, novIdx in novStruct:
 
             iLevel = nwHeaders.H_LEVEL.get(novIdx.level, 0)
-            dLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
             if iLevel == 0:
                 continue
 
             trItem = QTreeWidgetItem()
             nwItem = self.theProject.tree[tHandle]
+            hDec = self.mainTheme.getHeaderDecoration(iLevel)
 
-            trItem.setData(self._colIdx[nwOutline.TITLE], Qt.DecorationRole, self._pIndent[iLevel])
+            trItem.setData(self._colIdx[nwOutline.TITLE], Qt.DecorationRole, hDec)
             trItem.setText(self._colIdx[nwOutline.TITLE], novIdx.title)
             trItem.setData(self._colIdx[nwOutline.TITLE], self.D_HANDLE, tHandle)
             trItem.setData(self._colIdx[nwOutline.TITLE], self.D_TITLE, sTitle)
             trItem.setFont(self._colIdx[nwOutline.TITLE], self._hFonts[iLevel])
             trItem.setText(self._colIdx[nwOutline.LEVEL], novIdx.level)
-            trItem.setIcon(self._colIdx[nwOutline.LABEL], self._dIcon[dLevel])
+            trItem.setIcon(self._colIdx[nwOutline.LABEL], self._dIcon[nwItem.mainHeading])
             trItem.setText(self._colIdx[nwOutline.LABEL], nwItem.itemName)
             trItem.setText(self._colIdx[nwOutline.LINE], sTitle[1:].lstrip("0"))
             trItem.setText(self._colIdx[nwOutline.SYNOP], novIdx.synopsis)
@@ -741,7 +733,7 @@ class GuiOutlineHeaderMenu(QMenu):
     columnToggled = pyqtSignal(bool, Enum)
 
     def __init__(self, theOutline):
-        QMenu.__init__(self, theOutline)
+        super().__init__(parent=theOutline)
 
         self.acceptToggle = True
 
@@ -792,7 +784,7 @@ class GuiOutlineDetails(QScrollArea):
     itemTagClicked = pyqtSignal(str)
 
     def __init__(self, theOutline):
-        QScrollArea.__init__(self, theOutline)
+        super().__init__(parent=theOutline)
 
         logger.debug("Initialising GuiOutlineDetails ...")
 
@@ -1048,7 +1040,7 @@ class GuiOutlineDetails(QScrollArea):
             self.titleLabel.setText("<b>%s</b>" % self.tr("Title"))
         self.titleValue.setText(novIdx.title)
 
-        itemStatus, _ = nwItem.getImportStatus()
+        itemStatus, _ = nwItem.getImportStatus(incIcon=False)
 
         self.fileValue.setText(nwItem.itemName)
         self.itemValue.setText(itemStatus)

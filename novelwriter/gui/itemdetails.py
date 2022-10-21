@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 class GuiItemDetails(QWidget):
 
     def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiItemDetails ...")
         self.mainConf   = novelwriter.CONFIG
@@ -247,7 +247,7 @@ class GuiItemDetails(QWidget):
             theLabel = theLabel[:96].rstrip()+" ..."
 
         if nwItem.isFileType():
-            if nwItem.isExported:
+            if nwItem.isActive:
                 self.labelIcon.setPixmap(self._expCheck)
             else:
                 self.labelIcon.setPixmap(self._expCross)
@@ -273,12 +273,11 @@ class GuiItemDetails(QWidget):
         # Layout
         # ======
 
-        hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
         usageIcon = self.mainTheme.getItemIcon(
-            nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
+            nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, nwItem.mainHeading
         )
         self.usageIcon.setPixmap(usageIcon.pixmap(iPx, iPx))
-        self.usageData.setText(nwItem.describeMe(hLevel))
+        self.usageData.setText(nwItem.describeMe())
 
         # Counts
         # ======

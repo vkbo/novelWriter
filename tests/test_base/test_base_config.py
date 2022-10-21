@@ -96,12 +96,6 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     # Let the config class figure out the path
     with monkeypatch.context() as mp:
         mp.setattr("PyQt5.QtCore.QStandardPaths.writableLocation", lambda *a: fncDir)
-        tstConf.verQtValue = 50600
-        tstConf.initConfig()
-        assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
-        assert tstConf.dataPath == os.path.join(fncDir, tstConf.appHandle)
-        assert not os.path.isfile(confFile)
-        tstConf.verQtValue = 50000
         tstConf.initConfig()
         assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
         assert tstConf.dataPath == os.path.join(fncDir, tstConf.appHandle)
@@ -320,38 +314,6 @@ def testBaseConfig_RecentCache(monkeypatch, tmpConf, tmpDir, fncDir):
     }
 
 # END Test testBaseConfig_RecentCache
-
-
-@pytest.mark.base
-def testBaseConfig_SetPath(tmpConf, tmpDir):
-    """Test path setters.
-    """
-    # Conf Path
-    assert tmpConf.setConfPath(None)
-    assert not tmpConf.setConfPath(os.path.join("somewhere", "over", "the", "rainbow"))
-    assert tmpConf.setConfPath(os.path.join(tmpDir, "novelwriter.conf"))
-    assert tmpConf.confPath == tmpDir
-    assert tmpConf.confFile == "novelwriter.conf"
-    assert not tmpConf.confChanged
-
-    # Data Path
-    assert tmpConf.setDataPath(None)
-    assert not tmpConf.setDataPath(os.path.join("somewhere", "over", "the", "rainbow"))
-    assert tmpConf.setDataPath(tmpDir)
-    assert tmpConf.dataPath == tmpDir
-    assert not tmpConf.confChanged
-
-    # Last Path
-    assert tmpConf.setLastPath(None)
-    assert tmpConf.lastPath == ""
-
-    assert tmpConf.setLastPath(os.path.join(tmpDir, "file.tmp"))
-    assert tmpConf.lastPath == tmpDir
-
-    assert tmpConf.setLastPath("")
-    assert tmpConf.lastPath == ""
-
-# END Test testBaseConfig_SetPath
 
 
 @pytest.mark.base
