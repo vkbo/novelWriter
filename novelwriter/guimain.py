@@ -907,8 +907,15 @@ class GuiMain(QMainWindow):
         if dlgConf.result() == QDialog.Accepted:
             logger.debug("Applying new preferences")
             self.initMain()
-            self.mainTheme.updateTheme()
             self.saveDocument()
+
+            self.mainTheme.updateTheme()
+            self.viewsBar.updateTheme()
+            self.projView.updateTheme()
+            self.novelView.updateTheme()
+            self.docEditor.updateTheme()
+            self.docViewer.updateTheme()
+
             self.docEditor.initEditor()
             self.docViewer.initViewer()
             self.projView.initSettings()

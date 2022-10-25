@@ -92,6 +92,13 @@ class GuiNovelView(QWidget):
     #  Methods
     ##
 
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        self.novelBar.updateTheme()
+        self.refreshTree()
+        return
+
     def initSettings(self):
         """Initialise GUI elements that depend on specific settings.
         """
@@ -181,16 +188,6 @@ class GuiNovelToolBar(QWidget):
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
 
-        qPalette = self.palette()
-        qPalette.setBrush(QPalette.Window, qPalette.base())
-        self.setPalette(qPalette)
-
-        fadeCol = qPalette.text().color()
-        buttonStyle = (
-            "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
-        ).format(mPx, fadeCol.red(), fadeCol.green(), fadeCol.blue())
-
         # Widget Label
         self.viewLabel = QLabel("<b>%s</b>" % self.tr("Novel Outline"))
         self.viewLabel.setContentsMargins(0, 0, 0, 0)
@@ -199,9 +196,7 @@ class GuiNovelToolBar(QWidget):
         # Refresh Button
         self.tbRefresh = QToolButton(self)
         self.tbRefresh.setToolTip(self.tr("Refresh"))
-        self.tbRefresh.setIcon(self.mainTheme.getIcon("refresh"))
         self.tbRefresh.setIconSize(QSize(iPx, iPx))
-        self.tbRefresh.setStyleSheet(buttonStyle)
         self.tbRefresh.clicked.connect(self._refreshNovelTree)
 
         # Novel Root Menu
@@ -211,9 +206,7 @@ class GuiNovelToolBar(QWidget):
 
         self.tbRoot = QToolButton(self)
         self.tbRoot.setToolTip(self.tr("Novel Root"))
-        self.tbRoot.setIcon(self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL]))
         self.tbRoot.setIconSize(QSize(iPx, iPx))
-        self.tbRoot.setStyleSheet(buttonStyle)
         self.tbRoot.setMenu(self.mRoot)
         self.tbRoot.setPopupMode(QToolButton.InstantPopup)
 
@@ -230,9 +223,7 @@ class GuiNovelToolBar(QWidget):
 
         self.tbMore = QToolButton(self)
         self.tbMore.setToolTip(self.tr("More Options"))
-        self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
         self.tbMore.setIconSize(QSize(iPx, iPx))
-        self.tbMore.setStyleSheet(buttonStyle)
         self.tbMore.setMenu(self.mMore)
         self.tbMore.setPopupMode(QToolButton.InstantPopup)
 
@@ -247,6 +238,8 @@ class GuiNovelToolBar(QWidget):
 
         self.setLayout(self.outerBox)
 
+        self.updateTheme()
+
         logger.debug("GuiNovelToolBar initialisation complete")
 
         return
@@ -254,6 +247,33 @@ class GuiNovelToolBar(QWidget):
     ##
     #  Methods
     ##
+
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        # Icons
+
+        self.tbRefresh.setIcon(self.mainTheme.getIcon("refresh"))
+        self.tbRoot.setIcon(self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL]))
+        self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
+
+        qPalette = self.palette()
+        qPalette.setBrush(QPalette.Window, qPalette.base())
+        self.setPalette(qPalette)
+
+        # StyleSheets
+
+        fadeCol = qPalette.text().color()
+        buttonStyle = (
+            "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
+        ).format(self.mainConf.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
+
+        self.tbRefresh.setStyleSheet(buttonStyle)
+        self.tbRoot.setStyleSheet(buttonStyle)
+        self.tbMore.setStyleSheet(buttonStyle)
+
+        return
 
     def clearContent(self):
         """Run clearing project tasks.

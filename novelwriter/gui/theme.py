@@ -130,7 +130,6 @@ class GuiTheme:
 
         self.updateFont()
         self.updateTheme()
-        self.iconCache.updateTheme()
 
         # Icon Functions
         self.getIcon = self.iconCache.getIcon
@@ -220,6 +219,7 @@ class GuiTheme:
         else:
             self.cssFile = self.themeFile[:-5]+".css"
             self.loadTheme()
+            self.iconCache.updateTheme()
 
         self.syntaxFile = self._availSyntax.get(self.guiSyntax, None)
         if self.syntaxFile is None:
@@ -287,6 +287,8 @@ class GuiTheme:
             self._setPalette(confParser, cnfSec, "highlightedtext", QPalette.HighlightedText)
             self._setPalette(confParser, cnfSec, "link",            QPalette.Link)
             self._setPalette(confParser, cnfSec, "linkvisited",     QPalette.LinkVisited)
+        else:
+            self._guiPalette = qApp.style().standardPalette()
 
         # GUI
         cnfSec = "GUI"
@@ -577,6 +579,12 @@ class GuiIcons:
                 continue
             if iconKey not in self._themeMap:
                 logger.error("No icon file specified for '%s'", iconKey)
+
+        # Refresh icons
+        for iconKey in self._qIcons:
+            logger.debug("Reloading icon: '%s'", iconKey)
+            qIcon = self._loadIcon(iconKey)
+            self._qIcons[iconKey] = qIcon
 
         return True
 
