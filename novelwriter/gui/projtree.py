@@ -42,7 +42,7 @@ from PyQt5.QtWidgets import (
 from novelwriter.core import DocMerger, DocSplitter
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.dialogs import GuiDocMerge, GuiDocSplit, GuiEditLabel, GuiProjectSettings
-from novelwriter.constants import nwHeaders, trConst, nwLabels
+from novelwriter.constants import nwHeaders, nwUnicode, trConst, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -1121,10 +1121,12 @@ class GuiProjectTree(QTreeWidget):
         open a context menu in-place.
         """
         tItem = None
+        hasChild = False
         selItem = self.itemAt(clickPos)
         if isinstance(selItem, QTreeWidgetItem):
             tHandle = selItem.data(self.C_NAME, Qt.UserRole)
             tItem = self.theProject.tree[tHandle]
+            hasChild = selItem.childCount() > 0
 
         if tItem is None:
             logger.debug("No item found")
@@ -1149,7 +1151,6 @@ class GuiProjectTree(QTreeWidget):
         isRoot = tItem.isRootType()
         isFolder = tItem.isFolderType()
         isFile = tItem.isFileType()
-        hasChild = selItem.childCount() > 0
 
         if isFile:
             aOpenDoc = ctxMenu.addAction(self.tr("Open Document"))
@@ -1172,10 +1173,12 @@ class GuiProjectTree(QTreeWidget):
             aActive = ctxMenu.addAction(self.tr("Toggle Active"))
             aActive.triggered.connect(lambda: self._toggleItemActive(tHandle))
 
+        checkMark = f" ({nwUnicode.U_CHECK})"
         if tItem.isNovelLike():
             mStatus = ctxMenu.addMenu(self.tr("Set Status to ..."))
             for n, (key, entry) in enumerate(self.theProject.statusItems.items()):
-                aStatus = mStatus.addAction(entry["icon"], entry["name"])
+                entryName = entry["name"] + (checkMark if tItem.itemStatus == key else "")
+                aStatus = mStatus.addAction(entry["icon"], entryName)
                 aStatus.triggered.connect(
                     lambda n, key=key: self._changeItemStatus(tHandle, key)
                 )
@@ -1187,7 +1190,8 @@ class GuiProjectTree(QTreeWidget):
         else:
             mImport = ctxMenu.addMenu(self.tr("Set Importance to ..."))
             for n, (key, entry) in enumerate(self.theProject.importItems.items()):
-                aImport = mImport.addAction(entry["icon"], entry["name"])
+                entryName = entry["name"] + (checkMark if tItem.itemImport == key else "")
+                aImport = mImport.addAction(entry["icon"], entryName)
                 aImport.triggered.connect(
                     lambda n, key=key: self._changeItemImport(tHandle, key)
                 )
