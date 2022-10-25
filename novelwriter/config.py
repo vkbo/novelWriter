@@ -508,12 +508,6 @@ class Config:
             logger.info("Using straight double quotes, so disabling auto-replace")
             self.doReplaceDQuote = False
 
-        # Check deprecated settings
-        if self.guiIcons in ("typicons_colour_dark", "typicons_grey_dark"):
-            self.guiIcons = "typicons_dark"
-        elif self.guiIcons in ("typicons_colour_light", "typicons_grey_light"):
-            self.guiIcons = "typicons_light"
-
         return True
 
     def saveConfig(self):

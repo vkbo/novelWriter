@@ -185,22 +185,6 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Requires restart.")
         )
 
-        # Select Icon Theme
-        self.guiIcons = QComboBox()
-        self.guiIcons.setMinimumWidth(minWidth)
-        self.iconCache = self.mainTheme.iconCache.listThemes()
-        for iconDir, iconName in self.iconCache:
-            self.guiIcons.addItem(iconName, iconDir)
-        iconIdx = self.guiIcons.findData(self.mainConf.guiIcons)
-        if iconIdx != -1:
-            self.guiIcons.setCurrentIndex(iconIdx)
-
-        self.mainForm.addRow(
-            self.tr("Main icon theme"),
-            self.guiIcons,
-            self.tr("Requires restart.")
-        )
-
         # Editor Theme
         self.guiSyntax = QComboBox()
         self.guiSyntax.setMinimumWidth(self.mainConf.pxInt(200))
@@ -288,7 +272,6 @@ class GuiPreferencesGeneral(QWidget):
         """
         guiLang     = self.guiLang.currentData()
         guiTheme    = self.guiTheme.currentData()
-        guiIcons    = self.guiIcons.currentData()
         guiSyntax   = self.guiSyntax.currentData()
         guiFont     = self.guiFont.text()
         guiFontSize = self.guiFontSize.value()
@@ -298,7 +281,6 @@ class GuiPreferencesGeneral(QWidget):
         needsRestart = False
         needsRestart |= self.mainConf.guiLang != guiLang
         needsRestart |= self.mainConf.guiTheme != guiTheme
-        needsRestart |= self.mainConf.guiIcons != guiIcons
         needsRestart |= self.mainConf.guiFont != guiFont
         needsRestart |= self.mainConf.guiFontSize != guiFontSize
 
@@ -308,7 +290,6 @@ class GuiPreferencesGeneral(QWidget):
 
         self.mainConf.guiLang      = guiLang
         self.mainConf.guiTheme     = guiTheme
-        self.mainConf.guiIcons     = guiIcons
         self.mainConf.guiSyntax    = guiSyntax
         self.mainConf.guiFont      = guiFont
         self.mainConf.guiFontSize  = guiFontSize

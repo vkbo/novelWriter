@@ -67,6 +67,7 @@ class GuiTheme:
         self.themeUrl         = ""
         self.themeLicense     = ""
         self.themeLicenseUrl  = ""
+        self.themeIcons       = ""
 
         # GUI
         self.statNone    = [120, 120, 120]
@@ -267,6 +268,7 @@ class GuiTheme:
             self.themeUrl         = confParser.rdStr(cnfSec, "url", "")
             self.themeLicense     = confParser.rdStr(cnfSec, "license", "N/A")
             self.themeLicenseUrl  = confParser.rdStr(cnfSec, "licenseurl", "")
+            self.themeIcons       = confParser.rdStr(cnfSec, "icontheme", "")
 
         # Palette
         cnfSec = "Palette"
@@ -292,6 +294,9 @@ class GuiTheme:
             self.statNone    = self._loadColour(confParser, cnfSec, "statusnone")
             self.statUnsaved = self._loadColour(confParser, cnfSec, "statusunsaved")
             self.statSaved   = self._loadColour(confParser, cnfSec, "statussaved")
+
+        # Set Icon Theme
+        self.mainConf.guiIcons = self.themeIcons
 
         # CSS File
         cssData = readTextFile(self.cssFile)
@@ -492,7 +497,6 @@ class GuiIcons:
         # Storage
         self._qIcons    = {}
         self._themeMap  = {}
-        self._themeList = []
         self._headerDec = []
         self._confName  = "icons.conf"
 
@@ -667,28 +671,6 @@ class GuiIcons:
                 self.loadDecoration("deco_doc_h4", pxH=iPx),
             ]
         return self._headerDec[minmax(hLevel, 0, 4)]
-
-    def listThemes(self):
-        """Scan the icons themes folder and list all themes.
-        """
-        if self._themeList:
-            return self._themeList
-
-        confParser = NWConfigParser()
-        for themeDir in os.listdir(self._iconPath):
-            themePath = os.path.join(self._iconPath, themeDir)
-            if not os.path.isdir(themePath):
-                continue
-
-            logger.debug("Checking icon theme config for '%s'", themeDir)
-            themeConf = os.path.join(themePath, self._confName)
-            themeName = _loadInternalName(confParser, themeConf)
-            if themeName:
-                self._themeList.append((themeDir, themeName))
-
-        self._themeList = sorted(self._themeList, key=lambda x: x[1])
-
-        return self._themeList
 
     ##
     #  Internal Functions

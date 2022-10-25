@@ -50,7 +50,7 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert novelwriter.CONFIG.confPath == nwMinimal
     novelwriter.CONFIG.guiTheme = "default_dark"
     novelwriter.CONFIG.guiSyntax = "tomorrow_night_eighties"
-    novelwriter.CONFIG.guiIcons = "typicons_colour_dark"
+    novelwriter.CONFIG.guiIcons = "typicons_dark"
     novelwriter.CONFIG.guiFont = "Cantarell"
     novelwriter.CONFIG.guiFontSize = 11
     novelwriter.CONFIG.confChanged = True
