@@ -88,7 +88,7 @@ class GuiProjectSettings(PagedDialog):
         self.addControls(self.buttonBox)
 
         # Flags
-        self.spellChanged = False
+        self._spellChanged = False
 
         # Focus Tab
         self._focusTab(focusTab)
@@ -96,6 +96,10 @@ class GuiProjectSettings(PagedDialog):
         logger.debug("GuiProjectSettings initialisation complete")
 
         return
+
+    @property
+    def spellChanged(self):
+        return self._spellChanged
 
     ##
     #  Slots
@@ -116,7 +120,7 @@ class GuiProjectSettings(PagedDialog):
         self.theProject.setProjBackup(doBackup)
 
         # Remember this as updating spell dictionary can be expensive
-        self.spellChanged = self.theProject.setSpellLang(spellLang)
+        self._spellChanged = self.theProject.setSpellLang(spellLang)
 
         if self.tabStatus.colChanged:
             newList, delList = self.tabStatus.getNewList()
