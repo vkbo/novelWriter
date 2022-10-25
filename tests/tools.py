@@ -30,6 +30,17 @@ XML_IGNORE = ("<novelWriterXML", "<saveCount", "<autoCount", "<editTime")
 
 class C:
 
+    # Import and status items from test project when random generator is mocked
+    sNew      = "s000000"
+    sNote     = "s000001"
+    sDraft    = "s000002"
+    sFinished = "s000003"
+
+    iNew   = "i000004"
+    iMinor = "i000005"
+    iMajor = "i000006"
+    iMain  = "i000007"
+
     # Handles from test project when random generator is mocked
     hInvalid    = "0000000000000"
     hNovelRoot  = "0000000000008"

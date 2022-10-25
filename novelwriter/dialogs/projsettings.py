@@ -43,7 +43,12 @@ logger = logging.getLogger(__name__)
 
 class GuiProjectSettings(PagedDialog):
 
-    def __init__(self, mainGui):
+    TAB_MAIN    = 0
+    TAB_STATUS  = 1
+    TAB_IMPORT  = 2
+    TAB_REPLACE = 3
+
+    def __init__(self, mainGui, focusTab=TAB_MAIN):
         super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiProjectSettings ...")
@@ -83,11 +88,18 @@ class GuiProjectSettings(PagedDialog):
         self.addControls(self.buttonBox)
 
         # Flags
-        self.spellChanged = False
+        self._spellChanged = False
+
+        # Focus Tab
+        self._focusTab(focusTab)
 
         logger.debug("GuiProjectSettings initialisation complete")
 
         return
+
+    @property
+    def spellChanged(self):
+        return self._spellChanged
 
     ##
     #  Slots
@@ -108,7 +120,7 @@ class GuiProjectSettings(PagedDialog):
         self.theProject.setProjBackup(doBackup)
 
         # Remember this as updating spell dictionary can be expensive
-        self.spellChanged = self.theProject.setSpellLang(spellLang)
+        self._spellChanged = self.theProject.setSpellLang(spellLang)
 
         if self.tabStatus.colChanged:
             newList, delList = self.tabStatus.getNewList()
@@ -140,6 +152,19 @@ class GuiProjectSettings(PagedDialog):
     ##
     #  Internal Functions
     ##
+
+    def _focusTab(self, tab):
+        """Change which is the focused tab.
+        """
+        if tab == self.TAB_MAIN:
+            self.setCurrentWidget(self.tabMain)
+        elif tab == self.TAB_STATUS:
+            self.setCurrentWidget(self.tabStatus)
+        elif tab == self.TAB_IMPORT:
+            self.setCurrentWidget(self.tabImport)
+        elif tab == self.TAB_REPLACE:
+            self.setCurrentWidget(self.tabReplace)
+        return
 
     def _saveGuiSettings(self):
         """Save GUI settings.

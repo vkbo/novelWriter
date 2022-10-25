@@ -41,8 +41,8 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.core import DocMerger, DocSplitter
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.dialogs import GuiDocMerge, GuiDocSplit, GuiEditLabel
-from novelwriter.constants import nwHeaders, trConst, nwLabels
+from novelwriter.dialogs import GuiDocMerge, GuiDocSplit, GuiEditLabel, GuiProjectSettings
+from novelwriter.constants import nwHeaders, nwUnicode, trConst, nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +61,9 @@ class GuiProjectView(QWidget):
     # Signals for user interaction with the project tree
     selectedItemChanged = pyqtSignal(str)
     openDocumentRequest = pyqtSignal(str, Enum, int, str)
+
+    # Requests for the main GUI
+    projectSettingsRequest = pyqtSignal(int)
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -102,9 +105,6 @@ class GuiProjectView(QWidget):
         self.keyContext.activated.connect(lambda: self.projTree.openContextOnSelected())
 
         # Function Mappings
-        self.revealNewTreeItem = self.projTree.revealNewTreeItem
-        self.renameTreeItem = self.projTree.renameTreeItem
-        self.getTreeFromHandle = self.projTree.getTreeFromHandle
         self.emptyTrash = self.projTree.emptyTrash
         self.requestDeleteItem = self.projTree.requestDeleteItem
         self.setTreeItemValues = self.projTree.setTreeItemValues
@@ -160,6 +160,16 @@ class GuiProjectView(QWidget):
         """Check if the project tree has focus.
         """
         return self.projTree.hasFocus()
+
+    def renameTreeItem(self, tHandle=None):
+        """External request to rename an item or the currently selected
+        item. This is triggered by the global menu or keyboard shortcut.
+        """
+        if tHandle is None:
+            tHandle = self.projTree.getSelectedHandle()
+        if tHandle:
+            return self.projTree.renameTreeItem(tHandle)
+        return
 
     ##
     #  Public Slots
@@ -1111,10 +1121,12 @@ class GuiProjectTree(QTreeWidget):
         open a context menu in-place.
         """
         tItem = None
+        hasChild = False
         selItem = self.itemAt(clickPos)
         if isinstance(selItem, QTreeWidgetItem):
             tHandle = selItem.data(self.C_NAME, Qt.UserRole)
             tItem = self.theProject.tree[tHandle]
+            hasChild = selItem.childCount() > 0
 
         if tItem is None:
             logger.debug("No item found")
@@ -1128,9 +1140,8 @@ class GuiProjectTree(QTreeWidget):
         trashHandle = self.theProject.tree.trashRoot()
         if tItem.itemHandle == trashHandle and trashHandle is not None:
             # The trash folder only has one option
-            ctxMenu.addAction(
-                self.tr("Empty Trash"), lambda: self.emptyTrash()
-            )
+            aEmptyTrash = ctxMenu.addAction(self.tr("Empty Trash"))
+            aEmptyTrash.triggered.connect(lambda: self.emptyTrash())
             ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
             return True
 
@@ -1140,15 +1151,14 @@ class GuiProjectTree(QTreeWidget):
         isRoot = tItem.isRootType()
         isFolder = tItem.isFolderType()
         isFile = tItem.isFileType()
-        hasChild = selItem.childCount() > 0
 
         if isFile:
-            ctxMenu.addAction(
-                self.tr("Open Document"),
+            aOpenDoc = ctxMenu.addAction(self.tr("Open Document"))
+            aOpenDoc.triggered.connect(
                 lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, -1, "")
             )
-            ctxMenu.addAction(
-                self.tr("View Document"),
+            aViewDoc = ctxMenu.addAction(self.tr("View Document"))
+            aViewDoc.triggered.connect(
                 lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
             )
             ctxMenu.addSeparator()
@@ -1156,29 +1166,40 @@ class GuiProjectTree(QTreeWidget):
         # Edit Item Settings
         # ==================
 
-        ctxMenu.addAction(
-            self.tr("Change Label"), lambda: self.renameTreeItem(tHandle)
-        )
+        aLabel = ctxMenu.addAction(self.tr("Change Label"))
+        aLabel.triggered.connect(lambda: self.renameTreeItem(tHandle))
 
         if isFile:
-            ctxMenu.addAction(
-                self.tr("Toggle Active"), lambda: self._toggleItemActive(tHandle)
-            )
+            aActive = ctxMenu.addAction(self.tr("Toggle Active"))
+            aActive.triggered.connect(lambda: self._toggleItemActive(tHandle))
 
+        checkMark = f" ({nwUnicode.U_CHECK})"
         if tItem.isNovelLike():
             mStatus = ctxMenu.addMenu(self.tr("Set Status to ..."))
             for n, (key, entry) in enumerate(self.theProject.statusItems.items()):
-                aStatus = mStatus.addAction(entry["icon"], entry["name"])
+                entryName = entry["name"] + (checkMark if tItem.itemStatus == key else "")
+                aStatus = mStatus.addAction(entry["icon"], entryName)
                 aStatus.triggered.connect(
                     lambda n, key=key: self._changeItemStatus(tHandle, key)
                 )
+            mStatus.addSeparator()
+            aManage1 = mStatus.addAction("Manage Labels ...")
+            aManage1.triggered.connect(
+                lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.TAB_STATUS)
+            )
         else:
             mImport = ctxMenu.addMenu(self.tr("Set Importance to ..."))
             for n, (key, entry) in enumerate(self.theProject.importItems.items()):
-                aImport = mImport.addAction(entry["icon"], entry["name"])
+                entryName = entry["name"] + (checkMark if tItem.itemImport == key else "")
+                aImport = mImport.addAction(entry["icon"], entryName)
                 aImport.triggered.connect(
                     lambda n, key=key: self._changeItemImport(tHandle, key)
                 )
+            mImport.addSeparator()
+            aManage2 = mImport.addAction("Manage Labels ...")
+            aManage2.triggered.connect(
+                lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.TAB_IMPORT)
+            )
 
         # Transform Item
         # ==============
@@ -1193,38 +1214,30 @@ class GuiProjectTree(QTreeWidget):
             isNoteFile = isFile and tItem.isNoteLayout()
 
             if (isNoteFile or isFolder) and tItem.documentAllowed():
-                mTrans.addAction(
-                    self.tr("Convert to {0}").format(trDoc),
+                aConvert1 = mTrans.addAction(self.tr("Convert to {0}").format(trDoc))
+                aConvert1.triggered.connect(
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.DOCUMENT)
                 )
 
             if isDocFile or isFolder:
-                mTrans.addAction(
-                    self.tr("Convert to {0}").format(trNote),
+                aConvert2 = mTrans.addAction(self.tr("Convert to {0}").format(trNote))
+                aConvert2.triggered.connect(
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.NOTE)
                 )
 
             if hasChild and isFile:
-                mTrans.addAction(
-                    self.tr("Merge Child Items into Self"),
-                    lambda: self._mergeDocuments(tHandle, False)
-                )
-                mTrans.addAction(
-                    self.tr("Merge Child Items into New"),
-                    lambda: self._mergeDocuments(tHandle, True)
-                )
+                aMerge1 = mTrans.addAction(self.tr("Merge Child Items into Self"))
+                aMerge1.triggered.connect(lambda: self._mergeDocuments(tHandle, False))
+                aMerge2 = mTrans.addAction(self.tr("Merge Child Items into New"))
+                aMerge2.triggered.connect(lambda: self._mergeDocuments(tHandle, True))
 
             if hasChild and isFolder:
-                mTrans.addAction(
-                    self.tr("Merge Documents in Folder"),
-                    lambda: self._mergeDocuments(tHandle, True)
-                )
+                aMerge3 = mTrans.addAction(self.tr("Merge Documents in Folder"))
+                aMerge3.triggered.connect(lambda: self._mergeDocuments(tHandle, True))
 
             if isFile:
-                mTrans.addAction(
-                    self.tr("Split Document by Headers"),
-                    lambda: self._splitDocument(tHandle)
-                )
+                aSplit1 = mTrans.addAction(self.tr("Split Document by Headers"))
+                aSplit1.triggered.connect(lambda: self._splitDocument(tHandle))
 
         # Expand/Collapse/Delete
         # ======================
@@ -1232,23 +1245,17 @@ class GuiProjectTree(QTreeWidget):
         ctxMenu.addSeparator()
 
         if hasChild:
-            ctxMenu.addAction(
-                self.tr("Expand All"),
-                lambda: self.setExpandedFromHandle(tHandle, True)
-            )
-            ctxMenu.addAction(
-                self.tr("Collapse All"),
-                lambda: self.setExpandedFromHandle(tHandle, False)
-            )
+            aExpand = ctxMenu.addAction(self.tr("Expand All"))
+            aExpand.triggered.connect(lambda: self.setExpandedFromHandle(tHandle, True))
+            aCollapse = ctxMenu.addAction(self.tr("Collapse All"))
+            aCollapse.triggered.connect(lambda: self.setExpandedFromHandle(tHandle, False))
 
         if tItem.itemClass == nwItemClass.TRASH or isRoot or (isFolder and not hasChild):
-            ctxMenu.addAction(
-                self.tr("Delete Permanently"), lambda: self.permanentlyDeleteItem(tHandle)
-            )
+            aDelete = ctxMenu.addAction(self.tr("Delete Permanently"))
+            aDelete.triggered.connect(lambda: self.permanentlyDeleteItem(tHandle))
         else:
-            ctxMenu.addAction(
-                self.tr("Move to Trash"), lambda: self.moveItemToTrash(tHandle)
-            )
+            aMoveTrash = ctxMenu.addAction(self.tr("Move to Trash"))
+            aMoveTrash.triggered.connect(lambda: self.moveItemToTrash(tHandle))
 
         # Show Context Menu
         ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
