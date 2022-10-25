@@ -130,6 +130,7 @@ class GuiTheme:
 
         self.updateFont()
         self.updateTheme()
+        self.updateSyntax()
 
         # Icon Functions
         self.getIcon = self.iconCache.getIcon
@@ -221,12 +222,6 @@ class GuiTheme:
             self.loadTheme()
             self.iconCache.updateTheme()
 
-        self.syntaxFile = self._availSyntax.get(self.guiSyntax, None)
-        if self.syntaxFile is None:
-            logger.error("Could not find syntax theme '%s'", self.guiSyntax)
-        else:
-            self.loadSyntax()
-
         # Update dependant colours
         backCol = qApp.palette().window().color()
         textCol = qApp.palette().windowText().color()
@@ -240,6 +235,19 @@ class GuiTheme:
             helpLCol = backLCol + 0.65*(textLCol - backLCol)
 
         self.helpText = [int(255*helpLCol)]*3
+
+        return True
+
+    def updateSyntax(self):
+        """Update the syntac theme from theme files.
+        """
+        self.guiSyntax = self.mainConf.guiSyntax
+
+        self.syntaxFile = self._availSyntax.get(self.guiSyntax, None)
+        if self.syntaxFile is None:
+            logger.error("Could not find syntax theme '%s'", self.guiSyntax)
+        else:
+            self.loadSyntax()
 
         return True
 

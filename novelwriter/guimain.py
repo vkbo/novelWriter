@@ -929,7 +929,8 @@ class GuiMain(QMainWindow):
                 self.mainStatus.updateTheme()
 
             if dlgConf.updateSyntax:
-                pass
+                self.mainTheme.updateSyntax()
+                self.docEditor.updateSyntaxColours()
 
             self.docEditor.initEditor()
             self.docViewer.initViewer()

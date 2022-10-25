@@ -173,6 +173,7 @@ class GuiDocEditor(QTextEdit):
         self.wCounterSel.signals.countsReady.connect(self._updateSelCounts)
 
         # Finalise
+        self.updateSyntaxColours()
         self.initEditor()
 
         logger.debug("GuiDocEditor initialisation complete")
@@ -212,6 +213,27 @@ class GuiDocEditor(QTextEdit):
         self.docSearch.updateTheme()
         self.docHeader.updateTheme()
         self.docFooter.updateTheme()
+        return
+
+    def updateSyntaxColours(self):
+        """Update the syntax highlighting theme.
+        """
+        mainPalette = self.palette()
+        mainPalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        mainPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
+        mainPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
+        self.setPalette(mainPalette)
+
+        docPalette = self.viewport().palette()
+        docPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
+        docPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
+        self.viewport().setPalette(docPalette)
+
+        self.docHeader.matchColours()
+        self.docFooter.matchColours()
+
+        self.highLight.initHighlighter()
+
         return
 
     def initEditor(self):
@@ -260,21 +282,6 @@ class GuiDocEditor(QTextEdit):
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
 
-        # Set the widget colours to match syntax theme
-        mainPalette = self.palette()
-        mainPalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
-        mainPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
-        mainPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
-        self.setPalette(mainPalette)
-
-        docPalette = self.viewport().palette()
-        docPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
-        docPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
-        self.viewport().setPalette(docPalette)
-
-        self.docHeader.matchColours()
-        self.docFooter.matchColours()
-
         # Set default text margins
         # Due to cursor visibility, a part of the margin must be
         # allocated to the document itself. See issue #1112.
@@ -308,9 +315,6 @@ class GuiDocEditor(QTextEdit):
 
         # Refresh the tab stops
         self.setTabStopDistance(self.mainConf.getTabWidth())
-
-        # Initialise the syntax highlighter
-        self.highLight.initHighlighter()
 
         # Configure word count timer
         self.wcInterval = self.mainConf.wordCountTimer
