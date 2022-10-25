@@ -1871,10 +1871,10 @@ class GuiDocEditor(QTextEdit):
 
     def _followTag(self, theCursor=None, loadTag=True):
         """Activated by Ctrl+Enter. Checks that we're in a block
-        starting with '@'. We then find the word under the cursor and
-        check that it is after the ':'. If all this is fine, we have a
-        tag and can tell the document viewer to try and find and load
-        the file where the tag is defined.
+        starting with '@'. We then find the tag under the cursor and
+        check that it is not the tag itself. If all this is fine, we
+        have a tag and can tell the document viewer to try and find and
+        load the file where the tag is defined.
         """
         if theCursor is None:
             theCursor = self.textCursor()
@@ -1887,18 +1887,29 @@ class GuiDocEditor(QTextEdit):
 
         if theText.startswith("@"):
 
-            theCursor.select(QTextCursor.WordUnderCursor)
-            theWord = theCursor.selectedText()
-            cPos = theText.find(":")
-            wPos = theCursor.selectionStart() - theBlock.position()
-            if wPos <= cPos:
+            isGood, tBits, tPos = self.theParent.theIndex.scanThis(theText)
+            if not isGood:
+                return False
+
+            theTag = ""
+            cPos = theCursor.selectionStart() - theBlock.position()
+            for sTag, sPos in zip(reversed(tBits), reversed(tPos)):
+                if cPos >= sPos:
+                    # The cursor is between the start of two tags
+                    if cPos <= sPos + len(sTag):
+                        # The cursor is inside or at the edge of the tag
+                        theTag = sTag
+                    break
+
+            if not theTag or theTag.startswith("@"):
+                # The keyword cannot be looked up, so we ignore that
                 return False
 
             if loadTag:
-                logger.verbose("Attempting to follow tag '%s'", theWord)
-                self.theParent.docViewer.loadFromTag(theWord)
+                logger.verbose("Attempting to follow tag '%s'", theTag)
+                self.theParent.docViewer.loadFromTag(theTag)
             else:
-                logger.verbose("Potential tag '%s'", theWord)
+                logger.verbose("Potential tag '%s'", theTag)
 
             return True
 
