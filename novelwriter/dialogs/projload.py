@@ -53,21 +53,21 @@ class GuiProjectLoad(QDialog):
     C_COUNT = 1
     C_TIME  = 2
 
-    def __init__(self, theParent):
-        QDialog.__init__(self, theParent)
+    def __init__(self, mainGui):
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiProjectLoad ...")
         self.setObjectName("GuiProjectLoad")
 
         self.mainConf  = novelwriter.CONFIG
-        self.theParent = theParent
-        self.theTheme  = theParent.theTheme
+        self.mainGui   = mainGui
+        self.mainTheme = mainGui.mainTheme
         self.openState = self.NONE_STATE
         self.openPath  = None
 
         sPx = self.mainConf.pxInt(16)
         nPx = self.mainConf.pxInt(96)
-        iPx = self.theTheme.baseIconSize
+        iPx = self.mainTheme.baseIconSize
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
@@ -80,7 +80,7 @@ class GuiProjectLoad(QDialog):
         self.setModal(True)
 
         self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(self.theParent.theTheme.getPixmap("novelwriter", (nPx, nPx)))
+        self.nwIcon.setPixmap(self.mainGui.mainTheme.getPixmap("novelwriter", (nPx, nPx)))
         self.innerBox.addWidget(self.nwIcon, 0, Qt.AlignTop)
 
         self.projectForm = QGridLayout()
@@ -110,7 +110,7 @@ class GuiProjectLoad(QDialog):
         self.selPath.setReadOnly(True)
 
         self.browseButton = QPushButton("...")
-        self.browseButton.setMaximumWidth(int(2.5*self.theTheme.getTextWidth("...")))
+        self.browseButton.setMaximumWidth(int(2.5*self.mainTheme.getTextWidth("...")))
         self.browseButton.clicked.connect(self._doBrowse)
 
         self.projectForm.addWidget(self.lblRecent,    0, 0, 1, 3)
@@ -158,7 +158,6 @@ class GuiProjectLoad(QDialog):
     def _doOpenRecent(self):
         """Close the dialog window with a recent project selected.
         """
-        logger.verbose("GuiProjectLoad open button clicked")
         self._saveSettings()
 
         self.openPath = None
@@ -183,7 +182,6 @@ class GuiProjectLoad(QDialog):
     def _doBrowse(self):
         """Browse for a folder path.
         """
-        logger.verbose("GuiProjectLoad browse button clicked")
         extFilter = [
             self.tr("novelWriter Project File ({0})").format(nwFiles.PROJ_FILE),
             self.tr("All files ({0})").format("*"),
@@ -203,7 +201,6 @@ class GuiProjectLoad(QDialog):
     def _doCancel(self):
         """Close the dialog window without doing anything.
         """
-        logger.verbose("GuiProjectLoad close button clicked")
         self.openPath = None
         self.openState = self.NONE_STATE
         self.close()
@@ -212,7 +209,6 @@ class GuiProjectLoad(QDialog):
     def _doNewProject(self):
         """Create a new project.
         """
-        logger.verbose("GuiProjectLoad new project button clicked")
         self._saveSettings()
         self.openPath = None
         self.openState = self.NEW_STATE
@@ -225,7 +221,7 @@ class GuiProjectLoad(QDialog):
         selList = self.listBox.selectedItems()
         if selList:
             projName = selList[0].text(self.C_NAME)
-            msgYes = self.theParent.askQuestion(
+            msgYes = self.mainGui.askQuestion(
                 self.tr("Remove Entry"),
                 self.tr(
                     "Remove '{0}' from the recent projects list? "
@@ -280,7 +276,7 @@ class GuiProjectLoad(QDialog):
         sortList = sorted(dataList, key=lambda x: x[1], reverse=True)
         for theTitle, theTime, theWords, projPath in sortList:
             newItem = QTreeWidgetItem([""]*4)
-            newItem.setIcon(self.C_NAME,  self.theParent.theTheme.getIcon("proj_nwx"))
+            newItem.setIcon(self.C_NAME,  self.mainGui.mainTheme.getIcon("proj_nwx"))
             newItem.setText(self.C_NAME,  theTitle)
             newItem.setData(self.C_NAME,  Qt.UserRole, projPath)
             newItem.setText(self.C_COUNT, formatInt(theWords))
@@ -288,7 +284,7 @@ class GuiProjectLoad(QDialog):
             newItem.setTextAlignment(self.C_NAME,  Qt.AlignLeft  | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_TIME,  Qt.AlignRight | Qt.AlignVCenter)
-            newItem.setFont(self.C_TIME, self.theTheme.guiFontFixed)
+            newItem.setFont(self.C_TIME, self.mainTheme.guiFontFixed)
             self.listBox.addTopLevelItem(newItem)
 
         if self.listBox.topLevelItemCount() > 0:

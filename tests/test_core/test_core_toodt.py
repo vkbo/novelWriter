@@ -28,8 +28,8 @@ from shutil import copyfile
 
 from tools import cmpFiles
 
-from novelwriter.core import NWProject, NWIndex, ToOdt
-from novelwriter.core.toodt import ODTParagraphStyle, ODTTextStyle, XMLParagraph, _mkTag
+from novelwriter.core.toodt import ToOdt, ODTParagraphStyle, ODTTextStyle, XMLParagraph, _mkTag
+from novelwriter.core.project import NWProject
 
 XML_NS = [
     ' xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"',
@@ -55,7 +55,6 @@ def testCoreToOdt_Init(mockGUI):
     """Test initialisation of the ODT document.
     """
     theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
 
     # Flat Doc
     # ========
@@ -111,7 +110,6 @@ def testCoreToOdt_TextFormatting(mockGUI):
     """Test formatting of paragraphs.
     """
     theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
     theDoc = ToOdt(theProject, isFlat=True)
 
     theDoc.initDocument()
@@ -233,7 +231,6 @@ def testCoreToOdt_Convert(mockGUI):
     """Test the converter of the ToOdt class.
     """
     theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
     theDoc = ToOdt(theProject, isFlat=True)
 
     theDoc._isNovel = True
@@ -565,7 +562,6 @@ def testCoreToOdt_ConvertDirect(mockGUI):
     otherwise hard to reach conditions.
     """
     theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
     theDoc = ToOdt(theProject, isFlat=True)
 
     theDoc._isNovel = True
@@ -620,7 +616,6 @@ def testCoreToOdt_SaveFlat(mockGUI, fncDir, outDir, refDir):
     """Test the document save functions.
     """
     theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
 
     theDoc = ToOdt(theProject, isFlat=True)
     theDoc._isNovel = True
@@ -657,7 +652,6 @@ def testCoreToOdt_SaveFull(mockGUI, fncDir, outDir, refDir):
     """Test the document save functions.
     """
     theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
 
     theDoc = ToOdt(theProject, isFlat=False)
     theDoc._isNovel = True
@@ -737,7 +731,6 @@ def testCoreToOdt_Format(mockGUI):
     """Test the formatters for the ToOdt class.
     """
     theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
     theDoc = ToOdt(theProject, isFlat=True)
 
     assert theDoc._formatSynopsis("synopsis text") == (

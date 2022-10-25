@@ -37,7 +37,7 @@ from PyQt5.QtCore import (
 )
 
 from novelwriter.error import logException, formatException
-from novelwriter.common import splitVersionNumber, formatTimeStamp, NWConfigParser
+from novelwriter.common import ensureFolder, splitVersionNumber, formatTimeStamp, NWConfigParser
 from novelwriter.constants import nwFiles, nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -52,25 +52,22 @@ class Config:
 
         # Set Application Variables
         self.appName   = "novelWriter"
-        self.appHandle = self.appName.lower()
-
-        # Config Error Handling
-        self.hasError  = False  # True if the config class encountered an error
-        self.errData   = []     # List of error messages
+        self.appHandle = "novelwriter"
 
         # Set Paths
-        self.cmdOpen   = None   # Path from command line for project to be opened on launch
-        self.confPath  = None   # Folder where the config is saved
-        self.confFile  = None   # The config file name
-        self.dataPath  = None   # Folder where app data is stored
-        self.lastPath  = None   # The last user-selected folder (browse dialogs)
-        self.appPath   = None   # The full path to the novelwriter package folder
-        self.appRoot   = None   # The full path to the novelwriter root folder
-        self.appIcon   = None   # The full path to the novelwriter icon file
-        self.assetPath = None   # The full path to the novelwriter/assets folder
-        self.pdfDocs   = None   # The location of the PDF manual, if it exists
+        self.cmdOpen   = None  # Path from command line for project to be opened on launch
+        self.confPath  = None  # Folder where the config is saved
+        self.dataPath  = None  # Folder where app data is stored
+        self.lastPath  = None  # The last user-selected folder (browse dialogs)
+        self.appPath   = None  # The full path to the novelwriter package folder
+        self.appRoot   = None  # The full path to the novelwriter root folder
+        self.appIcon   = None  # The full path to the novelwriter icon file
+        self.assetPath = None  # The full path to the novelwriter/assets folder
+        self.pdfDocs   = None  # The location of the PDF manual, if it exists
 
         # Runtime Settings and Variables
+        self.hasError = False     # True if the config class encountered an error
+        self.errData  = []        # List of error messages
         self.confChanged = False  # True whenever the config has chenged, false after save
 
         # General
@@ -94,16 +91,14 @@ class Config:
         self.qtTrans    = {}
 
         # Sizes
-        self.winGeometry   = [1200, 650]
-        self.prefGeometry  = [700, 615]
-        self.treeColWidth  = [200, 50, 30]
-        self.novelColWidth = [200, 50]
-        self.projColWidth  = [200, 60, 140]
-        self.mainPanePos   = [300, 800]
-        self.docPanePos    = [400, 400]
-        self.viewPanePos   = [500, 150]
-        self.outlnPanePos  = [500, 150]
-        self.isFullScreen  = False
+        self.winGeometry  = [1200, 650]
+        self.prefGeometry = [700, 615]
+        self.projColWidth = [200, 60, 140]
+        self.mainPanePos  = [300, 800]
+        self.docPanePos   = [400, 400]
+        self.viewPanePos  = [500, 150]
+        self.outlnPanePos = [500, 150]
+        self.isFullScreen = False
 
         # Features
         self.hideVScroll = False  # Hide vertical scroll bars on main widgets
@@ -117,7 +112,7 @@ class Config:
         # Text Editor
         self.textFont        = None   # Editor font
         self.textSize        = 12     # Editor font size
-        self.textWidth       = 600    # Editor text width
+        self.textWidth       = 700    # Editor text width
         self.textMargin      = 40     # Editor/viewer text margin
         self.tabWidth        = 40     # Editor tabulator width
 
@@ -222,8 +217,8 @@ class Config:
             self.osUnknown = True
 
         # Other System Info
-        self.hostName  = "Unknown"
-        self.kernelVer = "Unknown"
+        self.hostName  = QSysInfo.machineHostName()
+        self.kernelVer = QSysInfo.kernelVersion()
 
         # Packages
         self.hasEnchant = False  # The pyenchant package
@@ -266,31 +261,15 @@ class Config:
             self.confPath = confPath
 
         if dataPath is None:
-            if self.verQtValue >= 50400:
-                dataRoot = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
-            else:
-                dataRoot = QStandardPaths.writableLocation(QStandardPaths.DataLocation)
+            dataRoot = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
             self.dataPath = os.path.join(os.path.abspath(dataRoot), self.appHandle)
         else:
             logger.info("Setting data path from alternative path: %s", dataPath)
             self.dataPath = dataPath
 
-        logger.verbose("Config path: %s", self.confPath)
-        logger.verbose("Data path: %s", self.dataPath)
+        logger.debug("Config path: %s", self.confPath)
+        logger.debug("Data path: %s", self.dataPath)
 
-        # Check Data Path Subdirs
-        dataDirs = ["syntax", "themes"]
-        for dataDir in dataDirs:
-            dirPath = os.path.join(self.dataPath, dataDir)
-            if not os.path.isdir(dirPath):
-                try:
-                    os.mkdir(dirPath)
-                    logger.info("Created folder: %s", dirPath)
-                except Exception:
-                    logger.error("Could not create folder: %s", dirPath)
-                    logException()
-
-        self.confFile = self.appHandle+".conf"
         self.lastPath = os.path.expanduser("~")
         self.appPath = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
         self.appRoot = os.path.abspath(os.path.join(self.appPath, os.path.pardir))
@@ -310,49 +289,32 @@ class Config:
         self.nwLangPath = os.path.join(self.assetPath, "i18n")
 
         logger.debug("Assets: %s", self.assetPath)
-        logger.verbose("App path: %s", self.appPath)
-        logger.verbose("Last path: %s", self.lastPath)
+        logger.debug("App path: %s", self.appPath)
+        logger.debug("Last path: %s", self.lastPath)
 
-        # If the config folder does not exist, create it.
-        # This assumes that the os config folder itself exists.
-        if not os.path.isdir(self.confPath):
-            try:
-                os.mkdir(self.confPath)
-            except Exception as exc:
-                logger.error("Could not create folder: %s", self.confPath)
-                logException()
-                self.hasError = True
-                self.errData.append("Could not create folder: %s" % self.confPath)
-                self.errData.append(formatException(exc))
-                self.confPath = None
+        # If the config and data folders don't not exist, create them
+        # This assumes that the os config and data folders exist
+        if not ensureFolder(self.confPath, errLog=self.errData):
+            self.hasError = True
+            self.confPath = None
+
+        if not ensureFolder(self.dataPath, errLog=self.errData):
+            self.hasError = True
+            self.dataPath = None
+
+        # We don't error on these failing since they are not essential
+        if self.dataPath is not None:
+            ensureFolder("syntax", parent=self.dataPath)
+            ensureFolder("themes", parent=self.dataPath)
 
         # Check if config file exists
         if self.confPath is not None:
-            if os.path.isfile(os.path.join(self.confPath, self.confFile)):
+            if os.path.isfile(os.path.join(self.confPath, nwFiles.CONF_FILE)):
                 # If it exists, load it
                 self.loadConfig()
             else:
                 # If it does not exist, save a copy of the default values
                 self.saveConfig()
-
-        # If the data folder does not exist, create it.
-        # This assumes that the os data folder itself exists.
-        if self.dataPath is not None:
-            if not os.path.isdir(self.dataPath):
-                try:
-                    os.mkdir(self.dataPath)
-                except Exception as exc:
-                    logger.error("Could not create folder: %s", self.dataPath)
-                    logException()
-                    self.hasError = True
-                    self.errData.append("Could not create folder: %s" % self.dataPath)
-                    self.errData.append(formatException(exc))
-                    self.dataPath = None
-
-        # Host and Kernel
-        if self.verQtValue >= 50600:
-            self.hostName  = QSysInfo.machineHostName()
-            self.kernelVer = QSysInfo.kernelVersion()
 
         # Load recent projects cache
         self.loadRecentCache()
@@ -399,7 +361,7 @@ class Config:
 
     def listLanguages(self, lngSet):
         """List localisation files in the i18n folder. The default GUI
-        language 'en_GB' is British English.
+        language is British English (en_GB).
         """
         if lngSet == self.LANG_NW:
             fPre = "nw_"
@@ -432,7 +394,7 @@ class Config:
             return False
 
         theConf = NWConfigParser()
-        cnfPath = os.path.join(self.confPath, self.confFile)
+        cnfPath = os.path.join(self.confPath, nwFiles.CONF_FILE)
         try:
             with open(cnfPath, mode="r", encoding="utf-8") as inFile:
                 theConf.read_file(inFile)
@@ -460,8 +422,6 @@ class Config:
         cnfSec = "Sizes"
         self.winGeometry   = theConf.rdIntList(cnfSec, "geometry", self.winGeometry)
         self.prefGeometry  = theConf.rdIntList(cnfSec, "preferences", self.prefGeometry)
-        self.treeColWidth  = theConf.rdIntList(cnfSec, "treecols", self.treeColWidth)
-        self.novelColWidth = theConf.rdIntList(cnfSec, "novelcols", self.novelColWidth)
         self.projColWidth  = theConf.rdIntList(cnfSec, "projcols", self.projColWidth)
         self.mainPanePos   = theConf.rdIntList(cnfSec, "mainpane", self.mainPanePos)
         self.docPanePos    = theConf.rdIntList(cnfSec, "docpane", self.docPanePos)
@@ -581,8 +541,6 @@ class Config:
         theConf["Sizes"] = {
             "geometry":    self._packList(self.winGeometry),
             "preferences": self._packList(self.prefGeometry),
-            "treecols":    self._packList(self.treeColWidth),
-            "novelcols":   self._packList(self.novelColWidth),
             "projcols":    self._packList(self.projColWidth),
             "mainpane":    self._packList(self.mainPanePos),
             "docpane":     self._packList(self.docPanePos),
@@ -659,7 +617,7 @@ class Config:
         }
 
         # Write config file
-        cnfPath = os.path.join(self.confPath, self.confFile)
+        cnfPath = os.path.join(self.confPath, nwFiles.CONF_FILE)
         try:
             with open(cnfPath, mode="w", encoding="utf-8") as outFile:
                 theConf.write(outFile)
@@ -744,7 +702,7 @@ class Config:
         """
         if thePath in self.recentProj:
             del self.recentProj[thePath]
-            logger.verbose("Removed recent: %s", thePath)
+            logger.debug("Removed recent: %s", thePath)
             self.saveRecentCache()
         else:
             logger.error("Unknown recent: %s", thePath)
@@ -754,29 +712,6 @@ class Config:
     ##
     #  Setters
     ##
-
-    def setConfPath(self, newPath):
-        """Set the path and filename to the config file.
-        """
-        if newPath is None:
-            return True
-        if not os.path.isfile(newPath):
-            logger.error("File not found, using default config path instead")
-            return False
-        self.confPath = os.path.dirname(newPath)
-        self.confFile = os.path.basename(newPath)
-        return True
-
-    def setDataPath(self, newPath):
-        """Set the data path.
-        """
-        if newPath is None:
-            return True
-        if not os.path.isdir(newPath):
-            logger.error("Path not found, using default data path instead")
-            return False
-        self.dataPath = os.path.abspath(newPath)
-        return True
 
     def setLastPath(self, lastPath):
         """Set the last used path (by the user).
@@ -808,20 +743,6 @@ class Config:
         """
         self.prefGeometry[0] = int(newWidth/self.guiScale)
         self.prefGeometry[1] = int(newHeight/self.guiScale)
-        self.confChanged = True
-        return True
-
-    def setTreeColWidths(self, colWidths):
-        """Set the column widths of the main project tree.
-        """
-        self.treeColWidth = [int(x/self.guiScale) for x in colWidths]
-        self.confChanged = True
-        return True
-
-    def setNovelColWidths(self, colWidths):
-        """Set the column widths of the novel tree.
-        """
-        self.novelColWidth = [int(x/self.guiScale) for x in colWidths]
         self.confChanged = True
         return True
 
@@ -910,12 +831,6 @@ class Config:
     def getPreferencesSize(self):
         return [int(x*self.guiScale) for x in self.prefGeometry]
 
-    def getTreeColWidths(self):
-        return [int(x*self.guiScale) for x in self.treeColWidth]
-
-    def getNovelColWidths(self):
-        return [int(x*self.guiScale) for x in self.novelColWidth]
-
     def getProjColWidths(self):
         return [int(x*self.guiScale) for x in self.projColWidth]
 
@@ -978,12 +893,12 @@ class Config:
         """
         try:
             import enchant  # noqa: F401
-            self.hasEnchant = True
-            logger.debug("Checking package 'pyenchant': OK")
-        except Exception:
+        except ImportError:
             self.hasEnchant = False
             logger.debug("Checking package 'pyenchant': Missing")
-
+        else:
+            self.hasEnchant = True
+            logger.debug("Checking package 'pyenchant': OK")
         return
 
 # END Class Config

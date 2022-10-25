@@ -19,27 +19,29 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import pytest
 import os
+import pytest
 
 from shutil import copyfile
-from tools import cmpFiles, getGuiItem
+from tools import cmpFiles, getGuiItem, buildTestProject
 
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
-    QDialog, QAction, QMessageBox, QColorDialog, QTreeWidgetItem
-)
+from PyQt5.QtWidgets import QDialog, QAction, QMessageBox, QColorDialog
 
-from novelwriter.dialogs import GuiProjectSettings
+from novelwriter.dialogs.projsettings import GuiProjectSettings
 
 keyDelay = 2
 typeDelay = 1
 stepDelay = 20
+statusKeys = ["s000000", "s000001", "s000002", "s000003"]
+importKeys = ["i000004", "i000005", "i000006", "i000007"]
 
 
 @pytest.mark.gui
-def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDir, refDir):
+def testDlgProjSettings_Dialog(
+    qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDir, refDir, mockRnd
+):
     """Test the full project settings dialog.
     """
     projFile = os.path.join(fncProj, "nwProject.nwx")
@@ -55,8 +57,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
     assert getGuiItem("GuiProjectSettings") is None
 
     # Create new project
-    nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
     nwGUI.mainConf.backupPath = fncDir
 
     nwGUI.theProject.setSpellLang("en")
@@ -80,7 +81,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
     # ============
 
     assert projEdit.tabMain.editName.text() == "New Project"
-    assert projEdit.tabMain.editTitle.text() == ""
+    assert projEdit.tabMain.editTitle.text() == "New Novel"
     assert projEdit.tabMain.editAuthors.toPlainText() == "Jane Smith\nJohn Smith"
     assert projEdit.tabMain.spellLang.currentData() == "en"
     assert projEdit.tabMain.doBackup.isChecked() is False
@@ -89,6 +90,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
     projEdit.tabMain.editName.setText("")
     for c in "Project Name":
         qtbot.keyClick(projEdit.tabMain.editName, c, delay=typeDelay)
+    projEdit.tabMain.editTitle.setText("")
     for c in "Project Title":
         qtbot.keyClick(projEdit.tabMain.editTitle, c, delay=typeDelay)
 
@@ -111,18 +113,8 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
     projEdit._tabBox.setCurrentWidget(projEdit.tabStatus)
 
     assert projEdit.tabStatus.colChanged is False
-    assert projEdit.tabStatus.getNewList() is None
+    assert projEdit.tabStatus.getNewList() == ([], [])
     assert projEdit.tabStatus.listBox.topLevelItemCount() == 4
-
-    # Fake drag'n'drop should change changed status
-    projEdit.tabStatus._rowsMoved()
-    assert projEdit.tabStatus.colChanged is True
-    projEdit.tabStatus.colChanged = False
-
-    projEdit.tabStatus.listBox.clearSelection()
-    assert projEdit.tabStatus._getSelectedItem() is None
-    projEdit.tabStatus.listBox.topLevelItem(0).setSelected(True)
-    assert isinstance(projEdit.tabStatus._getSelectedItem(), QTreeWidgetItem)
 
     # Can't delete the first item (it's in use)
     projEdit.tabStatus.listBox.clearSelection()
@@ -150,11 +142,53 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDi
     qtbot.wait(stepDelay)
 
     assert projEdit.tabStatus.colChanged is True
-    assert projEdit.tabStatus.getNewList() == [
-        ("New", 100, 100, 100, "New"),
-        ("Note", 200, 50, 0, "Note"),
-        ("Finished", 50, 200, 0, "Finished"),
-        ("Final", 20, 30, 40, None)
+    assert projEdit.tabStatus.getNewList() == (
+        [
+            {
+                "key": statusKeys[0],
+                "name": "New",
+                "cols": (100, 100, 100)
+            }, {
+                "key": statusKeys[1],
+                "name": "Note",
+                "cols": (200, 50, 0)
+            }, {
+                "key": statusKeys[3],
+                "name": "Finished",
+                "cols": (50, 200, 0)
+            }, {
+                "key": None,
+                "name": "Final",
+                "cols": (20, 30, 40)
+            }
+        ], [
+            statusKeys[2]  # Deleted item
+        ]
+    )
+
+    # Move items
+    projEdit.tabStatus.listBox.clearSelection()
+    projEdit.tabStatus._moveItem(1)
+    assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
+        statusKeys[0], statusKeys[1], statusKeys[3], None
+    ]
+
+    projEdit.tabStatus.listBox.clearSelection()
+    projEdit.tabStatus.listBox.topLevelItem(0).setSelected(True)
+    projEdit.tabStatus._moveItem(-1)
+    assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
+        statusKeys[0], statusKeys[1], statusKeys[3], None
+    ]
+
+    projEdit.tabStatus.listBox.clearSelection()
+    projEdit.tabStatus.listBox.topLevelItem(3).setSelected(True)
+    projEdit.tabStatus._moveItem(-1)
+    assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
+        statusKeys[0], statusKeys[1], None, statusKeys[3]
+    ]
+    projEdit.tabStatus._moveItem(1)
+    assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
+        statusKeys[0], statusKeys[1], statusKeys[3], None
     ]
 
     # Importance Tab

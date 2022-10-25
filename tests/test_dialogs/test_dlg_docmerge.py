@@ -20,20 +20,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import pytest
-import os
 
-from tools import getGuiItem, readFile, writeFile
-from mock import causeOSError
+from tools import buildTestProject, C
 
-from PyQt5.QtWidgets import QAction, QMessageBox, QDialog
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMessageBox
 
-from novelwriter.dialogs import GuiDocMerge, GuiItemEditor
-from novelwriter.enum import nwItemType, nwWidget
-from novelwriter.core.tree import NWTree
+from novelwriter.dialogs.docmerge import GuiDocMerge
 
 
 @pytest.mark.gui
-def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj):
+def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test the merge documents tool.
     """
     # Block message box
@@ -41,138 +38,56 @@ def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj):
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
 
     # Create a new project
-    nwGUI.theProject.projTree.setSeed(42)
-    assert nwGUI.newProject({"projPath": fncProj})
+    buildTestProject(nwGUI, fncProj)
 
-    # Handles for new objects
-    hChapterDir = "31489056e0916"
-    hChapterOne = "98010bd9270f9"
-    hSceneOne   = "0e17daca5f3e1"
-    hSceneTwo   = "1a6562590ef19"
-    hSceneThree = "031b4af5197ec"
-    hSceneFour  = "41cfc0d1f2d12"
-    hMergedDoc  = "2858dcd1057d3"
-
-    # Add Project Content
-    monkeypatch.setattr(GuiItemEditor, "exec_", lambda *a: QDialog.Accepted)
-    nwGUI.switchFocus(nwWidget.TREE)
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
-    nwGUI.treeView.newTreeItem(nwItemType.FILE, None)
-
-    assert nwGUI.saveProject() is True
-    assert nwGUI.closeProject() is True
-
-    tChapterOne = "## Chapter One\n\n% Chapter one comment\n"
-    tSceneOne   = "### Scene One\n\nThere once was a man from Nantucket"
-    tSceneTwo   = "### Scene Two\n\nWho kept all his cash in a bucket."
-    tSceneThree = "### Scene Three\n\n\tBut his daughter, named Nan,  \n\tRan away with a man"
-    tSceneFour  = "### Scene Four\n\nAnd as for the bucket, Nantucket."
-
-    contentDir = os.path.join(fncProj, "content")
-    writeFile(os.path.join(contentDir, hChapterOne+".nwd"), tChapterOne)
-    writeFile(os.path.join(contentDir, hSceneOne+".nwd"), tSceneOne)
-    writeFile(os.path.join(contentDir, hSceneTwo+".nwd"), tSceneTwo)
-    writeFile(os.path.join(contentDir, hSceneThree+".nwd"), tSceneThree)
-    writeFile(os.path.join(contentDir, hSceneFour+".nwd"), tSceneFour)
-
-    assert nwGUI.openProject(fncProj) is True
-
-    # Open the Merge tool
-    nwGUI.switchFocus(nwWidget.TREE)
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
-
-    monkeypatch.setattr(GuiDocMerge, "exec_", lambda *a: None)
-    nwGUI.mainMenu.aMergeDocs.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiDocMerge") is not None, timeout=1000)
-
-    nwMerge = getGuiItem("GuiDocMerge")
-    assert isinstance(nwMerge, GuiDocMerge)
+    # Check that the dialog kan handle invalid items
+    nwMerge = GuiDocMerge(nwGUI, C.hInvalid, [C.hInvalid])
+    qtbot.addWidget(nwMerge)
     nwMerge.show()
-    qtbot.wait(50)
-
-    # Populate List
-    # =============
-
-    nwMerge.listBox.clear()
     assert nwMerge.listBox.count() == 0
+    nwMerge.reject()
 
-    # No item selected
-    nwGUI.treeView.clearSelection()
-    assert nwMerge._populateList() is False
-    assert nwMerge.listBox.count() == 0
+    # Load items from chapter dir
+    nwMerge = GuiDocMerge(nwGUI, C.hChapterDir, [C.hChapterDir, C.hChapterDoc, C.hSceneDoc])
+    qtbot.addWidget(nwMerge)
+    nwMerge.show()
 
-    # Non-existing item
-    with monkeypatch.context() as mp:
-        mp.setattr(NWTree, "__getitem__", lambda *a: None)
-        nwGUI.treeView.clearSelection()
-        nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
-        assert nwMerge._populateList() is False
-        assert nwMerge.listBox.count() == 0
+    assert nwMerge.listBox.count() == 2
 
-    # Select a non-folder
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hChapterOne).setSelected(True)
-    assert nwMerge._populateList() is False
-    assert nwMerge.listBox.count() == 0
+    itemOne = nwMerge.listBox.item(0)
+    itemTwo = nwMerge.listBox.item(1)
 
-    # Select the chapter folder
-    nwGUI.treeView.clearSelection()
-    nwGUI.treeView._getTreeItem(hChapterDir).setSelected(True)
-    assert nwMerge._populateList() is True
-    assert nwMerge.listBox.count() == 5
+    assert itemOne.data(Qt.UserRole) == C.hChapterDoc
+    assert itemTwo.data(Qt.UserRole) == C.hSceneDoc
 
-    # Merge Documents
-    # ===============
+    assert itemOne.checkState() == Qt.Checked
+    assert itemTwo.checkState() == Qt.Checked
 
-    # First, a successful merge
-    with monkeypatch.context() as mp:
-        mp.setattr(GuiDocMerge, "_doClose", lambda *a: None)
-        assert nwMerge._doMerge() is True
-        assert nwGUI.saveProject() is True
-        mergedFile = os.path.join(contentDir, hMergedDoc+".nwd")
-        assert os.path.isfile(mergedFile)
-        assert readFile(mergedFile) == (
-            "%%%%~name: New Chapter\n"
-            "%%%%~path: 73475cb40a568/2858dcd1057d3\n"
-            "%%%%~kind: NOVEL/DOCUMENT\n"
-            "%s\n\n"
-            "%s\n\n"
-            "%s\n\n"
-            "%s\n\n"
-            "%s\n\n"
-        ) % (
-            tChapterOne.strip(),
-            tSceneOne.strip(),
-            tSceneTwo.strip(),
-            tSceneThree.strip(),
-            tSceneFour.strip(),
-        )
+    data = nwMerge.getData()
+    assert data["sHandle"] == C.hChapterDir
+    assert data["origItems"] == [C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
+    assert data["moveToTrash"] is False
+    assert data["finalItems"] == [C.hChapterDoc, C.hSceneDoc]
 
-    # OS error
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert nwMerge._doMerge() is False
+    # Uncheck second item and toggle trash switch
+    itemTwo.setCheckState(Qt.Unchecked)
+    nwMerge.trashSwitch.setChecked(True)
 
-    # Can't find the source item
-    with monkeypatch.context() as mp:
-        mp.setattr(NWTree, "__getitem__", lambda *a: None)
-        assert nwMerge._doMerge() is False
+    data = nwMerge.getData()
+    assert data["sHandle"] == C.hChapterDir
+    assert data["origItems"] == [C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
+    assert data["moveToTrash"] is True
+    assert data["finalItems"] == [C.hChapterDoc]
 
-    # No source handle set
-    nwMerge.sourceItem = None
-    assert nwMerge._doMerge() is False
+    # Restore default values
+    nwMerge._resetList()
 
-    # No documents to merge
-    nwMerge.listBox.clear()
-    assert nwMerge._doMerge() is False
+    data = nwMerge.getData()
+    assert data["sHandle"] == C.hChapterDir
+    assert data["origItems"] == [C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
+    assert data["moveToTrash"] is True
+    assert data["finalItems"] == [C.hChapterDoc, C.hSceneDoc]
 
-    # Close up
-    nwMerge._doClose()
-
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testDlgMerge_Main

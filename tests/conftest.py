@@ -36,6 +36,13 @@ from PyQt5.QtWidgets import QMessageBox  # noqa: E402
 from novelwriter.config import Config  # noqa: E402
 
 
+@pytest.fixture(autouse=True)
+def initQt(qtbot):
+    """Ensures that the qt main thread is always available in all tests.
+    """
+    return
+
+
 ##
 #  Core Test Folders
 ##
@@ -174,6 +181,32 @@ def nwGUI(qtbot, monkeypatch, fncDir, fncConf):
 
 
 ##
+#  Python Objects
+##
+
+@pytest.fixture(scope="function")
+def mockRnd(monkeypatch):
+    """Create a mock random number generator that just counts upwards
+    from 0. This one will generate status/importance flags and handles
+    in a predictable sequence.
+    """
+    class MockRnd:
+
+        def __init__(self):
+            self.reset()
+
+        def _rnd(self, n):
+            for x in range(n):
+                yield x
+
+        def reset(self):
+            gen = self._rnd(1000)
+            monkeypatch.setattr("random.getrandbits", lambda *a: next(gen))
+
+    return MockRnd()
+
+
+##
 #  Temp Project Folders
 ##
 
@@ -240,10 +273,6 @@ def nwOldProj(tmpDir):
 
     return
 
-
-##
-#  Useful Fixtures
-##
 
 @pytest.fixture(scope="session")
 def ipsumText():

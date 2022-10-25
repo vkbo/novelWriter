@@ -44,7 +44,8 @@ def logException():
     """Log the content of an exception message.
     """
     exType, exValue, _ = sys.exc_info()
-    logger.error("%s: %s", exType.__name__, str(exValue))
+    if exType is not None:
+        logger.error("%s: %s", exType.__name__, str(exValue))
 
 
 def formatException(exc):
@@ -61,7 +62,7 @@ def formatException(exc):
 class NWErrorMessage(QDialog):
 
     def __init__(self, parent):
-        QDialog.__init__(self, parent=parent)
+        super().__init__(parent=parent)
         self.setObjectName("NWErrorMessage")
 
         # Widgets
@@ -87,6 +88,8 @@ class NWErrorMessage(QDialog):
         self.mainBox.addWidget(self.btnBox,  2, 0, 1, 2)
         self.mainBox.setSpacing(16)
 
+        # Pick a random window title from a set of error messages by
+        # Hex, the computer, from Discworld
         self.setWindowTitle([
             "+++ Out of Cheese Error +++",
             "+++ Divide by Cucumber Error +++",
@@ -129,7 +132,7 @@ class NWErrorMessage(QDialog):
 
         try:
             import lxml
-            lxmlVersion = lxml.__version__
+            lxmlVersion = lxml.__version__  # type: ignore
         except Exception:
             lxmlVersion = "Unknown"
 
@@ -196,8 +199,8 @@ def exceptionHandler(exType, exValue, exTrace):
 
         try:
             # Try a controlled shutdown
-            nwGUI.closeProject(isYes=True)
-            nwGUI.closeMain()
+            nwGUI.closeProject(isYes=True)  # type: ignore
+            nwGUI.closeMain()  # type: ignore
             logger.info("Emergency shutdown successful")
 
         except Exception as exc:

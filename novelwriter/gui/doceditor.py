@@ -33,6 +33,7 @@ import bisect
 import logging
 import novelwriter
 
+from enum import Enum
 from time import time
 
 from PyQt5.QtCore import (
@@ -50,7 +51,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import NWDoc, NWSpellEnchant, countWords
-from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwItemClass
+from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode
 from novelwriter.common import transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
 from novelwriter.gui.dochighlight import GuiDocHighlighter
@@ -69,18 +70,18 @@ class GuiDocEditor(QTextEdit):
     spellDictionaryChanged = pyqtSignal(str, str)
     docEditedStatusChanged = pyqtSignal(bool)
     docCountsChanged = pyqtSignal(str, int, int, int)
+    loadDocumentTagRequest = pyqtSignal(str, Enum)
 
-    def __init__(self, theParent):
-        QTextEdit.__init__(self, theParent)
+    def __init__(self, mainGui):
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiDocEditor ...")
 
         # Class Variables
         self.mainConf   = novelwriter.CONFIG
-        self.theParent  = theParent
-        self.theTheme   = theParent.theTheme
-        self.theIndex   = theParent.theIndex
-        self.theProject = theParent.theProject
+        self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
+        self.theProject = mainGui.theProject
 
         self._nwDocument = None
         self._nwItem     = None
@@ -124,7 +125,7 @@ class GuiDocEditor(QTextEdit):
 
         # Syntax
         self.spEnchant = NWSpellEnchant()
-        self.highLight = GuiDocHighlighter(qDoc, self.theParent, self.spEnchant)
+        self.highLight = GuiDocHighlighter(qDoc, self.mainGui, self.spEnchant)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -132,8 +133,9 @@ class GuiDocEditor(QTextEdit):
 
         # Editor Settings
         self.setMinimumWidth(self.mainConf.pxInt(300))
-        self.setAutoFillBackground(True)
         self.setAcceptRichText(False)
+        self.setAutoFillBackground(True)
+        self.setFrameStyle(QFrame.NoFrame)
 
         # Custom Shortcuts
         QShortcut(
@@ -238,10 +240,10 @@ class GuiDocEditor(QTextEdit):
         if self.mainConf.textFont is None:
             # If none is defined, set a default font
             theFont = QFont()
-            if self.mainConf.osWindows and "Arial" in self.theTheme.guiFontDB.families():
+            if self.mainConf.osWindows and "Arial" in self.mainTheme.guiFontDB.families():
                 theFont.setFamily("Arial")
                 theFont.setPointSize(12)
-            elif self.mainConf.osDarwin and "Courier" in self.theTheme.guiFontDB.families():
+            elif self.mainConf.osDarwin and "Courier" in self.mainTheme.guiFontDB.families():
                 theFont.setFamily("Courier")
                 theFont.setPointSize(12)
             else:
@@ -256,19 +258,20 @@ class GuiDocEditor(QTextEdit):
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
-        mainPalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        mainPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
-        mainPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        mainPalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        mainPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
+        mainPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
         self.setPalette(mainPalette)
 
         docPalette = self.viewport().palette()
-        docPalette.setColor(QPalette.Base, QColor(*self.theTheme.colBack))
-        docPalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        docPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
+        docPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
         self.viewport().setPalette(docPalette)
 
         self.docHeader.matchColours()
         self.docFooter.matchColours()
 
+        # Set default text margins
         # Due to cursor visibility, a part of the margin must be
         # allocated to the document itself. See issue #1112.
         cW = self.cursorWidth()
@@ -300,10 +303,7 @@ class GuiDocEditor(QTextEdit):
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Refresh the tab stops
-        if self.mainConf.verQtValue >= 51000:
-            self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:  # pragma: no cover
-            self.setTabStopWidth(self.mainConf.getTabWidth())
+        self.setTabStopDistance(self.mainConf.getTabWidth())
 
         # Initialise the syntax highlighter
         self.highLight.initHighlighter()
@@ -342,7 +342,7 @@ class GuiDocEditor(QTextEdit):
 
         docSize = len(theDoc)
         if docSize > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "The document you are trying to open is too big. "
                 "The document size is {0} MB. "
                 "The maximum size allowed is {1} MB."
@@ -403,7 +403,7 @@ class GuiDocEditor(QTextEdit):
             self.document().rootFrame().setFrameFormat(docFrame)
 
         self.docFooter.updateLineCount()
-        self._docHeaders = self.theIndex.getHandleHeaders(self._docHandle)
+        self._docHeaders = self.theProject.index.getHandleHeaders(self._docHandle)
 
         qApp.processEvents()
         self.document().clearUndoRedoStacks()
@@ -418,7 +418,7 @@ class GuiDocEditor(QTextEdit):
 
         # Update the status bar
         if self._nwItem is not None:
-            self.theParent.setStatus(
+            self.mainGui.setStatus(
                 self.tr("Opened Document: {0}").format(self._nwItem.itemName)
             )
 
@@ -443,7 +443,7 @@ class GuiDocEditor(QTextEdit):
         """
         docSize = len(theText)
         if docSize > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "The text you are trying to add is too big. "
                 "The text size is {0} MB. "
                 "The maximum size allowed is {1} MB."
@@ -489,7 +489,7 @@ class GuiDocEditor(QTextEdit):
         if not self._nwDocument.writeDocument(docText):
             saveOk = False
             if self._nwDocument._currHash != self._nwDocument._prevHash:
-                msgYes = self.theParent.askQuestion(
+                msgYes = self.mainGui.askQuestion(
                     self.tr("File Changed on Disk"),
                     self.tr(
                         "This document has been changed outside of novelWriter "
@@ -500,7 +500,7 @@ class GuiDocEditor(QTextEdit):
                     saveOk = self._nwDocument.writeDocument(docText, forceWrite=True)
 
             if not saveOk:
-                self.theParent.makeAlert([
+                self.mainGui.makeAlert([
                     self.tr("Could not save document."), self._nwDocument.getError()
                 ], nwAlert.ERROR)
 
@@ -508,22 +508,24 @@ class GuiDocEditor(QTextEdit):
 
         self.setDocumentChanged(False)
 
-        oldHeader = self.theIndex.getHandleHeaderLevel(tHandle)
-        self.theIndex.scanText(tHandle, docText)
-        newHeader = self.theIndex.getHandleHeaderLevel(tHandle)
+        oldHeader = self._nwItem.mainHeading
+        self.theProject.index.scanText(tHandle, docText)
+        newHeader = self._nwItem.mainHeading
 
-        if self._updateHeaders(checkLevel=True):
-            self.theParent.requestNovelTreeRefresh()
+        # ToDo: This should be a signal
+        if self._updateHeaders():
+            self.mainGui.requestNovelTreeRefresh()
         else:
-            self.theParent.novelView.updateWordCounts(tHandle)
+            self.mainGui.novelView.updateWordCounts(tHandle)
 
+        # ToDo: This should be a signal
         if oldHeader != newHeader:
-            self.theParent.treeView.setTreeItemValues(tHandle)
-            self.theParent.treeMeta.updateViewBox(tHandle)
+            self.mainGui.projView.setTreeItemValues(tHandle)
+            self.mainGui.itemDetails.updateViewBox(tHandle)
             self.docFooter.updateInfo()
 
         # Update the status bar
-        self.theParent.setStatus(
+        self.mainGui.setStatus(
             self.tr("Saved Document: {0}").format(self._nwItem.itemName)
         )
 
@@ -544,8 +546,8 @@ class GuiDocEditor(QTextEdit):
         sH = hBar.height() if hBar.isVisible() else 0
 
         tM = self._vpMargin
-        if self.mainConf.textWidth > 0 or self.theParent.isFocusMode:
-            tW = self.mainConf.getTextWidth(self.theParent.isFocusMode)
+        if self.mainConf.textWidth > 0 or self.mainGui.isFocusMode:
+            tW = self.mainConf.getTextWidth(self.mainGui.isFocusMode)
             tM = max((wW - sW - tW)//2, self._vpMargin)
 
         tB = self.frameWidth()
@@ -567,16 +569,6 @@ class GuiDocEditor(QTextEdit):
         lM = max(self._vpMargin, fH)
         self.setViewportMargins(tM, uM, tM, lM)
 
-        return
-
-    def updateDocInfo(self, tHandle):
-        """Called when an item label is changed to check if the document
-        title bar needs updating,
-        """
-        if tHandle == self._docHandle:
-            self.docHeader.setTitleFromHandle(self._docHandle)
-            self.docFooter.updateInfo()
-            self.updateDocMargins()
         return
 
     ##
@@ -609,19 +601,15 @@ class GuiDocEditor(QTextEdit):
     ##
 
     def getText(self):
-        """Get the text content of the current document. This method
-        uses QTextEdit->toPlainText for Qt versions lower than 5.9, and
-        the QTextDocument->toRawText for higher version. The latter
-        preserves non-breaking spaces, which the former does not.
-        We still want to get rid of page and line separators though.
+        """Get the text content of the current document. This method uses
+        QTextDocument->toRawText instead of toPlainText(). The former preserves
+        non-breaking spaces, the latter does not. We still want to get rid of
+        page and line separators though.
         See: https://doc.qt.io/qt-5/qtextdocument.html#toPlainText
         """
-        if self.mainConf.verQtValue >= 50900:
-            theText = self.document().toRawText()
-            theText = theText.replace(nwUnicode.U_LSEP, "\n")  # Line separators
-            theText = theText.replace(nwUnicode.U_PSEP, "\n")  # Paragraph separators
-        else:
-            theText = self.toPlainText()
+        theText = self.document().toRawText()
+        theText = theText.replace(nwUnicode.U_LSEP, "\n")  # Line separators
+        theText = theText.replace(nwUnicode.U_PSEP, "\n")  # Paragraph separators
         return theText
 
     def getCursorPosition(self):
@@ -676,7 +664,7 @@ class GuiDocEditor(QTextEdit):
             if theBlock:
                 self.setCursorPosition(theBlock.position())
                 self.docFooter.updateLineCount()
-                logger.verbose("Cursor moved to line %d", theLine)
+                logger.debug("Cursor moved to line %d", theLine)
 
         return True
 
@@ -714,7 +702,7 @@ class GuiDocEditor(QTextEdit):
 
         if not self.mainConf.hasEnchant:
             if theMode:
-                self.theParent.makeAlert(self.tr(
+                self.mainGui.makeAlert(self.tr(
                     "Spell checking requires the package PyEnchant. "
                     "It does not appear to be installed."
                 ), nwAlert.INFO)
@@ -724,13 +712,13 @@ class GuiDocEditor(QTextEdit):
             theMode = False
 
         self._spellCheck = theMode
-        self.theParent.mainMenu.setSpellCheck(theMode)
+        self.mainGui.mainMenu.setSpellCheck(theMode)
         self.theProject.setSpellCheck(theMode)
         self.highLight.setSpellCheck(theMode)
         if not self._bigDoc:
             self.spellCheckDocument()
 
-        logger.verbose("Spell check is set to '%s'", str(theMode))
+        logger.debug("Spell check is set to '%s'", str(theMode))
 
         return True
 
@@ -740,7 +728,7 @@ class GuiDocEditor(QTextEdit):
         of Qt 5.13, is to clear the text and put it back. This clears
         the undo stack, so we only do it for big documents.
         """
-        logger.verbose("Running spell checker")
+        logger.debug("Running spell checker")
         if self._spellCheck:
             bfTime = time()
             qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -752,7 +740,7 @@ class GuiDocEditor(QTextEdit):
             qApp.restoreOverrideCursor()
             afTime = time()
             logger.debug("Document highlighted in %.3f ms", 1000*(afTime-bfTime))
-            self.theParent.statusBar.setStatus(self.tr("Spell check complete"))
+            self.mainGui.mainStatus.setStatus(self.tr("Spell check complete"))
 
         return True
 
@@ -775,7 +763,7 @@ class GuiDocEditor(QTextEdit):
             logger.error("Not a document action")
             return False
 
-        logger.verbose("Requesting action: %s", theAction.name)
+        logger.debug("Requesting action: %s", theAction.name)
 
         self._allowAutoReplace(False)
         if theAction == nwDocAction.UNDO:
@@ -956,7 +944,7 @@ class GuiDocEditor(QTextEdit):
             logger.error("Invalid keyword '%s'", keyWord)
             return False
 
-        logger.verbose("Inserting keyword '%s'", keyWord)
+        logger.debug("Inserting keyword '%s'", keyWord)
         theState = self.insertNewBlock("%s: " % keyWord)
 
         return theState
@@ -1008,7 +996,7 @@ class GuiDocEditor(QTextEdit):
         if self.mainConf.autoScroll:
 
             cOld = self.cursorRect().center().y()
-            QTextEdit.keyPressEvent(self, keyEvent)
+            super().keyPressEvent(keyEvent)
 
             kMod = keyEvent.modifiers()
             okMod = kMod == Qt.NoModifier or kMod == Qt.ShiftModifier
@@ -1027,7 +1015,7 @@ class GuiDocEditor(QTextEdit):
                     doAnim.start()
 
         else:
-            QTextEdit.keyPressEvent(self, keyEvent)
+            super().keyPressEvent(keyEvent)
 
         self.docFooter.updateLineCount()
 
@@ -1054,7 +1042,7 @@ class GuiDocEditor(QTextEdit):
             theCursor = self.cursorForPosition(theEvent.pos())
             self._followTag(theCursor)
 
-        QTextEdit.mouseReleaseEvent(self, theEvent)
+        super().mouseReleaseEvent(theEvent)
         self.docFooter.updateLineCount()
 
         return
@@ -1064,11 +1052,26 @@ class GuiDocEditor(QTextEdit):
         has its margins adjusted according to user preferences.
         """
         self.updateDocMargins()
-        QTextEdit.resizeEvent(self, theEvent)
+        super().resizeEvent(theEvent)
         return
 
     ##
-    #  Slots
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str)
+    def updateDocInfo(self, tHandle):
+        """Called when an item label is changed to check if the document
+        title bar needs updating,
+        """
+        if tHandle == self._docHandle:
+            self.docHeader.setTitleFromHandle(self._docHandle)
+            self.docFooter.updateInfo()
+            self.updateDocMargins()
+        return
+
+    ##
+    #  Private Slots
     ##
 
     @pyqtSlot(int, int, int)
@@ -1080,7 +1083,7 @@ class GuiDocEditor(QTextEdit):
         self._lastFind = None
 
         if self.document().characterCount() > nwConst.MAX_DOCSIZE:
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "The document has grown too big and you cannot add more text to it. "
                 "The maximum size of a single novelWriter document is {0} MB."
             ).format(
@@ -1169,7 +1172,7 @@ class GuiDocEditor(QTextEdit):
             spellCheck &= theWord != ""
 
         if spellCheck:
-            logger.verbose("Looking up '%s' in the dictionary", theWord)
+            logger.debug("Looking up '%s' in the dictionary", theWord)
             spellCheck &= not self.spEnchant.checkWord(theWord)
 
         if spellCheck:
@@ -1235,12 +1238,12 @@ class GuiDocEditor(QTextEdit):
             return
 
         if self.wCounterDoc.isRunning():
-            logger.verbose("Word counter is busy")
+            logger.debug("Word counter is busy")
             return
 
         if time() - self._lastEdit < 5 * self.wcInterval:
-            logger.verbose("Running word counter")
-            self.theParent.threadPool.start(self.wCounterDoc)
+            logger.debug("Running word counter")
+            self.mainGui.threadPool.start(self.wCounterDoc)
 
         return
 
@@ -1251,7 +1254,7 @@ class GuiDocEditor(QTextEdit):
         if self._docHandle is None or self._nwItem is None:
             return
 
-        logger.verbose("Updating word count")
+        logger.debug("Updating word count")
 
         self._charCount = cCount
         self._wordCount = wCount
@@ -1294,10 +1297,10 @@ class GuiDocEditor(QTextEdit):
             return
 
         if self.wCounterSel.isRunning():
-            logger.verbose("Selection word counter is busy")
+            logger.debug("Selection word counter is busy")
             return
 
-        self.theParent.threadPool.start(self.wCounterSel)
+        self.mainGui.threadPool.start(self.wCounterSel)
 
         return
 
@@ -1308,7 +1311,7 @@ class GuiDocEditor(QTextEdit):
         if self._docHandle is None or self._nwItem is None:
             return
 
-        logger.verbose("User selectee %d words", wCount)
+        logger.debug("User selectee %d words", wCount)
         self.docFooter.updateCounts(wCount=wCount, cCount=cCount)
         self.wcTimerSel.stop()
 
@@ -1326,11 +1329,11 @@ class GuiDocEditor(QTextEdit):
                 QPointF(theSize.width(), theSize.height()), Qt.FuzzyHit
             )
             if self._queuePos <= thePos:
-                logger.verbose("Allowed cursor move to %d <= %d", self._queuePos, thePos)
+                logger.debug("Allowed cursor move to %d <= %d", self._queuePos, thePos)
                 self.setCursorPosition(self._queuePos)
                 self._queuePos = None
             else:
-                logger.verbose("Denied cursor move to %d > %d", self._queuePos, thePos)
+                logger.debug("Denied cursor move to %d > %d", self._queuePos, thePos)
 
         return
 
@@ -1376,7 +1379,7 @@ class GuiDocEditor(QTextEdit):
             self.docSearch.setResultCount(0, 0)
             self._lastFind = None
             if self.docSearch.doNextFile and not goBack:
-                self.theParent.openNextDocument(
+                self.mainGui.openNextDocument(
                     self._docHandle, wrapAround=self.docSearch.doLoop
                 )
                 self.beginSearch()
@@ -1396,7 +1399,7 @@ class GuiDocEditor(QTextEdit):
 
         if resIdx > maxIdx:
             if self.docSearch.doNextFile and not goBack:
-                self.theParent.openNextDocument(
+                self.mainGui.openNextDocument(
                     self._docHandle, wrapAround=self.docSearch.doLoop
                 )
                 self.beginSearch()
@@ -1517,7 +1520,7 @@ class GuiDocEditor(QTextEdit):
             theCursor.endEditBlock()
             theCursor.setPosition(theCursor.selectionEnd())
             self.setTextCursor(theCursor)
-            logger.verbose(
+            logger.debug(
                 "Replaced occurrence of '%s' with '%s' on line %d",
                 searchFor, replWith, theCursor.blockNumber()
             )
@@ -1640,7 +1643,7 @@ class GuiDocEditor(QTextEdit):
         """
         theCursor = self.textCursor()
         if not theCursor.hasSelection():
-            self.theParent.makeAlert(self.tr(
+            self.mainGui.makeAlert(self.tr(
                 "Please select some text before calling replace quotes."
             ), nwAlert.ERROR)
             return False
@@ -1887,7 +1890,7 @@ class GuiDocEditor(QTextEdit):
 
         if theText.startswith("@"):
 
-            isGood, tBits, tPos = self.theParent.theIndex.scanThis(theText)
+            isGood, tBits, tPos = self.theProject.index.scanThis(theText)
             if not isGood:
                 return False
 
@@ -1906,10 +1909,10 @@ class GuiDocEditor(QTextEdit):
                 return False
 
             if loadTag:
-                logger.verbose("Attempting to follow tag '%s'", theTag)
-                self.theParent.docViewer.loadFromTag(theTag)
+                logger.debug("Attempting to follow tag '%s'", theTag)
+                self.loadDocumentTagRequest.emit(theTag, nwDocMode.VIEW)
             else:
-                logger.verbose("Potential tag '%s'", theTag)
+                logger.debug("Potential tag '%s'", theTag)
 
             return True
 
@@ -1999,12 +2002,16 @@ class GuiDocEditor(QTextEdit):
             tInsert = nwUnicode.U_PSEP
 
         tCheck = tInsert
-        if tCheck in self.mainConf.fmtPadBefore:
+        if self.mainConf.fmtPadBefore and tCheck in self.mainConf.fmtPadBefore:
             if self._allowSpaceBeforeColon(theText, tCheck):
                 nDelete = max(nDelete, 1)
+                chkPos = thePos - nDelete - 1
+                if chkPos >= 0 and theText[chkPos].isspace():
+                    # Strip existing space before inserting a new (#1061)
+                    nDelete += 1
                 tInsert = self._typPadChar + tInsert
 
-        if tCheck in self.mainConf.fmtPadAfter:
+        if self.mainConf.fmtPadAfter and tCheck in self.mainConf.fmtPadAfter:
             if self._allowSpaceBeforeColon(theText, tCheck):
                 nDelete = max(nDelete, 1)
                 tInsert = tInsert + self._typPadChar
@@ -2019,7 +2026,7 @@ class GuiDocEditor(QTextEdit):
     def _allowSpaceBeforeColon(text, char):
         """Special checker function only used by the insert space
         feature for French, Spanish, etc, so it doesn't insert a
-        sapce before colons in meta data lines.
+        space before colons in meta data lines. See issue #1090.
         """
         if char == ":" and len(text) > 1:
             if text[0] == "@":
@@ -2029,29 +2036,20 @@ class GuiDocEditor(QTextEdit):
                     return False
         return True
 
-    def _updateHeaders(self, checkPos=False, checkLevel=False):
+    def _updateHeaders(self):
         """Update the headers record and return True if anything
         changed, if a check flag was provided.
         """
         if self._docHandle is None:
             return False
 
-        newHeaders = self.theIndex.getHandleHeaders(self._docHandle)
-        if checkPos:
-            newPos = [x[0] for x in newHeaders]
-            oldPos = [x[0] for x in self._docHeaders]
-        if checkLevel:
-            newLev = [x[1] for x in newHeaders]
-            oldLev = [x[1] for x in self._docHeaders]
+        newHeaders = self.theProject.index.getHandleHeaders(self._docHandle)
+        newLev = [x[1] for x in newHeaders]
+        oldLev = [x[1] for x in self._docHeaders]
 
         self._docHeaders = newHeaders
 
-        if checkPos:
-            return newPos != oldPos
-        if checkLevel:
-            return newLev != oldLev
-
-        return False
+        return newLev != oldLev
 
     def _checkDocSize(self, theSize):
         """Check if document size crosses the big document limit set in
@@ -2158,7 +2156,7 @@ class GuiDocEditor(QTextEdit):
 class BackgroundWordCounter(QRunnable):
 
     def __init__(self, docEditor, forSelection=False):
-        QRunnable.__init__(self)
+        super().__init__()
 
         self._docEditor = docEditor
         self._forSelection = forSelection
@@ -2208,15 +2206,15 @@ class BackgroundWordCounterSignals(QObject):
 class GuiDocEditSearch(QFrame):
 
     def __init__(self, docEditor):
-        QFrame.__init__(self, docEditor)
+        super().__init__(parent=docEditor)
 
         logger.debug("Initialising GuiDocEditSearch ...")
 
         self.mainConf   = novelwriter.CONFIG
         self.docEditor  = docEditor
-        self.theParent  = docEditor.theParent
+        self.mainGui    = docEditor.mainGui
         self.theProject = docEditor.theProject
-        self.theTheme   = docEditor.theTheme
+        self.mainTheme  = docEditor.mainTheme
 
         self.repVisible  = False
         self.isCaseSense = self.mainConf.searchCase
@@ -2227,9 +2225,9 @@ class GuiDocEditSearch(QFrame):
         self.doMatchCap  = self.mainConf.searchMatchCap
 
         mPx = self.mainConf.pxInt(6)
-        tPx = int(0.8*self.theTheme.fontPixelSize)
-        self.boxFont = self.theTheme.guiFont
-        self.boxFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        tPx = int(0.8*self.mainTheme.fontPixelSize)
+        self.boxFont = self.mainTheme.guiFont
+        self.boxFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -2263,38 +2261,38 @@ class GuiDocEditSearch(QFrame):
 
         self.resultLabel = QLabel("?/?")
         self.resultLabel.setFont(self.boxFont)
-        self.resultLabel.setMinimumWidth(self.theTheme.getTextWidth("?/?", self.boxFont))
+        self.resultLabel.setMinimumWidth(self.mainTheme.getTextWidth("?/?", self.boxFont))
 
         self.toggleCase = QAction(self.tr("Case Sensitive"), self)
-        self.toggleCase.setIcon(self.theTheme.getIcon("search_case"))
+        self.toggleCase.setIcon(self.mainTheme.getIcon("search_case"))
         self.toggleCase.setCheckable(True)
         self.toggleCase.setChecked(self.isCaseSense)
         self.toggleCase.toggled.connect(self._doToggleCase)
         self.searchOpt.addAction(self.toggleCase)
 
         self.toggleWord = QAction(self.tr("Whole Words Only"), self)
-        self.toggleWord.setIcon(self.theTheme.getIcon("search_word"))
+        self.toggleWord.setIcon(self.mainTheme.getIcon("search_word"))
         self.toggleWord.setCheckable(True)
         self.toggleWord.setChecked(self.isWholeWord)
         self.toggleWord.toggled.connect(self._doToggleWord)
         self.searchOpt.addAction(self.toggleWord)
 
         self.toggleRegEx = QAction(self.tr("RegEx Mode"), self)
-        self.toggleRegEx.setIcon(self.theTheme.getIcon("search_regex"))
+        self.toggleRegEx.setIcon(self.mainTheme.getIcon("search_regex"))
         self.toggleRegEx.setCheckable(True)
         self.toggleRegEx.setChecked(self.isRegEx)
         self.toggleRegEx.toggled.connect(self._doToggleRegEx)
         self.searchOpt.addAction(self.toggleRegEx)
 
         self.toggleLoop = QAction(self.tr("Loop Search"), self)
-        self.toggleLoop.setIcon(self.theTheme.getIcon("search_loop"))
+        self.toggleLoop.setIcon(self.mainTheme.getIcon("search_loop"))
         self.toggleLoop.setCheckable(True)
         self.toggleLoop.setChecked(self.doLoop)
         self.toggleLoop.toggled.connect(self._doToggleLoop)
         self.searchOpt.addAction(self.toggleLoop)
 
         self.toggleProject = QAction(self.tr("Search Next File"), self)
-        self.toggleProject.setIcon(self.theTheme.getIcon("search_project"))
+        self.toggleProject.setIcon(self.mainTheme.getIcon("search_project"))
         self.toggleProject.setCheckable(True)
         self.toggleProject.setChecked(self.doNextFile)
         self.toggleProject.toggled.connect(self._doToggleProject)
@@ -2303,7 +2301,7 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addSeparator()
 
         self.toggleMatchCap = QAction(self.tr("Preserve Case"), self)
-        self.toggleMatchCap.setIcon(self.theTheme.getIcon("search_preserve"))
+        self.toggleMatchCap.setIcon(self.mainTheme.getIcon("search_preserve"))
         self.toggleMatchCap.setCheckable(True)
         self.toggleMatchCap.setChecked(self.doMatchCap)
         self.toggleMatchCap.toggled.connect(self._doToggleMatchCap)
@@ -2312,7 +2310,7 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addSeparator()
 
         self.cancelSearch = QAction(self.tr("Close Search"), self)
-        self.cancelSearch.setIcon(self.theTheme.getIcon("search_cancel"))
+        self.cancelSearch.setIcon(self.mainTheme.getIcon("search_cancel"))
         self.cancelSearch.triggered.connect(self._doClose)
         self.searchOpt.addAction(self.cancelSearch)
 
@@ -2327,12 +2325,12 @@ class GuiDocEditSearch(QFrame):
         self.showReplace.setStyleSheet("QToolButton {border: none; background: transparent;}")
         self.showReplace.toggled.connect(self._doToggleReplace)
 
-        self.searchButton = QPushButton(self.theTheme.getIcon("search"), "")
+        self.searchButton = QPushButton(self.mainTheme.getIcon("search"), "")
         self.searchButton.setFixedSize(QSize(bPx, bPx))
         self.searchButton.setToolTip(self.tr("Find in current document"))
         self.searchButton.clicked.connect(self._doSearch)
 
-        self.replaceButton = QPushButton(self.theTheme.getIcon("search_replace"), "")
+        self.replaceButton = QPushButton(self.mainTheme.getIcon("search_replace"), "")
         self.replaceButton.setFixedSize(QSize(bPx, bPx))
         self.replaceButton.setToolTip(self.tr("Find and replace in current document"))
         self.replaceButton.clicked.connect(self._doReplace)
@@ -2435,7 +2433,6 @@ class GuiDocEditSearch(QFrame):
         self.searchBox.selectAll()
         if self.isRegEx:
             self._alertSearchValid(True)
-        logger.verbose("Setting search text to '%s'", theText)
         return True
 
     def setReplaceText(self, theText):
@@ -2451,7 +2448,7 @@ class GuiDocEditSearch(QFrame):
         """
         currRes = "?" if currRes is None else currRes
         resCount = "?" if resCount is None else "1000+" if resCount > 1000 else resCount
-        minWidth = self.theTheme.getTextWidth(f"{resCount}//{resCount}", self.boxFont)
+        minWidth = self.mainTheme.getTextWidth(f"{resCount}//{resCount}", self.boxFont)
         self.resultLabel.setText(f"{currRes}/{resCount}")
         self.resultLabel.setMinimumWidth(minWidth)
         self.adjustSize()
@@ -2475,7 +2472,8 @@ class GuiDocEditSearch(QFrame):
                 self._alertSearchValid(theRegEx.isValid())
                 return theRegEx
 
-            else:  # >= 50300 to < 51300
+            else:  # pragma: no cover
+                # >= 50300 to < 51300
                 if self.isCaseSense:
                     rxOpt = Qt.CaseSensitive
                 else:
@@ -2596,19 +2594,19 @@ class GuiDocEditSearch(QFrame):
 class GuiDocEditHeader(QWidget):
 
     def __init__(self, docEditor):
-        QWidget.__init__(self, docEditor)
+        super().__init__(parent=docEditor)
 
         logger.debug("Initialising GuiDocEditHeader ...")
 
         self.mainConf   = novelwriter.CONFIG
         self.docEditor  = docEditor
-        self.theParent  = docEditor.theParent
+        self.mainGui    = docEditor.mainGui
         self.theProject = docEditor.theProject
-        self.theTheme   = docEditor.theTheme
+        self.mainTheme  = docEditor.mainTheme
 
         self._docHandle = None
 
-        fPx = int(0.9*self.theTheme.fontPixelSize)
+        fPx = int(0.9*self.mainTheme.fontPixelSize)
         hSp = self.mainConf.pxInt(6)
 
         # Main Widget Settings
@@ -2625,28 +2623,28 @@ class GuiDocEditHeader(QWidget):
         self.theTitle.setFixedHeight(fPx)
 
         lblFont = self.theTitle.font()
-        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
         self.theTitle.setFont(lblFont)
 
         buttonStyle = (
             "QToolButton {{border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*self.theTheme.colText)
+        ).format(*self.mainTheme.colText)
 
         # Buttons
         self.editButton = QToolButton(self)
-        self.editButton.setIcon(self.theTheme.getIcon("edit"))
+        self.editButton.setIcon(self.mainTheme.getIcon("edit"))
         self.editButton.setContentsMargins(0, 0, 0, 0)
         self.editButton.setIconSize(QSize(fPx, fPx))
         self.editButton.setFixedSize(fPx, fPx)
         self.editButton.setStyleSheet(buttonStyle)
         self.editButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.editButton.setVisible(False)
-        self.editButton.setToolTip(self.tr("Edit document meta"))
+        self.editButton.setToolTip(self.tr("Edit document label"))
         self.editButton.clicked.connect(self._editDocument)
 
         self.searchButton = QToolButton(self)
-        self.searchButton.setIcon(self.theTheme.getIcon("search"))
+        self.searchButton.setIcon(self.mainTheme.getIcon("search"))
         self.searchButton.setContentsMargins(0, 0, 0, 0)
         self.searchButton.setIconSize(QSize(fPx, fPx))
         self.searchButton.setFixedSize(fPx, fPx)
@@ -2657,7 +2655,7 @@ class GuiDocEditHeader(QWidget):
         self.searchButton.clicked.connect(self._searchDocument)
 
         self.minmaxButton = QToolButton(self)
-        self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
+        self.minmaxButton.setIcon(self.mainTheme.getIcon("maximise"))
         self.minmaxButton.setContentsMargins(0, 0, 0, 0)
         self.minmaxButton.setIconSize(QSize(fPx, fPx))
         self.minmaxButton.setFixedSize(fPx, fPx)
@@ -2668,7 +2666,7 @@ class GuiDocEditHeader(QWidget):
         self.minmaxButton.clicked.connect(self._minmaxDocument)
 
         self.closeButton = QToolButton(self)
-        self.closeButton.setIcon(self.theTheme.getIcon("close"))
+        self.closeButton.setIcon(self.mainTheme.getIcon("close"))
         self.closeButton.setContentsMargins(0, 0, 0, 0)
         self.closeButton.setIconSize(QSize(fPx, fPx))
         self.closeButton.setFixedSize(fPx, fPx)
@@ -2711,9 +2709,9 @@ class GuiDocEditHeader(QWidget):
         theme rather than the main GUI.
         """
         thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.mainTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
 
         self.setPalette(thePalette)
         self.theTitle.setPalette(thePalette)
@@ -2735,15 +2733,15 @@ class GuiDocEditHeader(QWidget):
 
         if self.mainConf.showFullPath:
             tTitle = []
-            tTree = self.theProject.projTree.getItemPath(tHandle)
+            tTree = self.theProject.tree.getItemPath(tHandle)
             for aHandle in reversed(tTree):
-                nwItem = self.theProject.projTree[aHandle]
+                nwItem = self.theProject.tree[aHandle]
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
             sSep = "  %s  " % nwUnicode.U_RSAQUO
             self.theTitle.setText(sSep.join(tTitle))
         else:
-            nwItem = self.theProject.projTree[tHandle]
+            nwItem = self.theProject.tree[tHandle]
             if nwItem is None:
                 return False
             self.theTitle.setText(nwItem.itemName)
@@ -2760,10 +2758,10 @@ class GuiDocEditHeader(QWidget):
         This function is called by the GuiMain class via the
         toggleFocusMode function and should not be activated directly.
         """
-        if self.theParent.isFocusMode:
-            self.minmaxButton.setIcon(self.theTheme.getIcon("minimise"))
+        if self.mainGui.isFocusMode:
+            self.minmaxButton.setIcon(self.mainTheme.getIcon("minimise"))
         else:
-            self.minmaxButton.setIcon(self.theTheme.getIcon("maximise"))
+            self.minmaxButton.setIcon(self.mainTheme.getIcon("maximise"))
         return
 
     ##
@@ -2773,7 +2771,7 @@ class GuiDocEditHeader(QWidget):
     def _editDocument(self):
         """Open the edit item dialog from the main GUI.
         """
-        self.theParent.editItem(self._docHandle)
+        self.mainGui.editItemLabel(self._docHandle)
         return
 
     def _searchDocument(self):
@@ -2785,7 +2783,7 @@ class GuiDocEditHeader(QWidget):
     def _closeDocument(self):
         """Trigger the close editor on the main window.
         """
-        self.theParent.closeDocEditor()
+        self.mainGui.closeDocEditor()
         self.editButton.setVisible(False)
         self.searchButton.setVisible(False)
         self.closeButton.setVisible(False)
@@ -2795,7 +2793,7 @@ class GuiDocEditHeader(QWidget):
     def _minmaxDocument(self):
         """Switch on or off Focus Mode.
         """
-        self.theParent.toggleFocusMode()
+        self.mainGui.toggleFocusMode()
         return
 
     ##
@@ -2806,7 +2804,7 @@ class GuiDocEditHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.theParent.treeView.setSelectedHandle(self._docHandle, doScroll=True)
+        self.mainGui.projView.setSelectedHandle(self._docHandle, doScroll=True)
         return
 
 # END Class GuiDocEditHeader
@@ -2820,29 +2818,28 @@ class GuiDocEditHeader(QWidget):
 class GuiDocEditFooter(QWidget):
 
     def __init__(self, docEditor):
-        QWidget.__init__(self, docEditor)
+        super().__init__(parent=docEditor)
 
         logger.debug("Initialising GuiDocEditFooter ...")
 
         self.mainConf   = novelwriter.CONFIG
         self.docEditor  = docEditor
-        self.theParent  = docEditor.theParent
+        self.mainGui    = docEditor.mainGui
         self.theProject = docEditor.theProject
-        self.theTheme   = docEditor.theTheme
-        self.optState   = docEditor.theProject.optState
+        self.mainTheme  = docEditor.mainTheme
 
         self._theItem   = None
         self._docHandle = None
 
         self._docSelection = False
 
-        self.sPx = int(round(0.9*self.theTheme.baseIconSize))
-        fPx = int(0.9*self.theTheme.fontPixelSize)
+        self.sPx = int(round(0.9*self.mainTheme.baseIconSize))
+        fPx = int(0.9*self.mainTheme.fontPixelSize)
         bSp = self.mainConf.pxInt(4)
         hSp = self.mainConf.pxInt(6)
 
         lblFont = self.font()
-        lblFont.setPointSizeF(0.9*self.theTheme.fontPointSize)
+        lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
 
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
@@ -2865,7 +2862,7 @@ class GuiDocEditFooter(QWidget):
 
         # Lines
         self.linesIcon = QLabel("")
-        self.linesIcon.setPixmap(self.theTheme.getPixmap("status_lines", (self.sPx, self.sPx)))
+        self.linesIcon.setPixmap(self.mainTheme.getPixmap("status_lines", (self.sPx, self.sPx)))
         self.linesIcon.setContentsMargins(0, 0, 0, 0)
         self.linesIcon.setFixedHeight(self.sPx)
         self.linesIcon.setAlignment(Qt.AlignLeft | Qt.AlignTop)
@@ -2881,7 +2878,7 @@ class GuiDocEditFooter(QWidget):
 
         # Words
         self.wordsIcon = QLabel("")
-        self.wordsIcon.setPixmap(self.theTheme.getPixmap("status_stats", (self.sPx, self.sPx)))
+        self.wordsIcon.setPixmap(self.mainTheme.getPixmap("status_stats", (self.sPx, self.sPx)))
         self.wordsIcon.setContentsMargins(0, 0, 0, 0)
         self.wordsIcon.setFixedHeight(self.sPx)
         self.wordsIcon.setAlignment(Qt.AlignLeft | Qt.AlignTop)
@@ -2933,9 +2930,9 @@ class GuiDocEditFooter(QWidget):
         theme rather than the main GUI.
         """
         thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*self.theTheme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*self.theTheme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*self.theTheme.colText))
+        thePalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*self.mainTheme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
 
         self.setPalette(thePalette)
         self.statusText.setPalette(thePalette)
@@ -2949,10 +2946,10 @@ class GuiDocEditFooter(QWidget):
         """
         self._docHandle = tHandle
         if self._docHandle is None:
-            logger.verbose("No handle set, so clearing the editor footer")
+            logger.debug("No handle set, so clearing the editor footer")
             self._theItem = None
         else:
-            self._theItem = self.theProject.projTree[self._docHandle]
+            self._theItem = self.theProject.tree[self._docHandle]
 
         self.setHasSelection(False)
         self.updateInfo()
@@ -2974,17 +2971,9 @@ class GuiDocEditFooter(QWidget):
             sIcon = QPixmap()
             sText = ""
         else:
-            iStatus = self._theItem.itemStatus
-            if self._theItem.itemClass == nwItemClass.NOVEL:
-                iStatus = self.theProject.statusItems.checkEntry(iStatus)
-                theIcon = self.theParent.statusIcons[iStatus]
-            else:
-                iStatus = self.theProject.importItems.checkEntry(iStatus)
-                theIcon = self.theParent.importIcons[iStatus]
-
+            theStatus, theIcon = self._theItem.getImportStatus()
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            hLevel = self.theParent.theIndex.getHandleHeaderLevel(self._docHandle)
-            sText = f"{self._theItem.itemStatus} / {self._theItem.describeMe(hLevel)}"
+            sText = f"{theStatus} / {self._theItem.describeMe()}"
 
         self.statusIcon.setPixmap(sIcon)
         self.statusText.setText(sText)

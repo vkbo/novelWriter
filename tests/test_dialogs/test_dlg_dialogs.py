@@ -24,11 +24,9 @@ import pytest
 from PyQt5.QtCore import QItemSelectionModel
 from PyQt5.QtWidgets import QAction, QListWidgetItem, QDialog, QMessageBox
 
-from novelwriter.dialogs import GuiQuoteSelect, GuiUpdates
-
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
+from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.dialogs.updates import GuiUpdates
+from novelwriter.dialogs.editlabel import GuiEditLabel
 
 
 @pytest.mark.gui
@@ -101,3 +99,24 @@ def testDlgOther_Updates(qtbot, monkeypatch, nwGUI):
     nwUpdate._doClose()
 
 # END Test testDlgOther_Updates
+
+
+@pytest.mark.gui
+def testDlgOther_EditLabel(qtbot, monkeypatch):
+    """Test the label editor dialog.
+    """
+    monkeypatch.setattr(GuiEditLabel, "exec_", lambda *a: None)
+
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiEditLabel, "result", lambda *a: QDialog.Accepted)
+        newLabel, dlgOk = GuiEditLabel.getLabel(None, text="Hello World")
+        assert dlgOk is True
+        assert newLabel == "Hello World"
+
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiEditLabel, "result", lambda *a: QDialog.Rejected)
+        newLabel, dlgOk = GuiEditLabel.getLabel(None, text="Hello World")
+        assert dlgOk is False
+        assert newLabel == "Hello World"
+
+# END Test testDlgOther_EditLabel

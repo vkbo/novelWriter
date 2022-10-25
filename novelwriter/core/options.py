@@ -28,6 +28,8 @@ import os
 import json
 import logging
 
+from enum import Enum
+
 from novelwriter.error import logException
 from novelwriter.common import checkBool, checkFloat, checkInt, checkString
 from novelwriter.constants import nwFiles
@@ -38,29 +40,30 @@ VALID_MAP = {
     "GuiWritingStats": {
         "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
         "widthCol3", "sortCol", "sortOrder", "incNovel", "incNotes",
-        "hideZeros", "hideNegative", "groupByDay", "showIdleTime", "histMax"
+        "hideZeros", "hideNegative", "groupByDay", "showIdleTime", "histMax",
     },
-    "GuiDocSplit": {"spLevel"},
+    "GuiDocSplit": {"spLevel", "intoFolder", "docHierarchy"},
     "GuiBuildNovel": {
         "winWidth", "winHeight", "boxWidth", "docWidth", "hideScene",
         "hideSection", "addNovel", "addNotes", "ignoreFlag", "justifyText",
         "excludeBody", "textFont", "textSize", "lineHeight", "noStyling",
         "incSynopsis", "incComments", "incKeywords", "incBodyText",
-        "replaceTabs", "replaceUCode"
+        "replaceTabs", "replaceUCode", "rootFilter",
     },
     "GuiOutline": {"headerOrder", "columnWidth", "columnHidden"},
     "GuiProjectSettings": {
-        "winWidth", "winHeight", "replaceColW", "statusColW", "importColW"
+        "winWidth", "winHeight", "replaceColW", "statusColW", "importColW",
     },
     "GuiProjectDetails": {
         "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
-        "widthCol3", "widthCol4", "wordsPerPage", "countFrom", "clearDouble"
+        "widthCol3", "widthCol4", "wordsPerPage", "countFrom", "clearDouble",
     },
-    "GuiWordList": {"winWidth", "winHeight"}
+    "GuiWordList": {"winWidth", "winHeight"},
+    "GuiNovelView": {"lastCol"},
 }
 
 
-class OptionState():
+class OptionState:
 
     def __init__(self, theProject):
         self.theProject = theProject
@@ -137,7 +140,10 @@ class OptionState():
         if group not in self._theState:
             self._theState[group] = {}
 
-        self._theState[group][name] = value
+        if isinstance(value, Enum):
+            self._theState[group][name] = value.name
+        else:
+            self._theState[group][name] = value
 
         return True
 
@@ -182,8 +188,19 @@ class OptionState():
         the default value.
         """
         if group in self._theState:
-            if name in self._theState[group]:
-                return checkBool(self._theState[group].get(name, default), default)
+            return checkBool(self._theState[group].get(name, default), default)
+        return default
+
+    def getEnum(self, group, name, lookup, default):
+        """Return the value mapped to an enum. Otherwise return the
+        default value
+        """
+        if issubclass(lookup, Enum):
+            if group in self._theState:
+                if name in self._theState[group]:
+                    value = self._theState[group][name]
+                    if value in lookup.__members__:
+                        return lookup[value]
         return default
 
 # END Class OptionState

@@ -25,7 +25,7 @@ from tools import getGuiItem
 
 from PyQt5.QtWidgets import QAction, QMessageBox
 
-from novelwriter.dialogs import GuiAbout
+from novelwriter.dialogs.about import GuiAbout
 
 
 @pytest.mark.gui
@@ -36,8 +36,8 @@ def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
     # NW About
-    nwGUI.theTheme.themeName = "A Theme"
-    nwGUI.theTheme.themeAuthor = "An Author"
+    nwGUI.mainTheme.themeName = "A Theme"
+    nwGUI.mainTheme.themeAuthor = "An Author"
     assert nwGUI.showAboutNWDialog(showNotes=True) is True
 
     qtbot.waitUntil(lambda: getGuiItem("GuiAbout") is not None, timeout=1000)

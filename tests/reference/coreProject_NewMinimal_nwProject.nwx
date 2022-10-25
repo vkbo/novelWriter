@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="1.5-alpha0" hexVersion="0x010500a0" fileVersion="1.2" timeStamp="2021-08-02 02:31:23">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-20 18:21:56">
   <project>
     <name>New Project</name>
     <title></title>
-    <saveCount>1</saveCount>
+    <saveCount>2</saveCount>
     <autoCount>1</autoCount>
     <editTime>0</editTime>
   </project>
@@ -12,9 +12,10 @@
     <language>None</language>
     <spellCheck>False</spellCheck>
     <spellLang>None</spellLang>
-    <autoOutline>True</autoOutline>
     <lastEdited>None</lastEdited>
     <lastViewed>None</lastViewed>
+    <lastNovel>None</lastNovel>
+    <lastOutline>None</lastOutline>
     <lastWordCount>0</lastWordCount>
     <novelWordCount>0</novelWordCount>
     <notesWordCount>0</notesWordCount>
@@ -27,89 +28,50 @@
       <section></section>
     </titleFormat>
     <status>
-      <entry blue="100" green="100" red="100">New</entry>
-      <entry blue="0" green="50" red="200">Note</entry>
-      <entry blue="0" green="150" red="200">Draft</entry>
-      <entry blue="0" green="200" red="50">Finished</entry>
+      <entry key="s000008" count="5" red="100" green="100" blue="100">New</entry>
+      <entry key="s000009" count="0" red="200" green="50" blue="0">Note</entry>
+      <entry key="s00000a" count="0" red="200" green="150" blue="0">Draft</entry>
+      <entry key="s00000b" count="0" red="50" green="200" blue="0">Finished</entry>
     </status>
     <importance>
-      <entry blue="100" green="100" red="100">New</entry>
-      <entry blue="0" green="50" red="200">Minor</entry>
-      <entry blue="0" green="150" red="200">Major</entry>
-      <entry blue="0" green="200" red="50">Main</entry>
+      <entry key="i00000c" count="3" red="100" green="100" blue="100">New</entry>
+      <entry key="i00000d" count="0" red="200" green="50" blue="0">Minor</entry>
+      <entry key="i00000e" count="0" red="200" green="150" blue="0">Major</entry>
+      <entry key="i00000f" count="0" red="50" green="200" blue="0">Main</entry>
     </importance>
   </settings>
   <content count="8">
-    <item handle="73475cb40a568" order="0" parent="None">
-      <name>Novel</name>
-      <type>ROOT</type>
-      <class>NOVEL</class>
-      <status>New</status>
-      <expanded>False</expanded>
+    <item handle="0000000000010" parent="None" root="0000000000010" order="0" type="ROOT" class="NOVEL">
+      <meta expanded="False"/>
+      <name status="s000008" import="i00000c">Novel</name>
     </item>
-    <item handle="44cb730c42048" order="0" parent="None">
-      <name>Plot</name>
-      <type>ROOT</type>
-      <class>PLOT</class>
-      <status>New</status>
-      <expanded>False</expanded>
+    <item handle="0000000000011" parent="0000000000010" root="0000000000010" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="False" mainHeading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
+      <name status="s000008" import="i00000c" active="True">Title Page</name>
     </item>
-    <item handle="71ee45a3c0db9" order="0" parent="None">
-      <name>Characters</name>
-      <type>ROOT</type>
-      <class>CHARACTER</class>
-      <status>New</status>
-      <expanded>False</expanded>
+    <item handle="0000000000012" parent="0000000000010" root="0000000000010" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="False" mainHeading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
+      <name status="s000008" import="i00000c" active="True">New Chapter</name>
     </item>
-    <item handle="811786ad1ae74" order="0" parent="None">
-      <name>World</name>
-      <type>ROOT</type>
-      <class>WORLD</class>
-      <status>New</status>
-      <expanded>False</expanded>
+    <item handle="0000000000013" parent="0000000000012" root="0000000000010" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="False" mainHeading="H0" charCount="0" wordCount="0" paraCount="0" cursorPos="0"/>
+      <name status="s000008" import="i00000c" active="True">New Scene</name>
     </item>
-    <item handle="25fc0e7096fc6" order="0" parent="73475cb40a568">
-      <name>Title Page</name>
-      <type>FILE</type>
-      <class>NOVEL</class>
-      <status>New</status>
-      <exported>True</exported>
-      <layout>DOCUMENT</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
+    <item handle="0000000000014" parent="None" root="0000000000014" order="0" type="ROOT" class="PLOT">
+      <meta expanded="False"/>
+      <name status="s000008" import="i00000c">Plot</name>
     </item>
-    <item handle="31489056e0916" order="0" parent="73475cb40a568">
-      <name>New Chapter</name>
-      <type>FOLDER</type>
-      <class>NOVEL</class>
-      <status>New</status>
-      <expanded>False</expanded>
+    <item handle="0000000000015" parent="None" root="0000000000015" order="0" type="ROOT" class="CHARACTER">
+      <meta expanded="False"/>
+      <name status="s000008" import="i00000c">Characters</name>
     </item>
-    <item handle="98010bd9270f9" order="0" parent="31489056e0916">
-      <name>New Chapter</name>
-      <type>FILE</type>
-      <class>NOVEL</class>
-      <status>New</status>
-      <exported>True</exported>
-      <layout>DOCUMENT</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
+    <item handle="0000000000016" parent="None" root="0000000000016" order="0" type="ROOT" class="WORLD">
+      <meta expanded="False"/>
+      <name status="s000008" import="i00000c">Locations</name>
     </item>
-    <item handle="0e17daca5f3e1" order="0" parent="31489056e0916">
-      <name>New Scene</name>
-      <type>FILE</type>
-      <class>NOVEL</class>
-      <status>New</status>
-      <exported>True</exported>
-      <layout>DOCUMENT</layout>
-      <charCount>0</charCount>
-      <wordCount>0</wordCount>
-      <paraCount>0</paraCount>
-      <cursorPos>0</cursorPos>
+    <item handle="0000000000017" parent="None" root="0000000000017" order="0" type="ROOT" class="ARCHIVE">
+      <meta expanded="False"/>
+      <name status="s000008" import="i00000c">Archive</name>
     </item>
   </content>
 </novelWriterXML>

@@ -27,7 +27,7 @@ from PyQt5.QtWidgets import qApp, QAction, QMessageBox
 from mock import causeException
 
 from novelwriter.enum import nwDocAction
-from novelwriter.core import ToHtml
+from novelwriter.core.tohtml import ToHtml
 
 keyDelay = 2
 typeDelay = 1
@@ -43,21 +43,20 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
 
     # Open project
-    nwGUI.theProject.projTree.setSeed(42)
     assert nwGUI.openProject(nwLipsum)
 
     # Rebuild the index
     nwGUI.mainMenu.aRebuildIndex.activate(QAction.Trigger)
-    assert nwGUI.theIndex._tagIndex != {}
-    assert nwGUI.theIndex._refIndex != {}
+    assert nwGUI.theProject.index._tagsIndex._tags != {}
+    assert nwGUI.theProject.index._itemIndex._items != {}
 
     # Select a document in the project tree
-    nwGUI.treeView.setSelectedHandle("88243afbe5ed8")
+    nwGUI.projView.setSelectedHandle("88243afbe5ed8")
 
     # Middle-click the selected item
-    theItem = nwGUI.treeView._getTreeItem("88243afbe5ed8")
-    theRect = nwGUI.treeView.visualItemRect(theItem)
-    qtbot.mouseClick(nwGUI.treeView.viewport(), Qt.MidButton, pos=theRect.center())
+    theItem = nwGUI.projView.projTree._getTreeItem("88243afbe5ed8")
+    theRect = nwGUI.projView.projTree.visualItemRect(theItem)
+    qtbot.mouseClick(nwGUI.projView.projTree.viewport(), Qt.MidButton, pos=theRect.center())
     assert nwGUI.docViewer.docHandle() == "88243afbe5ed8"
 
     # Reload the text
@@ -118,7 +117,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docViewer.docAction(nwDocAction.COPY) is False
 
     # Open again via menu
-    assert nwGUI.treeView.setSelectedHandle("88243afbe5ed8")
+    assert nwGUI.projView.setSelectedHandle("88243afbe5ed8")
     nwGUI.mainMenu.aViewDoc.activate(QAction.Trigger)
 
     # Select "Bod" link
@@ -141,7 +140,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.docViewer.reloadText()
 
     # Change document title
-    nwItem = nwGUI.theProject.projTree["4c4f28287af27"]
+    nwItem = nwGUI.theProject.tree["4c4f28287af27"]
     nwItem.setName("Test Title")
     assert nwItem.itemName == "Test Title"
     nwGUI.docViewer.updateDocInfo("4c4f28287af27")

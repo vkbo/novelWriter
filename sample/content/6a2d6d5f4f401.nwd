@@ -1,11 +1,11 @@
 %%~name: Chapter One
-%%~path: e7ded148d6e4a/6a2d6d5f4f401
+%%~path: 7031beac91f75/6a2d6d5f4f401
 %%~kind: NOVEL/DOCUMENT
 ## So it Begins
 
 @pov: Jane
 @location: Earth
 
-% Synopsis: We can add a chapter file, but keep the scene files separate. In the chapter file we can set the meta data that applies to the whole chapter if we wish to.
+% Synopsis: We can add a chapter document, but keep the scene files separate. In the chapter document we can set the meta data that applies to the whole chapter if we wish to. You can add the scenes as child documents directly under the chapter.
 
-A chapter can also contain leading text before the first scene.
+A chapter can contain leading text before the first scene, like this piece of text.

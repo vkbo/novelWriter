@@ -1,5 +1,234 @@
 # novelWriter Changelog
 
+## Version 2.0 RC 1 [2022-10-17]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you take frequent
+backups.
+
+Please check the changelog for an overview of changes. The full release notes will be added to the
+final release.
+
+**Note:** As of the 2.0 release, novelWriter requires Qt 5.10 or higher and Python 3.7 or higher.
+
+### Detailed Changelog
+
+**Note:** This will no longer be release 1.7, but 2.0 instead due to the major changes to the User
+Interface. PR #1146.
+
+**Features**
+
+* The add new documents feature has been made a little smarter and now tries to choose whether the
+  added document should be a sibling or a child to the selected document. Issue #1107. PR #1110.
+* A folder in the Project Tree can now be converted to a Novel Document or Project Note from the
+  item's context menu. This makes sense now that documents can have child items. Issue #1071.
+  PR #1128.
+* All child elements of an item in the Project Tree can now be collectively expanded or collapsed
+  from the context menu. The same action can be triggered on the entire tree from the menu button
+  at the top. Issue #1122. PR #1129.
+* If using the auto-insert feature for spaces next to punctuation designed for for instance French,
+  any existing spaces are first stripped before the correct space character is added. Some users
+  find it hard to unlearn the reflex to type the space. Issue #1061. PR #1131.
+* The Project Tree now has Quick Links for navigating directly between root folders. This is
+  convenient for very large projects. Issue #1137. PR #1165.
+* It is now possible to filter out entire root folders on the Build Tool. Issue #1138. PR #1168.
+
+**Bugfixes**
+
+* Fix a typo in the Lorem Ipsum tool and set a max width for the views bar. PR #1065.
+* The language set in the Build Tool is now properly exported to Open Document files. Previously,
+  it would be set to English regardless of the user's selection. Issue #1073. PR #1077.
+* Since the text editor cursor extends to the right of its position in the window, it would
+  disappear under the right-hand margin if it reached the edge. A minimum margin of the width of
+  the cursor has been added to the editor, and the same value subtracted from the margin of the
+  viewbox. Thus, the cursor no longer disappears. Issue #1112. PR #1113.
+* The `Shift+Enter` key combination no longer inserts a Unicode line separator in the text editor.
+  Issue #1150. PR #1151.
+* Fixed an issue where idle time would not be properly reset when a new project was created.
+  Issue #1149. PR #1153.
+* Removed the context menu that would appear on the Views Bar, from which the bar could be hidden.
+  This is some feature imposed by the Qt library, and it is not wanted. Issue #1147. PR #1153.
+
+**Known Issues**
+
+* An attempt has been made to fix the missing mime icon for novelWriter projects on Linux. The
+  newer versions of Nautilus don't seem to display the correct icon due to some changes in the way
+  icons are extracted from the theme. The icon displays fine in other places. PR #1068.
+
+**Internationalisation**
+
+* Norwegian and US English translations have been updated. PR #1170.
+
+**User Interface**
+
+* The New Project Wizard has been updated based on user feedback. The "Working Title" setting is
+  now called "Project Name". The number of root folders one can create on the options page has been
+  reduced to the standard ones. An option to add sample notes has been added, and the option to
+  generate chapter folders has been removed. The "Minimal Project" option also no longer creates
+  folders. An Archive root folder is automatically added to all new projects, and a Trash folder is
+  added to custom projects. PR #1067.
+* The border around a lot of Widgets on the main GUI have been removed. PR #1069.
+* The Views Bar has been updated since the beta re;ease with better icons, tooltips, and an
+  expanding menu on the Settings button. The Build Tool can now also be accessed from the Views
+  Bar. PR #1069.
+* The editor theme setting in Preferences has been moved back to the General tab where users seem
+  to expect to find it. PR #1069.
+* A toolbar has been added to the Outline View where the user can select which Novel folder to
+  view. A refresh button for a forced reload of the selected Novel folder has been added, and the
+  menu to select which columns to show has been added to a new button. This makes it easier to find
+  for users instead of having to right-click the table header. Issue #1105. PRs #1063, #1094, and
+  #1111.
+* The Rebuild Outline and Auto-Update Outline options have been removed from the Main Menu.
+  PR #1063.
+* The Project Tree has been redesigned. The header is now hidden, and the columns resize
+  automatically. A toolbar has been added with buttons for moving items up and down in the tree, a
+  button for adding new files, folders and root folders, and a menu button for further options
+  affecting the whole tree. These features have mostly bee removed from the Main Menu. PR #1079.
+* The context menu of the Project Tree has been rewritten completely. It is now possible to set
+  importance and status directly from this menu. Part of issue #973. PRs #1079 and #1105.
+* The Edit Item dialog has been replaced with a simple Edit Label dialog. Most of the features
+  handled by the old dialog have been moved to the Project Tree context menu. PR #1082.
+* The Novel View has been redesigned to match the new Outline View and Project Tree. The header is
+  now hidden, and the columns auto-size. The third column can be selected from a set of options, or
+  be hidden entirely. A button with a menu can be used to select which Novel folder to show.
+  Issue #1041. PR #1084.
+* An arrow icon has been added behind each item in the Novel View. Clicking it, will pop up a
+  tooltip showing the collected meta data for the heading the item represents. PR #1088.
+* The Project Details dialog now supports multiple novel folders. Issue #1078. PRs #1130 and #1167.
+* The Split and Merge tools have been rewritten to work with the new feature of allowing documents
+  to have child documents. The tools have also had more options added to them. The feature is now
+  accessible through the Project Tree item's context menu, and is no longer available from the Main
+  Menu. Issues #1072 and #1032. PRs #1148 and #1154.
+
+**Installation and Packaging**
+
+* AppImage distribution has been added by @Ryex. Issue #1091. PR #1092.
+
+**Code Improvements**
+
+* A new test project generator function has been added to replace the dependency on the New Project
+  tools in the app itself. This ensures that changing the in-app feature doesn't affect the entire
+  test suite. Over time, this generator function should also replace the minimal sample project
+  saved in the test suite. PR #1067.
+* The index class has been rewritten. The index data is now stored in a hierarchy of objects rather
+  than a set of nested dictionaries. The `itemIndex` holds all the data collected from the project,
+  and the `tagsIndex` is a reverse lookup index for linking tags back to where they are used. The
+  reading/writing of the index to disk between sessions is now handled by pack/unpack functions in
+  each object. The index will be regenerated when the user first opens a project as it has been
+  completely restructured. PR #1074.
+* The index instance is now an instance of the project class, not the main GUI. PR #1074.
+* The Outline View has been restructured into a single parent widget in the same manner as the
+  Novel View was in the previous pre-release. Related to #1041. PR #1063.
+* A lot of main GUI objects have been given new names in the code to better represent what they do.
+  PR #1081.
+* The converter for the old 1.0 project structure has been simplified. Mostly to reduce the amount
+  of code and number of translation labels needed for it. It now produces a single error if
+  something went wrong. PR #1083.
+* A number of unused icons have been removed from the code base. PR #1164.
+* All checks for Qt versions below 5.10 have been removed. PR #1174.
+
+**Not Implemented**
+
+* An idea to make the indexer run in the global thread pool was not implemented. Issue #1076.
+* Feature #997 is now obsolete due to the changes made to the Edit Item dialog in #1082.
+* Feature #1106 is not implemented. It proposes to hide the option to select Novel folder if there
+  is only one. We will see if this is really needed based on user feedback.
+
+----
+
+## Version 1.7 Beta 1 [2022-05-17]
+
+**Note:** The 1.7 release cycle was renamed 2.0 on 2022-10-06. See #1144.
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+Please check the changelog for an overview of changes. The full release notes will be added to the
+final release.
+
+### Detailed Changelog
+
+**Features**
+
+* A simple tool to add Lorem Ipsum placeholder text has been added to the Insert menu. PR #1028.
+* Status and Importance flags can now be reorganised in Project Settings. Issue #1035. PR #1040.
+* It is now possible to create multiple Root Folders of the same kind. This makes it possible to
+  add multiple Novel root folders in a project, for instance. Issue #967. PR #1031.
+* All documents can now be dragged and dropped anywhere in the project tree. The document layout
+  may be converted in the process. PR #1031.
+* Documents in the project tree can now have other documents as child documents. Issue #1002.
+  PR #1047.
+* Folders in the project tree that are not empty, can now be moved to trash. PR #1048.
+* Empty folders are deleted on request, and not moved to trash. Issue #1052. PR #1055.
+
+**User Interface**
+
+* The tabs under the project tree and to the right of the main window have been replaced with a
+  toolbar on the left hand side. The toolbar has a set of buttons to change view between Project,
+  Novel and Outline. The three buttons that were available under the project tree have been moved
+  to the bottom of the new toolbar. Issue #1056. PR #1057.
+* When a document changes from a project document to a note, and back again, the Status flag
+  setting is preserved. Previously, the Importance setting would overwrite it during the
+  conversion. PR #1030.
+* Item labels, Status labels, and other labels on the GUI are now run through a "simplify" function
+  before being accepted. This functions strips out all whitespaces and consecutive whitespaces and
+  replace them with single plain whitespaces. This is a safer format to store in XML, and also
+  makes sure there aren't invisible characters floating around in the labels. PR #1038.
+* Due to the changes to how drag and drop works, there are no longer any restrictions on folders
+  and documents. Only root folders remain restricted in terms of moving. Root folders can only be
+  reordered with the Move Up and Move Down commands. PR #1047.
+* The label for the highlighting of redundant spaces in the Preferences dialog has been updated to
+  better reflect what it does. Issue #1043. PR #1046.
+* The New Project Wizard will now try to check if the path selected for the new project can
+  actually be used before letting the user proceed to the next page. Issue #1058. PR #1062.
+
+**Internationalisation**
+
+* Dutch translations have been added by Martijn van der Kleijn (@mvdkleijn). PR #1027.
+
+**Functionality**
+
+* Documents that are missing in the project index when a project is opened are automatically
+  re-indexed. This also handles cases where the cached index is missing. PR #1039.
+
+**Installation and Packaging**
+
+* Python 3.6 is no longer supported. PR #1004.
+* Ubuntu 18.04 packages will no longer be released, due to dropping Python 3.6. Issue #1005.
+  PR #1014.
+
+**Project File Format**
+
+* The item nodes in the content section of the main project XML file have been compacted. It now
+  consists of a main item node and meta and a name node. All settings have been made attributes of
+  one of these three nodes, except the item label which is the text value of the name node. The
+  file format version has been bumped to 1.4. Issue #995. PR #993.
+* Both Importance and Status flag values are now saved to the project file. This means if a
+  document changes layout, the value is no longer lost. PR #1030.
+
+**Code Improvements**
+
+* The linting settings have been updated to select between mutually exclusive options in
+  pycodestyle. PR #1014.
+* The Tokenizer class has been converted to an abstract base class. PR #1026.
+* The class handling Status and Importance flags has been completely rewritten. The flags are now
+  handled using a unique random key as reference rather than relying on the text of the label
+  itself. This makes it a lot easier to rename them as there is no need to update project items.
+  PR #1034.
+* Many of the decisions regarding where items are allowed to belong has been delegated to the
+  NWItem class that holds the item. Some is also handled by the NWTree class that holds the project
+  tree. A new maintenance function in the NWTree class will also ensure that the meta data of an
+  item is correct and up to date. This is especially important after an item has been moved, but is
+  also checked when items are initially loaded. PRs #1031 and #1054.
+* Item handles are now generated using the standard library random number generator. The new
+  handles have the same format as the old algorithm, so they are compatible. PR #1044.
+
+----
+
 ## Version 1.6.6 [2022-10-25]
 
 ### Release Notes

@@ -29,11 +29,13 @@ The full documentation is available at
 The full credits are listed in
 [CREDITS.md](https://github.com/vkbo/novelWriter/blob/main/CREDITS.md).
 
+You can also follow novelWriter on Mastodon at [fosstodon.org/@novelwriter](https://fosstodon.org/@novelwriter).
+
 ## Implementation
 
-The application is written in Python 3 (3.6+) using Qt5 and PyQt5 (5.3+). It is developed on Linux,
-but should in principle work fine on other operating systems as well as long as dependencies are
-met. It is regularly tested on Debian and Ubuntu Linux, Windows, and macOS.
+The application is written with Python 3 (3.7+) using Qt5 and PyQt5 (5.10+). It is developed on
+Linux, but should in principle work fine on other operating systems as well as long as dependencies
+are met. It is regularly tested on Debian and Ubuntu Linux, Windows, and macOS.
 
 ## Installation
 

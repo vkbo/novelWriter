@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
-from novelwriter.dialogs.itemeditor import GuiItemEditor
+from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projdetails import GuiProjectDetails
 from novelwriter.dialogs.projload import GuiProjectLoad
@@ -35,7 +35,7 @@ __all__ = [
     "GuiAbout",
     "GuiDocMerge",
     "GuiDocSplit",
-    "GuiItemEditor",
+    "GuiEditLabel",
     "GuiPreferences",
     "GuiProjectDetails",
     "GuiProjectLoad",

@@ -89,7 +89,7 @@ M_DEL = ~X_DEL
 class ToOdt(Tokenizer):
 
     def __init__(self, theProject, isFlat):
-        Tokenizer.__init__(self, theProject)
+        super().__init__(theProject)
 
         self._isFlat = isFlat  # Flat: .fodt, otherwise .odt
 
@@ -330,7 +330,7 @@ class ToOdt(Tokenizer):
 
         # Meta Data
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "creation-date"))
-        xMeta.text = datetime.now().strftime(r"%Y-%m-%dT%H:%M:%S")
+        xMeta.text = datetime.now().isoformat(sep="T", timespec="seconds")
 
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "generator"))
         xMeta.text = f"novelWriter/{novelwriter.__version__}"
@@ -550,7 +550,7 @@ class ToOdt(Tokenizer):
     def _formatKeywords(self, tText):
         """Apply formatting to keywords.
         """
-        isValid, theBits, _ = self.theParent.theIndex.scanThis("@"+tText)
+        isValid, theBits, _ = self.theProject.index.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 
@@ -994,7 +994,7 @@ class ToOdt(Tokenizer):
 #  Auto-Style Classes
 # =============================================================================================== #
 
-class ODTParagraphStyle():
+class ODTParagraphStyle:
     """Wrapper class for the paragraph style setting used by the
     exporter. Only the used settings are exposed here to keep the class
     minimal and fast.
@@ -1208,7 +1208,7 @@ class ODTParagraphStyle():
 # END Class ODTParagraphStyle
 
 
-class ODTTextStyle():
+class ODTTextStyle:
     """Wrapper class for the text style setting used by the exporter.
     Only the used settings are exposed here to keep the class minimal
     and fast.
@@ -1297,7 +1297,7 @@ X_SPAN_TEXT = 2
 X_SPAN_SING = 3
 
 
-class XMLParagraph():
+class XMLParagraph:
     """This is a helper class to manage the text content of a single
     XML element using mixed content tags.
 

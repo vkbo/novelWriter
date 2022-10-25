@@ -32,7 +32,8 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.config import Config
-from novelwriter.dialogs import GuiPreferences, GuiQuoteSelect
+from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.dialogs.preferences import GuiPreferences
 
 keyDelay = 2
 typeDelay = 1
@@ -239,8 +240,8 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     copyfile(projFile, testFile)
     ignTuple = (
         "timestamp", "guifont", "lastnotes", "guilang", "geometry",
-        "preferences", "treecols", "novelcols", "projcols", "mainpane",
-        "docpane", "viewpane", "outlinepane", "textfont", "textsize"
+        "preferences", "projcols", "mainpane", "docpane", "viewpane",
+        "outlinepane", "textfont", "textsize"
     )
     assert cmpFiles(testFile, compFile, ignoreStart=ignTuple)
 

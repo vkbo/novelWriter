@@ -24,7 +24,8 @@ import pytest
 
 from tools import readFile
 
-from novelwriter.core import NWProject, NWIndex, ToHtml
+from novelwriter.core.tohtml import ToHtml
+from novelwriter.core.project import NWProject
 
 
 @pytest.mark.core
@@ -32,7 +33,6 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     """Test the tokenizer and converter chain using the ToHtml class.
     """
     theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
     theHtml = ToHtml(theProject)
 
     # Novel Files Headers
@@ -235,7 +235,6 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     """Test the converter directly using the ToHtml class.
     """
     theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
     theHtml = ToHtml(theProject)
 
     theHtml._isNovel = True
@@ -606,7 +605,6 @@ def testCoreToHtml_Format(mockGUI):
     """Test all the formatters for the ToHtml class.
     """
     theProject = NWProject(mockGUI)
-    mockGUI.theIndex = NWIndex(theProject)
     theHtml = ToHtml(theProject)
 
     # Export Mode

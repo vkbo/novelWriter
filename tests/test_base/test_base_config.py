@@ -96,12 +96,6 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     # Let the config class figure out the path
     with monkeypatch.context() as mp:
         mp.setattr("PyQt5.QtCore.QStandardPaths.writableLocation", lambda *a: fncDir)
-        tstConf.verQtValue = 50600
-        tstConf.initConfig()
-        assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
-        assert tstConf.dataPath == os.path.join(fncDir, tstConf.appHandle)
-        assert not os.path.isfile(confFile)
-        tstConf.verQtValue = 50000
         tstConf.initConfig()
         assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
         assert tstConf.dataPath == os.path.join(fncDir, tstConf.appHandle)
@@ -323,38 +317,6 @@ def testBaseConfig_RecentCache(monkeypatch, tmpConf, tmpDir, fncDir):
 
 
 @pytest.mark.base
-def testBaseConfig_SetPath(tmpConf, tmpDir):
-    """Test path setters.
-    """
-    # Conf Path
-    assert tmpConf.setConfPath(None)
-    assert not tmpConf.setConfPath(os.path.join("somewhere", "over", "the", "rainbow"))
-    assert tmpConf.setConfPath(os.path.join(tmpDir, "novelwriter.conf"))
-    assert tmpConf.confPath == tmpDir
-    assert tmpConf.confFile == "novelwriter.conf"
-    assert not tmpConf.confChanged
-
-    # Data Path
-    assert tmpConf.setDataPath(None)
-    assert not tmpConf.setDataPath(os.path.join("somewhere", "over", "the", "rainbow"))
-    assert tmpConf.setDataPath(tmpDir)
-    assert tmpConf.dataPath == tmpDir
-    assert not tmpConf.confChanged
-
-    # Last Path
-    assert tmpConf.setLastPath(None)
-    assert tmpConf.lastPath == ""
-
-    assert tmpConf.setLastPath(os.path.join(tmpDir, "file.tmp"))
-    assert tmpConf.lastPath == tmpDir
-
-    assert tmpConf.setLastPath("")
-    assert tmpConf.lastPath == ""
-
-# END Test testBaseConfig_SetPath
-
-
-@pytest.mark.base
 def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     """Set various sizes and positions
     """
@@ -409,32 +371,6 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     assert tmpConf.prefGeometry == [70, 70]
 
     assert tmpConf.setPreferencesSize(700, 615)
-
-    # Project Tree Columns
-    tmpConf.guiScale = 2.0
-    assert tmpConf.setTreeColWidths([10, 20, 25])
-    assert tmpConf.getTreeColWidths() == [10, 20, 24]
-    assert tmpConf.treeColWidth == [5, 10, 12]
-
-    tmpConf.guiScale = 1.0
-    assert tmpConf.setTreeColWidths([10, 20, 25])
-    assert tmpConf.getTreeColWidths() == [10, 20, 25]
-    assert tmpConf.treeColWidth == [10, 20, 25]
-
-    assert tmpConf.setTreeColWidths([200, 50, 30])
-
-    # Novel Tree Columns
-    tmpConf.guiScale = 2.0
-    assert tmpConf.setNovelColWidths([10, 20])
-    assert tmpConf.getNovelColWidths() == [10, 20]
-    assert tmpConf.novelColWidth == [5, 10]
-
-    tmpConf.guiScale = 1.0
-    assert tmpConf.setNovelColWidths([10, 20])
-    assert tmpConf.getNovelColWidths() == [10, 20]
-    assert tmpConf.novelColWidth == [10, 20]
-
-    assert tmpConf.setNovelColWidths([200, 50])
 
     # Project Settings Tree Columns
     tmpConf.guiScale = 2.0
@@ -505,13 +441,13 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     # ============
 
     tmpConf.guiScale = 1.0
-    assert tmpConf.getTextWidth(False) == 600
+    assert tmpConf.getTextWidth(False) == 700
     assert tmpConf.getTextWidth(True) == 800
     assert tmpConf.getTextMargin() == 40
     assert tmpConf.getTabWidth() == 40
 
     tmpConf.guiScale = 2.0
-    assert tmpConf.getTextWidth(False) == 1200
+    assert tmpConf.getTextWidth(False) == 1400
     assert tmpConf.getTextWidth(True) == 1600
     assert tmpConf.getTextMargin() == 80
     assert tmpConf.getTabWidth() == 80

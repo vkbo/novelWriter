@@ -24,14 +24,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #  Mock GUI
 # =========================================================================== #
 
-class MockGuiMain():
+class MockGuiMain:
 
     def __init__(self):
         self.mainConf = None
         self.hasProject = True
-        self.theIndex = None
         self.theProject = None
-        self.statusBar = MockStatusBar()
+        self.mainStatus = MockStatusBar()
 
         # Test Variables
         self.askResponse = True
@@ -82,7 +81,7 @@ class MockGuiMain():
 # END Class MockGuiMain
 
 
-class MockStatusBar():
+class MockStatusBar:
 
     def __init__(self):
         return

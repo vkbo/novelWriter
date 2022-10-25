@@ -25,8 +25,9 @@ import pytest
 from mock import causeOSError
 from tools import readFile, writeFile
 
-from novelwriter.core import NWProject, NWDoc
 from novelwriter.enum import nwItemClass, nwItemLayout
+from novelwriter.core.project import NWProject
+from novelwriter.core.document import NWDoc
 
 
 @pytest.mark.core
@@ -64,9 +65,9 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
     assert theDoc.readDocument() == "### New Scene\n\n"
 
     # Try to open a new (non-existent) file
-    nHandle = theProject.projTree.findRoot(nwItemClass.NOVEL)
+    nHandle = theProject.tree.findRoot(nwItemClass.NOVEL)
     assert nHandle is not None
-    xHandle = theProject.newFile("New File", nwItemClass.NOVEL, nHandle)
+    xHandle = theProject.newFile("New File", nHandle)
     theDoc = NWDoc(theProject, xHandle)
     assert bool(theDoc) is True
     assert repr(theDoc) == f"<NWDoc handle={xHandle}>"
