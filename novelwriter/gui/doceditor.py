@@ -138,24 +138,20 @@ class GuiDocEditor(QTextEdit):
         self.setFrameStyle(QFrame.NoFrame)
 
         # Custom Shortcuts
-        QShortcut(
-            QKeySequence("Ctrl+."),
-            self,
-            context=Qt.WidgetShortcut,
-            activated=self._openSpellContext
-        )
-        QShortcut(
-            Qt.Key_Return | Qt.ControlModifier,
-            self,
-            context=Qt.WidgetShortcut,
-            activated=self._followTag
-        )
-        QShortcut(
-            Qt.Key_Enter | Qt.ControlModifier,
-            self,
-            context=Qt.WidgetShortcut,
-            activated=self._followTag
-        )
+        self.keyContext = QShortcut(self)
+        self.keyContext.setKey("Ctrl+.")
+        self.keyContext.setContext(Qt.WidgetShortcut)
+        self.keyContext.activated.connect(self._openSpellContext)
+
+        self.followTag1 = QShortcut(self)
+        self.followTag1.setKey(Qt.Key_Return | Qt.ControlModifier)
+        self.followTag1.setContext(Qt.WidgetShortcut)
+        self.followTag1.activated.connect(self._followTag)
+
+        self.followTag2 = QShortcut(self)
+        self.followTag2.setKey(Qt.Key_Enter | Qt.ControlModifier)
+        self.followTag2.setContext(Qt.WidgetShortcut)
+        self.followTag2.activated.connect(self._followTag)
 
         # Set Up Document Word Counter
         self.wcTimerDoc = QTimer()
@@ -1162,6 +1158,7 @@ class GuiDocEditor(QTextEdit):
 
         posCursor = self.cursorForPosition(thePos)
         spellCheck = self._spellCheck
+        theWord = ""
 
         if posCursor.block().text().startswith("@"):
             spellCheck = False
@@ -1430,6 +1427,7 @@ class GuiDocEditor(QTextEdit):
             origB = theCursor.selectionEnd()
         else:
             origA = theCursor.position()
+            origB = theCursor.position()
 
         findOpt = QTextDocument.FindFlag(0)
         if self.docSearch.isCaseSense:
