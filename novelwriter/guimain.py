@@ -208,6 +208,7 @@ class GuiMain(QMainWindow):
         self.projView.rootFolderChanged.connect(self.outlineView.updateRootItem)
         self.projView.rootFolderChanged.connect(self.novelView.updateRootItem)
         self.projView.rootFolderChanged.connect(self.projView.updateRootItem)
+        self.projView.projectSettingsRequest.connect(self.showProjectSettingsDialog)
 
         self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.novelView.openDocumentRequest.connect(self._openDocument)
@@ -921,14 +922,15 @@ class GuiMain(QMainWindow):
 
         return
 
-    def showProjectSettingsDialog(self):
+    @pyqtSlot(int)
+    def showProjectSettingsDialog(self, focusTab=GuiProjectSettings.TAB_MAIN):
         """Open the project settings dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
             return False
 
-        dlgProj = GuiProjectSettings(self)
+        dlgProj = GuiProjectSettings(self, focusTab=focusTab)
         dlgProj.exec_()
 
         if dlgProj.result() == QDialog.Accepted:

@@ -421,6 +421,12 @@ class PagedDialog(QDialog):
         self._buttonBox.addWidget(buttonBar)
         return
 
+    def setCurrentWidget(self, widget):
+        """Forward the changing of tab to the QTabWidget.
+        """
+        self._tabBox.setCurrentWidget(widget)
+        return
+
 # END Class PagedDialog
 
 

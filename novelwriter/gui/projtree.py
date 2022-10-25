@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.core import DocMerger, DocSplitter
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.dialogs import GuiDocMerge, GuiDocSplit, GuiEditLabel
+from novelwriter.dialogs import GuiDocMerge, GuiDocSplit, GuiEditLabel, GuiProjectSettings
 from novelwriter.constants import nwHeaders, trConst, nwLabels
 
 logger = logging.getLogger(__name__)
@@ -61,6 +61,9 @@ class GuiProjectView(QWidget):
     # Signals for user interaction with the project tree
     selectedItemChanged = pyqtSignal(str)
     openDocumentRequest = pyqtSignal(str, Enum, int, str)
+
+    # Requests for the main GUI
+    projectSettingsRequest = pyqtSignal(int)
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -1169,6 +1172,11 @@ class GuiProjectTree(QTreeWidget):
                 aStatus.triggered.connect(
                     lambda n, key=key: self._changeItemStatus(tHandle, key)
                 )
+            mStatus.addSeparator()
+            aManage1 = mStatus.addAction("Manage Labels ...")
+            aManage1.triggered.connect(
+                lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.TAB_STATUS)
+            )
         else:
             mImport = ctxMenu.addMenu(self.tr("Set Importance to ..."))
             for n, (key, entry) in enumerate(self.theProject.importItems.items()):
@@ -1176,6 +1184,11 @@ class GuiProjectTree(QTreeWidget):
                 aImport.triggered.connect(
                     lambda n, key=key: self._changeItemImport(tHandle, key)
                 )
+            mImport.addSeparator()
+            aManage2 = mImport.addAction("Manage Labels ...")
+            aManage2.triggered.connect(
+                lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.TAB_IMPORT)
+            )
 
         # Transform Item
         # ==============

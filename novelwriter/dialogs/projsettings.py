@@ -43,7 +43,12 @@ logger = logging.getLogger(__name__)
 
 class GuiProjectSettings(PagedDialog):
 
-    def __init__(self, mainGui):
+    TAB_MAIN    = 0
+    TAB_STATUS  = 1
+    TAB_IMPORT  = 2
+    TAB_REPLACE = 3
+
+    def __init__(self, mainGui, focusTab=TAB_MAIN):
         super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiProjectSettings ...")
@@ -84,6 +89,9 @@ class GuiProjectSettings(PagedDialog):
 
         # Flags
         self.spellChanged = False
+
+        # Focus Tab
+        self._focusTab(focusTab)
 
         logger.debug("GuiProjectSettings initialisation complete")
 
@@ -140,6 +148,19 @@ class GuiProjectSettings(PagedDialog):
     ##
     #  Internal Functions
     ##
+
+    def _focusTab(self, tab):
+        """Change which is the focused tab.
+        """
+        if tab == self.TAB_MAIN:
+            self.setCurrentWidget(self.tabMain)
+        elif tab == self.TAB_STATUS:
+            self.setCurrentWidget(self.tabStatus)
+        elif tab == self.TAB_IMPORT:
+            self.setCurrentWidget(self.tabImport)
+        elif tab == self.TAB_REPLACE:
+            self.setCurrentWidget(self.tabReplace)
+        return
 
     def _saveGuiSettings(self):
         """Save GUI settings.
