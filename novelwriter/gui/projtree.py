@@ -105,9 +105,6 @@ class GuiProjectView(QWidget):
         self.keyContext.activated.connect(lambda: self.projTree.openContextOnSelected())
 
         # Function Mappings
-        self.revealNewTreeItem = self.projTree.revealNewTreeItem
-        self.renameTreeItem = self.projTree.renameTreeItem
-        self.getTreeFromHandle = self.projTree.getTreeFromHandle
         self.emptyTrash = self.projTree.emptyTrash
         self.requestDeleteItem = self.projTree.requestDeleteItem
         self.setTreeItemValues = self.projTree.setTreeItemValues
@@ -163,6 +160,16 @@ class GuiProjectView(QWidget):
         """Check if the project tree has focus.
         """
         return self.projTree.hasFocus()
+
+    def renameTreeItem(self, tHandle=None):
+        """External request to rename an item or the currently selected
+        item. This is triggered by the global menu or keyboard shortcut.
+        """
+        if tHandle is None:
+            tHandle = self.projTree.getSelectedHandle()
+        if tHandle:
+            return self.projTree.renameTreeItem(tHandle)
+        return
 
     ##
     #  Public Slots

@@ -40,7 +40,7 @@ def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     cHandle = nwGUI.theProject.newFile("A Note", C.hCharRoot)
     newDoc = NWDoc(nwGUI.theProject, cHandle)
     newDoc.writeDocument("# A Note\n\n")
-    nwGUI.projView.revealNewTreeItem(cHandle)
+    nwGUI.projView.projTree.revealNewTreeItem(cHandle)
     nwGUI.rebuildIndex(beQuiet=True)
 
     # Reference Time

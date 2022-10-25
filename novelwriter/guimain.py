@@ -807,15 +807,11 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        if tHandle is None:
-            if self.docEditor.anyFocus() or self.isFocusMode:
-                tHandle = self.docEditor.docHandle()
-            else:
-                tHandle = self.projView.getSelectedHandle()
-        if tHandle:
-            return self.projView.renameTreeItem(tHandle)
+        if tHandle is None and (self.docEditor.anyFocus() or self.isFocusMode):
+            tHandle = self.docEditor.docHandle()
+        self.projView.renameTreeItem(tHandle)
 
-        return False
+        return True
 
     def rebuildTrees(self):
         """Rebuild the project tree.

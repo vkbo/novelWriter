@@ -1144,7 +1144,7 @@ def testGuiEditor_Tags(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     assert nwGUI.openDocument(cHandle) is True
     assert nwGUI.docEditor.replaceText(theText) is True
     assert nwGUI.saveDocument() is True
-    assert nwGUI.projView.revealNewTreeItem(cHandle)
+    assert nwGUI.projView.projTree.revealNewTreeItem(cHandle)
     nwGUI.docEditor.updateTagHighLighting()
 
     # Follow Tag
