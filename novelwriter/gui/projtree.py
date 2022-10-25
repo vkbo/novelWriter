@@ -1128,9 +1128,8 @@ class GuiProjectTree(QTreeWidget):
         trashHandle = self.theProject.tree.trashRoot()
         if tItem.itemHandle == trashHandle and trashHandle is not None:
             # The trash folder only has one option
-            ctxMenu.addAction(
-                self.tr("Empty Trash"), lambda: self.emptyTrash()
-            )
+            aEmptyTrash = ctxMenu.addAction(self.tr("Empty Trash"))
+            aEmptyTrash.triggered.connect(lambda: self.emptyTrash())
             ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
             return True
 
@@ -1143,12 +1142,12 @@ class GuiProjectTree(QTreeWidget):
         hasChild = selItem.childCount() > 0
 
         if isFile:
-            ctxMenu.addAction(
-                self.tr("Open Document"),
+            aOpenDoc = ctxMenu.addAction(self.tr("Open Document"))
+            aOpenDoc.triggered.connect(
                 lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, -1, "")
             )
-            ctxMenu.addAction(
-                self.tr("View Document"),
+            aViewDoc = ctxMenu.addAction(self.tr("View Document"))
+            aViewDoc.triggered.connect(
                 lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
             )
             ctxMenu.addSeparator()
@@ -1156,14 +1155,12 @@ class GuiProjectTree(QTreeWidget):
         # Edit Item Settings
         # ==================
 
-        ctxMenu.addAction(
-            self.tr("Change Label"), lambda: self.renameTreeItem(tHandle)
-        )
+        aLabel = ctxMenu.addAction(self.tr("Change Label"))
+        aLabel.triggered.connect(lambda: self.renameTreeItem(tHandle))
 
         if isFile:
-            ctxMenu.addAction(
-                self.tr("Toggle Active"), lambda: self._toggleItemActive(tHandle)
-            )
+            aActive = ctxMenu.addAction(self.tr("Toggle Active"))
+            aActive.triggered.connect(lambda: self._toggleItemActive(tHandle))
 
         if tItem.isNovelLike():
             mStatus = ctxMenu.addMenu(self.tr("Set Status to ..."))
@@ -1193,38 +1190,30 @@ class GuiProjectTree(QTreeWidget):
             isNoteFile = isFile and tItem.isNoteLayout()
 
             if (isNoteFile or isFolder) and tItem.documentAllowed():
-                mTrans.addAction(
-                    self.tr("Convert to {0}").format(trDoc),
+                aConvert1 = mTrans.addAction(self.tr("Convert to {0}").format(trDoc))
+                aConvert1.triggered.connect(
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.DOCUMENT)
                 )
 
             if isDocFile or isFolder:
-                mTrans.addAction(
-                    self.tr("Convert to {0}").format(trNote),
+                aConvert2 = mTrans.addAction(self.tr("Convert to {0}").format(trNote))
+                aConvert2.triggered.connect(
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.NOTE)
                 )
 
             if hasChild and isFile:
-                mTrans.addAction(
-                    self.tr("Merge Child Items into Self"),
-                    lambda: self._mergeDocuments(tHandle, False)
-                )
-                mTrans.addAction(
-                    self.tr("Merge Child Items into New"),
-                    lambda: self._mergeDocuments(tHandle, True)
-                )
+                aMerge1 = mTrans.addAction(self.tr("Merge Child Items into Self"))
+                aMerge1.triggered.connect(lambda: self._mergeDocuments(tHandle, False))
+                aMerge2 = mTrans.addAction(self.tr("Merge Child Items into New"))
+                aMerge2.triggered.connect(lambda: self._mergeDocuments(tHandle, True))
 
             if hasChild and isFolder:
-                mTrans.addAction(
-                    self.tr("Merge Documents in Folder"),
-                    lambda: self._mergeDocuments(tHandle, True)
-                )
+                aMerge3 = mTrans.addAction(self.tr("Merge Documents in Folder"))
+                aMerge3.triggered.connect(lambda: self._mergeDocuments(tHandle, True))
 
             if isFile:
-                mTrans.addAction(
-                    self.tr("Split Document by Headers"),
-                    lambda: self._splitDocument(tHandle)
-                )
+                aSplit1 = mTrans.addAction(self.tr("Split Document by Headers"))
+                aSplit1.triggered.connect(lambda: self._splitDocument(tHandle))
 
         # Expand/Collapse/Delete
         # ======================
@@ -1232,23 +1221,17 @@ class GuiProjectTree(QTreeWidget):
         ctxMenu.addSeparator()
 
         if hasChild:
-            ctxMenu.addAction(
-                self.tr("Expand All"),
-                lambda: self.setExpandedFromHandle(tHandle, True)
-            )
-            ctxMenu.addAction(
-                self.tr("Collapse All"),
-                lambda: self.setExpandedFromHandle(tHandle, False)
-            )
+            aExpand = ctxMenu.addAction(self.tr("Expand All"))
+            aExpand.triggered.connect(lambda: self.setExpandedFromHandle(tHandle, True))
+            aCollapse = ctxMenu.addAction(self.tr("Collapse All"))
+            aCollapse.triggered.connect(lambda: self.setExpandedFromHandle(tHandle, False))
 
         if tItem.itemClass == nwItemClass.TRASH or isRoot or (isFolder and not hasChild):
-            ctxMenu.addAction(
-                self.tr("Delete Permanently"), lambda: self.permanentlyDeleteItem(tHandle)
-            )
+            aDelete = ctxMenu.addAction(self.tr("Delete Permanently"))
+            aDelete.triggered.connect(lambda: self.permanentlyDeleteItem(tHandle))
         else:
-            ctxMenu.addAction(
-                self.tr("Move to Trash"), lambda: self.moveItemToTrash(tHandle)
-            )
+            aMoveTrash = ctxMenu.addAction(self.tr("Move to Trash"))
+            aMoveTrash.triggered.connect(lambda: self.moveItemToTrash(tHandle))
 
         # Show Context Menu
         ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
