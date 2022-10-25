@@ -208,6 +208,7 @@ class GuiMain(QMainWindow):
         self.projView.rootFolderChanged.connect(self.outlineView.updateRootItem)
         self.projView.rootFolderChanged.connect(self.novelView.updateRootItem)
         self.projView.rootFolderChanged.connect(self.projView.updateRootItem)
+        self.projView.projectSettingsRequest.connect(self.showProjectSettingsDialog)
 
         self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.novelView.openDocumentRequest.connect(self._openDocument)
@@ -806,15 +807,11 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        if tHandle is None:
-            if self.docEditor.anyFocus() or self.isFocusMode:
-                tHandle = self.docEditor.docHandle()
-            else:
-                tHandle = self.projView.getSelectedHandle()
-        if tHandle:
-            return self.projView.renameTreeItem(tHandle)
+        if tHandle is None and (self.docEditor.anyFocus() or self.isFocusMode):
+            tHandle = self.docEditor.docHandle()
+        self.projView.renameTreeItem(tHandle)
 
-        return False
+        return True
 
     def rebuildTrees(self):
         """Rebuild the project tree.
@@ -921,14 +918,15 @@ class GuiMain(QMainWindow):
 
         return
 
-    def showProjectSettingsDialog(self):
+    @pyqtSlot(int)
+    def showProjectSettingsDialog(self, focusTab=GuiProjectSettings.TAB_MAIN):
         """Open the project settings dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
             return False
 
-        dlgProj = GuiProjectSettings(self)
+        dlgProj = GuiProjectSettings(self, focusTab=focusTab)
         dlgProj.exec_()
 
         if dlgProj.result() == QDialog.Accepted:
