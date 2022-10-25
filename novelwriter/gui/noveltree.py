@@ -252,7 +252,6 @@ class GuiNovelToolBar(QWidget):
         """Update theme elements.
         """
         # Icons
-
         self.tbRefresh.setIcon(self.mainTheme.getIcon("refresh"))
         self.tbRoot.setIcon(self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL]))
         self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
@@ -262,7 +261,6 @@ class GuiNovelToolBar(QWidget):
         self.setPalette(qPalette)
 
         # StyleSheets
-
         fadeCol = qPalette.text().color()
         buttonStyle = (
             "QToolButton {{padding: {0}px; border: none; background: transparent;}} "

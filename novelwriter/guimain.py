@@ -909,18 +909,34 @@ class GuiMain(QMainWindow):
             self.initMain()
             self.saveDocument()
 
-            self.mainTheme.updateTheme()
-            self.viewsBar.updateTheme()
-            self.projView.updateTheme()
-            self.novelView.updateTheme()
-            self.docEditor.updateTheme()
-            self.docViewer.updateTheme()
+            if dlgConf.needsRestart:
+                self.makeAlert(self.tr(
+                    "Some changes will not be applied until novelWriter has been restarted."
+                ), nwAlert.INFO)
+
+            if dlgConf.refreshTree:
+                self.projView.populateTree()
+
+            if dlgConf.updateTheme:
+                self.mainTheme.updateTheme()
+                self.docEditor.updateTheme()
+                self.docViewer.updateTheme()
+                self.viewsBar.updateTheme()
+                self.projView.updateTheme()
+                self.novelView.updateTheme()
+                self.outlineView.updateTheme()
+                self.itemDetails.updateTheme()
+                self.mainStatus.updateTheme()
+
+            if dlgConf.updateSyntax:
+                pass
 
             self.docEditor.initEditor()
             self.docViewer.initViewer()
             self.projView.initSettings()
             self.novelView.initSettings()
             self.outlineView.initSettings()
+
             self._updateStatusWordCount()
 
         return

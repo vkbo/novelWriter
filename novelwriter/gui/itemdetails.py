@@ -53,11 +53,7 @@ class GuiItemDetails(QWidget):
         hSp = self.mainConf.pxInt(6)
         vSp = self.mainConf.pxInt(1)
         mPx = self.mainConf.pxInt(6)
-        iPx = self.mainTheme.baseIconSize
         fPt = self.mainTheme.fontPointSize
-
-        self._expCheck = self.mainTheme.getPixmap("check", (iPx, iPx))
-        self._expCross = self.mainTheme.getPixmap("cross", (iPx, iPx))
 
         fntLabel = QFont()
         fntLabel.setBold(True)
@@ -179,6 +175,8 @@ class GuiItemDetails(QWidget):
 
         self.setLayout(self.mainBox)
 
+        self.updateTheme()
+
         # Make sure the columns for flags and counts don't resize too often
         flagWidth  = self.mainTheme.getTextWidth("Mm", fntValue)
         countWidth = self.mainTheme.getTextWidth("99,999", fntValue)
@@ -218,6 +216,15 @@ class GuiItemDetails(QWidget):
         """Reload the content of the details panel.
         """
         self.updateViewBox(self._itemHandle)
+
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        iPx = self.mainTheme.baseIconSize
+        self._expCheck = self.mainTheme.getPixmap("check", (iPx, iPx))
+        self._expCross = self.mainTheme.getPixmap("cross", (iPx, iPx))
+        self.updateViewBox(self._itemHandle)
+        return
 
     ##
     #  Public Slots

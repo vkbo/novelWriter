@@ -742,17 +742,11 @@ class GuiDocViewHeader(QWidget):
         lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
         self.theTitle.setFont(lblFont)
 
-        buttonStyle = (
-            "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*self.mainTheme.colText)
-
         # Buttons
         self.backButton = QToolButton(self)
         self.backButton.setContentsMargins(0, 0, 0, 0)
         self.backButton.setIconSize(QSize(fPx, fPx))
         self.backButton.setFixedSize(fPx, fPx)
-        self.backButton.setStyleSheet(buttonStyle)
         self.backButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.backButton.setVisible(False)
         self.backButton.setToolTip(self.tr("Go backward"))
@@ -762,7 +756,6 @@ class GuiDocViewHeader(QWidget):
         self.forwardButton.setContentsMargins(0, 0, 0, 0)
         self.forwardButton.setIconSize(QSize(fPx, fPx))
         self.forwardButton.setFixedSize(fPx, fPx)
-        self.forwardButton.setStyleSheet(buttonStyle)
         self.forwardButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.forwardButton.setVisible(False)
         self.forwardButton.setToolTip(self.tr("Go forward"))
@@ -772,7 +765,6 @@ class GuiDocViewHeader(QWidget):
         self.refreshButton.setContentsMargins(0, 0, 0, 0)
         self.refreshButton.setIconSize(QSize(fPx, fPx))
         self.refreshButton.setFixedSize(fPx, fPx)
-        self.refreshButton.setStyleSheet(buttonStyle)
         self.refreshButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.refreshButton.setVisible(False)
         self.refreshButton.setToolTip(self.tr("Reload the document"))
@@ -782,7 +774,6 @@ class GuiDocViewHeader(QWidget):
         self.closeButton.setContentsMargins(0, 0, 0, 0)
         self.closeButton.setIconSize(QSize(fPx, fPx))
         self.closeButton.setFixedSize(fPx, fPx)
-        self.closeButton.setStyleSheet(buttonStyle)
         self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.closeButton.setVisible(False)
         self.closeButton.setToolTip(self.tr("Close the document"))
@@ -807,7 +798,6 @@ class GuiDocViewHeader(QWidget):
 
         # Fix the Colours
         self.updateTheme()
-        self.matchColours()
 
         logger.debug("GuiDocViewHeader initialisation complete")
 
@@ -824,6 +814,19 @@ class GuiDocViewHeader(QWidget):
         self.forwardButton.setIcon(self.mainTheme.getIcon("forward"))
         self.refreshButton.setIcon(self.mainTheme.getIcon("refresh"))
         self.closeButton.setIcon(self.mainTheme.getIcon("close"))
+
+        buttonStyle = (
+            "QToolButton {{border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
+        ).format(*self.mainTheme.colText)
+
+        self.backButton.setStyleSheet(buttonStyle)
+        self.forwardButton.setStyleSheet(buttonStyle)
+        self.refreshButton.setStyleSheet(buttonStyle)
+        self.closeButton.setStyleSheet(buttonStyle)
+
+        self.matchColours()
+
         return
 
     def matchColours(self):
@@ -1051,7 +1054,6 @@ class GuiDocViewFooter(QWidget):
 
         # Fix the Colours
         self.updateTheme()
-        self.matchColours()
 
         logger.debug("GuiDocViewFooter initialisation complete")
 
@@ -1096,6 +1098,8 @@ class GuiDocViewFooter(QWidget):
         self.stickyRefs.setStyleSheet(buttonStyle)
         self.showComments.setStyleSheet(buttonStyle)
         self.showSynopsis.setStyleSheet(buttonStyle)
+
+        self.matchColours()
 
         return
 

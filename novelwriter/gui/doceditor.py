@@ -2650,17 +2650,11 @@ class GuiDocEditHeader(QWidget):
         lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
         self.theTitle.setFont(lblFont)
 
-        buttonStyle = (
-            "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*self.mainTheme.colText)
-
         # Buttons
         self.editButton = QToolButton(self)
         self.editButton.setContentsMargins(0, 0, 0, 0)
         self.editButton.setIconSize(QSize(fPx, fPx))
         self.editButton.setFixedSize(fPx, fPx)
-        self.editButton.setStyleSheet(buttonStyle)
         self.editButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.editButton.setVisible(False)
         self.editButton.setToolTip(self.tr("Edit document label"))
@@ -2670,7 +2664,6 @@ class GuiDocEditHeader(QWidget):
         self.searchButton.setContentsMargins(0, 0, 0, 0)
         self.searchButton.setIconSize(QSize(fPx, fPx))
         self.searchButton.setFixedSize(fPx, fPx)
-        self.searchButton.setStyleSheet(buttonStyle)
         self.searchButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.searchButton.setVisible(False)
         self.searchButton.setToolTip(self.tr("Search document"))
@@ -2680,7 +2673,6 @@ class GuiDocEditHeader(QWidget):
         self.minmaxButton.setContentsMargins(0, 0, 0, 0)
         self.minmaxButton.setIconSize(QSize(fPx, fPx))
         self.minmaxButton.setFixedSize(fPx, fPx)
-        self.minmaxButton.setStyleSheet(buttonStyle)
         self.minmaxButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.minmaxButton.setVisible(False)
         self.minmaxButton.setToolTip(self.tr("Toggle Focus Mode"))
@@ -2690,7 +2682,6 @@ class GuiDocEditHeader(QWidget):
         self.closeButton.setContentsMargins(0, 0, 0, 0)
         self.closeButton.setIconSize(QSize(fPx, fPx))
         self.closeButton.setFixedSize(fPx, fPx)
-        self.closeButton.setStyleSheet(buttonStyle)
         self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.closeButton.setVisible(False)
         self.closeButton.setToolTip(self.tr("Close the document"))
@@ -2713,9 +2704,7 @@ class GuiDocEditHeader(QWidget):
         self.outerBox.setContentsMargins(cM, cM, cM, cM)
         self.setMinimumHeight(fPx + 2*cM)
 
-        # Fix the Colours
         self.updateTheme()
-        self.matchColours()
 
         logger.debug("GuiDocEditHeader initialisation complete")
 
@@ -2732,6 +2721,19 @@ class GuiDocEditHeader(QWidget):
         self.searchButton.setIcon(self.mainTheme.getIcon("search"))
         self.minmaxButton.setIcon(self.mainTheme.getIcon("maximise"))
         self.closeButton.setIcon(self.mainTheme.getIcon("close"))
+
+        buttonStyle = (
+            "QToolButton {{border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
+        ).format(*self.mainTheme.colText)
+
+        self.editButton.setStyleSheet(buttonStyle)
+        self.searchButton.setStyleSheet(buttonStyle)
+        self.minmaxButton.setStyleSheet(buttonStyle)
+        self.closeButton.setStyleSheet(buttonStyle)
+
+        self.matchColours()
+
         return
 
     def matchColours(self):
@@ -2942,7 +2944,6 @@ class GuiDocEditFooter(QWidget):
 
         # Fix the Colours
         self.updateTheme()
-        self.matchColours()
         self.updateLineCount()
         self.updateCounts()
 
@@ -2959,6 +2960,9 @@ class GuiDocEditFooter(QWidget):
         """
         self.linesIcon.setPixmap(self.mainTheme.getPixmap("status_lines", (self.sPx, self.sPx)))
         self.wordsIcon.setPixmap(self.mainTheme.getPixmap("status_stats", (self.sPx, self.sPx)))
+
+        self.matchColours()
+
         return
 
     def matchColours(self):

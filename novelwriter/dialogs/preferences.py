@@ -34,7 +34,6 @@ from PyQt5.QtWidgets import (
     QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
 )
 
-from novelwriter.enum import nwAlert
 from novelwriter.custom import QSwitch, QConfigLayout, PagedDialog
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 
@@ -78,6 +77,12 @@ class GuiPreferences(PagedDialog):
 
         self.resize(*self.mainConf.getPreferencesSize())
 
+        # Settings
+        self.updateTheme = False
+        self.updateSyntax = False
+        self.needsRestart = False
+        self.refreshTree = False
+
         logger.debug("GuiPreferences initialisation complete")
 
         return
@@ -92,22 +97,13 @@ class GuiPreferences(PagedDialog):
         """
         logger.debug("Saving new preferences")
 
-        needsRestart, refreshTree = self.tabGeneral.saveValues()
-
+        self.tabGeneral.saveValues()
         self.tabProjects.saveValues()
         self.tabDocs.saveValues()
         self.tabEditor.saveValues()
         self.tabSyntax.saveValues()
         self.tabAuto.saveValues()
         self.tabQuote.saveValues()
-
-        if needsRestart:
-            self.mainGui.makeAlert(self.tr(
-                "Some changes will not be applied until novelWriter has been restarted."
-            ), nwAlert.INFO)
-
-        if refreshTree:
-            self.mainGui.projView.populateTree()
 
         self._saveWindowSize()
         self.accept()
@@ -140,6 +136,7 @@ class GuiPreferencesGeneral(QWidget):
         super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
+        self.prefsGui  = prefsGui
         self.mainGui   = prefsGui.mainGui
         self.mainTheme = prefsGui.mainGui.mainTheme
 
@@ -277,16 +274,13 @@ class GuiPreferencesGeneral(QWidget):
         guiFontSize = self.guiFontSize.value()
         emphLabels  = self.emphLabels.isChecked()
 
-        # Check if restart is needed
-        needsRestart = False
-        needsRestart |= self.mainConf.guiLang != guiLang
-        needsRestart |= self.mainConf.guiTheme != guiTheme
-        needsRestart |= self.mainConf.guiFont != guiFont
-        needsRestart |= self.mainConf.guiFontSize != guiFontSize
-
-        # Check if refreshing project tree is needed
-        refreshTree = False
-        refreshTree |= self.mainConf.emphLabels != emphLabels
+        # Update Flags
+        self.prefsGui.updateTheme |= self.mainConf.guiTheme != guiTheme
+        self.prefsGui.updateSyntax |= self.mainConf.guiSyntax != guiSyntax
+        self.prefsGui.needsRestart |= self.mainConf.guiLang != guiLang
+        self.prefsGui.needsRestart |= self.mainConf.guiFont != guiFont
+        self.prefsGui.needsRestart |= self.mainConf.guiFontSize != guiFontSize
+        self.prefsGui.refreshTree |= self.mainConf.emphLabels != emphLabels
 
         self.mainConf.guiLang      = guiLang
         self.mainConf.guiTheme     = guiTheme
@@ -300,7 +294,7 @@ class GuiPreferencesGeneral(QWidget):
 
         self.mainConf.confChanged = True
 
-        return needsRestart, refreshTree
+        return
 
     ##
     #  Slots
