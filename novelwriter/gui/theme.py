@@ -220,7 +220,7 @@ class GuiTheme:
         else:
             self.cssFile = self.themeFile[:-5]+".css"
             self.loadTheme()
-            self.iconCache.updateTheme()
+            self.iconCache.updateTheme(self.themeIcons)
 
         # Update dependant colours
         backCol = qApp.palette().window().color()
@@ -304,9 +304,6 @@ class GuiTheme:
             self.statNone    = self._loadColour(confParser, cnfSec, "statusnone")
             self.statUnsaved = self._loadColour(confParser, cnfSec, "statusunsaved")
             self.statSaved   = self._loadColour(confParser, cnfSec, "statussaved")
-
-        # Set Icon Theme
-        self.mainConf.guiIcons = self.themeIcons
 
         # CSS File
         cssData = readTextFile(self.cssFile)
@@ -511,8 +508,7 @@ class GuiIcons:
         self._confName  = "icons.conf"
 
         # Icon Theme Path
-        self._iconPath  = os.path.join(self.mainConf.assetPath, "icons")
-        self._themePath = os.path.join(self._iconPath, "system")
+        self._iconPath = os.path.join(self.mainConf.assetPath, "icons")
 
         # Icon Theme Meta
         self.themeName        = ""
@@ -529,20 +525,19 @@ class GuiIcons:
     #  Actions
     ##
 
-    def updateTheme(self):
+    def updateTheme(self, iconTheme):
         """Update the theme map. This is more of an init, since many of
         the GUI icons cannot really be replaced without writing specific
         update functions for the classes where they're used.
         """
         self._themeMap = {}
-        themePath = self._getThemePath()
-        if themePath is None:
-            logger.warning("No icons loaded")
+        themePath = os.path.join(self.mainConf.assetPath, "icons", iconTheme)
+        if not os.path.isdir(themePath):
+            logger.warning("No icons loaded for '%s'", iconTheme)
             return False
 
-        self._themePath = themePath
         themeConf = os.path.join(themePath, self._confName)
-        logger.info("Loading icon theme '%s'", self.mainConf.guiIcons)
+        logger.info("Loading icon theme '%s'", iconTheme)
 
         # Config File
         confParser = NWConfigParser()
@@ -572,7 +567,7 @@ class GuiIcons:
                 if iconName not in self.ICON_KEYS:
                     logger.error("Unknown icon name '%s' in config file", iconName)
                 else:
-                    iconPath = os.path.join(self._themePath, iconFile)
+                    iconPath = os.path.join(themePath, iconFile)
                     if os.path.isfile(iconPath):
                         self._themeMap[iconName] = iconPath
                         logger.debug("Icon slot '%s' using file '%s'", iconName, iconFile)
@@ -593,6 +588,8 @@ class GuiIcons:
             logger.debug("Reloading icon: '%s'", iconKey)
             qIcon = self._loadIcon(iconKey)
             self._qIcons[iconKey] = qIcon
+
+        self._headerDec = []
 
         return True
 
@@ -691,23 +688,6 @@ class GuiIcons:
     ##
     #  Internal Functions
     ##
-
-    def _getThemePath(self):
-        """Get a valid theme path. Returns None if it fails.
-        """
-        themePath = os.path.join(self.mainConf.assetPath, "icons", self.mainConf.guiIcons)
-        if not os.path.isdir(themePath):
-            logger.warning(
-                "Icon theme '%s' not found, resetting to default", self.mainConf.guiIcons
-            )
-            self.mainConf.setDefaultIconTheme()
-
-            themePath = os.path.join(self.mainConf.assetPath, "icons", self.mainConf.guiIcons)
-            if not os.path.isdir(themePath):
-                logger.error("Default icon theme not found")
-                return None
-
-        return themePath
 
     def _loadIcon(self, iconKey):
         """Load an icon from the assets themes folder. Is guaranteed to

@@ -50,7 +50,6 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
     assert novelwriter.CONFIG.confPath == nwMinimal
     novelwriter.CONFIG.guiTheme = "default_dark"
     novelwriter.CONFIG.guiSyntax = "tomorrow_night_eighties"
-    novelwriter.CONFIG.guiIcons = "typicons_dark"
     novelwriter.CONFIG.guiFont = "Cantarell"
     novelwriter.CONFIG.guiFontSize = 11
     novelwriter.CONFIG.confChanged = True
@@ -72,7 +71,6 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
 
     assert novelwriter.CONFIG.guiTheme == "default_dark"
     assert novelwriter.CONFIG.guiSyntax == "tomorrow_night_eighties"
-    assert novelwriter.CONFIG.guiIcons == "typicons_dark"
     assert novelwriter.CONFIG.guiFont != ""
     assert novelwriter.CONFIG.guiFontSize > 0
 
@@ -117,9 +115,7 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
 
     # Test Icon class
     iconCache = nwGUI.mainTheme.iconCache
-    novelwriter.CONFIG.guiIcons = "invalid"
-    assert iconCache.updateTheme() is True
-    assert novelwriter.CONFIG.guiIcons == "typicons_light"
+    assert iconCache.updateTheme("invalid") is False
 
     # Ask for a non-existent key
     anImg = iconCache.loadDecoration("nonsense", 20, 20)

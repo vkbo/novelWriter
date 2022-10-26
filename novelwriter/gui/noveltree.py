@@ -96,6 +96,7 @@ class GuiNovelView(QWidget):
         """Update theme elements.
         """
         self.novelBar.updateTheme()
+        self.novelTree.updateTheme()
         self.refreshTree()
         return
 
@@ -408,7 +409,6 @@ class GuiNovelTree(QTreeWidget):
         fH2.setBold(True)
 
         self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
-        self._pMore = self.mainTheme.loadDecoration("deco_doc_more", pxH=iPx)
 
         # Connect signals
         self.clicked.connect(self._treeItemClicked)
@@ -417,6 +417,7 @@ class GuiNovelTree(QTreeWidget):
 
         # Set custom settings
         self.initSettings()
+        self.updateTheme()
 
         logger.debug("GuiNovelTree initialisation complete")
 
@@ -436,6 +437,13 @@ class GuiNovelTree(QTreeWidget):
         else:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
+        return
+
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        iPx = self.mainTheme.baseIconSize
+        self._pMore = self.mainTheme.loadDecoration("deco_doc_more", pxH=iPx)
         return
 
     ##
