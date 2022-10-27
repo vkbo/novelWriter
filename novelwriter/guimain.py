@@ -918,7 +918,7 @@ class GuiMain(QMainWindow):
                 self.projView.populateTree()
 
             if dlgConf.updateTheme:
-                self.mainTheme.updateTheme()
+                self.mainTheme.loadTheme()
                 self.docEditor.updateTheme()
                 self.docViewer.updateTheme()
                 self.viewsBar.updateTheme()
@@ -929,7 +929,7 @@ class GuiMain(QMainWindow):
                 self.mainStatus.updateTheme()
 
             if dlgConf.updateSyntax:
-                self.mainTheme.updateSyntax()
+                self.mainTheme.loadSyntax()
                 self.docEditor.updateSyntaxColours()
 
             self.docEditor.initEditor()

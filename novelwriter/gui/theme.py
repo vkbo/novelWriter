@@ -105,16 +105,14 @@ class GuiTheme:
         self.colRepTag = [0, 0, 0]
         self.colMod    = [0, 0, 0]
 
-        # Changeable Settings
-        self.guiTheme   = None
-        self.guiSyntax  = None
-        self.syntaxFile = None
-        self.cssFile    = None
-        self.guiFontDB  = QFontDatabase()
-
         # Class Setup
         # ===========
 
+        # Init GUI Font
+        self.guiFontDB = QFontDatabase()
+        self._setGuiFont()
+
+        # Load Themes
         self._guiPalette  = QPalette()
         self._themeList   = []
         self._syntaxList  = []
@@ -128,9 +126,8 @@ class GuiTheme:
             self._listConf(self._availSyntax, os.path.join(self.mainConf.dataPath, "syntax"))
             self._listConf(self._availThemes, os.path.join(self.mainConf.dataPath, "themes"))
 
-        self.updateFont()
-        self.updateTheme()
-        self.updateSyntax()
+        self.loadTheme()
+        self.loadSyntax()
 
         # Icon Functions
         self.getIcon = self.iconCache.getIcon
@@ -184,85 +181,26 @@ class GuiTheme:
         return int(ceil(qMetrics.boundingRect(theText).width()))
 
     ##
-    #  Actions
+    #  Theme Methods
     ##
-
-    def updateFont(self):
-        """Update the GUI's font style from settings.
-        """
-        theFont = QFont()
-        if self.mainConf.guiFont not in self.guiFontDB.families():
-            if self.mainConf.osWindows and "Arial" in self.guiFontDB.families():
-                # On Windows we default to Arial if possible
-                theFont.setFamily("Arial")
-                theFont.setPointSize(10)
-            else:
-                theFont = self.guiFontDB.systemFont(QFontDatabase.GeneralFont)
-            self.mainConf.guiFont = theFont.family()
-            self.mainConf.guiFontSize = theFont.pointSize()
-        else:
-            theFont.setFamily(self.mainConf.guiFont)
-            theFont.setPointSize(self.mainConf.guiFontSize)
-
-        qApp.setFont(theFont)
-
-        return
-
-    def updateTheme(self):
-        """Update the GUI theme from theme files.
-        """
-        self.guiTheme  = self.mainConf.guiTheme
-        self.guiSyntax = self.mainConf.guiSyntax
-
-        self.themeFile = self._availThemes.get(self.guiTheme, None)
-        if self.themeFile is None:
-            logger.error("Could not find GUI theme '%s'", self.guiTheme)
-        else:
-            self.cssFile = self.themeFile[:-5]+".css"
-            self.loadTheme()
-            self.iconCache.updateTheme(self.themeIcons)
-
-        # Update dependant colours
-        backCol = qApp.palette().window().color()
-        textCol = qApp.palette().windowText().color()
-
-        backLCol = backCol.lightnessF()
-        textLCol = textCol.lightnessF()
-
-        if backLCol > textLCol:
-            helpLCol = textLCol + 0.65*(backLCol - textLCol)
-        else:
-            helpLCol = backLCol + 0.65*(textLCol - backLCol)
-
-        self.helpText = [int(255*helpLCol)]*3
-
-        return True
-
-    def updateSyntax(self):
-        """Update the syntac theme from theme files.
-        """
-        self.guiSyntax = self.mainConf.guiSyntax
-
-        self.syntaxFile = self._availSyntax.get(self.guiSyntax, None)
-        if self.syntaxFile is None:
-            logger.error("Could not find syntax theme '%s'", self.guiSyntax)
-        else:
-            self.loadSyntax()
-
-        return True
 
     def loadTheme(self):
         """Load the currently specified GUI theme.
         """
-        logger.info("Loading GUI theme '%s'", self.guiTheme)
+        guiTheme = self.mainConf.guiTheme
+        themeFile = self._availThemes.get(guiTheme, None)
+        if themeFile is None:
+            logger.error("Could not find GUI theme '%s'", guiTheme)
+            return False
 
         # Config File
+        logger.info("Loading GUI theme '%s'", guiTheme)
         confParser = NWConfigParser()
         try:
-            with open(self.themeFile, mode="r", encoding="utf-8") as inFile:
+            with open(themeFile, mode="r", encoding="utf-8") as inFile:
                 confParser.read_file(inFile)
         except Exception:
-            logger.error("Could not load theme settings from: %s", self.themeFile)
+            logger.error("Could not load theme settings from: %s", themeFile)
             logException()
             return False
 
@@ -301,31 +239,54 @@ class GuiTheme:
         # GUI
         cnfSec = "GUI"
         if confParser.has_section(cnfSec):
-            self.statNone    = self._loadColour(confParser, cnfSec, "statusnone")
-            self.statUnsaved = self._loadColour(confParser, cnfSec, "statusunsaved")
-            self.statSaved   = self._loadColour(confParser, cnfSec, "statussaved")
+            self.statNone    = self._parseColour(confParser, cnfSec, "statusnone")
+            self.statUnsaved = self._parseColour(confParser, cnfSec, "statusunsaved")
+            self.statSaved   = self._parseColour(confParser, cnfSec, "statussaved")
+
+        # Icons
+        self.iconCache.updateTheme(self.themeIcons)
 
         # CSS File
-        cssData = readTextFile(self.cssFile)
+        cssData = readTextFile(themeFile[:-5]+".css")
         if cssData:
             qApp.setStyleSheet(cssData)
 
         # Apply Styles
         qApp.setPalette(self._guiPalette)
 
+        # Update Dependant Colours
+        backCol = qApp.palette().window().color()
+        textCol = qApp.palette().windowText().color()
+
+        backLCol = backCol.lightnessF()
+        textLCol = textCol.lightnessF()
+
+        if backLCol > textLCol:
+            helpLCol = textLCol + 0.65*(backLCol - textLCol)
+        else:
+            helpLCol = backLCol + 0.65*(textLCol - backLCol)
+
+        self.helpText = [int(255*helpLCol)]*3
+
         return True
 
     def loadSyntax(self):
         """Load the currently specified syntax highlighter theme.
         """
-        logger.info("Loading syntax theme '%s'", self.guiSyntax)
+        guiSyntax = self.mainConf.guiSyntax
+        syntaxFile = self._availSyntax.get(guiSyntax, None)
+        if syntaxFile is None:
+            logger.error("Could not find syntax theme '%s'", guiSyntax)
+            return False
+
+        logger.info("Loading syntax theme '%s'", guiSyntax)
 
         confParser = NWConfigParser()
         try:
-            with open(self.syntaxFile, mode="r", encoding="utf-8") as inFile:
+            with open(syntaxFile, mode="r", encoding="utf-8") as inFile:
                 confParser.read_file(inFile)
         except Exception:
-            logger.error("Could not load syntax colours from: %s", self.syntaxFile)
+            logger.error("Could not load syntax colours from: %s", syntaxFile)
             logException()
             return False
 
@@ -333,32 +294,32 @@ class GuiTheme:
         cnfSec = "Main"
         if confParser.has_section(cnfSec):
             self.syntaxName        = confParser.rdStr(cnfSec, "name", "")
-            self.syntaxDescription = confParser.rdStr(cnfSec, "description", "")
-            self.syntaxAuthor      = confParser.rdStr(cnfSec, "author", "")
-            self.syntaxCredit      = confParser.rdStr(cnfSec, "credit", "")
+            self.syntaxDescription = confParser.rdStr(cnfSec, "description", "N/A")
+            self.syntaxAuthor      = confParser.rdStr(cnfSec, "author", "N/A")
+            self.syntaxCredit      = confParser.rdStr(cnfSec, "credit", "N/A")
             self.syntaxUrl         = confParser.rdStr(cnfSec, "url", "")
-            self.syntaxLicense     = confParser.rdStr(cnfSec, "license", "")
+            self.syntaxLicense     = confParser.rdStr(cnfSec, "license", "N/A")
             self.syntaxLicenseUrl  = confParser.rdStr(cnfSec, "licenseurl", "")
 
         # Syntax
         cnfSec = "Syntax"
         if confParser.has_section(cnfSec):
-            self.colBack   = self._loadColour(confParser, cnfSec, "background")
-            self.colText   = self._loadColour(confParser, cnfSec, "text")
-            self.colLink   = self._loadColour(confParser, cnfSec, "link")
-            self.colHead   = self._loadColour(confParser, cnfSec, "headertext")
-            self.colHeadH  = self._loadColour(confParser, cnfSec, "headertag")
-            self.colEmph   = self._loadColour(confParser, cnfSec, "emphasis")
-            self.colDialN  = self._loadColour(confParser, cnfSec, "straightquotes")
-            self.colDialD  = self._loadColour(confParser, cnfSec, "doublequotes")
-            self.colDialS  = self._loadColour(confParser, cnfSec, "singlequotes")
-            self.colHidden = self._loadColour(confParser, cnfSec, "hidden")
-            self.colKey    = self._loadColour(confParser, cnfSec, "keyword")
-            self.colVal    = self._loadColour(confParser, cnfSec, "value")
-            self.colSpell  = self._loadColour(confParser, cnfSec, "spellcheckline")
-            self.colError  = self._loadColour(confParser, cnfSec, "errorline")
-            self.colRepTag = self._loadColour(confParser, cnfSec, "replacetag")
-            self.colMod    = self._loadColour(confParser, cnfSec, "modifier")
+            self.colBack   = self._parseColour(confParser, cnfSec, "background")
+            self.colText   = self._parseColour(confParser, cnfSec, "text")
+            self.colLink   = self._parseColour(confParser, cnfSec, "link")
+            self.colHead   = self._parseColour(confParser, cnfSec, "headertext")
+            self.colHeadH  = self._parseColour(confParser, cnfSec, "headertag")
+            self.colEmph   = self._parseColour(confParser, cnfSec, "emphasis")
+            self.colDialN  = self._parseColour(confParser, cnfSec, "straightquotes")
+            self.colDialD  = self._parseColour(confParser, cnfSec, "doublequotes")
+            self.colDialS  = self._parseColour(confParser, cnfSec, "singlequotes")
+            self.colHidden = self._parseColour(confParser, cnfSec, "hidden")
+            self.colKey    = self._parseColour(confParser, cnfSec, "keyword")
+            self.colVal    = self._parseColour(confParser, cnfSec, "value")
+            self.colSpell  = self._parseColour(confParser, cnfSec, "spellcheckline")
+            self.colError  = self._parseColour(confParser, cnfSec, "errorline")
+            self.colRepTag = self._parseColour(confParser, cnfSec, "replacetag")
+            self.colMod    = self._parseColour(confParser, cnfSec, "modifier")
 
         return True
 
@@ -400,52 +361,64 @@ class GuiTheme:
     #  Internal Functions
     ##
 
+    def _setGuiFont(self):
+        """Update the GUI's font style from settings.
+        """
+        theFont = QFont()
+        if self.mainConf.guiFont not in self.guiFontDB.families():
+            if self.mainConf.osWindows and "Arial" in self.guiFontDB.families():
+                # On Windows we default to Arial if possible
+                theFont.setFamily("Arial")
+                theFont.setPointSize(10)
+            else:
+                theFont = self.guiFontDB.systemFont(QFontDatabase.GeneralFont)
+            self.mainConf.guiFont = theFont.family()
+            self.mainConf.guiFontSize = theFont.pointSize()
+        else:
+            theFont.setFamily(self.mainConf.guiFont)
+            theFont.setPointSize(self.mainConf.guiFontSize)
+
+        qApp.setFont(theFont)
+
+        return
+
     def _listConf(self, targetDict, checkDir):
-        """Scan for syntax and gui themes and populate the dictionary.
+        """Scan for theme config files and populate the dictionary.
         """
         if not os.path.isdir(checkDir):
-            return
+            return False
 
         for checkFile in os.listdir(checkDir):
             confPath = os.path.join(checkDir, checkFile)
             if os.path.isfile(confPath) and confPath.endswith(".conf"):
                 targetDict[checkFile[:-5]] = confPath
 
-        return
+        return True
 
-    def _loadColour(self, confParser, cnfSec, cnfName):
-        """Load a colour value from a config string.
+    def _parseColour(self, confParser, cnfSec, cnfName):
+        """Parse a colour value from a config string.
         """
         if confParser.has_option(cnfSec, cnfName):
-            inData = confParser.get(cnfSec, cnfName).split(",")
-            outData = []
+            values = confParser.get(cnfSec, cnfName).split(",")
+            result = []
             try:
-                outData.append(int(inData[0]))
-                outData.append(int(inData[1]))
-                outData.append(int(inData[2]))
+                result.append(minmax(int(values[0]), 0, 255))
+                result.append(minmax(int(values[1]), 0, 255))
+                result.append(minmax(int(values[2]), 0, 255))
             except Exception:
                 logger.error("Could not load theme colours for '%s' from config file", cnfName)
-                outData = [0, 0, 0]
+                result = [0, 0, 0]
         else:
             logger.warning("Could not find theme colours for '%s' in config file", cnfName)
-            outData = [0, 0, 0]
-        return outData
+            result = [0, 0, 0]
+        return result
 
     def _setPalette(self, confParser, cnfSec, cnfName, paletteVal):
         """Set a palette colour value from a config string.
         """
-        readCol = []
-        if confParser.has_option(cnfSec, cnfName):
-            inData = confParser.get(cnfSec, cnfName).split(",")
-            try:
-                readCol.append(int(inData[0]))
-                readCol.append(int(inData[1]))
-                readCol.append(int(inData[2]))
-            except Exception:
-                logger.error("Could not load theme colours for '%s' from config file", cnfName)
-                return
-        if len(readCol) == 3:
-            self._guiPalette.setColor(paletteVal, QColor(*readCol))
+        self._guiPalette.setColor(
+            paletteVal, QColor(*self._parseColour(confParser, cnfSec, cnfName))
+        )
         return
 
 # End Class GuiTheme
