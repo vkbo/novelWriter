@@ -19,157 +19,179 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
+import shutil
 import pytest
-import novelwriter
 
-from PyQt5.QtGui import QColor, QPixmap, QIcon
-from PyQt5.QtWidgets import QMessageBox
+from configparser import ConfigParser
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
+from mock import causeOSError
+from tools import writeFile
+
+from PyQt5.QtGui import QPalette
+from PyQt5.QtWidgets import QApplication, QMessageBox
+
+from novelwriter.config import Config
+from novelwriter.gui.theme import GuiTheme
 
 
 @pytest.mark.gui
-def testGuiTheme_Main(qtbot, monkeypatch, nwMinimal, tmpDir):
-    """Test the theme and icon classes.
+def testGuiTheme_Main(qtbot, monkeypatch, nwGUI, fncDir):
+    """Test the theme class init.
     """
-    # Block message box
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
 
-    nwGUI = novelwriter.main(
-        ["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal]
-    )
-    qtbot.addWidget(nwGUI)
-    nwGUI.show()
-    qtbot.wait(stepDelay)
+    mainTheme: GuiTheme = nwGUI.mainTheme
+    mainConf: Config = nwGUI.mainConf
 
-    # Change Settings
-    assert novelwriter.CONFIG.confPath == nwMinimal
-    novelwriter.CONFIG.guiTheme = "default_dark"
-    novelwriter.CONFIG.guiSyntax = "tomorrow_night_eighties"
-    novelwriter.CONFIG.guiFont = "Cantarell"
-    novelwriter.CONFIG.guiFontSize = 11
-    novelwriter.CONFIG.confChanged = True
-    assert novelwriter.CONFIG.saveConfig()
+    # Methods
+    # =======
 
-    nwGUI.closeMain()
-    nwGUI.close()
-    del nwGUI
+    mSize = mainTheme.getTextWidth("m")
+    assert mSize > 0
+    assert mainTheme.getTextWidth("m", mainTheme.guiFont) == mSize
 
-    # Re-open
-    assert novelwriter.CONFIG.confPath == nwMinimal
-    nwGUI = novelwriter.main(
-        ["--testmode", "--config=%s" % nwMinimal, "--data=%s" % tmpDir, nwMinimal]
-    )
-    assert nwGUI.mainConf.confPath == nwMinimal
-    qtbot.addWidget(nwGUI)
-    nwGUI.show()
-    qtbot.wait(stepDelay)
+    # Init Fonts
+    # ==========
 
-    assert novelwriter.CONFIG.guiTheme == "default_dark"
-    assert novelwriter.CONFIG.guiSyntax == "tomorrow_night_eighties"
-    assert novelwriter.CONFIG.guiFont != ""
-    assert novelwriter.CONFIG.guiFontSize > 0
+    # The defaults should be set
+    defaultFont = mainConf.guiFont
+    defaultSize = mainConf.guiFontSize
 
-    # Check GUI Colours
-    thePalette = nwGUI.palette()
-    assert thePalette.window().color()          == QColor(54, 54, 54)
-    assert thePalette.windowText().color()      == QColor(174, 174, 174)
-    assert thePalette.base().color()            == QColor(62, 62, 62)
-    assert thePalette.alternateBase().color()   == QColor(78, 78, 78)
-    assert thePalette.text().color()            == QColor(174, 174, 174)
-    assert thePalette.toolTipBase().color()     == QColor(255, 255, 192)
-    assert thePalette.toolTipText().color()     == QColor(21, 21, 13)
-    assert thePalette.button().color()          == QColor(62, 62, 62)
-    assert thePalette.buttonText().color()      == QColor(174, 174, 174)
-    assert thePalette.brightText().color()      == QColor(174, 174, 174)
-    assert thePalette.highlight().color()       == QColor(44, 152, 247)
-    assert thePalette.highlightedText().color() == QColor(255, 255, 255)
-    assert thePalette.link().color()            == QColor(44, 152, 247)
-    assert thePalette.linkVisited().color()     == QColor(44, 152, 247)
+    # CHange them to nonsense values
+    mainConf.guiFont = "notafont"
+    mainConf.guiFontSize = 99
 
-    assert nwGUI.mainTheme.statNone    == [150, 152, 150]
-    assert nwGUI.mainTheme.statSaved   == [39, 135, 78]
-    assert nwGUI.mainTheme.statUnsaved == [138, 32, 32]
+    # Let the theme class set them back to default
+    mainTheme._setGuiFont()
+    assert mainConf.guiFont == defaultFont
+    assert mainConf.guiFontSize == defaultSize
 
-    # Check Syntax Colours
-    assert nwGUI.mainTheme.colBack   == [45, 45, 45]
-    assert nwGUI.mainTheme.colText   == [204, 204, 204]
-    assert nwGUI.mainTheme.colLink   == [102, 153, 204]
-    assert nwGUI.mainTheme.colHead   == [102, 153, 204]
-    assert nwGUI.mainTheme.colHeadH  == [102, 153, 204]
-    assert nwGUI.mainTheme.colEmph   == [249, 145, 57]
-    assert nwGUI.mainTheme.colDialN  == [242, 119, 122]
-    assert nwGUI.mainTheme.colDialD  == [153, 204, 153]
-    assert nwGUI.mainTheme.colDialS  == [255, 204, 102]
-    assert nwGUI.mainTheme.colHidden == [153, 153, 153]
-    assert nwGUI.mainTheme.colKey    == [242, 119, 122]
-    assert nwGUI.mainTheme.colVal    == [204, 153, 204]
-    assert nwGUI.mainTheme.colSpell  == [242, 119, 122]
-    assert nwGUI.mainTheme.colError  == [153, 204, 153]
-    assert nwGUI.mainTheme.colRepTag == [102, 204, 204]
-    assert nwGUI.mainTheme.colMod    == [249, 145, 57]
+    # A second call should just restore the defaults again
+    mainTheme._setGuiFont()
+    assert mainConf.guiFont == defaultFont
+    assert mainConf.guiFontSize == defaultSize
 
-    # Test Icon class
-    iconCache = nwGUI.mainTheme.iconCache
-    assert iconCache.updateTheme("invalid") is False
+    # Scan for Themes
+    # ===============
 
-    # Ask for a non-existent key
-    anImg = iconCache.loadDecoration("nonsense", 20, 20)
-    assert isinstance(anImg, QPixmap)
-    assert anImg.isNull()
+    assert mainTheme._listConf({}, "not_a_path") is False
 
-    # Add a non-existent file and request it
-    iconCache.IMAGE_MAP["nonsense"] = "nofile.jpg"
-    anImg = iconCache.loadDecoration("nonsense", 20, 20)
-    assert isinstance(anImg, QPixmap)
-    assert anImg.isNull()
+    themeOne = os.path.join(fncDir, "themes", "themeone.conf")
+    themeTwo = os.path.join(fncDir, "themes", "themetwo.conf")
+    writeFile(themeOne, "# Stuff")
+    writeFile(themeTwo, "# Stuff")
 
-    # Get a real image, with different size parameters
-    anImg = iconCache.loadDecoration("wiz-back", 20, None)
-    assert isinstance(anImg, QPixmap)
-    assert not anImg.isNull()
-    assert anImg.width() == 20
-    assert anImg.height() >= 56
+    result = {}
+    assert mainTheme._listConf(result, os.path.join(fncDir, "themes")) is True
+    assert result["themeone"] == themeOne
+    assert result["themetwo"] == themeTwo
 
-    anImg = iconCache.loadDecoration("wiz-back", None, 70)
-    assert isinstance(anImg, QPixmap)
-    assert not anImg.isNull()
-    assert anImg.height() == 70
-    assert anImg.width() >= 24
+    # Parse Colours
+    # =============
 
-    anImg = iconCache.loadDecoration("wiz-back", 30, 70)
-    assert isinstance(anImg, QPixmap)
-    assert not anImg.isNull()
-    assert anImg.height() == 70
-    assert anImg.width() == 30
+    parser = ConfigParser()
+    parser["Palette"] = {
+        "colour1": "100, 150, 200",
+        "colour2": "100, 150, 200, 250",
+        "colour3": "250, 250",
+        "colour4": "-10, 127, 300",
+    }
 
-    anImg = iconCache.loadDecoration("wiz-back", None, None)
-    assert isinstance(anImg, QPixmap)
-    assert not anImg.isNull()
-    assert anImg.height() >= 1500
-    assert anImg.width() >= 500
+    # Test the parser for several valid and invalid values
+    assert mainTheme._parseColour(parser, "Palette", "colour1") == [100, 150, 200]
+    assert mainTheme._parseColour(parser, "Palette", "colour2") == [100, 150, 200]
+    assert mainTheme._parseColour(parser, "Palette", "colour3") == [0, 0, 0]
+    assert mainTheme._parseColour(parser, "Palette", "colour4") == [0, 127, 255]
+    assert mainTheme._parseColour(parser, "Palette", "colour5") == [0, 0, 0]
 
-    # Load icons
-    anIcon = iconCache.getIcon("nonsense")
-    assert isinstance(anIcon, QIcon)
-    assert anIcon.isNull()
+    # The palette should load with the parsed values
+    mainTheme._setPalette(parser, "Palette", "colour1", QPalette.Window)
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (100, 150, 200, 255)
+    mainTheme._setPalette(parser, "Palette", "colour2", QPalette.Window)
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (100, 150, 200, 255)
+    mainTheme._setPalette(parser, "Palette", "colour3", QPalette.Window)
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 0, 0, 255)
+    mainTheme._setPalette(parser, "Palette", "colour4", QPalette.Window)
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 127, 255, 255)
+    mainTheme._setPalette(parser, "Palette", "colour5", QPalette.Window)
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 0, 0, 255)
 
-    anIcon = iconCache.getIcon("novelwriter")
-    assert isinstance(anIcon, QIcon)
-    assert not anIcon.isNull()
-
-    # Check return empty icon if file not found
-    iconCache.ICON_KEYS.add("testicon3")
-    anIcon = iconCache.getIcon("testicon3")
-    assert isinstance(anIcon, QIcon)
-    assert anIcon.isNull()
-
-    # qtbot.stopForInteraction()
-    nwGUI.closeMain()
-    nwGUI.close()
+    # qtbot.stop()
 
 # END Test testGuiTheme_Main
+
+
+@pytest.mark.gui
+def testGuiTheme_Themes(qtbot, monkeypatch, nwGUI, fncDir):
+    """Test the theme class init.
+    """
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
+
+    mainTheme: GuiTheme = nwGUI.mainTheme
+    mainConf: Config = nwGUI.mainConf
+
+    # List Themes
+    # ===========
+
+    shutil.copy(
+        os.path.join(mainConf.assetPath, "themes", "default_dark.conf"),
+        os.path.join(fncDir, "themes")
+    )
+    shutil.copy(
+        os.path.join(mainConf.assetPath, "themes", "default.conf"),
+        os.path.join(fncDir, "themes")
+    )
+    writeFile(os.path.join(fncDir, "themes", "default.qss"), "/* Stuff */")
+
+    # Load the theme info
+    themesList = mainTheme.listThemes()
+    assert themesList[0] == ("default_dark", "Default Dark Theme")
+    assert themesList[1] == ("default", "Default Theme")
+
+    # A second call should returned the cached list
+    assert mainTheme.listThemes() == mainTheme._themeList
+
+    # Check handling of broken theme settings
+    mainConf.guiTheme = "not_a_theme"
+    assert mainTheme.loadTheme() is False
+
+    # Check handling of unreadable file
+    mainConf.guiTheme = "default"
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert mainTheme.loadTheme() is False
+
+    # Load Default Theme
+    # ==================
+
+    # Set a mock colour for the window background
+    mainTheme._guiPalette.color(QPalette.Window).setRgb(0, 0, 0, 0)
+
+    # Load the default theme
+    mainConf.guiTheme = "default"
+    assert mainTheme.loadTheme() is True
+
+    # This should load a standard palette
+    wCol = QApplication.style().standardPalette().color(QPalette.Window).getRgb()
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == wCol
+
+    # Load Default Dark Theme
+    # =======================
+
+    mainConf.guiTheme = "default_dark"
+    assert mainTheme.loadTheme() is True
+
+    # Check a few values
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb()        == (54, 54, 54, 255)
+    assert mainTheme._guiPalette.color(QPalette.WindowText).getRgb()    == (174, 174, 174, 255)
+    assert mainTheme._guiPalette.color(QPalette.Base).getRgb()          == (62, 62, 62, 255)
+    assert mainTheme._guiPalette.color(QPalette.AlternateBase).getRgb() == (78, 78, 78, 255)
+
+    # qtbot.stop()
+
+# END Test testGuiTheme_Themes

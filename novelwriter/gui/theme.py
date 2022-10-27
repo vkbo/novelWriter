@@ -247,7 +247,7 @@ class GuiTheme:
         self.iconCache.updateTheme(self.themeIcons)
 
         # CSS File
-        cssData = readTextFile(themeFile[:-5]+".css")
+        cssData = readTextFile(themeFile[:-5]+".qss")
         if cssData:
             qApp.setStyleSheet(cssData)
 
