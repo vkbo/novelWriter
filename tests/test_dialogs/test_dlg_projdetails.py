@@ -23,25 +23,15 @@ import pytest
 
 from tools import getGuiItem
 
-from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt5.QtWidgets import QAction
 
 from novelwriter.dialogs.projdetails import GuiProjectDetails
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
-
 
 @pytest.mark.gui
-def testDlgProjDetails_Dialog(qtbot, monkeypatch, nwGUI, nwLipsum):
+def testDlgProjDetails_Dialog(qtbot, nwGUI, nwLipsum):
     """Test the project details dialog.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Create a project to work on
     assert nwGUI.openProject(nwLipsum)
     assert nwGUI.rebuildIndex(beQuiet=True)
@@ -54,7 +44,6 @@ def testDlgProjDetails_Dialog(qtbot, monkeypatch, nwGUI, nwLipsum):
 
     projDet = getGuiItem("GuiProjectDetails")
     assert isinstance(projDet, GuiProjectDetails)
-    qtbot.wait(stepDelay)
 
     # Overview Page
     # =============
@@ -105,7 +94,7 @@ def testDlgProjDetails_Dialog(qtbot, monkeypatch, nwGUI, nwLipsum):
         assert tocTree.topLevelItem(i).text(tocTab.C_PAGES) == thePages[i]
         assert tocTree.topLevelItem(i).text(tocTab.C_PAGE) == thePage[i]
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
     # Clean Up
     projDet._doClose()

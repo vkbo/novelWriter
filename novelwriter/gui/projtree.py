@@ -119,6 +119,13 @@ class GuiProjectView(QWidget):
     #  Methods
     ##
 
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        self.projBar.updateTheme()
+        self.populateTree()
+        return
+
     def initSettings(self):
         """Initialise GUI elements that depend on specific settings.
         """
@@ -213,16 +220,6 @@ class GuiProjectToolBar(QWidget):
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
 
-        qPalette = self.palette()
-        qPalette.setBrush(QPalette.Window, qPalette.base())
-        self.setPalette(qPalette)
-
-        fadeCol = qPalette.text().color()
-        buttonStyle = (
-            "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
-        ).format(mPx, fadeCol.red(), fadeCol.green(), fadeCol.blue())
-
         # Widget Label
         self.viewLabel = QLabel("<b>%s</b>" % self.tr("Project Content"))
         self.viewLabel.setContentsMargins(0, 0, 0, 0)
@@ -234,78 +231,56 @@ class GuiProjectToolBar(QWidget):
         self.tbQuick = QToolButton(self)
         self.tbQuick.setToolTip("%s [Ctrl+L]" % self.tr("Quick Links"))
         self.tbQuick.setShortcut("Ctrl+L")
-        self.tbQuick.setIcon(self.mainTheme.getIcon("bookmark"))
         self.tbQuick.setIconSize(QSize(iPx, iPx))
-        self.tbQuick.setStyleSheet(buttonStyle)
         self.tbQuick.setMenu(self.mQuick)
         self.tbQuick.setPopupMode(QToolButton.InstantPopup)
 
         # Move Buttons
         self.tbMoveU = QToolButton(self)
         self.tbMoveU.setToolTip("%s [Ctrl+Up]" % self.tr("Move Up"))
-        self.tbMoveU.setIcon(self.mainTheme.getIcon("up"))
         self.tbMoveU.setIconSize(QSize(iPx, iPx))
-        self.tbMoveU.setStyleSheet(buttonStyle)
         self.tbMoveU.clicked.connect(lambda: self.projTree.moveTreeItem(-1))
 
         self.tbMoveD = QToolButton(self)
         self.tbMoveD.setToolTip("%s [Ctrl+Down]" % self.tr("Move Down"))
-        self.tbMoveD.setIcon(self.mainTheme.getIcon("down"))
         self.tbMoveD.setIconSize(QSize(iPx, iPx))
-        self.tbMoveD.setStyleSheet(buttonStyle)
         self.tbMoveD.clicked.connect(lambda: self.projTree.moveTreeItem(1))
 
         # Add Item Menu
         self.mAdd = QMenu()
 
         self.aAddEmpty = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["document"]))
-        self.aAddEmpty.setIcon(self.mainTheme.getIcon("proj_document"))
         self.aAddEmpty.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=0, isNote=False)
         )
 
         self.aAddChap = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["doc_h2"]))
-        self.aAddChap.setIcon(self.mainTheme.getIcon("proj_chapter"))
         self.aAddChap.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=2, isNote=False)
         )
 
         self.aAddScene = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["doc_h3"]))
-        self.aAddScene.setIcon(self.mainTheme.getIcon("proj_scene"))
         self.aAddScene.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=3, isNote=False)
         )
 
         self.aAddNote = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["note"]))
-        self.aAddNote.setIcon(self.mainTheme.getIcon("proj_note"))
         self.aAddNote.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
         )
 
         self.aAddFolder = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["folder"]))
-        self.aAddFolder.setIcon(self.mainTheme.getIcon("proj_folder"))
         self.aAddFolder.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FOLDER)
         )
 
         self.mAddRoot = self.mAdd.addMenu(trConst(nwLabels.ITEM_DESCRIPTION["root"]))
-        self._addRootFolderEntry(nwItemClass.NOVEL)
-        self._addRootFolderEntry(nwItemClass.ARCHIVE)
-        self.mAddRoot.addSeparator()
-        self._addRootFolderEntry(nwItemClass.PLOT)
-        self._addRootFolderEntry(nwItemClass.CHARACTER)
-        self._addRootFolderEntry(nwItemClass.WORLD)
-        self._addRootFolderEntry(nwItemClass.TIMELINE)
-        self._addRootFolderEntry(nwItemClass.OBJECT)
-        self._addRootFolderEntry(nwItemClass.ENTITY)
-        self._addRootFolderEntry(nwItemClass.CUSTOM)
+        self._buildRootMenu()
 
         self.tbAdd = QToolButton(self)
         self.tbAdd.setToolTip("%s [Ctrl+N]" % self.tr("Add Item"))
         self.tbAdd.setShortcut("Ctrl+N")
-        self.tbAdd.setIcon(self.mainTheme.getIcon("add"))
         self.tbAdd.setIconSize(QSize(iPx, iPx))
-        self.tbAdd.setStyleSheet(buttonStyle)
         self.tbAdd.setMenu(self.mAdd)
         self.tbAdd.setPopupMode(QToolButton.InstantPopup)
 
@@ -326,9 +301,7 @@ class GuiProjectToolBar(QWidget):
 
         self.tbMore = QToolButton(self)
         self.tbMore.setToolTip(self.tr("More Options"))
-        self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
         self.tbMore.setIconSize(QSize(iPx, iPx))
-        self.tbMore.setStyleSheet(buttonStyle)
         self.tbMore.setMenu(self.mMore)
         self.tbMore.setPopupMode(QToolButton.InstantPopup)
 
@@ -344,6 +317,7 @@ class GuiProjectToolBar(QWidget):
         self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
+        self.updateTheme()
 
         logger.debug("GuiProjectToolBar initialisation complete")
 
@@ -352,6 +326,41 @@ class GuiProjectToolBar(QWidget):
     ##
     #  Methods
     ##
+
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        qPalette = self.palette()
+        qPalette.setBrush(QPalette.Window, qPalette.base())
+        self.setPalette(qPalette)
+
+        fadeCol = qPalette.text().color()
+        buttonStyle = (
+            "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
+        ).format(self.mainConf.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
+
+        self.tbQuick.setStyleSheet(buttonStyle)
+        self.tbMoveU.setStyleSheet(buttonStyle)
+        self.tbMoveD.setStyleSheet(buttonStyle)
+        self.tbAdd.setStyleSheet(buttonStyle)
+        self.tbMore.setStyleSheet(buttonStyle)
+
+        self.tbQuick.setIcon(self.mainTheme.getIcon("bookmark"))
+        self.tbMoveU.setIcon(self.mainTheme.getIcon("up"))
+        self.tbMoveD.setIcon(self.mainTheme.getIcon("down"))
+        self.aAddEmpty.setIcon(self.mainTheme.getIcon("proj_document"))
+        self.aAddChap.setIcon(self.mainTheme.getIcon("proj_chapter"))
+        self.aAddScene.setIcon(self.mainTheme.getIcon("proj_scene"))
+        self.aAddNote.setIcon(self.mainTheme.getIcon("proj_note"))
+        self.aAddFolder.setIcon(self.mainTheme.getIcon("proj_folder"))
+        self.tbAdd.setIcon(self.mainTheme.getIcon("add"))
+        self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
+
+        self.buildQuickLinkMenu()
+        self._buildRootMenu()
+
+        return
 
     def clearContent(self):
         """Clear dynamic content on the tool bar.
@@ -379,13 +388,29 @@ class GuiProjectToolBar(QWidget):
     #  Internal Functions
     ##
 
-    def _addRootFolderEntry(self, itemClass):
-        """Add a menu entry for a root folder of a given class.
+    def _buildRootMenu(self):
+        """Build the rood folder menu.
         """
-        aNew = self.mAddRoot.addAction(trConst(nwLabels.CLASS_NAME[itemClass]))
-        aNew.setIcon(self.mainTheme.getIcon(nwLabels.CLASS_ICON[itemClass]))
-        aNew.triggered.connect(lambda: self.projTree.newTreeItem(nwItemType.ROOT, itemClass))
-        self.mAddRoot.addAction(aNew)
+        def addClass(itemClass):
+            aNew = self.mAddRoot.addAction(trConst(nwLabels.CLASS_NAME[itemClass]))
+            aNew.setIcon(self.mainTheme.getIcon(nwLabels.CLASS_ICON[itemClass]))
+            aNew.triggered.connect(lambda: self.projTree.newTreeItem(nwItemType.ROOT, itemClass))
+            self.mAddRoot.addAction(aNew)
+            return
+
+        self.mAddRoot.clear()
+        addClass(nwItemClass.NOVEL)
+        addClass(nwItemClass.ARCHIVE)
+        self.mAddRoot.addSeparator()
+        addClass(nwItemClass.PLOT)
+        addClass(nwItemClass.CHARACTER)
+        addClass(nwItemClass.WORLD)
+        addClass(nwItemClass.TIMELINE)
+        addClass(nwItemClass.OBJECT)
+        addClass(nwItemClass.ENTITY)
+        addClass(nwItemClass.CUSTOM)
+
+        return
 
 # END Class GuiProjectToolBar
 
