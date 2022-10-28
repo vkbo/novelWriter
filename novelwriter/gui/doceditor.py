@@ -1709,12 +1709,8 @@ class GuiDocEditor(QTextEdit):
             logger.debug("Invalid block selected for action '%s'", str(docAction))
             return False
 
-        theText = theBlock.text()
-        if len(theText.strip()) == 0:
-            logger.debug("Empty block selected for action '%s'", str(docAction))
-            return False
-
         # Remove existing format first, if any
+        theText = theBlock.text()
         if theText.startswith("@"):
             logger.error("Cannot apply block format to keyword/value line")
             return False
