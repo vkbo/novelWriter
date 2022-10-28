@@ -116,6 +116,16 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
     fmtStr = "#### Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:91] == fmtStr
 
+    # Title Format
+    nwGUI.mainMenu.aFmtTitle.activate(QAction.Trigger)
+    fmtStr = "#! Pellentesque nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[39:89] == fmtStr
+
+    # Unnumbered Chapter
+    nwGUI.mainMenu.aFmtUnNum.activate(QAction.Trigger)
+    fmtStr = "##! Pellentesque nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[39:90] == fmtStr
+
     # Clear Format
     nwGUI.mainMenu.aFmtNoFormat.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
@@ -312,10 +322,6 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
 
     # Cannot Format Tag
     assert nwGUI.docEditor.setCursorPosition(17)
-    assert not nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT)
-
-    # Cannot Format Empty Line
-    assert nwGUI.docEditor.setCursorPosition(13)
     assert not nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT)
 
     # Invalid Action
