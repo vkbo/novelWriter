@@ -69,13 +69,23 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     monkeypatch.setattr(GuiPreferences, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
 
-    nwGUI.mainMenu.aPreferences.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiPreferences") is not None, timeout=1000)
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiPreferences, "updateTheme", lambda *a: True)
+        mp.setattr(GuiPreferences, "updateSyntax", lambda *a: True)
+        mp.setattr(GuiPreferences, "needsRestart", lambda *a: True)
+        mp.setattr(GuiPreferences, "refreshTree", lambda *a: True)
+        nwGUI.mainMenu.aPreferences.activate(QAction.Trigger)
+        qtbot.waitUntil(lambda: getGuiItem("GuiPreferences") is not None, timeout=1000)
 
     nwPrefs = getGuiItem("GuiPreferences")
     assert isinstance(nwPrefs, GuiPreferences)
     nwPrefs.show()
     assert nwPrefs.mainConf.confPath == fncDir
+
+    assert nwPrefs.updateTheme is False
+    assert nwPrefs.updateSyntax is False
+    assert nwPrefs.needsRestart is False
+    assert nwPrefs.refreshTree is False
 
     # General Settings
     qtbot.wait(KEY_DELAY)
@@ -220,7 +230,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     nwPrefs._tabBox.setCurrentWidget(tabQuote)
 
     monkeypatch.setattr(GuiQuoteSelect, "selectedQuote", "'")
-    monkeypatch.setattr(GuiQuoteSelect, "exec_", lambda *args: QDialog.Accepted)
+    monkeypatch.setattr(GuiQuoteSelect, "exec_", lambda *a: QDialog.Accepted)
     qtbot.mouseClick(tabQuote.btnDoubleStyleC, Qt.LeftButton)
 
     # Save and Check Config

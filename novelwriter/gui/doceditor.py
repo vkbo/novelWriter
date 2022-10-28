@@ -2526,12 +2526,14 @@ class GuiDocEditSearch(QFrame):
     #  Slots
     ##
 
+    @pyqtSlot()
     def _doClose(self):
         """Hide the search/replace bar.
         """
         self.closeSearch()
         return
 
+    @pyqtSlot()
     def _doSearch(self):
         """Call the search action function for the document editor.
         """
@@ -2542,12 +2544,14 @@ class GuiDocEditSearch(QFrame):
             self.docEditor.findNext()
         return
 
+    @pyqtSlot()
     def _doReplace(self):
         """Call the replace action function for the document editor.
         """
         self.docEditor.replaceNext()
         return
 
+    @pyqtSlot(bool)
     def _doToggleReplace(self, theState):
         """Toggle the show/hide of the replace box.
         """
@@ -2562,36 +2566,42 @@ class GuiDocEditSearch(QFrame):
         self.docEditor.updateDocMargins()
         return
 
+    @pyqtSlot(bool)
     def _doToggleCase(self, theState):
         """Enable/disable case sensitive mode.
         """
         self.isCaseSense = theState
         return
 
+    @pyqtSlot(bool)
     def _doToggleWord(self, theState):
         """Enable/disable whole word search mode.
         """
         self.isWholeWord = theState
         return
 
+    @pyqtSlot(bool)
     def _doToggleRegEx(self, theState):
         """Enable/disable regular expression search mode.
         """
         self.isRegEx = theState
         return
 
+    @pyqtSlot(bool)
     def _doToggleLoop(self, theState):
         """Enable/disable looping the search.
         """
         self.doLoop = theState
         return
 
+    @pyqtSlot(bool)
     def _doToggleProject(self, theState):
         """Enable/disable continuing search in next project file.
         """
         self.doNextFile = theState
         return
 
+    @pyqtSlot(bool)
     def _doToggleMatchCap(self, theState):
         """Enable/disable preserving capitalisation when replacing.
         """
@@ -2804,18 +2814,21 @@ class GuiDocEditHeader(QWidget):
     #  Slots
     ##
 
+    @pyqtSlot()
     def _editDocument(self):
         """Open the edit item dialog from the main GUI.
         """
         self.mainGui.editItemLabel(self._docHandle)
         return
 
+    @pyqtSlot()
     def _searchDocument(self):
         """Toggle the visibility of the search box.
         """
         self.docEditor.toggleSearch()
         return
 
+    @pyqtSlot()
     def _closeDocument(self):
         """Trigger the close editor on the main window.
         """
@@ -2826,6 +2839,7 @@ class GuiDocEditHeader(QWidget):
         self.minmaxButton.setVisible(False)
         return
 
+    @pyqtSlot()
     def _minmaxDocument(self):
         """Switch on or off Focus Mode.
         """

@@ -918,6 +918,8 @@ class GuiMain(QMainWindow):
                 self.projView.populateTree()
 
             if dlgConf.updateTheme:
+                # We are doing this manually instead of connecting to
+                # qApp.paletteChanged since the processing order matters
                 self.mainTheme.loadTheme()
                 self.docEditor.updateTheme()
                 self.docViewer.updateTheme()

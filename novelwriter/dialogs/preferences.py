@@ -78,14 +78,34 @@ class GuiPreferences(PagedDialog):
         self.resize(*self.mainConf.getPreferencesSize())
 
         # Settings
-        self.updateTheme = False
-        self.updateSyntax = False
-        self.needsRestart = False
-        self.refreshTree = False
+        self._updateTheme = False
+        self._updateSyntax = False
+        self._needsRestart = False
+        self._refreshTree = False
 
         logger.debug("GuiPreferences initialisation complete")
 
         return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def updateTheme(self):
+        return self._updateTheme
+
+    @property
+    def updateSyntax(self):
+        return self._updateSyntax
+
+    @property
+    def needsRestart(self):
+        return self._needsRestart
+
+    @property
+    def refreshTree(self):
+        return self._refreshTree
 
     ##
     #  Slots
@@ -275,12 +295,12 @@ class GuiPreferencesGeneral(QWidget):
         emphLabels  = self.emphLabels.isChecked()
 
         # Update Flags
-        self.prefsGui.updateTheme |= self.mainConf.guiTheme != guiTheme
-        self.prefsGui.updateSyntax |= self.mainConf.guiSyntax != guiSyntax
-        self.prefsGui.needsRestart |= self.mainConf.guiLang != guiLang
-        self.prefsGui.needsRestart |= self.mainConf.guiFont != guiFont
-        self.prefsGui.needsRestart |= self.mainConf.guiFontSize != guiFontSize
-        self.prefsGui.refreshTree |= self.mainConf.emphLabels != emphLabels
+        self.prefsGui._updateTheme |= self.mainConf.guiTheme != guiTheme
+        self.prefsGui._updateSyntax |= self.mainConf.guiSyntax != guiSyntax
+        self.prefsGui._needsRestart |= self.mainConf.guiLang != guiLang
+        self.prefsGui._needsRestart |= self.mainConf.guiFont != guiFont
+        self.prefsGui._needsRestart |= self.mainConf.guiFontSize != guiFontSize
+        self.prefsGui._refreshTree |= self.mainConf.emphLabels != emphLabels
 
         self.mainConf.guiLang      = guiLang
         self.mainConf.guiTheme     = guiTheme

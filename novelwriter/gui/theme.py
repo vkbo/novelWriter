@@ -246,12 +246,9 @@ class GuiTheme:
         # Icons
         self.iconCache.loadTheme(self.themeIcons)
 
-        # Apply Styles
-        qApp.setPalette(self._guiPalette)
-
         # Update Dependant Colours
-        backCol = qApp.palette().window().color()
-        textCol = qApp.palette().windowText().color()
+        backCol = self._guiPalette.window().color()
+        textCol = self._guiPalette.windowText().color()
 
         backLCol = backCol.lightnessF()
         textLCol = textCol.lightnessF()
@@ -262,6 +259,9 @@ class GuiTheme:
             helpLCol = backLCol + 0.65*(textLCol - backLCol)
 
         self.helpText = [int(255*helpLCol)]*3
+
+        # Apply Styles
+        qApp.setPalette(self._guiPalette)
 
         return True
 

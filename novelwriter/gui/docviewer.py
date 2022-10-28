@@ -889,12 +889,14 @@ class GuiDocViewHeader(QWidget):
     #  Slots
     ##
 
+    @pyqtSlot()
     def _closeDocument(self):
         """Trigger the close editor/viewer on the main window.
         """
         self.mainGui.closeDocViewer()
         return
 
+    @pyqtSlot()
     def _refreshDocument(self):
         """Reload the content of the document.
         """
@@ -1124,6 +1126,7 @@ class GuiDocViewFooter(QWidget):
     #  Slots
     ##
 
+    @pyqtSlot()
     def _doShowHide(self):
         """Toggle the expand/collapse of the panel.
         """
@@ -1131,6 +1134,7 @@ class GuiDocViewFooter(QWidget):
         self.viewMeta.setVisible(not isVisible)
         return
 
+    @pyqtSlot(bool)
     def _doToggleSticky(self, theState):
         """Toggle the sticky flag for the reference panel.
         """
@@ -1140,6 +1144,7 @@ class GuiDocViewFooter(QWidget):
             self.viewMeta.refreshReferences(self.docViewer.docHandle())
         return
 
+    @pyqtSlot(bool)
     def _doToggleComments(self, theState):
         """Toggle the view comment button and reload the document.
         """
@@ -1147,6 +1152,7 @@ class GuiDocViewFooter(QWidget):
         self.docViewer.reloadText()
         return
 
+    @pyqtSlot(bool)
     def _doToggleSynopsis(self, theState):
         """Toggle the view synopsis button and reload the document.
         """
