@@ -783,10 +783,6 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumTex
         mp.setattr(QTextBlock, "isValid", lambda *a, **k: False)
         assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is False
 
-    # Empty Block
-    assert nwGUI.docEditor.setCursorLine(1) is True
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is False
-
     # Keyword
     assert nwGUI.docEditor.replaceText("@pov: Jane\n\n") is True
     assert nwGUI.docEditor.setCursorPosition(5) is True

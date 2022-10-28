@@ -183,7 +183,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Main GUI language"),
             self.guiLang,
-            self.tr("Requires restart.")
+            self.tr("Requires restart to take effect.")
         )
 
         # Select Theme
@@ -199,7 +199,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Main GUI theme"),
             self.guiTheme,
-            self.tr("Requires restart.")
+            self.tr("General colour theme and icons.")
         )
 
         # Editor Theme
@@ -229,7 +229,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Font family"),
             self.guiFont,
-            self.tr("Requires restart."),
+            self.tr("Requires restart to take effect."),
             theButton=self.fontButton
         )
 
@@ -242,7 +242,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Font size"),
             self.guiFontSize,
-            self.tr("Requires restart."),
+            self.tr("Requires restart to take effect."),
             theUnit=self.tr("pt")
         )
 
