@@ -877,6 +877,7 @@ class GuiDocEditor(QTextEdit):
             return False
 
         newBlock = False
+        goAfter = False
 
         if isinstance(theInsert, str):
             theText = theInsert
@@ -889,22 +890,29 @@ class GuiDocEditor(QTextEdit):
                 theText = self._typDQOpen
             elif theInsert == nwDocInsert.QUOTE_RD:
                 theText = self._typDQClose
+            elif theInsert == nwDocInsert.SYNOPSIS:
+                theText = "% Synopsis: "
+                newBlock = True
+                goAfter = True
             elif theInsert == nwDocInsert.NEW_PAGE:
                 theText = "[NEW PAGE]"
                 newBlock = True
+                goAfter = False
             elif theInsert == nwDocInsert.VSPACE_S:
                 theText = "[VSPACE]"
                 newBlock = True
+                goAfter = False
             elif theInsert == nwDocInsert.VSPACE_M:
                 theText = "[VSPACE:2]"
                 newBlock = True
+                goAfter = False
             else:
                 return False
         else:
             return False
 
         if newBlock:
-            self.insertNewBlock(theText, defaultAfter=False)
+            self.insertNewBlock(theText, defaultAfter=goAfter)
         else:
             theCursor = self.textCursor()
             theCursor.beginEditBlock()

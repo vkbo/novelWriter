@@ -554,6 +554,15 @@ class GuiMainMenu(QMenuBar):
             )
             self.mInsKeywords.addAction(self.mInsKWItems[keyWord][0])
 
+        # Insert > Special Comments
+        self.mInsComments = self.insertMenu.addMenu(self.tr("Special Comments"))
+
+        # Insert > Synopsis Comment
+        self.aInsSynopsis = QAction(self.tr("Synopsis Comment"), self)
+        self.aInsSynopsis.setShortcut("Ctrl+K, S")
+        self.aInsSynopsis.triggered.connect(lambda: self._docInsert(nwDocInsert.SYNOPSIS))
+        self.mInsComments.addAction(self.aInsSynopsis)
+
         # Insert > Symbols
         self.mInsBreaks = self.insertMenu.addMenu(self.tr("Page Break and Space"))
 
