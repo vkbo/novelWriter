@@ -38,7 +38,7 @@ from PyQt5.QtGui import (
 
 from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.error import logException
-from novelwriter.common import NWConfigParser, minmax, readTextFile
+from novelwriter.common import NWConfigParser, minmax
 from novelwriter.constants import nwLabels
 
 logger = logging.getLogger(__name__)
@@ -245,11 +245,6 @@ class GuiTheme:
 
         # Icons
         self.iconCache.loadTheme(self.themeIcons)
-
-        # CSS File
-        cssData = readTextFile(themeFile[:-5]+".qss")
-        if cssData:
-            qApp.setStyleSheet(cssData)
 
         # Apply Styles
         qApp.setPalette(self._guiPalette)
