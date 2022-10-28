@@ -26,17 +26,13 @@ import pytest
 from tools import getGuiItem
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFileDialog, QWizard, QMessageBox, QDialog
+from PyQt5.QtWidgets import QFileDialog, QWizard, QDialog
 
 from novelwriter.enum import nwItemClass
 from novelwriter.tools.projwizard import (
     GuiProjectWizard, ProjWizardIntroPage, ProjWizardFolderPage,
     ProjWizardPopulatePage, ProjWizardCustomPage, ProjWizardFinalPage
 )
-
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
 
 
 @pytest.mark.gui
@@ -45,13 +41,8 @@ def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, nwMinimal):
     """Test the launch of the project wizard.
     Disabled for macOS because the test segfaults on QWizard.show()
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
-    ##
-    #  Test New Project Function
-    ##
+    # Test New Project Function
+    # ========================
 
     # New with a project open should cause an error
     assert nwGUI.openProject(nwMinimal)
@@ -73,9 +64,8 @@ def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, nwMinimal):
         mp.setattr(nwGUI, "showNewProjectDialog", lambda *a: {"projPath": nwMinimal})
         assert nwGUI.newProject() is False
 
-    ##
-    #  Test the Wizard Launching
-    ##
+    # Test the Wizard Launching
+    # =========================
 
     nwGUI.mainConf.lastPath = " "
     monkeypatch.setattr(GuiProjectWizard, "exec_", lambda *a: None)
@@ -87,7 +77,6 @@ def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, nwMinimal):
     assert isinstance(nwWiz, GuiProjectWizard)
     nwWiz.show()
 
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwWiz.button(QWizard.CancelButton), Qt.LeftButton)
     assert result is None
 
@@ -100,7 +89,7 @@ def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, nwMinimal):
     nwWiz.reject()
     nwWiz.close()
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testToolProjectWizard_Handling
 
@@ -111,14 +100,12 @@ def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, nwMinimal):
 def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
     """Test the new project wizard with a set of selection scenarios.
     """
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiProjectWizard, "exec_", lambda *a: None)
 
     nwGUI.mainConf.lastPath = " "
     nwWiz = GuiProjectWizard(nwGUI)
     nwWiz.show()
-    qtbot.wait(stepDelay)
+    qtbot.addWidget(nwWiz)
 
     # Intro Page
     # ==========
@@ -134,7 +121,6 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
     # Setting projName should activate the button
     assert nwWiz.button(QWizard.NextButton).isEnabled()
 
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
 
     # Folder Page
@@ -173,7 +159,6 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
     # Setting projPath should activate the button
     assert nwWiz.button(QWizard.NextButton).isEnabled()
 
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
 
     # Populate Page
@@ -183,7 +168,6 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
     assert isinstance(popPage, ProjWizardPopulatePage)
     assert nwWiz.button(QWizard.NextButton).isEnabled()
 
-    qtbot.wait(stepDelay)
     if prjType.startswith("minimal"):
         popPage.popMinimal.setChecked(True)
     elif prjType.startswith("custom"):
@@ -191,7 +175,6 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
     elif prjType.startswith("sample"):
         popPage.popSample.setChecked(True)
 
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
 
     # Custom Page
@@ -219,7 +202,6 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
             customPage.numChapters.setValue(0)
             customPage.numScenes.setValue(10)
 
-        qtbot.wait(stepDelay)
         qtbot.mouseClick(nwWiz.button(QWizard.NextButton), Qt.LeftButton)
 
     # Final Page
@@ -264,6 +246,6 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
     nwWiz.reject()
     nwWiz.close()
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testToolProjectWizard_Run

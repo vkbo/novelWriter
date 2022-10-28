@@ -29,20 +29,16 @@ from mock import causeOSError
 from tools import writeFile
 
 from PyQt5.QtGui import QPalette
-from PyQt5.QtWidgets import QApplication, QMessageBox
+from PyQt5.QtWidgets import QApplication
 
 from novelwriter.config import Config
 from novelwriter.gui.theme import GuiTheme
 
 
 @pytest.mark.gui
-def testGuiTheme_Main(qtbot, monkeypatch, nwGUI, fncDir):
+def testGuiTheme_Main(qtbot, nwGUI, fncDir):
     """Test the theme class init.
     """
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-
     mainTheme: GuiTheme = nwGUI.mainTheme
     mainConf: Config = nwGUI.mainConf
 
@@ -128,10 +124,6 @@ def testGuiTheme_Main(qtbot, monkeypatch, nwGUI, fncDir):
 def testGuiTheme_Themes(qtbot, monkeypatch, nwGUI, fncDir):
     """Test the theme class init.
     """
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-
     mainTheme: GuiTheme = nwGUI.mainTheme
     mainConf: Config = nwGUI.mainConf
 

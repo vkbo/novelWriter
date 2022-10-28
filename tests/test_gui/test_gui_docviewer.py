@@ -23,25 +23,17 @@ import pytest
 
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QTextCursor
-from PyQt5.QtWidgets import qApp, QAction, QMessageBox
+from PyQt5.QtWidgets import qApp, QAction
 from mock import causeException
 
 from novelwriter.enum import nwDocAction
 from novelwriter.core.tohtml import ToHtml
-
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
 
 
 @pytest.mark.gui
 def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     """Test the document viewer.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-
     # Open project
     assert nwGUI.openProject(nwLipsum)
 
@@ -184,6 +176,6 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
         assert nwGUI.docViewer.loadText("846352075de7d") is False
         assert nwGUI.docViewer.toPlainText() == "An error occurred while generating the preview."
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiViewer_Main

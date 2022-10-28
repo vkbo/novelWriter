@@ -25,33 +25,26 @@ from mock import causeOSError
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextBlock, QTextCursor, QTextOption
-from PyQt5.QtWidgets import QAction, QMessageBox, qApp
+from PyQt5.QtWidgets import QAction, qApp
 
 from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
 from novelwriter.gui.doceditor import GuiDocEditor
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
+KEY_DELAY = 1
 
 
 @pytest.mark.gui
-def testGuiEditor_Init(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
+def testGuiEditor_Init(qtbot, nwGUI, nwMinimal, ipsumText):
     """Test initialising the editor.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-
     # Open project
     assert nwGUI.openProject(nwMinimal)
     assert nwGUI.openDocument("8c659a11cd429")
 
     nwGUI.docEditor.setText("### Lorem Ipsum\n\n%s" % ipsumText[0])
     assert nwGUI.saveDocument()
-    qtbot.wait(stepDelay)
 
     # Check Defaults
     qDoc = nwGUI.docEditor.document()
@@ -80,7 +73,7 @@ def testGuiEditor_Init(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     assert nwGUI.docEditor.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert nwGUI.docEditor._typPadChar == nwUnicode.U_THNBSP
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiEditor_Init
 
@@ -89,10 +82,6 @@ def testGuiEditor_Init(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
 def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumText):
     """Test loading text into the editor.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Open project
     sHandle = "8c659a11cd429"
     assert nwGUI.openProject(nwMinimal) is True
@@ -102,7 +91,6 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
     nwGUI.docEditor.replaceText(longText)
     assert nwGUI.saveDocument() is True
     assert nwGUI.closeDocument() is True
-    qtbot.wait(stepDelay)
 
     # Load Text
     # =========
@@ -142,7 +130,7 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
     assert nwGUI.docEditor.loadText(sHandle) is True
     assert nwGUI.docEditor.toPlainText() == ""
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiEditor_LoadText
 
@@ -151,15 +139,10 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
 def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumText):
     """Test saving text from the editor.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Open project
     sHandle = "8c659a11cd429"
     assert nwGUI.openProject(nwMinimal) is True
     assert nwGUI.openDocument(sHandle) is True
-    qtbot.wait(stepDelay)
 
     # Save Text
     # =========
@@ -193,24 +176,19 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
     # Regular save
     assert nwGUI.docEditor.saveText() is True
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiEditor_SaveText
 
 
 @pytest.mark.gui
-def testGuiEditor_MetaData(qtbot, monkeypatch, nwGUI, nwMinimal):
+def testGuiEditor_MetaData(qtbot, nwGUI, nwMinimal):
     """Test extracting various meta data and other values.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Open project
     sHandle = "8c659a11cd429"
     assert nwGUI.openProject(nwMinimal) is True
     assert nwGUI.openDocument(sHandle) is True
-    qtbot.wait(stepDelay)
 
     # Get Text
     # This should replace line and paragraph separators, but preserve
@@ -253,21 +231,16 @@ def testGuiEditor_MetaData(qtbot, monkeypatch, nwGUI, nwMinimal):
 
 
 @pytest.mark.gui
-def testGuiEditor_Actions(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
+def testGuiEditor_Actions(qtbot, nwGUI, nwMinimal, ipsumText):
     """Test the document actions. This is not an extensive test of the
     action features, just that the actions are actually called. The
     various action features are tested when their respective functions
     are tested.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Open project
     sHandle = "8c659a11cd429"
     assert nwGUI.openProject(nwMinimal) is True
     assert nwGUI.openDocument(sHandle) is True
-    qtbot.wait(stepDelay)
 
     theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
     assert nwGUI.docEditor.replaceText(theText) is True
@@ -487,7 +460,7 @@ def testGuiEditor_Actions(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     # Unknown Action
     assert nwGUI.docEditor.docAction(nwDocAction.NO_ACTION) is False
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiEditor_Actions
 
@@ -496,15 +469,10 @@ def testGuiEditor_Actions(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
 def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     """Test the document insert functions.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Open project
     sHandle = "8c659a11cd429"
     assert nwGUI.openProject(nwMinimal) is True
     assert nwGUI.openDocument(sHandle) is True
-    qtbot.wait(stepDelay)
 
     theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
     assert nwGUI.docEditor.replaceText(theText) is True
@@ -577,7 +545,7 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
         "\n\n\n", "\n\n@pov: Jane\n@char: John\n\n", 1
     )
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiEditor_Insert
 
@@ -586,15 +554,10 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
 def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     """Test the text manipulation functions.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Open project
     sHandle = "8c659a11cd429"
     assert nwGUI.openProject(nwMinimal) is True
     assert nwGUI.openDocument(sHandle) is True
-    qtbot.wait(stepDelay)
 
     theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
     assert nwGUI.docEditor.replaceText(theText) is True
@@ -791,7 +754,7 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumTe
     assert newPara[6] == twoBits[4]
     assert newPara[7] == " ".join(twoBits[5:])
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiEditor_TextManipulation
 
@@ -800,15 +763,10 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumTe
 def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     """Test the block formatting function.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Open project
     sHandle = "8c659a11cd429"
     assert nwGUI.openProject(nwMinimal) is True
     assert nwGUI.openDocument(sHandle) is True
-    qtbot.wait(stepDelay)
 
     theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
     assert nwGUI.docEditor.replaceText(theText) is True
@@ -1115,24 +1073,19 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumTex
     assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
     assert nwGUI.docEditor.getText() == "#### Title\n\n% The Text\n\n"
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiEditor_BlockFormatting
 
 
 @pytest.mark.gui
-def testGuiEditor_Tags(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
+def testGuiEditor_Tags(qtbot, nwGUI, nwMinimal, ipsumText):
     """Test the document editor tags functionality.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Open project
     sHandle = "8c659a11cd429"
     assert nwGUI.openProject(nwMinimal) is True
     assert nwGUI.openDocument(sHandle) is True
-    qtbot.wait(stepDelay)
 
     # Create Scene
     theText = "### A Scene\n\n@char: Jane, John\n\n" + ipsumText[0] + "\n\n"
@@ -1181,7 +1134,7 @@ def testGuiEditor_Tags(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     assert nwGUI.closeDocViewer() is True
     assert nwGUI.docViewer._docHandle is None
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiEditor_Tags
 
@@ -1190,10 +1143,6 @@ def testGuiEditor_Tags(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
 def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     """Test saving text from the editor.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     class MockThreadPool:
 
         def __init__(self):
@@ -1226,7 +1175,6 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     nwGUI.theProject.tree[sHandle]._initCount = 0  # Clear item's count
     nwGUI.theProject.tree[sHandle]._wordCount = 0  # Clear item's count
     assert nwGUI.openDocument(sHandle) is True
-    qtbot.wait(stepDelay)
 
     theText = "\n\n".join(ipsumText)
     cC, wC, pC = countWords(theText)
@@ -1249,7 +1197,6 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
 
     nwGUI.docEditor.wCounterDoc.run()
     # nwGUI.docEditor._updateDocCounts(cC, wC, pC)
-    qtbot.wait(stepDelay)
     assert nwGUI.theProject.tree[sHandle]._charCount == cC
     assert nwGUI.theProject.tree[sHandle]._wordCount == wC
     assert nwGUI.theProject.tree[sHandle]._paraCount == pC
@@ -1258,7 +1205,6 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     # Select all text
     assert nwGUI.docEditor.docFooter._docSelection is False
     nwGUI.docEditor.docAction(nwDocAction.SEL_ALL)
-    qtbot.wait(stepDelay)
     assert nwGUI.docEditor.docFooter._docSelection is True
 
     # Run the selection word counter
@@ -1267,10 +1213,9 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
 
     nwGUI.docEditor.wCounterSel.run()
     # nwGUI.docEditor._updateSelCounts(cC, wC, pC)
-    qtbot.wait(stepDelay)
     assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} selected"
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiEditor_WordCounters
 
@@ -1279,14 +1224,11 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
 def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     """Test the document editor search functionality.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
     assert nwGUI.openProject(nwLipsum) is True
     assert nwGUI.openDocument("4c4f28287af27") is True
     origText = nwGUI.docEditor.getText()
-    qtbot.wait(stepDelay)
 
     # Select the Word "est"
     nwGUI.docEditor.setCursorPosition(630)
@@ -1301,11 +1243,11 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
 
     # Find next by enter key
     monkeypatch.setattr(nwGUI.docEditor.docSearch.searchBox, "hasFocus", lambda: True)
-    qtbot.keyClick(nwGUI.docEditor.docSearch.searchBox, Qt.Key_Return, delay=keyDelay)
+    qtbot.keyClick(nwGUI.docEditor.docSearch.searchBox, Qt.Key_Return, delay=KEY_DELAY)
     assert abs(nwGUI.docEditor.getCursorPosition() - 1284) < 3
 
     # Find next by button
-    qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=keyDelay)
+    qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
     assert abs(nwGUI.docEditor.getCursorPosition() - 1498) < 3
 
     # Activate loop search
@@ -1323,14 +1265,14 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docEditor.setCursorPosition(15)
 
     # Toggle search again with header button
-    qtbot.mouseClick(nwGUI.docEditor.docHeader.searchButton, Qt.LeftButton, delay=keyDelay)
+    qtbot.mouseClick(nwGUI.docEditor.docHeader.searchButton, Qt.LeftButton, delay=KEY_DELAY)
     assert nwGUI.docEditor.docSearch.setSearchText("")
     assert nwGUI.docEditor.docSearch.isVisible() is True
 
     # Search for non-existing
     nwGUI.docEditor.setCursorPosition(0)
     assert nwGUI.docEditor.docSearch.setSearchText("abcdef")
-    qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=keyDelay)
+    qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
     assert nwGUI.docEditor.getCursorPosition() < 3  # No result
 
     # Enable RegEx search
@@ -1341,19 +1283,19 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     # Set invalid RegEx
     nwGUI.docEditor.setCursorPosition(0)
     assert nwGUI.docEditor.docSearch.setSearchText(r"\bSus[")
-    qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=keyDelay)
+    qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
     assert nwGUI.docEditor.getCursorPosition() < 3  # No result
 
     # Set dangerous RegEx (issue #1015)
     # If this doesn't get caught, the app will hang
     nwGUI.docEditor.setCursorPosition(0)
     assert nwGUI.docEditor.docSearch.setSearchText(r".*")
-    qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=keyDelay)
+    qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
     assert abs(nwGUI.docEditor.getCursorPosition() - 14) < 3
 
     # Set valid RegEx
     assert nwGUI.docEditor.docSearch.setSearchText(r"\bSus")
-    qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=keyDelay)
+    qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
     assert abs(nwGUI.docEditor.getCursorPosition() - 208) < 3
 
     # Find next and then prev
@@ -1404,7 +1346,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert abs(nwGUI.docEditor.getCursorPosition() - 208) < 3
 
     # Replace "sus" with "foo" via replace button
-    qtbot.mouseClick(nwGUI.docEditor.docSearch.replaceButton, Qt.LeftButton, delay=keyDelay)
+    qtbot.mouseClick(nwGUI.docEditor.docSearch.replaceButton, Qt.LeftButton, delay=KEY_DELAY)
     assert nwGUI.docEditor.getText()[205:213] == "foocipit"
 
     # Revert last two replaces
@@ -1482,7 +1424,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
     monkeypatch.setattr(nwGUI.docEditor.docSearch.replaceBox, "hasFocus", lambda: True)
     assert nwGUI.docEditor.focusNextPrevChild(True) is True
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiEditor_Search
 

@@ -24,19 +24,14 @@ import pytest
 from tools import buildTestProject, C
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox
 
 from novelwriter.dialogs.docmerge import GuiDocMerge
 
 
 @pytest.mark.gui
-def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
+def testDlgMerge_Main(qtbot, nwGUI, fncProj, mockRnd):
     """Test the merge documents tool.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
-
     # Create a new project
     buildTestProject(nwGUI, fncProj)
 
