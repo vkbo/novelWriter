@@ -244,7 +244,7 @@ class GuiTheme:
             self.statSaved   = self._parseColour(confParser, cnfSec, "statussaved")
 
         # Icons
-        self.iconCache.updateTheme(self.themeIcons)
+        self.iconCache.loadTheme(self.themeIcons)
 
         # CSS File
         cssData = readTextFile(themeFile[:-5]+".qss")
@@ -498,7 +498,7 @@ class GuiIcons:
     #  Actions
     ##
 
-    def updateTheme(self, iconTheme):
+    def loadTheme(self, iconTheme):
         """Update the theme map. This is more of an init, since many of
         the GUI icons cannot really be replaced without writing specific
         update functions for the classes where they're used.
@@ -585,7 +585,7 @@ class GuiIcons:
             return QPixmap()
 
         if not os.path.isfile(imgPath):
-            logger.error("Asset '%s' not found", self.IMAGE_MAP[decoKey])
+            logger.error("Asset not found: %s", imgPath)
             return QPixmap()
 
         theDeco = QPixmap(imgPath)
@@ -598,7 +598,7 @@ class GuiIcons:
 
         return theDeco
 
-    def getIcon(self, iconKey, iconSize=None):
+    def getIcon(self, iconKey):
         """Return an icon from the icon buffer. If it doesn't exist,
         return, load it, and if it still doesn't exist, return an empty
         icon.
