@@ -537,9 +537,8 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     assert nwGUI.docEditor.getText() == nwUnicode.U_THNBSP
     nwGUI.docEditor.clear()
 
-    ##
-    #  Insert Keywords
-    ##
+    # Insert Keywords
+    # ===============
 
     nwGUI.docEditor.setText("Stuff")
     nwGUI.mainMenu.mInsKWItems[nwKeyWords.TAG_KEY][0].activate(QAction.Trigger)
@@ -589,9 +588,15 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
 
     nwGUI.docEditor.clear()
 
-    ##
-    #  Insert Break or Space
-    ##
+    # Insert Special Comments
+    # =======================
+
+    nwGUI.docEditor.setText("Stuff\n")
+    nwGUI.mainMenu.aInsSynopsis.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Stuff\n% Synopsis: \n"
+
+    # Insert Break or Space
+    # =====================
 
     nwGUI.docEditor.setText("### Stuff\n")
     nwGUI.mainMenu.aInsNewPage.activate(QAction.Trigger)
@@ -607,9 +612,8 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
 
     nwGUI.docEditor.clear()
 
-    ##
-    #  Insert text from file
-    ##
+    # Insert Text from File
+    # =====================
 
     nwGUI.closeDocument()
 
@@ -645,9 +649,8 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     nwGUI.mainMenu.aImportFile.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == "Foo"
 
-    ##
-    #  Reveal file location
-    ##
+    # Reveal File Location
+    # ====================
 
     theMessage = ""
 
