@@ -951,10 +951,13 @@ class GuiProjectTree(QTreeWidget):
         trItem.setToolTip(self.C_STATUS, itemStatus)
 
         if nwItem.isFileType():
-            iconName = "check" if nwItem.isActive else "cross"
+            iconName = "checked" if nwItem.isActive else "unchecked"
             toolTip = self._lblActive if nwItem.isActive else self._lblInactive
-            trItem.setIcon(self.C_ACTIVE, self.mainTheme.getIcon(iconName))
             trItem.setToolTip(self.C_ACTIVE, toolTip)
+        else:
+            iconName = "noncheckable"
+
+        trItem.setIcon(self.C_ACTIVE, self.mainTheme.getIcon(iconName))
 
         if self.mainConf.emphLabels and nwItem.isDocumentLayout():
             trFont = trItem.font(self.C_NAME)

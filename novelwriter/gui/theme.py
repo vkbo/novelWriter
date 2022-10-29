@@ -448,9 +448,9 @@ class GuiIcons:
         "view_editor", "view_novel", "view_outline",
 
         # General Button Icons
-        "add", "backward", "bookmark", "check", "close", "cross", "down", "edit", "forward",
-        "maximise", "menu", "minimise", "reference", "refresh", "remove", "search_replace",
-        "search", "settings", "up",
+        "add", "backward", "bookmark", "checked", "close", "cross", "down", "edit", "forward",
+        "maximise", "menu", "minimise", "noncheckable", "reference", "refresh", "remove",
+        "search_replace", "search", "settings", "unchecked", "up",
 
         # Switches
         "sticky-on", "sticky-off",
