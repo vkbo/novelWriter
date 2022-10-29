@@ -32,6 +32,8 @@ import logging
 
 from time import time
 
+from PyQt5.QtCore import QStringListModel
+
 from novelwriter.enum import nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode, nwHeaders
@@ -716,6 +718,17 @@ class TagsIndex:
         self._tags = data
 
         return
+
+    def getCompletionModel(self, itemClass):
+        """
+        Build list of completion suggestion for tags auto_completer
+        """
+        result = []
+        for tagKey in self._tags.keys():
+            if self.tagClass(tagKey) == itemClass:
+                result.append(tagKey)
+        return QStringListModel(result)
+
 
 # END Class TagsIndex
 

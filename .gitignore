@@ -51,3 +51,4 @@ ToC.txt
 # Coverage
 /.coverage
 /coverage.*
+.idea

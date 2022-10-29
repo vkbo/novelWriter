@@ -38,7 +38,7 @@ from time import time
 
 from PyQt5.QtCore import (
     Qt, QSize, QTimer, pyqtSlot, pyqtSignal, QRegExp, QRegularExpression,
-    QPointF, QObject, QRunnable, QPropertyAnimation
+    QPointF, QObject, QRunnable, QPropertyAnimation, QEvent
 )
 from PyQt5.QtGui import (
     QFontMetrics, QTextCursor, QTextOption, QKeySequence, QFont, QColor,
@@ -47,7 +47,7 @@ from PyQt5.QtGui import (
 from PyQt5.QtWidgets import (
     qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QWidget, QLabel,
     QToolBar, QToolButton, QHBoxLayout, QGridLayout, QLineEdit, QPushButton,
-    QFrame
+    QFrame, QCompleter
 )
 
 from novelwriter.core import NWDoc, NWSpellEnchant, countWords
@@ -55,6 +55,7 @@ from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode
 from novelwriter.common import transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
 from novelwriter.gui.dochighlight import GuiDocHighlighter
+from novelwriter.core.auto_complete import TagsCompleter
 
 logger = logging.getLogger(__name__)
 
@@ -176,12 +177,32 @@ class GuiDocEditor(QTextEdit):
         self.wCounterSel.setAutoDelete(False)
         self.wCounterSel.signals.countsReady.connect(self._updateSelCounts)
 
+        # tags completer
+        self.completer = TagsCompleter()
+        self.completer.setWidget(self)
+        self.completer.insertText.connect(self.insertTagCompletion)
+        self.completer_tag_mode = None
+
         # Finalise
         self.initEditor()
 
         logger.debug("GuiDocEditor initialisation complete")
 
         return
+
+    def insertTagCompletion(self, completion):
+        cursor = self.textCursor()
+        extra = (len(completion) - len(self.completer.completionPrefix()))
+        cursor.movePosition(QTextCursor.Left)
+        cursor.movePosition(QTextCursor.EndOfWord)
+        cursor.insertText(completion[-extra:])
+        self.setTextCursor(cursor)
+        self.completer.popup().hide()
+
+    def focusInEvent(self, event):
+        if self.completer:
+            self.completer.setWidget(self)
+        QTextEdit.focusInEvent(self, event)
 
     def clearEditor(self):
         """Clear the current document and reset all document-related
@@ -983,6 +1004,12 @@ class GuiDocEditor(QTextEdit):
         isReturn |= keyEvent.key() == Qt.Key_Enter
         if isReturn and self.docSearch.anyFocus():
             return
+        # completer
+        elif isReturn and self.completer.popup() and self.completer.popup().isVisible():
+            # should we add complete by enter?
+            self.completer.popup().hide()
+            return
+        # end completer
         elif keyEvent == QKeySequence.Redo:
             self.docAction(nwDocAction.REDO)
             return
@@ -1017,8 +1044,44 @@ class GuiDocEditor(QTextEdit):
         else:
             super().keyPressEvent(keyEvent)
 
-        self.docFooter.updateLineCount()
+        # completer
+        try:
+            cursor = self.textCursor()
+            if cursor.block().text().startswith("@"):
+                tag = cursor.block().text().split(":")[0]
+                tag_name = nwKeyWords.KEY_CLASS[tag].name
 
+                if self.completer_tag_mode != tag_name:
+                    self.completer.setModel(self.theProject.index._tagsIndex.getCompletionModel(tag_name))
+                    self.completer_tag_mode = tag_name
+
+                if keyEvent.key() in (Qt.Key_Tab, ):
+                    if self.completer.popup().isVisible():
+                        self.completer.insertText.emit(self.completer.getSelected())
+                        self.completer.setCompletionMode(QCompleter.PopupCompletion)
+                        return
+
+                if keyEvent.key() not in (Qt.Key_Delete, Qt.Key_Backspace):
+                    cursor.select(QTextCursor.WordUnderCursor)
+                    cr = self.cursorRect()
+
+                    if len(cursor.selectedText()) > 0:
+                        self.completer.setCompletionPrefix(cursor.selectedText())
+                        popup = self.completer.popup()
+                        popup.setCurrentIndex(self.completer.completionModel().index(0, 0))
+
+                        cr.setWidth(
+                            self.completer.popup().sizeHintForColumn(0) +
+                            self.completer.popup().verticalScrollBar().sizeHint().width()
+                        )
+                        self.completer.complete(cr)
+                    else:
+                        self.completer.popup().hide()
+        except:
+            pass
+            # end completer
+
+        self.docFooter.updateLineCount()
         return
 
     def focusNextPrevChild(self, toNext):
