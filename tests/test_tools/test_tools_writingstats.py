@@ -27,26 +27,16 @@ from mock import causeOSError
 from tools import getGuiItem, writeFile, buildTestProject
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QAction, QFileDialog
 
 from novelwriter.tools import GuiWritingStats
 from novelwriter.constants import nwFiles
-
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
 
 
 @pytest.mark.gui
 def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     """Test the full writing stats tool.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Create a project to work on
     buildTestProject(nwGUI, fncProj)
     qtbot.wait(100)
@@ -60,7 +50,6 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     sessLog = getGuiItem("GuiWritingStats")
     assert isinstance(sessLog, GuiWritingStats)
-    qtbot.wait(stepDelay)
 
     # Test Loading
     # ============
@@ -186,9 +175,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     # No Novel Files
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
 
     jsonStats = os.path.join(fncDir, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
@@ -234,9 +221,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # No Note Files
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
     qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
 
     jsonStats = os.path.join(fncDir, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
@@ -282,11 +267,9 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # No Negative Entries
     qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
     qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
     jsonStats = os.path.join(fncDir, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
@@ -316,9 +299,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # Un-hide Zero Entries
     qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
     qtbot.mouseClick(sessLog.hideZeros, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
 
     jsonStats = os.path.join(fncDir, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
@@ -371,9 +352,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     # Group by Day
     qtbot.mouseClick(sessLog.groupByDay, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
 
     jsonStats = os.path.join(fncDir, "sessionStats.json")
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
@@ -422,10 +401,9 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert not sessLog._loadLogFile()
     assert not sessLog._saveData(sessLog.FMT_CSV)
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
     sessLog._doClose()
     assert nwGUI.closeProject()
-    qtbot.wait(stepDelay)
 
 # END Test testToolWritingStats_Main

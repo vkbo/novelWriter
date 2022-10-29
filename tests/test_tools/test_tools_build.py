@@ -26,13 +26,9 @@ from shutil import copyfile
 from tools import cmpFiles, getGuiItem
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction, QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QAction, QFileDialog
 
 from novelwriter.tools import GuiBuildNovel
-
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
 
 
 @pytest.mark.gui
@@ -40,8 +36,6 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     """Test the build tool.
     """
     # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda a, b, c, **k: (c, None))
 
     # Check that we cannot open when there is no project
@@ -121,27 +115,17 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
 
     # Change Title Formats and Flip Switches
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
-    qtbot.wait(stepDelay)
     nwBuild.fmtScene.setText(r"Scene %ch%.%sc%: %title%")
-    qtbot.wait(stepDelay)
     nwBuild.fmtSection.setText(r"%ch%.%sc%.1: %title%")
-    qtbot.wait(stepDelay)
 
     qtbot.mouseClick(nwBuild.justifyText, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwBuild.includeSynopsis, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwBuild.includeComments, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwBuild.includeKeywords, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwBuild.replaceUCode, Qt.LeftButton)
-    qtbot.wait(stepDelay)
 
     qtbot.mouseClick(nwBuild.noteFiles, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwBuild.ignoreFlag, Qt.LeftButton)
-    qtbot.wait(stepDelay)
 
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
 
@@ -175,7 +159,6 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
 
     # Replace Tabs with Spaces
     qtbot.mouseClick(nwBuild.replaceTabs, Qt.LeftButton)
-    qtbot.wait(stepDelay)
 
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
 
@@ -210,20 +193,13 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
 
     # Putline Mode
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
-    qtbot.wait(stepDelay)
     nwBuild.fmtScene.setText(r"Scene %sca%: %title%")
-    qtbot.wait(stepDelay)
     nwBuild.fmtSection.setText(r"Section: %title%")
-    qtbot.wait(stepDelay)
 
     qtbot.mouseClick(nwBuild.includeComments, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwBuild.noteFiles, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwBuild.ignoreFlag, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwBuild.includeBody, Qt.LeftButton)
-    qtbot.wait(stepDelay)
 
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
 
@@ -287,6 +263,6 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
 
     nwBuild._doClose()
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testToolBuild_Main

@@ -23,18 +23,15 @@ import pytest
 
 from tools import C, getGuiItem, buildTestProject
 
-from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt5.QtWidgets import QAction
 
 from novelwriter.tools import GuiLipsum
 
 
 @pytest.mark.gui
-def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
+def testToolLipsum_Main(qtbot, nwGUI, fncProj, mockRnd):
     """Test the Lorem Ipsum tool.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aLipsumText.activate(QAction.Trigger)
     assert getGuiItem("GuiLipsum") is None
@@ -70,6 +67,6 @@ def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Close
     nwLipsum._doClose()
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testToolLipsum_Main

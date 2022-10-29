@@ -26,7 +26,7 @@ import pytest
 from tools import buildTestProject, writeFile
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QMessageBox, QAction
+from PyQt5.QtWidgets import QWidget, QAction
 
 from novelwriter.enum import nwItemClass, nwOutline, nwView
 
@@ -35,10 +35,6 @@ from novelwriter.enum import nwItemClass, nwOutline, nwView
 def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
     """Test the outline view.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-
     # Create a project
     prjDir = os.path.join(fncDir, "project")
     buildTestProject(nwGUI, prjDir)
@@ -156,13 +152,9 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
 
 
 @pytest.mark.gui
-def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
+def testGuiOutline_Content(qtbot, nwGUI, nwLipsum):
     """Test the outline view.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-
     assert nwGUI.openProject(nwLipsum)
     nwGUI.mainConf.lastPath = nwLipsum
 

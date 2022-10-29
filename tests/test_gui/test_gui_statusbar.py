@@ -24,18 +24,14 @@ import pytest
 
 from tools import C, buildTestProject
 
-from PyQt5.QtWidgets import QMessageBox
-
 from novelwriter.enum import nwState
 from novelwriter.core.document import NWDoc
 
 
 @pytest.mark.gui
-def testGuiStatusBar_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
+def testGuiStatusBar_Main(qtbot, nwGUI, fncProj, mockRnd):
     """Test the the various features of the status bar.
     """
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-
     buildTestProject(nwGUI, fncProj)
     cHandle = nwGUI.theProject.newFile("A Note", C.hCharRoot)
     newDoc = NWDoc(nwGUI.theProject, cHandle)

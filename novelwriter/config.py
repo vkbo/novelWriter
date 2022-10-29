@@ -73,7 +73,6 @@ class Config:
         # General
         self.guiTheme    = ""     # GUI theme
         self.guiSyntax   = ""     # Syntax theme
-        self.guiIcons    = ""     # Icon theme
         self.guiFont     = ""     # Defaults to system default font
         self.guiFontSize = 11     # Is overridden if system default is loaded
         self.guiScale    = 1.0    # Set automatically by Theme class
@@ -81,7 +80,6 @@ class Config:
 
         self.setDefaultGuiTheme()
         self.setDefaultSyntaxTheme()
-        self.setDefaultIconTheme()
 
         # Localisation
         self.qLocal     = QLocale.system()
@@ -410,7 +408,6 @@ class Config:
         cnfSec = "Main"
         self.guiTheme    = theConf.rdStr(cnfSec, "theme", self.guiTheme)
         self.guiSyntax   = theConf.rdStr(cnfSec, "syntax", self.guiSyntax)
-        self.guiIcons    = theConf.rdStr(cnfSec, "icons", self.guiIcons)
         self.guiFont     = theConf.rdStr(cnfSec, "guifont", self.guiFont)
         self.guiFontSize = theConf.rdInt(cnfSec, "guifontsize", self.guiFontSize)
         self.lastNotes   = theConf.rdStr(cnfSec, "lastnotes", self.lastNotes)
@@ -508,12 +505,6 @@ class Config:
             logger.info("Using straight double quotes, so disabling auto-replace")
             self.doReplaceDQuote = False
 
-        # Check deprecated settings
-        if self.guiIcons in ("typicons_colour_dark", "typicons_grey_dark"):
-            self.guiIcons = "typicons_dark"
-        elif self.guiIcons in ("typicons_colour_light", "typicons_grey_light"):
-            self.guiIcons = "typicons_light"
-
         return True
 
     def saveConfig(self):
@@ -529,7 +520,6 @@ class Config:
             "timestamp":   formatTimeStamp(time()),
             "theme":       str(self.guiTheme),
             "syntax":      str(self.guiSyntax),
-            "icons":       str(self.guiIcons),
             "guifont":     str(self.guiFont),
             "guifontsize": str(self.guiFontSize),
             "lastnotes":   str(self.lastNotes),
@@ -815,11 +805,6 @@ class Config:
         """Reset the syntax theme to default value.
         """
         self.guiSyntax = "default_light"
-
-    def setDefaultIconTheme(self):
-        """Reset the icon theme to default value.
-        """
-        self.guiIcons = "typicons_light"
 
     ##
     #  Getters
