@@ -26,7 +26,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import random
 import logging
-
 import novelwriter
 
 from lxml import etree

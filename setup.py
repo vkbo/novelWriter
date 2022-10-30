@@ -131,6 +131,7 @@ def makeCheckSum(sumFile, cwd=None):
     except Exception as exc:
         print("Could not generate sha256 file")
         print(str(exc))
+        return ""
 
     return shaFile
 
