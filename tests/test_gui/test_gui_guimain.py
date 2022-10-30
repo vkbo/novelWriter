@@ -172,7 +172,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert nwGUI.theProject.tree.trashRoot() is None
     assert nwGUI.theProject.projPath is None
     assert nwGUI.theProject.projMeta is None
-    assert nwGUI.theProject.projName == ""
+    assert nwGUI.theProject.data.name == ""
     assert nwGUI.theProject.bookTitle == ""
     assert len(nwGUI.theProject.bookAuthors) == 0
     assert not nwGUI.theProject.spellCheck
@@ -194,7 +194,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert nwGUI.theProject.tree.trashRoot() is None
     assert nwGUI.theProject.projPath == fncProj
     assert nwGUI.theProject.projMeta == os.path.join(fncProj, "meta")
-    assert nwGUI.theProject.projName == "New Project"
+    assert nwGUI.theProject.data.name == "New Project"
     assert nwGUI.theProject.bookTitle == "New Novel"
     assert len(nwGUI.theProject.bookAuthors) == 1
     assert nwGUI.theProject.spellCheck is False

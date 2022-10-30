@@ -75,7 +75,7 @@ class NWIndex:
         return
 
     def __repr__(self):
-        return f"<NWIndex project='{self.theProject.projName}'>"
+        return f"<NWIndex project='{self.theProject.data.name}'>"
 
     ##
     #  Properties

@@ -315,7 +315,7 @@ class ToHtml(Tokenizer):
                 "</body>\n"
                 "</html>\n"
             ).format(
-                projTitle=self.theProject.projName,
+                projTitle=self.theProject.data.name,
                 htmlStyle="\n".join(theStyle),
                 bodyText=bodyText,
             )

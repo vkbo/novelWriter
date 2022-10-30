@@ -136,7 +136,7 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd
     assert projSettings.spellChanged is False
 
     projSettings._doSave()
-    assert theProject.projName == "Project Name"
+    assert theProject.data.name == "Project Name"
     assert theProject.bookTitle == "Project Title"
     assert theProject.bookAuthors == ["Jane Doe", "John Doh"]
 

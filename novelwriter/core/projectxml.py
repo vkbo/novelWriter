@@ -4,7 +4,8 @@ novelWriter – Project XML Read/Write
 Classes for reading and writing the project XML file
 
 File History:
-Created: 2022-09-28 [1.7.b1]
+Created: 2022-09-28 [2.0rc1] ProjectXMLReader
+Created: 2022-09-28 [2.0rc1] XMLReadState
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -90,7 +91,7 @@ class ProjectXMLReader:
     #  Methods
     ##
 
-    def read(self):
+    def read(self, projData):
         """Read and parse the project XML file.
         """
         self._data = {}
@@ -154,7 +155,7 @@ class ProjectXMLReader:
         status = True
         for xSection in xRoot:
             if xSection.tag == "project":
-                status &= self._parseProjectMeta(xSection)
+                status &= self._parseProjectMeta(xSection, projData)
             elif xSection.tag == "settings":
                 status &= self._parseProjectSettings(xSection)
             elif xSection.tag == "content":
@@ -180,31 +181,25 @@ class ProjectXMLReader:
     #  Internal Functions
     ##
 
-    def _parseProjectMeta(self, xSection):
+    def _parseProjectMeta(self, xSection, projData):
         """Parse the project section of the XML file.
         """
         logger.debug("Parsing xml <root/project>")
-        data = {}
-        authors = []
         for xItem in xSection:
             if xItem.tag == "name":
-                data["name"] = simplified(checkString(xItem.text, ""))
+                projData.setName(xItem.text)
             elif xItem.tag == "title":
-                data["title"] = simplified(checkString(xItem.text, ""))
+                projData.setTitle(xItem.text)
             elif xItem.tag == "author":
-                authors.append(simplified(checkString(xItem.text, "")))
+                projData.addAuthor(xItem.text)
             elif xItem.tag == "saveCount":
-                data["saveCount"] = checkInt(xItem.text, 0)
+                projData.setSaveCount(xItem.text)
             elif xItem.tag == "autoCount":
-                data["autoCount"] = checkInt(xItem.text, 0)
+                projData.setAutoCount(xItem.text)
             elif xItem.tag == "editTime":
-                data["editTime"] = checkInt(xItem.text, 0)
+                projData.setEditTime(xItem.text)
             else:
                 logger.warning("Ignored <root/project/%s> in xml", xItem.tag)
-
-        data["authors"] = authors
-        self._data["project"] = data
-
         return True
 
     def _parseProjectSettings(self, xSection):

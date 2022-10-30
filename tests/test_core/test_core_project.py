@@ -202,7 +202,7 @@ def testCoreProject_NewSampleA(fncDir, tmpConf, mockGUI, tmpDir):
 
     assert theProject.newProject(projData) is True
     assert theProject.openProject(fncDir) is True
-    assert theProject.projName == "Sample Project"
+    assert theProject.data.name == "Sample Project"
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
     os.unlink(dstSample)
@@ -236,7 +236,7 @@ def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, mockGUI, tmpDir):
     monkeypatch.setattr(nwFiles, "PROJ_FILE", "nwProject.nwx")
     assert theProject.newProject(projData) is True
     assert theProject.openProject(fncDir) is True
-    assert theProject.projName == "Sample Project"
+    assert theProject.data.name == "Sample Project"
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
 
@@ -895,8 +895,8 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     assert theProject.setProjectPath(fncDir)
 
     # Project Name
-    assert theProject.setProjectName("  A Name ")
-    assert theProject.projName == "A Name"
+    assert theProject.data.setName("  A Name ")
+    assert theProject.data.name == "A Name"
 
     # Project Title
     assert theProject.setBookTitle("  A Title ")
@@ -944,9 +944,9 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     theProject.mainConf.backupPath = tmpDir
     assert theProject.setProjBackup(True)
 
-    assert theProject.setProjectName("")
+    assert theProject.data.setName("")
     assert not theProject.setProjBackup(True)
-    assert theProject.setProjectName("A Name")
+    assert theProject.data.setName("A Name")
     assert theProject.setProjBackup(True)
 
     # Spell check
@@ -1327,12 +1327,12 @@ def testCoreProject_Backup(monkeypatch, mockGUI, nwMinimal, tmpDir):
 
     # Missing project name
     theProject.mainConf.backupPath = tmpDir
-    theProject.projName = ""
+    theProject.data.name = ""
     assert theProject.zipIt(doNotify=False) is False
 
     # Non-existent folder
     theProject.mainConf.backupPath = os.path.join(tmpDir, "nonexistent")
-    theProject.projName = "Test Minimal"
+    theProject.data.name = "Test Minimal"
     assert theProject.zipIt(doNotify=False) is False
 
     # Same folder as project (causes infinite loop in zipping)

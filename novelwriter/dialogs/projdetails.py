@@ -166,7 +166,7 @@ class GuiProjectDetailsMain(QWidget):
         self.bookTitle.setWordWrap(True)
 
         self.projName = QLabel(
-            self.tr("Working Title: {0}").format(self.theProject.projName)
+            self.tr("Working Title: {0}").format(self.theProject.data.name)
         )
         workFont = self.projName.font()
         workFont.setPointSizeF(0.8*fPt)

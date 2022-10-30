@@ -167,7 +167,7 @@ def buildTestProject(theObject, projPath):
 
     theProject.clearProject()
     theProject.setProjectPath(projPath, newProject=True)
-    theProject.setProjectName("New Project")
+    theProject.data.setName("New Project")
     theProject.setBookTitle("New Novel")
     theProject.setBookAuthors("Jane Doe")
 

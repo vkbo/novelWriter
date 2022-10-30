@@ -383,7 +383,7 @@ class GuiMain(QMainWindow):
             self.mainStatus.setDocumentStatus(nwState.NONE)
             self.mainStatus.setStatus(self.tr("New project created ..."))
 
-            self._updateWindowTitle(self.theProject.projName)
+            self._updateWindowTitle(self.theProject.data.name)
 
         else:
             self.theProject.clearProject()
@@ -521,7 +521,7 @@ class GuiMain(QMainWindow):
         self.theProject.index.loadIndex()
 
         # Update GUI
-        self._updateWindowTitle(self.theProject.projName)
+        self._updateWindowTitle(self.theProject.data.name)
         self.rebuildTrees()
         self.docEditor.setDictionaries()
         self.docEditor.toggleSpellCheck(self.theProject.spellCheck)
@@ -960,7 +960,7 @@ class GuiMain(QMainWindow):
             if dlgProj.spellChanged:
                 self.docEditor.setDictionaries()
             self.itemDetails.refreshDetails()
-            self._updateWindowTitle(self.theProject.projName)
+            self._updateWindowTitle(self.theProject.data.name)
 
         return True
 

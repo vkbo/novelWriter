@@ -888,7 +888,7 @@ class GuiBuildNovel(QDialog):
         # Generate File Name
         # ==================
 
-        cleanName = makeFileNameSafe(self.theProject.projName)
+        cleanName = makeFileNameSafe(self.theProject.data.name)
         fileName = "%s.%s" % (cleanName, fileExt)
         saveDir = self.mainConf.lastPath
         if not os.path.isdir(saveDir):
@@ -972,7 +972,7 @@ class GuiBuildNovel(QDialog):
         elif theFmt == self.FMT_JSON_H or theFmt == self.FMT_JSON_M:
             jsonData = {
                 "meta": {
-                    "workingTitle": self.theProject.projName,
+                    "workingTitle": self.theProject.data.name,
                     "novelTitle": self.theProject.bookTitle,
                     "authors": self.theProject.bookAuthors,
                     "buildTime": self.buildTime,

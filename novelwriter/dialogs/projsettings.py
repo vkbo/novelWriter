@@ -114,7 +114,7 @@ class GuiProjectSettings(PagedDialog):
         spellLang   = self.tabMain.spellLang.currentData()
         doBackup    = not self.tabMain.doBackup.isChecked()
 
-        self.theProject.setProjectName(projName)
+        self.theProject.data.setName(projName)
         self.theProject.setBookTitle(bookTitle)
         self.theProject.setBookAuthors(bookAuthors)
         self.theProject.setProjBackup(doBackup)
@@ -209,7 +209,7 @@ class GuiProjectEditMain(QWidget):
         self.editName = QLineEdit()
         self.editName.setMaxLength(200)
         self.editName.setMaximumWidth(xW)
-        self.editName.setText(self.theProject.projName)
+        self.editName.setText(self.theProject.data.name)
         self.mainForm.addRow(
             self.tr("Project name"),
             self.editName,

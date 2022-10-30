@@ -38,9 +38,10 @@ from PyQt5.QtCore import QCoreApplication
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.error import logException
 from novelwriter.common import (
-    checkString, checkStringNone, isHandle, formatTimeStamp,
-    makeFileNameSafe, hexToInt, minmax, simplified
+    checkString, checkStringNone, isHandle, formatTimeStamp, makeFileNameSafe,
+    hexToInt, minmax, simplified
 )
+from novelwriter.constants import trConst, nwFiles, nwLabels
 from novelwriter.core.tree import NWTree
 from novelwriter.core.item import NWItem
 from novelwriter.core.index import NWIndex
@@ -48,7 +49,7 @@ from novelwriter.core.status import NWStatus
 from novelwriter.core.options import OptionState
 from novelwriter.core.document import NWDoc
 from novelwriter.core.projectxml import ProjectXMLReader, XMLReadState
-from novelwriter.constants import trConst, nwFiles, nwLabels
+from novelwriter.core.projectdata import NWProjectData
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +64,8 @@ class NWProject:
         self.mainConf = novelwriter.CONFIG
         self.mainGui  = mainGui
 
-        self._data = {}
+        self._data = NWProjectData()
+        self._raw = {}
 
         # Core Elements
         self._optState  = OptionState(self)  # Project-specific GUI options
@@ -91,7 +93,6 @@ class NWProject:
         self.projFiles   = []    # A list of all files in the content folder on load
 
         # Project Meta
-        self.projName    = ""  # Project name
         self.bookTitle   = ""  # The final title; should only be used for exports
         self.bookAuthors = []  # A list of book authors
 
@@ -124,6 +125,10 @@ class NWProject:
     ##
     #  Properties
     ##
+
+    @property
+    def data(self):
+        return self._data
 
     @property
     def index(self):
@@ -263,7 +268,6 @@ class NWProject:
         self.projSpell   = None
         self.projLang    = None
         self.projFiles   = []
-        self.projName    = ""
         self.bookTitle   = ""
         self.bookAuthors = []
         self.autoReplace = {}
@@ -328,14 +332,14 @@ class NWProject:
         if not self.setProjectPath(projPath, newProject=True):
             return False
 
-        self.setProjectName(projName)
+        self.data.setName(projName)
         self.setBookTitle(projTitle)
         self.setBookAuthors(projAuthors)
 
         hNovelRoot = self.newRoot(nwItemClass.NOVEL)
         hTitlePage = self.newFile(self.tr("Title Page"), hNovelRoot)
 
-        titlePage = "#! %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
+        titlePage = "#! %s\n\n" % (self.bookTitle if self.bookTitle else self._data.name)
         if self.bookAuthors:
             titlePage = "%s>> %s %s <<\n" % (titlePage, self.tr("By"), self.getAuthors())
 
@@ -480,8 +484,9 @@ class NWProject:
         # Open The Project XML File
         # =========================
 
+        self._data = NWProjectData()
         xmlReader = ProjectXMLReader(fileName)
-        xmlParsed = xmlReader.read()
+        xmlParsed = xmlReader.read(self._data)
         xmlData = xmlReader.data
 
         print(json.dumps(xmlData, indent=2))
@@ -510,7 +515,7 @@ class NWProject:
             self.clearProject()
             return False
 
-        self._data = xmlData
+        self._raw = xmlData
 
         logger.debug("XML root is '%s'", nwxRoot)
         logger.debug("File version is '%s'", xmlVersion)
@@ -552,16 +557,13 @@ class NWProject:
         # Extract Data
         # ============
 
-        xmlProject = xmlData.get("project", {})
+        self.bookTitle = self._data.title
+        self.bookAuthors = self._data.autors
+        self.saveCount = self._data.saveCount
+        self.autoCount = self._data.autoCount
+        self.editTime = self._data.editTime
 
-        self.projName = xmlProject.get("name", "")
-        self.bookTitle = xmlProject.get("title", "")
-        self.bookAuthors = xmlProject.get("authors", [])
-        self.saveCount = xmlProject.get("saveCount", 0)
-        self.autoCount = xmlProject.get("autoCount", 0)
-        self.editTime = xmlProject.get("editTime", 0)
-
-        logger.info("Project Name: '%s'", self.projName)
+        logger.info("Project Name: '%s'", self._data.name)
         logger.info("Project Title: '%s'", self.bookTitle)
 
         xmlSettings = xmlData.get("settings", {})
@@ -601,7 +603,7 @@ class NWProject:
         self._deprecatedFiles()
 
         # Update recent projects
-        self.mainConf.updateRecentCache(self.projPath, self.projName, self.lastWCount, time())
+        self.mainConf.updateRecentCache(self.projPath, self._data.name, self.lastWCount, time())
         self.mainConf.saveRecentCache()
 
         # Check the project tree consistency
@@ -621,7 +623,7 @@ class NWProject:
 
         self._writeLockFile()
         self.setProjectChanged(False)
-        self.mainGui.setStatus(self.tr("Opened Project: {0}").format(self.projName))
+        self.mainGui.setStatus(self.tr("Opened Project: {0}").format(self._data.name))
 
         return True
 
@@ -662,7 +664,7 @@ class NWProject:
 
         # Save Project Meta
         xProject = etree.SubElement(nwXML, "project")
-        self._packProjectValue(xProject, "name", self.projName)
+        self._packProjectValue(xProject, "name", self._data.name)
         self._packProjectValue(xProject, "title", self.bookTitle)
         self._packProjectValue(xProject, "author", self.bookAuthors)
         self._packProjectValue(xProject, "saveCount", str(self.saveCount))
@@ -734,11 +736,11 @@ class NWProject:
         self._optState.saveSettings()
 
         # Update recent projects
-        self.mainConf.updateRecentCache(self.projPath, self.projName, self.currWCount, saveTime)
+        self.mainConf.updateRecentCache(self.projPath, self._data.name, self.currWCount, saveTime)
         self.mainConf.saveRecentCache()
 
         self._writeLockFile()
-        self.mainGui.setStatus(self.tr("Saved Project: {0}").format(self.projName))
+        self.mainGui.setStatus(self.tr("Saved Project: {0}").format(self._data.name))
         self.setProjectChanged(False)
 
         return True
@@ -800,14 +802,14 @@ class NWProject:
             ), nwAlert.ERROR)
             return False
 
-        if not self.projName:
+        if not self._data.name:
             self.mainGui.makeAlert(self.tr(
                 "Cannot backup project because no project name is set. "
                 "Please set a Working Title in Project Settings."
             ), nwAlert.ERROR)
             return False
 
-        cleanName = makeFileNameSafe(self.projName)
+        cleanName = makeFileNameSafe(self._data.name)
         baseDir = os.path.abspath(os.path.join(self.mainConf.backupPath, cleanName))
         if not os.path.isdir(baseDir):
             try:
@@ -953,14 +955,6 @@ class NWProject:
 
         return True
 
-    def setProjectName(self, projName):
-        """Set the project name, This is the the name used for backup
-        files etc.
-        """
-        self.projName = simplified(projName)
-        self.setProjectChanged(True)
-        return True
-
     def setBookTitle(self, bookTitle):
         """Set the book title, that is, the title to include in exports.
         """
@@ -998,7 +992,7 @@ class NWProject:
                 ), nwAlert.WARN)
                 return False
 
-            if self.projName == "":
+            if self._data.name == "":
                 self.mainGui.makeAlert(self.tr(
                     "You must set a valid project name in Project Settings to "
                     "use the automatic project backup feature."
