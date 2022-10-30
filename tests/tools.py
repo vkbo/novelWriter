@@ -168,8 +168,8 @@ def buildTestProject(theObject, projPath):
     theProject.clearProject()
     theProject.setProjectPath(projPath, newProject=True)
     theProject.data.setName("New Project")
-    theProject.setBookTitle("New Novel")
-    theProject.setBookAuthors("Jane Doe")
+    theProject.data.setTitle("New Novel")
+    theProject.data.setAuthors("Jane Doe")
 
     # Creating a minimal project with a few root folders and a
     # single chapter folder with a single file.

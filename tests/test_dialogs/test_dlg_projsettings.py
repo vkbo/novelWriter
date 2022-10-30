@@ -96,7 +96,7 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd
     # Set some values
     theProject = nwGUI.theProject
     theProject.setSpellLang("en")
-    theProject.setBookAuthors("Jane Smith\nJohn Smith")
+    theProject.data.setAuthors("Jane Smith\nJohn Smith")
     theProject.setAutoReplace({"A": "B", "C": "D"})
 
     # Create Dialog
@@ -137,8 +137,8 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd
 
     projSettings._doSave()
     assert theProject.data.name == "Project Name"
-    assert theProject.bookTitle == "Project Title"
-    assert theProject.bookAuthors == ["Jane Doe", "John Doh"]
+    assert theProject.data.title == "Project Title"
+    assert theProject.data.authors == ["Jane Doe", "John Doh"]
 
     # Clean up
     projSettings._doClose()

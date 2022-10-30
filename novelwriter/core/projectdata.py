@@ -60,7 +60,7 @@ class NWProjectData:
         return self._title
 
     @property
-    def autors(self):
+    def authors(self):
         return self._authors
 
     @property
@@ -76,6 +76,44 @@ class NWProjectData:
         return self._editTime
 
     ##
+    #  Methods
+    ##
+
+    def addAuthor(self, value):
+        self._authors.append(simplified(str(value)))
+        self._changed = True
+        return
+
+    def incSaveCount(self):
+        self._saveCount += 1
+        self._changed = True
+        return
+
+    def incAutoCount(self):
+        self._autoCount += 1
+        self._changed = True
+        return
+
+    ##
+    #  Getters
+    ##
+
+    def getAuthors(self, trAnd="and"):
+        """Return a formatted string of authors.
+        """
+        nAuth = len(self._authors)
+        authors = ""
+
+        if nAuth == 1:
+            authors = self._authors[0]
+        elif nAuth > 1:
+            authors = "%s %s %s" % (
+                ", ".join(self._authors[0:-1]), trAnd, self._authors[-1]
+            )
+
+        return authors
+
+    ##
     #  Setters
     ##
 
@@ -89,9 +127,17 @@ class NWProjectData:
         self._changed = True
         return
 
-    def addAuthor(self, value):
-        self._authors.append(simplified(str(value)))
+    def setAuthors(self, value):
+        self._authors = []
         self._changed = True
+        if isinstance(value, str):
+            for author in value.splitlines():
+                author = simplified(author)
+                if author:
+                    self.addAuthor(author)
+            self._changed = True
+        elif isinstance(value, list):
+            self._authors = value
         return
 
     def setSaveCount(self, value):

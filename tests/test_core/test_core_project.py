@@ -555,22 +555,22 @@ def testCoreProject_Save(monkeypatch, nwMinimal, mockGUI, refDir):
         assert os.path.isfile(backFile) is False
 
     # Successful save
-    saveCount = theProject.saveCount
-    autoCount = theProject.autoCount
+    saveCount = theProject.data.saveCount
+    autoCount = theProject.data.autoCount
     assert theProject.saveProject() is True
-    assert theProject.saveCount == saveCount + 1
-    assert theProject.autoCount == autoCount
+    assert theProject.data.saveCount == saveCount + 1
+    assert theProject.data.autoCount == autoCount
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
     # Check that a second save creates a .bak file
     assert os.path.isfile(backFile) is True
 
     # Successful autosave
-    saveCount = theProject.saveCount
-    autoCount = theProject.autoCount
+    saveCount = theProject.data.saveCount
+    autoCount = theProject.data.autoCount
     assert theProject.saveProject(autoSave=True) is True
-    assert theProject.saveCount == saveCount
-    assert theProject.autoCount == autoCount + 1
+    assert theProject.data.saveCount == saveCount
+    assert theProject.data.autoCount == autoCount + 1
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
     # Close test project
@@ -902,30 +902,31 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     assert theProject.data.name == "A Name"
 
     # Project Title
-    theProject.setBookTitle("  A Title ")
-    assert theProject.bookTitle == "A Title"
+    theProject.data.setTitle("  A Title ")
+    assert theProject.data.title == "A Title"
 
     # Project Authors
     # Check that the list is cleaned up and that it can be extracted as
     # a properly formatted string, depending on number of names
-    assert not theProject.setBookAuthors([])
-    assert theProject.setBookAuthors(" Jane Doe \n John Doh \n ")
-    assert theProject.bookAuthors == ["Jane Doe", "John Doh"]
+    theProject.data.setAuthors([])
+    assert theProject.data.authors == []
+    theProject.data.setAuthors(" Jane Doe \n John Doh \n ")
+    assert theProject.data.authors == ["Jane Doe", "John Doh"]
 
-    assert theProject.setBookAuthors("")
-    assert theProject.getAuthors() == ""
+    theProject.data.setAuthors("")
+    assert theProject.data.getAuthors() == ""
 
-    assert theProject.setBookAuthors("Jane Doe")
-    assert theProject.getAuthors() == "Jane Doe"
+    theProject.data.setAuthors("Jane Doe")
+    assert theProject.data.getAuthors() == "Jane Doe"
 
-    assert theProject.setBookAuthors("Jane Doe\nJohn Doh")
-    assert theProject.getAuthors() == "Jane Doe and John Doh"
+    theProject.data.setAuthors("Jane Doe\nJohn Doh")
+    assert theProject.data.getAuthors() == "Jane Doe and John Doh"
 
-    assert theProject.setBookAuthors("Jane Doe\nJohn Doh\nBod Owens")
-    assert theProject.getAuthors() == "Jane Doe, John Doh and Bod Owens"
+    theProject.data.setAuthors("Jane Doe\nJohn Doh\nBod Owens")
+    assert theProject.data.getAuthors() == "Jane Doe, John Doh and Bod Owens"
 
     # Edit Time
-    theProject.editTime = 1234
+    theProject.data.setEditTime(1234)
     theProject.projOpened = 1600000000
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.project.time", lambda: 1600005600)

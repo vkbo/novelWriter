@@ -115,8 +115,8 @@ class GuiProjectSettings(PagedDialog):
         doBackup    = not self.tabMain.doBackup.isChecked()
 
         self.theProject.data.setName(projName)
-        self.theProject.setBookTitle(bookTitle)
-        self.theProject.setBookAuthors(bookAuthors)
+        self.theProject.data.setTitle(bookTitle)
+        self.theProject.data.setAuthors(bookAuthors)
         self.theProject.setProjBackup(doBackup)
 
         # Remember this as updating spell dictionary can be expensive
@@ -219,7 +219,7 @@ class GuiProjectEditMain(QWidget):
         self.editTitle = QLineEdit()
         self.editTitle.setMaxLength(200)
         self.editTitle.setMaximumWidth(xW)
-        self.editTitle.setText(self.theProject.bookTitle)
+        self.editTitle.setText(self.theProject.data.title)
         self.mainForm.addRow(
             self.tr("Novel title"),
             self.editTitle,
@@ -229,7 +229,7 @@ class GuiProjectEditMain(QWidget):
         self.editAuthors = QPlainTextEdit()
         self.editAuthors.setMaximumHeight(xH)
         self.editAuthors.setMaximumWidth(xW)
-        self.editAuthors.setPlainText("\n".join(self.theProject.bookAuthors))
+        self.editAuthors.setPlainText("\n".join(self.theProject.data.authors))
         self.mainForm.addRow(
             self.tr("Author(s)"),
             self.editAuthors,

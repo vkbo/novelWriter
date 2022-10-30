@@ -157,7 +157,7 @@ class GuiProjectDetailsMain(QWidget):
         # Header
         # ======
 
-        self.bookTitle = QLabel(self.theProject.bookTitle)
+        self.bookTitle = QLabel(self.theProject.data.title)
         bookFont = self.bookTitle.font()
         bookFont.setPointSizeF(2.2*fPt)
         bookFont.setWeight(QFont.Bold)
@@ -175,7 +175,9 @@ class GuiProjectDetailsMain(QWidget):
         self.projName.setAlignment(Qt.AlignHCenter)
         self.projName.setWordWrap(True)
 
-        self.bookAuthors = QLabel(self.tr("By {0}").format(self.theProject.getAuthors()))
+        self.bookAuthors = QLabel(self.tr("By {0}").format(
+            self.theProject.data.getAuthors(self.tr("and"))
+        ))
         authFont = self.bookAuthors.font()
         authFont.setPointSizeF(1.2*fPt)
         self.bookAuthors.setFont(authFont)
@@ -255,7 +257,7 @@ class GuiProjectDetailsMain(QWidget):
         self.wordCountVal.setText(f"{nwCount:n}")
         self.chapCountVal.setText(f"{hCounts[2]:n}")
         self.sceneCountVal.setText(f"{hCounts[3]:n}")
-        self.revCountVal.setText(f"{self.theProject.saveCount:n}")
+        self.revCountVal.setText(f"{self.theProject.data.saveCount:n}")
         self.editTimeVal.setText(f"{edTime//3600:02d}:{edTime%3600//60:02d}")
 
         self.projPathVal.setText(self.theProject.projPath)

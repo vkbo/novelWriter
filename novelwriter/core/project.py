@@ -78,9 +78,6 @@ class NWProject:
         self.projChanged = False  # The project has unsaved changes
         self.projAltered = False  # The project has been altered this session
         self.lockedBy    = None   # Data on which computer has the project open
-        self.saveCount   = 0      # Meta data: number of saves
-        self.autoCount   = 0      # Meta data: number of automatic saves
-        self.editTime    = 0      # The accumulated edit time read from the project file
 
         # Class Settings
         self.projPath    = None  # The full path to where the currently open project is saved
@@ -91,10 +88,6 @@ class NWProject:
         self.projSpell   = None  # The spell check language, if different than default
         self.projLang    = None  # The project language, used for builds
         self.projFiles   = []    # A list of all files in the content folder on load
-
-        # Project Meta
-        self.bookTitle   = ""  # The final title; should only be used for exports
-        self.bookAuthors = []  # A list of book authors
 
         # Project Settings
         self.autoReplace = {}     # Text to auto-replace on exports
@@ -253,11 +246,11 @@ class NWProject:
         self.projOpened  = 0
         self.projChanged = False
         self.projAltered = False
-        self.saveCount   = 0
-        self.autoCount   = 0
 
         # Project Tree
         self._projTree.clear()
+
+        self._data = NWProjectData()
 
         # Project Settings
         self.projPath    = None
@@ -268,8 +261,6 @@ class NWProject:
         self.projSpell   = None
         self.projLang    = None
         self.projFiles   = []
-        self.bookTitle   = ""
-        self.bookAuthors = []
         self.autoReplace = {}
         self.titleFormat = {
             "title":      "%title%",
@@ -332,16 +323,18 @@ class NWProject:
         if not self.setProjectPath(projPath, newProject=True):
             return False
 
-        self.data.setName(projName)
-        self.setBookTitle(projTitle)
-        self.setBookAuthors(projAuthors)
+        self._data.setName(projName)
+        self._data.setTitle(projTitle)
+        self._data.setAuthors(projAuthors)
 
         hNovelRoot = self.newRoot(nwItemClass.NOVEL)
         hTitlePage = self.newFile(self.tr("Title Page"), hNovelRoot)
 
-        titlePage = "#! %s\n\n" % (self.bookTitle if self.bookTitle else self._data.name)
-        if self.bookAuthors:
-            titlePage = "%s>> %s %s <<\n" % (titlePage, self.tr("By"), self.getAuthors())
+        titlePage = "#! %s\n\n" % (self._data.title if self._data.title else self._data.name)
+        if self._data.authors:
+            titlePage = "%s>> %s %s <<\n" % (
+                titlePage, self.tr("By"), self._data.getAuthors(self.tr("and"))
+            )
 
         aDoc = NWDoc(self, hTitlePage)
         aDoc.writeDocument(titlePage)
@@ -557,14 +550,8 @@ class NWProject:
         # Extract Data
         # ============
 
-        self.bookTitle = self._data.title
-        self.bookAuthors = self._data.autors
-        self.saveCount = self._data.saveCount
-        self.autoCount = self._data.autoCount
-        self.editTime = self._data.editTime
-
         logger.info("Project Name: '%s'", self._data.name)
-        logger.info("Project Title: '%s'", self.bookTitle)
+        logger.info("Project Title: '%s'", self._data.title)
 
         xmlSettings = xmlData.get("settings", {})
 
@@ -646,9 +633,9 @@ class NWProject:
         logger.info("Saving project: %s", self.projPath)
 
         if autoSave:
-            self.autoCount += 1
+            self._data.incAutoCount()
         else:
-            self.saveCount += 1
+            self._data.incSaveCount()
 
         # Root element and project details
         logger.debug("Writing project meta")
@@ -660,15 +647,15 @@ class NWProject:
         })
 
         self.updateWordCounts()
-        editTime = int(self.editTime + saveTime - self.projOpened)
+        editTime = int(self._data.editTime + saveTime - self.projOpened)
 
         # Save Project Meta
         xProject = etree.SubElement(nwXML, "project")
         self._packProjectValue(xProject, "name", self._data.name)
-        self._packProjectValue(xProject, "title", self.bookTitle)
-        self._packProjectValue(xProject, "author", self.bookAuthors)
-        self._packProjectValue(xProject, "saveCount", str(self.saveCount))
-        self._packProjectValue(xProject, "autoCount", str(self.autoCount))
+        self._packProjectValue(xProject, "title", self._data.title)
+        self._packProjectValue(xProject, "author", self._data.authors)
+        self._packProjectValue(xProject, "saveCount", str(self._data.saveCount))
+        self._packProjectValue(xProject, "autoCount", str(self._data.autoCount))
         self._packProjectValue(xProject, "editTime", str(editTime))
 
         # Save Project Settings
@@ -955,30 +942,6 @@ class NWProject:
 
         return True
 
-    def setBookTitle(self, bookTitle):
-        """Set the book title, that is, the title to include in exports.
-        """
-        self.bookTitle = simplified(bookTitle)
-        self.setProjectChanged(True)
-        return True
-
-    def setBookAuthors(self, bookAuthors):
-        """A line-separated list of authors, parsed into an array.
-        """
-        if not isinstance(bookAuthors, str):
-            return False
-
-        self.bookAuthors = []
-        for bookAuthor in bookAuthors.splitlines():
-            bookAuthor = simplified(bookAuthor)
-            if bookAuthor == "":
-                continue
-            self.bookAuthors.append(bookAuthor)
-
-        self.setProjectChanged(True)
-
-        return True
-
     def setProjBackup(self, doBackup):
         """Set whether projects should be backed up or not. The user
         will be notified in case required settings are missing.
@@ -1116,26 +1079,11 @@ class NWProject:
     #  Getters
     ##
 
-    def getAuthors(self):
-        """Return a formatted string of authors.
-        """
-        nAuth = len(self.bookAuthors)
-        authString = ""
-
-        if nAuth == 1:
-            authString = self.bookAuthors[0]
-        elif nAuth > 1:
-            authString = "%s %s %s" % (
-                ", ".join(self.bookAuthors[0:-1]), self.tr("and"), self.bookAuthors[-1]
-            )
-
-        return authString
-
     def getCurrentEditTime(self):
         """Get the total project edit time, including the time spent in
         the current session.
         """
-        return round(self.editTime + time() - self.projOpened)
+        return round(self._data.editTime + time() - self.projOpened)
 
     def getProjectItems(self):
         """This function ensures that the item tree loaded is sent to

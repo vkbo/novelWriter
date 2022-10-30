@@ -973,8 +973,8 @@ class GuiBuildNovel(QDialog):
             jsonData = {
                 "meta": {
                     "workingTitle": self.theProject.data.name,
-                    "novelTitle": self.theProject.bookTitle,
-                    "authors": self.theProject.bookAuthors,
+                    "novelTitle": self.theProject.data.title,
+                    "authors": self.theProject.data.authors,
                     "buildTime": self.buildTime,
                 }
             }
