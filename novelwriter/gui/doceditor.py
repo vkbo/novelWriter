@@ -1051,6 +1051,7 @@ class GuiDocEditor(QTextEdit):
                 tag = cursor.block().text().split(":")[0]
                 tag_name = nwKeyWords.KEY_CLASS[tag].name
 
+                # this block doesn't support live updates for available tag list
                 if self.completer_tag_mode != tag_name:
                     self.completer.setModel(self.theProject.index._tagsIndex.getCompletionModel(tag_name))
                     self.completer_tag_mode = tag_name
@@ -1077,8 +1078,8 @@ class GuiDocEditor(QTextEdit):
                         self.completer.complete(cr)
                     else:
                         self.completer.popup().hide()
-        except:
-            pass
+        except Exception as exc:
+            print(exc)
             # end completer
 
         self.docFooter.updateLineCount()
