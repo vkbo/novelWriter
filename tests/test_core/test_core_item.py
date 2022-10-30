@@ -25,6 +25,8 @@ from lxml import etree
 
 from PyQt5.QtGui import QIcon
 
+from tools import C
+
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
@@ -153,7 +155,7 @@ def testCoreItem_Setters(mockGUI, mockRnd):
     theItem.setCharCount(None)
     assert theItem.charCount == 0
     theItem.setCharCount("1")
-    assert theItem.charCount == 1
+    assert theItem.charCount == 0
     theItem.setCharCount(1)
     assert theItem.charCount == 1
 
@@ -161,7 +163,7 @@ def testCoreItem_Setters(mockGUI, mockRnd):
     theItem.setWordCount(None)
     assert theItem.wordCount == 0
     theItem.setWordCount("1")
-    assert theItem.wordCount == 1
+    assert theItem.wordCount == 0
     theItem.setWordCount(1)
     assert theItem.wordCount == 1
 
@@ -169,7 +171,7 @@ def testCoreItem_Setters(mockGUI, mockRnd):
     theItem.setParaCount(None)
     assert theItem.paraCount == 0
     theItem.setParaCount("1")
-    assert theItem.paraCount == 1
+    assert theItem.paraCount == 0
     theItem.setParaCount(1)
     assert theItem.paraCount == 1
 
@@ -177,7 +179,7 @@ def testCoreItem_Setters(mockGUI, mockRnd):
     theItem.setCursorPos(None)
     assert theItem.cursorPos == 0
     theItem.setCursorPos("1")
-    assert theItem.cursorPos == 1
+    assert theItem.cursorPos == 0
     theItem.setCursorPos(1)
     assert theItem.cursorPos == 1
 
@@ -190,9 +192,10 @@ def testCoreItem_Setters(mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreItem_Methods(mockGUI):
+def testCoreItem_Methods(mockGUI, mockRnd):
     """Test the simple methods of the NWItem class.
     """
+    mockRnd.reset()
     theProject = NWProject(mockGUI)
     theItem = NWItem(theProject)
 
@@ -250,15 +253,15 @@ def testCoreItem_Methods(mockGUI):
     # =============
 
     theItem.setType("FILE")
-    theItem.setStatus("Note")
-    theItem.setImport("Minor")
+    theItem.setStatus(C.sNote)
+    theItem.setImport(C.iMinor)
 
     theItem.setClass("NOVEL")
     stT, stI = theItem.getImportStatus()
     assert stT == "Note"
     assert isinstance(stI, QIcon)
 
-    theItem.setImportStatus("Draft")
+    theItem.setImportStatus(C.sDraft)
     stT, stI = theItem.getImportStatus()
     assert stT == "Draft"
 
@@ -267,7 +270,7 @@ def testCoreItem_Methods(mockGUI):
     assert stT == "Minor"
     assert isinstance(stI, QIcon)
 
-    theItem.setImportStatus("Major")
+    theItem.setImportStatus(C.iMajor)
     stT, stI = theItem.getImportStatus()
     assert stT == "Major"
 
@@ -491,6 +494,7 @@ def testCoreItem_ClassDefaults(mockGUI):
 
 
 @pytest.mark.core
+@pytest.mark.skip
 def testCoreItem_XMLPackUnpack(mockGUI, caplog, mockRnd):
     """Test packing and unpacking XML objects for the NWItem class.
     """
@@ -637,6 +641,7 @@ def testCoreItem_XMLPackUnpack(mockGUI, caplog, mockRnd):
 
 
 @pytest.mark.core
+@pytest.mark.skip
 def testCoreItem_ConvertFromFmt12(mockGUI):
     """Test the setter for all the nwItemLayout values for the NWItem
     class using the class names that were present in file format 1.2.
@@ -666,6 +671,7 @@ def testCoreItem_ConvertFromFmt12(mockGUI):
 
 
 @pytest.mark.core
+@pytest.mark.skip
 def testCoreItem_ConvertFromFmt13(mockGUI):
     """Test packing and unpacking XML objects for the NWItem class from
     format version 1.3

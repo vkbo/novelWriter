@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-17 20:32:06">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-30 23:46:07">
   <project>
     <name>Test Minimal</name>
     <title>Minimal</title>
     <author>Jane Doe</author>
     <author>John Doh</author>
-    <saveCount>19</saveCount>
+    <saveCount>21</saveCount>
     <autoCount>2</autoCount>
-    <editTime>167</editTime>
+    <editTime>177</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
@@ -48,7 +48,7 @@
       <name status="s72322d" import="iffcacb">Novel</name>
     </item>
     <item handle="a35baf2e93843" parent="a508bb932959c" root="a508bb932959c" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" mainHeading="H1" charCount="28" wordCount="6" paraCount="1" cursorPos="33"/>
+      <meta expanded="False" heading="H1" charCount="28" wordCount="6" paraCount="1" cursorPos="33"/>
       <name status="s72322d" import="iffcacb" active="True">Title Page</name>
     </item>
     <item handle="a6d311a93600a" parent="a508bb932959c" root="a508bb932959c" order="1" type="FOLDER" class="NOVEL">
@@ -56,11 +56,11 @@
       <name status="s72322d" import="iffcacb">New Chapter</name>
     </item>
     <item handle="f5ab3e30151e1" parent="a6d311a93600a" root="a508bb932959c" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" mainHeading="H2" charCount="11" wordCount="2" paraCount="0" cursorPos="16"/>
+      <meta expanded="False" heading="H2" charCount="11" wordCount="2" paraCount="0" cursorPos="16"/>
       <name status="s72322d" import="iffcacb" active="True">New Chapter</name>
     </item>
     <item handle="8c659a11cd429" parent="a6d311a93600a" root="a508bb932959c" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" mainHeading="H3" charCount="9" wordCount="2" paraCount="0" cursorPos="15"/>
+      <meta expanded="False" heading="H3" charCount="9" wordCount="2" paraCount="0" cursorPos="15"/>
       <name status="s72322d" import="iffcacb" active="True">New Scene</name>
     </item>
     <item handle="7695ce551d265" parent="None" root="7695ce551d265" order="1" type="ROOT" class="PLOT">

@@ -489,7 +489,7 @@ class NWProject:
         xmlParsed = xmlReader.read(self._data)
         xmlData = xmlReader.data
 
-        print(json.dumps(xmlData, indent=2))
+        # print(json.dumps(xmlData, indent=2))
 
         nwxRoot = xmlData.get("xmlRoot", "")
         appVersion = xmlData.get("appVersion", self.tr("Unknown"))
