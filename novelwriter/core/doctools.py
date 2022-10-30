@@ -192,7 +192,7 @@ class DocSplitter:
         """An iterator that will write each document in the buffer, and
         return its new handle, parent handle, and sibling handle.
         """
-        if self._srcHandle is None:
+        if self._srcHandle is None or self._srcItem is None:
             return
 
         pHandle = self._parHandle
@@ -223,6 +223,10 @@ class DocSplitter:
 
             dHandle = self.theProject.newFile(docLabel, pHandle)
             hHandle[hLevel] = dHandle
+
+            newItem = self.theProject.tree[dHandle]
+            newItem.setStatus(self._srcItem.itemStatus)
+            newItem.setImport(self._srcItem.itemImport)
 
             outDoc = NWDoc(self.theProject, dHandle)
             status = outDoc.writeDocument("\n".join(docText))
