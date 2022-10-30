@@ -254,6 +254,8 @@ class GuiOutlineToolBar(QToolBar):
         self.addWidget(self.tbColumns)
         self.addWidget(stretch)
 
+        self.updateTheme()
+
         logger.debug("GuiOutlineToolBar initialisation complete")
 
         return

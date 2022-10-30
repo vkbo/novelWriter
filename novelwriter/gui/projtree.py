@@ -1612,6 +1612,9 @@ class GuiProjectTree(QTreeWidget):
                         self.tr("Could not write document content."), docSplit.getError()
                     ], nwAlert.ERROR)
 
+            if splitData.get("moveToTrash", False):
+                self.moveItemToTrash(tHandle, askFirst=False, flush=True)
+
             self.saveTreeOrder()
 
         else:
