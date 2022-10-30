@@ -35,18 +35,19 @@ from functools import partial
 
 from PyQt5.QtCore import QCoreApplication
 
+from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from novelwriter.error import logException
+from novelwriter.common import (
+    checkString, checkStringNone, isHandle, formatTimeStamp,
+    makeFileNameSafe, hexToInt, minmax, simplified
+)
 from novelwriter.core.tree import NWTree
 from novelwriter.core.item import NWItem
 from novelwriter.core.index import NWIndex
 from novelwriter.core.status import NWStatus
 from novelwriter.core.options import OptionState
 from novelwriter.core.document import NWDoc
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.error import logException
-from novelwriter.common import (
-    checkString, checkBool, checkInt, checkStringNone, isHandle, formatTimeStamp,
-    makeFileNameSafe, hexToInt, minmax, simplified
-)
+from novelwriter.core.projectxml import ProjectXMLReader, XMLReadState
 from novelwriter.constants import trConst, nwFiles, nwLabels
 
 logger = logging.getLogger(__name__)
@@ -61,6 +62,8 @@ class NWProject:
         # Internal
         self.mainConf = novelwriter.CONFIG
         self.mainGui  = mainGui
+
+        self._data = {}
 
         # Core Elements
         self._optState  = OptionState(self)  # Project-specific GUI options
@@ -477,80 +480,45 @@ class NWProject:
         # Open The Project XML File
         # =========================
 
-        try:
-            nwXML = etree.parse(fileName)
-        except Exception as exc:
-            self.mainGui.makeAlert(self.tr(
-                "Failed to parse project xml."
-            ), nwAlert.ERROR, exception=exc)
+        xmlReader = ProjectXMLReader(fileName)
+        xmlParsed = xmlReader.read()
+        xmlData = xmlReader.data
 
-            # Trying to open backup file instead
-            backFile = fileName[:-3]+"bak"
-            if os.path.isfile(backFile):
+        print(json.dumps(xmlData, indent=2))
+
+        nwxRoot = xmlData.get("xmlRoot", "")
+        appVersion = xmlData.get("appVersion", self.tr("Unknown"))
+        hexVersion = xmlData.get("hexVersion", 0x0000)
+        xmlVersion = xmlData.get("xmlVersion", self.tr("Unknown"))
+
+        if not xmlParsed:
+            if xmlReader.state == XMLReadState.NOT_NWX_FILE:
                 self.mainGui.makeAlert(self.tr(
-                    "Attempting to open backup project file instead."
-                ), nwAlert.INFO)
-                try:
-                    nwXML = etree.parse(backFile)
-                except Exception as exc:
-                    self.mainGui.makeAlert(self.tr(
-                        "Failed to parse project xml."
-                    ), nwAlert.ERROR, exception=exc)
-                    self.clearProject()
-                    return False
+                    "Project file does not appear to be a novelWriterXML file."
+                ), nwAlert.ERROR)
+            elif xmlReader.state == XMLReadState.UNKNOWN_VERSION:
+                self.mainGui.makeAlert(self.tr(
+                    "Unknown or unsupported novelWriter project file format. "
+                    "The project cannot be opened by this version of novelWriter. "
+                    "The file was saved with novelWriter version {0}."
+                ).format(appVersion), nwAlert.ERROR)
             else:
-                self.clearProject()
-                return False
+                self.mainGui.makeAlert(self.tr(
+                    "Failed to parse project xml."
+                ), nwAlert.ERROR)
 
-        xRoot = nwXML.getroot()
-        nwxRoot = xRoot.tag
+            self.clearProject()
+            return False
 
-        appVersion  = xRoot.attrib.get("appVersion", self.tr("Unknown"))
-        hexVersion  = xRoot.attrib.get("hexVersion", "0x0")
-        fileVersion = xRoot.attrib.get("fileVersion", self.tr("Unknown"))
+        self._data = xmlData
 
         logger.debug("XML root is '%s'", nwxRoot)
-        logger.debug("File version is '%s'", fileVersion)
+        logger.debug("File version is '%s'", xmlVersion)
 
-        # Check File Type
-        # ===============
+        # Check Legacy Upgrade
+        # ====================
 
-        if nwxRoot != "novelWriterXML":
-            self.mainGui.makeAlert(self.tr(
-                "Project file does not appear to be a novelWriterXML file."
-            ), nwAlert.ERROR)
-            self.clearProject()
-            return False
-
-        # Check Project Storage Version
-        # =============================
-
-        # Changes:
-        # 1.0 : Original file format.
-        # 1.1 : Changes the way documents are structured in the project
-        #       folder from data_X, where X is the first hex value of
-        #       the handle, to a single content folder.
-        # 1.2 : Changes the way autoReplace entries are stored. The 1.1
-        #       parser will lose the autoReplace settings if allowed to
-        #       read the file. Introduced in version 0.10.
-        # 1.3 : Reduces the number of layouts to only two. One for novel
-        #       documents and one for project notes. Introduced in
-        #       version 1.5.
-        # 1.4 : Introduces a more compact format for storing items. All
-        #       settings aside from name are now attributes. This format
-        #       also changes the way satus and importance labels are
-        #       stored and handled. Introduced in version 1.7.
-
-        if fileVersion not in ("1.0", "1.1", "1.2", "1.3", "1.4"):
-            self.mainGui.makeAlert(self.tr(
-                "Unknown or unsupported novelWriter project file format. "
-                "The project cannot be opened by this version of novelWriter. "
-                "The file was saved with novelWriter version {0}."
-            ).format(appVersion), nwAlert.ERROR)
-            self.clearProject()
-            return False
-
-        if fileVersion != self.FILE_VERSION:
+        if xmlReader.state == XMLReadState.WAS_LEGACY:
             msgYes = self.mainGui.askQuestion(
                 self.tr("File Version"),
                 self.tr(
@@ -581,79 +549,40 @@ class NWProject:
                 self.clearProject()
                 return False
 
-        # Start Parsing the XML
-        # =====================
+        # Extract Data
+        # ============
 
-        for xChild in xRoot:
-            if xChild.tag == "project":
-                logger.debug("Found project meta")
-                for xItem in xChild:
-                    if xItem.text is None:
-                        continue
-                    if xItem.tag == "name":
-                        self.projName = simplified(checkString(xItem.text, ""))
-                        logger.info("Project Name: '%s'", self.projName)
-                    elif xItem.tag == "title":
-                        self.bookTitle = simplified(checkString(xItem.text, ""))
-                        logger.info("Project Title: '%s'", self.bookTitle)
-                    elif xItem.tag == "author":
-                        author = simplified(checkString(xItem.text, ""))
-                        if author:
-                            self.bookAuthors.append(author)
-                            logger.debug("Author: '%s'", author)
-                    elif xItem.tag == "saveCount":
-                        self.saveCount = checkInt(xItem.text, 0)
-                    elif xItem.tag == "autoCount":
-                        self.autoCount = checkInt(xItem.text, 0)
-                    elif xItem.tag == "editTime":
-                        self.editTime = checkInt(xItem.text, 0)
+        xmlProject = xmlData.get("project", {})
 
-            elif xChild.tag == "settings":
-                logger.debug("Found project settings")
-                for xItem in xChild:
-                    if xItem.text is None:
-                        continue
-                    if xItem.tag == "doBackup":
-                        self.doBackup = checkBool(xItem.text, False)
-                    elif xItem.tag == "language":
-                        self.projLang = checkStringNone(xItem.text, None)
-                    elif xItem.tag == "spellCheck":
-                        self.spellCheck = checkBool(xItem.text, False)
-                    elif xItem.tag == "spellLang":
-                        self.projSpell = checkStringNone(xItem.text, None)
-                    elif xItem.tag == "lastEdited":
-                        self.lastEdited = checkStringNone(xItem.text, None)
-                    elif xItem.tag == "lastViewed":
-                        self.lastViewed = checkStringNone(xItem.text, None)
-                    elif xItem.tag == "lastNovel":
-                        self.lastNovel = checkStringNone(xItem.text, None)
-                    elif xItem.tag == "lastOutline":
-                        self.lastOutline = checkStringNone(xItem.text, None)
-                    elif xItem.tag == "lastWordCount":
-                        self.lastWCount = checkInt(xItem.text, 0)
-                    elif xItem.tag == "novelWordCount":
-                        self.lastNovelWC = checkInt(xItem.text, 0)
-                    elif xItem.tag == "notesWordCount":
-                        self.lastNotesWC = checkInt(xItem.text, 0)
-                    elif xItem.tag == "status":
-                        self.statusItems.unpackXML(xItem)
-                    elif xItem.tag == "importance":
-                        self.importItems.unpackXML(xItem)
-                    elif xItem.tag == "autoReplace":
-                        for xEntry in xItem:
-                            if xEntry.tag == "entry" and "key" in xEntry.attrib:
-                                self.autoReplace[xEntry.attrib["key"]] = checkString(
-                                    xEntry.text, "ERROR"
-                                )
-                    elif xItem.tag == "titleFormat":
-                        titleFormat = self.titleFormat.copy()
-                        for xEntry in xItem:
-                            titleFormat[xEntry.tag] = checkString(xEntry.text, "")
-                        self.setTitleFormat(titleFormat)
+        self.projName = xmlProject.get("name", "")
+        self.bookTitle = xmlProject.get("title", "")
+        self.bookAuthors = xmlProject.get("authors", [])
+        self.saveCount = xmlProject.get("saveCount", 0)
+        self.autoCount = xmlProject.get("autoCount", 0)
+        self.editTime = xmlProject.get("editTime", 0)
 
-            elif xChild.tag == "content":
-                logger.debug("Found project content")
-                self._projTree.unpackXML(xChild)
+        logger.info("Project Name: '%s'", self.projName)
+        logger.info("Project Title: '%s'", self.bookTitle)
+
+        xmlSettings = xmlData.get("settings", {})
+
+        self.doBackup = xmlSettings.get("doBackup", False)
+        self.projLang = xmlSettings.get("language", None)
+        self.spellCheck = xmlSettings.get("spellCheck", False)
+        self.projSpell = xmlSettings.get("spellLang", None)
+        self.lastEdited = xmlSettings.get("lastEdited", None)
+        self.lastViewed = xmlSettings.get("lastViewed", None)
+        self.lastNovel = xmlSettings.get("lastNovel", None)
+        self.lastOutline = xmlSettings.get("lastOutline", None)
+        self.lastWCount = xmlSettings.get("lastWordCount", 0)
+        self.lastNovelWC = xmlSettings.get("novelWordCount", 0)
+        self.lastNotesWC = xmlSettings.get("notesWordCount", 0)
+        self.statusItems.unpack(xmlSettings.get("status", {}))
+        self.importItems.unpack(xmlSettings.get("import", {}))
+        self.autoReplace = xmlSettings.get("autoReplace", {})
+        self.titleFormat.update(xmlSettings.get("titleFormat", {}))
+
+        self._projTree.unpack(xmlData.get("content", []))
 
         self._optState.loadSettings()
 

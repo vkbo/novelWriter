@@ -126,18 +126,14 @@ class NWTree:
             tItem.packXML(xContent)
         return
 
-    def unpackXML(self, xContent):
-        """Iterate through all items of a content XML object and add
-        them to the project tree.
+    def unpack(self, data):
+        """Iterate through all items of a list and add them to the
+        project tree.
         """
-        if xContent.tag != "content":
-            logger.error("XML entry is not a NWTree")
-            return False
-
         self.clear()
-        for xItem in xContent:
+        for item in data:
             nwItem = NWItem(self.theProject)
-            if nwItem.unpackXML(xItem):
+            if nwItem.unpack(item):
                 self.append(nwItem.itemHandle, nwItem.itemParent, nwItem)
                 nwItem.saveInitialCount()
 

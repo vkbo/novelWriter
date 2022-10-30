@@ -33,7 +33,7 @@ from lxml import etree
 from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor
 from PyQt5.QtCore import QRectF, Qt
 
-from novelwriter.common import checkInt, minmax, simplified
+from novelwriter.common import simplified
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,6 @@ class NWStatus:
 
         self._type = type
         self._store = {}
-        self._reverse = {}
         self._default = None
 
         self._iPX = novelwriter.CONFIG.pxInt(24)
@@ -90,7 +89,6 @@ class NWStatus:
             "cols": col,
             "count": count,
         }
-        self._reverse[name] = key
 
         if self._default is None:
             self._default = key
@@ -106,7 +104,6 @@ class NWStatus:
         if self._store[key]["count"] > 0:
             return False
 
-        del self._reverse[self._store[key]["name"]]
         del self._store[key]
 
         keys = list(self._store.keys())
@@ -123,8 +120,6 @@ class NWStatus:
         """
         if self._isKey(value) and value in self._store:
             return value
-        elif value in self._reverse:
-            return self._reverse[value]
         elif self._default is not None:
             return self._default
         else:
@@ -222,21 +217,17 @@ class NWStatus:
 
         return True
 
-    def unpackXML(self, xParent):
-        """Unpack an XML tree and set the class values.
+    def unpack(self, data):
+        """Unpack a data dictionary and set the class values.
         """
         self._store = {}
-        self._reverse = {}
         self._default = None
 
-        for xChild in xParent:
-            key   = xChild.attrib.get("key", None)
-            name  = xChild.text.strip()
-            count = max(checkInt(xChild.attrib.get("count", 0), 0), 0)
-            red   = minmax(checkInt(xChild.attrib.get("red", 100), 100), 0, 255)
-            green = minmax(checkInt(xChild.attrib.get("green", 100), 100), 0, 255)
-            blue  = minmax(checkInt(xChild.attrib.get("blue", 100), 100), 0, 255)
-            self.write(key, name, (red, green, blue), count)
+        for key, entry in data.items():
+            label = entry.get("label", "")
+            colour = entry.get("colour", (100, 100, 100))
+            count = entry.get("count", 0)
+            self.write(key, label, colour, count)
 
         return True
 
