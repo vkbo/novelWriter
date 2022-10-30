@@ -417,10 +417,14 @@ class GuiProjectToolBar(QWidget):
 
 class GuiProjectTree(QTreeWidget):
 
+    C_DATA   = 0
     C_NAME   = 0
     C_COUNT  = 1
     C_ACTIVE = 2
     C_STATUS = 3
+
+    D_HANDLE = Qt.UserRole
+    D_WORDS  = Qt.UserRole + 1
 
     def __init__(self, projView):
         super().__init__(parent=projView)
@@ -947,10 +951,13 @@ class GuiProjectTree(QTreeWidget):
         trItem.setToolTip(self.C_STATUS, itemStatus)
 
         if nwItem.isFileType():
-            iconName = "check" if nwItem.isActive else "cross"
+            iconName = "checked" if nwItem.isActive else "unchecked"
             toolTip = self._lblActive if nwItem.isActive else self._lblInactive
-            trItem.setIcon(self.C_ACTIVE, self.mainTheme.getIcon(iconName))
             trItem.setToolTip(self.C_ACTIVE, toolTip)
+        else:
+            iconName = "noncheckable"
+
+        trItem.setIcon(self.C_ACTIVE, self.mainTheme.getIcon(iconName))
 
         if self.mainConf.emphLabels and nwItem.isDocumentLayout():
             trFont = trItem.font(self.C_NAME)
@@ -974,10 +981,10 @@ class GuiProjectTree(QTreeWidget):
 
         if countChildren:
             for i in range(tItem.childCount()):
-                newCount += int(tItem.child(i).data(self.C_COUNT, Qt.UserRole))
+                newCount += int(tItem.child(i).data(self.C_DATA, self.D_WORDS))
 
         tItem.setText(self.C_COUNT, f"{newCount:n}")
-        tItem.setData(self.C_COUNT, Qt.UserRole, int(newCount))
+        tItem.setData(self.C_DATA, self.D_WORDS, int(newCount))
 
         pItem = tItem.parent()
         if pItem is None:
@@ -986,8 +993,8 @@ class GuiProjectTree(QTreeWidget):
         pCount = 0
         pHandle = None
         for i in range(pItem.childCount()):
-            pCount += int(pItem.child(i).data(self.C_COUNT, Qt.UserRole))
-            pHandle = pItem.data(self.C_NAME, Qt.UserRole)
+            pCount += int(pItem.child(i).data(self.C_DATA, self.D_WORDS))
+            pHandle = pItem.data(self.C_DATA, self.D_HANDLE)
 
         if pHandle:
             if self.theProject.tree.checkType(pHandle, nwItemType.FILE):
@@ -1038,8 +1045,8 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         dstIndex = min(max(0, dstIndex), dstItem.childCount())
-        sHandle = srcItem.data(self.C_NAME, Qt.UserRole)
-        dHandle = dstItem.data(self.C_NAME, Qt.UserRole)
+        sHandle = srcItem.data(self.C_DATA, self.D_HANDLE)
+        dHandle = dstItem.data(self.C_DATA, self.D_HANDLE)
         logger.debug("Moving item '%s' back to '%s', index %d", sHandle, dHandle, dstIndex)
 
         wCount = self._getItemWordCount(sHandle)
@@ -1063,7 +1070,7 @@ class GuiProjectTree(QTreeWidget):
         """
         selItem = self.selectedItems()
         if selItem:
-            return selItem[0].data(self.C_NAME, Qt.UserRole)
+            return selItem[0].data(self.C_DATA, self.D_HANDLE)
 
         return None
 
@@ -1149,7 +1156,7 @@ class GuiProjectTree(QTreeWidget):
         hasChild = False
         selItem = self.itemAt(clickPos)
         if isinstance(selItem, QTreeWidgetItem):
-            tHandle = selItem.data(self.C_NAME, Qt.UserRole)
+            tHandle = selItem.data(self.C_DATA, self.D_HANDLE)
             tItem = self.theProject.tree[tHandle]
             hasChild = selItem.childCount() > 0
 
@@ -1308,7 +1315,7 @@ class GuiProjectTree(QTreeWidget):
             if not isinstance(selItem, QTreeWidgetItem):
                 return
 
-            tHandle = selItem.data(self.C_NAME, Qt.UserRole)
+            tHandle = selItem.data(self.C_DATA, self.D_HANDLE)
             tItem = self.theProject.tree[tHandle]
             if tItem is None:
                 return
@@ -1367,7 +1374,7 @@ class GuiProjectTree(QTreeWidget):
 
         # Update item parent handle in the project, make sure meta data
         # is updated accordingly, and update word count
-        pHandle = trItemP.data(self.C_NAME, Qt.UserRole)
+        pHandle = trItemP.data(self.C_DATA, self.D_HANDLE)
         nwItemS.setParent(pHandle)
         trItemP.setExpanded(True)
         logger.debug("The parent of item '%s' has been changed to '%s'", tHandle, pHandle)
@@ -1397,7 +1404,7 @@ class GuiProjectTree(QTreeWidget):
         tItem = self._getTreeItem(tHandle)
         if tItem is None:
             return 0
-        return int(tItem.data(self.C_COUNT, Qt.UserRole))
+        return int(tItem.data(self.C_DATA, self.D_WORDS))
 
     def _getTreeItem(self, tHandle):
         """Return the QTreeWidgetItem of a given item handle.
@@ -1617,7 +1624,7 @@ class GuiProjectTree(QTreeWidget):
         """This is a recursive function returning all items in a tree
         starting at a given QTreeWidgetItem.
         """
-        tHandle = tItem.data(self.C_NAME, Qt.UserRole)
+        tHandle = tItem.data(self.C_DATA, self.D_HANDLE)
         cCount = tItem.childCount()
 
         # Update tree-related meta data
@@ -1650,8 +1657,8 @@ class GuiProjectTree(QTreeWidget):
         newItem.setTextAlignment(self.C_ACTIVE, Qt.AlignLeft)
         newItem.setTextAlignment(self.C_STATUS, Qt.AlignLeft)
 
-        newItem.setData(self.C_NAME, Qt.UserRole, tHandle)
-        newItem.setData(self.C_COUNT, Qt.UserRole, 0)
+        newItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
+        newItem.setData(self.C_DATA, self.D_WORDS, 0)
 
         self._treeMap[tHandle] = newItem
         if pHandle is None:
