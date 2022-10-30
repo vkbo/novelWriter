@@ -837,13 +837,16 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ip
         assert tHandle in theProject.tree
         assert os.path.isfile(os.path.join(prjDir, "content", f"{tHandle}.nwd"))
 
-    # Add to a folder
+    # Add to a folder and move source to trash
     splitData["intoFolder"] = True
+    splitData["moveToTrash"] = True
     assert projTree._splitDocument(hSplitDoc) is True
     assert "0000000000029" in theProject.tree  # The folder
     for tHandle in trdSet:
         assert tHandle in theProject.tree
         assert os.path.isfile(os.path.join(prjDir, "content", f"{tHandle}.nwd"))
+
+    assert theProject.tree.isTrash(hSplitDoc) is True
 
     # Cancelled by user
     with monkeypatch.context() as mp:

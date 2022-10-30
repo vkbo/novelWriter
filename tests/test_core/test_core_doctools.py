@@ -162,6 +162,8 @@ def testCoreDocTools_DocSplitter(monkeypatch, mockGUI, fncDir, outDir, refDir, m
     docText = "\n\n".join(docData)
     docRaw = docText.splitlines()
     assert NWDoc(theProject, hSplitDoc).writeDocument(docText) is True
+    theProject.tree[hSplitDoc].setStatus(C.sFinished)
+    theProject.tree[hSplitDoc].setImport(C.iMain)
 
     docSplitter = DocSplitter(theProject, hSplitDoc)
     assert docSplitter._srcItem.isFileType()
@@ -241,6 +243,11 @@ def testCoreDocTools_DocSplitter(monkeypatch, mockGUI, fncDir, outDir, refDir, m
         "000000000002d",  # Scene Four is after Scene Three
         "000000000002e",  # Scene Five is after Scene Four
     ]
+
+    # Check that status and importance has been preserved
+    for rHandle in resDocHandle:
+        assert theProject.tree[rHandle].itemStatus == C.sFinished
+        assert theProject.tree[rHandle].itemImport == C.iMain
 
     # Check handling of improper initialisation
     docSplitter = DocSplitter(theProject, C.hInvalid)
