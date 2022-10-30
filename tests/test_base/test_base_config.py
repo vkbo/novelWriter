@@ -192,32 +192,6 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     tstConf.doReplaceSQuote = orDoSng
     assert tstConf.saveConfig() is True
 
-    # Test Correcting icon theme
-    origIcons = tstConf.guiIcons
-
-    tstConf.guiIcons = "typicons_colour_dark"
-    assert tstConf.saveConfig() is True
-    assert tstConf.loadConfig() is True
-    assert tstConf.guiIcons == "typicons_dark"
-
-    tstConf.guiIcons = "typicons_grey_dark"
-    assert tstConf.saveConfig() is True
-    assert tstConf.loadConfig() is True
-    assert tstConf.guiIcons == "typicons_dark"
-
-    tstConf.guiIcons = "typicons_colour_light"
-    assert tstConf.saveConfig() is True
-    assert tstConf.loadConfig() is True
-    assert tstConf.guiIcons == "typicons_light"
-
-    tstConf.guiIcons = "typicons_grey_light"
-    assert tstConf.saveConfig() is True
-    assert tstConf.loadConfig() is True
-    assert tstConf.guiIcons == "typicons_light"
-
-    tstConf.guiIcons = origIcons
-    assert tstConf.saveConfig()
-
     # Localisation
     # ============
 

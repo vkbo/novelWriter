@@ -26,7 +26,7 @@ from tools import C, buildTestProject, writeFile
 
 from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtCore import Qt, QEvent
-from PyQt5.QtWidgets import QMessageBox, QToolTip
+from PyQt5.QtWidgets import QToolTip
 
 from novelwriter.enum import nwWidget, nwItemType
 from novelwriter.gui.noveltree import NovelTreeColumn
@@ -37,9 +37,6 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test navigating the novel tree.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     buildTestProject(nwGUI, fncProj)

@@ -26,14 +26,12 @@ from tools import C, getGuiItem, buildTestProject
 
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QAction, QMessageBox, QColorDialog
+from PyQt5.QtWidgets import QDialog, QAction, QColorDialog
 
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projsettings import GuiProjectSettings
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
+KEY_DELAY = 1
 
 
 @pytest.mark.gui
@@ -41,10 +39,6 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     """Test the main dialog class. Saving settings is not tested in this
     test, but are instead tested in the individual tab tests.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Block the GUI blocking thread
     monkeypatch.setattr(GuiProjectSettings, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QDialog.Accepted)
@@ -91,10 +85,6 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
 def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     """Test the main tab of the project settings dialog.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Mock components
     monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
 
@@ -125,23 +115,21 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd
     assert tabMain.spellLang.currentData() == "en"
     assert tabMain.doBackup.isChecked() is False
 
-    qtbot.wait(stepDelay)
     tabMain.editName.setText("")
     for c in "Project Name":
-        qtbot.keyClick(tabMain.editName, c, delay=typeDelay)
+        qtbot.keyClick(tabMain.editName, c, delay=KEY_DELAY)
     tabMain.editTitle.setText("")
     for c in "Project Title":
-        qtbot.keyClick(tabMain.editTitle, c, delay=typeDelay)
+        qtbot.keyClick(tabMain.editTitle, c, delay=KEY_DELAY)
 
     tabMain.editAuthors.clear()
     for c in "Jane Doe":
-        qtbot.keyClick(tabMain.editAuthors, c, delay=typeDelay)
-    qtbot.keyClick(tabMain.editAuthors, Qt.Key_Return, delay=keyDelay)
+        qtbot.keyClick(tabMain.editAuthors, c, delay=KEY_DELAY)
+    qtbot.keyClick(tabMain.editAuthors, Qt.Key_Return, delay=KEY_DELAY)
     for c in "John Doh":
-        qtbot.keyClick(tabMain.editAuthors, c, delay=typeDelay)
-    qtbot.keyClick(tabMain.editAuthors, Qt.Key_Return, delay=keyDelay)
+        qtbot.keyClick(tabMain.editAuthors, c, delay=KEY_DELAY)
+    qtbot.keyClick(tabMain.editAuthors, Qt.Key_Return, delay=KEY_DELAY)
 
-    qtbot.wait(stepDelay)
     assert tabMain.editName.text() == "Project Name"
     assert tabMain.editTitle.text() == "Project Title"
     assert tabMain.editAuthors.toPlainText() == "Jane Doe\nJohn Doh\n"
@@ -164,9 +152,6 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncDir, fncProj,
     """Test the status and importance tabs of the project settings
     dialog.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     # Mock components
@@ -230,9 +215,9 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncDir, fncProj,
         qtbot.mouseClick(tabStatus.addButton, Qt.LeftButton)
         tabStatus.listBox.setCurrentItem(tabStatus.listBox.topLevelItem(3))
         for _ in range(8):
-            qtbot.keyClick(tabStatus.editName, Qt.Key_Backspace, delay=typeDelay)
+            qtbot.keyClick(tabStatus.editName, Qt.Key_Backspace, delay=KEY_DELAY)
         for c in "Final":
-            qtbot.keyClick(tabStatus.editName, c, delay=typeDelay)
+            qtbot.keyClick(tabStatus.editName, c, delay=KEY_DELAY)
         qtbot.mouseClick(tabStatus.colButton, Qt.LeftButton)
         qtbot.mouseClick(tabStatus.saveButton, Qt.LeftButton)
         assert tabStatus.listBox.topLevelItemCount() == 4
@@ -310,9 +295,9 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncDir, fncProj,
         tabImport.listBox.clearSelection()
         tabImport.listBox.setCurrentItem(tabImport.listBox.topLevelItem(3))
         for _ in range(8):
-            qtbot.keyClick(tabImport.editName, Qt.Key_Backspace, delay=typeDelay)
+            qtbot.keyClick(tabImport.editName, Qt.Key_Backspace, delay=KEY_DELAY)
         for c in "Final":
-            qtbot.keyClick(tabImport.editName, c, delay=typeDelay)
+            qtbot.keyClick(tabImport.editName, c, delay=KEY_DELAY)
         qtbot.mouseClick(tabImport.colButton, Qt.LeftButton)
         qtbot.mouseClick(tabImport.saveButton, Qt.LeftButton)
         assert tabImport.listBox.topLevelItemCount() == 4
@@ -368,9 +353,6 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncDir, fncProj,
 def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     """Test the auto-replace tab of the project settings dialog.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     # Mock components
@@ -419,10 +401,10 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mock
     tabReplace.listBox.setCurrentItem(tabReplace.listBox.topLevelItem(2))
     tabReplace.editKey.setText("")
     for c in "Th is ":
-        qtbot.keyClick(tabReplace.editKey, c, delay=typeDelay)
+        qtbot.keyClick(tabReplace.editKey, c, delay=KEY_DELAY)
     tabReplace.editValue.setText("")
     for c in "With This Stuff ":
-        qtbot.keyClick(tabReplace.editValue, c, delay=typeDelay)
+        qtbot.keyClick(tabReplace.editValue, c, delay=KEY_DELAY)
     qtbot.mouseClick(tabReplace.saveButton, Qt.LeftButton)
     assert tabReplace.listBox.topLevelItem(2).text(0) == "<This>"
     assert tabReplace.listBox.topLevelItem(2).text(1) == "With This Stuff "

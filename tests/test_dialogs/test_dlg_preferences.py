@@ -35,9 +35,7 @@ from novelwriter.config import Config
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.dialogs.preferences import GuiPreferences
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
+KEY_DELAY = 1
 
 
 @pytest.mark.gui
@@ -63,7 +61,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     nwGUI = novelwriter.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
-    qtbot.wait(stepDelay)
 
     theConf = nwGUI.mainConf
     assert theConf.confPath == fncDir
@@ -72,30 +69,40 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     monkeypatch.setattr(GuiPreferences, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
 
-    nwGUI.mainMenu.aPreferences.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiPreferences") is not None, timeout=1000)
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiPreferences, "updateTheme", lambda *a: True)
+        mp.setattr(GuiPreferences, "updateSyntax", lambda *a: True)
+        mp.setattr(GuiPreferences, "needsRestart", lambda *a: True)
+        mp.setattr(GuiPreferences, "refreshTree", lambda *a: True)
+        nwGUI.mainMenu.aPreferences.activate(QAction.Trigger)
+        qtbot.waitUntil(lambda: getGuiItem("GuiPreferences") is not None, timeout=1000)
 
     nwPrefs = getGuiItem("GuiPreferences")
     assert isinstance(nwPrefs, GuiPreferences)
     nwPrefs.show()
     assert nwPrefs.mainConf.confPath == fncDir
 
+    assert nwPrefs.updateTheme is False
+    assert nwPrefs.updateSyntax is False
+    assert nwPrefs.needsRestart is False
+    assert nwPrefs.refreshTree is False
+
     # General Settings
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     tabGeneral = nwPrefs.tabGeneral
     nwPrefs._tabBox.setCurrentWidget(tabGeneral)
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert tabGeneral.showFullPath.isChecked()
     qtbot.mouseClick(tabGeneral.showFullPath, Qt.LeftButton)
     assert not tabGeneral.showFullPath.isChecked()
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert not tabGeneral.hideVScroll.isChecked()
     qtbot.mouseClick(tabGeneral.hideVScroll, Qt.LeftButton)
     assert tabGeneral.hideVScroll.isChecked()
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert not tabGeneral.hideHScroll.isChecked()
     qtbot.mouseClick(tabGeneral.hideHScroll, Qt.LeftButton)
     assert tabGeneral.hideHScroll.isChecked()
@@ -104,21 +111,21 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     monkeypatch.setattr(QFontDialog, "getFont", lambda font, obj: (font, True))
     qtbot.mouseClick(tabGeneral.fontButton, Qt.LeftButton)
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     tabGeneral.guiFontSize.setValue(12)
 
     # Projects Settings
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     tabProjects = nwPrefs.tabProjects
     nwPrefs._tabBox.setCurrentWidget(tabProjects)
     tabProjects.backupPath = "no/where"
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert not tabProjects.backupOnClose.isChecked()
     qtbot.mouseClick(tabProjects.backupOnClose, Qt.LeftButton)
     assert tabProjects.backupOnClose.isChecked()
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
     # Check Browse button
     monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: "")
@@ -126,104 +133,104 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: "some/dir")
     qtbot.mouseClick(tabProjects.backupGetPath, Qt.LeftButton)
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     tabProjects.autoSaveDoc.setValue(20)
     tabProjects.autoSaveProj.setValue(40)
 
     # Document Settings
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     tabDocs = nwPrefs.tabDocs
     nwPrefs._tabBox.setCurrentWidget(tabDocs)
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     qtbot.mouseClick(tabDocs.fontButton, Qt.LeftButton)
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     tabDocs.textSize.setValue(13)
     tabDocs.textWidth.setValue(700)
     tabDocs.focusWidth.setValue(900)
     tabDocs.textMargin.setValue(45)
     tabDocs.tabWidth.setValue(45)
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert not tabDocs.hideFocusFooter.isChecked()
     qtbot.mouseClick(tabDocs.hideFocusFooter, Qt.LeftButton)
     assert tabDocs.hideFocusFooter.isChecked()
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert not tabDocs.doJustify.isChecked()
     qtbot.mouseClick(tabDocs.doJustify, Qt.LeftButton)
     assert tabDocs.doJustify.isChecked()
 
     # Editor Settings
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     tabEditor = nwPrefs.tabEditor
     nwPrefs._tabBox.setCurrentWidget(tabEditor)
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert not tabEditor.showTabsNSpaces.isChecked()
     qtbot.mouseClick(tabEditor.showTabsNSpaces, Qt.LeftButton)
     assert tabEditor.showTabsNSpaces.isChecked()
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert not tabEditor.showLineEndings.isChecked()
     qtbot.mouseClick(tabEditor.showLineEndings, Qt.LeftButton)
     assert tabEditor.showLineEndings.isChecked()
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert not tabEditor.autoScroll.isChecked()
     qtbot.mouseClick(tabEditor.autoScroll, Qt.LeftButton)
     assert tabEditor.autoScroll.isChecked()
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     tabEditor.scrollPastEnd.setValue(0)
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     tabEditor.bigDocLimit.setValue(500)
 
     # Syntax Settings
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     tabSyntax = nwPrefs.tabSyntax
     nwPrefs._tabBox.setCurrentWidget(tabSyntax)
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert tabSyntax.highlightQuotes.isChecked()
     qtbot.mouseClick(tabSyntax.highlightQuotes, Qt.LeftButton)
     assert not tabSyntax.highlightQuotes.isChecked()
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert tabSyntax.highlightEmph.isChecked()
     qtbot.mouseClick(tabSyntax.highlightEmph, Qt.LeftButton)
     assert not tabSyntax.highlightEmph.isChecked()
 
     # Automation Settings
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     tabAuto = nwPrefs.tabAuto
     nwPrefs._tabBox.setCurrentWidget(tabAuto)
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert tabAuto.autoSelect.isChecked()
     qtbot.mouseClick(tabAuto.autoSelect, Qt.LeftButton)
     assert not tabAuto.autoSelect.isChecked()
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert tabAuto.doReplace.isChecked()
     qtbot.mouseClick(tabAuto.doReplace, Qt.LeftButton)
     assert not tabAuto.doReplace.isChecked()
 
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     assert not tabAuto.doReplaceSQuote.isEnabled()
     assert not tabAuto.doReplaceDQuote.isEnabled()
     assert not tabAuto.doReplaceDash.isEnabled()
     assert not tabAuto.doReplaceDots.isEnabled()
 
     # Quotation Style
-    qtbot.wait(keyDelay)
+    qtbot.wait(KEY_DELAY)
     tabQuote = nwPrefs.tabQuote
     nwPrefs._tabBox.setCurrentWidget(tabQuote)
 
     monkeypatch.setattr(GuiQuoteSelect, "selectedQuote", "'")
-    monkeypatch.setattr(GuiQuoteSelect, "exec_", lambda *args: QDialog.Accepted)
+    monkeypatch.setattr(GuiQuoteSelect, "exec_", lambda *a: QDialog.Accepted)
     qtbot.mouseClick(tabQuote.btnDoubleStyleC, Qt.LeftButton)
 
     # Save and Check Config
@@ -249,6 +256,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     novelwriter.CONFIG = origConf
     nwGUI.closeMain()
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testDlgPreferences_Main

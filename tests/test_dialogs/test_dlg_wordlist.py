@@ -23,7 +23,7 @@ import os
 import pytest
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QMessageBox, QAction
+from PyQt5.QtWidgets import QDialog, QAction
 
 from tools import writeFile, readFile, getGuiItem
 from mock import causeOSError
@@ -31,25 +31,17 @@ from mock import causeOSError
 from novelwriter.constants import nwFiles
 from novelwriter.dialogs.wordlist import GuiWordList
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
-
 
 @pytest.mark.gui
 def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal):
     """test the word list editor.
     """
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiWordList, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiWordList, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(GuiWordList, "accept", lambda *a: None)
 
     # Open project
     nwGUI.openProject(nwMinimal)
-    qtbot.wait(stepDelay)
     dictFile = os.path.join(nwMinimal, "meta", nwFiles.PROJ_DICT)
 
     # Load the dialog
@@ -59,7 +51,6 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal):
     wList = getGuiItem("GuiWordList")
     assert isinstance(wList, GuiWordList)
     wList.show()
-    qtbot.wait(stepDelay)
 
     # List should be blank
     assert wList.listBox.count() == 0
@@ -73,7 +64,6 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal):
         "word_f\n"
         "word_b\n"
     ))
-    qtbot.wait(stepDelay)
     assert wList._loadWordList()
 
     # Check that the content was loaded
@@ -130,7 +120,7 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal):
     monkeypatch.setattr("builtins.open", causeOSError)
     assert not wList._doSave()
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
     wList._doClose()
 
 # END Test testDlgWordList_Dialog
