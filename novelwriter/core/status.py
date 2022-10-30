@@ -26,11 +26,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import random
 import logging
+
 import novelwriter
 
 from lxml import etree
 
-from PyQt5.QtGui import QIcon, QPixmap, QColor
+from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor
+from PyQt5.QtCore import QRectF, Qt
 
 from novelwriter.common import checkInt, minmax, simplified
 
@@ -49,10 +51,15 @@ class NWStatus:
         self._reverse = {}
         self._default = None
 
-        self._iconSize = novelwriter.CONFIG.pxInt(32)
-        pixmap = QPixmap(self._iconSize, self._iconSize)
-        pixmap.fill(QColor(100, 100, 100))
-        self._defaultIcon = QIcon(pixmap)
+        self._iPX = novelwriter.CONFIG.pxInt(24)
+
+        pA = novelwriter.CONFIG.pxInt(2)
+        pB = novelwriter.CONFIG.pxInt(20)
+        pR = float(novelwriter.CONFIG.pxInt(4))
+        self._iconPath = QPainterPath()
+        self._iconPath.addRoundedRect(QRectF(pA, pA, pB, pB), pR, pR)
+
+        self._defaultIcon = self._createIcon([100, 100, 100])
 
         if self._type == self.STATUS:
             self._prefix = "s"
@@ -63,19 +70,16 @@ class NWStatus:
 
         return
 
-    def write(self, key, name, cols, count=None):
+    def write(self, key, name, col, count=None):
         """Add or update a status entry. If the key is invalid, a new
         key is generated.
         """
         if not self._isKey(key):
             key = self._newKey()
-        if not isinstance(cols, tuple):
-            cols = (100, 100, 100)
-        if len(cols) != 3:
-            cols = (100, 100, 100)
-
-        pixmap = QPixmap(self._iconSize, self._iconSize)
-        pixmap.fill(QColor(*cols))
+        if not isinstance(col, tuple):
+            col = (100, 100, 100)
+        if len(col) != 3:
+            col = (100, 100, 100)
 
         name = simplified(name)
         if count is None:
@@ -83,8 +87,8 @@ class NWStatus:
 
         self._store[key] = {
             "name": name,
-            "icon": QIcon(pixmap),
-            "cols": cols,
+            "icon": self._createIcon(col),
+            "cols": col,
             "count": count,
         }
         self._reverse[name] = key
@@ -266,6 +270,19 @@ class NWStatus:
             if c not in "0123456789abcdef":
                 return False
         return True
+
+    def _createIcon(self, col):
+        """Generate an icon for a status label.
+        """
+        pixmap = QPixmap(self._iPX, self._iPX)
+        pixmap.fill(Qt.transparent)
+
+        painter = QPainter(pixmap)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.fillPath(self._iconPath, QColor(*col))
+        painter.end()
+
+        return QIcon(pixmap)
 
     ##
     #  Iterator Bits
