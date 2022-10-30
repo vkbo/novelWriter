@@ -97,6 +97,13 @@ class GuiOutlineView(QWidget):
     #  Methods
     ##
 
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        self.outlineBar.updateTheme()
+        self.refreshTree()
+        return
+
     def initSettings(self):
         """Initialise GUI elements that depend on specific settings.
         """
@@ -213,7 +220,6 @@ class GuiOutlineToolBar(QToolBar):
         self.setMovable(False)
         self.setIconSize(QSize(iPx, iPx))
         self.setContentsMargins(0, 0, 0, 0)
-        self.setStyleSheet("QToolBar {border: 0px;}")
 
         stretch = QWidget(self)
         stretch.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -228,7 +234,6 @@ class GuiOutlineToolBar(QToolBar):
 
         # Actions
         self.aRefresh = QAction(self.tr("Refresh"), self)
-        self.aRefresh.setIcon(self.mainTheme.getIcon("refresh"))
         self.aRefresh.triggered.connect(self._refreshRequested)
 
         # Column Menu
@@ -238,7 +243,6 @@ class GuiOutlineToolBar(QToolBar):
         )
 
         self.tbColumns = QToolButton(self)
-        self.tbColumns.setIcon(self.mainTheme.getIcon("menu"))
         self.tbColumns.setMenu(self.mColumns)
         self.tbColumns.setPopupMode(QToolButton.InstantPopup)
 
@@ -250,6 +254,8 @@ class GuiOutlineToolBar(QToolBar):
         self.addWidget(self.tbColumns)
         self.addWidget(stretch)
 
+        self.updateTheme()
+
         logger.debug("GuiOutlineToolBar initialisation complete")
 
         return
@@ -257,6 +263,16 @@ class GuiOutlineToolBar(QToolBar):
     ##
     #  Methods
     ##
+
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        self.setStyleSheet("QToolBar {border: 0px;}")
+
+        self.aRefresh.setIcon(self.mainTheme.getIcon("refresh"))
+        self.tbColumns.setIcon(self.mainTheme.getIcon("menu"))
+
+        return
 
     def populateNovelList(self):
         """Fill the novel combo box with a list of all novel folders.

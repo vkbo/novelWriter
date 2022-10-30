@@ -102,6 +102,13 @@ class GuiDocViewer(QTextBrowser):
         self.docHeader.setTitleFromHandle(self._docHandle)
         return True
 
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        self.docHeader.updateTheme()
+        self.docFooter.updateTheme()
+        return
+
     def initViewer(self):
         """Set editor settings from main config.
         """
@@ -735,51 +742,38 @@ class GuiDocViewHeader(QWidget):
         lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
         self.theTitle.setFont(lblFont)
 
-        buttonStyle = (
-            "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*self.mainTheme.colText)
-
         # Buttons
         self.backButton = QToolButton(self)
-        self.backButton.setIcon(self.mainTheme.getIcon("backward"))
         self.backButton.setContentsMargins(0, 0, 0, 0)
         self.backButton.setIconSize(QSize(fPx, fPx))
         self.backButton.setFixedSize(fPx, fPx)
-        self.backButton.setStyleSheet(buttonStyle)
         self.backButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.backButton.setVisible(False)
         self.backButton.setToolTip(self.tr("Go backward"))
         self.backButton.clicked.connect(self.docViewer.navBackward)
 
         self.forwardButton = QToolButton(self)
-        self.forwardButton.setIcon(self.mainTheme.getIcon("forward"))
         self.forwardButton.setContentsMargins(0, 0, 0, 0)
         self.forwardButton.setIconSize(QSize(fPx, fPx))
         self.forwardButton.setFixedSize(fPx, fPx)
-        self.forwardButton.setStyleSheet(buttonStyle)
         self.forwardButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.forwardButton.setVisible(False)
         self.forwardButton.setToolTip(self.tr("Go forward"))
         self.forwardButton.clicked.connect(self.docViewer.navForward)
 
         self.refreshButton = QToolButton(self)
-        self.refreshButton.setIcon(self.mainTheme.getIcon("refresh"))
         self.refreshButton.setContentsMargins(0, 0, 0, 0)
         self.refreshButton.setIconSize(QSize(fPx, fPx))
         self.refreshButton.setFixedSize(fPx, fPx)
-        self.refreshButton.setStyleSheet(buttonStyle)
         self.refreshButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.refreshButton.setVisible(False)
         self.refreshButton.setToolTip(self.tr("Reload the document"))
         self.refreshButton.clicked.connect(self._refreshDocument)
 
         self.closeButton = QToolButton(self)
-        self.closeButton.setIcon(self.mainTheme.getIcon("close"))
         self.closeButton.setContentsMargins(0, 0, 0, 0)
         self.closeButton.setIconSize(QSize(fPx, fPx))
         self.closeButton.setFixedSize(fPx, fPx)
-        self.closeButton.setStyleSheet(buttonStyle)
         self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.closeButton.setVisible(False)
         self.closeButton.setToolTip(self.tr("Close the document"))
@@ -803,7 +797,7 @@ class GuiDocViewHeader(QWidget):
         self.setMinimumHeight(fPx + 2*cM)
 
         # Fix the Colours
-        self.matchColours()
+        self.updateTheme()
 
         logger.debug("GuiDocViewHeader initialisation complete")
 
@@ -812,6 +806,28 @@ class GuiDocViewHeader(QWidget):
     ##
     #  Methods
     ##
+
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        self.backButton.setIcon(self.mainTheme.getIcon("backward"))
+        self.forwardButton.setIcon(self.mainTheme.getIcon("forward"))
+        self.refreshButton.setIcon(self.mainTheme.getIcon("refresh"))
+        self.closeButton.setIcon(self.mainTheme.getIcon("close"))
+
+        buttonStyle = (
+            "QToolButton {{border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
+        ).format(*self.mainTheme.colText)
+
+        self.backButton.setStyleSheet(buttonStyle)
+        self.forwardButton.setStyleSheet(buttonStyle)
+        self.refreshButton.setStyleSheet(buttonStyle)
+        self.closeButton.setStyleSheet(buttonStyle)
+
+        self.matchColours()
+
+        return
 
     def matchColours(self):
         """Update the colours of the widget to match those of the syntax
@@ -873,12 +889,14 @@ class GuiDocViewHeader(QWidget):
     #  Slots
     ##
 
+    @pyqtSlot()
     def _closeDocument(self):
         """Trigger the close editor/viewer on the main window.
         """
         self.mainGui.closeDocViewer()
         return
 
+    @pyqtSlot()
     def _refreshDocument(self):
         """Reload the content of the document.
         """
@@ -926,33 +944,13 @@ class GuiDocViewFooter(QWidget):
         bSp = self.mainConf.pxInt(2)
         hSp = self.mainConf.pxInt(8)
 
-        # Icons
-        stickyOn  = self.mainTheme.getPixmap("sticky-on", (fPx, fPx))
-        stickyOff = self.mainTheme.getPixmap("sticky-off", (fPx, fPx))
-        stickyIcon = QIcon()
-        stickyIcon.addPixmap(stickyOn, QIcon.Normal, QIcon.On)
-        stickyIcon.addPixmap(stickyOff, QIcon.Normal, QIcon.Off)
-
-        bulletOn  = self.mainTheme.getPixmap("bullet-on", (fPx, fPx))
-        bulletOff = self.mainTheme.getPixmap("bullet-off", (fPx, fPx))
-        bulletIcon = QIcon()
-        bulletIcon.addPixmap(bulletOn, QIcon.Normal, QIcon.On)
-        bulletIcon.addPixmap(bulletOff, QIcon.Normal, QIcon.Off)
-
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
 
-        buttonStyle = (
-            "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*self.mainTheme.colText)
-
         # Show/Hide Details
         self.showHide = QToolButton(self)
         self.showHide.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        self.showHide.setStyleSheet(buttonStyle)
-        self.showHide.setIcon(self.mainTheme.getIcon("reference"))
         self.showHide.setIconSize(QSize(fPx, fPx))
         self.showHide.setFixedSize(QSize(fPx, fPx))
         self.showHide.clicked.connect(self._doShowHide)
@@ -962,8 +960,6 @@ class GuiDocViewFooter(QWidget):
         self.stickyRefs = QToolButton(self)
         self.stickyRefs.setCheckable(True)
         self.stickyRefs.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        self.stickyRefs.setStyleSheet(buttonStyle)
-        self.stickyRefs.setIcon(stickyIcon)
         self.stickyRefs.setIconSize(QSize(fPx, fPx))
         self.stickyRefs.setFixedSize(QSize(fPx, fPx))
         self.stickyRefs.toggled.connect(self._doToggleSticky)
@@ -976,8 +972,6 @@ class GuiDocViewFooter(QWidget):
         self.showComments.setCheckable(True)
         self.showComments.setChecked(self.mainConf.viewComments)
         self.showComments.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        self.showComments.setStyleSheet(buttonStyle)
-        self.showComments.setIcon(bulletIcon)
         self.showComments.setIconSize(QSize(fPx, fPx))
         self.showComments.setFixedSize(QSize(fPx, fPx))
         self.showComments.toggled.connect(self._doToggleComments)
@@ -988,8 +982,6 @@ class GuiDocViewFooter(QWidget):
         self.showSynopsis.setCheckable(True)
         self.showSynopsis.setChecked(self.mainConf.viewSynopsis)
         self.showSynopsis.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        self.showSynopsis.setStyleSheet(buttonStyle)
-        self.showSynopsis.setIcon(bulletIcon)
         self.showSynopsis.setIconSize(QSize(fPx, fPx))
         self.showSynopsis.setFixedSize(QSize(fPx, fPx))
         self.showSynopsis.toggled.connect(self._doToggleSynopsis)
@@ -1063,7 +1055,7 @@ class GuiDocViewFooter(QWidget):
         self.setMinimumHeight(fPx + 2*cM)
 
         # Fix the Colours
-        self.matchColours()
+        self.updateTheme()
 
         logger.debug("GuiDocViewFooter initialisation complete")
 
@@ -1072,6 +1064,46 @@ class GuiDocViewFooter(QWidget):
     ##
     #  Methods
     ##
+
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        # Icons
+
+        fPx = int(0.9*self.mainTheme.fontPixelSize)
+
+        stickyOn  = self.mainTheme.getPixmap("sticky-on", (fPx, fPx))
+        stickyOff = self.mainTheme.getPixmap("sticky-off", (fPx, fPx))
+        stickyIcon = QIcon()
+        stickyIcon.addPixmap(stickyOn, QIcon.Normal, QIcon.On)
+        stickyIcon.addPixmap(stickyOff, QIcon.Normal, QIcon.Off)
+
+        bulletOn  = self.mainTheme.getPixmap("bullet-on", (fPx, fPx))
+        bulletOff = self.mainTheme.getPixmap("bullet-off", (fPx, fPx))
+        bulletIcon = QIcon()
+        bulletIcon.addPixmap(bulletOn, QIcon.Normal, QIcon.On)
+        bulletIcon.addPixmap(bulletOff, QIcon.Normal, QIcon.Off)
+
+        self.showHide.setIcon(self.mainTheme.getIcon("reference"))
+        self.stickyRefs.setIcon(stickyIcon)
+        self.showComments.setIcon(bulletIcon)
+        self.showSynopsis.setIcon(bulletIcon)
+
+        # StyleSheets
+
+        buttonStyle = (
+            "QToolButton {{border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
+        ).format(*self.mainTheme.colText)
+
+        self.showHide.setStyleSheet(buttonStyle)
+        self.stickyRefs.setStyleSheet(buttonStyle)
+        self.showComments.setStyleSheet(buttonStyle)
+        self.showSynopsis.setStyleSheet(buttonStyle)
+
+        self.matchColours()
+
+        return
 
     def matchColours(self):
         """Update the colours of the widget to match those of the syntax
@@ -1094,6 +1126,7 @@ class GuiDocViewFooter(QWidget):
     #  Slots
     ##
 
+    @pyqtSlot()
     def _doShowHide(self):
         """Toggle the expand/collapse of the panel.
         """
@@ -1101,6 +1134,7 @@ class GuiDocViewFooter(QWidget):
         self.viewMeta.setVisible(not isVisible)
         return
 
+    @pyqtSlot(bool)
     def _doToggleSticky(self, theState):
         """Toggle the sticky flag for the reference panel.
         """
@@ -1110,6 +1144,7 @@ class GuiDocViewFooter(QWidget):
             self.viewMeta.refreshReferences(self.docViewer.docHandle())
         return
 
+    @pyqtSlot(bool)
     def _doToggleComments(self, theState):
         """Toggle the view comment button and reload the document.
         """
@@ -1117,6 +1152,7 @@ class GuiDocViewFooter(QWidget):
         self.docViewer.reloadText()
         return
 
+    @pyqtSlot(bool)
     def _doToggleSynopsis(self, theState):
         """Toggle the view synopsis button and reload the document.
         """

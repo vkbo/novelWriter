@@ -137,6 +137,7 @@ a key or key combination for the inserted content.
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`F`",                 "Insert a ``@focus`` keyword."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`C`",                 "Insert a ``@char`` keyword."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`P`",                 "Insert a ``@plot`` keyword."
+   ":kbd:`Ctrl`:kbd:`K`, :kbd:`S`",                 "Insert a synopsis comment."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`T`",                 "Insert a ``@time`` keyword."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`L`",                 "Insert a ``@location`` keyword."
    ":kbd:`Ctrl`:kbd:`K`, :kbd:`O`",                 "Insert an ``@object`` keyword."

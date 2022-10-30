@@ -112,9 +112,10 @@ class nwDocInsert(Enum):
     QUOTE_RS  = 2
     QUOTE_LD  = 3
     QUOTE_RD  = 4
-    NEW_PAGE  = 5
-    VSPACE_S  = 6
-    VSPACE_M  = 7
+    SYNOPSIS  = 5
+    NEW_PAGE  = 6
+    VSPACE_S  = 7
+    VSPACE_M  = 8
 
 # END Enum nwDocInsert
 

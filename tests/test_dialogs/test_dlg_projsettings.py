@@ -19,56 +19,40 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 
-from shutil import copyfile
-from tools import cmpFiles, getGuiItem, buildTestProject
+from novelwriter.enum import nwItemType
+from tools import C, getGuiItem, buildTestProject
 
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QAction, QMessageBox, QColorDialog
+from PyQt5.QtWidgets import QDialog, QAction, QColorDialog
 
+from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projsettings import GuiProjectSettings
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
-statusKeys = ["s000000", "s000001", "s000002", "s000003"]
-importKeys = ["i000004", "i000005", "i000006", "i000007"]
+KEY_DELAY = 1
 
 
 @pytest.mark.gui
-def testDlgProjSettings_Dialog(
-    qtbot, monkeypatch, nwGUI, fncDir, fncProj, outDir, refDir, mockRnd
-):
-    """Test the full project settings dialog.
+def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
+    """Test the main dialog class. Saving settings is not tested in this
+    test, but are instead tested in the individual tab tests.
     """
-    projFile = os.path.join(fncProj, "nwProject.nwx")
-    testFile = os.path.join(outDir, "guiProjSettings_Dialog_nwProject.nwx")
-    compFile = os.path.join(refDir, "guiProjSettings_Dialog_nwProject.nwx")
-
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
+    # Block the GUI blocking thread
+    monkeypatch.setattr(GuiProjectSettings, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiProjectSettings, "spellChanged", lambda *a: True)
 
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
     assert getGuiItem("GuiProjectSettings") is None
 
-    # Create new project
-    buildTestProject(nwGUI, fncProj)
-    nwGUI.mainConf.backupPath = fncDir
-
+    # Pretend we have a project
+    nwGUI.hasProject = True
     nwGUI.theProject.setSpellLang("en")
-    nwGUI.theProject.setBookAuthors("Jane Smith\nJohn Smith")
-    nwGUI.theProject.setAutoReplace({"A": "B", "C": "D"})
 
     # Get the dialog object
-    monkeypatch.setattr(GuiProjectSettings, "exec_", lambda *a: None)
-    monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QDialog.Accepted)
-    monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
-
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiProjectSettings") is not None, timeout=1000)
 
@@ -77,83 +61,180 @@ def testDlgProjSettings_Dialog(
     projEdit.show()
     qtbot.addWidget(projEdit)
 
+    # Switch Tabs
+    projEdit._focusTab(GuiProjectSettings.TAB_REPLACE)
+    assert projEdit._tabBox.currentWidget() == projEdit.tabReplace
+
+    projEdit._focusTab(GuiProjectSettings.TAB_IMPORT)
+    assert projEdit._tabBox.currentWidget() == projEdit.tabImport
+
+    projEdit._focusTab(GuiProjectSettings.TAB_STATUS)
+    assert projEdit._tabBox.currentWidget() == projEdit.tabStatus
+
+    projEdit._focusTab(GuiProjectSettings.TAB_MAIN)
+    assert projEdit._tabBox.currentWidget() == projEdit.tabMain
+
+    # Clean Up
+    projEdit._doClose()
+    # qtbot.stop()
+
+# END Test testDlgProjSettings_Dialog
+
+
+@pytest.mark.gui
+def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
+    """Test the main tab of the project settings dialog.
+    """
+    # Mock components
+    monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
+
+    # Create new project
+    buildTestProject(nwGUI, fncProj)
+    mockRnd.reset()
+    nwGUI.mainConf.backupPath = fncDir
+
+    # Set some values
+    theProject = nwGUI.theProject
+    theProject.setSpellLang("en")
+    theProject.setBookAuthors("Jane Smith\nJohn Smith")
+    theProject.setAutoReplace({"A": "B", "C": "D"})
+
+    # Create Dialog
+    projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.TAB_MAIN)
+    projSettings.show()
+    qtbot.addWidget(projSettings)
+
     # Settings Tab
     # ============
 
-    assert projEdit.tabMain.editName.text() == "New Project"
-    assert projEdit.tabMain.editTitle.text() == "New Novel"
-    assert projEdit.tabMain.editAuthors.toPlainText() == "Jane Smith\nJohn Smith"
-    assert projEdit.tabMain.spellLang.currentData() == "en"
-    assert projEdit.tabMain.doBackup.isChecked() is False
+    tabMain = projSettings.tabMain
 
-    qtbot.wait(stepDelay)
-    projEdit.tabMain.editName.setText("")
+    assert tabMain.editName.text() == "New Project"
+    assert tabMain.editTitle.text() == "New Novel"
+    assert tabMain.editAuthors.toPlainText() == "Jane Smith\nJohn Smith"
+    assert tabMain.spellLang.currentData() == "en"
+    assert tabMain.doBackup.isChecked() is False
+
+    tabMain.editName.setText("")
     for c in "Project Name":
-        qtbot.keyClick(projEdit.tabMain.editName, c, delay=typeDelay)
-    projEdit.tabMain.editTitle.setText("")
+        qtbot.keyClick(tabMain.editName, c, delay=KEY_DELAY)
+    tabMain.editTitle.setText("")
     for c in "Project Title":
-        qtbot.keyClick(projEdit.tabMain.editTitle, c, delay=typeDelay)
+        qtbot.keyClick(tabMain.editTitle, c, delay=KEY_DELAY)
 
-    projEdit.tabMain.editAuthors.clear()
+    tabMain.editAuthors.clear()
     for c in "Jane Doe":
-        qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=typeDelay)
-    qtbot.keyClick(projEdit.tabMain.editAuthors, Qt.Key_Return, delay=keyDelay)
+        qtbot.keyClick(tabMain.editAuthors, c, delay=KEY_DELAY)
+    qtbot.keyClick(tabMain.editAuthors, Qt.Key_Return, delay=KEY_DELAY)
     for c in "John Doh":
-        qtbot.keyClick(projEdit.tabMain.editAuthors, c, delay=typeDelay)
-    qtbot.keyClick(projEdit.tabMain.editAuthors, Qt.Key_Return, delay=keyDelay)
+        qtbot.keyClick(tabMain.editAuthors, c, delay=KEY_DELAY)
+    qtbot.keyClick(tabMain.editAuthors, Qt.Key_Return, delay=KEY_DELAY)
 
-    qtbot.wait(stepDelay)
-    assert projEdit.tabMain.editName.text() == "Project Name"
-    assert projEdit.tabMain.editTitle.text() == "Project Title"
-    assert projEdit.tabMain.editAuthors.toPlainText() == "Jane Doe\nJohn Doh\n"
+    assert tabMain.editName.text() == "Project Name"
+    assert tabMain.editTitle.text() == "Project Title"
+    assert tabMain.editAuthors.toPlainText() == "Jane Doe\nJohn Doh\n"
+    assert projSettings.spellChanged is False
+
+    projSettings._doSave()
+    assert theProject.projName == "Project Name"
+    assert theProject.bookTitle == "Project Title"
+    assert theProject.bookAuthors == ["Jane Doe", "John Doh"]
+
+    # Clean up
+    projSettings._doClose()
+    # qtbot.stop()
+
+# END Test testDlgProjSettings_Main
+
+
+@pytest.mark.gui
+def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
+    """Test the status and importance tabs of the project settings
+    dialog.
+    """
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
+
+    # Mock components
+    monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
+
+    # Create new project
+    mockRnd.reset()
+    buildTestProject(nwGUI, fncProj)
+    nwGUI.mainConf.backupPath = fncDir
+
+    # Set some values
+    theProject = nwGUI.theProject
+    theProject.tree[C.hTitlePage].setStatus(C.sFinished)
+    theProject.tree[C.hChapterDoc].setStatus(C.sDraft)
+    theProject.tree[C.hSceneDoc].setStatus(C.sDraft)
+
+    nwGUI.projView.projTree.setSelectedHandle(C.hPlotRoot)
+    nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
+    nwGUI.projView.projTree.setSelectedHandle(C.hCharRoot)
+    nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
+    nwGUI.projView.projTree.setSelectedHandle(C.hWorldRoot)
+    nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
+
+    hPlotNote = "0000000000010"
+    hCharNote = "0000000000011"
+    hWorldNote = "0000000000012"
+
+    theProject.tree[hPlotNote].setImport(C.iMajor)
+    theProject.tree[hCharNote].setImport(C.iMajor)
+    theProject.tree[hWorldNote].setImport(C.iMain)
+
+    # Create Dialog
+    projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.TAB_STATUS)
+    projSettings.show()
+    qtbot.addWidget(projSettings)
 
     # Status Tab
     # ==========
 
-    projEdit._tabBox.setCurrentWidget(projEdit.tabStatus)
+    tabStatus = projSettings.tabStatus
 
-    assert projEdit.tabStatus.colChanged is False
-    assert projEdit.tabStatus.getNewList() == ([], [])
-    assert projEdit.tabStatus.listBox.topLevelItemCount() == 4
+    assert tabStatus.colChanged is False
+    assert tabStatus.getNewList() == ([], [])
+    assert tabStatus.listBox.topLevelItemCount() == 4
 
     # Can't delete the first item (it's in use)
-    projEdit.tabStatus.listBox.clearSelection()
-    projEdit.tabStatus.listBox.topLevelItem(0).setSelected(True)
-    qtbot.mouseClick(projEdit.tabStatus.delButton, Qt.LeftButton)
-    assert projEdit.tabStatus.listBox.topLevelItemCount() == 4
+    tabStatus.listBox.clearSelection()
+    tabStatus.listBox.setCurrentItem(tabStatus.listBox.topLevelItem(0))
+    qtbot.mouseClick(tabStatus.delButton, Qt.LeftButton)
+    assert tabStatus.listBox.topLevelItemCount() == 4
 
-    # Can delete the third item
-    projEdit.tabStatus.listBox.clearSelection()
-    projEdit.tabStatus.listBox.topLevelItem(2).setSelected(True)
-    qtbot.mouseClick(projEdit.tabStatus.delButton, Qt.LeftButton)
-    assert projEdit.tabStatus.listBox.topLevelItemCount() == 3
+    # Can delete the second item
+    tabStatus.listBox.clearSelection()
+    tabStatus.listBox.setCurrentItem(tabStatus.listBox.topLevelItem(1))
+    qtbot.mouseClick(tabStatus.delButton, Qt.LeftButton)
+    assert tabStatus.listBox.topLevelItemCount() == 3
 
     # Add a new item
-    monkeypatch.setattr(QColorDialog, "getColor", lambda *a: QColor(20, 30, 40))
-    qtbot.mouseClick(projEdit.tabStatus.addButton, Qt.LeftButton)
-    projEdit.tabStatus.listBox.topLevelItem(3).setSelected(True)
-    for n in range(8):
-        qtbot.keyClick(projEdit.tabStatus.editName, Qt.Key_Backspace, delay=typeDelay)
-    for c in "Final":
-        qtbot.keyClick(projEdit.tabStatus.editName, c, delay=typeDelay)
-    qtbot.mouseClick(projEdit.tabStatus.colButton, Qt.LeftButton)
-    qtbot.mouseClick(projEdit.tabStatus.saveButton, Qt.LeftButton)
-    assert projEdit.tabStatus.listBox.topLevelItemCount() == 4
-    qtbot.wait(stepDelay)
+    with monkeypatch.context() as mp:
+        mp.setattr(QColorDialog, "getColor", lambda *a: QColor(20, 30, 40))
+        qtbot.mouseClick(tabStatus.addButton, Qt.LeftButton)
+        tabStatus.listBox.setCurrentItem(tabStatus.listBox.topLevelItem(3))
+        for _ in range(8):
+            qtbot.keyClick(tabStatus.editName, Qt.Key_Backspace, delay=KEY_DELAY)
+        for c in "Final":
+            qtbot.keyClick(tabStatus.editName, c, delay=KEY_DELAY)
+        qtbot.mouseClick(tabStatus.colButton, Qt.LeftButton)
+        qtbot.mouseClick(tabStatus.saveButton, Qt.LeftButton)
+        assert tabStatus.listBox.topLevelItemCount() == 4
 
-    assert projEdit.tabStatus.colChanged is True
-    assert projEdit.tabStatus.getNewList() == (
+    assert tabStatus.colChanged is True
+    assert tabStatus.getNewList() == (
         [
             {
-                "key": statusKeys[0],
+                "key": C.sNew,
                 "name": "New",
                 "cols": (100, 100, 100)
             }, {
-                "key": statusKeys[1],
-                "name": "Note",
-                "cols": (200, 50, 0)
+                "key": C.sDraft,
+                "name": "Draft",
+                "cols": (200, 150, 0)
             }, {
-                "key": statusKeys[3],
+                "key": C.sFinished,
                 "name": "Finished",
                 "cols": (50, 200, 0)
             }, {
@@ -162,121 +243,198 @@ def testDlgProjSettings_Dialog(
                 "cols": (20, 30, 40)
             }
         ], [
-            statusKeys[2]  # Deleted item
+            C.sNote  # Deleted item
         ]
     )
 
-    # Move items
-    projEdit.tabStatus.listBox.clearSelection()
-    projEdit.tabStatus._moveItem(1)
-    assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
-        statusKeys[0], statusKeys[1], statusKeys[3], None
+    # Move items, none selected -> no change
+    tabStatus.listBox.clearSelection()
+    tabStatus._moveItem(1)
+    assert [x["key"] for x in tabStatus.getNewList()[0]] == [
+        C.sNew, C.sDraft, C.sFinished, None
     ]
 
-    projEdit.tabStatus.listBox.clearSelection()
-    projEdit.tabStatus.listBox.topLevelItem(0).setSelected(True)
-    projEdit.tabStatus._moveItem(-1)
-    assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
-        statusKeys[0], statusKeys[1], statusKeys[3], None
+    # Move items, first selected, move up -> no change
+    tabStatus.listBox.clearSelection()
+    tabStatus.listBox.setCurrentItem(tabStatus.listBox.topLevelItem(0))
+    tabStatus._moveItem(-1)
+    assert [x["key"] for x in tabStatus.getNewList()[0]] == [
+        C.sNew, C.sDraft, C.sFinished, None
     ]
 
-    projEdit.tabStatus.listBox.clearSelection()
-    projEdit.tabStatus.listBox.topLevelItem(3).setSelected(True)
-    projEdit.tabStatus._moveItem(-1)
-    assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
-        statusKeys[0], statusKeys[1], None, statusKeys[3]
+    # Move items, last selected, move up -> allowed
+    tabStatus.listBox.clearSelection()
+    tabStatus.listBox.setCurrentItem(tabStatus.listBox.topLevelItem(3))
+    tabStatus._moveItem(-1)
+    assert [x["key"] for x in tabStatus.getNewList()[0]] == [
+        C.sNew, C.sDraft, None, C.sFinished
     ]
-    projEdit.tabStatus._moveItem(1)
-    assert [x["key"] for x in projEdit.tabStatus.getNewList()[0]] == [
-        statusKeys[0], statusKeys[1], statusKeys[3], None
+
+    # Move items, same selected, move down -> allowed
+    tabStatus._moveItem(1)
+    assert [x["key"] for x in tabStatus.getNewList()[0]] == [
+        C.sNew, C.sDraft, C.sFinished, None
     ]
 
     # Importance Tab
     # ==============
 
-    projEdit._tabBox.setCurrentWidget(projEdit.tabImport)
-    projEdit.tabStatus.listBox.clearSelection()
-    projEdit.tabImport.listBox.topLevelItem(3).setSelected(True)
-    qtbot.mouseClick(projEdit.tabImport.delButton, Qt.LeftButton)
-    qtbot.mouseClick(projEdit.tabImport.addButton, Qt.LeftButton)
-    projEdit.tabStatus.listBox.clearSelection()
-    projEdit.tabImport.listBox.topLevelItem(3).setSelected(True)
-    for n in range(8):
-        qtbot.keyClick(projEdit.tabImport.editName, Qt.Key_Backspace, delay=typeDelay)
-    for c in "Final":
-        qtbot.keyClick(projEdit.tabImport.editName, c, delay=typeDelay)
-    qtbot.mouseClick(projEdit.tabImport.saveButton, Qt.LeftButton)
-    qtbot.wait(stepDelay)
+    tabImport = projSettings.tabImport
+    projSettings._focusTab(GuiProjectSettings.TAB_IMPORT)
+
+    # Delete unused entry
+    tabImport.listBox.clearSelection()
+    tabImport.listBox.setCurrentItem(tabImport.listBox.topLevelItem(1))
+    qtbot.mouseClick(tabImport.delButton, Qt.LeftButton)
+    assert tabImport.listBox.topLevelItemCount() == 3
+
+    # Add a new entry
+    with monkeypatch.context() as mp:
+        mp.setattr(QColorDialog, "getColor", lambda *a: QColor(20, 30, 40))
+        qtbot.mouseClick(tabImport.addButton, Qt.LeftButton)
+        tabImport.listBox.clearSelection()
+        tabImport.listBox.setCurrentItem(tabImport.listBox.topLevelItem(3))
+        for _ in range(8):
+            qtbot.keyClick(tabImport.editName, Qt.Key_Backspace, delay=KEY_DELAY)
+        for c in "Final":
+            qtbot.keyClick(tabImport.editName, c, delay=KEY_DELAY)
+        qtbot.mouseClick(tabImport.colButton, Qt.LeftButton)
+        qtbot.mouseClick(tabImport.saveButton, Qt.LeftButton)
+        assert tabImport.listBox.topLevelItemCount() == 4
+
+    assert tabImport.colChanged is True
+    assert tabImport.getNewList() == (
+        [
+            {
+                "key": C.iNew,
+                "name": "New",
+                "cols": (100, 100, 100)
+            }, {
+                "key": C.iMajor,
+                "name": "Major",
+                "cols": (200, 150, 0)
+            }, {
+                "key": C.iMain,
+                "name": "Main",
+                "cols": (50, 200, 0)
+            }, {
+                "key": None,
+                "name": "Final",
+                "cols": (20, 30, 40)
+            }
+        ], [
+            C.iMinor  # Deleted item
+        ]
+    )
+
+    # Check Project
+    projSettings._doSave()
+
+    statusItems = dict(theProject.statusItems.items())
+    assert statusItems[C.sNew]["name"] == "New"
+    assert statusItems[C.sDraft]["name"] == "Draft"
+    assert statusItems[C.sFinished]["name"] == "Finished"
+    assert statusItems["s000013"]["name"] == "Final"
+
+    importItems = dict(theProject.importItems.items())
+    assert importItems[C.iNew]["name"] == "New"
+    assert importItems[C.iMajor]["name"] == "Major"
+    assert importItems[C.iMain]["name"] == "Main"
+    assert importItems["i000014"]["name"] == "Final"
+
+    # Clean up
+    # qtbot.stop()
+    projSettings._doClose()
+
+# END Test testDlgProjSettings_StatusImport
+
+
+@pytest.mark.gui
+def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
+    """Test the auto-replace tab of the project settings dialog.
+    """
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
+
+    # Mock components
+    monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
+
+    # Create new project
+    mockRnd.reset()
+    buildTestProject(nwGUI, fncProj)
+    nwGUI.mainConf.backupPath = fncDir
+
+    # Set some values
+    theProject = nwGUI.theProject
+    theProject.autoReplace = {
+        "A": "B", "C": "D"
+    }
+
+    # Create Dialog
+    projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.TAB_REPLACE)
+    projSettings.show()
+    qtbot.addWidget(projSettings)
 
     # Auto-Replace Tab
     # ================
 
-    qtbot.wait(stepDelay)
-    projEdit._tabBox.setCurrentWidget(projEdit.tabReplace)
+    tabReplace = projSettings.tabReplace
 
-    assert projEdit.tabReplace.listBox.topLevelItem(0).text(0) == "<A>"
-    assert projEdit.tabReplace.listBox.topLevelItem(0).text(1) == "B"
-    assert projEdit.tabReplace.listBox.topLevelItem(1).text(0) == "<C>"
-    assert projEdit.tabReplace.listBox.topLevelItem(1).text(1) == "D"
+    assert tabReplace.listBox.topLevelItem(0).text(0) == "<A>"
+    assert tabReplace.listBox.topLevelItem(0).text(1) == "B"
+    assert tabReplace.listBox.topLevelItem(1).text(0) == "<C>"
+    assert tabReplace.listBox.topLevelItem(1).text(1) == "D"
+    assert tabReplace.listBox.topLevelItemCount() == 2
 
-    qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
-    projEdit.tabReplace.listBox.topLevelItem(2).setSelected(True)
-    projEdit.tabReplace.editKey.setText("")
+    # Nothing to save or delete
+    tabReplace.listBox.clearSelection()
+    assert tabReplace._saveEntry() is False
+    assert tabReplace._delEntry() is False
+    assert tabReplace.listBox.topLevelItemCount() == 2
+
+    # Create a new entry
+    qtbot.mouseClick(tabReplace.addButton, Qt.LeftButton)
+    assert tabReplace.listBox.topLevelItemCount() == 3
+    assert tabReplace.listBox.topLevelItem(2).text(0) == "<keyword3>"
+    assert tabReplace.listBox.topLevelItem(2).text(1) == ""
+
+    # Edit the entry
+    tabReplace.listBox.setCurrentItem(tabReplace.listBox.topLevelItem(2))
+    tabReplace.editKey.setText("")
     for c in "Th is ":
-        qtbot.keyClick(projEdit.tabReplace.editKey, c, delay=typeDelay)
-    projEdit.tabReplace.editValue.setText("")
+        qtbot.keyClick(tabReplace.editKey, c, delay=KEY_DELAY)
+    tabReplace.editValue.setText("")
     for c in "With This Stuff ":
-        qtbot.keyClick(projEdit.tabReplace.editValue, c, delay=typeDelay)
-    qtbot.mouseClick(projEdit.tabReplace.saveButton, Qt.LeftButton)
+        qtbot.keyClick(tabReplace.editValue, c, delay=KEY_DELAY)
+    qtbot.mouseClick(tabReplace.saveButton, Qt.LeftButton)
+    assert tabReplace.listBox.topLevelItem(2).text(0) == "<This>"
+    assert tabReplace.listBox.topLevelItem(2).text(1) == "With This Stuff "
 
-    qtbot.wait(stepDelay)
-    projEdit.tabReplace.listBox.clearSelection()
-    assert not projEdit.tabReplace._saveEntry()
-    assert not projEdit.tabReplace._delEntry()
-    qtbot.mouseClick(projEdit.tabReplace.addButton, Qt.LeftButton)
+    # Create a new entry again
+    tabReplace.listBox.clearSelection()
+    qtbot.mouseClick(tabReplace.addButton, Qt.LeftButton)
+    assert tabReplace.listBox.topLevelItemCount() == 4
 
+    # The list is sorted, so we must find it
     newIdx = -1
-    for i in range(projEdit.tabReplace.listBox.topLevelItemCount()):
-        if projEdit.tabReplace.listBox.topLevelItem(i).text(0) == "<keyword4>":
+    for i in range(tabReplace.listBox.topLevelItemCount()):
+        if tabReplace.listBox.topLevelItem(i).text(0) == "<keyword4>":
             newIdx = i
             break
-
     assert newIdx >= 0
-    newItem = projEdit.tabReplace.listBox.topLevelItem(newIdx)
-    projEdit.tabReplace.listBox.setCurrentItem(newItem)
-    qtbot.mouseClick(projEdit.tabReplace.delButton, Qt.LeftButton)
-    qtbot.wait(stepDelay)
 
-    # Save & Check
-    # ============
+    # Then delete the new item
+    tabReplace.listBox.setCurrentItem(tabReplace.listBox.topLevelItem(newIdx))
+    qtbot.mouseClick(tabReplace.delButton, Qt.LeftButton)
+    assert tabReplace.listBox.topLevelItemCount() == 3
 
-    projEdit._doSave()
+    # Check Project
+    projSettings._doSave()
+    assert theProject.autoReplace == {
+        "A": "B", "C": "D", "This": "With This Stuff"
+    }
 
-    # Open again, and check project settings
-    nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiProjectSettings") is not None, timeout=1000)
+    # Clean up
+    # qtbot.stop()
+    projSettings._doClose()
 
-    projEdit = getGuiItem("GuiProjectSettings")
-    assert isinstance(projEdit, GuiProjectSettings)
-
-    qtbot.addWidget(projEdit)
-    assert projEdit.tabMain.editName.text()  == "Project Name"
-    assert projEdit.tabMain.editTitle.text() == "Project Title"
-    theAuth = projEdit.tabMain.editAuthors.toPlainText().strip().splitlines()
-    assert len(theAuth) == 2
-    assert theAuth[0] == "Jane Doe"
-    assert theAuth[1] == "John Doh"
-
-    projEdit._doClose()
-    qtbot.wait(stepDelay)
-
-    assert nwGUI.saveProject()
-    qtbot.wait(stepDelay)
-
-    # Check the files
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [2, 8, 9, 10])
-
-    # qtbot.stopForInteraction()
-
-# END Test testDlgProjSettings_Dialog
+# END Test testDlgProjSettings_Replace

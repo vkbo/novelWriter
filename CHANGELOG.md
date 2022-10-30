@@ -229,11 +229,28 @@ final release.
 
 ----
 
+## Version 1.6.6 [2022-10-25]
+
+### Release Notes
+
+This is a bugfix release that fixes a minor issues with following tags in the editor. It is now
+possible to also follow tags that contain spaces.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix a bug where only the word under the cursor would be looked up when the user tried to follow a
+  tag in the editor. The lookup function now uses the same parser for the `@`-line as the syntax
+  highlighter does, so they should behave consistently. Issue #1195. PR #1209.
+
+----
+
 ## Version 1.6.5 [2022-10-13]
 
 ### Release Notes
 
-This is a bugfix release that fixes a a few minor issues. The idle time for new projects would be
+This is a bugfix release that fixes a few minor issues. The idle time for new projects would be
 artificially inflated as the clock was not reset when the project was first created. This only
 affects the first entry in the writing statistics. A scaling issue for the Preferences dialog has
 also been fixed. It only affected screens with UI scaling enabled. Lastly, typing `Shift+Enter` in

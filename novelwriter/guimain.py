@@ -208,6 +208,7 @@ class GuiMain(QMainWindow):
         self.projView.rootFolderChanged.connect(self.outlineView.updateRootItem)
         self.projView.rootFolderChanged.connect(self.novelView.updateRootItem)
         self.projView.rootFolderChanged.connect(self.projView.updateRootItem)
+        self.projView.projectSettingsRequest.connect(self.showProjectSettingsDialog)
 
         self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.novelView.openDocumentRequest.connect(self._openDocument)
@@ -806,15 +807,11 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        if tHandle is None:
-            if self.docEditor.anyFocus() or self.isFocusMode:
-                tHandle = self.docEditor.docHandle()
-            else:
-                tHandle = self.projView.getSelectedHandle()
-        if tHandle:
-            return self.projView.renameTreeItem(tHandle)
+        if tHandle is None and (self.docEditor.anyFocus() or self.isFocusMode):
+            tHandle = self.docEditor.docHandle()
+        self.projView.renameTreeItem(tHandle)
 
-        return False
+        return True
 
     def rebuildTrees(self):
         """Rebuild the project tree.
@@ -910,25 +907,52 @@ class GuiMain(QMainWindow):
         if dlgConf.result() == QDialog.Accepted:
             logger.debug("Applying new preferences")
             self.initMain()
-            self.mainTheme.updateTheme()
             self.saveDocument()
+
+            if dlgConf.needsRestart:
+                self.makeAlert(self.tr(
+                    "Some changes will not be applied until novelWriter has been restarted."
+                ), nwAlert.INFO)
+
+            if dlgConf.refreshTree:
+                self.projView.populateTree()
+
+            if dlgConf.updateTheme:
+                # We are doing this manually instead of connecting to
+                # qApp.paletteChanged since the processing order matters
+                self.mainTheme.loadTheme()
+                self.docEditor.updateTheme()
+                self.docViewer.updateTheme()
+                self.viewsBar.updateTheme()
+                self.projView.updateTheme()
+                self.novelView.updateTheme()
+                self.outlineView.updateTheme()
+                self.itemDetails.updateTheme()
+                self.mainStatus.updateTheme()
+
+            if dlgConf.updateSyntax:
+                self.mainTheme.loadSyntax()
+                self.docEditor.updateSyntaxColours()
+
             self.docEditor.initEditor()
             self.docViewer.initViewer()
             self.projView.initSettings()
             self.novelView.initSettings()
             self.outlineView.initSettings()
+
             self._updateStatusWordCount()
 
         return
 
-    def showProjectSettingsDialog(self):
+    @pyqtSlot(int)
+    def showProjectSettingsDialog(self, focusTab=GuiProjectSettings.TAB_MAIN):
         """Open the project settings dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
             return False
 
-        dlgProj = GuiProjectSettings(self)
+        dlgProj = GuiProjectSettings(self, focusTab=focusTab)
         dlgProj.exec_()
 
         if dlgProj.result() == QDialog.Accepted:
@@ -1316,6 +1340,7 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aInsMinus)
         self.addAction(self.mainMenu.aInsTimes)
         self.addAction(self.mainMenu.aInsDivide)
+        self.addAction(self.mainMenu.aInsSynopsis)
 
         for mAction, _ in self.mainMenu.mInsKWItems.values():
             self.addAction(mAction)

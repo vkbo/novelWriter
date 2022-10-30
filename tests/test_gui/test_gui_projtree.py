@@ -40,11 +40,6 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd):
     """Test adding and removing items from the project tree.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     projView = nwGUI.projView
@@ -160,11 +155,11 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     # ============
 
     # Also check error handling in reveal function
-    assert projView.revealNewTreeItem("abc") is False
+    assert projView.projTree.revealNewTreeItem("abc") is False
 
     # Add an item that cannot be displayed in the tree
     nHandle = theProject.newFile("Test", None)
-    assert projView.revealNewTreeItem(nHandle) is False
+    assert projView.projTree.revealNewTreeItem(nHandle) is False
 
     # Clean up
     # qtbot.stop()
@@ -177,17 +172,13 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
 def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     """Test adding and removing items from the project tree.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
-    nwTree = nwGUI.projView
+    projView = nwGUI.projView
+    projTree = nwGUI.projView.projTree
 
     # Try to move item with no project
-    assert nwTree.projTree.moveTreeItem(1) is False
+    assert projView.projTree.moveTreeItem(1) is False
 
     # Create a project
     prjDir = os.path.join(fncDir, "project")
@@ -197,68 +188,68 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     # ==============
 
     # Add some files
-    nwTree.setSelectedHandle(C.hChapterDir)
-    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
-    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
-    assert nwTree.projTree.newTreeItem(nwItemType.FILE) is True
-    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+    projView.setSelectedHandle(C.hChapterDir)
+    assert projTree.newTreeItem(nwItemType.FILE) is True
+    assert projTree.newTreeItem(nwItemType.FILE) is True
+    assert projTree.newTreeItem(nwItemType.FILE) is True
+    assert projTree.getTreeFromHandle(C.hChapterDir) == [
         C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
     # Move with no selections
-    nwTree.projTree.clearSelection()
-    assert nwTree.projTree.moveTreeItem(1) is False
+    projTree.clearSelection()
+    assert projTree.moveTreeItem(1) is False
 
     # Move second item up twice (should give same result)
-    nwTree.setSelectedHandle(C.hSceneDoc)
-    assert nwTree.projTree.moveTreeItem(-1) is True
-    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+    projView.setSelectedHandle(C.hSceneDoc)
+    assert projTree.moveTreeItem(-1) is True
+    assert projTree.getTreeFromHandle(C.hChapterDir) == [
         C.hChapterDir, C.hSceneDoc, C.hChapterDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
-    assert nwTree.projTree.moveTreeItem(-1) is False
-    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+    assert projTree.moveTreeItem(-1) is False
+    assert projTree.getTreeFromHandle(C.hChapterDir) == [
         C.hChapterDir, C.hSceneDoc, C.hChapterDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
     # Restore
-    assert nwTree.projTree.moveTreeItem(1) is True
-    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+    assert projTree.moveTreeItem(1) is True
+    assert projTree.getTreeFromHandle(C.hChapterDir) == [
         C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
     # Move fifth item down twice (should give same result)
-    nwTree.setSelectedHandle("0000000000011")
-    assert nwTree.projTree.moveTreeItem(1) is True
-    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+    projView.setSelectedHandle("0000000000011")
+    assert projTree.moveTreeItem(1) is True
+    assert projTree.getTreeFromHandle(C.hChapterDir) == [
         C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000012", "0000000000011",
     ]
-    assert nwTree.projTree.moveTreeItem(1) is False
-    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+    assert projTree.moveTreeItem(1) is False
+    assert projTree.getTreeFromHandle(C.hChapterDir) == [
         C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000012", "0000000000011",
     ]
 
     # Restore
-    assert nwTree.projTree.moveTreeItem(-1) is True
-    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+    assert projTree.moveTreeItem(-1) is True
+    assert projTree.getTreeFromHandle(C.hChapterDir) == [
         C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
     # Move down again, and restore via undo
-    nwTree.setSelectedHandle("0000000000011")
-    assert nwTree.projTree.moveTreeItem(1) is True
-    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+    projView.setSelectedHandle("0000000000011")
+    assert projTree.moveTreeItem(1) is True
+    assert projTree.getTreeFromHandle(C.hChapterDir) == [
         C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000012", "0000000000011",
     ]
-    assert nwTree.projTree.undoLastMove() is True
-    assert nwTree.getTreeFromHandle(C.hChapterDir) == [
+    assert projTree.undoLastMove() is True
+    assert projTree.getTreeFromHandle(C.hChapterDir) == [
         C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
@@ -266,23 +257,23 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     # Root Folder
     # ===========
 
-    nwTree.setSelectedHandle(C.hNovelRoot)
+    projView.setSelectedHandle(C.hNovelRoot)
     assert nwGUI.theProject.tree._treeOrder.index(C.hNovelRoot) == 0
 
     # Move novel folder up
-    assert nwTree.projTree.moveTreeItem(-1) is False
+    assert projTree.moveTreeItem(-1) is False
     assert nwGUI.theProject.tree._treeOrder.index(C.hNovelRoot) == 0
 
     # Move novel folder down
-    assert nwTree.projTree.moveTreeItem(1) is True
+    assert projTree.moveTreeItem(1) is True
     assert nwGUI.theProject.tree._treeOrder.index(C.hNovelRoot) == 1
 
     # Move novel folder up again
-    assert nwTree.projTree.moveTreeItem(-1) is True
+    assert projTree.moveTreeItem(-1) is True
     assert nwGUI.theProject.tree._treeOrder.index(C.hNovelRoot) == 0
 
     # Clean up
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
     nwGUI.closeProject()
 
 # END Test testGuiProjTree_MoveItems
@@ -292,83 +283,79 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
 def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd):
     """Test external requests for removing items from project tree.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
-    nwView = nwGUI.projView
+    projView = nwGUI.projView
+    projTree = nwGUI.projView.projTree
 
     # Try to run with no project
-    assert nwView.requestDeleteItem() is False
+    assert projView.requestDeleteItem() is False
 
     # Create a project
     prjDir = os.path.join(fncDir, "project")
     buildTestProject(nwGUI, prjDir)
 
     # Try emptying the trash already now, when there is no trash folder
-    assert nwView.emptyTrash() is False
+    assert projView.emptyTrash() is False
 
     # Add some files
-    nwView.setSelectedHandle(C.hChapterDir)
-    assert nwView.projTree.newTreeItem(nwItemType.FILE) is True
-    assert nwView.projTree.newTreeItem(nwItemType.FILE) is True
-    assert nwView.projTree.newTreeItem(nwItemType.FILE) is True
-    assert nwView.getTreeFromHandle(C.hChapterDir) == [
+    projView.setSelectedHandle(C.hChapterDir)
+    assert projTree.newTreeItem(nwItemType.FILE) is True
+    assert projTree.newTreeItem(nwItemType.FILE) is True
+    assert projTree.newTreeItem(nwItemType.FILE) is True
+    assert projTree.getTreeFromHandle(C.hChapterDir) == [
         C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
     # Delete item without focus -> blocked
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: False)
-    nwView.setSelectedHandle("0000000000012")
-    assert nwView.requestDeleteItem() is False
+    projView.setSelectedHandle("0000000000012")
+    assert projView.requestDeleteItem() is False
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
 
     # No selection made
-    nwView.projTree.clearSelection()
+    projTree.clearSelection()
     caplog.clear()
-    assert nwView.requestDeleteItem() is False
+    assert projView.requestDeleteItem() is False
     assert "no item to delete" in caplog.text
 
     # Not a valid handle
-    nwView.projTree.clearSelection()
+    projTree.clearSelection()
     caplog.clear()
-    assert nwView.requestDeleteItem("0000000000000") is False
+    assert projView.requestDeleteItem("0000000000000") is False
     assert "No tree item with handle '0000000000000'" in caplog.text
 
     # Delete Root Folders
     # ===================
 
-    assert nwView.requestDeleteItem(C.hNovelRoot) is False  # Novel Root is blocked
-    assert nwView.requestDeleteItem(C.hCharRoot) is True   # Character Root
+    assert projView.requestDeleteItem(C.hNovelRoot) is False  # Novel Root is blocked
+    assert projView.requestDeleteItem(C.hCharRoot) is True   # Character Root
 
     # Delete File
     # ===========
 
     # Block adding trash folder
-    funcPointer = nwView.projTree._addTrashRoot
-    nwView.projTree._addTrashRoot = lambda *a: None
-    assert nwView.requestDeleteItem("0000000000012") is False
-    nwView.projTree._addTrashRoot = funcPointer
+    funcPointer = projTree._addTrashRoot
+    projTree._addTrashRoot = lambda *a: None
+    assert projView.requestDeleteItem("0000000000012") is False
+    projTree._addTrashRoot = funcPointer
 
     # Delete last two documents, which also adds the trash folder
-    assert nwView.requestDeleteItem("0000000000012") is True
-    assert nwView.requestDeleteItem("0000000000011") is True
-    assert nwView.getTreeFromHandle(C.hChapterDir) == [
+    assert projView.requestDeleteItem("0000000000012") is True
+    assert projView.requestDeleteItem("0000000000011") is True
+    assert projTree.getTreeFromHandle(C.hChapterDir) == [
         C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010"
     ]
     trashHandle = nwGUI.theProject.tree.trashRoot()
-    assert nwView.getTreeFromHandle(trashHandle) == [
+    assert projTree.getTreeFromHandle(trashHandle) == [
         trashHandle, "0000000000012", "0000000000011"
     ]
 
     # Try to delete the trash folder
     caplog.clear()
-    assert nwView.requestDeleteItem("0000000000013") is False
+    assert projView.requestDeleteItem("0000000000013") is False
     assert "Cannot delete the Trash folder" in caplog.text
 
     nwGUI.closeProject()
@@ -380,11 +367,6 @@ def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fncDir,
 def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd):
     """Test moving items to Trash.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     theProject = nwGUI.theProject
@@ -439,11 +421,6 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, fncDir, m
 def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd):
     """Test permanently deleting items.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     theProject = nwGUI.theProject
@@ -497,11 +474,6 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fnc
 def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd):
     """Test emptying Trash.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     theProject = nwGUI.theProject
@@ -557,11 +529,6 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     """Test the building of the project tree context menu. All this does
     is test that the menu builds. It doesn't open the actual menu,
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
     monkeypatch.setattr(QMenu, "exec_", lambda *a: None)
 
@@ -682,12 +649,6 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, i
     """
     mergeData = {}
 
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-
     monkeypatch.setattr(GuiDocMerge, "__init__", lambda *a: None)
     monkeypatch.setattr(GuiDocMerge, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiDocMerge, "result", lambda *a: QDialog.Accepted)
@@ -792,12 +753,6 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ip
     splitData = {}
     splitText = []
 
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-
     monkeypatch.setattr(GuiDocSplit, "__init__", lambda *a: None)
     monkeypatch.setattr(GuiDocSplit, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiDocSplit, "result", lambda *a: QDialog.Accepted)
@@ -882,13 +837,16 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ip
         assert tHandle in theProject.tree
         assert os.path.isfile(os.path.join(prjDir, "content", f"{tHandle}.nwd"))
 
-    # Add to a folder
+    # Add to a folder and move source to trash
     splitData["intoFolder"] = True
+    splitData["moveToTrash"] = True
     assert projTree._splitDocument(hSplitDoc) is True
     assert "0000000000029" in theProject.tree  # The folder
     for tHandle in trdSet:
         assert tHandle in theProject.tree
         assert os.path.isfile(os.path.join(prjDir, "content", f"{tHandle}.nwd"))
+
+    assert theProject.tree.isTrash(hSplitDoc) is True
 
     # Cancelled by user
     with monkeypatch.context() as mp:
@@ -905,12 +863,6 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     """Test various parts of the project tree class not covered by
     other tests.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-
     # Create a project
     prjDir = os.path.join(fncDir, "project")
     buildTestProject(nwGUI, prjDir)

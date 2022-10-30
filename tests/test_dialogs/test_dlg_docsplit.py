@@ -23,8 +23,6 @@ import pytest
 
 from tools import C, buildTestProject
 
-from PyQt5.QtWidgets import QMessageBox
-
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
 
@@ -33,9 +31,6 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     """Test the split document tool.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     # Create a new project

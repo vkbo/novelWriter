@@ -162,7 +162,11 @@ def mockGUI(monkeypatch, tmpConf):
 def nwGUI(qtbot, monkeypatch, fncDir, fncConf):
     """Create an instance of the novelWriter GUI.
     """
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Ok)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Ok)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+
     monkeypatch.setattr("novelwriter.CONFIG", fncConf)
     nwGUI = novelwriter.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
     qtbot.addWidget(nwGUI)

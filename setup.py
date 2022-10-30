@@ -131,6 +131,7 @@ def makeCheckSum(sumFile, cwd=None):
     except Exception as exc:
         print("Could not generate sha256 file")
         print(str(exc))
+        return ""
 
     return shaFile
 
@@ -905,7 +906,6 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
 def makeAppImage(sysArgs):
     """Build an Appimage
     """
-
     import glob
     import argparse
     import platform
@@ -1088,8 +1088,9 @@ def makeAppImage(sysArgs):
     shutil.copyfile("setup/icons/novelwriter.svg", f"{imageDir}/novelwriter.svg")
     print("Copied: setup/icons/novelwriter.svg")
 
-    shutil.copyfile("setup/data/hicolor/256x256/apps/novelwriter.png",
-                    f"{imageDir}/novelwriter.png")
+    shutil.copyfile(
+        "setup/data/hicolor/256x256/apps/novelwriter.png", f"{imageDir}/novelwriter.png"
+    )
     print("Copied: setup/data/hicolor/256x256/apps/novelwriter.png")
 
     # Build Appimage
@@ -1110,7 +1111,9 @@ def makeAppImage(sysArgs):
         print("")
         sys.exit(1)
 
-    outFile = glob.glob(f"{bldDir}/*.AppImage")[0]
+    bldFile = glob.glob(f"{bldDir}/*.AppImage")[0]
+    outFile = f"{bldDir}/novelWriter-{pkgVers}-py{pythonVer}-{linuxTag}.AppImage"
+    os.rename(bldFile, outFile)
     shaFile = makeCheckSum(os.path.basename(outFile), cwd=bldDir)
 
     toUpload(outFile)
@@ -1118,10 +1121,10 @@ def makeAppImage(sysArgs):
 
     return unparsedArgs
 
+
 ##
 #  Make Windows Setup EXE (build-win-exe)
 ##
-
 
 def makeWindowsEmbedded(sysArgs):
     """Set up a package with embedded Python and dependencies for

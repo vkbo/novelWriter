@@ -32,24 +32,17 @@ from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.gui.doceditor import GuiDocEditor
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
-
 
 @pytest.mark.gui
 def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
     """Test the main menu Edit and Format entries.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
     # Test Document Action with No Project
     assert nwGUI.docEditor.docAction(nwDocAction.COPY) is False
 
     assert nwGUI.openProject(nwLipsum) is True
-    qtbot.wait(stepDelay)
 
     # Split By Chapter
     assert nwGUI.openDocument("4c4f28287af27") is True
@@ -61,57 +54,43 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.mainMenu.aFmtStrong.activate(QAction.Trigger)
     fmtStr = "**Pellentesque** nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:90] == fmtStr
-    qtbot.wait(stepDelay)
     nwGUI.mainMenu.aFmtStrong.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
-    qtbot.wait(stepDelay)
 
     # Italic
     nwGUI.mainMenu.aFmtEmph.activate(QAction.Trigger)
     fmtStr = "_Pellentesque_ nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:88] == fmtStr
-    qtbot.wait(stepDelay)
     nwGUI.mainMenu.aFmtEmph.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
-    qtbot.wait(stepDelay)
 
     # Strikethrough
     nwGUI.mainMenu.aFmtStrike.activate(QAction.Trigger)
     fmtStr = "~~Pellentesque~~ nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:90] == fmtStr
-    qtbot.wait(stepDelay)
     nwGUI.mainMenu.aFmtStrike.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
-    qtbot.wait(stepDelay)
 
     # Should get us back to plain
     nwGUI.mainMenu.aFmtStrong.activate(QAction.Trigger)
-    qtbot.wait(stepDelay)
     nwGUI.mainMenu.aFmtEmph.activate(QAction.Trigger)
-    qtbot.wait(stepDelay)
     nwGUI.mainMenu.aFmtEmph.activate(QAction.Trigger)
-    qtbot.wait(stepDelay)
     nwGUI.mainMenu.aFmtStrong.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
-    qtbot.wait(stepDelay)
 
     # Double Quotes
     nwGUI.mainMenu.aFmtDQuote.activate(QAction.Trigger)
     fmtStr = "“Pellentesque” nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:88] == fmtStr
-    qtbot.wait(stepDelay)
     nwGUI.mainMenu.aEditUndo.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
-    qtbot.wait(stepDelay)
 
     # Single Quotes
     nwGUI.mainMenu.aFmtSQuote.activate(QAction.Trigger)
     fmtStr = "‘Pellentesque’ nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:88] == fmtStr
-    qtbot.wait(stepDelay)
     nwGUI.mainMenu.aEditUndo.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
-    qtbot.wait(stepDelay)
 
     # Block Formats
     # =============
@@ -121,61 +100,60 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.mainMenu.aFmtHead1.activate(QAction.Trigger)
     fmtStr = "# Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:88] == fmtStr
-    qtbot.wait(stepDelay)
 
     # Header 2
     nwGUI.mainMenu.aFmtHead2.activate(QAction.Trigger)
     fmtStr = "## Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:89] == fmtStr
-    qtbot.wait(stepDelay)
 
     # Header 3
     nwGUI.mainMenu.aFmtHead3.activate(QAction.Trigger)
     fmtStr = "### Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:90] == fmtStr
-    qtbot.wait(stepDelay)
 
     # Header 4
     nwGUI.mainMenu.aFmtHead4.activate(QAction.Trigger)
     fmtStr = "#### Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:91] == fmtStr
-    qtbot.wait(stepDelay)
+
+    # Title Format
+    nwGUI.mainMenu.aFmtTitle.activate(QAction.Trigger)
+    fmtStr = "#! Pellentesque nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[39:89] == fmtStr
+
+    # Unnumbered Chapter
+    nwGUI.mainMenu.aFmtUnNum.activate(QAction.Trigger)
+    fmtStr = "##! Pellentesque nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[39:90] == fmtStr
 
     # Clear Format
     nwGUI.mainMenu.aFmtNoFormat.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
-    qtbot.wait(stepDelay)
 
     # Comment On
     nwGUI.mainMenu.aFmtComment.activate(QAction.Trigger)
     fmtStr = "% Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:88] == fmtStr
-    qtbot.wait(stepDelay)
 
     # Comment Off
     nwGUI.mainMenu.aFmtComment.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
-    qtbot.wait(stepDelay)
 
     # Check comment with no space before text
     assert nwGUI.docEditor.setCursorPosition(39)
     assert nwGUI.docEditor.insertText("%")
     fmtStr = "%Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:87] == fmtStr
-    qtbot.wait(stepDelay)
 
     nwGUI.mainMenu.aFmtNoFormat.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
-    qtbot.wait(stepDelay)
 
     # Undo/Redo
     nwGUI.mainMenu.aEditUndo.activate(QAction.Trigger)
     fmtStr = "%Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:87] == fmtStr
-    qtbot.wait(stepDelay)
     nwGUI.mainMenu.aEditRedo.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
-    qtbot.wait(stepDelay)
 
     # Cut, Copy and Paste
     assert nwGUI.docEditor.setCursorPosition(39)
@@ -240,36 +218,30 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.mainMenu.aFmtAlignLeft.activate(QAction.Trigger)
     fmtStr = "A single, short paragraph. <<"
     assert nwGUI.docEditor.getText()[:29] == fmtStr
-    qtbot.wait(stepDelay)
 
     # Right Align
     nwGUI.mainMenu.aFmtAlignRight.activate(QAction.Trigger)
     fmtStr = ">> A single, short paragraph."
     assert nwGUI.docEditor.getText()[:29] == fmtStr
-    qtbot.wait(stepDelay)
 
     # Centre Align
     nwGUI.mainMenu.aFmtAlignCentre.activate(QAction.Trigger)
     fmtStr = ">> A single, short paragraph. <<"
     assert nwGUI.docEditor.getText()[:32] == fmtStr
-    qtbot.wait(stepDelay)
 
     # Left Indent
     nwGUI.mainMenu.aFmtIndentLeft.activate(QAction.Trigger)
     fmtStr = "> A single, short paragraph."
     assert nwGUI.docEditor.getText()[:28] == fmtStr
-    qtbot.wait(stepDelay)
 
     # Right Indent
     nwGUI.mainMenu.aFmtIndentRight.activate(QAction.Trigger)
     fmtStr = "> A single, short paragraph. <"
     assert nwGUI.docEditor.getText()[:30] == fmtStr
-    qtbot.wait(stepDelay)
 
     # No Format
     nwGUI.mainMenu.aFmtNoFormat.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[:30] == cleanText
-    qtbot.wait(stepDelay)
 
     # Other Checks
 
@@ -352,10 +324,6 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docEditor.setCursorPosition(17)
     assert not nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT)
 
-    # Cannot Format Empty Line
-    assert nwGUI.docEditor.setCursorPosition(13)
-    assert not nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT)
-
     # Invalid Action
     assert nwGUI.docEditor.setCursorPosition(30)
     assert not nwGUI.docEditor._formatBlock(nwDocAction.NO_ACTION)
@@ -368,21 +336,17 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
         "Also text with \"double\" quotes which are \"less tricky\".\n\n"
     )
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiMenu_EditFormat
 
 
 @pytest.mark.gui
-def testGuiMenu_ContextMenus(qtbot, monkeypatch, nwGUI, nwLipsum):
+def testGuiMenu_ContextMenus(qtbot, nwGUI, nwLipsum):
     """Test the context menus.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-
     assert nwGUI.openProject(nwLipsum)
     assert nwGUI.openDocument("4c4f28287af27")
-    qtbot.wait(stepDelay)
 
     # Editor Context Menu
     theCursor = nwGUI.docEditor.textCursor()
@@ -452,7 +416,7 @@ def testGuiMenu_ContextMenus(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docViewer.docHeader.backButton.isEnabled()
     assert not nwGUI.docViewer.docHeader.forwardButton.isEnabled()
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiMenu_ContextMenus
 
@@ -461,10 +425,6 @@ def testGuiMenu_ContextMenus(qtbot, monkeypatch, nwGUI, nwLipsum):
 def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     """Test the Insert menu.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     buildTestProject(nwGUI, fncProj)
 
     assert nwGUI.projView.projTree._getTreeItem(C.hSceneDoc) is not None
@@ -482,7 +442,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     assert nwGUI.docEditor.insertText(None) is False
     assert nwGUI.docEditor.isEmpty()
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
     # Check Menu Entries
     nwGUI.mainMenu.aInsENDash.activate(QAction.Trigger)
@@ -577,9 +537,8 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     assert nwGUI.docEditor.getText() == nwUnicode.U_THNBSP
     nwGUI.docEditor.clear()
 
-    ##
-    #  Insert Keywords
-    ##
+    # Insert Keywords
+    # ===============
 
     nwGUI.docEditor.setText("Stuff")
     nwGUI.mainMenu.mInsKWItems[nwKeyWords.TAG_KEY][0].activate(QAction.Trigger)
@@ -629,9 +588,15 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
 
     nwGUI.docEditor.clear()
 
-    ##
-    #  Insert Break or Space
-    ##
+    # Insert Special Comments
+    # =======================
+
+    nwGUI.docEditor.setText("Stuff\n")
+    nwGUI.mainMenu.aInsSynopsis.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Stuff\n% Synopsis: \n"
+
+    # Insert Break or Space
+    # =====================
 
     nwGUI.docEditor.setText("### Stuff\n")
     nwGUI.mainMenu.aInsNewPage.activate(QAction.Trigger)
@@ -647,9 +612,8 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
 
     nwGUI.docEditor.clear()
 
-    ##
-    #  Insert text from file
-    ##
+    # Insert Text from File
+    # =====================
 
     nwGUI.closeDocument()
 
@@ -676,18 +640,17 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     assert nwGUI.docEditor.getText() == "Bar"
 
     # The document isn't empty, so the message box should pop
-    monkeypatch.setattr(QMessageBox, "question", lambda *a, **k: QMessageBox.No)
-    assert not nwGUI.importDocument()
-    assert nwGUI.docEditor.getText() == "Bar"
+    with monkeypatch.context() as mp:
+        mp.setattr(QMessageBox, "question", lambda *a, **k: QMessageBox.No)
+        assert not nwGUI.importDocument()
+        assert nwGUI.docEditor.getText() == "Bar"
 
     # Finally, accept the replaced text, this time we use the menu entry to trigger it
-    monkeypatch.setattr(QMessageBox, "question", lambda *a, **k: QMessageBox.Yes)
     nwGUI.mainMenu.aImportFile.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == "Foo"
 
-    ##
-    #  Reveal file location
-    ##
+    # Reveal File Location
+    # ====================
 
     theMessage = ""
 
@@ -705,6 +668,6 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     assert theBits[0] == "The currently open file is saved in:"
     assert theBits[1] == os.path.join(fncProj, "content", "000000000000f.nwd")
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testGuiMenu_Insert

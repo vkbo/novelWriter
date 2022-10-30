@@ -103,14 +103,19 @@ class GuiDocSplit(QDialog):
         self.hierarchySwitch = QSwitch(width=2*iPx, height=iPx)
         self.hierarchySwitch.setChecked(docHierarchy)
 
+        self.trashLabel = QLabel(self.tr("Move split document to Trash"))
+        self.trashSwitch = QSwitch(width=2*iPx, height=iPx)
+
         self.optBox = QGridLayout()
         self.optBox.addWidget(self.folderLabel,  0, 0)
         self.optBox.addWidget(self.folderSwitch, 0, 1)
         self.optBox.addWidget(self.hierarchyLabel,  1, 0)
         self.optBox.addWidget(self.hierarchySwitch, 1, 1)
+        self.optBox.addWidget(self.trashLabel,  2, 0)
+        self.optBox.addWidget(self.trashSwitch, 2, 1)
         self.optBox.setVerticalSpacing(vSp)
         self.optBox.setHorizontalSpacing(hSp)
-        self.optBox.setColumnStretch(2, 1)
+        self.optBox.setColumnStretch(3, 1)
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -155,11 +160,13 @@ class GuiDocSplit(QDialog):
         spLevel = self.splitLevel.currentData()
         intoFolder = self.folderSwitch.isChecked()
         docHierarchy = self.hierarchySwitch.isChecked()
+        moveToTrash = self.trashSwitch.isChecked()
 
         self._data["spLevel"] = spLevel
         self._data["headerList"] = headerList
         self._data["intoFolder"] = intoFolder
         self._data["docHierarchy"] = docHierarchy
+        self._data["moveToTrash"] = moveToTrash
 
         pOptions = self.theProject.options
         pOptions.setValue("GuiDocSplit", "spLevel", spLevel)

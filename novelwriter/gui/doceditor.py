@@ -138,24 +138,20 @@ class GuiDocEditor(QTextEdit):
         self.setFrameStyle(QFrame.NoFrame)
 
         # Custom Shortcuts
-        QShortcut(
-            QKeySequence("Ctrl+."),
-            self,
-            context=Qt.WidgetShortcut,
-            activated=self._openSpellContext
-        )
-        QShortcut(
-            Qt.Key_Return | Qt.ControlModifier,
-            self,
-            context=Qt.WidgetShortcut,
-            activated=self._followTag
-        )
-        QShortcut(
-            Qt.Key_Enter | Qt.ControlModifier,
-            self,
-            context=Qt.WidgetShortcut,
-            activated=self._followTag
-        )
+        self.keyContext = QShortcut(self)
+        self.keyContext.setKey("Ctrl+.")
+        self.keyContext.setContext(Qt.WidgetShortcut)
+        self.keyContext.activated.connect(self._openSpellContext)
+
+        self.followTag1 = QShortcut(self)
+        self.followTag1.setKey(Qt.Key_Return | Qt.ControlModifier)
+        self.followTag1.setContext(Qt.WidgetShortcut)
+        self.followTag1.activated.connect(self._followTag)
+
+        self.followTag2 = QShortcut(self)
+        self.followTag2.setKey(Qt.Key_Enter | Qt.ControlModifier)
+        self.followTag2.setContext(Qt.WidgetShortcut)
+        self.followTag2.activated.connect(self._followTag)
 
         # Set Up Document Word Counter
         self.wcTimerDoc = QTimer()
@@ -177,6 +173,7 @@ class GuiDocEditor(QTextEdit):
         self.wCounterSel.signals.countsReady.connect(self._updateSelCounts)
 
         # Finalise
+        self.updateSyntaxColours()
         self.initEditor()
 
         logger.debug("GuiDocEditor initialisation complete")
@@ -209,6 +206,35 @@ class GuiDocEditor(QTextEdit):
         self.docFooter.setHandle(self._docHandle)
 
         return True
+
+    def updateTheme(self):
+        """Update theme elements
+        """
+        self.docSearch.updateTheme()
+        self.docHeader.updateTheme()
+        self.docFooter.updateTheme()
+        return
+
+    def updateSyntaxColours(self):
+        """Update the syntax highlighting theme.
+        """
+        mainPalette = self.palette()
+        mainPalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
+        mainPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
+        mainPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
+        self.setPalette(mainPalette)
+
+        docPalette = self.viewport().palette()
+        docPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
+        docPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
+        self.viewport().setPalette(docPalette)
+
+        self.docHeader.matchColours()
+        self.docFooter.matchColours()
+
+        self.highLight.initHighlighter()
+
+        return
 
     def initEditor(self):
         """Initialise or re-initialise the editor with the user's
@@ -256,21 +282,6 @@ class GuiDocEditor(QTextEdit):
         theFont.setPointSize(self.mainConf.textSize)
         self.setFont(theFont)
 
-        # Set the widget colours to match syntax theme
-        mainPalette = self.palette()
-        mainPalette.setColor(QPalette.Window, QColor(*self.mainTheme.colBack))
-        mainPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
-        mainPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
-        self.setPalette(mainPalette)
-
-        docPalette = self.viewport().palette()
-        docPalette.setColor(QPalette.Base, QColor(*self.mainTheme.colBack))
-        docPalette.setColor(QPalette.Text, QColor(*self.mainTheme.colText))
-        self.viewport().setPalette(docPalette)
-
-        self.docHeader.matchColours()
-        self.docFooter.matchColours()
-
         # Set default text margins
         # Due to cursor visibility, a part of the margin must be
         # allocated to the document itself. See issue #1112.
@@ -304,9 +315,6 @@ class GuiDocEditor(QTextEdit):
 
         # Refresh the tab stops
         self.setTabStopDistance(self.mainConf.getTabWidth())
-
-        # Initialise the syntax highlighter
-        self.highLight.initHighlighter()
 
         # Configure word count timer
         self.wcInterval = self.mainConf.wordCountTimer
@@ -869,6 +877,7 @@ class GuiDocEditor(QTextEdit):
             return False
 
         newBlock = False
+        goAfter = False
 
         if isinstance(theInsert, str):
             theText = theInsert
@@ -881,22 +890,29 @@ class GuiDocEditor(QTextEdit):
                 theText = self._typDQOpen
             elif theInsert == nwDocInsert.QUOTE_RD:
                 theText = self._typDQClose
+            elif theInsert == nwDocInsert.SYNOPSIS:
+                theText = "% Synopsis: "
+                newBlock = True
+                goAfter = True
             elif theInsert == nwDocInsert.NEW_PAGE:
                 theText = "[NEW PAGE]"
                 newBlock = True
+                goAfter = False
             elif theInsert == nwDocInsert.VSPACE_S:
                 theText = "[VSPACE]"
                 newBlock = True
+                goAfter = False
             elif theInsert == nwDocInsert.VSPACE_M:
                 theText = "[VSPACE:2]"
                 newBlock = True
+                goAfter = False
             else:
                 return False
         else:
             return False
 
         if newBlock:
-            self.insertNewBlock(theText, defaultAfter=False)
+            self.insertNewBlock(theText, defaultAfter=goAfter)
         else:
             theCursor = self.textCursor()
             theCursor.beginEditBlock()
@@ -1162,6 +1178,7 @@ class GuiDocEditor(QTextEdit):
 
         posCursor = self.cursorForPosition(thePos)
         spellCheck = self._spellCheck
+        theWord = ""
 
         if posCursor.block().text().startswith("@"):
             spellCheck = False
@@ -1430,6 +1447,7 @@ class GuiDocEditor(QTextEdit):
             origB = theCursor.selectionEnd()
         else:
             origA = theCursor.position()
+            origB = theCursor.position()
 
         findOpt = QTextDocument.FindFlag(0)
         if self.docSearch.isCaseSense:
@@ -1699,12 +1717,8 @@ class GuiDocEditor(QTextEdit):
             logger.debug("Invalid block selected for action '%s'", str(docAction))
             return False
 
-        theText = theBlock.text()
-        if len(theText.strip()) == 0:
-            logger.debug("Empty block selected for action '%s'", str(docAction))
-            return False
-
         # Remove existing format first, if any
+        theText = theBlock.text()
         if theText.startswith("@"):
             logger.error("Cannot apply block format to keyword/value line")
             return False
@@ -1874,10 +1888,10 @@ class GuiDocEditor(QTextEdit):
 
     def _followTag(self, theCursor=None, loadTag=True):
         """Activated by Ctrl+Enter. Checks that we're in a block
-        starting with '@'. We then find the word under the cursor and
-        check that it is after the ':'. If all this is fine, we have a
-        tag and can tell the document viewer to try and find and load
-        the file where the tag is defined.
+        starting with '@'. We then find the tag under the cursor and
+        check that it is not the tag itself. If all this is fine, we
+        have a tag and can tell the document viewer to try and find and
+        load the file where the tag is defined.
         """
         if theCursor is None:
             theCursor = self.textCursor()
@@ -1890,18 +1904,29 @@ class GuiDocEditor(QTextEdit):
 
         if theText.startswith("@"):
 
-            theCursor.select(QTextCursor.WordUnderCursor)
-            theWord = theCursor.selectedText()
-            cPos = theText.find(":")
-            wPos = theCursor.selectionStart() - theBlock.position()
-            if wPos <= cPos:
+            isGood, tBits, tPos = self.theProject.index.scanThis(theText)
+            if not isGood:
+                return False
+
+            theTag = ""
+            cPos = theCursor.selectionStart() - theBlock.position()
+            for sTag, sPos in zip(reversed(tBits), reversed(tPos)):
+                if cPos >= sPos:
+                    # The cursor is between the start of two tags
+                    if cPos <= sPos + len(sTag):
+                        # The cursor is inside or at the edge of the tag
+                        theTag = sTag
+                    break
+
+            if not theTag or theTag.startswith("@"):
+                # The keyword cannot be looked up, so we ignore that
                 return False
 
             if loadTag:
-                logger.debug("Attempting to follow tag '%s'", theWord)
-                self.loadDocumentTagRequest.emit(theWord, nwDocMode.VIEW)
+                logger.debug("Attempting to follow tag '%s'", theTag)
+                self.loadDocumentTagRequest.emit(theTag, nwDocMode.VIEW)
             else:
-                logger.debug("Potential tag '%s'", theWord)
+                logger.debug("Potential tag '%s'", theTag)
 
             return True
 
@@ -2242,7 +2267,6 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.searchOpt.setIconSize(QSize(tPx, tPx))
         self.searchOpt.setContentsMargins(0, 0, 0, 0)
-        self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
 
         self.searchLabel = QLabel(self.tr("Search"))
         self.searchLabel.setFont(self.boxFont)
@@ -2253,35 +2277,30 @@ class GuiDocEditSearch(QFrame):
         self.resultLabel.setMinimumWidth(self.mainTheme.getTextWidth("?/?", self.boxFont))
 
         self.toggleCase = QAction(self.tr("Case Sensitive"), self)
-        self.toggleCase.setIcon(self.mainTheme.getIcon("search_case"))
         self.toggleCase.setCheckable(True)
         self.toggleCase.setChecked(self.isCaseSense)
         self.toggleCase.toggled.connect(self._doToggleCase)
         self.searchOpt.addAction(self.toggleCase)
 
         self.toggleWord = QAction(self.tr("Whole Words Only"), self)
-        self.toggleWord.setIcon(self.mainTheme.getIcon("search_word"))
         self.toggleWord.setCheckable(True)
         self.toggleWord.setChecked(self.isWholeWord)
         self.toggleWord.toggled.connect(self._doToggleWord)
         self.searchOpt.addAction(self.toggleWord)
 
         self.toggleRegEx = QAction(self.tr("RegEx Mode"), self)
-        self.toggleRegEx.setIcon(self.mainTheme.getIcon("search_regex"))
         self.toggleRegEx.setCheckable(True)
         self.toggleRegEx.setChecked(self.isRegEx)
         self.toggleRegEx.toggled.connect(self._doToggleRegEx)
         self.searchOpt.addAction(self.toggleRegEx)
 
         self.toggleLoop = QAction(self.tr("Loop Search"), self)
-        self.toggleLoop.setIcon(self.mainTheme.getIcon("search_loop"))
         self.toggleLoop.setCheckable(True)
         self.toggleLoop.setChecked(self.doLoop)
         self.toggleLoop.toggled.connect(self._doToggleLoop)
         self.searchOpt.addAction(self.toggleLoop)
 
         self.toggleProject = QAction(self.tr("Search Next File"), self)
-        self.toggleProject.setIcon(self.mainTheme.getIcon("search_project"))
         self.toggleProject.setCheckable(True)
         self.toggleProject.setChecked(self.doNextFile)
         self.toggleProject.toggled.connect(self._doToggleProject)
@@ -2290,7 +2309,6 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addSeparator()
 
         self.toggleMatchCap = QAction(self.tr("Preserve Case"), self)
-        self.toggleMatchCap.setIcon(self.mainTheme.getIcon("search_preserve"))
         self.toggleMatchCap.setCheckable(True)
         self.toggleMatchCap.setChecked(self.doMatchCap)
         self.toggleMatchCap.toggled.connect(self._doToggleMatchCap)
@@ -2299,7 +2317,6 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addSeparator()
 
         self.cancelSearch = QAction(self.tr("Close Search"), self)
-        self.cancelSearch.setIcon(self.mainTheme.getIcon("search_cancel"))
         self.cancelSearch.triggered.connect(self._doClose)
         self.searchOpt.addAction(self.cancelSearch)
 
@@ -2311,15 +2328,14 @@ class GuiDocEditSearch(QFrame):
         self.showReplace = QToolButton(self)
         self.showReplace.setArrowType(Qt.RightArrow)
         self.showReplace.setCheckable(True)
-        self.showReplace.setStyleSheet("QToolButton {border: none; background: transparent;}")
         self.showReplace.toggled.connect(self._doToggleReplace)
 
-        self.searchButton = QPushButton(self.mainTheme.getIcon("search"), "")
+        self.searchButton = QPushButton("")
         self.searchButton.setFixedSize(QSize(bPx, bPx))
         self.searchButton.setToolTip(self.tr("Find in current document"))
         self.searchButton.clicked.connect(self._doSearch)
 
-        self.replaceButton = QPushButton(self.mainTheme.getIcon("search_replace"), "")
+        self.replaceButton = QPushButton("")
         self.replaceButton.setFixedSize(QSize(bPx, bPx))
         self.replaceButton.setToolTip(self.tr("Find and replace in current document"))
         self.replaceButton.clicked.connect(self._doReplace)
@@ -2349,6 +2365,35 @@ class GuiDocEditSearch(QFrame):
         self.replaceButton.setVisible(False)
         self.adjustSize()
 
+        self.updateTheme()
+
+        logger.debug("GuiDocEditSearch initialisation complete")
+
+        return
+
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        qPalette = qApp.palette()
+        self.setPalette(qPalette)
+        self.searchBox.setPalette(qPalette)
+        self.replaceBox.setPalette(qPalette)
+
+        # Set icons
+        self.toggleCase.setIcon(self.mainTheme.getIcon("search_case"))
+        self.toggleWord.setIcon(self.mainTheme.getIcon("search_word"))
+        self.toggleRegEx.setIcon(self.mainTheme.getIcon("search_regex"))
+        self.toggleLoop.setIcon(self.mainTheme.getIcon("search_loop"))
+        self.toggleProject.setIcon(self.mainTheme.getIcon("search_project"))
+        self.toggleMatchCap.setIcon(self.mainTheme.getIcon("search_preserve"))
+        self.cancelSearch.setIcon(self.mainTheme.getIcon("search_cancel"))
+        self.searchButton.setIcon(self.mainTheme.getIcon("search"))
+        self.replaceButton.setIcon(self.mainTheme.getIcon("search_replace"))
+
+        # Set stylesheets
+        self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
+        self.showReplace.setStyleSheet("QToolButton {border: none; background: transparent;}")
+
         # Construct Box Colours
         qPalette = self.searchBox.palette()
         baseCol = qPalette.base().color()
@@ -2366,8 +2411,6 @@ class GuiDocEditSearch(QFrame):
             True: baseCol,
             False: errCol
         }
-
-        logger.debug("GuiDocEditSearch initialisation complete")
 
         return
 
@@ -2394,10 +2437,10 @@ class GuiDocEditSearch(QFrame):
         """
         if self.replaceBox.isVisible():
             if self.searchBox.hasFocus():
-                self.replaceBox.setFocus(True)
+                self.replaceBox.setFocus()
                 return True
             elif self.replaceBox.hasFocus():
-                self.searchBox.setFocus(True)
+                self.searchBox.setFocus()
                 return True
         return False
 
@@ -2487,12 +2530,14 @@ class GuiDocEditSearch(QFrame):
     #  Slots
     ##
 
+    @pyqtSlot()
     def _doClose(self):
         """Hide the search/replace bar.
         """
         self.closeSearch()
         return
 
+    @pyqtSlot()
     def _doSearch(self):
         """Call the search action function for the document editor.
         """
@@ -2503,12 +2548,14 @@ class GuiDocEditSearch(QFrame):
             self.docEditor.findNext()
         return
 
+    @pyqtSlot()
     def _doReplace(self):
         """Call the replace action function for the document editor.
         """
         self.docEditor.replaceNext()
         return
 
+    @pyqtSlot(bool)
     def _doToggleReplace(self, theState):
         """Toggle the show/hide of the replace box.
         """
@@ -2523,36 +2570,42 @@ class GuiDocEditSearch(QFrame):
         self.docEditor.updateDocMargins()
         return
 
+    @pyqtSlot(bool)
     def _doToggleCase(self, theState):
         """Enable/disable case sensitive mode.
         """
         self.isCaseSense = theState
         return
 
+    @pyqtSlot(bool)
     def _doToggleWord(self, theState):
         """Enable/disable whole word search mode.
         """
         self.isWholeWord = theState
         return
 
+    @pyqtSlot(bool)
     def _doToggleRegEx(self, theState):
         """Enable/disable regular expression search mode.
         """
         self.isRegEx = theState
         return
 
+    @pyqtSlot(bool)
     def _doToggleLoop(self, theState):
         """Enable/disable looping the search.
         """
         self.doLoop = theState
         return
 
+    @pyqtSlot(bool)
     def _doToggleProject(self, theState):
         """Enable/disable continuing search in next project file.
         """
         self.doNextFile = theState
         return
 
+    @pyqtSlot(bool)
     def _doToggleMatchCap(self, theState):
         """Enable/disable preserving capitalisation when replacing.
         """
@@ -2615,51 +2668,38 @@ class GuiDocEditHeader(QWidget):
         lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
         self.theTitle.setFont(lblFont)
 
-        buttonStyle = (
-            "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*self.mainTheme.colText)
-
         # Buttons
         self.editButton = QToolButton(self)
-        self.editButton.setIcon(self.mainTheme.getIcon("edit"))
         self.editButton.setContentsMargins(0, 0, 0, 0)
         self.editButton.setIconSize(QSize(fPx, fPx))
         self.editButton.setFixedSize(fPx, fPx)
-        self.editButton.setStyleSheet(buttonStyle)
         self.editButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.editButton.setVisible(False)
         self.editButton.setToolTip(self.tr("Edit document label"))
         self.editButton.clicked.connect(self._editDocument)
 
         self.searchButton = QToolButton(self)
-        self.searchButton.setIcon(self.mainTheme.getIcon("search"))
         self.searchButton.setContentsMargins(0, 0, 0, 0)
         self.searchButton.setIconSize(QSize(fPx, fPx))
         self.searchButton.setFixedSize(fPx, fPx)
-        self.searchButton.setStyleSheet(buttonStyle)
         self.searchButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.searchButton.setVisible(False)
         self.searchButton.setToolTip(self.tr("Search document"))
         self.searchButton.clicked.connect(self._searchDocument)
 
         self.minmaxButton = QToolButton(self)
-        self.minmaxButton.setIcon(self.mainTheme.getIcon("maximise"))
         self.minmaxButton.setContentsMargins(0, 0, 0, 0)
         self.minmaxButton.setIconSize(QSize(fPx, fPx))
         self.minmaxButton.setFixedSize(fPx, fPx)
-        self.minmaxButton.setStyleSheet(buttonStyle)
         self.minmaxButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.minmaxButton.setVisible(False)
         self.minmaxButton.setToolTip(self.tr("Toggle Focus Mode"))
         self.minmaxButton.clicked.connect(self._minmaxDocument)
 
         self.closeButton = QToolButton(self)
-        self.closeButton.setIcon(self.mainTheme.getIcon("close"))
         self.closeButton.setContentsMargins(0, 0, 0, 0)
         self.closeButton.setIconSize(QSize(fPx, fPx))
         self.closeButton.setFixedSize(fPx, fPx)
-        self.closeButton.setStyleSheet(buttonStyle)
         self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.closeButton.setVisible(False)
         self.closeButton.setToolTip(self.tr("Close the document"))
@@ -2682,8 +2722,7 @@ class GuiDocEditHeader(QWidget):
         self.outerBox.setContentsMargins(cM, cM, cM, cM)
         self.setMinimumHeight(fPx + 2*cM)
 
-        # Fix the Colours
-        self.matchColours()
+        self.updateTheme()
 
         logger.debug("GuiDocEditHeader initialisation complete")
 
@@ -2692,6 +2731,28 @@ class GuiDocEditHeader(QWidget):
     ##
     #  Methods
     ##
+
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        self.editButton.setIcon(self.mainTheme.getIcon("edit"))
+        self.searchButton.setIcon(self.mainTheme.getIcon("search"))
+        self.minmaxButton.setIcon(self.mainTheme.getIcon("maximise"))
+        self.closeButton.setIcon(self.mainTheme.getIcon("close"))
+
+        buttonStyle = (
+            "QToolButton {{border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
+        ).format(*self.mainTheme.colText)
+
+        self.editButton.setStyleSheet(buttonStyle)
+        self.searchButton.setStyleSheet(buttonStyle)
+        self.minmaxButton.setStyleSheet(buttonStyle)
+        self.closeButton.setStyleSheet(buttonStyle)
+
+        self.matchColours()
+
+        return
 
     def matchColours(self):
         """Update the colours of the widget to match those of the syntax
@@ -2757,18 +2818,21 @@ class GuiDocEditHeader(QWidget):
     #  Slots
     ##
 
+    @pyqtSlot()
     def _editDocument(self):
         """Open the edit item dialog from the main GUI.
         """
         self.mainGui.editItemLabel(self._docHandle)
         return
 
+    @pyqtSlot()
     def _searchDocument(self):
         """Toggle the visibility of the search box.
         """
         self.docEditor.toggleSearch()
         return
 
+    @pyqtSlot()
     def _closeDocument(self):
         """Trigger the close editor on the main window.
         """
@@ -2779,6 +2843,7 @@ class GuiDocEditHeader(QWidget):
         self.minmaxButton.setVisible(False)
         return
 
+    @pyqtSlot()
     def _minmaxDocument(self):
         """Switch on or off Focus Mode.
         """
@@ -2851,7 +2916,6 @@ class GuiDocEditFooter(QWidget):
 
         # Lines
         self.linesIcon = QLabel("")
-        self.linesIcon.setPixmap(self.mainTheme.getPixmap("status_lines", (self.sPx, self.sPx)))
         self.linesIcon.setContentsMargins(0, 0, 0, 0)
         self.linesIcon.setFixedHeight(self.sPx)
         self.linesIcon.setAlignment(Qt.AlignLeft | Qt.AlignTop)
@@ -2867,7 +2931,6 @@ class GuiDocEditFooter(QWidget):
 
         # Words
         self.wordsIcon = QLabel("")
-        self.wordsIcon.setPixmap(self.mainTheme.getPixmap("status_stats", (self.sPx, self.sPx)))
         self.wordsIcon.setContentsMargins(0, 0, 0, 0)
         self.wordsIcon.setFixedHeight(self.sPx)
         self.wordsIcon.setAlignment(Qt.AlignLeft | Qt.AlignTop)
@@ -2902,7 +2965,7 @@ class GuiDocEditFooter(QWidget):
         self.setMinimumHeight(fPx + 2*cM)
 
         # Fix the Colours
-        self.matchColours()
+        self.updateTheme()
         self.updateLineCount()
         self.updateCounts()
 
@@ -2913,6 +2976,16 @@ class GuiDocEditFooter(QWidget):
     ##
     #  Methods
     ##
+
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        self.linesIcon.setPixmap(self.mainTheme.getPixmap("status_lines", (self.sPx, self.sPx)))
+        self.wordsIcon.setPixmap(self.mainTheme.getPixmap("status_stats", (self.sPx, self.sPx)))
+
+        self.matchColours()
+
+        return
 
     def matchColours(self):
         """Update the colours of the widget to match those of the syntax
