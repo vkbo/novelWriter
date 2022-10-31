@@ -74,10 +74,10 @@ class NWProject:
         self._langData  = {}                 # Localisation data
 
         # Project Status
-        self.projOpened  = 0      # The time stamp of when the project file was opened
-        self.projChanged = False  # The project has unsaved changes
-        self.projAltered = False  # The project has been altered this session
-        self.lockedBy    = None   # Data on which computer has the project open
+        self._projOpened  = 0      # The time stamp of when the project file was opened
+        self._projChanged = False  # The project has unsaved changes
+        self._projAltered = False  # The project has been altered this session
+        self.lockedBy     = None   # Data on which computer has the project open
 
         # Class Settings
         self.projPath    = None  # The full path to where the currently open project is saved
@@ -86,7 +86,6 @@ class NWProject:
         self.projContent = None  # The full path to the project's content folder
         self.projDict    = None  # The spell check dictionary
         self.projSpell   = None  # The spell check language, if different than default
-        self.projLang    = None  # The project language, used for builds
         self.projFiles   = []    # A list of all files in the content folder on load
 
         # Project Settings
@@ -95,17 +94,9 @@ class NWProject:
         self.spellCheck  = False  # Controls the spellcheck-as-you-type feature
         self.statusItems = None   # Novel file progress status values
         self.importItems = None   # Note file importance values
-        self.lastEdited  = None   # The handle of the last file to be edited
-        self.lastViewed  = None   # The handle of the last file to be viewed
-        self.lastNovel   = None   # The handle of the last novel root viewed
-        self.lastOutline = None   # The handle of the last outline root viewed
-        self.lastWCount  = 0      # The project word count from last session
-        self.lastNovelWC = 0      # The novel files word count from last session
-        self.lastNotesWC = 0      # The note files word count from last session
         self.currWCount  = 0      # The project word count in current session
         self.currNovelWC = 0      # The novel files word count in cutrent session
         self.currNotesWC = 0      # The note files word count in cutrent session
-        self.doBackup    = True   # Run project backup on exit
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
@@ -134,6 +125,18 @@ class NWProject:
     @property
     def options(self):
         return self._optState
+
+    @property
+    def projOpened(self):
+        return self._projOpened
+
+    @property
+    def projChanged(self):
+        return self._projChanged or self._data.changed
+
+    @property
+    def projAltered(self):
+        return self._projAltered
 
     ##
     #  Item Methods
@@ -243,9 +246,9 @@ class NWProject:
         default values.
         """
         # Project Status
-        self.projOpened  = 0
-        self.projChanged = False
-        self.projAltered = False
+        self._projOpened  = 0
+        self._projChanged = False
+        self._projAltered = False
 
         # Project Tree
         self._projTree.clear()
@@ -259,7 +262,6 @@ class NWProject:
         self.projContent = None
         self.projDict    = None
         self.projSpell   = None
-        self.projLang    = None
         self.projFiles   = []
         self.autoReplace = {}
         self.titleFormat = {
@@ -280,11 +282,6 @@ class NWProject:
         self.importItems.write(None, self.tr("Minor"), (200, 50,  0))
         self.importItems.write(None, self.tr("Major"), (200, 150, 0))
         self.importItems.write(None, self.tr("Main"),  (50,  200, 0))
-        self.lastEdited = None
-        self.lastViewed = None
-        self.lastWCount = 0
-        self.lastNovelWC = 0
-        self.lastNotesWC = 0
         self.currWCount = 0
         self.currNovelWC = 0
         self.currNotesWC = 0
@@ -414,7 +411,7 @@ class NWProject:
 
         # Finalise
         if popCustom or popMinimal:
-            self.projOpened = time()
+            self._projOpened = time()
             self.setProjectChanged(True)
             self.saveProject(autoSave=True)
 
@@ -484,10 +481,10 @@ class NWProject:
 
         # print(json.dumps(xmlData, indent=2))
 
-        nwxRoot = xmlData.get("xmlRoot", "")
-        appVersion = xmlData.get("appVersion", self.tr("Unknown"))
-        hexVersion = xmlData.get("hexVersion", 0x0000)
-        xmlVersion = xmlData.get("xmlVersion", self.tr("Unknown"))
+        nwxRoot = xmlReader.xmlRoot
+        appVersion = xmlReader.appVersion or self.tr("Unknown")
+        hexVersion = xmlReader.hexVersion or "0x0"
+        xmlVersion = xmlReader.xmlVersion or self.tr("Unknown")
 
         if not xmlParsed:
             if xmlReader.state == XMLReadState.NOT_NWX_FILE:
@@ -555,17 +552,8 @@ class NWProject:
 
         xmlSettings = xmlData.get("settings", {})
 
-        self.doBackup = xmlSettings.get("doBackup", False)
-        self.projLang = xmlSettings.get("language", None)
-        self.spellCheck = xmlSettings.get("spellCheck", False)
-        self.projSpell = xmlSettings.get("spellLang", None)
-        self.lastEdited = xmlSettings.get("lastEdited", None)
-        self.lastViewed = xmlSettings.get("lastViewed", None)
-        self.lastNovel = xmlSettings.get("lastNovel", None)
-        self.lastOutline = xmlSettings.get("lastOutline", None)
-        self.lastWCount = xmlSettings.get("lastWordCount", 0)
-        self.lastNovelWC = xmlSettings.get("novelWordCount", 0)
-        self.lastNotesWC = xmlSettings.get("notesWordCount", 0)
+        self.spellCheck = self._data.spellCheck
+        self.projSpell = self._data.spellLang
         self.statusItems.unpack(xmlSettings.get("status", {}))
         self.importItems.unpack(xmlSettings.get("import", {}))
         self.autoReplace = xmlSettings.get("autoReplace", {})
@@ -590,7 +578,9 @@ class NWProject:
         self._deprecatedFiles()
 
         # Update recent projects
-        self.mainConf.updateRecentCache(self.projPath, self._data.name, self.lastWCount, time())
+        self.mainConf.updateRecentCache(
+            self.projPath, self._data.name, self._data.getLastCount("total"), time()
+        )
         self.mainConf.saveRecentCache()
 
         # Check the project tree consistency
@@ -605,8 +595,8 @@ class NWProject:
         self._loadProjectLocalisation()
         self.updateWordCounts()
 
-        self.projOpened = time()
-        self.projAltered = False
+        self._projOpened = time()
+        self._projAltered = False
 
         self._writeLockFile()
         self.setProjectChanged(False)
@@ -647,7 +637,7 @@ class NWProject:
         })
 
         self.updateWordCounts()
-        editTime = int(self._data.editTime + saveTime - self.projOpened)
+        editTime = int(self._data.editTime + saveTime - self._projOpened)
 
         # Save Project Meta
         xProject = etree.SubElement(nwXML, "project")
@@ -660,14 +650,14 @@ class NWProject:
 
         # Save Project Settings
         xSettings = etree.SubElement(nwXML, "settings")
-        self._packProjectValue(xSettings, "doBackup", self.doBackup)
-        self._packProjectValue(xSettings, "language", self.projLang)
-        self._packProjectValue(xSettings, "spellCheck", self.spellCheck)
-        self._packProjectValue(xSettings, "spellLang", self.projSpell)
-        self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
-        self._packProjectValue(xSettings, "lastViewed", self.lastViewed)
-        self._packProjectValue(xSettings, "lastNovel", self.lastNovel)
-        self._packProjectValue(xSettings, "lastOutline", self.lastOutline)
+        self._packProjectValue(xSettings, "doBackup", self._data.doBackup)
+        self._packProjectValue(xSettings, "language", self._data.language)
+        self._packProjectValue(xSettings, "spellCheck", self._data.spellCheck)
+        self._packProjectValue(xSettings, "spellLang", self._data.spellLang)
+        self._packProjectValue(xSettings, "lastEdited", self._data.getLastHandle("editor"))
+        self._packProjectValue(xSettings, "lastViewed", self._data.getLastHandle("viewer"))
+        self._packProjectValue(xSettings, "lastNovel", self._data.getLastHandle("noveltree"))
+        self._packProjectValue(xSettings, "lastOutline", self._data.getLastHandle("outline"))
         self._packProjectValue(xSettings, "lastWordCount", self.currWCount)
         self._packProjectValue(xSettings, "novelWordCount", self.currNovelWC)
         self._packProjectValue(xSettings, "notesWordCount", self.currNotesWC)
@@ -942,28 +932,6 @@ class NWProject:
 
         return True
 
-    def setProjBackup(self, doBackup):
-        """Set whether projects should be backed up or not. The user
-        will be notified in case required settings are missing.
-        """
-        self.doBackup = doBackup
-        if doBackup:
-            if not os.path.isdir(self.mainConf.backupPath):
-                self.mainGui.makeAlert(self.tr(
-                    "You must set a valid backup path in Preferences to use "
-                    "the automatic project backup feature."
-                ), nwAlert.WARN)
-                return False
-
-            if self._data.name == "":
-                self.mainGui.makeAlert(self.tr(
-                    "You must set a valid project name in Project Settings to "
-                    "use the automatic project backup feature."
-                ), nwAlert.WARN)
-                return False
-
-        return True
-
     def setSpellCheck(self, theMode):
         """Enable/disable spell checking.
         """
@@ -986,8 +954,8 @@ class NWProject:
         """Set the project-specific language.
         """
         theLang = checkStringNone(theLang, None)
-        if self.projLang != theLang:
-            self.projLang = theLang
+        if self._data.language != theLang:
+            self._data.setLanguage(theLang)
             self._loadProjectLocalisation()
             self.setProjectChanged(True)
         return True
@@ -1001,38 +969,6 @@ class NWProject:
             logger.warning("Sizes of new and old tree order do not match")
         self._projTree.setOrder(newOrder)
         self.setProjectChanged(True)
-        return True
-
-    def setLastEdited(self, tHandle):
-        """Set last edited project item.
-        """
-        if self.lastEdited != tHandle:
-            self.lastEdited = tHandle
-            self.setProjectChanged(True)
-        return True
-
-    def setLastViewed(self, tHandle):
-        """Set last viewed project item.
-        """
-        if self.lastViewed != tHandle:
-            self.lastViewed = tHandle
-            self.setProjectChanged(True)
-        return True
-
-    def setLastNovelViewed(self, tHandle):
-        """Set last viewed novel root in the novel tree.
-        """
-        if self.lastNovel != tHandle:
-            self.lastNovel = tHandle
-            self.setProjectChanged(True)
-        return True
-
-    def setLastOutlineViewed(self, tHandle):
-        """Set last viewed novel root in the outline view.
-        """
-        if self.lastOutline != tHandle:
-            self.lastOutline = tHandle
-            self.setProjectChanged(True)
         return True
 
     def setStatusColours(self, newCols, delCols):
@@ -1068,12 +1004,15 @@ class NWProject:
         """Toggle the project changed flag, and propagate the
         information to the GUI statusbar.
         """
-        self.projChanged = bValue
+        self._projChanged = bValue
         self.mainGui.mainStatus.doUpdateProjectStatus(bValue)
-        if bValue:
+        if bValue is True:
             # If we've changed the project at all, this should be True
-            self.projAltered = True
-        return self.projChanged
+            self._projAltered = True
+        else:
+            # If we're resetting the status, also reset for data class
+            self._data.resetProjectChanged()
+        return self._projChanged
 
     ##
     #  Getters
@@ -1083,7 +1022,7 @@ class NWProject:
         """Get the total project edit time, including the time spent in
         the current session.
         """
-        return round(self._data.editTime + time() - self.projOpened)
+        return round(self._data.editTime + time() - self._projOpened)
 
     def getProjectItems(self):
         """This function ensures that the item tree loaded is sent to
@@ -1193,11 +1132,11 @@ class NWProject:
     def _loadProjectLocalisation(self):
         """Load the language data for the current project language.
         """
-        if self.projLang is None:
+        if self._data.language is None:
             self._langData = {}
             return False
 
-        langFile = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self.projLang)
+        langFile = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self._data.language)
         if not os.path.isfile(langFile):
             langFile = os.path.join(self.mainConf.nwLangPath, "project_en_GB.json")
 
@@ -1421,8 +1360,9 @@ class NWProject:
         isFile = os.path.isfile(sessionFile)
 
         nowTime = time()
-        sessDiff = self.currWCount - self.lastWCount
-        sessTime = nowTime - self.projOpened
+        lastCount = self._data.getLastCount("total")
+        sessDiff = self.currWCount - lastCount
+        sessTime = nowTime - self._projOpened
 
         logger.info("The session lasted %d sec and added %d words", int(sessTime), sessDiff)
         if sessTime < 300 and sessDiff == 0:
@@ -1433,14 +1373,14 @@ class NWProject:
             with open(sessionFile, mode="a+", encoding="utf-8") as outFile:
                 if not isFile:
                     # It's a new file, so add a header
-                    if self.lastWCount > 0:
-                        outFile.write("# Offset %d\n" % self.lastWCount)
+                    if lastCount > 0:
+                        outFile.write("# Offset %d\n" % lastCount)
                     outFile.write("# %-17s  %-19s  %8s  %8s  %8s\n" % (
                         "Start Time", "End Time", "Novel", "Notes", "Idle"
                     ))
 
                 outFile.write("%-19s  %-19s  %8d  %8d  %8d\n" % (
-                    formatTimeStamp(self.projOpened),
+                    formatTimeStamp(self._projOpened),
                     formatTimeStamp(nowTime),
                     self.currNovelWC,
                     self.currNotesWC,

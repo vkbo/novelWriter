@@ -117,7 +117,7 @@ class GuiProjectSettings(PagedDialog):
         self.theProject.data.setName(projName)
         self.theProject.data.setTitle(bookTitle)
         self.theProject.data.setAuthors(bookAuthors)
-        self.theProject.setProjBackup(doBackup)
+        self.theProject.data.setDoBackup(doBackup)
 
         # Remember this as updating spell dictionary can be expensive
         self._spellChanged = self.theProject.setSpellLang(spellLang)
@@ -258,7 +258,7 @@ class GuiProjectEditMain(QWidget):
             self.spellLang.setCurrentIndex(spellIdx)
 
         self.doBackup = QSwitch(self)
-        self.doBackup.setChecked(not self.theProject.doBackup)
+        self.doBackup.setChecked(not self.theProject.data.doBackup)
         self.mainForm.addRow(
             self.tr("No backup on close"),
             self.doBackup,

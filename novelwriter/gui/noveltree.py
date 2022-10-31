@@ -109,7 +109,7 @@ class GuiNovelView(QWidget):
     def refreshTree(self):
         """Refresh the current tree.
         """
-        self.novelTree.refreshTree(rootHandle=self.theProject.lastNovel)
+        self.novelTree.refreshTree(rootHandle=self.theProject.data.getLastHandle("noveltree"))
         return
 
     def clearProject(self):
@@ -122,7 +122,7 @@ class GuiNovelView(QWidget):
     def openProjectTasks(self):
         """Run open project tasks.
         """
-        lastNovel = self.theProject.lastNovel
+        lastNovel = self.theProject.data.getLastHandle("noveltree")
         if lastNovel not in self.theProject.tree:
             lastNovel = self.theProject.tree.findRoot(nwItemClass.NOVEL)
 
@@ -319,7 +319,7 @@ class GuiNovelToolBar(QWidget):
     def _refreshNovelTree(self):
         """Rebuild the current tree.
         """
-        rootHandle = self.theProject.lastNovel
+        rootHandle = self.theProject.data.getLastHandle("noveltree")
         self.novelView.novelTree.refreshTree(rootHandle=rootHandle, overRide=True)
         return
 
@@ -485,7 +485,7 @@ class GuiNovelTree(QTreeWidget):
             titleKey = selItem[0].data(self.C_TITLE, self.D_KEY)
 
         self._populateTree(rootHandle)
-        self.theProject.setLastNovelViewed(rootHandle)
+        self.theProject.data.setLastHandle(rootHandle, "noveltree")
 
         if titleKey is not None and titleKey in self._treeMap:
             self._treeMap[titleKey].setSelected(True)
@@ -523,7 +523,8 @@ class GuiNovelTree(QTreeWidget):
             self._lastCol = colType
             self.setColumnHidden(self.C_EXTRA, colType == NovelTreeColumn.HIDDEN)
             if doRefresh:
-                self.refreshTree(rootHandle=self.theProject.lastNovel, overRide=True)
+                lastNovel = self.theProject.data.getLastHandle("noveltree")
+                self.refreshTree(rootHandle=lastNovel, overRide=True)
         return
 
     def setActiveHandle(self, tHandle):

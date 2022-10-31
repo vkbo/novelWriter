@@ -168,7 +168,7 @@ class GuiBuildNovel(QDialog):
         for langID, langName in theLangs:
             self.buildLang.addItem(langName, langID)
 
-        langIdx = self.buildLang.findData(self.theProject.projLang)
+        langIdx = self.buildLang.findData(self.theProject.data.language)
         if langIdx != -1:
             self.buildLang.setCurrentIndex(langIdx)
 

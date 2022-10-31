@@ -25,7 +25,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 
-from novelwriter.common import checkInt, simplified
+from novelwriter.common import (
+    checkBool, checkInt, checkStringNone, simplified
+)
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +43,14 @@ class NWProjectData:
         self._saveCount = 0
         self._autoCount = 0
         self._editTime = 0
+
+        # Project Settings
+        self._doBackup = True
+        self._language = None
+        self._spellCheck = False
+        self._spellLang = None
+        self._lastHandle = {}
+        self._lastCount = {}
 
         # Internal
         self._changed = False
@@ -75,6 +85,26 @@ class NWProjectData:
     def editTime(self):
         return self._editTime
 
+    @property
+    def doBackup(self):
+        return self._doBackup
+
+    @property
+    def language(self):
+        return self._language
+
+    @property
+    def spellCheck(self):
+        return self._spellCheck
+
+    @property
+    def spellLang(self):
+        return self._spellLang
+
+    @property
+    def changed(self):
+        return self._changed
+
     ##
     #  Methods
     ##
@@ -94,9 +124,18 @@ class NWProjectData:
         self._changed = True
         return
 
+    def resetProjectChanged(self):
+        self._changed = False
+
     ##
     #  Getters
     ##
+
+    def getLastHandle(self, component):
+        return self._lastHandle.get(component, None)
+
+    def getLastCount(self, type):
+        return self._lastCount.get(type, 0)
 
     def getAuthors(self, trAnd="and"):
         """Return a formatted string of authors.
@@ -152,6 +191,36 @@ class NWProjectData:
 
     def setEditTime(self, value):
         self._editTime = checkInt(value, 0)
+        self._changed = True
+        return
+
+    def setDoBackup(self, value):
+        self._doBackup = checkBool(value, False)
+        self._changed = True
+        return
+
+    def setLanguage(self, value):
+        self._language = checkStringNone(value, None)
+        self._changed = True
+        return
+
+    def setSpellCheck(self, value):
+        self._spellCheck = checkBool(value, False)
+        self._changed = True
+        return
+
+    def setSpellLang(self, value):
+        self._spellLang = checkStringNone(value, None)
+        self._changed = True
+        return
+
+    def setLastHandle(self, value, component):
+        self._lastHandle[component] = checkStringNone(value, None)
+        self._changed = True
+        return
+
+    def setLastCount(self, value, type):
+        self._lastCount[type] = checkInt(value, 0)
         self._changed = True
         return
 

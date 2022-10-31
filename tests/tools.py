@@ -195,7 +195,7 @@ def buildTestProject(theObject, projPath):
     aDoc.writeDocument("### %s\n\n" % theProject.tr("New Scene"))
     theProject.index.reIndexHandle(xHandle[8])
 
-    theProject.projOpened = time.time()
+    theProject._projOpened = time.time()
     theProject.setProjectChanged(True)
     theProject.saveProject(autoSave=True)
 

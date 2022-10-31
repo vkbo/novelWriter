@@ -417,7 +417,7 @@ class GuiMain(QMainWindow):
         if self.theProject.projAltered:
             saveOK = self.saveProject()
             doBackup = False
-            if self.theProject.doBackup and self.mainConf.backupOnClose:
+            if self.theProject.data.doBackup and self.mainConf.backupOnClose:
                 doBackup = True
                 if self.mainConf.askBeforeBackup:
                     msgYes = self.askQuestion(
@@ -532,11 +532,13 @@ class GuiMain(QMainWindow):
         self._updateStatusWordCount()
 
         # Restore previously open documents, if any
-        if self.theProject.lastEdited is not None:
-            self.openDocument(self.theProject.lastEdited, doScroll=True)
+        lastEdited = self.theProject.data.getLastHandle("editor")
+        if lastEdited is not None:
+            self.openDocument(lastEdited, doScroll=True)
 
-        if self.theProject.lastViewed is not None:
-            self.viewDocument(self.theProject.lastViewed)
+        lastViewed = self.theProject.data.getLastHandle("viewer")
+        if lastViewed is not None:
+            self.viewDocument(lastViewed)
 
         # Check if we need to rebuild the index
         if self.theProject.index.indexBroken:
@@ -607,7 +609,7 @@ class GuiMain(QMainWindow):
         if self.docEditor.loadText(tHandle, tLine):
             if changeFocus:
                 self.docEditor.setFocus()
-            self.theProject.setLastEdited(tHandle)
+            self.theProject.data.setLastHandle(tHandle, "editor")
             self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
             self.novelView.setActiveHandle(tHandle)
         else:
@@ -676,7 +678,7 @@ class GuiMain(QMainWindow):
                 tHandle = self.projView.getSelectedHandle()
 
             if tHandle is None:
-                tHandle = self.theProject.lastViewed
+                tHandle = self.theProject.data.getLastHandle("viewer")
 
             if tHandle is None:
                 logger.debug("No document to view, giving up")
@@ -1223,14 +1225,14 @@ class GuiMain(QMainWindow):
         """Close the document edit panel. This does not hide the editor.
         """
         self.closeDocument()
-        self.theProject.setLastEdited(None)
+        self.theProject.data.setLastHandle(None, "editor")
         return
 
     def closeDocViewer(self):
         """Close the document view panel.
         """
         self.docViewer.clearViewer()
-        self.theProject.setLastViewed(None)
+        self.theProject.data.setLastHandle(None, "viewer")
         bPos = self.splitMain.sizes()
         self.splitView.setVisible(False)
         self.splitDocs.setSizes([bPos[1], 0])
@@ -1556,10 +1558,10 @@ class GuiMain(QMainWindow):
         self.theProject.updateWordCounts()
         if self.mainConf.incNotesWCount:
             currWords = self.theProject.currWCount
-            diffWords = currWords - self.theProject.lastWCount
+            diffWords = currWords - self.theProject.data.getLastCount("total")
         else:
             currWords = self.theProject.currNovelWC
-            diffWords = currWords - self.theProject.lastNovelWC
+            diffWords = currWords - self.theProject.data.getLastCount("novel")
 
         self.mainStatus.setProjectStats(currWords, diffWords)
 

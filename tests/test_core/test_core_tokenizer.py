@@ -137,7 +137,7 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
     """Test handling files and text in the Tokenizer class.
     """
     theProject = NWProject(mockGUI)
-    theProject.projLang = "en"
+    theProject.data.setLanguage("en")
     theProject._loadProjectLocalisation()
 
     theToken = BareTokenizer(theProject)
@@ -884,7 +884,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     """Test the header and page parser of the Tokenizer class.
     """
     theProject = NWProject(mockGUI)
-    theProject.projLang = "en"
+    theProject.data.setLanguage("en")
     theProject._loadProjectLocalisation()
     theToken = BareTokenizer(theProject)
 

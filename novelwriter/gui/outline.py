@@ -114,7 +114,7 @@ class GuiOutlineView(QWidget):
     def refreshTree(self):
         """Refresh the current tree.
         """
-        self.outlineTree.refreshTree(rootHandle=self.theProject.lastOutline)
+        self.outlineTree.refreshTree(rootHandle=self.theProject.data.getLastHandle("outline"))
         return
 
     def clearProject(self):
@@ -126,7 +126,7 @@ class GuiOutlineView(QWidget):
     def openProjectTasks(self):
         """Run open project tasks.
         """
-        lastOutline = self.theProject.lastOutline
+        lastOutline = self.theProject.data.getLastHandle("outline")
         if not (lastOutline in self.theProject.tree or lastOutline is None):
             lastOutline = self.theProject.tree.findRoot(nwItemClass.NOVEL)
 
@@ -504,7 +504,7 @@ class GuiOutlineTree(QTreeWidget):
             return
 
         self._populateTree(rootHandle)
-        self.theProject.setLastOutlineViewed(rootHandle or None)
+        self.theProject.data.setLastHandle(rootHandle or None, "outline")
 
         return
 

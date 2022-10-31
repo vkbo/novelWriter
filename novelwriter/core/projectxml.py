@@ -69,9 +69,15 @@ class ProjectXMLReader:
         self._state = XMLReadState.NO_ACTION
 
         self._data = {}
-        self._version = 0x0000
+        self._content = []
         self._statusData = {}
         self._statusMap = {}
+
+        self._root = ""
+        self._version = 0x0000
+        self._appVersion = ""
+        self._hexVersion = ""
+        self._timeStamp = ""
 
         return
 
@@ -84,8 +90,32 @@ class ProjectXMLReader:
         return self._data
 
     @property
+    def content(self):
+        return self._content
+
+    @property
     def state(self):
         return self._state
+
+    @property
+    def xmlRoot(self):
+        return self._root
+
+    @property
+    def xmlVersion(self):
+        return self._version
+
+    @property
+    def appVersion(self):
+        return self._appVersion
+
+    @property
+    def hexVersion(self):
+        return self._hexVersion
+
+    @property
+    def timeStamp(self):
+        return self._timeStamp
 
     ##
     #  Methods
@@ -95,6 +125,7 @@ class ProjectXMLReader:
         """Read and parse the project XML file.
         """
         self._data = {}
+        self._content = []
 
         try:
             xml = etree.parse(self._path)
@@ -119,8 +150,8 @@ class ProjectXMLReader:
                 return False
 
         xRoot = xml.getroot()
-        self._data["xmlRoot"] = str(xRoot.tag)
-        if xRoot.tag != "novelWriterXML":
+        self._root = str(xRoot.tag)
+        if self._root != "novelWriterXML":
             self._state = XMLReadState.NOT_NWX_FILE
             return False
 
@@ -147,17 +178,16 @@ class ProjectXMLReader:
             self._state = XMLReadState.UNKNOWN_VERSION
             return False
 
-        self._data["xmlVersion"] = self._version
-        self._data["appVersion"] = str(xRoot.attrib.get("appVersion", ""))
-        self._data["hexVersion"] = str(xRoot.attrib.get("appVersion", ""))
-        self._data["timeStamp"] = str(xRoot.attrib.get("timeStamp", ""))
+        self._appVersion = str(xRoot.attrib.get("appVersion", ""))
+        self._hexVersion = str(xRoot.attrib.get("appVersion", ""))
+        self._timeStamp = str(xRoot.attrib.get("timeStamp", ""))
 
         status = True
         for xSection in xRoot:
             if xSection.tag == "project":
                 status &= self._parseProjectMeta(xSection, projData)
             elif xSection.tag == "settings":
-                status &= self._parseProjectSettings(xSection)
+                status &= self._parseProjectSettings(xSection, projData)
             elif xSection.tag == "content":
                 if self._version >= 0x0104:
                     status &= self._parseProjectContent(xSection)
@@ -202,7 +232,7 @@ class ProjectXMLReader:
                 logger.warning("Ignored <root/project/%s> in xml", xItem.tag)
         return True
 
-    def _parseProjectSettings(self, xSection):
+    def _parseProjectSettings(self, xSection, projData):
         """Parse the settings section of the XML file.
         """
         logger.debug("Parsing xml <root/settings>")
@@ -212,27 +242,27 @@ class ProjectXMLReader:
         titleFormat = {}
         for xItem in xSection:
             if xItem.tag == "doBackup":
-                data["doBackup"] = checkBool(xItem.text, False)
+                projData.setDoBackup(xItem.text)
             elif xItem.tag == "language":
-                data["language"] = checkStringNone(xItem.text, None)
+                projData.setLanguage(xItem.text)
             elif xItem.tag == "spellCheck":
-                data["spellCheck"] = checkBool(xItem.text, False)
+                projData.setSpellCheck(xItem.text)
             elif xItem.tag == "spellLang":
-                data["spellLang"] = checkStringNone(xItem.text, None)
+                projData.setSpellLang(xItem.text)
             elif xItem.tag == "lastEdited":
-                data["lastEdited"] = checkStringNone(xItem.text, None)
+                projData.setLastHandle(xItem.text, "editor")
             elif xItem.tag == "lastViewed":
-                data["lastViewed"] = checkStringNone(xItem.text, None)
+                projData.setLastHandle(xItem.text, "viewer")
             elif xItem.tag == "lastNovel":
-                data["lastNovel"] = checkStringNone(xItem.text, None)
+                projData.setLastHandle(xItem.text, "noveltree")
             elif xItem.tag == "lastOutline":
-                data["lastOutline"] = checkStringNone(xItem.text, None)
+                projData.setLastHandle(xItem.text, "outline")
             elif xItem.tag == "lastWordCount":
-                data["lastWordCount"] = checkInt(xItem.text, 0)
+                projData.setLastCount(xItem.text, "total")
             elif xItem.tag == "novelWordCount":
-                data["novelWordCount"] = checkInt(xItem.text, 0)
+                projData.setLastCount(xItem.text, "novel")
             elif xItem.tag == "notesWordCount":
-                data["notesWordCount"] = checkInt(xItem.text, 0)
+                projData.setLastCount(xItem.text, "notes")
             elif xItem.tag == "status":
                 data["status"] = self._parseStatusImport(xItem, "status")
             elif xItem.tag in ("import", "importance"):
@@ -293,6 +323,7 @@ class ProjectXMLReader:
                     else:
                         logger.warning("Ignored <root/content/item/%s> in xml", xVal.tag)
                 data.append(item)
+                self._content.append(item)
             else:
                 logger.warning("Ignored item <root/content/%s> in xml", xItem.tag)
 
@@ -357,6 +388,7 @@ class ProjectXMLReader:
                     item["type"] = "ROOT"
 
                 data.append(item)
+                self._content.append(item)
             else:
                 logger.warning("Ignored <root/content/%s> in xml", xItem.tag)
 

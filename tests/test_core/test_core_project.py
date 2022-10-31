@@ -927,7 +927,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
 
     # Edit Time
     theProject.data.setEditTime(1234)
-    theProject.projOpened = 1600000000
+    theProject._projOpened = 1600000000
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.project.time", lambda: 1600005600)
         assert theProject.getCurrentEditTime() == 6834
@@ -939,28 +939,14 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     assert theProject.trashFolder() == hTrash
     assert theProject.trashFolder() == hTrash
 
-    # Project backup
-    assert theProject.doBackup is True
-    assert theProject.setProjBackup(False)
-    assert theProject.doBackup is False
-
-    assert not theProject.setProjBackup(True)
-    theProject.mainConf.backupPath = tmpDir
-    assert theProject.setProjBackup(True)
-
-    theProject.data.setName("")
-    assert not theProject.setProjBackup(True)
-    theProject.data.setName("A Name")
-    assert theProject.setProjBackup(True)
-
     # Spell check
-    theProject.projChanged = False
+    theProject.setProjectChanged(False)
     assert theProject.setSpellCheck(True)
     assert not theProject.setSpellCheck(False)
     assert theProject.projChanged
 
     # Spell language
-    theProject.projChanged = False
+    theProject.setProjectChanged(False)
     assert theProject.projSpell is None
     assert theProject.setSpellLang(None) is False
     assert theProject.projSpell is None
@@ -971,31 +957,31 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     assert theProject.projChanged
 
     # Project Language
-    theProject.projChanged = False
-    theProject.projLang = "en"
+    theProject.setProjectChanged(False)
+    theProject.data.setLanguage("en")
     assert theProject.setProjectLang(None) is True
-    assert theProject.projLang is None
+    assert theProject.data.language is None
     assert theProject.setProjectLang("en_GB") is True
-    assert theProject.projLang == "en_GB"
+    assert theProject.data.language == "en_GB"
 
     # Language Lookup
     assert theProject.localLookup(1) == "One"
     assert theProject.localLookup(10) == "Ten"
 
     # Last edited
-    theProject.projChanged = False
-    assert theProject.setLastEdited("0123456789abc")
-    assert theProject.lastEdited == "0123456789abc"
+    theProject.setProjectChanged(False)
+    theProject._data.setLastHandle("0123456789abc", "editor")
+    assert theProject._data.getLastHandle("editor") == "0123456789abc"
     assert theProject.projChanged
 
     # Last viewed
-    theProject.projChanged = False
-    assert theProject.setLastViewed("0123456789abc")
-    assert theProject.lastViewed == "0123456789abc"
+    theProject.setProjectChanged(False)
+    theProject._data.setLastHandle("0123456789abc", "viewer")
+    assert theProject._data.getLastHandle("viewer") == "0123456789abc"
     assert theProject.projChanged
 
     # Autoreplace
-    theProject.projChanged = False
+    theProject.setProjectChanged(False)
     assert theProject.setAutoReplace({"A": "B", "C": "D"})
     assert theProject.autoReplace == {"A": "B", "C": "D"}
     assert theProject.projChanged
@@ -1019,7 +1005,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
 
     # Session stats
     theProject.currWCount = 200
-    theProject.lastWCount = 100
+    theProject.data.setLastCount(100, "total")
     with monkeypatch.context() as mp:
         mp.setattr("os.path.isdir", lambda *a, **k: False)
         assert not theProject._appendSessionStats(idleTime=0)
@@ -1033,7 +1019,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     assert theProject.projMeta == os.path.join(fncDir, "meta")
     statsFile = os.path.join(theProject.projMeta, nwFiles.SESS_STATS)
 
-    theProject.projOpened = 1600002000
+    theProject._projOpened = 1600002000
     theProject.currNovelWC = 200
     theProject.currNotesWC = 100
 
