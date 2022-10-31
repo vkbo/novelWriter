@@ -1,26 +1,28 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-31 18:11:11">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-31 21:24:31">
   <project>
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1387</saveCount>
+    <saveCount>1403</saveCount>
     <autoCount>236</autoCount>
-    <editTime>69358</editTime>
+    <editTime>69454</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
     <language>en_GB</language>
     <spellCheck>True</spellCheck>
     <spellLang>None</spellLang>
-    <lastEdited>636b6aa9b697b</lastEdited>
-    <lastViewed>636b6aa9b697b</lastViewed>
-    <lastNovel>7031beac91f75</lastNovel>
-    <lastOutline>7031beac91f75</lastOutline>
     <lastWordCount>1363</lastWordCount>
     <novelWordCount>954</novelWordCount>
     <notesWordCount>409</notesWordCount>
+    <lastHandle>
+      <entry component="editor">636b6aa9b697b</entry>
+      <entry component="viewer">636b6aa9b697b</entry>
+      <entry component="novelTree">7031beac91f75</entry>
+      <entry component="outline">7031beac91f75</entry>
+    </lastHandle>
     <autoReplace>
       <entry key="A">B</entry>
       <entry key="B">E</entry>

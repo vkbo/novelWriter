@@ -197,6 +197,8 @@ class GuiMain(QMainWindow):
         # Connect Signals
         # ===============
 
+        self.theProject.projectStatusChanged.connect(self.mainStatus.doUpdateProjectStatus)
+
         self.viewsBar.viewChangeRequested.connect(self._changeView)
 
         self.projView.selectedItemChanged.connect(self.itemDetails.updateViewBox)

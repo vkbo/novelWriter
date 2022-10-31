@@ -266,14 +266,10 @@ class ProjectXMLReader:
                 projData.setSpellCheck(xItem.text)
             elif xItem.tag == "spellLang":
                 projData.setSpellLang(xItem.text)
-            elif xItem.tag == "lastEdited":
+            elif xItem.tag == "lastEdited":  # Discontinued in 1.4
                 projData.setLastHandle(xItem.text, "editor")
-            elif xItem.tag == "lastViewed":
+            elif xItem.tag == "lastViewed":  # Discontinued in 1.4
                 projData.setLastHandle(xItem.text, "viewer")
-            elif xItem.tag == "lastNovel":
-                projData.setLastHandle(xItem.text, "noveltree")
-            elif xItem.tag == "lastOutline":
-                projData.setLastHandle(xItem.text, "outline")
             elif xItem.tag == "lastWordCount":
                 projData.setLastCount(xItem.text, "total")
             elif xItem.tag == "novelWordCount":
@@ -284,9 +280,11 @@ class ProjectXMLReader:
                 self._parseStatusImport(xItem, projData.itemStatus)
             elif xItem.tag in ("import", "importance"):
                 self._parseStatusImport(xItem, projData.itemImport)
+            elif xItem.tag == "lastHandle":
+                projData.setLastHandle(self._parseDictKeyText(xItem, "component"))
             elif xItem.tag == "autoReplace":
                 if self._version >= 0x0102:
-                    projData.setAutoReplace(self._parseDictKeyText(xItem))
+                    projData.setAutoReplace(self._parseDictKeyText(xItem, "key"))
                 else:  # Pre 1.2 format
                     projData.setAutoReplace(self._parseDictTagText(xItem))
             elif xItem.tag == "titleFormat":
@@ -304,13 +302,13 @@ class ProjectXMLReader:
         for xItem in xSection:
             if xItem.tag == "item":
                 item = {}
-                item["handle"] = xItem.attrib.get("handle", None)
-                item["parent"] = xItem.attrib.get("parent", None)
-                item["root"]   = xItem.attrib.get("root", None)
+                item["handle"] = checkStringNone(xItem.attrib.get("handle", None), None)
+                item["parent"] = checkStringNone(xItem.attrib.get("parent", None), None)
+                item["root"]   = checkStringNone(xItem.attrib.get("root", None), None)
                 item["order"]  = checkInt(xItem.attrib.get("order", 0), 0)
-                item["type"]   = checkString(xItem.attrib.get("type", ""), "")
-                item["class"]  = checkString(xItem.attrib.get("class", ""), "")
-                item["layout"] = checkString(xItem.attrib.get("layout", ""), "")
+                item["type"]   = checkString(xItem.attrib.get("type", "NO_TYPE"), "NO_TYPE")
+                item["class"]  = checkString(xItem.attrib.get("class", "NO_CLASS"), "NO_CLASS")
+                item["layout"] = checkString(xItem.attrib.get("layout", "NO_LAYOUT"), "NO_LAYOUT")
                 for xVal in xItem:
                     if xVal.tag == "meta":
                         item["expanded"]  = checkBool(xVal.attrib.get("expanded", False), False)
@@ -339,7 +337,7 @@ class ProjectXMLReader:
         return True
 
     def _parseProjectContentLegacy(self, xSection):
-        """Parse the content section of the XML file for older version.
+        """Parse the content section of the XML file for older versions.
         """
         logger.debug("Parsing xml <root/content> (legacy format)")
         depLayout = ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE")
@@ -347,8 +345,8 @@ class ProjectXMLReader:
         for xItem in xSection:
             item = {}
             if xItem.tag == "item":
-                item["handle"]  = xItem.attrib.get("handle", None)
-                item["parent"]  = xItem.attrib.get("parent", None)
+                item["handle"]  = checkStringNone(xItem.attrib.get("handle", None), None)
+                item["parent"]  = checkStringNone(xItem.attrib.get("parent", None), None)
                 item["root"]    = None  # Value was added in 1.4
                 item["order"]   = checkInt(xItem.attrib.get("order", 0), 0)
                 item["heading"] = "H0"  # Value was added in 1.4
@@ -421,14 +419,14 @@ class ProjectXMLReader:
         self._importMap = {entry["name"]: key for key, entry in projData.itemImport.items()}
         return
 
-    def _parseDictKeyText(self, xItem):
+    def _parseDictKeyText(self, xItem, keyName):
         """Parse a dictionary stored with key as an attribute and the
         value as the text porperty.
         """
         result = {}
         for xEntry in xItem:
-            if xEntry.tag == "entry" and "key" in xEntry.attrib:
-                result[xEntry.attrib["key"]] = checkString(xEntry.text, "")
+            if xEntry.tag == "entry" and keyName in xEntry.attrib:
+                result[xEntry.attrib[keyName]] = checkString(xEntry.text, "")
         return result
 
     def _parseDictTagText(self, xItem):
@@ -473,14 +471,11 @@ class ProjectXMLWriter:
         self._packSingleValue(xSettings, "language", projData.language)
         self._packSingleValue(xSettings, "spellCheck", projData.spellCheck)
         self._packSingleValue(xSettings, "spellLang", projData.spellLang)
-        self._packSingleValue(xSettings, "lastEdited", projData.getLastHandle("editor"))
-        self._packSingleValue(xSettings, "lastViewed", projData.getLastHandle("viewer"))
-        self._packSingleValue(xSettings, "lastNovel", projData.getLastHandle("noveltree"))
-        self._packSingleValue(xSettings, "lastOutline", projData.getLastHandle("outline"))
         self._packSingleValue(xSettings, "lastWordCount", projData.getCurrCount("total"))
         self._packSingleValue(xSettings, "novelWordCount", projData.getCurrCount("novel"))
         self._packSingleValue(xSettings, "notesWordCount", projData.getCurrCount("notes"))
-        self._packDictKeyValue(xSettings, "autoReplace", projData.autoReplace)
+        self._packDictKeyValue(xSettings, "lastHandle", projData.lastHandle, "component")
+        self._packDictKeyValue(xSettings, "autoReplace", projData.autoReplace, "key")
         self._packDictTagValue(xSettings, "titleFormat", projData.titleFormat)
 
         # Save Status/Importance
@@ -549,14 +544,15 @@ class ProjectXMLWriter:
             self._packSingleValue(xParent, name, value, allowNone=allowNone)
         return
 
-    def _packDictKeyValue(self, xParent, name, data):
+    def _packDictKeyValue(self, xParent, name, data, keyName):
         """Pack the entries of a dictionary into an xml element.
         """
         xItem = etree.SubElement(xParent, name)
         for key, value in data.items():
             if len(key) > 0:
-                xEntry = etree.SubElement(xItem, "entry", attrib={"key": key})
-                xEntry.text = value
+                xEntry = etree.SubElement(xItem, "entry", attrib={keyName: key})
+                if value:
+                    xEntry.text = value
         return
 
     def _packDictTagValue(self, xParent, name, data):
