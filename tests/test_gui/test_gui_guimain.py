@@ -175,7 +175,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert nwGUI.theProject.data.name == ""
     assert nwGUI.theProject.data.title == ""
     assert nwGUI.theProject.data.authors == []
-    assert not nwGUI.theProject.spellCheck
+    assert nwGUI.theProject.data.spellCheck is False
 
     # Check the files
     projFile = os.path.join(fncProj, "nwProject.nwx")
@@ -197,7 +197,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert nwGUI.theProject.data.name == "New Project"
     assert nwGUI.theProject.data.title == "New Novel"
     assert nwGUI.theProject.data.authors == ["Jane Doe"]
-    assert nwGUI.theProject.spellCheck is False
+    assert nwGUI.theProject.data.spellCheck is False
 
     # Check that tree items have been created
     assert nwGUI.projView.projTree._getTreeItem(C.hNovelRoot) is not None

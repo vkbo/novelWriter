@@ -126,7 +126,7 @@ class GuiBuildNovel(QDialog):
         self.fmtTitle.setMinimumWidth(xFmt)
         self.fmtTitle.setToolTip(fmtHelp)
         self.fmtTitle.setText(
-            self._reFmtCodes(self.theProject.titleFormat["title"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("title"))
         )
 
         self.fmtChapter = QLineEdit()
@@ -134,7 +134,7 @@ class GuiBuildNovel(QDialog):
         self.fmtChapter.setMinimumWidth(xFmt)
         self.fmtChapter.setToolTip(fmtHelp)
         self.fmtChapter.setText(
-            self._reFmtCodes(self.theProject.titleFormat["chapter"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("chapter"))
         )
 
         self.fmtUnnumbered = QLineEdit()
@@ -142,7 +142,7 @@ class GuiBuildNovel(QDialog):
         self.fmtUnnumbered.setMinimumWidth(xFmt)
         self.fmtUnnumbered.setToolTip(fmtHelp)
         self.fmtUnnumbered.setText(
-            self._reFmtCodes(self.theProject.titleFormat["unnumbered"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("unnumbered"))
         )
 
         self.fmtScene = QLineEdit()
@@ -150,7 +150,7 @@ class GuiBuildNovel(QDialog):
         self.fmtScene.setMinimumWidth(xFmt)
         self.fmtScene.setToolTip(fmtHelp + fmtScHelp)
         self.fmtScene.setText(
-            self._reFmtCodes(self.theProject.titleFormat["scene"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("scene"))
         )
 
         self.fmtSection = QLineEdit()
@@ -158,7 +158,7 @@ class GuiBuildNovel(QDialog):
         self.fmtSection.setMinimumWidth(xFmt)
         self.fmtSection.setToolTip(fmtHelp + fmtScHelp)
         self.fmtSection.setText(
-            self._reFmtCodes(self.theProject.titleFormat["section"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("section"))
         )
 
         self.buildLang = QComboBox()
@@ -1159,7 +1159,7 @@ class GuiBuildNovel(QDialog):
         logger.debug("Saving GuiBuildNovel settings")
 
         # Formatting
-        self.theProject.setTitleFormat({
+        self.theProject.data.setTitleFormat({
             "title":      self.fmtTitle.text().strip(),
             "chapter":    self.fmtChapter.text().strip(),
             "unnumbered": self.fmtUnnumbered.text().strip(),

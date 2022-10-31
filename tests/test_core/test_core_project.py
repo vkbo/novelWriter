@@ -941,19 +941,19 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
 
     # Spell check
     theProject.setProjectChanged(False)
-    assert theProject.setSpellCheck(True)
-    assert not theProject.setSpellCheck(False)
+    theProject.data.setSpellCheck(True)
+    theProject.data.setSpellCheck(False)
     assert theProject.projChanged
 
     # Spell language
     theProject.setProjectChanged(False)
-    assert theProject.projSpell is None
-    assert theProject.setSpellLang(None) is False
-    assert theProject.projSpell is None
-    assert theProject.setSpellLang("None") is False  # Should be interpreded as None
-    assert theProject.projSpell is None
-    assert theProject.setSpellLang("en_GB")
-    assert theProject.projSpell == "en_GB"
+    assert theProject.data.spellLang is None
+    theProject.data.setSpellLang(None)
+    assert theProject.data.spellLang is None
+    theProject.data.setSpellLang("None")  # Should be interpreded as None
+    assert theProject.data.spellLang is None
+    theProject.data.setSpellLang("en_GB")
+    assert theProject.data.spellLang == "en_GB"
     assert theProject.projChanged
 
     # Project Language
@@ -982,8 +982,8 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
 
     # Autoreplace
     theProject.setProjectChanged(False)
-    assert theProject.setAutoReplace({"A": "B", "C": "D"})
-    assert theProject.autoReplace == {"A": "B", "C": "D"}
+    theProject.data.setAutoReplace({"A": "B", "C": "D"})
+    assert theProject.data.autoReplace == {"A": "B", "C": "D"}
     assert theProject.projChanged
 
     # Change project tree order

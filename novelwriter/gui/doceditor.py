@@ -684,10 +684,10 @@ class GuiDocEditor(QTextEdit):
         """Set the spell checker dictionary language, and emit the
         dictionary changed signal.
         """
-        if self.theProject.projSpell is None:
+        if self.theProject.data.spellLang is None:
             theLang = self.mainConf.spellLanguage
         else:
-            theLang = self.theProject.projSpell
+            theLang = self.theProject.data.spellLang
 
         self.spEnchant.setLanguage(theLang, self.theProject.projDict)
         _, theProvider = self.spEnchant.describeDict()
@@ -721,7 +721,7 @@ class GuiDocEditor(QTextEdit):
 
         self._spellCheck = theMode
         self.mainGui.mainMenu.setSpellCheck(theMode)
-        self.theProject.setSpellCheck(theMode)
+        self.theProject.data.setSpellCheck(theMode)
         self.highLight.setSpellCheck(theMode)
         if not self._bigDoc:
             self.spellCheckDocument()

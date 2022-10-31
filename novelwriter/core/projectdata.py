@@ -54,6 +54,15 @@ class NWProjectData:
         self._lastCount = {}
         self._currCount = {}
 
+        self._autoReplace = {}
+        self._titleFormat = {
+            "title":      "%title%",
+            "chapter":    "%title%",
+            "unnumbered": "%title%",
+            "scene":      "* * *",
+            "section":    "",
+        }
+
         self._status = NWStatus(NWStatus.STATUS)
         self._import = NWStatus(NWStatus.IMPORT)
 
@@ -107,6 +116,14 @@ class NWProjectData:
         return self._spellLang
 
     @property
+    def autoReplace(self):
+        return self._autoReplace
+
+    @property
+    def titleFormat(self):
+        return self._titleFormat
+
+    @property
     def itemStatus(self):
         return self._status
 
@@ -152,6 +169,9 @@ class NWProjectData:
 
     def getCurrCount(self, type):
         return self._currCount.get(type, 0)
+
+    def getTitleFormat(self, kind):
+        return self._titleFormat.get(kind, "%title%")
 
     ##
     #  Setters
@@ -228,6 +248,23 @@ class NWProjectData:
     def setCurrCount(self, value, type):
         if value != self._currCount.get(type, 0):
             self._currCount[type] = checkInt(value, 0)
+            self._changed = True
+        return
+
+    def setAutoReplace(self, value):
+        if isinstance(value, dict):
+            self._autoReplace = {}
+            for key, entry in value.items():
+                if isinstance(entry, str):
+                    self._autoReplace[key] = simplified(entry)
+            self._changed = True
+        return
+
+    def setTitleFormat(self, value):
+        if isinstance(value, dict):
+            for key, entry in value.items():
+                if key in self._titleFormat and isinstance(entry, str):
+                    self._titleFormat[key] = simplified(entry)
             self._changed = True
         return
 

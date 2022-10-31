@@ -68,7 +68,6 @@ class ProjectXMLReader:
         self._path = path
         self._state = XMLReadState.NO_ACTION
 
-        self._data = {}
         self._content = []
         self._statusData = {}
         self._statusMap = {}
@@ -84,10 +83,6 @@ class ProjectXMLReader:
     ##
     #  Properties
     ##
-
-    @property
-    def data(self):
-        return self._data
 
     @property
     def content(self):
@@ -124,7 +119,6 @@ class ProjectXMLReader:
     def read(self, projData):
         """Read and parse the project XML file.
         """
-        self._data = {}
         self._content = []
 
         try:
@@ -231,6 +225,7 @@ class ProjectXMLReader:
                 projData.setEditTime(xItem.text)
             else:
                 logger.warning("Ignored <root/project/%s> in xml", xItem.tag)
+
         return True
 
     def _parseProjectSettings(self, xSection, projData):
@@ -238,9 +233,6 @@ class ProjectXMLReader:
         """
         logger.debug("Parsing xml <root/settings>")
 
-        data = {}
-        autoReplace = {}
-        titleFormat = {}
         for xItem in xSection:
             if xItem.tag == "doBackup":
                 projData.setDoBackup(xItem.text)
@@ -270,21 +262,13 @@ class ProjectXMLReader:
                 self._parseStatusImport(xItem, projData.itemImport)
             elif xItem.tag == "autoReplace":
                 if self._version >= 0x0102:
-                    for xEntry in xItem:
-                        if xEntry.tag == "entry" and "key" in xEntry.attrib:
-                            autoReplace[xEntry.attrib["key"]] = checkString(xEntry.text, "ERROR")
+                    projData.setAutoReplace(self._parseDictKeyText(xItem))
                 else:  # Pre 1.2 format
-                    for xEntry in xItem:
-                        autoReplace[xEntry.tag] = checkString(xEntry.text, "ERROR")
+                    projData.setAutoReplace(self._parseDictTagText(xItem))
             elif xItem.tag == "titleFormat":
-                for xEntry in xItem:
-                    titleFormat[xEntry.tag] = checkString(xEntry.text, "")
+                projData.setTitleFormat(self._parseDictTagText(xItem))
             else:
                 logger.warning("Ignored <root/settings/%s> in xml", xItem.tag)
-
-        data["autoReplace"] = autoReplace
-        data["titleFormat"] = titleFormat
-        self._data["settings"] = data
 
         return True
 
@@ -293,7 +277,6 @@ class ProjectXMLReader:
         """
         logger.debug("Parsing xml <root/content>")
 
-        data = []
         for xItem in xSection:
             if xItem.tag == "item":
                 item = {}
@@ -323,21 +306,20 @@ class ProjectXMLReader:
                             item["active"] = checkBool(xVal.attrib.get("exported", False), False)
                     else:
                         logger.warning("Ignored <root/content/item/%s> in xml", xVal.tag)
-                data.append(item)
+
                 self._content.append(item)
+
             else:
                 logger.warning("Ignored item <root/content/%s> in xml", xItem.tag)
-
-        self._data["content"] = data
 
         return True
 
     def _parseProjectContentLegacy(self, xSection):
-        """Parse the content section of the XML file for version before 1.4.
+        """Parse the content section of the XML file for older version.
         """
         logger.debug("Parsing xml <root/content> (legacy format)")
         depLayout = ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE")
-        data = []
+
         for xItem in xSection:
             item = {}
             if xItem.tag == "item":
@@ -388,12 +370,10 @@ class ProjectXMLReader:
                 if item.get("type", "") == "TRASH":
                     item["type"] = "ROOT"
 
-                data.append(item)
                 self._content.append(item)
+
             else:
                 logger.warning("Ignored <root/content/%s> in xml", xItem.tag)
-
-        self._data["content"] = data
 
         return True
 
@@ -416,6 +396,22 @@ class ProjectXMLReader:
         self._statusMap = {entry["name"]: key for key, entry in projData.itemStatus.items()}
         self._importMap = {entry["name"]: key for key, entry in projData.itemImport.items()}
         return
+
+    def _parseDictKeyText(self, xItem):
+        """Parse a dictionary stored with key as an attribute and the
+        value as the text porperty.
+        """
+        result = {}
+        for xEntry in xItem:
+            if xEntry.tag == "entry" and "key" in xEntry.attrib:
+                result[xEntry.attrib["key"]] = checkString(xEntry.text, "")
+        return result
+
+    def _parseDictTagText(self, xItem):
+        """Parse a dictionary stored with key as the tag and the value
+        as the text porperty.
+        """
+        return {n.tag: checkString(n.text, "") for n in xItem}
 
 # END Class ProjectXMLReader
 

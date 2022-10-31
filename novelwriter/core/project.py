@@ -38,8 +38,8 @@ from PyQt5.QtCore import QCoreApplication
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.error import logException
 from novelwriter.common import (
-    checkString, checkStringNone, isHandle, formatTimeStamp, makeFileNameSafe,
-    hexToInt, minmax, simplified
+    checkStringNone, isHandle, formatTimeStamp, makeFileNameSafe, hexToInt,
+    minmax, simplified
 )
 from novelwriter.constants import trConst, nwFiles, nwLabels
 from novelwriter.core.tree import NWTree
@@ -63,8 +63,8 @@ class NWProject:
         self.mainConf = novelwriter.CONFIG
         self.mainGui  = mainGui
 
+        # Project Data
         self._data = NWProjectData()
-        self._raw = {}
 
         # Core Elements
         self._optState  = OptionState(self)  # Project-specific GUI options
@@ -84,13 +84,7 @@ class NWProject:
         self.projCache   = None  # The full path to the project's cache folder
         self.projContent = None  # The full path to the project's content folder
         self.projDict    = None  # The spell check dictionary
-        self.projSpell   = None  # The spell check language, if different than default
         self.projFiles   = []    # A list of all files in the content folder on load
-
-        # Project Settings
-        self.autoReplace = {}     # Text to auto-replace on exports
-        self.titleFormat = {}     # The formatting of titles for exports
-        self.spellCheck  = False  # Controls the spellcheck-as-you-type feature
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
@@ -255,17 +249,7 @@ class NWProject:
         self.projCache   = None
         self.projContent = None
         self.projDict    = None
-        self.projSpell   = None
         self.projFiles   = []
-        self.autoReplace = {}
-        self.titleFormat = {
-            "title":      "%title%",
-            "chapter":    "%title%",
-            "unnumbered": "%title%",
-            "scene":      "* * *",
-            "section":    "",
-        }
-        self.spellCheck = False
         self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100))
         self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0))
         self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0))
@@ -466,9 +450,6 @@ class NWProject:
         self._data = NWProjectData()
         xmlReader = ProjectXMLReader(fileName)
         xmlParsed = xmlReader.read(self._data)
-        xmlData = xmlReader.data
-
-        # print(json.dumps(xmlData, indent=2))
 
         nwxRoot = xmlReader.xmlRoot
         appVersion = xmlReader.appVersion or self.tr("Unknown")
@@ -493,8 +474,6 @@ class NWProject:
 
             self.clearProject()
             return False
-
-        self._raw = xmlData
 
         logger.debug("XML root is '%s'", nwxRoot)
         logger.debug("File version is '%s'", xmlVersion)
@@ -539,15 +518,7 @@ class NWProject:
         logger.info("Project Name: '%s'", self._data.name)
         logger.info("Project Title: '%s'", self._data.title)
 
-        xmlSettings = xmlData.get("settings", {})
-
-        self.spellCheck = self._data.spellCheck
-        self.projSpell = self._data.spellLang
-        self.autoReplace = xmlSettings.get("autoReplace", {})
-        self.titleFormat.update(xmlSettings.get("titleFormat", {}))
-
-        self._projTree.unpack(xmlData.get("content", []))
-
+        self._projTree.unpack(xmlReader.content)
         self._optState.loadSettings()
 
         # Sort out old file locations
@@ -648,10 +619,10 @@ class NWProject:
         self._packProjectValue(xSettings, "lastWordCount", self._data.getCurrCount("total"))
         self._packProjectValue(xSettings, "novelWordCount", self._data.getCurrCount("novel"))
         self._packProjectValue(xSettings, "notesWordCount", self._data.getCurrCount("notes"))
-        self._packProjectKeyValue(xSettings, "autoReplace", self.autoReplace)
+        self._packProjectKeyValue(xSettings, "autoReplace", self._data.autoReplace)
 
         xTitleFmt = etree.SubElement(xSettings, "titleFormat")
-        for aKey, aValue in self.titleFormat.items():
+        for aKey, aValue in self._data.titleFormat.items():
             if len(aKey) > 0:
                 self._packProjectValue(xTitleFmt, aKey, aValue)
 
@@ -921,24 +892,6 @@ class NWProject:
 
         return True
 
-    def setSpellCheck(self, theMode):
-        """Enable/disable spell checking.
-        """
-        if self.spellCheck != theMode:
-            self.spellCheck = theMode
-            self.setProjectChanged(True)
-        return self.spellCheck
-
-    def setSpellLang(self, theLang):
-        """Set the project-specific spell check language.
-        """
-        theLang = checkStringNone(theLang, None)
-        if self.projSpell != theLang:
-            self.projSpell = theLang
-            self.setProjectChanged(True)
-            return True
-        return False
-
     def setProjectLang(self, theLang):
         """Set the project-specific language.
         """
@@ -969,25 +922,6 @@ class NWProject:
         """Update the list of note file importance flags.
         """
         return self._setStatusImport(newCols, delCols, self._data.itemImport)
-
-    def setAutoReplace(self, autoReplace):
-        """Update the auto-replace dictionary.
-        """
-        self.autoReplace = {}
-        for key, entry in autoReplace.items():
-            self.autoReplace[key] = simplified(entry)
-        self.setProjectChanged(True)
-        return True
-
-    def setTitleFormat(self, titleFormat):
-        """Set the formatting of titles in the project.
-        """
-        for valKey, valEntry in titleFormat.items():
-            if valKey in self.titleFormat:
-                self.titleFormat[valKey] = checkString(
-                    simplified(valEntry), self.titleFormat[valKey]
-                )
-        return True
 
     def setProjectChanged(self, bValue):
         """Toggle the project changed flag, and propagate the

@@ -120,7 +120,7 @@ class GuiProjectSettings(PagedDialog):
         self.theProject.data.setDoBackup(doBackup)
 
         # Remember this as updating spell dictionary can be expensive
-        self._spellChanged = self.theProject.setSpellLang(spellLang)
+        self._spellChanged = self.theProject.data.setSpellLang(spellLang)
 
         if self.tabStatus.colChanged:
             newList, delList = self.tabStatus.getNewList()
@@ -135,7 +135,7 @@ class GuiProjectSettings(PagedDialog):
 
         if self.tabReplace.arChanged:
             newList = self.tabReplace.getNewList()
-            self.theProject.setAutoReplace(newList)
+            self.theProject.data.setAutoReplace(newList)
 
         self._saveGuiSettings()
         self.accept()
@@ -252,8 +252,8 @@ class GuiProjectEditMain(QWidget):
         )
 
         spellIdx = 0
-        if self.theProject.projSpell is not None:
-            spellIdx = self.spellLang.findData(self.theProject.projSpell)
+        if self.theProject.data.spellLang is not None:
+            spellIdx = self.spellLang.findData(self.theProject.data.spellLang)
         if spellIdx != -1:
             self.spellLang.setCurrentIndex(spellIdx)
 
@@ -578,7 +578,7 @@ class GuiProjectEditReplace(QWidget):
         self.listBox.setColumnWidth(self.COL_KEY, wCol0)
         self.listBox.setIndentation(0)
 
-        for aKey, aVal in self.theProject.autoReplace.items():
+        for aKey, aVal in self.theProject.data.autoReplace.items():
             newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
             self.listBox.addTopLevelItem(newItem)
 

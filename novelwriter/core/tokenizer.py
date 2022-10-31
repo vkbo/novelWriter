@@ -327,9 +327,10 @@ class Tokenizer(ABC):
         """Run trough the various replace doctionaries.
         """
         # Process the user's auto-replace dictionary
-        if len(self.theProject.autoReplace) > 0:
+        autoReplace = self.theProject.data.autoReplace
+        if len(autoReplace) > 0:
             repDict = {}
-            for aKey, aVal in self.theProject.autoReplace.items():
+            for aKey, aVal in autoReplace.items():
                 repDict[f"<{aKey}>"] = aVal
             xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
             self._theText = xRep.sub(lambda x: repDict[x.group(0)], self._theText)

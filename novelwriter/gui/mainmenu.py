@@ -794,7 +794,7 @@ class GuiMainMenu(QMenuBar):
         # Tools > Check Spelling
         self.aSpellCheck = QAction(self.tr("Check Spelling"), self)
         self.aSpellCheck.setCheckable(True)
-        self.aSpellCheck.setChecked(self.theProject.spellCheck)
+        self.aSpellCheck.setChecked(self.theProject.data.spellCheck)
         self.aSpellCheck.triggered.connect(self._toggleSpellCheck)  # triggered, not toggled!
         self.aSpellCheck.setShortcut("Ctrl+F7")
         self.toolsMenu.addAction(self.aSpellCheck)

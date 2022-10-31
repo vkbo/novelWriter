@@ -50,7 +50,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
 
     # Pretend we have a project
     nwGUI.hasProject = True
-    nwGUI.theProject.setSpellLang("en")
+    nwGUI.theProject.data.setSpellLang("en")
 
     # Get the dialog object
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
@@ -95,9 +95,9 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd
 
     # Set some values
     theProject = nwGUI.theProject
-    theProject.setSpellLang("en")
+    theProject.data.setSpellLang("en")
     theProject.data.setAuthors("Jane Smith\nJohn Smith")
-    theProject.setAutoReplace({"A": "B", "C": "D"})
+    theProject.data.setAutoReplace({"A": "B", "C": "D"})
 
     # Create Dialog
     projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.TAB_MAIN)
@@ -365,9 +365,9 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mock
 
     # Set some values
     theProject = nwGUI.theProject
-    theProject.autoReplace = {
+    theProject.data.setAutoReplace({
         "A": "B", "C": "D"
-    }
+    })
 
     # Create Dialog
     projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.TAB_REPLACE)
@@ -429,7 +429,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mock
 
     # Check Project
     projSettings._doSave()
-    assert theProject.autoReplace == {
+    assert theProject.data.autoReplace == {
         "A": "B", "C": "D", "This": "With This Stuff"
     }
 

@@ -524,7 +524,7 @@ class GuiMain(QMainWindow):
         self._updateWindowTitle(self.theProject.data.name)
         self.rebuildTrees()
         self.docEditor.setDictionaries()
-        self.docEditor.toggleSpellCheck(self.theProject.spellCheck)
+        self.docEditor.toggleSpellCheck(self.theProject.data.spellCheck)
         self.mainStatus.setRefTime(self.theProject.projOpened)
         self.projView.openProjectTasks()
         self.novelView.openProjectTasks()

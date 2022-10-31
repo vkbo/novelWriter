@@ -160,7 +160,7 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
     nDoc = NWDoc(theProject, sHandle)
     assert nDoc.writeDocument(docText)
 
-    theProject.setAutoReplace({"A": "this", "B": "that"})
+    theProject.data.setAutoReplace({"A": "this", "B": "that"})
 
     assert theProject.saveProject()
 
