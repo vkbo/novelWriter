@@ -27,8 +27,6 @@ import os
 import random
 import logging
 
-from lxml import etree
-
 from novelwriter.enum import nwItemClass, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.common import checkHandle
@@ -114,17 +112,16 @@ class NWTree:
 
         return True
 
-    def packXML(self, xParent):
+    def pack(self):
         """Pack the content of the tree into the provided XML object. In
         the order defined by the _treeOrder list.
         """
-        xContent = etree.SubElement(xParent, "content", attrib={
-            "count": str(len(self._treeOrder))}
-        )
+        tree = []
         for tHandle in self._treeOrder:
             tItem = self.__getitem__(tHandle)
-            tItem.packXML(xContent)
-        return
+            if tItem:
+                tree.append(tItem.pack())
+        return tree
 
     def unpack(self, data):
         """Iterate through all items of a list and add them to the

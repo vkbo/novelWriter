@@ -26,16 +26,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import os
 import logging
+import novelwriter
 
 from enum import Enum
 from lxml import etree
 
 from novelwriter.common import (
-    checkBool, checkInt, checkStringNone, simplified, checkString
+    checkBool, checkInt, checkStringNone, formatTimeStamp, simplified, checkString
 )
+from novelwriter.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
+FILE_VERSION = "1.4"  # The current project file format version
 
 NUM_VERSION = {
     "1.0": 0x0100,
@@ -62,6 +65,29 @@ class XMLReadState(Enum):
 
 
 class ProjectXMLReader:
+    """The main project XML file reader class. All data is read into a
+    NWProjectData instance, which must be provided.
+
+    Version Change History
+    ======================
+    1.0 Original file format.
+
+    1.1 Changes the way documents are structured in the project folder
+        from data_X, where X is the first hex value of the handle, to a
+        single content folder. Introduced in version 0.7.
+
+    1.2 Changes the way autoReplace entries are stored. The 1.1 parser
+        will lose the autoReplace settings if allowed to read the file.
+        Introduced in version 0.10.
+
+    1.3 Reduces the number of layouts to only two. One for novel
+        documents and one for project notes. Introduced in version 1.5.
+
+    1.4 Introduces a more compact format for storing items. All settings
+        aside from name are now attributes. This format also changes the
+        way satus and importance labels are stored and handled.
+        Introduced in version 2.0.
+    """
 
     def __init__(self, path):
 
@@ -86,30 +112,44 @@ class ProjectXMLReader:
 
     @property
     def content(self):
+        """The project content section, a dictionary of project items.
+        """
         return self._content
 
     @property
     def state(self):
+        """The state of the parsing as an XMLReadState enum value.
+        """
         return self._state
 
     @property
     def xmlRoot(self):
+        """The root tag name of the XNL file,
+        """
         return self._root
 
     @property
     def xmlVersion(self):
+        """The project XML version number.
+        """
         return self._version
 
     @property
     def appVersion(self):
+        """The novelWriter version number who wrote the file.
+        """
         return self._appVersion
 
     @property
     def hexVersion(self):
+        """The novelWriter version number who wrote the file as hex.
+        """
         return self._hexVersion
 
     @property
     def timeStamp(self):
+        """The date and time when the file was written.
+        """
         return self._timeStamp
 
     ##
@@ -148,22 +188,6 @@ class ProjectXMLReader:
         if self._root != "novelWriterXML":
             self._state = XMLReadState.NOT_NWX_FILE
             return False
-
-        # Changes:
-        # 1.0 : Original file format.
-        # 1.1 : Changes the way documents are structured in the project
-        #       folder from data_X, where X is the first hex value of
-        #       the handle, to a single content folder.
-        # 1.2 : Changes the way autoReplace entries are stored. The 1.1
-        #       parser will lose the autoReplace settings if allowed to
-        #       read the file. Introduced in version 0.10.
-        # 1.3 : Reduces the number of layouts to only two. One for novel
-        #       documents and one for project notes. Introduced in
-        #       version 1.5.
-        # 1.4 : Introduces a more compact format for storing items. All
-        #       settings aside from name are now attributes. This format
-        #       also changes the way satus and importance labels are
-        #       stored and handled. Introduced in version 1.7.
 
         fileVersion = str(xRoot.attrib.get("fileVersion", ""))
         if fileVersion in NUM_VERSION:
@@ -425,11 +449,123 @@ class ProjectXMLWriter:
 
         return
 
-    def write(self):
-        return
+    def write(self, projData, projContent, saveTime, editTime):
+
+        nwXML = etree.Element("novelWriterXML", attrib={
+            "appVersion":  str(novelwriter.__version__),
+            "hexVersion":  str(novelwriter.__hexversion__),
+            "fileVersion": FILE_VERSION,
+            "timeStamp":   formatTimeStamp(saveTime),
+        })
+
+        # Save Project Meta
+        xProject = etree.SubElement(nwXML, "project")
+        self._packSingleValue(xProject, "name", projData.name)
+        self._packSingleValue(xProject, "title", projData.title)
+        self._packListValue(xProject, "author", projData.authors)
+        self._packSingleValue(xProject, "saveCount", projData.saveCount)
+        self._packSingleValue(xProject, "autoCount", projData.autoCount)
+        self._packSingleValue(xProject, "editTime", editTime)
+
+        # Save Project Settings
+        xSettings = etree.SubElement(nwXML, "settings")
+        self._packSingleValue(xSettings, "doBackup", projData.doBackup)
+        self._packSingleValue(xSettings, "language", projData.language)
+        self._packSingleValue(xSettings, "spellCheck", projData.spellCheck)
+        self._packSingleValue(xSettings, "spellLang", projData.spellLang)
+        self._packSingleValue(xSettings, "lastEdited", projData.getLastHandle("editor"))
+        self._packSingleValue(xSettings, "lastViewed", projData.getLastHandle("viewer"))
+        self._packSingleValue(xSettings, "lastNovel", projData.getLastHandle("noveltree"))
+        self._packSingleValue(xSettings, "lastOutline", projData.getLastHandle("outline"))
+        self._packSingleValue(xSettings, "lastWordCount", projData.getCurrCount("total"))
+        self._packSingleValue(xSettings, "novelWordCount", projData.getCurrCount("novel"))
+        self._packSingleValue(xSettings, "notesWordCount", projData.getCurrCount("notes"))
+        self._packDictKeyValue(xSettings, "autoReplace", projData.autoReplace)
+        self._packDictTagValue(xSettings, "titleFormat", projData.titleFormat)
+
+        # Save Status/Importance
+        xStatus = etree.SubElement(xSettings, "status")
+        for (label, attr) in projData.itemStatus.pack():
+            xEntry = etree.SubElement(xStatus, "entry", attrib=attr)
+            xEntry.text = label
+
+        xImport = etree.SubElement(xSettings, "importance")
+        for (label, attr) in projData.itemImport.pack():
+            xEntry = etree.SubElement(xImport, "entry", attrib=attr)
+            xEntry.text = label
+
+        # Save Tree Content
+        cAttr = {"count": str(len(projContent))}
+        xContent = etree.SubElement(nwXML, "content", attrib=cAttr)
+        for item in projContent:
+            xItem = etree.SubElement(xContent, "item", attrib=item.get("itemAttr", {}))
+            etree.SubElement(xItem, "meta", attrib=item.get("metaAttr", {}))
+            xName = etree.SubElement(xItem, "name", attrib=item.get("nameAttr", {}))
+            xName.text = item["name"]
+
+        # Write the xml tree to file
+        tempFile = os.path.join(self._path, nwFiles.PROJ_FILE+"~")
+        saveFile = os.path.join(self._path, nwFiles.PROJ_FILE)
+        backFile = os.path.join(self._path, nwFiles.PROJ_FILE[:-3]+"bak")
+        try:
+            with open(tempFile, mode="wb") as outFile:
+                outFile.write(etree.tostring(
+                    nwXML,
+                    pretty_print=True,
+                    encoding="utf-8",
+                    xml_declaration=True
+                ))
+        except Exception:
+            return False
+
+        # If we're here, the file was successfully saved,
+        # so let's sort out the temps and backups
+        try:
+            if os.path.isfile(saveFile):
+                os.replace(saveFile, backFile)
+            os.replace(tempFile, saveFile)
+        except OSError:
+            return False
+
+        return True
 
     ##
     #  Internal Functions
     ##
+
+    def _packSingleValue(self, xParent, name, value, allowNone=True):
+        """Pack a list of values into an xml element.
+        """
+        if (value == "" or value is None) and not allowNone:
+            return
+        xItem = etree.SubElement(xParent, name)
+        xItem.text = str(value)
+        return
+
+    def _packListValue(self, xParent, name, data, allowNone=True):
+        """Pack a list of values into an xml element.
+        """
+        for value in data:
+            self._packSingleValue(xParent, name, value, allowNone=allowNone)
+        return
+
+    def _packDictKeyValue(self, xParent, name, data):
+        """Pack the entries of a dictionary into an xml element.
+        """
+        xItem = etree.SubElement(xParent, name)
+        for key, value in data.items():
+            if len(key) > 0:
+                xEntry = etree.SubElement(xItem, "entry", attrib={"key": key})
+                xEntry.text = value
+        return
+
+    def _packDictTagValue(self, xParent, name, data):
+        """Pack the entries of a dictionary into an xml element.
+        """
+        xItem = etree.SubElement(xParent, name)
+        for aKey, value in data.items():
+            if len(aKey) > 0:
+                self._packSingleValue(xItem, aKey, value)
+        return
 
 # END Class ProjectXMLWriter

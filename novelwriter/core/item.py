@@ -25,8 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 
-from lxml import etree
-
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified
@@ -151,39 +149,40 @@ class NWItem:
     #  Pack/Unpack Data
     ##
 
-    def packXML(self, xParent):
-        """Pack all the data in the class instance into an XML object.
+    def pack(self):
+        """Pack all the data in the class instance into a dictionary.
         """
-        itemAttrib = {}
-        itemAttrib["handle"] = str(self._handle)
-        itemAttrib["parent"] = str(self._parent)
-        itemAttrib["root"]   = str(self._root)
-        itemAttrib["order"]  = str(self._order)
-        itemAttrib["type"]   = str(self._type.name)
-        itemAttrib["class"]  = str(self._class.name)
+        item = {}
+        meta = {}
+        name = {}
+
+        item["handle"]   = str(self._handle)
+        item["parent"]   = str(self._parent)
+        item["root"]     = str(self._root)
+        item["order"]    = str(self._order)
+        item["type"]     = str(self._type.name)
+        item["class"]    = str(self._class.name)
+        meta["expanded"] = str(self._expanded)
+        name["status"]   = str(self._status)
+        name["import"]   = str(self._import)
+
         if self._type == nwItemType.FILE:
-            itemAttrib["layout"] = str(self._layout.name)
+            item["layout"]    = str(self._layout.name)
+            meta["heading"]   = str(self._heading)
+            meta["charCount"] = str(self._charCount)
+            meta["wordCount"] = str(self._wordCount)
+            meta["paraCount"] = str(self._paraCount)
+            meta["cursorPos"] = str(self._cursorPos)
+            name["active"]    = str(self._active)
 
-        metaAttrib = {}
-        metaAttrib["expanded"] = str(self._expanded)
-        if self._type == nwItemType.FILE:
-            metaAttrib["heading"]   = str(self._heading)
-            metaAttrib["charCount"] = str(self._charCount)
-            metaAttrib["wordCount"] = str(self._wordCount)
-            metaAttrib["paraCount"] = str(self._paraCount)
-            metaAttrib["cursorPos"] = str(self._cursorPos)
+        data = {
+            "name": str(self._name),
+            "itemAttr": item,
+            "metaAttr": meta,
+            "nameAttr": name,
+        }
 
-        nameAttrib = {}
-        nameAttrib["status"] = str(self._status)
-        nameAttrib["import"] = str(self._import)
-        if self._type == nwItemType.FILE:
-            nameAttrib["active"] = str(self._active)
-
-        xPack = etree.SubElement(xParent, "item", attrib=itemAttrib)
-        self._subPack(xPack, "meta", attrib=metaAttrib)
-        self._subPack(xPack, "name", text=str(self._name), attrib=nameAttrib)
-
-        return
+        return data
 
     def unpack(self, data):
         """Set the values from a data dictionary.
@@ -201,7 +200,7 @@ class NWItem:
         self.setClass(data.get("class", nwItemClass.NO_CLASS))
         self.setLayout(data.get("layout", nwItemLayout.NO_LAYOUT))
         self.setExpanded(data.get("expanded", False))
-        self.setMainHeading(data.get("mainHeading", "H0"))
+        self.setMainHeading(data.get("heading", "H0"))
         self.setCharCount(data.get("charCount", 0))
         self.setWordCount(data.get("wordCount", 0))
         self.setParaCount(data.get("paraCount", 0))
@@ -223,19 +222,6 @@ class NWItem:
             self._cursorPos = 0  # Only set for files
 
         return True
-
-    @staticmethod
-    def _subPack(xParent, name, attrib=None, text=None, none=True):
-        """Pack the values into an XML element.
-        """
-        if not none and (text is None or text == "None"):
-            return None
-        xAttr = {} if attrib is None else attrib
-        xSub = etree.SubElement(xParent, name, attrib=xAttr)
-        if text is not None:
-            xSub.text = text
-
-        return
 
     ##
     #  Lookup Methods

@@ -30,7 +30,6 @@ import logging
 import novelwriter
 
 from time import time
-from lxml import etree
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication
@@ -47,7 +46,7 @@ from novelwriter.core.item import NWItem
 from novelwriter.core.index import NWIndex
 from novelwriter.core.options import OptionState
 from novelwriter.core.document import NWDoc
-from novelwriter.core.projectxml import ProjectXMLReader, XMLReadState
+from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.projectdata import NWProjectData
 
 logger = logging.getLogger(__name__)
@@ -585,86 +584,16 @@ class NWProject:
         else:
             self._data.incSaveCount()
 
-        # Root element and project details
-        logger.debug("Writing project meta")
-        nwXML = etree.Element("novelWriterXML", attrib={
-            "appVersion":  str(novelwriter.__version__),
-            "hexVersion":  str(novelwriter.__hexversion__),
-            "fileVersion": self.FILE_VERSION,
-            "timeStamp":   formatTimeStamp(saveTime),
-        })
-
         self.updateWordCounts()
+        self.countStatus()
+
+        saveTime = time()
         editTime = int(self._data.editTime + saveTime - self._projOpened)
 
-        # Save Project Meta
-        xProject = etree.SubElement(nwXML, "project")
-        self._packProjectValue(xProject, "name", self._data.name)
-        self._packProjectValue(xProject, "title", self._data.title)
-        self._packProjectValue(xProject, "author", self._data.authors)
-        self._packProjectValue(xProject, "saveCount", str(self._data.saveCount))
-        self._packProjectValue(xProject, "autoCount", str(self._data.autoCount))
-        self._packProjectValue(xProject, "editTime", str(editTime))
-
-        # Save Project Settings
-        xSettings = etree.SubElement(nwXML, "settings")
-        self._packProjectValue(xSettings, "doBackup", self._data.doBackup)
-        self._packProjectValue(xSettings, "language", self._data.language)
-        self._packProjectValue(xSettings, "spellCheck", self._data.spellCheck)
-        self._packProjectValue(xSettings, "spellLang", self._data.spellLang)
-        self._packProjectValue(xSettings, "lastEdited", self._data.getLastHandle("editor"))
-        self._packProjectValue(xSettings, "lastViewed", self._data.getLastHandle("viewer"))
-        self._packProjectValue(xSettings, "lastNovel", self._data.getLastHandle("noveltree"))
-        self._packProjectValue(xSettings, "lastOutline", self._data.getLastHandle("outline"))
-        self._packProjectValue(xSettings, "lastWordCount", self._data.getCurrCount("total"))
-        self._packProjectValue(xSettings, "novelWordCount", self._data.getCurrCount("novel"))
-        self._packProjectValue(xSettings, "notesWordCount", self._data.getCurrCount("notes"))
-        self._packProjectKeyValue(xSettings, "autoReplace", self._data.autoReplace)
-
-        xTitleFmt = etree.SubElement(xSettings, "titleFormat")
-        for aKey, aValue in self._data.titleFormat.items():
-            if len(aKey) > 0:
-                self._packProjectValue(xTitleFmt, aKey, aValue)
-
-        # Save Status/Importance
-        self.countStatus()
-        xStatus = etree.SubElement(xSettings, "status")
-        self._data.itemStatus.packXML(xStatus)
-        xStatus = etree.SubElement(xSettings, "importance")
-        self._data.itemImport.packXML(xStatus)
-
-        # Save Tree Content
-        logger.debug("Writing project content")
-        self._projTree.packXML(nwXML)
-
-        # Write the xml tree to file
-        tempFile = os.path.join(self.projPath, nwFiles.PROJ_FILE+"~")
-        saveFile = os.path.join(self.projPath, nwFiles.PROJ_FILE)
-        backFile = os.path.join(self.projPath, nwFiles.PROJ_FILE[:-3]+"bak")
-        try:
-            with open(tempFile, mode="wb") as outFile:
-                outFile.write(etree.tostring(
-                    nwXML,
-                    pretty_print=True,
-                    encoding="utf-8",
-                    xml_declaration=True
-                ))
-        except Exception as exc:
-            self.mainGui.makeAlert(self.tr(
-                "Failed to save project."
-            ), nwAlert.ERROR, exception=exc)
-            return False
-
-        # If we're here, the file was successfully saved,
-        # so let's sort out the temps and backups
-        try:
-            if os.path.isfile(saveFile):
-                os.replace(saveFile, backFile)
-            os.replace(tempFile, saveFile)
-        except OSError as exc:
-            self.mainGui.makeAlert(self.tr(
-                "Failed to save project."
-            ), nwAlert.ERROR, exception=exc)
+        content = self._projTree.pack()
+        xmlWriter = ProjectXMLWriter(self.projPath)
+        if not xmlWriter.write(self._data, content, saveTime, editTime):
+            self.mainGui.makeAlert(self.tr("Failed to save project."), nwAlert.ERROR)
             return False
 
         # Save project GUI options
@@ -1164,28 +1093,6 @@ class NWProject:
                 ), nwAlert.ERROR, exception=exc)
                 return False
         return True
-
-    def _packProjectValue(self, xParent, theName, theValue, allowNone=True):
-        """Pack a list of values into an xml element.
-        """
-        if not isinstance(theValue, list):
-            theValue = [theValue]
-        for aValue in theValue:
-            if (aValue == "" or aValue is None) and not allowNone:
-                continue
-            xItem = etree.SubElement(xParent, theName)
-            xItem.text = str(aValue)
-        return
-
-    def _packProjectKeyValue(self, xParent, theName, theDict):
-        """Pack the entries of a dictionary into an xml element.
-        """
-        xAutoRep = etree.SubElement(xParent, theName)
-        for aKey, aValue in theDict.items():
-            if len(aKey) > 0:
-                xEntry = etree.SubElement(xAutoRep, "entry", attrib={"key": aKey})
-                xEntry.text = aValue
-        return
 
     def _scanProjectFolder(self):
         """Scan the project folder and check that the files in it are

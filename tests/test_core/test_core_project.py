@@ -22,7 +22,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import pytest
 
-from lxml import etree
 from shutil import copyfile
 from zipfile import ZipFile
 
@@ -1032,31 +1031,6 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
         "# Start Time         End Time                Novel     Notes      Idle\n"
         "%s  %s       200       100        99\n"
     ) % (formatTimeStamp(1600002000), formatTimeStamp(1600005600))
-
-    # Pack XML Value
-    xElem = etree.Element("element")
-    theProject._packProjectValue(xElem, "A", "B", allowNone=False)
-    assert etree.tostring(xElem, pretty_print=False, encoding="utf-8") == (
-        b"<element><A>B</A></element>"
-    )
-
-    xElem = etree.Element("element")
-    theProject._packProjectValue(xElem, "A", "", allowNone=False)
-    assert etree.tostring(xElem, pretty_print=False, encoding="utf-8") == (
-        b"<element/>"
-    )
-
-    # Pack XML Key/Value
-    xElem = etree.Element("element")
-    theProject._packProjectKeyValue(xElem, "item", {"A": "B", "C": "D"})
-    assert etree.tostring(xElem, pretty_print=False, encoding="utf-8") == (
-        b"<element>"
-        b"<item>"
-        b"<entry key=\"A\">B</entry>"
-        b"<entry key=\"C\">D</entry>"
-        b"</item>"
-        b"</element>"
-    )
 
 # END Test testCoreProject_Methods
 

@@ -28,8 +28,6 @@ import random
 import logging
 import novelwriter
 
-from lxml import etree
-
 from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor
 from PyQt5.QtCore import QRectF, Qt
 
@@ -204,21 +202,21 @@ class NWStatus:
             self._store[key]["count"] += 1
         return
 
-    def packXML(self, xParent):
-        """Pack the status entries into an XML object for saving to the
-        main project file.
+    def pack(self):
+        """Pack the status entries into a dictionary.
         """
+        result = []
         for key, data in self._store.items():
-            xSub = etree.SubElement(xParent, "entry", attrib={
-                "key":   key,
-                "count": str(data["count"]),
-                "red":   str(data["cols"][0]),
-                "green": str(data["cols"][1]),
-                "blue":  str(data["cols"][2]),
-            })
-            xSub.text = data["name"]
-
-        return True
+            result. append((
+                data["name"], {
+                    "key":   key,
+                    "count": str(data["count"]),
+                    "red":   str(data["cols"][0]),
+                    "green": str(data["cols"][1]),
+                    "blue":  str(data["cols"][2]),
+                }
+            ))
+        return result
 
     def unpack(self, data):
         """Unpack a data dictionary and set the class values.
