@@ -330,13 +330,13 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncDir, fncProj,
     # Check Project
     projSettings._doSave()
 
-    statusItems = dict(theProject.statusItems.items())
+    statusItems = dict(theProject.data.itemStatus.items())
     assert statusItems[C.sNew]["name"] == "New"
     assert statusItems[C.sDraft]["name"] == "Draft"
     assert statusItems[C.sFinished]["name"] == "Finished"
     assert statusItems["s000013"]["name"] == "Final"
 
-    importItems = dict(theProject.importItems.items())
+    importItems = dict(theProject.data.itemImport.items())
     assert importItems[C.iNew]["name"] == "New"
     assert importItems[C.iMajor]["name"] == "Major"
     assert importItems[C.iMain]["name"] == "Main"

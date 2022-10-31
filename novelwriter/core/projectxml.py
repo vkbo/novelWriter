@@ -31,7 +31,7 @@ from enum import Enum
 from lxml import etree
 
 from novelwriter.common import (
-    checkBool, checkInt, checkStringNone, minmax, simplified, checkString
+    checkBool, checkInt, checkStringNone, simplified, checkString
 )
 
 logger = logging.getLogger(__name__)
@@ -192,6 +192,7 @@ class ProjectXMLReader:
                 if self._version >= 0x0104:
                     status &= self._parseProjectContent(xSection)
                 else:
+                    self._genLegacyImportStatysMap(projData)
                     status &= self._parseProjectContentLegacy(xSection)
             else:
                 logger.warning("Ignored <root/%s> in xml", xSection.tag)
@@ -264,9 +265,9 @@ class ProjectXMLReader:
             elif xItem.tag == "notesWordCount":
                 projData.setLastCount(xItem.text, "notes")
             elif xItem.tag == "status":
-                data["status"] = self._parseStatusImport(xItem, "status")
+                self._parseStatusImport(xItem, projData.itemStatus)
             elif xItem.tag in ("import", "importance"):
-                data["import"] = self._parseStatusImport(xItem, "import")
+                self._parseStatusImport(xItem, projData.itemImport)
             elif xItem.tag == "autoReplace":
                 if self._version >= 0x0102:
                     for xEntry in xItem:
@@ -375,9 +376,9 @@ class ProjectXMLReader:
 
                 # Status was split into separate status/import with a key in 1.4
                 if item.get("class", "") in ("NOVEL", "ARCHIVE"):
-                    item["status"] = self._getLegacyUnportStatus(tmpStatus, "status")
+                    item["status"] = self._statusMap.get(tmpStatus, None)
                 else:
-                    item["import"] = self._getLegacyUnportStatus(tmpStatus, "import")
+                    item["import"] = self._importMap.get(tmpStatus, None)
 
                 # A number of layouts were removed in 1.3
                 if item.get("layout", "") in depLayout:
@@ -396,39 +397,25 @@ class ProjectXMLReader:
 
         return True
 
-    def _parseStatusImport(self, xItem, type):
+    def _parseStatusImport(self, xItem, sObject):
         """Parse a status or importance entry.
         """
-        data = self._statusData.get(type, {})
         for xEntry in xItem:
             if xEntry.tag == "entry":
-                key = xEntry.attrib.get("key", f"{type[0]}{len(data):06x}")
-                data[key] = {
-                    "label": xEntry.text,
-                    "count": checkInt(xEntry.attrib.get("count", 0), 0),
-                    "colour": (
-                        minmax(checkInt(xEntry.attrib.get("red", 0), 0), 0, 255),
-                        minmax(checkInt(xEntry.attrib.get("green", 0), 0), 0, 255),
-                        minmax(checkInt(xEntry.attrib.get("blue", 0), 0), 0, 255),
-                    ),
-                }
-        self._statusData[type] = data
+                key   = xEntry.attrib.get("key", None)
+                red   = checkInt(xEntry.attrib.get("red", 0), 0)
+                green = checkInt(xEntry.attrib.get("green", 0), 0)
+                blue  = checkInt(xEntry.attrib.get("blue", 0), 0)
+                count = checkInt(xEntry.attrib.get("count", 0), 0)
+                sObject.write(key, xEntry.text, (red, green, blue), count)
+        return
 
-        return data
-
-    def _getLegacyUnportStatus(self, label, type):
-        """Look up the label in defined status or importance values.
-        This is needed for file formats prior to 1.4 where the status
-        was saved as the label, not the key.
+    def _genLegacyImportStatysMap(self, projData):
+        """Generate a map of legacy import/status values.
         """
-        if not self._statusMap.get(type):
-            lookup = {}
-            for key, entry in self._statusData.get(type, {}).items():
-                lookup[entry.get("label", "")] = key
-            self._statusMap[type] = lookup
-            print(lookup)
-
-        return self._statusMap.get(type, {}).get(label, None)
+        self._statusMap = {entry["name"]: key for key, entry in projData.itemStatus.items()}
+        self._importMap = {entry["name"]: key for key, entry in projData.itemImport.items()}
+        return
 
 # END Class ProjectXMLReader
 

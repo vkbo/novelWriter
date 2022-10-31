@@ -288,11 +288,11 @@ class GuiProjectEditStatus(QWidget):
         self.mainTheme  = projGui.mainGui.mainTheme
 
         if isStatus:
-            self.theStatus = self.theProject.statusItems
+            self.theStatus = self.theProject.data.itemStatus
             pageLabel = self.tr("Novel File Status Levels")
             colSetting = "statusColW"
         else:
-            self.theStatus = self.theProject.importItems
+            self.theStatus = self.theProject.data.itemImport
             pageLabel = self.tr("Note File Importance Levels")
             colSetting = "importColW"
 

@@ -45,7 +45,6 @@ from novelwriter.constants import trConst, nwFiles, nwLabels
 from novelwriter.core.tree import NWTree
 from novelwriter.core.item import NWItem
 from novelwriter.core.index import NWIndex
-from novelwriter.core.status import NWStatus
 from novelwriter.core.options import OptionState
 from novelwriter.core.document import NWDoc
 from novelwriter.core.projectxml import ProjectXMLReader, XMLReadState
@@ -92,8 +91,6 @@ class NWProject:
         self.autoReplace = {}     # Text to auto-replace on exports
         self.titleFormat = {}     # The formatting of titles for exports
         self.spellCheck  = False  # Controls the spellcheck-as-you-type feature
-        self.statusItems = None   # Novel file progress status values
-        self.importItems = None   # Note file importance values
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
@@ -268,17 +265,15 @@ class NWProject:
             "scene":      "* * *",
             "section":    "",
         }
-        self.spellCheck  = False
-        self.statusItems = NWStatus(NWStatus.STATUS)
-        self.statusItems.write(None, self.tr("New"),      (100, 100, 100))
-        self.statusItems.write(None, self.tr("Note"),     (200, 50,  0))
-        self.statusItems.write(None, self.tr("Draft"),    (200, 150, 0))
-        self.statusItems.write(None, self.tr("Finished"), (50,  200, 0))
-        self.importItems = NWStatus(NWStatus.IMPORT)
-        self.importItems.write(None, self.tr("New"),   (100, 100, 100))
-        self.importItems.write(None, self.tr("Minor"), (200, 50,  0))
-        self.importItems.write(None, self.tr("Major"), (200, 150, 0))
-        self.importItems.write(None, self.tr("Main"),  (50,  200, 0))
+        self.spellCheck = False
+        self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100))
+        self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0))
+        self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0))
+        self._data.itemStatus.write(None, self.tr("Finished"), (50,  200, 0))
+        self._data.itemImport.write(None, self.tr("New"),   (100, 100, 100))
+        self._data.itemImport.write(None, self.tr("Minor"), (200, 50,  0))
+        self._data.itemImport.write(None, self.tr("Major"), (200, 150, 0))
+        self._data.itemImport.write(None, self.tr("Main"),  (50,  200, 0))
 
         return
 
@@ -548,8 +543,6 @@ class NWProject:
 
         self.spellCheck = self._data.spellCheck
         self.projSpell = self._data.spellLang
-        self.statusItems.unpack(xmlSettings.get("status", {}))
-        self.importItems.unpack(xmlSettings.get("import", {}))
         self.autoReplace = xmlSettings.get("autoReplace", {})
         self.titleFormat.update(xmlSettings.get("titleFormat", {}))
 
@@ -665,9 +658,9 @@ class NWProject:
         # Save Status/Importance
         self.countStatus()
         xStatus = etree.SubElement(xSettings, "status")
-        self.statusItems.packXML(xStatus)
+        self._data.itemStatus.packXML(xStatus)
         xStatus = etree.SubElement(xSettings, "importance")
-        self.importItems.packXML(xStatus)
+        self._data.itemImport.packXML(xStatus)
 
         # Save Tree Content
         logger.debug("Writing project content")
@@ -970,12 +963,12 @@ class NWProject:
     def setStatusColours(self, newCols, delCols):
         """Update the list of novel file status flags.
         """
-        return self._setStatusImport(newCols, delCols, self.statusItems)
+        return self._setStatusImport(newCols, delCols, self._data.itemStatus)
 
     def setImportColours(self, newCols, delCols):
         """Update the list of note file importance flags.
         """
-        return self._setStatusImport(newCols, delCols, self.importItems)
+        return self._setStatusImport(newCols, delCols, self._data.itemImport)
 
     def setAutoReplace(self, autoReplace):
         """Update the auto-replace dictionary.
@@ -1096,13 +1089,13 @@ class NWProject:
         project tree. The counts themselves are kept in the NWStatus
         objects. This is essentially a refresh.
         """
-        self.statusItems.resetCounts()
-        self.importItems.resetCounts()
+        self._data.itemStatus.resetCounts()
+        self._data.itemImport.resetCounts()
         for nwItem in self._projTree:
             if nwItem.isNovelLike():
-                self.statusItems.increment(nwItem.itemStatus)
+                self._data.itemStatus.increment(nwItem.itemStatus)
             else:
-                self.importItems.increment(nwItem.itemImport)
+                self._data.itemImport.increment(nwItem.itemImport)
         return
 
     def localLookup(self, theWord):

@@ -271,11 +271,11 @@ class NWItem:
         the current item based on its class.
         """
         if self.isNovelLike():
-            stName = self.theProject.statusItems.name(self._status)
-            stIcon = self.theProject.statusItems.icon(self._status) if incIcon else None
+            stName = self.theProject.data.itemStatus.name(self._status)
+            stIcon = self.theProject.data.itemStatus.icon(self._status) if incIcon else None
         else:
-            stName = self.theProject.importItems.name(self._import)
-            stIcon = self.theProject.importItems.icon(self._import) if incIcon else None
+            stName = self.theProject.data.itemImport.name(self._import)
+            stIcon = self.theProject.data.itemImport.icon(self._import) if incIcon else None
         return stName, stIcon
 
     ##
@@ -447,14 +447,14 @@ class NWItem:
         """Set the item status by looking it up in the valid status
         items of the current project.
         """
-        self._status = self.theProject.statusItems.check(value)
+        self._status = self.theProject.data.itemStatus.check(value)
         return
 
     def setImport(self, value):
         """Set the item importance by looking it up in the valid import
         items of the current project.
         """
-        self._import = self.theProject.importItems.check(value)
+        self._import = self.theProject.data.itemImport.check(value)
         return
 
     def setActive(self, state):

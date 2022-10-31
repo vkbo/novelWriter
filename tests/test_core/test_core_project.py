@@ -783,24 +783,24 @@ def testCoreProject_StatusImport(mockGUI, fncDir, mockRnd):
     assert theProject.setStatusColours([], []) is False
     assert theProject.setStatusColours(newList, []) is True
 
-    assert theProject.statusItems.name(statusKeys[0]) == "New"
-    assert theProject.statusItems.name(statusKeys[1]) == "Draft"
-    assert theProject.statusItems.name(statusKeys[2]) == "Note"
-    assert theProject.statusItems.name(statusKeys[3]) == "Edited"
-    assert theProject.statusItems.cols(statusKeys[0]) == (1, 1, 1)
-    assert theProject.statusItems.cols(statusKeys[1]) == (2, 2, 2)
-    assert theProject.statusItems.cols(statusKeys[2]) == (3, 3, 3)
-    assert theProject.statusItems.cols(statusKeys[3]) == (4, 4, 4)
+    assert theProject.data.itemStatus.name(statusKeys[0]) == "New"
+    assert theProject.data.itemStatus.name(statusKeys[1]) == "Draft"
+    assert theProject.data.itemStatus.name(statusKeys[2]) == "Note"
+    assert theProject.data.itemStatus.name(statusKeys[3]) == "Edited"
+    assert theProject.data.itemStatus.cols(statusKeys[0]) == (1, 1, 1)
+    assert theProject.data.itemStatus.cols(statusKeys[1]) == (2, 2, 2)
+    assert theProject.data.itemStatus.cols(statusKeys[2]) == (3, 3, 3)
+    assert theProject.data.itemStatus.cols(statusKeys[3]) == (4, 4, 4)
 
     # Check the new entry
-    lastKey = theProject.statusItems.check("s000018")
+    lastKey = theProject.data.itemStatus.check("s000018")
     assert lastKey == "s000018"
-    assert theProject.statusItems.name(lastKey) == "Finished"
-    assert theProject.statusItems.cols(lastKey) == (5, 5, 5)
+    assert theProject.data.itemStatus.name(lastKey) == "Finished"
+    assert theProject.data.itemStatus.cols(lastKey) == (5, 5, 5)
 
     # Delete last entry
     assert theProject.setStatusColours([], [lastKey]) is True
-    assert theProject.statusItems.name(lastKey) == "New"
+    assert theProject.data.itemStatus.name(lastKey) == "New"
 
     # Change Importance
     # =================
@@ -820,52 +820,52 @@ def testCoreProject_StatusImport(mockGUI, fncDir, mockRnd):
     assert theProject.setImportColours([], []) is False
     assert theProject.setImportColours(newList, []) is True
 
-    assert theProject.importItems.name(importKeys[0]) == "New"
-    assert theProject.importItems.name(importKeys[1]) == "Minor"
-    assert theProject.importItems.name(importKeys[2]) == "Major"
-    assert theProject.importItems.name(importKeys[3]) == "Min"
-    assert theProject.importItems.cols(importKeys[0]) == (1, 1, 1)
-    assert theProject.importItems.cols(importKeys[1]) == (2, 2, 2)
-    assert theProject.importItems.cols(importKeys[2]) == (3, 3, 3)
-    assert theProject.importItems.cols(importKeys[3]) == (4, 4, 4)
+    assert theProject.data.itemImport.name(importKeys[0]) == "New"
+    assert theProject.data.itemImport.name(importKeys[1]) == "Minor"
+    assert theProject.data.itemImport.name(importKeys[2]) == "Major"
+    assert theProject.data.itemImport.name(importKeys[3]) == "Min"
+    assert theProject.data.itemImport.cols(importKeys[0]) == (1, 1, 1)
+    assert theProject.data.itemImport.cols(importKeys[1]) == (2, 2, 2)
+    assert theProject.data.itemImport.cols(importKeys[2]) == (3, 3, 3)
+    assert theProject.data.itemImport.cols(importKeys[3]) == (4, 4, 4)
 
     # Check the new entry
-    lastKey = theProject.importItems.check("i00001a")
+    lastKey = theProject.data.itemImport.check("i00001a")
     assert lastKey == "i00001a"
-    assert theProject.importItems.name(lastKey) == "Max"
-    assert theProject.importItems.cols(lastKey) == (5, 5, 5)
+    assert theProject.data.itemImport.name(lastKey) == "Max"
+    assert theProject.data.itemImport.cols(lastKey) == (5, 5, 5)
 
     # Delete last entry
     assert theProject.setImportColours([], [lastKey]) is True
-    assert theProject.importItems.name(lastKey) == "New"
+    assert theProject.data.itemImport.name(lastKey) == "New"
 
     # Delete Status/Import
     # ====================
 
-    theProject.statusItems.resetCounts()
-    for key in list(theProject.statusItems.keys()):
-        assert theProject.statusItems.remove(key) is True
+    theProject.data.itemStatus.resetCounts()
+    for key in list(theProject.data.itemStatus.keys()):
+        assert theProject.data.itemStatus.remove(key) is True
 
-    theProject.importItems.resetCounts()
-    for key in list(theProject.importItems.keys()):
-        assert theProject.importItems.remove(key) is True
+    theProject.data.itemImport.resetCounts()
+    for key in list(theProject.data.itemImport.keys()):
+        assert theProject.data.itemImport.remove(key) is True
 
-    assert len(theProject.statusItems) == 0
-    assert len(theProject.importItems) == 0
+    assert len(theProject.data.itemStatus) == 0
+    assert len(theProject.data.itemImport) == 0
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True
 
     # This should restore the default status/import labels
     assert theProject.openProject(fncDir) is True
     assert theProject.saveProject() is True
-    assert theProject.statusItems.name("s000023") == "New"
-    assert theProject.statusItems.name("s000024") == "Note"
-    assert theProject.statusItems.name("s000025") == "Draft"
-    assert theProject.statusItems.name("s000026") == "Finished"
-    assert theProject.importItems.name("i000027") == "New"
-    assert theProject.importItems.name("i000028") == "Minor"
-    assert theProject.importItems.name("i000029") == "Major"
-    assert theProject.importItems.name("i00002a") == "Main"
+    assert theProject.data.itemStatus.name("s000023") == "New"
+    assert theProject.data.itemStatus.name("s000024") == "Note"
+    assert theProject.data.itemStatus.name("s000025") == "Draft"
+    assert theProject.data.itemStatus.name("s000026") == "Finished"
+    assert theProject.data.itemImport.name("i000027") == "New"
+    assert theProject.data.itemImport.name("i000028") == "Minor"
+    assert theProject.data.itemImport.name("i000029") == "Major"
+    assert theProject.data.itemImport.name("i00002a") == "Main"
 
 # END Test testCoreProject_StatusImport
 

@@ -1208,7 +1208,7 @@ class GuiProjectTree(QTreeWidget):
         checkMark = f" ({nwUnicode.U_CHECK})"
         if tItem.isNovelLike():
             mStatus = ctxMenu.addMenu(self.tr("Set Status to ..."))
-            for n, (key, entry) in enumerate(self.theProject.statusItems.items()):
+            for n, (key, entry) in enumerate(self.theProject.data.itemStatus.items()):
                 entryName = entry["name"] + (checkMark if tItem.itemStatus == key else "")
                 aStatus = mStatus.addAction(entry["icon"], entryName)
                 aStatus.triggered.connect(
@@ -1221,7 +1221,7 @@ class GuiProjectTree(QTreeWidget):
             )
         else:
             mImport = ctxMenu.addMenu(self.tr("Set Importance to ..."))
-            for n, (key, entry) in enumerate(self.theProject.importItems.items()):
+            for n, (key, entry) in enumerate(self.theProject.data.itemImport.items()):
                 entryName = entry["name"] + (checkMark if tItem.itemImport == key else "")
                 aImport = mImport.addAction(entry["icon"], entryName)
                 aImport.triggered.connect(

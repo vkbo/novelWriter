@@ -33,7 +33,7 @@ from lxml import etree
 from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor
 from PyQt5.QtCore import QRectF, Qt
 
-from novelwriter.common import simplified
+from novelwriter.common import minmax, simplified
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class NWStatus:
         self._iconPath = QPainterPath()
         self._iconPath.addRoundedRect(QRectF(pA, pA, pB, pB), pR, pR)
 
-        self._defaultIcon = self._createIcon([100, 100, 100])
+        self._defaultIcon = self._createIcon(100, 100, 100)
 
         if self._type == self.STATUS:
             self._prefix = "s"
@@ -79,14 +79,17 @@ class NWStatus:
         if len(col) != 3:
             col = (100, 100, 100)
 
+        cR = minmax(col[0], 0, 255)
+        cG = minmax(col[1], 0, 255)
+        cB = minmax(col[2], 0, 255)
         name = simplified(name)
         if count is None:
-            count = self._store[key]["count"] if key in self._store else 0
+            count = self._store.get(key, {}).get("count", 0)
 
         self._store[key] = {
             "name": name,
-            "icon": self._createIcon(col),
-            "cols": col,
+            "icon": self._createIcon(cR, cG, cB),
+            "cols": (cR, cG, cB),
             "count": count,
         }
 
@@ -261,7 +264,7 @@ class NWStatus:
                 return False
         return True
 
-    def _createIcon(self, col):
+    def _createIcon(self, red, green, blue):
         """Generate an icon for a status label.
         """
         pixmap = QPixmap(self._iPX, self._iPX)
@@ -269,7 +272,7 @@ class NWStatus:
 
         painter = QPainter(pixmap)
         painter.setRenderHint(QPainter.Antialiasing)
-        painter.fillPath(self._iconPath, QColor(*col))
+        painter.fillPath(self._iconPath, QColor(red, green, blue))
         painter.end()
 
         return QIcon(pixmap)

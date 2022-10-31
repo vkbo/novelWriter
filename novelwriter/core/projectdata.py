@@ -28,6 +28,7 @@ import logging
 from novelwriter.common import (
     checkBool, checkInt, checkStringNone, simplified
 )
+from novelwriter.core.status import NWStatus
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +53,9 @@ class NWProjectData:
         self._lastHandle = {}
         self._lastCount = {}
         self._currCount = {}
+
+        self._status = NWStatus(NWStatus.STATUS)
+        self._import = NWStatus(NWStatus.IMPORT)
 
         # Internal
         self._changed = False
@@ -101,6 +105,14 @@ class NWProjectData:
     @property
     def spellLang(self):
         return self._spellLang
+
+    @property
+    def itemStatus(self):
+        return self._status
+
+    @property
+    def itemImport(self):
+        return self._import
 
     @property
     def changed(self):
