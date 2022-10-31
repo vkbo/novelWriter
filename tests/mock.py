@@ -19,14 +19,18 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from PyQt5.QtCore import QObject
+
 
 # =========================================================================== #
 #  Mock GUI
 # =========================================================================== #
 
-class MockGuiMain:
+class MockGuiMain(QObject):
 
     def __init__(self):
+        super().__init__()
+
         self.mainConf = None
         self.hasProject = True
         self.theProject = None

@@ -1,35 +1,37 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-17 21:17:31">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-31 22:17:38">
   <project>
     <name>Lorem Ipsum</name>
     <title>Lorem Ipsum</title>
     <author>lipsum.com</author>
-    <saveCount>28</saveCount>
+    <saveCount>32</saveCount>
     <autoCount>24</autoCount>
-    <editTime>1874</editTime>
+    <editTime>1889</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
     <language>en_GB</language>
     <spellCheck>False</spellCheck>
     <spellLang>None</spellLang>
-    <lastEdited>7a992350f3eb6</lastEdited>
-    <lastViewed>None</lastViewed>
-    <lastNovel>None</lastNovel>
-    <lastOutline>None</lastOutline>
-    <lastWordCount>3847</lastWordCount>
+    <totalWordCount>3847</totalWordCount>
     <novelWordCount>3109</novelWordCount>
     <notesWordCount>738</notesWordCount>
+    <lastHandle>
+      <entry key="editor">7a992350f3eb6</entry>
+      <entry key="viewer">None</entry>
+      <entry key="novelTree">b3643d0f92e32</entry>
+      <entry key="outline">None</entry>
+    </lastHandle>
     <autoReplace>
       <entry key="Rep1">Replace Text 1</entry>
       <entry key="Rep2">Replace Text 2</entry>
     </autoReplace>
     <titleFormat>
-      <title>%title%</title>
-      <chapter>Chapter %ch%: %title%</chapter>
-      <unnumbered>%title%</unnumbered>
-      <scene>* * *</scene>
-      <section></section>
+      <entry key="title">%title%</entry>
+      <entry key="chapter">Chapter %ch%: %title%</entry>
+      <entry key="unnumbered">%title%</entry>
+      <entry key="scene">* * *</entry>
+      <entry key="section"></entry>
     </titleFormat>
     <status>
       <entry key="sbaa94f" count="3" red="100" green="100" blue="100">New</entry>

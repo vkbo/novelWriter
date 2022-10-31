@@ -1,32 +1,34 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-30 23:53:59">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-31 22:31:39">
   <project>
     <name>New Project</name>
     <title>New Novel</title>
     <author>Jane Doe</author>
     <saveCount>4</saveCount>
     <autoCount>2</autoCount>
-    <editTime>3</editTime>
+    <editTime>4</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
     <language>None</language>
     <spellCheck>True</spellCheck>
     <spellLang>None</spellLang>
-    <lastEdited>000000000000f</lastEdited>
-    <lastViewed>None</lastViewed>
-    <lastNovel>0000000000008</lastNovel>
-    <lastOutline>0000000000008</lastOutline>
-    <lastWordCount>163</lastWordCount>
+    <totalWordCount>163</totalWordCount>
     <novelWordCount>136</novelWordCount>
     <notesWordCount>27</notesWordCount>
+    <lastHandle>
+      <entry key="editor">000000000000f</entry>
+      <entry key="viewer">None</entry>
+      <entry key="novelTree">0000000000008</entry>
+      <entry key="outline">0000000000008</entry>
+    </lastHandle>
     <autoReplace/>
     <titleFormat>
-      <title>%title%</title>
-      <chapter>%title%</chapter>
-      <unnumbered>%title%</unnumbered>
-      <scene>* * *</scene>
-      <section></section>
+      <entry key="title">%title%</entry>
+      <entry key="chapter">%title%</entry>
+      <entry key="unnumbered">%title%</entry>
+      <entry key="scene">* * *</entry>
+      <entry key="section"></entry>
     </titleFormat>
     <status>
       <entry key="s000000" count="5" red="100" green="100" blue="100">New</entry>

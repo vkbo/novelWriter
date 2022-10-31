@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-31 20:02:22">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-31 22:20:45">
   <project>
     <name>New Project</name>
     <title>New Novel</title>
@@ -13,20 +13,22 @@
     <language>None</language>
     <spellCheck>False</spellCheck>
     <spellLang>None</spellLang>
-    <lastEdited>None</lastEdited>
-    <lastViewed>None</lastViewed>
-    <lastNovel>None</lastNovel>
-    <lastOutline>None</lastOutline>
-    <lastWordCount>13</lastWordCount>
+    <totalWordCount>13</totalWordCount>
     <novelWordCount>10</novelWordCount>
     <notesWordCount>3</notesWordCount>
+    <lastHandle>
+      <entry key="editor">None</entry>
+      <entry key="viewer">None</entry>
+      <entry key="novelTree">None</entry>
+      <entry key="outline">None</entry>
+    </lastHandle>
     <autoReplace/>
     <titleFormat>
-      <title>%title%</title>
-      <chapter>%title%</chapter>
-      <unnumbered>%title%</unnumbered>
-      <scene>* * *</scene>
-      <section></section>
+      <entry key="title">%title%</entry>
+      <entry key="chapter">%title%</entry>
+      <entry key="unnumbered">%title%</entry>
+      <entry key="scene">* * *</entry>
+      <entry key="section"></entry>
     </titleFormat>
     <status>
       <entry key="s000000" count="7" red="100" green="100" blue="100">New</entry>

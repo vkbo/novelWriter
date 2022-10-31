@@ -24,6 +24,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from __future__ import annotations
+
 import os
 import json
 import shutil
@@ -46,7 +48,7 @@ from novelwriter.core.options import OptionState
 from novelwriter.core.document import NWDoc
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.common import (
-    checkBool, checkInt, checkString, checkStringNone, formatTimeStamp, hexToInt, isHandle,
+    checkBool, checkInt, checkStringNone, formatTimeStamp, hexToInt, isHandle,
     makeFileNameSafe, minmax, simplified,
 )
 
@@ -122,7 +124,7 @@ class NWProject(QObject):
 
     @property
     def projChanged(self):
-        return self._projChanged or self._data.changed
+        return self._projChanged
 
     @property
     def projAltered(self):
@@ -596,7 +598,9 @@ class NWProject(QObject):
         content = self._projTree.pack()
         xmlWriter = ProjectXMLWriter(self.projPath)
         if not xmlWriter.write(self._data, content, saveTime, editTime):
-            self.mainGui.makeAlert(self.tr("Failed to save project."), nwAlert.ERROR)
+            self.mainGui.makeAlert(self.tr(
+                "Failed to save project."
+            ), nwAlert.ERROR, exception=xmlWriter.error)
             return False
 
         # Save project GUI options
@@ -1331,17 +1335,18 @@ class NWProjectData:
         self._language = None
         self._spellCheck = False
         self._spellLang = None
-        self._lastHandle = {
-            "editor":    "",
-            "viewer":    "",
-            "novelTree": "",
-            "outline":   "",
-        }
-        self._lastCount = {}
-        self._currCount = {}
 
-        self._autoReplace = {}
-        self._titleFormat = {
+        # Project Dictionaries
+        self._lastCount: dict[str, int] = {}
+        self._currCount: dict[str, int] = {}
+        self._lastHandle: dict[str, str | None] = {
+            "editor":    None,
+            "viewer":    None,
+            "novelTree": None,
+            "outline":   None,
+        }
+        self._autoReplace: dict[str, str] = {}
+        self._titleFormat: dict[str, str] = {
             "title":      "%title%",
             "chapter":    "%title%",
             "unnumbered": "%title%",
@@ -1562,12 +1567,12 @@ class NWProjectData:
         values.
         """
         if isinstance(component, str):
-            self._lastHandle[component] = checkString(value, "")
+            self._lastHandle[component] = checkStringNone(value, None)
             self.theProject.setProjectChanged(True)
         elif isinstance(value, dict):
             for key, entry in value.items():
                 if key in self._lastHandle:
-                    self._lastHandle[key] = checkString(entry, "")
+                    self._lastHandle[key] = str(entry) if isHandle(entry) else None
             self.theProject.setProjectChanged(True)
         return
 

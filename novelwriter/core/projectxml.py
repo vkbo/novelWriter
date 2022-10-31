@@ -266,11 +266,7 @@ class ProjectXMLReader:
                 projData.setSpellCheck(xItem.text)
             elif xItem.tag == "spellLang":
                 projData.setSpellLang(xItem.text)
-            elif xItem.tag == "lastEdited":  # Discontinued in 1.4
-                projData.setLastHandle(xItem.text, "editor")
-            elif xItem.tag == "lastViewed":  # Discontinued in 1.4
-                projData.setLastHandle(xItem.text, "viewer")
-            elif xItem.tag == "lastWordCount":
+            elif xItem.tag == "totalWordCount":
                 projData.setLastCount(xItem.text, "total")
             elif xItem.tag == "novelWordCount":
                 projData.setLastCount(xItem.text, "novel")
@@ -281,16 +277,30 @@ class ProjectXMLReader:
             elif xItem.tag in ("import", "importance"):
                 self._parseStatusImport(xItem, projData.itemImport)
             elif xItem.tag == "lastHandle":
-                projData.setLastHandle(self._parseDictKeyText(xItem, "component"))
+                projData.setLastHandle(self._parseDictKeyText(xItem))
             elif xItem.tag == "autoReplace":
                 if self._version >= 0x0102:
-                    projData.setAutoReplace(self._parseDictKeyText(xItem, "key"))
+                    projData.setAutoReplace(self._parseDictKeyText(xItem))
                 else:  # Pre 1.2 format
                     projData.setAutoReplace(self._parseDictTagText(xItem))
             elif xItem.tag == "titleFormat":
-                projData.setTitleFormat(self._parseDictTagText(xItem))
+                if self._version >= 0x0104:
+                    projData.setTitleFormat(self._parseDictKeyText(xItem))
+                else:  # Pre 1.4 format
+                    projData.setTitleFormat(self._parseDictTagText(xItem))
             else:
-                logger.warning("Ignored <root/settings/%s> in xml", xItem.tag)
+                if self._version < 0x0104:
+                    # Convert some deprecated fields
+                    if xItem.tag == "lastEdited":  # Discontinued in 1.4
+                        projData.setLastHandle(xItem.text, "editor")
+                    elif xItem.tag == "lastViewed":  # Discontinued in 1.4
+                        projData.setLastHandle(xItem.text, "viewer")
+                    elif xItem.tag == "lastWordCount":  # Renamed in 1.4
+                        projData.setLastCount(xItem.text, "total")
+                    else:
+                        logger.warning("Ignored <root/settings/%s> in xml", xItem.tag)
+                else:
+                    logger.warning("Ignored <root/settings/%s> in xml", xItem.tag)
 
         return True
 
@@ -419,14 +429,14 @@ class ProjectXMLReader:
         self._importMap = {entry["name"]: key for key, entry in projData.itemImport.items()}
         return
 
-    def _parseDictKeyText(self, xItem, keyName):
+    def _parseDictKeyText(self, xItem):
         """Parse a dictionary stored with key as an attribute and the
         value as the text porperty.
         """
         result = {}
         for xEntry in xItem:
-            if xEntry.tag == "entry" and keyName in xEntry.attrib:
-                result[xEntry.attrib[keyName]] = checkString(xEntry.text, "")
+            if xEntry.tag == "entry" and "key" in xEntry.attrib:
+                result[xEntry.attrib["key"]] = checkString(xEntry.text, "")
         return result
 
     def _parseDictTagText(self, xItem):
@@ -447,7 +457,21 @@ class ProjectXMLWriter:
 
         return
 
+    ##
+    #  Properties
+    ##
+
+    @property
+    def error(self):
+        return self._error
+
+    ##
+    #  Methods
+    ##
+
     def write(self, projData, projContent, saveTime, editTime):
+        """Write the project data and content to the XML files.
+        """
 
         nwXML = etree.Element("novelWriterXML", attrib={
             "appVersion":  str(novelwriter.__version__),
@@ -471,27 +495,24 @@ class ProjectXMLWriter:
         self._packSingleValue(xSettings, "language", projData.language)
         self._packSingleValue(xSettings, "spellCheck", projData.spellCheck)
         self._packSingleValue(xSettings, "spellLang", projData.spellLang)
-        self._packSingleValue(xSettings, "lastWordCount", projData.getCurrCount("total"))
+        self._packSingleValue(xSettings, "totalWordCount", projData.getCurrCount("total"))
         self._packSingleValue(xSettings, "novelWordCount", projData.getCurrCount("novel"))
         self._packSingleValue(xSettings, "notesWordCount", projData.getCurrCount("notes"))
-        self._packDictKeyValue(xSettings, "lastHandle", projData.lastHandle, "component")
-        self._packDictKeyValue(xSettings, "autoReplace", projData.autoReplace, "key")
-        self._packDictTagValue(xSettings, "titleFormat", projData.titleFormat)
+        self._packDictKeyValue(xSettings, "lastHandle", projData.lastHandle)
+        self._packDictKeyValue(xSettings, "autoReplace", projData.autoReplace)
+        self._packDictKeyValue(xSettings, "titleFormat", projData.titleFormat)
 
         # Save Status/Importance
         xStatus = etree.SubElement(xSettings, "status")
-        for (label, attr) in projData.itemStatus.pack():
-            xEntry = etree.SubElement(xStatus, "entry", attrib=attr)
-            xEntry.text = label
+        for label, attrib in projData.itemStatus.pack():
+            self._packSingleValue(xStatus, "entry", label, attrib=attrib)
 
         xImport = etree.SubElement(xSettings, "importance")
-        for (label, attr) in projData.itemImport.pack():
-            xEntry = etree.SubElement(xImport, "entry", attrib=attr)
-            xEntry.text = label
+        for label, attrib in projData.itemImport.pack():
+            self._packSingleValue(xImport, "entry", label, attrib=attrib)
 
         # Save Tree Content
-        cAttr = {"count": str(len(projContent))}
-        xContent = etree.SubElement(nwXML, "content", attrib=cAttr)
+        xContent = etree.SubElement(nwXML, "content", attrib={"count": str(len(projContent))})
         for item in projContent:
             xItem = etree.SubElement(xContent, "item", attrib=item.get("itemAttr", {}))
             etree.SubElement(xItem, "meta", attrib=item.get("metaAttr", {}))
@@ -499,8 +520,8 @@ class ProjectXMLWriter:
             xName.text = item["name"]
 
         # Write the xml tree to file
-        tempFile = os.path.join(self._path, nwFiles.PROJ_FILE+"~")
         saveFile = os.path.join(self._path, nwFiles.PROJ_FILE)
+        tempFile = os.path.join(self._path, nwFiles.PROJ_FILE+"~")
         backFile = os.path.join(self._path, nwFiles.PROJ_FILE[:-3]+"bak")
         try:
             with open(tempFile, mode="wb") as outFile:
@@ -510,7 +531,8 @@ class ProjectXMLWriter:
                     encoding="utf-8",
                     xml_declaration=True
                 ))
-        except Exception:
+        except Exception as exc:
+            self._error = exc
             return False
 
         # If we're here, the file was successfully saved,
@@ -519,7 +541,8 @@ class ProjectXMLWriter:
             if os.path.isfile(saveFile):
                 os.replace(saveFile, backFile)
             os.replace(tempFile, saveFile)
-        except OSError:
+        except OSError as exc:
+            self._error = exc
             return False
 
         return True
@@ -528,40 +551,29 @@ class ProjectXMLWriter:
     #  Internal Functions
     ##
 
-    def _packSingleValue(self, xParent, name, value, allowNone=True):
-        """Pack a list of values into an xml element.
+    def _packSingleValue(self, xParent, name, value, attrib=None):
+        """Pack a single value into an xml element.
         """
-        if (value == "" or value is None) and not allowNone:
-            return
-        xItem = etree.SubElement(xParent, name)
-        xItem.text = str(value)
+        xItem = etree.SubElement(xParent, name, attrib=attrib)
+        xItem.text = str(value) or ""
         return
 
-    def _packListValue(self, xParent, name, data, allowNone=True):
+    def _packListValue(self, xParent, name, data):
         """Pack a list of values into an xml element.
         """
         for value in data:
-            self._packSingleValue(xParent, name, value, allowNone=allowNone)
+            xItem = etree.SubElement(xParent, name)
+            xItem.text = str(value) or ""
         return
 
-    def _packDictKeyValue(self, xParent, name, data, keyName):
+    def _packDictKeyValue(self, xParent, name, data):
         """Pack the entries of a dictionary into an xml element.
         """
         xItem = etree.SubElement(xParent, name)
         for key, value in data.items():
             if len(key) > 0:
-                xEntry = etree.SubElement(xItem, "entry", attrib={keyName: key})
-                if value:
-                    xEntry.text = value
-        return
-
-    def _packDictTagValue(self, xParent, name, data):
-        """Pack the entries of a dictionary into an xml element.
-        """
-        xItem = etree.SubElement(xParent, name)
-        for aKey, value in data.items():
-            if len(aKey) > 0:
-                self._packSingleValue(xItem, aKey, value)
+                xEntry = etree.SubElement(xItem, "entry", attrib={"key": key})
+                xEntry.text = str(value) or ""
         return
 
 # END Class ProjectXMLWriter
