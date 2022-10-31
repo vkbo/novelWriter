@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-31 22:23:18">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-31 23:08:06">
   <project>
     <name>New Project</name>
     <title>New Novel</title>
@@ -76,35 +76,35 @@
       <meta expanded="False" heading="H3" charCount="9" wordCount="2" paraCount="0" cursorPos="0"/>
       <name status="s000000" import="i000004" active="True">New Scene</name>
     </item>
-    <item handle="0000000000020" parent="None" root="0000000000020" order="0" type="ROOT" class="NOVEL">
+    <item handle="0000000000010" parent="None" root="0000000000010" order="0" type="ROOT" class="NOVEL">
       <meta expanded="False"/>
       <name status="s000000" import="i000004">Novel</name>
     </item>
-    <item handle="0000000000021" parent="None" root="0000000000021" order="0" type="ROOT" class="PLOT">
+    <item handle="0000000000011" parent="None" root="0000000000011" order="0" type="ROOT" class="PLOT">
       <meta expanded="False"/>
       <name status="s000000" import="i000004">Plot</name>
     </item>
-    <item handle="0000000000022" parent="None" root="0000000000022" order="0" type="ROOT" class="CHARACTER">
+    <item handle="0000000000012" parent="None" root="0000000000012" order="0" type="ROOT" class="CHARACTER">
       <meta expanded="False"/>
       <name status="s000000" import="i000004">Characters</name>
     </item>
-    <item handle="0000000000023" parent="None" root="0000000000023" order="0" type="ROOT" class="WORLD">
+    <item handle="0000000000013" parent="None" root="0000000000013" order="0" type="ROOT" class="WORLD">
       <meta expanded="False"/>
       <name status="s000000" import="i000004">Locations</name>
     </item>
-    <item handle="0000000000024" parent="None" root="0000000000024" order="0" type="ROOT" class="TIMELINE">
+    <item handle="0000000000014" parent="None" root="0000000000014" order="0" type="ROOT" class="TIMELINE">
       <meta expanded="False"/>
       <name status="s000000" import="i000004">Timeline</name>
     </item>
-    <item handle="0000000000025" parent="None" root="0000000000025" order="0" type="ROOT" class="OBJECT">
+    <item handle="0000000000015" parent="None" root="0000000000015" order="0" type="ROOT" class="OBJECT">
       <meta expanded="False"/>
       <name status="s000000" import="i000004">Objects</name>
     </item>
-    <item handle="0000000000026" parent="None" root="0000000000026" order="0" type="ROOT" class="CUSTOM">
+    <item handle="0000000000016" parent="None" root="0000000000016" order="0" type="ROOT" class="CUSTOM">
       <meta expanded="False"/>
       <name status="s000000" import="i000004">Custom</name>
     </item>
-    <item handle="0000000000027" parent="None" root="0000000000027" order="0" type="ROOT" class="CUSTOM">
+    <item handle="0000000000017" parent="None" root="0000000000017" order="0" type="ROOT" class="CUSTOM">
       <meta expanded="False"/>
       <name status="s000000" import="i000004">Custom</name>
     </item>

@@ -25,7 +25,7 @@ from lxml import etree
 
 from PyQt5.QtGui import QIcon
 
-from tools import C
+from tools import C, buildTestProject
 
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
@@ -33,10 +33,12 @@ from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 
 
 @pytest.mark.core
-def testCoreItem_Setters(mockGUI, mockRnd):
+def testCoreItem_Setters(mockGUI, mockRnd, fncDir):
     """Test all the simple setters for the NWItem class.
     """
     theProject = NWProject(mockGUI)
+    mockRnd.reset()
+    buildTestProject(theProject, fncDir)
     theItem = NWItem(theProject)
 
     statusKeys = ["s000000", "s000001", "s000002", "s000003"]
@@ -192,11 +194,12 @@ def testCoreItem_Setters(mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreItem_Methods(mockGUI, mockRnd):
+def testCoreItem_Methods(mockGUI, mockRnd, fncDir):
     """Test the simple methods of the NWItem class.
     """
-    mockRnd.reset()
     theProject = NWProject(mockGUI)
+    mockRnd.reset()
+    buildTestProject(theProject, fncDir)
     theItem = NWItem(theProject)
 
     # Describe Me

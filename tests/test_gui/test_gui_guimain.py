@@ -489,11 +489,12 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     # Check a Quick Create and Delete
     assert nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None)
     newHandle = nwGUI.projView.getSelectedHandle()
-    assert nwGUI.theProject.tree["0000000000020"] is not None
+    assert newHandle == "0000000000013"
+    assert nwGUI.theProject.tree[newHandle] is not None
     assert nwGUI.projView.requestDeleteItem()
     assert nwGUI.projView.setSelectedHandle(newHandle)
     assert nwGUI.projView.requestDeleteItem()
-    assert nwGUI.theProject.tree["0000000000024"] is not None  # Trash
+    assert nwGUI.theProject.tree["0000000000014"] is not None  # Trash
     assert nwGUI.saveProject()
 
     # Check the files
@@ -509,21 +510,21 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
-    projFile = os.path.join(fncProj, "content", "0000000000020.nwd")
-    testFile = os.path.join(outDir, "guiEditor_Main_Final_0000000000020.nwd")
-    compFile = os.path.join(refDir, "guiEditor_Main_Final_0000000000020.nwd")
+    projFile = os.path.join(fncProj, "content", "0000000000010.nwd")
+    testFile = os.path.join(outDir, "guiEditor_Main_Final_0000000000010.nwd")
+    compFile = os.path.join(refDir, "guiEditor_Main_Final_0000000000010.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
-    projFile = os.path.join(fncProj, "content", "0000000000021.nwd")
-    testFile = os.path.join(outDir, "guiEditor_Main_Final_0000000000021.nwd")
-    compFile = os.path.join(refDir, "guiEditor_Main_Final_0000000000021.nwd")
+    projFile = os.path.join(fncProj, "content", "0000000000011.nwd")
+    testFile = os.path.join(outDir, "guiEditor_Main_Final_0000000000011.nwd")
+    compFile = os.path.join(refDir, "guiEditor_Main_Final_0000000000011.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
-    projFile = os.path.join(fncProj, "content", "0000000000022.nwd")
-    testFile = os.path.join(outDir, "guiEditor_Main_Final_0000000000022.nwd")
-    compFile = os.path.join(refDir, "guiEditor_Main_Final_0000000000022.nwd")
+    projFile = os.path.join(fncProj, "content", "0000000000012.nwd")
+    testFile = os.path.join(outDir, "guiEditor_Main_Final_0000000000012.nwd")
+    compFile = os.path.join(refDir, "guiEditor_Main_Final_0000000000012.nwd")
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 

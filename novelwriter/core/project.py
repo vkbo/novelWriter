@@ -254,14 +254,6 @@ class NWProject(QObject):
         self.projContent = None
         self.projDict    = None
         self.projFiles   = []
-        self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100))
-        self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0))
-        self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0))
-        self._data.itemStatus.write(None, self.tr("Finished"), (50,  200, 0))
-        self._data.itemImport.write(None, self.tr("New"),   (100, 100, 100))
-        self._data.itemImport.write(None, self.tr("Minor"), (200, 50,  0))
-        self._data.itemImport.write(None, self.tr("Major"), (200, 150, 0))
-        self._data.itemImport.write(None, self.tr("Main"),  (50,  200, 0))
 
         return
 
@@ -294,6 +286,17 @@ class NWProject(QObject):
             return False
 
         self.clearProject()
+
+        self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100))
+        self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0))
+        self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0))
+        self._data.itemStatus.write(None, self.tr("Finished"), (50,  200, 0))
+
+        self._data.itemImport.write(None, self.tr("New"),      (100, 100, 100))
+        self._data.itemImport.write(None, self.tr("Minor"),    (200, 50,  0))
+        self._data.itemImport.write(None, self.tr("Major"),    (200, 150, 0))
+        self._data.itemImport.write(None, self.tr("Main"),     (50,  200, 0))
+
         if not self.setProjectPath(projPath, newProject=True):
             return False
 
@@ -859,15 +862,16 @@ class NWProject(QObject):
         """
         return self._setStatusImport(newCols, delCols, self._data.itemImport)
 
-    def setProjectChanged(self, bValue):
+    def setProjectChanged(self, value):
         """Toggle the project changed flag, and propagate the
         information to the GUI statusbar.
         """
-        self._projChanged = bValue
-        self.projectStatusChanged.emit(self._projChanged)
-        if bValue is True:
-            # If we've changed the project at all, this should be True
-            self._projAltered = True
+        if isinstance(value, bool):
+            self._projChanged = value
+            self.projectStatusChanged.emit(self._projChanged)
+            if value:
+                # If we've changed the project at all, this should be True
+                self._projAltered = True
         return self._projChanged
 
     ##

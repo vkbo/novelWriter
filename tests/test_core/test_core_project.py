@@ -263,14 +263,14 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.closeProject() is True
     assert theProject.openProject(projFile) is True
 
-    assert theProject.newRoot(nwItemClass.NOVEL) == "0000000000020"
-    assert theProject.newRoot(nwItemClass.PLOT) == "0000000000021"
-    assert theProject.newRoot(nwItemClass.CHARACTER) == "0000000000022"
-    assert theProject.newRoot(nwItemClass.WORLD) == "0000000000023"
-    assert theProject.newRoot(nwItemClass.TIMELINE) == "0000000000024"
-    assert theProject.newRoot(nwItemClass.OBJECT) == "0000000000025"
-    assert theProject.newRoot(nwItemClass.CUSTOM) == "0000000000026"
-    assert theProject.newRoot(nwItemClass.CUSTOM) == "0000000000027"
+    assert theProject.newRoot(nwItemClass.NOVEL) == "0000000000010"
+    assert theProject.newRoot(nwItemClass.PLOT) == "0000000000011"
+    assert theProject.newRoot(nwItemClass.CHARACTER) == "0000000000012"
+    assert theProject.newRoot(nwItemClass.WORLD) == "0000000000013"
+    assert theProject.newRoot(nwItemClass.TIMELINE) == "0000000000014"
+    assert theProject.newRoot(nwItemClass.OBJECT) == "0000000000015"
+    assert theProject.newRoot(nwItemClass.CUSTOM) == "0000000000016"
+    assert theProject.newRoot(nwItemClass.CUSTOM) == "0000000000017"
 
     assert theProject.projChanged is True
     assert theProject.saveProject() is True
@@ -281,23 +281,23 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
     assert theProject.projChanged is False
 
     # Delete the new items
-    assert theProject.removeItem("0000000000020") is True
-    assert theProject.removeItem("0000000000021") is True
-    assert theProject.removeItem("0000000000022") is True
-    assert theProject.removeItem("0000000000023") is True
-    assert theProject.removeItem("0000000000024") is True
-    assert theProject.removeItem("0000000000025") is True
-    assert theProject.removeItem("0000000000026") is True
-    assert theProject.removeItem("0000000000027") is True
+    assert theProject.removeItem("0000000000010") is True
+    assert theProject.removeItem("0000000000011") is True
+    assert theProject.removeItem("0000000000012") is True
+    assert theProject.removeItem("0000000000013") is True
+    assert theProject.removeItem("0000000000014") is True
+    assert theProject.removeItem("0000000000015") is True
+    assert theProject.removeItem("0000000000016") is True
+    assert theProject.removeItem("0000000000017") is True
 
-    assert "0000000000020" not in theProject.tree
-    assert "0000000000021" not in theProject.tree
-    assert "0000000000022" not in theProject.tree
-    assert "0000000000023" not in theProject.tree
-    assert "0000000000024" not in theProject.tree
-    assert "0000000000025" not in theProject.tree
-    assert "0000000000026" not in theProject.tree
-    assert "0000000000027" not in theProject.tree
+    assert "0000000000010" not in theProject.tree
+    assert "0000000000011" not in theProject.tree
+    assert "0000000000012" not in theProject.tree
+    assert "0000000000013" not in theProject.tree
+    assert "0000000000014" not in theProject.tree
+    assert "0000000000015" not in theProject.tree
+    assert "0000000000016" not in theProject.tree
+    assert "0000000000017" not in theProject.tree
 
 # END Test testCoreProject_NewRoot
 
@@ -324,26 +324,26 @@ def testCoreProject_NewFileFolder(monkeypatch, fncDir, outDir, refDir, mockGUI, 
     assert theProject.newFile("New File", "1234567890abc") is None
 
     # Add files properly
-    assert theProject.newFolder("Stuff", C.hNovelRoot) == "0000000000020"
-    assert theProject.newFile("Hello", "0000000000020") == "0000000000021"
-    assert theProject.newFile("Jane", C.hCharRoot) == "0000000000022"
+    assert theProject.newFolder("Stuff", C.hNovelRoot) == "0000000000010"
+    assert theProject.newFile("Hello", "0000000000010") == "0000000000011"
+    assert theProject.newFile("Jane", C.hCharRoot) == "0000000000012"
 
-    assert "0000000000020" in theProject.tree
-    assert "0000000000021" in theProject.tree
-    assert "0000000000022" in theProject.tree
+    assert "0000000000010" in theProject.tree
+    assert "0000000000011" in theProject.tree
+    assert "0000000000012" in theProject.tree
 
     # Write to file, failed
     assert theProject.writeNewFile("blabla", 1, True) is False         # Not a handle
-    assert theProject.writeNewFile("0000000000020", 1, True) is False  # Not a file
+    assert theProject.writeNewFile("0000000000010", 1, True) is False  # Not a file
     assert theProject.writeNewFile(C.hTitlePage, 1, True) is False  # Already has content
 
     # Write to file, success
-    assert theProject.writeNewFile("0000000000021", 2, True) is True
-    assert NWDoc(theProject, "0000000000021").readDocument() == "## Hello\n\n"
+    assert theProject.writeNewFile("0000000000011", 2, True) is True
+    assert NWDoc(theProject, "0000000000011").readDocument() == "## Hello\n\n"
 
     # Write to file with additional text, success
-    assert theProject.writeNewFile("0000000000022", 1, False, "Hi Jane\n\n") is True
-    assert NWDoc(theProject, "0000000000022").readDocument() == "# Jane\n\nHi Jane\n\n"
+    assert theProject.writeNewFile("0000000000012", 1, False, "Hi Jane\n\n") is True
+    assert NWDoc(theProject, "0000000000012").readDocument() == "# Jane\n\nHi Jane\n\n"
 
     # Save, close and check
     assert theProject.projChanged is True
@@ -356,23 +356,23 @@ def testCoreProject_NewFileFolder(monkeypatch, fncDir, outDir, refDir, mockGUI, 
     # Delete new file, but block access
     with monkeypatch.context() as mp:
         mp.setattr("os.unlink", causeOSError)
-        assert theProject.removeItem("0000000000021") is False
-        assert "0000000000021" in theProject.tree
+        assert theProject.removeItem("0000000000011") is False
+        assert "0000000000011" in theProject.tree
 
     # Delete new files and folders
-    assert os.path.isfile(os.path.join(fncDir, "content", "0000000000022.nwd"))
-    assert os.path.isfile(os.path.join(fncDir, "content", "0000000000021.nwd"))
+    assert os.path.isfile(os.path.join(fncDir, "content", "0000000000012.nwd"))
+    assert os.path.isfile(os.path.join(fncDir, "content", "0000000000011.nwd"))
 
-    assert theProject.removeItem("0000000000022") is True
-    assert theProject.removeItem("0000000000021") is True
-    assert theProject.removeItem("0000000000020") is True
+    assert theProject.removeItem("0000000000012") is True
+    assert theProject.removeItem("0000000000011") is True
+    assert theProject.removeItem("0000000000010") is True
 
-    assert not os.path.isfile(os.path.join(fncDir, "content", "0000000000022.nwd"))
-    assert not os.path.isfile(os.path.join(fncDir, "content", "0000000000021.nwd"))
+    assert not os.path.isfile(os.path.join(fncDir, "content", "0000000000012.nwd"))
+    assert not os.path.isfile(os.path.join(fncDir, "content", "0000000000011.nwd"))
 
-    assert "0000000000020" not in theProject.tree
-    assert "0000000000021" not in theProject.tree
-    assert "0000000000022" not in theProject.tree
+    assert "0000000000010" not in theProject.tree
+    assert "0000000000011" not in theProject.tree
+    assert "0000000000012" not in theProject.tree
 
     assert theProject.closeProject() is True
 
@@ -933,7 +933,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
 
     # Trash folder
     # Should create on first call, and just returned on later calls
-    hTrash = "0000000000018"
+    hTrash = "0000000000010"
     assert theProject.tree[hTrash] is None
     assert theProject.trashFolder() == hTrash
     assert theProject.trashFolder() == hTrash
@@ -987,14 +987,14 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
 
     # Change project tree order
     oldOrder = [
-        "0000000000010", "0000000000011", "0000000000012",
-        "0000000000013", "0000000000014", "0000000000015",
-        "0000000000016", "0000000000017", "0000000000018",
+        "0000000000008", "0000000000009", "000000000000a",
+        "000000000000b", "000000000000c", "000000000000d",
+        "000000000000e", "000000000000f", "0000000000010",
     ]
     newOrder = [
-        "0000000000013", "0000000000014", "0000000000015",
-        "0000000000010", "0000000000011", "0000000000012",
-        "0000000000016", "0000000000017",
+        "000000000000b", "000000000000c", "000000000000d",
+        "0000000000008", "0000000000009", "000000000000a",
+        "000000000000e", "000000000000f",
     ]
     assert theProject.tree.handles() == oldOrder
     assert theProject.setTreeOrder(newOrder)
