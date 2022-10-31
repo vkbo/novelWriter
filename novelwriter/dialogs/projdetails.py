@@ -176,7 +176,7 @@ class GuiProjectDetailsMain(QWidget):
         self.projName.setWordWrap(True)
 
         self.bookAuthors = QLabel(self.tr("By {0}").format(
-            self.theProject.data.getAuthors(self.tr("and"))
+            self.theProject.getFormattedAuthors()
         ))
         authFont = self.bookAuthors.font()
         authFont.setPointSizeF(1.2*fPt)

@@ -914,16 +914,16 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     assert theProject.data.authors == ["Jane Doe", "John Doh"]
 
     theProject.data.setAuthors("")
-    assert theProject.data.getAuthors() == ""
+    assert theProject.getFormattedAuthors() == ""
 
     theProject.data.setAuthors("Jane Doe")
-    assert theProject.data.getAuthors() == "Jane Doe"
+    assert theProject.getFormattedAuthors() == "Jane Doe"
 
     theProject.data.setAuthors("Jane Doe\nJohn Doh")
-    assert theProject.data.getAuthors() == "Jane Doe and John Doh"
+    assert theProject.getFormattedAuthors() == "Jane Doe and John Doh"
 
     theProject.data.setAuthors("Jane Doe\nJohn Doh\nBod Owens")
-    assert theProject.data.getAuthors() == "Jane Doe, John Doh and Bod Owens"
+    assert theProject.getFormattedAuthors() == "Jane Doe, John Doh and Bod Owens"
 
     # Edit Time
     theProject.data.setEditTime(1234)
@@ -1004,7 +1004,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     assert theProject.tree.handles() == oldOrder
 
     # Session stats
-    theProject.currWCount = 200
+    theProject.data.setCurrCount(200, "total")
     theProject.data.setLastCount(100, "total")
     with monkeypatch.context() as mp:
         mp.setattr("os.path.isdir", lambda *a, **k: False)
@@ -1020,8 +1020,8 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     statsFile = os.path.join(theProject.projMeta, nwFiles.SESS_STATS)
 
     theProject._projOpened = 1600002000
-    theProject.currNovelWC = 200
-    theProject.currNotesWC = 100
+    theProject._data.setCurrCount(200, "novel")
+    theProject._data.setCurrCount(100, "notes")
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.project.time", lambda: 1600005600)

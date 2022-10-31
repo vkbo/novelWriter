@@ -94,9 +94,6 @@ class NWProject:
         self.spellCheck  = False  # Controls the spellcheck-as-you-type feature
         self.statusItems = None   # Novel file progress status values
         self.importItems = None   # Note file importance values
-        self.currWCount  = 0      # The project word count in current session
-        self.currNovelWC = 0      # The novel files word count in cutrent session
-        self.currNotesWC = 0      # The note files word count in cutrent session
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
@@ -282,9 +279,6 @@ class NWProject:
         self.importItems.write(None, self.tr("Minor"), (200, 50,  0))
         self.importItems.write(None, self.tr("Major"), (200, 150, 0))
         self.importItems.write(None, self.tr("Main"),  (50,  200, 0))
-        self.currWCount = 0
-        self.currNovelWC = 0
-        self.currNotesWC = 0
 
         return
 
@@ -330,7 +324,7 @@ class NWProject:
         titlePage = "#! %s\n\n" % (self._data.title if self._data.title else self._data.name)
         if self._data.authors:
             titlePage = "%s>> %s %s <<\n" % (
-                titlePage, self.tr("By"), self._data.getAuthors(self.tr("and"))
+                titlePage, self.tr("By"), self.getFormattedAuthors()
             )
 
         aDoc = NWDoc(self, hTitlePage)
@@ -658,9 +652,9 @@ class NWProject:
         self._packProjectValue(xSettings, "lastViewed", self._data.getLastHandle("viewer"))
         self._packProjectValue(xSettings, "lastNovel", self._data.getLastHandle("noveltree"))
         self._packProjectValue(xSettings, "lastOutline", self._data.getLastHandle("outline"))
-        self._packProjectValue(xSettings, "lastWordCount", self.currWCount)
-        self._packProjectValue(xSettings, "novelWordCount", self.currNovelWC)
-        self._packProjectValue(xSettings, "notesWordCount", self.currNotesWC)
+        self._packProjectValue(xSettings, "lastWordCount", self._data.getCurrCount("total"))
+        self._packProjectValue(xSettings, "novelWordCount", self._data.getCurrCount("novel"))
+        self._packProjectValue(xSettings, "notesWordCount", self._data.getCurrCount("notes"))
         self._packProjectKeyValue(xSettings, "autoReplace", self.autoReplace)
 
         xTitleFmt = etree.SubElement(xSettings, "titleFormat")
@@ -713,7 +707,9 @@ class NWProject:
         self._optState.saveSettings()
 
         # Update recent projects
-        self.mainConf.updateRecentCache(self.projPath, self._data.name, self.currWCount, saveTime)
+        self.mainConf.updateRecentCache(
+            self.projPath, self._data.name, self._data.getCurrCount("total"), saveTime
+        )
         self.mainConf.saveRecentCache()
 
         self._writeLockFile()
@@ -1018,6 +1014,22 @@ class NWProject:
     #  Getters
     ##
 
+    def getFormattedAuthors(self):
+        """Return a formatted string of authors.
+        """
+        authors = self._data.authors
+        nAuth = len(authors)
+
+        result = ""
+        if nAuth == 1:
+            result = authors[0]
+        elif nAuth > 1:
+            result = "%s %s %s" % (
+                ", ".join(authors[0:-1]), self.tr("and"), authors[-1]
+            )
+
+        return result
+
     def getCurrentEditTime(self):
         """Get the total project edit time, including the time spent in
         the current session.
@@ -1074,12 +1086,9 @@ class NWProject:
         """Update the total word count values.
         """
         wcNovel, wcNotes = self._projTree.sumWords()
-        wcTotal = wcNovel + wcNotes
-        if wcTotal != self.currWCount:
-            self.currNovelWC = wcNovel
-            self.currNotesWC = wcNotes
-            self.currWCount  = wcTotal
-            self.setProjectChanged(True)
+        self._data.setCurrCount(wcNovel, "novel")
+        self._data.setCurrCount(wcNotes, "notes")
+        self._data.setCurrCount(wcNovel + wcNotes, "total")
         return
 
     def countStatus(self):
@@ -1361,7 +1370,8 @@ class NWProject:
 
         nowTime = time()
         lastCount = self._data.getLastCount("total")
-        sessDiff = self.currWCount - lastCount
+        currCount = self._data.getCurrCount("total")
+        sessDiff = currCount - lastCount
         sessTime = nowTime - self._projOpened
 
         logger.info("The session lasted %d sec and added %d words", int(sessTime), sessDiff)
@@ -1382,8 +1392,8 @@ class NWProject:
                 outFile.write("%-19s  %-19s  %8d  %8d  %8d\n" % (
                     formatTimeStamp(self._projOpened),
                     formatTimeStamp(nowTime),
-                    self.currNovelWC,
-                    self.currNotesWC,
+                    self._data.getCurrCount("novel"),
+                    self._data.getCurrCount("notes"),
                     int(idleTime),
                 ))
 

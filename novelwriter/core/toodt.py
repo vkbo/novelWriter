@@ -262,7 +262,7 @@ class ToOdt(Tokenizer):
 
         if self._headerText == "":
             theTitle = self.theProject.data.title
-            theAuth  = self.theProject.data.getAuthors(self.tr("and"))
+            theAuth = self.theProject.getFormattedAuthors()
             self._headerText = f"{theTitle} / {theAuth} /"
 
         # Create Roots

@@ -51,6 +51,7 @@ class NWProjectData:
         self._spellLang = None
         self._lastHandle = {}
         self._lastCount = {}
+        self._currCount = {}
 
         # Internal
         self._changed = False
@@ -137,20 +138,8 @@ class NWProjectData:
     def getLastCount(self, type):
         return self._lastCount.get(type, 0)
 
-    def getAuthors(self, trAnd="and"):
-        """Return a formatted string of authors.
-        """
-        nAuth = len(self._authors)
-        authors = ""
-
-        if nAuth == 1:
-            authors = self._authors[0]
-        elif nAuth > 1:
-            authors = "%s %s %s" % (
-                ", ".join(self._authors[0:-1]), trAnd, self._authors[-1]
-            )
-
-        return authors
+    def getCurrCount(self, type):
+        return self._currCount.get(type, 0)
 
     ##
     #  Setters
@@ -173,7 +162,7 @@ class NWProjectData:
             for author in value.splitlines():
                 author = simplified(author)
                 if author:
-                    self.addAuthor(author)
+                    self._authors.append(author)
             self._changed = True
         elif isinstance(value, list):
             self._authors = value
@@ -222,6 +211,12 @@ class NWProjectData:
     def setLastCount(self, value, type):
         self._lastCount[type] = checkInt(value, 0)
         self._changed = True
+        return
+
+    def setCurrCount(self, value, type):
+        if value != self._currCount.get(type, 0):
+            self._currCount[type] = checkInt(value, 0)
+            self._changed = True
         return
 
 # END Class NWProjectData
