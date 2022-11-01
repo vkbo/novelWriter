@@ -443,7 +443,6 @@ class GuiMain(QMainWindow):
             self.idleRefTime = time()
             self.idleTime = 0.0
 
-            self.theProject.index.clearIndex()
             self.clearGUI()
             self.hasProject = False
             self._changeView(nwView.PROJECT)
@@ -519,9 +518,6 @@ class GuiMain(QMainWindow):
         self.idleRefTime = time()
         self.idleTime = 0.0
 
-        # Load the tag index
-        self.theProject.index.loadIndex()
-
         # Update GUI
         self._updateWindowTitle(self.theProject.data.name)
         self.rebuildTrees()
@@ -573,8 +569,7 @@ class GuiMain(QMainWindow):
             return False
 
         self.projView.saveProjectTasks()
-        if self.theProject.saveProject(autoSave=autoSave):
-            self.theProject.index.saveIndex()
+        self.theProject.saveProject(autoSave=autoSave)
 
         return True
 

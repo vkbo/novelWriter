@@ -752,7 +752,6 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
 
     assert theIndex.saveIndex() is True
     assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
 
     # Header Record
     bHandle = "0000000000000"
@@ -763,6 +762,8 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
     assert theIndex.getHandleHeaders(nHandle) == [
         ("T000001", "H1", "Hello World!"), ("T000011", "H1", "Hello World!")
     ]
+
+    assert theProject.closeProject() is True
 
 # END Test testCoreIndex_ExtractData
 

@@ -67,14 +67,14 @@ class NWProject(QObject):
         self.mainConf = novelwriter.CONFIG
         self.mainGui  = mainGui
 
-        # Project Data
-        self._data = NWProjectData(self)
-
         # Core Elements
-        self._optState  = OptionState(self)  # Project-specific GUI options
-        self._projTree  = NWTree(self)       # The project tree
-        self._projIndex = NWIndex(self)      # The projecty index
-        self._langData  = {}                 # Localisation data
+        self._data    = NWProjectData(self)  # The project settings
+        self._options = OptionState(self)    # Project-specific GUI options
+        self._tree    = NWTree(self)         # The project tree
+        self._index   = NWIndex(self)        # The projecty index
+
+        # Data Cache
+        self._langData = {}  # Localisation data
 
         # Project Status
         self._projOpened  = 0      # The time stamp of when the project file was opened
@@ -108,15 +108,15 @@ class NWProject(QObject):
 
     @property
     def index(self):
-        return self._projIndex
+        return self._index
 
     @property
     def tree(self):
-        return self._projTree
+        return self._tree
 
     @property
     def options(self):
-        return self._optState
+        return self._options
 
     @property
     def projOpened(self):
@@ -143,39 +143,39 @@ class NWProject(QObject):
         newItem.setName(label)
         newItem.setType(nwItemType.ROOT)
         newItem.setClass(itemClass)
-        self._projTree.append(None, None, newItem)
-        self._projTree.updateItemData(newItem.itemHandle)
+        self._tree.append(None, None, newItem)
+        self._tree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
     def newFolder(self, label, pHandle):
         """Add a new folder with a given label and parent item.
         """
-        if pHandle not in self._projTree:
+        if pHandle not in self._tree:
             return None
         newItem = NWItem(self)
         newItem.setName(label)
         newItem.setType(nwItemType.FOLDER)
-        self._projTree.append(None, pHandle, newItem)
-        self._projTree.updateItemData(newItem.itemHandle)
+        self._tree.append(None, pHandle, newItem)
+        self._tree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
     def newFile(self, label, pHandle):
         """Add a new file with a given label and parent item.
         """
-        if pHandle not in self._projTree:
+        if pHandle not in self._tree:
             return None
         newItem = NWItem(self)
         newItem.setName(label)
         newItem.setType(nwItemType.FILE)
-        self._projTree.append(None, pHandle, newItem)
-        self._projTree.updateItemData(newItem.itemHandle)
+        self._tree.append(None, pHandle, newItem)
+        self._tree.updateItemData(newItem.itemHandle)
         return newItem.itemHandle
 
     def writeNewFile(self, tHandle, hLevel, isDocument, addText=""):
         """Write content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
-        tItem = self._projTree[tHandle]
+        tItem = self._tree[tHandle]
         if tItem is None:
             return False
         if not tItem.isFileType():
@@ -193,7 +193,7 @@ class NWProject(QObject):
             tItem.setLayout(nwItemLayout.NOTE)
 
         newDoc.writeDocument(newText)
-        self._projIndex.scanText(tHandle, newText)
+        self._index.scanText(tHandle, newText)
 
         return True
 
@@ -201,7 +201,7 @@ class NWProject(QObject):
         """Remove an item from the project. This will delete both the
         project entry and a document file if it exists.
         """
-        if self._projTree.checkType(tHandle, nwItemType.FILE):
+        if self._tree.checkType(tHandle, nwItemType.FILE):
             delDoc = NWDoc(self, tHandle)
             if not delDoc.deleteDocument():
                 self.mainGui.makeAlert([
@@ -209,22 +209,22 @@ class NWProject(QObject):
                 ], nwAlert.ERROR)
                 return False
 
-        self._projIndex.deleteHandle(tHandle)
-        del self._projTree[tHandle]
+        self._index.deleteHandle(tHandle)
+        del self._tree[tHandle]
 
         return True
 
     def trashFolder(self):
         """Add the special trash root folder to the project.
         """
-        trashHandle = self._projTree.trashRoot()
+        trashHandle = self._tree.trashRoot()
         if trashHandle is None:
             newItem = NWItem(self)
             newItem.setName(trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH]))
             newItem.setType(nwItemType.ROOT)
             newItem.setClass(nwItemClass.TRASH)
-            self._projTree.append(None, None, newItem)
-            self._projTree.updateItemData(newItem.itemHandle)
+            self._tree.append(None, None, newItem)
+            self._tree.updateItemData(newItem.itemHandle)
             return newItem.itemHandle
 
         return trashHandle
@@ -243,8 +243,8 @@ class NWProject(QObject):
         self._projAltered = False
 
         # Project Tree
-        self._projTree.clear()
-
+        self._tree.clear()
+        self._index.clearIndex()
         self._data = NWProjectData(self)
 
         # Project Settings
@@ -307,7 +307,9 @@ class NWProject(QObject):
         hNovelRoot = self.newRoot(nwItemClass.NOVEL)
         hTitlePage = self.newFile(self.tr("Title Page"), hNovelRoot)
 
-        titlePage = "#! %s\n\n" % (self._data.title if self._data.title else self._data.name)
+        titlePage = "#! %s\n\n" % (
+            self._data.title if self._data.title else self._data.name
+        )
         if self._data.authors:
             titlePage = "%s>> %s %s <<\n" % (
                 titlePage, self.tr("By"), self.getFormattedAuthors()
@@ -519,8 +521,9 @@ class NWProject(QObject):
         # Extract Data
         # ============
 
-        self._projTree.unpack(projContent)
-        self._optState.loadSettings()
+        self._tree.unpack(projContent)
+        self._options.loadSettings()
+        self._index.loadIndex()
 
         # Sort out old file locations
         if legacyList:
@@ -543,12 +546,12 @@ class NWProject(QObject):
         self.mainConf.saveRecentCache()
 
         # Check the project tree consistency
-        for tItem in self._projTree:
+        for tItem in self._tree:
             tHandle = tItem.itemHandle
             logger.debug("Checking item '%s'", tHandle)
-            if not self._projTree.updateItemData(tHandle):
+            if not self._tree.updateItemData(tHandle):
                 logger.error("There was a problem item '%s', and it has been removed", tHandle)
-                del self._projTree[tHandle]  # The file will be re-added as orphaned
+                del self._tree[tHandle]  # The file will be re-added as orphaned
 
         self._scanProjectFolder()
         self._loadProjectLocalisation()
@@ -592,7 +595,7 @@ class NWProject(QObject):
         saveTime = time()
         editTime = int(self._data.editTime + saveTime - self._projOpened)
 
-        content = self._projTree.pack()
+        content = self._tree.pack()
         xmlWriter = ProjectXMLWriter(self.projPath)
         if not xmlWriter.write(self._data, content, saveTime, editTime):
             self.mainGui.makeAlert(self.tr(
@@ -600,8 +603,9 @@ class NWProject(QObject):
             ), nwAlert.ERROR, exception=xmlWriter.error)
             return False
 
-        # Save project GUI options
-        self._optState.saveSettings()
+        # Save other project data
+        self._options.saveSettings()
+        self._index.saveIndex()
 
         # Update recent projects
         self.mainConf.updateRecentCache(
@@ -619,8 +623,8 @@ class NWProject(QObject):
         """Close the current project and clear all meta data.
         """
         logger.info("Closing project: %s", self.projPath)
-        self._optState.saveSettings()
-        self._projTree.writeToCFile()
+        self._options.saveSettings()
+        self._tree.writeToCFile()
         self._appendSessionStats(idleTime)
         self._clearLockFile()
         self.clearProject()
@@ -840,9 +844,9 @@ class NWProject(QObject):
         items in the GUI project tree. The user can rearrange the order
         by drag-and-drop. Forwarded to the NWTree class.
         """
-        if len(self._projTree) != len(newOrder):
+        if len(self._tree) != len(newOrder):
             logger.warning("Sizes of new and old tree order do not match")
-        self._projTree.setOrder(newOrder)
+        self._tree.setOrder(newOrder)
         self.setProjectChanged(True)
         return True
 
@@ -903,12 +907,12 @@ class NWProject(QObject):
         capable of handling it.
         """
         sentItems = []
-        iterItems = self._projTree.handles()
+        iterItems = self._tree.handles()
         n = 0
         nMax = min(len(iterItems), 10000)
         while n < nMax:
             tHandle = iterItems[n]
-            tItem = self._projTree[tHandle]
+            tItem = self._tree[tHandle]
             n += 1
             if tItem is None:
                 # Technically a bug since treeOrder is built from the
@@ -943,7 +947,7 @@ class NWProject(QObject):
     def updateWordCounts(self):
         """Update the total word count values.
         """
-        novel, notes = self._projTree.sumWords()
+        novel, notes = self._tree.sumWords()
         self._data.setCurrCounts(novel=novel, notes=notes)
         return
 
@@ -954,7 +958,7 @@ class NWProject(QObject):
         """
         self._data.itemStatus.resetCounts()
         self._data.itemImport.resetCounts()
-        for nwItem in self._projTree:
+        for nwItem in self._tree:
             if nwItem.isNovelLike():
                 self._data.itemStatus.increment(nwItem.itemStatus)
             else:
@@ -1001,7 +1005,9 @@ class NWProject(QObject):
             self._langData = {}
             return False
 
-        langFile = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self._data.language)
+        langFile = os.path.join(
+            self.mainConf.nwLangPath, "project_%s.json" % self._data.language
+        )
         if not os.path.isfile(langFile):
             langFile = os.path.join(self.mainConf.nwLangPath, "project_en_GB.json")
 
@@ -1120,7 +1126,7 @@ class NWProject(QObject):
                 logger.warning("Skipping file: %s", fileItem)
                 continue
 
-            if fHandle in self._projTree:
+            if fHandle in self._tree:
                 self.projFiles.append(fHandle)
                 logger.debug("Checking file %s, handle '%s': OK", fileItem, fHandle)
             else:
@@ -1167,10 +1173,10 @@ class NWProject(QObject):
             if oLayout is None:
                 oLayout = nwItemLayout.NOTE
 
-            if oParent is None or oParent not in self._projTree:
-                oParent = self._projTree.findRoot(oClass)
+            if oParent is None or oParent not in self._tree:
+                oParent = self._tree.findRoot(oClass)
                 if oParent is None:
-                    oParent = self._projTree.findRoot(nwItemClass.NOVEL)
+                    oParent = self._tree.findRoot(nwItemClass.NOVEL)
 
             # If the file still has no parent item, skip it
             if oParent is None:
@@ -1182,8 +1188,8 @@ class NWProject(QObject):
             orphItem.setType(nwItemType.FILE)
             orphItem.setClass(oClass)
             orphItem.setLayout(oLayout)
-            self._projTree.append(oHandle, oParent, orphItem)
-            self._projTree.updateItemData(orphItem.itemHandle)
+            self._tree.append(oHandle, oParent, orphItem)
+            self._tree.updateItemData(orphItem.itemHandle)
 
         if noWhere:
             self.mainGui.makeAlert(self.tr(
