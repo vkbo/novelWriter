@@ -534,7 +534,14 @@ class GuiMain(QMainWindow):
         self._updateStatusWordCount()
 
         # Restore previously open documents, if any
+        # If none was recorded, open the first document found
         lastEdited = self.theProject.data.getLastHandle("editor")
+        if lastEdited is None:
+            for nwItem in self.theProject.tree:
+                if nwItem and nwItem.isFileType():
+                    lastEdited = nwItem.itemHandle
+                    break
+
         if lastEdited is not None:
             self.openDocument(lastEdited, doScroll=True)
 
