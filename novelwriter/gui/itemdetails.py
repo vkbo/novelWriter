@@ -220,9 +220,6 @@ class GuiItemDetails(QWidget):
     def updateTheme(self):
         """Update theme elements.
         """
-        iPx = self.mainTheme.baseIconSize
-        self._expCheck = self.mainTheme.getPixmap("check", (iPx, iPx))
-        self._expCross = self.mainTheme.getPixmap("cross", (iPx, iPx))
         self.updateViewBox(self._itemHandle)
         return
 
@@ -255,11 +252,11 @@ class GuiItemDetails(QWidget):
 
         if nwItem.isFileType():
             if nwItem.isActive:
-                self.labelIcon.setPixmap(self._expCheck)
+                self.labelIcon.setPixmap(self.mainTheme.getPixmap("checked", (iPx, iPx)))
             else:
-                self.labelIcon.setPixmap(self._expCross)
+                self.labelIcon.setPixmap(self.mainTheme.getPixmap("unchecked", (iPx, iPx)))
         else:
-            self.labelIcon.setPixmap(QPixmap(1, 1))
+            self.labelIcon.setPixmap(self.mainTheme.getPixmap("noncheckable", (iPx, iPx)))
 
         self.labelData.setText(theLabel)
 
