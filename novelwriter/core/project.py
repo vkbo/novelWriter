@@ -1576,8 +1576,10 @@ class NWProjectData:
         """
         if novel is not None:
             self._initCounts[0] = checkInt(novel, 0)
+            self._currCounts[0] = checkInt(novel, 0)
         if notes is not None:
             self._initCounts[1] = checkInt(notes, 0)
+            self._currCounts[1] = checkInt(notes, 0)
         return
 
     def setCurrCounts(self, novel=None, notes=None):

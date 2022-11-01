@@ -58,9 +58,8 @@ class XMLReadState(Enum):
     CANNOT_PARSE    = 3
     NOT_NWX_FILE    = 4
     UNKNOWN_VERSION = 5
-    PARSING_ERROR   = 6
-    PARSED_OK       = 7
-    WAS_LEGACY      = 8
+    PARSED_OK       = 6
+    WAS_LEGACY      = 7
 
 # END Class XMLReadState
 
@@ -173,6 +172,7 @@ class ProjectXMLReader:
                     self._state = XMLReadState.CANNOT_PARSE
                     return False
             else:
+                self._state = XMLReadState.CANNOT_PARSE
                 return False
 
         xRoot = xml.getroot()
@@ -191,26 +191,21 @@ class ProjectXMLReader:
         logger.debug("XML is '%s' version '%s'", self._root, fileVersion)
 
         self._appVersion = str(xRoot.attrib.get("appVersion", ""))
-        self._hexVersion = str(xRoot.attrib.get("appVersion", ""))
+        self._hexVersion = str(xRoot.attrib.get("hexVersion", ""))
         self._timeStamp = str(xRoot.attrib.get("timeStamp", ""))
 
-        status = True
         for xSection in xRoot:
             if xSection.tag == "project":
-                status &= self._parseProjectMeta(xSection, projData)
+                self._parseProjectMeta(xSection, projData)
             elif xSection.tag == "settings":
-                status &= self._parseProjectSettings(xSection, projData)
+                self._parseProjectSettings(xSection, projData)
             elif xSection.tag == "content":
                 if self._version >= 0x0104:
-                    status &= self._parseProjectContent(xSection, projContent)
+                    self._parseProjectContent(xSection, projContent)
                 else:
-                    status &= self._parseProjectContentLegacy(xSection, projContent, projData)
+                    self._parseProjectContentLegacy(xSection, projContent, projData)
             else:
                 logger.warning("Ignored <root/%s> in xml", xSection.tag)
-
-        if not status:
-            self._state = XMLReadState.PARSING_ERROR
-            return False
 
         if self._version == 0x0104:
             self._state = XMLReadState.PARSED_OK
@@ -245,7 +240,7 @@ class ProjectXMLReader:
             else:
                 logger.warning("Ignored <root/project/%s> in xml", xItem.tag)
 
-        return True
+        return
 
     def _parseProjectSettings(self, xSection, projData):
         """Parse the settings section of the XML file.
@@ -284,7 +279,7 @@ class ProjectXMLReader:
             else:
                 logger.warning("Ignored <root/settings/%s> in xml", xItem.tag)
 
-        return True
+        return
 
     def _parseProjectContent(self, xSection, projContent):
         """Parse the content section of the XML file.
@@ -326,7 +321,7 @@ class ProjectXMLReader:
             else:
                 logger.warning("Ignored item <root/content/%s> in xml", xItem.tag)
 
-        return True
+        return
 
     def _parseProjectContentLegacy(self, xSection, projContent, projData):
         """Parse the content section of the XML file for older versions.
@@ -394,7 +389,7 @@ class ProjectXMLReader:
             else:
                 logger.warning("Ignored <root/content/%s> in xml", xItem.tag)
 
-        return True
+        return
 
     def _parseStatusImport(self, xItem, sObject):
         """Parse a status or importance entry.

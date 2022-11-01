@@ -5,12 +5,12 @@
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>408</saveCount>
-    <autoCount>71</autoCount>
-    <editTime>15120</editTime>
+    <saveCount>5</saveCount>
+    <autoCount>10</autoCount>
+    <editTime>1000</editTime>
   </project>
   <settings>
-    <doBackup>False</doBackup>
+    <doBackup>True</doBackup>
     <spellCheck>True</spellCheck>
     <autoOutline>True</autoOutline>
     <lastEdited>636b6aa9b697b</lastEdited>
