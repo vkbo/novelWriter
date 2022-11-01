@@ -167,9 +167,19 @@ def buildTestProject(theObject, projPath):
 
     theProject.clearProject()
     theProject.setProjectPath(projPath, newProject=True)
-    theProject.setProjectName("New Project")
-    theProject.setBookTitle("New Novel")
-    theProject.setBookAuthors("Jane Doe")
+
+    theProject.data.itemStatus.write(None, "New",      (100, 100, 100))
+    theProject.data.itemStatus.write(None, "Note",     (200, 50,  0))
+    theProject.data.itemStatus.write(None, "Draft",    (200, 150, 0))
+    theProject.data.itemStatus.write(None, "Finished", (50,  200, 0))
+    theProject.data.itemImport.write(None, "New",      (100, 100, 100))
+    theProject.data.itemImport.write(None, "Minor",    (200, 50,  0))
+    theProject.data.itemImport.write(None, "Major",    (200, 150, 0))
+    theProject.data.itemImport.write(None, "Main",     (50,  200, 0))
+
+    theProject.data.setName("New Project")
+    theProject.data.setTitle("New Novel")
+    theProject.data.setAuthors("Jane Doe")
 
     # Creating a minimal project with a few root folders and a
     # single chapter folder with a single file.
@@ -195,7 +205,7 @@ def buildTestProject(theObject, projPath):
     aDoc.writeDocument("### %s\n\n" % theProject.tr("New Scene"))
     theProject.index.reIndexHandle(xHandle[8])
 
-    theProject.projOpened = time.time()
+    theProject._projOpened = time.time()
     theProject.setProjectChanged(True)
     theProject.saveProject(autoSave=True)
 

@@ -126,7 +126,7 @@ class GuiBuildNovel(QDialog):
         self.fmtTitle.setMinimumWidth(xFmt)
         self.fmtTitle.setToolTip(fmtHelp)
         self.fmtTitle.setText(
-            self._reFmtCodes(self.theProject.titleFormat["title"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("title"))
         )
 
         self.fmtChapter = QLineEdit()
@@ -134,7 +134,7 @@ class GuiBuildNovel(QDialog):
         self.fmtChapter.setMinimumWidth(xFmt)
         self.fmtChapter.setToolTip(fmtHelp)
         self.fmtChapter.setText(
-            self._reFmtCodes(self.theProject.titleFormat["chapter"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("chapter"))
         )
 
         self.fmtUnnumbered = QLineEdit()
@@ -142,7 +142,7 @@ class GuiBuildNovel(QDialog):
         self.fmtUnnumbered.setMinimumWidth(xFmt)
         self.fmtUnnumbered.setToolTip(fmtHelp)
         self.fmtUnnumbered.setText(
-            self._reFmtCodes(self.theProject.titleFormat["unnumbered"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("unnumbered"))
         )
 
         self.fmtScene = QLineEdit()
@@ -150,7 +150,7 @@ class GuiBuildNovel(QDialog):
         self.fmtScene.setMinimumWidth(xFmt)
         self.fmtScene.setToolTip(fmtHelp + fmtScHelp)
         self.fmtScene.setText(
-            self._reFmtCodes(self.theProject.titleFormat["scene"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("scene"))
         )
 
         self.fmtSection = QLineEdit()
@@ -158,7 +158,7 @@ class GuiBuildNovel(QDialog):
         self.fmtSection.setMinimumWidth(xFmt)
         self.fmtSection.setToolTip(fmtHelp + fmtScHelp)
         self.fmtSection.setText(
-            self._reFmtCodes(self.theProject.titleFormat["section"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("section"))
         )
 
         self.buildLang = QComboBox()
@@ -168,7 +168,7 @@ class GuiBuildNovel(QDialog):
         for langID, langName in theLangs:
             self.buildLang.addItem(langName, langID)
 
-        langIdx = self.buildLang.findData(self.theProject.projLang)
+        langIdx = self.buildLang.findData(self.theProject.data.language)
         if langIdx != -1:
             self.buildLang.setCurrentIndex(langIdx)
 
@@ -888,7 +888,7 @@ class GuiBuildNovel(QDialog):
         # Generate File Name
         # ==================
 
-        cleanName = makeFileNameSafe(self.theProject.projName)
+        cleanName = makeFileNameSafe(self.theProject.data.name)
         fileName = "%s.%s" % (cleanName, fileExt)
         saveDir = self.mainConf.lastPath
         if not os.path.isdir(saveDir):
@@ -972,9 +972,9 @@ class GuiBuildNovel(QDialog):
         elif theFmt == self.FMT_JSON_H or theFmt == self.FMT_JSON_M:
             jsonData = {
                 "meta": {
-                    "workingTitle": self.theProject.projName,
-                    "novelTitle": self.theProject.bookTitle,
-                    "authors": self.theProject.bookAuthors,
+                    "workingTitle": self.theProject.data.name,
+                    "novelTitle": self.theProject.data.title,
+                    "authors": self.theProject.data.authors,
                     "buildTime": self.buildTime,
                 }
             }
@@ -1159,7 +1159,7 @@ class GuiBuildNovel(QDialog):
         logger.debug("Saving GuiBuildNovel settings")
 
         # Formatting
-        self.theProject.setTitleFormat({
+        self.theProject.data.setTitleFormat({
             "title":      self.fmtTitle.text().strip(),
             "chapter":    self.fmtChapter.text().strip(),
             "unnumbered": self.fmtUnnumbered.text().strip(),

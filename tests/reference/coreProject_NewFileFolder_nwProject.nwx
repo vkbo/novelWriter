@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-20 18:21:56">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-11-01 11:53:22">
   <project>
     <name>New Project</name>
     <title>New Novel</title>
@@ -13,20 +13,21 @@
     <language>None</language>
     <spellCheck>False</spellCheck>
     <spellLang>None</spellLang>
-    <lastEdited>None</lastEdited>
-    <lastViewed>None</lastViewed>
-    <lastNovel>None</lastNovel>
-    <lastOutline>None</lastOutline>
-    <lastWordCount>13</lastWordCount>
     <novelWordCount>10</novelWordCount>
     <notesWordCount>3</notesWordCount>
+    <lastHandle>
+      <entry key="editor">None</entry>
+      <entry key="viewer">None</entry>
+      <entry key="novelTree">None</entry>
+      <entry key="outline">None</entry>
+    </lastHandle>
     <autoReplace/>
     <titleFormat>
-      <title>%title%</title>
-      <chapter>%title%</chapter>
-      <unnumbered>%title%</unnumbered>
-      <scene>* * *</scene>
-      <section></section>
+      <entry key="title">%title%</entry>
+      <entry key="chapter">%title%</entry>
+      <entry key="unnumbered">%title%</entry>
+      <entry key="scene">* * *</entry>
+      <entry key="section"></entry>
     </titleFormat>
     <status>
       <entry key="s000000" count="7" red="100" green="100" blue="100">New</entry>
@@ -59,7 +60,7 @@
       <name status="s000000" import="i000004">World</name>
     </item>
     <item handle="000000000000c" parent="0000000000008" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" mainHeading="H1" charCount="20" wordCount="5" paraCount="1" cursorPos="0"/>
+      <meta expanded="False" heading="H1" charCount="20" wordCount="5" paraCount="1" cursorPos="0"/>
       <name status="s000000" import="i000004" active="True">Title Page</name>
     </item>
     <item handle="000000000000d" parent="0000000000008" root="0000000000008" order="0" type="FOLDER" class="NOVEL">
@@ -67,23 +68,23 @@
       <name status="s000000" import="i000004">New Chapter</name>
     </item>
     <item handle="000000000000e" parent="000000000000d" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" mainHeading="H2" charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
+      <meta expanded="False" heading="H2" charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
       <name status="s000000" import="i000004" active="True">New Chapter</name>
     </item>
     <item handle="000000000000f" parent="000000000000d" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" mainHeading="H3" charCount="9" wordCount="2" paraCount="0" cursorPos="0"/>
+      <meta expanded="False" heading="H3" charCount="9" wordCount="2" paraCount="0" cursorPos="0"/>
       <name status="s000000" import="i000004" active="True">New Scene</name>
     </item>
-    <item handle="0000000000020" parent="0000000000008" root="0000000000008" order="0" type="FOLDER" class="NOVEL">
+    <item handle="0000000000010" parent="0000000000008" root="0000000000008" order="0" type="FOLDER" class="NOVEL">
       <meta expanded="False"/>
       <name status="s000000" import="i000004">Stuff</name>
     </item>
-    <item handle="0000000000021" parent="0000000000020" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="False" mainHeading="H2" charCount="5" wordCount="1" paraCount="0" cursorPos="0"/>
+    <item handle="0000000000011" parent="0000000000010" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+      <meta expanded="False" heading="H2" charCount="5" wordCount="1" paraCount="0" cursorPos="0"/>
       <name status="s000000" import="i000004" active="True">Hello</name>
     </item>
-    <item handle="0000000000022" parent="000000000000a" root="000000000000a" order="0" type="FILE" class="CHARACTER" layout="NOTE">
-      <meta expanded="False" mainHeading="H1" charCount="11" wordCount="3" paraCount="1" cursorPos="0"/>
+    <item handle="0000000000012" parent="000000000000a" root="000000000000a" order="0" type="FILE" class="CHARACTER" layout="NOTE">
+      <meta expanded="False" heading="H1" charCount="11" wordCount="3" paraCount="1" cursorPos="0"/>
       <name status="s000000" import="i000004" active="True">Jane</name>
     </item>
   </content>

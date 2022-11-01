@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 import pytest
 
-from tools import readFile
+from tools import C, buildTestProject, readFile
 
 from novelwriter.core.project import NWProject
 from novelwriter.core.document import NWDoc
@@ -133,21 +133,20 @@ def testCoreToken_Setters(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
+def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncDir):
     """Test handling files and text in the Tokenizer class.
     """
     theProject = NWProject(mockGUI)
-    theProject.projLang = "en"
+    mockRnd.reset()
+    buildTestProject(theProject, fncDir)
+
+    theProject.data.setLanguage("en")
     theProject._loadProjectLocalisation()
 
     theToken = BareTokenizer(theProject)
     theToken.setKeepMarkdown(True)
 
-    assert theProject.openProject(nwMinimal)
-    sHandle = "8c659a11cd429"
-
     # Set some content to work with
-
     docText = (
         "### Scene Six\n\n"
         "This is text with _italic text_, some **bold text**, some ~~deleted text~~, "
@@ -157,26 +156,26 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
     )
     docTextR = docText.replace("<A>", "this").replace("<B>", "that")
 
-    nDoc = NWDoc(theProject, sHandle)
+    nDoc = NWDoc(theProject, C.hSceneDoc)
     assert nDoc.writeDocument(docText)
 
-    theProject.setAutoReplace({"A": "this", "B": "that"})
+    theProject.data.setAutoReplace({"A": "this", "B": "that"})
 
     assert theProject.saveProject()
 
     # Root Heading
     assert theToken.addRootHeading("stuff") is False
-    assert theToken.addRootHeading(sHandle) is False
+    assert theToken.addRootHeading(C.hSceneDoc) is False
 
     # First Page
-    assert theToken.addRootHeading("7695ce551d265") is True
+    assert theToken.addRootHeading(C.hPlotRoot) is True
     assert theToken.theMarkdown[-1] == "# Notes: Plot\n\n"
     assert theToken._theTokens[-1] == (
         Tokenizer.T_TITLE, 0, "Notes: Plot", None, Tokenizer.A_CENTRE
     )
 
     # Not First Page
-    assert theToken.addRootHeading("7695ce551d265") is True
+    assert theToken.addRootHeading(C.hPlotRoot) is True
     assert theToken.theMarkdown[-1] == "# Notes: Plot\n\n"
     assert theToken._theTokens[-1] == (
         Tokenizer.T_TITLE, 0, "Notes: Plot", None, Tokenizer.A_CENTRE | Tokenizer.A_PBB
@@ -184,18 +183,18 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
 
     # Set Text
     assert theToken.setText("stuff") is False
-    assert theToken.setText(sHandle) is True
+    assert theToken.setText(C.hSceneDoc) is True
     assert theToken._theText == docText
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.constants.nwConst.MAX_DOCSIZE", 100)
-        assert theToken.setText(sHandle, docText) is True
+        assert theToken.setText(C.hSceneDoc, docText) is True
         assert theToken._theText == (
             "# ERROR\n\n"
             "Document 'New Scene' is too big (0.00 MB). Skipping.\n\n"
         )
 
-    assert theToken.setText(sHandle, docText) is True
+    assert theToken.setText(C.hSceneDoc, docText) is True
     assert theToken._theText == docText
 
     assert theToken._isNone is False
@@ -212,7 +211,7 @@ def testCoreToken_TextOps(monkeypatch, nwMinimal, mockGUI):
     assert theToken.theResult == "This is text with escapes: ** ~~ __"
 
     # Save File
-    savePath = os.path.join(nwMinimal, "dump.nwd")
+    savePath = os.path.join(fncDir, "dump.nwd")
     theToken.saveRawMarkdown(savePath)
     assert readFile(savePath) == (
         "# Notes: Plot\n\n"
@@ -884,7 +883,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     """Test the header and page parser of the Tokenizer class.
     """
     theProject = NWProject(mockGUI)
-    theProject.projLang = "en"
+    theProject.data.setLanguage("en")
     theProject._loadProjectLocalisation()
     theToken = BareTokenizer(theProject)
 

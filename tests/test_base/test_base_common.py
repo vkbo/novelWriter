@@ -54,53 +54,63 @@ def testBaseCommon_CheckStringNone():
 
 @pytest.mark.base
 def testBaseCommon_CheckString():
-    """Test the checkString function.
+    """Test the checkString function. Anything that is a string should
+    be returned, otherwise it returns the default.
     """
-    assert checkString("None", "NotNone") == "None"
-    assert checkString(None, "NotNone") == "NotNone"
-    assert checkString(1, "NotNone") == "NotNone"
-    assert checkString(1.0, "NotNone") == "NotNone"
-    assert checkString(True, "NotNone") == "NotNone"
+    assert checkString("None", "default") == "None"
+    assert checkString("Text", "default") == "Text"
+    assert checkString(None, "default") == "default"
+    assert checkString(1, "default") == "default"
+    assert checkString(1.0, "default") == "default"
+    assert checkString(True, "default") == "default"
 
 # END Test testBaseCommon_CheckString
 
 
 @pytest.mark.base
 def testBaseCommon_CheckInt():
-    """Test the checkInt function.
+    """Test the checkInt function. Anything that can be converted to an
+    integer should be returned, otherwise it returns the default.
     """
-    assert checkInt(None, 3) == 3
-    assert checkInt("1", 3) == 1
-    assert checkInt("1.0", 3) == 3
     assert checkInt(1, 3) == 1
     assert checkInt(1.0, 3) == 1
     assert checkInt(True, 3) == 1
+    assert checkInt(False, 3) == 0
+    assert checkInt(None, 3) == 3
+    assert checkInt("1", 3) == 1
+    assert checkInt("1.0", 3) == 3
 
 # END Test testBaseCommon_CheckInt
 
 
 @pytest.mark.base
 def testBaseCommon_CheckFloat():
-    """Test the checkFloat function.
+    """Test the checkFloat function. Anything that can be converted to an
+    integer should be returned, otherwise it returns the default.
     """
-    assert checkFloat(None, 3.0) == 3.0
-    assert checkFloat("1", 3.0) == 1.0
-    assert checkFloat("1.0", 3.0) == 1.0
     assert checkFloat(1, 3.0) == 1.0
     assert checkFloat(1.0, 3.0) == 1.0
     assert checkFloat(True, 3.0) == 1.0
+    assert checkFloat(False, 3.0) == 0.0
+    assert checkFloat(None, 3.0) == 3.0
+    assert checkFloat("1", 3.0) == 1.0
+    assert checkFloat("1.0", 3.0) == 1.0
 
 # END Test testBaseCommon_CheckInt
 
 
 @pytest.mark.base
 def testBaseCommon_CheckBool():
-    """Test the checkBool function.
+    """Test the checkBool function. Any bool, string version of Python
+    bool, or integer 1 or 0, are returned as bool. Otherwise, the
+    default is returned.
     """
     assert checkBool("True", False) is True
     assert checkBool("False", True) is False
     assert checkBool("Boo", False) is False
     assert checkBool("Boo", True) is True
+    assert checkBool(None, True) is True
+    assert checkBool(None, False) is False
     assert checkBool(0, True) is False
     assert checkBool(1, False) is True
     assert checkBool(2, True) is True

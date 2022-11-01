@@ -55,7 +55,7 @@ def testDlgProjDetails_Dialog(qtbot, nwGUI, nwLipsum):
     assert projDet.tabMain.wordCountVal.text() == f"{3000:n}"
     assert projDet.tabMain.chapCountVal.text() == f"{3:n}"
     assert projDet.tabMain.sceneCountVal.text() == f"{5:n}"
-    assert projDet.tabMain.revCountVal.text() == f"{nwGUI.theProject.saveCount:n}"
+    assert projDet.tabMain.revCountVal.text() == f"{nwGUI.theProject.data.saveCount:n}"
 
     assert projDet.tabMain.projPathVal.text() == nwLipsum
 

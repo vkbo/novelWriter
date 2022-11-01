@@ -4,7 +4,8 @@ novelWriter – Project Wrapper
 Data class for novelWriter projects
 
 File History:
-Created: 2018-09-29 [0.0.1]
+Created: 2018-09-29 [0.0.1]  NWProject
+Created: 2022-10-30 [2.0rc1] NWProjectData
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -23,6 +24,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from __future__ import annotations
+
 import os
 import json
 import shutil
@@ -30,37 +33,42 @@ import logging
 import novelwriter
 
 from time import time
-from lxml import etree
 from functools import partial
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import QCoreApplication, QObject, pyqtSignal
 
+from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from novelwriter.error import logException
+from novelwriter.constants import trConst, nwFiles, nwLabels
 from novelwriter.core.tree import NWTree
 from novelwriter.core.item import NWItem
 from novelwriter.core.index import NWIndex
 from novelwriter.core.status import NWStatus
 from novelwriter.core.options import OptionState
 from novelwriter.core.document import NWDoc
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.error import logException
+from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.common import (
-    checkString, checkBool, checkInt, checkStringNone, isHandle, formatTimeStamp,
-    makeFileNameSafe, hexToInt, minmax, simplified
+    checkBool, checkInt, checkStringNone, formatTimeStamp, hexToInt, isHandle,
+    makeFileNameSafe, minmax, simplified,
 )
-from novelwriter.constants import trConst, nwFiles, nwLabels
+
 
 logger = logging.getLogger(__name__)
 
 
-class NWProject:
+class NWProject(QObject):
 
-    FILE_VERSION = "1.4"  # The current project file format version
+    projectStatusChanged = pyqtSignal(bool)
 
     def __init__(self, mainGui):
+        super().__init__(parent=mainGui)
 
         # Internal
         self.mainConf = novelwriter.CONFIG
         self.mainGui  = mainGui
+
+        # Project Data
+        self._data = NWProjectData(self)
 
         # Core Elements
         self._optState  = OptionState(self)  # Project-specific GUI options
@@ -69,13 +77,10 @@ class NWProject:
         self._langData  = {}                 # Localisation data
 
         # Project Status
-        self.projOpened  = 0      # The time stamp of when the project file was opened
-        self.projChanged = False  # The project has unsaved changes
-        self.projAltered = False  # The project has been altered this session
-        self.lockedBy    = None   # Data on which computer has the project open
-        self.saveCount   = 0      # Meta data: number of saves
-        self.autoCount   = 0      # Meta data: number of automatic saves
-        self.editTime    = 0      # The accumulated edit time read from the project file
+        self._projOpened  = 0      # The time stamp of when the project file was opened
+        self._projChanged = False  # The project has unsaved changes
+        self._projAltered = False  # The project has been altered this session
+        self.lockedBy     = None   # Data on which computer has the project open
 
         # Class Settings
         self.projPath    = None  # The full path to where the currently open project is saved
@@ -83,32 +88,7 @@ class NWProject:
         self.projCache   = None  # The full path to the project's cache folder
         self.projContent = None  # The full path to the project's content folder
         self.projDict    = None  # The spell check dictionary
-        self.projSpell   = None  # The spell check language, if different than default
-        self.projLang    = None  # The project language, used for builds
         self.projFiles   = []    # A list of all files in the content folder on load
-
-        # Project Meta
-        self.projName    = ""  # Project name
-        self.bookTitle   = ""  # The final title; should only be used for exports
-        self.bookAuthors = []  # A list of book authors
-
-        # Project Settings
-        self.autoReplace = {}     # Text to auto-replace on exports
-        self.titleFormat = {}     # The formatting of titles for exports
-        self.spellCheck  = False  # Controls the spellcheck-as-you-type feature
-        self.statusItems = None   # Novel file progress status values
-        self.importItems = None   # Note file importance values
-        self.lastEdited  = None   # The handle of the last file to be edited
-        self.lastViewed  = None   # The handle of the last file to be viewed
-        self.lastNovel   = None   # The handle of the last novel root viewed
-        self.lastOutline = None   # The handle of the last outline root viewed
-        self.lastWCount  = 0      # The project word count from last session
-        self.lastNovelWC = 0      # The novel files word count from last session
-        self.lastNotesWC = 0      # The note files word count from last session
-        self.currWCount  = 0      # The project word count in current session
-        self.currNovelWC = 0      # The novel files word count in cutrent session
-        self.currNotesWC = 0      # The note files word count in cutrent session
-        self.doBackup    = True   # Run project backup on exit
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
@@ -123,6 +103,10 @@ class NWProject:
     ##
 
     @property
+    def data(self):
+        return self._data
+
+    @property
     def index(self):
         return self._projIndex
 
@@ -133,6 +117,18 @@ class NWProject:
     @property
     def options(self):
         return self._optState
+
+    @property
+    def projOpened(self):
+        return self._projOpened
+
+    @property
+    def projChanged(self):
+        return self._projChanged
+
+    @property
+    def projAltered(self):
+        return self._projAltered
 
     ##
     #  Item Methods
@@ -242,14 +238,14 @@ class NWProject:
         default values.
         """
         # Project Status
-        self.projOpened  = 0
-        self.projChanged = False
-        self.projAltered = False
-        self.saveCount   = 0
-        self.autoCount   = 0
+        self._projOpened  = 0
+        self._projChanged = False
+        self._projAltered = False
 
         # Project Tree
         self._projTree.clear()
+
+        self._data = NWProjectData(self)
 
         # Project Settings
         self.projPath    = None
@@ -257,39 +253,7 @@ class NWProject:
         self.projCache   = None
         self.projContent = None
         self.projDict    = None
-        self.projSpell   = None
-        self.projLang    = None
         self.projFiles   = []
-        self.projName    = ""
-        self.bookTitle   = ""
-        self.bookAuthors = []
-        self.autoReplace = {}
-        self.titleFormat = {
-            "title":      "%title%",
-            "chapter":    "%title%",
-            "unnumbered": "%title%",
-            "scene":      "* * *",
-            "section":    "",
-        }
-        self.spellCheck  = False
-        self.statusItems = NWStatus(NWStatus.STATUS)
-        self.statusItems.write(None, self.tr("New"),      (100, 100, 100))
-        self.statusItems.write(None, self.tr("Note"),     (200, 50,  0))
-        self.statusItems.write(None, self.tr("Draft"),    (200, 150, 0))
-        self.statusItems.write(None, self.tr("Finished"), (50,  200, 0))
-        self.importItems = NWStatus(NWStatus.IMPORT)
-        self.importItems.write(None, self.tr("New"),   (100, 100, 100))
-        self.importItems.write(None, self.tr("Minor"), (200, 50,  0))
-        self.importItems.write(None, self.tr("Major"), (200, 150, 0))
-        self.importItems.write(None, self.tr("Main"),  (50,  200, 0))
-        self.lastEdited = None
-        self.lastViewed = None
-        self.lastWCount = 0
-        self.lastNovelWC = 0
-        self.lastNotesWC = 0
-        self.currWCount = 0
-        self.currNovelWC = 0
-        self.currNotesWC = 0
 
         return
 
@@ -322,19 +286,32 @@ class NWProject:
             return False
 
         self.clearProject()
+
+        self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100))
+        self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0))
+        self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0))
+        self._data.itemStatus.write(None, self.tr("Finished"), (50,  200, 0))
+
+        self._data.itemImport.write(None, self.tr("New"),      (100, 100, 100))
+        self._data.itemImport.write(None, self.tr("Minor"),    (200, 50,  0))
+        self._data.itemImport.write(None, self.tr("Major"),    (200, 150, 0))
+        self._data.itemImport.write(None, self.tr("Main"),     (50,  200, 0))
+
         if not self.setProjectPath(projPath, newProject=True):
             return False
 
-        self.setProjectName(projName)
-        self.setBookTitle(projTitle)
-        self.setBookAuthors(projAuthors)
+        self._data.setName(projName)
+        self._data.setTitle(projTitle)
+        self._data.setAuthors(projAuthors)
 
         hNovelRoot = self.newRoot(nwItemClass.NOVEL)
         hTitlePage = self.newFile(self.tr("Title Page"), hNovelRoot)
 
-        titlePage = "#! %s\n\n" % (self.bookTitle if self.bookTitle else self.projName)
-        if self.bookAuthors:
-            titlePage = "%s>> %s %s <<\n" % (titlePage, self.tr("By"), self.getAuthors())
+        titlePage = "#! %s\n\n" % (self._data.title if self._data.title else self._data.name)
+        if self._data.authors:
+            titlePage = "%s>> %s %s <<\n" % (
+                titlePage, self.tr("By"), self.getFormattedAuthors()
+            )
 
         aDoc = NWDoc(self, hTitlePage)
         aDoc.writeDocument(titlePage)
@@ -414,7 +391,7 @@ class NWProject:
 
         # Finalise
         if popCustom or popMinimal:
-            self.projOpened = time()
+            self._projOpened = time()
             self.setProjectChanged(True)
             self.saveProject(autoSave=True)
 
@@ -477,80 +454,38 @@ class NWProject:
         # Open The Project XML File
         # =========================
 
-        try:
-            nwXML = etree.parse(fileName)
-        except Exception as exc:
-            self.mainGui.makeAlert(self.tr(
-                "Failed to parse project xml."
-            ), nwAlert.ERROR, exception=exc)
+        self._data = NWProjectData(self)
+        projContent = []
 
-            # Trying to open backup file instead
-            backFile = fileName[:-3]+"bak"
-            if os.path.isfile(backFile):
+        xmlReader = ProjectXMLReader(fileName)
+        xmlParsed = xmlReader.read(self._data, projContent)
+
+        appVersion = xmlReader.appVersion or self.tr("Unknown")
+        hexVersion = xmlReader.hexVersion or "0x0"
+
+        if not xmlParsed:
+            if xmlReader.state == XMLReadState.NOT_NWX_FILE:
                 self.mainGui.makeAlert(self.tr(
-                    "Attempting to open backup project file instead."
-                ), nwAlert.INFO)
-                try:
-                    nwXML = etree.parse(backFile)
-                except Exception as exc:
-                    self.mainGui.makeAlert(self.tr(
-                        "Failed to parse project xml."
-                    ), nwAlert.ERROR, exception=exc)
-                    self.clearProject()
-                    return False
+                    "Project file does not appear to be a novelWriterXML file."
+                ), nwAlert.ERROR)
+            elif xmlReader.state == XMLReadState.UNKNOWN_VERSION:
+                self.mainGui.makeAlert(self.tr(
+                    "Unknown or unsupported novelWriter project file format. "
+                    "The project cannot be opened by this version of novelWriter. "
+                    "The file was saved with novelWriter version {0}."
+                ).format(appVersion), nwAlert.ERROR)
             else:
-                self.clearProject()
-                return False
+                self.mainGui.makeAlert(self.tr(
+                    "Failed to parse project xml."
+                ), nwAlert.ERROR)
 
-        xRoot = nwXML.getroot()
-        nwxRoot = xRoot.tag
-
-        appVersion  = xRoot.attrib.get("appVersion", self.tr("Unknown"))
-        hexVersion  = xRoot.attrib.get("hexVersion", "0x0")
-        fileVersion = xRoot.attrib.get("fileVersion", self.tr("Unknown"))
-
-        logger.debug("XML root is '%s'", nwxRoot)
-        logger.debug("File version is '%s'", fileVersion)
-
-        # Check File Type
-        # ===============
-
-        if nwxRoot != "novelWriterXML":
-            self.mainGui.makeAlert(self.tr(
-                "Project file does not appear to be a novelWriterXML file."
-            ), nwAlert.ERROR)
             self.clearProject()
             return False
 
-        # Check Project Storage Version
-        # =============================
+        # Check Legacy Upgrade
+        # ====================
 
-        # Changes:
-        # 1.0 : Original file format.
-        # 1.1 : Changes the way documents are structured in the project
-        #       folder from data_X, where X is the first hex value of
-        #       the handle, to a single content folder.
-        # 1.2 : Changes the way autoReplace entries are stored. The 1.1
-        #       parser will lose the autoReplace settings if allowed to
-        #       read the file. Introduced in version 0.10.
-        # 1.3 : Reduces the number of layouts to only two. One for novel
-        #       documents and one for project notes. Introduced in
-        #       version 1.5.
-        # 1.4 : Introduces a more compact format for storing items. All
-        #       settings aside from name are now attributes. This format
-        #       also changes the way satus and importance labels are
-        #       stored and handled. Introduced in version 1.7.
-
-        if fileVersion not in ("1.0", "1.1", "1.2", "1.3", "1.4"):
-            self.mainGui.makeAlert(self.tr(
-                "Unknown or unsupported novelWriter project file format. "
-                "The project cannot be opened by this version of novelWriter. "
-                "The file was saved with novelWriter version {0}."
-            ).format(appVersion), nwAlert.ERROR)
-            self.clearProject()
-            return False
-
-        if fileVersion != self.FILE_VERSION:
+        if xmlReader.state == XMLReadState.WAS_LEGACY:
             msgYes = self.mainGui.askQuestion(
                 self.tr("File Version"),
                 self.tr(
@@ -581,80 +516,10 @@ class NWProject:
                 self.clearProject()
                 return False
 
-        # Start Parsing the XML
-        # =====================
+        # Extract Data
+        # ============
 
-        for xChild in xRoot:
-            if xChild.tag == "project":
-                logger.debug("Found project meta")
-                for xItem in xChild:
-                    if xItem.text is None:
-                        continue
-                    if xItem.tag == "name":
-                        self.projName = simplified(checkString(xItem.text, ""))
-                        logger.info("Project Name: '%s'", self.projName)
-                    elif xItem.tag == "title":
-                        self.bookTitle = simplified(checkString(xItem.text, ""))
-                        logger.info("Project Title: '%s'", self.bookTitle)
-                    elif xItem.tag == "author":
-                        author = simplified(checkString(xItem.text, ""))
-                        if author:
-                            self.bookAuthors.append(author)
-                            logger.debug("Author: '%s'", author)
-                    elif xItem.tag == "saveCount":
-                        self.saveCount = checkInt(xItem.text, 0)
-                    elif xItem.tag == "autoCount":
-                        self.autoCount = checkInt(xItem.text, 0)
-                    elif xItem.tag == "editTime":
-                        self.editTime = checkInt(xItem.text, 0)
-
-            elif xChild.tag == "settings":
-                logger.debug("Found project settings")
-                for xItem in xChild:
-                    if xItem.text is None:
-                        continue
-                    if xItem.tag == "doBackup":
-                        self.doBackup = checkBool(xItem.text, False)
-                    elif xItem.tag == "language":
-                        self.projLang = checkStringNone(xItem.text, None)
-                    elif xItem.tag == "spellCheck":
-                        self.spellCheck = checkBool(xItem.text, False)
-                    elif xItem.tag == "spellLang":
-                        self.projSpell = checkStringNone(xItem.text, None)
-                    elif xItem.tag == "lastEdited":
-                        self.lastEdited = checkStringNone(xItem.text, None)
-                    elif xItem.tag == "lastViewed":
-                        self.lastViewed = checkStringNone(xItem.text, None)
-                    elif xItem.tag == "lastNovel":
-                        self.lastNovel = checkStringNone(xItem.text, None)
-                    elif xItem.tag == "lastOutline":
-                        self.lastOutline = checkStringNone(xItem.text, None)
-                    elif xItem.tag == "lastWordCount":
-                        self.lastWCount = checkInt(xItem.text, 0)
-                    elif xItem.tag == "novelWordCount":
-                        self.lastNovelWC = checkInt(xItem.text, 0)
-                    elif xItem.tag == "notesWordCount":
-                        self.lastNotesWC = checkInt(xItem.text, 0)
-                    elif xItem.tag == "status":
-                        self.statusItems.unpackXML(xItem)
-                    elif xItem.tag == "importance":
-                        self.importItems.unpackXML(xItem)
-                    elif xItem.tag == "autoReplace":
-                        for xEntry in xItem:
-                            if xEntry.tag == "entry" and "key" in xEntry.attrib:
-                                self.autoReplace[xEntry.attrib["key"]] = checkString(
-                                    xEntry.text, "ERROR"
-                                )
-                    elif xItem.tag == "titleFormat":
-                        titleFormat = self.titleFormat.copy()
-                        for xEntry in xItem:
-                            titleFormat[xEntry.tag] = checkString(xEntry.text, "")
-                        self.setTitleFormat(titleFormat)
-
-            elif xChild.tag == "content":
-                logger.debug("Found project content")
-                self._projTree.unpackXML(xChild)
-
+        self._projTree.unpack(projContent)
         self._optState.loadSettings()
 
         # Sort out old file locations
@@ -672,7 +537,9 @@ class NWProject:
         self._deprecatedFiles()
 
         # Update recent projects
-        self.mainConf.updateRecentCache(self.projPath, self.projName, self.lastWCount, time())
+        self.mainConf.updateRecentCache(
+            self.projPath, self._data.name, sum(self._data.initCounts), time()
+        )
         self.mainConf.saveRecentCache()
 
         # Check the project tree consistency
@@ -687,12 +554,12 @@ class NWProject:
         self._loadProjectLocalisation()
         self.updateWordCounts()
 
-        self.projOpened = time()
-        self.projAltered = False
+        self._projOpened = time()
+        self._projAltered = False
 
         self._writeLockFile()
         self.setProjectChanged(False)
-        self.mainGui.setStatus(self.tr("Opened Project: {0}").format(self.projName))
+        self.mainGui.setStatus(self.tr("Opened Project: {0}").format(self._data.name))
 
         return True
 
@@ -715,101 +582,35 @@ class NWProject:
         logger.info("Saving project: %s", self.projPath)
 
         if autoSave:
-            self.autoCount += 1
+            self._data.incAutoCount()
         else:
-            self.saveCount += 1
-
-        # Root element and project details
-        logger.debug("Writing project meta")
-        nwXML = etree.Element("novelWriterXML", attrib={
-            "appVersion":  str(novelwriter.__version__),
-            "hexVersion":  str(novelwriter.__hexversion__),
-            "fileVersion": self.FILE_VERSION,
-            "timeStamp":   formatTimeStamp(saveTime),
-        })
+            self._data.incSaveCount()
 
         self.updateWordCounts()
-        editTime = int(self.editTime + saveTime - self.projOpened)
-
-        # Save Project Meta
-        xProject = etree.SubElement(nwXML, "project")
-        self._packProjectValue(xProject, "name", self.projName)
-        self._packProjectValue(xProject, "title", self.bookTitle)
-        self._packProjectValue(xProject, "author", self.bookAuthors)
-        self._packProjectValue(xProject, "saveCount", str(self.saveCount))
-        self._packProjectValue(xProject, "autoCount", str(self.autoCount))
-        self._packProjectValue(xProject, "editTime", str(editTime))
-
-        # Save Project Settings
-        xSettings = etree.SubElement(nwXML, "settings")
-        self._packProjectValue(xSettings, "doBackup", self.doBackup)
-        self._packProjectValue(xSettings, "language", self.projLang)
-        self._packProjectValue(xSettings, "spellCheck", self.spellCheck)
-        self._packProjectValue(xSettings, "spellLang", self.projSpell)
-        self._packProjectValue(xSettings, "lastEdited", self.lastEdited)
-        self._packProjectValue(xSettings, "lastViewed", self.lastViewed)
-        self._packProjectValue(xSettings, "lastNovel", self.lastNovel)
-        self._packProjectValue(xSettings, "lastOutline", self.lastOutline)
-        self._packProjectValue(xSettings, "lastWordCount", self.currWCount)
-        self._packProjectValue(xSettings, "novelWordCount", self.currNovelWC)
-        self._packProjectValue(xSettings, "notesWordCount", self.currNotesWC)
-        self._packProjectKeyValue(xSettings, "autoReplace", self.autoReplace)
-
-        xTitleFmt = etree.SubElement(xSettings, "titleFormat")
-        for aKey, aValue in self.titleFormat.items():
-            if len(aKey) > 0:
-                self._packProjectValue(xTitleFmt, aKey, aValue)
-
-        # Save Status/Importance
         self.countStatus()
-        xStatus = etree.SubElement(xSettings, "status")
-        self.statusItems.packXML(xStatus)
-        xStatus = etree.SubElement(xSettings, "importance")
-        self.importItems.packXML(xStatus)
 
-        # Save Tree Content
-        logger.debug("Writing project content")
-        self._projTree.packXML(nwXML)
+        saveTime = time()
+        editTime = int(self._data.editTime + saveTime - self._projOpened)
 
-        # Write the xml tree to file
-        tempFile = os.path.join(self.projPath, nwFiles.PROJ_FILE+"~")
-        saveFile = os.path.join(self.projPath, nwFiles.PROJ_FILE)
-        backFile = os.path.join(self.projPath, nwFiles.PROJ_FILE[:-3]+"bak")
-        try:
-            with open(tempFile, mode="wb") as outFile:
-                outFile.write(etree.tostring(
-                    nwXML,
-                    pretty_print=True,
-                    encoding="utf-8",
-                    xml_declaration=True
-                ))
-        except Exception as exc:
+        content = self._projTree.pack()
+        xmlWriter = ProjectXMLWriter(self.projPath)
+        if not xmlWriter.write(self._data, content, saveTime, editTime):
             self.mainGui.makeAlert(self.tr(
                 "Failed to save project."
-            ), nwAlert.ERROR, exception=exc)
-            return False
-
-        # If we're here, the file was successfully saved,
-        # so let's sort out the temps and backups
-        try:
-            if os.path.isfile(saveFile):
-                os.replace(saveFile, backFile)
-            os.replace(tempFile, saveFile)
-        except OSError as exc:
-            self.mainGui.makeAlert(self.tr(
-                "Failed to save project."
-            ), nwAlert.ERROR, exception=exc)
+            ), nwAlert.ERROR, exception=xmlWriter.error)
             return False
 
         # Save project GUI options
         self._optState.saveSettings()
 
         # Update recent projects
-        self.mainConf.updateRecentCache(self.projPath, self.projName, self.currWCount, saveTime)
+        self.mainConf.updateRecentCache(
+            self.projPath, self._data.name, sum(self._data.currCounts), saveTime
+        )
         self.mainConf.saveRecentCache()
 
         self._writeLockFile()
-        self.mainGui.setStatus(self.tr("Saved Project: {0}").format(self.projName))
+        self.mainGui.setStatus(self.tr("Saved Project: {0}").format(self._data.name))
         self.setProjectChanged(False)
 
         return True
@@ -871,14 +672,14 @@ class NWProject:
             ), nwAlert.ERROR)
             return False
 
-        if not self.projName:
+        if not self._data.name:
             self.mainGui.makeAlert(self.tr(
                 "Cannot backup project because no project name is set. "
                 "Please set a Working Title in Project Settings."
             ), nwAlert.ERROR)
             return False
 
-        cleanName = makeFileNameSafe(self.projName)
+        cleanName = makeFileNameSafe(self._data.name)
         baseDir = os.path.abspath(os.path.join(self.mainConf.backupPath, cleanName))
         if not os.path.isdir(baseDir):
             try:
@@ -1024,84 +825,12 @@ class NWProject:
 
         return True
 
-    def setProjectName(self, projName):
-        """Set the project name, This is the the name used for backup
-        files etc.
-        """
-        self.projName = simplified(projName)
-        self.setProjectChanged(True)
-        return True
-
-    def setBookTitle(self, bookTitle):
-        """Set the book title, that is, the title to include in exports.
-        """
-        self.bookTitle = simplified(bookTitle)
-        self.setProjectChanged(True)
-        return True
-
-    def setBookAuthors(self, bookAuthors):
-        """A line-separated list of authors, parsed into an array.
-        """
-        if not isinstance(bookAuthors, str):
-            return False
-
-        self.bookAuthors = []
-        for bookAuthor in bookAuthors.splitlines():
-            bookAuthor = simplified(bookAuthor)
-            if bookAuthor == "":
-                continue
-            self.bookAuthors.append(bookAuthor)
-
-        self.setProjectChanged(True)
-
-        return True
-
-    def setProjBackup(self, doBackup):
-        """Set whether projects should be backed up or not. The user
-        will be notified in case required settings are missing.
-        """
-        self.doBackup = doBackup
-        if doBackup:
-            if not os.path.isdir(self.mainConf.backupPath):
-                self.mainGui.makeAlert(self.tr(
-                    "You must set a valid backup path in Preferences to use "
-                    "the automatic project backup feature."
-                ), nwAlert.WARN)
-                return False
-
-            if self.projName == "":
-                self.mainGui.makeAlert(self.tr(
-                    "You must set a valid project name in Project Settings to "
-                    "use the automatic project backup feature."
-                ), nwAlert.WARN)
-                return False
-
-        return True
-
-    def setSpellCheck(self, theMode):
-        """Enable/disable spell checking.
-        """
-        if self.spellCheck != theMode:
-            self.spellCheck = theMode
-            self.setProjectChanged(True)
-        return self.spellCheck
-
-    def setSpellLang(self, theLang):
-        """Set the project-specific spell check language.
-        """
-        theLang = checkStringNone(theLang, None)
-        if self.projSpell != theLang:
-            self.projSpell = theLang
-            self.setProjectChanged(True)
-            return True
-        return False
-
     def setProjectLang(self, theLang):
         """Set the project-specific language.
         """
         theLang = checkStringNone(theLang, None)
-        if self.projLang != theLang:
-            self.projLang = theLang
+        if self._data.language != theLang:
+            self._data.setLanguage(theLang)
             self._loadProjectLocalisation()
             self.setProjectChanged(True)
         return True
@@ -1117,102 +846,53 @@ class NWProject:
         self.setProjectChanged(True)
         return True
 
-    def setLastEdited(self, tHandle):
-        """Set last edited project item.
-        """
-        if self.lastEdited != tHandle:
-            self.lastEdited = tHandle
-            self.setProjectChanged(True)
-        return True
-
-    def setLastViewed(self, tHandle):
-        """Set last viewed project item.
-        """
-        if self.lastViewed != tHandle:
-            self.lastViewed = tHandle
-            self.setProjectChanged(True)
-        return True
-
-    def setLastNovelViewed(self, tHandle):
-        """Set last viewed novel root in the novel tree.
-        """
-        if self.lastNovel != tHandle:
-            self.lastNovel = tHandle
-            self.setProjectChanged(True)
-        return True
-
-    def setLastOutlineViewed(self, tHandle):
-        """Set last viewed novel root in the outline view.
-        """
-        if self.lastOutline != tHandle:
-            self.lastOutline = tHandle
-            self.setProjectChanged(True)
-        return True
-
     def setStatusColours(self, newCols, delCols):
         """Update the list of novel file status flags.
         """
-        return self._setStatusImport(newCols, delCols, self.statusItems)
+        return self._setStatusImport(newCols, delCols, self._data.itemStatus)
 
     def setImportColours(self, newCols, delCols):
         """Update the list of note file importance flags.
         """
-        return self._setStatusImport(newCols, delCols, self.importItems)
+        return self._setStatusImport(newCols, delCols, self._data.itemImport)
 
-    def setAutoReplace(self, autoReplace):
-        """Update the auto-replace dictionary.
-        """
-        self.autoReplace = {}
-        for key, entry in autoReplace.items():
-            self.autoReplace[key] = simplified(entry)
-        self.setProjectChanged(True)
-        return True
-
-    def setTitleFormat(self, titleFormat):
-        """Set the formatting of titles in the project.
-        """
-        for valKey, valEntry in titleFormat.items():
-            if valKey in self.titleFormat:
-                self.titleFormat[valKey] = checkString(
-                    simplified(valEntry), self.titleFormat[valKey]
-                )
-        return True
-
-    def setProjectChanged(self, bValue):
+    def setProjectChanged(self, value):
         """Toggle the project changed flag, and propagate the
         information to the GUI statusbar.
         """
-        self.projChanged = bValue
-        self.mainGui.mainStatus.doUpdateProjectStatus(bValue)
-        if bValue:
-            # If we've changed the project at all, this should be True
-            self.projAltered = True
-        return self.projChanged
+        if isinstance(value, bool):
+            self._projChanged = value
+            self.projectStatusChanged.emit(self._projChanged)
+            if value:
+                # If we've changed the project at all, this should be True
+                self._projAltered = True
+        return self._projChanged
 
     ##
     #  Getters
     ##
 
-    def getAuthors(self):
+    def getFormattedAuthors(self):
         """Return a formatted string of authors.
         """
-        nAuth = len(self.bookAuthors)
-        authString = ""
+        authors = self._data.authors
+        nAuth = len(authors)
 
+        result = ""
         if nAuth == 1:
-            authString = self.bookAuthors[0]
+            result = authors[0]
         elif nAuth > 1:
-            authString = "%s %s %s" % (
-                ", ".join(self.bookAuthors[0:-1]), self.tr("and"), self.bookAuthors[-1]
+            result = "%s %s %s" % (
+                ", ".join(authors[0:-1]), self.tr("and"), authors[-1]
             )
 
-        return authString
+        return result
 
     def getCurrentEditTime(self):
         """Get the total project edit time, including the time spent in
         the current session.
         """
-        return round(self.editTime + time() - self.projOpened)
+        return round(self._data.editTime + time() - self._projOpened)
 
     def getProjectItems(self):
         """This function ensures that the item tree loaded is sent to
@@ -1263,13 +943,8 @@ class NWProject:
     def updateWordCounts(self):
         """Update the total word count values.
         """
-        wcNovel, wcNotes = self._projTree.sumWords()
-        wcTotal = wcNovel + wcNotes
-        if wcTotal != self.currWCount:
-            self.currNovelWC = wcNovel
-            self.currNotesWC = wcNotes
-            self.currWCount  = wcTotal
-            self.setProjectChanged(True)
+        novel, notes = self._projTree.sumWords()
+        self._data.setCurrCounts(novel=novel, notes=notes)
         return
 
     def countStatus(self):
@@ -1277,13 +952,13 @@ class NWProject:
         project tree. The counts themselves are kept in the NWStatus
         objects. This is essentially a refresh.
         """
-        self.statusItems.resetCounts()
-        self.importItems.resetCounts()
+        self._data.itemStatus.resetCounts()
+        self._data.itemImport.resetCounts()
         for nwItem in self._projTree:
             if nwItem.isNovelLike():
-                self.statusItems.increment(nwItem.itemStatus)
+                self._data.itemStatus.increment(nwItem.itemStatus)
             else:
-                self.importItems.increment(nwItem.itemImport)
+                self._data.itemImport.increment(nwItem.itemImport)
         return
 
     def localLookup(self, theWord):
@@ -1322,11 +997,11 @@ class NWProject:
     def _loadProjectLocalisation(self):
         """Load the language data for the current project language.
         """
-        if self.projLang is None:
+        if self._data.language is None:
             self._langData = {}
             return False
 
-        langFile = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self.projLang)
+        langFile = os.path.join(self.mainConf.nwLangPath, "project_%s.json" % self._data.language)
         if not os.path.isfile(langFile):
             langFile = os.path.join(self.mainConf.nwLangPath, "project_en_GB.json")
 
@@ -1418,28 +1093,6 @@ class NWProject:
                 ), nwAlert.ERROR, exception=exc)
                 return False
         return True
-
-    def _packProjectValue(self, xParent, theName, theValue, allowNone=True):
-        """Pack a list of values into an xml element.
-        """
-        if not isinstance(theValue, list):
-            theValue = [theValue]
-        for aValue in theValue:
-            if (aValue == "" or aValue is None) and not allowNone:
-                continue
-            xItem = etree.SubElement(xParent, theName)
-            xItem.text = str(aValue)
-        return
-
-    def _packProjectKeyValue(self, xParent, theName, theDict):
-        """Pack the entries of a dictionary into an xml element.
-        """
-        xAutoRep = etree.SubElement(xParent, theName)
-        for aKey, aValue in theDict.items():
-            if len(aKey) > 0:
-                xEntry = etree.SubElement(xAutoRep, "entry", attrib={"key": aKey})
-                xEntry.text = aValue
-        return
 
     def _scanProjectFolder(self):
         """Scan the project folder and check that the files in it are
@@ -1550,8 +1203,11 @@ class NWProject:
         isFile = os.path.isfile(sessionFile)
 
         nowTime = time()
-        sessDiff = self.currWCount - self.lastWCount
-        sessTime = nowTime - self.projOpened
+        iNovel, iNotes = self._data.initCounts
+        cNovel, cNotes = self._data.currCounts
+        iTotal = iNovel + iNotes
+        sessDiff = cNovel + cNotes - iTotal
+        sessTime = nowTime - self._projOpened
 
         logger.info("The session lasted %d sec and added %d words", int(sessTime), sessDiff)
         if sessTime < 300 and sessDiff == 0:
@@ -1562,17 +1218,17 @@ class NWProject:
             with open(sessionFile, mode="a+", encoding="utf-8") as outFile:
                 if not isFile:
                     # It's a new file, so add a header
-                    if self.lastWCount > 0:
-                        outFile.write("# Offset %d\n" % self.lastWCount)
+                    if iTotal > 0:
+                        outFile.write("# Offset %d\n" % iTotal)
                     outFile.write("# %-17s  %-19s  %8s  %8s  %8s\n" % (
                         "Start Time", "End Time", "Novel", "Notes", "Idle"
                     ))
 
                 outFile.write("%-19s  %-19s  %8d  %8d  %8d\n" % (
-                    formatTimeStamp(self.projOpened),
+                    formatTimeStamp(self._projOpened),
                     formatTimeStamp(nowTime),
-                    self.currNovelWC,
-                    self.currNotesWC,
+                    cNovel,
+                    cNotes,
                     int(idleTime),
                 ))
 
@@ -1655,3 +1311,305 @@ class NWProject:
         return True
 
 # END Class NWProject
+
+
+class NWProjectData:
+
+    def __init__(self, theProject):
+
+        self.theProject = theProject
+
+        # Project Meta
+        self._name = ""
+        self._title = ""
+        self._authors = []
+        self._saveCount = 0
+        self._autoCount = 0
+        self._editTime = 0
+
+        # Project Settings
+        self._doBackup = True
+        self._language = None
+        self._spellCheck = False
+        self._spellLang = None
+
+        # Project Dictionaries
+        self._initCounts = [0, 0]
+        self._currCounts = [0, 0]
+        self._lastHandle: dict[str, str | None] = {
+            "editor":    None,
+            "viewer":    None,
+            "novelTree": None,
+            "outline":   None,
+        }
+        self._autoReplace: dict[str, str] = {}
+        self._titleFormat: dict[str, str] = {
+            "title":      "%title%",
+            "chapter":    "%title%",
+            "unnumbered": "%title%",
+            "scene":      "* * *",
+            "section":    "",
+        }
+
+        self._status = NWStatus(NWStatus.STATUS)
+        self._import = NWStatus(NWStatus.IMPORT)
+
+        return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def title(self):
+        return self._title
+
+    @property
+    def authors(self):
+        return self._authors
+
+    @property
+    def saveCount(self):
+        return self._saveCount
+
+    @property
+    def autoCount(self):
+        return self._autoCount
+
+    @property
+    def editTime(self):
+        return self._editTime
+
+    @property
+    def doBackup(self):
+        return self._doBackup
+
+    @property
+    def language(self):
+        return self._language
+
+    @property
+    def spellCheck(self):
+        return self._spellCheck
+
+    @property
+    def spellLang(self):
+        return self._spellLang
+
+    @property
+    def initCounts(self):
+        return tuple(self._initCounts)
+
+    @property
+    def currCounts(self):
+        return tuple(self._currCounts)
+
+    @property
+    def lastHandle(self):
+        return self._lastHandle
+
+    @property
+    def autoReplace(self):
+        return self._autoReplace
+
+    @property
+    def titleFormat(self):
+        return self._titleFormat
+
+    @property
+    def itemStatus(self):
+        return self._status
+
+    @property
+    def itemImport(self):
+        return self._import
+
+    ##
+    #  Methods
+    ##
+
+    def addAuthor(self, value):
+        """Add an author to the authors list.
+        """
+        self._authors.append(simplified(str(value)))
+        self.theProject.setProjectChanged(True)
+        return
+
+    def incSaveCount(self):
+        """Increment the save count by one.
+        """
+        self._saveCount += 1
+        self.theProject.setProjectChanged(True)
+        return
+
+    def incAutoCount(self):
+        """Increment the auto save count by one.
+        """
+        self._autoCount += 1
+        self.theProject.setProjectChanged(True)
+        return
+
+    ##
+    #  Getters
+    ##
+
+    def getLastHandle(self, component):
+        """Retrieve the last used handle for a given component.
+        """
+        return self._lastHandle.get(component, None)
+
+    def getTitleFormat(self, kind):
+        """Retrieve the title format string for a given kind of header.
+        """
+        return self._titleFormat.get(kind, "%title%")
+
+    ##
+    #  Setters
+    ##
+
+    def setName(self, value):
+        """Set a new project name.
+        """
+        if value != self._name:
+            self._name = simplified(str(value))
+            self.theProject.setProjectChanged(True)
+        return
+
+    def setTitle(self, value):
+        """Set a new novel title.
+        """
+        if value != self._title:
+            self._title = simplified(str(value))
+            self.theProject.setProjectChanged(True)
+        return
+
+    def setAuthors(self, value):
+        """Set the list of authors from either a string with one author
+        per line, or a list of authors.
+        """
+        self._authors = []
+        self.theProject.setProjectChanged(True)
+        if isinstance(value, str):
+            for author in value.splitlines():
+                author = simplified(author)
+                if author:
+                    self._authors.append(author)
+            self.theProject.setProjectChanged(True)
+        elif isinstance(value, list):
+            self._authors = value
+        return
+
+    def setSaveCount(self, value):
+        """Set the save count from last session.
+        """
+        self._saveCount = checkInt(value, 0)
+        self.theProject.setProjectChanged(True)
+        return
+
+    def setAutoCount(self, value):
+        """Set the auto save count from last session.
+        """
+        self._autoCount = checkInt(value, 0)
+        self.theProject.setProjectChanged(True)
+        return
+
+    def setEditTime(self, value):
+        """Set tyje edit time from last session.
+        """
+        self._editTime = checkInt(value, 0)
+        self.theProject.setProjectChanged(True)
+        return
+
+    def setDoBackup(self, value):
+        """Set the do write backup flag.
+        """
+        if value != self._doBackup:
+            self._doBackup = checkBool(value, False)
+            self.theProject.setProjectChanged(True)
+        return
+
+    def setLanguage(self, value):
+        """Set the project language.
+        """
+        if value != self._language:
+            self._language = checkStringNone(value, None)
+            self.theProject.setProjectChanged(True)
+        return
+
+    def setSpellCheck(self, value):
+        """Set the spell check flag.
+        """
+        if value != self._spellCheck:
+            self._spellCheck = checkBool(value, False)
+            self.theProject.setProjectChanged(True)
+        return
+
+    def setSpellLang(self, value):
+        """Set the spell check language.
+        """
+        if value != self._spellLang:
+            self._spellLang = checkStringNone(value, None)
+            self.theProject.setProjectChanged(True)
+        return
+
+    def setLastHandle(self, value, component=None):
+        """Set a last used handle into the handle registry. If component
+        is None, the value is assumed to be the whole dictionary of
+        values.
+        """
+        if isinstance(component, str):
+            self._lastHandle[component] = checkStringNone(value, None)
+            self.theProject.setProjectChanged(True)
+        elif isinstance(value, dict):
+            for key, entry in value.items():
+                if key in self._lastHandle:
+                    self._lastHandle[key] = str(entry) if isHandle(entry) else None
+            self.theProject.setProjectChanged(True)
+        return
+
+    def setInitCounts(self, novel=None, notes=None):
+        """Set the worc count totals for novel and note files.
+        """
+        if novel is not None:
+            self._initCounts[0] = checkInt(novel, 0)
+            self._currCounts[0] = checkInt(novel, 0)
+        if notes is not None:
+            self._initCounts[1] = checkInt(notes, 0)
+            self._currCounts[1] = checkInt(notes, 0)
+        return
+
+    def setCurrCounts(self, novel=None, notes=None):
+        """Set the worc count totals for novel and note files.
+        """
+        if novel is not None:
+            self._currCounts[0] = checkInt(novel, 0)
+        if notes is not None:
+            self._currCounts[1] = checkInt(notes, 0)
+        return
+
+    def setAutoReplace(self, value):
+        """Set the auto-replace dictionary.
+        """
+        if isinstance(value, dict):
+            self._autoReplace = {}
+            for key, entry in value.items():
+                if isinstance(entry, str):
+                    self._autoReplace[key] = simplified(entry)
+            self.theProject.setProjectChanged(True)
+        return
+
+    def setTitleFormat(self, value):
+        """Set the title formats.
+        """
+        if isinstance(value, dict):
+            for key, entry in value.items():
+                if key in self._titleFormat and isinstance(entry, str):
+                    self._titleFormat[key] = simplified(entry)
+            self.theProject.setProjectChanged(True)
+        return
+
+# END Class NWProjectData

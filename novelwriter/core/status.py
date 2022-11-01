@@ -28,12 +28,10 @@ import random
 import logging
 import novelwriter
 
-from lxml import etree
-
 from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor
 from PyQt5.QtCore import QRectF, Qt
 
-from novelwriter.common import checkInt, minmax, simplified
+from novelwriter.common import minmax, simplified
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +45,6 @@ class NWStatus:
 
         self._type = type
         self._store = {}
-        self._reverse = {}
         self._default = None
 
         self._iPX = novelwriter.CONFIG.pxInt(24)
@@ -58,7 +55,7 @@ class NWStatus:
         self._iconPath = QPainterPath()
         self._iconPath.addRoundedRect(QRectF(pA, pA, pB, pB), pR, pR)
 
-        self._defaultIcon = self._createIcon([100, 100, 100])
+        self._defaultIcon = self._createIcon(100, 100, 100)
 
         if self._type == self.STATUS:
             self._prefix = "s"
@@ -80,17 +77,19 @@ class NWStatus:
         if len(col) != 3:
             col = (100, 100, 100)
 
+        cR = minmax(col[0], 0, 255)
+        cG = minmax(col[1], 0, 255)
+        cB = minmax(col[2], 0, 255)
         name = simplified(name)
         if count is None:
-            count = self._store[key]["count"] if key in self._store else 0
+            count = self._store.get(key, {}).get("count", 0)
 
         self._store[key] = {
             "name": name,
-            "icon": self._createIcon(col),
-            "cols": col,
+            "icon": self._createIcon(cR, cG, cB),
+            "cols": (cR, cG, cB),
             "count": count,
         }
-        self._reverse[name] = key
 
         if self._default is None:
             self._default = key
@@ -106,7 +105,6 @@ class NWStatus:
         if self._store[key]["count"] > 0:
             return False
 
-        del self._reverse[self._store[key]["name"]]
         del self._store[key]
 
         keys = list(self._store.keys())
@@ -123,8 +121,6 @@ class NWStatus:
         """
         if self._isKey(value) and value in self._store:
             return value
-        elif value in self._reverse:
-            return self._reverse[value]
         elif self._default is not None:
             return self._default
         else:
@@ -206,37 +202,30 @@ class NWStatus:
             self._store[key]["count"] += 1
         return
 
-    def packXML(self, xParent):
-        """Pack the status entries into an XML object for saving to the
-        main project file.
+    def pack(self):
+        """Pack the status entries into a dictionary.
         """
         for key, data in self._store.items():
-            xSub = etree.SubElement(xParent, "entry", attrib={
+            yield (data["name"], {
                 "key":   key,
                 "count": str(data["count"]),
                 "red":   str(data["cols"][0]),
                 "green": str(data["cols"][1]),
                 "blue":  str(data["cols"][2]),
             })
-            xSub.text = data["name"]
+        return
 
-        return True
-
-    def unpackXML(self, xParent):
-        """Unpack an XML tree and set the class values.
+    def unpack(self, data):
+        """Unpack a data dictionary and set the class values.
         """
         self._store = {}
-        self._reverse = {}
         self._default = None
 
-        for xChild in xParent:
-            key   = xChild.attrib.get("key", None)
-            name  = xChild.text.strip()
-            count = max(checkInt(xChild.attrib.get("count", 0), 0), 0)
-            red   = minmax(checkInt(xChild.attrib.get("red", 100), 100), 0, 255)
-            green = minmax(checkInt(xChild.attrib.get("green", 100), 100), 0, 255)
-            blue  = minmax(checkInt(xChild.attrib.get("blue", 100), 100), 0, 255)
-            self.write(key, name, (red, green, blue), count)
+        for key, entry in data.items():
+            label = entry.get("label", "")
+            colour = entry.get("colour", (100, 100, 100))
+            count = entry.get("count", 0)
+            self.write(key, label, colour, count)
 
         return True
 
@@ -270,7 +259,7 @@ class NWStatus:
                 return False
         return True
 
-    def _createIcon(self, col):
+    def _createIcon(self, red, green, blue):
         """Generate an icon for a status label.
         """
         pixmap = QPixmap(self._iPX, self._iPX)
@@ -278,7 +267,7 @@ class NWStatus:
 
         painter = QPainter(pixmap)
         painter.setRenderHint(QPainter.Antialiasing)
-        painter.fillPath(self._iconPath, QColor(*col))
+        painter.fillPath(self._iconPath, QColor(red, green, blue))
         painter.end()
 
         return QIcon(pixmap)

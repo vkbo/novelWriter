@@ -114,13 +114,13 @@ class GuiProjectSettings(PagedDialog):
         spellLang   = self.tabMain.spellLang.currentData()
         doBackup    = not self.tabMain.doBackup.isChecked()
 
-        self.theProject.setProjectName(projName)
-        self.theProject.setBookTitle(bookTitle)
-        self.theProject.setBookAuthors(bookAuthors)
-        self.theProject.setProjBackup(doBackup)
+        self.theProject.data.setName(projName)
+        self.theProject.data.setTitle(bookTitle)
+        self.theProject.data.setAuthors(bookAuthors)
+        self.theProject.data.setDoBackup(doBackup)
 
         # Remember this as updating spell dictionary can be expensive
-        self._spellChanged = self.theProject.setSpellLang(spellLang)
+        self._spellChanged = self.theProject.data.setSpellLang(spellLang)
 
         if self.tabStatus.colChanged:
             newList, delList = self.tabStatus.getNewList()
@@ -135,7 +135,7 @@ class GuiProjectSettings(PagedDialog):
 
         if self.tabReplace.arChanged:
             newList = self.tabReplace.getNewList()
-            self.theProject.setAutoReplace(newList)
+            self.theProject.data.setAutoReplace(newList)
 
         self._saveGuiSettings()
         self.accept()
@@ -209,7 +209,7 @@ class GuiProjectEditMain(QWidget):
         self.editName = QLineEdit()
         self.editName.setMaxLength(200)
         self.editName.setMaximumWidth(xW)
-        self.editName.setText(self.theProject.projName)
+        self.editName.setText(self.theProject.data.name)
         self.mainForm.addRow(
             self.tr("Project name"),
             self.editName,
@@ -219,7 +219,7 @@ class GuiProjectEditMain(QWidget):
         self.editTitle = QLineEdit()
         self.editTitle.setMaxLength(200)
         self.editTitle.setMaximumWidth(xW)
-        self.editTitle.setText(self.theProject.bookTitle)
+        self.editTitle.setText(self.theProject.data.title)
         self.mainForm.addRow(
             self.tr("Novel title"),
             self.editTitle,
@@ -229,7 +229,7 @@ class GuiProjectEditMain(QWidget):
         self.editAuthors = QPlainTextEdit()
         self.editAuthors.setMaximumHeight(xH)
         self.editAuthors.setMaximumWidth(xW)
-        self.editAuthors.setPlainText("\n".join(self.theProject.bookAuthors))
+        self.editAuthors.setPlainText("\n".join(self.theProject.data.authors))
         self.mainForm.addRow(
             self.tr("Author(s)"),
             self.editAuthors,
@@ -252,13 +252,13 @@ class GuiProjectEditMain(QWidget):
         )
 
         spellIdx = 0
-        if self.theProject.projSpell is not None:
-            spellIdx = self.spellLang.findData(self.theProject.projSpell)
+        if self.theProject.data.spellLang is not None:
+            spellIdx = self.spellLang.findData(self.theProject.data.spellLang)
         if spellIdx != -1:
             self.spellLang.setCurrentIndex(spellIdx)
 
         self.doBackup = QSwitch(self)
-        self.doBackup.setChecked(not self.theProject.doBackup)
+        self.doBackup.setChecked(not self.theProject.data.doBackup)
         self.mainForm.addRow(
             self.tr("No backup on close"),
             self.doBackup,
@@ -288,11 +288,11 @@ class GuiProjectEditStatus(QWidget):
         self.mainTheme  = projGui.mainGui.mainTheme
 
         if isStatus:
-            self.theStatus = self.theProject.statusItems
+            self.theStatus = self.theProject.data.itemStatus
             pageLabel = self.tr("Novel File Status Levels")
             colSetting = "statusColW"
         else:
-            self.theStatus = self.theProject.importItems
+            self.theStatus = self.theProject.data.itemImport
             pageLabel = self.tr("Note File Importance Levels")
             colSetting = "importColW"
 
@@ -578,7 +578,7 @@ class GuiProjectEditReplace(QWidget):
         self.listBox.setColumnWidth(self.COL_KEY, wCol0)
         self.listBox.setIndentation(0)
 
-        for aKey, aVal in self.theProject.autoReplace.items():
+        for aKey, aVal in self.theProject.data.autoReplace.items():
             newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
             self.listBox.addTopLevelItem(newItem)
 

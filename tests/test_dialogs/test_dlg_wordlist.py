@@ -25,7 +25,7 @@ import pytest
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QAction
 
-from tools import writeFile, readFile, getGuiItem
+from tools import buildTestProject, writeFile, readFile, getGuiItem
 from mock import causeOSError
 
 from novelwriter.constants import nwFiles
@@ -33,16 +33,18 @@ from novelwriter.dialogs.wordlist import GuiWordList
 
 
 @pytest.mark.gui
-def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal):
+def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, fncProj):
     """test the word list editor.
     """
+    buildTestProject(nwGUI, fncProj)
+
     monkeypatch.setattr(GuiWordList, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiWordList, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(GuiWordList, "accept", lambda *a: None)
 
     # Open project
-    nwGUI.openProject(nwMinimal)
-    dictFile = os.path.join(nwMinimal, "meta", nwFiles.PROJ_DICT)
+    nwGUI.openProject(fncProj)
+    dictFile = os.path.join(fncProj, "meta", nwFiles.PROJ_DICT)
 
     # Load the dialog
     nwGUI.mainMenu.aEditWordList.activate(QAction.Trigger)

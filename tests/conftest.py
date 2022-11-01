@@ -215,27 +215,6 @@ def mockRnd(monkeypatch):
 ##
 
 @pytest.fixture(scope="function")
-def nwMinimal(tmpDir):
-    """A minimal novelWriter example project.
-    """
-    tstDir = os.path.dirname(__file__)
-    srcDir = os.path.join(tstDir, "minimal")
-    dstDir = os.path.join(tmpDir, "minimal")
-    if os.path.isdir(dstDir):
-        shutil.rmtree(dstDir)
-
-    shutil.copytree(srcDir, dstDir)
-    cleanProject(dstDir)
-
-    yield dstDir
-
-    if os.path.isdir(dstDir):
-        shutil.rmtree(dstDir)
-
-    return
-
-
-@pytest.fixture(scope="function")
 def nwLipsum(tmpDir):
     """A medium sized novelWriter example project with a lot of Lorem
     Ipsum text.

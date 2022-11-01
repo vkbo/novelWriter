@@ -50,7 +50,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
 
     # Pretend we have a project
     nwGUI.hasProject = True
-    nwGUI.theProject.setSpellLang("en")
+    nwGUI.theProject.data.setSpellLang("en")
 
     # Get the dialog object
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
@@ -95,9 +95,9 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd
 
     # Set some values
     theProject = nwGUI.theProject
-    theProject.setSpellLang("en")
-    theProject.setBookAuthors("Jane Smith\nJohn Smith")
-    theProject.setAutoReplace({"A": "B", "C": "D"})
+    theProject.data.setSpellLang("en")
+    theProject.data.setAuthors("Jane Smith\nJohn Smith")
+    theProject.data.setAutoReplace({"A": "B", "C": "D"})
 
     # Create Dialog
     projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.TAB_MAIN)
@@ -136,9 +136,9 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd
     assert projSettings.spellChanged is False
 
     projSettings._doSave()
-    assert theProject.projName == "Project Name"
-    assert theProject.bookTitle == "Project Title"
-    assert theProject.bookAuthors == ["Jane Doe", "John Doh"]
+    assert theProject.data.name == "Project Name"
+    assert theProject.data.title == "Project Title"
+    assert theProject.data.authors == ["Jane Doe", "John Doh"]
 
     # Clean up
     projSettings._doClose()
@@ -330,13 +330,13 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncDir, fncProj,
     # Check Project
     projSettings._doSave()
 
-    statusItems = dict(theProject.statusItems.items())
+    statusItems = dict(theProject.data.itemStatus.items())
     assert statusItems[C.sNew]["name"] == "New"
     assert statusItems[C.sDraft]["name"] == "Draft"
     assert statusItems[C.sFinished]["name"] == "Finished"
     assert statusItems["s000013"]["name"] == "Final"
 
-    importItems = dict(theProject.importItems.items())
+    importItems = dict(theProject.data.itemImport.items())
     assert importItems[C.iNew]["name"] == "New"
     assert importItems[C.iMajor]["name"] == "Major"
     assert importItems[C.iMain]["name"] == "Main"
@@ -365,9 +365,9 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mock
 
     # Set some values
     theProject = nwGUI.theProject
-    theProject.autoReplace = {
+    theProject.data.setAutoReplace({
         "A": "B", "C": "D"
-    }
+    })
 
     # Create Dialog
     projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.TAB_REPLACE)
@@ -429,7 +429,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mock
 
     # Check Project
     projSettings._doSave()
-    assert theProject.autoReplace == {
+    assert theProject.data.autoReplace == {
         "A": "B", "C": "D", "This": "With This Stuff"
     }
 

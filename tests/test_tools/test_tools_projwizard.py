@@ -23,7 +23,7 @@ import os
 import sys
 import pytest
 
-from tools import getGuiItem
+from tools import buildTestProject, getGuiItem
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFileDialog, QWizard, QDialog
@@ -37,7 +37,7 @@ from novelwriter.tools.projwizard import (
 
 @pytest.mark.gui
 @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
-def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, nwMinimal):
+def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, fncProj):
     """Test the launch of the project wizard.
     Disabled for macOS because the test segfaults on QWizard.show()
     """
@@ -45,7 +45,7 @@ def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, nwMinimal):
     # ========================
 
     # New with a project open should cause an error
-    assert nwGUI.openProject(nwMinimal)
+    buildTestProject(nwGUI, fncProj)
     with monkeypatch.context() as mp:
         mp.setattr(nwGUI, "closeProject", lambda *a: False)
         assert nwGUI.newProject() is False
@@ -61,7 +61,7 @@ def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, nwMinimal):
         assert nwGUI.newProject() is False
 
         # Now, with a non-empty folder
-        mp.setattr(nwGUI, "showNewProjectDialog", lambda *a: {"projPath": nwMinimal})
+        mp.setattr(nwGUI, "showNewProjectDialog", lambda *a: {"projPath": fncProj})
         assert nwGUI.newProject() is False
 
     # Test the Wizard Launching

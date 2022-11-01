@@ -217,7 +217,7 @@ class GuiDocViewer(QTextBrowser):
             self.verticalScrollBar().setValue(sPos)
 
         self._docHandle = tHandle
-        self.theProject.setLastViewed(tHandle)
+        self.theProject._data.setLastHandle(tHandle, "viewer")
         self.docHeader.setTitleFromHandle(self._docHandle)
         self.updateDocMargins()
 

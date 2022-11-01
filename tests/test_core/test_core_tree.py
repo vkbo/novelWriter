@@ -23,8 +23,6 @@ import os
 import pytest
 import random
 
-from lxml import etree
-
 from tools import readFile
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
@@ -198,7 +196,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     assert len(theTree) == len(mockItems) + 1
 
     theList = theTree.handles()
-    nHandle = "0000000000010"
+    nHandle = "0000000000000"
     assert theList[-1] == nHandle
 
     # Try to add existing handle
@@ -393,64 +391,6 @@ def testCoreTree_Reorder(mockGUI, mockItems):
     assert theTree.handles() == bHandle
 
 # END Test testCoreTree_Reorder
-
-
-@pytest.mark.core
-def testCoreTree_XMLPackUnpack(mockGUI, mockItems):
-    """Test packing and unpacking the tree to and from XML.
-    """
-    theProject = NWProject(mockGUI)
-    theTree = NWTree(theProject)
-
-    for tHandle, pHandle, nwItem in mockItems:
-        theTree.append(tHandle, pHandle, nwItem)
-        theTree.updateItemData(tHandle)
-
-    assert len(theTree) == len(mockItems)
-
-    nwXML = etree.Element("novelWriterXML")
-    theTree.packXML(nwXML)
-    assert etree.tostring(nwXML, pretty_print=False, encoding="utf-8") == (
-        b'<novelWriterXML>'
-        b'<content count="8">'
-        b'<item handle="a000000000001" parent="None" root="a000000000001" order="0" type="ROOT" '
-        b'class="NOVEL"><meta expanded="True"/><name status="s000000" '
-        b'import="i000004">Novel</name></item>'
-        b'<item handle="b000000000001" parent="a000000000001" root="a000000000001" order="0" '
-        b'type="FOLDER" class="NOVEL"><meta expanded="True"/><name status="s000000" '
-        b'import="i000004">Act One</name></item>'
-        b'<item handle="c000000000001" parent="b000000000001" root="a000000000001" order="0" '
-        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta expanded="False" mainHeading="H0" '
-        b'charCount="300" wordCount="50" paraCount="2" cursorPos="0"/><name status="s000000" '
-        b'import="i000004" active="True">Chapter One</name></item>'
-        b'<item handle="c000000000002" parent="b000000000001" root="a000000000001" order="0" '
-        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta expanded="False" mainHeading="H0" '
-        b'charCount="3000" wordCount="500" paraCount="20" cursorPos="0"/><name status="s000000" '
-        b'import="i000004" active="True">Scene One</name></item>'
-        b'<item handle="a000000000002" parent="None" root="a000000000002" order="0" type="ROOT" '
-        b'class="ARCHIVE"><meta expanded="False"/><name status="s000000" '
-        b'import="i000004">Outtakes</name></item>'
-        b'<item handle="a000000000003" parent="None" root="a000000000003" order="0" type="ROOT" '
-        b'class="TRASH"><meta expanded="False"/><name status="s000000" '
-        b'import="i000004">Trash</name></item>'
-        b'<item handle="a000000000004" parent="None" root="a000000000004" order="0" type="ROOT" '
-        b'class="CHARACTER"><meta expanded="True"/><name status="s000000" '
-        b'import="i000004">Characters</name></item>'
-        b'<item handle="b000000000002" parent="a000000000004" root="a000000000004" order="0" '
-        b'type="FILE" class="CHARACTER" layout="NOTE"><meta expanded="False" mainHeading="H0" '
-        b'charCount="2000" wordCount="400" paraCount="16" cursorPos="0"/><name status="s000000" '
-        b'import="i000004" active="True">Jane Doe</name></item>'
-        b'</content>'
-        b'</novelWriterXML>'
-    )
-
-    theTree.clear()
-    assert len(theTree) == 0
-    assert not theTree.unpackXML(nwXML)
-    assert theTree.unpackXML(nwXML[0])
-    assert len(theTree) == len(mockItems)
-
-# END Test testCoreTree_XMLPackUnpack
 
 
 @pytest.mark.core
