@@ -205,18 +205,15 @@ class NWStatus:
     def pack(self):
         """Pack the status entries into a dictionary.
         """
-        result = []
         for key, data in self._store.items():
-            result. append((
-                data["name"], {
-                    "key":   key,
-                    "count": str(data["count"]),
-                    "red":   str(data["cols"][0]),
-                    "green": str(data["cols"][1]),
-                    "blue":  str(data["cols"][2]),
-                }
-            ))
-        return result
+            yield (data["name"], {
+                "key":   key,
+                "count": str(data["count"]),
+                "red":   str(data["cols"][0]),
+                "green": str(data["cols"][1]),
+                "blue":  str(data["cols"][2]),
+            })
+        return
 
     def unpack(self, data):
         """Unpack a data dictionary and set the class values.

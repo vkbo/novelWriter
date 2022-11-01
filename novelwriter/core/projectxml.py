@@ -30,6 +30,7 @@ import novelwriter
 
 from enum import Enum
 from lxml import etree
+from time import time
 
 from novelwriter.common import (
     checkBool, checkInt, checkStringNone, formatTimeStamp, simplified, checkString
@@ -94,10 +95,6 @@ class ProjectXMLReader:
         self._path = path
         self._state = XMLReadState.NO_ACTION
 
-        self._content = []
-        self._statusData = {}
-        self._statusMap = {}
-
         self._root = ""
         self._version = 0x0000
         self._appVersion = ""
@@ -109,12 +106,6 @@ class ProjectXMLReader:
     ##
     #  Properties
     ##
-
-    @property
-    def content(self):
-        """The project content section, a dictionary of project items.
-        """
-        return self._content
 
     @property
     def state(self):
@@ -156,10 +147,11 @@ class ProjectXMLReader:
     #  Methods
     ##
 
-    def read(self, projData):
+    def read(self, projData, projContent):
         """Read and parse the project XML file.
         """
-        self._content = []
+        tStart = time()
+        logger.debug("Reading project XML")
 
         try:
             xml = etree.parse(self._path)
@@ -196,6 +188,8 @@ class ProjectXMLReader:
             self._state = XMLReadState.UNKNOWN_VERSION
             return False
 
+        logger.debug("XML is '%s' version '%s'", self._root, fileVersion)
+
         self._appVersion = str(xRoot.attrib.get("appVersion", ""))
         self._hexVersion = str(xRoot.attrib.get("appVersion", ""))
         self._timeStamp = str(xRoot.attrib.get("timeStamp", ""))
@@ -208,10 +202,9 @@ class ProjectXMLReader:
                 status &= self._parseProjectSettings(xSection, projData)
             elif xSection.tag == "content":
                 if self._version >= 0x0104:
-                    status &= self._parseProjectContent(xSection)
+                    status &= self._parseProjectContent(xSection, projContent)
                 else:
-                    self._genLegacyImportStatysMap(projData)
-                    status &= self._parseProjectContentLegacy(xSection)
+                    status &= self._parseProjectContentLegacy(xSection, projContent, projData)
             else:
                 logger.warning("Ignored <root/%s> in xml", xSection.tag)
 
@@ -224,6 +217,8 @@ class ProjectXMLReader:
         else:
             self._state = XMLReadState.WAS_LEGACY
 
+        logger.debug("Project XML loaded in %.3f ms", (time() - tStart)*1000)
+
         return True
 
     ##
@@ -233,7 +228,7 @@ class ProjectXMLReader:
     def _parseProjectMeta(self, xSection, projData):
         """Parse the project section of the XML file.
         """
-        logger.debug("Parsing xml <root/project>")
+        logger.debug("Parsing <project> section")
         for xItem in xSection:
             if xItem.tag == "name":
                 projData.setName(xItem.text)
@@ -255,7 +250,7 @@ class ProjectXMLReader:
     def _parseProjectSettings(self, xSection, projData):
         """Parse the settings section of the XML file.
         """
-        logger.debug("Parsing xml <root/settings>")
+        logger.debug("Parsing <settings> section")
 
         for xItem in xSection:
             if xItem.tag == "doBackup":
@@ -291,53 +286,56 @@ class ProjectXMLReader:
 
         return True
 
-    def _parseProjectContent(self, xSection):
+    def _parseProjectContent(self, xSection, projContent):
         """Parse the content section of the XML file.
         """
-        logger.debug("Parsing xml <root/content>")
+        logger.debug("Parsing <content> section")
 
         for xItem in xSection:
             if xItem.tag == "item":
                 item = {}
-                item["handle"] = checkStringNone(xItem.attrib.get("handle", None), None)
-                item["parent"] = checkStringNone(xItem.attrib.get("parent", None), None)
-                item["root"]   = checkStringNone(xItem.attrib.get("root", None), None)
-                item["order"]  = checkInt(xItem.attrib.get("order", 0), 0)
-                item["type"]   = checkString(xItem.attrib.get("type", "NO_TYPE"), "NO_TYPE")
-                item["class"]  = checkString(xItem.attrib.get("class", "NO_CLASS"), "NO_CLASS")
-                item["layout"] = checkString(xItem.attrib.get("layout", "NO_LAYOUT"), "NO_LAYOUT")
+                item["handle"] = checkStringNone(xItem.attrib.get("handle"), None)
+                item["parent"] = checkStringNone(xItem.attrib.get("parent"), None)
+                item["root"]   = checkStringNone(xItem.attrib.get("root"), None)
+                item["order"]  = checkInt(xItem.attrib.get("order"), 0)
+                item["type"]   = checkString(xItem.attrib.get("type"), "NO_TYPE")
+                item["class"]  = checkString(xItem.attrib.get("class"), "NO_CLASS")
+                item["layout"] = checkString(xItem.attrib.get("layout"), "NO_LAYOUT")
                 for xVal in xItem:
                     if xVal.tag == "meta":
-                        item["expanded"]  = checkBool(xVal.attrib.get("expanded", False), False)
-                        item["heading"]   = checkString(xVal.attrib.get("heading", "H0"), "H0")
-                        item["charCount"] = checkInt(xVal.attrib.get("charCount", 0), 0)
-                        item["wordCount"] = checkInt(xVal.attrib.get("wordCount", 0), 0)
-                        item["paraCount"] = checkInt(xVal.attrib.get("paraCount", 0), 0)
-                        item["cursorPos"] = checkInt(xVal.attrib.get("cursorPos", 0), 0)
+                        item["expanded"]  = checkBool(xVal.attrib.get("expanded"), False)
+                        item["heading"]   = checkString(xVal.attrib.get("heading"), "H0")
+                        item["charCount"] = checkInt(xVal.attrib.get("charCount"), 0)
+                        item["wordCount"] = checkInt(xVal.attrib.get("wordCount"), 0)
+                        item["paraCount"] = checkInt(xVal.attrib.get("paraCount"), 0)
+                        item["cursorPos"] = checkInt(xVal.attrib.get("cursorPos"), 0)
                     elif xVal.tag == "name":
                         item["label"]  = simplified(checkString(xVal.text, ""))
-                        item["status"] = checkStringNone(xVal.attrib.get("status", None), None)
-                        item["import"] = checkStringNone(xVal.attrib.get("import", None), None)
-                        item["active"] = checkBool(xVal.attrib.get("active", False), False)
+                        item["status"] = checkStringNone(xVal.attrib.get("status"), None)
+                        item["import"] = checkStringNone(xVal.attrib.get("import"), None)
+                        item["active"] = checkBool(xVal.attrib.get("active"), False)
 
                         # ToDo: Remove before 2.0 release. Only needed for 2.0 pre-releases.
                         if "exported" in xVal.attrib:
-                            item["active"] = checkBool(xVal.attrib.get("exported", False), False)
+                            item["active"] = checkBool(xVal.attrib.get("exported"), False)
                     else:
                         logger.warning("Ignored <root/content/item/%s> in xml", xVal.tag)
 
-                self._content.append(item)
+                projContent.append(item)
 
             else:
                 logger.warning("Ignored item <root/content/%s> in xml", xItem.tag)
 
         return True
 
-    def _parseProjectContentLegacy(self, xSection):
+    def _parseProjectContentLegacy(self, xSection, projContent, projData):
         """Parse the content section of the XML file for older versions.
         """
-        logger.debug("Parsing xml <root/content> (legacy format)")
-        depLayout = ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE")
+        logger.debug("Parsing <content> section (legacy format)")
+
+        # Create maps to look up name -> key for status and importance
+        statusMap = {entry["name"]: key for key, entry in projData.itemStatus.items()}
+        importMap = {entry["name"]: key for key, entry in projData.itemImport.items()}
 
         for xItem in xSection:
             item = {}
@@ -377,19 +375,21 @@ class ProjectXMLReader:
 
                 # Status was split into separate status/import with a key in 1.4
                 if item.get("class", "") in ("NOVEL", "ARCHIVE"):
-                    item["status"] = self._statusMap.get(tmpStatus, None)
+                    item["status"] = statusMap.get(tmpStatus, None)
                 else:
-                    item["import"] = self._importMap.get(tmpStatus, None)
+                    item["import"] = importMap.get(tmpStatus, None)
 
                 # A number of layouts were removed in 1.3
-                if item.get("layout", "") in depLayout:
+                if item.get("layout", "") in (
+                    "TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE"
+                ):
                     item["layout"] = "DOCUMENT"
 
                 # The trast type was removed in 1.4
                 if item.get("type", "") == "TRASH":
                     item["type"] = "ROOT"
 
-                self._content.append(item)
+                projContent.append(item)
 
             else:
                 logger.warning("Ignored <root/content/%s> in xml", xItem.tag)
@@ -407,13 +407,6 @@ class ProjectXMLReader:
                 blue  = checkInt(xEntry.attrib.get("blue", 0), 0)
                 count = checkInt(xEntry.attrib.get("count", 0), 0)
                 sObject.write(key, xEntry.text, (red, green, blue), count)
-        return
-
-    def _genLegacyImportStatysMap(self, projData):
-        """Generate a map of legacy import/status values.
-        """
-        self._statusMap = {entry["name"]: key for key, entry in projData.itemStatus.items()}
-        self._importMap = {entry["name"]: key for key, entry in projData.itemImport.items()}
         return
 
     def _parseDictKeyText(self, xItem):
@@ -459,8 +452,10 @@ class ProjectXMLWriter:
     def write(self, projData, projContent, saveTime, editTime):
         """Write the project data and content to the XML files.
         """
+        tStart = time()
+        logger.debug("Writing project XML")
 
-        nwXML = etree.Element("novelWriterXML", attrib={
+        xRoot = etree.Element("novelWriterXML", attrib={
             "appVersion":  str(novelwriter.__version__),
             "hexVersion":  str(novelwriter.__hexversion__),
             "fileVersion": FILE_VERSION,
@@ -468,7 +463,7 @@ class ProjectXMLWriter:
         })
 
         # Save Project Meta
-        xProject = etree.SubElement(nwXML, "project")
+        xProject = etree.SubElement(xRoot, "project")
         self._packSingleValue(xProject, "name", projData.name)
         self._packSingleValue(xProject, "title", projData.title)
         self._packListValue(xProject, "author", projData.authors)
@@ -477,7 +472,7 @@ class ProjectXMLWriter:
         self._packSingleValue(xProject, "editTime", editTime)
 
         # Save Project Settings
-        xSettings = etree.SubElement(nwXML, "settings")
+        xSettings = etree.SubElement(xRoot, "settings")
         self._packSingleValue(xSettings, "doBackup", projData.doBackup)
         self._packSingleValue(xSettings, "language", projData.language)
         self._packSingleValue(xSettings, "spellCheck", projData.spellCheck)
@@ -498,7 +493,7 @@ class ProjectXMLWriter:
             self._packSingleValue(xImport, "entry", label, attrib=attrib)
 
         # Save Tree Content
-        xContent = etree.SubElement(nwXML, "content", attrib={"count": str(len(projContent))})
+        xContent = etree.SubElement(xRoot, "content", attrib={"count": str(len(projContent))})
         for item in projContent:
             xItem = etree.SubElement(xContent, "item", attrib=item.get("itemAttr", {}))
             etree.SubElement(xItem, "meta", attrib=item.get("metaAttr", {}))
@@ -512,7 +507,7 @@ class ProjectXMLWriter:
         try:
             with open(tempFile, mode="wb") as outFile:
                 outFile.write(etree.tostring(
-                    nwXML,
+                    xRoot,
                     pretty_print=True,
                     encoding="utf-8",
                     xml_declaration=True
@@ -530,6 +525,8 @@ class ProjectXMLWriter:
         except OSError as exc:
             self._error = exc
             return False
+
+        logger.debug("Project XML saved in %.3f ms", (time() - tStart)*1000)
 
         return True
 

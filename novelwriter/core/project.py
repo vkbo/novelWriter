@@ -455,13 +455,13 @@ class NWProject(QObject):
         # =========================
 
         self._data = NWProjectData(self)
-        xmlReader = ProjectXMLReader(fileName)
-        xmlParsed = xmlReader.read(self._data)
+        projContent = []
 
-        nwxRoot = xmlReader.xmlRoot
+        xmlReader = ProjectXMLReader(fileName)
+        xmlParsed = xmlReader.read(self._data, projContent)
+
         appVersion = xmlReader.appVersion or self.tr("Unknown")
         hexVersion = xmlReader.hexVersion or "0x0"
-        xmlVersion = xmlReader.xmlVersion or self.tr("Unknown")
 
         if not xmlParsed:
             if xmlReader.state == XMLReadState.NOT_NWX_FILE:
@@ -481,9 +481,6 @@ class NWProject(QObject):
 
             self.clearProject()
             return False
-
-        logger.debug("XML root is '%s'", nwxRoot)
-        logger.debug("File version is '%s'", xmlVersion)
 
         # Check Legacy Upgrade
         # ====================
@@ -522,10 +519,7 @@ class NWProject(QObject):
         # Extract Data
         # ============
 
-        logger.info("Project Name: '%s'", self._data.name)
-        logger.info("Project Title: '%s'", self._data.title)
-
-        self._projTree.unpack(xmlReader.content)
+        self._projTree.unpack(projContent)
         self._optState.loadSettings()
 
         # Sort out old file locations

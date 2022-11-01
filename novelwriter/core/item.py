@@ -193,21 +193,22 @@ class NWItem:
             logger.error("XML item entry does not have a handle")
             return False
 
+        self.setName(data.get("label", ""))
         self.setParent(data.get("parent", None))
         self.setRoot(data.get("root", None))
         self.setOrder(data.get("order", 0))
         self.setType(data.get("type", nwItemType.NO_TYPE))
         self.setClass(data.get("class", nwItemClass.NO_CLASS))
         self.setLayout(data.get("layout", nwItemLayout.NO_LAYOUT))
+
         self.setExpanded(data.get("expanded", False))
+        self.setStatus(data.get("status", None))
+        self.setImport(data.get("import", None))
         self.setMainHeading(data.get("heading", "H0"))
         self.setCharCount(data.get("charCount", 0))
         self.setWordCount(data.get("wordCount", 0))
         self.setParaCount(data.get("paraCount", 0))
         self.setCursorPos(data.get("cursorPos", 0))
-        self.setName(data.get("label", ""))
-        self.setStatus(data.get("status", None))
-        self.setImport(data.get("import", None))
         self.setActive(data.get("active", True))
 
         # Make some checks to ensure consistency
@@ -216,10 +217,12 @@ class NWItem:
             self._parent = None        # Root items cannot have a parent
 
         if self._type != nwItemType.FILE:
-            self._charCount = 0  # Only set for files
-            self._wordCount = 0  # Only set for files
-            self._paraCount = 0  # Only set for files
-            self._cursorPos = 0  # Only set for files
+            self._heading = "H0"  # Only files have headers
+            self._active = False  # Can only be True for files
+            self._charCount = 0   # Only set for files
+            self._wordCount = 0   # Only set for files
+            self._paraCount = 0   # Only set for files
+            self._cursorPos = 0   # Only set for files
 
         return True
 
