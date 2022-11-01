@@ -190,7 +190,7 @@ class NWItem:
         if "handle" in data:
             self.setHandle(data["handle"])
         else:
-            logger.error("XML item entry does not have a handle")
+            logger.error("Item does not have a handle")
             return False
 
         self.setName(data.get("label", ""))
@@ -217,12 +217,14 @@ class NWItem:
             self._parent = None        # Root items cannot have a parent
 
         if self._type != nwItemType.FILE:
-            self._heading = "H0"  # Only files have headers
-            self._active = False  # Can only be True for files
-            self._charCount = 0   # Only set for files
-            self._wordCount = 0   # Only set for files
-            self._paraCount = 0   # Only set for files
-            self._cursorPos = 0   # Only set for files
+            # Reset values that should only be set for files
+            self._layout = nwItemLayout.NO_LAYOUT
+            self._heading = "H0"
+            self._active = False
+            self._charCount = 0
+            self._wordCount = 0
+            self._paraCount = 0
+            self._cursorPos = 0
 
         return True
 
