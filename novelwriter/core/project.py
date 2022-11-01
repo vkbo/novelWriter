@@ -45,6 +45,7 @@ from novelwriter.core.item import NWItem
 from novelwriter.core.index import NWIndex
 from novelwriter.core.status import NWStatus
 from novelwriter.core.options import OptionState
+from novelwriter.core.storage import NWStorage
 from novelwriter.core.document import NWDoc
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.common import (
@@ -68,8 +69,9 @@ class NWProject(QObject):
         self.mainGui  = mainGui
 
         # Core Elements
-        self._data    = NWProjectData(self)  # The project settings
         self._options = OptionState(self)    # Project-specific GUI options
+        self._storage = NWStorage(self)      # The project storage handler
+        self._data    = NWProjectData(self)  # The project settings
         self._tree    = NWTree(self)         # The project tree
         self._index   = NWIndex(self)        # The projecty index
 
