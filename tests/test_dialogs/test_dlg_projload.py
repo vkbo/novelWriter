@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import pytest
 import os
 
-from tools import getGuiItem
+from tools import buildTestProject, getGuiItem
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -33,10 +33,10 @@ from novelwriter.dialogs.projload import GuiProjectLoad
 
 
 @pytest.mark.gui
-def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
+def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, fncProj):
     """Test the load project wizard.
     """
-    assert nwGUI.openProject(nwMinimal)
+    buildTestProject(nwGUI, fncProj)
     assert nwGUI.closeProject()
 
     monkeypatch.setattr(GuiProjectLoad, "exec_", lambda *a: None)
@@ -87,10 +87,10 @@ def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     nwLoad._doDeleteRecent()
     assert nwLoad.listBox.topLevelItemCount() == recentCount - 1
 
-    getFile = os.path.join(nwMinimal, "nwProject.nwx")
+    getFile = os.path.join(fncProj, "nwProject.nwx")
     monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (getFile, None))
     qtbot.mouseClick(nwLoad.browseButton, Qt.LeftButton)
-    assert nwLoad.openPath == nwMinimal
+    assert nwLoad.openPath == fncProj
     assert nwLoad.openState == nwLoad.OPEN_STATE
 
     nwLoad.close()

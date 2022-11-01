@@ -22,6 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import pytest
 
 from mock import causeOSError
+from tools import C, buildTestProject
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextBlock, QTextCursor, QTextOption
@@ -36,12 +37,12 @@ KEY_DELAY = 1
 
 
 @pytest.mark.gui
-def testGuiEditor_Init(qtbot, nwGUI, nwMinimal, ipsumText):
+def testGuiEditor_Init(qtbot, nwGUI, fncProj, ipsumText, mockRnd):
     """Test initialising the editor.
     """
     # Open project
-    assert nwGUI.openProject(nwMinimal)
-    assert nwGUI.openDocument("8c659a11cd429")
+    buildTestProject(nwGUI, fncProj)
+    assert nwGUI.openDocument(C.hSceneDoc)
 
     nwGUI.docEditor.setText("### Lorem Ipsum\n\n%s" % ipsumText[0])
     assert nwGUI.saveDocument()
@@ -79,13 +80,11 @@ def testGuiEditor_Init(qtbot, nwGUI, nwMinimal, ipsumText):
 
 
 @pytest.mark.gui
-def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumText):
+def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, fncProj, ipsumText, mockRnd):
     """Test loading text into the editor.
     """
-    # Open project
-    sHandle = "8c659a11cd429"
-    assert nwGUI.openProject(nwMinimal) is True
-    assert nwGUI.openDocument(sHandle) is True
+    buildTestProject(nwGUI, fncProj)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
 
     longText = "### Lorem Ipsum\n\n%s" % "\n\n".join(ipsumText*20)
     nwGUI.docEditor.replaceText(longText)
@@ -101,11 +100,11 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
     # Document too big
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.constants.nwConst.MAX_DOCSIZE", 100)
-        assert nwGUI.docEditor.loadText(sHandle) is False
+        assert nwGUI.docEditor.loadText(C.hSceneDoc) is False
         assert "The document you are trying to open is too big." in caplog.text
 
     # Regular open
-    assert nwGUI.docEditor.loadText(sHandle) is True
+    assert nwGUI.docEditor.loadText(C.hSceneDoc) is True
     assert nwGUI.docEditor._bigDoc is False
 
     # Reload too big text
@@ -116,18 +115,18 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
 
     # Big doc handling
     nwGUI.mainConf.bigDocLimit = 50
-    assert nwGUI.docEditor.loadText(sHandle) is True
+    assert nwGUI.docEditor.loadText(C.hSceneDoc) is True
     assert nwGUI.docEditor._bigDoc is True
 
     # Regular open, with line number
-    assert nwGUI.docEditor.loadText(sHandle, tLine=4) is True
+    assert nwGUI.docEditor.loadText(C.hSceneDoc, tLine=4) is True
     cursPos = nwGUI.docEditor.getCursorPosition()
     assert nwGUI.docEditor.document().findBlock(cursPos).blockNumber() == 4
 
     # Load empty document
     nwGUI.docEditor.replaceText("")
     assert nwGUI.saveDocument() is True
-    assert nwGUI.docEditor.loadText(sHandle) is True
+    assert nwGUI.docEditor.loadText(C.hSceneDoc) is True
     assert nwGUI.docEditor.toPlainText() == ""
 
     # qtbot.stop()
@@ -136,13 +135,11 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
 
 
 @pytest.mark.gui
-def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumText):
+def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, fncProj, ipsumText, mockRnd):
     """Test saving text from the editor.
     """
-    # Open project
-    sHandle = "8c659a11cd429"
-    assert nwGUI.openProject(nwMinimal) is True
-    assert nwGUI.openDocument(sHandle) is True
+    buildTestProject(nwGUI, fncProj)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
 
     # Save Text
     # =========
@@ -159,7 +156,7 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
     # Unkown handle
     nwGUI.docEditor._docHandle = "0123456789abcdef"
     assert nwGUI.docEditor.saveText() is False
-    nwGUI.docEditor._docHandle = sHandle
+    nwGUI.docEditor._docHandle = C.hSceneDoc
 
     # Cause error when saving
     with monkeypatch.context() as mp:
@@ -168,10 +165,10 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
         assert "Could not save document." in caplog.text
 
     # Change header level
-    assert nwGUI.theProject.tree[sHandle].itemLayout == nwItemLayout.DOCUMENT
+    assert nwGUI.theProject.tree[C.hSceneDoc].itemLayout == nwItemLayout.DOCUMENT
     nwGUI.docEditor.replaceText(longText[1:])
     assert nwGUI.docEditor.saveText() is True
-    assert nwGUI.theProject.tree[sHandle].itemLayout == nwItemLayout.DOCUMENT
+    assert nwGUI.theProject.tree[C.hSceneDoc].itemLayout == nwItemLayout.DOCUMENT
 
     # Regular save
     assert nwGUI.docEditor.saveText() is True
@@ -182,13 +179,11 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, nwMinimal, ipsumTe
 
 
 @pytest.mark.gui
-def testGuiEditor_MetaData(qtbot, nwGUI, nwMinimal):
+def testGuiEditor_MetaData(qtbot, nwGUI, fncProj, mockRnd):
     """Test extracting various meta data and other values.
     """
-    # Open project
-    sHandle = "8c659a11cd429"
-    assert nwGUI.openProject(nwMinimal) is True
-    assert nwGUI.openDocument(sHandle) is True
+    buildTestProject(nwGUI, fncProj)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
 
     # Get Text
     # This should replace line and paragraph separators, but preserve
@@ -203,7 +198,7 @@ def testGuiEditor_MetaData(qtbot, nwGUI, nwMinimal):
 
     # Check Propertoes
     assert nwGUI.docEditor.docChanged() is True
-    assert nwGUI.docEditor.docHandle() == sHandle
+    assert nwGUI.docEditor.docHandle() == C.hSceneDoc
     assert nwGUI.docEditor.lastActive() > 0.0
     assert nwGUI.docEditor.isEmpty() is False
 
@@ -211,9 +206,9 @@ def testGuiEditor_MetaData(qtbot, nwGUI, nwMinimal):
     assert nwGUI.docEditor.setCursorPosition(None) is False
     assert nwGUI.docEditor.setCursorPosition(10) is True
     assert nwGUI.docEditor.getCursorPosition() == 10
-    assert nwGUI.theProject.tree[sHandle].cursorPos != 10
+    assert nwGUI.theProject.tree[C.hSceneDoc].cursorPos != 10
     nwGUI.docEditor.saveCursorPosition()
-    assert nwGUI.theProject.tree[sHandle].cursorPos == 10
+    assert nwGUI.theProject.tree[C.hSceneDoc].cursorPos == 10
 
     assert nwGUI.docEditor.setCursorLine(None) is False
     assert nwGUI.docEditor.setCursorLine(2) is True
@@ -231,16 +226,14 @@ def testGuiEditor_MetaData(qtbot, nwGUI, nwMinimal):
 
 
 @pytest.mark.gui
-def testGuiEditor_Actions(qtbot, nwGUI, nwMinimal, ipsumText):
+def testGuiEditor_Actions(qtbot, nwGUI, fncProj, ipsumText, mockRnd):
     """Test the document actions. This is not an extensive test of the
     action features, just that the actions are actually called. The
     various action features are tested when their respective functions
     are tested.
     """
-    # Open project
-    sHandle = "8c659a11cd429"
-    assert nwGUI.openProject(nwMinimal) is True
-    assert nwGUI.openDocument(sHandle) is True
+    buildTestProject(nwGUI, fncProj)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
 
     theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
     assert nwGUI.docEditor.replaceText(theText) is True
@@ -452,7 +445,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, nwMinimal, ipsumText):
     # No Document Handle
     nwGUI.docEditor._docHandle = None
     assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_TXT) is False
-    nwGUI.docEditor._docHandle = sHandle
+    nwGUI.docEditor._docHandle = C.hSceneDoc
 
     # Wrong Action Type
     assert nwGUI.docEditor.docAction(None) is False
@@ -466,13 +459,11 @@ def testGuiEditor_Actions(qtbot, nwGUI, nwMinimal, ipsumText):
 
 
 @pytest.mark.gui
-def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
+def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, fncProj, ipsumText, mockRnd):
     """Test the document insert functions.
     """
-    # Open project
-    sHandle = "8c659a11cd429"
-    assert nwGUI.openProject(nwMinimal) is True
-    assert nwGUI.openDocument(sHandle) is True
+    buildTestProject(nwGUI, fncProj)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
 
     theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
     assert nwGUI.docEditor.replaceText(theText) is True
@@ -487,7 +478,7 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     nwGUI.docEditor._docHandle = None
     assert nwGUI.docEditor.setCursorPosition(24) is True
     assert nwGUI.docEditor.insertText("Stuff") is False
-    nwGUI.docEditor._docHandle = sHandle
+    nwGUI.docEditor._docHandle = C.hSceneDoc
 
     # Insert String
     assert nwGUI.docEditor.setCursorPosition(24) is True
@@ -551,13 +542,11 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
 
 
 @pytest.mark.gui
-def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
+def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, fncProj, ipsumText, mockRnd):
     """Test the text manipulation functions.
     """
-    # Open project
-    sHandle = "8c659a11cd429"
-    assert nwGUI.openProject(nwMinimal) is True
-    assert nwGUI.openDocument(sHandle) is True
+    buildTestProject(nwGUI, fncProj)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
 
     theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
     assert nwGUI.docEditor.replaceText(theText) is True
@@ -760,13 +749,11 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumTe
 
 
 @pytest.mark.gui
-def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
+def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, fncProj, ipsumText, mockRnd):
     """Test the block formatting function.
     """
-    # Open project
-    sHandle = "8c659a11cd429"
-    assert nwGUI.openProject(nwMinimal) is True
-    assert nwGUI.openDocument(sHandle) is True
+    buildTestProject(nwGUI, fncProj)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
 
     theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
     assert nwGUI.docEditor.replaceText(theText) is True
@@ -1075,13 +1062,11 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumTex
 
 
 @pytest.mark.gui
-def testGuiEditor_Tags(qtbot, nwGUI, nwMinimal, ipsumText):
+def testGuiEditor_Tags(qtbot, nwGUI, fncProj, ipsumText, mockRnd):
     """Test the document editor tags functionality.
     """
-    # Open project
-    sHandle = "8c659a11cd429"
-    assert nwGUI.openProject(nwMinimal) is True
-    assert nwGUI.openDocument(sHandle) is True
+    buildTestProject(nwGUI, fncProj)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
 
     # Create Scene
     theText = "### A Scene\n\n@char: Jane, John\n\n" + ipsumText[0] + "\n\n"
@@ -1089,7 +1074,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, nwMinimal, ipsumText):
 
     # Create Character
     theText = "### Jane Doe\n\n@tag: Jane\n\n" + ipsumText[1] + "\n\n"
-    cHandle = nwGUI.theProject.newFile("Jane Doe", "afb3043c7b2b3")
+    cHandle = nwGUI.theProject.newFile("Jane Doe", C.hCharRoot)
     assert nwGUI.openDocument(cHandle) is True
     assert nwGUI.docEditor.replaceText(theText) is True
     assert nwGUI.saveDocument() is True
@@ -1098,7 +1083,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, nwMinimal, ipsumText):
 
     # Follow Tag
     # ==========
-    assert nwGUI.openDocument(sHandle) is True
+    assert nwGUI.openDocument(C.hSceneDoc) is True
 
     # Empty Block
     assert nwGUI.docEditor.setCursorLine(1) is True
@@ -1136,7 +1121,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, nwMinimal, ipsumText):
 
 
 @pytest.mark.gui
-def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
+def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, fncProj, ipsumText, mockRnd):
     """Test saving text from the editor.
     """
     class MockThreadPool:
@@ -1153,7 +1138,8 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     nwGUI.threadPool = MockThreadPool()
     nwGUI.docEditor.wcTimerDoc.blockSignals(True)
     nwGUI.docEditor.wcTimerSel.blockSignals(True)
-    assert nwGUI.openProject(nwMinimal) is True
+
+    buildTestProject(nwGUI, fncProj)
 
     # Run on an empty document
     nwGUI.docEditor._runDocCounter()
@@ -1167,10 +1153,9 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
     assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     # Open a document and populate it
-    sHandle = "8c659a11cd429"
-    nwGUI.theProject.tree[sHandle]._initCount = 0  # Clear item's count
-    nwGUI.theProject.tree[sHandle]._wordCount = 0  # Clear item's count
-    assert nwGUI.openDocument(sHandle) is True
+    nwGUI.theProject.tree[C.hSceneDoc]._initCount = 0  # Clear item's count
+    nwGUI.theProject.tree[C.hSceneDoc]._wordCount = 0  # Clear item's count
+    assert nwGUI.openDocument(C.hSceneDoc) is True
 
     theText = "\n\n".join(ipsumText)
     cC, wC, pC = countWords(theText)
@@ -1193,9 +1178,9 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, nwMinimal, ipsumText):
 
     nwGUI.docEditor.wCounterDoc.run()
     # nwGUI.docEditor._updateDocCounts(cC, wC, pC)
-    assert nwGUI.theProject.tree[sHandle]._charCount == cC
-    assert nwGUI.theProject.tree[sHandle]._wordCount == wC
-    assert nwGUI.theProject.tree[sHandle]._paraCount == pC
+    assert nwGUI.theProject.tree[C.hSceneDoc]._charCount == cC
+    assert nwGUI.theProject.tree[C.hSceneDoc]._wordCount == wC
+    assert nwGUI.theProject.tree[C.hSceneDoc]._paraCount == pC
     assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} (+{wC})"
 
     # Select all text

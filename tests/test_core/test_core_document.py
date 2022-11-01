@@ -23,7 +23,7 @@ import os
 import pytest
 
 from mock import causeOSError
-from tools import readFile, writeFile
+from tools import C, buildTestProject, readFile, writeFile
 
 from novelwriter.enum import nwItemClass, nwItemLayout
 from novelwriter.core.project import NWProject
@@ -31,14 +31,12 @@ from novelwriter.core.document import NWDoc
 
 
 @pytest.mark.core
-def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
+def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncDir, mockRnd):
     """Test loading and saving a document with the NWDoc class.
     """
     theProject = NWProject(mockGUI)
-    assert theProject.openProject(nwMinimal) is True
-    assert theProject.projPath == nwMinimal
-
-    sHandle = "8c659a11cd429"
+    mockRnd.reset()
+    buildTestProject(theProject, fncDir)
 
     # Read Document
     # =============
@@ -49,25 +47,23 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
     assert theDoc.readDocument() is None
 
     # Non-existent handle
-    theDoc = NWDoc(theProject, "0000000000000")
+    theDoc = NWDoc(theProject, C.hInvalid)
     assert theDoc.readDocument() is None
     assert theDoc._currHash is None
 
     # Cause open() to fail while loading
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        theDoc = NWDoc(theProject, sHandle)
+        theDoc = NWDoc(theProject, C.hSceneDoc)
         assert theDoc.readDocument() is None
         assert theDoc.getError() == "OSError: Mock OSError"
 
     # Load the text
-    theDoc = NWDoc(theProject, sHandle)
+    theDoc = NWDoc(theProject, C.hSceneDoc)
     assert theDoc.readDocument() == "### New Scene\n\n"
 
     # Try to open a new (non-existent) file
-    nHandle = theProject.tree.findRoot(nwItemClass.NOVEL)
-    assert nHandle is not None
-    xHandle = theProject.newFile("New File", nHandle)
+    xHandle = theProject.newFile("New File", C.hNovelRoot)
     theDoc = NWDoc(theProject, xHandle)
     assert bool(theDoc) is True
     assert repr(theDoc) == f"<NWDoc handle={xHandle}>"
@@ -86,10 +82,10 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
     assert theDoc.writeDocument(theText)
 
     # Check file content
-    docPath = os.path.join(nwMinimal, "content", xHandle+".nwd")
+    docPath = os.path.join(fncDir, "content", xHandle+".nwd")
     assert readFile(docPath) == (
         "%%~name: New File\n"
-        f"%%~path: a508bb932959c/{xHandle}\n"
+        f"%%~path: {C.hNovelRoot}/{xHandle}\n"
         "%%~kind: NOVEL/DOCUMENT\n"
         "### Test File\n\n"
         "Text ...\n\n"
@@ -153,16 +149,15 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
 
 
 @pytest.mark.core
-def testCoreDocument_Methods(mockGUI, nwMinimal):
+def testCoreDocument_Methods(mockGUI, fncDir, mockRnd):
     """Test other methods of the NWDoc class.
     """
     theProject = NWProject(mockGUI)
-    assert theProject.openProject(nwMinimal)
-    assert theProject.projPath == nwMinimal
+    mockRnd.reset()
+    buildTestProject(theProject, fncDir)
 
-    sHandle = "8c659a11cd429"
-    theDoc = NWDoc(theProject, sHandle)
-    docPath = os.path.join(nwMinimal, "content", sHandle+".nwd")
+    theDoc = NWDoc(theProject, C.hSceneDoc)
+    docPath = os.path.join(fncDir, "content", C.hSceneDoc+".nwd")
 
     assert theDoc.readDocument() == "### New Scene\n\n"
 
@@ -171,12 +166,12 @@ def testCoreDocument_Methods(mockGUI, nwMinimal):
 
     # Check the item
     assert theDoc.getCurrentItem() is not None
-    assert theDoc.getCurrentItem().itemHandle == sHandle
+    assert theDoc.getCurrentItem().itemHandle == C.hSceneDoc
 
     # Check the meta
     theName, theParent, theClass, theLayout = theDoc.getMeta()
     assert theName == "New Scene"
-    assert theParent == "a6d311a93600a"
+    assert theParent == C.hChapterDir
     assert theClass == nwItemClass.NOVEL
     assert theLayout == nwItemLayout.DOCUMENT
 
@@ -184,7 +179,7 @@ def testCoreDocument_Methods(mockGUI, nwMinimal):
     assert theDoc.writeDocument("%%~ stuff\n### Test File\n\nText ...\n\n")
     assert readFile(docPath) == (
         "%%~name: New Scene\n"
-        f"%%~path: a6d311a93600a/{sHandle}\n"
+        f"%%~path: {C.hChapterDir}/{C.hSceneDoc}\n"
         "%%~kind: NOVEL/DOCUMENT\n"
         "%%~ stuff\n"
         "### Test File\n\n"
