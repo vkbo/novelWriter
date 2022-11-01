@@ -266,12 +266,10 @@ class ProjectXMLReader:
                 projData.setSpellCheck(xItem.text)
             elif xItem.tag == "spellLang":
                 projData.setSpellLang(xItem.text)
-            elif xItem.tag == "totalWordCount":
-                projData.setLastCount(xItem.text, "total")
             elif xItem.tag == "novelWordCount":
-                projData.setLastCount(xItem.text, "novel")
+                projData.setInitCounts(novel=xItem.text)
             elif xItem.tag == "notesWordCount":
-                projData.setLastCount(xItem.text, "notes")
+                projData.setInitCounts(notes=xItem.text)
             elif xItem.tag == "status":
                 self._parseStatusImport(xItem, projData.itemStatus)
             elif xItem.tag in ("import", "importance"):
@@ -289,18 +287,7 @@ class ProjectXMLReader:
                 else:  # Pre 1.4 format
                     projData.setTitleFormat(self._parseDictTagText(xItem))
             else:
-                if self._version < 0x0104:
-                    # Convert some deprecated fields
-                    if xItem.tag == "lastEdited":  # Discontinued in 1.4
-                        projData.setLastHandle(xItem.text, "editor")
-                    elif xItem.tag == "lastViewed":  # Discontinued in 1.4
-                        projData.setLastHandle(xItem.text, "viewer")
-                    elif xItem.tag == "lastWordCount":  # Renamed in 1.4
-                        projData.setLastCount(xItem.text, "total")
-                    else:
-                        logger.warning("Ignored <root/settings/%s> in xml", xItem.tag)
-                else:
-                    logger.warning("Ignored <root/settings/%s> in xml", xItem.tag)
+                logger.warning("Ignored <root/settings/%s> in xml", xItem.tag)
 
         return True
 
@@ -495,9 +482,8 @@ class ProjectXMLWriter:
         self._packSingleValue(xSettings, "language", projData.language)
         self._packSingleValue(xSettings, "spellCheck", projData.spellCheck)
         self._packSingleValue(xSettings, "spellLang", projData.spellLang)
-        self._packSingleValue(xSettings, "totalWordCount", projData.getCurrCount("total"))
-        self._packSingleValue(xSettings, "novelWordCount", projData.getCurrCount("novel"))
-        self._packSingleValue(xSettings, "notesWordCount", projData.getCurrCount("notes"))
+        self._packSingleValue(xSettings, "novelWordCount", projData.currCounts[0])
+        self._packSingleValue(xSettings, "notesWordCount", projData.currCounts[1])
         self._packDictKeyValue(xSettings, "lastHandle", projData.lastHandle)
         self._packDictKeyValue(xSettings, "autoReplace", projData.autoReplace)
         self._packDictKeyValue(xSettings, "titleFormat", projData.titleFormat)

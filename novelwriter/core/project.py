@@ -544,7 +544,7 @@ class NWProject(QObject):
 
         # Update recent projects
         self.mainConf.updateRecentCache(
-            self.projPath, self._data.name, self._data.getLastCount("total"), time()
+            self.projPath, self._data.name, sum(self._data.initCounts), time()
         )
         self.mainConf.saveRecentCache()
 
@@ -611,7 +611,7 @@ class NWProject(QObject):
 
         # Update recent projects
         self.mainConf.updateRecentCache(
-            self.projPath, self._data.name, self._data.getCurrCount("total"), saveTime
+            self.projPath, self._data.name, sum(self._data.currCounts), saveTime
         )
         self.mainConf.saveRecentCache()
 
@@ -949,10 +949,8 @@ class NWProject(QObject):
     def updateWordCounts(self):
         """Update the total word count values.
         """
-        wcNovel, wcNotes = self._projTree.sumWords()
-        self._data.setCurrCount(wcNovel, "novel")
-        self._data.setCurrCount(wcNotes, "notes")
-        self._data.setCurrCount(wcNovel + wcNotes, "total")
+        novel, notes = self._projTree.sumWords()
+        self._data.setCurrCounts(novel=novel, notes=notes)
         return
 
     def countStatus(self):
@@ -1211,9 +1209,10 @@ class NWProject(QObject):
         isFile = os.path.isfile(sessionFile)
 
         nowTime = time()
-        lastCount = self._data.getLastCount("total")
-        currCount = self._data.getCurrCount("total")
-        sessDiff = currCount - lastCount
+        iNovel, iNotes = self._data.initCounts
+        cNovel, cNotes = self._data.currCounts
+        iTotal = iNovel + iNotes
+        sessDiff = cNovel + cNotes - iTotal
         sessTime = nowTime - self._projOpened
 
         logger.info("The session lasted %d sec and added %d words", int(sessTime), sessDiff)
@@ -1225,8 +1224,8 @@ class NWProject(QObject):
             with open(sessionFile, mode="a+", encoding="utf-8") as outFile:
                 if not isFile:
                     # It's a new file, so add a header
-                    if lastCount > 0:
-                        outFile.write("# Offset %d\n" % lastCount)
+                    if iTotal > 0:
+                        outFile.write("# Offset %d\n" % iTotal)
                     outFile.write("# %-17s  %-19s  %8s  %8s  %8s\n" % (
                         "Start Time", "End Time", "Novel", "Notes", "Idle"
                     ))
@@ -1234,8 +1233,8 @@ class NWProject(QObject):
                 outFile.write("%-19s  %-19s  %8d  %8d  %8d\n" % (
                     formatTimeStamp(self._projOpened),
                     formatTimeStamp(nowTime),
-                    self._data.getCurrCount("novel"),
-                    self._data.getCurrCount("notes"),
+                    cNovel,
+                    cNotes,
                     int(idleTime),
                 ))
 
@@ -1341,8 +1340,8 @@ class NWProjectData:
         self._spellLang = None
 
         # Project Dictionaries
-        self._lastCount: dict[str, int] = {}
-        self._currCount: dict[str, int] = {}
+        self._initCounts = [0, 0]
+        self._currCounts = [0, 0]
         self._lastHandle: dict[str, str | None] = {
             "editor":    None,
             "viewer":    None,
@@ -1408,6 +1407,14 @@ class NWProjectData:
         return self._spellLang
 
     @property
+    def initCounts(self):
+        return tuple(self._initCounts)
+
+    @property
+    def currCounts(self):
+        return tuple(self._currCounts)
+
+    @property
     def lastHandle(self):
         return self._lastHandle
 
@@ -1460,16 +1467,6 @@ class NWProjectData:
         """Retrieve the last used handle for a given component.
         """
         return self._lastHandle.get(component, None)
-
-    def getLastCount(self, type):
-        """Retrieve the last word count for a given type.
-        """
-        return self._lastCount.get(type, 0)
-
-    def getCurrCount(self, type):
-        """Retrieve the current word count for a given type.
-        """
-        return self._currCount.get(type, 0)
 
     def getTitleFormat(self, kind):
         """Retrieve the title format string for a given kind of header.
@@ -1580,19 +1577,22 @@ class NWProjectData:
             self.theProject.setProjectChanged(True)
         return
 
-    def setLastCount(self, value, type):
-        """Set the word counts from last session.
+    def setInitCounts(self, novel=None, notes=None):
+        """Set the worc count totals for novel and note files.
         """
-        self._lastCount[type] = checkInt(value, 0)
-        self.theProject.setProjectChanged(True)
+        if novel is not None:
+            self._initCounts[0] = checkInt(novel, 0)
+        if notes is not None:
+            self._initCounts[1] = checkInt(notes, 0)
         return
 
-    def setCurrCount(self, value, type):
-        """Set the current word counts.
+    def setCurrCounts(self, novel=None, notes=None):
+        """Set the worc count totals for novel and note files.
         """
-        if value != self._currCount.get(type, 0):
-            self._currCount[type] = checkInt(value, 0)
-            self.theProject.setProjectChanged(True)
+        if novel is not None:
+            self._currCounts[0] = checkInt(novel, 0)
+        if notes is not None:
+            self._currCounts[1] = checkInt(notes, 0)
         return
 
     def setAutoReplace(self, value):

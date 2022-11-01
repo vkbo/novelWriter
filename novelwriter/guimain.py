@@ -1559,13 +1559,13 @@ class GuiMain(QMainWindow):
 
         self.theProject.updateWordCounts()
         if self.mainConf.incNotesWCount:
-            currWords = self.theProject.data.getCurrCount("total")
-            diffWords = currWords - self.theProject.data.getLastCount("total")
+            iTotal = sum(self.theProject.data.initCounts)
+            cTotal = sum(self.theProject.data.currCounts)
+            self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
         else:
-            currWords = self.theProject.data.getCurrCount("novel")
-            diffWords = currWords - self.theProject.data.getLastCount("novel")
-
-        self.mainStatus.setProjectStats(currWords, diffWords)
+            iNovel, _ = self.theProject.data.initCounts
+            cNovel, _ = self.theProject.data.currCounts
+            self.mainStatus.setProjectStats(cNovel, cNovel - iNovel)
 
         return
 

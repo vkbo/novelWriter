@@ -1,19 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-31 22:53:34">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-11-01 12:01:37">
   <project>
     <name>New Project</name>
     <title>New Novel</title>
     <author>Jane Doe</author>
     <saveCount>4</saveCount>
     <autoCount>2</autoCount>
-    <editTime>4</editTime>
+    <editTime>3</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
     <language>None</language>
     <spellCheck>True</spellCheck>
     <spellLang>None</spellLang>
-    <totalWordCount>163</totalWordCount>
     <novelWordCount>136</novelWordCount>
     <notesWordCount>27</notesWordCount>
     <lastHandle>

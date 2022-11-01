@@ -1003,8 +1003,8 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     assert theProject.tree.handles() == oldOrder
 
     # Session stats
-    theProject.data.setCurrCount(200, "total")
-    theProject.data.setLastCount(100, "total")
+    theProject._data._initCounts = [50, 50]
+    theProject._data._currCounts = [100, 100]
     with monkeypatch.context() as mp:
         mp.setattr("os.path.isdir", lambda *a, **k: False)
         assert not theProject._appendSessionStats(idleTime=0)
@@ -1019,8 +1019,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     statsFile = os.path.join(theProject.projMeta, nwFiles.SESS_STATS)
 
     theProject._projOpened = 1600002000
-    theProject._data.setCurrCount(200, "novel")
-    theProject._data.setCurrCount(100, "notes")
+    theProject._data._currCounts = [200, 100]
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.project.time", lambda: 1600005600)
