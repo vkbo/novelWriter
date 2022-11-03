@@ -24,7 +24,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import logging
 import novelwriter
 
@@ -163,7 +162,7 @@ class ProjectXMLReader:
             self._state = XMLReadState.CANNOT_PARSE
 
             backFile = self._path.with_suffix(".bak")
-            if os.path.isfile(backFile):
+            if backFile.is_file():
                 try:
                     xml = etree.parse(str(backFile))
                     self._state = XMLReadState.PARSED_BACKUP

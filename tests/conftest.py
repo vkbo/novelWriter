@@ -24,6 +24,8 @@ import sys
 import pytest
 import shutil
 
+from pathlib import Path
+
 from mock import MockGuiMain
 from tools import cleanProject
 
@@ -60,6 +62,35 @@ def tmpDir():
     if not os.path.isdir(theDir):
         os.mkdir(theDir)
     return theDir
+
+
+@pytest.fixture(scope="session")
+def tstPaths(tmpDir):
+    """Returns an object that can provide the various paths needed for
+    running tests.
+    """
+    class _Store:
+        testDir = Path(__file__).parent
+        filesDir = testDir / "files"
+        refDir = testDir / "reference"
+        outDir = testDir / tmpDir / "results"
+
+    store = _Store()
+    store.outDir.mkdir(exist_ok=True)
+
+    return store
+
+
+@pytest.fixture(scope="function")
+def fncPath(tmpDir):
+    """A temporary folder for a single test function.
+    """
+    fncPath = Path(tmpDir) / "f_temp"
+    if fncPath.is_dir():
+        shutil.rmtree(fncPath)
+    if not fncPath.is_dir():
+        fncPath.mkdir()
+    return fncPath
 
 
 @pytest.fixture(scope="session")

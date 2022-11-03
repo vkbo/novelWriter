@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
 import pytest
 
@@ -40,14 +39,14 @@ class MockProject:
 
 
 @pytest.mark.core
-def testCoreProjectXML_ReadCurrent(monkeypatch, filesDir, fncDir, outDir, refDir):
+def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     """Test reading the current XML file format.
     """
-    refFile = os.path.join(filesDir, "nwProject-1.4.nwx")
-    xmlFile = os.path.join(fncDir, "nwProject-1.4.nwx")
-    bakFile = os.path.join(fncDir, "nwProject-1.4.bak")
-    outFile = os.path.join(fncDir, "nwProject.nwx")
-    tstFile = os.path.join(outDir, "ProjectXML_ReadCurrent.nwx")
+    refFile = tstPaths.filesDir / "nwProject-1.4.nwx"
+    tstFile = tstPaths.outDir / "ProjectXML_ReadCurrent.nwx"
+    xmlFile = fncPath / "nwProject-1.4.nwx"
+    bakFile = fncPath / "nwProject-1.4.bak"
+    outFile = fncPath / "nwProject.nwx"
 
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
@@ -200,8 +199,8 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, filesDir, fncDir, outDir, refDir
     assert data.itemImport.count("i56be10") == 1
 
     # Compare content
-    dumpFile = os.path.join(outDir, "projectXML_ReadCurrent.json")
-    compFile = os.path.join(refDir, "projectXML_ReadCurrent.json")
+    dumpFile = tstPaths.outDir / "projectXML_ReadCurrent.json"
+    compFile = tstPaths.refDir / "projectXML_ReadCurrent.json"
     with open(dumpFile, mode="w", encoding="utf-8") as dump:
         json.dump(content, dump, indent=2)
     assert cmpFiles(dumpFile, compFile)
@@ -216,7 +215,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, filesDir, fncDir, outDir, refDir
 
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
-    xmlWriter = ProjectXMLWriter(fncDir)
+    xmlWriter = ProjectXMLWriter(fncPath)
 
     # Fail saving
     with monkeypatch.context() as mp:
@@ -239,12 +238,12 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, filesDir, fncDir, outDir, refDir
 
 
 @pytest.mark.core
-def testCoreProjectXML_ReadLegacy10(filesDir, fncDir, outDir, refDir, mockRnd):
+def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
     """Test reading the version 1.0 XML file format.
     """
-    refFile = os.path.join(filesDir, "nwProject-1.0.nwx")
-    xmlFile = os.path.join(fncDir, "nwProject-1.0.nwx")
-    outFile = os.path.join(fncDir, "nwProject.nwx")
+    refFile = tstPaths.filesDir / "nwProject-1.0.nwx"
+    xmlFile = fncPath / "nwProject-1.0.nwx"
+    outFile = fncPath / "nwProject.nwx"
     copyfile(refFile, xmlFile)
 
     xmlReader = ProjectXMLReader(xmlFile)
@@ -326,8 +325,8 @@ def testCoreProjectXML_ReadLegacy10(filesDir, fncDir, outDir, refDir, mockRnd):
     assert data.itemImport.count("i00000a") == 0
 
     # Compare content
-    dumpFile = os.path.join(outDir, "projectXML_ReadLegacy10.json")
-    compFile = os.path.join(refDir, "projectXML_ReadLegacy10.json")
+    dumpFile = tstPaths.outDir / "projectXML_ReadLegacy10.json"
+    compFile = tstPaths.refDir / "projectXML_ReadLegacy10.json"
     with open(dumpFile, mode="w", encoding="utf-8") as dump:
         json.dump(content, dump, indent=2)
     assert cmpFiles(dumpFile, compFile)
@@ -369,10 +368,10 @@ def testCoreProjectXML_ReadLegacy10(filesDir, fncDir, outDir, refDir, mockRnd):
 
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
-    xmlWriter = ProjectXMLWriter(fncDir)
+    xmlWriter = ProjectXMLWriter(fncPath)
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
-    testFile = os.path.join(outDir, "projectXML_ReadLegacy10.nwx")
-    compFile = os.path.join(refDir, "projectXML_ReadLegacy10.nwx")
+    testFile = tstPaths.outDir / "projectXML_ReadLegacy10.nwx"
+    compFile = tstPaths.refDir / "projectXML_ReadLegacy10.nwx"
     copyfile(outFile, testFile)
     assert cmpFiles(testFile, compFile)
 
@@ -380,12 +379,12 @@ def testCoreProjectXML_ReadLegacy10(filesDir, fncDir, outDir, refDir, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProjectXML_ReadLegacy11(filesDir, fncDir, outDir, refDir, mockRnd):
+def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
     """Test reading the version 1.1 XML file format.
     """
-    refFile = os.path.join(filesDir, "nwProject-1.1.nwx")
-    xmlFile = os.path.join(fncDir, "nwProject-1.1.nwx")
-    outFile = os.path.join(fncDir, "nwProject.nwx")
+    refFile = tstPaths.filesDir / "nwProject-1.1.nwx"
+    xmlFile = fncPath / "nwProject-1.1.nwx"
+    outFile = fncPath / "nwProject.nwx"
     copyfile(refFile, xmlFile)
 
     xmlReader = ProjectXMLReader(xmlFile)
@@ -467,8 +466,8 @@ def testCoreProjectXML_ReadLegacy11(filesDir, fncDir, outDir, refDir, mockRnd):
     assert data.itemImport.count("i00000a") == 0
 
     # Compare content
-    dumpFile = os.path.join(outDir, "projectXML_ReadLegacy11.json")
-    compFile = os.path.join(refDir, "projectXML_ReadLegacy11.json")
+    dumpFile = tstPaths.outDir / "projectXML_ReadLegacy11.json"
+    compFile = tstPaths.refDir / "projectXML_ReadLegacy11.json"
     with open(dumpFile, mode="w", encoding="utf-8") as dump:
         json.dump(content, dump, indent=2)
     assert cmpFiles(dumpFile, compFile)
@@ -510,10 +509,10 @@ def testCoreProjectXML_ReadLegacy11(filesDir, fncDir, outDir, refDir, mockRnd):
 
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
-    xmlWriter = ProjectXMLWriter(fncDir)
+    xmlWriter = ProjectXMLWriter(fncPath)
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
-    testFile = os.path.join(outDir, "projectXML_ReadLegacy11.nwx")
-    compFile = os.path.join(refDir, "projectXML_ReadLegacy11.nwx")
+    testFile = tstPaths.outDir / "projectXML_ReadLegacy11.nwx"
+    compFile = tstPaths.refDir / "projectXML_ReadLegacy11.nwx"
     copyfile(outFile, testFile)
     assert cmpFiles(testFile, compFile)
 
@@ -521,12 +520,12 @@ def testCoreProjectXML_ReadLegacy11(filesDir, fncDir, outDir, refDir, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProjectXML_ReadLegacy12(filesDir, fncDir, outDir, refDir, mockRnd):
+def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
     """Test reading the version 1.2 XML file format.
     """
-    refFile = os.path.join(filesDir, "nwProject-1.2.nwx")
-    xmlFile = os.path.join(fncDir, "nwProject-1.2.nwx")
-    outFile = os.path.join(fncDir, "nwProject.nwx")
+    refFile = tstPaths.filesDir / "nwProject-1.2.nwx"
+    xmlFile = fncPath / "nwProject-1.2.nwx"
+    outFile = fncPath / "nwProject.nwx"
     copyfile(refFile, xmlFile)
 
     xmlReader = ProjectXMLReader(xmlFile)
@@ -608,8 +607,8 @@ def testCoreProjectXML_ReadLegacy12(filesDir, fncDir, outDir, refDir, mockRnd):
     assert data.itemImport.count("i00000a") == 0
 
     # Compare content
-    dumpFile = os.path.join(outDir, "projectXML_ReadLegacy12.json")
-    compFile = os.path.join(refDir, "projectXML_ReadLegacy12.json")
+    dumpFile = tstPaths.outDir / "projectXML_ReadLegacy12.json"
+    compFile = tstPaths.refDir / "projectXML_ReadLegacy12.json"
     with open(dumpFile, mode="w", encoding="utf-8") as dump:
         json.dump(content, dump, indent=2)
     assert cmpFiles(dumpFile, compFile)
@@ -654,10 +653,10 @@ def testCoreProjectXML_ReadLegacy12(filesDir, fncDir, outDir, refDir, mockRnd):
 
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
-    xmlWriter = ProjectXMLWriter(fncDir)
+    xmlWriter = ProjectXMLWriter(fncPath)
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
-    testFile = os.path.join(outDir, "projectXML_ReadLegacy12.nwx")
-    compFile = os.path.join(refDir, "projectXML_ReadLegacy12.nwx")
+    testFile = tstPaths.outDir / "projectXML_ReadLegacy12.nwx"
+    compFile = tstPaths.refDir / "projectXML_ReadLegacy12.nwx"
     copyfile(outFile, testFile)
     assert cmpFiles(testFile, compFile)
 
@@ -665,12 +664,12 @@ def testCoreProjectXML_ReadLegacy12(filesDir, fncDir, outDir, refDir, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProjectXML_ReadLegacy13(filesDir, fncDir, outDir, refDir, mockRnd):
+def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
     """Test reading the version 1.3 XML file format.
     """
-    refFile = os.path.join(filesDir, "nwProject-1.3.nwx")
-    xmlFile = os.path.join(fncDir, "nwProject-1.3.nwx")
-    outFile = os.path.join(fncDir, "nwProject.nwx")
+    refFile = tstPaths.filesDir / "nwProject-1.3.nwx"
+    xmlFile = fncPath / "nwProject-1.3.nwx"
+    outFile = fncPath / "nwProject.nwx"
     copyfile(refFile, xmlFile)
 
     xmlReader = ProjectXMLReader(xmlFile)
@@ -752,8 +751,8 @@ def testCoreProjectXML_ReadLegacy13(filesDir, fncDir, outDir, refDir, mockRnd):
     assert data.itemImport.count("i00000a") == 0
 
     # Compare content
-    dumpFile = os.path.join(outDir, "projectXML_ReadLegacy13.json")
-    compFile = os.path.join(refDir, "projectXML_ReadLegacy13.json")
+    dumpFile = tstPaths.outDir / "projectXML_ReadLegacy13.json"
+    compFile = tstPaths.refDir / "projectXML_ReadLegacy13.json"
     with open(dumpFile, mode="w", encoding="utf-8") as dump:
         json.dump(content, dump, indent=2)
     assert cmpFiles(dumpFile, compFile)
@@ -798,10 +797,10 @@ def testCoreProjectXML_ReadLegacy13(filesDir, fncDir, outDir, refDir, mockRnd):
 
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
-    xmlWriter = ProjectXMLWriter(fncDir)
+    xmlWriter = ProjectXMLWriter(fncPath)
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
-    testFile = os.path.join(outDir, "projectXML_ReadLegacy13.nwx")
-    compFile = os.path.join(refDir, "projectXML_ReadLegacy13.nwx")
+    testFile = tstPaths.outDir / "projectXML_ReadLegacy13.nwx"
+    compFile = tstPaths.refDir / "projectXML_ReadLegacy13.nwx"
     copyfile(outFile, testFile)
     assert cmpFiles(testFile, compFile)
 
