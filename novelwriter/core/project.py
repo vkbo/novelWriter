@@ -105,20 +105,24 @@ class NWProject(QObject):
     ##
 
     @property
-    def data(self):
-        return self._data
+    def options(self):
+        return self._options
 
     @property
-    def index(self):
-        return self._index
+    def storage(self):
+        return self._storage
+
+    @property
+    def data(self):
+        return self._data
 
     @property
     def tree(self):
         return self._tree
 
     @property
-    def options(self):
-        return self._options
+    def index(self):
+        return self._index
 
     @property
     def projOpened(self):
@@ -245,6 +249,7 @@ class NWProject(QObject):
         self._projAltered = False
 
         # Project Tree
+        self._storage.clear()
         self._tree.clear()
         self._index.clearIndex()
         self._data = NWProjectData(self)
@@ -301,6 +306,8 @@ class NWProject(QObject):
 
         if not self.setProjectPath(projPath, newProject=True):
             return False
+
+        self._storage.openProjectInPlace(self.projPath)
 
         self._data.setName(projName)
         self._data.setTitle(projTitle)
@@ -458,10 +465,18 @@ class NWProject(QObject):
         # Open The Project XML File
         # =========================
 
+        if not self._storage.openProjectInPlace(self.projPath):
+            self.clearProject()
+            return False
+
+        xmlReader = self._storage.getXmlReader()
+        if not isinstance(xmlReader, ProjectXMLReader):
+            self.clearProject()
+            return False
+
         self._data = NWProjectData(self)
         projContent = []
 
-        xmlReader = ProjectXMLReader(fileName)
         xmlParsed = xmlReader.read(self._data, projContent)
 
         appVersion = xmlReader.appVersion or self.tr("Unknown")
@@ -580,6 +595,12 @@ class NWProject(QObject):
             ), nwAlert.ERROR)
             return False
 
+        if not self._storage.isOpen():
+            self.mainGui.makeAlert(self.tr(
+                "There is no project open."
+            ), nwAlert.ERROR)
+            return False
+
         saveTime = time()
         if not self.ensureFolderStructure():
             return False
@@ -594,11 +615,13 @@ class NWProject(QObject):
         self.updateWordCounts()
         self.countStatus()
 
+        xmlWriter = self._storage.getXmlWriter()
+        if not isinstance(xmlWriter, ProjectXMLWriter):
+            return False
+
         saveTime = time()
         editTime = int(self._data.editTime + saveTime - self._projOpened)
-
         content = self._tree.pack()
-        xmlWriter = ProjectXMLWriter(self.projPath)
         if not xmlWriter.write(self._data, content, saveTime, editTime):
             self.mainGui.makeAlert(self.tr(
                 "Failed to save project."

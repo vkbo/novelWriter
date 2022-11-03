@@ -25,37 +25,109 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 
+from pathlib import Path
+
+from novelwriter.constants import nwFiles
+from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
+
 logger = logging.getLogger(__name__)
 
 
 class NWStorage:
 
+    MODE_INACTIVE = 0
+    MODE_INPLACE  = 1
+    MODE_ARCHIVE  = 2
+
     def __init__(self, theProject):
+
         self.theProject = theProject
+
+        self._storagePath = None
+        self._runtimePath = None
+        self._openMode = self.MODE_INACTIVE
+
+        return
+
+    def clear(self):
+        """Reset internal variables.
+        """
+        self._storagePath = None
+        self._runtimePath = None
+        self._openMode = self.MODE_INACTIVE
         return
 
     ##
     #  Core Methods
     ##
 
-    def openProjectFolder(self, path):
-        pass
+    def isOpen(self):
+        """Check if the storage location is open.
+        """
+        return self._runtimePath is not None
+
+    def openProjectInPlace(self, path):
+        """Open a novelWriter project in-place. That is, it is opened
+        directly from a project folder.
+        """
+        inPath = Path(path)
+        if inPath.is_file():
+            inPath = inPath.parent
+
+        if not inPath.is_dir():
+            logger.error("No such folder: %s", inPath)
+            self.clear()
+            return False
+
+        self._storagePath = inPath
+        self._runtimePath = inPath
+        self._openMode = self.MODE_INPLACE
+
+        return True
 
     def openProjectArchive(self, path):
         pass
 
-    def close(self):
-        pass
+    def runPostSaveTasks(self, autoSave=False):
+        """Run tasks after the project has been saved.
+        """
+        if self._openMode == self.MODE_INPLACE:
+            # Nothing to do, so we just return
+            return True
+
+        return True
+
+    def closeSession(self):
+        """Run tasks related to closing the session.
+        """
+        # Clear lockfile
+        self.clear()
+        return
 
     ##
     #  Content Access Methods
     ##
 
     def getXmlReader(self):
-        pass
+        """
+        """
+        if self._runtimePath is None:
+            return None
+
+        projFile = self._runtimePath / nwFiles.PROJ_FILE
+        xmlReader = ProjectXMLReader(projFile)
+
+        return xmlReader
 
     def getXmlWriter(self):
-        pass
+        """
+        """
+        if self._runtimePath is None:
+            return None
+
+        xmlWriter = ProjectXMLWriter(self._runtimePath)
+
+        return xmlWriter
 
     def getDocument(self, tHandle):
         pass

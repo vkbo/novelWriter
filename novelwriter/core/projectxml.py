@@ -31,6 +31,7 @@ import novelwriter
 from enum import Enum
 from lxml import etree
 from time import time
+from pathlib import Path
 
 from novelwriter.common import (
     checkBool, checkInt, checkStringNone, formatTimeStamp, simplified, checkString
@@ -91,7 +92,7 @@ class ProjectXMLReader:
 
     def __init__(self, path):
 
-        self._path = path
+        self._path = Path(path)
         self._state = XMLReadState.NO_ACTION
 
         self._root = ""
@@ -153,7 +154,7 @@ class ProjectXMLReader:
         logger.debug("Reading project XML")
 
         try:
-            xml = etree.parse(self._path)
+            xml = etree.parse(str(self._path))
             self._state = XMLReadState.NO_ERROR
 
         except Exception as exc:
@@ -161,10 +162,10 @@ class ProjectXMLReader:
             logger.error("Failed to parse project XML", exc_info=exc)
             self._state = XMLReadState.CANNOT_PARSE
 
-            backFile = self._path[:-3]+"bak"
+            backFile = self._path.with_suffix(".bak")
             if os.path.isfile(backFile):
                 try:
-                    xml = etree.parse(backFile)
+                    xml = etree.parse(str(backFile))
                     self._state = XMLReadState.PARSED_BACKUP
                     logger.info("Backup project file parsed")
                 except Exception as exc:
@@ -445,7 +446,7 @@ class ProjectXMLWriter:
 
     def __init__(self, path):
 
-        self._path = path
+        self._path = Path(path)
         self._error = None
 
         return
@@ -514,17 +515,13 @@ class ProjectXMLWriter:
             xName.text = item["name"]
 
         # Write the XML tree to file
-        saveFile = os.path.join(self._path, nwFiles.PROJ_FILE)
-        tempFile = os.path.join(self._path, nwFiles.PROJ_FILE+"~")
-        backFile = os.path.join(self._path, nwFiles.PROJ_FILE[:-3]+"bak")
+        saveFile = self._path / nwFiles.PROJ_FILE
+        tempFile = saveFile.with_suffix(".tmp")
+        backFile = saveFile.with_suffix(".bak")
         try:
-            with open(tempFile, mode="wb") as outFile:
-                outFile.write(etree.tostring(
-                    xRoot,
-                    pretty_print=True,
-                    encoding="utf-8",
-                    xml_declaration=True
-                ))
+            tempFile.write_bytes(etree.tostring(
+                xRoot, pretty_print=True, encoding="utf-8", xml_declaration=True
+            ))
         except Exception as exc:
             self._error = exc
             return False
@@ -532,10 +529,10 @@ class ProjectXMLWriter:
         # If we're here, the file was successfully saved,
         # so let's sort out the temps and backups
         try:
-            if os.path.isfile(saveFile):
-                os.replace(saveFile, backFile)
-            os.replace(tempFile, saveFile)
-        except OSError as exc:
+            if saveFile.exists():
+                saveFile.replace(backFile)
+            tempFile.replace(saveFile)
+        except Exception as exc:
             self._error = exc
             return False
 

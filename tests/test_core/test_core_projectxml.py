@@ -220,12 +220,12 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, filesDir, fncDir, outDir, refDir
 
     # Fail saving
     with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
+        mp.setattr("pathlib.Path.write_bytes", causeOSError)
         assert xmlWriter.write(data, packedContent, timeStamp, 1000) is False
         assert str(xmlWriter.error) == "Mock OSError"
 
     with monkeypatch.context() as mp:
-        mp.setattr("os.replace", causeOSError)
+        mp.setattr("pathlib.Path.replace", causeOSError)
         assert xmlWriter.write(data, packedContent, timeStamp, 1000) is False
         assert str(xmlWriter.error) == "Mock OSError"
 

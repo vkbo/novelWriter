@@ -167,6 +167,7 @@ def buildTestProject(theObject, projPath):
 
     theProject.clearProject()
     theProject.setProjectPath(projPath, newProject=True)
+    theProject.storage.openProjectInPlace(theProject.projPath)
 
     theProject.data.itemStatus.write(None, "New",      (100, 100, 100))
     theProject.data.itemStatus.write(None, "Note",     (200, 50,  0))
