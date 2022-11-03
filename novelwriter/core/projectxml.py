@@ -68,24 +68,24 @@ class ProjectXMLReader:
     """The main project XML file reader class. All data is read into a
     NWProjectData instance, which must be provided.
 
-    Version Change History
-    ======================
+    File Format Version Change History
+    ==================================
     1.0 Original file format.
 
     1.1 Changes the way documents are structured in the project folder
         from data_X, where X is the first hex value of the handle, to a
         single content folder. Introduced in version 0.7.
 
-    1.2 Changes the way autoReplace entries are stored. The 1.1 parser
-        will lose the autoReplace settings if allowed to read the file.
-        Introduced in version 0.10.
+    1.2 Changes the way autoReplace entries are stored. Introduced in
+        version 0.10.
 
     1.3 Reduces the number of layouts to only two. One for novel
         documents and one for project notes. Introduced in version 1.5.
 
     1.4 Introduces a more compact format for storing items. All settings
         aside from name are now attributes. This format also changes the
-        way satus and importance labels are stored and handled.
+        way satus and importance labels, last used handles, and title
+        formats are stored. They are now all stored as key/value sets.
         Introduced in version 2.0.
     """
 
@@ -158,7 +158,7 @@ class ProjectXMLReader:
 
         except Exception as exc:
             # Trying to open backup file instead
-            logger.error("Failed to parse project xml", exc_info=exc)
+            logger.error("Failed to parse project XML", exc_info=exc)
             self._state = XMLReadState.CANNOT_PARSE
 
             backFile = self._path[:-3]+"bak"
@@ -168,7 +168,7 @@ class ProjectXMLReader:
                     self._state = XMLReadState.PARSED_BACKUP
                     logger.info("Backup project file parsed")
                 except Exception as exc:
-                    logger.error("Failed to parse backup project xml", exc_info=exc)
+                    logger.error("Failed to parse backup project XML", exc_info=exc)
                     self._state = XMLReadState.CANNOT_PARSE
                     return False
             else:
@@ -205,7 +205,7 @@ class ProjectXMLReader:
                 else:
                     self._parseProjectContentLegacy(xSection, projContent, projData)
             else:
-                logger.warning("Ignored <root/%s> in xml", xSection.tag)
+                logger.warning("Ignored <root/%s> in XML", xSection.tag)
 
         if self._version == 0x0104:
             self._state = XMLReadState.PARSED_OK
@@ -238,7 +238,7 @@ class ProjectXMLReader:
             elif xItem.tag == "editTime":
                 projData.setEditTime(xItem.text)
             else:
-                logger.warning("Ignored <root/project/%s> in xml", xItem.tag)
+                logger.warning("Ignored <root/project/%s> in XML", xItem.tag)
 
         return
 
@@ -277,7 +277,7 @@ class ProjectXMLReader:
                 else:  # Pre 1.4 format
                     projData.setTitleFormat(self._parseDictTagText(xItem))
             else:
-                logger.warning("Ignored <root/settings/%s> in xml", xItem.tag)
+                logger.warning("Ignored <root/settings/%s> in XML", xItem.tag)
 
         return
 
@@ -289,6 +289,10 @@ class ProjectXMLReader:
         for xItem in xSection:
             if xItem.tag == "item":
                 item = {}
+                meta = {}
+                name = {}
+                itemName = ""
+
                 item["handle"] = checkStringNone(xItem.attrib.get("handle"), None)
                 item["parent"] = checkStringNone(xItem.attrib.get("parent"), None)
                 item["root"]   = checkStringNone(xItem.attrib.get("root"), None)
@@ -298,28 +302,33 @@ class ProjectXMLReader:
                 item["layout"] = checkString(xItem.attrib.get("layout"), "NO_LAYOUT")
                 for xVal in xItem:
                     if xVal.tag == "meta":
-                        item["expanded"]  = checkBool(xVal.attrib.get("expanded"), False)
-                        item["heading"]   = checkString(xVal.attrib.get("heading"), "H0")
-                        item["charCount"] = checkInt(xVal.attrib.get("charCount"), 0)
-                        item["wordCount"] = checkInt(xVal.attrib.get("wordCount"), 0)
-                        item["paraCount"] = checkInt(xVal.attrib.get("paraCount"), 0)
-                        item["cursorPos"] = checkInt(xVal.attrib.get("cursorPos"), 0)
+                        meta["expanded"]  = checkBool(xVal.attrib.get("expanded"), False)
+                        meta["heading"]   = checkString(xVal.attrib.get("heading"), "H0")
+                        meta["charCount"] = checkInt(xVal.attrib.get("charCount"), 0)
+                        meta["wordCount"] = checkInt(xVal.attrib.get("wordCount"), 0)
+                        meta["paraCount"] = checkInt(xVal.attrib.get("paraCount"), 0)
+                        meta["cursorPos"] = checkInt(xVal.attrib.get("cursorPos"), 0)
                     elif xVal.tag == "name":
-                        item["label"]  = simplified(checkString(xVal.text, ""))
-                        item["status"] = checkStringNone(xVal.attrib.get("status"), None)
-                        item["import"] = checkStringNone(xVal.attrib.get("import"), None)
-                        item["active"] = checkBool(xVal.attrib.get("active"), False)
+                        itemName = simplified(checkString(xVal.text, ""))
+                        name["status"] = checkStringNone(xVal.attrib.get("status"), None)
+                        name["import"] = checkStringNone(xVal.attrib.get("import"), None)
+                        name["active"] = checkBool(xVal.attrib.get("active"), False)
 
                         # ToDo: Remove before 2.0 release. Only needed for 2.0 pre-releases.
                         if "exported" in xVal.attrib:
-                            item["active"] = checkBool(xVal.attrib.get("exported"), False)
+                            name["active"] = checkBool(xVal.attrib.get("exported"), False)
                     else:
-                        logger.warning("Ignored <root/content/item/%s> in xml", xVal.tag)
+                        logger.warning("Ignored <root/content/item/%s> in XML", xVal.tag)
 
-                projContent.append(item)
+                projContent.append({
+                    "name": itemName,
+                    "itemAttr": item,
+                    "metaAttr": meta,
+                    "nameAttr": name,
+                })
 
             else:
-                logger.warning("Ignored item <root/content/%s> in xml", xItem.tag)
+                logger.warning("Ignored item <root/content/%s> in XML", xItem.tag)
 
         return
 
@@ -334,17 +343,21 @@ class ProjectXMLReader:
 
         for xItem in xSection:
             item = {}
+            meta = {}
+            name = {}
+            itemName = ""
+
             if xItem.tag == "item":
                 item["handle"]  = checkStringNone(xItem.attrib.get("handle", None), None)
                 item["parent"]  = checkStringNone(xItem.attrib.get("parent", None), None)
                 item["root"]    = None  # Value was added in 1.4
                 item["order"]   = checkInt(xItem.attrib.get("order", 0), 0)
-                item["heading"] = "H0"  # Value was added in 1.4
+                meta["heading"] = "H0"  # Value was added in 1.4
 
                 tmpStatus = ""
                 for xVal in xItem:
                     if xVal.tag == "name":
-                        item["label"] = simplified(checkString(xVal.text, ""))
+                        itemName = simplified(checkString(xVal.text, ""))
                     elif xVal.tag == "status":
                         tmpStatus = checkStringNone(xVal.text, None)
                     elif xVal.tag == "type":
@@ -354,25 +367,25 @@ class ProjectXMLReader:
                     elif xVal.tag == "layout":
                         item["layout"] = checkString(xVal.text, "")
                     elif xVal.tag == "expanded":
-                        item["expanded"] = checkBool(xVal.text, False)
+                        meta["expanded"] = checkBool(xVal.text, False)
                     elif xVal.tag == "exported":  # Renamed to active in 1.4
-                        item["active"] = checkBool(xVal.text, False)
+                        name["active"] = checkBool(xVal.text, False)
                     elif xVal.tag == "charCount":
-                        item["charCount"] = checkInt(xVal.text, 0)
+                        meta["charCount"] = checkInt(xVal.text, 0)
                     elif xVal.tag == "wordCount":
-                        item["wordCount"] = checkInt(xVal.text, 0)
+                        meta["wordCount"] = checkInt(xVal.text, 0)
                     elif xVal.tag == "paraCount":
-                        item["paraCount"] = checkInt(xVal.text, 0)
+                        meta["paraCount"] = checkInt(xVal.text, 0)
                     elif xVal.tag == "cursorPos":
-                        item["cursorPos"] = checkInt(xVal.text, 0)
+                        meta["cursorPos"] = checkInt(xVal.text, 0)
                     else:
-                        logger.warning("Ignored <root/content/item/%s> in xml", xVal.tag)
+                        logger.warning("Ignored <root/content/item/%s> in XML", xVal.tag)
 
                 # Status was split into separate status/import with a key in 1.4
                 if item.get("class", "") in ("NOVEL", "ARCHIVE"):
-                    item["status"] = statusMap.get(tmpStatus, None)
+                    name["status"] = statusMap.get(tmpStatus, None)
                 else:
-                    item["import"] = importMap.get(tmpStatus, None)
+                    name["import"] = importMap.get(tmpStatus, None)
 
                 # A number of layouts were removed in 1.3
                 if item.get("layout", "") in (
@@ -384,10 +397,15 @@ class ProjectXMLReader:
                 if item.get("type", "") == "TRASH":
                     item["type"] = "ROOT"
 
-                projContent.append(item)
+                projContent.append({
+                    "name": itemName,
+                    "itemAttr": item,
+                    "metaAttr": meta,
+                    "nameAttr": name,
+                })
 
             else:
-                logger.warning("Ignored <root/content/%s> in xml", xItem.tag)
+                logger.warning("Ignored <root/content/%s> in XML", xItem.tag)
 
         return
 
@@ -495,7 +513,7 @@ class ProjectXMLWriter:
             xName = etree.SubElement(xItem, "name", attrib=item.get("nameAttr", {}))
             xName.text = item["name"]
 
-        # Write the xml tree to file
+        # Write the XML tree to file
         saveFile = os.path.join(self._path, nwFiles.PROJ_FILE)
         tempFile = os.path.join(self._path, nwFiles.PROJ_FILE+"~")
         backFile = os.path.join(self._path, nwFiles.PROJ_FILE[:-3]+"bak")
@@ -530,14 +548,14 @@ class ProjectXMLWriter:
     ##
 
     def _packSingleValue(self, xParent, name, value, attrib=None):
-        """Pack a single value into an xml element.
+        """Pack a single value into an XML element.
         """
         xItem = etree.SubElement(xParent, name, attrib=attrib)
         xItem.text = str(value) or ""
         return
 
     def _packListValue(self, xParent, name, data):
-        """Pack a list of values into an xml element.
+        """Pack a list of values into an XML element.
         """
         for value in data:
             xItem = etree.SubElement(xParent, name)
@@ -545,7 +563,7 @@ class ProjectXMLWriter:
         return
 
     def _packDictKeyValue(self, xParent, name, data):
-        """Pack the entries of a dictionary into an xml element.
+        """Pack the entries of a dictionary into an XML element.
         """
         xItem = etree.SubElement(xParent, name)
         for key, value in data.items():

@@ -19,11 +19,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import json
 import os
+import json
 import pytest
-import shutil
 
+from shutil import copyfile
 from datetime import datetime
 
 from mock import causeOSError
@@ -47,6 +47,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, filesDir, fncDir, outDir, refDir
     xmlFile = os.path.join(fncDir, "nwProject-1.4.nwx")
     bakFile = os.path.join(fncDir, "nwProject-1.4.bak")
     outFile = os.path.join(fncDir, "nwProject.nwx")
+    tstFile = os.path.join(outDir, "ProjectXML_ReadCurrent.nwx")
 
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
@@ -125,7 +126,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, filesDir, fncDir, outDir, refDir
     content = []
 
     # Parse a valid, complete file
-    shutil.copy(refFile, xmlFile)
+    copyfile(refFile, xmlFile)
     assert xmlReader.read(data, content) is True
     assert xmlReader.state == XMLReadState.PARSED_OK
     assert xmlReader.xmlRoot == "novelWriterXML"
@@ -231,7 +232,8 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, filesDir, fncDir, outDir, refDir
     # Successful save (should be twice)
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
-    assert cmpFiles(outFile, xmlFile)
+    copyfile(outFile, tstFile)
+    assert cmpFiles(tstFile, xmlFile)
 
 # END Test testCoreProjectXML_ReadCurrent
 
@@ -243,7 +245,7 @@ def testCoreProjectXML_ReadLegacy10(filesDir, fncDir, outDir, refDir, mockRnd):
     refFile = os.path.join(filesDir, "nwProject-1.0.nwx")
     xmlFile = os.path.join(fncDir, "nwProject-1.0.nwx")
     outFile = os.path.join(fncDir, "nwProject.nwx")
-    shutil.copy(refFile, xmlFile)
+    copyfile(refFile, xmlFile)
 
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
@@ -369,8 +371,10 @@ def testCoreProjectXML_ReadLegacy10(filesDir, fncDir, outDir, refDir, mockRnd):
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
     xmlWriter = ProjectXMLWriter(fncDir)
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
+    testFile = os.path.join(outDir, "projectXML_ReadLegacy10.nwx")
     compFile = os.path.join(refDir, "projectXML_ReadLegacy10.nwx")
-    assert cmpFiles(outFile, compFile)
+    copyfile(outFile, testFile)
+    assert cmpFiles(testFile, compFile)
 
 # END Test testCoreProjectXML_ReadLegacy10
 
@@ -382,7 +386,7 @@ def testCoreProjectXML_ReadLegacy11(filesDir, fncDir, outDir, refDir, mockRnd):
     refFile = os.path.join(filesDir, "nwProject-1.1.nwx")
     xmlFile = os.path.join(fncDir, "nwProject-1.1.nwx")
     outFile = os.path.join(fncDir, "nwProject.nwx")
-    shutil.copy(refFile, xmlFile)
+    copyfile(refFile, xmlFile)
 
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
@@ -508,8 +512,10 @@ def testCoreProjectXML_ReadLegacy11(filesDir, fncDir, outDir, refDir, mockRnd):
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
     xmlWriter = ProjectXMLWriter(fncDir)
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
+    testFile = os.path.join(outDir, "projectXML_ReadLegacy11.nwx")
     compFile = os.path.join(refDir, "projectXML_ReadLegacy11.nwx")
-    assert cmpFiles(outFile, compFile)
+    copyfile(outFile, testFile)
+    assert cmpFiles(testFile, compFile)
 
 # END Test testCoreProjectXML_ReadLegacy11
 
@@ -521,7 +527,7 @@ def testCoreProjectXML_ReadLegacy12(filesDir, fncDir, outDir, refDir, mockRnd):
     refFile = os.path.join(filesDir, "nwProject-1.2.nwx")
     xmlFile = os.path.join(fncDir, "nwProject-1.2.nwx")
     outFile = os.path.join(fncDir, "nwProject.nwx")
-    shutil.copy(refFile, xmlFile)
+    copyfile(refFile, xmlFile)
 
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
@@ -650,8 +656,10 @@ def testCoreProjectXML_ReadLegacy12(filesDir, fncDir, outDir, refDir, mockRnd):
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
     xmlWriter = ProjectXMLWriter(fncDir)
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
+    testFile = os.path.join(outDir, "projectXML_ReadLegacy12.nwx")
     compFile = os.path.join(refDir, "projectXML_ReadLegacy12.nwx")
-    assert cmpFiles(outFile, compFile)
+    copyfile(outFile, testFile)
+    assert cmpFiles(testFile, compFile)
 
 # END Test testCoreProjectXML_ReadLegacy12
 
@@ -663,7 +671,7 @@ def testCoreProjectXML_ReadLegacy13(filesDir, fncDir, outDir, refDir, mockRnd):
     refFile = os.path.join(filesDir, "nwProject-1.3.nwx")
     xmlFile = os.path.join(fncDir, "nwProject-1.3.nwx")
     outFile = os.path.join(fncDir, "nwProject.nwx")
-    shutil.copy(refFile, xmlFile)
+    copyfile(refFile, xmlFile)
 
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
@@ -792,7 +800,9 @@ def testCoreProjectXML_ReadLegacy13(filesDir, fncDir, outDir, refDir, mockRnd):
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
     xmlWriter = ProjectXMLWriter(fncDir)
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
+    testFile = os.path.join(outDir, "projectXML_ReadLegacy13.nwx")
     compFile = os.path.join(refDir, "projectXML_ReadLegacy13.nwx")
-    assert cmpFiles(outFile, compFile)
+    copyfile(outFile, testFile)
+    assert cmpFiles(testFile, compFile)
 
 # END Test testCoreProjectXML_ReadLegacy13

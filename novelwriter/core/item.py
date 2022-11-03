@@ -187,29 +187,34 @@ class NWItem:
     def unpack(self, data):
         """Set the values from a data dictionary.
         """
-        if "handle" in data:
-            self.setHandle(data["handle"])
+        item = data.get("itemAttr", {})
+        meta = data.get("metaAttr", {})
+        name = data.get("nameAttr", {})
+
+        if "handle" in item:
+            self.setHandle(item["handle"])
         else:
             logger.error("Item does not have a handle")
             return False
 
-        self.setName(data.get("label", ""))
-        self.setParent(data.get("parent", None))
-        self.setRoot(data.get("root", None))
-        self.setOrder(data.get("order", 0))
-        self.setType(data.get("type", nwItemType.NO_TYPE))
-        self.setClass(data.get("class", nwItemClass.NO_CLASS))
-        self.setLayout(data.get("layout", nwItemLayout.NO_LAYOUT))
+        self.setName(data.get("name", ""))
+        self.setParent(item.get("parent", None))
+        self.setRoot(item.get("root", None))
+        self.setOrder(item.get("order", 0))
+        self.setType(item.get("type", nwItemType.NO_TYPE))
+        self.setClass(item.get("class", nwItemClass.NO_CLASS))
+        self.setExpanded(meta.get("expanded", False))
+        self.setStatus(name.get("status", None))
+        self.setImport(name.get("import", None))
 
-        self.setExpanded(data.get("expanded", False))
-        self.setStatus(data.get("status", None))
-        self.setImport(data.get("import", None))
-        self.setMainHeading(data.get("heading", "H0"))
-        self.setCharCount(data.get("charCount", 0))
-        self.setWordCount(data.get("wordCount", 0))
-        self.setParaCount(data.get("paraCount", 0))
-        self.setCursorPos(data.get("cursorPos", 0))
-        self.setActive(data.get("active", True))
+        if self._type == nwItemType.FILE:
+            self.setLayout(item.get("layout", nwItemLayout.NO_LAYOUT))
+            self.setMainHeading(meta.get("heading", "H0"))
+            self.setCharCount(meta.get("charCount", 0))
+            self.setWordCount(meta.get("wordCount", 0))
+            self.setParaCount(meta.get("paraCount", 0))
+            self.setCursorPos(meta.get("cursorPos", 0))
+            self.setActive(name.get("active", True))
 
         # Make some checks to ensure consistency
         if self._type == nwItemType.ROOT:
