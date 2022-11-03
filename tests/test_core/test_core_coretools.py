@@ -28,12 +28,12 @@ from mock import causeOSError
 from tools import C, buildTestProject, cmpFiles
 
 from novelwriter.core.project import NWProject
-from novelwriter.core.doctools import DocMerger, DocSplitter
 from novelwriter.core.document import NWDoc
+from novelwriter.core.coretools import DocMerger, DocSplitter
 
 
 @pytest.mark.core
-def testCoreDocTools_DocMerger(monkeypatch, mockGUI, fncDir, outDir, refDir, mockRnd, ipsumText):
+def testCoreTools_DocMerger(monkeypatch, mockGUI, fncDir, outDir, refDir, mockRnd, ipsumText):
     """Test the DocMerger utility.
     """
     theProject = NWProject(mockGUI)
@@ -118,11 +118,11 @@ def testCoreDocTools_DocMerger(monkeypatch, mockGUI, fncDir, outDir, refDir, moc
     # Just for debugging
     docMerger.writeTargetDoc()
 
-# END Test testCoreDocTools_DocMerger
+# END Test testCoreTools_DocMerger
 
 
 @pytest.mark.core
-def testCoreDocTools_DocSplitter(monkeypatch, mockGUI, fncDir, outDir, refDir, mockRnd, ipsumText):
+def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncDir, outDir, refDir, mockRnd, ipsumText):
     """Test the DocSplitter utility.
     """
     theProject = NWProject(mockGUI)
@@ -258,4 +258,4 @@ def testCoreDocTools_DocSplitter(monkeypatch, mockGUI, fncDir, outDir, refDir, m
 
     theProject.saveProject()
 
-# END Test testCoreDocTools_DocSplitter
+# END Test testCoreTools_DocSplitter
