@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-11-01 11:53:22">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-11-03 23:33:20">
   <project>
     <name>New Project</name>
-    <title>None</title>
-    <saveCount>2</saveCount>
-    <autoCount>1</autoCount>
+    <title>New Project</title>
+    <saveCount>1</saveCount>
+    <autoCount>0</autoCount>
     <editTime>0</editTime>
   </project>
   <settings>

@@ -264,150 +264,6 @@ class NWProject(QObject):
 
         return
 
-    def newProject(self, projData):
-        """Create a new project by populating the project tree with a
-        few starter items.
-        """
-        if not isinstance(projData, dict):
-            logger.error("Invalid call to newProject function")
-            return False
-
-        popMinimal = projData.get("popMinimal", True)
-        popCustom = projData.get("popCustom", False)
-        popSample = projData.get("popSample", False)
-
-        # Check if we're extracting the sample project. This is handled
-        # differently as it isn't actually a new project, so we forward
-        # this to another function and return here.
-        if popSample:
-            return self.extractSampleProject(projData)
-
-        # Project Settings
-        projPath = projData.get("projPath", None)
-        projName = projData.get("projName", self.tr("New Project"))
-        projTitle = projData.get("projTitle", "")
-        projAuthors = projData.get("projAuthors", "")
-
-        if projPath is None:
-            logger.error("No project path set for the new project")
-            return False
-
-        self.clearProject()
-
-        self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100))
-        self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0))
-        self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0))
-        self._data.itemStatus.write(None, self.tr("Finished"), (50,  200, 0))
-
-        self._data.itemImport.write(None, self.tr("New"),      (100, 100, 100))
-        self._data.itemImport.write(None, self.tr("Minor"),    (200, 50,  0))
-        self._data.itemImport.write(None, self.tr("Major"),    (200, 150, 0))
-        self._data.itemImport.write(None, self.tr("Main"),     (50,  200, 0))
-
-        if not self.setProjectPath(projPath, newProject=True):
-            return False
-
-        self._storage.openProjectInPlace(self.projPath)
-
-        self._data.setName(projName)
-        self._data.setTitle(projTitle)
-        self._data.setAuthors(projAuthors)
-
-        hNovelRoot = self.newRoot(nwItemClass.NOVEL)
-        hTitlePage = self.newFile(self.tr("Title Page"), hNovelRoot)
-
-        titlePage = "#! %s\n\n" % (
-            self._data.title if self._data.title else self._data.name
-        )
-        if self._data.authors:
-            titlePage = "%s>> %s %s <<\n" % (
-                titlePage, self.tr("By"), self.getFormattedAuthors()
-            )
-
-        aDoc = NWDoc(self, hTitlePage)
-        aDoc.writeDocument(titlePage)
-
-        if popMinimal:
-            # Creating a minimal project with a few root folders and a
-            # single chapter with a single scene.
-            hChapter = self.newFile(self.tr("New Chapter"), hNovelRoot)
-            aDoc = NWDoc(self, hChapter)
-            aDoc.writeDocument("## %s\n\n" % self.tr("New Chapter"))
-
-            hScene = self.newFile(self.tr("New Scene"), hChapter)
-            aDoc = NWDoc(self, hScene)
-            aDoc.writeDocument("### %s\n\n" % self.tr("New Scene"))
-
-            self.newRoot(nwItemClass.PLOT)
-            self.newRoot(nwItemClass.CHARACTER)
-            self.newRoot(nwItemClass.WORLD)
-            self.newRoot(nwItemClass.ARCHIVE)
-
-        elif popCustom:
-            # Create a project structure based on selected root folders
-            # and a number of chapters and scenes selected in the
-            # wizard's custom page.
-
-            # Create chapters and scenes
-            numChapters = projData.get("numChapters", 0)
-            numScenes = projData.get("numScenes", 0)
-
-            chSynop = self.tr("Summary of the chapter.")
-            scSynop = self.tr("Summary of the scene.")
-
-            # Create chapters
-            if numChapters > 0:
-                for ch in range(numChapters):
-                    chTitle = self.tr("Chapter {0}").format(f"{ch+1:d}")
-                    cHandle = self.newFile(chTitle, hNovelRoot)
-                    aDoc = NWDoc(self, cHandle)
-                    aDoc.writeDocument(f"## {chTitle}\n\n% Synopsis: {chSynop}\n\n")
-
-                    # Create chapter scenes
-                    if numScenes > 0:
-                        for sc in range(numScenes):
-                            scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
-                            sHandle = self.newFile(scTitle, cHandle)
-                            aDoc = NWDoc(self, sHandle)
-                            aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
-
-            # Create scenes (no chapters)
-            elif numScenes > 0:
-                for sc in range(numScenes):
-                    scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
-                    sHandle = self.newFile(scTitle, hNovelRoot)
-                    aDoc = NWDoc(self, sHandle)
-                    aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
-
-            # Create notes folders
-            noteTitles = {
-                nwItemClass.PLOT: self.tr("Main Plot"),
-                nwItemClass.CHARACTER: self.tr("Protagonist"),
-                nwItemClass.WORLD: self.tr("Main Location"),
-            }
-
-            addNotes = projData.get("addNotes", False)
-            for newRoot in projData.get("addRoots", []):
-                if newRoot in nwItemClass:
-                    rHandle = self.newRoot(newRoot)
-                    if addNotes:
-                        aHandle = self.newFile(noteTitles[newRoot], rHandle)
-                        ntTag = simplified(noteTitles[newRoot]).replace(" ", "")
-                        aDoc = NWDoc(self, aHandle)
-                        aDoc.writeDocument(f"# {noteTitles[newRoot]}\n\n@tag: {ntTag}\n\n")
-
-            # Also add the archive and trash folders
-            self.newRoot(nwItemClass.ARCHIVE)
-            self.trashFolder()
-
-        # Finalise
-        if popCustom or popMinimal:
-            self._projOpened = time()
-            self.setProjectChanged(True)
-            self.saveProject(autoSave=True)
-
-        return True
-
     def openProject(self, fileName, overrideLock=False):
         """Open the project file provided. If it doesn't exist, assume
         it is a folder and look for the file within it. If successful,
@@ -680,6 +536,19 @@ class NWProject(QObject):
 
         return True
 
+    def setDefaultStatusImport(self):
+        """Set the default status and importance values.
+        """
+        self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100))
+        self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0))
+        self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0))
+        self._data.itemStatus.write(None, self.tr("Finished"), (50,  200, 0))
+        self._data.itemImport.write(None, self.tr("New"),      (100, 100, 100))
+        self._data.itemImport.write(None, self.tr("Minor"),    (200, 50,  0))
+        self._data.itemImport.write(None, self.tr("Major"),    (200, 150, 0))
+        self._data.itemImport.write(None, self.tr("Main"),     (50,  200, 0))
+        return
+
     ##
     #  Zip/Unzip Project
     ##
@@ -752,68 +621,6 @@ class NWProject(QObject):
         ).format(f"{baseName}.zip"))
 
         return True
-
-    def extractSampleProject(self, projData):
-        """Make a copy of the sample project.
-        First, look for the sample.zip file in the assets folder and
-        unpack it. If it doesn't exist, try to copy the content of the
-        sample folder to the new project path. If neither exits, error.
-        """
-        projPath = projData.get("projPath", None)
-        if projPath is None:
-            logger.error("No project path set for the example project")
-            return False
-
-        srcSample = os.path.abspath(os.path.join(self.mainConf.appRoot, "sample"))
-        pkgSample = os.path.join(self.mainConf.assetPath, "sample.zip")
-
-        isSuccess = False
-        if os.path.isfile(pkgSample):
-
-            self.setProjectPath(projPath, newProject=True)
-            try:
-                shutil.unpack_archive(pkgSample, projPath)
-                isSuccess = True
-            except Exception as exc:
-                self.mainGui.makeAlert(self.tr(
-                    "Failed to create a new example project."
-                ), nwAlert.ERROR, exception=exc)
-
-        elif os.path.isdir(srcSample):
-
-            self.setProjectPath(projPath, newProject=True)
-            try:
-                srcProj = os.path.join(srcSample, nwFiles.PROJ_FILE)
-                dstProj = os.path.join(projPath, nwFiles.PROJ_FILE)
-                shutil.copyfile(srcProj, dstProj)
-
-                srcContent = os.path.join(srcSample, "content")
-                dstContent = os.path.join(projPath, "content")
-                for srcFile in os.listdir(srcContent):
-                    srcDoc = os.path.join(srcContent, srcFile)
-                    dstDoc = os.path.join(dstContent, srcFile)
-                    shutil.copyfile(srcDoc, dstDoc)
-
-                isSuccess = True
-
-            except Exception as exc:
-                self.mainGui.makeAlert(self.tr(
-                    "Failed to create a new example project."
-                ), nwAlert.ERROR, exception=exc)
-
-        else:
-            self.mainGui.makeAlert(self.tr(
-                "Failed to create a new example project. "
-                "Could not find the necessary files. "
-                "They seem to be missing from this installation."
-            ), nwAlert.ERROR)
-
-        if isSuccess:
-            self.clearProject()
-            self.mainGui.openProject(projPath)
-            self.mainGui.rebuildIndex()
-
-        return isSuccess
 
     ##
     #  Setters

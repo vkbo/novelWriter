@@ -168,15 +168,7 @@ def buildTestProject(theObject, projPath):
     theProject.clearProject()
     theProject.setProjectPath(projPath, newProject=True)
     theProject.storage.openProjectInPlace(theProject.projPath)
-
-    theProject.data.itemStatus.write(None, "New",      (100, 100, 100))
-    theProject.data.itemStatus.write(None, "Note",     (200, 50,  0))
-    theProject.data.itemStatus.write(None, "Draft",    (200, 150, 0))
-    theProject.data.itemStatus.write(None, "Finished", (50,  200, 0))
-    theProject.data.itemImport.write(None, "New",      (100, 100, 100))
-    theProject.data.itemImport.write(None, "Minor",    (200, 50,  0))
-    theProject.data.itemImport.write(None, "Major",    (200, 150, 0))
-    theProject.data.itemImport.write(None, "Main",     (50,  200, 0))
+    theProject.setDefaultStatusImport()
 
     theProject.data.setName("New Project")
     theProject.data.setTitle("New Novel")

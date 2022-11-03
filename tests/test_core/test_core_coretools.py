@@ -23,13 +23,15 @@ import os
 import pytest
 
 from shutil import copyfile
+from zipfile import ZipFile
 
 from mock import causeOSError
-from tools import C, buildTestProject, cmpFiles
+from tools import C, buildTestProject, cmpFiles, XML_IGNORE
 
+from novelwriter.constants import nwItemClass
 from novelwriter.core.project import NWProject
 from novelwriter.core.document import NWDoc
-from novelwriter.core.coretools import DocMerger, DocSplitter
+from novelwriter.core.coretools import DocMerger, DocSplitter, ProjectBuilder
 
 
 @pytest.mark.core
@@ -259,3 +261,153 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncDir, outDir, refDir, mock
     theProject.saveProject()
 
 # END Test testCoreTools_DocSplitter
+
+
+@pytest.mark.core
+def testCoreTools_NewMinimal(fncDir, outDir, refDir, mockGUI, mockRnd):
+    """Create a new project from a project wizard dictionary. With
+    default setting, creating a Minimal project.
+    """
+    projFile = os.path.join(fncDir, "nwProject.nwx")
+    testFile = os.path.join(outDir, "coreTools_NewMinimal_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreTools_NewMinimal_nwProject.nwx")
+
+    projBuild = ProjectBuilder(mockGUI)
+
+    # Setting no data should fail
+    assert projBuild.buildProject({}) is False
+
+    # Wrong type should also fail
+    assert projBuild.buildProject("stuff") is False
+
+    # Try again with a proper path
+    assert projBuild.buildProject({"projPath": fncDir}) is True
+
+    # Creating the project once more should fail
+    assert projBuild.buildProject({"projPath": fncDir}) is False
+
+    # Save and close
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+
+# END Test testCoreTools_NewMinimal
+
+
+@pytest.mark.core
+def testCoreTools_NewCustomA(fncDir, outDir, refDir, mockGUI, mockRnd):
+    """Create a new project from a project wizard dictionary.
+    Custom type with chapters and scenes.
+    """
+    projFile = os.path.join(fncDir, "nwProject.nwx")
+    testFile = os.path.join(outDir, "coreTools_NewCustomA_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreTools_NewCustomA_nwProject.nwx")
+
+    projData = {
+        "projName": "Test Custom",
+        "projTitle": "Test Novel",
+        "projAuthors": "Jane Doe\nJohn Doh\n",
+        "projPath": fncDir,
+        "popSample": False,
+        "popMinimal": False,
+        "popCustom": True,
+        "addRoots": [
+            nwItemClass.PLOT,
+            nwItemClass.CHARACTER,
+            nwItemClass.WORLD,
+        ],
+        "addNotes": True,
+        "numChapters": 3,
+        "numScenes": 3,
+    }
+
+    projBuild = ProjectBuilder(mockGUI)
+    assert projBuild.buildProject(projData) is True
+
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+
+# END Test testCoreTools_NewCustomA
+
+
+@pytest.mark.core
+def testCoreTools_NewCustomB(fncDir, outDir, refDir, mockGUI, mockRnd):
+    """Create a new project from a project wizard dictionary.
+    Custom type without chapters, but with scenes.
+    """
+    projFile = os.path.join(fncDir, "nwProject.nwx")
+    testFile = os.path.join(outDir, "coreTools_NewCustomB_nwProject.nwx")
+    compFile = os.path.join(refDir, "coreTools_NewCustomB_nwProject.nwx")
+
+    projData = {
+        "projName": "Test Custom",
+        "projTitle": "Test Novel",
+        "projAuthors": "Jane Doe\nJohn Doh\n",
+        "projPath": fncDir,
+        "popSample": False,
+        "popMinimal": False,
+        "popCustom": True,
+        "addRoots": [
+            nwItemClass.PLOT,
+            nwItemClass.CHARACTER,
+            nwItemClass.WORLD,
+        ],
+        "addNotes": True,
+        "numChapters": 0,
+        "numScenes": 6,
+    }
+
+    projBuild = ProjectBuilder(mockGUI)
+    assert projBuild.buildProject(projData) is True
+
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+
+# END Test testCoreTools_NewCustomB
+
+
+@pytest.mark.core
+def testCoreTools_NewSample(fncDir, tmpConf, mockGUI, tmpDir):
+    """Check that we can create a new project can be created from the
+    provided sample project via a zip file.
+    """
+    projData = {
+        "projName": "Test Sample",
+        "projTitle": "Test Novel",
+        "projAuthors": "Jane Doe\nJohn Doh\n",
+        "projPath": fncDir,
+        "popSample": True,
+        "popMinimal": False,
+        "popCustom": False,
+    }
+
+    projBuild = ProjectBuilder(mockGUI)
+
+    # No path set
+    assert projBuild.buildProject({"popSample": True}) is False
+
+    # Force the lookup path for assets to our temp folder
+    srcSample = os.path.abspath(os.path.join(tmpConf.appRoot, "sample"))
+    dstSample = os.path.join(tmpDir, "sample.zip")
+    tmpConf.assetPath = tmpDir
+
+    # Cannot extract when the zip does not exist
+    assert projBuild.buildProject(projData) is False
+
+    # Create and open a defective zip file
+    with open(dstSample, mode="w+") as outFile:
+        outFile.write("foo")
+
+    assert projBuild.buildProject(projData) is False
+    os.unlink(dstSample)
+
+    # Create a real zip file, and unpack it
+    with ZipFile(dstSample, "w") as zipObj:
+        zipObj.write(os.path.join(srcSample, "nwProject.nwx"), "nwProject.nwx")
+        for docFile in os.listdir(os.path.join(srcSample, "content")):
+            srcDoc = os.path.join(srcSample, "content", docFile)
+            zipObj.write(srcDoc, "content/"+docFile)
+
+    assert projBuild.buildProject(projData) is True
+    os.unlink(dstSample)
+
+# END Test testCoreTools_NewSample

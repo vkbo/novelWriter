@@ -50,9 +50,9 @@ from novelwriter.dialogs import (
 from novelwriter.tools import (
     GuiBuildNovel, GuiLipsum, GuiProjectWizard, GuiWritingStats
 )
-from novelwriter.core import NWProject
+from novelwriter.core import NWProject, ProjectBuilder
 from novelwriter.enum import (
-    nwDocMode, nwItemType, nwItemClass, nwAlert, nwWidget, nwState, nwView
+    nwDocMode, nwItemType, nwItemClass, nwAlert, nwWidget, nwView
 )
 from novelwriter.common import getGuiItem, hexToInt
 from novelwriter.constants import nwFiles
@@ -365,30 +365,10 @@ class GuiMain(QMainWindow):
             return False
 
         logger.info("Creating new project")
-        if self.theProject.newProject(projData):
-
-            self.hasProject = True
-            self.idleRefTime = time()
-            self.idleTime = 0.0
-
-            self.rebuildTrees()
-            self.saveProject()
-
-            self.docEditor.setDictionaries()
-            self.projView.openProjectTasks()
-            self.novelView.openProjectTasks()
-            self.outlineView.openProjectTasks()
-            self.rebuildIndex(beQuiet=True)
-
-            self.mainStatus.setRefTime(self.theProject.projOpened)
-            self.mainStatus.setProjectStatus(nwState.GOOD)
-            self.mainStatus.setDocumentStatus(nwState.NONE)
-            self.mainStatus.setStatus(self.tr("New project created ..."))
-
-            self._updateWindowTitle(self.theProject.data.name)
-
+        nwProject = ProjectBuilder(self)
+        if nwProject.buildProject(projData):
+            self.openProject(projPath)
         else:
-            self.theProject.clearProject()
             return False
 
         return True
