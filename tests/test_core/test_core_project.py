@@ -250,16 +250,6 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncDir, mockRnd):
         assert "This project was saved by a newer version" in mockGUI.lastQuestion[1]
         mockGUI.askResponse = True
 
-    # Add some legacy stuff that cannot be removed
-    with monkeypatch.context() as mp:
-        mp.setattr(theProject, "_legacyDataFolder", causeOSError)
-        os.mkdir(os.path.join(fncDir, "data_0"))
-        writeFile(os.path.join(fncDir, "data_0", "123456789abc_main.nwd"), "stuff")
-        writeFile(os.path.join(fncDir, "data_0", "123456789abc_main.bak"), "stuff")
-        mockGUI.clear()
-        assert theProject.openProject(fncDir) is True
-        assert "There was an error updating the project." in mockGUI.lastAlert
-
     assert theProject.closeProject()
 
 # END Test testCoreProject_Open

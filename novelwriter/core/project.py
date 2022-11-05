@@ -264,41 +264,25 @@ class NWProject(QObject):
 
         return
 
-    def openProject(self, fileName, overrideLock=False):
+    def openProject(self, projPath, overrideLock=False):
         """Open the project file provided. If it doesn't exist, assume
         it is a folder and look for the file within it. If successful,
         parse the XML of the file and populate the project variables and
         build the tree of project items.
         """
-        if not os.path.isfile(fileName):
-            fileName = os.path.join(fileName, nwFiles.PROJ_FILE)
-            if not os.path.isfile(fileName):
-                self.mainGui.makeAlert(self.tr(
-                    "File not found: {0}"
-                ).format(fileName), nwAlert.ERROR)
-                return False
-
         self.clearProject()
-        self.projPath = os.path.abspath(os.path.dirname(fileName))
-        logger.info("Opening project: %s", self.projPath)
-
-        # Standard Folders and Files
-        # ==========================
-
-        if not self.ensureFolderStructure():
-            self.clearProject()
+        if not self._storage.openProjectInPlace(projPath):
             return False
 
+        # ToDo: These should not be set explicitly, and should stay as Path
+        self.projPath = str(self._storage.runtimePath)
+        self.projContent = str(self._storage.contentPath)
+        self.projCache = str(self._storage.cachePath)
+        self.projMeta = str(self._storage.metaPath)
+
+        logger.info("Opening project: %s", self.projPath)
+
         self.projDict = os.path.join(self.projMeta, nwFiles.PROJ_DICT)
-
-        # Check for Old Legacy Data
-        # =========================
-
-        legacyList = []  # Cleanup is done later
-        for projItem in os.listdir(self.projPath):
-            logger.debug("Project contains: %s", projItem)
-            if projItem.startswith("data_") and len(projItem) == 6:
-                legacyList.append(projItem)
 
         # Project Lock
         # ============
@@ -320,10 +304,6 @@ class NWProject(QObject):
 
         # Open The Project XML File
         # =========================
-
-        if not self._storage.openProjectInPlace(self.projPath):
-            self.clearProject()
-            return False
 
         xmlReader = self._storage.getXmlReader()
         if not isinstance(xmlReader, ProjectXMLReader):
@@ -397,17 +377,6 @@ class NWProject(QObject):
         self._tree.unpack(projContent)
         self._options.loadSettings()
         self._index.loadIndex()
-
-        # Sort out old file locations
-        if legacyList:
-            try:
-                for projItem in legacyList:
-                    self._legacyDataFolder(projItem)
-            except Exception:
-                self.mainGui.makeAlert(self.tr(
-                    "There was an error updating the project. "
-                    "Some data may not have been preserved."
-                ), nwAlert.ERROR)
 
         # Clean up no longer used files
         self._deprecatedFiles()

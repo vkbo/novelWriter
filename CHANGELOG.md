@@ -3707,8 +3707,8 @@ helpful feedback and issue reports for the new features added in this, and previ
 
 **User Interface**
 
-* Added a preferences dialog for the program settings. No longer necessary to edit the config file.
-  PR #30.
+* Added a preferences dialog for the program settings. It is no longer necessary to edit the config
+  file. PR #30.
 * The document viewer remembers scroll bar position when pressing `Ctrl+R` on a document already
   being viewed. PR #28.
 * Removed version number from windows title. PR #28.
@@ -3749,8 +3749,8 @@ helpful feedback and issue reports for the new features added in this, and previ
 **Status Bar**
 
 * Redesign of the status bar adding project and session stats as well as a session timer. PR #21.
-* Project word count is written to the project file, which is needed for the session word count. PR
-  #21.
+* Project word count is written to the project file, which is needed for the session word count.
+  PR #21.
 * Closing a project now clears the status bar. PR #21.
 
 **Editor**
