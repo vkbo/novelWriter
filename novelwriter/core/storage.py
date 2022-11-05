@@ -97,7 +97,7 @@ class NWStorage:
         """
         return self._runtimePath is not None
 
-    def openProjectInPlace(self, path):
+    def openProjectInPlace(self, path, newProject=False):
         """Open a novelWriter project in-place. That is, it is opened
         directly from a project folder.
         """
@@ -112,7 +112,7 @@ class NWStorage:
         self._lockFilePath = inPath / nwFiles.PROJ_LOCK
         self._openMode = self.MODE_INPLACE
 
-        if self._prepareStorage(checkLegacy=True) is False:
+        if not self._prepareStorage(checkLegacy=True, newProject=newProject):
             self.clear()
             return False
 
@@ -142,7 +142,7 @@ class NWStorage:
     ##
 
     def getXmlReader(self):
-        """
+        """Return a properly configured ProjectXMLReader instance.
         """
         if self._runtimePath is None:
             return None
@@ -153,7 +153,7 @@ class NWStorage:
         return xmlReader
 
     def getXmlWriter(self):
-        """
+        """Return a properly configured ProjectXMLWriter instance.
         """
         if self._runtimePath is None:
             return None
@@ -165,8 +165,12 @@ class NWStorage:
     def getDocument(self, tHandle):
         pass
 
-    def getMetaFile(self, kind):
-        pass
+    def getMetaFile(self, fileName):
+        """Return the path to a file in the project meta folder.
+        """
+        if self._runtimePath is not None:
+            return self._runtimePath / "meta" / fileName
+        return None
 
     def readLockFile(self):
         """Read the project lock file.
@@ -234,7 +238,7 @@ class NWStorage:
     def _writeLockFile(self):
         pass
 
-    def _prepareStorage(self, checkLegacy=True):
+    def _prepareStorage(self, checkLegacy=True, newProject=False):
         """Prepare the storage area for the project.
         """
         path = self._runtimePath
@@ -247,6 +251,15 @@ class NWStorage:
             logger.error("Cannot use the user's home path as the root of a project")
             self.clear()
             return False
+
+        if newProject:
+            # If it's a new project, we check that there is no existing
+            # project in the selected path.
+            projFile = path / nwFiles.PROJ_FILE
+            if projFile.exists():
+                logger.error("A project already exists in this path")
+                self.clear()
+                return False
 
         # The folder is not required to exist, as it could be a new
         # project, so we make sure it does. Then we add subfolders.

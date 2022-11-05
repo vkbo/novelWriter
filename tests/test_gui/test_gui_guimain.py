@@ -170,8 +170,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert len(nwGUI.theProject.tree._treeOrder) == 0
     assert len(nwGUI.theProject.tree._treeRoots) == 0
     assert nwGUI.theProject.tree.trashRoot() is None
-    assert nwGUI.theProject.projPath is None
-    assert nwGUI.theProject.projMeta is None
     assert nwGUI.theProject.data.name == ""
     assert nwGUI.theProject.data.title == ""
     assert nwGUI.theProject.data.authors == []
@@ -192,8 +190,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert len(nwGUI.theProject.tree._treeOrder) == 8
     assert len(nwGUI.theProject.tree._treeRoots) == 4
     assert nwGUI.theProject.tree.trashRoot() is None
-    assert nwGUI.theProject.projPath == fncProj
-    assert nwGUI.theProject.projMeta == os.path.join(fncProj, "meta")
     assert nwGUI.theProject.data.name == "New Project"
     assert nwGUI.theProject.data.title == "New Novel"
     assert nwGUI.theProject.data.authors == ["Jane Doe"]

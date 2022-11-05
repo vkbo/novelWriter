@@ -166,8 +166,8 @@ def buildTestProject(theObject, projPath):
         theProject = theObject.theProject
 
     theProject.clearProject()
-    theProject.setProjectPath(projPath, newProject=True)
-    theProject.storage.openProjectInPlace(theProject.projPath)
+    theProject.projPath = projPath
+    theProject.storage.openProjectInPlace(projPath)
     theProject.setDefaultStatusImport()
 
     theProject.data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")

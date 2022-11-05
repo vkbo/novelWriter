@@ -305,11 +305,10 @@ class ProjectBuilder:
             return False
 
         project = NWProject(self.mainGui)
-        if not project.setProjectPath(projPath, newProject=True):
+        if not project.storage.openProjectInPlace(projPath, newProject=True):
             return False
 
-        if not project.storage.openProjectInPlace(projPath):
-            return False
+        project.projPath = projPath
 
         lblNewProject = self.tr("New Project")
         lblNewChapter = self.tr("New Chapter")

@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import os
 import json
+from pathlib import Path
 import shutil
 import logging
 import novelwriter
@@ -84,7 +85,6 @@ class NWProject(QObject):
 
         # Class Settings
         self.projPath    = None  # The full path to where the currently open project is saved
-        self.projMeta    = None  # The full path to the project's meta data folder
         self.projCache   = None  # The full path to the project's cache folder
         self.projContent = None  # The full path to the project's content folder
         self.projDict    = None  # The spell check dictionary
@@ -254,7 +254,6 @@ class NWProject(QObject):
 
         # Project Settings
         self.projPath    = None
-        self.projMeta    = None
         self.projCache   = None
         self.projContent = None
         self.projDict    = None
@@ -276,11 +275,10 @@ class NWProject(QObject):
         self.projPath = str(self._storage.runtimePath)
         self.projContent = str(self._storage.contentPath)
         self.projCache = str(self._storage.cachePath)
-        self.projMeta = str(self._storage.metaPath)
 
         logger.info("Opening project: %s", self.projPath)
 
-        self.projDict = os.path.join(self.projMeta, nwFiles.PROJ_DICT)
+        self.projDict = str(self._storage.getMetaFile(nwFiles.PROJ_DICT))
 
         # Project Lock
         # ============
@@ -421,8 +419,6 @@ class NWProject(QObject):
             return False
 
         saveTime = time()
-        if not self.ensureFolderStructure():
-            return False
 
         logger.info("Saving project: %s", self.projPath)
 
@@ -482,7 +478,6 @@ class NWProject(QObject):
         if self.projPath is None or self.projPath == "":
             return False
 
-        self.projMeta    = os.path.join(self.projPath, "meta")
         self.projCache   = os.path.join(self.projPath, "cache")
         self.projContent = os.path.join(self.projPath, "content")
 
@@ -490,8 +485,6 @@ class NWProject(QObject):
             # Don't make a mess in the user's home folder
             return False
 
-        if not self._checkFolder(self.projMeta):
-            return False
         if not self._checkFolder(self.projCache):
             return False
         if not self._checkFolder(self.projContent):
@@ -588,41 +581,6 @@ class NWProject(QObject):
     ##
     #  Setters
     ##
-
-    def setProjectPath(self, projPath, newProject=False):
-        """Set the project storage path, and also expand ~ to the user
-        directory using the path library.
-        """
-        if projPath is None or projPath == "":
-            self.projPath = None
-        else:
-            if projPath.startswith("~"):
-                projPath = os.path.expanduser(projPath)
-            self.projPath = os.path.abspath(projPath)
-
-        if newProject:
-            if not os.path.isdir(projPath):
-                try:
-                    os.mkdir(projPath)
-                    logger.debug("Created folder: %s", projPath)
-                except Exception as exc:
-                    self.mainGui.makeAlert(self.tr(
-                        "Could not create new project folder."
-                    ), nwAlert.ERROR, exception=exc)
-                    return False
-
-            if os.path.isdir(projPath):
-                if os.listdir(self.projPath):
-                    self.mainGui.makeAlert(self.tr(
-                        "New project folder is not empty. "
-                        "Each project requires a dedicated project folder."
-                    ), nwAlert.ERROR)
-                    return False
-
-        self.ensureFolderStructure()
-        self.setProjectChanged(True)
-
-        return True
 
     def setProjectLang(self, theLang):
         """Set the project-specific language.
@@ -934,11 +892,9 @@ class NWProject(QObject):
     def _appendSessionStats(self, idleTime):
         """Append session statistics to the sessions log file.
         """
-        if not self.ensureFolderStructure():
+        sessionFile = self._storage.getMetaFile(nwFiles.SESS_STATS)
+        if not isinstance(sessionFile, Path):
             return False
-
-        sessionFile = os.path.join(self.projMeta, nwFiles.SESS_STATS)
-        isFile = os.path.isfile(sessionFile)
 
         nowTime = time()
         iNovel, iNotes = self._data.initCounts
@@ -953,6 +909,7 @@ class NWProject(QObject):
             return False
 
         try:
+            isFile = sessionFile.exists()  # We must save the state before we open
             with open(sessionFile, mode="a+", encoding="utf-8") as outFile:
                 if not isFile:
                     # It's a new file, so add a header

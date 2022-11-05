@@ -26,11 +26,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
 import logging
 
 from time import time
+from pathlib import Path
 
 from novelwriter.enum import nwItemType, nwItemLayout
 from novelwriter.error import logException
@@ -141,12 +141,15 @@ class NWIndex:
     def loadIndex(self):
         """Load index from last session from the project meta folder.
         """
+        indexFile = self.theProject.storage.getMetaFile(nwFiles.INDEX_FILE)
+        if not isinstance(indexFile, Path):
+            return False
+
         theData = {}
-        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         tStart = time()
 
         self._indexBroken = False
-        if os.path.isfile(indexFile):
+        if indexFile.exists():
             logger.debug("Loading index file")
             try:
                 with open(indexFile, mode="r", encoding="utf-8") as inFile:
@@ -184,8 +187,11 @@ class NWIndex:
         """Save the current index as a json file in the project meta
         data folder.
         """
+        indexFile = self.theProject.storage.getMetaFile(nwFiles.INDEX_FILE)
+        if not isinstance(indexFile, Path):
+            return False
+
         logger.debug("Saving index file")
-        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         tStart = time()
 
         try:

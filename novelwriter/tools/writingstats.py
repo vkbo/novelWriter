@@ -28,6 +28,7 @@ import json
 import logging
 import novelwriter
 
+from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtGui import QPixmap, QCursor
@@ -439,8 +440,8 @@ class GuiWritingStats(QDialog):
         ttTime = 0
         ttIdle = 0
 
-        logFile = os.path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
-        if not os.path.isfile(logFile):
+        logFile = self.theProject.storage.getMetaFile(nwFiles.SESS_STATS)
+        if not isinstance(logFile, Path) or not logFile.exists():
             logger.info("This project has no writing stats logfile")
             return False
 

@@ -23,11 +23,13 @@ import os
 import shutil
 import pytest
 
+from time import time
 from shutil import copyfile
+from pathlib import Path
 from zipfile import ZipFile
 
 from mock import causeOSError
-from tools import C, cmpFiles, writeFile, readFile, buildTestProject, XML_IGNORE
+from tools import C, cmpFiles, writeFile, buildTestProject, XML_IGNORE
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.common import formatTimeStamp
@@ -51,11 +53,6 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncDir)
-
-    assert theProject.setProjectPath(fncDir) is True
-    assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
-    assert theProject.openProject(projFile) is True
 
     assert theProject.newRoot(nwItemClass.NOVEL) == "0000000000010"
     assert theProject.newRoot(nwItemClass.PLOT) == "0000000000011"
@@ -107,11 +104,6 @@ def testCoreProject_NewFileFolder(monkeypatch, fncDir, outDir, refDir, mockGUI, 
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncDir)
-
-    assert theProject.setProjectPath(fncDir) is True
-    assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
-    assert theProject.openProject(projFile) is True
 
     # Invalid call
     assert theProject.newFolder("New Folder", "1234567890abc") is None
@@ -195,7 +187,6 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncDir, mockRnd):
         assert theProject.openProject(fncDir) is False
 
     # Fail on lock file
-    theProject.setProjectPath(fncDir)
     assert theProject._storage.writeLockFile()
     assert theProject.openProject(fncDir) is False
 
@@ -208,7 +199,6 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncDir, mockRnd):
     assert theProject.closeProject()
 
     # Force open with lockfile
-    theProject.setProjectPath(fncDir)
     assert theProject._storage.writeLockFile()
     assert theProject.openProject(fncDir, overrideLock=True) is True
     assert theProject.closeProject()
@@ -267,12 +257,6 @@ def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncDir, refDir):
     mockRnd.reset()
     buildTestProject(theProject, fncDir)
 
-    # Fail on folder structure check
-    with monkeypatch.context() as mp:
-        mp.setattr("os.mkdir", causeOSError)
-        shutil.rmtree(os.path.join(fncDir, "meta"))
-        assert theProject.saveProject() is False
-
     # Fail writing
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLWriter, "write", lambda *a: False)
@@ -303,12 +287,6 @@ def testCoreProject_Helpers(monkeypatch, fncDir, mockGUI):
         mp.setattr("os.path.expanduser", lambda *a, **k: fncDir)
         assert theProject.ensureFolderStructure() is False
 
-    # Create a file to block meta folder
-    metaDir = os.path.join(fncDir, "meta")
-    writeFile(metaDir, "stuff")
-    assert theProject.ensureFolderStructure() is False
-    os.unlink(metaDir)
-
     # Create a file to block cache folder
     cacheDir = os.path.join(fncDir, "cache")
     writeFile(cacheDir, "stuff")
@@ -323,7 +301,7 @@ def testCoreProject_Helpers(monkeypatch, fncDir, mockGUI):
 
     # Now, do it right
     assert theProject.ensureFolderStructure() is True
-    assert os.path.isdir(metaDir)
+    # assert os.path.isdir(metaDir)
     assert os.path.isdir(cacheDir)
     assert os.path.isdir(contentDir)
 
@@ -506,31 +484,11 @@ def testCoreProject_StatusImport(mockGUI, fncDir, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
+def testCoreProject_Methods(monkeypatch, mockGUI, fncDir, mockRnd):
     """Test other project class methods and functions.
     """
     theProject = NWProject(mockGUI)
     buildTestProject(theProject, fncDir)
-
-    # Setting project path
-    assert theProject.setProjectPath(None)
-    assert theProject.projPath is None
-    assert theProject.setProjectPath("")
-    assert theProject.projPath is None
-    assert theProject.setProjectPath("~")
-    assert theProject.projPath == os.path.expanduser("~")
-
-    # Create a new folder and populate it
-    projPath = os.path.join(fncDir, "mock1")
-    assert theProject.setProjectPath(projPath, newProject=True)
-
-    # Make os.mkdir fail
-    monkeypatch.setattr("os.mkdir", causeOSError)
-    projPath = os.path.join(fncDir, "mock2")
-    assert not theProject.setProjectPath(projPath, newProject=True)
-
-    # Set back
-    assert theProject.setProjectPath(fncDir)
 
     # Project Name
     theProject.data.setName("  A Name ")
@@ -639,29 +597,39 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     assert theProject.tree.handles() == oldOrder
 
     # Session stats
-    theProject._data._initCounts = [50, 50]
-    theProject._data._currCounts = [100, 100]
+    theProject.data.setInitCounts(50, 50)
+    theProject.data.setCurrCounts(100, 100)
+
+    # No path for writing
     with monkeypatch.context() as mp:
-        mp.setattr("os.path.isdir", lambda *a, **k: False)
-        assert not theProject._appendSessionStats(idleTime=0)
+        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        assert theProject._appendSessionStats(idleTime=0) is False
 
     # Block open
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        assert not theProject._appendSessionStats(idleTime=0)
+        assert theProject._appendSessionStats(idleTime=0) is False
+
+    # Session too short
+    theProject._projOpened = time()
+    theProject.data.setInitCounts(50, 50)
+    theProject.data.setCurrCounts(50, 50)
+    assert theProject._appendSessionStats(idleTime=0) is False
 
     # Write entry
-    assert theProject.projMeta == os.path.join(fncDir, "meta")
-    statsFile = os.path.join(theProject.projMeta, nwFiles.SESS_STATS)
+    statsFile = theProject.storage.getMetaFile(nwFiles.SESS_STATS)
+    assert isinstance(statsFile, Path)
+    statsFile.unlink(missing_ok=True)
 
     theProject._projOpened = 1600002000
-    theProject._data._currCounts = [200, 100]
+    theProject.data._initCounts = [50, 50]
+    theProject.data._currCounts = [200, 100]
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.project.time", lambda: 1600005600)
         assert theProject._appendSessionStats(idleTime=99)
 
-    assert readFile(statsFile) == (
+    assert statsFile.read_text(encoding="utf-8") == (
         "# Offset 100\n"
         "# Start Time         End Time                Novel     Notes      Idle\n"
         "%s  %s       200       100        99\n"
