@@ -378,9 +378,6 @@ class NWProject(QObject):
         self._options.loadSettings()
         self._index.loadIndex()
 
-        # Clean up no longer used files
-        self._deprecatedFiles()
-
         # Update recent projects
         self.mainConf.updateRecentCache(
             self.projPath, self._data.name, sum(self._data.initCounts), time()
@@ -1043,77 +1040,6 @@ class NWProject(QObject):
             logger.error("Failed to write session stats file")
             logException()
             return False
-
-        return True
-
-    ##
-    #  Legacy Data Structure Handlers
-    ##
-
-    def _legacyDataFolder(self, dataDir):
-        """Clean up legacy data folders.
-        """
-        dataPath = os.path.join(self.projPath, dataDir)
-        if not os.path.isdir(dataPath):
-            return False
-
-        logger.info("Old data folder found: %s", dataDir)
-
-        # Move Documents to Content
-        for dataItem in os.listdir(dataPath):
-            dataFile = os.path.join(dataPath, dataItem)
-            if not os.path.isfile(dataFile):
-                continue
-
-            if len(dataItem) == 21 and dataItem.endswith("_main.nwd"):
-                tHandle = dataDir[-1] + dataItem[:12]
-                newPath = os.path.join(self.projContent, f"{tHandle}.nwd")
-                os.rename(dataFile, newPath)
-                logger.info("Moved file: %s", dataFile)
-
-            elif len(dataItem) == 21 and dataItem.endswith("_main.bak"):
-                os.unlink(dataFile)
-                logger.info("Deleted file: %s", dataFile)
-
-        # Remove Data Folder
-        if not os.listdir(dataPath):
-            os.rmdir(dataPath)
-            logger.info("Deleted folder: %s", dataDir)
-
-        return True
-
-    def _deprecatedFiles(self):
-        """Delete files that are no longer used by novelWriter.
-        """
-        rmList = [
-            os.path.join(self.projCache, "nwProject.nwx.0"),
-            os.path.join(self.projCache, "nwProject.nwx.1"),
-            os.path.join(self.projCache, "nwProject.nwx.2"),
-            os.path.join(self.projCache, "nwProject.nwx.3"),
-            os.path.join(self.projCache, "nwProject.nwx.4"),
-            os.path.join(self.projCache, "nwProject.nwx.5"),
-            os.path.join(self.projCache, "nwProject.nwx.6"),
-            os.path.join(self.projCache, "nwProject.nwx.7"),
-            os.path.join(self.projCache, "nwProject.nwx.8"),
-            os.path.join(self.projCache, "nwProject.nwx.9"),
-            os.path.join(self.projMeta, "mainOptions.json"),
-            os.path.join(self.projMeta, "exportOptions.json"),
-            os.path.join(self.projMeta, "outlineOptions.json"),
-            os.path.join(self.projMeta, "timelineOptions.json"),
-            os.path.join(self.projMeta, "docMergeOptions.json"),
-            os.path.join(self.projMeta, "sessionLogOptions.json"),
-            os.path.join(self.projPath, "ToC.json"),
-        ]
-
-        for rmFile in rmList:
-            if os.path.isfile(rmFile):
-                logger.info("Deleting: %s", rmFile)
-                try:
-                    os.unlink(rmFile)
-                except Exception:
-                    logger.error("Could not delete: %s", rmFile)
-                    logException()
-                    return False
 
         return True
 

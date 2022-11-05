@@ -267,27 +267,6 @@ def nwLipsum(tmpDir):
     return
 
 
-@pytest.fixture(scope="function")
-def nwOldProj(tmpDir):
-    """A minimal movelWriter project using the old folder structure used
-    for storage versions < 1.2.
-    """
-    tstDir = os.path.dirname(__file__)
-    srcDir = os.path.join(tstDir, "oldproj")
-    dstDir = os.path.join(tmpDir, "oldproj")
-    if os.path.isdir(dstDir):
-        shutil.rmtree(dstDir)
-
-    shutil.copytree(srcDir, dstDir)
-
-    yield dstDir
-
-    if os.path.isdir(dstDir):
-        shutil.rmtree(dstDir)
-
-    return
-
-
 @pytest.fixture(scope="session")
 def ipsumText():
     """Return five paragraphs of Lorem Ipsum text.
