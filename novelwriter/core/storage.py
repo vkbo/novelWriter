@@ -76,18 +76,6 @@ class NWStorage:
             return self._runtimePath / "content"
         return None
 
-    @property
-    def metaPath(self):
-        if self._runtimePath is not None:
-            return self._runtimePath / "meta"
-        return None
-
-    @property
-    def cachePath(self):
-        if self._runtimePath is not None:
-            return self._runtimePath / "cache"
-        return None
-
     ##
     #  Core Methods
     ##
@@ -170,6 +158,13 @@ class NWStorage:
         """
         if self._runtimePath is not None:
             return self._runtimePath / "meta" / fileName
+        return None
+
+    def getCacheFile(self, fileName):
+        """Return the path to a file in the project cache folder.
+        """
+        if self._runtimePath is not None:
+            return self._runtimePath / "cache" / fileName
         return None
 
     def readLockFile(self):

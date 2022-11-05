@@ -85,7 +85,6 @@ class NWProject(QObject):
 
         # Class Settings
         self.projPath    = None  # The full path to where the currently open project is saved
-        self.projCache   = None  # The full path to the project's cache folder
         self.projContent = None  # The full path to the project's content folder
         self.projDict    = None  # The spell check dictionary
         self.projFiles   = []    # A list of all files in the content folder on load
@@ -254,7 +253,6 @@ class NWProject(QObject):
 
         # Project Settings
         self.projPath    = None
-        self.projCache   = None
         self.projContent = None
         self.projDict    = None
         self.projFiles   = []
@@ -274,7 +272,6 @@ class NWProject(QObject):
         # ToDo: These should not be set explicitly, and should stay as Path
         self.projPath = str(self._storage.runtimePath)
         self.projContent = str(self._storage.contentPath)
-        self.projCache = str(self._storage.cachePath)
 
         logger.info("Opening project: %s", self.projPath)
 
@@ -478,15 +475,12 @@ class NWProject(QObject):
         if self.projPath is None or self.projPath == "":
             return False
 
-        self.projCache   = os.path.join(self.projPath, "cache")
         self.projContent = os.path.join(self.projPath, "content")
 
         if self.projPath == os.path.expanduser("~"):
             # Don't make a mess in the user's home folder
             return False
 
-        if not self._checkFolder(self.projCache):
-            return False
         if not self._checkFolder(self.projContent):
             return False
 

@@ -287,12 +287,6 @@ def testCoreProject_Helpers(monkeypatch, fncDir, mockGUI):
         mp.setattr("os.path.expanduser", lambda *a, **k: fncDir)
         assert theProject.ensureFolderStructure() is False
 
-    # Create a file to block cache folder
-    cacheDir = os.path.join(fncDir, "cache")
-    writeFile(cacheDir, "stuff")
-    assert theProject.ensureFolderStructure() is False
-    os.unlink(cacheDir)
-
     # Create a file to block content folder
     contentDir = os.path.join(fncDir, "content")
     writeFile(contentDir, "stuff")
@@ -301,8 +295,6 @@ def testCoreProject_Helpers(monkeypatch, fncDir, mockGUI):
 
     # Now, do it right
     assert theProject.ensureFolderStructure() is True
-    # assert os.path.isdir(metaDir)
-    assert os.path.isdir(cacheDir)
     assert os.path.isdir(contentDir)
 
 # END Test testCoreProject_Helpers
