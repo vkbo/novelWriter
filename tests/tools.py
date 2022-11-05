@@ -166,7 +166,6 @@ def buildTestProject(theObject, projPath):
         theProject = theObject.theProject
 
     theProject.clearProject()
-    theProject.projPath = projPath
     theProject.storage.openProjectInPlace(projPath)
     theProject.setDefaultStatusImport()
 

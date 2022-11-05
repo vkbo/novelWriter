@@ -83,7 +83,6 @@ class NWProject(QObject):
         self.lockedBy     = None   # Data on which computer has the project open
 
         # Class Settings
-        self.projPath  = None  # The full path to where the currently open project is saved
         self.projDict  = None  # The spell check dictionary
         self.projFiles = []    # A list of all files in the content folder on load
 
@@ -250,7 +249,6 @@ class NWProject(QObject):
         self._data = NWProjectData(self)
 
         # Project Settings
-        self.projPath  = None
         self.projDict  = None
         self.projFiles = []
 
@@ -266,10 +264,7 @@ class NWProject(QObject):
         if not self._storage.openProjectInPlace(projPath):
             return False
 
-        # ToDo: These should not be set explicitly, and should stay as Path
-        self.projPath = str(self._storage.runtimePath)
-
-        logger.info("Opening project: %s", self.projPath)
+        logger.info("Opening project: %s", projPath)
 
         self.projDict = str(self._storage.getMetaFile(nwFiles.PROJ_DICT))
 
@@ -368,7 +363,7 @@ class NWProject(QObject):
 
         # Update recent projects
         self.mainConf.updateRecentCache(
-            self.projPath, self._data.name, sum(self._data.initCounts), time()
+            self._storage.storagePath, self._data.name, sum(self._data.initCounts), time()
         )
         self.mainConf.saveRecentCache()
 
@@ -399,12 +394,6 @@ class NWProject(QObject):
         to make sure if the save fails, we're not left with a truncated
         file.
         """
-        if self.projPath is None:
-            self.mainGui.makeAlert(self.tr(
-                "Project path not set, cannot save project."
-            ), nwAlert.ERROR)
-            return False
-
         if not self._storage.isOpen():
             self.mainGui.makeAlert(self.tr(
                 "There is no project open."
@@ -413,7 +402,7 @@ class NWProject(QObject):
 
         saveTime = time()
 
-        logger.info("Saving project: %s", self.projPath)
+        logger.info("Saving project: %s", self._storage.storagePath)
 
         if autoSave:
             self._data.incAutoCount()
@@ -442,7 +431,7 @@ class NWProject(QObject):
 
         # Update recent projects
         self.mainConf.updateRecentCache(
-            self.projPath, self._data.name, sum(self._data.currCounts), saveTime
+            self._storage.storagePath, self._data.name, sum(self._data.currCounts), saveTime
         )
         self.mainConf.saveRecentCache()
 
@@ -455,7 +444,7 @@ class NWProject(QObject):
     def closeProject(self, idleTime=0.0):
         """Close the current project and clear all meta data.
         """
-        logger.info("Closing project: %s", self.projPath)
+        logger.info("Closing project")
         self._options.saveSettings()
         self._tree.writeToCFile()
         self._appendSessionStats(idleTime)
@@ -517,7 +506,7 @@ class NWProject(QObject):
                 ), nwAlert.ERROR, exception=exc)
                 return False
 
-        if baseDir and baseDir.startswith(self.projPath):
+        if baseDir and baseDir.startswith(str(self._storage.runtimePath)):
             self.mainGui.makeAlert(self.tr(
                 "Cannot backup project because the backup path is within the "
                 "project folder to be backed up. Please choose a different "
@@ -530,7 +519,7 @@ class NWProject(QObject):
 
         try:
             self._storage.clearLockFile()
-            shutil.make_archive(baseName, "zip", self.projPath, ".")
+            shutil.make_archive(baseName, "zip", self._storage.runtimePath, ".")
             self._storage.writeLockFile()
             logger.info("Backup written to: %s", archName)
             if doNotify:

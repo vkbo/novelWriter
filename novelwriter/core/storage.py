@@ -68,6 +68,10 @@ class NWStorage:
     ##
 
     @property
+    def storagePath(self):
+        return self._storagePath
+
+    @property
     def runtimePath(self):
         return self._runtimePath
 

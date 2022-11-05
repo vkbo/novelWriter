@@ -307,8 +307,6 @@ class ProjectBuilder:
         if not project.storage.openProjectInPlace(projPath, newProject=True):
             return False
 
-        project.projPath = projPath
-
         lblNewProject = self.tr("New Project")
         lblNewChapter = self.tr("New Chapter")
         lblNewScene   = self.tr("New Scene")

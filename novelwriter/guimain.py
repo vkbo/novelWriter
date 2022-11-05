@@ -1382,7 +1382,7 @@ class GuiMain(QMainWindow):
         """
         doSave  = self.hasProject
         doSave &= self.theProject.projChanged
-        doSave &= self.theProject.projPath is not None
+        doSave &= self.theProject.storage.isOpen()
 
         if doSave:
             logger.debug("Autosaving project")

@@ -649,7 +649,8 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
     writeFile(tstPath, "\n")
 
     assert theProject.openProject(nwLipsum)
-    assert theProject.projPath is not None
+    assert theProject.storage.storagePath is not None
+    assert theProject.storage.runtimePath is not None
     assert theProject.tree["636b6aa9b697bb"] is None
     assert theProject.tree["abcdefghijklm"] is None
 
