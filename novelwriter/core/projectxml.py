@@ -224,6 +224,7 @@ class ProjectXMLReader:
         """Parse the project section of the XML file.
         """
         logger.debug("Parsing <project> section")
+        projData.setUuid(xSection.attrib.get("id", None))
         for xItem in xSection:
             if xItem.tag == "name":
                 projData.setName(xItem.text)
@@ -476,7 +477,7 @@ class ProjectXMLWriter:
         })
 
         # Save Project Meta
-        xProject = etree.SubElement(xRoot, "project")
+        xProject = etree.SubElement(xRoot, "project", attrib={"id": projData.uuid})
         self._packSingleValue(xProject, "name", projData.name)
         self._packSingleValue(xProject, "title", projData.title)
         self._packListValue(xProject, "author", projData.authors)

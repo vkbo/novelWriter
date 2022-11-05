@@ -25,6 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import os
 import json
+import uuid
 import hashlib
 import logging
 
@@ -111,6 +112,15 @@ def checkHandle(value, default, allowNone=False):
     if isHandle(value):
         return str(value)
     return default
+
+
+def checkUuid(value, default):
+    """Try to process a value as an uuid, or return a default.
+    """
+    try:
+        return str(uuid.UUID(value))
+    except Exception:
+        return default
 
 
 # =============================================================================================== #

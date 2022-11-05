@@ -25,9 +25,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import uuid
 import logging
 
-from novelwriter.common import checkBool, checkInt, checkStringNone, isHandle, simplified
+from novelwriter.common import (
+    checkBool, checkInt, checkStringNone, checkUuid, isHandle, simplified
+)
 from novelwriter.core.status import NWStatus
 
 logger = logging.getLogger(__name__)
@@ -195,6 +198,17 @@ class NWProjectData:
     ##
     #  Setters
     ##
+
+    def setUuid(self, value):
+        """Set the project id.
+        """
+        value = checkUuid(value, "")
+        if not value:
+            self._uuid = str(uuid.uuid4())
+        elif value != self._uuid:
+            self._uuid = value
+            self.theProject.setProjectChanged(True)
+        return
 
     def setName(self, value):
         """Set a new project name.

@@ -322,6 +322,7 @@ class ProjectBuilder:
         projTitle = data.get("projTitle", lblNewProject)
         projAuthors = data.get("projAuthors", "")
 
+        project.data.setUuid(None)
         project.data.setName(projName)
         project.data.setTitle(projTitle)
         project.data.setAuthors(projAuthors)

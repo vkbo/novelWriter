@@ -232,7 +232,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     copyfile(outFile, tstFile)
-    assert cmpFiles(tstFile, xmlFile)
+    assert cmpFiles(tstFile, refFile)
 
 # END Test testCoreProjectXML_ReadCurrent
 
@@ -369,6 +369,7 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
     xmlWriter = ProjectXMLWriter(fncPath)
+    data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     testFile = tstPaths.outDir / "projectXML_ReadLegacy10.nwx"
     compFile = tstPaths.refDir / "projectXML_ReadLegacy10.nwx"
@@ -510,6 +511,7 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
     xmlWriter = ProjectXMLWriter(fncPath)
+    data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     testFile = tstPaths.outDir / "projectXML_ReadLegacy11.nwx"
     compFile = tstPaths.refDir / "projectXML_ReadLegacy11.nwx"
@@ -654,6 +656,7 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
     xmlWriter = ProjectXMLWriter(fncPath)
+    data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     testFile = tstPaths.outDir / "projectXML_ReadLegacy12.nwx"
     compFile = tstPaths.refDir / "projectXML_ReadLegacy12.nwx"
@@ -798,6 +801,7 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
     xmlWriter = ProjectXMLWriter(fncPath)
+    data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     testFile = tstPaths.outDir / "projectXML_ReadLegacy13.nwx"
     compFile = tstPaths.refDir / "projectXML_ReadLegacy13.nwx"

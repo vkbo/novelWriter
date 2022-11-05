@@ -20,6 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import os
+import uuid
 import pytest
 
 from shutil import copyfile
@@ -264,10 +265,12 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncDir, outDir, refDir, mock
 
 
 @pytest.mark.core
-def testCoreTools_NewMinimal(fncDir, outDir, refDir, mockGUI, mockRnd):
+def testCoreTools_NewMinimal(monkeypatch, fncDir, outDir, refDir, mockGUI, mockRnd):
     """Create a new project from a project wizard dictionary. With
     default setting, creating a Minimal project.
     """
+    monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
+
     projFile = os.path.join(fncDir, "nwProject.nwx")
     testFile = os.path.join(outDir, "coreTools_NewMinimal_nwProject.nwx")
     compFile = os.path.join(refDir, "coreTools_NewMinimal_nwProject.nwx")
@@ -294,10 +297,12 @@ def testCoreTools_NewMinimal(fncDir, outDir, refDir, mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_NewCustomA(fncDir, outDir, refDir, mockGUI, mockRnd):
+def testCoreTools_NewCustomA(monkeypatch, fncDir, outDir, refDir, mockGUI, mockRnd):
     """Create a new project from a project wizard dictionary.
     Custom type with chapters and scenes.
     """
+    monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
+
     projFile = os.path.join(fncDir, "nwProject.nwx")
     testFile = os.path.join(outDir, "coreTools_NewCustomA_nwProject.nwx")
     compFile = os.path.join(refDir, "coreTools_NewCustomA_nwProject.nwx")
@@ -330,10 +335,12 @@ def testCoreTools_NewCustomA(fncDir, outDir, refDir, mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_NewCustomB(fncDir, outDir, refDir, mockGUI, mockRnd):
+def testCoreTools_NewCustomB(monkeypatch, fncDir, outDir, refDir, mockGUI, mockRnd):
     """Create a new project from a project wizard dictionary.
     Custom type without chapters, but with scenes.
     """
+    monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
+
     projFile = os.path.join(fncDir, "nwProject.nwx")
     testFile = os.path.join(outDir, "coreTools_NewCustomB_nwProject.nwx")
     compFile = os.path.join(refDir, "coreTools_NewCustomB_nwProject.nwx")

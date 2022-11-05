@@ -30,11 +30,11 @@ from tools import writeFile
 from novelwriter.guimain import GuiMain
 from novelwriter.common import (
     checkStringNone, checkString, checkInt, checkFloat, checkBool, checkHandle,
-    isHandle, isTitleTag, isItemClass, isItemType, isItemLayout, hexToInt,
-    minmax, checkIntTuple, formatInt, formatTimeStamp, formatTime, simplified,
-    splitVersionNumber, transferCase, fuzzyTime, numberToRoman, jsonEncode,
-    readTextFile, makeFileNameSafe, ensureFolder, sha256sum, getGuiItem,
-    NWConfigParser
+    checkUuid, isHandle, isTitleTag, isItemClass, isItemType, isItemLayout,
+    hexToInt, minmax, checkIntTuple, formatInt, formatTimeStamp, formatTime,
+    simplified, splitVersionNumber, transferCase, fuzzyTime, numberToRoman,
+    jsonEncode, readTextFile, makeFileNameSafe, ensureFolder, sha256sum,
+    getGuiItem, NWConfigParser
 )
 
 
@@ -135,6 +135,20 @@ def testBaseCommon_CheckHandle():
     assert checkHandle("h7666c91c7ccf", None, False) is None
 
 # END Test testBaseCommon_CheckHandle
+
+
+@pytest.mark.base
+def testBaseCommon_CheckUuid():
+    """Test the checkUuid function.
+    """
+    testUuid = "e2be99af-f9bf-4403-857a-c3d1ac25abea"
+    assert checkUuid("", None) is None
+    assert checkUuid("e2be99af-f9bf-4403-857a-c3d1ac25abe", None) is None
+    assert checkUuid("e2be99af-f9bf-qq03-857a-c3d1ac25abea", None) is None
+    assert checkUuid("e2be99af-f9bf-4403-857a-c3d1ac25abeaa", None) is None
+    assert checkUuid(testUuid, None) == testUuid
+
+# END Test testBaseCommon_CheckUuid
 
 
 @pytest.mark.base

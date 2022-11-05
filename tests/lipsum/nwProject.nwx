@@ -1,19 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-10-31 22:17:38">
-  <project>
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-11-05 16:38:19">
+  <project id="5ac0df12-8b8b-476b-9905-21d33685687c">
     <name>Lorem Ipsum</name>
     <title>Lorem Ipsum</title>
     <author>lipsum.com</author>
-    <saveCount>32</saveCount>
+    <saveCount>34</saveCount>
     <autoCount>24</autoCount>
-    <editTime>1889</editTime>
+    <editTime>1893</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
     <language>en_GB</language>
     <spellCheck>False</spellCheck>
     <spellLang>None</spellLang>
-    <totalWordCount>3847</totalWordCount>
     <novelWordCount>3109</novelWordCount>
     <notesWordCount>738</notesWordCount>
     <lastHandle>
