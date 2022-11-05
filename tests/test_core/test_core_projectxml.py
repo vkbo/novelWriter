@@ -29,8 +29,8 @@ from mock import causeOSError
 from tools import cmpFiles, writeFile
 
 from novelwriter.core.item import NWItem
-from novelwriter.core.project import NWProjectData
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
+from novelwriter.core.projectdata import NWProjectData
 
 
 class MockProject:
