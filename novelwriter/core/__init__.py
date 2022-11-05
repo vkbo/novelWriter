@@ -20,7 +20,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 from novelwriter.core.coretools import DocMerger, DocSplitter, ProjectBuilder
-from novelwriter.core.document import NWDoc
 from novelwriter.core.index import countWords
 from novelwriter.core.project import NWProject
 from novelwriter.core.spellcheck import NWSpellEnchant
@@ -33,7 +32,6 @@ __all__ = [
     "DocSplitter",
     "ProjectBuilder",
     "countWords",
-    "NWDoc",
     "NWProject",
     "NWSpellEnchant",
     "ToHtml",

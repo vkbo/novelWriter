@@ -38,7 +38,6 @@ from novelwriter.enum import nwAlert
 from novelwriter.common import minmax, simplified
 from novelwriter.constants import nwItemClass
 from novelwriter.core.project import NWProject
-from novelwriter.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
 
@@ -102,7 +101,7 @@ class DocMerger:
         if srcItem is None:
             return False
 
-        inDoc = NWDoc(self.theProject, srcHandle)
+        inDoc = self.theProject.storage.getDocument(srcHandle)
         docText = (inDoc.readDocument() or "").rstrip("\n")
 
         if addComment:
@@ -122,7 +121,7 @@ class DocMerger:
         if self._targetDoc is None:
             return False
 
-        outDoc = NWDoc(self.theProject, self._targetDoc)
+        outDoc = self.theProject.storage.getDocument(self._targetDoc)
         docText = (outDoc.readDocument() or "").rstrip("\n")
         if docText:
             self._targetText.insert(0, docText)
@@ -247,7 +246,7 @@ class DocSplitter:
             newItem.setStatus(self._srcItem.itemStatus)
             newItem.setImport(self._srcItem.itemImport)
 
-            outDoc = NWDoc(self.theProject, dHandle)
+            outDoc = self.theProject.storage.getDocument(dHandle)
             status = outDoc.writeDocument("\n".join(docText))
             if not status:
                 self._error = outDoc.getError()
@@ -337,18 +336,18 @@ class ProjectBuilder:
         if project.data.authors:
             titlePage += f">> {lblByAuthors} {project.getFormattedAuthors()} <<\n\n"
 
-        aDoc = NWDoc(project, hTitlePage)
+        aDoc = project.storage.getDocument(hTitlePage)
         aDoc.writeDocument(titlePage)
 
         if popMinimal:
             # Creating a minimal project with a few root folders and a
             # single chapter with a single scene.
             hChapter = project.newFile(lblNewChapter, hNovelRoot)
-            aDoc = NWDoc(project, hChapter)
+            aDoc = project.storage.getDocument(hChapter)
             aDoc.writeDocument(f"## {lblNewChapter}\n\n")
 
             hScene = project.newFile(lblNewScene, hChapter)
-            aDoc = NWDoc(project, hScene)
+            aDoc = project.storage.getDocument(hScene)
             aDoc.writeDocument(f"### {lblNewScene}\n\n")
 
             project.newRoot(nwItemClass.PLOT)
@@ -376,7 +375,7 @@ class ProjectBuilder:
                 for ch in range(numChapters):
                     chTitle = self.tr("Chapter {0}").format(f"{ch+1:d}")
                     cHandle = project.newFile(chTitle, hNovelRoot)
-                    aDoc = NWDoc(project, cHandle)
+                    aDoc = project.storage.getDocument(cHandle)
                     aDoc.writeDocument(f"## {chTitle}\n\n% Synopsis: {chSynop}\n\n")
 
                     # Create chapter scenes
@@ -384,7 +383,7 @@ class ProjectBuilder:
                         for sc in range(numScenes):
                             scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
                             sHandle = project.newFile(scTitle, cHandle)
-                            aDoc = NWDoc(project, sHandle)
+                            aDoc = project.storage.getDocument(sHandle)
                             aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
 
             # Create scenes (no chapters)
@@ -392,7 +391,7 @@ class ProjectBuilder:
                 for sc in range(numScenes):
                     scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
                     sHandle = project.newFile(scTitle, hNovelRoot)
-                    aDoc = NWDoc(project, sHandle)
+                    aDoc = project.storage.getDocument(sHandle)
                     aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
 
             # Create notes folders
@@ -409,7 +408,7 @@ class ProjectBuilder:
                     if addNotes:
                         aHandle = project.newFile(noteTitles[newRoot], rHandle)
                         ntTag = simplified(noteTitles[newRoot]).replace(" ", "")
-                        aDoc = NWDoc(project, aHandle)
+                        aDoc = project.storage.getDocument(aHandle)
                         aDoc.writeDocument(f"# {noteTitles[newRoot]}\n\n@tag: {ntTag}\n\n")
 
             # Also add the archive and trash folders

@@ -156,7 +156,7 @@ def buildTestProject(theObject, projPath):
     object as the parent.
     """
     from novelwriter.enum import nwItemClass
-    from novelwriter.core import NWProject, NWDoc
+    from novelwriter.core import NWProject
 
     if isinstance(theObject, NWProject):
         theGUI = None
@@ -187,15 +187,15 @@ def buildTestProject(theObject, projPath):
     xHandle[7] = theProject.newFile("New Chapter", xHandle[6])
     xHandle[8] = theProject.newFile("New Scene", xHandle[6])
 
-    aDoc = NWDoc(theProject, xHandle[5])
+    aDoc = theProject.storage.getDocument(xHandle[5])
     aDoc.writeDocument("#! New Novel\n\n>> By Jane Doe <<\n")
     theProject.index.reIndexHandle(xHandle[5])
 
-    aDoc = NWDoc(theProject, xHandle[7])
+    aDoc = theProject.storage.getDocument(xHandle[7])
     aDoc.writeDocument("## %s\n\n" % theProject.tr("New Chapter"))
     theProject.index.reIndexHandle(xHandle[7])
 
-    aDoc = NWDoc(theProject, xHandle[8])
+    aDoc = theProject.storage.getDocument(xHandle[8])
     aDoc.writeDocument("### %s\n\n" % theProject.tr("New Scene"))
     theProject.index.reIndexHandle(xHandle[8])
 

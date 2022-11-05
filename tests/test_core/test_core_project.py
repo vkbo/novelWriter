@@ -38,7 +38,6 @@ from novelwriter.core.tree import NWTree
 from novelwriter.core.index import NWIndex
 from novelwriter.core.project import NWProject
 from novelwriter.core.options import OptionState
-from novelwriter.core.document import NWDoc
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 
 
@@ -125,11 +124,13 @@ def testCoreProject_NewFileFolder(monkeypatch, fncDir, outDir, refDir, mockGUI, 
 
     # Write to file, success
     assert theProject.writeNewFile("0000000000011", 2, True) is True
-    assert NWDoc(theProject, "0000000000011").readDocument() == "## Hello\n\n"
+    assert theProject.storage.getDocument("0000000000011").readDocument() == "## Hello\n\n"
 
     # Write to file with additional text, success
     assert theProject.writeNewFile("0000000000012", 1, False, "Hi Jane\n\n") is True
-    assert NWDoc(theProject, "0000000000012").readDocument() == "# Jane\n\nHi Jane\n\n"
+    assert theProject.storage.getDocument("0000000000012").readDocument() == (
+        "# Jane\n\nHi Jane\n\n"
+    )
 
     # Save, close and check
     assert theProject.projChanged is True

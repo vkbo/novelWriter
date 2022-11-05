@@ -36,7 +36,6 @@ from PyQt5.QtCore import QCoreApplication, QRegularExpression
 from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.common import numberToRoman, checkInt
 from novelwriter.constants import nwConst, nwRegEx, nwUnicode
-from novelwriter.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
 
@@ -305,7 +304,7 @@ class Tokenizer(ABC):
             return False
 
         if theText is None:
-            theText = NWDoc(self.theProject, theHandle).readDocument() or ""
+            theText = self.theProject.storage.getDocument(theHandle).readDocument() or ""
 
         self._theText = theText
 

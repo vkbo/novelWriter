@@ -25,7 +25,6 @@ import pytest
 from tools import C, buildTestProject, readFile
 
 from novelwriter.core.project import NWProject
-from novelwriter.core.document import NWDoc
 from novelwriter.core.tokenizer import Tokenizer
 
 
@@ -156,7 +155,7 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncDir):
     )
     docTextR = docText.replace("<A>", "this").replace("<B>", "that")
 
-    nDoc = NWDoc(theProject, C.hSceneDoc)
+    nDoc = theProject.storage.getDocument(C.hSceneDoc)
     assert nDoc.writeDocument(docText)
 
     theProject.data.setAutoReplace({"A": "this", "B": "that"})

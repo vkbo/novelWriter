@@ -35,7 +35,6 @@ from pathlib import Path
 from novelwriter.enum import nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode, nwHeaders
-from novelwriter.core.document import NWDoc
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
 )
@@ -118,7 +117,7 @@ class NWIndex:
             return False
 
         logger.debug("Re-indexing item '%s'", tHandle)
-        theDoc = NWDoc(self.theProject, tHandle)
+        theDoc = self.theProject.storage.getDocument(tHandle)
         self.scanText(tHandle, theDoc.readDocument() or "")
 
         return True

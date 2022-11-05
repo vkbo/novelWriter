@@ -33,7 +33,6 @@ from PyQt5.QtWidgets import (
     QListWidgetItem, QDialogButtonBox, QLabel, QGridLayout
 )
 
-from novelwriter.core import NWDoc
 from novelwriter.custom import QHelpLabel, QSwitch
 
 logger = logging.getLogger(__name__)
@@ -204,7 +203,7 @@ class GuiDocSplit(QDialog):
 
         spLevel = self.splitLevel.currentData()
         if not self._text:
-            inDoc = NWDoc(self.theProject, sHandle)
+            inDoc = self.theProject.storage.getDocument(sHandle)
             self._text = (inDoc.readDocument() or "").splitlines()
 
         for lineNo, aLine in enumerate(self._text):

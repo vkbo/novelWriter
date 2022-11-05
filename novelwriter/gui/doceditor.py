@@ -50,7 +50,7 @@ from PyQt5.QtWidgets import (
     QFrame
 )
 
-from novelwriter.core import NWDoc, NWSpellEnchant, countWords
+from novelwriter.core import NWSpellEnchant, countWords
 from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode
 from novelwriter.common import transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
@@ -339,7 +339,7 @@ class GuiDocEditor(QTextEdit):
         document is new (empty string), we set up the editor for editing
         the file.
         """
-        self._nwDocument = NWDoc(self.theProject, tHandle)
+        self._nwDocument = self.theProject.storage.getDocument(tHandle)
         self._nwItem = self._nwDocument.getCurrentItem()
 
         theDoc = self._nwDocument.readDocument()

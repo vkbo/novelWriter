@@ -31,7 +31,6 @@ from tools import C, buildTestProject, cmpFiles, XML_IGNORE
 
 from novelwriter.constants import nwItemClass
 from novelwriter.core.project import NWProject
-from novelwriter.core.document import NWDoc
 from novelwriter.core.coretools import DocMerger, DocSplitter, ProjectBuilder
 
 
@@ -164,7 +163,7 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncDir, outDir, refDir, mock
 
     docText = "\n\n".join(docData)
     docRaw = docText.splitlines()
-    assert NWDoc(theProject, hSplitDoc).writeDocument(docText) is True
+    assert theProject.storage.getDocument(hSplitDoc).writeDocument(docText) is True
     theProject.tree[hSplitDoc].setStatus(C.sFinished)
     theProject.tree[hSplitDoc].setImport(C.iMain)
 

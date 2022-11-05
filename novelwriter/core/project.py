@@ -45,7 +45,6 @@ from novelwriter.core.item import NWItem
 from novelwriter.core.index import NWIndex
 from novelwriter.core.options import OptionState
 from novelwriter.core.storage import NWStorage
-from novelwriter.core.document import NWDoc
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.projectdata import NWProjectData
 from novelwriter.common import (
@@ -183,7 +182,7 @@ class NWProject(QObject):
         if not tItem.isFileType():
             return False
 
-        newDoc = NWDoc(self, tHandle)
+        newDoc = self._storage.getDocument(tHandle)
         if (newDoc.readDocument() or "").strip():
             return False
 
@@ -204,7 +203,7 @@ class NWProject(QObject):
         project entry and a document file if it exists.
         """
         if self._tree.checkType(tHandle, nwItemType.FILE):
-            delDoc = NWDoc(self, tHandle)
+            delDoc = self._storage.getDocument(tHandle)
             if not delDoc.deleteDocument():
                 self.mainGui.makeAlert([
                     self.tr("Could not delete document file."), delDoc.getError()
@@ -820,7 +819,7 @@ class NWProject(QObject):
             oClass = None
             oLayout = None
 
-            aDoc = NWDoc(self, oHandle)
+            aDoc = self._storage.getDocument(oHandle)
             if aDoc.readDocument(isOrphan=True) is not None:
                 oName, oParent, oClass, oLayout = aDoc.getMeta()
 
