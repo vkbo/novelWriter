@@ -1,21 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2020-05-28 09:59:15">
-  <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.5" timeStamp="2020-05-28 09:59:15">
+  <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed" saveCount="0" autoCount="0" editTime="1000">
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>0</saveCount>
-    <autoCount>0</autoCount>
-    <editTime>1000</editTime>
   </project>
   <settings>
     <doBackup>True</doBackup>
     <language>None</language>
     <spellCheck>True</spellCheck>
     <spellLang>None</spellLang>
-    <novelWordCount>0</novelWordCount>
-    <notesWordCount>0</notesWordCount>
     <lastHandle>
       <entry key="editor">None</entry>
       <entry key="viewer">None</entry>
@@ -50,7 +45,7 @@
       <entry key="i00000a" count="0" red="117" green="0" blue="175">Main</entry>
     </importance>
   </settings>
-  <content count="22">
+  <content itemCount="22" novelWords="0" notesWords="0">
     <item handle="7031beac91f75" parent="None" root="7031beac91f75" order="0" type="ROOT" class="NOVEL">
       <meta expanded="True"/>
       <name status="s000002" import="i000007">Novel</name>

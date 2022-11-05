@@ -1,21 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-11-05 16:59:57">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.5" timeStamp="2022-11-05 17:46:51">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1430" autoCount="236" editTime="69502">
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
     <author>Jay Doh</author>
-    <saveCount>1421</saveCount>
-    <autoCount>236</autoCount>
-    <editTime>69454</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
     <language>en_GB</language>
     <spellCheck>True</spellCheck>
     <spellLang>None</spellLang>
-    <novelWordCount>954</novelWordCount>
-    <notesWordCount>409</notesWordCount>
     <lastHandle>
       <entry key="editor">636b6aa9b697b</entry>
       <entry key="viewer">636b6aa9b697b</entry>
@@ -50,7 +45,7 @@
       <entry key="i56be10" count="1" red="117" green="0" blue="175">Main</entry>
     </importance>
   </settings>
-  <content count="27">
+  <content itemCount="27" novelWords="954" notesWords="409">
     <item handle="7031beac91f75" parent="None" root="7031beac91f75" order="0" type="ROOT" class="NOVEL">
       <meta expanded="True"/>
       <name status="sc24b8f" import="ia857f0">Novel</name>

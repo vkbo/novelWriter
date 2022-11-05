@@ -1,20 +1,15 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.4" timeStamp="2022-11-05 16:38:19">
-  <project id="5ac0df12-8b8b-476b-9905-21d33685687c">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.5" timeStamp="2022-11-05 17:51:27">
+  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="36" autoCount="24" editTime="1896">
     <name>Lorem Ipsum</name>
     <title>Lorem Ipsum</title>
     <author>lipsum.com</author>
-    <saveCount>34</saveCount>
-    <autoCount>24</autoCount>
-    <editTime>1893</editTime>
   </project>
   <settings>
     <doBackup>False</doBackup>
     <language>en_GB</language>
     <spellCheck>False</spellCheck>
     <spellLang>None</spellLang>
-    <novelWordCount>3109</novelWordCount>
-    <notesWordCount>738</notesWordCount>
     <lastHandle>
       <entry key="editor">7a992350f3eb6</entry>
       <entry key="viewer">None</entry>
@@ -45,7 +40,7 @@
       <entry key="id6b1d0" count="0" red="50" green="200" blue="0">Main</entry>
     </importance>
   </settings>
-  <content count="21">
+  <content itemCount="21" novelWords="3109" notesWords="738">
     <item handle="b3643d0f92e32" parent="None" root="b3643d0f92e32" order="0" type="ROOT" class="NOVEL">
       <meta expanded="True"/>
       <name status="sbaa94f" import="i613591">Novel</name>

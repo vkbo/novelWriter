@@ -25,7 +25,7 @@ import shutil
 
 from PyQt5.QtWidgets import qApp
 
-XML_IGNORE = ("<novelWriterXML", "<saveCount", "<autoCount", "<editTime")
+XML_IGNORE = ("<novelWriterXML", "<project")
 
 
 class C:
