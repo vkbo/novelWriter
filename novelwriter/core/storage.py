@@ -24,11 +24,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
+import novelwriter
 
+from time import time
 from pathlib import Path
 
 from novelwriter.constants import nwFiles
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
+from novelwriter.error import logException
 
 logger = logging.getLogger(__name__)
 
@@ -41,10 +44,12 @@ class NWStorage:
 
     def __init__(self, theProject):
 
+        self.mainConf = novelwriter.CONFIG
         self.theProject = theProject
 
         self._storagePath = None
         self._runtimePath = None
+        self._lockFilePath = None
         self._openMode = self.MODE_INACTIVE
 
         return
@@ -104,6 +109,7 @@ class NWStorage:
 
         self._storagePath = inPath
         self._runtimePath = inPath
+        self._lockFilePath = inPath / nwFiles.PROJ_LOCK
         self._openMode = self.MODE_INPLACE
 
         if self._prepareStorage(checkLegacy=True) is False:
@@ -162,14 +168,67 @@ class NWStorage:
     def getMetaFile(self, kind):
         pass
 
+    def readLockFile(self):
+        """Read the project lock file.
+        """
+        if self._lockFilePath is None:
+            return ["ERROR"]
+
+        if not self._lockFilePath.exists():
+            return []
+
+        try:
+            lines = self._lockFilePath.read_text(encoding="utf-8").split(";")
+        except Exception:
+            logger.error("Failed to read project lockfile")
+            logException()
+            return ["ERROR"]
+
+        if len(lines) != 4:
+            return ["ERROR"]
+
+        return lines
+
+    def writeLockFile(self):
+        """Write the project lock file.
+        """
+        if self._lockFilePath is None:
+            return False
+
+        data = [
+            self.mainConf.hostName, self.mainConf.osType,
+            self.mainConf.kernelVer, str(int(time()))
+        ]
+        try:
+            self._lockFilePath.write_text(";".join(data), encoding="utf-8")
+        except Exception:
+            logger.error("Failed to write project lockfile")
+            logException()
+            return False
+
+        return True
+
+    def clearLockFile(self):
+        """Remove the lock file, if it exists.
+        """
+        if self._lockFilePath is None:
+            return False
+
+        if self._lockFilePath.exists():
+            try:
+                self._lockFilePath.unlink()
+            except Exception:
+                logger.error("Failed to remove project lockfile")
+                logException()
+                return False
+
+        return True
+
     ##
     #  Internal Functions
     ##
 
     def _zipIt(self, target):
-        pass
-
-    def _readLockFile(self):
         pass
 
     def _writeLockFile(self):

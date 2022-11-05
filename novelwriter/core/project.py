@@ -286,9 +286,9 @@ class NWProject(QObject):
         # ============
 
         if overrideLock:
-            self._clearLockFile()
+            self._storage.clearLockFile()
 
-        lockStatus = self._readLockFile()
+        lockStatus = self._storage.readLockFile()
         if len(lockStatus) > 0:
             if lockStatus[0] == "ERROR":
                 logger.warning("Failed to check lock file")
@@ -310,7 +310,6 @@ class NWProject(QObject):
 
         self._data = NWProjectData(self)
         projContent = []
-
         xmlParsed = xmlReader.read(self._data, projContent)
 
         appVersion = xmlReader.appVersion or self.tr("Unknown")
@@ -397,7 +396,7 @@ class NWProject(QObject):
         self._projOpened = time()
         self._projAltered = False
 
-        self._writeLockFile()
+        self._storage.writeLockFile()
         self.setProjectChanged(False)
         self.mainGui.setStatus(self.tr("Opened Project: {0}").format(self._data.name))
 
@@ -458,7 +457,7 @@ class NWProject(QObject):
         )
         self.mainConf.saveRecentCache()
 
-        self._writeLockFile()
+        self._storage.writeLockFile()
         self.mainGui.setStatus(self.tr("Saved Project: {0}").format(self._data.name))
         self.setProjectChanged(False)
 
@@ -471,7 +470,7 @@ class NWProject(QObject):
         self._options.saveSettings()
         self._tree.writeToCFile()
         self._appendSessionStats(idleTime)
-        self._clearLockFile()
+        self._storage.clearLockFile()
         self.clearProject()
         self.lockedBy = None
         return True
@@ -565,9 +564,9 @@ class NWProject(QObject):
         baseName = os.path.join(baseDir, archName)
 
         try:
-            self._clearLockFile()
+            self._storage.clearLockFile()
             shutil.make_archive(baseName, "zip", self.projPath, ".")
-            self._writeLockFile()
+            self._storage.writeLockFile()
             logger.info("Backup written to: %s", archName)
             if doNotify:
                 self.mainGui.makeAlert(self.tr(
@@ -816,69 +815,6 @@ class NWProject(QObject):
             logger.error("Failed to project language file")
             logException()
             return False
-
-        return True
-
-    def _readLockFile(self):
-        """Reads the lock file in the project folder.
-        """
-        if self.projPath is None:
-            return ["ERROR"]
-
-        lockFile = os.path.join(self.projPath, nwFiles.PROJ_LOCK)
-        if not os.path.isfile(lockFile):
-            return []
-
-        theLines = []
-        try:
-            with open(lockFile, mode="r", encoding="utf-8") as inFile:
-                theData = inFile.read()
-                theLines = theData.splitlines()
-                if len(theLines) != 4:
-                    return ["ERROR"]
-
-        except Exception:
-            logger.error("Failed to read project lockfile")
-            logException()
-            return ["ERROR"]
-
-        return theLines
-
-    def _writeLockFile(self):
-        """Writes a lock file to the project folder.
-        """
-        if self.projPath is None:
-            return False
-
-        lockFile = os.path.join(self.projPath, nwFiles.PROJ_LOCK)
-        try:
-            with open(lockFile, mode="w+", encoding="utf-8") as outFile:
-                outFile.write("%s\n" % self.mainConf.hostName)
-                outFile.write("%s\n" % self.mainConf.osType)
-                outFile.write("%s\n" % self.mainConf.kernelVer)
-                outFile.write("%d\n" % time())
-
-        except Exception:
-            logger.error("Failed to write project lockfile")
-            logException()
-            return False
-
-        return True
-
-    def _clearLockFile(self):
-        """Remove the lock file, if it exists.
-        """
-        if self.projPath is None:
-            return False
-
-        lockFile = os.path.join(self.projPath, nwFiles.PROJ_LOCK)
-        if os.path.isfile(lockFile):
-            try:
-                os.unlink(lockFile)
-            except Exception:
-                logger.error("Failed to remove project lockfile")
-                logException()
-                return False
 
         return True
 

@@ -276,7 +276,7 @@ class ProjectXMLReader:
                 projData.setSpellLang(xItem.text)
             elif xItem.tag == "status":
                 self._parseStatusImport(xItem, projData.itemStatus)
-            elif xItem.tag in ("import", "importance"):
+            elif xItem.tag == "importance":
                 self._parseStatusImport(xItem, projData.itemImport)
             elif xItem.tag == "lastHandle":
                 projData.setLastHandle(self._parseDictKeyText(xItem))

@@ -196,12 +196,12 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncDir, mockRnd):
 
     # Fail on lock file
     theProject.setProjectPath(fncDir)
-    assert theProject._writeLockFile()
+    assert theProject._storage.writeLockFile()
     assert theProject.openProject(fncDir) is False
 
     # Fail to read lockfile (which still opens the project)
     with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
+        mp.setattr("novelwriter.core.storage.NWStorage.readLockFile", lambda *a: ["ERROR"])
         caplog.clear()
         assert theProject.openProject(fncDir) is True
         assert "Failed to check lock file" in caplog.text
@@ -209,7 +209,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncDir, mockRnd):
 
     # Force open with lockfile
     theProject.setProjectPath(fncDir)
-    assert theProject._writeLockFile()
+    assert theProject._storage.writeLockFile()
     assert theProject.openProject(fncDir, overrideLock=True) is True
     assert theProject.closeProject()
 
@@ -284,66 +284,6 @@ def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncDir, refDir):
     assert theProject.closeProject()
 
 # END Test testCoreProject_Save
-
-
-@pytest.mark.core
-def testCoreProject_LockFile(monkeypatch, fncDir, mockGUI):
-    """Test lock file functions for the project folder.
-    """
-    theProject = NWProject(mockGUI)
-
-    lockFile = os.path.join(fncDir, nwFiles.PROJ_LOCK)
-
-    # No project
-    assert theProject._writeLockFile() is False
-    assert theProject._readLockFile() == ["ERROR"]
-    assert theProject._clearLockFile() is False
-
-    theProject.projPath = fncDir
-    theProject.mainConf.hostName = "TestHost"
-    theProject.mainConf.osType = "TestOS"
-    theProject.mainConf.kernelVer = "1.0"
-
-    # Block open
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert theProject._writeLockFile() is False
-
-    # Write lock file
-    with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.project.time", lambda: 123.4)
-        assert theProject._writeLockFile() is True
-    assert readFile(lockFile) == "TestHost\nTestOS\n1.0\n123\n"
-
-    # Block open
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert theProject._readLockFile() == ["ERROR"]
-
-    # Read lock file
-    assert theProject._readLockFile() == ["TestHost", "TestOS", "1.0", "123"]
-
-    # Block unlink
-    with monkeypatch.context() as mp:
-        mp.setattr("os.unlink", causeOSError)
-        assert os.path.isfile(lockFile)
-        assert theProject._clearLockFile() is False
-        assert os.path.isfile(lockFile)
-
-    # Clear file
-    assert os.path.isfile(lockFile)
-    assert theProject._clearLockFile() is True
-    assert not os.path.isfile(lockFile)
-
-    # Read again, no file
-    assert theProject._readLockFile() == []
-
-    # Read an invalid lock file
-    writeFile(lockFile, "A\nB")
-    assert theProject._readLockFile() == ["ERROR"]
-    assert theProject._clearLockFile() is True
-
-# END Test testCoreProject_LockFile
 
 
 @pytest.mark.core
