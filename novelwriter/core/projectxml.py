@@ -347,8 +347,8 @@ class ProjectXMLReader:
             # Deprecated Nodes
             if self._version < HEX_VERSION:
                 for xVal in xItem:
-                    if xVal.tag == "name":
-                        name["active"] = checkBool(xVal.attrib.get("exported"), name["active"])
+                    if xVal.tag == "name" and "exported" in xVal.attrib:
+                        name["active"] = checkBool(xVal.attrib.get("exported"), False)
 
             projContent.append({
                 "name": itemName,
@@ -365,74 +365,74 @@ class ProjectXMLReader:
         logger.debug("Parsing <content> section (legacy format)")
 
         # Create maps to look up name -> key for status and importance
-        statusMap = {entry["name"]: key for key, entry in projData.itemStatus.items()}
-        importMap = {entry["name"]: key for key, entry in projData.itemImport.items()}
+        statusMap = {entry.get("name"): key for key, entry in projData.itemStatus.items()}
+        importMap = {entry.get("name"): key for key, entry in projData.itemImport.items()}
 
         for xItem in xSection:
+            if xItem.tag != "item":
+                logger.warning("Ignored item <root/content/%s> in XML", xItem.tag)
+                continue
+
             item = {}
             meta = {}
             name = {}
             itemName = ""
 
-            if xItem.tag == "item":
-                item["handle"]  = checkStringNone(xItem.attrib.get("handle", None), None)
-                item["parent"]  = checkStringNone(xItem.attrib.get("parent", None), None)
-                item["root"]    = None  # Value was added in 1.4
-                item["order"]   = checkInt(xItem.attrib.get("order", 0), 0)
-                meta["heading"] = "H0"  # Value was added in 1.4
+            item["handle"]  = checkStringNone(xItem.attrib.get("handle", None), None)
+            item["parent"]  = checkStringNone(xItem.attrib.get("parent", None), None)
+            item["root"]    = None  # Value was added in 1.4
+            item["order"]   = checkInt(xItem.attrib.get("order", 0), 0)
+            meta["heading"] = "H0"  # Value was added in 1.4
 
-                tmpStatus = ""
-                for xVal in xItem:
-                    if xVal.tag == "name":
-                        itemName = simplified(checkString(xVal.text, ""))
-                    elif xVal.tag == "status":
-                        tmpStatus = checkStringNone(xVal.text, None)
-                    elif xVal.tag == "type":
-                        item["type"] = checkString(xVal.text, "")
-                    elif xVal.tag == "class":
-                        item["class"] = checkString(xVal.text, "")
-                    elif xVal.tag == "layout":
-                        item["layout"] = checkString(xVal.text, "")
-                    elif xVal.tag == "expanded":
-                        meta["expanded"] = checkBool(xVal.text, False)
-                    elif xVal.tag == "exported":  # Renamed to active in 1.4
-                        name["active"] = checkBool(xVal.text, False)
-                    elif xVal.tag == "charCount":
-                        meta["charCount"] = checkInt(xVal.text, 0)
-                    elif xVal.tag == "wordCount":
-                        meta["wordCount"] = checkInt(xVal.text, 0)
-                    elif xVal.tag == "paraCount":
-                        meta["paraCount"] = checkInt(xVal.text, 0)
-                    elif xVal.tag == "cursorPos":
-                        meta["cursorPos"] = checkInt(xVal.text, 0)
-                    else:
-                        logger.warning("Ignored <root/content/item/%s> in XML", xVal.tag)
-
-                # Status was split into separate status/import with a key in 1.4
-                if item.get("class", "") in ("NOVEL", "ARCHIVE"):
-                    name["status"] = statusMap.get(tmpStatus, None)
+            tmpStatus = ""
+            for xVal in xItem:
+                if xVal.tag == "name":
+                    itemName = simplified(checkString(xVal.text, ""))
+                elif xVal.tag == "status":
+                    tmpStatus = checkStringNone(xVal.text, None)
+                elif xVal.tag == "type":
+                    item["type"] = checkString(xVal.text, "")
+                elif xVal.tag == "class":
+                    item["class"] = checkString(xVal.text, "")
+                elif xVal.tag == "layout":
+                    item["layout"] = checkString(xVal.text, "")
+                elif xVal.tag == "expanded":
+                    meta["expanded"] = checkBool(xVal.text, False)
+                elif xVal.tag == "exported":  # Renamed to active in 1.5
+                    name["active"] = checkBool(xVal.text, False)
+                elif xVal.tag == "charCount":
+                    meta["charCount"] = checkInt(xVal.text, 0)
+                elif xVal.tag == "wordCount":
+                    meta["wordCount"] = checkInt(xVal.text, 0)
+                elif xVal.tag == "paraCount":
+                    meta["paraCount"] = checkInt(xVal.text, 0)
+                elif xVal.tag == "cursorPos":
+                    meta["cursorPos"] = checkInt(xVal.text, 0)
                 else:
-                    name["import"] = importMap.get(tmpStatus, None)
+                    logger.warning("Ignored <root/content/item/%s> in XML", xVal.tag)
 
-                # A number of layouts were removed in 1.3
-                if item.get("layout", "") in (
-                    "TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE"
-                ):
-                    item["layout"] = "DOCUMENT"
-
-                # The trast type was removed in 1.4
-                if item.get("type", "") == "TRASH":
-                    item["type"] = "ROOT"
-
-                projContent.append({
-                    "name": itemName,
-                    "itemAttr": item,
-                    "metaAttr": meta,
-                    "nameAttr": name,
-                })
-
+            # Status was split into separate status/import with a key in 1.4
+            if item.get("class", "") in ("NOVEL", "ARCHIVE"):
+                name["status"] = statusMap.get(tmpStatus, None)
             else:
-                logger.warning("Ignored <root/content/%s> in XML", xItem.tag)
+                name["import"] = importMap.get(tmpStatus, None)
+
+            # A number of layouts were removed in 1.3
+            if item.get("layout", "") in (
+                "TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE"
+            ):
+                item["layout"] = "DOCUMENT"
+
+            # The trash type was removed in 1.4
+            if item.get("type", "") == "TRASH":
+                item["type"] = "ROOT"
+
+            projContent.append({
+                "name": itemName,
+                "itemAttr": item,
+                "metaAttr": meta,
+                "nameAttr": name,
+            })
 
         return
 
@@ -463,7 +463,7 @@ class ProjectXMLReader:
         """Parse a dictionary stored with key as the tag and the value
         as the text porperty.
         """
-        return {n.tag: checkString(n.text, "") for n in xItem}
+        return {xNode.tag: checkString(xNode.text, "") for xNode in xItem}
 
 # END Class ProjectXMLReader
 
