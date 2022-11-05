@@ -27,12 +27,12 @@ from __future__ import annotations
 
 import os
 import json
-from pathlib import Path
 import shutil
 import logging
 import novelwriter
 
 from time import time
+from pathlib import Path
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication, QObject, pyqtSignal
@@ -84,10 +84,9 @@ class NWProject(QObject):
         self.lockedBy     = None   # Data on which computer has the project open
 
         # Class Settings
-        self.projPath    = None  # The full path to where the currently open project is saved
-        self.projContent = None  # The full path to the project's content folder
-        self.projDict    = None  # The spell check dictionary
-        self.projFiles   = []    # A list of all files in the content folder on load
+        self.projPath  = None  # The full path to where the currently open project is saved
+        self.projDict  = None  # The spell check dictionary
+        self.projFiles = []    # A list of all files in the content folder on load
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
@@ -252,10 +251,9 @@ class NWProject(QObject):
         self._data = NWProjectData(self)
 
         # Project Settings
-        self.projPath    = None
-        self.projContent = None
-        self.projDict    = None
-        self.projFiles   = []
+        self.projPath  = None
+        self.projDict  = None
+        self.projFiles = []
 
         return
 
@@ -271,7 +269,6 @@ class NWProject(QObject):
 
         # ToDo: These should not be set explicitly, and should stay as Path
         self.projPath = str(self._storage.runtimePath)
-        self.projContent = str(self._storage.contentPath)
 
         logger.info("Opening project: %s", self.projPath)
 
@@ -466,24 +463,6 @@ class NWProject(QObject):
         self._storage.clearLockFile()
         self.clearProject()
         self.lockedBy = None
-        return True
-
-    def ensureFolderStructure(self):
-        """Ensure that all necessary folders exist in the project
-        folder.
-        """
-        if self.projPath is None or self.projPath == "":
-            return False
-
-        self.projContent = os.path.join(self.projPath, "content")
-
-        if self.projPath == os.path.expanduser("~"):
-            # Don't make a mess in the user's home folder
-            return False
-
-        if not self._checkFolder(self.projContent):
-            return False
-
         return True
 
     def setDefaultStatusImport(self):
@@ -790,31 +769,34 @@ class NWProject(QObject):
         orphaned files so the user can either delete them, or put them
         back into the project tree.
         """
-        if self.projPath is None:
+        contentPath = self._storage.contentPath
+        if not isinstance(contentPath, Path):
             return False
 
         # Then check the files in the data folder
         logger.debug("Checking files in project content folder")
         orphanFiles = []
         self.projFiles = []
-        for fileItem in os.listdir(self.projContent):
-            if not fileItem.endswith(".nwd"):
-                logger.warning("Skipping file: %s", fileItem)
+
+        for item in contentPath.iterdir():
+            itemName = item.name
+            if not itemName.endswith(".nwd"):
+                logger.warning("Skipping file: %s", itemName)
                 continue
-            if len(fileItem) != 17:
-                logger.warning("Skipping file: %s", fileItem)
+            if len(itemName) != 17:
+                logger.warning("Skipping file: %s", itemName)
                 continue
 
-            fHandle = fileItem[:13]
+            fHandle = itemName[:13]
             if not isHandle(fHandle):
-                logger.warning("Skipping file: %s", fileItem)
+                logger.warning("Skipping file: %s", itemName)
                 continue
 
             if fHandle in self._tree:
                 self.projFiles.append(fHandle)
-                logger.debug("Checking file %s, handle '%s': OK", fileItem, fHandle)
+                logger.debug("Checking file %s, handle '%s': OK", itemName, fHandle)
             else:
-                logger.warning("Checking file %s, handle '%s': Orphaned", fileItem, fHandle)
+                logger.warning("Checking file %s, handle '%s': Orphaned", itemName, fHandle)
                 orphanFiles.append(fHandle)
 
         # Report status

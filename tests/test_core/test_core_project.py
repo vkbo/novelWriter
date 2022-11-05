@@ -141,7 +141,7 @@ def testCoreProject_NewFileFolder(monkeypatch, fncDir, outDir, refDir, mockGUI, 
 
     # Delete new file, but block access
     with monkeypatch.context() as mp:
-        mp.setattr("os.unlink", causeOSError)
+        mp.setattr("pathlib.Path.unlink", causeOSError)
         assert theProject.removeItem("0000000000011") is False
         assert "0000000000011" in theProject.tree
 
@@ -268,36 +268,6 @@ def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncDir, refDir):
     assert theProject.closeProject()
 
 # END Test testCoreProject_Save
-
-
-@pytest.mark.core
-def testCoreProject_Helpers(monkeypatch, fncDir, mockGUI):
-    """Test helper functions for the project folder.
-    """
-    theProject = NWProject(mockGUI)
-
-    # No path
-    assert theProject.ensureFolderStructure() is False
-
-    # Set the correct dir
-    theProject.projPath = fncDir
-
-    # Block user's home folder
-    with monkeypatch.context() as mp:
-        mp.setattr("os.path.expanduser", lambda *a, **k: fncDir)
-        assert theProject.ensureFolderStructure() is False
-
-    # Create a file to block content folder
-    contentDir = os.path.join(fncDir, "content")
-    writeFile(contentDir, "stuff")
-    assert theProject.ensureFolderStructure() is False
-    os.unlink(contentDir)
-
-    # Now, do it right
-    assert theProject.ensureFolderStructure() is True
-    assert os.path.isdir(contentDir)
-
-# END Test testCoreProject_Helpers
 
 
 @pytest.mark.core

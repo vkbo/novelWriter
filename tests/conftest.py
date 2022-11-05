@@ -64,6 +64,13 @@ def tmpDir():
     return theDir
 
 
+@pytest.fixture(scope="function")
+def tmpPath(tmpDir):
+    """A temporary folder for a single test function.
+    """
+    return Path(tmpDir)
+
+
 @pytest.fixture(scope="session")
 def tstPaths(tmpDir):
     """Returns an object that can provide the various paths needed for

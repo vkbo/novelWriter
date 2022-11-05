@@ -151,6 +151,8 @@ class NWStorage:
         return xmlWriter
 
     def getDocument(self, tHandle):
+        """Return a document wrapper object.
+        """
         pass
 
     def getMetaFile(self, fileName):

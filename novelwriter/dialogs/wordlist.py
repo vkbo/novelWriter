@@ -163,9 +163,7 @@ class GuiWordList(QDialog):
                     if item is not None:
                         outFile.write(item.text() + "\n")
 
-            if dctFile.exists():
-                dctFile.unlink()
-            tmpFile.rename(dctFile)
+            tmpFile.replace(dctFile)
 
         except Exception:
             logger.error("Could not save new word list")

@@ -114,7 +114,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncDir, mockRnd):
 
     # Cause os.replace() to fail while saving
     with monkeypatch.context() as mp:
-        mp.setattr("os.replace", causeOSError)
+        mp.setattr("pathlib.Path.replace", causeOSError)
         assert theDoc.writeDocument(theText) is False
         assert theDoc.getError() == "OSError: Mock OSError"
 
@@ -135,7 +135,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncDir, mockRnd):
 
     # Cause the delete to fail
     with monkeypatch.context() as mp:
-        mp.setattr("os.unlink", causeOSError)
+        mp.setattr("pathlib.Path.unlink", causeOSError)
         theDoc = NWDoc(theProject, xHandle)
         assert theDoc.deleteDocument() is False
         assert theDoc.getError() == "OSError: Mock OSError"

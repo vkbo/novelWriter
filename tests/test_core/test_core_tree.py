@@ -19,9 +19,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 import random
+
+from pathlib import Path
 
 from tools import readFile
 
@@ -394,7 +395,7 @@ def testCoreTree_Reorder(mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpDir):
+def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpPath):
     """Test writing the ToC.txt file.
     """
     theProject = NWProject(mockGUI)
@@ -411,24 +412,23 @@ def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpDir):
         """Return True for items that are files in novelWriter and
         should thus also be files in the project folder structure.
         """
-        dItem = theTree[fileName[8:21]]
+        dItem = theTree[fileName.name[:13]]
         assert dItem is not None
         return dItem.itemType == nwItemType.FILE
 
-    monkeypatch.setattr("os.path.isfile", mockIsFile)
+    monkeypatch.setattr("pathlib.Path.is_file", mockIsFile)
 
-    theProject.projContent = "content"
-    theProject.projPath = None
-    assert not theTree.writeToCFile()
+    theProject._storage._runtimePath = None
+    assert theTree.writeToCFile() is False
 
-    theProject.projPath = tmpDir
-    assert theTree.writeToCFile()
+    theProject._storage._runtimePath = tmpPath
+    assert theTree.writeToCFile() is True
 
-    pathA = os.path.join("content", "c000000000001.nwd")
-    pathB = os.path.join("content", "c000000000002.nwd")
-    pathC = os.path.join("content", "b000000000002.nwd")
+    pathA = str(Path("content") / "c000000000001.nwd")
+    pathB = str(Path("content") / "c000000000002.nwd")
+    pathC = str(Path("content") / "b000000000002.nwd")
 
-    assert readFile(os.path.join(tmpDir, nwFiles.TOC_TXT)) == (
+    assert readFile(tmpPath / nwFiles.TOC_TXT) == (
         "\n"
         "Table of Contents\n"
         "=================\n"
