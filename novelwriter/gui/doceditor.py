@@ -470,8 +470,8 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def saveText(self):
-        """Save the text currently in the editor to the NWDoc object,
-        and update the NWItem meta data.
+        """Save the text currently in the editor to the NWDocument
+        object, and update the NWItem meta data.
         """
         if self._nwItem is None or self._nwDocument is None:
             logger.error("Cannot save text as no document is open")

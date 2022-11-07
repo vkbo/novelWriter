@@ -1,6 +1,6 @@
 """
-novelWriter – NWDoc Class Tester
-================================
+novelWriter – NWDocument Class Tester
+=====================================
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -27,12 +27,12 @@ from tools import C, buildTestProject, readFile, writeFile
 
 from novelwriter.enum import nwItemClass, nwItemLayout
 from novelwriter.core.project import NWProject
-from novelwriter.core.document import NWDoc
+from novelwriter.core.document import NWDocument
 
 
 @pytest.mark.core
 def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncDir, mockRnd):
-    """Test loading and saving a document with the NWDoc class.
+    """Test loading and saving a document with the NWDocument class.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
@@ -42,31 +42,31 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncDir, mockRnd):
     # =============
 
     # Not a valid handle
-    theDoc = NWDoc(theProject, "stuff")
+    theDoc = NWDocument(theProject, "stuff")
     assert bool(theDoc) is False
     assert theDoc.readDocument() is None
 
     # Non-existent handle
-    theDoc = NWDoc(theProject, C.hInvalid)
+    theDoc = NWDocument(theProject, C.hInvalid)
     assert theDoc.readDocument() is None
     assert theDoc._currHash is None
 
     # Cause open() to fail while loading
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        theDoc = NWDoc(theProject, C.hSceneDoc)
+        theDoc = NWDocument(theProject, C.hSceneDoc)
         assert theDoc.readDocument() is None
         assert theDoc.getError() == "OSError: Mock OSError"
 
     # Load the text
-    theDoc = NWDoc(theProject, C.hSceneDoc)
+    theDoc = NWDocument(theProject, C.hSceneDoc)
     assert theDoc.readDocument() == "### New Scene\n\n"
 
     # Try to open a new (non-existent) file
     xHandle = theProject.newFile("New File", C.hNovelRoot)
-    theDoc = NWDoc(theProject, xHandle)
+    theDoc = NWDocument(theProject, xHandle)
     assert bool(theDoc) is True
-    assert repr(theDoc) == f"<NWDoc handle={xHandle}>"
+    assert repr(theDoc) == f"<NWDocument handle={xHandle}>"
     assert theDoc.readDocument() == ""
 
     # Write Document
@@ -74,7 +74,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncDir, mockRnd):
 
     # Set handle and save again
     theText = "### Test File\n\nText ...\n\n"
-    theDoc = NWDoc(theProject, xHandle)
+    theDoc = NWDocument(theProject, xHandle)
     assert theDoc.readDocument(xHandle) == ""
     assert theDoc.writeDocument(theText) is True
 
@@ -129,19 +129,19 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncDir, mockRnd):
     # ===============
 
     # Delete the last document
-    theDoc = NWDoc(theProject, "stuff")
+    theDoc = NWDocument(theProject, "stuff")
     assert theDoc.deleteDocument() is False
     assert os.path.isfile(docPath)
 
     # Cause the delete to fail
     with monkeypatch.context() as mp:
         mp.setattr("pathlib.Path.unlink", causeOSError)
-        theDoc = NWDoc(theProject, xHandle)
+        theDoc = NWDocument(theProject, xHandle)
         assert theDoc.deleteDocument() is False
         assert theDoc.getError() == "OSError: Mock OSError"
 
     # Make the delete pass
-    theDoc = NWDoc(theProject, xHandle)
+    theDoc = NWDocument(theProject, xHandle)
     assert theDoc.deleteDocument() is True
     assert not os.path.isfile(docPath)
 
@@ -150,13 +150,13 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncDir, mockRnd):
 
 @pytest.mark.core
 def testCoreDocument_Methods(mockGUI, fncDir, mockRnd):
-    """Test other methods of the NWDoc class.
+    """Test other methods of the NWDocument class.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncDir)
 
-    theDoc = NWDoc(theProject, C.hSceneDoc)
+    theDoc = NWDocument(theProject, C.hSceneDoc)
     docPath = os.path.join(fncDir, "content", C.hSceneDoc+".nwd")
 
     assert theDoc.readDocument() == "### New Scene\n\n"

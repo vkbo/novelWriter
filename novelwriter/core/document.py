@@ -34,7 +34,7 @@ from novelwriter.common import isHandle, sha256sum
 logger = logging.getLogger(__name__)
 
 
-class NWDoc:
+class NWDocument:
 
     def __init__(self, theProject, theHandle):
 
@@ -58,7 +58,7 @@ class NWDoc:
         return
 
     def __repr__(self):
-        return f"<NWDoc handle={self._docHandle}>"
+        return f"<NWDocument handle={self._docHandle}>"
 
     def __bool__(self):
         return self._docHandle is not None and bool(self._theItem)
@@ -277,4 +277,4 @@ class NWDoc:
 
         return
 
-# END Class NWDoc
+# END Class NWDocument

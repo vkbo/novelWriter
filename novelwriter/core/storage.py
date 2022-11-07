@@ -30,7 +30,7 @@ from time import time
 from pathlib import Path
 
 from novelwriter.constants import nwFiles
-from novelwriter.core.document import NWDoc
+from novelwriter.core.document import NWDocument
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
 from novelwriter.error import logException
 
@@ -159,8 +159,8 @@ class NWStorage:
         """Return a document wrapper object.
         """
         if self._runtimePath is not None:
-            return NWDoc(self.theProject, tHandle)
-        return NWDoc(self.theProject, None)
+            return NWDocument(self.theProject, tHandle)
+        return NWDocument(self.theProject, None)
 
     def getMetaFile(self, fileName):
         """Return the path to a file in the project meta folder.
