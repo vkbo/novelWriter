@@ -582,7 +582,8 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncDir, mockRnd):
     # Write entry
     statsFile = theProject.storage.getMetaFile(nwFiles.SESS_STATS)
     assert isinstance(statsFile, Path)
-    statsFile.unlink(missing_ok=True)
+    if statsFile.exists():
+        statsFile.unlink()
 
     theProject._projOpened = 1600002000
     theProject.data._initCounts = [50, 50]

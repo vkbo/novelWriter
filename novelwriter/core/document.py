@@ -201,8 +201,12 @@ class NWDoc:
         docTemp = docPath.with_suffix(".tmp")
 
         try:
-            docPath.unlink(missing_ok=True)
-            docTemp.unlink(missing_ok=True)
+            # ToDo: When Python 3.7 is dropped, these can be changed to
+            # path.unlink(missing_ok=True)
+            if docPath.exists():
+                docPath.unlink()
+            if docTemp.exists():
+                docTemp.unlink()
         except Exception as exc:
             self._docError = formatException(exc)
             return False
