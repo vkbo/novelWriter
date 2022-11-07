@@ -88,9 +88,10 @@ def checkBool(value, default):
     if isinstance(value, bool):
         return value
     elif isinstance(value, str):
-        if value == "True":
+        check = value.lower()
+        if check in ("true", "yes", "on"):
             return True
-        elif value == "False":
+        elif check in ("false", "no", "off"):
             return False
         else:
             return default
@@ -257,6 +258,12 @@ def simplified(string):
     replace all occurences of (multiple) whitespaces with a 0x20 space.
     """
     return " ".join(str(string).strip().split())
+
+
+def yesNo(value):
+    """Convert a boolean evaluated variable to a yes or no.
+    """
+    return "yes" if value else "no"
 
 
 def splitVersionNumber(value):

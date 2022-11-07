@@ -33,7 +33,8 @@ from time import time
 from pathlib import Path
 
 from novelwriter.common import (
-    checkBool, checkInt, checkStringNone, formatTimeStamp, simplified, checkString
+    checkBool, checkInt, checkString, checkStringNone, formatTimeStamp,
+    simplified, yesNo
 )
 from novelwriter.constants import nwFiles
 
@@ -270,10 +271,9 @@ class ProjectXMLReader:
                 projData.setDoBackup(xItem.text)
             elif xItem.tag == "language":
                 projData.setLanguage(xItem.text)
-            elif xItem.tag == "spellCheck":
-                projData.setSpellCheck(xItem.text)
-            elif xItem.tag == "spellLang":
+            elif xItem.tag == "spellChecking":
                 projData.setSpellLang(xItem.text)
+                projData.setSpellCheck(xItem.attrib.get("auto", False))
             elif xItem.tag == "status":
                 self._parseStatusImport(xItem, projData.itemStatus)
             elif xItem.tag == "importance":
@@ -296,7 +296,11 @@ class ProjectXMLReader:
         # Deprecated Nodes
         if self._version < HEX_VERSION:
             for xItem in xSection:
-                if xItem.tag == "novelWordCount":  # Moved to content attribute in 1.5
+                if xItem.tag == "spellCheck":  # Changed to spellChecking in 1.5
+                    projData.setSpellCheck(xItem.text)
+                elif xItem.tag == "spellLang":  # Changed to spellChecking in 1.5
+                    projData.setSpellLang(xItem.text)
+                elif xItem.tag == "novelWordCount":  # Moved to content attribute in 1.5
                     projData.setInitCounts(novel=xItem.text)
                 elif xItem.tag == "notesWordCount":  # Moved to content attribute in 1.5
                     projData.setInitCounts(notes=xItem.text)
@@ -517,10 +521,11 @@ class ProjectXMLWriter:
 
         # Save Project Settings
         xSettings = etree.SubElement(xRoot, "settings")
-        self._packSingleValue(xSettings, "doBackup", projData.doBackup)
+        self._packSingleValue(xSettings, "doBackup", yesNo(projData.doBackup))
         self._packSingleValue(xSettings, "language", projData.language)
-        self._packSingleValue(xSettings, "spellCheck", projData.spellCheck)
-        self._packSingleValue(xSettings, "spellLang", projData.spellLang)
+        self._packSingleValue(xSettings, "spellChecking", projData.spellLang, attrib={
+            "auto": yesNo(projData.spellCheck)
+        })
         self._packDictKeyValue(xSettings, "lastHandle", projData.lastHandle)
         self._packDictKeyValue(xSettings, "autoReplace", projData.autoReplace)
         self._packDictKeyValue(xSettings, "titleFormat", projData.titleFormat)
@@ -536,7 +541,7 @@ class ProjectXMLWriter:
 
         # Save Tree Content
         contAttr = {
-            "itemCount": str(len(projContent)),
+            "items": str(len(projContent)),
             "novelWords": str(projData.currCounts[0]),
             "notesWords": str(projData.currCounts[1]),
         }

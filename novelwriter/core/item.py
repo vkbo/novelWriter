@@ -27,7 +27,7 @@ import logging
 
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
 from novelwriter.common import (
-    checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified
+    checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified, yesNo
 )
 from novelwriter.constants import nwHeaders, nwLabels, trConst
 
@@ -162,7 +162,7 @@ class NWItem:
         item["order"]    = str(self._order)
         item["type"]     = str(self._type.name)
         item["class"]    = str(self._class.name)
-        meta["expanded"] = str(self._expanded)
+        meta["expanded"] = yesNo(self._expanded)
         name["status"]   = str(self._status)
         name["import"]   = str(self._import)
 
@@ -173,7 +173,7 @@ class NWItem:
             meta["wordCount"] = str(self._wordCount)
             meta["paraCount"] = str(self._paraCount)
             meta["cursorPos"] = str(self._cursorPos)
-            name["active"]    = str(self._active)
+            name["active"]    = yesNo(self._active)
 
         data = {
             "name": str(self._name),

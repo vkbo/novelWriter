@@ -564,7 +564,7 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
             "layout": "DOCUMENT",
         },
         "metaAttr": {
-            "expanded": "True",
+            "expanded": "yes",
             "heading": "H1",
             "charCount": "100",
             "wordCount": "20",
@@ -574,7 +574,7 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
         "nameAttr": {
             "status": "s000000",
             "import": "i000001",
-            "active": "False",
+            "active": "no",
         }
     }
 
@@ -635,7 +635,7 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
             "class": "NOVEL",
         },
         "metaAttr": {
-            "expanded": "True",
+            "expanded": "yes",
         },
         "nameAttr": {
             "status": "s000000",
@@ -700,7 +700,7 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
             "class": "NOVEL",
         },
         "metaAttr": {
-            "expanded": "True",
+            "expanded": "yes",
         },
         "nameAttr": {
             "status": "s000000",
