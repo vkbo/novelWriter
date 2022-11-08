@@ -53,7 +53,7 @@ from PyQt5.QtWidgets import (
 from novelwriter.core import NWSpellEnchant, countWords
 from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode
 from novelwriter.common import transferCase
-from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
+from novelwriter.constants import nwConst, nwFiles, nwKeyWords, nwUnicode
 from novelwriter.gui.dochighlight import GuiDocHighlighter
 
 logger = logging.getLogger(__name__)
@@ -689,7 +689,8 @@ class GuiDocEditor(QTextEdit):
         else:
             theLang = self.theProject.data.spellLang
 
-        self.spEnchant.setLanguage(theLang, self.theProject.projDict)
+        projDict = self.theProject.storage.getMetaFile(nwFiles.PROJ_DICT)
+        self.spEnchant.setLanguage(theLang, projDict)
         _, theProvider = self.spEnchant.describeDict()
 
         self.spellDictionaryChanged.emit(str(theLang), str(theProvider))

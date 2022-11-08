@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-import os
 import json
 import logging
 import novelwriter
@@ -82,8 +81,7 @@ class NWProject(QObject):
         self.lockedBy     = None   # Data on which computer has the project open
 
         # Class Settings
-        self.projDict  = None  # The spell check dictionary
-        self.projFiles = []    # A list of all files in the content folder on load
+        self.projFiles = []  # A list of all files in the content folder on load
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
@@ -248,7 +246,6 @@ class NWProject(QObject):
         self._data = NWProjectData(self)
 
         # Project Settings
-        self.projDict  = None
         self.projFiles = []
 
         return
@@ -264,8 +261,6 @@ class NWProject(QObject):
             return False
 
         logger.info("Opening project: %s", projPath)
-
-        self.projDict = str(self._storage.getMetaFile(nwFiles.PROJ_DICT))
 
         # Project Lock
         # ============
@@ -367,11 +362,12 @@ class NWProject(QObject):
 
         # Check the project tree consistency
         for tItem in self._tree:
-            tHandle = tItem.itemHandle
-            logger.debug("Checking item '%s'", tHandle)
-            if not self._tree.updateItemData(tHandle):
-                logger.error("There was a problem item '%s', and it has been removed", tHandle)
-                del self._tree[tHandle]  # The file will be re-added as orphaned
+            if tItem:
+                tHandle = tItem.itemHandle
+                logger.debug("Checking item '%s'", tHandle)
+                if not self._tree.updateItemData(tHandle):
+                    logger.error("There was a problem the item, and it has been removed")
+                    del self._tree[tHandle]  # The file will be re-added as orphaned
 
         self._scanProjectFolder()
         self._index.loadIndex()
@@ -694,20 +690,18 @@ class NWProject(QObject):
     def _loadProjectLocalisation(self):
         """Load the language data for the current project language.
         """
-        if self._data.language is None:
+        if self._data.language is None or self.mainConf.nwLangPath is None:
             self._langData = {}
             return False
 
-        langFile = os.path.join(
-            self.mainConf.nwLangPath, "project_%s.json" % self._data.language
-        )
-        if not os.path.isfile(langFile):
-            langFile = os.path.join(self.mainConf.nwLangPath, "project_en_GB.json")
+        langFile = Path(self.mainConf.nwLangPath) / f"project_{self._data.language}.json"
+        if not langFile.is_file():
+            langFile = Path(self.mainConf.nwLangPath) / "project_en_GB.json"
 
         try:
             with open(langFile, mode="r", encoding="utf-8") as inFile:
                 self._langData = json.load(inFile)
-            logger.debug("Loaded project language file: %s", os.path.basename(langFile))
+            logger.debug("Loaded project language file: %s", langFile.name)
 
         except Exception:
             logger.error("Failed to project language file")

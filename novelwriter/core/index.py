@@ -820,8 +820,6 @@ class ItemIndex:
             elif tItem.itemRoot == rootHandle:
                 for sTitle in self._items[tHandle].headings():
                     yield tHandle, sTitle, self._items[tHandle][sTitle]
-            else:
-                continue
 
         return
 

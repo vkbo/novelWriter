@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 
 from mock import causeOSError
@@ -31,12 +30,12 @@ from novelwriter.core.document import NWDocument
 
 
 @pytest.mark.core
-def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncDir, mockRnd):
+def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     """Test loading and saving a document with the NWDocument class.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
 
     # Read Document
     # =============
@@ -50,6 +49,12 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncDir, mockRnd):
     theDoc = NWDocument(theProject, C.hInvalid)
     assert theDoc.readDocument() is None
     assert theDoc._currHash is None
+
+    # No content path
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.contentPath", property(lambda *a: None))
+        theDoc = NWDocument(theProject, C.hSceneDoc)
+        assert theDoc.readDocument() is None
 
     # Cause open() to fail while loading
     with monkeypatch.context() as mp:
@@ -72,17 +77,23 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncDir, mockRnd):
     # Write Document
     # ==============
 
-    # Set handle and save again
+    # No content path
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.contentPath", property(lambda *a: None))
+        theDoc = NWDocument(theProject, xHandle)
+        assert theDoc.writeDocument("") is False
+
+    # Set handle and save
     theText = "### Test File\n\nText ...\n\n"
     theDoc = NWDocument(theProject, xHandle)
     assert theDoc.readDocument(xHandle) == ""
     assert theDoc.writeDocument(theText) is True
 
     # Save again to ensure temp file and previous file is handled
-    assert theDoc.writeDocument(theText)
+    assert theDoc.writeDocument(theText) is True
 
     # Check file content
-    docPath = os.path.join(fncDir, "content", xHandle+".nwd")
+    docPath = fncPath / "content" / f"{xHandle}.nwd"
     assert readFile(docPath) == (
         "%%~name: New File\n"
         f"%%~path: {C.hNovelRoot}/{xHandle}\n"
@@ -128,10 +139,16 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncDir, mockRnd):
     # Delete Document
     # ===============
 
-    # Delete the last document
+    # Delete a non-existing document
     theDoc = NWDocument(theProject, "stuff")
     assert theDoc.deleteDocument() is False
-    assert os.path.isfile(docPath)
+    assert docPath.exists()
+
+    # No content path
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.contentPath", property(lambda *a: None))
+        theDoc = NWDocument(theProject, xHandle)
+        assert theDoc.deleteDocument() is False
 
     # Cause the delete to fail
     with monkeypatch.context() as mp:
@@ -143,26 +160,26 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncDir, mockRnd):
     # Make the delete pass
     theDoc = NWDocument(theProject, xHandle)
     assert theDoc.deleteDocument() is True
-    assert not os.path.isfile(docPath)
+    assert not docPath.exists()
 
 # END Test testCoreDocument_Load
 
 
 @pytest.mark.core
-def testCoreDocument_Methods(mockGUI, fncDir, mockRnd):
+def testCoreDocument_Methods(mockGUI, fncPath, mockRnd):
     """Test other methods of the NWDocument class.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
 
     theDoc = NWDocument(theProject, C.hSceneDoc)
-    docPath = os.path.join(fncDir, "content", C.hSceneDoc+".nwd")
+    docPath = fncPath / "content" / f"{C.hSceneDoc}.nwd"
 
     assert theDoc.readDocument() == "### New Scene\n\n"
 
     # Check location
-    assert theDoc.getFileLocation() == docPath
+    assert theDoc.getFileLocation() == str(docPath)
 
     # Check the item
     assert theDoc.getCurrentItem() is not None

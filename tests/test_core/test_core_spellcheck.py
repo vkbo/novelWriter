@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import sys
 import pytest
 
@@ -63,10 +62,10 @@ def testCoreSpell_FakeEnchant(monkeypatch):
 
 
 @pytest.mark.core
-def testCoreSpell_Enchant(monkeypatch, fncDir):
+def testCoreSpell_Enchant(monkeypatch, fncPath):
     """Test the pyenchant spell checker.
     """
-    wList = os.path.join(fncDir, "wordlist.txt")
+    wList = fncPath / "wordlist.txt"
     writeFile(wList, "a_word\nb_word\nc_word\n")
 
     # Break the enchant package, and check error handling
@@ -134,13 +133,13 @@ def testCoreSpell_Enchant(monkeypatch, fncDir):
 
 
 @pytest.mark.core
-def testCoreSpell_SessionWords(fncDir):
+def testCoreSpell_SessionWords(fncPath):
     """Test the handling of the custom word list in the spell checker.
     New project sessions should not inherit the project word list from
     other sessions, so this test checks that they don't bleed through.
     """
-    wList1 = os.path.join(fncDir, "wordlist1.txt")
-    wList2 = os.path.join(fncDir, "wordlist2.txt")
+    wList1 = fncPath / "wordlist1.txt"
+    wList2 = fncPath / "wordlist2.txt"
     writeFile(wList1, "a_word\nb_word\nc_word\n")
     writeFile(wList2, "d_word\ne_word\nf_word\n")
 

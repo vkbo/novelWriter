@@ -138,7 +138,7 @@ class NWDocument:
         contentPath = self.theProject.storage.contentPath
         if not isinstance(contentPath, Path):
             logger.error("No content path set")
-            return None
+            return False
 
         docFile = self._docHandle+".nwd"
         logger.debug("Saving document: %s", docFile)
@@ -195,7 +195,7 @@ class NWDocument:
         contentPath = self.theProject.storage.contentPath
         if not isinstance(contentPath, Path):
             logger.error("No content path set")
-            return None
+            return False
 
         docPath = contentPath / f"{self._docHandle}.nwd"
         docTemp = docPath.with_suffix(".tmp")
