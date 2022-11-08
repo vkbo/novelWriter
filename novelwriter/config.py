@@ -38,7 +38,7 @@ from PyQt5.QtCore import (
 )
 
 from novelwriter.error import logException, formatException
-from novelwriter.common import ensureFolder, splitVersionNumber, formatTimeStamp, NWConfigParser
+from novelwriter.common import splitVersionNumber, formatTimeStamp, NWConfigParser
 from novelwriter.constants import nwFiles, nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -55,12 +55,14 @@ class Config:
         self.appName   = "novelWriter"
         self.appHandle = "novelwriter"
 
-        confRoot = Path(QStandardPaths.writableLocation(QStandardPaths.ConfigLocation))
-        self._confPath = confRoot.absolute() / self.appHandle  # The user config location
-
         # Set Paths
+        confRoot = Path(QStandardPaths.writableLocation(QStandardPaths.ConfigLocation))
+        dataRoot = Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation))
+
+        self._confPath = confRoot.absolute() / self.appHandle  # The user config location
+        self._dataPath = dataRoot.absolute() / self.appHandle  # The user data location
+
         self.cmdOpen   = None  # Path from command line for project to be opened on launch
-        self.dataPath  = None  # Folder where app data is stored
         self.lastPath  = None  # The last user-selected folder (browse dialogs)
         self.appPath   = None  # The full path to the novelwriter package folder
         self.appRoot   = None  # The full path to the novelwriter root folder
@@ -245,6 +247,13 @@ class Config:
         """
         return int(theSize/self.guiScale)
 
+    def getDataPath(self, target=None):
+        """Return a path in the data folder.
+        """
+        if isinstance(target, str):
+            return self._dataPath / target
+        return self._dataPath
+
     ##
     #  Config Actions
     ##
@@ -254,19 +263,16 @@ class Config:
         and dataPath is mainly intended for the test suite.
         """
         logger.debug("Initialising Config ...")
-        if isinstance(confPath, Path):
+        if isinstance(confPath, (str, Path)):
             logger.info("Setting config from alternative path: %s", confPath)
-            self._confPath = confPath
+            self._confPath = Path(confPath)
 
-        if dataPath is None:
-            dataRoot = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
-            self.dataPath = os.path.join(os.path.abspath(dataRoot), self.appHandle)
-        else:
+        if isinstance(dataPath, (str, Path)):
             logger.info("Setting data path from alternative path: %s", dataPath)
-            self.dataPath = dataPath
+            self._dataPath = Path(dataPath)
 
         logger.debug("Config path: %s", self._confPath)
-        logger.debug("Data path: %s", self.dataPath)
+        logger.debug("Data path: %s", self._dataPath)
 
         self.lastPath = os.path.expanduser("~")
         self.appPath = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
@@ -293,15 +299,12 @@ class Config:
         # If the config and data folders don't not exist, create them
         # This assumes that the os config and data folders exist
         self._confPath.mkdir(exist_ok=True)
-
-        if not ensureFolder(self.dataPath, errLog=self.errData):
-            self.hasError = True
-            self.dataPath = None
+        self._dataPath.mkdir(exist_ok=True)
 
         # We don't error on these failing since they are not essential
-        if self.dataPath is not None:
-            ensureFolder("syntax", parent=self.dataPath)
-            ensureFolder("themes", parent=self.dataPath)
+        if self._dataPath.is_dir():
+            (self._dataPath / "syntax").mkdir(exist_ok=True)
+            (self._dataPath / "themes").mkdir(exist_ok=True)
 
         # Check if config file exists
         if (self._confPath / nwFiles.CONF_FILE).is_file():
@@ -618,12 +621,9 @@ class Config:
     def loadRecentCache(self):
         """Load the cache file for recent projects.
         """
-        if self.dataPath is None:
-            return False
-
         self.recentProj = {}
 
-        cacheFile = os.path.join(self.dataPath, nwFiles.RECENT_FILE)
+        cacheFile = self._dataPath / nwFiles.RECENT_FILE
         if not os.path.isfile(cacheFile):
             return True
 
@@ -649,24 +649,17 @@ class Config:
     def saveRecentCache(self):
         """Save the cache dictionary of recent projects.
         """
-        if self.dataPath is None:
-            return False
-
-        cacheFile = os.path.join(self.dataPath, nwFiles.RECENT_FILE)
-        cacheTemp = os.path.join(self.dataPath, nwFiles.RECENT_FILE+"~")
-
+        cacheFile = self._dataPath / nwFiles.RECENT_FILE
+        cacheTemp = cacheFile.with_suffix(".tmp")
         try:
             with open(cacheTemp, mode="w+", encoding="utf-8") as outFile:
                 json.dump(self.recentProj, outFile, indent=2)
+            cacheTemp.replace(cacheFile)
         except Exception as exc:
             self.hasError = True
             self.errData.append("Could not save recent project cache")
             self.errData.append(formatException(exc))
             return False
-
-        if os.path.isfile(cacheFile):
-            os.unlink(cacheFile)
-        os.rename(cacheTemp, cacheFile)
 
         return True
 

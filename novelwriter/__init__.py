@@ -27,8 +27,6 @@ import sys
 import getopt
 import logging
 
-from pathlib import Path
-
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
@@ -158,7 +156,7 @@ def main(sysArgs=None):
         elif inOpt == "--style":
             qtStyle = inArg
         elif inOpt == "--config":
-            confPath = Path(inArg)
+            confPath = inArg
         elif inOpt == "--data":
             dataPath = inArg
         elif inOpt == "--testmode":

@@ -165,7 +165,7 @@ def tmpConf(tmpPath):
     if confFile.is_file():
         confFile.unlink()
     theConf = Config()
-    theConf.initConfig(tmpPath, str(tmpPath))
+    theConf.initConfig(tmpPath, tmpPath)
     theConf.setLastPath("")
     theConf.guiLang = "en_GB"
     return theConf
@@ -179,7 +179,7 @@ def fncConf(fncPath):
     if confFile.is_file():
         confFile.unlink()
     theConf = Config()
-    theConf.initConfig(fncPath, str(fncPath))
+    theConf.initConfig(fncPath, fncPath)
     theConf.setLastPath("")
     theConf.guiLang = "en_GB"
     return theConf

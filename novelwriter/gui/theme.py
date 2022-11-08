@@ -29,6 +29,7 @@ import logging
 import novelwriter
 
 from math import ceil
+from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import qApp
@@ -122,9 +123,8 @@ class GuiTheme:
         self._listConf(self._availSyntax, os.path.join(self.mainConf.assetPath, "syntax"))
         self._listConf(self._availThemes, os.path.join(self.mainConf.assetPath, "themes"))
 
-        if self.mainConf.dataPath:  # Not guaranteed to be set
-            self._listConf(self._availSyntax, os.path.join(self.mainConf.dataPath, "syntax"))
-            self._listConf(self._availThemes, os.path.join(self.mainConf.dataPath, "themes"))
+        self._listConf(self._availSyntax, self.mainConf.getDataPath("syntax"))
+        self._listConf(self._availThemes, self.mainConf.getDataPath("themes"))
 
         self.loadTheme()
         self.loadSyntax()
@@ -380,13 +380,13 @@ class GuiTheme:
     def _listConf(self, targetDict, checkDir):
         """Scan for theme config files and populate the dictionary.
         """
-        if not os.path.isdir(checkDir):
+        checkDir = Path(checkDir)
+        if not checkDir.is_dir():
             return False
 
-        for checkFile in os.listdir(checkDir):
-            confPath = os.path.join(checkDir, checkFile)
-            if os.path.isfile(confPath) and confPath.endswith(".conf"):
-                targetDict[checkFile[:-5]] = confPath
+        for checkFile in checkDir.iterdir():
+            if checkFile.is_file() and checkFile.name.endswith(".conf"):
+                targetDict[checkFile.name[:-5]] = checkFile
 
         return True
 

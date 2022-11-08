@@ -99,7 +99,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
         mp.setattr("PyQt5.QtCore.QStandardPaths.writableLocation", lambda *a: fncDir)
         tstConf.initConfig()
         assert tstConf._confPath == os.path.join(fncDir, tstConf.appHandle)
-        assert tstConf.dataPath == os.path.join(fncDir, tstConf.appHandle)
+        assert tstConf._dataPath == os.path.join(fncDir, tstConf.appHandle)
         assert not os.path.isfile(confFile)
 
     # Fail to make folders
@@ -109,13 +109,13 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
         tstConfDir = os.path.join(fncDir, "test_conf")
         tstConf.initConfig(confPath=tstConfDir, dataPath=tmpDir)
         assert tstConf._confPath is None
-        assert tstConf.dataPath == tmpDir
+        assert tstConf._dataPath == tmpDir
         assert not os.path.isfile(confFile)
 
         tstDataDir = os.path.join(fncDir, "test_data")
         tstConf.initConfig(confPath=tmpDir, dataPath=tstDataDir)
         assert tstConf._confPath == tmpDir
-        assert tstConf.dataPath is None
+        assert tstConf._dataPath is None
         assert os.path.isfile(confFile)
         os.unlink(confFile)
 
@@ -130,7 +130,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
         mp.setattr("os.path.expanduser", lambda *a: "")
         tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
         assert tstConf._confPath == tmpDir
-        assert tstConf.dataPath == tmpDir
+        assert tstConf._dataPath == tmpDir
         assert os.path.isfile(confFile)
 
         copyfile(confFile, testFile)
@@ -158,13 +158,13 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     with monkeypatch.context() as mp:
         tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
         assert tstConf._confPath == tmpDir
-        assert tstConf.dataPath == tmpDir
+        assert tstConf._dataPath == tmpDir
         appRoot = tstConf.appRoot
 
         mp.setattr("os.path.isfile", lambda *a: True)
         tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
         assert tstConf._confPath == tmpDir
-        assert tstConf.dataPath == tmpDir
+        assert tstConf._dataPath == tmpDir
         assert tstConf.appRoot == os.path.dirname(appRoot)
         assert tstConf.appPath == os.path.dirname(appRoot)
 
@@ -233,12 +233,6 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
 def testBaseConfig_RecentCache(monkeypatch, tmpConf, tmpDir, fncDir):
     """Test recent cache file.
     """
-    # Check failing
-    tmpConf.dataPath = None
-    assert not tmpConf.loadRecentCache()
-    assert not tmpConf.saveRecentCache()
-    tmpConf.dataPath = tmpDir
-
     # Add a couple of values
     pathOne = os.path.join(fncDir, "projPathOne", nwFiles.PROJ_FILE)
     pathTwo = os.path.join(fncDir, "projPathTwo", nwFiles.PROJ_FILE)
