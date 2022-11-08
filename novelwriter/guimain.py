@@ -447,7 +447,8 @@ class GuiMain(QMainWindow):
         if not self.theProject.openProject(projFile):
             # The project open failed.
 
-            if self.theProject.lockedBy is None:
+            lockStatus = self.theProject.getLockStatus()
+            if lockStatus is None:
                 # The project is not locked, so failed for some other
                 # reason handled by the project class.
                 return False
@@ -459,10 +460,8 @@ class GuiMain(QMainWindow):
                         "'{0}' ({1} {2}), last active on {3}."
                     )
                 ).format(
-                    self.theProject.lockedBy[0],
-                    self.theProject.lockedBy[1],
-                    self.theProject.lockedBy[2],
-                    datetime.fromtimestamp(int(self.theProject.lockedBy[3])).strftime("%x %X")
+                    lockStatus[0], lockStatus[1], lockStatus[2],
+                    datetime.fromtimestamp(int(lockStatus[3])).strftime("%x %X")
                 )
             except Exception:
                 lockDetails = ""
