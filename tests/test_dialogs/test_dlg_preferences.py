@@ -19,19 +19,16 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
-import novelwriter
 
 from shutil import copyfile
 from tools import cmpFiles, getGuiItem
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QDialogButtonBox, QDialog, QAction, QFileDialog, QFontDialog, QMessageBox
+    QDialogButtonBox, QDialog, QAction, QFileDialog, QFontDialog
 )
 
-from novelwriter.config import Config
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.dialogs.preferences import GuiPreferences
 
@@ -39,31 +36,11 @@ KEY_DELAY = 1
 
 
 @pytest.mark.gui
-def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
+def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     """Test the load project wizard.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-
-    # Must create a clean config and GUI object as the test-wide
-    # novelwriter.CONFIG object is created on import an can be tainted by other tests
-    confFile = os.path.join(fncDir, "novelwriter.conf")
-    if os.path.isfile(confFile):
-        os.unlink(confFile)
-    theConf = Config()
-    theConf.initConfig(fncDir, fncDir)
-    theConf.setLastPath("")
-    origConf = novelwriter.CONFIG
-    novelwriter.CONFIG = theConf
-
-    nwGUI = novelwriter.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
-    qtbot.addWidget(nwGUI)
-    nwGUI.show()
-
     theConf = nwGUI.mainConf
-    assert theConf.confPath == fncDir
+    assert theConf._confPath == fncPath
 
     monkeypatch.setattr(GuiPreferences, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiPreferences, "result", lambda *a: QDialog.Accepted)
@@ -80,7 +57,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     nwPrefs = getGuiItem("GuiPreferences")
     assert isinstance(nwPrefs, GuiPreferences)
     nwPrefs.show()
-    assert nwPrefs.mainConf.confPath == fncDir
+    assert nwPrefs.mainConf._confPath == fncPath
 
     assert nwPrefs.updateTheme is False
     assert nwPrefs.updateSyntax is False
@@ -241,9 +218,9 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     theConf.lastPath = ""
 
     assert nwGUI.mainConf.saveConfig()
-    projFile = os.path.join(fncDir, "novelwriter.conf")
-    testFile = os.path.join(outDir, "guiPreferences_novelwriter.conf")
-    compFile = os.path.join(refDir, "guiPreferences_novelwriter.conf")
+    projFile = fncPath / "novelwriter.conf"
+    testFile = tstPaths.outDir / "guiPreferences_novelwriter.conf"
+    compFile = tstPaths.refDir / "guiPreferences_novelwriter.conf"
     copyfile(projFile, testFile)
     ignTuple = (
         "timestamp", "guifont", "lastnotes", "guilang", "geometry",
@@ -253,7 +230,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, fncDir, outDir, refDir):
     assert cmpFiles(testFile, compFile, ignoreStart=ignTuple)
 
     # Clean up
-    novelwriter.CONFIG = origConf
     nwGUI.closeMain()
 
     # qtbot.stop()

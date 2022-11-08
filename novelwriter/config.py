@@ -29,6 +29,7 @@ import json
 import logging
 
 from time import time
+from pathlib import Path
 
 from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import (
@@ -54,9 +55,11 @@ class Config:
         self.appName   = "novelWriter"
         self.appHandle = "novelwriter"
 
+        confRoot = Path(QStandardPaths.writableLocation(QStandardPaths.ConfigLocation))
+        self._confPath = confRoot.absolute() / self.appHandle  # The user config location
+
         # Set Paths
         self.cmdOpen   = None  # Path from command line for project to be opened on launch
-        self.confPath  = None  # Folder where the config is saved
         self.dataPath  = None  # Folder where app data is stored
         self.lastPath  = None  # The last user-selected folder (browse dialogs)
         self.appPath   = None  # The full path to the novelwriter package folder
@@ -251,12 +254,9 @@ class Config:
         and dataPath is mainly intended for the test suite.
         """
         logger.debug("Initialising Config ...")
-        if confPath is None:
-            confRoot = QStandardPaths.writableLocation(QStandardPaths.ConfigLocation)
-            self.confPath = os.path.join(os.path.abspath(confRoot), self.appHandle)
-        else:
+        if isinstance(confPath, Path):
             logger.info("Setting config from alternative path: %s", confPath)
-            self.confPath = confPath
+            self._confPath = confPath
 
         if dataPath is None:
             dataRoot = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
@@ -265,7 +265,7 @@ class Config:
             logger.info("Setting data path from alternative path: %s", dataPath)
             self.dataPath = dataPath
 
-        logger.debug("Config path: %s", self.confPath)
+        logger.debug("Config path: %s", self._confPath)
         logger.debug("Data path: %s", self.dataPath)
 
         self.lastPath = os.path.expanduser("~")
@@ -292,9 +292,7 @@ class Config:
 
         # If the config and data folders don't not exist, create them
         # This assumes that the os config and data folders exist
-        if not ensureFolder(self.confPath, errLog=self.errData):
-            self.hasError = True
-            self.confPath = None
+        self._confPath.mkdir(exist_ok=True)
 
         if not ensureFolder(self.dataPath, errLog=self.errData):
             self.hasError = True
@@ -306,13 +304,12 @@ class Config:
             ensureFolder("themes", parent=self.dataPath)
 
         # Check if config file exists
-        if self.confPath is not None:
-            if os.path.isfile(os.path.join(self.confPath, nwFiles.CONF_FILE)):
-                # If it exists, load it
-                self.loadConfig()
-            else:
-                # If it does not exist, save a copy of the default values
-                self.saveConfig()
+        if (self._confPath / nwFiles.CONF_FILE).is_file():
+            # If it exists, load it
+            self.loadConfig()
+        else:
+            # If it does not exist, save a copy of the default values
+            self.saveConfig()
 
         # Load recent projects cache
         self.loadRecentCache()
@@ -388,11 +385,9 @@ class Config:
         """Load preferences from file and replace default settings.
         """
         logger.debug("Loading config file")
-        if self.confPath is None:
-            return False
 
         theConf = NWConfigParser()
-        cnfPath = os.path.join(self.confPath, nwFiles.CONF_FILE)
+        cnfPath = self._confPath / nwFiles.CONF_FILE
         try:
             with open(cnfPath, mode="r", encoding="utf-8") as inFile:
                 theConf.read_file(inFile)
@@ -511,8 +506,6 @@ class Config:
         """Save the current preferences to file.
         """
         logger.debug("Saving config file")
-        if self.confPath is None:
-            return False
 
         theConf = NWConfigParser()
 
@@ -607,7 +600,7 @@ class Config:
         }
 
         # Write config file
-        cnfPath = os.path.join(self.confPath, nwFiles.CONF_FILE)
+        cnfPath = self._confPath / nwFiles.CONF_FILE
         try:
             with open(cnfPath, mode="w", encoding="utf-8") as outFile:
                 theConf.write(outFile)

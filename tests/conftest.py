@@ -158,28 +158,28 @@ def fncProj(fncDir):
 ##
 
 @pytest.fixture(scope="function")
-def tmpConf(tmpDir):
+def tmpConf(tmpPath):
     """Create a temporary novelWriter configuration object.
     """
-    confFile = os.path.join(tmpDir, "novelwriter.conf")
-    if os.path.isfile(confFile):
-        os.unlink(confFile)
+    confFile = tmpPath / "novelwriter.conf"
+    if confFile.is_file():
+        confFile.unlink()
     theConf = Config()
-    theConf.initConfig(tmpDir, tmpDir)
+    theConf.initConfig(tmpPath, str(tmpPath))
     theConf.setLastPath("")
     theConf.guiLang = "en_GB"
     return theConf
 
 
 @pytest.fixture(scope="function")
-def fncConf(fncDir):
+def fncConf(fncPath):
     """Create a temporary novelWriter configuration object.
     """
-    confFile = os.path.join(fncDir, "novelwriter.conf")
-    if os.path.isfile(confFile):
-        os.unlink(confFile)
+    confFile = fncPath / "novelwriter.conf"
+    if confFile.is_file():
+        confFile.unlink()
     theConf = Config()
-    theConf.initConfig(fncDir, fncDir)
+    theConf.initConfig(fncPath, str(fncPath))
     theConf.setLastPath("")
     theConf.guiLang = "en_GB"
     return theConf
