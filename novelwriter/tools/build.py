@@ -29,6 +29,7 @@ import logging
 import novelwriter
 
 from time import time
+from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtGui import (
@@ -1088,9 +1089,12 @@ class GuiBuildNovel(QDialog):
     def _loadCache(self):
         """Save the current data to cache.
         """
-        buildCache = os.path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
+        buildCache = self.theProject.storage.getCacheFile(nwFiles.BUILD_CACHE)
+        if not isinstance(buildCache, Path):
+            return False
+
         dataCount = 0
-        if os.path.isfile(buildCache):
+        if buildCache.exists():
             logger.debug("Loading build cache")
             try:
                 with open(buildCache, mode="r", encoding="utf-8") as inFile:
@@ -1115,7 +1119,10 @@ class GuiBuildNovel(QDialog):
     def _saveCache(self):
         """Save the current data to cache.
         """
-        buildCache = os.path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
+        buildCache = self.theProject.storage.getCacheFile(nwFiles.BUILD_CACHE)
+        if not isinstance(buildCache, Path):
+            return False
+
         logger.debug("Saving build cache")
         try:
             with open(buildCache, mode="w+", encoding="utf-8") as outFile:

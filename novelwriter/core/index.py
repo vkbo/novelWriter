@@ -26,16 +26,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
 import logging
 
 from time import time
+from pathlib import Path
 
 from novelwriter.enum import nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode, nwHeaders
-from novelwriter.core.document import NWDoc
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
 )
@@ -118,7 +117,7 @@ class NWIndex:
             return False
 
         logger.debug("Re-indexing item '%s'", tHandle)
-        theDoc = NWDoc(self.theProject, tHandle)
+        theDoc = self.theProject.storage.getDocument(tHandle)
         self.scanText(tHandle, theDoc.readDocument() or "")
 
         return True
@@ -141,12 +140,15 @@ class NWIndex:
     def loadIndex(self):
         """Load index from last session from the project meta folder.
         """
+        indexFile = self.theProject.storage.getMetaFile(nwFiles.INDEX_FILE)
+        if not isinstance(indexFile, Path):
+            return False
+
         theData = {}
-        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         tStart = time()
 
         self._indexBroken = False
-        if os.path.isfile(indexFile):
+        if indexFile.exists():
             logger.debug("Loading index file")
             try:
                 with open(indexFile, mode="r", encoding="utf-8") as inFile:
@@ -184,8 +186,11 @@ class NWIndex:
         """Save the current index as a json file in the project meta
         data folder.
         """
+        indexFile = self.theProject.storage.getMetaFile(nwFiles.INDEX_FILE)
+        if not isinstance(indexFile, Path):
+            return False
+
         logger.debug("Saving index file")
-        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         tStart = time()
 
         try:
@@ -815,8 +820,6 @@ class ItemIndex:
             elif tItem.itemRoot == rootHandle:
                 for sTitle in self._items[tHandle].headings():
                     yield tHandle, sTitle, self._items[tHandle][sTitle]
-            else:
-                continue
 
         return
 

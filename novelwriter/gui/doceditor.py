@@ -50,10 +50,10 @@ from PyQt5.QtWidgets import (
     QFrame
 )
 
-from novelwriter.core import NWDoc, NWSpellEnchant, countWords
+from novelwriter.core import NWSpellEnchant, countWords
 from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode
 from novelwriter.common import transferCase
-from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
+from novelwriter.constants import nwConst, nwFiles, nwKeyWords, nwUnicode
 from novelwriter.gui.dochighlight import GuiDocHighlighter
 
 logger = logging.getLogger(__name__)
@@ -339,7 +339,7 @@ class GuiDocEditor(QTextEdit):
         document is new (empty string), we set up the editor for editing
         the file.
         """
-        self._nwDocument = NWDoc(self.theProject, tHandle)
+        self._nwDocument = self.theProject.storage.getDocument(tHandle)
         self._nwItem = self._nwDocument.getCurrentItem()
 
         theDoc = self._nwDocument.readDocument()
@@ -470,8 +470,8 @@ class GuiDocEditor(QTextEdit):
         return True
 
     def saveText(self):
-        """Save the text currently in the editor to the NWDoc object,
-        and update the NWItem meta data.
+        """Save the text currently in the editor to the NWDocument
+        object, and update the NWItem meta data.
         """
         if self._nwItem is None or self._nwDocument is None:
             logger.error("Cannot save text as no document is open")
@@ -689,7 +689,8 @@ class GuiDocEditor(QTextEdit):
         else:
             theLang = self.theProject.data.spellLang
 
-        self.spEnchant.setLanguage(theLang, self.theProject.projDict)
+        projDict = self.theProject.storage.getMetaFile(nwFiles.PROJ_DICT)
+        self.spEnchant.setLanguage(theLang, projDict)
         _, theProvider = self.spEnchant.describeDict()
 
         self.spellDictionaryChanged.emit(str(theLang), str(theProvider))

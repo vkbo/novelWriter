@@ -19,8 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from novelwriter.core.doctools import DocMerger, DocSplitter
-from novelwriter.core.document import NWDoc
+from novelwriter.core.coretools import DocMerger, DocSplitter, ProjectBuilder
 from novelwriter.core.index import countWords
 from novelwriter.core.project import NWProject
 from novelwriter.core.spellcheck import NWSpellEnchant
@@ -31,8 +30,8 @@ from novelwriter.core.tomd import ToMarkdown
 __all__ = [
     "DocMerger",
     "DocSplitter",
+    "ProjectBuilder",
     "countWords",
-    "NWDoc",
     "NWProject",
     "NWSpellEnchant",
     "ToHtml",

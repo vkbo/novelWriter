@@ -19,28 +19,29 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
 import pytest
 
 from shutil import copyfile
+from pathlib import Path
 
 from mock import causeException
 from tools import C, buildTestProject, cmpFiles, writeFile
 
 from novelwriter.enum import nwItemClass, nwItemLayout
+from novelwriter.constants import nwFiles
 from novelwriter.core.index import NWIndex, countWords, TagsIndex
 from novelwriter.core.project import NWProject
 
 
 @pytest.mark.core
-def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
+def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, tstPaths):
     """Test core functionality of scaning, saving, loading and checking
     the index cache file.
     """
-    projFile = os.path.join(nwLipsum, "meta", "tagsIndex.json")
-    testFile = os.path.join(outDir, "coreIndex_LoadSave_tagsIndex.json")
-    compFile = os.path.join(refDir, "coreIndex_LoadSave_tagsIndex.json")
+    projFile = Path(nwLipsum) / "meta" / nwFiles.INDEX_FILE
+    testFile = tstPaths.outDir / "coreIndex_LoadSave_tagsIndex.json"
+    compFile = tstPaths.refDir / "coreIndex_LoadSave_tagsIndex.json"
 
     theProject = NWProject(mockGUI)
     assert theProject.openProject(nwLipsum)
@@ -60,6 +61,11 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
         assert theIndex.reIndexHandle(tItem.itemHandle) is notIndexable.get(tItem.itemHandle, True)
 
     assert theIndex.reIndexHandle(None) is False
+
+    # No folder for saving
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        assert theIndex.saveIndex() is False
 
     # Make the save fail
     with monkeypatch.context() as mp:
@@ -84,6 +90,11 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     theIndex.clearIndex()
     assert theIndex._tagsIndex._tags == {}
     assert theIndex._itemIndex._items == {}
+
+    # No folder for sloading
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        assert theIndex.loadIndex() is False
 
     # Make the load fail
     with monkeypatch.context() as mp:
@@ -752,7 +763,6 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
 
     assert theIndex.saveIndex() is True
     assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
 
     # Header Record
     bHandle = "0000000000000"
@@ -763,6 +773,8 @@ def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
     assert theIndex.getHandleHeaders(nHandle) == [
         ("T000001", "H1", "Hello World!"), ("T000011", "H1", "Hello World!")
     ]
+
+    assert theProject.closeProject() is True
 
 # END Test testCoreIndex_ExtractData
 

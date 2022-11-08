@@ -23,9 +23,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import random
 import logging
+
+from pathlib import Path
 
 from novelwriter.enum import nwItemClass, nwItemLayout
 from novelwriter.error import logException
@@ -140,16 +141,22 @@ class NWTree:
         """Write the convenience table of contents file in the root of
         the project directory.
         """
+        runtimePath = self.theProject.storage.runtimePath
+        contentPath = self.theProject.storage.contentPath
+        if not (isinstance(contentPath, Path) and isinstance(runtimePath, Path)):
+            return False
+
         tocList = []
         tocLen = 0
         for tHandle in self._treeOrder:
             tItem = self.__getitem__(tHandle)
             if tItem is None:
                 continue
+
             tFile = tHandle+".nwd"
-            if os.path.isfile(os.path.join(self.theProject.projContent, tFile)):
+            if (contentPath / tFile).is_file():
                 tocLine = "{0:<25s}  {1:<9s}  {2:<8s}  {3:s}".format(
-                    os.path.join("content", tFile),
+                    str(Path("content") / tFile),
                     tItem.itemClass.name,
                     tItem.itemLayout.name,
                     tItem.itemName,
@@ -159,7 +166,7 @@ class NWTree:
 
         try:
             # Dump the text
-            tocText = os.path.join(self.theProject.projPath, nwFiles.TOC_TXT)
+            tocText = runtimePath / nwFiles.TOC_TXT
             with open(tocText, mode="w", encoding="utf-8") as outFile:
                 outFile.write("\n")
                 outFile.write("Table of Contents\n")

@@ -25,7 +25,6 @@ import pytest
 from tools import C, buildTestProject
 
 from novelwriter.enum import nwState
-from novelwriter.core.document import NWDoc
 
 
 @pytest.mark.gui
@@ -34,7 +33,7 @@ def testGuiStatusBar_Main(qtbot, nwGUI, fncProj, mockRnd):
     """
     buildTestProject(nwGUI, fncProj)
     cHandle = nwGUI.theProject.newFile("A Note", C.hCharRoot)
-    newDoc = NWDoc(nwGUI.theProject, cHandle)
+    newDoc = nwGUI.theProject.storage.getDocument(cHandle)
     newDoc.writeDocument("# A Note\n\n")
     nwGUI.projView.projTree.revealNewTreeItem(cHandle)
     nwGUI.rebuildIndex(beQuiet=True)

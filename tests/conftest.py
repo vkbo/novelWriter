@@ -24,10 +24,12 @@ import sys
 import pytest
 import shutil
 
+from pathlib import Path
+
 from mock import MockGuiMain
 from tools import cleanProject
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 
 import novelwriter  # noqa: E402
 
@@ -63,6 +65,41 @@ def tmpDir():
 
 
 @pytest.fixture(scope="session")
+def tmpPath(tmpDir):
+    """A temporary folder for the test session. Path version.
+    """
+    return Path(tmpDir)
+
+
+@pytest.fixture(scope="session")
+def tstPaths(tmpPath):
+    """Returns an object that can provide the various paths needed for
+    running tests.
+    """
+    class _Store:
+        testDir = Path(__file__).parent
+        filesDir = testDir / "files"
+        refDir = testDir / "reference"
+        outDir = tmpPath / "results"
+
+    store = _Store()
+    store.outDir.mkdir(exist_ok=True)
+
+    return store
+
+
+@pytest.fixture(scope="function")
+def fncPath(tmpPath):
+    """A temporary folder for a single test function. Path version.
+    """
+    fncPath = tmpPath / "function"
+    if fncPath.is_dir():
+        shutil.rmtree(fncPath)
+    fncPath.mkdir(exist_ok=True)
+    return fncPath
+
+
+@pytest.fixture(scope="session")
 def refDir():
     """The folder where all the reference files are stored for verifying
     the results of tests.
@@ -95,7 +132,7 @@ def outDir(tmpDir):
 def fncDir(tmpDir):
     """A temporary folder for a single test function.
     """
-    fncDir = os.path.join(tmpDir, "f_temp")
+    fncDir = os.path.join(tmpDir, "function")
     if os.path.isdir(fncDir):
         shutil.rmtree(fncDir)
     if not os.path.isdir(fncDir):
@@ -227,27 +264,6 @@ def nwLipsum(tmpDir):
 
     shutil.copytree(srcDir, dstDir)
     cleanProject(dstDir)
-
-    yield dstDir
-
-    if os.path.isdir(dstDir):
-        shutil.rmtree(dstDir)
-
-    return
-
-
-@pytest.fixture(scope="function")
-def nwOldProj(tmpDir):
-    """A minimal movelWriter project using the old folder structure used
-    for storage versions < 1.2.
-    """
-    tstDir = os.path.dirname(__file__)
-    srcDir = os.path.join(tstDir, "oldproj")
-    dstDir = os.path.join(tmpDir, "oldproj")
-    if os.path.isdir(dstDir):
-        shutil.rmtree(dstDir)
-
-    shutil.copytree(srcDir, dstDir)
 
     yield dstDir
 

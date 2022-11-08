@@ -30,11 +30,11 @@ from tools import writeFile
 from novelwriter.guimain import GuiMain
 from novelwriter.common import (
     checkStringNone, checkString, checkInt, checkFloat, checkBool, checkHandle,
-    isHandle, isTitleTag, isItemClass, isItemType, isItemLayout, hexToInt,
-    minmax, checkIntTuple, formatInt, formatTimeStamp, formatTime, simplified,
-    splitVersionNumber, transferCase, fuzzyTime, numberToRoman, jsonEncode,
-    readTextFile, makeFileNameSafe, ensureFolder, sha256sum, getGuiItem,
-    NWConfigParser
+    checkUuid, isHandle, isTitleTag, isItemClass, isItemType, isItemLayout,
+    hexToInt, minmax, checkIntTuple, formatInt, formatTimeStamp, formatTime,
+    simplified, yesNo, splitVersionNumber, transferCase, fuzzyTime,
+    numberToRoman, jsonEncode, readTextFile, makeFileNameSafe, ensureFolder,
+    sha256sum, getGuiItem, NWConfigParser
 )
 
 
@@ -105,16 +105,41 @@ def testBaseCommon_CheckBool():
     bool, or integer 1 or 0, are returned as bool. Otherwise, the
     default is returned.
     """
+    # Bools
+    assert checkBool(True, False) is True
+    assert checkBool(False, True) is False
+
+    # Valid Strings
     assert checkBool("True", False) is True
     assert checkBool("False", True) is False
-    assert checkBool("Boo", False) is False
-    assert checkBool("Boo", True) is True
-    assert checkBool(None, True) is True
-    assert checkBool(None, False) is False
+    assert checkBool("true", False) is True
+    assert checkBool("false", True) is False
+    assert checkBool("Yes", False) is True
+    assert checkBool("No", True) is False
+    assert checkBool("yes", False) is True
+    assert checkBool("no", True) is False
+    assert checkBool("On", False) is True
+    assert checkBool("Off", True) is False
+    assert checkBool("on", False) is True
+    assert checkBool("off", True) is False
+
+    # Invalid Strings
+    assert checkBool("Foo", False) is False
+    assert checkBool("Foo", True) is True
+    assert checkBool("bar", False) is False
+    assert checkBool("bar", True) is True
+
+    # Valid Integers
     assert checkBool(0, True) is False
     assert checkBool(1, False) is True
+
+    # Inalid Integers
     assert checkBool(2, True) is True
     assert checkBool(2, False) is False
+
+    # Other Types
+    assert checkBool(None, True) is True
+    assert checkBool(None, False) is False
     assert checkBool(0.0, True) is True
     assert checkBool(1.0, False) is False
     assert checkBool(2.0, True) is True
@@ -135,6 +160,20 @@ def testBaseCommon_CheckHandle():
     assert checkHandle("h7666c91c7ccf", None, False) is None
 
 # END Test testBaseCommon_CheckHandle
+
+
+@pytest.mark.base
+def testBaseCommon_CheckUuid():
+    """Test the checkUuid function.
+    """
+    testUuid = "e2be99af-f9bf-4403-857a-c3d1ac25abea"
+    assert checkUuid("", None) is None
+    assert checkUuid("e2be99af-f9bf-4403-857a-c3d1ac25abe", None) is None
+    assert checkUuid("e2be99af-f9bf-qq03-857a-c3d1ac25abea", None) is None
+    assert checkUuid("e2be99af-f9bf-4403-857a-c3d1ac25abeaa", None) is None
+    assert checkUuid(testUuid, None) == testUuid
+
+# END Test testBaseCommon_CheckUuid
 
 
 @pytest.mark.base
@@ -315,6 +354,34 @@ def testBaseCommon_Simplified():
     assert simplified("\tHello\n\r\tWorld") == "Hello World"
 
 # END Test testBaseCommon_Simplified
+
+
+@pytest.mark.base
+def testBaseCommon_YesNo():
+    """Test the yesNo function.
+    """
+    # Bool
+    assert yesNo(True) == "yes"
+    assert yesNo(False) == "no"
+
+    # None
+    assert yesNo(None) == "no"
+
+    # String
+    assert yesNo("foo") == "yes"
+    assert yesNo("") == "no"
+
+    # Integer
+    assert yesNo(0) == "no"
+    assert yesNo(1) == "yes"
+    assert yesNo(2) == "yes"
+
+    # Float
+    assert yesNo(0.0) == "no"
+    assert yesNo(1.0) == "yes"
+    assert yesNo(2.0) == "yes"
+
+# END Test testBaseCommon_YesNo
 
 
 @pytest.mark.base

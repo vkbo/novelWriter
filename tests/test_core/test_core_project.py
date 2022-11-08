@@ -19,15 +19,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
-import shutil
 import pytest
 
+from time import time
 from shutil import copyfile
+from pathlib import Path
 from zipfile import ZipFile
 
 from mock import causeOSError
-from tools import cmpFiles, writeFile, readFile, buildTestProject, XML_IGNORE, C
+from tools import C, cmpFiles, writeFile, buildTestProject, XML_IGNORE
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.common import formatTimeStamp
@@ -36,234 +36,20 @@ from novelwriter.core.tree import NWTree
 from novelwriter.core.index import NWIndex
 from novelwriter.core.project import NWProject
 from novelwriter.core.options import OptionState
-from novelwriter.core.document import NWDoc
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 
 
 @pytest.mark.core
-def testCoreProject_NewMinimal(fncDir, outDir, refDir, mockGUI, mockRnd):
-    """Create a new project from a project wizard dictionary. With
-    default setting, creating a Minimal project.
-    """
-    projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_NewMinimal_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_NewMinimal_nwProject.nwx")
-
-    theProject = NWProject(mockGUI)
-
-    # Setting no data should fail
-    assert theProject.newProject({}) is False
-
-    # Wrong type should also fail
-    assert theProject.newProject("stuff") is False
-
-    # Try again with a proper path
-    assert theProject.newProject({"projPath": fncDir}) is True
-    assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
-
-    # Creating the project once more should fail
-    assert theProject.newProject({"projPath": fncDir}) is False
-
-    # Open again
-    assert theProject.openProject(projFile) is True
-
-    # Save and close
-    assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
-    assert theProject.projChanged is False
-
-    # Open a second time
-    assert theProject.openProject(projFile) is True
-    assert theProject.openProject(projFile) is False
-    assert theProject.openProject(projFile, overrideLock=True) is True
-    assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
-
-# END Test testCoreProject_NewMinimal
-
-
-@pytest.mark.core
-def testCoreProject_NewCustomA(fncDir, outDir, refDir, mockGUI, mockRnd):
-    """Create a new project from a project wizard dictionary.
-    Custom type with chapters and scenes.
-    """
-    projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_NewCustomA_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_NewCustomA_nwProject.nwx")
-
-    projData = {
-        "projName": "Test Custom",
-        "projTitle": "Test Novel",
-        "projAuthors": "Jane Doe\nJohn Doh\n",
-        "projPath": fncDir,
-        "popSample": False,
-        "popMinimal": False,
-        "popCustom": True,
-        "addRoots": [
-            nwItemClass.PLOT,
-            nwItemClass.CHARACTER,
-            nwItemClass.WORLD,
-        ],
-        "addNotes": True,
-        "numChapters": 3,
-        "numScenes": 3,
-    }
-    theProject = NWProject(mockGUI)
-
-    assert theProject.newProject(projData) is True
-    assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
-
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
-
-# END Test testCoreProject_NewCustomA
-
-
-@pytest.mark.core
-def testCoreProject_NewCustomB(fncDir, outDir, refDir, mockGUI, mockRnd):
-    """Create a new project from a project wizard dictionary.
-    Custom type without chapters, but with scenes.
-    """
-    projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_NewCustomB_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_NewCustomB_nwProject.nwx")
-
-    projData = {
-        "projName": "Test Custom",
-        "projTitle": "Test Novel",
-        "projAuthors": "Jane Doe\nJohn Doh\n",
-        "projPath": fncDir,
-        "popSample": False,
-        "popMinimal": False,
-        "popCustom": True,
-        "addRoots": [
-            nwItemClass.PLOT,
-            nwItemClass.CHARACTER,
-            nwItemClass.WORLD,
-        ],
-        "addNotes": True,
-        "numChapters": 0,
-        "numScenes": 6,
-    }
-    theProject = NWProject(mockGUI)
-
-    assert theProject.newProject(projData) is True
-    assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
-
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
-
-# END Test testCoreProject_NewCustomB
-
-
-@pytest.mark.core
-def testCoreProject_NewSampleA(fncDir, tmpConf, mockGUI, tmpDir):
-    """Check that we can create a new project can be created from the
-    provided sample project via a zip file.
-    """
-    projData = {
-        "projName": "Test Sample",
-        "projTitle": "Test Novel",
-        "projAuthors": "Jane Doe\nJohn Doh\n",
-        "projPath": fncDir,
-        "popSample": True,
-        "popMinimal": False,
-        "popCustom": False,
-    }
-    theProject = NWProject(mockGUI)
-
-    # Sample set, but no path
-    assert not theProject.newProject({"popSample": True})
-
-    # Force the lookup path for assets to our temp folder
-    srcSample = os.path.abspath(os.path.join(tmpConf.appRoot, "sample"))
-    dstSample = os.path.join(tmpDir, "sample.zip")
-    tmpConf.assetPath = tmpDir
-
-    # Create and open a defective zip file
-    with open(dstSample, mode="w+") as outFile:
-        outFile.write("foo")
-
-    assert not theProject.newProject(projData)
-    os.unlink(dstSample)
-
-    # Create a real zip file, and unpack it
-    with ZipFile(dstSample, "w") as zipObj:
-        zipObj.write(os.path.join(srcSample, "nwProject.nwx"), "nwProject.nwx")
-        for docFile in os.listdir(os.path.join(srcSample, "content")):
-            srcDoc = os.path.join(srcSample, "content", docFile)
-            zipObj.write(srcDoc, "content/"+docFile)
-
-    assert theProject.newProject(projData) is True
-    assert theProject.openProject(fncDir) is True
-    assert theProject.data.name == "Sample Project"
-    assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
-    os.unlink(dstSample)
-
-# END Test testCoreProject_NewSampleA
-
-
-@pytest.mark.core
-def testCoreProject_NewSampleB(monkeypatch, fncDir, tmpConf, mockGUI, tmpDir):
-    """Check that we can create a new project can be created from the
-    provided sample project folder.
-    """
-    projData = {
-        "projName": "Test Sample",
-        "projTitle": "Test Novel",
-        "projAuthors": "Jane Doe\nJohn Doh\n",
-        "projPath": fncDir,
-        "popSample": True,
-        "popMinimal": False,
-        "popCustom": False,
-    }
-    theProject = NWProject(mockGUI)
-
-    # Make sure we do not pick up the novelwriter/assets/sample.zip file
-    tmpConf.assetPath = tmpDir
-
-    # Set a fake project file name
-    monkeypatch.setattr(nwFiles, "PROJ_FILE", "nothing.nwx")
-    assert not theProject.newProject(projData)
-
-    monkeypatch.setattr(nwFiles, "PROJ_FILE", "nwProject.nwx")
-    assert theProject.newProject(projData) is True
-    assert theProject.openProject(fncDir) is True
-    assert theProject.data.name == "Sample Project"
-    assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
-
-    # Misdirect the appRoot path so neither is possible
-    tmpConf.appRoot = tmpDir
-    assert not theProject.newProject(projData)
-
-# END Test testCoreProject_NewSampleB
-
-
-@pytest.mark.core
-def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
+def testCoreProject_NewRoot(fncPath, tstPaths, mockGUI, mockRnd):
     """Check that new root folders can be added to the project.
     """
-    projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_NewRoot_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_NewRoot_nwProject.nwx")
+    projFile = fncPath / "nwProject.nwx"
+    testFile = tstPaths.outDir / "coreProject_NewRoot_nwProject.nwx"
+    compFile = tstPaths.refDir / "coreProject_NewRoot_nwProject.nwx"
 
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
-
-    assert theProject.setProjectPath(fncDir) is True
-    assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
-    assert theProject.openProject(projFile) is True
+    buildTestProject(theProject, fncPath)
 
     assert theProject.newRoot(nwItemClass.NOVEL) == "0000000000010"
     assert theProject.newRoot(nwItemClass.PLOT) == "0000000000011"
@@ -305,21 +91,16 @@ def testCoreProject_NewRoot(fncDir, outDir, refDir, mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProject_NewFileFolder(monkeypatch, fncDir, outDir, refDir, mockGUI, mockRnd):
+def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
     """Check that new files can be added to the project.
     """
-    projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreProject_NewFileFolder_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreProject_NewFileFolder_nwProject.nwx")
+    projFile = fncPath / "nwProject.nwx"
+    testFile = tstPaths.outDir / "coreProject_NewFileFolder_nwProject.nwx"
+    compFile = tstPaths.refDir / "coreProject_NewFileFolder_nwProject.nwx"
 
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
-
-    assert theProject.setProjectPath(fncDir) is True
-    assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
-    assert theProject.openProject(projFile) is True
+    buildTestProject(theProject, fncPath)
 
     # Invalid call
     assert theProject.newFolder("New Folder", "1234567890abc") is None
@@ -341,11 +122,13 @@ def testCoreProject_NewFileFolder(monkeypatch, fncDir, outDir, refDir, mockGUI, 
 
     # Write to file, success
     assert theProject.writeNewFile("0000000000011", 2, True) is True
-    assert NWDoc(theProject, "0000000000011").readDocument() == "## Hello\n\n"
+    assert theProject.storage.getDocument("0000000000011").readDocument() == "## Hello\n\n"
 
     # Write to file with additional text, success
     assert theProject.writeNewFile("0000000000012", 1, False, "Hi Jane\n\n") is True
-    assert NWDoc(theProject, "0000000000012").readDocument() == "# Jane\n\nHi Jane\n\n"
+    assert theProject.storage.getDocument("0000000000012").readDocument() == (
+        "# Jane\n\nHi Jane\n\n"
+    )
 
     # Save, close and check
     assert theProject.projChanged is True
@@ -357,20 +140,20 @@ def testCoreProject_NewFileFolder(monkeypatch, fncDir, outDir, refDir, mockGUI, 
 
     # Delete new file, but block access
     with monkeypatch.context() as mp:
-        mp.setattr("os.unlink", causeOSError)
+        mp.setattr("pathlib.Path.unlink", causeOSError)
         assert theProject.removeItem("0000000000011") is False
         assert "0000000000011" in theProject.tree
 
     # Delete new files and folders
-    assert os.path.isfile(os.path.join(fncDir, "content", "0000000000012.nwd"))
-    assert os.path.isfile(os.path.join(fncDir, "content", "0000000000011.nwd"))
+    assert (fncPath / "content" / "0000000000012.nwd").exists()
+    assert (fncPath / "content" / "0000000000011.nwd").exists()
 
     assert theProject.removeItem("0000000000012") is True
     assert theProject.removeItem("0000000000011") is True
     assert theProject.removeItem("0000000000010") is True
 
-    assert not os.path.isfile(os.path.join(fncDir, "content", "0000000000012.nwd"))
-    assert not os.path.isfile(os.path.join(fncDir, "content", "0000000000011.nwd"))
+    assert not (fncPath / "content" / "0000000000012.nwd").exists()
+    assert not (fncPath / "content" / "0000000000011.nwd").exists()
 
     assert "0000000000010" not in theProject.tree
     assert "0000000000011" not in theProject.tree
@@ -382,91 +165,81 @@ def testCoreProject_NewFileFolder(monkeypatch, fncDir, outDir, refDir, mockGUI, 
 
 
 @pytest.mark.core
-def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncDir, mockRnd):
+def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     """Test opening a project.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
 
-    # Rename the project file to check handling
-    rName = os.path.join(fncDir, nwFiles.PROJ_FILE)
-    wName = os.path.join(fncDir, nwFiles.PROJ_FILE+"_sdfghj")
-    os.rename(rName, wName)
-    assert theProject.openProject(fncDir) is False
-    os.rename(wName, rName)
-
-    # Fail on folder structure check
+    # Initialising the storage class fails
     with monkeypatch.context() as mp:
-        mp.setattr("os.mkdir", causeOSError)
-        shutil.rmtree(os.path.join(fncDir, "meta"))
-        assert theProject.openProject(fncDir) is False
+        mp.setattr("novelwriter.core.storage.NWStorage.openProjectInPlace", lambda *a, **k: False)
+        assert theProject.openProject(fncPath) is False
 
     # Fail on lock file
-    theProject.setProjectPath(fncDir)
-    assert theProject._writeLockFile()
-    assert theProject.openProject(fncDir) is False
+    assert theProject._storage.writeLockFile()
+    assert theProject.openProject(fncPath) is False
 
     # Fail to read lockfile (which still opens the project)
     with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
+        mp.setattr("novelwriter.core.storage.NWStorage.readLockFile", lambda *a: ["ERROR"])
         caplog.clear()
-        assert theProject.openProject(fncDir) is True
+        assert theProject.openProject(fncPath) is True
         assert "Failed to check lock file" in caplog.text
-    assert theProject.closeProject()
+        assert theProject.closeProject()
 
     # Force open with lockfile
-    theProject.setProjectPath(fncDir)
-    assert theProject._writeLockFile()
-    assert theProject.openProject(fncDir, overrideLock=True) is True
+    assert theProject._storage.writeLockFile()
+    assert theProject.openProject(fncPath, overrideLock=True) is True
     assert theProject.closeProject()
+
+    # Fail getting xml reader
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.getXmlReader", lambda *a: None)
+        assert theProject.openProject(fncPath) is False
 
     # Not a novelwriter XML file
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.NOT_NWX_FILE))
-        assert theProject.openProject(fncDir) is False
+        assert theProject.openProject(fncPath) is False
         assert "Project file does not appear" in mockGUI.lastAlert
 
     # Unknown project file version
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.UNKNOWN_VERSION))
-        assert theProject.openProject(fncDir) is False
+        assert theProject.openProject(fncPath) is False
         assert "Unknown or unsupported novelWriter project file" in mockGUI.lastAlert
 
     # Other parse error
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.CANNOT_PARSE))
-        assert theProject.openProject(fncDir) is False
+        assert theProject.openProject(fncPath) is False
         assert "Failed to parse project xml" in mockGUI.lastAlert
 
     # Won't convert legacy file
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.WAS_LEGACY))
         mockGUI.askResponse = False
-        assert theProject.openProject(fncDir) is False
+        assert theProject.openProject(fncPath) is False
         assert "The file format of your project is about to be" in mockGUI.lastQuestion[1]
         mockGUI.askResponse = True
 
     # Won't convert legacy file
     with monkeypatch.context() as mp:
-        mp.setattr(ProjectXMLReader, "hexVersion", property(lambda *a: "0x99999999"))
+        mp.setattr(ProjectXMLReader, "hexVersion", property(lambda *a: 0x99999999))
         mockGUI.askResponse = False
-        assert theProject.openProject(fncDir) is False
+        assert theProject.openProject(fncPath) is False
         assert "This project was saved by a newer version" in mockGUI.lastQuestion[1]
         mockGUI.askResponse = True
 
-    # Add some legacy stuff that cannot be removed
+    # Fail checking items should still pass
     with monkeypatch.context() as mp:
-        mp.setattr(theProject, "_legacyDataFolder", causeOSError)
-        os.mkdir(os.path.join(fncDir, "data_0"))
-        writeFile(os.path.join(fncDir, "data_0", "123456789abc_main.nwd"), "stuff")
-        writeFile(os.path.join(fncDir, "data_0", "123456789abc_main.bak"), "stuff")
-        mockGUI.clear()
-        assert theProject.openProject(fncDir) is True
-        assert "There was an error updating the project." in mockGUI.lastAlert
+        mp.setattr("novelwriter.core.tree.NWTree.updateItemData", lambda *a: False)
+        assert theProject.openProject(fncPath) is True
 
     assert theProject.closeProject()
 
@@ -474,7 +247,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncDir, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncDir, refDir):
+def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
     """Test saving a project.
     """
     theProject = NWProject(mockGUI)
@@ -483,12 +256,11 @@ def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncDir, refDir):
     assert theProject.saveProject() is False
 
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
 
-    # Fail on folder structure check
+    # Fail getting xml writer
     with monkeypatch.context() as mp:
-        mp.setattr("os.mkdir", causeOSError)
-        shutil.rmtree(os.path.join(fncDir, "meta"))
+        mp.setattr("novelwriter.core.storage.NWStorage.getXmlWriter", lambda *a: None)
         assert theProject.saveProject() is False
 
     # Fail writing
@@ -505,115 +277,11 @@ def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncDir, refDir):
 
 
 @pytest.mark.core
-def testCoreProject_LockFile(monkeypatch, fncDir, mockGUI):
-    """Test lock file functions for the project folder.
-    """
-    theProject = NWProject(mockGUI)
-
-    lockFile = os.path.join(fncDir, nwFiles.PROJ_LOCK)
-
-    # No project
-    assert theProject._writeLockFile() is False
-    assert theProject._readLockFile() == ["ERROR"]
-    assert theProject._clearLockFile() is False
-
-    theProject.projPath = fncDir
-    theProject.mainConf.hostName = "TestHost"
-    theProject.mainConf.osType = "TestOS"
-    theProject.mainConf.kernelVer = "1.0"
-
-    # Block open
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert theProject._writeLockFile() is False
-
-    # Write lock file
-    with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.project.time", lambda: 123.4)
-        assert theProject._writeLockFile() is True
-    assert readFile(lockFile) == "TestHost\nTestOS\n1.0\n123\n"
-
-    # Block open
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert theProject._readLockFile() == ["ERROR"]
-
-    # Read lock file
-    assert theProject._readLockFile() == ["TestHost", "TestOS", "1.0", "123"]
-
-    # Block unlink
-    with monkeypatch.context() as mp:
-        mp.setattr("os.unlink", causeOSError)
-        assert os.path.isfile(lockFile)
-        assert theProject._clearLockFile() is False
-        assert os.path.isfile(lockFile)
-
-    # Clear file
-    assert os.path.isfile(lockFile)
-    assert theProject._clearLockFile() is True
-    assert not os.path.isfile(lockFile)
-
-    # Read again, no file
-    assert theProject._readLockFile() == []
-
-    # Read an invalid lock file
-    writeFile(lockFile, "A\nB")
-    assert theProject._readLockFile() == ["ERROR"]
-    assert theProject._clearLockFile() is True
-
-# END Test testCoreProject_LockFile
-
-
-@pytest.mark.core
-def testCoreProject_Helpers(monkeypatch, fncDir, mockGUI):
+def testCoreProject_AccessItems(mockGUI, fncPath, mockRnd):
     """Test helper functions for the project folder.
     """
     theProject = NWProject(mockGUI)
-
-    # No path
-    assert theProject.ensureFolderStructure() is False
-
-    # Set the correct dir
-    theProject.projPath = fncDir
-
-    # Block user's home folder
-    with monkeypatch.context() as mp:
-        mp.setattr("os.path.expanduser", lambda *a, **k: fncDir)
-        assert theProject.ensureFolderStructure() is False
-
-    # Create a file to block meta folder
-    metaDir = os.path.join(fncDir, "meta")
-    writeFile(metaDir, "stuff")
-    assert theProject.ensureFolderStructure() is False
-    os.unlink(metaDir)
-
-    # Create a file to block cache folder
-    cacheDir = os.path.join(fncDir, "cache")
-    writeFile(cacheDir, "stuff")
-    assert theProject.ensureFolderStructure() is False
-    os.unlink(cacheDir)
-
-    # Create a file to block content folder
-    contentDir = os.path.join(fncDir, "content")
-    writeFile(contentDir, "stuff")
-    assert theProject.ensureFolderStructure() is False
-    os.unlink(contentDir)
-
-    # Now, do it right
-    assert theProject.ensureFolderStructure() is True
-    assert os.path.isdir(metaDir)
-    assert os.path.isdir(cacheDir)
-    assert os.path.isdir(contentDir)
-
-# END Test testCoreProject_Helpers
-
-
-@pytest.mark.core
-def testCoreProject_AccessItems(mockGUI, fncDir, mockRnd):
-    """Test helper functions for the project folder.
-    """
-    theProject = NWProject(mockGUI)
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
 
     # Storage Objects
     assert isinstance(theProject.index, NWIndex)
@@ -674,12 +342,12 @@ def testCoreProject_AccessItems(mockGUI, fncDir, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProject_StatusImport(mockGUI, fncDir, mockRnd):
+def testCoreProject_StatusImport(mockGUI, fncPath, mockRnd):
     """Test the status and importance flag handling.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
 
     statusKeys = [C.sNew, C.sNote, C.sDraft, C.sFinished]
     importKeys = [C.iNew, C.iMinor, C.iMajor, C.iMain]
@@ -784,31 +452,11 @@ def testCoreProject_StatusImport(mockGUI, fncDir, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
+def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     """Test other project class methods and functions.
     """
     theProject = NWProject(mockGUI)
-    buildTestProject(theProject, fncDir)
-
-    # Setting project path
-    assert theProject.setProjectPath(None)
-    assert theProject.projPath is None
-    assert theProject.setProjectPath("")
-    assert theProject.projPath is None
-    assert theProject.setProjectPath("~")
-    assert theProject.projPath == os.path.expanduser("~")
-
-    # Create a new folder and populate it
-    projPath = os.path.join(fncDir, "mock1")
-    assert theProject.setProjectPath(projPath, newProject=True)
-
-    # Make os.mkdir fail
-    monkeypatch.setattr("os.mkdir", causeOSError)
-    projPath = os.path.join(fncDir, "mock2")
-    assert not theProject.setProjectPath(projPath, newProject=True)
-
-    # Set back
-    assert theProject.setProjectPath(fncDir)
+    buildTestProject(theProject, fncPath)
 
     # Project Name
     theProject.data.setName("  A Name ")
@@ -854,9 +502,12 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
 
     # Spell check
     theProject.setProjectChanged(False)
+    theProject._projAltered = False
     theProject.data.setSpellCheck(True)
     theProject.data.setSpellCheck(False)
-    assert theProject.projChanged
+    assert theProject.projChanged is True
+    assert theProject.projAltered is True
+    assert theProject.projOpened > 0
 
     # Spell language
     theProject.setProjectChanged(False)
@@ -867,7 +518,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     assert theProject.data.spellLang is None
     theProject.data.setSpellLang("en_GB")
     assert theProject.data.spellLang == "en_GB"
-    assert theProject.projChanged
+    assert theProject.projChanged is True
 
     # Project Language
     theProject.setProjectChanged(False)
@@ -880,6 +531,20 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     # Language Lookup
     assert theProject.localLookup(1) == "One"
     assert theProject.localLookup(10) == "Ten"
+
+    # Set invalid language
+    theProject.data.setLanguage("foo")
+    theProject._loadProjectLocalisation()
+    assert theProject.localLookup(1) == "One"
+    assert theProject.localLookup(10) == "Ten"
+
+    # Block reading language data
+    theProject.data.setLanguage("en")
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        theProject._loadProjectLocalisation()
+        assert theProject.localLookup(1) == "One"
+        assert theProject.localLookup(10) == "Ten"
 
     # Last edited
     theProject.setProjectChanged(False)
@@ -917,29 +582,40 @@ def testCoreProject_Methods(monkeypatch, mockGUI, tmpDir, fncDir, mockRnd):
     assert theProject.tree.handles() == oldOrder
 
     # Session stats
-    theProject._data._initCounts = [50, 50]
-    theProject._data._currCounts = [100, 100]
+    theProject.data.setInitCounts(50, 50)
+    theProject.data.setCurrCounts(100, 100)
+
+    # No path for writing
     with monkeypatch.context() as mp:
-        mp.setattr("os.path.isdir", lambda *a, **k: False)
-        assert not theProject._appendSessionStats(idleTime=0)
+        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        assert theProject._appendSessionStats(idleTime=0) is False
 
     # Block open
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        assert not theProject._appendSessionStats(idleTime=0)
+        assert theProject._appendSessionStats(idleTime=0) is False
+
+    # Session too short
+    theProject._projOpened = time()
+    theProject.data.setInitCounts(50, 50)
+    theProject.data.setCurrCounts(50, 50)
+    assert theProject._appendSessionStats(idleTime=0) is False
 
     # Write entry
-    assert theProject.projMeta == os.path.join(fncDir, "meta")
-    statsFile = os.path.join(theProject.projMeta, nwFiles.SESS_STATS)
+    statsFile = theProject.storage.getMetaFile(nwFiles.SESS_STATS)
+    assert isinstance(statsFile, Path)
+    if statsFile.exists():
+        statsFile.unlink()
 
     theProject._projOpened = 1600002000
-    theProject._data._currCounts = [200, 100]
+    theProject.data._initCounts = [50, 50]
+    theProject.data._currCounts = [200, 100]
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.project.time", lambda: 1600005600)
         assert theProject._appendSessionStats(idleTime=99)
 
-    assert readFile(statsFile) == (
+    assert statsFile.read_text(encoding="utf-8") == (
         "# Offset 100\n"
         "# Start Time         End Time                Novel     Notes      Idle\n"
         "%s  %s       200       100        99\n"
@@ -970,7 +646,7 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
     assert theProject.closeProject() is True
 
     # First Item with Meta Data
-    orphPath = os.path.join(nwLipsum, "content", "636b6aa9b697b.nwd")
+    orphPath = Path(nwLipsum) / "content" / "636b6aa9b697b.nwd"
     writeFile(orphPath, (
         "%%~name:[Recovered] Mars\n"
         "%%~path:5eaea4e8cdee8/636b6aa9b697b\n"
@@ -980,23 +656,24 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
     ))
 
     # Second Item without Meta Data
-    orphPath = os.path.join(nwLipsum, "content", "736b6aa9b697b.nwd")
+    orphPath = Path(nwLipsum) / "content" / "736b6aa9b697b.nwd"
     writeFile(orphPath, "\n")
 
     # Invalid File Name
-    tstPath = os.path.join(nwLipsum, "content", "636b6aa9b697b.txt")
+    tstPath = Path(nwLipsum) / "content" / "636b6aa9b697b.txt"
     writeFile(tstPath, "\n")
 
     # Invalid File Name
-    tstPath = os.path.join(nwLipsum, "content", "636b6aa9b697bb.nwd")
+    tstPath = Path(nwLipsum) / "content" / "636b6aa9b697bb.nwd"
     writeFile(tstPath, "\n")
 
     # Invalid File Name
-    tstPath = os.path.join(nwLipsum, "content", "abcdefghijklm.nwd")
+    tstPath = Path(nwLipsum) / "content" / "abcdefghijklm.nwd"
     writeFile(tstPath, "\n")
 
     assert theProject.openProject(nwLipsum)
-    assert theProject.projPath is not None
+    assert theProject.storage.storagePath is not None
+    assert theProject.storage.runtimePath is not None
     assert theProject.tree["636b6aa9b697bb"] is None
     assert theProject.tree["abcdefghijklm"] is None
 
@@ -1031,226 +708,69 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
 
 
 @pytest.mark.core
-def testCoreProject_OldFormat(mockGUI, nwOldProj):
-    """Test that a project folder structure of version 1.0 can be
-    converted to the latest folder structure. Version 1.0 split the
-    documents into 'data_0' ... 'data_f' folders, which are now all
-    contained in a single 'content' folder.
-    """
-    theProject = NWProject(mockGUI)
-
-    # Create mock files for known legacy files
-    deleteFiles = [
-        os.path.join(nwOldProj, "cache", "nwProject.nwx.0"),
-        os.path.join(nwOldProj, "cache", "nwProject.nwx.1"),
-        os.path.join(nwOldProj, "cache", "nwProject.nwx.2"),
-        os.path.join(nwOldProj, "cache", "nwProject.nwx.3"),
-        os.path.join(nwOldProj, "cache", "nwProject.nwx.4"),
-        os.path.join(nwOldProj, "cache", "nwProject.nwx.5"),
-        os.path.join(nwOldProj, "cache", "nwProject.nwx.6"),
-        os.path.join(nwOldProj, "cache", "nwProject.nwx.7"),
-        os.path.join(nwOldProj, "cache", "nwProject.nwx.8"),
-        os.path.join(nwOldProj, "cache", "nwProject.nwx.9"),
-        os.path.join(nwOldProj, "meta",  "mainOptions.json"),
-        os.path.join(nwOldProj, "meta",  "exportOptions.json"),
-        os.path.join(nwOldProj, "meta",  "outlineOptions.json"),
-        os.path.join(nwOldProj, "meta",  "timelineOptions.json"),
-        os.path.join(nwOldProj, "meta",  "docMergeOptions.json"),
-        os.path.join(nwOldProj, "meta",  "sessionLogOptions.json"),
-    ]
-
-    # Create mock files
-    os.mkdir(os.path.join(nwOldProj, "cache"))
-    for aFile in deleteFiles:
-        writeFile(aFile, "Hi")
-    for aFile in deleteFiles:
-        assert os.path.isfile(aFile)
-
-    # Open project and check that files that are not supposed to be
-    # there have been removed
-    assert theProject.openProject(nwOldProj)
-    for aFile in deleteFiles:
-        assert not os.path.isfile(aFile)
-
-    assert not os.path.isdir(os.path.join(nwOldProj, "data_1"))
-    assert not os.path.isdir(os.path.join(nwOldProj, "data_7"))
-    assert not os.path.isdir(os.path.join(nwOldProj, "data_8"))
-    assert not os.path.isdir(os.path.join(nwOldProj, "data_9"))
-    assert not os.path.isdir(os.path.join(nwOldProj, "data_a"))
-    assert not os.path.isdir(os.path.join(nwOldProj, "data_f"))
-
-    # Check that files we want to keep are in the right place
-    assert os.path.isdir(os.path.join(nwOldProj, "cache"))
-    assert os.path.isdir(os.path.join(nwOldProj, "content"))
-    assert os.path.isdir(os.path.join(nwOldProj, "meta"))
-
-    assert os.path.isfile(os.path.join(nwOldProj, "content", "f528d831f5b24.nwd"))
-    assert os.path.isfile(os.path.join(nwOldProj, "content", "88124a4292d8b.nwd"))
-    assert os.path.isfile(os.path.join(nwOldProj, "content", "91239bf2f8b69.nwd"))
-    assert os.path.isfile(os.path.join(nwOldProj, "content", "19752e7f9d8af.nwd"))
-    assert os.path.isfile(os.path.join(nwOldProj, "content", "a764d5acf5a21.nwd"))
-    assert os.path.isfile(os.path.join(nwOldProj, "content", "9058ae29f0dfd.nwd"))
-    assert os.path.isfile(os.path.join(nwOldProj, "content", "7ff63b8afc4cd.nwd"))
-
-    assert os.path.isfile(os.path.join(nwOldProj, "meta", "tagsIndex.json"))
-    assert os.path.isfile(os.path.join(nwOldProj, "meta", "sessionInfo.log"))
-
-    # Close the project
-    theProject.closeProject()
-
-    # Check that new files have been created
-    assert os.path.isfile(os.path.join(nwOldProj, "meta", "guiOptions.json"))
-    assert os.path.isfile(os.path.join(nwOldProj, "ToC.txt"))
-
-# END Test testCoreProject_OldFormat
-
-
-@pytest.mark.core
-def testCoreProject_LegacyData(monkeypatch, mockGUI, fncDir):
-    """Test the functins that handle legacy data folders and structure
-    with additional tests of failure handling.
-    """
-    theProject = NWProject(mockGUI)
-    theProject.setProjectPath(fncDir)
-
-    # Check behaviour of deprecated files function on OSError
-    tstFile = os.path.join(fncDir, "ToC.json")
-    writeFile(tstFile, "stuff")
-    assert os.path.isfile(tstFile)
-
-    with monkeypatch.context() as mp:
-        mp.setattr("os.unlink", causeOSError)
-        assert theProject._deprecatedFiles() is False
-
-    assert theProject._deprecatedFiles()
-    assert not os.path.isfile(tstFile)
-
-    # Check processing non-folders
-    tstFile = os.path.join(fncDir, "data_0")
-    writeFile(tstFile, "stuff")
-    assert os.path.isfile(tstFile)
-    assert theProject._legacyDataFolder(tstFile) is False
-
-    # Check renaming/deleting of old document files
-    tstData2 = os.path.join(fncDir, "data_2")
-    tstData3 = os.path.join(fncDir, "data_3")
-    tstDoc1m = os.path.join(tstData2, "000000000001_main.nwd")
-    tstDoc1b = os.path.join(tstData2, "000000000001_main.bak")
-    tstDoc2m = os.path.join(tstData2, "000000000002_main.nwd")
-    tstDoc2b = os.path.join(tstData2, "000000000002_main.bak")
-    tstDoc3m = os.path.join(tstData3, "tooshort003_main.nwd")
-    tstDoc3b = os.path.join(tstData3, "tooshort003_main.bak")
-    tstDir4a = os.path.join(tstData3, "stuff")
-
-    os.mkdir(tstData2)
-    os.mkdir(tstData3)
-    writeFile(tstDoc1m, "stuff")
-    writeFile(tstDoc1b, "stuff")
-    writeFile(tstDoc2m, "stuff")
-    writeFile(tstDoc2b, "stuff")
-    writeFile(tstDoc3m, "stuff")
-    writeFile(tstDoc3b, "stuff")
-    os.mkdir(tstDir4a)
-
-    # Make the above fail
-    with monkeypatch.context() as mp:
-        mp.setattr("os.rename", causeOSError)
-        mp.setattr("os.unlink", causeOSError)
-        with pytest.raises(OSError):
-            theProject._legacyDataFolder(tstData2)
-            theProject._legacyDataFolder(tstData3)
-        assert os.path.isfile(tstDoc1m)
-        assert os.path.isfile(tstDoc1b)
-        assert os.path.isfile(tstDoc2m)
-        assert os.path.isfile(tstDoc2b)
-        assert os.path.isfile(tstDoc3m)
-        assert os.path.isfile(tstDoc3b)
-
-    # And succeed ...
-    assert theProject._legacyDataFolder(tstData2) is True
-    assert theProject._legacyDataFolder(tstData3) is True
-
-    assert not os.path.isdir(tstData2)
-    assert os.path.isdir(tstData3)
-    assert os.path.isfile(os.path.join(fncDir, "content", "2000000000001.nwd"))
-    assert os.path.isfile(os.path.join(fncDir, "content", "2000000000002.nwd"))
-    assert os.path.isfile(os.path.join(fncDir, tstData3, "tooshort003_main.nwd"))
-    assert os.path.isfile(os.path.join(fncDir, tstData3, "tooshort003_main.bak"))
-    assert os.path.isdir(tstDir4a)
-
-# END Test testCoreProject_LegacyData
-
-
-@pytest.mark.core
-def testCoreProject_Backup(monkeypatch, mockGUI, fncDir, tmpDir):
+def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tmpPath):
     """Test the automated backup feature of the project class. The test
     creates a backup of the Minimal test project, and then unzips the
     backupd file and checks that the project XML file is identical to
     the original file.
     """
     theProject = NWProject(mockGUI)
-    buildTestProject(theProject, fncDir)
 
-    # Test faulty settings
+    # No Project
+    assert theProject.backupProject(doNotify=False) is False
+
+    buildTestProject(theProject, fncPath)
+
+    # Invalid Settings
+    # ================
 
     # No project
     mockGUI.hasProject = False
-    assert theProject.zipIt(doNotify=False) is False
+    assert theProject.backupProject(doNotify=False) is False
     mockGUI.hasProject = True
 
     # Invalid path
     theProject.mainConf.backupPath = None
-    assert theProject.zipIt(doNotify=False) is False
+    assert theProject.backupProject(doNotify=False) is False
 
     # Missing project name
-    theProject.mainConf.backupPath = tmpDir
+    theProject.mainConf.backupPath = str(tmpPath)
     theProject.data.setName("")
-    assert theProject.zipIt(doNotify=False) is False
+    assert theProject.backupProject(doNotify=False) is False
 
-    # Non-existent folder
-    theProject.mainConf.backupPath = os.path.join(tmpDir, "nonexistent")
+    # Valid Settings
+    # ==============
+    theProject.mainConf.backupPath = str(tmpPath)
     theProject.data.setName("Test Minimal")
-    assert theProject.zipIt(doNotify=False) is False
-
-    # Same folder as project (causes infinite loop in zipping)
-    theProject.mainConf.backupPath = fncDir
-    assert theProject.zipIt(doNotify=False) is False
-
-    # Subfolder of project (causes infinite loop in zipping)
-    theProject.mainConf.backupPath = os.path.join(fncDir, "subdir")
-    assert theProject.zipIt(doNotify=False) is False
-
-    # Set a valid folder
-    theProject.mainConf.backupPath = tmpDir
 
     # Can't make folder
     with monkeypatch.context() as mp:
-        mp.setattr("os.mkdir", causeOSError)
-        assert theProject.zipIt(doNotify=False) is False
+        mp.setattr("pathlib.Path.mkdir", causeOSError)
+        assert theProject.backupProject(doNotify=False) is False
 
     # Can't write archive
     with monkeypatch.context() as mp:
-        mp.setattr("shutil.make_archive", causeOSError)
-        assert theProject.zipIt(doNotify=False) is False
+        mp.setattr("zipfile.ZipFile.write", causeOSError)
+        assert theProject.backupProject(doNotify=False) is False
 
     # Test correct settings
-    assert theProject.zipIt(doNotify=True) is True
+    assert theProject.backupProject(doNotify=True) is True
 
-    theFiles = os.listdir(os.path.join(tmpDir, "Test Minimal"))
+    theFiles = list((tmpPath / "Test Minimal").iterdir())
     assert len(theFiles) == 1
 
-    theZip = theFiles[0]
+    theZip = theFiles[0].name
     assert theZip[:12] == "Backup from "
     assert theZip[-4:] == ".zip"
 
     # Extract the archive
-    with ZipFile(os.path.join(tmpDir, "Test Minimal", theZip), "r") as inZip:
-        inZip.extractall(os.path.join(tmpDir, "extract"))
+    with ZipFile(tmpPath / "Test Minimal" / theZip, mode="r") as inZip:
+        inZip.extractall(tmpPath / "extract")
 
     # Check that the main project file was restored
     assert cmpFiles(
-        os.path.join(fncDir, "nwProject.nwx"),
-        os.path.join(tmpDir, "extract", "nwProject.nwx")
+        fncPath / "nwProject.nwx",
+        tmpPath / "extract" / "nwProject.nwx"
     )
 
 # END Test testCoreProject_Backup

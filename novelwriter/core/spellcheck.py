@@ -23,10 +23,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import logging
 
 from collections import namedtuple
+from pathlib import Path
 
 from novelwriter.error import logException
 
@@ -173,10 +173,10 @@ class NWSpellEnchant:
         self._projDict = set()
         self._projectDict = projectDict
 
-        if projectDict is None:
+        if not isinstance(projectDict, Path):
             return False
 
-        if not os.path.isfile(projectDict):
+        if not projectDict.exists():
             return False
 
         try:

@@ -29,7 +29,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidgetItem, QDialog
 
 from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass
-from novelwriter.core import NWDoc
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
@@ -714,7 +713,7 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, i
 
     # The merge goes through
     assert projTree._mergeDocuments(hChapter1, True) is True
-    assert len(NWDoc(theProject, mergedDoc1).readDocument()) > lenAll
+    assert len(theProject.storage.getDocument(mergedDoc1).readDocument()) > lenAll
 
     # Merge to Existing Doc
     # =====================
@@ -733,9 +732,9 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, i
 
     # Successful merge, and move to trash
     mergeData["moveToTrash"] = True
-    assert len(NWDoc(theProject, hChapter1).readDocument()) < lenAll
+    assert len(theProject.storage.getDocument(hChapter1).readDocument()) < lenAll
     assert projTree._mergeDocuments(hChapter1, False) is True
-    assert len(NWDoc(theProject, hChapter1).readDocument()) > lenAll
+    assert len(theProject.storage.getDocument(hChapter1).readDocument()) > lenAll
 
     assert theProject.tree.isTrash(hSceneOne11)
     assert theProject.tree.isTrash(hSceneOne12)

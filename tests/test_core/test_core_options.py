@@ -19,28 +19,30 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
 import pytest
 
 from mock import causeOSError
-from tools import writeFile
 
+from novelwriter.constants import nwFiles
 from novelwriter.core.options import OptionState
 from novelwriter.core.project import NWProject
-from novelwriter.constants import nwFiles
+from novelwriter.gui.noveltree import NovelTreeColumn
 
 
 @pytest.mark.core
-def testCoreOptions_LoadSave(monkeypatch, mockGUI, tmpDir):
+def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
     """Test loading and saving from the OptionState class.
     """
     theProject = NWProject(mockGUI)
     theOpts = OptionState(theProject)
 
+    metaDir = fncPath / "meta"
+    metaDir.mkdir()
+
     # Write a test file
-    optFile = os.path.join(tmpDir, nwFiles.OPTS_FILE)
-    writeFile(optFile, json.dumps({
+    optFile = metaDir / nwFiles.OPTS_FILE
+    optFile.write_text(json.dumps({
         "GuiBuildNovel": {
             "winWidth": 1000,
             "winHeight": 700,
@@ -52,22 +54,22 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, tmpDir):
         "MockGroup": {
             "mockItem": None,
         },
-    }))
+    }), encoding="utf-8")
 
     # Load and save with no path set
-    theProject.projMeta = None
-    assert not theOpts.loadSettings()
-    assert not theOpts.saveSettings()
+    theProject.storage._runtimePath = None
+    assert theOpts.loadSettings() is False
+    assert theOpts.saveSettings() is False
 
     # Set path
-    theProject.projMeta = tmpDir
-    assert theProject.projMeta == tmpDir
+    theProject.storage._runtimePath = fncPath
+    assert theProject.storage.getMetaFile(nwFiles.OPTS_FILE) == optFile
 
     # Cause open() to fail
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        assert not theOpts.loadSettings()
-        assert not theOpts.saveSettings()
+        assert theOpts.loadSettings() is False
+        assert theOpts.saveSettings() is False
 
     # Load proper
     assert theOpts.loadSettings()
@@ -108,9 +110,11 @@ def testCoreOptions_SetGet(mockGUI):
     theProject = NWProject(mockGUI)
     theOpts = OptionState(theProject)
 
+    nwColHidden = NovelTreeColumn.HIDDEN
+
     # Set invalid values
-    assert not theOpts.setValue("MockGroup", "mockItem", None)
-    assert not theOpts.setValue("GuiBuildNovel", "mockItem", None)
+    assert theOpts.setValue("MockGroup", "mockItem", None) is False
+    assert theOpts.setValue("GuiBuildNovel", "mockItem", None) is False
 
     # Set valid value
     assert theOpts.setValue("GuiBuildNovel", "winWidth", 100)
@@ -120,6 +124,7 @@ def testCoreOptions_SetGet(mockGUI):
     assert theOpts.setValue("GuiBuildNovel", "winHeight", 12.34)
     assert theOpts.setValue("GuiBuildNovel", "addNovel", True)
     assert theOpts.setValue("GuiBuildNovel", "textFont", "Cantarell")
+    assert theOpts.setValue("GuiNovelView", "lastCol", nwColHidden)
 
     # Generic get, doesn't check type
     assert theOpts.getValue("GuiBuildNovel", "winWidth", None) == 100
@@ -139,5 +144,14 @@ def testCoreOptions_SetGet(mockGUI):
     assert theOpts.getFloat("GuiBuildNovel", "mockItem", None) is None
     assert theOpts.getBool("GuiBuildNovel", "addNovel", None) is True
     assert theOpts.getBool("GuiBuildNovel", "mockItem", None) is None
+    assert theOpts.getEnum("GuiNovelView", "lastCol", NovelTreeColumn, None) == nwColHidden
+
+    # Get from non-existent  groups
+    assert theOpts.getValue("SomeGroup", "mockItem", None) is None
+    assert theOpts.getString("SomeGroup", "mockItem", None) is None
+    assert theOpts.getInt("SomeGroup", "mockItem", None) is None
+    assert theOpts.getFloat("SomeGroup", "mockItem", None) is None
+    assert theOpts.getBool("SomeGroup", "mockItem", None) is None
+    assert theOpts.getEnum("SomeGroup", "mockItem", NovelTreeColumn, None) is None
 
 # END Test testCoreOptions_SetGet

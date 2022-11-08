@@ -260,7 +260,7 @@ class GuiProjectDetailsMain(QWidget):
         self.revCountVal.setText(f"{self.theProject.data.saveCount:n}")
         self.editTimeVal.setText(f"{edTime//3600:02d}:{edTime%3600//60:02d}")
 
-        self.projPathVal.setText(self.theProject.projPath)
+        self.projPathVal.setText(str(self.theProject.storage.storagePath))
 
         return
 

@@ -50,9 +50,9 @@ from novelwriter.dialogs import (
 from novelwriter.tools import (
     GuiBuildNovel, GuiLipsum, GuiProjectWizard, GuiWritingStats
 )
-from novelwriter.core import NWProject
+from novelwriter.core import NWProject, ProjectBuilder
 from novelwriter.enum import (
-    nwDocMode, nwItemType, nwItemClass, nwAlert, nwWidget, nwState, nwView
+    nwDocMode, nwItemType, nwItemClass, nwAlert, nwWidget, nwView
 )
 from novelwriter.common import getGuiItem, hexToInt
 from novelwriter.constants import nwFiles
@@ -365,30 +365,10 @@ class GuiMain(QMainWindow):
             return False
 
         logger.info("Creating new project")
-        if self.theProject.newProject(projData):
-
-            self.hasProject = True
-            self.idleRefTime = time()
-            self.idleTime = 0.0
-
-            self.rebuildTrees()
-            self.saveProject()
-
-            self.docEditor.setDictionaries()
-            self.projView.openProjectTasks()
-            self.novelView.openProjectTasks()
-            self.outlineView.openProjectTasks()
-            self.rebuildIndex(beQuiet=True)
-
-            self.mainStatus.setRefTime(self.theProject.projOpened)
-            self.mainStatus.setProjectStatus(nwState.GOOD)
-            self.mainStatus.setDocumentStatus(nwState.NONE)
-            self.mainStatus.setStatus(self.tr("New project created ..."))
-
-            self._updateWindowTitle(self.theProject.data.name)
-
+        nwProject = ProjectBuilder(self)
+        if nwProject.buildProject(projData):
+            self.openProject(projPath)
         else:
-            self.theProject.clearProject()
             return False
 
         return True
@@ -429,7 +409,7 @@ class GuiMain(QMainWindow):
                     if not msgYes:
                         doBackup = False
             if doBackup:
-                self.theProject.zipIt(False)
+                self.theProject.backupProject(doNotify=False)
         else:
             saveOK = True
 
@@ -443,7 +423,6 @@ class GuiMain(QMainWindow):
             self.idleRefTime = time()
             self.idleTime = 0.0
 
-            self.theProject.index.clearIndex()
             self.clearGUI()
             self.hasProject = False
             self._changeView(nwView.PROJECT)
@@ -519,9 +498,6 @@ class GuiMain(QMainWindow):
         self.idleRefTime = time()
         self.idleTime = 0.0
 
-        # Load the tag index
-        self.theProject.index.loadIndex()
-
         # Update GUI
         self._updateWindowTitle(self.theProject.data.name)
         self.rebuildTrees()
@@ -573,8 +549,7 @@ class GuiMain(QMainWindow):
             return False
 
         self.projView.saveProjectTasks()
-        if self.theProject.saveProject(autoSave=autoSave):
-            self.theProject.index.saveIndex()
+        self.theProject.saveProject(autoSave=autoSave)
 
         return True
 
@@ -1407,7 +1382,7 @@ class GuiMain(QMainWindow):
         """
         doSave  = self.hasProject
         doSave &= self.theProject.projChanged
-        doSave &= self.theProject.projPath is not None
+        doSave &= self.theProject.storage.isOpen()
 
         if doSave:
             logger.debug("Autosaving project")

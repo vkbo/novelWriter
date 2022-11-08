@@ -4,17 +4,24 @@
     "itemAttr": {
       "handle": "7031beac91f75",
       "parent": null,
-      "root": null,
+      "root": "7031beac91f75",
       "order": 0,
       "type": "ROOT",
-      "class": "NOVEL"
+      "class": "NOVEL",
+      "layout": "NO_LAYOUT"
     },
     "metaAttr": {
+      "expanded": true,
       "heading": "H0",
-      "expanded": true
+      "charCount": 0,
+      "wordCount": 0,
+      "paraCount": 0,
+      "cursorPos": 0
     },
     "nameAttr": {
-      "status": "s000002"
+      "status": "sc24b8f",
+      "import": "ia857f0",
+      "active": false
     }
   },
   {
@@ -22,22 +29,24 @@
     "itemAttr": {
       "handle": "53b69b83cdafc",
       "parent": "7031beac91f75",
-      "root": null,
+      "root": "7031beac91f75",
       "order": 0,
       "type": "FILE",
       "class": "NOVEL",
       "layout": "DOCUMENT"
     },
     "metaAttr": {
+      "expanded": false,
       "heading": "H0",
-      "charCount": 241,
-      "wordCount": 42,
-      "paraCount": 3,
-      "cursorPos": 252
+      "charCount": 93,
+      "wordCount": 19,
+      "paraCount": 2,
+      "cursorPos": 119
     },
     "nameAttr": {
-      "active": true,
-      "status": "s000002"
+      "status": "sc24b8f",
+      "import": "ia857f0",
+      "active": true
     }
   },
   {
@@ -45,22 +54,24 @@
     "itemAttr": {
       "handle": "974e400180a99",
       "parent": "7031beac91f75",
-      "root": null,
+      "root": "7031beac91f75",
       "order": 1,
       "type": "FILE",
       "class": "NOVEL",
       "layout": "DOCUMENT"
     },
     "metaAttr": {
+      "expanded": false,
       "heading": "H0",
-      "charCount": 125,
-      "wordCount": 26,
+      "charCount": 251,
+      "wordCount": 50,
       "paraCount": 2,
-      "cursorPos": 127
+      "cursorPos": 277
     },
     "nameAttr": {
-      "active": true,
-      "status": "s000000"
+      "status": "sf12341",
+      "import": "ia857f0",
+      "active": true
     }
   },
   {
@@ -68,201 +79,274 @@
     "itemAttr": {
       "handle": "edca4be2fcaf8",
       "parent": "7031beac91f75",
-      "root": null,
+      "root": "7031beac91f75",
       "order": 2,
       "type": "FILE",
       "class": "NOVEL",
       "layout": "DOCUMENT"
     },
     "metaAttr": {
+      "expanded": false,
       "heading": "H0",
       "charCount": 26,
       "wordCount": 6,
       "paraCount": 1,
-      "cursorPos": 30
+      "cursorPos": 36
     },
     "nameAttr": {
-      "active": true,
-      "status": "s000000"
-    }
-  },
-  {
-    "name": "A Folder",
-    "itemAttr": {
-      "handle": "e7ded148d6e4a",
-      "parent": "7031beac91f75",
-      "root": null,
-      "order": 3,
-      "type": "FOLDER",
-      "class": "NOVEL"
-    },
-    "metaAttr": {
-      "heading": "H0",
-      "expanded": true
-    },
-    "nameAttr": {
-      "status": "s000003"
+      "status": "s90e6c9",
+      "import": "ia857f0",
+      "active": true
     }
   },
   {
     "name": "Chapter One",
     "itemAttr": {
       "handle": "6a2d6d5f4f401",
-      "parent": "e7ded148d6e4a",
-      "root": null,
-      "order": 0,
-      "type": "FILE",
-      "class": "NOVEL",
-      "layout": "DOCUMENT"
-    },
-    "metaAttr": {
-      "heading": "H0",
-      "charCount": 75,
-      "wordCount": 14,
-      "paraCount": 1,
-      "cursorPos": 279
-    },
-    "nameAttr": {
-      "active": true,
-      "status": "s000001"
-    }
-  },
-  {
-    "name": "Making a Scene",
-    "itemAttr": {
-      "handle": "636b6aa9b697b",
-      "parent": "e7ded148d6e4a",
-      "root": null,
-      "order": 1,
-      "type": "FILE",
-      "class": "NOVEL",
-      "layout": "DOCUMENT"
-    },
-    "metaAttr": {
-      "heading": "H0",
-      "charCount": 2429,
-      "wordCount": 432,
-      "paraCount": 14,
-      "cursorPos": 61
-    },
-    "nameAttr": {
-      "active": true,
-      "status": "s000003"
-    }
-  },
-  {
-    "name": "Another Scene",
-    "itemAttr": {
-      "handle": "bc0cbd2a407f3",
-      "parent": "e7ded148d6e4a",
-      "root": null,
-      "order": 2,
-      "type": "FILE",
-      "class": "NOVEL",
-      "layout": "DOCUMENT"
-    },
-    "metaAttr": {
-      "heading": "H0",
-      "charCount": 476,
-      "wordCount": 93,
-      "paraCount": 3,
-      "cursorPos": 577
-    },
-    "nameAttr": {
-      "active": true,
-      "status": "s000003"
-    }
-  },
-  {
-    "name": "Interlude",
-    "itemAttr": {
-      "handle": "ba8a28a246524",
-      "parent": "e7ded148d6e4a",
-      "root": null,
+      "parent": "7031beac91f75",
+      "root": "7031beac91f75",
       "order": 3,
       "type": "FILE",
       "class": "NOVEL",
       "layout": "DOCUMENT"
     },
     "metaAttr": {
+      "expanded": true,
+      "heading": "H0",
+      "charCount": 95,
+      "wordCount": 18,
+      "paraCount": 1,
+      "cursorPos": 291
+    },
+    "nameAttr": {
+      "status": "sf24ce6",
+      "import": "ia857f0",
+      "active": true
+    }
+  },
+  {
+    "name": "Making a Scene",
+    "itemAttr": {
+      "handle": "636b6aa9b697b",
+      "parent": "6a2d6d5f4f401",
+      "root": "7031beac91f75",
+      "order": 0,
+      "type": "FILE",
+      "class": "NOVEL",
+      "layout": "DOCUMENT"
+    },
+    "metaAttr": {
+      "expanded": false,
+      "heading": "H0",
+      "charCount": 2687,
+      "wordCount": 479,
+      "paraCount": 14,
+      "cursorPos": 67
+    },
+    "nameAttr": {
+      "status": "s90e6c9",
+      "import": "ia857f0",
+      "active": true
+    }
+  },
+  {
+    "name": "Another Scene",
+    "itemAttr": {
+      "handle": "bc0cbd2a407f3",
+      "parent": "6a2d6d5f4f401",
+      "root": "7031beac91f75",
+      "order": 1,
+      "type": "FILE",
+      "class": "NOVEL",
+      "layout": "DOCUMENT"
+    },
+    "metaAttr": {
+      "expanded": false,
+      "heading": "H0",
+      "charCount": 548,
+      "wordCount": 108,
+      "paraCount": 3,
+      "cursorPos": 465
+    },
+    "nameAttr": {
+      "status": "s90e6c9",
+      "import": "ia857f0",
+      "active": true
+    }
+  },
+  {
+    "name": "Interlude",
+    "itemAttr": {
+      "handle": "ba8a28a246524",
+      "parent": "7031beac91f75",
+      "root": "7031beac91f75",
+      "order": 4,
+      "type": "FILE",
+      "class": "NOVEL",
+      "layout": "DOCUMENT"
+    },
+    "metaAttr": {
+      "expanded": false,
       "heading": "H0",
       "charCount": 617,
       "wordCount": 101,
       "paraCount": 3,
-      "cursorPos": 1137
+      "cursorPos": 310
     },
     "nameAttr": {
-      "active": true,
-      "status": "s000000"
+      "status": "s78ea90",
+      "import": "ia857f0",
+      "active": true
     }
   },
   {
     "name": "A Note on Structure",
     "itemAttr": {
       "handle": "96b68994dfa3d",
-      "parent": "e7ded148d6e4a",
-      "root": null,
-      "order": 4,
+      "parent": "7031beac91f75",
+      "root": "7031beac91f75",
+      "order": 5,
       "type": "FILE",
       "class": "NOVEL",
       "layout": "NOTE"
     },
     "metaAttr": {
+      "expanded": false,
       "heading": "H0",
-      "charCount": 1692,
-      "wordCount": 313,
-      "paraCount": 6,
-      "cursorPos": 1110
+      "charCount": 1909,
+      "wordCount": 346,
+      "paraCount": 7,
+      "cursorPos": 0
     },
     "nameAttr": {
-      "active": false,
-      "status": "s000004"
+      "status": "sf24ce6",
+      "import": "ia857f0",
+      "active": false
     }
   },
   {
     "name": "Chapter Two",
     "itemAttr": {
       "handle": "88706ddc78b1b",
-      "parent": "e7ded148d6e4a",
-      "root": null,
-      "order": 5,
-      "type": "FILE",
-      "class": "NOVEL",
-      "layout": "DOCUMENT"
-    },
-    "metaAttr": {
-      "heading": "H0",
-      "charCount": 139,
-      "wordCount": 28,
-      "paraCount": 1,
-      "cursorPos": 343
-    },
-    "nameAttr": {
-      "active": true,
-      "status": "s000003"
-    }
-  },
-  {
-    "name": "We Found John!",
-    "itemAttr": {
-      "handle": "ae7339df26ded",
-      "parent": "e7ded148d6e4a",
-      "root": null,
+      "parent": "7031beac91f75",
+      "root": "7031beac91f75",
       "order": 6,
       "type": "FILE",
       "class": "NOVEL",
       "layout": "DOCUMENT"
     },
     "metaAttr": {
+      "expanded": true,
+      "heading": "H0",
+      "charCount": 139,
+      "wordCount": 28,
+      "paraCount": 1,
+      "cursorPos": 188
+    },
+    "nameAttr": {
+      "status": "s90e6c9",
+      "import": "ia857f0",
+      "active": true
+    }
+  },
+  {
+    "name": "We Found John!",
+    "itemAttr": {
+      "handle": "ae7339df26ded",
+      "parent": "88706ddc78b1b",
+      "root": "7031beac91f75",
+      "order": 0,
+      "type": "FILE",
+      "class": "NOVEL",
+      "layout": "DOCUMENT"
+    },
+    "metaAttr": {
+      "expanded": false,
       "heading": "H0",
       "charCount": 189,
       "wordCount": 37,
       "paraCount": 1,
-      "cursorPos": 224
+      "cursorPos": 0
     },
     "nameAttr": {
-      "active": true,
-      "status": "s000003"
+      "status": "s90e6c9",
+      "import": "ia857f0",
+      "active": true
+    }
+  },
+  {
+    "name": "Sequel",
+    "itemAttr": {
+      "handle": "e5e47ebf63b1c",
+      "parent": null,
+      "root": "e5e47ebf63b1c",
+      "order": 1,
+      "type": "ROOT",
+      "class": "NOVEL",
+      "layout": "NO_LAYOUT"
+    },
+    "metaAttr": {
+      "expanded": true,
+      "heading": "H0",
+      "charCount": 0,
+      "wordCount": 0,
+      "paraCount": 0,
+      "cursorPos": 0
+    },
+    "nameAttr": {
+      "status": "sf12341",
+      "import": "ia857f0",
+      "active": false
+    }
+  },
+  {
+    "name": "Title Page",
+    "itemAttr": {
+      "handle": "bacb7059e3083",
+      "parent": "e5e47ebf63b1c",
+      "root": "e5e47ebf63b1c",
+      "order": 0,
+      "type": "FILE",
+      "class": "NOVEL",
+      "layout": "DOCUMENT"
+    },
+    "metaAttr": {
+      "expanded": false,
+      "heading": "H0",
+      "charCount": 27,
+      "wordCount": 5,
+      "paraCount": 1,
+      "cursorPos": 100
+    },
+    "nameAttr": {
+      "status": "sc24b8f",
+      "import": "ia857f0",
+      "active": true
+    }
+  },
+  {
+    "name": "Chapter One",
+    "itemAttr": {
+      "handle": "a520879ca0b45",
+      "parent": "e5e47ebf63b1c",
+      "root": "e5e47ebf63b1c",
+      "order": 1,
+      "type": "FILE",
+      "class": "NOVEL",
+      "layout": "DOCUMENT"
+    },
+    "metaAttr": {
+      "expanded": false,
+      "heading": "H0",
+      "charCount": 299,
+      "wordCount": 55,
+      "paraCount": 2,
+      "cursorPos": 104
+    },
+    "nameAttr": {
+      "status": "s90e6c9",
+      "import": "ia857f0",
+      "active": true
     }
   },
   {
@@ -270,17 +354,24 @@
     "itemAttr": {
       "handle": "f6622b4617424",
       "parent": null,
-      "root": null,
-      "order": 1,
+      "root": "f6622b4617424",
+      "order": 2,
       "type": "ROOT",
-      "class": "CHARACTER"
+      "class": "CHARACTER",
+      "layout": "NO_LAYOUT"
     },
     "metaAttr": {
+      "expanded": true,
       "heading": "H0",
-      "expanded": true
+      "charCount": 0,
+      "wordCount": 0,
+      "paraCount": 0,
+      "cursorPos": 0
     },
     "nameAttr": {
-      "import": null
+      "status": "sf12341",
+      "import": "ia857f0",
+      "active": false
     }
   },
   {
@@ -288,17 +379,24 @@
     "itemAttr": {
       "handle": "f7e2d9f330615",
       "parent": "f6622b4617424",
-      "root": null,
+      "root": "f6622b4617424",
       "order": 0,
       "type": "FOLDER",
-      "class": "CHARACTER"
+      "class": "CHARACTER",
+      "layout": "NO_LAYOUT"
     },
     "metaAttr": {
+      "expanded": true,
       "heading": "H0",
-      "expanded": true
+      "charCount": 0,
+      "wordCount": 0,
+      "paraCount": 0,
+      "cursorPos": 0
     },
     "nameAttr": {
-      "import": null
+      "status": "sf12341",
+      "import": "ia857f0",
+      "active": false
     }
   },
   {
@@ -306,13 +404,14 @@
     "itemAttr": {
       "handle": "14298de4d9524",
       "parent": "f7e2d9f330615",
-      "root": null,
+      "root": "f6622b4617424",
       "order": 0,
       "type": "FILE",
       "class": "CHARACTER",
       "layout": "NOTE"
     },
     "metaAttr": {
+      "expanded": false,
       "heading": "H0",
       "charCount": 49,
       "wordCount": 9,
@@ -320,8 +419,9 @@
       "cursorPos": 24
     },
     "nameAttr": {
-      "active": true,
-      "import": "i000008"
+      "status": "sf12341",
+      "import": "icfb3a5",
+      "active": true
     }
   },
   {
@@ -329,13 +429,14 @@
     "itemAttr": {
       "handle": "bb2c23b3c42cc",
       "parent": "f7e2d9f330615",
-      "root": null,
+      "root": "f6622b4617424",
       "order": 1,
       "type": "FILE",
       "class": "CHARACTER",
       "layout": "NOTE"
     },
     "metaAttr": {
+      "expanded": false,
       "heading": "H0",
       "charCount": 55,
       "wordCount": 9,
@@ -343,8 +444,9 @@
       "cursorPos": 25
     },
     "nameAttr": {
-      "active": true,
-      "import": "i000009"
+      "status": "sf12341",
+      "import": "i2d7a54",
+      "active": true
     }
   },
   {
@@ -352,17 +454,24 @@
     "itemAttr": {
       "handle": "15c4492bd5107",
       "parent": null,
-      "root": null,
-      "order": 2,
+      "root": "15c4492bd5107",
+      "order": 3,
       "type": "ROOT",
-      "class": "WORLD"
+      "class": "WORLD",
+      "layout": "NO_LAYOUT"
     },
     "metaAttr": {
+      "expanded": true,
       "heading": "H0",
-      "expanded": true
+      "charCount": 0,
+      "wordCount": 0,
+      "paraCount": 0,
+      "cursorPos": 0
     },
     "nameAttr": {
-      "import": null
+      "status": "sf12341",
+      "import": "ia857f0",
+      "active": false
     }
   },
   {
@@ -370,13 +479,14 @@
     "itemAttr": {
       "handle": "b3e74dbc1f584",
       "parent": "15c4492bd5107",
-      "root": null,
+      "root": "15c4492bd5107",
       "order": 0,
       "type": "FILE",
       "class": "WORLD",
       "layout": "NOTE"
     },
     "metaAttr": {
+      "expanded": false,
       "heading": "H0",
       "charCount": 76,
       "wordCount": 15,
@@ -384,8 +494,9 @@
       "cursorPos": 20
     },
     "nameAttr": {
-      "active": true,
-      "import": "i00000a"
+      "status": "sf12341",
+      "import": "i56be10",
+      "active": true
     }
   },
   {
@@ -393,13 +504,14 @@
     "itemAttr": {
       "handle": "f1471bef9f2ae",
       "parent": "15c4492bd5107",
-      "root": null,
+      "root": "15c4492bd5107",
       "order": 1,
       "type": "FILE",
       "class": "WORLD",
       "layout": "NOTE"
     },
     "metaAttr": {
+      "expanded": false,
       "heading": "H0",
       "charCount": 115,
       "wordCount": 24,
@@ -407,8 +519,9 @@
       "cursorPos": 133
     },
     "nameAttr": {
-      "active": true,
-      "import": "i000008"
+      "status": "sf12341",
+      "import": "icfb3a5",
+      "active": true
     }
   },
   {
@@ -416,13 +529,14 @@
     "itemAttr": {
       "handle": "5eaea4e8cdee8",
       "parent": "15c4492bd5107",
-      "root": null,
+      "root": "15c4492bd5107",
       "order": 2,
       "type": "FILE",
       "class": "WORLD",
       "layout": "NOTE"
     },
     "metaAttr": {
+      "expanded": false,
       "heading": "H0",
       "charCount": 28,
       "wordCount": 6,
@@ -430,26 +544,34 @@
       "cursorPos": 45
     },
     "nameAttr": {
-      "active": true,
-      "import": "i000009"
+      "status": "sf12341",
+      "import": "i2d7a54",
+      "active": true
     }
   },
   {
-    "name": "Outtakes",
+    "name": "Archive",
     "itemAttr": {
       "handle": "6827118336ac1",
       "parent": null,
-      "root": null,
-      "order": 3,
+      "root": "6827118336ac1",
+      "order": 4,
       "type": "ROOT",
-      "class": "ARCHIVE"
+      "class": "ARCHIVE",
+      "layout": "NO_LAYOUT"
     },
     "metaAttr": {
+      "expanded": true,
       "heading": "H0",
-      "expanded": true
+      "charCount": 0,
+      "wordCount": 0,
+      "paraCount": 0,
+      "cursorPos": 0
     },
     "nameAttr": {
-      "status": null
+      "status": "sf12341",
+      "import": "ia857f0",
+      "active": false
     }
   },
   {
@@ -457,17 +579,24 @@
     "itemAttr": {
       "handle": "ae9bf3c3ea159",
       "parent": "6827118336ac1",
-      "root": null,
+      "root": "6827118336ac1",
       "order": 0,
       "type": "FOLDER",
-      "class": "ARCHIVE"
+      "class": "ARCHIVE",
+      "layout": "NO_LAYOUT"
     },
     "metaAttr": {
+      "expanded": true,
       "heading": "H0",
-      "expanded": true
+      "charCount": 0,
+      "wordCount": 0,
+      "paraCount": 0,
+      "cursorPos": 0
     },
     "nameAttr": {
-      "status": null
+      "status": "sf12341",
+      "import": "ia857f0",
+      "active": false
     }
   },
   {
@@ -475,22 +604,24 @@
     "itemAttr": {
       "handle": "8a5deb88c0e97",
       "parent": "ae9bf3c3ea159",
-      "root": null,
+      "root": "6827118336ac1",
       "order": 0,
       "type": "FILE",
-      "class": "NOVEL",
+      "class": "ARCHIVE",
       "layout": "DOCUMENT"
     },
     "metaAttr": {
+      "expanded": false,
       "heading": "H0",
-      "charCount": 315,
-      "wordCount": 55,
+      "charCount": 232,
+      "wordCount": 42,
       "paraCount": 1,
-      "cursorPos": 322
+      "cursorPos": 239
     },
     "nameAttr": {
-      "active": true,
-      "status": "s000003"
+      "status": "s90e6c9",
+      "import": "ia857f0",
+      "active": true
     }
   },
   {
@@ -498,17 +629,24 @@
     "itemAttr": {
       "handle": "98acd8c76c93a",
       "parent": null,
-      "root": null,
-      "order": 4,
+      "root": "98acd8c76c93a",
+      "order": 5,
       "type": "ROOT",
-      "class": "TRASH"
+      "class": "TRASH",
+      "layout": "NO_LAYOUT"
     },
     "metaAttr": {
+      "expanded": true,
       "heading": "H0",
-      "expanded": true
+      "charCount": 0,
+      "wordCount": 0,
+      "paraCount": 0,
+      "cursorPos": 0
     },
     "nameAttr": {
-      "import": null
+      "status": "sf12341",
+      "import": "ia857f0",
+      "active": false
     }
   },
   {
@@ -516,13 +654,14 @@
     "itemAttr": {
       "handle": "b8136a5a774a0",
       "parent": "98acd8c76c93a",
-      "root": null,
+      "root": "98acd8c76c93a",
       "order": 0,
       "type": "FILE",
-      "class": "NOVEL",
+      "class": "TRASH",
       "layout": "DOCUMENT"
     },
     "metaAttr": {
+      "expanded": false,
       "heading": "H0",
       "charCount": 30,
       "wordCount": 6,
@@ -530,8 +669,9 @@
       "cursorPos": 36
     },
     "nameAttr": {
-      "active": true,
-      "status": "s000000"
+      "status": "sf12341",
+      "import": "ia857f0",
+      "active": true
     }
   }
 ]

@@ -19,10 +19,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 
-from tools import C, buildTestProject, writeFile
+from pathlib import Path
+
+from tools import C, buildTestProject
 
 from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtCore import Qt, QEvent
@@ -46,18 +47,18 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     nwGUI.projView.projTree._getTreeItem(C.hCharRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)
 
-    writeFile(
-        os.path.join(nwGUI.theProject.projContent, "0000000000010.nwd"),
-        "# Jane Doe\n\n@tag: Jane\n\n"
+    contentPath = nwGUI.theProject.storage.contentPath
+    assert isinstance(contentPath, Path)
+
+    (contentPath / "0000000000010.nwd").write_text(
+        "# Jane Doe\n\n@tag: Jane\n\n", encoding="utf-8"
     )
-    writeFile(
-        os.path.join(nwGUI.theProject.projContent, "000000000000f.nwd"), (
-            "### Scene One\n\n"
-            "@pov: Jane\n"
-            "@focus: Jane\n\n"
-            "% Synopsis: This is a scene."
-        )
-    )
+    (contentPath / "000000000000f.nwd").write_text((
+        "### Scene One\n\n"
+        "@pov: Jane\n"
+        "@focus: Jane\n\n"
+        "% Synopsis: This is a scene."
+    ), encoding="utf-8")
 
     novelView = nwGUI.novelView
     novelTree = novelView.novelTree

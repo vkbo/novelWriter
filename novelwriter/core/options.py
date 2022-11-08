@@ -24,11 +24,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
 import logging
 
 from enum import Enum
+from pathlib import Path
 
 from novelwriter.error import logException
 from novelwriter.common import checkBool, checkFloat, checkInt, checkString
@@ -77,13 +77,12 @@ class OptionState:
     def loadSettings(self):
         """Load the options dictionary from the project settings file.
         """
-        if self.theProject.projMeta is None:
+        stateFile = self.theProject.storage.getMetaFile(nwFiles.OPTS_FILE)
+        if not isinstance(stateFile, Path):
             return False
 
-        stateFile = os.path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
         theState = {}
-
-        if os.path.isfile(stateFile):
+        if stateFile.exists():
             logger.debug("Loading GUI options file")
             try:
                 with open(stateFile, mode="r", encoding="utf-8") as inFile:
@@ -106,12 +105,11 @@ class OptionState:
     def saveSettings(self):
         """Save the options dictionary to the project settings file.
         """
-        if self.theProject.projMeta is None:
+        stateFile = self.theProject.storage.getMetaFile(nwFiles.OPTS_FILE)
+        if not isinstance(stateFile, Path):
             return False
 
-        stateFile = os.path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
         logger.debug("Saving GUI options file")
-
         try:
             with open(stateFile, mode="w+", encoding="utf-8") as outFile:
                 json.dump(self._theState, outFile, indent=2)

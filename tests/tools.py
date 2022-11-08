@@ -25,7 +25,7 @@ import shutil
 
 from PyQt5.QtWidgets import qApp
 
-XML_IGNORE = ("<novelWriterXML", "<saveCount", "<autoCount", "<editTime")
+XML_IGNORE = ("<novelWriterXML", "<project")
 
 
 class C:
@@ -156,7 +156,7 @@ def buildTestProject(theObject, projPath):
     object as the parent.
     """
     from novelwriter.enum import nwItemClass
-    from novelwriter.core import NWProject, NWDoc
+    from novelwriter.core import NWProject
 
     if isinstance(theObject, NWProject):
         theGUI = None
@@ -166,17 +166,10 @@ def buildTestProject(theObject, projPath):
         theProject = theObject.theProject
 
     theProject.clearProject()
-    theProject.setProjectPath(projPath, newProject=True)
+    theProject.storage.openProjectInPlace(projPath)
+    theProject.setDefaultStatusImport()
 
-    theProject.data.itemStatus.write(None, "New",      (100, 100, 100))
-    theProject.data.itemStatus.write(None, "Note",     (200, 50,  0))
-    theProject.data.itemStatus.write(None, "Draft",    (200, 150, 0))
-    theProject.data.itemStatus.write(None, "Finished", (50,  200, 0))
-    theProject.data.itemImport.write(None, "New",      (100, 100, 100))
-    theProject.data.itemImport.write(None, "Minor",    (200, 50,  0))
-    theProject.data.itemImport.write(None, "Major",    (200, 150, 0))
-    theProject.data.itemImport.write(None, "Main",     (50,  200, 0))
-
+    theProject.data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
     theProject.data.setName("New Project")
     theProject.data.setTitle("New Novel")
     theProject.data.setAuthors("Jane Doe")
@@ -193,15 +186,15 @@ def buildTestProject(theObject, projPath):
     xHandle[7] = theProject.newFile("New Chapter", xHandle[6])
     xHandle[8] = theProject.newFile("New Scene", xHandle[6])
 
-    aDoc = NWDoc(theProject, xHandle[5])
+    aDoc = theProject.storage.getDocument(xHandle[5])
     aDoc.writeDocument("#! New Novel\n\n>> By Jane Doe <<\n")
     theProject.index.reIndexHandle(xHandle[5])
 
-    aDoc = NWDoc(theProject, xHandle[7])
+    aDoc = theProject.storage.getDocument(xHandle[7])
     aDoc.writeDocument("## %s\n\n" % theProject.tr("New Chapter"))
     theProject.index.reIndexHandle(xHandle[7])
 
-    aDoc = NWDoc(theProject, xHandle[8])
+    aDoc = theProject.storage.getDocument(xHandle[8])
     aDoc.writeDocument("### %s\n\n" % theProject.tr("New Scene"))
     theProject.index.reIndexHandle(xHandle[8])
 

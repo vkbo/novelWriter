@@ -24,29 +24,32 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import logging
 import novelwriter
 
 from enum import Enum
 from lxml import etree
 from time import time
+from pathlib import Path
 
 from novelwriter.common import (
-    checkBool, checkInt, checkStringNone, formatTimeStamp, simplified, checkString
+    checkBool, checkInt, checkString, checkStringNone, formatTimeStamp,
+    hexToInt, simplified, yesNo
 )
 from novelwriter.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
-FILE_VERSION = "1.4"  # The current project file format version
+FILE_VERSION = "1.5"  # The current project file format version
+HEX_VERSION = 0x0105
 
 NUM_VERSION = {
-    "1.0": 0x0100,
-    "1.1": 0x0101,
-    "1.2": 0x0102,
-    "1.3": 0x0103,
-    "1.4": 0x0104,
+    "1.0": 0x0100,  # Up to 0.7
+    "1.1": 0x0101,  # Up to 0.10
+    "1.2": 0x0102,  # Up to 1.5
+    "1.3": 0x0103,  # Up to 2.0 Beta 1
+    "1.4": 0x0104,  # Up to 2.0 RC 2
+    "1.5": 0x0105,  # Current
 }
 
 
@@ -68,36 +71,42 @@ class ProjectXMLReader:
     """The main project XML file reader class. All data is read into a
     NWProjectData instance, which must be provided.
 
-    Version Change History
-    ======================
+    File Format Version Change History
+    ==================================
     1.0 Original file format.
 
     1.1 Changes the way documents are structured in the project folder
         from data_X, where X is the first hex value of the handle, to a
         single content folder. Introduced in version 0.7.
 
-    1.2 Changes the way autoReplace entries are stored. The 1.1 parser
-        will lose the autoReplace settings if allowed to read the file.
-        Introduced in version 0.10.
+    1.2 Changes the way autoReplace entries are stored. Introduced in
+        version 0.10.
 
     1.3 Reduces the number of layouts to only two. One for novel
         documents and one for project notes. Introduced in version 1.5.
 
     1.4 Introduces a more compact format for storing items. All settings
         aside from name are now attributes. This format also changes the
-        way satus and importance labels are stored and handled.
-        Introduced in version 2.0.
+        way satus and importance labels are stored. This format was only
+        a part of version 2.0 RC 1
+
+    1.5 The actual format released for 2.0. It moves last used handles
+        and title formats into a key/value format similar to auto-
+        replace, status and imporetance. It adds the heading value to
+        the content item meta entry. It also moves meta data related to
+        the project or the content into their respective section nodes
+        as attributes. The id attribute was also added to the project.
     """
 
     def __init__(self, path):
 
-        self._path = path
+        self._path = Path(path)
         self._state = XMLReadState.NO_ACTION
 
         self._root = ""
-        self._version = 0x0000
+        self._version = 0x0
         self._appVersion = ""
-        self._hexVersion = ""
+        self._hexVersion = 0x0
         self._timeStamp = ""
 
         return
@@ -153,22 +162,22 @@ class ProjectXMLReader:
         logger.debug("Reading project XML")
 
         try:
-            xml = etree.parse(self._path)
+            xml = etree.parse(str(self._path))
             self._state = XMLReadState.NO_ERROR
 
         except Exception as exc:
             # Trying to open backup file instead
-            logger.error("Failed to parse project xml", exc_info=exc)
+            logger.error("Failed to parse project XML", exc_info=exc)
             self._state = XMLReadState.CANNOT_PARSE
 
-            backFile = self._path[:-3]+"bak"
-            if os.path.isfile(backFile):
+            backFile = self._path.with_suffix(".bak")
+            if backFile.is_file():
                 try:
-                    xml = etree.parse(backFile)
+                    xml = etree.parse(str(backFile))
                     self._state = XMLReadState.PARSED_BACKUP
                     logger.info("Backup project file parsed")
                 except Exception as exc:
-                    logger.error("Failed to parse backup project xml", exc_info=exc)
+                    logger.error("Failed to parse backup project XML", exc_info=exc)
                     self._state = XMLReadState.CANNOT_PARSE
                     return False
             else:
@@ -191,7 +200,7 @@ class ProjectXMLReader:
         logger.debug("XML is '%s' version '%s'", self._root, fileVersion)
 
         self._appVersion = str(xRoot.attrib.get("appVersion", ""))
-        self._hexVersion = str(xRoot.attrib.get("hexVersion", ""))
+        self._hexVersion = hexToInt(xRoot.attrib.get("hexVersion", ""))
         self._timeStamp = str(xRoot.attrib.get("timeStamp", ""))
 
         for xSection in xRoot:
@@ -201,13 +210,13 @@ class ProjectXMLReader:
                 self._parseProjectSettings(xSection, projData)
             elif xSection.tag == "content":
                 if self._version >= 0x0104:
-                    self._parseProjectContent(xSection, projContent)
+                    self._parseProjectContent(xSection, projData, projContent)
                 else:
-                    self._parseProjectContentLegacy(xSection, projContent, projData)
+                    self._parseProjectContentLegacy(xSection, projData, projContent)
             else:
-                logger.warning("Ignored <root/%s> in xml", xSection.tag)
+                logger.warning("Ignored <root/%s> in XML", xSection.tag)
 
-        if self._version == 0x0104:
+        if self._version == HEX_VERSION:
             self._state = XMLReadState.PARSED_OK
         else:
             self._state = XMLReadState.WAS_LEGACY
@@ -224,6 +233,12 @@ class ProjectXMLReader:
         """Parse the project section of the XML file.
         """
         logger.debug("Parsing <project> section")
+
+        projData.setUuid(xSection.attrib.get("id", None))           # Added in 1.5
+        projData.setSaveCount(xSection.attrib.get("saveCount", 0))  # Moved in 1.5
+        projData.setAutoCount(xSection.attrib.get("autoCount", 0))  # Moved in 1.5
+        projData.setEditTime(xSection.attrib.get("editTime", 0))    # Moved in 1.5
+
         for xItem in xSection:
             if xItem.tag == "name":
                 projData.setName(xItem.text)
@@ -231,14 +246,18 @@ class ProjectXMLReader:
                 projData.setTitle(xItem.text)
             elif xItem.tag == "author":
                 projData.addAuthor(xItem.text)
-            elif xItem.tag == "saveCount":
-                projData.setSaveCount(xItem.text)
-            elif xItem.tag == "autoCount":
-                projData.setAutoCount(xItem.text)
-            elif xItem.tag == "editTime":
-                projData.setEditTime(xItem.text)
             else:
-                logger.warning("Ignored <root/project/%s> in xml", xItem.tag)
+                logger.warning("Ignored <root/project/%s> in XML", xItem.tag)
+
+        # Deprecated Nodes
+        if self._version < HEX_VERSION:
+            for xItem in xSection:
+                if xItem.tag == "saveCount":  # Moved to attribute in 1.5
+                    projData.setSaveCount(xItem.text)
+                elif xItem.tag == "autoCount":  # Moved to attribute in 1.5
+                    projData.setAutoCount(xItem.text)
+                elif xItem.tag == "editTime":  # Moved to attribute in 1.5
+                    projData.setEditTime(xItem.text)
 
         return
 
@@ -252,17 +271,12 @@ class ProjectXMLReader:
                 projData.setDoBackup(xItem.text)
             elif xItem.tag == "language":
                 projData.setLanguage(xItem.text)
-            elif xItem.tag == "spellCheck":
-                projData.setSpellCheck(xItem.text)
-            elif xItem.tag == "spellLang":
+            elif xItem.tag == "spellChecking":
                 projData.setSpellLang(xItem.text)
-            elif xItem.tag == "novelWordCount":
-                projData.setInitCounts(novel=xItem.text)
-            elif xItem.tag == "notesWordCount":
-                projData.setInitCounts(notes=xItem.text)
+                projData.setSpellCheck(xItem.attrib.get("auto", False))
             elif xItem.tag == "status":
                 self._parseStatusImport(xItem, projData.itemStatus)
-            elif xItem.tag in ("import", "importance"):
+            elif xItem.tag == "importance":
                 self._parseStatusImport(xItem, projData.itemImport)
             elif xItem.tag == "lastHandle":
                 projData.setLastHandle(self._parseDictKeyText(xItem))
@@ -272,122 +286,157 @@ class ProjectXMLReader:
                 else:  # Pre 1.2 format
                     projData.setAutoReplace(self._parseDictTagText(xItem))
             elif xItem.tag == "titleFormat":
-                if self._version >= 0x0104:
+                if self._version >= 0x0105:
                     projData.setTitleFormat(self._parseDictKeyText(xItem))
                 else:  # Pre 1.4 format
                     projData.setTitleFormat(self._parseDictTagText(xItem))
             else:
-                logger.warning("Ignored <root/settings/%s> in xml", xItem.tag)
+                logger.warning("Ignored <root/settings/%s> in XML", xItem.tag)
+
+        # Deprecated Nodes
+        if self._version < HEX_VERSION:
+            for xItem in xSection:
+                if xItem.tag == "spellCheck":  # Changed to spellChecking in 1.5
+                    projData.setSpellCheck(xItem.text)
+                elif xItem.tag == "spellLang":  # Changed to spellChecking in 1.5
+                    projData.setSpellLang(xItem.text)
+                elif xItem.tag == "novelWordCount":  # Moved to content attribute in 1.5
+                    projData.setInitCounts(novel=xItem.text)
+                elif xItem.tag == "notesWordCount":  # Moved to content attribute in 1.5
+                    projData.setInitCounts(notes=xItem.text)
 
         return
 
-    def _parseProjectContent(self, xSection, projContent):
+    def _parseProjectContent(self, xSection, projData, projContent):
         """Parse the content section of the XML file.
         """
         logger.debug("Parsing <content> section")
 
+        projData.setInitCounts(novel=xSection.attrib.get("novelWords", None))  # Moved in 1.5
+        projData.setInitCounts(notes=xSection.attrib.get("notesWords", None))  # Moved in 1.5
+
         for xItem in xSection:
-            if xItem.tag == "item":
-                item = {}
-                item["handle"] = checkStringNone(xItem.attrib.get("handle"), None)
-                item["parent"] = checkStringNone(xItem.attrib.get("parent"), None)
-                item["root"]   = checkStringNone(xItem.attrib.get("root"), None)
-                item["order"]  = checkInt(xItem.attrib.get("order"), 0)
-                item["type"]   = checkString(xItem.attrib.get("type"), "NO_TYPE")
-                item["class"]  = checkString(xItem.attrib.get("class"), "NO_CLASS")
-                item["layout"] = checkString(xItem.attrib.get("layout"), "NO_LAYOUT")
+            if xItem.tag != "item":
+                logger.warning("Ignored item <root/content/%s> in XML", xItem.tag)
+                continue
+
+            item = {}
+            meta = {}
+            name = {}
+            itemName = ""
+
+            item["handle"] = checkStringNone(xItem.attrib.get("handle"), None)
+            item["parent"] = checkStringNone(xItem.attrib.get("parent"), None)
+            item["root"]   = checkStringNone(xItem.attrib.get("root"), None)
+            item["order"]  = checkInt(xItem.attrib.get("order"), 0)
+            item["type"]   = checkString(xItem.attrib.get("type"), "NO_TYPE")
+            item["class"]  = checkString(xItem.attrib.get("class"), "NO_CLASS")
+            item["layout"] = checkString(xItem.attrib.get("layout"), "NO_LAYOUT")
+            for xVal in xItem:
+                if xVal.tag == "meta":
+                    meta["expanded"]  = checkBool(xVal.attrib.get("expanded"), False)
+                    meta["heading"]   = checkString(xVal.attrib.get("heading"), "H0")
+                    meta["charCount"] = checkInt(xVal.attrib.get("charCount"), 0)
+                    meta["wordCount"] = checkInt(xVal.attrib.get("wordCount"), 0)
+                    meta["paraCount"] = checkInt(xVal.attrib.get("paraCount"), 0)
+                    meta["cursorPos"] = checkInt(xVal.attrib.get("cursorPos"), 0)
+                elif xVal.tag == "name":
+                    itemName = simplified(checkString(xVal.text, ""))
+                    name["status"] = checkStringNone(xVal.attrib.get("status"), None)
+                    name["import"] = checkStringNone(xVal.attrib.get("import"), None)
+                    name["active"] = checkBool(xVal.attrib.get("active"), False)
+                else:
+                    logger.warning("Ignored <root/content/item/%s> in XML", xVal.tag)
+
+            # Deprecated Nodes
+            if self._version < HEX_VERSION:
                 for xVal in xItem:
-                    if xVal.tag == "meta":
-                        item["expanded"]  = checkBool(xVal.attrib.get("expanded"), False)
-                        item["heading"]   = checkString(xVal.attrib.get("heading"), "H0")
-                        item["charCount"] = checkInt(xVal.attrib.get("charCount"), 0)
-                        item["wordCount"] = checkInt(xVal.attrib.get("wordCount"), 0)
-                        item["paraCount"] = checkInt(xVal.attrib.get("paraCount"), 0)
-                        item["cursorPos"] = checkInt(xVal.attrib.get("cursorPos"), 0)
-                    elif xVal.tag == "name":
-                        item["label"]  = simplified(checkString(xVal.text, ""))
-                        item["status"] = checkStringNone(xVal.attrib.get("status"), None)
-                        item["import"] = checkStringNone(xVal.attrib.get("import"), None)
-                        item["active"] = checkBool(xVal.attrib.get("active"), False)
+                    if xVal.tag == "name" and "exported" in xVal.attrib:
+                        name["active"] = checkBool(xVal.attrib.get("exported"), False)
 
-                        # ToDo: Remove before 2.0 release. Only needed for 2.0 pre-releases.
-                        if "exported" in xVal.attrib:
-                            item["active"] = checkBool(xVal.attrib.get("exported"), False)
-                    else:
-                        logger.warning("Ignored <root/content/item/%s> in xml", xVal.tag)
-
-                projContent.append(item)
-
-            else:
-                logger.warning("Ignored item <root/content/%s> in xml", xItem.tag)
+            projContent.append({
+                "name": itemName,
+                "itemAttr": item,
+                "metaAttr": meta,
+                "nameAttr": name,
+            })
 
         return
 
-    def _parseProjectContentLegacy(self, xSection, projContent, projData):
+    def _parseProjectContentLegacy(self, xSection, projData, projContent):
         """Parse the content section of the XML file for older versions.
         """
         logger.debug("Parsing <content> section (legacy format)")
 
         # Create maps to look up name -> key for status and importance
-        statusMap = {entry["name"]: key for key, entry in projData.itemStatus.items()}
-        importMap = {entry["name"]: key for key, entry in projData.itemImport.items()}
+        statusMap = {entry.get("name"): key for key, entry in projData.itemStatus.items()}
+        importMap = {entry.get("name"): key for key, entry in projData.itemImport.items()}
 
         for xItem in xSection:
+            if xItem.tag != "item":
+                logger.warning("Ignored item <root/content/%s> in XML", xItem.tag)
+                continue
+
             item = {}
-            if xItem.tag == "item":
-                item["handle"]  = checkStringNone(xItem.attrib.get("handle", None), None)
-                item["parent"]  = checkStringNone(xItem.attrib.get("parent", None), None)
-                item["root"]    = None  # Value was added in 1.4
-                item["order"]   = checkInt(xItem.attrib.get("order", 0), 0)
-                item["heading"] = "H0"  # Value was added in 1.4
+            meta = {}
+            name = {}
+            itemName = ""
 
-                tmpStatus = ""
-                for xVal in xItem:
-                    if xVal.tag == "name":
-                        item["label"] = simplified(checkString(xVal.text, ""))
-                    elif xVal.tag == "status":
-                        tmpStatus = checkStringNone(xVal.text, None)
-                    elif xVal.tag == "type":
-                        item["type"] = checkString(xVal.text, "")
-                    elif xVal.tag == "class":
-                        item["class"] = checkString(xVal.text, "")
-                    elif xVal.tag == "layout":
-                        item["layout"] = checkString(xVal.text, "")
-                    elif xVal.tag == "expanded":
-                        item["expanded"] = checkBool(xVal.text, False)
-                    elif xVal.tag == "exported":  # Renamed to active in 1.4
-                        item["active"] = checkBool(xVal.text, False)
-                    elif xVal.tag == "charCount":
-                        item["charCount"] = checkInt(xVal.text, 0)
-                    elif xVal.tag == "wordCount":
-                        item["wordCount"] = checkInt(xVal.text, 0)
-                    elif xVal.tag == "paraCount":
-                        item["paraCount"] = checkInt(xVal.text, 0)
-                    elif xVal.tag == "cursorPos":
-                        item["cursorPos"] = checkInt(xVal.text, 0)
-                    else:
-                        logger.warning("Ignored <root/content/item/%s> in xml", xVal.tag)
+            item["handle"]  = checkStringNone(xItem.attrib.get("handle", None), None)
+            item["parent"]  = checkStringNone(xItem.attrib.get("parent", None), None)
+            item["root"]    = None  # Value was added in 1.4
+            item["order"]   = checkInt(xItem.attrib.get("order", 0), 0)
+            meta["heading"] = "H0"  # Value was added in 1.4
 
-                # Status was split into separate status/import with a key in 1.4
-                if item.get("class", "") in ("NOVEL", "ARCHIVE"):
-                    item["status"] = statusMap.get(tmpStatus, None)
+            tmpStatus = ""
+            for xVal in xItem:
+                if xVal.tag == "name":
+                    itemName = simplified(checkString(xVal.text, ""))
+                elif xVal.tag == "status":
+                    tmpStatus = checkStringNone(xVal.text, None)
+                elif xVal.tag == "type":
+                    item["type"] = checkString(xVal.text, "")
+                elif xVal.tag == "class":
+                    item["class"] = checkString(xVal.text, "")
+                elif xVal.tag == "layout":
+                    item["layout"] = checkString(xVal.text, "")
+                elif xVal.tag == "expanded":
+                    meta["expanded"] = checkBool(xVal.text, False)
+                elif xVal.tag == "exported":  # Renamed to active in 1.5
+                    name["active"] = checkBool(xVal.text, False)
+                elif xVal.tag == "charCount":
+                    meta["charCount"] = checkInt(xVal.text, 0)
+                elif xVal.tag == "wordCount":
+                    meta["wordCount"] = checkInt(xVal.text, 0)
+                elif xVal.tag == "paraCount":
+                    meta["paraCount"] = checkInt(xVal.text, 0)
+                elif xVal.tag == "cursorPos":
+                    meta["cursorPos"] = checkInt(xVal.text, 0)
                 else:
-                    item["import"] = importMap.get(tmpStatus, None)
+                    logger.warning("Ignored <root/content/item/%s> in XML", xVal.tag)
 
-                # A number of layouts were removed in 1.3
-                if item.get("layout", "") in (
-                    "TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE"
-                ):
-                    item["layout"] = "DOCUMENT"
-
-                # The trast type was removed in 1.4
-                if item.get("type", "") == "TRASH":
-                    item["type"] = "ROOT"
-
-                projContent.append(item)
-
+            # Status was split into separate status/import with a key in 1.4
+            if item.get("class", "") in ("NOVEL", "ARCHIVE"):
+                name["status"] = statusMap.get(tmpStatus, None)
             else:
-                logger.warning("Ignored <root/content/%s> in xml", xItem.tag)
+                name["import"] = importMap.get(tmpStatus, None)
+
+            # A number of layouts were removed in 1.3
+            if item.get("layout", "") in (
+                "TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE"
+            ):
+                item["layout"] = "DOCUMENT"
+
+            # The trash type was removed in 1.4
+            if item.get("type", "") == "TRASH":
+                item["type"] = "ROOT"
+
+            projContent.append({
+                "name": itemName,
+                "itemAttr": item,
+                "metaAttr": meta,
+                "nameAttr": name,
+            })
 
         return
 
@@ -418,7 +467,7 @@ class ProjectXMLReader:
         """Parse a dictionary stored with key as the tag and the value
         as the text porperty.
         """
-        return {n.tag: checkString(n.text, "") for n in xItem}
+        return {xNode.tag: checkString(xNode.text, "") for xNode in xItem}
 
 # END Class ProjectXMLReader
 
@@ -427,7 +476,7 @@ class ProjectXMLWriter:
 
     def __init__(self, path):
 
-        self._path = path
+        self._path = Path(path)
         self._error = None
 
         return
@@ -458,22 +507,25 @@ class ProjectXMLWriter:
         })
 
         # Save Project Meta
-        xProject = etree.SubElement(xRoot, "project")
+        projAttr = {
+            "id": projData.uuid,
+            "saveCount": str(projData.saveCount),
+            "autoCount": str(projData.autoCount),
+            "editTime": str(editTime),
+        }
+
+        xProject = etree.SubElement(xRoot, "project", attrib=projAttr)
         self._packSingleValue(xProject, "name", projData.name)
         self._packSingleValue(xProject, "title", projData.title)
         self._packListValue(xProject, "author", projData.authors)
-        self._packSingleValue(xProject, "saveCount", projData.saveCount)
-        self._packSingleValue(xProject, "autoCount", projData.autoCount)
-        self._packSingleValue(xProject, "editTime", editTime)
 
         # Save Project Settings
         xSettings = etree.SubElement(xRoot, "settings")
-        self._packSingleValue(xSettings, "doBackup", projData.doBackup)
+        self._packSingleValue(xSettings, "doBackup", yesNo(projData.doBackup))
         self._packSingleValue(xSettings, "language", projData.language)
-        self._packSingleValue(xSettings, "spellCheck", projData.spellCheck)
-        self._packSingleValue(xSettings, "spellLang", projData.spellLang)
-        self._packSingleValue(xSettings, "novelWordCount", projData.currCounts[0])
-        self._packSingleValue(xSettings, "notesWordCount", projData.currCounts[1])
+        self._packSingleValue(xSettings, "spellChecking", projData.spellLang, attrib={
+            "auto": yesNo(projData.spellCheck)
+        })
         self._packDictKeyValue(xSettings, "lastHandle", projData.lastHandle)
         self._packDictKeyValue(xSettings, "autoReplace", projData.autoReplace)
         self._packDictKeyValue(xSettings, "titleFormat", projData.titleFormat)
@@ -488,25 +540,27 @@ class ProjectXMLWriter:
             self._packSingleValue(xImport, "entry", label, attrib=attrib)
 
         # Save Tree Content
-        xContent = etree.SubElement(xRoot, "content", attrib={"count": str(len(projContent))})
+        contAttr = {
+            "items": str(len(projContent)),
+            "novelWords": str(projData.currCounts[0]),
+            "notesWords": str(projData.currCounts[1]),
+        }
+
+        xContent = etree.SubElement(xRoot, "content", attrib=contAttr)
         for item in projContent:
             xItem = etree.SubElement(xContent, "item", attrib=item.get("itemAttr", {}))
             etree.SubElement(xItem, "meta", attrib=item.get("metaAttr", {}))
             xName = etree.SubElement(xItem, "name", attrib=item.get("nameAttr", {}))
             xName.text = item["name"]
 
-        # Write the xml tree to file
-        saveFile = os.path.join(self._path, nwFiles.PROJ_FILE)
-        tempFile = os.path.join(self._path, nwFiles.PROJ_FILE+"~")
-        backFile = os.path.join(self._path, nwFiles.PROJ_FILE[:-3]+"bak")
+        # Write the XML tree to file
+        saveFile = self._path / nwFiles.PROJ_FILE
+        tempFile = saveFile.with_suffix(".tmp")
+        backFile = saveFile.with_suffix(".bak")
         try:
-            with open(tempFile, mode="wb") as outFile:
-                outFile.write(etree.tostring(
-                    xRoot,
-                    pretty_print=True,
-                    encoding="utf-8",
-                    xml_declaration=True
-                ))
+            tempFile.write_bytes(etree.tostring(
+                xRoot, pretty_print=True, encoding="utf-8", xml_declaration=True
+            ))
         except Exception as exc:
             self._error = exc
             return False
@@ -514,10 +568,10 @@ class ProjectXMLWriter:
         # If we're here, the file was successfully saved,
         # so let's sort out the temps and backups
         try:
-            if os.path.isfile(saveFile):
-                os.replace(saveFile, backFile)
-            os.replace(tempFile, saveFile)
-        except OSError as exc:
+            if saveFile.exists():
+                saveFile.replace(backFile)
+            tempFile.replace(saveFile)
+        except Exception as exc:
             self._error = exc
             return False
 
@@ -530,14 +584,14 @@ class ProjectXMLWriter:
     ##
 
     def _packSingleValue(self, xParent, name, value, attrib=None):
-        """Pack a single value into an xml element.
+        """Pack a single value into an XML element.
         """
         xItem = etree.SubElement(xParent, name, attrib=attrib)
         xItem.text = str(value) or ""
         return
 
     def _packListValue(self, xParent, name, data):
-        """Pack a list of values into an xml element.
+        """Pack a list of values into an XML element.
         """
         for value in data:
             xItem = etree.SubElement(xParent, name)
@@ -545,7 +599,7 @@ class ProjectXMLWriter:
         return
 
     def _packDictKeyValue(self, xParent, name, data):
-        """Pack the entries of a dictionary into an xml element.
+        """Pack the entries of a dictionary into an XML element.
         """
         xItem = etree.SubElement(xParent, name)
         for key, value in data.items():
