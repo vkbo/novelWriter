@@ -113,10 +113,10 @@ class NWStorage:
 
         return True
 
-    def openProjectArchive(self, path):
+    def openProjectArchive(self, path):  # pragma: no cover
         pass
 
-    def runPostSaveTasks(self, autoSave=False):
+    def runPostSaveTasks(self, autoSave=False):  # pragma: no cover
         """Run tasks after the project has been saved.
         """
         if self._openMode == self.MODE_INPLACE:
@@ -295,9 +295,8 @@ class NWStorage:
         if newProject:
             # If it's a new project, we check that there is no existing
             # project in the selected path.
-            projFile = path / nwFiles.PROJ_FILE
-            if projFile.exists():
-                logger.error("A project already exists in this path")
+            if path.exists() and len(list(path.iterdir())) > 0:
+                logger.error("The new project folder is not empty")
                 self.clear()
                 return False
 
@@ -310,6 +309,7 @@ class NWStorage:
             (path / "meta").mkdir(exist_ok=True)
         except Exception as exc:
             logger.error("Failed to create required project folders", exc_info=exc)
+            self.clear()
             return False
 
         if not checkLegacy:

@@ -422,6 +422,7 @@ class NWProject(QObject):
         # Save other project data
         self._options.saveSettings()
         self._index.saveIndex()
+        self._storage.runPostSaveTasks(autoSave=autoSave)
 
         # Update recent projects
         self.mainConf.updateRecentCache(
@@ -443,6 +444,7 @@ class NWProject(QObject):
         self._tree.writeToCFile()
         self._appendSessionStats(idleTime)
         self._storage.clearLockFile()
+        self._storage.closeSession()
         self.clearProject()
         self.lockedBy = None
         return True

@@ -29,7 +29,7 @@ from pathlib import Path
 from mock import MockGuiMain
 from tools import cleanProject
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 
 import novelwriter  # noqa: E402
 
@@ -64,15 +64,15 @@ def tmpDir():
     return theDir
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def tmpPath(tmpDir):
-    """A temporary folder for a single test function.
+    """A temporary folder for the test session. Path version.
     """
     return Path(tmpDir)
 
 
 @pytest.fixture(scope="session")
-def tstPaths(tmpDir):
+def tstPaths(tmpPath):
     """Returns an object that can provide the various paths needed for
     running tests.
     """
@@ -80,7 +80,7 @@ def tstPaths(tmpDir):
         testDir = Path(__file__).parent
         filesDir = testDir / "files"
         refDir = testDir / "reference"
-        outDir = testDir / tmpDir / "results"
+        outDir = tmpPath / "results"
 
     store = _Store()
     store.outDir.mkdir(exist_ok=True)
@@ -89,14 +89,13 @@ def tstPaths(tmpDir):
 
 
 @pytest.fixture(scope="function")
-def fncPath(tmpDir):
-    """A temporary folder for a single test function.
+def fncPath(tmpPath):
+    """A temporary folder for a single test function. Path version.
     """
-    fncPath = Path(tmpDir) / "f_temp"
+    fncPath = tmpPath / "function"
     if fncPath.is_dir():
         shutil.rmtree(fncPath)
-    if not fncPath.is_dir():
-        fncPath.mkdir()
+    fncPath.mkdir(exist_ok=True)
     return fncPath
 
 
@@ -133,7 +132,7 @@ def outDir(tmpDir):
 def fncDir(tmpDir):
     """A temporary folder for a single test function.
     """
-    fncDir = os.path.join(tmpDir, "f_temp")
+    fncDir = os.path.join(tmpDir, "function")
     if os.path.isdir(fncDir):
         shutil.rmtree(fncDir)
     if not os.path.isdir(fncDir):
