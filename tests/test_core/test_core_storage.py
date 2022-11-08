@@ -320,12 +320,12 @@ def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tmpPath, mockRnd):
     # Check content
     with ZipFile(zipFile, mode="r") as archive:
         names = archive.namelist()
-        assert names[0] == nwFiles.PROJ_FILE
-        assert names[1] == f"meta/{nwFiles.OPTS_FILE}"
-        assert names[2] == f"meta/{nwFiles.INDEX_FILE}"
-        assert names[3] == f"content/{C.hTitlePage}.nwd"
-        assert names[4] == f"content/{C.hChapterDoc}.nwd"
-        assert names[5] == f"content/{C.hSceneDoc}.nwd"
+        assert nwFiles.PROJ_FILE in names
+        assert f"meta/{nwFiles.OPTS_FILE}" in names
+        assert f"meta/{nwFiles.INDEX_FILE}" in names
+        assert f"content/{C.hTitlePage}.nwd" in names
+        assert f"content/{C.hChapterDoc}.nwd" in names
+        assert f"content/{C.hSceneDoc}.nwd" in names
 
     theProject.closeProject()
 
