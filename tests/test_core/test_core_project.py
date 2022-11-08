@@ -235,7 +235,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncDir, mockRnd):
 
     # Won't convert legacy file
     with monkeypatch.context() as mp:
-        mp.setattr(ProjectXMLReader, "hexVersion", property(lambda *a: "0x99999999"))
+        mp.setattr(ProjectXMLReader, "hexVersion", property(lambda *a: 0x99999999))
         mockGUI.askResponse = False
         assert theProject.openProject(fncDir) is False
         assert "This project was saved by a newer version" in mockGUI.lastQuestion[1]
@@ -699,46 +699,42 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncDir, tmpDir):
 
     # No project
     mockGUI.hasProject = False
-    assert theProject.zipIt(doNotify=False) is False
+    assert theProject.backupProject(doNotify=False) is False
     mockGUI.hasProject = True
 
     # Invalid path
     theProject.mainConf.backupPath = None
-    assert theProject.zipIt(doNotify=False) is False
+    assert theProject.backupProject(doNotify=False) is False
 
     # Missing project name
     theProject.mainConf.backupPath = tmpDir
     theProject.data.setName("")
-    assert theProject.zipIt(doNotify=False) is False
+    assert theProject.backupProject(doNotify=False) is False
 
     # Non-existent folder
     theProject.mainConf.backupPath = os.path.join(tmpDir, "nonexistent")
     theProject.data.setName("Test Minimal")
-    assert theProject.zipIt(doNotify=False) is False
-
-    # Same folder as project (causes infinite loop in zipping)
-    theProject.mainConf.backupPath = fncDir
-    assert theProject.zipIt(doNotify=False) is False
+    assert theProject.backupProject(doNotify=False) is False
 
     # Subfolder of project (causes infinite loop in zipping)
     theProject.mainConf.backupPath = os.path.join(fncDir, "subdir")
-    assert theProject.zipIt(doNotify=False) is False
+    assert theProject.backupProject(doNotify=False) is False
 
     # Set a valid folder
     theProject.mainConf.backupPath = tmpDir
 
     # Can't make folder
     with monkeypatch.context() as mp:
-        mp.setattr("os.mkdir", causeOSError)
-        assert theProject.zipIt(doNotify=False) is False
+        mp.setattr("pathlib.Path.mkdir", causeOSError)
+        assert theProject.backupProject(doNotify=False) is False
 
     # Can't write archive
     with monkeypatch.context() as mp:
-        mp.setattr("shutil.make_archive", causeOSError)
-        assert theProject.zipIt(doNotify=False) is False
+        mp.setattr("zipfile.ZipFile.write", causeOSError)
+        assert theProject.backupProject(doNotify=False) is False
 
     # Test correct settings
-    assert theProject.zipIt(doNotify=True) is True
+    assert theProject.backupProject(doNotify=True) is True
 
     theFiles = os.listdir(os.path.join(tmpDir, "Test Minimal"))
     assert len(theFiles) == 1

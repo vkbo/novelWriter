@@ -28,7 +28,9 @@ import novelwriter
 
 from time import time
 from pathlib import Path
+from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile
 
+from novelwriter.common import minmax
 from novelwriter.constants import nwFiles
 from novelwriter.core.document import NWDocument
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
@@ -232,18 +234,55 @@ class NWStorage:
 
         return True
 
+    def zipIt(self, target, compression=None):
+        """Zip the content of the project at its runtime location into a
+        zip file. This process will only grab files that are supposed to
+        be in the project. All non-project files will be left out.
+        """
+        basePath = self._runtimePath
+        if not isinstance(basePath, Path):
+            logger.error("No path set")
+            return False
+
+        baseMeta = basePath / "meta"
+        baseCont = basePath / "content"
+        files = [
+            (basePath / nwFiles.PROJ_FILE,  nwFiles.PROJ_FILE),
+            (baseMeta / nwFiles.OPTS_FILE,  f"meta/{nwFiles.OPTS_FILE}"),
+            (baseMeta / nwFiles.SESS_STATS, f"meta/{nwFiles.SESS_STATS}"),
+            (baseMeta / nwFiles.INDEX_FILE, f"meta/{nwFiles.INDEX_FILE}"),
+            (baseMeta / nwFiles.PROJ_DICT,  f"meta/{nwFiles.PROJ_DICT}"),
+        ]
+        for contItem in baseCont.iterdir():
+            name = contItem.name
+            if contItem.is_file() and len(name) == 17 and name.endswith(".nwd"):
+                files.append((contItem, f"content/{name}"))
+
+        comp = ZIP_STORED if compression is None else ZIP_DEFLATED
+        level = minmax(compression, 0, 9) if isinstance(compression, int) else None
+        try:
+            with ZipFile(target, mode="w", compression=comp, compresslevel=level) as zipObj:
+                logger.info("Creating archive: %s", target)
+                for srcPath, zipPath in files:
+                    if srcPath.is_file():
+                        zipObj.write(srcPath, zipPath)
+                        logger.debug("Added: %s", zipPath)
+        except Exception:
+            logger.error("Failed to create acrhive")
+            logException()
+            return False
+
+        return True
+
     ##
     #  Internal Functions
     ##
-
-    def _zipIt(self, target):
-        pass
 
     def _prepareStorage(self, checkLegacy=True, newProject=False):
         """Prepare the storage area for the project.
         """
         path = self._runtimePath
-        if path is None:
+        if not isinstance(path, Path):
             logger.error("No path set")
             self.clear()
             return False
@@ -336,13 +375,13 @@ class NWStorage:
         """Delete files that are no longer used by novelWriter.
         """
         remove = [
-            path / "meta" / "mainOptions.json",
-            path / "meta" / "exportOptions.json",
-            path / "meta" / "outlineOptions.json",
-            path / "meta" / "timelineOptions.json",
-            path / "meta" / "docMergeOptions.json",
-            path / "meta" / "sessionLogOptions.json",
-            path / "ToC.json",
+            path / "meta" / "mainOptions.json",        # Replaced in 0.5
+            path / "meta" / "exportOptions.json",      # Replaced in 0.5
+            path / "meta" / "outlineOptions.json",     # Replaced in 0.5
+            path / "meta" / "timelineOptions.json",    # Replaced in 0.5
+            path / "meta" / "docMergeOptions.json",    # Replaced in 0.5
+            path / "meta" / "sessionLogOptions.json",  # Replaced in 0.5
+            path / "ToC.json",                         # Dropped in 1.0 RC 1
         ]
         for item in remove:
             if item.is_file():

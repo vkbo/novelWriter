@@ -131,7 +131,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     assert xmlReader.xmlRoot == "novelWriterXML"
     assert xmlReader.xmlVersion == 0x0105
     assert xmlReader.appVersion == "2.0-rc1"
-    assert xmlReader.hexVersion == "0x020000c1"
+    assert xmlReader.hexVersion == 0x020000c1
 
     # Check loaded data
     assert data.name == "Sample Project"
@@ -257,7 +257,7 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
     assert xmlReader.xmlRoot == "novelWriterXML"
     assert xmlReader.xmlVersion == 0x0100
     assert xmlReader.appVersion == "0.6.1"
-    assert xmlReader.hexVersion == "0x000601f0"
+    assert xmlReader.hexVersion == 0x000601f0
 
     # Check loaded data
     assert data.name == "Sample Project"
@@ -399,7 +399,7 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
     assert xmlReader.xmlRoot == "novelWriterXML"
     assert xmlReader.xmlVersion == 0x0101
     assert xmlReader.appVersion == "0.9.2"
-    assert xmlReader.hexVersion == "0x000902f0"
+    assert xmlReader.hexVersion == 0x000902f0
 
     # Check loaded data
     assert data.name == "Sample Project"
@@ -541,7 +541,7 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
     assert xmlReader.xmlRoot == "novelWriterXML"
     assert xmlReader.xmlVersion == 0x0102
     assert xmlReader.appVersion == "1.4.2"
-    assert xmlReader.hexVersion == "0x010402f0"
+    assert xmlReader.hexVersion == 0x010402f0
 
     # Check loaded data
     assert data.name == "Sample Project"
@@ -686,7 +686,7 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
     assert xmlReader.xmlRoot == "novelWriterXML"
     assert xmlReader.xmlVersion == 0x0103
     assert xmlReader.appVersion == "1.6.6"
-    assert xmlReader.hexVersion == "0x010606f0"
+    assert xmlReader.hexVersion == 0x010606f0
 
     # Check loaded data
     assert data.name == "Sample Project"
@@ -831,7 +831,7 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockRnd):
     assert xmlReader.xmlRoot == "novelWriterXML"
     assert xmlReader.xmlVersion == 0x0104
     assert xmlReader.appVersion == "2.0-rc1"
-    assert xmlReader.hexVersion == "0x020000c1"
+    assert xmlReader.hexVersion == 0x020000c1
 
     # Check loaded data
     assert data.name == "Sample Project"

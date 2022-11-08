@@ -34,7 +34,7 @@ from pathlib import Path
 
 from novelwriter.common import (
     checkBool, checkInt, checkString, checkStringNone, formatTimeStamp,
-    simplified, yesNo
+    hexToInt, simplified, yesNo
 )
 from novelwriter.constants import nwFiles
 
@@ -104,9 +104,9 @@ class ProjectXMLReader:
         self._state = XMLReadState.NO_ACTION
 
         self._root = ""
-        self._version = 0x0000
+        self._version = 0x0
         self._appVersion = ""
-        self._hexVersion = ""
+        self._hexVersion = 0x0
         self._timeStamp = ""
 
         return
@@ -200,7 +200,7 @@ class ProjectXMLReader:
         logger.debug("XML is '%s' version '%s'", self._root, fileVersion)
 
         self._appVersion = str(xRoot.attrib.get("appVersion", ""))
-        self._hexVersion = str(xRoot.attrib.get("hexVersion", ""))
+        self._hexVersion = hexToInt(xRoot.attrib.get("hexVersion", ""))
         self._timeStamp = str(xRoot.attrib.get("timeStamp", ""))
 
         for xSection in xRoot:

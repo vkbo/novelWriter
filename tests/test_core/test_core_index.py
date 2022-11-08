@@ -29,6 +29,7 @@ from mock import causeException
 from tools import C, buildTestProject, cmpFiles, writeFile
 
 from novelwriter.enum import nwItemClass, nwItemLayout
+from novelwriter.constants import nwFiles
 from novelwriter.core.index import NWIndex, countWords, TagsIndex
 from novelwriter.core.project import NWProject
 
@@ -38,7 +39,7 @@ def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, outDir, refDir):
     """Test core functionality of scaning, saving, loading and checking
     the index cache file.
     """
-    projFile = os.path.join(nwLipsum, "meta", "tagsIndex.json")
+    projFile = os.path.join(nwLipsum, "meta", nwFiles.INDEX_FILE)
     testFile = os.path.join(outDir, "coreIndex_LoadSave_tagsIndex.json")
     compFile = os.path.join(refDir, "coreIndex_LoadSave_tagsIndex.json")
 

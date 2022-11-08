@@ -27,7 +27,6 @@ from __future__ import annotations
 
 import os
 import json
-import shutil
 import logging
 import novelwriter
 
@@ -299,7 +298,6 @@ class NWProject(QObject):
         xmlParsed = xmlReader.read(self._data, projContent)
 
         appVersion = xmlReader.appVersion or self.tr("Unknown")
-        hexVersion = xmlReader.hexVersion or "0x0"
 
         if not xmlParsed:
             if xmlReader.state == XMLReadState.NOT_NWX_FILE:
@@ -339,7 +337,7 @@ class NWProject(QObject):
         # Check novelWriter Version
         # =========================
 
-        if hexToInt(hexVersion) > hexToInt(novelwriter.__hexversion__):
+        if xmlReader.hexVersion > hexToInt(novelwriter.__hexversion__):
             msgYes = self.mainGui.askQuestion(
                 self.tr("Version Conflict"),
                 self.tr(
@@ -359,7 +357,7 @@ class NWProject(QObject):
 
         self._tree.unpack(projContent)
         self._options.loadSettings()
-        self._index.loadIndex()
+        self._loadProjectLocalisation()
 
         # Update recent projects
         self.mainConf.updateRecentCache(
@@ -376,7 +374,7 @@ class NWProject(QObject):
                 del self._tree[tHandle]  # The file will be re-added as orphaned
 
         self._scanProjectFolder()
-        self._loadProjectLocalisation()
+        self._index.loadIndex()
         self.updateWordCounts()
 
         self._projOpened = time()
@@ -466,21 +464,17 @@ class NWProject(QObject):
         self._data.itemImport.write(None, self.tr("Main"),     (50,  200, 0))
         return
 
-    ##
-    #  Zip/Unzip Project
-    ##
-
-    def zipIt(self, doNotify):
+    def backupProject(self, doNotify):
         """Create a zip file of the entire project.
         """
-        if not self.mainGui.hasProject:
+        if not self._storage.isOpen():
             logger.error("No project open")
             return False
 
         logger.info("Backing up project")
         self.mainGui.setStatus(self.tr("Backing up project ..."))
 
-        if not (self.mainConf.backupPath and os.path.isdir(self.mainConf.backupPath)):
+        if not self.mainConf.backupPath:
             self.mainGui.makeAlert(self.tr(
                 "Cannot backup project because no valid backup path is set. "
                 "Please set a valid backup location in Preferences."
@@ -490,52 +484,37 @@ class NWProject(QObject):
         if not self._data.name:
             self.mainGui.makeAlert(self.tr(
                 "Cannot backup project because no project name is set. "
-                "Please set a Working Title in Project Settings."
+                "Please set a Project Name in Project Settings."
             ), nwAlert.ERROR)
             return False
 
         cleanName = makeFileNameSafe(self._data.name)
-        baseDir = os.path.abspath(os.path.join(self.mainConf.backupPath, cleanName))
-        if not os.path.isdir(baseDir):
-            try:
-                os.mkdir(baseDir)
-                logger.debug("Created folder: %s", baseDir)
-            except Exception as exc:
-                self.mainGui.makeAlert(self.tr(
-                    "Could not create backup folder."
-                ), nwAlert.ERROR, exception=exc)
-                return False
-
-        if baseDir and baseDir.startswith(str(self._storage.runtimePath)):
+        baseDir = Path(self.mainConf.backupPath) / cleanName
+        try:
+            baseDir.mkdir(exist_ok=True)
+        except Exception as exc:
             self.mainGui.makeAlert(self.tr(
-                "Cannot backup project because the backup path is within the "
-                "project folder to be backed up. Please choose a different "
-                "backup path in Preferences."
-            ), nwAlert.ERROR)
+                "Could not create backup folder."
+            ), nwAlert.ERROR, exception=exc)
             return False
 
-        archName = self.tr("Backup from {0}").format(formatTimeStamp(time(), fileSafe=True))
-        baseName = os.path.join(baseDir, archName)
-
-        try:
-            self._storage.clearLockFile()
-            shutil.make_archive(baseName, "zip", self._storage.runtimePath, ".")
-            self._storage.writeLockFile()
-            logger.info("Backup written to: %s", archName)
+        archName = baseDir / self.tr(
+            "Backup from {0}.zip"
+        ).format(formatTimeStamp(time(), fileSafe=True))
+        if self._storage.zipIt(archName, compression=2):
             if doNotify:
                 self.mainGui.makeAlert(self.tr(
                     "Backup archive file written to: {0}"
-                ).format(f"{os.path.join(cleanName, archName)}.zip"), nwAlert.INFO)
-
-        except Exception as exc:
+                ).format(str(archName), nwAlert.INFO))
+        else:
             self.mainGui.makeAlert(self.tr(
                 "Could not write backup archive."
-            ), nwAlert.ERROR, exception=exc)
+            ), nwAlert.ERROR)
             return False
 
         self.mainGui.setStatus(self.tr(
             "Project backed up to '{0}'"
-        ).format(f"{baseName}.zip"))
+        ).format(str(archName)))
 
         return True
 
@@ -735,20 +714,6 @@ class NWProject(QObject):
             logException()
             return False
 
-        return True
-
-    def _checkFolder(self, thePath):
-        """Check if a folder exists, and if it doesn't, create it.
-        """
-        if not os.path.isdir(thePath):
-            try:
-                os.mkdir(thePath)
-                logger.debug("Created folder: %s", thePath)
-            except Exception as exc:
-                self.mainGui.makeAlert(self.tr(
-                    "Could not create folder."
-                ), nwAlert.ERROR, exception=exc)
-                return False
         return True
 
     def _scanProjectFolder(self):

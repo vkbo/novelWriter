@@ -409,7 +409,7 @@ class GuiMain(QMainWindow):
                     if not msgYes:
                         doBackup = False
             if doBackup:
-                self.theProject.zipIt(False)
+                self.theProject.backupProject(doNotify=False)
         else:
             saveOK = True
 
