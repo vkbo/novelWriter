@@ -48,7 +48,7 @@ def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
     assert msgAbout.pageLicense.document().characterCount() > 100
 
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.config.Config.getAssetPath", lambda *a: Path("whatever"))
+        mp.setattr("novelwriter.config.Config.assetPath", lambda *a: Path("whatever"))
         msgAbout._fillNotesPage()
         assert msgAbout.pageNotes.toPlainText() == "Error loading release notes text ..."
         msgAbout._fillLicensePage()

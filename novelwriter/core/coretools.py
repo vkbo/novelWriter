@@ -430,7 +430,7 @@ class ProjectBuilder:
             logger.error("No project path set for the example project")
             return False
 
-        pkgSample = self.mainConf.getAssetPath("sample.zip")
+        pkgSample = self.mainConf.assetPath("sample.zip")
         if pkgSample.is_file():
             try:
                 shutil.unpack_archive(pkgSample, projPath)

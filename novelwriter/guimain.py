@@ -97,7 +97,7 @@ class GuiMain(QMainWindow):
         self.resize(*self.mainConf.getWinSize())
         self._updateWindowTitle()
 
-        nwIcon = self.mainConf.getAssetPath("icons") / "novelwriter.svg"
+        nwIcon = self.mainConf.assetPath("icons") / "novelwriter.svg"
         self.nwIcon = QIcon(str(nwIcon)) if nwIcon.is_file() else QIcon()
         self.setWindowIcon(self.nwIcon)
         qApp.setWindowIcon(self.nwIcon)
@@ -698,7 +698,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        lastPath = self.mainConf.getLastPath()
+        lastPath = self.mainConf.lastPath()
         extFilter = [
             self.tr("Text files ({0})").format("*.txt"),
             self.tr("Markdown files ({0})").format("*.md"),

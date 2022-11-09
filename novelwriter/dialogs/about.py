@@ -232,7 +232,7 @@ class GuiAbout(QDialog):
     def _fillNotesPage(self):
         """Load the content for the Release Notes page.
         """
-        docPath = self.mainConf.getAssetPath("text") / "release_notes.htm"
+        docPath = self.mainConf.assetPath("text") / "release_notes.htm"
         docText = readTextFile(docPath)
         if docText:
             self.pageNotes.setHtml(docText)
@@ -243,7 +243,7 @@ class GuiAbout(QDialog):
     def _fillLicensePage(self):
         """Load the content for the Licence page.
         """
-        docPath = self.mainConf.getAssetPath("text") / "gplv3_en.htm"
+        docPath = self.mainConf.assetPath("text") / "gplv3_en.htm"
         docText = readTextFile(docPath)
         if docText:
             self.pageLicense.setHtml(docText)

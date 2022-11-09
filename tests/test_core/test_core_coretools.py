@@ -395,7 +395,7 @@ def testCoreTools_NewSample(monkeypatch, fncPath, tmpConf, tmpPath, mockGUI):
     srcSample = tmpConf._appRoot / "sample"
     dstSample = tmpPath / "sample.zip"
     monkeypatch.setattr(
-        "novelwriter.config.Config.getAssetPath", lambda *a: tmpPath / "sample.zip"
+        "novelwriter.config.Config.assetPath", lambda *a: tmpPath / "sample.zip"
     )
 
     # Cannot extract when the zip does not exist

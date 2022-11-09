@@ -890,7 +890,7 @@ class GuiBuildNovel(QDialog):
 
         cleanName = makeFileNameSafe(self.theProject.data.name)
         fileName = "%s.%s" % (cleanName, fileExt)
-        savePath = self.mainConf.getLastPath() / fileName
+        savePath = self.mainConf.lastPath() / fileName
         savePath, _ = QFileDialog.getSaveFileName(
             self, self.tr("Save Document As"), str(savePath)
         )

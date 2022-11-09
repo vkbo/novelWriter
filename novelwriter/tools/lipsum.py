@@ -119,7 +119,7 @@ class GuiLipsum(QDialog):
     def _doInsert(self):
         """Load the text and insert it in the open document.
         """
-        lipsumFile = self.mainConf.getAssetPath("text") / "lipsum.txt"
+        lipsumFile = self.mainConf.assetPath("text") / "lipsum.txt"
         lipsumText = readTextFile(lipsumFile).splitlines()
 
         if self.randSwitch.isChecked():

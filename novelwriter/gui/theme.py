@@ -118,10 +118,10 @@ class GuiTheme:
         self._availThemes = {}
         self._availSyntax = {}
 
-        self._listConf(self._availSyntax, self.mainConf.getAssetPath("syntax"))
-        self._listConf(self._availThemes, self.mainConf.getAssetPath("themes"))
-        self._listConf(self._availSyntax, self.mainConf.getDataPath("syntax"))
-        self._listConf(self._availThemes, self.mainConf.getDataPath("themes"))
+        self._listConf(self._availSyntax, self.mainConf.assetPath("syntax"))
+        self._listConf(self._availThemes, self.mainConf.assetPath("themes"))
+        self._listConf(self._availSyntax, self.mainConf.dataPath("syntax"))
+        self._listConf(self._availThemes, self.mainConf.dataPath("themes"))
 
         self.loadTheme()
         self.loadSyntax()
@@ -472,7 +472,7 @@ class GuiIcons:
         self._confName  = "icons.conf"
 
         # Icon Theme Path
-        self._iconPath = self.mainConf.getAssetPath("icons")
+        self._iconPath = self.mainConf.assetPath("icons")
 
         # Icon Theme Meta
         self.themeName        = ""
@@ -568,7 +568,7 @@ class GuiIcons:
         if decoKey in self._themeMap:
             imgPath = self._themeMap[decoKey]
         elif decoKey in self.IMAGE_MAP:
-            imgPath = self.mainConf.getAssetPath("images") / self.IMAGE_MAP[decoKey]
+            imgPath = self.mainConf.assetPath("images") / self.IMAGE_MAP[decoKey]
         else:
             logger.error("Decoration with name '%s' does not exist", decoKey)
             return QPixmap()

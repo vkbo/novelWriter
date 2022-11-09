@@ -74,10 +74,10 @@ class Config:
             self._appPath = self._appRoot
 
         # Runtime Settings and Variables
-        self.hasError = False     # True if the config class encountered an error
-        self.errData  = []        # List of error messages
+        self.hasError    = False  # True if the config class encountered an error
+        self.errData     = []     # List of error messages
         self.confChanged = False  # True whenever the config has chenged, false after save
-        self.cmdOpen = None       # Path from command line for project to be opened on launch
+        self.cmdOpen     = None   # Path from command line for project to be opened on launch
 
         # Localisation Info
         self._qLocal     = QLocale.system()
@@ -171,7 +171,7 @@ class Config:
         self.fmtPadThin      = False
 
         # Spell Checking Settings
-        self.spellLanguage = None
+        self.spellLanguage = "en"
 
         # Search Bar Switches
         self.searchCase     = False
@@ -261,21 +261,21 @@ class Config:
         """
         return int(theSize/self.guiScale)
 
-    def getDataPath(self, target=None):
+    def dataPath(self, target=None):
         """Return a path in the data folder.
         """
         if isinstance(target, str):
             return self._dataPath / target
         return self._dataPath
 
-    def getAssetPath(self, target=None):
+    def assetPath(self, target=None):
         """Return a path in the assets folder.
         """
         if isinstance(target, str):
             return self._appPath / "assets" / target
         return self._appPath / "assets"
 
-    def getLastPath(self):
+    def lastPath(self):
         """Return the last path used by the user, but ensure it exists.
         """
         if self._lastPath.is_dir():
@@ -294,7 +294,6 @@ class Config:
         if isinstance(confPath, (str, Path)):
             logger.info("Setting config from alternative path: %s", confPath)
             self._confPath = Path(confPath)
-
         if isinstance(dataPath, (str, Path)):
             logger.info("Setting data path from alternative path: %s", dataPath)
             self._dataPath = Path(dataPath)
@@ -306,32 +305,24 @@ class Config:
         logger.debug("Last Path: %s", self._lastPath)
         logger.debug("PDF Manual: %s", self.pdfDocs)
 
-        # If the config and data folders don't not exist, create them
+        # If the config and data folders don't exist, create them
         # This assumes that the os config and data folders exist
         self._confPath.mkdir(exist_ok=True)
         self._dataPath.mkdir(exist_ok=True)
 
-        # We don't error on these failing since they are not essential
+        # Also create the syntax and themes folders if possible
         if self._dataPath.is_dir():
             (self._dataPath / "syntax").mkdir(exist_ok=True)
             (self._dataPath / "themes").mkdir(exist_ok=True)
 
-        # Check if config file exists
+        # Check if config file exists, and load it. If not, we save defaults
         if (self._confPath / nwFiles.CONF_FILE).is_file():
-            # If it exists, load it
             self.loadConfig()
         else:
-            # If it does not exist, save a copy of the default values
             self.saveConfig()
 
-        # Load recent projects cache
         self.loadRecentCache()
-
-        # Check the availability of optional packages
         self._checkOptionalPackages()
-
-        if not self.spellLanguage:
-            self.spellLanguage = "en"
 
         logger.debug("Config initialisation complete")
 
@@ -694,16 +685,17 @@ class Config:
     ##
 
     def setLastPath(self, lastPath):
-        """Set the last used path (by the user).
+        """Set the last used path. Only the folder is saved, so if the
+        path is not a folder, the parent of the path is used instead.
         """
-        if isinstance(lastPath, str):
+        if isinstance(lastPath, (str, Path)):
             lastPath = Path(lastPath)
-        if isinstance(lastPath, Path):
-            if lastPath.is_file():
-                self._lastPath = lastPath.parent
-            elif lastPath.is_dir():
+            if not lastPath.is_dir():
+                lastPath = lastPath.parent
+            if lastPath.is_dir():
                 self._lastPath = lastPath
-        return True
+                logger.debug("Last path updated: %s" % self._lastPath)
+        return
 
     def setWinSize(self, newWidth, newHeight):
         """Set the size of the main window, but only if the change is
@@ -719,7 +711,7 @@ class Config:
         if abs(self.winGeometry[1] - newHeight) > 5:
             self.winGeometry[1] = newHeight
             self.confChanged = True
-        return True
+        return
 
     def setPreferencesSize(self, newWidth, newHeight):
         """Sat the size of the Preferences dialog window.
@@ -727,63 +719,63 @@ class Config:
         self.prefGeometry[0] = int(newWidth/self.guiScale)
         self.prefGeometry[1] = int(newHeight/self.guiScale)
         self.confChanged = True
-        return True
+        return
 
     def setProjColWidths(self, colWidths):
         """Set the column widths of the Load Project dialog.
         """
         self.projColWidth = [int(x/self.guiScale) for x in colWidths]
         self.confChanged = True
-        return True
+        return
 
     def setMainPanePos(self, panePos):
         """Set the position of the main GUI splitter.
         """
         self.mainPanePos = [int(x/self.guiScale) for x in panePos]
         self.confChanged = True
-        return True
+        return
 
     def setDocPanePos(self, panePos):
         """Set the position of the main editor/viewer splitter.
         """
         self.docPanePos = [int(x/self.guiScale) for x in panePos]
         self.confChanged = True
-        return True
+        return
 
     def setViewPanePos(self, panePos):
         """Set the position of the viewer meta data splitter.
         """
         self.viewPanePos = [int(x/self.guiScale) for x in panePos]
         self.confChanged = True
-        return True
+        return
 
     def setOutlinePanePos(self, panePos):
         """Set the position of the outline details splitter.
         """
         self.outlnPanePos = [int(x/self.guiScale) for x in panePos]
         self.confChanged = True
-        return True
+        return
 
     def setShowRefPanel(self, checkState):
         """Set the visibility state of the reference panel.
         """
         self.showRefPanel = checkState
         self.confChanged = True
-        return self.showRefPanel
+        return
 
     def setViewComments(self, viewState):
         """Set the visibility state of comments in the viewer.
         """
         self.viewComments = viewState
         self.confChanged = True
-        return self.viewComments
+        return
 
     def setViewSynopsis(self, viewState):
         """Set the visibility state of synopsis comments in the viewer.
         """
         self.viewSynopsis = viewState
         self.confChanged = True
-        return self.viewSynopsis
+        return
 
     ##
     #  Default Setters

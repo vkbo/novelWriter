@@ -132,8 +132,8 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, fncPath):
     # List Themes
     # ===========
 
-    shutil.copy(mainConf.getAssetPath("themes") / "default_dark.conf", fncPath / "themes")
-    shutil.copy(mainConf.getAssetPath("themes") / "default.conf", fncPath / "themes")
+    shutil.copy(mainConf.assetPath("themes") / "default_dark.conf", fncPath / "themes")
+    shutil.copy(mainConf.assetPath("themes") / "default.conf", fncPath / "themes")
 
     # Block the reading of the files
     with monkeypatch.context() as mp:
@@ -199,8 +199,8 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI, fncPath):
     # List Themes
     # ===========
 
-    shutil.copy(mainConf.getAssetPath("syntax") / "default_dark.conf", fncPath / "syntax")
-    shutil.copy(mainConf.getAssetPath("syntax") / "default_light.conf", fncPath / "syntax")
+    shutil.copy(mainConf.assetPath("syntax") / "default_dark.conf", fncPath / "syntax")
+    shutil.copy(mainConf.assetPath("syntax") / "default_light.conf", fncPath / "syntax")
 
     # Block the reading of the files
     with monkeypatch.context() as mp:
