@@ -225,7 +225,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     ignTuple = (
         "timestamp", "guifont", "lastnotes", "guilang", "geometry",
         "preferences", "projcols", "mainpane", "docpane", "viewpane",
-        "outlinepane", "textfont", "textsize", "lastpath"
+        "outlinepane", "textfont", "textsize", "lastpath", "backuppath"
     )
     assert cmpFiles(testFile, compFile, ignoreStart=ignTuple)
 
