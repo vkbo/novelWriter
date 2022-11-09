@@ -229,7 +229,7 @@ class GuiProjectLoad(QDialog):
                 ).format(projName)
             )
             if msgYes:
-                self.mainConf.removeFromRecentCache(
+                self.mainConf.recentProjects.remove(
                     selList[0].data(self.C_NAME, Qt.UserRole)
                 )
                 self._populateList()
@@ -264,23 +264,17 @@ class GuiProjectLoad(QDialog):
     def _populateList(self):
         """Populate the list box with recent project data.
         """
-        dataList = []
-        for projPath in self.mainConf.recentProj:
-            theEntry = self.mainConf.recentProj[projPath]
-            theTitle = theEntry.get("title", "")
-            theTime  = theEntry.get("time", 0)
-            theWords = theEntry.get("words", 0)
-            dataList.append([theTitle, theTime, theWords, projPath])
-
         self.listBox.clear()
-        sortList = sorted(dataList, key=lambda x: x[1], reverse=True)
-        for theTitle, theTime, theWords, projPath in sortList:
+        dataList = self.mainConf.recentProjects.listEntries()
+        sortList = sorted(dataList, key=lambda x: x[3], reverse=True)
+        nwxIcon = self.mainGui.mainTheme.getIcon("proj_nwx")
+        for path, title, words, time in sortList:
             newItem = QTreeWidgetItem([""]*4)
-            newItem.setIcon(self.C_NAME,  self.mainGui.mainTheme.getIcon("proj_nwx"))
-            newItem.setText(self.C_NAME,  theTitle)
-            newItem.setData(self.C_NAME,  Qt.UserRole, projPath)
-            newItem.setText(self.C_COUNT, formatInt(theWords))
-            newItem.setText(self.C_TIME,  datetime.fromtimestamp(theTime).strftime("%x %X"))
+            newItem.setIcon(self.C_NAME, nwxIcon)
+            newItem.setText(self.C_NAME, title)
+            newItem.setData(self.C_NAME, Qt.UserRole, path)
+            newItem.setText(self.C_COUNT, formatInt(words))
+            newItem.setText(self.C_TIME, datetime.fromtimestamp(time).strftime("%x %X"))
             newItem.setTextAlignment(self.C_NAME,  Qt.AlignLeft  | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_TIME,  Qt.AlignRight | Qt.AlignVCenter)

@@ -1144,7 +1144,7 @@ class GuiMain(QMainWindow):
         errors since it is initialised before the GUI itself.
         """
         if self.mainConf.hasError:
-            self.makeAlert(self.mainConf.getErrData(), nwAlert.ERROR)
+            self.makeAlert(self.mainConf.errorText(), nwAlert.ERROR)
             return True
         return False
 

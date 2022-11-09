@@ -354,10 +354,9 @@ class NWProject(QObject):
         self._loadProjectLocalisation()
 
         # Update recent projects
-        self.mainConf.updateRecentCache(
+        self.mainConf.recentProjects.update(
             self._storage.storagePath, self._data.name, sum(self._data.initCounts), time()
         )
-        self.mainConf.saveRecentCache()
 
         # Check the project tree consistency
         for tItem in self._tree:
@@ -424,10 +423,9 @@ class NWProject(QObject):
         self._storage.runPostSaveTasks(autoSave=autoSave)
 
         # Update recent projects
-        self.mainConf.updateRecentCache(
+        self.mainConf.recentProjects.update(
             self._storage.storagePath, self._data.name, sum(self._data.currCounts), saveTime
         )
-        self.mainConf.saveRecentCache()
 
         self._storage.writeLockFile()
         self.mainGui.setStatus(self.tr("Saved Project: {0}").format(self._data.name))

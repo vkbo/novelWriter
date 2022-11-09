@@ -74,8 +74,8 @@ class Config:
             self._appPath = self._appRoot
 
         # Runtime Settings and Variables
-        self.hasError    = False  # True if the config class encountered an error
-        self.errData     = []     # List of error messages
+        self._hasError   = False  # True if the config class encountered an error
+        self._errData    = []     # List of error messages
         self.confChanged = False  # True whenever the config has chenged, false after save
         self.cmdOpen     = None   # Path from command line for project to be opened on launch
 
@@ -91,6 +91,8 @@ class Config:
 
         # User Settings
         # =============
+
+        self._recentProj = RecentProjects(self._dataPath)
 
         # General GUI Settings
         self.guiLang     = self._qLocal.name()
@@ -246,6 +248,18 @@ class Config:
         return
 
     ##
+    #  Properties
+    ##
+
+    @property
+    def hasError(self):
+        return self._hasError
+
+    @property
+    def recentProjects(self):
+        return self._recentProj
+
+    ##
     #  Methods
     ##
 
@@ -281,6 +295,15 @@ class Config:
         if self._lastPath.is_dir():
             return self._lastPath
         return Path.home().absolute()
+
+    def errorText(self):
+        """Compile and return error messages from the initialisation of
+        the Config class, and clear the error buffer.
+        """
+        errMessage = "<br>".join(self._errData)
+        self._hasError = False
+        self._errData = []
+        return errMessage
 
     ##
     #  Config Actions
@@ -321,12 +344,12 @@ class Config:
         else:
             self.saveConfig()
 
-        self.loadRecentCache()
+        self._recentProj.loadCache()
         self._checkOptionalPackages()
 
         logger.debug("Config initialisation complete")
 
-        return True
+        return
 
     def initLocalisation(self, nwApp):
         """Initialise the localisation of the GUI.
@@ -345,7 +368,7 @@ class Config:
                 qTrans = QTranslator()
                 lngFile = "%s_%s" % (lngBase, lngCode.replace("-", "_"))
                 if lngFile not in self._qtTrans:
-                    if qTrans.load(lngFile, lngPath):
+                    if qTrans.load(lngFile, str(lngPath)):
                         logger.debug("Loaded: %s", os.path.join(lngPath, lngFile))
                         nwApp.installTranslator(qTrans)
                         self._qtTrans[lngFile] = qTrans
@@ -367,12 +390,12 @@ class Config:
         else:
             return []
 
-        for qmFile in os.listdir(self._nwLangPath):
-            if not os.path.isfile(os.path.join(self._nwLangPath, qmFile)):
+        for qmFile in Path(self._nwLangPath).iterdir():
+            qmName = qmFile.name
+            if not (qmFile.is_file() and qmName.startswith(fPre) and qmName.endswith(fExt)):
                 continue
-            if not qmFile.startswith(fPre) or not qmFile.endswith(fExt):
-                continue
-            qmLang = qmFile[len(fPre):-len(fExt)]
+
+            qmLang = qmName[len(fPre):-len(fExt)]
             qmName = QLocale(qmLang).nativeLanguageName().title()
             if qmLang and qmName and qmLang != "en_GB":
                 langList[qmLang] = qmName
@@ -392,9 +415,9 @@ class Config:
         except Exception as exc:
             logger.error("Could not load config file")
             logException()
-            self.hasError = True
-            self.errData.append("Could not load config file")
-            self.errData.append(formatException(exc))
+            self._hasError = True
+            self._errData.append("Could not load config file")
+            self._errData.append(formatException(exc))
             return False
 
         # Main
@@ -606,78 +629,11 @@ class Config:
         except Exception as exc:
             logger.error("Could not save config file")
             logException()
-            self.hasError = True
-            self.errData.append("Could not save config file")
-            self.errData.append(formatException(exc))
+            self._hasError = True
+            self._errData.append("Could not save config file")
+            self._errData.append(formatException(exc))
             return False
 
-        return True
-
-    def loadRecentCache(self):
-        """Load the cache file for recent projects.
-        """
-        self.recentProj = {}
-
-        cacheFile = self._dataPath / nwFiles.RECENT_FILE
-        if not os.path.isfile(cacheFile):
-            return True
-
-        try:
-            with open(cacheFile, mode="r", encoding="utf-8") as inFile:
-                theData = json.load(inFile)
-
-            for projPath, theEntry in theData.items():
-                self.recentProj[projPath] = {
-                    "title": theEntry.get("title", ""),
-                    "time": theEntry.get("time", 0),
-                    "words": theEntry.get("words", 0),
-                }
-
-        except Exception as exc:
-            self.hasError = True
-            self.errData.append("Could not load recent project cache")
-            self.errData.append(formatException(exc))
-            return False
-
-        return True
-
-    def saveRecentCache(self):
-        """Save the cache dictionary of recent projects.
-        """
-        cacheFile = self._dataPath / nwFiles.RECENT_FILE
-        cacheTemp = cacheFile.with_suffix(".tmp")
-        try:
-            with open(cacheTemp, mode="w+", encoding="utf-8") as outFile:
-                json.dump(self.recentProj, outFile, indent=2)
-            cacheTemp.replace(cacheFile)
-        except Exception as exc:
-            self.hasError = True
-            self.errData.append("Could not save recent project cache")
-            self.errData.append(formatException(exc))
-            return False
-
-        return True
-
-    def updateRecentCache(self, projPath, projTitle, wordCount, saveTime):
-        """Add or update recent cache information on a given project.
-        """
-        self.recentProj[os.path.abspath(projPath)] = {
-            "title": projTitle,
-            "time": int(saveTime),
-            "words": int(wordCount),
-        }
-        return True
-
-    def removeFromRecentCache(self, thePath):
-        """Trying to remove a path from the recent projects cache.
-        """
-        if thePath in self.recentProj:
-            del self.recentProj[thePath]
-            logger.debug("Removed recent: %s", thePath)
-            self.saveRecentCache()
-        else:
-            logger.error("Unknown recent: %s", thePath)
-            return False
         return True
 
     ##
@@ -828,15 +784,6 @@ class Config:
     def getTabWidth(self):
         return self.pxInt(max(self.tabWidth, 0))
 
-    def getErrData(self):
-        """Compile and return error messages from the initialisation of
-        the Config class, and clear the error buffer.
-        """
-        errMessage = "<br>".join(self.errData)
-        self.hasError = False
-        self.errData = []
-        return errMessage
-
     ##
     #  Internal Functions
     ##
@@ -872,3 +819,78 @@ class Config:
         return
 
 # END Class Config
+
+
+class RecentProjects:
+
+    def __init__(self, dataPath):
+        self._dataPath = dataPath
+        self._data = {}
+        return
+
+    def loadCache(self):
+        """Load the cache file for recent projects.
+        """
+        self._data = {}
+
+        cacheFile = self._dataPath / nwFiles.RECENT_FILE
+        if not cacheFile.is_file():
+            return True
+
+        try:
+            with open(cacheFile, mode="r", encoding="utf-8") as inFile:
+                theData = json.load(inFile)
+            for projPath, theEntry in theData.items():
+                self._data[projPath] = {
+                    "title": theEntry.get("title", ""),
+                    "words": theEntry.get("words", 0),
+                    "time": theEntry.get("time", 0),
+                }
+        except Exception:
+            logger.error("Could not load recent project cache")
+            logException()
+            return False
+
+        return True
+
+    def saveCache(self):
+        """Save the cache dictionary of recent projects.
+        """
+        cacheFile = self._dataPath / nwFiles.RECENT_FILE
+        cacheTemp = cacheFile.with_suffix(".tmp")
+        try:
+            with open(cacheTemp, mode="w+", encoding="utf-8") as outFile:
+                json.dump(self._data, outFile, indent=2)
+            cacheTemp.replace(cacheFile)
+        except Exception:
+            logger.error("Could not save recent project cache")
+            logException()
+            return False
+
+        return True
+
+    def listEntries(self):
+        """List all items in the cache.
+        """
+        return [(k, e["title"], e["words"], e["time"]) for k, e in self._data.items()]
+
+    def update(self, projPath, projTitle, wordCount, saveTime):
+        """Add or update recent cache information on a given project.
+        """
+        self._data[str(projPath)] = {
+            "title": projTitle,
+            "words": int(wordCount),
+            "time": int(saveTime),
+        }
+        self.saveCache()
+        return
+
+    def remove(self, projPath):
+        """Try to remove a path from the recent projects cache.
+        """
+        if self._data.pop(str(projPath), None) is not None:
+            logger.debug("Removed recent: %s", projPath)
+            self.saveCache()
+        return
+
+# END Class RecentProjects
