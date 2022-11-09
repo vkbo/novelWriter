@@ -91,7 +91,7 @@ class Config:
         # User Settings
         # =============
 
-        self._recentProj = RecentProjects(self._dataPath)
+        self._recentProj = RecentProjects(self)
 
         # General GUI Settings
         self.guiLang     = self._qLocal.name()
@@ -839,8 +839,8 @@ class Config:
 
 class RecentProjects:
 
-    def __init__(self, dataPath):
-        self._dataPath = dataPath
+    def __init__(self, mainConf):
+        self.mainConf = mainConf
         self._data = {}
         return
 
@@ -849,7 +849,7 @@ class RecentProjects:
         """
         self._data = {}
 
-        cacheFile = self._dataPath / nwFiles.RECENT_FILE
+        cacheFile = self.mainConf.dataPath(nwFiles.RECENT_FILE)
         if not cacheFile.is_file():
             return True
 
@@ -872,7 +872,7 @@ class RecentProjects:
     def saveCache(self):
         """Save the cache dictionary of recent projects.
         """
-        cacheFile = self._dataPath / nwFiles.RECENT_FILE
+        cacheFile = self.mainConf.dataPath(nwFiles.RECENT_FILE)
         cacheTemp = cacheFile.with_suffix(".tmp")
         try:
             with open(cacheTemp, mode="w+", encoding="utf-8") as outFile:

@@ -411,11 +411,11 @@ def testBaseConfig_Internal(monkeypatch, tmpConf):
 
 
 @pytest.mark.base
-def testBaseConfig_RecentCache(monkeypatch, fncPath):
+def testBaseConfig_RecentCache(monkeypatch, fncConf, fncPath):
     """Test recent cache file.
     """
     cacheFile = fncPath / nwFiles.RECENT_FILE
-    recent = RecentProjects(fncPath)
+    recent = RecentProjects(fncConf)
 
     # Load when there is no file should pass, but load nothing
     assert not cacheFile.exists()
