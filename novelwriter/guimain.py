@@ -29,6 +29,7 @@ import novelwriter
 
 from enum import Enum
 from time import time
+from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer, QThreadPool, pyqtSlot
@@ -95,7 +96,11 @@ class GuiMain(QMainWindow):
         # Prepare Main Window
         self.resize(*self.mainConf.getWinSize())
         self._updateWindowTitle()
-        self.setWindowIcon(QIcon(self.mainConf.appIcon))
+
+        nwIcon = self.mainConf.getAssetPath("icons") / "novelwriter.svg"
+        self.nwIcon = QIcon(str(nwIcon)) if nwIcon.is_file() else QIcon()
+        self.setWindowIcon(self.nwIcon)
+        qApp.setWindowIcon(self.nwIcon)
 
         # Build the GUI
         # =============
@@ -1362,7 +1367,7 @@ class GuiMain(QMainWindow):
 
         # Help
         self.addAction(self.mainMenu.aHelpDocs)
-        if self.mainConf.pdfDocs is not None:
+        if isinstance(self.mainConf.pdfDocs, Path):
             self.addAction(self.mainMenu.aPdfDocs)
 
         return True

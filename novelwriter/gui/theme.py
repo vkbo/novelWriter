@@ -24,12 +24,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import logging
 import novelwriter
 
 from math import ceil
-from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import qApp
@@ -120,9 +118,8 @@ class GuiTheme:
         self._availThemes = {}
         self._availSyntax = {}
 
-        self._listConf(self._availSyntax, os.path.join(self.mainConf.assetPath, "syntax"))
-        self._listConf(self._availThemes, os.path.join(self.mainConf.assetPath, "themes"))
-
+        self._listConf(self._availSyntax, self.mainConf.getAssetPath("syntax"))
+        self._listConf(self._availThemes, self.mainConf.getAssetPath("themes"))
         self._listConf(self._availSyntax, self.mainConf.getDataPath("syntax"))
         self._listConf(self._availThemes, self.mainConf.getDataPath("themes"))
 
@@ -380,7 +377,6 @@ class GuiTheme:
     def _listConf(self, targetDict, checkDir):
         """Scan for theme config files and populate the dictionary.
         """
-        checkDir = Path(checkDir)
         if not checkDir.is_dir():
             return False
 
@@ -476,7 +472,7 @@ class GuiIcons:
         self._confName  = "icons.conf"
 
         # Icon Theme Path
-        self._iconPath = os.path.join(self.mainConf.assetPath, "icons")
+        self._iconPath = self.mainConf.getAssetPath("icons")
 
         # Icon Theme Meta
         self.themeName        = ""
@@ -499,12 +495,12 @@ class GuiIcons:
         update functions for the classes where they're used.
         """
         self._themeMap = {}
-        themePath = os.path.join(self.mainConf.assetPath, "icons", iconTheme)
-        if not os.path.isdir(themePath):
+        themePath = self._iconPath / iconTheme
+        if not themePath.is_dir():
             logger.warning("No icons loaded for '%s'", iconTheme)
             return False
 
-        themeConf = os.path.join(themePath, self._confName)
+        themeConf = themePath / self._confName
         logger.info("Loading icon theme '%s'", iconTheme)
 
         # Config File
@@ -535,8 +531,8 @@ class GuiIcons:
                 if iconName not in self.ICON_KEYS:
                     logger.error("Unknown icon name '%s' in config file", iconName)
                 else:
-                    iconPath = os.path.join(themePath, iconFile)
-                    if os.path.isfile(iconPath):
+                    iconPath = themePath / iconFile
+                    if iconPath.is_file():
                         self._themeMap[iconName] = iconPath
                         logger.debug("Icon slot '%s' using file '%s'", iconName, iconFile)
                     else:
@@ -572,18 +568,16 @@ class GuiIcons:
         if decoKey in self._themeMap:
             imgPath = self._themeMap[decoKey]
         elif decoKey in self.IMAGE_MAP:
-            imgPath = os.path.join(
-                self.mainConf.assetPath, "images", self.IMAGE_MAP[decoKey]
-            )
+            imgPath = self.mainConf.getAssetPath("images") / self.IMAGE_MAP[decoKey]
         else:
             logger.error("Decoration with name '%s' does not exist", decoKey)
             return QPixmap()
 
-        if not os.path.isfile(imgPath):
+        if not imgPath.is_file():
             logger.error("Asset not found: %s", imgPath)
             return QPixmap()
 
-        theDeco = QPixmap(imgPath)
+        theDeco = QPixmap(str(imgPath))
         if pxW is not None and pxH is not None:
             return theDeco.scaled(pxW, pxH, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
         elif pxW is None and pxH is not None:
@@ -667,15 +661,14 @@ class GuiIcons:
 
         # If we just want the app icons, return right away
         if iconKey == "novelwriter":
-            return QIcon(os.path.join(self._iconPath, "novelwriter.svg"))
+            return QIcon(str(self._iconPath / "novelwriter.svg"))
         elif iconKey == "proj_nwx":
-            return QIcon(os.path.join(self._iconPath, "x-novelwriter-project.svg"))
+            return QIcon(str(self._iconPath / "x-novelwriter-project.svg"))
 
         # Otherwise, we load from the theme folder
         if iconKey in self._themeMap:
-            relPath = os.path.relpath(self._themeMap[iconKey], self._iconPath)
-            logger.debug("Loading: %s", relPath)
-            return QIcon(self._themeMap[iconKey])
+            logger.debug("Loading: %s", self._themeMap[iconKey].name)
+            return QIcon(str(self._themeMap[iconKey]))
 
         # If we didn't find one, give up and return an empty icon
         logger.warning("Did not load an icon for '%s'", iconKey)

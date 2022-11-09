@@ -372,7 +372,7 @@ def testCoreTools_NewCustomB(monkeypatch, fncDir, outDir, refDir, mockGUI, mockR
 
 
 @pytest.mark.core
-def testCoreTools_NewSample(fncDir, tmpConf, mockGUI, tmpDir):
+def testCoreTools_NewSample(monkeypatch, fncPath, tmpConf, tmpPath, mockGUI):
     """Check that we can create a new project can be created from the
     provided sample project via a zip file.
     """
@@ -380,7 +380,7 @@ def testCoreTools_NewSample(fncDir, tmpConf, mockGUI, tmpDir):
         "projName": "Test Sample",
         "projTitle": "Test Novel",
         "projAuthors": "Jane Doe\nJohn Doh\n",
-        "projPath": fncDir,
+        "projPath": fncPath,
         "popSample": True,
         "popMinimal": False,
         "popCustom": False,
@@ -392,9 +392,11 @@ def testCoreTools_NewSample(fncDir, tmpConf, mockGUI, tmpDir):
     assert projBuild.buildProject({"popSample": True}) is False
 
     # Force the lookup path for assets to our temp folder
-    srcSample = os.path.abspath(os.path.join(tmpConf.appRoot, "sample"))
-    dstSample = os.path.join(tmpDir, "sample.zip")
-    tmpConf.assetPath = tmpDir
+    srcSample = tmpConf._appRoot / "sample"
+    dstSample = tmpPath / "sample.zip"
+    monkeypatch.setattr(
+        "novelwriter.config.Config.getAssetPath", lambda *a: tmpPath / "sample.zip"
+    )
 
     # Cannot extract when the zip does not exist
     assert projBuild.buildProject(projData) is False

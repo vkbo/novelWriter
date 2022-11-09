@@ -23,7 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import random
 import logging
 import novelwriter
@@ -120,7 +119,7 @@ class GuiLipsum(QDialog):
     def _doInsert(self):
         """Load the text and insert it in the open document.
         """
-        lipsumFile = os.path.join(self.mainConf.assetPath, "text", "lipsum.txt")
+        lipsumFile = self.mainConf.getAssetPath("text") / "lipsum.txt"
         lipsumText = readTextFile(lipsumFile).splitlines()
 
         if self.randSwitch.isChecked():

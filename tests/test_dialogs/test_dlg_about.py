@@ -21,6 +21,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
+from pathlib import Path
+
 from tools import getGuiItem
 
 from PyQt5.QtWidgets import QAction, QMessageBox
@@ -29,7 +31,7 @@ from novelwriter.dialogs.about import GuiAbout
 
 
 @pytest.mark.gui
-def testDlgAbout_NWDialog(qtbot, nwGUI):
+def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
     """Test the novelWriter about dialogs.
     """
     # NW About
@@ -45,13 +47,12 @@ def testDlgAbout_NWDialog(qtbot, nwGUI):
     assert msgAbout.pageNotes.document().characterCount() > 100
     assert msgAbout.pageLicense.document().characterCount() > 100
 
-    msgAbout.mainConf.assetPath = "whatever"
-
-    msgAbout._fillNotesPage()
-    assert msgAbout.pageNotes.toPlainText() == "Error loading release notes text ..."
-
-    msgAbout._fillLicensePage()
-    assert msgAbout.pageLicense.toPlainText() == "Error loading licence text ..."
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.config.Config.getAssetPath", lambda *a: Path("whatever"))
+        msgAbout._fillNotesPage()
+        assert msgAbout.pageNotes.toPlainText() == "Error loading release notes text ..."
+        msgAbout._fillLicensePage()
+        assert msgAbout.pageLicense.toPlainText() == "Error loading licence text ..."
 
     msgAbout.showReleaseNotes()
     assert msgAbout.tabBox.currentWidget() == msgAbout.pageNotes

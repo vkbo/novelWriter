@@ -51,6 +51,9 @@ class Config:
 
     def __init__(self):
 
+        # Initialisation
+        # ==============
+
         # Set Application Variables
         self.appName   = "novelWriter"
         self.appHandle = "novelwriter"
@@ -62,20 +65,37 @@ class Config:
         self._confPath = confRoot.absolute() / self.appHandle  # The user config location
         self._dataPath = dataRoot.absolute() / self.appHandle  # The user data location
 
-        self.cmdOpen   = None  # Path from command line for project to be opened on launch
-        self.lastPath  = None  # The last user-selected folder (browse dialogs)
-        self.appPath   = None  # The full path to the novelwriter package folder
-        self.appRoot   = None  # The full path to the novelwriter root folder
-        self.appIcon   = None  # The full path to the novelwriter icon file
-        self.assetPath = None  # The full path to the novelwriter/assets folder
-        self.pdfDocs   = None  # The location of the PDF manual, if it exists
+        if hasattr(sys, "_MEIPASS"):
+            self._appPath = Path(sys._MEIPASS).absolute()
+        else:
+            self._appPath = Path(__file__).parent.absolute()
+
+        self._appRoot = self._appPath.parent
+        if self._appRoot.is_file():
+            # novelWriter is packaged as a single file
+            self._appRoot = self._appRoot.parent
+            self._appPath = self._appRoot
+
+        self.cmdOpen  = None  # Path from command line for project to be opened on launch
+        self.lastPath = None  # The last user-selected folder (browse dialogs)
+        self.pdfDocs  = None  # The location of the PDF manual, if it exists
 
         # Runtime Settings and Variables
         self.hasError = False     # True if the config class encountered an error
         self.errData  = []        # List of error messages
         self.confChanged = False  # True whenever the config has chenged, false after save
 
-        # General
+        # Localisation Info
+        self._qLocal     = QLocale.system()
+        self._qtTrans    = {}
+        self._qtLangPath = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
+        self._nwLangPath = str(self._appPath / "assets" / "i18n")
+
+        # User Settings
+        # =============
+
+        # General GUI Settings
+        self.guiLang     = self._qLocal.name()
         self.guiTheme    = ""     # GUI theme
         self.guiSyntax   = ""     # Syntax theme
         self.guiFont     = ""     # Defaults to system default font
@@ -86,14 +106,7 @@ class Config:
         self.setDefaultGuiTheme()
         self.setDefaultSyntaxTheme()
 
-        # Localisation
-        self.qLocal     = QLocale.system()
-        self.guiLang    = self.qLocal.name()
-        self.qtLangPath = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
-        self.nwLangPath = None
-        self.qtTrans    = {}
-
-        # Sizes
+        # Size Settings
         self.winGeometry  = [1200, 650]
         self.prefGeometry = [700, 615]
         self.projColWidth = [200, 60, 140]
@@ -103,16 +116,16 @@ class Config:
         self.outlnPanePos = [500, 150]
         self.isFullScreen = False
 
-        # Features
+        # Feature Settings
         self.hideVScroll = False  # Hide vertical scroll bars on main widgets
         self.hideHScroll = False  # Hide horizontal scroll bars on main widgets
         self.emphLabels  = True   # Add emphasis to H1 and H2 item labels
 
-        # Project
+        # Project Settings
         self.autoSaveProj = 60  # Interval for auto-saving project in seconds
         self.autoSaveDoc  = 30  # Interval for auto-saving document in seconds
 
-        # Text Editor
+        # Text Editor Settings
         self.textFont        = None   # Editor font
         self.textSize        = 12     # Editor font size
         self.textWidth       = 700    # Editor text width
@@ -151,7 +164,7 @@ class Config:
         self.stopWhenIdle    = True   # Stop the status bar clock when the user is idle
         self.userIdleTime    = 300    # Time of inactivity to consider user idle
 
-        # User-Selected Symbols
+        # User-Selected Symbol Settings
         self.fmtApostrophe   = nwUnicode.U_RSQUO
         self.fmtSingleQuotes = [nwUnicode.U_LSQUO, nwUnicode.U_RSQUO]
         self.fmtDoubleQuotes = [nwUnicode.U_LDQUO, nwUnicode.U_RDQUO]
@@ -159,7 +172,7 @@ class Config:
         self.fmtPadAfter     = ""
         self.fmtPadThin      = False
 
-        # Spell Checking
+        # Spell Checking Settings
         self.spellLanguage = None
 
         # Search Bar Switches
@@ -170,7 +183,7 @@ class Config:
         self.searchNextFile = False
         self.searchMatchCap = False
 
-        # Backup
+        # Backup Settings
         self.backupPath      = ""
         self.backupOnClose   = False
         self.askBeforeBackup = True
@@ -179,6 +192,9 @@ class Config:
         self.showRefPanel = True  # The reference panel for the viewer is visible
         self.viewComments = True  # Comments are shown in the viewer
         self.viewSynopsis = True  # Synopsis is shown in the viewer
+
+        # System and App Information
+        # ==========================
 
         # Check Qt5 Versions
         verQt = splitVersionNumber(QT_VERSION_STR)
@@ -254,6 +270,13 @@ class Config:
             return self._dataPath / target
         return self._dataPath
 
+    def getAssetPath(self, target=None):
+        """Return a path in the assets folder.
+        """
+        if isinstance(target, str):
+            return self._appPath / "assets" / target
+        return self._appPath / "assets"
+
     ##
     #  Config Actions
     ##
@@ -271,29 +294,12 @@ class Config:
             logger.info("Setting data path from alternative path: %s", dataPath)
             self._dataPath = Path(dataPath)
 
-        logger.debug("Config path: %s", self._confPath)
-        logger.debug("Data path: %s", self._dataPath)
+        logger.debug("Config Path: %s", self._confPath)
+        logger.debug("Data Path: %s", self._dataPath)
+        logger.debug("App Root: %s", self._appRoot)
+        logger.debug("App Path: %s", self._appPath)
 
         self.lastPath = os.path.expanduser("~")
-        self.appPath = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
-        self.appRoot = os.path.abspath(os.path.join(self.appPath, os.path.pardir))
-
-        if os.path.isfile(self.appRoot):
-            # novelWriter is packaged as a single file, so the app and
-            # root paths are the same, and equal to the folder that
-            # contains the single executable.
-            self.appRoot = os.path.dirname(self.appRoot)
-            self.appPath = self.appRoot
-
-        # Assets
-        self.assetPath = os.path.join(self.appPath, "assets")
-        self.appIcon   = os.path.join(self.assetPath, "icons", "novelwriter.svg")
-
-        # Internationalisation
-        self.nwLangPath = os.path.join(self.assetPath, "i18n")
-
-        logger.debug("Assets: %s", self.assetPath)
-        logger.debug("App path: %s", self.appPath)
         logger.debug("Last path: %s", self.lastPath)
 
         # If the config and data folders don't not exist, create them
@@ -324,9 +330,9 @@ class Config:
             self.spellLanguage = "en"
 
         # Look for a PDF version of the manual
-        pdfDocs = os.path.join(self.assetPath, "manual.pdf")
-        if os.path.isfile(pdfDocs):
-            logger.debug("Found manual: %s", pdfDocs)
+        pdfDocs = self._appPath / "assets" / "manual.pdf"
+        if pdfDocs.is_file():
+            logger.debug("Found PDF manual: %s", pdfDocs)
             self.pdfDocs = pdfDocs
 
         logger.debug("Config initialisation complete")
@@ -336,24 +342,24 @@ class Config:
     def initLocalisation(self, nwApp):
         """Initialise the localisation of the GUI.
         """
-        self.qLocal = QLocale(self.guiLang)
-        QLocale.setDefault(self.qLocal)
-        self.qtTrans = {}
+        self._qLocal = QLocale(self.guiLang)
+        QLocale.setDefault(self._qLocal)
+        self._qtTrans = {}
 
         langList = [
-            (self.qtLangPath, "qtbase"),  # Qt 5.x
-            (self.nwLangPath, "qtbase"),  # Alternative Qt 5.x
-            (self.nwLangPath, "nw"),      # novelWriter
+            (self._qtLangPath, "qtbase"),  # Qt 5.x
+            (self._nwLangPath, "qtbase"),  # Alternative Qt 5.x
+            (self._nwLangPath, "nw"),      # novelWriter
         ]
         for lngPath, lngBase in langList:
-            for lngCode in self.qLocal.uiLanguages():
+            for lngCode in self._qLocal.uiLanguages():
                 qTrans = QTranslator()
                 lngFile = "%s_%s" % (lngBase, lngCode.replace("-", "_"))
-                if lngFile not in self.qtTrans:
+                if lngFile not in self._qtTrans:
                     if qTrans.load(lngFile, lngPath):
                         logger.debug("Loaded: %s", os.path.join(lngPath, lngFile))
                         nwApp.installTranslator(qTrans)
-                        self.qtTrans[lngFile] = qTrans
+                        self._qtTrans[lngFile] = qTrans
 
         return
 
@@ -372,8 +378,8 @@ class Config:
         else:
             return []
 
-        for qmFile in os.listdir(self.nwLangPath):
-            if not os.path.isfile(os.path.join(self.nwLangPath, qmFile)):
+        for qmFile in os.listdir(self._nwLangPath):
+            if not os.path.isfile(os.path.join(self._nwLangPath, qmFile)):
                 continue
             if not qmFile.startswith(fPre) or not qmFile.endswith(fExt):
                 continue

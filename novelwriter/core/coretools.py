@@ -24,7 +24,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import shutil
 import logging
 import novelwriter
@@ -431,8 +430,8 @@ class ProjectBuilder:
             logger.error("No project path set for the example project")
             return False
 
-        pkgSample = os.path.join(self.mainConf.assetPath, "sample.zip")
-        if os.path.isfile(pkgSample):
+        pkgSample = self.mainConf.getAssetPath("sample.zip")
+        if pkgSample.is_file():
             try:
                 shutil.unpack_archive(pkgSample, projPath)
             except Exception as exc:

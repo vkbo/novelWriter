@@ -159,14 +159,14 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
         tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
         assert tstConf._confPath == tmpDir
         assert tstConf._dataPath == tmpDir
-        appRoot = tstConf.appRoot
+        appRoot = tstConf._appRoot
 
         mp.setattr("os.path.isfile", lambda *a: True)
         tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
         assert tstConf._confPath == tmpDir
         assert tstConf._dataPath == tmpDir
-        assert tstConf.appRoot == os.path.dirname(appRoot)
-        assert tstConf.appPath == os.path.dirname(appRoot)
+        assert tstConf._appRoot == os.path.dirname(appRoot)
+        assert tstConf._appPath == os.path.dirname(appRoot)
 
     assert tstConf.loadConfig() is True
     assert tstConf.saveConfig() is True
@@ -199,7 +199,7 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     i18nDir = os.path.join(fncDir, "i18n")
     os.mkdir(i18nDir)
     os.mkdir(os.path.join(i18nDir, "stuff"))
-    tstConf.nwLangPath = i18nDir
+    tstConf._nwLangPath = i18nDir
 
     copyfile(os.path.join(filesDir, "nw_en_GB.qm"), os.path.join(i18nDir, "nw_en_GB.qm"))
     writeFile(os.path.join(i18nDir, "nw_en_GB.ts"), "")

@@ -698,13 +698,13 @@ class NWProject(QObject):
     def _loadProjectLocalisation(self):
         """Load the language data for the current project language.
         """
-        if self._data.language is None or self.mainConf.nwLangPath is None:
+        if self._data.language is None or self.mainConf._nwLangPath is None:
             self._langData = {}
             return False
 
-        langFile = Path(self.mainConf.nwLangPath) / f"project_{self._data.language}.json"
+        langFile = Path(self.mainConf._nwLangPath) / f"project_{self._data.language}.json"
         if not langFile.is_file():
-            langFile = Path(self.mainConf.nwLangPath) / "project_en_GB.json"
+            langFile = Path(self.mainConf._nwLangPath) / "project_en_GB.json"
 
         try:
             with open(langFile, mode="r", encoding="utf-8") as inFile:
