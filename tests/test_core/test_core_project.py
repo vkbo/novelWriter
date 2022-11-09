@@ -180,6 +180,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     # Fail on lock file
     assert theProject._storage.writeLockFile()
     assert theProject.openProject(fncPath) is False
+    assert isinstance(theProject.getLockStatus(), list)
 
     # Fail to read lockfile (which still opens the project)
     with monkeypatch.context() as mp:
@@ -193,6 +194,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     assert theProject._storage.writeLockFile()
     assert theProject.openProject(fncPath, overrideLock=True) is True
     assert theProject.closeProject()
+    assert theProject.getLockStatus() is None
 
     # Fail getting xml reader
     with monkeypatch.context() as mp:
@@ -625,7 +627,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
+def testCoreProject_OrphanedFiles(mockGUI, prjLipsum):
     """Check that files in the content folder that are not tracked in
     the project XML file are handled correctly by the orphaned files
     function. It should also restore as much meta data as possible from
@@ -633,7 +635,7 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
     """
     theProject = NWProject(mockGUI)
 
-    assert theProject.openProject(nwLipsum) is True
+    assert theProject.openProject(prjLipsum) is True
     assert theProject.tree["636b6aa9b697b"] is None
 
     # Add a file with non-existent parent
@@ -646,7 +648,7 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
     assert theProject.closeProject() is True
 
     # First Item with Meta Data
-    orphPath = Path(nwLipsum) / "content" / "636b6aa9b697b.nwd"
+    orphPath = prjLipsum / "content" / "636b6aa9b697b.nwd"
     writeFile(orphPath, (
         "%%~name:[Recovered] Mars\n"
         "%%~path:5eaea4e8cdee8/636b6aa9b697b\n"
@@ -656,22 +658,22 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
     ))
 
     # Second Item without Meta Data
-    orphPath = Path(nwLipsum) / "content" / "736b6aa9b697b.nwd"
+    orphPath = prjLipsum / "content" / "736b6aa9b697b.nwd"
     writeFile(orphPath, "\n")
 
     # Invalid File Name
-    tstPath = Path(nwLipsum) / "content" / "636b6aa9b697b.txt"
+    tstPath = prjLipsum / "content" / "636b6aa9b697b.txt"
     writeFile(tstPath, "\n")
 
     # Invalid File Name
-    tstPath = Path(nwLipsum) / "content" / "636b6aa9b697bb.nwd"
+    tstPath = prjLipsum / "content" / "636b6aa9b697bb.nwd"
     writeFile(tstPath, "\n")
 
     # Invalid File Name
-    tstPath = Path(nwLipsum) / "content" / "abcdefghijklm.nwd"
+    tstPath = prjLipsum / "content" / "abcdefghijklm.nwd"
     writeFile(tstPath, "\n")
 
-    assert theProject.openProject(nwLipsum)
+    assert theProject.openProject(prjLipsum)
     assert theProject.storage.storagePath is not None
     assert theProject.storage.runtimePath is not None
     assert theProject.tree["636b6aa9b697bb"] is None
@@ -697,7 +699,7 @@ def testCoreProject_OrphanedFiles(mockGUI, nwLipsum):
     assert oItem.itemType == nwItemType.FILE
     assert oItem.itemLayout == nwItemLayout.NOTE
 
-    assert theProject.saveProject(nwLipsum)
+    assert theProject.saveProject(prjLipsum)
     assert theProject.closeProject()
 
     # Finally, check that the orphaned files function returns
@@ -730,17 +732,17 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tmpPath):
     mockGUI.hasProject = True
 
     # Invalid path
-    theProject.mainConf.backupPath = None
+    theProject.mainConf._backupPath = None
     assert theProject.backupProject(doNotify=False) is False
 
     # Missing project name
-    theProject.mainConf.backupPath = str(tmpPath)
+    theProject.mainConf._backupPath = tmpPath
     theProject.data.setName("")
     assert theProject.backupProject(doNotify=False) is False
 
     # Valid Settings
     # ==============
-    theProject.mainConf.backupPath = str(tmpPath)
+    theProject.mainConf._backupPath = tmpPath
     theProject.data.setName("Test Minimal")
 
     # Can't make folder

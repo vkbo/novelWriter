@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 
 from PyQt5.QtCore import Qt
@@ -33,18 +32,18 @@ from novelwriter.dialogs.wordlist import GuiWordList
 
 
 @pytest.mark.gui
-def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, fncProj):
+def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
     """test the word list editor.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
 
     monkeypatch.setattr(GuiWordList, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiWordList, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(GuiWordList, "accept", lambda *a: None)
 
     # Open project
-    nwGUI.openProject(fncProj)
-    dictFile = os.path.join(fncProj, "meta", nwFiles.PROJ_DICT)
+    nwGUI.openProject(projPath)
+    dictFile = projPath / "meta" / nwFiles.PROJ_DICT
 
     # Load the dialog
     nwGUI.mainMenu.aEditWordList.activate(QAction.Trigger)

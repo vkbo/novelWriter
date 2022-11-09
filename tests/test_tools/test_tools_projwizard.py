@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import sys
 import pytest
 
@@ -37,7 +36,7 @@ from novelwriter.tools.projwizard import (
 
 @pytest.mark.gui
 @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
-def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, fncProj):
+def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, projPath):
     """Test the launch of the project wizard.
     Disabled for macOS because the test segfaults on QWizard.show()
     """
@@ -45,7 +44,7 @@ def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, fncProj):
     # ========================
 
     # New with a project open should cause an error
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     with monkeypatch.context() as mp:
         mp.setattr(nwGUI, "closeProject", lambda *a: False)
         assert nwGUI.newProject() is False
@@ -61,13 +60,12 @@ def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, fncProj):
         assert nwGUI.newProject() is False
 
         # Now, with a non-empty folder
-        mp.setattr(nwGUI, "showNewProjectDialog", lambda *a: {"projPath": fncProj})
+        mp.setattr(nwGUI, "showNewProjectDialog", lambda *a: {"projPath": projPath})
         assert nwGUI.newProject() is False
 
     # Test the Wizard Launching
     # =========================
 
-    nwGUI.mainConf.lastPath = " "
     monkeypatch.setattr(GuiProjectWizard, "exec_", lambda *a: None)
 
     result = nwGUI.showNewProjectDialog()
@@ -97,12 +95,11 @@ def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, fncProj):
 @pytest.mark.gui
 @pytest.mark.parametrize("prjType", ["minimal", "custom1", "custom2", "sample"])
 @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
-def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
+def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncPath, prjType):
     """Test the new project wizard with a set of selection scenarios.
     """
     monkeypatch.setattr(GuiProjectWizard, "exec_", lambda *a: None)
 
-    nwGUI.mainConf.lastPath = " "
     nwWiz = GuiProjectWizard(nwGUI)
     nwWiz.show()
     qtbot.addWidget(nwWiz)
@@ -132,12 +129,12 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
     assert storagePage.errLabel.text() == ""
 
     # Set an invalid path
-    storagePage.projPath.setText(os.path.join(fncDir, "not", "a", "path"))
+    storagePage.projPath.setText(str(fncPath / "not" / "a" / "path"))
     assert not nwWiz.button(QWizard.NextButton).isEnabled()
     assert storagePage.errLabel.text().startswith("Error")
 
     # Set an existing path
-    storagePage.projPath.setText(fncDir)
+    storagePage.projPath.setText(str(fncPath))
     assert not nwWiz.button(QWizard.NextButton).isEnabled()
     assert storagePage.errLabel.text().startswith("Error")
 
@@ -148,12 +145,12 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
         assert storagePage.errLabel.text() == ""
 
     # Let the browse feature handle it
-    projPath = os.path.join(fncDir, "Test Wizard")
+    projPath = fncPath / "Test Wizard"
     with monkeypatch.context() as mp:
-        mp.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: fncDir)
+        mp.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: str(fncPath))
         qtbot.mouseClick(storagePage.browseButton, Qt.LeftButton, delay=100)
 
-    assert storagePage.projPath.text() == projPath
+    assert storagePage.projPath.text() == str(projPath)
     assert storagePage.errLabel.text() == ""
 
     # Setting projPath should activate the button
@@ -218,7 +215,7 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
     assert projData["projName"] == "Test Wizard"
     assert projData["projTitle"] == "My Novel"
     assert projData["projAuthors"] == "Jane Doe"
-    assert projData["projPath"] == projPath
+    assert projData["projPath"] == str(projPath)
     assert projData["popMinimal"] == prjType.startswith("minimal")
     assert projData["popCustom"] == prjType.startswith("custom")
     assert projData["popSample"] == prjType.startswith("sample")

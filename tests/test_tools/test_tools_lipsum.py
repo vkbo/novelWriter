@@ -29,7 +29,7 @@ from novelwriter.tools import GuiLipsum
 
 
 @pytest.mark.gui
-def testToolLipsum_Main(qtbot, nwGUI, fncProj, mockRnd):
+def testToolLipsum_Main(qtbot, nwGUI, projPath, mockRnd):
     """Test the Lorem Ipsum tool.
     """
     # Check that we cannot open when there is no project
@@ -37,7 +37,7 @@ def testToolLipsum_Main(qtbot, nwGUI, fncProj, mockRnd):
     assert getGuiItem("GuiLipsum") is None
 
     # Create a new project
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
     assert len(nwGUI.docEditor.getText()) == 15
 

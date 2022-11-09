@@ -19,9 +19,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import pytest
 import json
-import os
+import pytest
 
 from mock import causeOSError
 from tools import getGuiItem, writeFile, buildTestProject
@@ -34,17 +33,16 @@ from novelwriter.constants import nwFiles
 
 
 @pytest.mark.gui
-def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
+def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     """Test the full writing stats tool.
     """
     # Create a project to work on
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     qtbot.wait(100)
     assert nwGUI.saveProject()
-    sessFile = os.path.join(fncProj, "meta", nwFiles.SESS_STATS)
+    sessFile = projPath / "meta" / nwFiles.SESS_STATS
 
     # Open the Writing Stats dialog
-    nwGUI.mainConf.lastPath = ""
     nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiWritingStats") is not None, timeout=1000)
 
@@ -55,7 +53,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # ============
 
     # No initial logfile
-    assert not os.path.isfile(sessFile)
+    assert not sessFile.is_file()
     assert not sessLog._loadLogFile()
 
     # Make a test log file
@@ -67,7 +65,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
         "2020-01-03 21:30:00  2020-01-03 21:30:15       125         5\n"
         "2020-01-06 21:00:00  2020-01-06 21:00:10       125         5\n"
     ))
-    assert os.path.isfile(sessFile)
+    assert sessFile.is_file()
     assert sessLog._loadLogFile()
     assert sessLog.wordOffset == 123
     assert len(sessLog.logData) == 4
@@ -111,9 +109,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert not sessLog._saveData(None)
 
     # Make the save succeed
-    monkeypatch.setattr("os.path.expanduser", lambda *a: fncDir)
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
-
     sessLog.listBox.sortByColumn(sessLog.C_TIME, 0)
 
     assert sessLog.novelWords.text() == "{:n}".format(600)
@@ -135,10 +131,8 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(100)
 
-    assert nwGUI.mainConf.lastPath == fncDir
-
     # Check the exported files
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
+    jsonStats = fncPath / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -177,7 +171,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
+    jsonStats = fncPath / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
@@ -223,7 +217,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
+    jsonStats = fncPath / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -271,7 +265,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     # qtbot.stop()
 
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
+    jsonStats = fncPath / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -301,7 +295,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     qtbot.mouseClick(sessLog.hideZeros, Qt.LeftButton)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
+    jsonStats = fncPath / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -354,7 +348,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     qtbot.mouseClick(sessLog.groupByDay, Qt.LeftButton)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
+    jsonStats = fncPath / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 

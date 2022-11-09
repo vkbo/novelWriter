@@ -27,7 +27,6 @@ import sys
 import getopt
 import logging
 
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
 from novelwriter.error import exceptionHandler, logException
@@ -249,7 +248,6 @@ def main(sysArgs=None):
         nwApp = QApplication([CONFIG.appName, (f"-style={qtStyle}")])
         nwApp.setApplicationName(CONFIG.appName)
         nwApp.setApplicationVersion(__version__)
-        nwApp.setWindowIcon(QIcon(CONFIG.appIcon))
         nwApp.setOrganizationDomain(__domain__)
 
         # Connect the exception handler before making the main GUI

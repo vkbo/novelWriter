@@ -23,8 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from __future__ import annotations
-
 import json
 import logging
 import novelwriter
@@ -48,7 +46,6 @@ from novelwriter.core.projectdata import NWProjectData
 from novelwriter.common import (
     checkStringNone, formatTimeStamp, hexToInt, isHandle, makeFileNameSafe, minmax
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -78,10 +75,8 @@ class NWProject(QObject):
         self._projOpened  = 0      # The time stamp of when the project file was opened
         self._projChanged = False  # The project has unsaved changes
         self._projAltered = False  # The project has been altered this session
-        self.lockedBy     = None   # Data on which computer has the project open
-
-        # Class Settings
-        self.projFiles = []  # A list of all files in the content folder on load
+        self._lockedBy    = None   # Data on which computer has the project open
+        self._projFiles   = []     # A list of all files in the content folder on load
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
@@ -126,6 +121,10 @@ class NWProject(QObject):
     @property
     def projAltered(self):
         return self._projAltered
+
+    @property
+    def projFiles(self):
+        return self._projFiles
 
     ##
     #  Item Methods
@@ -246,7 +245,7 @@ class NWProject(QObject):
         self._data = NWProjectData(self)
 
         # Project Settings
-        self.projFiles = []
+        self._projFiles = []
 
         return
 
@@ -274,7 +273,7 @@ class NWProject(QObject):
                 logger.warning("Failed to check lock file")
             else:
                 logger.error("Project is locked, so not opening")
-                self.lockedBy = lockStatus
+                self._lockedBy = lockStatus
                 self.clearProject()
                 return False
         else:
@@ -355,10 +354,9 @@ class NWProject(QObject):
         self._loadProjectLocalisation()
 
         # Update recent projects
-        self.mainConf.updateRecentCache(
+        self.mainConf.recentProjects.update(
             self._storage.storagePath, self._data.name, sum(self._data.initCounts), time()
         )
-        self.mainConf.saveRecentCache()
 
         # Check the project tree consistency
         for tItem in self._tree:
@@ -425,10 +423,9 @@ class NWProject(QObject):
         self._storage.runPostSaveTasks(autoSave=autoSave)
 
         # Update recent projects
-        self.mainConf.updateRecentCache(
+        self.mainConf.recentProjects.update(
             self._storage.storagePath, self._data.name, sum(self._data.currCounts), saveTime
         )
-        self.mainConf.saveRecentCache()
 
         self._storage.writeLockFile()
         self.mainGui.setStatus(self.tr("Saved Project: {0}").format(self._data.name))
@@ -446,21 +443,8 @@ class NWProject(QObject):
         self._storage.clearLockFile()
         self._storage.closeSession()
         self.clearProject()
-        self.lockedBy = None
+        self._lockedBy = None
         return True
-
-    def setDefaultStatusImport(self):
-        """Set the default status and importance values.
-        """
-        self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100))
-        self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0))
-        self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0))
-        self._data.itemStatus.write(None, self.tr("Finished"), (50,  200, 0))
-        self._data.itemImport.write(None, self.tr("New"),      (100, 100, 100))
-        self._data.itemImport.write(None, self.tr("Minor"),    (200, 50,  0))
-        self._data.itemImport.write(None, self.tr("Major"),    (200, 150, 0))
-        self._data.itemImport.write(None, self.tr("Main"),     (50,  200, 0))
-        return
 
     def backupProject(self, doNotify):
         """Create a zip file of the entire project.
@@ -472,7 +456,8 @@ class NWProject(QObject):
         logger.info("Backing up project")
         self.mainGui.setStatus(self.tr("Backing up project ..."))
 
-        if not self.mainConf.backupPath:
+        backupPath = self.mainConf.backupPath()
+        if not isinstance(backupPath, Path):
             self.mainGui.makeAlert(self.tr(
                 "Cannot backup project because no valid backup path is set. "
                 "Please set a valid backup location in Preferences."
@@ -487,7 +472,7 @@ class NWProject(QObject):
             return False
 
         cleanName = makeFileNameSafe(self._data.name)
-        baseDir = Path(self.mainConf.backupPath) / cleanName
+        baseDir = backupPath / cleanName
         try:
             baseDir.mkdir(exist_ok=True)
         except Exception as exc:
@@ -519,6 +504,19 @@ class NWProject(QObject):
     ##
     #  Setters
     ##
+
+    def setDefaultStatusImport(self):
+        """Set the default status and importance values.
+        """
+        self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100))
+        self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0))
+        self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0))
+        self._data.itemStatus.write(None, self.tr("Finished"), (50,  200, 0))
+        self._data.itemImport.write(None, self.tr("New"),      (100, 100, 100))
+        self._data.itemImport.write(None, self.tr("Minor"),    (200, 50,  0))
+        self._data.itemImport.write(None, self.tr("Major"),    (200, 150, 0))
+        self._data.itemImport.write(None, self.tr("Main"),     (50,  200, 0))
+        return
 
     def setProjectLang(self, theLang):
         """Set the project-specific language.
@@ -566,6 +564,13 @@ class NWProject(QObject):
     ##
     #  Getters
     ##
+
+    def getLockStatus(self):
+        """Return the project lock information for the project.
+        """
+        if isinstance(self._lockedBy, list) and len(self._lockedBy) == 4:
+            return self._lockedBy
+        return None
 
     def getFormattedAuthors(self):
         """Return a formatted string of authors.
@@ -692,13 +697,13 @@ class NWProject(QObject):
     def _loadProjectLocalisation(self):
         """Load the language data for the current project language.
         """
-        if self._data.language is None or self.mainConf.nwLangPath is None:
+        if self._data.language is None or self.mainConf._nwLangPath is None:
             self._langData = {}
             return False
 
-        langFile = Path(self.mainConf.nwLangPath) / f"project_{self._data.language}.json"
+        langFile = Path(self.mainConf._nwLangPath) / f"project_{self._data.language}.json"
         if not langFile.is_file():
-            langFile = Path(self.mainConf.nwLangPath) / "project_en_GB.json"
+            langFile = Path(self.mainConf._nwLangPath) / "project_en_GB.json"
 
         try:
             with open(langFile, mode="r", encoding="utf-8") as inFile:
@@ -725,7 +730,7 @@ class NWProject(QObject):
         # Then check the files in the data folder
         logger.debug("Checking files in project content folder")
         orphanFiles = []
-        self.projFiles = []
+        self._projFiles = []
 
         for item in contentPath.iterdir():
             itemName = item.name
@@ -742,7 +747,7 @@ class NWProject(QObject):
                 continue
 
             if fHandle in self._tree:
-                self.projFiles.append(fHandle)
+                self._projFiles.append(fHandle)
                 logger.debug("Checking file %s, handle '%s': OK", itemName, fHandle)
             else:
                 logger.warning("Checking file %s, handle '%s': Orphaned", itemName, fHandle)

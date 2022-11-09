@@ -32,12 +32,11 @@ from novelwriter.enum import nwItemClass, nwOutline, nwView
 
 
 @pytest.mark.gui
-def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
+def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
     """Test the outline view.
     """
     # Create a project
-    prjDir = os.path.join(fncDir, "project")
-    buildTestProject(nwGUI, prjDir)
+    buildTestProject(nwGUI, projPath)
 
     nwGUI.rebuildIndex()
     nwGUI._changeView(nwView.OUTLINE)
@@ -156,7 +155,6 @@ def testGuiOutline_Content(qtbot, nwGUI, nwLipsum):
     """Test the outline view.
     """
     assert nwGUI.openProject(nwLipsum)
-    nwGUI.mainConf.lastPath = nwLipsum
 
     nwGUI.rebuildIndex()
     nwGUI._changeView(nwView.OUTLINE)

@@ -19,10 +19,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import shutil
 import pytest
 
+from pathlib import Path
 from configparser import ConfigParser
 
 from mock import causeOSError
@@ -38,7 +38,7 @@ from novelwriter.gui.theme import GuiIcons, GuiTheme
 
 
 @pytest.mark.gui
-def testGuiTheme_Main(qtbot, nwGUI, fncDir):
+def testGuiTheme_Main(qtbot, nwGUI, fncPath):
     """Test the theme class init.
     """
     mainTheme: GuiTheme = nwGUI.mainTheme
@@ -75,15 +75,15 @@ def testGuiTheme_Main(qtbot, nwGUI, fncDir):
     # Scan for Themes
     # ===============
 
-    assert mainTheme._listConf({}, "not_a_path") is False
+    assert mainTheme._listConf({}, Path("not_a_path")) is False
 
-    themeOne = os.path.join(fncDir, "themes", "themeone.conf")
-    themeTwo = os.path.join(fncDir, "themes", "themetwo.conf")
+    themeOne = fncPath / "themes" / "themeone.conf"
+    themeTwo = fncPath / "themes" / "themetwo.conf"
     writeFile(themeOne, "# Stuff")
     writeFile(themeTwo, "# Stuff")
 
     result = {}
-    assert mainTheme._listConf(result, os.path.join(fncDir, "themes")) is True
+    assert mainTheme._listConf(result, fncPath / "themes") is True
     assert result["themeone"] == themeOne
     assert result["themetwo"] == themeTwo
 
@@ -123,7 +123,7 @@ def testGuiTheme_Main(qtbot, nwGUI, fncDir):
 
 
 @pytest.mark.gui
-def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, fncDir):
+def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, fncPath):
     """Test the theme part of the class.
     """
     mainTheme: GuiTheme = nwGUI.mainTheme
@@ -132,15 +132,8 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, fncDir):
     # List Themes
     # ===========
 
-    shutil.copy(
-        os.path.join(mainConf.assetPath, "themes", "default_dark.conf"),
-        os.path.join(fncDir, "themes")
-    )
-    shutil.copy(
-        os.path.join(mainConf.assetPath, "themes", "default.conf"),
-        os.path.join(fncDir, "themes")
-    )
-    writeFile(os.path.join(fncDir, "themes", "default.qss"), "/* Stuff */")
+    shutil.copy(mainConf.assetPath("themes") / "default_dark.conf", fncPath / "themes")
+    shutil.copy(mainConf.assetPath("themes") / "default.conf", fncPath / "themes")
 
     # Block the reading of the files
     with monkeypatch.context() as mp:
@@ -197,7 +190,7 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, fncDir):
 
 
 @pytest.mark.gui
-def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI, fncDir):
+def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI, fncPath):
     """Test the syntax part of the class.
     """
     mainTheme: GuiTheme = nwGUI.mainTheme
@@ -206,14 +199,8 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI, fncDir):
     # List Themes
     # ===========
 
-    shutil.copy(
-        os.path.join(mainConf.assetPath, "syntax", "default_dark.conf"),
-        os.path.join(fncDir, "syntax")
-    )
-    shutil.copy(
-        os.path.join(mainConf.assetPath, "syntax", "default_light.conf"),
-        os.path.join(fncDir, "syntax")
-    )
+    shutil.copy(mainConf.assetPath("syntax") / "default_dark.conf", fncPath / "syntax")
+    shutil.copy(mainConf.assetPath("syntax") / "default_light.conf", fncPath / "syntax")
 
     # Block the reading of the files
     with monkeypatch.context() as mp:
@@ -270,11 +257,10 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI, fncDir):
 
 
 @pytest.mark.gui
-def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, fncDir):
+def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, fncPath):
     """Test the icon cache class.
     """
     iconCache: GuiIcons = nwGUI.mainTheme.iconCache
-    mainConf: Config = nwGUI.mainConf
 
     # Load Theme
     # ==========
@@ -288,10 +274,11 @@ def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, fncDir):
         assert iconCache.loadTheme("typicons_dark") is False
 
     # Load a broken theme file
-    iconsDir = os.path.join(fncDir, "icons")
-    os.mkdir(iconsDir)
-    os.mkdir(os.path.join(iconsDir, "testicons"))
-    writeFile(os.path.join(iconsDir, "testicons", "icons.conf"), (
+    iconsDir = fncPath / "icons"
+    testIcons = iconsDir / "testicons"
+    iconsDir.mkdir()
+    testIcons.mkdir()
+    writeFile(testIcons / "icons.conf", (
         "[Main]\n"
         "name = Test Icons\n"
         "\n"
@@ -300,15 +287,15 @@ def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, fncDir):
         "stuff = stuff.svg\n"
     ))
 
-    assetPath = mainConf.assetPath
-    mainConf.assetPath = fncDir
+    iconPath = iconCache._iconPath
+    iconCache._iconPath = fncPath / "icons"
 
     caplog.clear()
     assert iconCache.loadTheme("testicons") is True
     assert "Unknown icon name 'stuff' in config file" in caplog.text
     assert "Icon file 'add.svg' not in theme folder" in caplog.text
 
-    mainConf.assetPath = assetPath
+    iconCache._iconPath = iconPath
 
     # Load working theme file
     assert iconCache.loadTheme("typicons_dark") is True
@@ -327,7 +314,7 @@ def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, fncDir):
 
     # Fail finding the file
     with monkeypatch.context() as mp:
-        mp.setattr("os.path.isfile", lambda *a: False)
+        mp.setattr("pathlib.Path.is_file", lambda *a: False)
         qPix = iconCache.loadDecoration("wiz-back")
         assert qPix.isNull() is True
 

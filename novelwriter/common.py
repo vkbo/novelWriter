@@ -23,12 +23,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
 import uuid
 import hashlib
 import logging
 
+from pathlib import Path
 from datetime import datetime
 from configparser import ConfigParser
 
@@ -36,7 +36,7 @@ from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import qApp
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
-from novelwriter.error import formatException, logException
+from novelwriter.error import logException
 from novelwriter.constants import nwConst, nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -458,19 +458,15 @@ def jsonEncode(data, n=0, nmax=0):
 def readTextFile(path):
     """Read the content of a text file in a robust manner.
     """
-    if not os.path.isfile(path):
+    path = Path(path)
+    if not path.is_file():
         return ""
-
-    text = ""
     try:
-        with open(path, mode="r", encoding="utf-8") as inFile:
-            text = inFile.read()
+        return path.read_text(encoding="utf-8")
     except Exception:
         logger.error("Could not read file: %s", path)
         logException()
         return ""
-
-    return text
 
 
 def makeFileNameSafe(value):
@@ -481,25 +477,6 @@ def makeFileNameSafe(value):
         if c.isalpha() or c.isdigit() or c == " ":
             clean += c
     return clean
-
-
-def ensureFolder(path, parent=None, errLog=None):
-    """Make sure a folder exists, and if it doesn't, create it.
-    """
-    try:
-        if parent:
-            path = os.path.join(parent, path)
-        if not os.path.isdir(path):
-            os.mkdir(path)
-    except Exception as exc:
-        logger.error("Could not create folder: %s", path)
-        logException()
-        if isinstance(errLog, list):
-            errLog.append(f"Could not create folder: {path}")
-            errLog.append(formatException(exc))
-        return False
-
-    return True
 
 
 def sha256sum(path):

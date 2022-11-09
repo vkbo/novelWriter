@@ -82,16 +82,16 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
 
 
 @pytest.mark.gui
-def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
+def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     """Test the main tab of the project settings dialog.
     """
     # Mock components
     monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
 
     # Create new project
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     mockRnd.reset()
-    nwGUI.mainConf.backupPath = fncDir
+    nwGUI.mainConf.backupPath = fncPath
 
     # Set some values
     theProject = nwGUI.theProject
@@ -148,7 +148,7 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd
 
 
 @pytest.mark.gui
-def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
+def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     """Test the status and importance tabs of the project settings
     dialog.
     """
@@ -159,8 +159,8 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncDir, fncProj,
 
     # Create new project
     mockRnd.reset()
-    buildTestProject(nwGUI, fncProj)
-    nwGUI.mainConf.backupPath = fncDir
+    buildTestProject(nwGUI, projPath)
+    nwGUI.mainConf.backupPath = fncPath
 
     # Set some values
     theProject = nwGUI.theProject
@@ -350,7 +350,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncDir, fncProj,
 
 
 @pytest.mark.gui
-def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
+def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     """Test the auto-replace tab of the project settings dialog.
     """
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
@@ -360,8 +360,8 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mock
 
     # Create new project
     mockRnd.reset()
-    buildTestProject(nwGUI, fncProj)
-    nwGUI.mainConf.backupPath = fncDir
+    buildTestProject(nwGUI, projPath)
+    nwGUI.mainConf.backupPath = fncPath
 
     # Set some values
     theProject = nwGUI.theProject

@@ -20,10 +20,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import pytest
-import os
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor, QTextBlock
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
 from tools import C, writeFile, buildTestProject
@@ -422,10 +421,10 @@ def testGuiMenu_ContextMenus(qtbot, nwGUI, nwLipsum):
 
 
 @pytest.mark.gui
-def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
+def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     """Test the Insert menu.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
 
     assert nwGUI.projView.projTree._getTreeItem(C.hSceneDoc) is not None
     assert nwGUI.openDocument(C.hSceneDoc) is True
@@ -626,8 +625,8 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     assert not nwGUI.importDocument()
 
     # Then a valid path, but bot a file that exists
-    theFile = os.path.join(fncDir, "import.txt")
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (theFile, ""))
+    theFile = fncPath / "import.txt"
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (str(theFile), ""))
     assert not nwGUI.importDocument()
 
     # Create the file and try again, but with no target document open
@@ -666,7 +665,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncDir, fncProj, mockRnd):
     theBits = theMessage.split("<br>")
     assert len(theBits) == 2
     assert theBits[0] == "The currently open file is saved in:"
-    assert theBits[1] == os.path.join(fncProj, "content", "000000000000f.nwd")
+    assert theBits[1] == str(projPath / "content" / "000000000000f.nwd")
 
     # qtbot.stop()
 

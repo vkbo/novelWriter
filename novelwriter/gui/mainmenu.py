@@ -26,6 +26,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
+from pathlib import Path
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 
@@ -104,10 +105,11 @@ class GuiMainMenu(QMenuBar):
     def _openUserManualFile(self):
         """Open the documentation in PDF format.
         """
-        if self.mainConf.pdfDocs is None:
-            return False
-        QDesktopServices.openUrl(QUrl(urljoin("file:", pathname2url(self.mainConf.pdfDocs))))
-        return True
+        if isinstance(self.mainConf.pdfDocs, Path):
+            QDesktopServices.openUrl(
+                QUrl(urljoin("file:", pathname2url(str(self.mainConf.pdfDocs))))
+            )
+        return
 
     ##
     #  Menu Builders
@@ -824,7 +826,7 @@ class GuiMainMenu(QMenuBar):
 
         # Tools > Backup
         self.aBackupProject = QAction(self.tr("Backup Project"), self)
-        self.aBackupProject.triggered.connect(lambda: self.theProject.backupProject(doNoify=True))
+        self.aBackupProject.triggered.connect(lambda: self.theProject.backupProject(True))
         self.toolsMenu.addAction(self.aBackupProject)
 
         # Tools > Export Project
@@ -881,7 +883,7 @@ class GuiMainMenu(QMenuBar):
         self.helpMenu.addAction(self.aHelpDocs)
 
         # Help > User Manual (PDF)
-        if self.mainConf.pdfDocs is not None:
+        if isinstance(self.mainConf.pdfDocs, Path):
             self.aPdfDocs = QAction(self.tr("User Manual (PDF)"), self)
             self.aPdfDocs.setShortcut("Shift+F1")
             self.aPdfDocs.triggered.connect(self._openUserManualFile)

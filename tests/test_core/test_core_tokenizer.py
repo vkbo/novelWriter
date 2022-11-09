@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 
 from tools import C, buildTestProject, readFile
@@ -132,12 +131,12 @@ def testCoreToken_Setters(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncDir):
+def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     """Test handling files and text in the Tokenizer class.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
 
     theProject.data.setLanguage("en")
     theProject._loadProjectLocalisation()
@@ -210,7 +209,7 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncDir):
     assert theToken.theResult == "This is text with escapes: ** ~~ __"
 
     # Save File
-    savePath = os.path.join(fncDir, "dump.nwd")
+    savePath = fncPath / "dump.nwd"
     theToken.saveRawMarkdown(savePath)
     assert readFile(savePath) == (
         "# Notes: Plot\n\n"

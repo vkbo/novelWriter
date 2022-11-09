@@ -23,7 +23,6 @@ import json
 import pytest
 
 from shutil import copyfile
-from pathlib import Path
 
 from mock import causeException
 from tools import C, buildTestProject, cmpFiles, writeFile
@@ -35,16 +34,16 @@ from novelwriter.core.project import NWProject
 
 
 @pytest.mark.core
-def testCoreIndex_LoadSave(monkeypatch, nwLipsum, mockGUI, tstPaths):
+def testCoreIndex_LoadSave(monkeypatch, prjLipsum, mockGUI, tstPaths):
     """Test core functionality of scaning, saving, loading and checking
     the index cache file.
     """
-    projFile = Path(nwLipsum) / "meta" / nwFiles.INDEX_FILE
+    projFile = prjLipsum / "meta" / nwFiles.INDEX_FILE
     testFile = tstPaths.outDir / "coreIndex_LoadSave_tagsIndex.json"
     compFile = tstPaths.refDir / "coreIndex_LoadSave_tagsIndex.json"
 
     theProject = NWProject(mockGUI)
-    assert theProject.openProject(nwLipsum)
+    assert theProject.openProject(prjLipsum)
 
     theIndex = NWIndex(theProject)
     assert repr(theIndex) == "<NWIndex project='Lorem Ipsum'>"
@@ -196,12 +195,12 @@ def testCoreIndex_ScanThis(mockGUI):
 
 
 @pytest.mark.core
-def testCoreIndex_CheckThese(mockGUI, fncDir, mockRnd):
+def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
     """Test the tag checker function checkThese.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
     theIndex = theProject.index
     theIndex.clearIndex()
 
@@ -274,12 +273,12 @@ def testCoreIndex_CheckThese(mockGUI, fncDir, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_ScanText(mockGUI, fncDir, mockRnd):
+def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
     """Check the index text scanner.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
     theIndex = theProject.index
 
     # Some items for fail to scan tests
@@ -486,12 +485,12 @@ def testCoreIndex_ScanText(mockGUI, fncDir, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_ExtractData(mockGUI, fncDir, mockRnd):
+def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     """Check the index data extraction functions.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
 
     theIndex = theProject.index
     theIndex.reIndexHandle(C.hNovelRoot)
@@ -940,12 +939,12 @@ def testCoreIndex_TagsIndex():
 
 
 @pytest.mark.core
-def testCoreIndex_ItemIndex(mockGUI, fncDir, mockRnd):
+def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     """Check the ItemIndex class.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
     theProject.index.clearIndex()
 
     nHandle = C.hTitlePage

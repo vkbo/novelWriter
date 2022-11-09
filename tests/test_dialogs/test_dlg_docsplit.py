@@ -28,13 +28,13 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 
 
 @pytest.mark.gui
-def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
+def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the split document tool.
     """
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     # Create a new project
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
 
     theProject = nwGUI.theProject
     projTree = nwGUI.projView.projTree

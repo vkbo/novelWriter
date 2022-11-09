@@ -20,9 +20,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import pytest
-import os
 
 from shutil import copyfile
+
 from tools import cmpFiles, getGuiItem
 
 from PyQt5.QtCore import Qt
@@ -32,7 +32,7 @@ from novelwriter.tools import GuiBuildNovel
 
 
 @pytest.mark.gui
-def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
+def testToolBuild_Main(qtbot, monkeypatch, nwGUI, prjLipsum, tstPaths):
     """Test the build tool.
     """
     # Block message box
@@ -43,7 +43,7 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     assert getGuiItem("GuiBuildNovel") is None
 
     # Open a project
-    assert nwGUI.openProject(nwLipsum)
+    assert nwGUI.openProject(prjLipsum)
 
     # Open the tool
     nwGUI.mainMenu.aBuildProject.activate(QAction.Trigger)
@@ -61,55 +61,47 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     # Invalid file format
     assert not nwBuild._saveDocument(-1)
 
-    # Non-existent path
-    with monkeypatch.context() as mp:
-        mp.setattr("os.path.expanduser", lambda *a, **k: nwLipsum)
-        assert nwGUI.mainConf.lastPath != nwLipsum
-        nwGUI.mainConf.lastPath = "no_such_path"
-        assert nwBuild._saveDocument(nwBuild.FMT_NWD)
-        assert nwGUI.mainConf.lastPath == nwLipsum
-
     # No path selected
     with monkeypatch.context() as mp:
         mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: ("", ""))
         assert not nwBuild._saveDocument(nwBuild.FMT_NWD)
 
     # Default Settings
-    nwGUI.mainConf.lastPath = nwLipsum
+    nwGUI.mainConf._lastPath = prjLipsum
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
 
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step1_Lorem_Ipsum.nwd")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step1_Lorem_Ipsum.nwd")
+    projFile = prjLipsum / "Lorem Ipsum.nwd"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step1_Lorem_Ipsum.nwd"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step1_Lorem_Ipsum.nwd"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_HTM)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step1_Lorem_Ipsum.htm")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step1_Lorem_Ipsum.htm")
+    projFile = prjLipsum / "Lorem Ipsum.htm"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step1_Lorem_Ipsum.htm"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step1_Lorem_Ipsum.htm"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_MD)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.md")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step1_Lorem_Ipsum.md")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step1_Lorem_Ipsum.md")
+    projFile = prjLipsum / "Lorem Ipsum.md"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step1_Lorem_Ipsum.md"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step1_Lorem_Ipsum.md"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_GH)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.md")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step1G_Lorem_Ipsum.md")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step1G_Lorem_Ipsum.md")
+    projFile = prjLipsum / "Lorem Ipsum.md"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step1G_Lorem_Ipsum.md"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step1G_Lorem_Ipsum.md"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_FODT)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.fodt")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step1_Lorem_Ipsum.fodt")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step1_Lorem_Ipsum.fodt")
+    projFile = prjLipsum / "Lorem Ipsum.fodt"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step1_Lorem_Ipsum.fodt"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step1_Lorem_Ipsum.fodt"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [4, 5])
 
@@ -130,30 +122,30 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
 
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step2_Lorem_Ipsum.nwd")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step2_Lorem_Ipsum.nwd")
+    projFile = prjLipsum / "Lorem Ipsum.nwd"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step2_Lorem_Ipsum.nwd"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step2_Lorem_Ipsum.nwd"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_HTM)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step2_Lorem_Ipsum.htm")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step2_Lorem_Ipsum.htm")
+    projFile = prjLipsum / "Lorem Ipsum.htm"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step2_Lorem_Ipsum.htm"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step2_Lorem_Ipsum.htm"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_MD)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.md")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step2_Lorem_Ipsum.md")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step2_Lorem_Ipsum.md")
+    projFile = prjLipsum / "Lorem Ipsum.md"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step2_Lorem_Ipsum.md"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step2_Lorem_Ipsum.md"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_FODT)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.fodt")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step2_Lorem_Ipsum.fodt")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step2_Lorem_Ipsum.fodt")
+    projFile = prjLipsum / "Lorem Ipsum.fodt"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step2_Lorem_Ipsum.fodt"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step2_Lorem_Ipsum.fodt"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [4, 5])
 
@@ -164,30 +156,30 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
 
     # Save files that can be compared
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step3_Lorem_Ipsum.nwd")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step3_Lorem_Ipsum.nwd")
+    projFile = prjLipsum / "Lorem Ipsum.nwd"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step3_Lorem_Ipsum.nwd"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step3_Lorem_Ipsum.nwd"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_HTM)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step3_Lorem_Ipsum.htm")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step3_Lorem_Ipsum.htm")
+    projFile = prjLipsum / "Lorem Ipsum.htm"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step3_Lorem_Ipsum.htm"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step3_Lorem_Ipsum.htm"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_MD)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.md")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step3_Lorem_Ipsum.md")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step3_Lorem_Ipsum.md")
+    projFile = prjLipsum / "Lorem Ipsum.md"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step3_Lorem_Ipsum.md"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step3_Lorem_Ipsum.md"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_FODT)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.fodt")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step3_Lorem_Ipsum.fodt")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step3_Lorem_Ipsum.fodt")
+    projFile = prjLipsum / "Lorem Ipsum.fodt"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step3_Lorem_Ipsum.fodt"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step3_Lorem_Ipsum.fodt"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [4, 5])
 
@@ -205,43 +197,43 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
 
     # Save files that can be compared
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.nwd")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step4_Lorem_Ipsum.nwd")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step4_Lorem_Ipsum.nwd")
+    projFile = prjLipsum / "Lorem Ipsum.nwd"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step4_Lorem_Ipsum.nwd"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step4_Lorem_Ipsum.nwd"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
     assert nwBuild._saveDocument(nwBuild.FMT_HTM)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.htm")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step4_Lorem_Ipsum.htm")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step4_Lorem_Ipsum.htm")
+    projFile = prjLipsum / "Lorem Ipsum.htm"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step4_Lorem_Ipsum.htm"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step4_Lorem_Ipsum.htm"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
     # Check the JSON files too at this stage
     assert nwBuild._saveDocument(nwBuild.FMT_JSON_H)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.json")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step4H_Lorem_Ipsum.json")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step4H_Lorem_Ipsum.json")
+    projFile = prjLipsum / "Lorem Ipsum.json"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step4H_Lorem_Ipsum.json"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step4H_Lorem_Ipsum.json"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [8])
 
     assert nwBuild._saveDocument(nwBuild.FMT_JSON_M)
-    projFile = os.path.join(nwLipsum, "Lorem Ipsum.json")
-    testFile = os.path.join(outDir, "guiBuild_Tool_Step4M_Lorem_Ipsum.json")
-    compFile = os.path.join(refDir, "guiBuild_Tool_Step4M_Lorem_Ipsum.json")
+    projFile = prjLipsum / "Lorem Ipsum.json"
+    testFile = tstPaths.outDir / "guiBuild_Tool_Step4M_Lorem_Ipsum.json"
+    compFile = tstPaths.refDir / "guiBuild_Tool_Step4M_Lorem_Ipsum.json"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, [8])
 
     # Since odt and fodt is built by the same code, we don't check the
     # output. but just that the different format can be written as well
     assert nwBuild._saveDocument(nwBuild.FMT_ODT)
-    assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.odt"))
+    assert (prjLipsum / "Lorem Ipsum.odt").is_file()
 
     # Print to PDF
     if not nwGUI.mainConf.osDarwin:
         assert nwBuild._saveDocument(nwBuild.FMT_PDF)
-        assert os.path.isfile(os.path.join(nwLipsum, "Lorem Ipsum.pdf"))
+        assert (prjLipsum / "Lorem Ipsum.pdf").is_file()
 
     # Close the build tool
     htmlText  = nwBuild.htmlText

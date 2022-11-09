@@ -23,12 +23,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import logging
 import novelwriter
 
 from enum import Enum
 from time import time
+from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer, QThreadPool, pyqtSlot
@@ -95,7 +95,11 @@ class GuiMain(QMainWindow):
         # Prepare Main Window
         self.resize(*self.mainConf.getWinSize())
         self._updateWindowTitle()
-        self.setWindowIcon(QIcon(self.mainConf.appIcon))
+
+        nwIcon = self.mainConf.assetPath("icons") / "novelwriter.svg"
+        self.nwIcon = QIcon(str(nwIcon)) if nwIcon.is_file() else QIcon()
+        self.setWindowIcon(self.nwIcon)
+        qApp.setWindowIcon(self.nwIcon)
 
         # Build the GUI
         # =============
@@ -357,7 +361,7 @@ class GuiMain(QMainWindow):
             logger.error("No projData or projPath set")
             return False
 
-        if os.path.isfile(os.path.join(projPath, nwFiles.PROJ_FILE)):
+        if (Path(projPath) / nwFiles.PROJ_FILE).is_file():
             self.makeAlert(self.tr(
                 "A project already exists in that location. "
                 "Please choose another folder."
@@ -409,7 +413,7 @@ class GuiMain(QMainWindow):
                     if not msgYes:
                         doBackup = False
             if doBackup:
-                self.theProject.backupProject(doNotify=False)
+                self.theProject.backupProject(False)
         else:
             saveOK = True
 
@@ -447,7 +451,8 @@ class GuiMain(QMainWindow):
         if not self.theProject.openProject(projFile):
             # The project open failed.
 
-            if self.theProject.lockedBy is None:
+            lockStatus = self.theProject.getLockStatus()
+            if lockStatus is None:
                 # The project is not locked, so failed for some other
                 # reason handled by the project class.
                 return False
@@ -459,10 +464,8 @@ class GuiMain(QMainWindow):
                         "'{0}' ({1} {2}), last active on {3}."
                     )
                 ).format(
-                    self.theProject.lockedBy[0],
-                    self.theProject.lockedBy[1],
-                    self.theProject.lockedBy[2],
-                    datetime.fromtimestamp(int(self.theProject.lockedBy[3])).strftime("%x %X")
+                    lockStatus[0], lockStatus[1], lockStatus[2],
+                    datetime.fromtimestamp(int(lockStatus[3])).strftime("%x %X")
                 )
             except Exception:
                 lockDetails = ""
@@ -694,7 +697,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        lastPath = self.mainConf.lastPath
+        lastPath = self.mainConf.lastPath()
         extFilter = [
             self.tr("Text files ({0})").format("*.txt"),
             self.tr("Markdown files ({0})").format("*.md"),
@@ -702,7 +705,7 @@ class GuiMain(QMainWindow):
             self.tr("All files ({0})").format("*"),
         ]
         loadFile, _ = QFileDialog.getOpenFileName(
-            self, self.tr("Import File"), lastPath, filter=";;".join(extFilter)
+            self, self.tr("Import File"), str(lastPath), filter=";;".join(extFilter)
         )
         if not loadFile:
             return False
@@ -1140,7 +1143,7 @@ class GuiMain(QMainWindow):
         errors since it is initialised before the GUI itself.
         """
         if self.mainConf.hasError:
-            self.makeAlert(self.mainConf.getErrData(), nwAlert.ERROR)
+            self.makeAlert(self.mainConf.errorText(), nwAlert.ERROR)
             return True
         return False
 
@@ -1363,7 +1366,7 @@ class GuiMain(QMainWindow):
 
         # Help
         self.addAction(self.mainMenu.aHelpDocs)
-        if self.mainConf.pdfDocs is not None:
+        if isinstance(self.mainConf.pdfDocs, Path):
             self.addAction(self.mainMenu.aPdfDocs)
 
         return True

@@ -38,7 +38,6 @@ def testDlgProjDetails_Dialog(qtbot, nwGUI, nwLipsum):
     qtbot.wait(100)
 
     # Open the Writing Stats dialog
-    nwGUI.mainConf.lastPath = ""
     nwGUI.mainMenu.aProjectDetails.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiProjectDetails") is not None, timeout=1000)
 

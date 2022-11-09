@@ -23,7 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import logging
 import novelwriter
 
@@ -233,7 +232,7 @@ class GuiAbout(QDialog):
     def _fillNotesPage(self):
         """Load the content for the Release Notes page.
         """
-        docPath = os.path.join(self.mainConf.assetPath, "text", "release_notes.htm")
+        docPath = self.mainConf.assetPath("text") / "release_notes.htm"
         docText = readTextFile(docPath)
         if docText:
             self.pageNotes.setHtml(docText)
@@ -244,7 +243,7 @@ class GuiAbout(QDialog):
     def _fillLicensePage(self):
         """Load the content for the Licence page.
         """
-        docPath = os.path.join(self.mainConf.assetPath, "text", "gplv3_en.htm")
+        docPath = self.mainConf.assetPath("text") / "gplv3_en.htm"
         docText = readTextFile(docPath)
         if docText:
             self.pageLicense.setHtml(docText)
