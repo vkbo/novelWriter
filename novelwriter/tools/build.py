@@ -23,7 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
 import logging
 import novelwriter
@@ -891,13 +890,9 @@ class GuiBuildNovel(QDialog):
 
         cleanName = makeFileNameSafe(self.theProject.data.name)
         fileName = "%s.%s" % (cleanName, fileExt)
-        saveDir = self.mainConf.lastPath
-        if not os.path.isdir(saveDir):
-            saveDir = os.path.expanduser("~")
-
-        savePath = os.path.join(saveDir, fileName)
+        savePath = self.mainConf.getLastPath() / fileName
         savePath, _ = QFileDialog.getSaveFileName(
-            self, self.tr("Save Document As"), savePath
+            self, self.tr("Save Document As"), str(savePath)
         )
         if not savePath:
             return False

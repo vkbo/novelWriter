@@ -64,32 +64,30 @@ class Config:
 
         self._confPath = confRoot.absolute() / self.appHandle  # The user config location
         self._dataPath = dataRoot.absolute() / self.appHandle  # The user data location
+        self._lastPath = Path.home().absolute()  # The user's last used path
 
-        if hasattr(sys, "_MEIPASS"):
-            self._appPath = Path(sys._MEIPASS).absolute()
-        else:
-            self._appPath = Path(__file__).parent.absolute()
-
+        self._appPath = Path(__file__).parent.absolute()
         self._appRoot = self._appPath.parent
         if self._appRoot.is_file():
             # novelWriter is packaged as a single file
             self._appRoot = self._appRoot.parent
             self._appPath = self._appRoot
 
-        self.cmdOpen  = None  # Path from command line for project to be opened on launch
-        self.lastPath = None  # The last user-selected folder (browse dialogs)
-        self.pdfDocs  = None  # The location of the PDF manual, if it exists
-
         # Runtime Settings and Variables
         self.hasError = False     # True if the config class encountered an error
         self.errData  = []        # List of error messages
         self.confChanged = False  # True whenever the config has chenged, false after save
+        self.cmdOpen = None       # Path from command line for project to be opened on launch
 
         # Localisation Info
         self._qLocal     = QLocale.system()
         self._qtTrans    = {}
         self._qtLangPath = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
         self._nwLangPath = str(self._appPath / "assets" / "i18n")
+
+        # PDF Manual
+        pdfDocs = self._appPath / "assets" / "manual.pdf"
+        self.pdfDocs = pdfDocs if pdfDocs.is_file() else None
 
         # User Settings
         # =============
@@ -277,6 +275,13 @@ class Config:
             return self._appPath / "assets" / target
         return self._appPath / "assets"
 
+    def getLastPath(self):
+        """Return the last path used by the user, but ensure it exists.
+        """
+        if self._lastPath.is_dir():
+            return self._lastPath
+        return Path.home().absolute()
+
     ##
     #  Config Actions
     ##
@@ -298,9 +303,8 @@ class Config:
         logger.debug("Data Path: %s", self._dataPath)
         logger.debug("App Root: %s", self._appRoot)
         logger.debug("App Path: %s", self._appPath)
-
-        self.lastPath = os.path.expanduser("~")
-        logger.debug("Last path: %s", self.lastPath)
+        logger.debug("Last Path: %s", self._lastPath)
+        logger.debug("PDF Manual: %s", self.pdfDocs)
 
         # If the config and data folders don't not exist, create them
         # This assumes that the os config and data folders exist
@@ -328,12 +332,6 @@ class Config:
 
         if not self.spellLanguage:
             self.spellLanguage = "en"
-
-        # Look for a PDF version of the manual
-        pdfDocs = self._appPath / "assets" / "manual.pdf"
-        if pdfDocs.is_file():
-            logger.debug("Found PDF manual: %s", pdfDocs)
-            self.pdfDocs = pdfDocs
 
         logger.debug("Config initialisation complete")
 
@@ -495,7 +493,7 @@ class Config:
 
         # Path
         cnfSec = "Path"
-        self.lastPath = theConf.rdStr(cnfSec, "lastpath", self.lastPath)
+        self._lastPath = Path(theConf.rdStr(cnfSec, "lastpath", self._lastPath))
 
         # Check Certain Values for None
         self.spellLanguage = self._checkNone(self.spellLanguage)
@@ -605,7 +603,7 @@ class Config:
         }
 
         theConf["Path"] = {
-            "lastpath": str(self.lastPath),
+            "lastpath": str(self._lastPath),
         }
 
         # Write config file
@@ -698,10 +696,13 @@ class Config:
     def setLastPath(self, lastPath):
         """Set the last used path (by the user).
         """
-        if lastPath is None or lastPath == "":
-            self.lastPath = ""
-        else:
-            self.lastPath = os.path.dirname(lastPath)
+        if isinstance(lastPath, str):
+            lastPath = Path(lastPath)
+        if isinstance(lastPath, Path):
+            if lastPath.is_file():
+                self._lastPath = lastPath.parent
+            elif lastPath.is_dir():
+                self._lastPath = lastPath
         return True
 
     def setWinSize(self, newWidth, newHeight):

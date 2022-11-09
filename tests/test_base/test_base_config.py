@@ -444,7 +444,8 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
     assert tmpConf.confChanged is False
 
     copyfile(confFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=("timestamp", "lastnotes", "guilang"))
+    ignore = ("timestamp", "lastnotes", "guilang", "lastpath")
+    assert cmpFiles(testFile, compFile, ignoreStart=ignore)
 
 # END Test testBaseConfig_SettersGetters
 

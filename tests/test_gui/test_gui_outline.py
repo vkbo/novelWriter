@@ -156,7 +156,6 @@ def testGuiOutline_Content(qtbot, nwGUI, nwLipsum):
     """Test the outline view.
     """
     assert nwGUI.openProject(nwLipsum)
-    nwGUI.mainConf.lastPath = nwLipsum
 
     nwGUI.rebuildIndex()
     nwGUI._changeView(nwView.OUTLINE)

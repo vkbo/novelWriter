@@ -44,7 +44,6 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     sessFile = os.path.join(fncProj, "meta", nwFiles.SESS_STATS)
 
     # Open the Writing Stats dialog
-    nwGUI.mainConf.lastPath = ""
     nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiWritingStats") is not None, timeout=1000)
 
@@ -134,8 +133,6 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(100)
-
-    assert nwGUI.mainConf.lastPath == fncDir
 
     # Check the exported files
     jsonStats = os.path.join(fncDir, "sessionStats.json")

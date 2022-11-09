@@ -166,7 +166,7 @@ def tmpConf(tmpPath):
         confFile.unlink()
     theConf = Config()
     theConf.initConfig(tmpPath, tmpPath)
-    theConf.setLastPath("")
+    theConf.setLastPath(tmpPath)
     theConf.guiLang = "en_GB"
     return theConf
 
@@ -180,7 +180,7 @@ def fncConf(fncPath):
         confFile.unlink()
     theConf = Config()
     theConf.initConfig(fncPath, fncPath)
-    theConf.setLastPath("")
+    theConf.setLastPath(fncPath)
     theConf.guiLang = "en_GB"
     return theConf
 
@@ -196,7 +196,7 @@ def mockGUI(monkeypatch, tmpConf):
 
 
 @pytest.fixture(scope="function")
-def nwGUI(qtbot, monkeypatch, fncDir, fncConf):
+def nwGUI(qtbot, monkeypatch, fncPath, fncConf):
     """Create an instance of the novelWriter GUI.
     """
     monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Ok)
@@ -205,12 +205,12 @@ def nwGUI(qtbot, monkeypatch, fncDir, fncConf):
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
     monkeypatch.setattr("novelwriter.CONFIG", fncConf)
-    nwGUI = novelwriter.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
+    nwGUI = novelwriter.main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.wait(20)
 
-    nwGUI.mainConf.lastPath = fncDir
+    nwGUI.mainConf.setLastPath(fncPath)
 
     yield nwGUI
 

@@ -698,7 +698,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        lastPath = self.mainConf.lastPath
+        lastPath = self.mainConf.getLastPath()
         extFilter = [
             self.tr("Text files ({0})").format("*.txt"),
             self.tr("Markdown files ({0})").format("*.md"),
@@ -706,7 +706,7 @@ class GuiMain(QMainWindow):
             self.tr("All files ({0})").format("*"),
         ]
         loadFile, _ = QFileDialog.getOpenFileName(
-            self, self.tr("Import File"), lastPath, filter=";;".join(extFilter)
+            self, self.tr("Import File"), str(lastPath), filter=";;".join(extFilter)
         )
         if not loadFile:
             return False

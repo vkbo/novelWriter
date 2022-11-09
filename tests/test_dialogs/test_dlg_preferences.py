@@ -22,6 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import pytest
 
 from shutil import copyfile
+
 from tools import cmpFiles, getGuiItem
 
 from PyQt5.QtCore import Qt
@@ -215,7 +216,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     nwPrefs._doClose()
 
     assert theConf.confChanged
-    theConf.lastPath = ""
 
     assert nwGUI.mainConf.saveConfig()
     projFile = fncPath / "novelwriter.conf"
@@ -225,7 +225,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     ignTuple = (
         "timestamp", "guifont", "lastnotes", "guilang", "geometry",
         "preferences", "projcols", "mainpane", "docpane", "viewpane",
-        "outlinepane", "textfont", "textsize"
+        "outlinepane", "textfont", "textsize", "lastpath"
     )
     assert cmpFiles(testFile, compFile, ignoreStart=ignTuple)
 

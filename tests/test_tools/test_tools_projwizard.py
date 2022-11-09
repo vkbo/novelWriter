@@ -67,7 +67,6 @@ def testToolProjectWizard_Handling(qtbot, monkeypatch, nwGUI, fncProj):
     # Test the Wizard Launching
     # =========================
 
-    nwGUI.mainConf.lastPath = " "
     monkeypatch.setattr(GuiProjectWizard, "exec_", lambda *a: None)
 
     result = nwGUI.showNewProjectDialog()
@@ -102,7 +101,6 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncDir, prjType):
     """
     monkeypatch.setattr(GuiProjectWizard, "exec_", lambda *a: None)
 
-    nwGUI.mainConf.lastPath = " "
     nwWiz = GuiProjectWizard(nwGUI)
     nwWiz.show()
     qtbot.addWidget(nwWiz)

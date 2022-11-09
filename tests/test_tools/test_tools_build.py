@@ -23,6 +23,8 @@ import pytest
 import os
 
 from shutil import copyfile
+from pathlib import Path
+
 from tools import cmpFiles, getGuiItem
 
 from PyQt5.QtCore import Qt
@@ -61,21 +63,13 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, nwLipsum, refDir, outDir):
     # Invalid file format
     assert not nwBuild._saveDocument(-1)
 
-    # Non-existent path
-    with monkeypatch.context() as mp:
-        mp.setattr("os.path.expanduser", lambda *a, **k: nwLipsum)
-        assert nwGUI.mainConf.lastPath != nwLipsum
-        nwGUI.mainConf.lastPath = "no_such_path"
-        assert nwBuild._saveDocument(nwBuild.FMT_NWD)
-        assert nwGUI.mainConf.lastPath == nwLipsum
-
     # No path selected
     with monkeypatch.context() as mp:
         mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: ("", ""))
         assert not nwBuild._saveDocument(nwBuild.FMT_NWD)
 
     # Default Settings
-    nwGUI.mainConf.lastPath = nwLipsum
+    nwGUI.mainConf._lastPath = Path(nwLipsum)
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
 
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
