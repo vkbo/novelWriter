@@ -28,10 +28,10 @@ from novelwriter.enum import nwState
 
 
 @pytest.mark.gui
-def testGuiStatusBar_Main(qtbot, nwGUI, fncProj, mockRnd):
+def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
     """Test the the various features of the status bar.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     cHandle = nwGUI.theProject.newFile("A Note", C.hCharRoot)
     newDoc = nwGUI.theProject.storage.getDocument(cHandle)
     newDoc.writeDocument("# A Note\n\n")

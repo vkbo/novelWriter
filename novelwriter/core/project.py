@@ -456,7 +456,8 @@ class NWProject(QObject):
         logger.info("Backing up project")
         self.mainGui.setStatus(self.tr("Backing up project ..."))
 
-        if not self.mainConf.backupPath:
+        backupPath = self.mainConf.backupPath()
+        if not isinstance(backupPath, Path):
             self.mainGui.makeAlert(self.tr(
                 "Cannot backup project because no valid backup path is set. "
                 "Please set a valid backup location in Preferences."
@@ -471,7 +472,7 @@ class NWProject(QObject):
             return False
 
         cleanName = makeFileNameSafe(self._data.name)
-        baseDir = Path(self.mainConf.backupPath) / cleanName
+        baseDir = backupPath / cleanName
         try:
             baseDir.mkdir(exist_ok=True)
         except Exception as exc:

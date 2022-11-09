@@ -19,9 +19,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import time
 import shutil
+
+from pathlib import Path
 
 from PyQt5.QtWidgets import qApp
 
@@ -129,24 +130,25 @@ def writeFile(fileName, fileData):
         outFile.write(fileData)
 
 
-def cleanProject(projPath):
+def cleanProject(path):
     """Delete all generated files in a project.
     """
-    cacheDir = os.path.join(projPath, "cache")
-    if os.path.isdir(cacheDir):
+    path = Path(path)
+    cacheDir = path / "cache"
+    if cacheDir.is_dir():
         shutil.rmtree(cacheDir)
 
-    metaDir = os.path.join(projPath, "meta")
-    if os.path.isdir(metaDir):
+    metaDir = path / "meta"
+    if metaDir.is_dir():
         shutil.rmtree(metaDir)
 
-    bakFile = os.path.join(projPath, "nwProject.bak")
-    if os.path.isfile(bakFile):
-        os.unlink(bakFile)
+    bakFile = path / "nwProject.bak"
+    if bakFile.is_file():
+        bakFile.unlink()
 
-    tocFile = os.path.join(projPath, "ToC.txt")
-    if os.path.isfile(tocFile):
-        os.unlink(tocFile)
+    tocFile = path / "ToC.txt"
+    if tocFile.is_file():
+        tocFile.unlink()
 
     return
 

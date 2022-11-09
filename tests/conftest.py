@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import sys
 import pytest
 import shutil
@@ -50,25 +49,14 @@ def initQt(qtbot):
 ##
 
 @pytest.fixture(scope="session")
-def tmpDir():
-    """A temporary folder for the test session. This folder is
-    presistent after the test so that the status of generated files can
-    be checked. The folder is instead cleared before a new test session.
-    """
-    testDir = os.path.dirname(__file__)
-    theDir = os.path.join(testDir, "temp")
-    if os.path.isdir(theDir):
-        shutil.rmtree(theDir)
-    if not os.path.isdir(theDir):
-        os.mkdir(theDir)
-    return theDir
-
-
-@pytest.fixture(scope="session")
-def tmpPath(tmpDir):
+def tmpPath():
     """A temporary folder for the test session. Path version.
     """
-    return Path(tmpDir)
+    theTemp = Path(__file__).parent / "temp"
+    if theTemp.exists():
+        shutil.rmtree(theTemp)
+    theTemp.mkdir(exist_ok=True)
+    return theTemp
 
 
 @pytest.fixture(scope="session")
@@ -99,57 +87,15 @@ def fncPath(tmpPath):
     return fncPath
 
 
-@pytest.fixture(scope="session")
-def refDir():
-    """The folder where all the reference files are stored for verifying
-    the results of tests.
-    """
-    testDir = os.path.dirname(__file__)
-    theDir = os.path.join(testDir, "reference")
-    return theDir
-
-
-@pytest.fixture(scope="session")
-def filesDir():
-    """The folder where additional test files are stored.
-    """
-    testDir = os.path.dirname(__file__)
-    theDir = os.path.join(testDir, "files")
-    return theDir
-
-
-@pytest.fixture(scope="session")
-def outDir(tmpDir):
-    """An output folder for test results
-    """
-    theDir = os.path.join(tmpDir, "results")
-    if not os.path.isdir(theDir):
-        os.mkdir(theDir)
-    return theDir
-
-
 @pytest.fixture(scope="function")
-def fncDir(tmpDir):
-    """A temporary folder for a single test function.
-    """
-    fncDir = os.path.join(tmpDir, "function")
-    if os.path.isdir(fncDir):
-        shutil.rmtree(fncDir)
-    if not os.path.isdir(fncDir):
-        os.mkdir(fncDir)
-    return fncDir
-
-
-@pytest.fixture(scope="function")
-def fncProj(fncDir):
+def projPath(fncPath):
     """A temporary folder for a single test function,
     with a project folder.
     """
-    prjDir = os.path.join(fncDir, "project")
-    if os.path.isdir(prjDir):
+    prjDir = fncPath / "project"
+    if prjDir.exists():
         shutil.rmtree(prjDir)
-    if not os.path.isdir(prjDir):
-        os.mkdir(prjDir)
+    prjDir.mkdir(exist_ok=True)
     return prjDir
 
 
@@ -252,14 +198,36 @@ def mockRnd(monkeypatch):
 ##
 
 @pytest.fixture(scope="function")
-def nwLipsum(tmpDir):
+def nwLipsum(tmpPath):
     """A medium sized novelWriter example project with a lot of Lorem
     Ipsum text.
     """
-    tstDir = os.path.dirname(__file__)
-    srcDir = os.path.join(tstDir, "lipsum")
-    dstDir = os.path.join(tmpDir, "lipsum")
-    if os.path.isdir(dstDir):
+    tstDir = Path(__file__).parent
+    srcDir = tstDir / "lipsum"
+    dstDir = tmpPath / "lipsum"
+    if dstDir.exists():
+        shutil.rmtree(dstDir)
+
+    shutil.copytree(srcDir, dstDir)
+    cleanProject(dstDir)
+
+    yield str(dstDir)
+
+    if dstDir.exists():
+        shutil.rmtree(dstDir)
+
+    return
+
+
+@pytest.fixture(scope="function")
+def prjLipsum(tmpPath):
+    """A medium sized novelWriter example project with a lot of Lorem
+    Ipsum text.
+    """
+    tstDir = Path(__file__).parent
+    srcDir = tstDir / "lipsum"
+    dstDir = tmpPath / "lipsum"
+    if dstDir.exists():
         shutil.rmtree(dstDir)
 
     shutil.copytree(srcDir, dstDir)
@@ -267,7 +235,7 @@ def nwLipsum(tmpDir):
 
     yield dstDir
 
-    if os.path.isdir(dstDir):
+    if dstDir.exists():
         shutil.rmtree(dstDir)
 
     return

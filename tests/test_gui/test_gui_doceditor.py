@@ -37,11 +37,11 @@ KEY_DELAY = 1
 
 
 @pytest.mark.gui
-def testGuiEditor_Init(qtbot, nwGUI, fncProj, ipsumText, mockRnd):
+def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     """Test initialising the editor.
     """
     # Open project
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
 
     nwGUI.docEditor.setText("### Lorem Ipsum\n\n%s" % ipsumText[0])
@@ -80,10 +80,10 @@ def testGuiEditor_Init(qtbot, nwGUI, fncProj, ipsumText, mockRnd):
 
 
 @pytest.mark.gui
-def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, fncProj, ipsumText, mockRnd):
+def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumText, mockRnd):
     """Test loading text into the editor.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     longText = "### Lorem Ipsum\n\n%s" % "\n\n".join(ipsumText*20)
@@ -135,10 +135,10 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, fncProj, ipsumText
 
 
 @pytest.mark.gui
-def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, fncProj, ipsumText, mockRnd):
+def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumText, mockRnd):
     """Test saving text from the editor.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     # Save Text
@@ -179,10 +179,10 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, fncProj, ipsumText
 
 
 @pytest.mark.gui
-def testGuiEditor_MetaData(qtbot, nwGUI, fncProj, mockRnd):
+def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
     """Test extracting various meta data and other values.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     # Get Text
@@ -226,13 +226,13 @@ def testGuiEditor_MetaData(qtbot, nwGUI, fncProj, mockRnd):
 
 
 @pytest.mark.gui
-def testGuiEditor_Actions(qtbot, nwGUI, fncProj, ipsumText, mockRnd):
+def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     """Test the document actions. This is not an extensive test of the
     action features, just that the actions are actually called. The
     various action features are tested when their respective functions
     are tested.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
@@ -459,10 +459,10 @@ def testGuiEditor_Actions(qtbot, nwGUI, fncProj, ipsumText, mockRnd):
 
 
 @pytest.mark.gui
-def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, fncProj, ipsumText, mockRnd):
+def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
     """Test the document insert functions.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
@@ -542,10 +542,10 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, fncProj, ipsumText, mockRnd)
 
 
 @pytest.mark.gui
-def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, fncProj, ipsumText, mockRnd):
+def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
     """Test the text manipulation functions.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
@@ -749,10 +749,10 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, fncProj, ipsumText
 
 
 @pytest.mark.gui
-def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, fncProj, ipsumText, mockRnd):
+def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
     """Test the block formatting function.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
@@ -1062,10 +1062,10 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, fncProj, ipsumText,
 
 
 @pytest.mark.gui
-def testGuiEditor_Tags(qtbot, nwGUI, fncProj, ipsumText, mockRnd):
+def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     """Test the document editor tags functionality.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     # Create Scene
@@ -1121,7 +1121,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, fncProj, ipsumText, mockRnd):
 
 
 @pytest.mark.gui
-def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, fncProj, ipsumText, mockRnd):
+def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
     """Test saving text from the editor.
     """
     class MockThreadPool:
@@ -1139,7 +1139,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, fncProj, ipsumText, mo
     nwGUI.docEditor.wcTimerDoc.blockSignals(True)
     nwGUI.docEditor.wcTimerSel.blockSignals(True)
 
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
 
     # Run on an empty document
     nwGUI.docEditor._runDocCounter()

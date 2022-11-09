@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import uuid
 import pytest
 
@@ -35,12 +34,12 @@ from novelwriter.core.coretools import DocMerger, DocSplitter, ProjectBuilder
 
 
 @pytest.mark.core
-def testCoreTools_DocMerger(monkeypatch, mockGUI, fncDir, outDir, refDir, mockRnd, ipsumText):
+def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ipsumText):
     """Test the DocMerger utility.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
 
     # Create Files to Merge
     # =====================
@@ -77,9 +76,9 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncDir, outDir, refDir, mockRn
     # Merge to New
     # ============
 
-    saveFile = os.path.join(fncDir, "content", "0000000000014.nwd")
-    testFile = os.path.join(outDir, "coreDocTools_DocMerger_0000000000014.nwd")
-    compFile = os.path.join(refDir, "coreDocTools_DocMerger_0000000000014.nwd")
+    saveFile = fncPath / "content" / "0000000000014.nwd"
+    testFile = tstPaths.outDir / "coreDocTools_DocMerger_0000000000014.nwd"
+    compFile = tstPaths.refDir / "coreDocTools_DocMerger_0000000000014.nwd"
 
     assert docMerger.newTargetDoc(hChapter1, "All of Chapter 1") == "0000000000014"
 
@@ -92,7 +91,7 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncDir, outDir, refDir, mockRn
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         assert docMerger.writeTargetDoc() is False
-        assert not os.path.isfile(saveFile)
+        assert not saveFile.exists()
         assert docMerger.getError() != ""
 
     # Write properly, and compare
@@ -103,9 +102,9 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncDir, outDir, refDir, mockRn
     # Merge into Existing
     # ===================
 
-    saveFile = os.path.join(fncDir, "content", "0000000000010.nwd")
-    testFile = os.path.join(outDir, "coreDocTools_DocMerger_0000000000010.nwd")
-    compFile = os.path.join(refDir, "coreDocTools_DocMerger_0000000000010.nwd")
+    saveFile = fncPath / "content" / "0000000000010.nwd"
+    testFile = tstPaths.outDir / "coreDocTools_DocMerger_0000000000010.nwd"
+    compFile = tstPaths.refDir / "coreDocTools_DocMerger_0000000000010.nwd"
 
     docMerger.setTargetDoc(hChapter1)
 
@@ -124,12 +123,12 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncDir, outDir, refDir, mockRn
 
 
 @pytest.mark.core
-def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncDir, outDir, refDir, mockRnd, ipsumText):
+def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     """Test the DocSplitter utility.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
 
     # Create File to Split
     # ====================
@@ -264,15 +263,15 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncDir, outDir, refDir, mock
 
 
 @pytest.mark.core
-def testCoreTools_NewMinimal(monkeypatch, fncDir, outDir, refDir, mockGUI, mockRnd):
+def testCoreTools_NewMinimal(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
     """Create a new project from a project wizard dictionary. With
     default setting, creating a Minimal project.
     """
     monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
 
-    projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreTools_NewMinimal_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreTools_NewMinimal_nwProject.nwx")
+    projFile = fncPath / "nwProject.nwx"
+    testFile = tstPaths.outDir / "coreTools_NewMinimal_nwProject.nwx"
+    compFile = tstPaths.refDir / "coreTools_NewMinimal_nwProject.nwx"
 
     projBuild = ProjectBuilder(mockGUI)
 
@@ -283,10 +282,10 @@ def testCoreTools_NewMinimal(monkeypatch, fncDir, outDir, refDir, mockGUI, mockR
     assert projBuild.buildProject("stuff") is False
 
     # Try again with a proper path
-    assert projBuild.buildProject({"projPath": fncDir}) is True
+    assert projBuild.buildProject({"projPath": fncPath}) is True
 
     # Creating the project once more should fail
-    assert projBuild.buildProject({"projPath": fncDir}) is False
+    assert projBuild.buildProject({"projPath": fncPath}) is False
 
     # Save and close
     copyfile(projFile, testFile)
@@ -296,21 +295,21 @@ def testCoreTools_NewMinimal(monkeypatch, fncDir, outDir, refDir, mockGUI, mockR
 
 
 @pytest.mark.core
-def testCoreTools_NewCustomA(monkeypatch, fncDir, outDir, refDir, mockGUI, mockRnd):
+def testCoreTools_NewCustomA(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
     """Create a new project from a project wizard dictionary.
     Custom type with chapters and scenes.
     """
     monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
 
-    projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreTools_NewCustomA_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreTools_NewCustomA_nwProject.nwx")
+    projFile = fncPath / "nwProject.nwx"
+    testFile = tstPaths.outDir / "coreTools_NewCustomA_nwProject.nwx"
+    compFile = tstPaths.refDir / "coreTools_NewCustomA_nwProject.nwx"
 
     projData = {
         "projName": "Test Custom",
         "projTitle": "Test Novel",
         "projAuthors": "Jane Doe\nJohn Doh\n",
-        "projPath": fncDir,
+        "projPath": fncPath,
         "popSample": False,
         "popMinimal": False,
         "popCustom": True,
@@ -334,21 +333,21 @@ def testCoreTools_NewCustomA(monkeypatch, fncDir, outDir, refDir, mockGUI, mockR
 
 
 @pytest.mark.core
-def testCoreTools_NewCustomB(monkeypatch, fncDir, outDir, refDir, mockGUI, mockRnd):
+def testCoreTools_NewCustomB(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
     """Create a new project from a project wizard dictionary.
     Custom type without chapters, but with scenes.
     """
     monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
 
-    projFile = os.path.join(fncDir, "nwProject.nwx")
-    testFile = os.path.join(outDir, "coreTools_NewCustomB_nwProject.nwx")
-    compFile = os.path.join(refDir, "coreTools_NewCustomB_nwProject.nwx")
+    projFile = fncPath / "nwProject.nwx"
+    testFile = tstPaths.outDir / "coreTools_NewCustomB_nwProject.nwx"
+    compFile = tstPaths.refDir / "coreTools_NewCustomB_nwProject.nwx"
 
     projData = {
         "projName": "Test Custom",
         "projTitle": "Test Novel",
         "projAuthors": "Jane Doe\nJohn Doh\n",
-        "projPath": fncDir,
+        "projPath": fncPath,
         "popSample": False,
         "popMinimal": False,
         "popCustom": True,
@@ -406,16 +405,15 @@ def testCoreTools_NewSample(monkeypatch, fncPath, tmpConf, tmpPath, mockGUI):
         outFile.write("foo")
 
     assert projBuild.buildProject(projData) is False
-    os.unlink(dstSample)
+    dstSample.unlink()
 
     # Create a real zip file, and unpack it
     with ZipFile(dstSample, "w") as zipObj:
-        zipObj.write(os.path.join(srcSample, "nwProject.nwx"), "nwProject.nwx")
-        for docFile in os.listdir(os.path.join(srcSample, "content")):
-            srcDoc = os.path.join(srcSample, "content", docFile)
-            zipObj.write(srcDoc, "content/"+docFile)
+        zipObj.write(srcSample / "nwProject.nwx", "nwProject.nwx")
+        for docFile in (srcSample / "content").iterdir():
+            zipObj.write(docFile, f"content/{docFile.name}")
 
     assert projBuild.buildProject(projData) is True
-    os.unlink(dstSample)
+    dstSample.unlink()
 
 # END Test testCoreTools_NewSample

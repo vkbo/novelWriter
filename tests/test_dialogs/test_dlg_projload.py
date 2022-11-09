@@ -20,7 +20,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import pytest
-import os
 
 from tools import buildTestProject, getGuiItem
 
@@ -33,10 +32,10 @@ from novelwriter.dialogs.projload import GuiProjectLoad
 
 
 @pytest.mark.gui
-def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, fncProj):
+def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, projPath):
     """Test the load project wizard.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.closeProject()
 
     monkeypatch.setattr(GuiProjectLoad, "exec_", lambda *a: None)
@@ -87,10 +86,10 @@ def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, fncProj):
     nwLoad._doDeleteRecent()
     assert nwLoad.listBox.topLevelItemCount() == recentCount - 1
 
-    getFile = os.path.join(fncProj, "nwProject.nwx")
+    getFile = str(projPath / "nwProject.nwx")
     monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (getFile, None))
     qtbot.mouseClick(nwLoad.browseButton, Qt.LeftButton)
-    assert nwLoad.openPath == fncProj
+    assert nwLoad.openPath == projPath / "nwProject.nwx"
     assert nwLoad.openState == nwLoad.OPEN_STATE
 
     nwLoad.close()

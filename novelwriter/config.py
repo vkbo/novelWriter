@@ -23,7 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import sys
 import json
 import logging
@@ -184,7 +183,7 @@ class Config:
         self.searchMatchCap = False
 
         # Backup Settings
-        self.backupPath      = ""
+        self._backupPath     = None
         self.backupOnClose   = False
         self.askBeforeBackup = True
 
@@ -296,6 +295,14 @@ class Config:
             return self._lastPath
         return Path.home().absolute()
 
+    def backupPath(self):
+        """Return the backup path.
+        """
+        if isinstance(self._backupPath, Path):
+            if self._backupPath.is_dir():
+                return self._backupPath
+        return None
+
     def errorText(self):
         """Compile and return error messages from the initialisation of
         the Config class, and clear the error buffer.
@@ -369,7 +376,7 @@ class Config:
                 lngFile = "%s_%s" % (lngBase, lngCode.replace("-", "_"))
                 if lngFile not in self._qtTrans:
                     if qTrans.load(lngFile, str(lngPath)):
-                        logger.debug("Loaded: %s", os.path.join(lngPath, lngFile))
+                        logger.debug("Loaded: %s/%s", lngPath, lngFile)
                         nwApp.installTranslator(qTrans)
                         self._qtTrans[lngFile] = qTrans
 
@@ -489,9 +496,10 @@ class Config:
 
         # Backup
         cnfSec = "Backup"
-        self.backupPath      = theConf.rdStr(cnfSec, "backuppath", self.backupPath)
+        backupPath           = theConf.rdStr(cnfSec, "backuppath", None)
         self.backupOnClose   = theConf.rdBool(cnfSec, "backuponclose", self.backupOnClose)
         self.askBeforeBackup = theConf.rdBool(cnfSec, "askbeforebackup", self.askBeforeBackup)
+        self.setBackupPath(backupPath)
 
         # State
         cnfSec = "State"
@@ -599,7 +607,7 @@ class Config:
         }
 
         theConf["Backup"] = {
-            "backuppath":      str(self.backupPath),
+            "backuppath":      str(self._backupPath or ""),
             "backuponclose":   str(self.backupOnClose),
             "askbeforebackup": str(self.askBeforeBackup),
         }
@@ -651,6 +659,14 @@ class Config:
             if lastPath.is_dir():
                 self._lastPath = lastPath
                 logger.debug("Last path updated: %s" % self._lastPath)
+        return
+
+    def setBackupPath(self, backupPath):
+        """Set the current backup path.
+        """
+        self._backupPath = None
+        if isinstance(backupPath, (str, Path)):
+            self._backupPath = Path(backupPath)
         return
 
     def setWinSize(self, newWidth, newHeight):

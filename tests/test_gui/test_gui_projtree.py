@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 
 from mock import causeOSError
@@ -36,7 +35,7 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 
 
 @pytest.mark.gui
-def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd):
+def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRnd):
     """Test adding and removing items from the project tree.
     """
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
@@ -49,8 +48,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
     assert projView.projTree.newTreeItem(nwItemType.FILE) is False
 
     # Create a project
-    prjDir = os.path.join(fncDir, "project")
-    buildTestProject(nwGUI, prjDir)
+    buildTestProject(nwGUI, projPath)
 
     # No itemType set
     projView.projTree.clearSelection()
@@ -168,7 +166,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd)
 
 
 @pytest.mark.gui
-def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
+def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test adding and removing items from the project tree.
     """
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
@@ -180,8 +178,7 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     assert projView.projTree.moveTreeItem(1) is False
 
     # Create a project
-    prjDir = os.path.join(fncDir, "project")
-    buildTestProject(nwGUI, prjDir)
+    buildTestProject(nwGUI, projPath)
 
     # Move Documents
     # ==============
@@ -279,7 +276,7 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
 
 
 @pytest.mark.gui
-def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd):
+def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRnd):
     """Test external requests for removing items from project tree.
     """
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
@@ -291,8 +288,7 @@ def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fncDir,
     assert projView.requestDeleteItem() is False
 
     # Create a project
-    prjDir = os.path.join(fncDir, "project")
-    buildTestProject(nwGUI, prjDir)
+    buildTestProject(nwGUI, projPath)
 
     # Try emptying the trash already now, when there is no trash folder
     assert projView.emptyTrash() is False
@@ -363,7 +359,7 @@ def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fncDir,
 
 
 @pytest.mark.gui
-def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd):
+def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRnd):
     """Test moving items to Trash.
     """
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
@@ -372,8 +368,7 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, fncDir, m
     projTree = nwGUI.projView.projTree
 
     # Create a project
-    prjDir = os.path.join(fncDir, "project")
-    buildTestProject(nwGUI, prjDir)
+    buildTestProject(nwGUI, projPath)
 
     # Invalid item
     caplog.clear()
@@ -417,7 +412,7 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, fncDir, m
 
 
 @pytest.mark.gui
-def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd):
+def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRnd):
     """Test permanently deleting items.
     """
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
@@ -426,8 +421,7 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fnc
     projTree = nwGUI.projView.projTree
 
     # Create a project
-    prjDir = os.path.join(fncDir, "project")
-    buildTestProject(nwGUI, prjDir)
+    buildTestProject(nwGUI, projPath)
 
     # Invalid item
     caplog.clear()
@@ -470,7 +464,7 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, fnc
 
 
 @pytest.mark.gui
-def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRnd):
+def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRnd):
     """Test emptying Trash.
     """
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
@@ -484,8 +478,7 @@ def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRn
     assert "No project open" in caplog.text
 
     # Create a project
-    prjDir = os.path.join(fncDir, "project")
-    buildTestProject(nwGUI, prjDir)
+    buildTestProject(nwGUI, projPath)
 
     # No Trash folder
     assert projTree.emptyTrash() is False
@@ -524,7 +517,7 @@ def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, fncDir, mockRn
 
 
 @pytest.mark.gui
-def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
+def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the building of the project tree context menu. All this does
     is test that the menu builds. It doesn't open the actual menu,
     """
@@ -532,8 +525,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
     monkeypatch.setattr(QMenu, "exec_", lambda *a: None)
 
     # Create a project
-    prjDir = os.path.join(fncDir, "project")
-    buildTestProject(nwGUI, prjDir)
+    buildTestProject(nwGUI, projPath)
 
     # Handles for new objects
     hCharNote     = "0000000000011"
@@ -643,7 +635,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
 
 
 @pytest.mark.gui
-def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ipsumText):
+def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd, ipsumText):
     """Test the merge document function.
     """
     mergeData = {}
@@ -654,8 +646,7 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, i
     monkeypatch.setattr(GuiDocMerge, "getData", lambda *a: mergeData)
 
     # Create a project
-    prjDir = os.path.join(fncDir, "project")
-    buildTestProject(nwGUI, prjDir)
+    buildTestProject(nwGUI, projPath)
 
     theProject = nwGUI.theProject
     projTree = nwGUI.projView.projTree
@@ -746,7 +737,7 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, i
 
 
 @pytest.mark.gui
-def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ipsumText):
+def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, ipsumText):
     """Test the split document function.
     """
     splitData = {}
@@ -758,8 +749,7 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ip
     monkeypatch.setattr(GuiDocSplit, "getData", lambda *a: (splitData, splitText))
 
     # Create a project
-    prjDir = os.path.join(fncDir, "project")
-    buildTestProject(nwGUI, prjDir)
+    buildTestProject(nwGUI, projPath)
 
     theProject = nwGUI.theProject
     projTree = nwGUI.projView.projTree
@@ -828,13 +818,13 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ip
         assert projTree._splitDocument(hSplitDoc) is True
         for tHandle in fstSet:
             assert tHandle in theProject.tree
-            assert not os.path.isfile(os.path.join(prjDir, "content", f"{tHandle}.nwd"))
+            assert not (projPath / "content" / f"{tHandle}.nwd").is_file()
 
     # Writing succeeds
     assert projTree._splitDocument(hSplitDoc) is True
     for tHandle in sndSet:
         assert tHandle in theProject.tree
-        assert os.path.isfile(os.path.join(prjDir, "content", f"{tHandle}.nwd"))
+        assert (projPath / "content" / f"{tHandle}.nwd").is_file()
 
     # Add to a folder and move source to trash
     splitData["intoFolder"] = True
@@ -843,7 +833,7 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ip
     assert "0000000000029" in theProject.tree  # The folder
     for tHandle in trdSet:
         assert tHandle in theProject.tree
-        assert os.path.isfile(os.path.join(prjDir, "content", f"{tHandle}.nwd"))
+        assert (projPath / "content" / f"{tHandle}.nwd").is_file()
 
     assert theProject.tree.isTrash(hSplitDoc) is True
 
@@ -858,13 +848,12 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, fncDir, mockRnd, ip
 
 
 @pytest.mark.gui
-def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI, fncDir, mockRnd):
+def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test various parts of the project tree class not covered by
     other tests.
     """
     # Create a project
-    prjDir = os.path.join(fncDir, "project")
-    buildTestProject(nwGUI, prjDir)
+    buildTestProject(nwGUI, projPath)
 
     projView = nwGUI.projView
     projTree = nwGUI.projView.projTree

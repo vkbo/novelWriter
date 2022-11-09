@@ -35,12 +35,12 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 
 
 @pytest.mark.gui
-def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
+def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test navigating the novel tree.
     """
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
 
     nwGUI.switchFocus(nwWidget.TREE)
     nwGUI.projView.projTree.clearSelection()

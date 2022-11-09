@@ -31,12 +31,12 @@ from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 
 
 @pytest.mark.core
-def testCoreItem_Setters(mockGUI, mockRnd, fncDir):
+def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
     """Test all the simple setters for the NWItem class.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
     theItem = NWItem(theProject)
 
     statusKeys = ["s000000", "s000001", "s000002", "s000003"]
@@ -192,12 +192,12 @@ def testCoreItem_Setters(mockGUI, mockRnd, fncDir):
 
 
 @pytest.mark.core
-def testCoreItem_Methods(mockGUI, mockRnd, fncDir):
+def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
     """Test the simple methods of the NWItem class.
     """
     theProject = NWProject(mockGUI)
     mockRnd.reset()
-    buildTestProject(theProject, fncDir)
+    buildTestProject(theProject, fncPath)
     theItem = NWItem(theProject)
 
     # Describe Me

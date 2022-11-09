@@ -23,7 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import logging
 import novelwriter
 
@@ -384,7 +383,7 @@ class GuiPreferencesProjects(QWidget):
         self.mainForm.addGroupLabel(self.tr("Project Backup"))
 
         # Backup Path
-        self.backupPath = self.mainConf.backupPath
+        self.backupPath = self.mainConf.backupPath()
         self.backupGetPath = QPushButton(self.tr("Browse"))
         self.backupGetPath.clicked.connect(self._backupFolder)
         self.backupPathRow = self.mainForm.addRow(
@@ -451,7 +450,7 @@ class GuiPreferencesProjects(QWidget):
         self.mainConf.autoSaveProj = self.autoSaveProj.value()
 
         # Project Backup
-        self.mainConf.backupPath      = self.backupPath
+        self.mainConf.setBackupPath(self.backupPath)
         self.mainConf.backupOnClose   = self.backupOnClose.isChecked()
         self.mainConf.askBeforeBackup = self.askBeforeBackup.isChecked()
 
@@ -470,12 +469,9 @@ class GuiPreferencesProjects(QWidget):
     def _backupFolder(self):
         """Open a dialog to select the backup folder.
         """
-        currDir = self.backupPath
-        if not os.path.isdir(currDir):
-            currDir = ""
-
+        currDir = self.backupPath or ""
         newDir = QFileDialog.getExistingDirectory(
-            self, self.tr("Backup Directory"), currDir, options=QFileDialog.ShowDirsOnly
+            self, self.tr("Backup Directory"), str(currDir), options=QFileDialog.ShowDirsOnly
         )
         if newDir:
             self.backupPath = newDir

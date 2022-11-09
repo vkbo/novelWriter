@@ -23,7 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import logging
 import novelwriter
 
@@ -362,7 +361,7 @@ class GuiMain(QMainWindow):
             logger.error("No projData or projPath set")
             return False
 
-        if os.path.isfile(os.path.join(projPath, nwFiles.PROJ_FILE)):
+        if (Path(projPath) / nwFiles.PROJ_FILE).is_file():
             self.makeAlert(self.tr(
                 "A project already exists in that location. "
                 "Please choose another folder."
@@ -414,7 +413,7 @@ class GuiMain(QMainWindow):
                     if not msgYes:
                         doBackup = False
             if doBackup:
-                self.theProject.backupProject(doNotify=False)
+                self.theProject.backupProject(False)
         else:
             saveOK = True
 

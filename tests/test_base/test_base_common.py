@@ -19,10 +19,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import hashlib
-import os
 import time
 import pytest
+import hashlib
 
 from mock import causeOSError
 from tools import writeFile
@@ -33,8 +32,8 @@ from novelwriter.common import (
     checkUuid, isHandle, isTitleTag, isItemClass, isItemType, isItemLayout,
     hexToInt, minmax, checkIntTuple, formatInt, formatTimeStamp, formatTime,
     simplified, yesNo, splitVersionNumber, transferCase, fuzzyTime,
-    numberToRoman, jsonEncode, readTextFile, makeFileNameSafe, ensureFolder,
-    sha256sum, getGuiItem, NWConfigParser
+    numberToRoman, jsonEncode, readTextFile, makeFileNameSafe, sha256sum,
+    getGuiItem, NWConfigParser
 )
 
 
@@ -591,18 +590,18 @@ def testBaseCommon_JsonEncode():
 
 
 @pytest.mark.base
-def testBaseCommon_ReadTextFile(monkeypatch, fncDir, ipsumText):
+def testBaseCommon_ReadTextFile(monkeypatch, fncPath, ipsumText):
     """Test the readTextFile function.
     """
     testText = "\n\n".join(ipsumText) + "\n"
-    testFile = os.path.join(fncDir, "ipsum.txt")
+    testFile = fncPath / "ipsum.txt"
     writeFile(testFile, testText)
 
-    assert readTextFile(os.path.join(fncDir, "not_a_file.txt")) == ""
+    assert readTextFile(fncPath / "not_a_file.txt") == ""
     assert readTextFile(testFile) == testText
 
     with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
+        mp.setattr("pathlib.Path.read_text", causeOSError)
         assert readTextFile(testFile) == ""
 
 # END Test testBaseCommon_ReadTextFile
@@ -621,33 +620,7 @@ def testBaseCommon_MakeFileNameSafe():
 
 
 @pytest.mark.base
-def testBaseCommon_EnsureFolder(monkeypatch, fncDir):
-    """Test the ensureFolder function.
-    """
-    newDir1 = os.path.join(fncDir, "newDir1")
-    newDir2 = os.path.join(fncDir, "newDir2")
-    newDir3 = os.path.join(fncDir, "newDir3")
-
-    assert ensureFolder(None) is False
-
-    assert ensureFolder(newDir1) is True
-    assert os.path.isdir(newDir1)
-
-    assert ensureFolder("newDir2", parent=fncDir) is True
-    assert os.path.isdir(newDir2)
-
-    with monkeypatch.context() as mp:
-        mp.setattr("os.mkdir", causeOSError)
-        errLog = []
-        assert ensureFolder("newDir3", parent=fncDir, errLog=errLog) is False
-        assert errLog[0] == f"Could not create folder: {newDir3}"
-        assert not os.path.isdir(newDir3)
-
-# END Test testBaseCommon_EnsureFolder
-
-
-@pytest.mark.base
-def testBaseCommon_Sha256Sum(monkeypatch, fncDir, ipsumText):
+def testBaseCommon_Sha256Sum(monkeypatch, fncPath, ipsumText):
     """Test the sha256sum function.
     """
     longText = 50*(" ".join(ipsumText) + " ")
@@ -656,9 +629,9 @@ def testBaseCommon_Sha256Sum(monkeypatch, fncDir, ipsumText):
 
     assert len(longText) == 175650
 
-    longFile = os.path.join(fncDir, "long_file.txt")
-    shortFile = os.path.join(fncDir, "short_file.txt")
-    noneFile = os.path.join(fncDir, "none_file.txt")
+    longFile  = fncPath / "long_file.txt"
+    shortFile = fncPath / "short_file.txt"
+    noneFile  = fncPath / "none_file.txt"
 
     writeFile(longFile, longText)
     writeFile(shortFile, shortText)
@@ -697,10 +670,10 @@ def testBaseCommon_GetGuiItem(nwGUI):
 
 
 @pytest.mark.base
-def testBaseCommon_NWConfigParser(fncDir):
+def testBaseCommon_NWConfigParser(fncPath):
     """Test the NWConfigParser subclass.
     """
-    tstConf = os.path.join(fncDir, "test.cfg")
+    tstConf = fncPath / "test.cfg"
     writeFile(tstConf, (
         "[main]\n"
         "stropt = value\n"

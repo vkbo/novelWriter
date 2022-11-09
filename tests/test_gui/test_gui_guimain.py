@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 
 from tools import C, cmpFiles, buildTestProject, XML_IGNORE, writeFile
@@ -67,7 +66,7 @@ def testGuiMain_ProjectBlocker(nwGUI):
 
 
 @pytest.mark.gui
-def testGuiMain_NewProject(monkeypatch, nwGUI, fncProj):
+def testGuiMain_NewProject(monkeypatch, nwGUI, projPath):
     """Test creating a new project.
     """
     # No data
@@ -79,34 +78,34 @@ def testGuiMain_NewProject(monkeypatch, nwGUI, fncProj):
     with monkeypatch.context() as mp:
         nwGUI.hasProject = True
         mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
-        assert nwGUI.newProject(projData={"projPath": fncProj}) is False
+        assert nwGUI.newProject(projData={"projPath": projPath}) is False
 
     # No project path
     assert nwGUI.newProject(projData={}) is False
 
     # Project file already exists
-    projFile = os.path.join(fncProj, nwFiles.PROJ_FILE)
+    projFile = projPath / nwFiles.PROJ_FILE
     writeFile(projFile, "Stuff")
-    assert nwGUI.newProject(projData={"projPath": fncProj}) is False
-    os.unlink(projFile)
+    assert nwGUI.newProject(projData={"projPath": projPath}) is False
+    projFile.unlink()
 
     # An unreachable path should also fail
-    projPath = os.path.join(fncProj, "stuff", "stuff", "stuff")
-    assert nwGUI.newProject(projData={"projPath": projPath}) is False
+    stuffPath = projPath / "stuff" / "stuff" / "stuff"
+    assert nwGUI.newProject(projData={"projPath": stuffPath}) is False
 
     # This one should work just fine
-    assert nwGUI.newProject(projData={"projPath": fncProj}) is True
-    assert os.path.isfile(os.path.join(fncProj, nwFiles.PROJ_FILE))
-    assert os.path.isdir(os.path.join(fncProj, "content"))
+    assert nwGUI.newProject(projData={"projPath": projPath}) is True
+    assert (projPath / nwFiles.PROJ_FILE).is_file()
+    assert (projPath / "content").is_dir()
 
 # END Test testGuiMain_NewProject
 
 
 @pytest.mark.gui
-def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
+def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test handling of project tree items based on GUI focus states.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
 
     sHandle = "000000000000f"
     assert nwGUI.openSelectedItem() is False
@@ -153,7 +152,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
 
 
 @pytest.mark.gui
-def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mockRnd):
+def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     """Test the document editor.
     """
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
@@ -162,7 +161,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     # Create new, save, close project
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
 
@@ -176,14 +175,14 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert nwGUI.theProject.data.spellCheck is False
 
     # Check the files
-    projFile = os.path.join(fncProj, "nwProject.nwx")
-    testFile = os.path.join(outDir, "guiEditor_Main_Initial_nwProject.nwx")
-    compFile = os.path.join(refDir, "guiEditor_Main_Initial_nwProject.nwx")
+    projFile = projPath / "nwProject.nwx"
+    testFile = tstPaths.outDir / "guiEditor_Main_Initial_nwProject.nwx"
+    compFile = tstPaths.refDir / "guiEditor_Main_Initial_nwProject.nwx"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
     # Re-open project
-    assert nwGUI.openProject(fncProj)
+    assert nwGUI.openProject(projPath)
 
     # Check that we loaded the data
     assert len(nwGUI.theProject.tree) == 8
@@ -494,33 +493,33 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
     assert nwGUI.saveProject()
 
     # Check the files
-    projFile = os.path.join(fncProj, "nwProject.nwx")
-    testFile = os.path.join(outDir, "guiEditor_Main_Final_nwProject.nwx")
-    compFile = os.path.join(refDir, "guiEditor_Main_Final_nwProject.nwx")
+    projFile = projPath / "nwProject.nwx"
+    testFile = tstPaths.outDir / "guiEditor_Main_Final_nwProject.nwx"
+    compFile = tstPaths.refDir / "guiEditor_Main_Final_nwProject.nwx"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=(*XML_IGNORE, "<spellCheck"))
 
-    projFile = os.path.join(fncProj, "content", "000000000000f.nwd")
-    testFile = os.path.join(outDir, "guiEditor_Main_Final_000000000000f.nwd")
-    compFile = os.path.join(refDir, "guiEditor_Main_Final_000000000000f.nwd")
+    projFile = projPath / "content" / "000000000000f.nwd"
+    testFile = tstPaths.outDir / "guiEditor_Main_Final_000000000000f.nwd"
+    compFile = tstPaths.refDir / "guiEditor_Main_Final_000000000000f.nwd"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
-    projFile = os.path.join(fncProj, "content", "0000000000010.nwd")
-    testFile = os.path.join(outDir, "guiEditor_Main_Final_0000000000010.nwd")
-    compFile = os.path.join(refDir, "guiEditor_Main_Final_0000000000010.nwd")
+    projFile = projPath / "content" / "0000000000010.nwd"
+    testFile = tstPaths.outDir / "guiEditor_Main_Final_0000000000010.nwd"
+    compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000010.nwd"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
-    projFile = os.path.join(fncProj, "content", "0000000000011.nwd")
-    testFile = os.path.join(outDir, "guiEditor_Main_Final_0000000000011.nwd")
-    compFile = os.path.join(refDir, "guiEditor_Main_Final_0000000000011.nwd")
+    projFile = projPath / "content" / "0000000000011.nwd"
+    testFile = tstPaths.outDir / "guiEditor_Main_Final_0000000000011.nwd"
+    compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000011.nwd"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
-    projFile = os.path.join(fncProj, "content", "0000000000012.nwd")
-    testFile = os.path.join(outDir, "guiEditor_Main_Final_0000000000012.nwd")
-    compFile = os.path.join(refDir, "guiEditor_Main_Final_0000000000012.nwd")
+    projFile = projPath / "content" / "0000000000012.nwd"
+    testFile = tstPaths.outDir / "guiEditor_Main_Final_0000000000012.nwd"
+    compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000012.nwd"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile)
 
@@ -530,10 +529,10 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, fncProj, refDir, outDir, mock
 
 
 @pytest.mark.gui
-def testGuiMain_FocusFullMode(qtbot, nwGUI, fncProj, mockRnd):
+def testGuiMain_FocusFullMode(qtbot, nwGUI, projPath, mockRnd):
     """Test toggling focus mode in main window.
     """
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.isFocusMode is False
 
     # Focus Mode

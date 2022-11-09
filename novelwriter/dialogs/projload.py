@@ -23,10 +23,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import logging
 import novelwriter
 
+from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtGui import QKeySequence
@@ -190,8 +190,8 @@ class GuiProjectLoad(QDialog):
             self, self.tr("Open Project"), "", filter=";;".join(extFilter)
         )
         if projFile:
-            thePath = os.path.abspath(os.path.dirname(projFile))
-            self.selPath.setText(thePath)
+            thePath = Path(projFile).absolute()
+            self.selPath.setText(str(thePath))
             self.openPath = thePath
             self.openState = self.OPEN_STATE
             self.accept()

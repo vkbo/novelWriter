@@ -29,11 +29,11 @@ from novelwriter.dialogs.docmerge import GuiDocMerge
 
 
 @pytest.mark.gui
-def testDlgMerge_Main(qtbot, nwGUI, fncProj, mockRnd):
+def testDlgMerge_Main(qtbot, nwGUI, projPath, mockRnd):
     """Test the merge documents tool.
     """
     # Create a new project
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
 
     # Check that the dialog kan handle invalid items
     nwMerge = GuiDocMerge(nwGUI, C.hInvalid, [C.hInvalid])

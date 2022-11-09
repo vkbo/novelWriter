@@ -826,7 +826,7 @@ class GuiMainMenu(QMenuBar):
 
         # Tools > Backup
         self.aBackupProject = QAction(self.tr("Backup Project"), self)
-        self.aBackupProject.triggered.connect(lambda: self.theProject.backupProject(doNoify=True))
+        self.aBackupProject.triggered.connect(lambda: self.theProject.backupProject(True))
         self.toolsMenu.addAction(self.aBackupProject)
 
         # Tools > Export Project
