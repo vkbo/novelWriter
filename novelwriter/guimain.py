@@ -93,7 +93,7 @@ class GuiMain(QMainWindow):
         self.idleTime    = 0.0
 
         # Prepare Main Window
-        self.resize(*self.mainConf.getWinSize())
+        self.resize(*self.mainConf.mainWinSize)
         self._updateWindowTitle()
 
         nwIcon = self.mainConf.assetPath("icons") / "novelwriter.svg"
@@ -140,7 +140,7 @@ class GuiMain(QMainWindow):
         self.splitView.addWidget(self.docViewer)
         self.splitView.addWidget(self.viewMeta)
         self.splitView.setHandleWidth(hWd)
-        self.splitView.setSizes(self.mainConf.getViewPanePos())
+        self.splitView.setSizes(self.mainConf.viewPanePos)
 
         # Splitter : Document Editor / Document Viewer
         self.splitDocs = QSplitter(Qt.Horizontal)
@@ -154,7 +154,7 @@ class GuiMain(QMainWindow):
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.splitDocs)
         self.splitMain.setHandleWidth(hWd)
-        self.splitMain.setSizes(self.mainConf.getMainPanePos())
+        self.splitMain.setSizes(self.mainConf.mainPanePos)
 
         # Main Stack : Editor / Outline
         self.mainStack = QStackedWidget()
@@ -1169,14 +1169,13 @@ class GuiMain(QMainWindow):
 
         if not self.isFocusMode:
             self.mainConf.setMainPanePos(self.splitMain.sizes())
-            self.mainConf.setDocPanePos(self.splitDocs.sizes())
             self.mainConf.setOutlinePanePos(self.outlineView.splitSizes())
             if self.viewMeta.isVisible():
                 self.mainConf.setViewPanePos(self.splitView.sizes())
 
         self.mainConf.setShowRefPanel(self.viewMeta.isVisible())
         if not self.mainConf.isFullScreen:
-            self.mainConf.setWinSize(self.width(), self.height())
+            self.mainConf.setMainWinSize(self.width(), self.height())
 
         if self.hasProject:
             self.closeProject(True)

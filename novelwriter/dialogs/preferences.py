@@ -74,7 +74,7 @@ class GuiPreferences(PagedDialog):
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
 
-        self.resize(*self.mainConf.getPreferencesSize())
+        self.resize(*self.mainConf.preferencesWinSize)
 
         # Settings
         self._updateTheme = False
@@ -143,7 +143,7 @@ class GuiPreferences(PagedDialog):
     def _saveWindowSize(self):
         """Save the dialog window size.
         """
-        self.mainConf.setPreferencesSize(self.width(), self.height())
+        self.mainConf.setPreferencesWinSize(self.width(), self.height())
         return
 
 # END Class GuiPreferences
@@ -311,7 +311,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainConf.hideVScroll  = self.hideVScroll.isChecked()
         self.mainConf.hideHScroll  = self.hideHScroll.isChecked()
 
-        self.mainConf.confChanged = True
+        self.mainConf.setConfigChanged(True)
 
         return
 
@@ -458,7 +458,7 @@ class GuiPreferencesProjects(QWidget):
         self.mainConf.stopWhenIdle = self.stopWhenIdle.isChecked()
         self.mainConf.userIdleTime = round(self.userIdleTime.value() * 60)
 
-        self.mainConf.confChanged = True
+        self.mainConf.setConfigChanged(True)
 
         return
 
@@ -629,7 +629,7 @@ class GuiPreferencesDocuments(QWidget):
         self.mainConf.textMargin      = self.textMargin.value()
         self.mainConf.tabWidth        = self.tabWidth.value()
 
-        self.mainConf.confChanged = True
+        self.mainConf.setConfigChanged(True)
 
         return
 
@@ -820,7 +820,7 @@ class GuiPreferencesEditor(QWidget):
         self.mainConf.autoScroll    = self.autoScroll.isChecked()
         self.mainConf.autoScrollPos = self.autoScrollPos.value()
 
-        self.mainConf.confChanged = True
+        self.mainConf.setConfigChanged(True)
 
         return
 
@@ -911,7 +911,7 @@ class GuiPreferencesSyntax(QWidget):
         # Text Errors
         self.mainConf.showMultiSpaces = self.showMultiSpaces.isChecked()
 
-        self.mainConf.confChanged = True
+        self.mainConf.setConfigChanged(True)
 
         return
 
@@ -1065,7 +1065,7 @@ class GuiPreferencesAutomation(QWidget):
         self.mainConf.fmtPadAfter  = self.fmtPadAfter.text().strip()
         self.mainConf.fmtPadThin   = self.fmtPadThin.isChecked()
 
-        self.mainConf.confChanged = True
+        self.mainConf.setConfigChanged(True)
 
         return
 
@@ -1186,7 +1186,7 @@ class GuiPreferencesQuotes(QWidget):
         self.mainConf.fmtDoubleQuotes[0] = self.quoteSym["DO"].text()
         self.mainConf.fmtDoubleQuotes[1] = self.quoteSym["DC"].text()
 
-        self.mainConf.confChanged = True
+        self.mainConf.setConfigChanged(True)
 
         return
 

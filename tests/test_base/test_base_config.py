@@ -253,96 +253,83 @@ def testBaseConfig_SettersGetters(tmpConf):
 
     # Window Size
     tmpConf.guiScale = 1.0
-    tmpConf.setWinSize(1205, 655)
-    assert tmpConf.confChanged is False
+    tmpConf.setMainWinSize(1205, 655)
+    assert tmpConf._confChanged is False
 
     tmpConf.guiScale = 2.0
-    tmpConf.setWinSize(70, 70)
-    assert tmpConf.getWinSize() == [70, 70]
-    assert tmpConf.winGeometry == [35, 35]
+    tmpConf.setMainWinSize(70, 70)
+    assert tmpConf.mainWinSize == [70, 70]
+    assert tmpConf._winGeometry == [35, 35]
 
     tmpConf.guiScale = 1.0
-    tmpConf.setWinSize(70, 70)
-    assert tmpConf.getWinSize() == [70, 70]
-    assert tmpConf.winGeometry == [70, 70]
+    tmpConf.setMainWinSize(70, 70)
+    assert tmpConf.mainWinSize == [70, 70]
+    assert tmpConf._winGeometry == [70, 70]
 
-    tmpConf.setWinSize(1200, 650)
+    tmpConf.setMainWinSize(1200, 650)
 
     # Preferences Size
     tmpConf.guiScale = 2.0
-    tmpConf.setPreferencesSize(70, 70)
-    assert tmpConf.getPreferencesSize() == [70, 70]
-    assert tmpConf.prefGeometry == [35, 35]
+    tmpConf.setPreferencesWinSize(70, 70)
+    assert tmpConf.preferencesWinSize == [70, 70]
+    assert tmpConf._prefGeometry == [35, 35]
 
     tmpConf.guiScale = 1.0
-    tmpConf.setPreferencesSize(70, 70)
-    assert tmpConf.getPreferencesSize() == [70, 70]
-    assert tmpConf.prefGeometry == [70, 70]
+    tmpConf.setPreferencesWinSize(70, 70)
+    assert tmpConf.preferencesWinSize == [70, 70]
+    assert tmpConf._prefGeometry == [70, 70]
 
-    tmpConf.setPreferencesSize(700, 615)
+    tmpConf.setPreferencesWinSize(700, 615)
 
     # Project Settings Tree Columns
     tmpConf.guiScale = 2.0
-    tmpConf.setProjColWidths([10, 20, 30])
-    assert tmpConf.getProjColWidths() == [10, 20, 30]
-    assert tmpConf.projColWidth == [5, 10, 15]
+    tmpConf.setProjLoadColWidths([10, 20, 30])
+    assert tmpConf.projLoadColWidths == [10, 20, 30]
+    assert tmpConf._projColWidth == [5, 10, 15]
 
     tmpConf.guiScale = 1.0
-    tmpConf.setProjColWidths([10, 20, 30])
-    assert tmpConf.getProjColWidths() == [10, 20, 30]
-    assert tmpConf.projColWidth == [10, 20, 30]
+    tmpConf.setProjLoadColWidths([10, 20, 30])
+    assert tmpConf.projLoadColWidths == [10, 20, 30]
+    assert tmpConf._projColWidth == [10, 20, 30]
 
-    tmpConf.setProjColWidths([200, 60, 140])
+    tmpConf.setProjLoadColWidths([200, 60, 140])
 
     # Main Pane Splitter
     tmpConf.guiScale = 2.0
     tmpConf.setMainPanePos([200, 700])
-    assert tmpConf.getMainPanePos() == [200, 700]
-    assert tmpConf.mainPanePos == [100, 350]
+    assert tmpConf.mainPanePos == [200, 700]
+    assert tmpConf._mainPanePos == [100, 350]
 
     tmpConf.guiScale = 1.0
     tmpConf.setMainPanePos([200, 700])
-    assert tmpConf.getMainPanePos() == [200, 700]
     assert tmpConf.mainPanePos == [200, 700]
+    assert tmpConf._mainPanePos == [200, 700]
 
     tmpConf.setMainPanePos([300, 800])
-
-    # Doc Pane Splitter
-    tmpConf.guiScale = 2.0
-    tmpConf.setDocPanePos([300, 300])
-    assert tmpConf.getDocPanePos() == [300, 300]
-    assert tmpConf.docPanePos == [150, 150]
-
-    tmpConf.guiScale = 1.0
-    tmpConf.setDocPanePos([300, 300])
-    assert tmpConf.getDocPanePos() == [300, 300]
-    assert tmpConf.docPanePos == [300, 300]
-
-    tmpConf.setDocPanePos([400, 400])
 
     # View Pane Splitter
     tmpConf.guiScale = 2.0
     tmpConf.setViewPanePos([400, 250])
-    assert tmpConf.getViewPanePos() == [400, 250]
-    assert tmpConf.viewPanePos == [200, 125]
+    assert tmpConf.viewPanePos == [400, 250]
+    assert tmpConf._viewPanePos == [200, 125]
 
     tmpConf.guiScale = 1.0
     tmpConf.setViewPanePos([400, 250])
-    assert tmpConf.getViewPanePos() == [400, 250]
     assert tmpConf.viewPanePos == [400, 250]
+    assert tmpConf._viewPanePos == [400, 250]
 
     tmpConf.setViewPanePos([500, 150])
 
     # Outline Pane Splitter
     tmpConf.guiScale = 2.0
     tmpConf.setOutlinePanePos([400, 250])
-    assert tmpConf.getOutlinePanePos() == [400, 250]
-    assert tmpConf.outlnPanePos == [200, 125]
+    assert tmpConf.outlinePanePos == [400, 250]
+    assert tmpConf._outlnPanePos == [200, 125]
 
     tmpConf.guiScale = 1.0
     tmpConf.setOutlinePanePos([400, 250])
-    assert tmpConf.getOutlinePanePos() == [400, 250]
-    assert tmpConf.outlnPanePos == [400, 250]
+    assert tmpConf.outlinePanePos == [400, 250]
+    assert tmpConf._outlnPanePos == [400, 250]
 
     tmpConf.setOutlinePanePos([500, 150])
 

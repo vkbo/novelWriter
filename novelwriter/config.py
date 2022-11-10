@@ -37,7 +37,7 @@ from PyQt5.QtCore import (
 )
 
 from novelwriter.error import logException, formatException
-from novelwriter.common import splitVersionNumber, formatTimeStamp, NWConfigParser
+from novelwriter.common import checkPath, splitVersionNumber, formatTimeStamp, NWConfigParser
 from novelwriter.constants import nwFiles, nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -73,10 +73,10 @@ class Config:
             self._appPath = self._appRoot
 
         # Runtime Settings and Variables
-        self._hasError   = False  # True if the config class encountered an error
-        self._errData    = []     # List of error messages
-        self.confChanged = False  # True whenever the config has chenged, false after save
-        self.cmdOpen     = None   # Path from command line for project to be opened on launch
+        self._hasError    = False  # True if the config class encountered an error
+        self._errData     = []     # List of error messages
+        self._confChanged = False  # True whenever the config has chenged, false after save
+        self.cmdOpen      = None   # Path from command line for project to be opened on launch
 
         # Localisation Info
         self._qLocal     = QLocale.system()
@@ -106,14 +106,13 @@ class Config:
         self.setDefaultSyntaxTheme()
 
         # Size Settings
-        self.winGeometry  = [1200, 650]
-        self.prefGeometry = [700, 615]
-        self.projColWidth = [200, 60, 140]
-        self.mainPanePos  = [300, 800]
-        self.docPanePos   = [400, 400]
-        self.viewPanePos  = [500, 150]
-        self.outlnPanePos = [500, 150]
-        self.isFullScreen = False
+        self._winGeometry  = [1200, 650]
+        self._prefGeometry = [700, 615]
+        self._projColWidth = [200, 60, 140]
+        self._mainPanePos  = [300, 800]
+        self._viewPanePos  = [500, 150]
+        self._outlnPanePos = [500, 150]
+        self.isFullScreen  = False
 
         # Feature Settings
         self.hideVScroll = False  # Hide vertical scroll bars on main widgets
@@ -258,6 +257,109 @@ class Config:
     def recentProjects(self):
         return self._recentProj
 
+    @property
+    def mainWinSize(self):
+        return [int(x*self.guiScale) for x in self._winGeometry]
+
+    @property
+    def preferencesWinSize(self):
+        return [int(x*self.guiScale) for x in self._prefGeometry]
+
+    @property
+    def projLoadColWidths(self):
+        return [int(x*self.guiScale) for x in self._projColWidth]
+
+    @property
+    def mainPanePos(self):
+        return [int(x*self.guiScale) for x in self._mainPanePos]
+
+    @property
+    def viewPanePos(self):
+        return [int(x*self.guiScale) for x in self._viewPanePos]
+
+    @property
+    def outlinePanePos(self):
+        return [int(x*self.guiScale) for x in self._outlnPanePos]
+
+    ##
+    #  Setters
+    ##
+
+    def setMainWinSize(self, newWidth, newHeight):
+        """Set the size of the main window, but only if the change is
+        larger than 5 pixels. The OS window manager will sometimes
+        adjust it a bit, and we don't want the main window to shrink or
+        grow each time the app is opened.
+        """
+        newWidth = int(newWidth/self.guiScale)
+        newHeight = int(newHeight/self.guiScale)
+        if abs(self._winGeometry[0] - newWidth) > 5:
+            self._winGeometry[0] = newWidth
+            self._confChanged = True
+        if abs(self._winGeometry[1] - newHeight) > 5:
+            self._winGeometry[1] = newHeight
+            self._confChanged = True
+        return
+
+    def setPreferencesWinSize(self, newWidth, newHeight):
+        """Sat the size of the Preferences dialog window.
+        """
+        self._prefGeometry[0] = int(newWidth/self.guiScale)
+        self._prefGeometry[1] = int(newHeight/self.guiScale)
+        self._confChanged = True
+        return
+
+    def setProjLoadColWidths(self, colWidths):
+        """Set the column widths of the Load Project dialog.
+        """
+        self._projColWidth = [int(x/self.guiScale) for x in colWidths]
+        self._confChanged = True
+        return
+
+    def setMainPanePos(self, panePos):
+        """Set the position of the main GUI splitter.
+        """
+        self._mainPanePos = [int(x/self.guiScale) for x in panePos]
+        self._confChanged = True
+        return
+
+    def setViewPanePos(self, panePos):
+        """Set the position of the viewer meta data splitter.
+        """
+        self._viewPanePos = [int(x/self.guiScale) for x in panePos]
+        self._confChanged = True
+        return
+
+    def setOutlinePanePos(self, panePos):
+        """Set the position of the outline details splitter.
+        """
+        self._outlnPanePos = [int(x/self.guiScale) for x in panePos]
+        self._confChanged = True
+        return
+
+    def setLastPath(self, lastPath):
+        """Set the last used path. Only the folder is saved, so if the
+        path is not a folder, the parent of the path is used instead.
+        """
+        if isinstance(lastPath, (str, Path)):
+            lastPath = Path(lastPath)
+            if not lastPath.is_dir():
+                lastPath = lastPath.parent
+            if lastPath.is_dir():
+                self._lastPath = lastPath
+                logger.debug("Last path updated: %s" % self._lastPath)
+        return
+
+    def setBackupPath(self, backupPath):
+        """Set the current backup path.
+        """
+        self._backupPath = checkPath(backupPath, None)
+        return
+
+    def setConfigChanged(self, value):
+        self._confChanged = bool(value)
+        return
+
     ##
     #  Methods
     ##
@@ -291,8 +393,9 @@ class Config:
     def lastPath(self):
         """Return the last path used by the user, but ensure it exists.
         """
-        if self._lastPath.is_dir():
-            return self._lastPath
+        if isinstance(self._lastPath, Path):
+            if self._lastPath.is_dir():
+                return self._lastPath
         return Path.home().absolute()
 
     def backupPath(self):
@@ -440,13 +543,12 @@ class Config:
 
         # Sizes
         cnfSec = "Sizes"
-        self.winGeometry   = theConf.rdIntList(cnfSec, "geometry", self.winGeometry)
-        self.prefGeometry  = theConf.rdIntList(cnfSec, "preferences", self.prefGeometry)
-        self.projColWidth  = theConf.rdIntList(cnfSec, "projcols", self.projColWidth)
-        self.mainPanePos   = theConf.rdIntList(cnfSec, "mainpane", self.mainPanePos)
-        self.docPanePos    = theConf.rdIntList(cnfSec, "docpane", self.docPanePos)
-        self.viewPanePos   = theConf.rdIntList(cnfSec, "viewpane", self.viewPanePos)
-        self.outlnPanePos  = theConf.rdIntList(cnfSec, "outlinepane", self.outlnPanePos)
+        self._winGeometry  = theConf.rdIntList(cnfSec, "geometry", self._winGeometry)
+        self._prefGeometry = theConf.rdIntList(cnfSec, "preferences", self._prefGeometry)
+        self._projColWidth = theConf.rdIntList(cnfSec, "projcols", self._projColWidth)
+        self._mainPanePos  = theConf.rdIntList(cnfSec, "mainpane", self._mainPanePos)
+        self._viewPanePos  = theConf.rdIntList(cnfSec, "viewpane", self._viewPanePos)
+        self._outlnPanePos = theConf.rdIntList(cnfSec, "outlinepane", self._outlnPanePos)
         self.isFullScreen  = theConf.rdBool(cnfSec, "fullscreen", self.isFullScreen)
 
         # Project
@@ -496,10 +598,9 @@ class Config:
 
         # Backup
         cnfSec = "Backup"
-        backupPath           = theConf.rdStr(cnfSec, "backuppath", None)
+        self._backupPath     = theConf.rdPath(cnfSec, "backuppath", self._backupPath)
         self.backupOnClose   = theConf.rdBool(cnfSec, "backuponclose", self.backupOnClose)
         self.askBeforeBackup = theConf.rdBool(cnfSec, "askbeforebackup", self.askBeforeBackup)
-        self.setBackupPath(backupPath)
 
         # State
         cnfSec = "State"
@@ -515,7 +616,7 @@ class Config:
 
         # Path
         cnfSec = "Path"
-        self._lastPath = Path(theConf.rdStr(cnfSec, "lastpath", self._lastPath))
+        self._lastPath = theConf.rdPath(cnfSec, "lastpath", self._lastPath)
 
         # Check Certain Values for None
         self.spellLanguage = self._checkNone(self.spellLanguage)
@@ -551,13 +652,12 @@ class Config:
         }
 
         theConf["Sizes"] = {
-            "geometry":    self._packList(self.winGeometry),
-            "preferences": self._packList(self.prefGeometry),
-            "projcols":    self._packList(self.projColWidth),
-            "mainpane":    self._packList(self.mainPanePos),
-            "docpane":     self._packList(self.docPanePos),
-            "viewpane":    self._packList(self.viewPanePos),
-            "outlinepane": self._packList(self.outlnPanePos),
+            "geometry":    self._packList(self._winGeometry),
+            "preferences": self._packList(self._prefGeometry),
+            "projcols":    self._packList(self._projColWidth),
+            "mainpane":    self._packList(self._mainPanePos),
+            "viewpane":    self._packList(self._viewPanePos),
+            "outlinepane": self._packList(self._outlnPanePos),
             "fullscreen":  str(self.isFullScreen),
         }
 
@@ -633,7 +733,7 @@ class Config:
         try:
             with open(cnfPath, mode="w", encoding="utf-8") as outFile:
                 theConf.write(outFile)
-            self.confChanged = False
+            self._confChanged = False
         except Exception as exc:
             logger.error("Could not save config file")
             logException()
@@ -648,105 +748,25 @@ class Config:
     #  Setters
     ##
 
-    def setLastPath(self, lastPath):
-        """Set the last used path. Only the folder is saved, so if the
-        path is not a folder, the parent of the path is used instead.
-        """
-        if isinstance(lastPath, (str, Path)):
-            lastPath = Path(lastPath)
-            if not lastPath.is_dir():
-                lastPath = lastPath.parent
-            if lastPath.is_dir():
-                self._lastPath = lastPath
-                logger.debug("Last path updated: %s" % self._lastPath)
-        return
-
-    def setBackupPath(self, backupPath):
-        """Set the current backup path.
-        """
-        self._backupPath = None
-        if isinstance(backupPath, (str, Path)):
-            self._backupPath = Path(backupPath)
-        return
-
-    def setWinSize(self, newWidth, newHeight):
-        """Set the size of the main window, but only if the change is
-        larger than 5 pixels. The OS window manager will sometimes
-        adjust it a bit, and we don't want the main window to shrink or
-        grow each time the app is opened.
-        """
-        newWidth = int(newWidth/self.guiScale)
-        newHeight = int(newHeight/self.guiScale)
-        if abs(self.winGeometry[0] - newWidth) > 5:
-            self.winGeometry[0] = newWidth
-            self.confChanged = True
-        if abs(self.winGeometry[1] - newHeight) > 5:
-            self.winGeometry[1] = newHeight
-            self.confChanged = True
-        return
-
-    def setPreferencesSize(self, newWidth, newHeight):
-        """Sat the size of the Preferences dialog window.
-        """
-        self.prefGeometry[0] = int(newWidth/self.guiScale)
-        self.prefGeometry[1] = int(newHeight/self.guiScale)
-        self.confChanged = True
-        return
-
-    def setProjColWidths(self, colWidths):
-        """Set the column widths of the Load Project dialog.
-        """
-        self.projColWidth = [int(x/self.guiScale) for x in colWidths]
-        self.confChanged = True
-        return
-
-    def setMainPanePos(self, panePos):
-        """Set the position of the main GUI splitter.
-        """
-        self.mainPanePos = [int(x/self.guiScale) for x in panePos]
-        self.confChanged = True
-        return
-
-    def setDocPanePos(self, panePos):
-        """Set the position of the main editor/viewer splitter.
-        """
-        self.docPanePos = [int(x/self.guiScale) for x in panePos]
-        self.confChanged = True
-        return
-
-    def setViewPanePos(self, panePos):
-        """Set the position of the viewer meta data splitter.
-        """
-        self.viewPanePos = [int(x/self.guiScale) for x in panePos]
-        self.confChanged = True
-        return
-
-    def setOutlinePanePos(self, panePos):
-        """Set the position of the outline details splitter.
-        """
-        self.outlnPanePos = [int(x/self.guiScale) for x in panePos]
-        self.confChanged = True
-        return
-
     def setShowRefPanel(self, checkState):
         """Set the visibility state of the reference panel.
         """
         self.showRefPanel = checkState
-        self.confChanged = True
+        self._confChanged = True
         return
 
     def setViewComments(self, viewState):
         """Set the visibility state of comments in the viewer.
         """
         self.viewComments = viewState
-        self.confChanged = True
+        self._confChanged = True
         return
 
     def setViewSynopsis(self, viewState):
         """Set the visibility state of synopsis comments in the viewer.
         """
         self.viewSynopsis = viewState
-        self.confChanged = True
+        self._confChanged = True
         return
 
     ##
@@ -766,27 +786,6 @@ class Config:
     ##
     #  Getters
     ##
-
-    def getWinSize(self):
-        return [int(x*self.guiScale) for x in self.winGeometry]
-
-    def getPreferencesSize(self):
-        return [int(x*self.guiScale) for x in self.prefGeometry]
-
-    def getProjColWidths(self):
-        return [int(x*self.guiScale) for x in self.projColWidth]
-
-    def getMainPanePos(self):
-        return [int(x*self.guiScale) for x in self.mainPanePos]
-
-    def getDocPanePos(self):
-        return [int(x*self.guiScale) for x in self.docPanePos]
-
-    def getViewPanePos(self):
-        return [int(x*self.guiScale) for x in self.viewPanePos]
-
-    def getOutlinePanePos(self):
-        return [int(x*self.guiScale) for x in self.outlnPanePos]
 
     def getTextWidth(self, focusMode=False):
         if focusMode:

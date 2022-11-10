@@ -23,15 +23,17 @@ import time
 import pytest
 import hashlib
 
+from pathlib import Path
+
 from mock import causeOSError
 from tools import writeFile
 
 from novelwriter.guimain import GuiMain
 from novelwriter.common import (
     checkStringNone, checkString, checkInt, checkFloat, checkBool, checkHandle,
-    checkUuid, isHandle, isTitleTag, isItemClass, isItemType, isItemLayout,
-    hexToInt, minmax, checkIntTuple, formatInt, formatTimeStamp, formatTime,
-    simplified, yesNo, splitVersionNumber, transferCase, fuzzyTime,
+    checkUuid, checkPath, isHandle, isTitleTag, isItemClass, isItemType,
+    isItemLayout, hexToInt, minmax, checkIntTuple, formatInt, formatTimeStamp,
+    formatTime, simplified, yesNo, splitVersionNumber, transferCase, fuzzyTime,
     numberToRoman, jsonEncode, readTextFile, makeFileNameSafe, sha256sum,
     getGuiItem, NWConfigParser
 )
@@ -173,6 +175,19 @@ def testBaseCommon_CheckUuid():
     assert checkUuid(testUuid, None) == testUuid
 
 # END Test testBaseCommon_CheckUuid
+
+
+@pytest.mark.base
+def testBaseCommon_CheckPath():
+    """Test the checkPath function.
+    """
+    assert checkPath(Path("test"), None) == Path("test")
+    assert checkPath("test", None) == Path("test")
+    assert checkPath(None, None) is None
+    assert checkPath("", None) is None
+    assert checkPath("   ", None) is None
+
+# END Test testBaseCommon_CheckPath
 
 
 @pytest.mark.base

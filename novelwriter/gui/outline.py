@@ -71,7 +71,7 @@ class GuiOutlineView(QWidget):
         self.splitOutline = QSplitter(Qt.Vertical)
         self.splitOutline.addWidget(self.outlineTree)
         self.splitOutline.addWidget(self.outlineData)
-        self.splitOutline.setSizes(self.mainConf.getOutlinePanePos())
+        self.splitOutline.setSizes(self.mainConf.outlinePanePos)
 
         # Assemble
         self.outerBox = QVBoxLayout()

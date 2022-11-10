@@ -215,7 +215,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     qtbot.mouseClick(nwPrefs.buttonBox.button(QDialogButtonBox.Ok), Qt.LeftButton)
     nwPrefs._doClose()
 
-    assert theConf.confChanged
+    assert theConf._confChanged is True
 
     assert nwGUI.mainConf.saveConfig()
     projFile = fncPath / "novelwriter.conf"

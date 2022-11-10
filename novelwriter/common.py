@@ -124,6 +124,17 @@ def checkUuid(value, default):
         return default
 
 
+def checkPath(value, default):
+    """Check if a value is a valid path. Non-empty strings are accepted.
+    """
+    if isinstance(value, Path):
+        return value
+    elif isinstance(value, str):
+        if value.strip():
+            return Path(value)
+    return default
+
+
 # =============================================================================================== #
 #  Validator Functions
 # =============================================================================================== #
@@ -551,6 +562,11 @@ class NWConfigParser(ConfigParser):
         except ValueError:
             logger.error("Could not read '%s':'%s' from config", section, option)
         return default
+
+    def rdPath(self, section, option, default):
+        """Read a path value.
+        """
+        return checkPath(self.get(section, option, fallback=default), default)
 
     def rdStrList(self, section, option, default):
         """Read string list.
