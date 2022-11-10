@@ -73,6 +73,7 @@ class GuiProjectView(QWidget):
         # Build GUI
         self.projTree = GuiProjectTree(self)
         self.projBar = GuiProjectToolBar(self)
+        self.projBar.setEnabled(False)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -136,6 +137,7 @@ class GuiProjectView(QWidget):
         """Clear project-related GUI content.
         """
         self.projBar.clearContent()
+        self.projBar.setEnabled(False)
         self.projTree.clearTree()
         return
 
@@ -143,6 +145,7 @@ class GuiProjectView(QWidget):
         """Run open project tasks.
         """
         self.projBar.buildQuickLinkMenu()
+        self.projBar.setEnabled(True)
         return
 
     def saveProjectTasks(self):

@@ -69,8 +69,9 @@ class GuiNovelView(QWidget):
         self.theProject = mainGui.theProject
 
         # Build GUI
-        self.novelBar = GuiNovelToolBar(self)
         self.novelTree = GuiNovelTree(self)
+        self.novelBar = GuiNovelToolBar(self)
+        self.novelBar.setEnabled(False)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -117,6 +118,7 @@ class GuiNovelView(QWidget):
         """
         self.novelTree.clearContent()
         self.novelBar.clearContent()
+        self.novelBar.setEnabled(False)
         return
 
     def openProjectTasks(self):
@@ -136,6 +138,7 @@ class GuiNovelView(QWidget):
         self.novelBar.buildNovelRootMenu()
         self.novelBar.setLastColType(lastCol, doRefresh=False)
         self.novelBar.setCurrentRoot(lastNovel)
+        self.novelBar.setEnabled(True)
 
         return
 
