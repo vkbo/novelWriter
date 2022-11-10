@@ -77,7 +77,6 @@ class GuiProjectLoad(QDialog):
         self.setWindowTitle(self.tr("Open Project"))
         self.setMinimumWidth(self.mainConf.pxInt(650))
         self.setMinimumHeight(self.mainConf.pxInt(400))
-        self.setModal(True)
 
         self.nwIcon = QLabel()
         self.nwIcon.setPixmap(self.mainGui.mainTheme.getPixmap("novelwriter", (nPx, nPx)))

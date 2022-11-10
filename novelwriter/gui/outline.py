@@ -64,9 +64,10 @@ class GuiOutlineView(QWidget):
         self.theProject = mainGui.theProject
 
         # Build GUI
-        self.outlineBar  = GuiOutlineToolBar(self)
         self.outlineTree = GuiOutlineTree(self)
         self.outlineData = GuiOutlineDetails(self)
+        self.outlineBar = GuiOutlineToolBar(self)
+        self.outlineBar.setEnabled(False)
 
         self.splitOutline = QSplitter(Qt.Vertical)
         self.splitOutline.addWidget(self.outlineTree)
@@ -121,6 +122,7 @@ class GuiOutlineView(QWidget):
         """Clear project-related GUI content.
         """
         self.outlineData.clearDetails()
+        self.outlineBar.setEnabled(False)
         return
 
     def openProjectTasks(self):
@@ -135,6 +137,7 @@ class GuiOutlineView(QWidget):
         self.clearProject()
         self.outlineBar.populateNovelList()
         self.outlineBar.setCurrentRoot(lastOutline)
+        self.outlineBar.setEnabled(True)
 
         return
 
