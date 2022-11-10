@@ -258,7 +258,7 @@ class GuiProjectLoad(QDialog):
         colWidths[self.C_NAME]  = self.listBox.columnWidth(self.C_NAME)
         colWidths[self.C_COUNT] = self.listBox.columnWidth(self.C_COUNT)
         colWidths[self.C_TIME]  = self.listBox.columnWidth(self.C_TIME)
-        self.mainConf.setProjColWidths(colWidths)
+        self.mainConf.setProjLoadColWidths(colWidths)
         return
 
     def _populateList(self):
@@ -284,7 +284,7 @@ class GuiProjectLoad(QDialog):
         if self.listBox.topLevelItemCount() > 0:
             self.listBox.topLevelItem(0).setSelected(True)
 
-        projColWidth = self.mainConf.getProjColWidths()
+        projColWidth = self.mainConf.projLoadColWidths
         if len(projColWidth) == 3:
             self.listBox.setColumnWidth(self.C_NAME,  projColWidth[self.C_NAME])
             self.listBox.setColumnWidth(self.C_COUNT, projColWidth[self.C_COUNT])

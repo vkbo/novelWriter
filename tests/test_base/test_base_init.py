@@ -138,7 +138,6 @@ def testBaseInit_Options(monkeypatch, tmpPath):
     nwGUI = novelwriter.main(
         ["--testmode", f"--config={tmpPath}", f"--data={tmpPath}", "sample/"]
     )
-    assert novelwriter.CONFIG.cmdOpen == "sample/"
     assert nwGUI.closeMain() == "closeMain"
 
 # END Test testBaseInit_Options

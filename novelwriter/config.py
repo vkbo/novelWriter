@@ -37,7 +37,7 @@ from PyQt5.QtCore import (
 )
 
 from novelwriter.error import logException, formatException
-from novelwriter.common import splitVersionNumber, formatTimeStamp, NWConfigParser
+from novelwriter.common import checkPath, splitVersionNumber, formatTimeStamp, NWConfigParser
 from novelwriter.constants import nwFiles, nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ class Config:
 
         self._confPath = confRoot.absolute() / self.appHandle  # The user config location
         self._dataPath = dataRoot.absolute() / self.appHandle  # The user data location
-        self._lastPath = Path.home().absolute()  # The user's last used path
+        self._homePath = Path.home().absolute()  # The user's home directory
 
         self._appPath = Path(__file__).parent.absolute()
         self._appRoot = self._appPath.parent
@@ -73,13 +73,12 @@ class Config:
             self._appPath = self._appRoot
 
         # Runtime Settings and Variables
-        self._hasError   = False  # True if the config class encountered an error
-        self._errData    = []     # List of error messages
-        self.confChanged = False  # True whenever the config has chenged, false after save
-        self.cmdOpen     = None   # Path from command line for project to be opened on launch
+        self._hasError = False  # True if the config class encountered an error
+        self._errData  = []     # List of error messages
 
-        # Localisation Info
-        self._qLocal     = QLocale.system()
+        # Localisation
+        # Note that these paths must be strings
+        self._qLocale    = QLocale.system()
         self._qtTrans    = {}
         self._qtLangPath = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
         self._nwLangPath = str(self._appPath / "assets" / "i18n")
@@ -91,38 +90,35 @@ class Config:
         # User Settings
         # =============
 
-        self._recentProj = RecentProjects(self._dataPath)
+        self._recentProj = RecentProjects(self)
 
         # General GUI Settings
-        self.guiLang     = self._qLocal.name()
-        self.guiTheme    = ""     # GUI theme
-        self.guiSyntax   = ""     # Syntax theme
-        self.guiFont     = ""     # Defaults to system default font
-        self.guiFontSize = 11     # Is overridden if system default is loaded
-        self.guiScale    = 1.0    # Set automatically by Theme class
-        self.lastNotes   = "0x0"  # The latest release notes that have been shown
-
-        self.setDefaultGuiTheme()
-        self.setDefaultSyntaxTheme()
+        self.guiLocale   = self._qLocale.name()
+        self.guiTheme    = "default"        # GUI theme
+        self.guiSyntax   = "default_light"  # Syntax theme
+        self.guiFont     = ""               # Defaults to system default font in theme class
+        self.guiFontSize = 11               # Is overridden if system default is loaded
+        self.guiScale    = 1.0              # Set automatically by Theme class
+        self.hideVScroll = False            # Hide vertical scroll bars on main widgets
+        self.hideHScroll = False            # Hide horizontal scroll bars on main widgets
+        self.lastNotes   = "0x0"            # The latest release notes that have been shown
+        self._lastPath   = self._homePath   # The user's last used path
 
         # Size Settings
-        self.winGeometry  = [1200, 650]
-        self.prefGeometry = [700, 615]
-        self.projColWidth = [200, 60, 140]
-        self.mainPanePos  = [300, 800]
-        self.docPanePos   = [400, 400]
-        self.viewPanePos  = [500, 150]
-        self.outlnPanePos = [500, 150]
-        self.isFullScreen = False
-
-        # Feature Settings
-        self.hideVScroll = False  # Hide vertical scroll bars on main widgets
-        self.hideHScroll = False  # Hide horizontal scroll bars on main widgets
-        self.emphLabels  = True   # Add emphasis to H1 and H2 item labels
+        self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
+        self._prefsWinSize = [700, 615]      # Last size of the Preferences dialog
+        self._projLoadCols = [280, 60, 160]  # Last columns withs of the Project Load dialog
+        self._mainPanePos  = [300, 800]      # Last position of the main window splitter
+        self._viewPanePos  = [500, 150]      # Last position of the document viewer splitter
+        self._outlnPanePos = [500, 150]      # Last position of the outline panel splitter
 
         # Project Settings
-        self.autoSaveProj = 60  # Interval for auto-saving project in seconds
-        self.autoSaveDoc  = 30  # Interval for auto-saving document in seconds
+        self.autoSaveProj    = 60     # Interval for auto-saving project, in seconds
+        self.autoSaveDoc     = 30     # Interval for auto-saving document, in seconds
+        self.emphLabels      = True   # Add emphasis to H1 and H2 item labels
+        self._backupPath     = None   # Backup path to use, can be none
+        self.backupOnClose   = False  # Flag for running automatic backups
+        self.askBeforeBackup = True   # Flag for asking before running automatic backup
 
         # Text Editor Settings
         self.textFont        = None   # Editor font
@@ -174,6 +170,12 @@ class Config:
         # Spell Checking Settings
         self.spellLanguage = "en"
 
+        # State
+        self.isFullScreen = False  # Last fullscreen state
+        self.showRefPanel = True   # The reference panel for the viewer is visible
+        self.viewComments = True   # Comments are shown in the viewer
+        self.viewSynopsis = True   # Synopsis is shown in the viewer
+
         # Search Bar Switches
         self.searchCase     = False
         self.searchWord     = False
@@ -181,16 +183,6 @@ class Config:
         self.searchLoop     = False
         self.searchNextFile = False
         self.searchMatchCap = False
-
-        # Backup Settings
-        self._backupPath     = None
-        self.backupOnClose   = False
-        self.askBeforeBackup = True
-
-        # State
-        self.showRefPanel = True  # The reference panel for the viewer is visible
-        self.viewComments = True  # Comments are shown in the viewer
-        self.viewSynopsis = True  # Synopsis is shown in the viewer
 
         # System and App Information
         # ==========================
@@ -258,6 +250,111 @@ class Config:
     def recentProjects(self):
         return self._recentProj
 
+    @property
+    def mainWinSize(self):
+        return [int(x*self.guiScale) for x in self._mainWinSize]
+
+    @property
+    def preferencesWinSize(self):
+        return [int(x*self.guiScale) for x in self._prefsWinSize]
+
+    @property
+    def projLoadColWidths(self):
+        return [int(x*self.guiScale) for x in self._projLoadCols]
+
+    @property
+    def mainPanePos(self):
+        return [int(x*self.guiScale) for x in self._mainPanePos]
+
+    @property
+    def viewPanePos(self):
+        return [int(x*self.guiScale) for x in self._viewPanePos]
+
+    @property
+    def outlinePanePos(self):
+        return [int(x*self.guiScale) for x in self._outlnPanePos]
+
+    ##
+    #  Getters
+    ##
+
+    def getTextWidth(self, focusMode=False):
+        """Get the text with for the correct editor mode."""
+        if focusMode:
+            return self.pxInt(max(self.focusWidth, 200))
+        else:
+            return self.pxInt(max(self.textWidth, 200))
+
+    def getTextMargin(self):
+        """Get the scaled text margin."""
+        return self.pxInt(max(self.textMargin, 0))
+
+    def getTabWidth(self):
+        """Get the scaled tab width."""
+        return self.pxInt(max(self.tabWidth, 0))
+
+    ##
+    #  Setters
+    ##
+
+    def setMainWinSize(self, newWidth, newHeight):
+        """Set the size of the main window, but only if the change is
+        larger than 5 pixels. The OS window manager will sometimes
+        adjust it a bit, and we don't want the main window to shrink or
+        grow each time the app is opened.
+        """
+        newWidth = int(newWidth/self.guiScale)
+        newHeight = int(newHeight/self.guiScale)
+        if abs(self._mainWinSize[0] - newWidth) > 5:
+            self._mainWinSize[0] = newWidth
+        if abs(self._mainWinSize[1] - newHeight) > 5:
+            self._mainWinSize[1] = newHeight
+        return
+
+    def setPreferencesWinSize(self, newWidth, newHeight):
+        """Set the size of the Preferences dialog window."""
+        self._prefsWinSize[0] = int(newWidth/self.guiScale)
+        self._prefsWinSize[1] = int(newHeight/self.guiScale)
+        return
+
+    def setProjLoadColWidths(self, colWidths):
+        """Set the column widths of the Load Project dialog."""
+        self._projLoadCols = [int(x/self.guiScale) for x in colWidths]
+        return
+
+    def setMainPanePos(self, panePos):
+        """Set the position of the main GUI splitter."""
+        self._mainPanePos = [int(x/self.guiScale) for x in panePos]
+        return
+
+    def setViewPanePos(self, panePos):
+        """Set the position of the viewer meta data splitter."""
+        self._viewPanePos = [int(x/self.guiScale) for x in panePos]
+        return
+
+    def setOutlinePanePos(self, panePos):
+        """Set the position of the outline details splitter."""
+        self._outlnPanePos = [int(x/self.guiScale) for x in panePos]
+        return
+
+    def setLastPath(self, lastPath):
+        """Set the last used path. Only the folder is saved, so if the
+        path is not a folder, the parent of the path is used instead.
+        """
+        if isinstance(lastPath, (str, Path)):
+            lastPath = checkPath(lastPath, self._homePath)
+            if not lastPath.is_dir():
+                lastPath = lastPath.parent
+            if lastPath.is_dir():
+                self._lastPath = lastPath
+                logger.debug("Last path updated: %s" % self._lastPath)
+        return
+
+    def setBackupPath(self, backupPath):
+        """Set the current backup path."""
+        self._backupPath = checkPath(backupPath, None)
+        return
+
     ##
     #  Methods
     ##
@@ -275,15 +372,13 @@ class Config:
         return int(theSize/self.guiScale)
 
     def dataPath(self, target=None):
-        """Return a path in the data folder.
-        """
+        """Return a path in the data folder."""
         if isinstance(target, str):
             return self._dataPath / target
         return self._dataPath
 
     def assetPath(self, target=None):
-        """Return a path in the assets folder.
-        """
+        """Return a path in the assets folder."""
         if isinstance(target, str):
             return self._appPath / "assets" / target
         return self._appPath / "assets"
@@ -291,13 +386,13 @@ class Config:
     def lastPath(self):
         """Return the last path used by the user, but ensure it exists.
         """
-        if self._lastPath.is_dir():
-            return self._lastPath
-        return Path.home().absolute()
+        if isinstance(self._lastPath, Path):
+            if self._lastPath.is_dir():
+                return self._lastPath
+        return self._homePath
 
     def backupPath(self):
-        """Return the backup path.
-        """
+        """Return the backup path."""
         if isinstance(self._backupPath, Path):
             if self._backupPath.is_dir():
                 return self._backupPath
@@ -311,6 +406,33 @@ class Config:
         self._hasError = False
         self._errData = []
         return errMessage
+
+    def listLanguages(self, lngSet):
+        """List localisation files in the i18n folder. The default GUI
+        language is British English (en_GB).
+        """
+        if lngSet == self.LANG_NW:
+            fPre = "nw_"
+            fExt = ".qm"
+            langList = {"en_GB": QLocale("en_GB").nativeLanguageName().title()}
+        elif lngSet == self.LANG_PROJ:
+            fPre = "project_"
+            fExt = ".json"
+            langList = {"en_GB": QLocale("en_GB").nativeLanguageName().title()}
+        else:
+            return []
+
+        for qmFile in Path(self._nwLangPath).iterdir():
+            qmName = qmFile.name
+            if not (qmFile.is_file() and qmName.startswith(fPre) and qmName.endswith(fExt)):
+                continue
+
+            qmLang = qmName[len(fPre):-len(fExt)]
+            qmName = QLocale(qmLang).nativeLanguageName().title()
+            if qmLang and qmName and qmLang != "en_GB":
+                langList[qmLang] = qmName
+
+        return sorted(langList.items(), key=lambda x: x[0])
 
     ##
     #  Config Actions
@@ -361,53 +483,25 @@ class Config:
     def initLocalisation(self, nwApp):
         """Initialise the localisation of the GUI.
         """
-        self._qLocal = QLocale(self.guiLang)
-        QLocale.setDefault(self._qLocal)
+        self._qLocale = QLocale(self.guiLocale)
+        QLocale.setDefault(self._qLocale)
         self._qtTrans = {}
 
         langList = [
             (self._qtLangPath, "qtbase"),  # Qt 5.x
-            (self._nwLangPath, "qtbase"),  # Alternative Qt 5.x
             (self._nwLangPath, "nw"),      # novelWriter
         ]
         for lngPath, lngBase in langList:
-            for lngCode in self._qLocal.uiLanguages():
+            for lngCode in self._qLocale.uiLanguages():
                 qTrans = QTranslator()
                 lngFile = "%s_%s" % (lngBase, lngCode.replace("-", "_"))
                 if lngFile not in self._qtTrans:
-                    if qTrans.load(lngFile, str(lngPath)):
-                        logger.debug("Loaded: %s/%s", lngPath, lngFile)
+                    if qTrans.load(lngFile, lngPath):
+                        logger.debug("Loaded: %s.qm", lngFile)
                         nwApp.installTranslator(qTrans)
                         self._qtTrans[lngFile] = qTrans
 
         return
-
-    def listLanguages(self, lngSet):
-        """List localisation files in the i18n folder. The default GUI
-        language is British English (en_GB).
-        """
-        if lngSet == self.LANG_NW:
-            fPre = "nw_"
-            fExt = ".qm"
-            langList = {"en_GB": QLocale("en_GB").nativeLanguageName().title()}
-        elif lngSet == self.LANG_PROJ:
-            fPre = "project_"
-            fExt = ".json"
-            langList = {"en_GB": QLocale("en_GB").nativeLanguageName().title()}
-        else:
-            return []
-
-        for qmFile in Path(self._nwLangPath).iterdir():
-            qmName = qmFile.name
-            if not (qmFile.is_file() and qmName.startswith(fPre) and qmName.endswith(fExt)):
-                continue
-
-            qmLang = qmName[len(fPre):-len(fExt)]
-            qmName = QLocale(qmLang).nativeLanguageName().title()
-            if qmLang and qmName and qmLang != "en_GB":
-                langList[qmLang] = qmName
-
-        return sorted(langList.items(), key=lambda x: x[0])
 
     def loadConfig(self):
         """Load preferences from file and replace default settings.
@@ -431,29 +525,31 @@ class Config:
         cnfSec = "Main"
         self.guiTheme    = theConf.rdStr(cnfSec, "theme", self.guiTheme)
         self.guiSyntax   = theConf.rdStr(cnfSec, "syntax", self.guiSyntax)
-        self.guiFont     = theConf.rdStr(cnfSec, "guifont", self.guiFont)
-        self.guiFontSize = theConf.rdInt(cnfSec, "guifontsize", self.guiFontSize)
-        self.lastNotes   = theConf.rdStr(cnfSec, "lastnotes", self.lastNotes)
-        self.guiLang     = theConf.rdStr(cnfSec, "guilang", self.guiLang)
+        self.guiFont     = theConf.rdStr(cnfSec, "font", self.guiFont)
+        self.guiFontSize = theConf.rdInt(cnfSec, "fontsize", self.guiFontSize)
+        self.guiLocale   = theConf.rdStr(cnfSec, "localisation", self.guiLocale)
         self.hideVScroll = theConf.rdBool(cnfSec, "hidevscroll", self.hideVScroll)
         self.hideHScroll = theConf.rdBool(cnfSec, "hidehscroll", self.hideHScroll)
+        self.lastNotes   = theConf.rdStr(cnfSec, "lastnotes", self.lastNotes)
+        self._lastPath   = theConf.rdPath(cnfSec, "lastpath", self._lastPath)
 
         # Sizes
         cnfSec = "Sizes"
-        self.winGeometry   = theConf.rdIntList(cnfSec, "geometry", self.winGeometry)
-        self.prefGeometry  = theConf.rdIntList(cnfSec, "preferences", self.prefGeometry)
-        self.projColWidth  = theConf.rdIntList(cnfSec, "projcols", self.projColWidth)
-        self.mainPanePos   = theConf.rdIntList(cnfSec, "mainpane", self.mainPanePos)
-        self.docPanePos    = theConf.rdIntList(cnfSec, "docpane", self.docPanePos)
-        self.viewPanePos   = theConf.rdIntList(cnfSec, "viewpane", self.viewPanePos)
-        self.outlnPanePos  = theConf.rdIntList(cnfSec, "outlinepane", self.outlnPanePos)
-        self.isFullScreen  = theConf.rdBool(cnfSec, "fullscreen", self.isFullScreen)
+        self._mainWinSize  = theConf.rdIntList(cnfSec, "mainwindow", self._mainWinSize)
+        self._prefsWinSize = theConf.rdIntList(cnfSec, "preferences", self._prefsWinSize)
+        self._projLoadCols = theConf.rdIntList(cnfSec, "projloadcols", self._projLoadCols)
+        self._mainPanePos  = theConf.rdIntList(cnfSec, "mainpane", self._mainPanePos)
+        self._viewPanePos  = theConf.rdIntList(cnfSec, "viewpane", self._viewPanePos)
+        self._outlnPanePos = theConf.rdIntList(cnfSec, "outlinepane", self._outlnPanePos)
 
         # Project
         cnfSec = "Project"
-        self.autoSaveProj = theConf.rdInt(cnfSec, "autosaveproject", self.autoSaveProj)
-        self.autoSaveDoc  = theConf.rdInt(cnfSec, "autosavedoc", self.autoSaveDoc)
-        self.emphLabels   = theConf.rdBool(cnfSec, "emphlabels", self.emphLabels)
+        self.autoSaveProj    = theConf.rdInt(cnfSec, "autosaveproject", self.autoSaveProj)
+        self.autoSaveDoc     = theConf.rdInt(cnfSec, "autosavedoc", self.autoSaveDoc)
+        self.emphLabels      = theConf.rdBool(cnfSec, "emphlabels", self.emphLabels)
+        self._backupPath     = theConf.rdPath(cnfSec, "backuppath", self._backupPath)
+        self.backupOnClose   = theConf.rdBool(cnfSec, "backuponclose", self.backupOnClose)
+        self.askBeforeBackup = theConf.rdBool(cnfSec, "askbeforebackup", self.askBeforeBackup)
 
         # Editor
         cnfSec = "Editor"
@@ -494,15 +590,9 @@ class Config:
         self.stopWhenIdle    = theConf.rdBool(cnfSec, "stopwhenidle", self.stopWhenIdle)
         self.userIdleTime    = theConf.rdInt(cnfSec, "useridletime", self.userIdleTime)
 
-        # Backup
-        cnfSec = "Backup"
-        backupPath           = theConf.rdStr(cnfSec, "backuppath", None)
-        self.backupOnClose   = theConf.rdBool(cnfSec, "backuponclose", self.backupOnClose)
-        self.askBeforeBackup = theConf.rdBool(cnfSec, "askbeforebackup", self.askBeforeBackup)
-        self.setBackupPath(backupPath)
-
         # State
         cnfSec = "State"
+        self.isFullScreen   = theConf.rdBool(cnfSec, "fullscreen", self.isFullScreen)
         self.showRefPanel   = theConf.rdBool(cnfSec, "showrefpanel", self.showRefPanel)
         self.viewComments   = theConf.rdBool(cnfSec, "viewcomments", self.viewComments)
         self.viewSynopsis   = theConf.rdBool(cnfSec, "viewsynopsis", self.viewSynopsis)
@@ -513,9 +603,14 @@ class Config:
         self.searchNextFile = theConf.rdBool(cnfSec, "searchnextfile", self.searchNextFile)
         self.searchMatchCap = theConf.rdBool(cnfSec, "searchmatchcap", self.searchMatchCap)
 
-        # Path
-        cnfSec = "Path"
-        self._lastPath = Path(theConf.rdStr(cnfSec, "lastpath", self._lastPath))
+        # Deprecated Settings or Locations as of 2.0
+        # These will be loaded for a few minor releases until the users have converted them
+        self.guiFont         = theConf.rdStr("Main", "guifont", self.guiFont)
+        self.guiFontSize     = theConf.rdInt("Main", "guifontsize", self.guiFontSize)
+        self.guiLocale         = theConf.rdStr("Main", "guilang", self.guiLocale)
+        self._backupPath     = theConf.rdPath("Backup", "backuppath", self._backupPath)
+        self.backupOnClose   = theConf.rdBool("Backup", "backuponclose", self.backupOnClose)
+        self.askBeforeBackup = theConf.rdBool("Backup", "askbeforebackup", self.askBeforeBackup)
 
         # Check Certain Values for None
         self.spellLanguage = self._checkNone(self.spellLanguage)
@@ -538,33 +633,38 @@ class Config:
 
         theConf = NWConfigParser()
 
+        theConf["Meta"] = {
+            "timestamp":    formatTimeStamp(time()),
+        }
+
         theConf["Main"] = {
-            "timestamp":   formatTimeStamp(time()),
-            "theme":       str(self.guiTheme),
-            "syntax":      str(self.guiSyntax),
-            "guifont":     str(self.guiFont),
-            "guifontsize": str(self.guiFontSize),
-            "lastnotes":   str(self.lastNotes),
-            "guilang":     str(self.guiLang),
-            "hidevscroll": str(self.hideVScroll),
-            "hidehscroll": str(self.hideHScroll),
+            "theme":        str(self.guiTheme),
+            "syntax":       str(self.guiSyntax),
+            "font":         str(self.guiFont),
+            "fontsize":     str(self.guiFontSize),
+            "localisation": str(self.guiLocale),
+            "hidevscroll":  str(self.hideVScroll),
+            "hidehscroll":  str(self.hideHScroll),
+            "lastnotes":    str(self.lastNotes),
+            "lastpath":     str(self._lastPath),
         }
 
         theConf["Sizes"] = {
-            "geometry":    self._packList(self.winGeometry),
-            "preferences": self._packList(self.prefGeometry),
-            "projcols":    self._packList(self.projColWidth),
-            "mainpane":    self._packList(self.mainPanePos),
-            "docpane":     self._packList(self.docPanePos),
-            "viewpane":    self._packList(self.viewPanePos),
-            "outlinepane": self._packList(self.outlnPanePos),
-            "fullscreen":  str(self.isFullScreen),
+            "mainwindow":   self._packList(self._mainWinSize),
+            "preferences":  self._packList(self._prefsWinSize),
+            "projloadcols": self._packList(self._projLoadCols),
+            "mainpane":     self._packList(self._mainPanePos),
+            "viewpane":     self._packList(self._viewPanePos),
+            "outlinepane":  self._packList(self._outlnPanePos),
         }
 
         theConf["Project"] = {
             "autosaveproject": str(self.autoSaveProj),
             "autosavedoc":     str(self.autoSaveDoc),
             "emphlabels":      str(self.emphLabels),
+            "backuppath":      str(self._backupPath or ""),
+            "backuponclose":   str(self.backupOnClose),
+            "askbeforebackup": str(self.askBeforeBackup),
         }
 
         theConf["Editor"] = {
@@ -606,13 +706,8 @@ class Config:
             "useridletime":    str(self.userIdleTime),
         }
 
-        theConf["Backup"] = {
-            "backuppath":      str(self._backupPath or ""),
-            "backuponclose":   str(self.backupOnClose),
-            "askbeforebackup": str(self.askBeforeBackup),
-        }
-
         theConf["State"] = {
+            "fullscreen":      str(self.isFullScreen),
             "showrefpanel":    str(self.showRefPanel),
             "viewcomments":    str(self.viewComments),
             "viewsynopsis":    str(self.viewSynopsis),
@@ -624,16 +719,11 @@ class Config:
             "searchmatchcap":  str(self.searchMatchCap),
         }
 
-        theConf["Path"] = {
-            "lastpath": str(self._lastPath),
-        }
-
         # Write config file
         cnfPath = self._confPath / nwFiles.CONF_FILE
         try:
             with open(cnfPath, mode="w", encoding="utf-8") as outFile:
                 theConf.write(outFile)
-            self.confChanged = False
         except Exception as exc:
             logger.error("Could not save config file")
             logException()
@@ -643,162 +733,6 @@ class Config:
             return False
 
         return True
-
-    ##
-    #  Setters
-    ##
-
-    def setLastPath(self, lastPath):
-        """Set the last used path. Only the folder is saved, so if the
-        path is not a folder, the parent of the path is used instead.
-        """
-        if isinstance(lastPath, (str, Path)):
-            lastPath = Path(lastPath)
-            if not lastPath.is_dir():
-                lastPath = lastPath.parent
-            if lastPath.is_dir():
-                self._lastPath = lastPath
-                logger.debug("Last path updated: %s" % self._lastPath)
-        return
-
-    def setBackupPath(self, backupPath):
-        """Set the current backup path.
-        """
-        self._backupPath = None
-        if isinstance(backupPath, (str, Path)):
-            self._backupPath = Path(backupPath)
-        return
-
-    def setWinSize(self, newWidth, newHeight):
-        """Set the size of the main window, but only if the change is
-        larger than 5 pixels. The OS window manager will sometimes
-        adjust it a bit, and we don't want the main window to shrink or
-        grow each time the app is opened.
-        """
-        newWidth = int(newWidth/self.guiScale)
-        newHeight = int(newHeight/self.guiScale)
-        if abs(self.winGeometry[0] - newWidth) > 5:
-            self.winGeometry[0] = newWidth
-            self.confChanged = True
-        if abs(self.winGeometry[1] - newHeight) > 5:
-            self.winGeometry[1] = newHeight
-            self.confChanged = True
-        return
-
-    def setPreferencesSize(self, newWidth, newHeight):
-        """Sat the size of the Preferences dialog window.
-        """
-        self.prefGeometry[0] = int(newWidth/self.guiScale)
-        self.prefGeometry[1] = int(newHeight/self.guiScale)
-        self.confChanged = True
-        return
-
-    def setProjColWidths(self, colWidths):
-        """Set the column widths of the Load Project dialog.
-        """
-        self.projColWidth = [int(x/self.guiScale) for x in colWidths]
-        self.confChanged = True
-        return
-
-    def setMainPanePos(self, panePos):
-        """Set the position of the main GUI splitter.
-        """
-        self.mainPanePos = [int(x/self.guiScale) for x in panePos]
-        self.confChanged = True
-        return
-
-    def setDocPanePos(self, panePos):
-        """Set the position of the main editor/viewer splitter.
-        """
-        self.docPanePos = [int(x/self.guiScale) for x in panePos]
-        self.confChanged = True
-        return
-
-    def setViewPanePos(self, panePos):
-        """Set the position of the viewer meta data splitter.
-        """
-        self.viewPanePos = [int(x/self.guiScale) for x in panePos]
-        self.confChanged = True
-        return
-
-    def setOutlinePanePos(self, panePos):
-        """Set the position of the outline details splitter.
-        """
-        self.outlnPanePos = [int(x/self.guiScale) for x in panePos]
-        self.confChanged = True
-        return
-
-    def setShowRefPanel(self, checkState):
-        """Set the visibility state of the reference panel.
-        """
-        self.showRefPanel = checkState
-        self.confChanged = True
-        return
-
-    def setViewComments(self, viewState):
-        """Set the visibility state of comments in the viewer.
-        """
-        self.viewComments = viewState
-        self.confChanged = True
-        return
-
-    def setViewSynopsis(self, viewState):
-        """Set the visibility state of synopsis comments in the viewer.
-        """
-        self.viewSynopsis = viewState
-        self.confChanged = True
-        return
-
-    ##
-    #  Default Setters
-    ##
-
-    def setDefaultGuiTheme(self):
-        """Reset the GUI theme to default value.
-        """
-        self.guiTheme = "default"
-
-    def setDefaultSyntaxTheme(self):
-        """Reset the syntax theme to default value.
-        """
-        self.guiSyntax = "default_light"
-
-    ##
-    #  Getters
-    ##
-
-    def getWinSize(self):
-        return [int(x*self.guiScale) for x in self.winGeometry]
-
-    def getPreferencesSize(self):
-        return [int(x*self.guiScale) for x in self.prefGeometry]
-
-    def getProjColWidths(self):
-        return [int(x*self.guiScale) for x in self.projColWidth]
-
-    def getMainPanePos(self):
-        return [int(x*self.guiScale) for x in self.mainPanePos]
-
-    def getDocPanePos(self):
-        return [int(x*self.guiScale) for x in self.docPanePos]
-
-    def getViewPanePos(self):
-        return [int(x*self.guiScale) for x in self.viewPanePos]
-
-    def getOutlinePanePos(self):
-        return [int(x*self.guiScale) for x in self.outlnPanePos]
-
-    def getTextWidth(self, focusMode=False):
-        if focusMode:
-            return self.pxInt(max(self.focusWidth, 200))
-        else:
-            return self.pxInt(max(self.textWidth, 200))
-
-    def getTextMargin(self):
-        return self.pxInt(max(self.textMargin, 0))
-
-    def getTabWidth(self):
-        return self.pxInt(max(self.tabWidth, 0))
 
     ##
     #  Internal Functions
@@ -839,8 +773,8 @@ class Config:
 
 class RecentProjects:
 
-    def __init__(self, dataPath):
-        self._dataPath = dataPath
+    def __init__(self, mainConf):
+        self.mainConf = mainConf
         self._data = {}
         return
 
@@ -849,7 +783,7 @@ class RecentProjects:
         """
         self._data = {}
 
-        cacheFile = self._dataPath / nwFiles.RECENT_FILE
+        cacheFile = self.mainConf.dataPath(nwFiles.RECENT_FILE)
         if not cacheFile.is_file():
             return True
 
@@ -872,7 +806,7 @@ class RecentProjects:
     def saveCache(self):
         """Save the cache dictionary of recent projects.
         """
-        cacheFile = self._dataPath / nwFiles.RECENT_FILE
+        cacheFile = self.mainConf.dataPath(nwFiles.RECENT_FILE)
         cacheTemp = cacheFile.with_suffix(".tmp")
         try:
             with open(cacheTemp, mode="w+", encoding="utf-8") as outFile:

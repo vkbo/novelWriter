@@ -35,6 +35,7 @@ class MockGuiMain(QObject):
         self.hasProject = True
         self.theProject = None
         self.mainStatus = MockStatusBar()
+        self.projPath = ""
 
         # Test Variables
         self.askResponse = True
@@ -43,7 +44,7 @@ class MockGuiMain(QObject):
 
         return
 
-    def releaseNotes(self):
+    def postLaunchTasks(self, cmdOpen):
         return
 
     def makeAlert(self, message, level=0, exception=None):
@@ -61,6 +62,7 @@ class MockGuiMain(QObject):
         return
 
     def openProject(self, projPath):
+        self.projPath = projPath
         return
 
     def rebuildIndex(self):

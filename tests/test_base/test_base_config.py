@@ -112,7 +112,7 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
 
     # Check that we have a default file
     copyfile(confFile, testFile)
-    ignore = ("timestamp", "lastnotes", "guilang", "lastpath")
+    ignore = ("timestamp", "lastnotes", "localisation", "lastpath")
     assert cmpFiles(testFile, compFile, ignoreStart=ignore)
     tstConf.errorText()  # This clears the error cache
 
@@ -166,7 +166,7 @@ def testBaseConfig_Localisation(fncPath, tstPaths):
 
     i18nDir = fncPath / "i18n"
     i18nDir.mkdir()
-    tstConf._nwLangPath = i18nDir
+    tstConf._nwLangPath = str(i18nDir)
 
     copyfile(tstPaths.filesDir / "nw_en_GB.qm", i18nDir / "nw_en_GB.qm")
     writeFile(i18nDir / "nw_en_GB.ts", "")
@@ -253,96 +253,83 @@ def testBaseConfig_SettersGetters(tmpConf):
 
     # Window Size
     tmpConf.guiScale = 1.0
-    tmpConf.setWinSize(1205, 655)
-    assert tmpConf.confChanged is False
+    tmpConf.setMainWinSize(1205, 655)
+    assert tmpConf.mainWinSize == [1200, 650]
 
     tmpConf.guiScale = 2.0
-    tmpConf.setWinSize(70, 70)
-    assert tmpConf.getWinSize() == [70, 70]
-    assert tmpConf.winGeometry == [35, 35]
+    tmpConf.setMainWinSize(70, 70)
+    assert tmpConf.mainWinSize == [70, 70]
+    assert tmpConf._mainWinSize == [35, 35]
 
     tmpConf.guiScale = 1.0
-    tmpConf.setWinSize(70, 70)
-    assert tmpConf.getWinSize() == [70, 70]
-    assert tmpConf.winGeometry == [70, 70]
+    tmpConf.setMainWinSize(70, 70)
+    assert tmpConf.mainWinSize == [70, 70]
+    assert tmpConf._mainWinSize == [70, 70]
 
-    tmpConf.setWinSize(1200, 650)
+    tmpConf.setMainWinSize(1200, 650)
 
     # Preferences Size
     tmpConf.guiScale = 2.0
-    tmpConf.setPreferencesSize(70, 70)
-    assert tmpConf.getPreferencesSize() == [70, 70]
-    assert tmpConf.prefGeometry == [35, 35]
+    tmpConf.setPreferencesWinSize(70, 70)
+    assert tmpConf.preferencesWinSize == [70, 70]
+    assert tmpConf._prefsWinSize == [35, 35]
 
     tmpConf.guiScale = 1.0
-    tmpConf.setPreferencesSize(70, 70)
-    assert tmpConf.getPreferencesSize() == [70, 70]
-    assert tmpConf.prefGeometry == [70, 70]
+    tmpConf.setPreferencesWinSize(70, 70)
+    assert tmpConf.preferencesWinSize == [70, 70]
+    assert tmpConf._prefsWinSize == [70, 70]
 
-    tmpConf.setPreferencesSize(700, 615)
+    tmpConf.setPreferencesWinSize(700, 615)
 
     # Project Settings Tree Columns
     tmpConf.guiScale = 2.0
-    tmpConf.setProjColWidths([10, 20, 30])
-    assert tmpConf.getProjColWidths() == [10, 20, 30]
-    assert tmpConf.projColWidth == [5, 10, 15]
+    tmpConf.setProjLoadColWidths([10, 20, 30])
+    assert tmpConf.projLoadColWidths == [10, 20, 30]
+    assert tmpConf._projLoadCols == [5, 10, 15]
 
     tmpConf.guiScale = 1.0
-    tmpConf.setProjColWidths([10, 20, 30])
-    assert tmpConf.getProjColWidths() == [10, 20, 30]
-    assert tmpConf.projColWidth == [10, 20, 30]
+    tmpConf.setProjLoadColWidths([10, 20, 30])
+    assert tmpConf.projLoadColWidths == [10, 20, 30]
+    assert tmpConf._projLoadCols == [10, 20, 30]
 
-    tmpConf.setProjColWidths([200, 60, 140])
+    tmpConf.setProjLoadColWidths([200, 60, 140])
 
     # Main Pane Splitter
     tmpConf.guiScale = 2.0
     tmpConf.setMainPanePos([200, 700])
-    assert tmpConf.getMainPanePos() == [200, 700]
-    assert tmpConf.mainPanePos == [100, 350]
+    assert tmpConf.mainPanePos == [200, 700]
+    assert tmpConf._mainPanePos == [100, 350]
 
     tmpConf.guiScale = 1.0
     tmpConf.setMainPanePos([200, 700])
-    assert tmpConf.getMainPanePos() == [200, 700]
     assert tmpConf.mainPanePos == [200, 700]
+    assert tmpConf._mainPanePos == [200, 700]
 
     tmpConf.setMainPanePos([300, 800])
-
-    # Doc Pane Splitter
-    tmpConf.guiScale = 2.0
-    tmpConf.setDocPanePos([300, 300])
-    assert tmpConf.getDocPanePos() == [300, 300]
-    assert tmpConf.docPanePos == [150, 150]
-
-    tmpConf.guiScale = 1.0
-    tmpConf.setDocPanePos([300, 300])
-    assert tmpConf.getDocPanePos() == [300, 300]
-    assert tmpConf.docPanePos == [300, 300]
-
-    tmpConf.setDocPanePos([400, 400])
 
     # View Pane Splitter
     tmpConf.guiScale = 2.0
     tmpConf.setViewPanePos([400, 250])
-    assert tmpConf.getViewPanePos() == [400, 250]
-    assert tmpConf.viewPanePos == [200, 125]
+    assert tmpConf.viewPanePos == [400, 250]
+    assert tmpConf._viewPanePos == [200, 125]
 
     tmpConf.guiScale = 1.0
     tmpConf.setViewPanePos([400, 250])
-    assert tmpConf.getViewPanePos() == [400, 250]
     assert tmpConf.viewPanePos == [400, 250]
+    assert tmpConf._viewPanePos == [400, 250]
 
     tmpConf.setViewPanePos([500, 150])
 
     # Outline Pane Splitter
     tmpConf.guiScale = 2.0
     tmpConf.setOutlinePanePos([400, 250])
-    assert tmpConf.getOutlinePanePos() == [400, 250]
-    assert tmpConf.outlnPanePos == [200, 125]
+    assert tmpConf.outlinePanePos == [400, 250]
+    assert tmpConf._outlnPanePos == [200, 125]
 
     tmpConf.guiScale = 1.0
     tmpConf.setOutlinePanePos([400, 250])
-    assert tmpConf.getOutlinePanePos() == [400, 250]
-    assert tmpConf.outlnPanePos == [400, 250]
+    assert tmpConf.outlinePanePos == [400, 250]
+    assert tmpConf._outlnPanePos == [400, 250]
 
     tmpConf.setOutlinePanePos([500, 150])
 
@@ -360,24 +347,6 @@ def testBaseConfig_SettersGetters(tmpConf):
     assert tmpConf.getTextWidth(True) == 1600
     assert tmpConf.getTextMargin() == 80
     assert tmpConf.getTabWidth() == 80
-
-    # Flag Setters
-    # ============
-
-    tmpConf.setShowRefPanel(False)
-    assert tmpConf.showRefPanel is False
-    tmpConf.setShowRefPanel(True)
-    assert tmpConf.showRefPanel is True
-
-    tmpConf.setViewComments(False)
-    assert tmpConf.viewComments is False
-    tmpConf.setViewComments(True)
-    assert tmpConf.viewComments is True
-
-    tmpConf.setViewSynopsis(False)
-    assert tmpConf.viewSynopsis is False
-    tmpConf.setViewSynopsis(True)
-    assert tmpConf.viewSynopsis is True
 
 # END Test testBaseConfig_SettersGetters
 
@@ -411,11 +380,11 @@ def testBaseConfig_Internal(monkeypatch, tmpConf):
 
 
 @pytest.mark.base
-def testBaseConfig_RecentCache(monkeypatch, fncPath):
+def testBaseConfig_RecentCache(monkeypatch, fncConf, fncPath):
     """Test recent cache file.
     """
     cacheFile = fncPath / nwFiles.RECENT_FILE
-    recent = RecentProjects(fncPath)
+    recent = RecentProjects(fncConf)
 
     # Load when there is no file should pass, but load nothing
     assert not cacheFile.exists()
