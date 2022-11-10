@@ -1,5 +1,90 @@
 # novelWriter Changelog
 
+## Version 2.0 RC 2 [2022-11-13]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you take frequent
+backups.
+
+Please check the changelog for an overview of changes. The full release notes will be added to the
+final release.
+
+### Detailed Changelog
+
+Note: This release introduces a new Project XML format with version number 1.5. When the project is
+opened, a request to update the file format will show up.
+
+**Bugfixes**
+
+* The custom folders for user defined themes and syntax were not created properly when the app was
+  first launched on a new computer. The folders were successfully created on a second launch. The
+  error was handled, but reported. This was caused by the folder creation process being in the
+  wrong order. Issue #1180. PR #1184.
+* Fixed context menu entries for split and merge having inconsistent labels. Issue #1199. PR #1197.
+
+**User Interface**
+
+* The exported status for document items have been renamed to active/inactive. Their icons have
+  also been updated. Issues #1196 and #1198. PRs #1200 and #1216.
+* The status/importance context menu now shows which label is the current. Issue #1202. PR #1207.
+* The status/importance context menu now has a "Manage Labels" action that opens the Project
+  Settings dialog at the correct place. Issue #1203. PR #1207.
+* Both GUI theme and syntax theme can now be updated without restarting the app. Issue #1171.
+  PR #1212.
+* The GUI theme now determines which icon theme is to be loaded. It is no longer a separate
+  setting. The icon theme can also be reloaded without restart. Issue #1172. PR #1212.
+* The block formating features in the Format menu now also works on empty lines. Issue #1178.
+  PR #1214.
+* There is now a Format menu entry and shortcut code for synopsis comments. Issue #1177. PR #1214.
+* The split document dialog now has the option to move teh source document to trash. Issue #1179.
+  PR #1217.
+
+**Other Changes**
+
+* Archived documents are now partially indexed. This mainly means that the item will have the
+  correct document icon in the project tree corresponding to its main heading. Issue #1176.
+  PR #1183.
+* The option to add notes files in the Project Wizard now automatically switches off if there are
+  no notes categories enabled. Issue #1192. PR #1201.
+* When a project is opened for the first time, the first document in the project is also opened.
+  Issue #1219. PR #1223.
+* When there is no project open, the toolbars on the Project Tree, Novel View and Outline View are
+  disabled. They are enabled only when a project is loaded. Issue #1220. PR #1230.
+
+**Installation and Packaging**
+
+* The AppImage release now has version information in the package name. Issue #1182. PR #1218.
+
+**Code Improvements**
+
+* The main heading of a document is now stored in the item class instead of the index. PR #1183.
+* The common module checker functions no longer allow None values. The only one needing it was the
+  string checker. A new string checker that allows None has been added for those cases. This makes
+  type discovery in the code editor easier. Issue #1185. PR #1188.
+* Verbose logging has been removed. The lowest severity level is now DEBUG. Issue #1186. PR #1191.
+* Added a number of None checks in the code where especially Qt calls could potentially return
+  None, even if they were unlikely to do so. PR #1197.
+* Renamed the status bar attribute in the main GUI class as it conflicts with a Qt method.
+  Issue #1190. PR #1197.
+* The data access methods for the custom config file parser have been improved to better report
+  correct type information. PR #1197.
+* Saving and loading of XML data is now handled by a separate set of reader and writer classes. The
+  reader class is capable of reading all file formats that have been used thus far. Issue #1189.
+  PR #1221.
+* The project folder on disk is now wrapped in a storage class that the project accesses files
+  through. It also handles lock files and archiving used for backup. The change is in preparation
+  for adding a potential single file format. Issue #1222. PR #1225.
+* The Project Wizard now creates the project on disk, and then opens it. This replaces the old
+  method where the new project was built directly into the current session. This caused a few
+  inconsistencies from time to time, and was a duplicate way of getting a project into the session.
+  Issue #1152. PR #1225.
+* The Config class has been refactored extensively and now also uses pathlib for all paths. Tests
+  are also switched to using pathlib. Issue #1224. PRs #1228 and #1229.
+
+----
+
 ## Version 2.0 RC 1 [2022-10-17]
 
 ### Release Notes
