@@ -872,6 +872,7 @@ class GuiMain(QMainWindow):
         """
         dlgProj = GuiProjectLoad(self)
         dlgProj.exec_()
+
         if dlgProj.result() == QDialog.Accepted:
             if dlgProj.openState == GuiProjectLoad.OPEN_STATE:
                 self.openProject(dlgProj.openPath)
