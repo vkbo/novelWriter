@@ -482,8 +482,8 @@ class NWProject(QObject):
             return False
 
         archName = baseDir / self.tr(
-            "Backup from {0}.zip"
-        ).format(formatTimeStamp(time(), fileSafe=True))
+            "Backup from {0}"
+        ).format(formatTimeStamp(time(), fileSafe=True) + ".zip")
         if self._storage.zipIt(archName, compression=2):
             if doNotify:
                 self.mainGui.makeAlert(self.tr(

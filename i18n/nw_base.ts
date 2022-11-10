@@ -3919,7 +3919,7 @@
     </message>
     <message>
       <location filename="../novelwriter/core/project.py" line="484" />
-      <source>Backup from {0}.zip</source>
+      <source>Backup from {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
