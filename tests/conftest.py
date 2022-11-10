@@ -113,7 +113,7 @@ def tmpConf(tmpPath):
     theConf = Config()
     theConf.initConfig(tmpPath, tmpPath)
     theConf.setLastPath(tmpPath)
-    theConf.guiLang = "en_GB"
+    theConf.guiLocale = "en_GB"
     return theConf
 
 
@@ -127,7 +127,7 @@ def fncConf(fncPath):
     theConf = Config()
     theConf.initConfig(fncPath, fncPath)
     theConf.setLastPath(fncPath)
-    theConf.guiLang = "en_GB"
+    theConf.guiLocale = "en_GB"
     return theConf
 
 

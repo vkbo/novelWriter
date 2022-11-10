@@ -166,7 +166,7 @@ def testBaseConfig_Localisation(fncPath, tstPaths):
 
     i18nDir = fncPath / "i18n"
     i18nDir.mkdir()
-    tstConf._nwLangPath = i18nDir
+    tstConf._nwLangPath = str(i18nDir)
 
     copyfile(tstPaths.filesDir / "nw_en_GB.qm", i18nDir / "nw_en_GB.qm")
     writeFile(i18nDir / "nw_en_GB.ts", "")
@@ -254,17 +254,17 @@ def testBaseConfig_SettersGetters(tmpConf):
     # Window Size
     tmpConf.guiScale = 1.0
     tmpConf.setMainWinSize(1205, 655)
-    assert tmpConf._confChanged is False
+    assert tmpConf.mainWinSize == [1200, 650]
 
     tmpConf.guiScale = 2.0
     tmpConf.setMainWinSize(70, 70)
     assert tmpConf.mainWinSize == [70, 70]
-    assert tmpConf._winGeometry == [35, 35]
+    assert tmpConf._mainWinSize == [35, 35]
 
     tmpConf.guiScale = 1.0
     tmpConf.setMainWinSize(70, 70)
     assert tmpConf.mainWinSize == [70, 70]
-    assert tmpConf._winGeometry == [70, 70]
+    assert tmpConf._mainWinSize == [70, 70]
 
     tmpConf.setMainWinSize(1200, 650)
 
@@ -272,12 +272,12 @@ def testBaseConfig_SettersGetters(tmpConf):
     tmpConf.guiScale = 2.0
     tmpConf.setPreferencesWinSize(70, 70)
     assert tmpConf.preferencesWinSize == [70, 70]
-    assert tmpConf._prefGeometry == [35, 35]
+    assert tmpConf._prefsWinSize == [35, 35]
 
     tmpConf.guiScale = 1.0
     tmpConf.setPreferencesWinSize(70, 70)
     assert tmpConf.preferencesWinSize == [70, 70]
-    assert tmpConf._prefGeometry == [70, 70]
+    assert tmpConf._prefsWinSize == [70, 70]
 
     tmpConf.setPreferencesWinSize(700, 615)
 
@@ -285,12 +285,12 @@ def testBaseConfig_SettersGetters(tmpConf):
     tmpConf.guiScale = 2.0
     tmpConf.setProjLoadColWidths([10, 20, 30])
     assert tmpConf.projLoadColWidths == [10, 20, 30]
-    assert tmpConf._projColWidth == [5, 10, 15]
+    assert tmpConf._projLoadCols == [5, 10, 15]
 
     tmpConf.guiScale = 1.0
     tmpConf.setProjLoadColWidths([10, 20, 30])
     assert tmpConf.projLoadColWidths == [10, 20, 30]
-    assert tmpConf._projColWidth == [10, 20, 30]
+    assert tmpConf._projLoadCols == [10, 20, 30]
 
     tmpConf.setProjLoadColWidths([200, 60, 140])
 
@@ -347,24 +347,6 @@ def testBaseConfig_SettersGetters(tmpConf):
     assert tmpConf.getTextWidth(True) == 1600
     assert tmpConf.getTextMargin() == 80
     assert tmpConf.getTabWidth() == 80
-
-    # Flag Setters
-    # ============
-
-    tmpConf.setShowRefPanel(False)
-    assert tmpConf.showRefPanel is False
-    tmpConf.setShowRefPanel(True)
-    assert tmpConf.showRefPanel is True
-
-    tmpConf.setViewComments(False)
-    assert tmpConf.viewComments is False
-    tmpConf.setViewComments(True)
-    assert tmpConf.viewComments is True
-
-    tmpConf.setViewSynopsis(False)
-    assert tmpConf.viewSynopsis is False
-    tmpConf.setViewSynopsis(True)
-    assert tmpConf.viewSynopsis is True
 
 # END Test testBaseConfig_SettersGetters
 

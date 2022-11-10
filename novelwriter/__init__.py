@@ -161,9 +161,6 @@ def main(sysArgs=None):
         elif inOpt == "--testmode":
             testMode = True
 
-    # Set Config Options
-    CONFIG.cmdOpen = cmdOpen
-
     # Set Logging
     cHandle = logging.StreamHandler()
     cHandle.setFormatter(logging.Formatter(fmt=logFormat, style="{"))
@@ -256,9 +253,7 @@ def main(sysArgs=None):
         # Launch main GUI
         CONFIG.initLocalisation(nwApp)
         nwGUI = GuiMain()
-        if not nwGUI.hasProject:
-            nwGUI.showProjectLoadDialog()
-        nwGUI.releaseNotes()
+        nwGUI.postLaunchTasks(cmdOpen)
 
         sys.exit(nwApp.exec_())
 

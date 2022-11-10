@@ -79,7 +79,7 @@ class GuiMain(QMainWindow):
         logger.info("Qt5: %s (%d)", self.mainConf.verQtString, self.mainConf.verQtValue)
         logger.info("PyQt5: %s (%d)", self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
         logger.info("Python: %s (0x%x)", self.mainConf.verPyString, self.mainConf.verPyHexVal)
-        logger.info("GUI Language: %s", self.mainConf.guiLang)
+        logger.info("GUI Language: %s", self.mainConf.guiLocale)
 
         # Core Classes
         # ============
@@ -290,11 +290,6 @@ class GuiMain(QMainWindow):
                 "and make sure you take regular backups."
             ), nwAlert.WARN)
 
-        # If a project path was provided at command line, open it
-        if self.mainConf.cmdOpen is not None:
-            logger.debug("Opening project from additional command line option")
-            self.openProject(self.mainConf.cmdOpen)
-
         logger.info("novelWriter is ready ...")
         self.setStatus(self.tr("novelWriter is ready ..."))
 
@@ -327,13 +322,22 @@ class GuiMain(QMainWindow):
         self.asDocTimer.setInterval(int(self.mainConf.autoSaveDoc*1000))
         return True
 
-    def releaseNotes(self):
-        """Determine whether release notes need to be shown, and show
-        them by calling the About dialog.
+    def postLaunchTasks(self, cmdOpen):
+        """This function is called after the main window is created to
+        determine what to open or show after initialisation.
         """
+        if cmdOpen:
+            logger.info("Command line path: %s", cmdOpen)
+            self.openProject(cmdOpen)
+
+        if not self.hasProject:
+            self.showProjectLoadDialog()
+
+        # Determine whether release notes need to be shown or not
         if hexToInt(self.mainConf.lastNotes) < hexToInt(novelwriter.__hexversion__):
             self.mainConf.lastNotes = novelwriter.__hexversion__
             self.showAboutNWDialog(showNotes=True)
+
         return
 
     ##
@@ -1173,7 +1177,7 @@ class GuiMain(QMainWindow):
             if self.viewMeta.isVisible():
                 self.mainConf.setViewPanePos(self.splitView.sizes())
 
-        self.mainConf.setShowRefPanel(self.viewMeta.isVisible())
+        self.mainConf.showRefPanel = self.viewMeta.isVisible()
         if not self.mainConf.isFullScreen:
             self.mainConf.setMainWinSize(self.width(), self.height())
 

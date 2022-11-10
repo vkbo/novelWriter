@@ -21,15 +21,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from tools import C, cmpFiles, buildTestProject, XML_IGNORE, writeFile
 from shutil import copyfile
 
+from tools import (
+    C, cmpFiles, buildTestProject, XML_IGNORE, getGuiItem, writeFile
+)
+
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox, QInputDialog
+from PyQt5.QtWidgets import QDialog, QMessageBox, QInputDialog
 
 from novelwriter.enum import nwItemType, nwView, nwWidget
 from novelwriter.tools import GuiProjectWizard
-from novelwriter.dialogs import GuiEditLabel
+from novelwriter.dialogs import GuiEditLabel, GuiAbout, GuiProjectLoad
 from novelwriter.constants import nwFiles
 from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectTree
@@ -62,7 +65,39 @@ def testGuiMain_ProjectBlocker(nwGUI):
     assert nwGUI.showProjectWordListDialog() is False
     assert nwGUI.showWritingStatsDialog() is False
 
-# END Test testGuiMain_NoProject
+# END Test testGuiMain_ProjectBlocker
+
+
+@pytest.mark.gui
+def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, prjLipsum):
+    """Test the handling of launch tasks.
+    """
+    monkeypatch.setattr(GuiProjectLoad, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiProjectLoad, "result", lambda *a: QDialog.Accepted)
+    nwGUI.mainConf.lastNotes = "0x0"
+
+    # Open Lipsum project
+    nwGUI.postLaunchTasks(prjLipsum)
+    nwGUI.closeProject()
+
+    # Check that release notes opened
+    qtbot.waitUntil(lambda: getGuiItem("GuiAbout") is not None, timeout=1000)
+    msgAbout = getGuiItem("GuiAbout")
+    assert isinstance(msgAbout, GuiAbout)
+    assert msgAbout.tabBox.currentWidget() == msgAbout.pageNotes
+    msgAbout.accept()
+
+    # Check that project open dialog launches
+    nwGUI.postLaunchTasks(None)
+    qtbot.waitUntil(lambda: getGuiItem("GuiProjectLoad") is not None, timeout=1000)
+    nwLoad = getGuiItem("GuiProjectLoad")
+    assert isinstance(nwLoad, GuiProjectLoad)
+    nwLoad.show()
+    nwLoad.reject()
+
+    # qtbot.stop()
+
+# END Test testGuiMain_Launch
 
 
 @pytest.mark.gui

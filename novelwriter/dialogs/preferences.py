@@ -125,6 +125,7 @@ class GuiPreferences(PagedDialog):
         self.tabQuote.saveValues()
 
         self._saveWindowSize()
+        self.mainConf.saveConfig()
         self.accept()
 
         return
@@ -170,18 +171,18 @@ class GuiPreferencesGeneral(QWidget):
         minWidth = self.mainConf.pxInt(200)
 
         # Select Locale
-        self.guiLang = QComboBox()
-        self.guiLang.setMinimumWidth(minWidth)
+        self.guiLocale = QComboBox()
+        self.guiLocale.setMinimumWidth(minWidth)
         theLangs = self.mainConf.listLanguages(self.mainConf.LANG_NW)
         for lang, langName in theLangs:
-            self.guiLang.addItem(langName, lang)
-        langIdx = self.guiLang.findData(self.mainConf.guiLang)
+            self.guiLocale.addItem(langName, lang)
+        langIdx = self.guiLocale.findData(self.mainConf.guiLocale)
         if langIdx != -1:
-            self.guiLang.setCurrentIndex(langIdx)
+            self.guiLocale.setCurrentIndex(langIdx)
 
         self.mainForm.addRow(
             self.tr("Main GUI language"),
-            self.guiLang,
+            self.guiLocale,
             self.tr("Requires restart to take effect.")
         )
 
@@ -286,7 +287,7 @@ class GuiPreferencesGeneral(QWidget):
     def saveValues(self):
         """Save the values set for this tab.
         """
-        guiLang     = self.guiLang.currentData()
+        guiLocale   = self.guiLocale.currentData()
         guiTheme    = self.guiTheme.currentData()
         guiSyntax   = self.guiSyntax.currentData()
         guiFont     = self.guiFont.text()
@@ -296,12 +297,12 @@ class GuiPreferencesGeneral(QWidget):
         # Update Flags
         self.prefsGui._updateTheme |= self.mainConf.guiTheme != guiTheme
         self.prefsGui._updateSyntax |= self.mainConf.guiSyntax != guiSyntax
-        self.prefsGui._needsRestart |= self.mainConf.guiLang != guiLang
+        self.prefsGui._needsRestart |= self.mainConf.guiLocale != guiLocale
         self.prefsGui._needsRestart |= self.mainConf.guiFont != guiFont
         self.prefsGui._needsRestart |= self.mainConf.guiFontSize != guiFontSize
         self.prefsGui._refreshTree |= self.mainConf.emphLabels != emphLabels
 
-        self.mainConf.guiLang      = guiLang
+        self.mainConf.guiLocale    = guiLocale
         self.mainConf.guiTheme     = guiTheme
         self.mainConf.guiSyntax    = guiSyntax
         self.mainConf.guiFont      = guiFont
@@ -310,8 +311,6 @@ class GuiPreferencesGeneral(QWidget):
         self.mainConf.showFullPath = self.showFullPath.isChecked()
         self.mainConf.hideVScroll  = self.hideVScroll.isChecked()
         self.mainConf.hideHScroll  = self.hideHScroll.isChecked()
-
-        self.mainConf.setConfigChanged(True)
 
         return
 
@@ -457,8 +456,6 @@ class GuiPreferencesProjects(QWidget):
         # Session Timer
         self.mainConf.stopWhenIdle = self.stopWhenIdle.isChecked()
         self.mainConf.userIdleTime = round(self.userIdleTime.value() * 60)
-
-        self.mainConf.setConfigChanged(True)
 
         return
 
@@ -628,8 +625,6 @@ class GuiPreferencesDocuments(QWidget):
         self.mainConf.doJustify       = self.doJustify.isChecked()
         self.mainConf.textMargin      = self.textMargin.value()
         self.mainConf.tabWidth        = self.tabWidth.value()
-
-        self.mainConf.setConfigChanged(True)
 
         return
 
@@ -820,8 +815,6 @@ class GuiPreferencesEditor(QWidget):
         self.mainConf.autoScroll    = self.autoScroll.isChecked()
         self.mainConf.autoScrollPos = self.autoScrollPos.value()
 
-        self.mainConf.setConfigChanged(True)
-
         return
 
 # END Class GuiPreferencesEditor
@@ -910,8 +903,6 @@ class GuiPreferencesSyntax(QWidget):
 
         # Text Errors
         self.mainConf.showMultiSpaces = self.showMultiSpaces.isChecked()
-
-        self.mainConf.setConfigChanged(True)
 
         return
 
@@ -1065,8 +1056,6 @@ class GuiPreferencesAutomation(QWidget):
         self.mainConf.fmtPadAfter  = self.fmtPadAfter.text().strip()
         self.mainConf.fmtPadThin   = self.fmtPadThin.isChecked()
 
-        self.mainConf.setConfigChanged(True)
-
         return
 
     ##
@@ -1185,9 +1174,6 @@ class GuiPreferencesQuotes(QWidget):
         self.mainConf.fmtSingleQuotes[1] = self.quoteSym["SC"].text()
         self.mainConf.fmtDoubleQuotes[0] = self.quoteSym["DO"].text()
         self.mainConf.fmtDoubleQuotes[1] = self.quoteSym["DC"].text()
-
-        self.mainConf.setConfigChanged(True)
-
         return
 
     ##

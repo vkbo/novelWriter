@@ -150,7 +150,10 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, fncPath):
 
     # Check handling of broken theme settings
     mainConf.guiTheme = "not_a_theme"
+    availThemes = mainTheme._availThemes
+    mainTheme._availThemes = {}
     assert mainTheme.loadTheme() is False
+    mainTheme._availThemes = availThemes
 
     # Check handling of unreadable file
     mainConf.guiTheme = "default"
@@ -216,8 +219,11 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI, fncPath):
     assert mainTheme.listSyntax() == mainTheme._syntaxList
 
     # Check handling of broken theme settings
+    availSyntax = mainTheme._availSyntax
+    mainTheme._availSyntax = {}
     mainConf.guiSyntax = "not_a_syntax"
     assert mainTheme.loadSyntax() is False
+    mainTheme._availSyntax = availSyntax
 
     # Check handling of unreadable file
     mainConf.guiSyntax = "default_light"

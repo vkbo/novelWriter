@@ -185,9 +185,14 @@ class GuiTheme:
         """Load the currently specified GUI theme.
         """
         guiTheme = self.mainConf.guiTheme
+        if guiTheme not in self._availThemes:
+            logger.error("Could not find GUI theme '%s'", guiTheme)
+            guiTheme = "default"
+            self.mainConf.guiTheme = guiTheme
+
         themeFile = self._availThemes.get(guiTheme, None)
         if themeFile is None:
-            logger.error("Could not find GUI theme '%s'", guiTheme)
+            logger.error("Could not load GUI theme")
             return False
 
         # Config File
@@ -266,9 +271,14 @@ class GuiTheme:
         """Load the currently specified syntax highlighter theme.
         """
         guiSyntax = self.mainConf.guiSyntax
+        if guiSyntax not in self._availSyntax:
+            logger.error("Could not find syntax theme '%s'", guiSyntax)
+            guiSyntax = "default_light"
+            self.mainConf.guiSyntax = guiSyntax
+
         syntaxFile = self._availSyntax.get(guiSyntax, None)
         if syntaxFile is None:
-            logger.error("Could not find syntax theme '%s'", guiSyntax)
+            logger.error("Could not load syntax theme")
             return False
 
         logger.info("Loading syntax theme '%s'", guiSyntax)

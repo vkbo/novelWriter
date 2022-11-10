@@ -1148,7 +1148,7 @@ class GuiDocViewFooter(QWidget):
     def _doToggleComments(self, theState):
         """Toggle the view comment button and reload the document.
         """
-        self.mainConf.setViewComments(theState)
+        self.mainConf.viewComments = theState
         self.docViewer.reloadText()
         return
 
@@ -1156,7 +1156,7 @@ class GuiDocViewFooter(QWidget):
     def _doToggleSynopsis(self, theState):
         """Toggle the view synopsis button and reload the document.
         """
-        self.mainConf.setViewSynopsis(theState)
+        self.mainConf.viewSynopsis = theState
         self.docViewer.reloadText()
         return
 
