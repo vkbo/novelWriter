@@ -221,7 +221,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     compFile = tstPaths.refDir / "guiPreferences_novelwriter.conf"
     copyfile(projFile, testFile)
     ignTuple = (
-        "timestamp", "guifont", "lastnotes", "guilang", "geometry",
+        "timestamp", "font", "lastnotes", "localisation", "geometry",
         "preferences", "projcols", "mainpane", "docpane", "viewpane",
         "outlinepane", "textfont", "textsize", "lastpath", "backuppath"
     )
