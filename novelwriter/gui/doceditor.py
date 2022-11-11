@@ -106,10 +106,6 @@ class GuiDocEditor(QTextEdit):
         self._queuePos   = None   # Used for delayed change of cursor position
 
         # Typography
-        self._typDQOpen  = '"'
-        self._typDQClose = '"'
-        self._typSQOpen  = "'"
-        self._typSQClose = "'"
         self._typPadChar = " "
 
         # Core Elements and Signals
@@ -242,20 +238,18 @@ class GuiDocEditor(QTextEdit):
         created, and when the user changes the main editor preferences.
         """
         # Some Constants
-        self._nonWord  = "\"'"
-        self._nonWord += "".join(self.mainConf.fmtDoubleQuotes)
-        self._nonWord += "".join(self.mainConf.fmtSingleQuotes)
+        self._nonWord = (
+            "\"'"
+            f"{self.mainConf.fmtSQuoteOpen}{self.mainConf.fmtSQuoteClose}"
+            f"{self.mainConf.fmtDQuoteOpen}{self.mainConf.fmtDQuoteClose}"
+        )
+        print(self._nonWord)
 
         # Typography
         if self.mainConf.fmtPadThin:
             self._typPadChar = nwUnicode.U_THNBSP
         else:
             self._typPadChar = nwUnicode.U_NBSP
-
-        self._typDQOpen  = self.mainConf.fmtDoubleQuotes[0]
-        self._typDQClose = self.mainConf.fmtDoubleQuotes[1]
-        self._typSQOpen  = self.mainConf.fmtSingleQuotes[0]
-        self._typSQClose = self.mainConf.fmtSingleQuotes[1]
 
         # Reload spell check and dictionaries
         self.setDictionaries()
@@ -792,9 +786,9 @@ class GuiDocEditor(QTextEdit):
         elif theAction == nwDocAction.STRIKE:
             self._toggleFormat(2, "~")
         elif theAction == nwDocAction.S_QUOTE:
-            self._wrapSelection(self._typSQOpen, self._typSQClose)
+            self._wrapSelection(self.mainConf.fmtSQuoteOpen, self.mainConf.fmtSQuoteClose)
         elif theAction == nwDocAction.D_QUOTE:
-            self._wrapSelection(self._typDQOpen, self._typDQClose)
+            self._wrapSelection(self.mainConf.fmtDQuoteOpen, self.mainConf.fmtDQuoteClose)
         elif theAction == nwDocAction.SEL_ALL:
             self._makeSelection(QTextCursor.Document)
         elif theAction == nwDocAction.SEL_PARA:
@@ -816,9 +810,9 @@ class GuiDocEditor(QTextEdit):
         elif theAction == nwDocAction.BLOCK_UNN:
             self._formatBlock(nwDocAction.BLOCK_UNN)
         elif theAction == nwDocAction.REPL_SNG:
-            self._replaceQuotes("'", self._typSQOpen, self._typSQClose)
+            self._replaceQuotes("'", self.mainConf.fmtSQuoteOpen, self.mainConf.fmtSQuoteClose)
         elif theAction == nwDocAction.REPL_DBL:
-            self._replaceQuotes("\"", self._typDQOpen, self._typDQClose)
+            self._replaceQuotes("\"", self.mainConf.fmtDQuoteOpen, self.mainConf.fmtDQuoteClose)
         elif theAction == nwDocAction.RM_BREAKS:
             self._removeInParLineBreaks()
         elif theAction == nwDocAction.ALIGN_L:
@@ -884,13 +878,13 @@ class GuiDocEditor(QTextEdit):
             theText = theInsert
         elif isinstance(theInsert, nwDocInsert):
             if theInsert == nwDocInsert.QUOTE_LS:
-                theText = self._typSQOpen
+                theText = self.mainConf.fmtSQuoteOpen
             elif theInsert == nwDocInsert.QUOTE_RS:
-                theText = self._typSQClose
+                theText = self.mainConf.fmtSQuoteClose
             elif theInsert == nwDocInsert.QUOTE_LD:
-                theText = self._typDQOpen
+                theText = self.mainConf.fmtDQuoteOpen
             elif theInsert == nwDocInsert.QUOTE_RD:
-                theText = self._typDQClose
+                theText = self.mainConf.fmtDQuoteClose
             elif theInsert == nwDocInsert.SYNOPSIS:
                 theText = "% Synopsis: "
                 newBlock = True
@@ -1967,33 +1961,33 @@ class GuiDocEditor(QTextEdit):
 
         if self.mainConf.doReplaceDQuote and theTwo[:1].isspace() and theTwo.endswith('"'):
             nDelete = 1
-            tInsert = self._typDQOpen
+            tInsert = self.mainConf.fmtDQuoteOpen
 
         elif self.mainConf.doReplaceDQuote and theOne == '"':
             nDelete = 1
             if thePos == 1:
-                tInsert = self._typDQOpen
+                tInsert = self.mainConf.fmtDQuoteOpen
             elif thePos == 2 and theTwo == '>"':
-                tInsert = self._typDQOpen
+                tInsert = self.mainConf.fmtDQuoteOpen
             elif thePos == 3 and theThree == '>>"':
-                tInsert = self._typDQOpen
+                tInsert = self.mainConf.fmtDQuoteOpen
             else:
-                tInsert = self._typDQClose
+                tInsert = self.mainConf.fmtDQuoteClose
 
         elif self.mainConf.doReplaceSQuote and theTwo[:1].isspace() and theTwo.endswith("'"):
             nDelete = 1
-            tInsert = self._typSQOpen
+            tInsert = self.mainConf.fmtSQuoteOpen
 
         elif self.mainConf.doReplaceSQuote and theOne == "'":
             nDelete = 1
             if thePos == 1:
-                tInsert = self._typSQOpen
+                tInsert = self.mainConf.fmtSQuoteOpen
             elif thePos == 2 and theTwo == ">'":
-                tInsert = self._typSQOpen
+                tInsert = self.mainConf.fmtSQuoteOpen
             elif thePos == 3 and theThree == ">>'":
-                tInsert = self._typSQOpen
+                tInsert = self.mainConf.fmtSQuoteOpen
             else:
-                tInsert = self._typSQClose
+                tInsert = self.mainConf.fmtSQuoteClose
 
         elif self.mainConf.doReplaceDash and theThree == "---":
             nDelete = 3

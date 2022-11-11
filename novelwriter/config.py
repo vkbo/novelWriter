@@ -161,8 +161,10 @@ class Config:
 
         # User-Selected Symbol Settings
         self.fmtApostrophe   = nwUnicode.U_RSQUO
-        self.fmtSingleQuotes = [nwUnicode.U_LSQUO, nwUnicode.U_RSQUO]
-        self.fmtDoubleQuotes = [nwUnicode.U_LDQUO, nwUnicode.U_RDQUO]
+        self.fmtSQuoteOpen   = nwUnicode.U_LSQUO
+        self.fmtSQuoteClose  = nwUnicode.U_RSQUO
+        self.fmtDQuoteOpen   = nwUnicode.U_LDQUO
+        self.fmtDQuoteClose  = nwUnicode.U_RDQUO
         self.fmtPadBefore    = ""
         self.fmtPadAfter     = ""
         self.fmtPadThin      = False
@@ -570,8 +572,10 @@ class Config:
         self.scrollPastEnd   = theConf.rdInt(cnfSec, "scrollpastend", self.scrollPastEnd)
         self.autoScroll      = theConf.rdBool(cnfSec, "autoscroll", self.autoScroll)
         self.autoScrollPos   = theConf.rdInt(cnfSec, "autoscrollpos", self.autoScrollPos)
-        self.fmtSingleQuotes = theConf.rdStrList(cnfSec, "fmtsinglequote", self.fmtSingleQuotes)
-        self.fmtDoubleQuotes = theConf.rdStrList(cnfSec, "fmtdoublequote", self.fmtDoubleQuotes)
+        self.fmtSQuoteOpen   = theConf.rdStr(cnfSec, "fmtsquoteopen", self.fmtSQuoteOpen)
+        self.fmtSQuoteClose  = theConf.rdStr(cnfSec, "fmtsquoteclose", self.fmtSQuoteClose)
+        self.fmtDQuoteOpen   = theConf.rdStr(cnfSec, "fmtdquoteopen", self.fmtDQuoteOpen)
+        self.fmtDQuoteClose  = theConf.rdStr(cnfSec, "fmtdquoteclose", self.fmtDQuoteClose)
         self.fmtPadBefore    = theConf.rdStr(cnfSec, "fmtpadbefore", self.fmtPadBefore)
         self.fmtPadAfter     = theConf.rdStr(cnfSec, "fmtpadafter", self.fmtPadAfter)
         self.fmtPadThin      = theConf.rdBool(cnfSec, "fmtpadthin", self.fmtPadThin)
@@ -604,23 +608,35 @@ class Config:
         self.searchMatchCap = theConf.rdBool(cnfSec, "searchmatchcap", self.searchMatchCap)
 
         # Deprecated Settings or Locations as of 2.0
-        # These will be loaded for a few minor releases until the users have converted them
+        # ToDo: These will be loaded for a few minor releases until the users have converted them
         self.guiFont         = theConf.rdStr("Main", "guifont", self.guiFont)
         self.guiFontSize     = theConf.rdInt("Main", "guifontsize", self.guiFontSize)
-        self.guiLocale         = theConf.rdStr("Main", "guilang", self.guiLocale)
+        self.guiLocale       = theConf.rdStr("Main", "guilang", self.guiLocale)
         self._backupPath     = theConf.rdPath("Backup", "backuppath", self._backupPath)
         self.backupOnClose   = theConf.rdBool("Backup", "backuponclose", self.backupOnClose)
         self.askBeforeBackup = theConf.rdBool("Backup", "askbeforebackup", self.askBeforeBackup)
+        fmtSingleQuotes      = theConf.rdStrList(cnfSec, "fmtsinglequote", [])
+        fmtDoubleQuotes      = theConf.rdStrList(cnfSec, "fmtdoublequote", [])
+
+        if isinstance(fmtSingleQuotes, list) and len(fmtSingleQuotes) == 2:
+            self.fmtSQuoteOpen = fmtSingleQuotes[0]
+            self.fmtSQuoteClose = fmtSingleQuotes[1]
+        if isinstance(fmtDoubleQuotes, list) and len(fmtDoubleQuotes) == 2:
+            self.fmtDQuoteOpen = fmtDoubleQuotes[0]
+            self.fmtDQuoteClose = fmtDoubleQuotes[1]
+
+        # Check Values
+        # ============
 
         # Check Certain Values for None
         self.spellLanguage = self._checkNone(self.spellLanguage)
 
         # If we're using straight quotes, disable auto-replace
-        if self.fmtSingleQuotes == ["'", "'"] and self.doReplaceSQuote:
+        if self.fmtSQuoteOpen == self.fmtSQuoteClose == "'" and self.doReplaceSQuote:
             logger.info("Using straight single quotes, so disabling auto-replace")
             self.doReplaceSQuote = False
 
-        if self.fmtDoubleQuotes == ['"', '"'] and self.doReplaceDQuote:
+        if self.fmtDQuoteOpen == self.fmtDQuoteClose == '"' and self.doReplaceDQuote:
             logger.info("Using straight double quotes, so disabling auto-replace")
             self.doReplaceDQuote = False
 
@@ -685,8 +701,10 @@ class Config:
             "scrollpastend":   str(self.scrollPastEnd),
             "autoscroll":      str(self.autoScroll),
             "autoscrollpos":   str(self.autoScrollPos),
-            "fmtsinglequote":  self._packList(self.fmtSingleQuotes),
-            "fmtdoublequote":  self._packList(self.fmtDoubleQuotes),
+            "fmtsquoteopen":   str(self.fmtSQuoteOpen),
+            "fmtsquoteclose":  str(self.fmtSQuoteClose),
+            "fmtdquoteopen":   str(self.fmtDQuoteOpen),
+            "fmtdquoteclose":  str(self.fmtDQuoteClose),
             "fmtpadbefore":    str(self.fmtPadBefore),
             "fmtpadafter":     str(self.fmtPadAfter),
             "fmtpadthin":      str(self.fmtPadThin),

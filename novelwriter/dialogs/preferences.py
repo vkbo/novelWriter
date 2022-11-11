@@ -1104,7 +1104,7 @@ class GuiPreferencesQuotes(QWidget):
         self.quoteSym["SO"].setReadOnly(True)
         self.quoteSym["SO"].setFixedWidth(qWidth)
         self.quoteSym["SO"].setAlignment(Qt.AlignCenter)
-        self.quoteSym["SO"].setText(self.mainConf.fmtSingleQuotes[0])
+        self.quoteSym["SO"].setText(self.mainConf.fmtSQuoteOpen)
         self.btnSingleStyleO = QPushButton("...")
         self.btnSingleStyleO.setMaximumWidth(bWidth)
         self.btnSingleStyleO.clicked.connect(lambda: self._getQuote("SO"))
@@ -1120,7 +1120,7 @@ class GuiPreferencesQuotes(QWidget):
         self.quoteSym["SC"].setReadOnly(True)
         self.quoteSym["SC"].setFixedWidth(qWidth)
         self.quoteSym["SC"].setAlignment(Qt.AlignCenter)
-        self.quoteSym["SC"].setText(self.mainConf.fmtSingleQuotes[1])
+        self.quoteSym["SC"].setText(self.mainConf.fmtSQuoteClose)
         self.btnSingleStyleC = QPushButton("...")
         self.btnSingleStyleC.setMaximumWidth(bWidth)
         self.btnSingleStyleC.clicked.connect(lambda: self._getQuote("SC"))
@@ -1137,7 +1137,7 @@ class GuiPreferencesQuotes(QWidget):
         self.quoteSym["DO"].setReadOnly(True)
         self.quoteSym["DO"].setFixedWidth(qWidth)
         self.quoteSym["DO"].setAlignment(Qt.AlignCenter)
-        self.quoteSym["DO"].setText(self.mainConf.fmtDoubleQuotes[0])
+        self.quoteSym["DO"].setText(self.mainConf.fmtDQuoteOpen)
         self.btnDoubleStyleO = QPushButton("...")
         self.btnDoubleStyleO.setMaximumWidth(bWidth)
         self.btnDoubleStyleO.clicked.connect(lambda: self._getQuote("DO"))
@@ -1153,7 +1153,7 @@ class GuiPreferencesQuotes(QWidget):
         self.quoteSym["DC"].setReadOnly(True)
         self.quoteSym["DC"].setFixedWidth(qWidth)
         self.quoteSym["DC"].setAlignment(Qt.AlignCenter)
-        self.quoteSym["DC"].setText(self.mainConf.fmtDoubleQuotes[1])
+        self.quoteSym["DC"].setText(self.mainConf.fmtDQuoteClose)
         self.btnDoubleStyleC = QPushButton("...")
         self.btnDoubleStyleC.setMaximumWidth(bWidth)
         self.btnDoubleStyleC.clicked.connect(lambda: self._getQuote("DC"))
@@ -1170,10 +1170,10 @@ class GuiPreferencesQuotes(QWidget):
         """Save the values set for this tab.
         """
         # Quotation Style
-        self.mainConf.fmtSingleQuotes[0] = self.quoteSym["SO"].text()
-        self.mainConf.fmtSingleQuotes[1] = self.quoteSym["SC"].text()
-        self.mainConf.fmtDoubleQuotes[0] = self.quoteSym["DO"].text()
-        self.mainConf.fmtDoubleQuotes[1] = self.quoteSym["DC"].text()
+        self.mainConf.fmtSQuoteOpen = self.quoteSym["SO"].text()
+        self.mainConf.fmtSQuoteClose = self.quoteSym["SC"].text()
+        self.mainConf.fmtDQuoteOpen = self.quoteSym["DO"].text()
+        self.mainConf.fmtDQuoteClose = self.quoteSym["DC"].text()
         return
 
     ##
