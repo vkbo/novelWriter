@@ -26,7 +26,7 @@ from shutil import copyfile
 from datetime import datetime
 
 from mock import causeOSError
-from tools import XML_IGNORE, cmpFiles, writeFile
+from tools import cmpFiles, writeFile
 
 from novelwriter.core.item import NWItem
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
@@ -36,6 +36,13 @@ from novelwriter.core.projectdata import NWProjectData
 class MockProject:
     def setProjectChanged(self, *a):
         pass
+
+
+@pytest.fixture(scope="function", autouse=True)
+def mockVersion(monkeypatch):
+    monkeypatch.setattr("novelwriter.__version__", "2.0-rc1")
+    monkeypatch.setattr("novelwriter.__hexversion__", "0x020000c1")
+    return
 
 
 @pytest.mark.core
@@ -203,7 +210,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     compFile = tstPaths.refDir / "projectXML_ReadCurrent.json"
     with open(dumpFile, mode="w", encoding="utf-8") as dump:
         json.dump(content, dump, indent=2)
-    assert cmpFiles(dumpFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(dumpFile, compFile)
 
     packedContent = []
     mockProject = MockProject()
@@ -232,7 +239,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     copyfile(outFile, tstFile)
-    assert cmpFiles(tstFile, refFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(tstFile, refFile)
 
 # END Test testCoreProjectXML_ReadCurrent
 
@@ -329,7 +336,7 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
     compFile = tstPaths.refDir / "projectXML_ReadLegacy10.json"
     with open(dumpFile, mode="w", encoding="utf-8") as dump:
         json.dump(content, dump, indent=2)
-    assert cmpFiles(dumpFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(dumpFile, compFile)
 
     packedContent = []
     mockProject = MockProject()
@@ -374,7 +381,7 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
     testFile = tstPaths.outDir / "projectXML_ReadLegacy10.nwx"
     compFile = tstPaths.refDir / "projectXML_ReadLegacy10.nwx"
     copyfile(outFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile)
 
 # END Test testCoreProjectXML_ReadLegacy10
 
@@ -471,7 +478,7 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
     compFile = tstPaths.refDir / "projectXML_ReadLegacy11.json"
     with open(dumpFile, mode="w", encoding="utf-8") as dump:
         json.dump(content, dump, indent=2)
-    assert cmpFiles(dumpFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(dumpFile, compFile)
 
     packedContent = []
     mockProject = MockProject()
@@ -516,7 +523,7 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
     testFile = tstPaths.outDir / "projectXML_ReadLegacy11.nwx"
     compFile = tstPaths.refDir / "projectXML_ReadLegacy11.nwx"
     copyfile(outFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile)
 
 # END Test testCoreProjectXML_ReadLegacy11
 
@@ -613,7 +620,7 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
     compFile = tstPaths.refDir / "projectXML_ReadLegacy12.json"
     with open(dumpFile, mode="w", encoding="utf-8") as dump:
         json.dump(content, dump, indent=2)
-    assert cmpFiles(dumpFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(dumpFile, compFile)
 
     packedContent = []
     mockProject = MockProject()
@@ -661,7 +668,7 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
     testFile = tstPaths.outDir / "projectXML_ReadLegacy12.nwx"
     compFile = tstPaths.refDir / "projectXML_ReadLegacy12.nwx"
     copyfile(outFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile)
 
 # END Test testCoreProjectXML_ReadLegacy12
 
@@ -758,7 +765,7 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
     compFile = tstPaths.refDir / "projectXML_ReadLegacy13.json"
     with open(dumpFile, mode="w", encoding="utf-8") as dump:
         json.dump(content, dump, indent=2)
-    assert cmpFiles(dumpFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(dumpFile, compFile)
 
     packedContent = []
     mockProject = MockProject()
@@ -806,7 +813,7 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
     testFile = tstPaths.outDir / "projectXML_ReadLegacy13.nwx"
     compFile = tstPaths.refDir / "projectXML_ReadLegacy13.nwx"
     copyfile(outFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile)
 
 # END Test testCoreProjectXML_ReadLegacy13
 
@@ -903,7 +910,7 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockRnd):
     compFile = tstPaths.refDir / "projectXML_ReadLegacy14.json"
     with open(dumpFile, mode="w", encoding="utf-8") as dump:
         json.dump(content, dump, indent=2)
-    assert cmpFiles(dumpFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(dumpFile, compFile)
 
     packedContent = []
     mockProject = MockProject()
@@ -953,6 +960,6 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockRnd):
     testFile = tstPaths.outDir / "projectXML_ReadLegacy14.nwx"
     compFile = tstPaths.refDir / "projectXML_ReadLegacy14.nwx"
     copyfile(outFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+    assert cmpFiles(testFile, compFile)
 
 # END Test testCoreProjectXML_ReadLegacy14
