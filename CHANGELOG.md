@@ -71,8 +71,9 @@ opened, a request to update the file format will show up.
 * The data access methods for the custom config file parser have been improved to better report
   correct type information. PR #1197.
 * Saving and loading of XML data is now handled by a separate set of reader and writer classes. The
-  reader class is capable of reading all file formats that have been used thus far. Issue #1189.
-  PR #1221.
+  reader class is capable of reading all file formats that have been used thus far. The various
+  data classes have been improved, and a new XML file formart version 1.5 added. Issue #1189.
+  PRs #1221 and #1232.
 * The project folder on disk is now wrapped in a storage class that the project accesses files
   through. It also handles lock files and archiving used for backup. The change is in preparation
   for adding a potential single file format. Issue #1222. PR #1225.
