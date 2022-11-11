@@ -105,8 +105,18 @@ class GuiDocEditor(QTextEdit):
         self._doReplace  = False  # Switch to temporarily disable auto-replace
         self._queuePos   = None   # Used for delayed change of cursor position
 
-        # Typography
+        # Typography Cache
         self._typPadChar = " "
+        self._typDQuoteO = '"'
+        self._typDQuoteC = '"'
+        self._typSQuoteO = "'"
+        self._typSQuoteC = "'"
+        self._typRepDQuote = False
+        self._typRepSQuote = False
+        self._typRepDash = False
+        self._typRepDots = False
+        self._typPadBefore = ""
+        self._typPadAfter = ""
 
         # Core Elements and Signals
         qDoc = self.document()
@@ -243,13 +253,23 @@ class GuiDocEditor(QTextEdit):
             f"{self.mainConf.fmtSQuoteOpen}{self.mainConf.fmtSQuoteClose}"
             f"{self.mainConf.fmtDQuoteOpen}{self.mainConf.fmtDQuoteClose}"
         )
-        print(self._nonWord)
 
         # Typography
         if self.mainConf.fmtPadThin:
             self._typPadChar = nwUnicode.U_THNBSP
         else:
             self._typPadChar = nwUnicode.U_NBSP
+
+        self._typSQuoteO = self.mainConf.fmtSQuoteOpen
+        self._typSQuoteC = self.mainConf.fmtSQuoteClose
+        self._typDQuoteO = self.mainConf.fmtDQuoteOpen
+        self._typDQuoteC = self.mainConf.fmtDQuoteClose
+        self._typRepDQuote = self.mainConf.doReplaceDQuote
+        self._typRepSQuote = self.mainConf.doReplaceSQuote
+        self._typRepDash = self.mainConf.doReplaceDash
+        self._typRepDots = self.mainConf.doReplaceDots
+        self._typPadBefore = self.mainConf.fmtPadBefore
+        self._typPadAfter = self.mainConf.fmtPadAfter
 
         # Reload spell check and dictionaries
         self.setDictionaries()
@@ -786,9 +806,9 @@ class GuiDocEditor(QTextEdit):
         elif theAction == nwDocAction.STRIKE:
             self._toggleFormat(2, "~")
         elif theAction == nwDocAction.S_QUOTE:
-            self._wrapSelection(self.mainConf.fmtSQuoteOpen, self.mainConf.fmtSQuoteClose)
+            self._wrapSelection(self._typSQuoteO, self._typSQuoteC)
         elif theAction == nwDocAction.D_QUOTE:
-            self._wrapSelection(self.mainConf.fmtDQuoteOpen, self.mainConf.fmtDQuoteClose)
+            self._wrapSelection(self._typDQuoteO, self._typDQuoteC)
         elif theAction == nwDocAction.SEL_ALL:
             self._makeSelection(QTextCursor.Document)
         elif theAction == nwDocAction.SEL_PARA:
@@ -810,9 +830,9 @@ class GuiDocEditor(QTextEdit):
         elif theAction == nwDocAction.BLOCK_UNN:
             self._formatBlock(nwDocAction.BLOCK_UNN)
         elif theAction == nwDocAction.REPL_SNG:
-            self._replaceQuotes("'", self.mainConf.fmtSQuoteOpen, self.mainConf.fmtSQuoteClose)
+            self._replaceQuotes("'", self._typSQuoteO, self._typSQuoteC)
         elif theAction == nwDocAction.REPL_DBL:
-            self._replaceQuotes("\"", self.mainConf.fmtDQuoteOpen, self.mainConf.fmtDQuoteClose)
+            self._replaceQuotes("\"", self._typDQuoteO, self._typDQuoteC)
         elif theAction == nwDocAction.RM_BREAKS:
             self._removeInParLineBreaks()
         elif theAction == nwDocAction.ALIGN_L:
@@ -878,13 +898,13 @@ class GuiDocEditor(QTextEdit):
             theText = theInsert
         elif isinstance(theInsert, nwDocInsert):
             if theInsert == nwDocInsert.QUOTE_LS:
-                theText = self.mainConf.fmtSQuoteOpen
+                theText = self._typSQuoteO
             elif theInsert == nwDocInsert.QUOTE_RS:
-                theText = self.mainConf.fmtSQuoteClose
+                theText = self._typSQuoteC
             elif theInsert == nwDocInsert.QUOTE_LD:
-                theText = self.mainConf.fmtDQuoteOpen
+                theText = self._typDQuoteO
             elif theInsert == nwDocInsert.QUOTE_RD:
-                theText = self.mainConf.fmtDQuoteClose
+                theText = self._typDQuoteC
             elif theInsert == nwDocInsert.SYNOPSIS:
                 theText = "% Synopsis: "
                 newBlock = True
@@ -1959,49 +1979,49 @@ class GuiDocEditor(QTextEdit):
         nDelete = 0
         tInsert = theOne
 
-        if self.mainConf.doReplaceDQuote and theTwo[:1].isspace() and theTwo.endswith('"'):
+        if self._typRepDQuote and theTwo[:1].isspace() and theTwo.endswith('"'):
             nDelete = 1
-            tInsert = self.mainConf.fmtDQuoteOpen
+            tInsert = self._typDQuoteO
 
-        elif self.mainConf.doReplaceDQuote and theOne == '"':
+        elif self._typRepDQuote and theOne == '"':
             nDelete = 1
             if thePos == 1:
-                tInsert = self.mainConf.fmtDQuoteOpen
+                tInsert = self._typDQuoteO
             elif thePos == 2 and theTwo == '>"':
-                tInsert = self.mainConf.fmtDQuoteOpen
+                tInsert = self._typDQuoteO
             elif thePos == 3 and theThree == '>>"':
-                tInsert = self.mainConf.fmtDQuoteOpen
+                tInsert = self._typDQuoteO
             else:
-                tInsert = self.mainConf.fmtDQuoteClose
+                tInsert = self._typDQuoteC
 
-        elif self.mainConf.doReplaceSQuote and theTwo[:1].isspace() and theTwo.endswith("'"):
+        elif self._typRepSQuote and theTwo[:1].isspace() and theTwo.endswith("'"):
             nDelete = 1
-            tInsert = self.mainConf.fmtSQuoteOpen
+            tInsert = self._typSQuoteO
 
-        elif self.mainConf.doReplaceSQuote and theOne == "'":
+        elif self._typRepSQuote and theOne == "'":
             nDelete = 1
             if thePos == 1:
-                tInsert = self.mainConf.fmtSQuoteOpen
+                tInsert = self._typSQuoteO
             elif thePos == 2 and theTwo == ">'":
-                tInsert = self.mainConf.fmtSQuoteOpen
+                tInsert = self._typSQuoteO
             elif thePos == 3 and theThree == ">>'":
-                tInsert = self.mainConf.fmtSQuoteOpen
+                tInsert = self._typSQuoteO
             else:
-                tInsert = self.mainConf.fmtSQuoteClose
+                tInsert = self._typSQuoteC
 
-        elif self.mainConf.doReplaceDash and theThree == "---":
+        elif self._typRepDash and theThree == "---":
             nDelete = 3
             tInsert = nwUnicode.U_EMDASH
 
-        elif self.mainConf.doReplaceDash and theTwo == "--":
+        elif self._typRepDash and theTwo == "--":
             nDelete = 2
             tInsert = nwUnicode.U_ENDASH
 
-        elif self.mainConf.doReplaceDash and theTwo == nwUnicode.U_ENDASH + "-":
+        elif self._typRepDash and theTwo == nwUnicode.U_ENDASH + "-":
             nDelete = 2
             tInsert = nwUnicode.U_EMDASH
 
-        elif self.mainConf.doReplaceDots and theThree == "...":
+        elif self._typRepDots and theThree == "...":
             nDelete = 3
             tInsert = nwUnicode.U_HELLIP
 
@@ -2011,7 +2031,7 @@ class GuiDocEditor(QTextEdit):
             tInsert = nwUnicode.U_PSEP
 
         tCheck = tInsert
-        if self.mainConf.fmtPadBefore and tCheck in self.mainConf.fmtPadBefore:
+        if self._typPadBefore and tCheck in self._typPadBefore:
             if self._allowSpaceBeforeColon(theText, tCheck):
                 nDelete = max(nDelete, 1)
                 chkPos = thePos - nDelete - 1
@@ -2020,7 +2040,7 @@ class GuiDocEditor(QTextEdit):
                     nDelete += 1
                 tInsert = self._typPadChar + tInsert
 
-        if self.mainConf.fmtPadAfter and tCheck in self.mainConf.fmtPadAfter:
+        if self._typPadAfter and tCheck in self._typPadAfter:
             if self._allowSpaceBeforeColon(theText, tCheck):
                 nDelete = max(nDelete, 1)
                 tInsert = tInsert + self._typPadChar

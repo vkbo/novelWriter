@@ -235,9 +235,6 @@ class Config:
         # Packages
         self.hasEnchant = False  # The pyenchant package
 
-        # Recent Cache
-        self.recentProj = {}
-
         return
 
     ##

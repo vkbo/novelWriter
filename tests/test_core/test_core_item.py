@@ -133,11 +133,11 @@ def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
     theItem.setExpanded("What?")
     assert theItem.isExpanded is False
     theItem.setExpanded("True")
-    assert theItem.isExpanded is True
+    assert theItem.isExpanded is False
     theItem.setExpanded(True)
     assert theItem.isExpanded is True
 
-    # Exported
+    # Active
     theItem.setActive(8)
     assert theItem.isActive is False
     theItem.setActive(None)
@@ -147,7 +147,7 @@ def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
     theItem.setActive("What?")
     assert theItem.isActive is False
     theItem.setActive("True")
-    assert theItem.isActive is True
+    assert theItem.isActive is False
     theItem.setActive(True)
     assert theItem.isActive is True
 
