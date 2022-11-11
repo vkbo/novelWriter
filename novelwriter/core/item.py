@@ -36,10 +36,16 @@ logger = logging.getLogger(__name__)
 
 class NWItem:
 
-    def __init__(self, theProject):
+    __slots__ = (
+        "_project", "_name", "_handle", "_parent", "_root", "_order",
+        "_type", "_class", "_layout", "_status", "_import", "_active",
+        "_expanded", "_heading", "_charCount", "_wordCount",
+        "_paraCount", "_cursorPos", "_initCount",
+    )
 
-        self.theProject = theProject
+    def __init__(self, project):
 
+        self._project  = project
         self._name     = ""
         self._handle   = None
         self._parent   = None
@@ -267,11 +273,11 @@ class NWItem:
         the current item based on its class.
         """
         if self.isNovelLike():
-            stName = self.theProject.data.itemStatus.name(self._status)
-            stIcon = self.theProject.data.itemStatus.icon(self._status) if incIcon else None
+            stName = self._project.data.itemStatus.name(self._status)
+            stIcon = self._project.data.itemStatus.icon(self._status) if incIcon else None
         else:
-            stName = self.theProject.data.itemImport.name(self._import)
-            stIcon = self.theProject.data.itemImport.icon(self._import) if incIcon else None
+            stName = self._project.data.itemImport.name(self._import)
+            stIcon = self._project.data.itemImport.icon(self._import) if incIcon else None
         return stName, stIcon
 
     ##
@@ -443,32 +449,32 @@ class NWItem:
         """Set the item status by looking it up in the valid status
         items of the current project.
         """
-        self._status = self.theProject.data.itemStatus.check(value)
+        self._status = self._project.data.itemStatus.check(value)
         return
 
     def setImport(self, value):
         """Set the item importance by looking it up in the valid import
         items of the current project.
         """
-        self._import = self.theProject.data.itemImport.check(value)
+        self._import = self._project.data.itemImport.check(value)
         return
 
     def setActive(self, state):
-        """Set the export flag.
+        """Set the active flag.
         """
-        if isinstance(state, str):
-            self._active = (state == str(True))
+        if isinstance(state, bool):
+            self._active = state
         else:
-            self._active = (state is True)
+            self._active = False
         return
 
     def setExpanded(self, state):
         """Set the expanded status of an item in the project tree.
         """
-        if isinstance(state, str):
-            self._expanded = (state == str(True))
+        if isinstance(state, bool):
+            self._expanded = state
         else:
-            self._expanded = (state is True)
+            self._expanded = False
         return
 
     ##

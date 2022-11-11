@@ -461,19 +461,19 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsQuoteLS.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtSingleQuotes[0]
+    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtSQuoteOpen
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsQuoteRS.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtSingleQuotes[1]
+    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtSQuoteClose
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsQuoteLD.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtDoubleQuotes[0]
+    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtDQuoteOpen
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsQuoteRD.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtDoubleQuotes[1]
+    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtDQuoteClose
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsMSApos.activate(QAction.Trigger)

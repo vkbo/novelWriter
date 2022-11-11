@@ -432,19 +432,19 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=KEY_DELAY)
 
     # Insert spaces before and after quotes
-    nwGUI.mainConf.fmtPadBefore = "\u201d"
-    nwGUI.mainConf.fmtPadAfter = "\u201c"
+    nwGUI.docEditor._typPadBefore = "\u201d"
+    nwGUI.docEditor._typPadAfter = "\u201c"
 
     for c in "Some \"double quoted text with spaces padded\".":
         qtbot.keyClick(nwGUI.docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=KEY_DELAY)
 
-    nwGUI.mainConf.fmtPadBefore = ""
-    nwGUI.mainConf.fmtPadAfter = ""
+    nwGUI.docEditor._typPadBefore = ""
+    nwGUI.docEditor._typPadAfter = ""
 
     # Insert spaces before colon, but ignore tags and synopsis
-    nwGUI.mainConf.fmtPadBefore = ":"
+    nwGUI.docEditor._typPadBefore = ":"
 
     for c in "@object: NoSpaceAdded":
         qtbot.keyClick(nwGUI.docEditor, c, delay=KEY_DELAY)
@@ -466,7 +466,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(nwGUI.docEditor, Qt.Key_Return, delay=KEY_DELAY)
 
-    nwGUI.mainConf.fmtPadBefore = ""
+    nwGUI.docEditor._typPadBefore = ""
 
     # Indent and Align
     # ================
