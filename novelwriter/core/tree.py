@@ -331,20 +331,15 @@ class NWTree:
     def setOrder(self, newOrder):
         """Reorders the tree based on a list of items.
         """
-        tmpOrder = []
-
-        # Add all known elements to a new temp list
-        for tHandle in newOrder:
-            if tHandle in self._projTree:
-                tmpOrder.append(tHandle)
-            else:
-                logger.error("Handle '%s' in new tree order is not in project tree", tHandle)
-
-        # Do a reverse lookup to check for items that will be lost
-        # This is mainly for debugging purposes
-        for tHandle in self._treeOrder:
-            if tHandle not in tmpOrder:
-                logger.warning("Handle '%s' in old tree order is not in new tree order", tHandle)
+        tmpOrder = [tHandle for tHandle in newOrder if tHandle in self._projTree]
+        if not (len(tmpOrder) == len(newOrder) == len(self._treeOrder)):
+            # Something is wrong, so let's debug it
+            for tHandle in newOrder:
+                if tHandle not in self._projTree:
+                    logger.error("Handle '%s' in new tree order is not in old order", tHandle)
+            for tHandle in self._treeOrder:
+                if tHandle not in tmpOrder:
+                    logger.warning("Handle '%s' in old tree order is not in new order", tHandle)
 
         # Save the temp list
         self._treeOrder = tmpOrder
