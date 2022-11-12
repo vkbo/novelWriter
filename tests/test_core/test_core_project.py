@@ -230,7 +230,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         assert "The file format of your project is about to be" in mockGUI.lastQuestion[1]
         mockGUI.askResponse = True
 
-    # Won't convert legacy file
+    # Won't open project from newer version
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "hexVersion", property(lambda *a: 0x99999999))
         mockGUI.askResponse = False
@@ -242,6 +242,18 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.tree.NWTree.updateItemData", lambda *a: False)
         assert theProject.openProject(fncPath) is True
+
+    assert theProject.closeProject()
+
+    # Trigger an index rebuild
+    with monkeypatch.context() as mp:
+        mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.WAS_LEGACY))
+        mp.setattr("novelwriter.core.index.NWIndex.loadIndex", lambda *a: True)
+        mockGUI.askResponse = True
+        theProject.index._indexBroken = True
+        assert theProject.openProject(fncPath) is True
+        assert "The file format of your project is about to be" in mockGUI.lastQuestion[1]
+        assert theProject.index._indexBroken is False
 
     assert theProject.closeProject()
 

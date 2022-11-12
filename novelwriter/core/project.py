@@ -369,8 +369,11 @@ class NWProject(QObject):
 
         self._scanProjectFolder()
         self._index.loadIndex()
-        self.updateWordCounts()
+        if xmlReader.state == XMLReadState.WAS_LEGACY:
+            # Often, the index needs to be rebuilt when updating format
+            self._index.rebuildIndex()
 
+        self.updateWordCounts()
         self._projOpened = time()
         self._projAltered = False
 
@@ -482,8 +485,8 @@ class NWProject(QObject):
             return False
 
         archName = baseDir / self.tr(
-            "Backup from {0}.zip"
-        ).format(formatTimeStamp(time(), fileSafe=True))
+            "Backup from {0}"
+        ).format(formatTimeStamp(time(), fileSafe=True) + ".zip")
         if self._storage.zipIt(archName, compression=2):
             if doNotify:
                 self.mainGui.makeAlert(self.tr(

@@ -38,6 +38,13 @@ class MockProject:
         pass
 
 
+@pytest.fixture(scope="function", autouse=True)
+def mockVersion(monkeypatch):
+    monkeypatch.setattr("novelwriter.__version__", "2.0-rc1")
+    monkeypatch.setattr("novelwriter.__hexversion__", "0x020000c1")
+    return
+
+
 @pytest.mark.core
 def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     """Test reading the current XML file format.

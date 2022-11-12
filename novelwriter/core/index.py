@@ -58,23 +58,23 @@ class NWIndex:
     The index data is cached in a JSON file between writing sessions.
     """
 
-    def __init__(self, theProject):
+    def __init__(self, project):
 
-        self.theProject = theProject
+        self._project = project
 
         # Storage and State
         self._tagsIndex = TagsIndex()
-        self._itemIndex = ItemIndex(theProject)
+        self._itemIndex = ItemIndex(project)
         self._indexBroken = False
 
         # TimeStamps
-        self._indexChange = 0
+        self._indexChange = 0.0
         self._rootChange = {}
 
         return
 
     def __repr__(self):
-        return f"<NWIndex project='{self.theProject.data.name}'>"
+        return f"<NWIndex project='{self._project.data.name}'>"
 
     ##
     #  Properties
@@ -93,8 +93,20 @@ class NWIndex:
         """
         self._tagsIndex.clear()
         self._itemIndex.clear()
-        self._indexChange = 0
+        self._indexChange = 0.0
         self._rootChange = {}
+        return
+
+    def rebuildIndex(self):
+        """Rebuild the entire index from scratch.
+        """
+        self.clearIndex()
+        for nwItem in self._project.tree:
+            if nwItem is not None and nwItem.isFileType():
+                tHandle = nwItem.itemHandle
+                theDoc = self._project.storage.getDocument(tHandle)
+                self.scanText(tHandle, theDoc.readDocument() or "")
+        self._indexBroken = False
         return
 
     def deleteHandle(self, tHandle):
@@ -113,11 +125,11 @@ class NWIndex:
         moved from the archive or trash folders back into the active
         project.
         """
-        if not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
+        if not self._project.tree.checkType(tHandle, nwItemType.FILE):
             return False
 
         logger.debug("Re-indexing item '%s'", tHandle)
-        theDoc = self.theProject.storage.getDocument(tHandle)
+        theDoc = self._project.storage.getDocument(tHandle)
         self.scanText(tHandle, theDoc.readDocument() or "")
 
         return True
@@ -125,13 +137,13 @@ class NWIndex:
     def indexChangedSince(self, checkTime):
         """Check if the index has changed since a given time.
         """
-        return self._indexChange > checkTime
+        return self._indexChange > float(checkTime)
 
     def rootChangedSince(self, rootHandle, checkTime):
         """Check if the index has changed since a given time for a
         given root item.
         """
-        return self._rootChange.get(rootHandle, self._indexChange) > checkTime
+        return self._rootChange.get(rootHandle, self._indexChange) > float(checkTime)
 
     ##
     #  Load and Save Index to/from File
@@ -140,7 +152,7 @@ class NWIndex:
     def loadIndex(self):
         """Load index from last session from the project meta folder.
         """
-        indexFile = self.theProject.storage.getMetaFile(nwFiles.INDEX_FILE)
+        indexFile = self._project.storage.getMetaFile(nwFiles.INDEX_FILE)
         if not isinstance(indexFile, Path):
             return False
 
@@ -171,12 +183,12 @@ class NWIndex:
         logger.debug("Checking index")
 
         # Check that all files are indexed
-        for fHandle in self.theProject.projFiles:
+        for fHandle in self._project.projFiles:
             if fHandle not in self._itemIndex:
                 logger.warning("Item '%s' is not in the index", fHandle)
                 self.reIndexHandle(fHandle)
 
-        self._indexChange = round(time())
+        self._indexChange = time()
 
         logger.debug("Index loaded in %.3f ms", (time() - tStart)*1000)
 
@@ -186,7 +198,7 @@ class NWIndex:
         """Save the current index as a json file in the project meta
         data folder.
         """
-        indexFile = self.theProject.storage.getMetaFile(nwFiles.INDEX_FILE)
+        indexFile = self._project.storage.getMetaFile(nwFiles.INDEX_FILE)
         if not isinstance(indexFile, Path):
             return False
 
@@ -222,7 +234,7 @@ class NWIndex:
         files before we save them, in which case we already have the
         text.
         """
-        theItem = self.theProject.tree[tHandle]
+        theItem = self._project.tree[tHandle]
         if theItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
             return False
@@ -256,7 +268,7 @@ class NWIndex:
             self._scanActive(tHandle, theItem, theText, itemTags)
 
         # Update timestamps for index changes
-        nowTime = round(time())
+        nowTime = time()
         self._indexChange = nowTime
         self._rootChange[theItem.itemRoot] = nowTime
 
@@ -737,8 +749,8 @@ class ItemIndex:
     IndexHeading object for each header of the text.
     """
 
-    def __init__(self, theProject):
-        self.theProject = theProject
+    def __init__(self, project):
+        self._project = project
         self._items = {}
         return
 
@@ -802,7 +814,7 @@ class ItemIndex:
         """Iterate over all items and headers in the novel structure for
         a given root handle, or for all if root handle is None.
         """
-        for tItem in self.theProject.tree:
+        for tItem in self._project.tree:
             if tItem is None:
                 continue
             if tItem.isNoteLayout():
@@ -885,7 +897,7 @@ class ItemIndex:
             if not isHandle(tHandle):
                 raise ValueError("itemIndex keys must be handles")
 
-            nwItem = self.theProject.tree[tHandle]
+            nwItem = self._project.tree[tHandle]
             if nwItem is not None:
                 tItem = IndexItem(tHandle, nwItem)
                 tItem.unpackData(tData)
