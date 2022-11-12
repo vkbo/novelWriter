@@ -404,22 +404,20 @@ class GuiMain(QMainWindow):
         if self.docEditor.docChanged():
             self.saveDocument()
 
-        if self.theProject.projAltered:
-            saveOK = self.saveProject()
-            doBackup = False
-            if self.theProject.data.doBackup and self.mainConf.backupOnClose:
-                doBackup = True
-                if self.mainConf.askBeforeBackup:
-                    msgYes = self.askQuestion(
-                        self.tr("Backup Project"),
-                        self.tr("Backup the current project?")
-                    )
-                    if not msgYes:
-                        doBackup = False
-            if doBackup:
-                self.theProject.backupProject(False)
-        else:
-            saveOK = True
+        saveOK = self.saveProject()
+        doBackup = False
+        if self.theProject.data.doBackup and self.mainConf.backupOnClose:
+            doBackup = True
+            if self.mainConf.askBeforeBackup:
+                msgYes = self.askQuestion(
+                    self.tr("Backup Project"),
+                    self.tr("Backup the current project?")
+                )
+                if not msgYes:
+                    doBackup = False
+
+        if doBackup:
+            self.theProject.backupProject(False)
 
         if saveOK:
             self.closeDocument()
