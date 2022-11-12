@@ -58,13 +58,13 @@ class NWIndex:
     The index data is cached in a JSON file between writing sessions.
     """
 
-    def __init__(self, theProject):
+    def __init__(self, project):
 
-        self.theProject = theProject
+        self._project = project
 
         # Storage and State
         self._tagsIndex = TagsIndex()
-        self._itemIndex = ItemIndex(theProject)
+        self._itemIndex = ItemIndex(project)
         self._indexBroken = False
 
         # TimeStamps
@@ -74,7 +74,7 @@ class NWIndex:
         return
 
     def __repr__(self):
-        return f"<NWIndex project='{self.theProject.data.name}'>"
+        return f"<NWIndex project='{self._project.data.name}'>"
 
     ##
     #  Properties
@@ -113,11 +113,11 @@ class NWIndex:
         moved from the archive or trash folders back into the active
         project.
         """
-        if not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
+        if not self._project.tree.checkType(tHandle, nwItemType.FILE):
             return False
 
         logger.debug("Re-indexing item '%s'", tHandle)
-        theDoc = self.theProject.storage.getDocument(tHandle)
+        theDoc = self._project.storage.getDocument(tHandle)
         self.scanText(tHandle, theDoc.readDocument() or "")
 
         return True
@@ -140,7 +140,7 @@ class NWIndex:
     def loadIndex(self):
         """Load index from last session from the project meta folder.
         """
-        indexFile = self.theProject.storage.getMetaFile(nwFiles.INDEX_FILE)
+        indexFile = self._project.storage.getMetaFile(nwFiles.INDEX_FILE)
         if not isinstance(indexFile, Path):
             return False
 
@@ -171,7 +171,7 @@ class NWIndex:
         logger.debug("Checking index")
 
         # Check that all files are indexed
-        for fHandle in self.theProject.projFiles:
+        for fHandle in self._project.projFiles:
             if fHandle not in self._itemIndex:
                 logger.warning("Item '%s' is not in the index", fHandle)
                 self.reIndexHandle(fHandle)
@@ -186,7 +186,7 @@ class NWIndex:
         """Save the current index as a json file in the project meta
         data folder.
         """
-        indexFile = self.theProject.storage.getMetaFile(nwFiles.INDEX_FILE)
+        indexFile = self._project.storage.getMetaFile(nwFiles.INDEX_FILE)
         if not isinstance(indexFile, Path):
             return False
 
@@ -222,7 +222,7 @@ class NWIndex:
         files before we save them, in which case we already have the
         text.
         """
-        theItem = self.theProject.tree[tHandle]
+        theItem = self._project.tree[tHandle]
         if theItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
             return False
@@ -737,8 +737,8 @@ class ItemIndex:
     IndexHeading object for each header of the text.
     """
 
-    def __init__(self, theProject):
-        self.theProject = theProject
+    def __init__(self, project):
+        self._project = project
         self._items = {}
         return
 
@@ -802,7 +802,7 @@ class ItemIndex:
         """Iterate over all items and headers in the novel structure for
         a given root handle, or for all if root handle is None.
         """
-        for tItem in self.theProject.tree:
+        for tItem in self._project.tree:
             if tItem is None:
                 continue
             if tItem.isNoteLayout():
@@ -885,7 +885,7 @@ class ItemIndex:
             if not isHandle(tHandle):
                 raise ValueError("itemIndex keys must be handles")
 
-            nwItem = self.theProject.tree[tHandle]
+            nwItem = self._project.tree[tHandle]
             if nwItem is not None:
                 tItem = IndexItem(tHandle, nwItem)
                 tItem.unpackData(tData)
