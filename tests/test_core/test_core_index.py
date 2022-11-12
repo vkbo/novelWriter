@@ -90,7 +90,7 @@ def testCoreIndex_LoadSave(monkeypatch, prjLipsum, mockGUI, tstPaths):
     assert theIndex._tagsIndex._tags == {}
     assert theIndex._itemIndex._items == {}
 
-    # No folder for sloading
+    # No folder for loading
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
         assert theIndex.loadIndex() is False
@@ -104,6 +104,13 @@ def testCoreIndex_LoadSave(monkeypatch, prjLipsum, mockGUI, tstPaths):
     # Make the load pass
     assert theIndex.loadIndex() is True
     assert theIndex.indexBroken is False
+
+    assert str(theIndex._tagsIndex.packData()) == tagIndex
+    assert str(theIndex._itemIndex.packData()) == itemsIndex
+
+    # Rebuild index
+    theIndex.clearIndex()
+    theIndex.rebuildIndex()
 
     assert str(theIndex._tagsIndex.packData()) == tagIndex
     assert str(theIndex._itemIndex.packData()) == itemsIndex

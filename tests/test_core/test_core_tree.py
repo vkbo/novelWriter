@@ -24,6 +24,7 @@ import random
 
 from pathlib import Path
 
+from mock import causeOSError
 from tools import readFile
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
@@ -231,6 +232,36 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
 
 
 @pytest.mark.core
+def testCoreTree_PackUnpack(mockGUI, mockItems):
+    """Test packing and unpacking data.
+    """
+    theProject = NWProject(mockGUI)
+    theTree = NWTree(theProject)
+
+    aHandles = []
+    for tHandle, pHandle, nwItem in mockItems:
+        aHandles.append(tHandle)
+        theTree.append(tHandle, pHandle, nwItem)
+        theTree.updateItemData(tHandle)
+
+    assert len(theTree) == len(mockItems)
+
+    # Pack
+    tree = theTree.pack()
+    for i, (tHandle, pHandle, nwItem) in enumerate(mockItems):
+        assert tree[i]["itemAttr"]["handle"] == tHandle
+
+    # Unpack
+    theTree.clear()
+    assert len(theTree) == 0
+    assert theTree.handles() == []
+    assert theTree.unpack(tree) is True
+    assert theTree.handles() == aHandles
+
+# END Test testCoreTree_PackUnpack
+
+
+@pytest.mark.core
 def testCoreTree_Methods(mockGUI, mockItems):
     """Test various class methods.
     """
@@ -271,6 +302,13 @@ def testCoreTree_Methods(mockGUI, mockItems):
     assert theTree.findRoot(nwItemClass.WORLD) is None
     assert theTree.findRoot(nwItemClass.NOVEL) == "a000000000001"
     assert theTree.findRoot(nwItemClass.CHARACTER) == "a000000000004"
+
+    # Iter roots
+    roots = list(theTree.iterRoots(None))
+    assert roots[0][0] == "a000000000001"
+    assert roots[1][0] == "a000000000002"
+    assert roots[2][0] == "a000000000003"
+    assert roots[3][0] == "a000000000004"
 
     # Add a fake item to root and check that it can handle it
     theTree._treeRoots["0000000000000"] = NWItem(theProject)
@@ -363,7 +401,7 @@ def testCoreTree_Stats(mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testCoreTree_Reorder(mockGUI, mockItems):
+def testCoreTree_Reorder(caplog, mockGUI, mockItems):
     """Test changing tree order.
     """
     theProject = NWProject(mockGUI)
@@ -384,12 +422,16 @@ def testCoreTree_Reorder(mockGUI, mockItems):
     theTree.setOrder(bHandle)
     assert theTree.handles() == bHandle
 
+    caplog.clear()
     theTree.setOrder(bHandle + ["stuff"])
     assert theTree.handles() == bHandle
+    assert "Handle 'stuff' in new tree order is not in old order" in caplog.text
 
+    caplog.clear()
     theTree._treeOrder.append("stuff")
     theTree.setOrder(bHandle)
     assert theTree.handles() == bHandle
+    assert "Handle 'stuff' in old tree order is not in new order" in caplog.text
 
 # END Test testCoreTree_Reorder
 
@@ -420,6 +462,11 @@ def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpPath):
 
     theProject._storage._runtimePath = None
     assert theTree.writeToCFile() is False
+
+    theProject._storage._runtimePath = tmpPath
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert theTree.writeToCFile() is False
 
     theProject._storage._runtimePath = tmpPath
     assert theTree.writeToCFile() is True

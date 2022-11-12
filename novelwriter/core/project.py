@@ -369,8 +369,11 @@ class NWProject(QObject):
 
         self._scanProjectFolder()
         self._index.loadIndex()
-        self.updateWordCounts()
+        if xmlReader.state == XMLReadState.WAS_LEGACY:
+            # Often, the index needs to be rebuilt when updating format
+            self._index.rebuildIndex()
 
+        self.updateWordCounts()
         self._projOpened = time()
         self._projAltered = False
 
