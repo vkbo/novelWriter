@@ -833,17 +833,8 @@ class GuiMain(QMainWindow):
         tStart = time()
 
         self.projView.saveProjectTasks()
-        self.theProject.index.clearIndex()
-
-        for tItem in self.theProject.tree:
-            if tItem is None:  # pragma: no cover
-                continue  # This is a bug trap
-
-            logger.debug("Indexing '%s'", tItem.itemName)
-            if self.theProject.index.reIndexHandle(tItem.itemHandle):
-                # Update Word Counts
-                self.projView.propagateCount(tItem.itemHandle, tItem.wordCount, countChildren=True)
-                self.projView.setTreeItemValues(tItem.itemHandle)
+        self.theProject.index.rebuildIndex()
+        self.projView.populateTree()
 
         tEnd = time()
         self.setStatus(

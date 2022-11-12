@@ -68,7 +68,7 @@ class NWIndex:
         self._indexBroken = False
 
         # TimeStamps
-        self._indexChange = 0
+        self._indexChange = 0.0
         self._rootChange = {}
 
         return
@@ -93,8 +93,20 @@ class NWIndex:
         """
         self._tagsIndex.clear()
         self._itemIndex.clear()
-        self._indexChange = 0
+        self._indexChange = 0.0
         self._rootChange = {}
+        return
+
+    def rebuildIndex(self):
+        """Rebuild the entire index from scratch.
+        """
+        self.clearIndex()
+        for nwItem in self._project.tree:
+            if nwItem is not None and nwItem.isFileType():
+                tHandle = nwItem.itemHandle
+                theDoc = self._project.storage.getDocument(tHandle)
+                self.scanText(tHandle, theDoc.readDocument() or "")
+        self._indexBroken = False
         return
 
     def deleteHandle(self, tHandle):
@@ -125,13 +137,13 @@ class NWIndex:
     def indexChangedSince(self, checkTime):
         """Check if the index has changed since a given time.
         """
-        return self._indexChange > checkTime
+        return self._indexChange > float(checkTime)
 
     def rootChangedSince(self, rootHandle, checkTime):
         """Check if the index has changed since a given time for a
         given root item.
         """
-        return self._rootChange.get(rootHandle, self._indexChange) > checkTime
+        return self._rootChange.get(rootHandle, self._indexChange) > float(checkTime)
 
     ##
     #  Load and Save Index to/from File
@@ -176,7 +188,7 @@ class NWIndex:
                 logger.warning("Item '%s' is not in the index", fHandle)
                 self.reIndexHandle(fHandle)
 
-        self._indexChange = round(time())
+        self._indexChange = time()
 
         logger.debug("Index loaded in %.3f ms", (time() - tStart)*1000)
 
@@ -256,7 +268,7 @@ class NWIndex:
             self._scanActive(tHandle, theItem, theText, itemTags)
 
         # Update timestamps for index changes
-        nowTime = round(time())
+        nowTime = time()
         self._indexChange = nowTime
         self._rootChange[theItem.itemRoot] = nowTime
 
