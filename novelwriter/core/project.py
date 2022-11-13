@@ -74,7 +74,6 @@ class NWProject(QObject):
         # Project Status
         self._projOpened  = 0      # The time stamp of when the project file was opened
         self._projChanged = False  # The project has unsaved changes
-        self._projAltered = False  # The project has been altered this session
         self._lockedBy    = None   # Data on which computer has the project open
         self._projFiles   = []     # A list of all files in the content folder on load
 
@@ -117,10 +116,6 @@ class NWProject(QObject):
     @property
     def projChanged(self):
         return self._projChanged
-
-    @property
-    def projAltered(self):
-        return self._projAltered
 
     @property
     def projFiles(self):
@@ -236,7 +231,6 @@ class NWProject(QObject):
         # Project Status
         self._projOpened  = 0
         self._projChanged = False
-        self._projAltered = False
 
         # Project Tree
         self._storage.clear()
@@ -375,7 +369,6 @@ class NWProject(QObject):
 
         self.updateWordCounts()
         self._projOpened = time()
-        self._projAltered = False
 
         self._storage.writeLockFile()
         self.setProjectChanged(False)
@@ -559,9 +552,6 @@ class NWProject(QObject):
         if isinstance(value, bool):
             self._projChanged = value
             self.projectStatusChanged.emit(self._projChanged)
-            if value:
-                # If we've changed the project at all, this should be True
-                self._projAltered = True
         return self._projChanged
 
     ##

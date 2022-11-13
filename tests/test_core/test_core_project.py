@@ -516,11 +516,9 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
 
     # Spell check
     theProject.setProjectChanged(False)
-    theProject._projAltered = False
     theProject.data.setSpellCheck(True)
     theProject.data.setSpellCheck(False)
     assert theProject.projChanged is True
-    assert theProject.projAltered is True
     assert theProject.projOpened > 0
 
     # Spell language

@@ -74,6 +74,8 @@ opened, a request to update the file format will show up.
   reader class is capable of reading all file formats that have been used thus far. The various
   data classes have been improved, and a new XML file formart version 1.5 added. Issue #1189.
   PRs #1221 and #1232.
+* The index is now automatically rebuilt when the project file format is updated. Issue #1235.
+  PR #1236.
 * The project folder on disk is now wrapped in a storage class that the project accesses files
   through. It also handles lock files and archiving used for backup. The change is in preparation
   for adding a potential single file format. Issue #1222. PR #1225.
@@ -83,6 +85,8 @@ opened, a request to update the file format will show up.
   Issue #1152. PR #1225.
 * The Config class has been refactored extensively and now also uses pathlib for all paths. Tests
   are also switched to using pathlib. Issue #1224. PRs #1228 and #1229.
+* The updating of tree order method of the project tree class has been updated for better
+  performance. PR #1236.
 
 ----
 
