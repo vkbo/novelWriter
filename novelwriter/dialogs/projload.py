@@ -23,10 +23,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import logging
 import novelwriter
 
+from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtGui import QKeySequence
@@ -54,7 +54,7 @@ class GuiProjectLoad(QDialog):
     C_TIME  = 2
 
     def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiProjectLoad ...")
         self.setObjectName("GuiProjectLoad")
@@ -77,7 +77,6 @@ class GuiProjectLoad(QDialog):
         self.setWindowTitle(self.tr("Open Project"))
         self.setMinimumWidth(self.mainConf.pxInt(650))
         self.setMinimumHeight(self.mainConf.pxInt(400))
-        self.setModal(True)
 
         self.nwIcon = QLabel()
         self.nwIcon.setPixmap(self.mainGui.mainTheme.getPixmap("novelwriter", (nPx, nPx)))
@@ -158,7 +157,6 @@ class GuiProjectLoad(QDialog):
     def _doOpenRecent(self):
         """Close the dialog window with a recent project selected.
         """
-        logger.verbose("GuiProjectLoad open button clicked")
         self._saveSettings()
 
         self.openPath = None
@@ -183,7 +181,6 @@ class GuiProjectLoad(QDialog):
     def _doBrowse(self):
         """Browse for a folder path.
         """
-        logger.verbose("GuiProjectLoad browse button clicked")
         extFilter = [
             self.tr("novelWriter Project File ({0})").format(nwFiles.PROJ_FILE),
             self.tr("All files ({0})").format("*"),
@@ -192,8 +189,8 @@ class GuiProjectLoad(QDialog):
             self, self.tr("Open Project"), "", filter=";;".join(extFilter)
         )
         if projFile:
-            thePath = os.path.abspath(os.path.dirname(projFile))
-            self.selPath.setText(thePath)
+            thePath = Path(projFile).absolute()
+            self.selPath.setText(str(thePath))
             self.openPath = thePath
             self.openState = self.OPEN_STATE
             self.accept()
@@ -203,7 +200,6 @@ class GuiProjectLoad(QDialog):
     def _doCancel(self):
         """Close the dialog window without doing anything.
         """
-        logger.verbose("GuiProjectLoad close button clicked")
         self.openPath = None
         self.openState = self.NONE_STATE
         self.close()
@@ -212,7 +208,6 @@ class GuiProjectLoad(QDialog):
     def _doNewProject(self):
         """Create a new project.
         """
-        logger.verbose("GuiProjectLoad new project button clicked")
         self._saveSettings()
         self.openPath = None
         self.openState = self.NEW_STATE
@@ -233,7 +228,7 @@ class GuiProjectLoad(QDialog):
                 ).format(projName)
             )
             if msgYes:
-                self.mainConf.removeFromRecentCache(
+                self.mainConf.recentProjects.remove(
                     selList[0].data(self.C_NAME, Qt.UserRole)
                 )
                 self._populateList()
@@ -262,29 +257,23 @@ class GuiProjectLoad(QDialog):
         colWidths[self.C_NAME]  = self.listBox.columnWidth(self.C_NAME)
         colWidths[self.C_COUNT] = self.listBox.columnWidth(self.C_COUNT)
         colWidths[self.C_TIME]  = self.listBox.columnWidth(self.C_TIME)
-        self.mainConf.setProjColWidths(colWidths)
+        self.mainConf.setProjLoadColWidths(colWidths)
         return
 
     def _populateList(self):
         """Populate the list box with recent project data.
         """
-        dataList = []
-        for projPath in self.mainConf.recentProj:
-            theEntry = self.mainConf.recentProj[projPath]
-            theTitle = theEntry.get("title", "")
-            theTime  = theEntry.get("time", 0)
-            theWords = theEntry.get("words", 0)
-            dataList.append([theTitle, theTime, theWords, projPath])
-
         self.listBox.clear()
-        sortList = sorted(dataList, key=lambda x: x[1], reverse=True)
-        for theTitle, theTime, theWords, projPath in sortList:
+        dataList = self.mainConf.recentProjects.listEntries()
+        sortList = sorted(dataList, key=lambda x: x[3], reverse=True)
+        nwxIcon = self.mainGui.mainTheme.getIcon("proj_nwx")
+        for path, title, words, time in sortList:
             newItem = QTreeWidgetItem([""]*4)
-            newItem.setIcon(self.C_NAME,  self.mainGui.mainTheme.getIcon("proj_nwx"))
-            newItem.setText(self.C_NAME,  theTitle)
-            newItem.setData(self.C_NAME,  Qt.UserRole, projPath)
-            newItem.setText(self.C_COUNT, formatInt(theWords))
-            newItem.setText(self.C_TIME,  datetime.fromtimestamp(theTime).strftime("%x %X"))
+            newItem.setIcon(self.C_NAME, nwxIcon)
+            newItem.setText(self.C_NAME, title)
+            newItem.setData(self.C_NAME, Qt.UserRole, path)
+            newItem.setText(self.C_COUNT, formatInt(words))
+            newItem.setText(self.C_TIME, datetime.fromtimestamp(time).strftime("%x %X"))
             newItem.setTextAlignment(self.C_NAME,  Qt.AlignLeft  | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_TIME,  Qt.AlignRight | Qt.AlignVCenter)
@@ -294,7 +283,7 @@ class GuiProjectLoad(QDialog):
         if self.listBox.topLevelItemCount() > 0:
             self.listBox.topLevelItem(0).setSelected(True)
 
-        projColWidth = self.mainConf.getProjColWidths()
+        projColWidth = self.mainConf.projLoadColWidths
         if len(projColWidth) == 3:
             self.listBox.setColumnWidth(self.C_NAME,  projColWidth[self.C_NAME])
             self.listBox.setColumnWidth(self.C_COUNT, projColWidth[self.C_COUNT])

@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 import zipfile
 
@@ -28,8 +27,8 @@ from shutil import copyfile
 
 from tools import cmpFiles
 
-from novelwriter.core import NWProject, ToOdt
-from novelwriter.core.toodt import ODTParagraphStyle, ODTTextStyle, XMLParagraph, _mkTag
+from novelwriter.core.toodt import ToOdt, ODTParagraphStyle, ODTTextStyle, XMLParagraph, _mkTag
+from novelwriter.core.project import NWProject
 
 XML_NS = [
     ' xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"',
@@ -612,7 +611,7 @@ def testCoreToOdt_ConvertDirect(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToOdt_SaveFlat(mockGUI, fncDir, outDir, refDir):
+def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     """Test the document save functions.
     """
     theProject = NWProject(mockGUI)
@@ -634,12 +633,12 @@ def testCoreToOdt_SaveFlat(mockGUI, fncDir, outDir, refDir):
     theDoc.doConvert()
     theDoc.closeDocument()
 
-    flatFile = os.path.join(fncDir, "document.fodt")
-    testFile = os.path.join(outDir, "coreToOdt_SaveFlat_document.fodt")
-    compFile = os.path.join(refDir, "coreToOdt_SaveFlat_document.fodt")
+    flatFile = fncPath / "document.fodt"
+    testFile = tstPaths.outDir / "coreToOdt_SaveFlat_document.fodt"
+    compFile = tstPaths.refDir / "coreToOdt_SaveFlat_document.fodt"
 
     theDoc.saveFlatXML(flatFile)
-    assert os.path.isfile(flatFile)
+    assert flatFile.exists()
 
     copyfile(flatFile, testFile)
     assert cmpFiles(testFile, compFile, [4, 5])
@@ -648,7 +647,7 @@ def testCoreToOdt_SaveFlat(mockGUI, fncDir, outDir, refDir):
 
 
 @pytest.mark.core
-def testCoreToOdt_SaveFull(mockGUI, fncDir, outDir, refDir):
+def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     """Test the document save functions.
     """
     theProject = NWProject(mockGUI)
@@ -667,25 +666,25 @@ def testCoreToOdt_SaveFull(mockGUI, fncDir, outDir, refDir):
     theDoc.doConvert()
     theDoc.closeDocument()
 
-    fullFile = os.path.join(fncDir, "document.odt")
+    fullFile = fncPath / "document.odt"
 
     theDoc.saveOpenDocText(fullFile)
-    assert os.path.isfile(fullFile)
+    assert fullFile.exists()
     assert zipfile.is_zipfile(fullFile)
 
-    maniFile = os.path.join(outDir, "coreToOdt_SaveFull_manifest.xml")
-    settFile = os.path.join(outDir, "coreToOdt_SaveFull_settings.xml")
-    contFile = os.path.join(outDir, "coreToOdt_SaveFull_content.xml")
-    metaFile = os.path.join(outDir, "coreToOdt_SaveFull_meta.xml")
-    stylFile = os.path.join(outDir, "coreToOdt_SaveFull_styles.xml")
+    maniFile = tstPaths.outDir / "coreToOdt_SaveFull_manifest.xml"
+    settFile = tstPaths.outDir / "coreToOdt_SaveFull_settings.xml"
+    contFile = tstPaths.outDir / "coreToOdt_SaveFull_content.xml"
+    metaFile = tstPaths.outDir / "coreToOdt_SaveFull_meta.xml"
+    stylFile = tstPaths.outDir / "coreToOdt_SaveFull_styles.xml"
 
-    maniComp = os.path.join(refDir, "coreToOdt_SaveFull_manifest.xml")
-    settComp = os.path.join(refDir, "coreToOdt_SaveFull_settings.xml")
-    contComp = os.path.join(refDir, "coreToOdt_SaveFull_content.xml")
-    metaComp = os.path.join(refDir, "coreToOdt_SaveFull_meta.xml")
-    stylComp = os.path.join(refDir, "coreToOdt_SaveFull_styles.xml")
+    maniComp = tstPaths.refDir / "coreToOdt_SaveFull_manifest.xml"
+    settComp = tstPaths.refDir / "coreToOdt_SaveFull_settings.xml"
+    contComp = tstPaths.refDir / "coreToOdt_SaveFull_content.xml"
+    metaComp = tstPaths.refDir / "coreToOdt_SaveFull_meta.xml"
+    stylComp = tstPaths.refDir / "coreToOdt_SaveFull_styles.xml"
 
-    extaxtTo = os.path.join(outDir, "coreToOdt_SaveFull")
+    extaxtTo = tstPaths.outDir / "coreToOdt_SaveFull"
 
     with zipfile.ZipFile(fullFile, mode="r") as theZip:
         theZip.extract("META-INF/manifest.xml", extaxtTo)
@@ -694,17 +693,17 @@ def testCoreToOdt_SaveFull(mockGUI, fncDir, outDir, refDir):
         theZip.extract("meta.xml", extaxtTo)
         theZip.extract("styles.xml", extaxtTo)
 
-    maniOut = os.path.join(outDir, "coreToOdt_SaveFull", "META-INF", "manifest.xml")
-    settOut = os.path.join(outDir, "coreToOdt_SaveFull", "settings.xml")
-    contOut = os.path.join(outDir, "coreToOdt_SaveFull", "content.xml")
-    metaOut = os.path.join(outDir, "coreToOdt_SaveFull", "meta.xml")
-    stylOut = os.path.join(outDir, "coreToOdt_SaveFull", "styles.xml")
+    maniOut = tstPaths.outDir / "coreToOdt_SaveFull" / "META-INF" / "manifest.xml"
+    settOut = tstPaths.outDir / "coreToOdt_SaveFull" / "settings.xml"
+    contOut = tstPaths.outDir / "coreToOdt_SaveFull" / "content.xml"
+    metaOut = tstPaths.outDir / "coreToOdt_SaveFull" / "meta.xml"
+    stylOut = tstPaths.outDir / "coreToOdt_SaveFull" / "styles.xml"
 
     def prettifyXml(inFile, outFile):
         with open(outFile, mode="wb") as fileStream:
             fileStream.write(
                 etree.tostring(
-                    etree.parse(inFile),
+                    etree.parse(str(inFile)),
                     pretty_print=True,
                     encoding="utf-8",
                     xml_declaration=True

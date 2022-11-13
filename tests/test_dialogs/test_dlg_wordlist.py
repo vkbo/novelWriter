@@ -19,38 +19,31 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QMessageBox, QAction
+from PyQt5.QtWidgets import QDialog, QAction
 
-from tools import writeFile, readFile, getGuiItem
+from tools import buildTestProject, writeFile, readFile, getGuiItem
 from mock import causeOSError
 
-from novelwriter.dialogs import GuiWordList
 from novelwriter.constants import nwFiles
-
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
+from novelwriter.dialogs.wordlist import GuiWordList
 
 
 @pytest.mark.gui
-def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal):
+def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
     """test the word list editor.
     """
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
+    buildTestProject(nwGUI, projPath)
+
     monkeypatch.setattr(GuiWordList, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiWordList, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(GuiWordList, "accept", lambda *a: None)
 
     # Open project
-    nwGUI.openProject(nwMinimal)
-    qtbot.wait(stepDelay)
-    dictFile = os.path.join(nwMinimal, "meta", nwFiles.PROJ_DICT)
+    nwGUI.openProject(projPath)
+    dictFile = projPath / "meta" / nwFiles.PROJ_DICT
 
     # Load the dialog
     nwGUI.mainMenu.aEditWordList.activate(QAction.Trigger)
@@ -59,7 +52,6 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal):
     wList = getGuiItem("GuiWordList")
     assert isinstance(wList, GuiWordList)
     wList.show()
-    qtbot.wait(stepDelay)
 
     # List should be blank
     assert wList.listBox.count() == 0
@@ -73,7 +65,6 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal):
         "word_f\n"
         "word_b\n"
     ))
-    qtbot.wait(stepDelay)
     assert wList._loadWordList()
 
     # Check that the content was loaded
@@ -130,7 +121,7 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, nwMinimal):
     monkeypatch.setattr("builtins.open", causeOSError)
     assert not wList._doSave()
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
     wList._doClose()
 
 # END Test testDlgWordList_Dialog

@@ -19,17 +19,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 import random
 
-from lxml import etree
+from pathlib import Path
 
+from mock import causeOSError
 from tools import readFile
 
-from novelwriter.core.project import NWProject, NWItem, NWTree
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.constants import nwFiles
+from novelwriter.core.item import NWItem
+from novelwriter.core.tree import NWTree
+from novelwriter.core.project import NWProject
 
 
 @pytest.fixture(scope="function")
@@ -196,7 +198,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     assert len(theTree) == len(mockItems) + 1
 
     theList = theTree.handles()
-    nHandle = "0000000000010"
+    nHandle = "0000000000000"
     assert theList[-1] == nHandle
 
     # Try to add existing handle
@@ -227,6 +229,36 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     assert theTree.trashRoot() is None
 
 # END Test testCoreTree_BuildTree
+
+
+@pytest.mark.core
+def testCoreTree_PackUnpack(mockGUI, mockItems):
+    """Test packing and unpacking data.
+    """
+    theProject = NWProject(mockGUI)
+    theTree = NWTree(theProject)
+
+    aHandles = []
+    for tHandle, pHandle, nwItem in mockItems:
+        aHandles.append(tHandle)
+        theTree.append(tHandle, pHandle, nwItem)
+        theTree.updateItemData(tHandle)
+
+    assert len(theTree) == len(mockItems)
+
+    # Pack
+    tree = theTree.pack()
+    for i, (tHandle, pHandle, nwItem) in enumerate(mockItems):
+        assert tree[i]["itemAttr"]["handle"] == tHandle
+
+    # Unpack
+    theTree.clear()
+    assert len(theTree) == 0
+    assert theTree.handles() == []
+    assert theTree.unpack(tree) is True
+    assert theTree.handles() == aHandles
+
+# END Test testCoreTree_PackUnpack
 
 
 @pytest.mark.core
@@ -270,6 +302,13 @@ def testCoreTree_Methods(mockGUI, mockItems):
     assert theTree.findRoot(nwItemClass.WORLD) is None
     assert theTree.findRoot(nwItemClass.NOVEL) == "a000000000001"
     assert theTree.findRoot(nwItemClass.CHARACTER) == "a000000000004"
+
+    # Iter roots
+    roots = list(theTree.iterRoots(None))
+    assert roots[0][0] == "a000000000001"
+    assert roots[1][0] == "a000000000002"
+    assert roots[2][0] == "a000000000003"
+    assert roots[3][0] == "a000000000004"
 
     # Add a fake item to root and check that it can handle it
     theTree._treeRoots["0000000000000"] = NWItem(theProject)
@@ -362,7 +401,7 @@ def testCoreTree_Stats(mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testCoreTree_Reorder(mockGUI, mockItems):
+def testCoreTree_Reorder(caplog, mockGUI, mockItems):
     """Test changing tree order.
     """
     theProject = NWProject(mockGUI)
@@ -383,76 +422,22 @@ def testCoreTree_Reorder(mockGUI, mockItems):
     theTree.setOrder(bHandle)
     assert theTree.handles() == bHandle
 
+    caplog.clear()
     theTree.setOrder(bHandle + ["stuff"])
     assert theTree.handles() == bHandle
+    assert "Handle 'stuff' in new tree order is not in old order" in caplog.text
 
+    caplog.clear()
     theTree._treeOrder.append("stuff")
     theTree.setOrder(bHandle)
     assert theTree.handles() == bHandle
+    assert "Handle 'stuff' in old tree order is not in new order" in caplog.text
 
 # END Test testCoreTree_Reorder
 
 
 @pytest.mark.core
-def testCoreTree_XMLPackUnpack(mockGUI, mockItems):
-    """Test packing and unpacking the tree to and from XML.
-    """
-    theProject = NWProject(mockGUI)
-    theTree = NWTree(theProject)
-
-    for tHandle, pHandle, nwItem in mockItems:
-        theTree.append(tHandle, pHandle, nwItem)
-        theTree.updateItemData(tHandle)
-
-    assert len(theTree) == len(mockItems)
-
-    nwXML = etree.Element("novelWriterXML")
-    theTree.packXML(nwXML)
-    assert etree.tostring(nwXML, pretty_print=False, encoding="utf-8") == (
-        b'<novelWriterXML>'
-        b'<content count="8">'
-        b'<item handle="a000000000001" parent="None" root="a000000000001" order="0" type="ROOT" '
-        b'class="NOVEL"><meta expanded="True"/><name status="s000000" '
-        b'import="i000004">Novel</name></item>'
-        b'<item handle="b000000000001" parent="a000000000001" root="a000000000001" order="0" '
-        b'type="FOLDER" class="NOVEL"><meta expanded="True"/><name status="s000000" '
-        b'import="i000004">Act One</name></item>'
-        b'<item handle="c000000000001" parent="b000000000001" root="a000000000001" order="0" '
-        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta expanded="False" charCount="300" '
-        b'wordCount="50" paraCount="2" cursorPos="0"/><name status="s000000" import="i000004" '
-        b'exported="True">Chapter One</name></item>'
-        b'<item handle="c000000000002" parent="b000000000001" root="a000000000001" order="0" '
-        b'type="FILE" class="NOVEL" layout="DOCUMENT"><meta expanded="False" charCount="3000" '
-        b'wordCount="500" paraCount="20" cursorPos="0"/><name status="s000000" import="i000004" '
-        b'exported="True">Scene One</name></item>'
-        b'<item handle="a000000000002" parent="None" root="a000000000002" order="0" type="ROOT" '
-        b'class="ARCHIVE"><meta expanded="False"/><name status="s000000" '
-        b'import="i000004">Outtakes</name></item>'
-        b'<item handle="a000000000003" parent="None" root="a000000000003" order="0" type="ROOT" '
-        b'class="TRASH"><meta expanded="False"/><name status="s000000" '
-        b'import="i000004">Trash</name></item>'
-        b'<item handle="a000000000004" parent="None" root="a000000000004" order="0" type="ROOT" '
-        b'class="CHARACTER"><meta expanded="True"/><name status="s000000" '
-        b'import="i000004">Characters</name></item>'
-        b'<item handle="b000000000002" parent="a000000000004" root="a000000000004" order="0" '
-        b'type="FILE" class="CHARACTER" layout="NOTE"><meta expanded="False" charCount="2000" '
-        b'wordCount="400" paraCount="16" cursorPos="0"/><name status="s000000" import="i000004" '
-        b'exported="True">Jane Doe</name></item>'
-        b'</content>'
-        b'</novelWriterXML>'
-    )
-
-    theTree.clear()
-    assert len(theTree) == 0
-    assert not theTree.unpackXML(nwXML)
-    assert theTree.unpackXML(nwXML[0])
-    assert len(theTree) == len(mockItems)
-
-# END Test testCoreTree_XMLPackUnpack
-
-
-@pytest.mark.core
-def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpDir):
+def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpPath):
     """Test writing the ToC.txt file.
     """
     theProject = NWProject(mockGUI)
@@ -469,24 +454,28 @@ def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpDir):
         """Return True for items that are files in novelWriter and
         should thus also be files in the project folder structure.
         """
-        dItem = theTree[fileName[8:21]]
+        dItem = theTree[fileName.name[:13]]
         assert dItem is not None
         return dItem.itemType == nwItemType.FILE
 
-    monkeypatch.setattr("os.path.isfile", mockIsFile)
+    monkeypatch.setattr("pathlib.Path.is_file", mockIsFile)
 
-    theProject.projContent = "content"
-    theProject.projPath = None
-    assert not theTree.writeToCFile()
+    theProject._storage._runtimePath = None
+    assert theTree.writeToCFile() is False
 
-    theProject.projPath = tmpDir
-    assert theTree.writeToCFile()
+    theProject._storage._runtimePath = tmpPath
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert theTree.writeToCFile() is False
 
-    pathA = os.path.join("content", "c000000000001.nwd")
-    pathB = os.path.join("content", "c000000000002.nwd")
-    pathC = os.path.join("content", "b000000000002.nwd")
+    theProject._storage._runtimePath = tmpPath
+    assert theTree.writeToCFile() is True
 
-    assert readFile(os.path.join(tmpDir, nwFiles.TOC_TXT)) == (
+    pathA = str(Path("content") / "c000000000001.nwd")
+    pathB = str(Path("content") / "c000000000002.nwd")
+    pathC = str(Path("content") / "b000000000002.nwd")
+
+    assert readFile(tmpPath / nwFiles.TOC_TXT) == (
         "\n"
         "Table of Contents\n"
         "=================\n"

@@ -21,27 +21,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from tools import getGuiItem, buildTestProject
+from tools import C, getGuiItem, buildTestProject
 
-from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt5.QtWidgets import QAction
 
 from novelwriter.tools import GuiLipsum
 
 
 @pytest.mark.gui
-def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
+def testToolLipsum_Main(qtbot, nwGUI, projPath, mockRnd):
     """Test the Lorem Ipsum tool.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aLipsumText.activate(QAction.Trigger)
     assert getGuiItem("GuiLipsum") is None
 
     # Create a new project
-    buildTestProject(nwGUI, fncProj)
-    assert nwGUI.openDocument("000000000000f") is True
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
     assert len(nwGUI.docEditor.getText()) == 15
 
     # Open the tool
@@ -70,6 +67,6 @@ def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, fncProj, mockRnd):
     # Close
     nwLipsum._doClose()
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testToolLipsum_Main

@@ -28,13 +28,13 @@ from mock import MockGuiMain
 
 
 @pytest.mark.base
-def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
+def testBaseInit_Launch(caplog, monkeypatch, tmpPath):
     """Check launching the main GUI.
     """
     monkeypatch.setattr("novelwriter.guimain.GuiMain", MockGuiMain)
 
     # TestMode Launch
-    nwGUI = novelwriter.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
+    nwGUI = novelwriter.main(["--testmode", f"--config={tmpPath}", f"--data={tmpPath}"])
     assert isinstance(nwGUI, MockGuiMain)
 
     # Darwin Launch
@@ -43,7 +43,7 @@ def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
     novelwriter.CONFIG.osDarwin = True
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "Foundation", None)
-        nwGUI = novelwriter.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
+        nwGUI = novelwriter.main(["--testmode", f"--config={tmpPath}", f"--data={tmpPath}"])
         assert isinstance(nwGUI, MockGuiMain)
         assert "Failed" in caplog.text
 
@@ -55,7 +55,7 @@ def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
     novelwriter.CONFIG.osWindows = True
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "ctypes", None)
-        nwGUI = novelwriter.main(["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir])
+        nwGUI = novelwriter.main(["--testmode", f"--config={tmpPath}", f"--data={tmpPath}"])
         assert isinstance(nwGUI, MockGuiMain)
         if not sys.platform.startswith("darwin"):
             # For some reason, the test doesn't work on macOS
@@ -71,19 +71,19 @@ def testBaseInit_Launch(caplog, monkeypatch, tmpDir):
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setOrganizationDomain", lambda *a: None)
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.exec_", lambda *a: 0)
     with pytest.raises(SystemExit) as ex:
-        novelwriter.main(["--config=%s" % tmpDir, "--data=%s" % tmpDir])
+        novelwriter.main([f"--config={tmpPath}", f"--data={tmpPath}"])
         assert ex.value.code == 0
 
 # END Test testBaseInit_Launch
 
 
 @pytest.mark.base
-def testBaseInit_Options(monkeypatch, tmpDir):
+def testBaseInit_Options(monkeypatch, tmpPath):
     """Test command line options for logging level.
     """
     monkeypatch.setattr("novelwriter.guimain.GuiMain", MockGuiMain)
     monkeypatch.setattr(sys, "argv", [
-        "novelWriter.py", "--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir
+        "novelWriter.py", "--testmode", f"--config={tmpPath}", f"--data={tmpPath}"
     ])
 
     # Defaults w/None Args
@@ -93,41 +93,35 @@ def testBaseInit_Options(monkeypatch, tmpDir):
 
     # Defaults
     nwGUI = novelwriter.main(
-        ["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir, "--style=Fusion"]
+        ["--testmode", f"--config={tmpPath}", f"--data={tmpPath}", "--style=Fusion"]
     )
     assert novelwriter.logger.getEffectiveLevel() == logging.WARNING
     assert nwGUI.closeMain() == "closeMain"
 
     # Log Levels
     nwGUI = novelwriter.main(
-        ["--testmode", "--info", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
+        ["--testmode", "--info", f"--config={tmpPath}", f"--data={tmpPath}"]
     )
     assert novelwriter.logger.getEffectiveLevel() == logging.INFO
     assert nwGUI.closeMain() == "closeMain"
 
     nwGUI = novelwriter.main(
-        ["--testmode", "--debug", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
+        ["--testmode", "--debug", f"--config={tmpPath}", f"--data={tmpPath}"]
     )
     assert novelwriter.logger.getEffectiveLevel() == logging.DEBUG
-    assert nwGUI.closeMain() == "closeMain"
-
-    nwGUI = novelwriter.main(
-        ["--testmode", "--verbose", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
-    )
-    assert novelwriter.logger.getEffectiveLevel() == 5
     assert nwGUI.closeMain() == "closeMain"
 
     # Help and Version
     with pytest.raises(SystemExit) as ex:
         nwGUI = novelwriter.main(
-            ["--testmode", "--help", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
+            ["--testmode", "--help", f"--config={tmpPath}", f"--data={tmpPath}"]
         )
     assert nwGUI.closeMain() == "closeMain"
     assert ex.value.code == 0
 
     with pytest.raises(SystemExit) as ex:
         nwGUI = novelwriter.main(
-            ["--testmode", "--version", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
+            ["--testmode", "--version", f"--config={tmpPath}", f"--data={tmpPath}"]
         )
     assert nwGUI.closeMain() == "closeMain"
     assert ex.value.code == 0
@@ -135,23 +129,22 @@ def testBaseInit_Options(monkeypatch, tmpDir):
     # Invalid options
     with pytest.raises(SystemExit) as ex:
         nwGUI = novelwriter.main(
-            ["--testmode", "--invalid", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
+            ["--testmode", "--invalid", f"--config={tmpPath}", f"--data={tmpPath}"]
         )
     assert nwGUI.closeMain() == "closeMain"
     assert ex.value.code == 2
 
     # Project Path
     nwGUI = novelwriter.main(
-        ["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir, "sample/"]
+        ["--testmode", f"--config={tmpPath}", f"--data={tmpPath}", "sample/"]
     )
-    assert novelwriter.CONFIG.cmdOpen == "sample/"
     assert nwGUI.closeMain() == "closeMain"
 
 # END Test testBaseInit_Options
 
 
 @pytest.mark.base
-def testBaseInit_Imports(caplog, monkeypatch, tmpDir):
+def testBaseInit_Imports(caplog, monkeypatch, tmpPath):
     """Check import error handling.
     """
     monkeypatch.setattr("novelwriter.guimain.GuiMain", MockGuiMain)
@@ -167,7 +160,7 @@ def testBaseInit_Imports(caplog, monkeypatch, tmpDir):
 
     with pytest.raises(SystemExit) as ex:
         _ = novelwriter.main(
-            ["--testmode", "--config=%s" % tmpDir, "--data=%s" % tmpDir]
+            ["--testmode", f"--config={tmpPath}", f"--data={tmpPath}"]
         )
 
     assert ex.value.code & 4 == 4    # Python version not satisfied

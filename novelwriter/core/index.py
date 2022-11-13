@@ -26,16 +26,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
 import logging
 
 from time import time
+from pathlib import Path
 
 from novelwriter.enum import nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode, nwHeaders
-from novelwriter.core.document import NWDoc
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
 )
@@ -59,23 +58,23 @@ class NWIndex:
     The index data is cached in a JSON file between writing sessions.
     """
 
-    def __init__(self, theProject):
+    def __init__(self, project):
 
-        self.theProject = theProject
+        self._project = project
 
         # Storage and State
         self._tagsIndex = TagsIndex()
-        self._itemIndex = ItemIndex(theProject)
+        self._itemIndex = ItemIndex(project)
         self._indexBroken = False
 
         # TimeStamps
-        self._indexChange = 0
+        self._indexChange = 0.0
         self._rootChange = {}
 
         return
 
     def __repr__(self):
-        return f"<NWIndex project='{self.theProject.projName}'>"
+        return f"<NWIndex project='{self._project.data.name}'>"
 
     ##
     #  Properties
@@ -94,8 +93,20 @@ class NWIndex:
         """
         self._tagsIndex.clear()
         self._itemIndex.clear()
-        self._indexChange = 0
+        self._indexChange = 0.0
         self._rootChange = {}
+        return
+
+    def rebuildIndex(self):
+        """Rebuild the entire index from scratch.
+        """
+        self.clearIndex()
+        for nwItem in self._project.tree:
+            if nwItem is not None and nwItem.isFileType():
+                tHandle = nwItem.itemHandle
+                theDoc = self._project.storage.getDocument(tHandle)
+                self.scanText(tHandle, theDoc.readDocument() or "")
+        self._indexBroken = False
         return
 
     def deleteHandle(self, tHandle):
@@ -114,11 +125,11 @@ class NWIndex:
         moved from the archive or trash folders back into the active
         project.
         """
-        if not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
+        if not self._project.tree.checkType(tHandle, nwItemType.FILE):
             return False
 
         logger.debug("Re-indexing item '%s'", tHandle)
-        theDoc = NWDoc(self.theProject, tHandle)
+        theDoc = self._project.storage.getDocument(tHandle)
         self.scanText(tHandle, theDoc.readDocument() or "")
 
         return True
@@ -126,13 +137,13 @@ class NWIndex:
     def indexChangedSince(self, checkTime):
         """Check if the index has changed since a given time.
         """
-        return self._indexChange > checkTime
+        return self._indexChange > float(checkTime)
 
     def rootChangedSince(self, rootHandle, checkTime):
         """Check if the index has changed since a given time for a
         given root item.
         """
-        return self._rootChange.get(rootHandle, self._indexChange) > checkTime
+        return self._rootChange.get(rootHandle, self._indexChange) > float(checkTime)
 
     ##
     #  Load and Save Index to/from File
@@ -141,12 +152,15 @@ class NWIndex:
     def loadIndex(self):
         """Load index from last session from the project meta folder.
         """
+        indexFile = self._project.storage.getMetaFile(nwFiles.INDEX_FILE)
+        if not isinstance(indexFile, Path):
+            return False
+
         theData = {}
-        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         tStart = time()
 
         self._indexBroken = False
-        if os.path.isfile(indexFile):
+        if indexFile.exists():
             logger.debug("Loading index file")
             try:
                 with open(indexFile, mode="r", encoding="utf-8") as inFile:
@@ -169,14 +183,14 @@ class NWIndex:
         logger.debug("Checking index")
 
         # Check that all files are indexed
-        for fHandle in self.theProject.projFiles:
+        for fHandle in self._project.projFiles:
             if fHandle not in self._itemIndex:
                 logger.warning("Item '%s' is not in the index", fHandle)
                 self.reIndexHandle(fHandle)
 
-        self._indexChange = round(time())
+        self._indexChange = time()
 
-        logger.verbose("Index loaded in %.3f ms", (time() - tStart)*1000)
+        logger.debug("Index loaded in %.3f ms", (time() - tStart)*1000)
 
         return True
 
@@ -184,8 +198,11 @@ class NWIndex:
         """Save the current index as a json file in the project meta
         data folder.
         """
+        indexFile = self._project.storage.getMetaFile(nwFiles.INDEX_FILE)
+        if not isinstance(indexFile, Path):
+            return False
+
         logger.debug("Saving index file")
-        indexFile = os.path.join(self.theProject.projMeta, nwFiles.INDEX_FILE)
         tStart = time()
 
         try:
@@ -202,7 +219,7 @@ class NWIndex:
             logException()
             return False
 
-        logger.verbose("Index saved in %.3f ms", (time() - tStart)*1000)
+        logger.debug("Index saved in %.3f ms", (time() - tStart)*1000)
 
         return True
 
@@ -217,11 +234,11 @@ class NWIndex:
         files before we save them, in which case we already have the
         text.
         """
-        theItem = self.theProject.tree[tHandle]
+        theItem = self._project.tree[tHandle]
         if theItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
             return False
-        if theItem.itemType != nwItemType.FILE:
+        if not theItem.isFileType():
             logger.info("Not indexing non-file item '%s'", tHandle)
             return False
 
@@ -243,20 +260,43 @@ class NWIndex:
         if theItem.itemParent is None:
             logger.info("Not indexing orphaned item '%s'", tHandle)
             return False
-        if theItem.isInactive():
-            logger.debug("Not indexing inactive item '%s'", tHandle)
-            return False
 
         logger.debug("Indexing item with handle '%s'", tHandle)
+        if theItem.isInactive():
+            self._scanInactive(theItem, theText)
+        else:
+            self._scanActive(tHandle, theItem, theText, itemTags)
 
-        # Scan the text content
+        # Update timestamps for index changes
+        nowTime = time()
+        self._indexChange = nowTime
+        self._rootChange[theItem.itemRoot] = nowTime
+
+        return True
+
+    ##
+    #  Internal Indexer Helpers
+    ##
+
+    def _scanActive(self, tHandle, theItem, theText, itemTags):
+        """Scan an active document for meta data.
+        """
         nTitle = 0
+        findHeader = True
         theLines = theText.splitlines()
+
         for nLine, aLine in enumerate(theLines, start=1):
+
             if len(aLine.strip()) == 0:
                 continue
 
             if aLine.startswith("#"):
+                if findHeader:
+                    hDepth, _ = self._splitHeading(aLine)
+                    if hDepth != "H0":
+                        theItem.setMainHeading(hDepth)
+                        findHeader = False
+
                 isTitle = self._indexTitle(tHandle, aLine, nLine)
                 if isTitle and nLine > 0:
                     if nTitle > 0:
@@ -289,48 +329,49 @@ class NWIndex:
         # Prune no longer used tags
         for tTag, isActive in itemTags.items():
             if not isActive:
-                logger.verbose("Deleting removed tag '%s'", tTag)
+                logger.debug("Deleting removed tag '%s'", tTag)
                 del self._tagsIndex[tTag]
 
-        # Update timestamps for index changes
-        nowTime = round(time())
-        self._indexChange = nowTime
-        self._rootChange[theItem.itemRoot] = nowTime
+        return
 
-        return True
+    def _scanInactive(self, theItem, theText):
+        """Scan an inactive document for meta data.
+        """
+        for aLine in theText.splitlines():
+            if aLine.startswith("#"):
+                hDepth, _ = self._splitHeading(aLine)
+                if hDepth != "H0":
+                    theItem.setMainHeading(hDepth)
+                    break
+        return
 
-    ##
-    #  Internal Indexer Helpers
-    ##
+    def _splitHeading(self, aLine):
+        """Split a heading into its header level and text value.
+        """
+        if aLine.startswith("# "):
+            return "H1", aLine[2:].strip()
+        elif aLine.startswith("## "):
+            return "H2", aLine[3:].strip()
+        elif aLine.startswith("### "):
+            return "H3", aLine[4:].strip()
+        elif aLine.startswith("#### "):
+            return "H4", aLine[5:].strip()
+        elif aLine.startswith("#! "):
+            return "H1", aLine[3:].strip()
+        elif aLine.startswith("##! "):
+            return "H2", aLine[4:].strip()
+        return "H0", ""
 
     def _indexTitle(self, tHandle, aLine, nTitle):
         """Save information about the title and its location in the
         file to the index.
         """
-        if aLine.startswith("# "):
-            hDepth = "H1"
-            hText = aLine[2:].strip()
-        elif aLine.startswith("## "):
-            hDepth = "H2"
-            hText = aLine[3:].strip()
-        elif aLine.startswith("### "):
-            hDepth = "H3"
-            hText = aLine[4:].strip()
-        elif aLine.startswith("#### "):
-            hDepth = "H4"
-            hText = aLine[5:].strip()
-        elif aLine.startswith("#! "):
-            hDepth = "H1"
-            hText = aLine[3:].strip()
-        elif aLine.startswith("##! "):
-            hDepth = "H2"
-            hText = aLine[4:].strip()
-        else:
+        hDepth, hText = self._splitHeading(aLine)
+        if hDepth == "H0":
             return False
 
         sTitle = f"T{nTitle:06d}"
         self._itemIndex.addItemHeading(tHandle, sTitle, hDepth, hText)
-
         return True
 
     def _indexWordCounts(self, tHandle, theText, nTitle):
@@ -493,18 +534,15 @@ class NWIndex:
             for sTitle, hItem in self._itemIndex.iterItemHeaders(tHandle)
         ]
 
-    def getHandleHeaderLevel(self, tHandle):
-        """Get the header level of the first header of a handle.
-        """
-        return self._itemIndex.mainItemHeader(tHandle)
-
-    def getTableOfContents(self, maxDepth, skipExcl=True):
+    def getTableOfContents(self, rootHandle, maxDepth, skipExcl=True):
         """Generate a table of contents up to a maximum depth.
         """
         tOrder = []
         tData = {}
         pKey = None
-        for tHandle, sTitle, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
+        for tHandle, sTitle, hItem in self._itemIndex.iterNovelStructure(
+            rootHandle=rootHandle, skipExcl=skipExcl
+        ):
             tKey = f"{tHandle}:{sTitle}"
             iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0)
             if iLevel > maxDepth:
@@ -647,23 +685,17 @@ class TagsIndex:
     def tagHandle(self, tagKey):
         """Get the handle of a given tag.
         """
-        if tagKey in self._tags:
-            return self._tags.get(tagKey).get("handle")
-        return None
+        return self._tags.get(tagKey, {}).get("handle", None)
 
     def tagHeading(self, tagKey):
         """Get the heading of a given tag.
         """
-        if tagKey in self._tags:
-            return self._tags.get(tagKey).get("heading")
-        return nwHeaders.TT_NONE
+        return self._tags.get(tagKey, {}).get("heading", nwHeaders.TT_NONE)
 
     def tagClass(self, tagKey):
         """Get the class of a given tag.
         """
-        if tagKey in self._tags:
-            return self._tags.get(tagKey).get("class")
-        return None
+        return self._tags.get(tagKey, {}).get("class", None)
 
     ##
     #  Pack/Unpack
@@ -717,8 +749,8 @@ class ItemIndex:
     IndexHeading object for each header of the text.
     """
 
-    def __init__(self, theProject):
-        self.theProject = theProject
+    def __init__(self, project):
+        self._project = project
         self._items = {}
         return
 
@@ -755,13 +787,6 @@ class ItemIndex:
         self._items[tHandle] = IndexItem(tHandle, tItem)
         return
 
-    def mainItemHeader(self, tHandle):
-        """Return the primary item header for an item.
-        """
-        if tHandle in self._items:
-            return self._items[tHandle].level
-        return "H0"
-
     def allItemTags(self, tHandle):
         """Get all tags set for headings of an item.
         """
@@ -789,12 +814,12 @@ class ItemIndex:
         """Iterate over all items and headers in the novel structure for
         a given root handle, or for all if root handle is None.
         """
-        for tItem in self.theProject.tree:
+        for tItem in self._project.tree:
             if tItem is None:
                 continue
-            if tItem.itemLayout == nwItemLayout.NOTE:
+            if tItem.isNoteLayout():
                 continue
-            if skipExcl and not tItem.isExported:
+            if skipExcl and not tItem.isActive:
                 continue
 
             tHandle = tItem.itemHandle
@@ -807,8 +832,6 @@ class ItemIndex:
             elif tItem.itemRoot == rootHandle:
                 for sTitle in self._items[tHandle].headings():
                     yield tHandle, sTitle, self._items[tHandle][sTitle]
-            else:
-                continue
 
         return
 
@@ -821,7 +844,6 @@ class ItemIndex:
         """
         if tHandle in self._items:
             tItem = self._items[tHandle]
-            tItem.updateLevel(hDepth)
             tItem.addHeading(IndexHeading(sTitle, hDepth, hText))
         return
 
@@ -875,7 +897,7 @@ class ItemIndex:
             if not isHandle(tHandle):
                 raise ValueError("itemIndex keys must be handles")
 
-            nwItem = self.theProject.tree[tHandle]
+            nwItem = self._project.tree[tHandle]
             if nwItem is not None:
                 tItem = IndexItem(tHandle, nwItem)
                 tItem.unpackData(tData)
@@ -897,7 +919,6 @@ class IndexItem:
     def __init__(self, tHandle, tItem):
         self._handle = tHandle
         self._item = tItem
-        self._level = "H0"
         self._headings = {}
         self._index = 0
 
@@ -917,20 +938,9 @@ class IndexItem:
     def item(self):
         return self._item
 
-    @property
-    def level(self):
-        return self._level
-
     ##
     #  Setters
     ##
-
-    def updateLevel(self, level):
-        """Set the level only if it has not already been set.
-        """
-        if self._level == "H0":
-            self._level = level
-        return
 
     def addHeading(self, tHeading):
         """Add a heading to the item. Also remove the placeholder entry
@@ -1011,7 +1021,7 @@ class IndexItem:
             if hRefs:
                 refs[sTitle] = hRefs
 
-        data = {"level": self._level}
+        data = {}
         data["headings"] = heads
         if refs:
             data["references"] = refs
@@ -1021,7 +1031,6 @@ class IndexItem:
     def unpackData(self, data):
         """Unpack an item entry from the data.
         """
-        self._level = data.get("level", "H0")
         references = data.get("references", {})
         for sTitle, hData in data.get("headings", {}).items():
             if not isTitleTag(sTitle):
@@ -1030,6 +1039,7 @@ class IndexItem:
             tHeading.unpackData(hData)
             tHeading.unpackReferences(references.get(sTitle, {}))
             self.addHeading(tHeading)
+
         return
 
 # END Class IndexItem

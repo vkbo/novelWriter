@@ -23,9 +23,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import logging
 import novelwriter
+
+from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -43,7 +44,7 @@ logger = logging.getLogger(__name__)
 class GuiWordList(QDialog):
 
     def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiWordList ...")
         self.setObjectName("GuiWordList")
@@ -150,13 +151,19 @@ class GuiWordList(QDialog):
         """
         self._saveGuiSettings()
 
-        dctFile = os.path.join(self.theProject.projMeta, nwFiles.PROJ_DICT)
-        tmpFile = dctFile + "~"
+        dctFile = self.theProject.storage.getMetaFile(nwFiles.PROJ_DICT)
+        if not isinstance(dctFile, Path):
+            return False
 
+        tmpFile = dctFile.with_suffix(".tmp")
         try:
             with open(tmpFile, mode="w", encoding="utf-8") as outFile:
                 for i in range(self.listBox.count()):
-                    outFile.write(self.listBox.item(i).text() + "\n")
+                    item = self.listBox.item(i)
+                    if item is not None:
+                        outFile.write(item.text() + "\n")
+
+            tmpFile.replace(dctFile)
 
         except Exception:
             logger.error("Could not save new word list")
@@ -164,9 +171,6 @@ class GuiWordList(QDialog):
             self.reject()
             return False
 
-        if os.path.isfile(dctFile):
-            os.unlink(dctFile)
-        os.rename(tmpFile, dctFile)
         self.accept()
 
         return True
@@ -185,10 +189,12 @@ class GuiWordList(QDialog):
     def _loadWordList(self):
         """Load the project's word list, if it exists.
         """
-        self.listBox.clear()
+        wordList = self.theProject.storage.getMetaFile(nwFiles.PROJ_DICT)
+        if not isinstance(wordList, Path):
+            return False
 
-        wordList = os.path.join(self.theProject.projMeta, nwFiles.PROJ_DICT)
-        if not os.path.isfile(wordList):
+        self.listBox.clear()
+        if not wordList.exists():
             logger.debug("No project dictionary file found")
             return False
 

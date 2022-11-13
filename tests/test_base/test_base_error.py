@@ -20,9 +20,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import pytest
-import novelwriter
-
-from PyQt5.QtWidgets import QMessageBox, qApp
 
 from mock import causeException
 
@@ -30,18 +27,9 @@ from novelwriter.error import NWErrorMessage, exceptionHandler
 
 
 @pytest.mark.base
-def testBaseError_Dialog(qtbot, monkeypatch, fncDir, tmpDir):
+def testBaseError_Dialog(qtbot, monkeypatch, nwGUI):
     """Test the error dialog.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-
-    qApp.closeAllWindows()
-    nwGUI = novelwriter.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % tmpDir])
-    qtbot.addWidget(nwGUI)
-    nwGUI.show()
-    qtbot.wait(20)
-
     nwErr = NWErrorMessage(nwGUI)
     qtbot.addWidget(nwErr)
     nwErr.show()
@@ -76,19 +64,11 @@ def testBaseError_Dialog(qtbot, monkeypatch, fncDir, tmpDir):
 
 
 @pytest.mark.base
-def testBaseError_Handler(qtbot, monkeypatch, fncDir, tmpDir):
+def testBaseError_Handler(qtbot, monkeypatch, nwGUI):
     """Test the error handler. This test doesn'thave any asserts, but it
     checks that the error handler handles potential exceptions. The test
     will fail if excpetions are not handled.
     """
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-
-    qApp.closeAllWindows()
-    nwGUI = novelwriter.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % tmpDir])
-    qtbot.addWidget(nwGUI)
-    nwGUI.show()
-    qtbot.wait(20)
-
     # Normal shutdown
     with monkeypatch.context() as mp:
         mp.setattr(NWErrorMessage, "exec_", lambda *a: None)

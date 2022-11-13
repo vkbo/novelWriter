@@ -23,12 +23,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
 import logging
 import novelwriter
 
 from time import time
+from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtGui import (
@@ -47,8 +47,8 @@ from novelwriter.core import ToHtml, ToOdt, ToMarkdown
 from novelwriter.enum import nwAlert, nwItemType, nwItemLayout, nwItemClass
 from novelwriter.error import formatException, logException
 from novelwriter.common import fuzzyTime, makeFileNameSafe
+from novelwriter.custom import QSwitch
 from novelwriter.constants import nwConst, nwFiles
-from novelwriter.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ class GuiBuildNovel(QDialog):
     FMT_JSON_M = 9  # nW Markdown wrapped in JSON
 
     def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiBuildNovel ...")
         self.setObjectName("GuiBuildNovel")
@@ -126,7 +126,7 @@ class GuiBuildNovel(QDialog):
         self.fmtTitle.setMinimumWidth(xFmt)
         self.fmtTitle.setToolTip(fmtHelp)
         self.fmtTitle.setText(
-            self._reFmtCodes(self.theProject.titleFormat["title"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("title"))
         )
 
         self.fmtChapter = QLineEdit()
@@ -134,7 +134,7 @@ class GuiBuildNovel(QDialog):
         self.fmtChapter.setMinimumWidth(xFmt)
         self.fmtChapter.setToolTip(fmtHelp)
         self.fmtChapter.setText(
-            self._reFmtCodes(self.theProject.titleFormat["chapter"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("chapter"))
         )
 
         self.fmtUnnumbered = QLineEdit()
@@ -142,7 +142,7 @@ class GuiBuildNovel(QDialog):
         self.fmtUnnumbered.setMinimumWidth(xFmt)
         self.fmtUnnumbered.setToolTip(fmtHelp)
         self.fmtUnnumbered.setText(
-            self._reFmtCodes(self.theProject.titleFormat["unnumbered"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("unnumbered"))
         )
 
         self.fmtScene = QLineEdit()
@@ -150,7 +150,7 @@ class GuiBuildNovel(QDialog):
         self.fmtScene.setMinimumWidth(xFmt)
         self.fmtScene.setToolTip(fmtHelp + fmtScHelp)
         self.fmtScene.setText(
-            self._reFmtCodes(self.theProject.titleFormat["scene"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("scene"))
         )
 
         self.fmtSection = QLineEdit()
@@ -158,7 +158,7 @@ class GuiBuildNovel(QDialog):
         self.fmtSection.setMinimumWidth(xFmt)
         self.fmtSection.setToolTip(fmtHelp + fmtScHelp)
         self.fmtSection.setText(
-            self._reFmtCodes(self.theProject.titleFormat["section"])
+            self._reFmtCodes(self.theProject.data.getTitleFormat("section"))
         )
 
         self.buildLang = QComboBox()
@@ -168,7 +168,7 @@ class GuiBuildNovel(QDialog):
         for langID, langName in theLangs:
             self.buildLang.addItem(langName, langID)
 
-        langIdx = self.buildLang.findData(self.theProject.projLang)
+        langIdx = self.buildLang.findData(self.theProject.data.language)
         if langIdx != -1:
             self.buildLang.setCurrentIndex(langIdx)
 
@@ -351,6 +351,36 @@ class GuiBuildNovel(QDialog):
         self.textForm.setColumnStretch(0, 1)
         self.textForm.setColumnStretch(1, 0)
 
+        # Root Filter Options
+        # ===================
+
+        self.rootGroup = QGroupBox(self.tr("Root Filter Options"), self)
+        self.rootForm  = QGridLayout(self)
+        self.rootGroup.setLayout(self.rootForm)
+
+        rootFilter = pOptions.getValue("GuiBuildNovel", "rootFilter", [])
+        if not isinstance(rootFilter, list):
+            rootFilter = []
+
+        iRow = 0
+        self.rootSelection = {}
+        for tHandle, nwItem in self.theProject.tree.iterRoots(None):
+            if not nwItem.isInactive():
+                rootLabel = QLabel(nwItem.itemName)
+                rootLabel.setWordWrap(True)
+
+                rootValue = QSwitch(width=wS, height=hS)
+                rootValue.setChecked(tHandle not in rootFilter)
+
+                self.rootSelection[tHandle] = rootValue
+                self.rootForm.addWidget(rootLabel, iRow, 0, 1, 1, Qt.AlignLeft)
+                self.rootForm.addWidget(rootValue, iRow, 1, 1, 1, Qt.AlignRight)
+
+                iRow += 1
+
+        self.rootForm.setColumnStretch(0, 1)
+        self.rootForm.setColumnStretch(1, 0)
+
         # File Filter Options
         # ===================
 
@@ -375,13 +405,13 @@ class GuiBuildNovel(QDialog):
 
         novelLabel  = QLabel(self.tr("Include novel files"))
         notesLabel  = QLabel(self.tr("Include note files"))
-        exportLabel = QLabel(self.tr("Ignore export flag"))
+        activeLabel = QLabel(self.tr("Include inactive files"))
 
         self.fileForm.addWidget(novelLabel,      0, 0, 1, 1, Qt.AlignLeft)
         self.fileForm.addWidget(self.novelFiles, 0, 1, 1, 1, Qt.AlignRight)
         self.fileForm.addWidget(notesLabel,      1, 0, 1, 1, Qt.AlignLeft)
         self.fileForm.addWidget(self.noteFiles,  1, 1, 1, 1, Qt.AlignRight)
-        self.fileForm.addWidget(exportLabel,     2, 0, 1, 1, Qt.AlignLeft)
+        self.fileForm.addWidget(activeLabel,     2, 0, 1, 1, Qt.AlignLeft)
         self.fileForm.addWidget(self.ignoreFlag, 2, 1, 1, 1, Qt.AlignRight)
 
         self.fileForm.setColumnStretch(0, 1)
@@ -503,6 +533,7 @@ class GuiBuildNovel(QDialog):
         self.toolsBox.addWidget(self.fontGroup)
         self.toolsBox.addWidget(self.styleGroup)
         self.toolsBox.addWidget(self.textGroup)
+        self.toolsBox.addWidget(self.rootGroup)
         self.toolsBox.addWidget(self.fileGroup)
         self.toolsBox.addWidget(self.exportGroup)
         self.toolsBox.addStretch(1)
@@ -716,6 +747,7 @@ class GuiBuildNovel(QDialog):
         self.buildProgress.setMaximum(len(self.theProject.tree))
         self.buildProgress.setValue(0)
 
+        rootFilter = set(self._generateRootFilter())
         for nItt, tItem in enumerate(self.theProject.tree):
 
             noteRoot = noteFiles
@@ -730,7 +762,7 @@ class GuiBuildNovel(QDialog):
                     if doConvert:
                         bldObj.doConvert()
 
-                elif self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag):
+                elif self._checkInclude(tItem, noteFiles, novelFiles, ignoreFlag, rootFilter):
                     bldObj.setText(tItem.itemHandle)
                     bldObj.doPreProcessing()
                     bldObj.tokenizeText()
@@ -766,7 +798,7 @@ class GuiBuildNovel(QDialog):
 
         return
 
-    def _checkInclude(self, theItem, noteFiles, novelFiles, ignoreFlag):
+    def _checkInclude(self, theItem, noteFiles, novelFiles, ignoreFlag, rootFilter):
         """This function checks whether a file should be included in the
         export or not. For standard note and novel files, this is
         controlled by the options selected by the user. For other files
@@ -781,14 +813,17 @@ class GuiBuildNovel(QDialog):
         if theItem is None:
             return False
 
-        if not (theItem.isExported or ignoreFlag):
+        if not (theItem.isActive or ignoreFlag):
             return False
 
-        isNone  = theItem.itemType != nwItemType.FILE
+        if theItem.itemRoot in rootFilter:
+            return False
+
+        isNone  = not theItem.isFileType()
         isNone |= theItem.itemLayout == nwItemLayout.NO_LAYOUT
         isNone |= theItem.isInactive()
         isNone |= theItem.itemParent is None
-        isNote  = theItem.itemLayout == nwItemLayout.NOTE
+        isNote  = theItem.isNoteLayout()
         isNovel = not isNone and not isNote
 
         if isNone:
@@ -853,15 +888,11 @@ class GuiBuildNovel(QDialog):
         # Generate File Name
         # ==================
 
-        cleanName = makeFileNameSafe(self.theProject.projName)
+        cleanName = makeFileNameSafe(self.theProject.data.name)
         fileName = "%s.%s" % (cleanName, fileExt)
-        saveDir = self.mainConf.lastPath
-        if not os.path.isdir(saveDir):
-            saveDir = os.path.expanduser("~")
-
-        savePath = os.path.join(saveDir, fileName)
+        savePath = self.mainConf.lastPath() / fileName
         savePath, _ = QFileDialog.getSaveFileName(
-            self, self.tr("Save Document As"), savePath
+            self, self.tr("Save Document As"), str(savePath)
         )
         if not savePath:
             return False
@@ -937,9 +968,9 @@ class GuiBuildNovel(QDialog):
         elif theFmt == self.FMT_JSON_H or theFmt == self.FMT_JSON_M:
             jsonData = {
                 "meta": {
-                    "workingTitle": self.theProject.projName,
-                    "novelTitle": self.theProject.bookTitle,
-                    "authors": self.theProject.bookAuthors,
+                    "workingTitle": self.theProject.data.name,
+                    "novelTitle": self.theProject.data.title,
+                    "authors": self.theProject.data.authors,
                     "buildTime": self.buildTime,
                 }
             }
@@ -1045,12 +1076,20 @@ class GuiBuildNovel(QDialog):
 
         return
 
+    def _generateRootFilter(self):
+        """Return a list of all root folders that are filtered out.
+        """
+        return [h for h, s in self.rootSelection.items() if not s.isChecked()]
+
     def _loadCache(self):
         """Save the current data to cache.
         """
-        buildCache = os.path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
+        buildCache = self.theProject.storage.getCacheFile(nwFiles.BUILD_CACHE)
+        if not isinstance(buildCache, Path):
+            return False
+
         dataCount = 0
-        if os.path.isfile(buildCache):
+        if buildCache.exists():
             logger.debug("Loading build cache")
             try:
                 with open(buildCache, mode="r", encoding="utf-8") as inFile:
@@ -1075,7 +1114,10 @@ class GuiBuildNovel(QDialog):
     def _saveCache(self):
         """Save the current data to cache.
         """
-        buildCache = os.path.join(self.theProject.projCache, nwFiles.BUILD_CACHE)
+        buildCache = self.theProject.storage.getCacheFile(nwFiles.BUILD_CACHE)
+        if not isinstance(buildCache, Path):
+            return False
+
         logger.debug("Saving build cache")
         try:
             with open(buildCache, mode="w+", encoding="utf-8") as outFile:
@@ -1119,7 +1161,7 @@ class GuiBuildNovel(QDialog):
         logger.debug("Saving GuiBuildNovel settings")
 
         # Formatting
-        self.theProject.setTitleFormat({
+        self.theProject.data.setTitleFormat({
             "title":      self.fmtTitle.text().strip(),
             "chapter":    self.fmtChapter.text().strip(),
             "unnumbered": self.fmtUnnumbered.text().strip(),
@@ -1146,6 +1188,7 @@ class GuiBuildNovel(QDialog):
         incBodyText  = self.includeBody.isChecked()
         replaceTabs  = self.replaceTabs.isChecked()
         replaceUCode = self.replaceUCode.isChecked()
+        rootFilter   = self._generateRootFilter()
 
         mainSplit = self.mainSplit.sizes()
         boxWidth  = self.mainConf.rpxInt(mainSplit[0])
@@ -1175,6 +1218,7 @@ class GuiBuildNovel(QDialog):
         pOptions.setValue("GuiBuildNovel", "incBodyText",  incBodyText)
         pOptions.setValue("GuiBuildNovel", "replaceTabs",  replaceTabs)
         pOptions.setValue("GuiBuildNovel", "replaceUCode", replaceUCode)
+        pOptions.setValue("GuiBuildNovel", "rootFilter",   rootFilter)
         pOptions.saveSettings()
 
         return
@@ -1194,7 +1238,7 @@ class GuiBuildNovel(QDialog):
 class GuiBuildNovelDocView(QTextBrowser):
 
     def __init__(self, mainGui, theProject):
-        QTextBrowser.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiBuildNovelDocView ...")
 
@@ -1223,10 +1267,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.setFont(theFont)
 
         # Set the tab stops
-        if self.mainConf.verQtValue >= 51000:
-            self.setTabStopDistance(self.mainConf.getTabWidth())
-        else:
-            self.setTabStopWidth(self.mainConf.getTabWidth())
+        self.setTabStopDistance(self.mainConf.getTabWidth())
 
         docPalette = self.palette()
         docPalette.setColor(QPalette.Base, QColor(255, 255, 255))
@@ -1343,7 +1384,7 @@ class GuiBuildNovelDocView(QTextBrowser):
     def resizeEvent(self, theEvent):
         """Make sure the document title is the same width as the window.
         """
-        QTextBrowser.resizeEvent(self, theEvent)
+        super().resizeEvent(theEvent)
         self._updateDocMargins()
         return
 

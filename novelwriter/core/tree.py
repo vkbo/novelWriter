@@ -23,13 +23,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import random
 import logging
 
-from lxml import etree
+from pathlib import Path
 
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
+from novelwriter.enum import nwItemClass, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.common import checkHandle
 from novelwriter.constants import nwFiles
@@ -38,7 +37,7 @@ from novelwriter.core.item import NWItem
 logger = logging.getLogger(__name__)
 
 
-class NWTree():
+class NWTree:
 
     MAX_DEPTH = 1000  # Cap of tree traversing for loops
 
@@ -89,20 +88,20 @@ class NWTree():
             logger.warning("Duplicate handle '%s' detected, skipping", tHandle)
             return False
 
-        logger.verbose("Adding item '%s' with parent '%s'", str(tHandle), str(pHandle))
+        logger.debug("Adding item '%s' with parent '%s'", str(tHandle), str(pHandle))
 
         nwItem.setHandle(tHandle)
         nwItem.setParent(pHandle)
 
-        if nwItem.itemType == nwItemType.ROOT:
-            logger.verbose("Item '%s' is a root item", str(tHandle))
+        if nwItem.isRootType():
+            logger.debug("Item '%s' is a root item", str(tHandle))
             self._treeRoots[tHandle] = nwItem
             if nwItem.itemClass == nwItemClass.ARCHIVE:
-                logger.verbose("Item '%s' is the archive folder", str(tHandle))
+                logger.debug("Item '%s' is the archive folder", str(tHandle))
                 self._archRoot = tHandle
             elif nwItem.itemClass == nwItemClass.TRASH:
                 if self._trashRoot is None:
-                    logger.verbose("Item '%s' is the trash folder", str(tHandle))
+                    logger.debug("Item '%s' is the trash folder", str(tHandle))
                     self._trashRoot = tHandle
                 else:
                     logger.error("Only one trash folder allowed")
@@ -114,30 +113,25 @@ class NWTree():
 
         return True
 
-    def packXML(self, xParent):
+    def pack(self):
         """Pack the content of the tree into the provided XML object. In
         the order defined by the _treeOrder list.
         """
-        xContent = etree.SubElement(xParent, "content", attrib={
-            "count": str(len(self._treeOrder))}
-        )
+        tree = []
         for tHandle in self._treeOrder:
             tItem = self.__getitem__(tHandle)
-            tItem.packXML(xContent)
-        return
+            if tItem:
+                tree.append(tItem.pack())
+        return tree
 
-    def unpackXML(self, xContent):
-        """Iterate through all items of a content XML object and add
-        them to the project tree.
+    def unpack(self, data):
+        """Iterate through all items of a list and add them to the
+        project tree.
         """
-        if xContent.tag != "content":
-            logger.error("XML entry is not a NWTree")
-            return False
-
         self.clear()
-        for xItem in xContent:
+        for item in data:
             nwItem = NWItem(self.theProject)
-            if nwItem.unpackXML(xItem):
+            if nwItem.unpack(item):
                 self.append(nwItem.itemHandle, nwItem.itemParent, nwItem)
                 nwItem.saveInitialCount()
 
@@ -147,16 +141,22 @@ class NWTree():
         """Write the convenience table of contents file in the root of
         the project directory.
         """
+        runtimePath = self.theProject.storage.runtimePath
+        contentPath = self.theProject.storage.contentPath
+        if not (isinstance(contentPath, Path) and isinstance(runtimePath, Path)):
+            return False
+
         tocList = []
         tocLen = 0
         for tHandle in self._treeOrder:
             tItem = self.__getitem__(tHandle)
             if tItem is None:
                 continue
+
             tFile = tHandle+".nwd"
-            if os.path.isfile(os.path.join(self.theProject.projContent, tFile)):
+            if (contentPath / tFile).is_file():
                 tocLine = "{0:<25s}  {1:<9s}  {2:<8s}  {3:s}".format(
-                    os.path.join("content", tFile),
+                    str(Path("content") / tFile),
                     tItem.itemClass.name,
                     tItem.itemLayout.name,
                     tItem.itemName,
@@ -166,7 +166,7 @@ class NWTree():
 
         try:
             # Dump the text
-            tocText = os.path.join(self.theProject.projPath, nwFiles.TOC_TXT)
+            tocText = runtimePath / nwFiles.TOC_TXT
             with open(tocText, mode="w", encoding="utf-8") as outFile:
                 outFile.write("\n")
                 outFile.write("Table of Contents\n")
@@ -274,11 +274,13 @@ class NWTree():
         return rootClasses
 
     def iterRoots(self, itemClass):
-        """Iterate over all items of a given class.
+        """Iterate over all root items of a given class in order.
         """
-        for tHandle, nwItem in self._treeRoots.items():
-            if nwItem.itemClass == itemClass:
-                yield tHandle, nwItem
+        for tHandle in self._treeOrder:
+            nwItem = self.__getitem__(tHandle)
+            if nwItem is not None and nwItem.isRootType():
+                if itemClass is None or nwItem.itemClass == itemClass:
+                    yield tHandle, nwItem
         return
 
     def isRoot(self, tHandle):
@@ -329,25 +331,20 @@ class NWTree():
     def setOrder(self, newOrder):
         """Reorders the tree based on a list of items.
         """
-        tmpOrder = []
-
-        # Add all known elements to a new temp list
-        for tHandle in newOrder:
-            if tHandle in self._projTree:
-                tmpOrder.append(tHandle)
-            else:
-                logger.error("Handle '%s' in new tree order is not in project tree", tHandle)
-
-        # Do a reverse lookup to check for items that will be lost
-        # This is mainly for debugging purposes
-        for tHandle in self._treeOrder:
-            if tHandle not in tmpOrder:
-                logger.warning("Handle '%s' in old tree order is not in new tree order", tHandle)
+        tmpOrder = [tHandle for tHandle in newOrder if tHandle in self._projTree]
+        if not (len(tmpOrder) == len(newOrder) == len(self._treeOrder)):
+            # Something is wrong, so let's debug it
+            for tHandle in newOrder:
+                if tHandle not in self._projTree:
+                    logger.error("Handle '%s' in new tree order is not in old order", tHandle)
+            for tHandle in self._treeOrder:
+                if tHandle not in tmpOrder:
+                    logger.warning("Handle '%s' in old tree order is not in new order", tHandle)
 
         # Save the temp list
         self._treeOrder = tmpOrder
         self._setTreeChanged(True)
-        logger.verbose("Project tree order updated")
+        logger.debug("Project tree order updated")
 
         return
 
@@ -357,7 +354,7 @@ class NWTree():
         tItem = self.__getitem__(tHandle)
         if tItem is None:
             return False
-        if tItem.itemType != nwItemType.FILE:
+        if not tItem.isFileType():
             logger.error("Item '%s' is not a file", tHandle)
             return False
         if not isinstance(itemLayout, nwItemLayout):
@@ -457,7 +454,7 @@ class NWTree():
         """Generate a unique item handle. In the event that the key
         already exists, generate a new one.
         """
-        logger.verbose("Generating new handle")
+        logger.debug("Generating new handle")
         handle = f"{random.getrandbits(52):013x}"
         if handle in self._projTree:
             logger.warning("Duplicate handle encountered! Retrying ...")

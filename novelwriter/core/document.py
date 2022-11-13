@@ -23,8 +23,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import logging
+
+from pathlib import Path
 
 from novelwriter.enum import nwItemLayout, nwItemClass
 from novelwriter.error import formatException
@@ -33,7 +34,7 @@ from novelwriter.common import isHandle, sha256sum
 logger = logging.getLogger(__name__)
 
 
-class NWDoc():
+class NWDocument:
 
     def __init__(self, theProject, theHandle):
 
@@ -57,7 +58,7 @@ class NWDoc():
         return
 
     def __repr__(self):
-        return f"<NWDoc handle={self._docHandle}>"
+        return f"<NWDocument handle={self._docHandle}>"
 
     def __bool__(self):
         return self._docHandle is not None and bool(self._theItem)
@@ -73,7 +74,7 @@ class NWDoc():
         empty string. If something went wrong, return None.
         """
         self._docError = ""
-        if self._docHandle is None:
+        if not isinstance(self._docHandle, str):
             logger.error("No document handle set")
             return None
 
@@ -81,17 +82,22 @@ class NWDoc():
             logger.error("Unknown novelWriter document")
             return None
 
+        contentPath = self.theProject.storage.contentPath
+        if not isinstance(contentPath, Path):
+            logger.error("No content path set")
+            return None
+
         docFile = self._docHandle+".nwd"
         logger.debug("Opening document: %s", docFile)
 
-        docPath = os.path.join(self.theProject.projContent, docFile)
+        docPath = contentPath / docFile
         self._fileLoc = docPath
 
         theText = ""
         self._docMeta = {}
         self._prevHash = None
 
-        if os.path.isfile(docPath):
+        if docPath.exists():
             self._prevHash = sha256sum(docPath)
             try:
                 with open(docPath, mode="r", encoding="utf-8") as inFile:
@@ -125,17 +131,20 @@ class NWDoc():
         if not.
         """
         self._docError = ""
-        if self._docHandle is None:
+        if not isinstance(self._docHandle, str):
             logger.error("No document handle set")
             return False
 
-        self.theProject.ensureFolderStructure()
+        contentPath = self.theProject.storage.contentPath
+        if not isinstance(contentPath, Path):
+            logger.error("No content path set")
+            return False
 
         docFile = self._docHandle+".nwd"
         logger.debug("Saving document: %s", docFile)
 
-        docPath = os.path.join(self.theProject.projContent, docFile)
-        docTemp = os.path.join(self.theProject.projContent, docFile+"~")
+        docPath = contentPath / docFile
+        docTemp = docPath.with_suffix(".tmp")
 
         if self._prevHash is not None and not forceWrite:
             self._currHash = sha256sum(docPath)
@@ -164,7 +173,7 @@ class NWDoc():
         # If we're here, the file was successfully saved, so we can
         # replace the temp file with the actual file
         try:
-            os.replace(docTemp, docPath)
+            docTemp.replace(docPath)
         except OSError as exc:
             self._docError = formatException(exc)
             return False
@@ -179,23 +188,28 @@ class NWDoc():
         from the project data folder.
         """
         self._docError = ""
-        if self._docHandle is None:
+        if not isinstance(self._docHandle, str):
             logger.error("No document handle set")
             return False
 
-        chkList = [
-            os.path.join(self.theProject.projContent, f"{self._docHandle}.nwd"),
-            os.path.join(self.theProject.projContent, f"{self._docHandle}.nwd~"),
-        ]
+        contentPath = self.theProject.storage.contentPath
+        if not isinstance(contentPath, Path):
+            logger.error("No content path set")
+            return False
 
-        for chkFile in chkList:
-            if os.path.isfile(chkFile):
-                try:
-                    os.unlink(chkFile)
-                    logger.debug("Deleted: %s", chkFile)
-                except Exception as exc:
-                    self._docError = formatException(exc)
-                    return False
+        docPath = contentPath / f"{self._docHandle}.nwd"
+        docTemp = docPath.with_suffix(".tmp")
+
+        try:
+            # ToDo: When Python 3.7 is dropped, these can be changed to
+            # path.unlink(missing_ok=True)
+            if docPath.exists():
+                docPath.unlink()
+            if docTemp.exists():
+                docTemp.unlink()
+        except Exception as exc:
+            self._docError = formatException(exc)
+            return False
 
         return True
 
@@ -206,7 +220,7 @@ class NWDoc():
     def getFileLocation(self):
         """Return the file location of the current document.
         """
-        return self._fileLoc
+        return str(self._fileLoc)
 
     def getCurrentItem(self):
         """Return a pointer to the currently open NWItem.
@@ -263,4 +277,4 @@ class NWDoc():
 
         return
 
-# END Class NWDoc
+# END Class NWDocument

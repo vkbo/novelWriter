@@ -19,36 +19,63 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import sys
 import pytest
 
 from mock import causeOSError
 from tools import readFile, writeFile
 
-from novelwriter.core.spellcheck import NWSpellEnchant
+from novelwriter.core.spellcheck import FakeEnchant, NWSpellEnchant
 
 
 @pytest.mark.core
-def testCoreSpell_Enchant(monkeypatch, tmpDir):
-    """Test the pyenchant spell checker
+def testCoreSpell_FakeEnchant(monkeypatch):
+    """Test the FakeEnchant spell checker fallback.
     """
-    wList = os.path.join(tmpDir, "wordlist.txt")
-    writeFile(wList, "a_word\nb_word\nc_word\n")
-
-    # Block the enchant package (and trigger the default class)
+    # Make package import fail
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "enchant", None)
         spChk = NWSpellEnchant()
+        spChk.setLanguage("en_US", "")
+        assert isinstance(spChk._theDict, FakeEnchant)
 
-        spChk.setLanguage("en", wList)
-        assert spChk.setLanguage("", "") is None
-        assert spChk.checkWord("") is True
-        assert spChk.suggestWords("") == []
+    # Request a non-existent dictionary
+    spChk = NWSpellEnchant()
+    spChk.setLanguage("whatchamajig", "")
+    assert isinstance(spChk._theDict, FakeEnchant)
+
+    # Request an emety language string
+    # See issue https://github.com/vkbo/novelWriter/issues/1096
+    spChk = NWSpellEnchant()
+    spChk.setLanguage("", "")
+    assert isinstance(spChk._theDict, FakeEnchant)
+
+    # FakeEnchant should handle requests
+    fkChk = FakeEnchant()
+    assert fkChk.tag == ""
+    assert fkChk.provider.name == ""
+    assert fkChk.check("whatchamajig") is True
+    assert fkChk.suggest("whatchamajig") == []
+    assert fkChk.add_to_session("whatchamajig") is None
+
+# END Test testCoreSpell_FakeEnchant
+
+
+@pytest.mark.core
+def testCoreSpell_Enchant(monkeypatch, fncPath):
+    """Test the pyenchant spell checker.
+    """
+    wList = fncPath / "wordlist.txt"
+    writeFile(wList, "a_word\nb_word\nc_word\n")
+
+    # Break the enchant package, and check error handling
+    with monkeypatch.context() as mp:
+        mp.setitem(sys.modules, "enchant", None)
+        spChk = NWSpellEnchant()
         assert spChk.listDictionaries() == []
         assert spChk.describeDict() == ("", "")
 
-    # Break the enchant package, and check error handling
+    # Set the dict to None, and check dictionary call error handling
     spChk = NWSpellEnchant()
     spChk.theDict = None
     assert spChk.checkWord("word") is True
@@ -57,8 +84,9 @@ def testCoreSpell_Enchant(monkeypatch, tmpDir):
 
     # Load the proper enchant package (twice)
     spChk = NWSpellEnchant()
-    spChk.setLanguage("en", wList)
-    spChk.setLanguage("en", wList)
+    spChk.setLanguage("en_US", wList)
+    spChk.setLanguage("en_US", wList)
+    assert spChk.spellLanguage == "en_US"
 
     # Add a word to the user's dictionary
     assert spChk._readProjectDictionary("stuff") is False
@@ -98,7 +126,39 @@ def testCoreSpell_Enchant(monkeypatch, tmpDir):
     assert len(dList) > 0
 
     aTag, aName = spChk.describeDict()
-    assert aTag == "en"
+    assert aTag == "en_US"
     assert aName != ""
 
 # END Test testCoreSpell_Enchant
+
+
+@pytest.mark.core
+def testCoreSpell_SessionWords(fncPath):
+    """Test the handling of the custom word list in the spell checker.
+    New project sessions should not inherit the project word list from
+    other sessions, so this test checks that they don't bleed through.
+    """
+    wList1 = fncPath / "wordlist1.txt"
+    wList2 = fncPath / "wordlist2.txt"
+    writeFile(wList1, "a_word\nb_word\nc_word\n")
+    writeFile(wList2, "d_word\ne_word\nf_word\n")
+
+    spChk = NWSpellEnchant()
+
+    spChk.setLanguage("en_US", wList1)
+    assert spChk.checkWord("a_word") is True
+    assert spChk.checkWord("b_word") is True
+    assert spChk.checkWord("c_word") is True
+    assert spChk.checkWord("d_word") is False
+    assert spChk.checkWord("e_word") is False
+    assert spChk.checkWord("f_word") is False
+
+    spChk.setLanguage("en_US", wList2)
+    assert spChk.checkWord("a_word") is False
+    assert spChk.checkWord("b_word") is False
+    assert spChk.checkWord("c_word") is False
+    assert spChk.checkWord("d_word") is True
+    assert spChk.checkWord("e_word") is True
+    assert spChk.checkWord("f_word") is True
+
+# END Test testCoreSpell_SessionWords

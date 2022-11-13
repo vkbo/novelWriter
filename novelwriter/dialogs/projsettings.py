@@ -36,15 +36,20 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.enum import nwAlert
 from novelwriter.common import simplified
-from novelwriter.gui.custom import QSwitch, PagedDialog, QConfigLayout
+from novelwriter.custom import QSwitch, PagedDialog, QConfigLayout
 
 logger = logging.getLogger(__name__)
 
 
 class GuiProjectSettings(PagedDialog):
 
-    def __init__(self, mainGui):
-        PagedDialog.__init__(self, mainGui)
+    TAB_MAIN    = 0
+    TAB_STATUS  = 1
+    TAB_IMPORT  = 2
+    TAB_REPLACE = 3
+
+    def __init__(self, mainGui, focusTab=TAB_MAIN):
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiProjectSettings ...")
         self.setObjectName("GuiProjectSettings")
@@ -67,10 +72,10 @@ class GuiProjectSettings(PagedDialog):
             self.mainConf.pxInt(pOptions.getInt("GuiProjectSettings", "winHeight", wH))
         )
 
-        self.tabMain    = GuiProjectEditMain(self.mainGui, self.theProject)
-        self.tabStatus  = GuiProjectEditStatus(self.mainGui, self.theProject, True)
-        self.tabImport  = GuiProjectEditStatus(self.mainGui, self.theProject, False)
-        self.tabReplace = GuiProjectEditReplace(self.mainGui, self.theProject)
+        self.tabMain    = GuiProjectEditMain(self)
+        self.tabStatus  = GuiProjectEditStatus(self, True)
+        self.tabImport  = GuiProjectEditStatus(self, False)
+        self.tabReplace = GuiProjectEditReplace(self)
 
         self.addTab(self.tabMain,    self.tr("Settings"))
         self.addTab(self.tabStatus,  self.tr("Status"))
@@ -83,11 +88,18 @@ class GuiProjectSettings(PagedDialog):
         self.addControls(self.buttonBox)
 
         # Flags
-        self.spellChanged = False
+        self._spellChanged = False
+
+        # Focus Tab
+        self._focusTab(focusTab)
 
         logger.debug("GuiProjectSettings initialisation complete")
 
         return
+
+    @property
+    def spellChanged(self):
+        return self._spellChanged
 
     ##
     #  Slots
@@ -96,21 +108,19 @@ class GuiProjectSettings(PagedDialog):
     def _doSave(self):
         """Save settings and close dialog.
         """
-        logger.verbose("GuiProjectSettings save button clicked")
-
         projName    = self.tabMain.editName.text()
         bookTitle   = self.tabMain.editTitle.text()
         bookAuthors = self.tabMain.editAuthors.toPlainText()
         spellLang   = self.tabMain.spellLang.currentData()
         doBackup    = not self.tabMain.doBackup.isChecked()
 
-        self.theProject.setProjectName(projName)
-        self.theProject.setBookTitle(bookTitle)
-        self.theProject.setBookAuthors(bookAuthors)
-        self.theProject.setProjBackup(doBackup)
+        self.theProject.data.setName(projName)
+        self.theProject.data.setTitle(bookTitle)
+        self.theProject.data.setAuthors(bookAuthors)
+        self.theProject.data.setDoBackup(doBackup)
 
         # Remember this as updating spell dictionary can be expensive
-        self.spellChanged = self.theProject.setSpellLang(spellLang)
+        self._spellChanged = self.theProject.data.setSpellLang(spellLang)
 
         if self.tabStatus.colChanged:
             newList, delList = self.tabStatus.getNewList()
@@ -125,7 +135,7 @@ class GuiProjectSettings(PagedDialog):
 
         if self.tabReplace.arChanged:
             newList = self.tabReplace.getNewList()
-            self.theProject.setAutoReplace(newList)
+            self.theProject.data.setAutoReplace(newList)
 
         self._saveGuiSettings()
         self.accept()
@@ -142,6 +152,19 @@ class GuiProjectSettings(PagedDialog):
     ##
     #  Internal Functions
     ##
+
+    def _focusTab(self, tab):
+        """Change which is the focused tab.
+        """
+        if tab == self.TAB_MAIN:
+            self.setCurrentWidget(self.tabMain)
+        elif tab == self.TAB_STATUS:
+            self.setCurrentWidget(self.tabStatus)
+        elif tab == self.TAB_IMPORT:
+            self.setCurrentWidget(self.tabImport)
+        elif tab == self.TAB_REPLACE:
+            self.setCurrentWidget(self.tabReplace)
+        return
 
     def _saveGuiSettings(self):
         """Save GUI settings.
@@ -166,12 +189,12 @@ class GuiProjectSettings(PagedDialog):
 
 class GuiProjectEditMain(QWidget):
 
-    def __init__(self, mainGui, theProject):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, projGui):
+        super().__init__(parent=projGui)
 
         self.mainConf   = novelwriter.CONFIG
-        self.mainGui    = mainGui
-        self.theProject = theProject
+        self.mainGui    = projGui.mainGui
+        self.theProject = projGui.theProject
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -186,7 +209,7 @@ class GuiProjectEditMain(QWidget):
         self.editName = QLineEdit()
         self.editName.setMaxLength(200)
         self.editName.setMaximumWidth(xW)
-        self.editName.setText(self.theProject.projName)
+        self.editName.setText(self.theProject.data.name)
         self.mainForm.addRow(
             self.tr("Project name"),
             self.editName,
@@ -196,7 +219,7 @@ class GuiProjectEditMain(QWidget):
         self.editTitle = QLineEdit()
         self.editTitle.setMaxLength(200)
         self.editTitle.setMaximumWidth(xW)
-        self.editTitle.setText(self.theProject.bookTitle)
+        self.editTitle.setText(self.theProject.data.title)
         self.mainForm.addRow(
             self.tr("Novel title"),
             self.editTitle,
@@ -206,7 +229,7 @@ class GuiProjectEditMain(QWidget):
         self.editAuthors = QPlainTextEdit()
         self.editAuthors.setMaximumHeight(xH)
         self.editAuthors.setMaximumWidth(xW)
-        self.editAuthors.setPlainText("\n".join(self.theProject.bookAuthors))
+        self.editAuthors.setPlainText("\n".join(self.theProject.data.authors))
         self.mainForm.addRow(
             self.tr("Author(s)"),
             self.editAuthors,
@@ -229,13 +252,13 @@ class GuiProjectEditMain(QWidget):
         )
 
         spellIdx = 0
-        if self.theProject.projSpell is not None:
-            spellIdx = self.spellLang.findData(self.theProject.projSpell)
+        if self.theProject.data.spellLang is not None:
+            spellIdx = self.spellLang.findData(self.theProject.data.spellLang)
         if spellIdx != -1:
             self.spellLang.setCurrentIndex(spellIdx)
 
         self.doBackup = QSwitch(self)
-        self.doBackup.setChecked(not self.theProject.doBackup)
+        self.doBackup.setChecked(not self.theProject.data.doBackup)
         self.mainForm.addRow(
             self.tr("No backup on close"),
             self.doBackup,
@@ -256,20 +279,20 @@ class GuiProjectEditStatus(QWidget):
     COL_ROLE = Qt.UserRole + 1
     NUM_ROLE = Qt.UserRole + 2
 
-    def __init__(self, mainGui, theProject, isStatus):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, projGui, isStatus):
+        super().__init__(parent=projGui)
 
         self.mainConf   = novelwriter.CONFIG
-        self.mainGui    = mainGui
-        self.theProject = theProject
-        self.mainTheme  = mainGui.mainTheme
+        self.mainGui    = projGui.mainGui
+        self.theProject = projGui.theProject
+        self.mainTheme  = projGui.mainGui.mainTheme
 
         if isStatus:
-            self.theStatus = self.theProject.statusItems
+            self.theStatus = self.theProject.data.itemStatus
             pageLabel = self.tr("Novel File Status Levels")
             colSetting = "statusColW"
         else:
-            self.theStatus = self.theProject.importItems
+            self.theStatus = self.theProject.data.itemImport
             pageLabel = self.tr("Note File Importance Levels")
             colSetting = "importColW"
 
@@ -367,11 +390,12 @@ class GuiProjectEditStatus(QWidget):
             newList = []
             for n in range(self.listBox.topLevelItemCount()):
                 item = self.listBox.topLevelItem(n)
-                newList.append({
-                    "key":  item.data(self.COL_LABEL, self.KEY_ROLE),
-                    "name": item.text(self.COL_LABEL),
-                    "cols": item.data(self.COL_LABEL, self.COL_ROLE),
-                })
+                if item is not None:
+                    newList.append({
+                        "key":  item.data(self.COL_LABEL, self.KEY_ROLE),
+                        "name": item.text(self.COL_LABEL),
+                        "cols": item.data(self.COL_LABEL, self.COL_ROLE),
+                    })
             return newList, self.colDeleted
 
         return [], []
@@ -470,7 +494,8 @@ class GuiProjectEditStatus(QWidget):
         self.listBox.insertTopLevelItem(nIndex, cItem)
         self.listBox.clearSelection()
 
-        cItem.setSelected(True)
+        if cItem is not None:
+            cItem.setSelected(True)
         self.colChanged = True
 
         return
@@ -527,13 +552,13 @@ class GuiProjectEditReplace(QWidget):
     COL_KEY  = 0
     COL_REPL = 1
 
-    def __init__(self, mainGui, theProject):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, projGui):
+        super().__init__(parent=projGui)
 
         self.mainConf   = novelwriter.CONFIG
-        self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
-        self.theProject = theProject
+        self.mainGui    = projGui.mainGui
+        self.mainTheme  = projGui.mainGui.mainTheme
+        self.theProject = projGui.theProject
         self.arChanged  = False
 
         wCol0 = self.mainConf.pxInt(
@@ -553,7 +578,7 @@ class GuiProjectEditReplace(QWidget):
         self.listBox.setColumnWidth(self.COL_KEY, wCol0)
         self.listBox.setIndentation(0)
 
-        for aKey, aVal in self.theProject.autoReplace.items():
+        for aKey, aVal in self.theProject.data.autoReplace.items():
             newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
             self.listBox.addTopLevelItem(newItem)
 
@@ -619,10 +644,11 @@ class GuiProjectEditReplace(QWidget):
         newList = {}
         for n in range(self.listBox.topLevelItemCount()):
             tItem = self.listBox.topLevelItem(n)
-            aKey = self._stripNotAllowed(tItem.text(0))
-            aVal = tItem.text(1)
-            if len(aKey) > 0:
-                newList[aKey] = aVal
+            if tItem is not None:
+                aKey = self._stripNotAllowed(tItem.text(0))
+                aVal = tItem.text(1)
+                if len(aKey) > 0:
+                    newList[aKey] = aVal
 
         return newList
 

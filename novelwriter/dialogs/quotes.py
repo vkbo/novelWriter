@@ -43,7 +43,7 @@ class GuiQuoteSelect(QDialog):
     selectedQuote = ""
 
     def __init__(self, parent=None, currentQuote='"'):
-        QDialog.__init__(self, parent=parent)
+        super().__init__(parent=parent)
 
         self.mainConf = novelwriter.CONFIG
 

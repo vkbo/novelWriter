@@ -21,20 +21,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from lxml import etree
-
 from PyQt5.QtGui import QIcon
 
-from novelwriter.core import NWProject
+from tools import C, buildTestProject
+
 from novelwriter.core.item import NWItem
+from novelwriter.core.project import NWProject
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 
 
 @pytest.mark.core
-def testCoreItem_Setters(mockGUI, mockRnd):
+def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
     """Test all the simple setters for the NWItem class.
     """
     theProject = NWProject(mockGUI)
+    mockRnd.reset()
+    buildTestProject(theProject, fncPath)
     theItem = NWItem(theProject)
 
     statusKeys = ["s000000", "s000001", "s000002", "s000003"]
@@ -131,29 +133,29 @@ def testCoreItem_Setters(mockGUI, mockRnd):
     theItem.setExpanded("What?")
     assert theItem.isExpanded is False
     theItem.setExpanded("True")
-    assert theItem.isExpanded is True
+    assert theItem.isExpanded is False
     theItem.setExpanded(True)
     assert theItem.isExpanded is True
 
-    # Exported
-    theItem.setExported(8)
-    assert theItem.isExported is False
-    theItem.setExported(None)
-    assert theItem.isExported is False
-    theItem.setExported("None")
-    assert theItem.isExported is False
-    theItem.setExported("What?")
-    assert theItem.isExported is False
-    theItem.setExported("True")
-    assert theItem.isExported is True
-    theItem.setExported(True)
-    assert theItem.isExported is True
+    # Active
+    theItem.setActive(8)
+    assert theItem.isActive is False
+    theItem.setActive(None)
+    assert theItem.isActive is False
+    theItem.setActive("None")
+    assert theItem.isActive is False
+    theItem.setActive("What?")
+    assert theItem.isActive is False
+    theItem.setActive("True")
+    assert theItem.isActive is False
+    theItem.setActive(True)
+    assert theItem.isActive is True
 
     # CharCount
     theItem.setCharCount(None)
     assert theItem.charCount == 0
     theItem.setCharCount("1")
-    assert theItem.charCount == 1
+    assert theItem.charCount == 0
     theItem.setCharCount(1)
     assert theItem.charCount == 1
 
@@ -161,7 +163,7 @@ def testCoreItem_Setters(mockGUI, mockRnd):
     theItem.setWordCount(None)
     assert theItem.wordCount == 0
     theItem.setWordCount("1")
-    assert theItem.wordCount == 1
+    assert theItem.wordCount == 0
     theItem.setWordCount(1)
     assert theItem.wordCount == 1
 
@@ -169,7 +171,7 @@ def testCoreItem_Setters(mockGUI, mockRnd):
     theItem.setParaCount(None)
     assert theItem.paraCount == 0
     theItem.setParaCount("1")
-    assert theItem.paraCount == 1
+    assert theItem.paraCount == 0
     theItem.setParaCount(1)
     assert theItem.paraCount == 1
 
@@ -177,7 +179,7 @@ def testCoreItem_Setters(mockGUI, mockRnd):
     theItem.setCursorPos(None)
     assert theItem.cursorPos == 0
     theItem.setCursorPos("1")
-    assert theItem.cursorPos == 1
+    assert theItem.cursorPos == 0
     theItem.setCursorPos(1)
     assert theItem.cursorPos == 1
 
@@ -190,10 +192,12 @@ def testCoreItem_Setters(mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreItem_Methods(mockGUI):
+def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
     """Test the simple methods of the NWItem class.
     """
     theProject = NWProject(mockGUI)
+    mockRnd.reset()
+    buildTestProject(theProject, fncPath)
     theItem = NWItem(theProject)
 
     # Describe Me
@@ -203,35 +207,62 @@ def testCoreItem_Methods(mockGUI):
 
     theItem.setType("ROOT")
     assert theItem.describeMe() == "Root Folder"
+    assert theItem.isRootType() is True
 
     theItem.setType("FOLDER")
     assert theItem.describeMe() == "Folder"
+    assert theItem.isFolderType() is True
 
     theItem.setType("FILE")
     theItem.setLayout("DOCUMENT")
+    assert theItem.isFileType() is True
+    assert theItem.isDocumentLayout() is True
+
+    theItem.setMainHeading("HH")
+    assert theItem.mainHeading == "H0"
     assert theItem.describeMe() == "Novel Document"
-    assert theItem.describeMe("H0") == "Novel Document"
-    assert theItem.describeMe("H1") == "Novel Title Page"
-    assert theItem.describeMe("H2") == "Novel Chapter"
-    assert theItem.describeMe("H3") == "Novel Scene"
-    assert theItem.describeMe("H4") == "Novel Document"
+
+    theItem.setMainHeading("H0")
+    assert theItem.mainHeading == "H0"
+    assert theItem.describeMe() == "Novel Document"
+
+    theItem.setMainHeading("H1")
+    assert theItem.mainHeading == "H1"
+    assert theItem.describeMe() == "Novel Title Page"
+
+    theItem.setMainHeading("H2")
+    assert theItem.mainHeading == "H2"
+    assert theItem.describeMe() == "Novel Chapter"
+
+    theItem.setMainHeading("H3")
+    assert theItem.mainHeading == "H3"
+    assert theItem.describeMe() == "Novel Scene"
+
+    theItem.setMainHeading("H4")
+    assert theItem.mainHeading == "H4"
+    assert theItem.describeMe() == "Novel Section"
+
+    theItem.setMainHeading("H5")
+    assert theItem.mainHeading == "H4"
+    assert theItem.describeMe() == "Novel Section"
 
     theItem.setLayout("NOTE")
+    assert theItem.isNoteLayout() is True
     assert theItem.describeMe() == "Project Note"
 
     # Status + Icon
     # =============
 
     theItem.setType("FILE")
-    theItem.setStatus("Note")
-    theItem.setImport("Minor")
+    theItem.setStatus(C.sNote)
+    theItem.setImport(C.iMinor)
 
     theItem.setClass("NOVEL")
     stT, stI = theItem.getImportStatus()
     assert stT == "Note"
     assert isinstance(stI, QIcon)
 
-    theItem.setImportStatus("Draft")
+    theItem.setImportStatus(C.sDraft)
     stT, stI = theItem.getImportStatus()
     assert stT == "Draft"
 
@@ -240,7 +271,7 @@ def testCoreItem_Methods(mockGUI):
     assert stT == "Minor"
     assert isinstance(stI, QIcon)
 
-    theItem.setImportStatus("Major")
+    theItem.setImportStatus(C.iMajor)
     stT, stI = theItem.getImportStatus()
     assert stT == "Major"
 
@@ -464,254 +495,217 @@ def testCoreItem_ClassDefaults(mockGUI):
 
 
 @pytest.mark.core
-def testCoreItem_XMLPackUnpack(mockGUI, caplog, mockRnd):
-    """Test packing and unpacking XML objects for the NWItem class.
+def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
+    """Test packing and unpacking entries for the NWItem class.
     """
     theProject = NWProject(mockGUI)
-    nwXML = etree.Element("novelWriterXML")
+    theProject.data.itemStatus.write(None, "New", (100, 100, 100))
+    theProject.data.itemImport.write(None, "New", (100, 100, 100))
 
-    statusKeys = ["s000000", "s000001", "s000002", "s000003"]
-    importKeys = ["i000004", "i000005", "i000006", "i000007"]
+    # Invalid
+    theItem = NWItem(theProject)
+    assert theItem.unpack({}) is False
 
     # File
-    # ====
-
     theItem = NWItem(theProject)
-    theItem.setHandle("0123456789abc")
-    theItem.setParent("0123456789abc")
-    theItem.setRoot("0123456789abc")
-    theItem.setOrder(1)
-    theItem.setName("A Name")
-    theItem.setClass("NOVEL")
-    theItem.setType("FILE")
-    theItem.setImport(importKeys[3])
-    theItem.setLayout("NOTE")
-    theItem.setExported(False)
-    theItem.setParaCount(3)
-    theItem.setWordCount(5)
-    theItem.setCharCount(7)
-    theItem.setCursorPos(11)
+    assert theItem.unpack({
+        "name": "A File",
+        "itemAttr": {
+            "handle": "0000000000003",
+            "parent": "0000000000002",
+            "root": "0000000000001",
+            "order": 1,
+            "type": "FILE",
+            "class": "NOVEL",
+            "layout": "DOCUMENT",
+        },
+        "metaAttr": {
+            "expanded": True,
+            "heading": "H1",
+            "charCount": 100,
+            "wordCount": 20,
+            "paraCount": 2,
+            "cursorPos": 50,
+        },
+        "nameAttr": {
+            "status": None,
+            "import": None,
+            "active": False,
+        },
+    }) is True
 
-    # Pack
-    xContent = etree.SubElement(nwXML, "content")
-    theItem.packXML(xContent)
-    assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
-        b'<content>'
-        b'<item handle="0123456789abc" parent="0123456789abc" root="0123456789abc" order="1" '
-        b'type="FILE" class="NOVEL" layout="NOTE"><meta expanded="False" charCount="7" '
-        b'wordCount="5" paraCount="3" cursorPos="11"/><name status="None" import="%s" '
-        b'exported="False">A Name</name></item>'
-        b'</content>'
-    ) % bytes(importKeys[3], encoding="utf8")
-
-    # Unpack
-    theItem = NWItem(theProject)
-    assert theItem.unpackXML(xContent[0])
-    assert theItem.itemHandle == "0123456789abc"
-    assert theItem.itemParent == "0123456789abc"
-    assert theItem.itemRoot == "0123456789abc"
+    assert theItem.itemName == "A File"
+    assert theItem.itemHandle == "0000000000003"
+    assert theItem.itemParent == "0000000000002"
+    assert theItem.itemRoot == "0000000000001"
     assert theItem.itemOrder == 1
-    assert theItem.isExported is False
-    assert theItem.paraCount == 3
-    assert theItem.wordCount == 5
-    assert theItem.charCount == 7
-    assert theItem.cursorPos == 11
-    assert theItem.itemClass == nwItemClass.NOVEL
     assert theItem.itemType == nwItemType.FILE
-    assert theItem.itemLayout == nwItemLayout.NOTE
-    assert theItem.itemStatus == statusKeys[0]  # Was None, should now be default
-    assert theItem.itemImport == importKeys[3]
-
-    # Folder
-    # ======
-
-    theItem = NWItem(theProject)
-    theItem.setHandle("0123456789abc")
-    theItem.setParent("0123456789abc")
-    theItem.setRoot("0123456789abc")
-    theItem.setOrder(1)
-    theItem.setName("A Name")
-    theItem.setClass("NOVEL")
-    theItem.setType("FOLDER")
-    theItem.setStatus(statusKeys[1])
-    theItem.setLayout("NOTE")
-    theItem.setExpanded(True)
-    theItem.setExported(False)
-    theItem.setParaCount(3)
-    theItem.setWordCount(5)
-    theItem.setCharCount(7)
-    theItem.setCursorPos(11)
-
-    # Pack
-    xContent = etree.SubElement(nwXML, "content")
-    theItem.packXML(xContent)
-    assert etree.tostring(xContent, pretty_print=False, encoding="utf-8") == (
-        b'<content>'
-        b'<item handle="0123456789abc" parent="0123456789abc" root="0123456789abc" order="1" '
-        b'type="FOLDER" class="NOVEL"><meta expanded="True"/><name status="%s" '
-        b'import="None">A Name</name></item>'
-        b'</content>'
-    ) % bytes(statusKeys[1], encoding="utf8")
-
-    # Unpack
-    theItem = NWItem(theProject)
-    assert theItem.unpackXML(xContent[0])
-    assert theItem.itemHandle == "0123456789abc"
-    assert theItem.itemParent == "0123456789abc"
-    assert theItem.itemRoot == "0123456789abc"
-    assert theItem.itemOrder == 1
-    assert theItem.isExpanded is True
-    assert theItem.isExported is True
-    assert theItem.paraCount == 0
-    assert theItem.wordCount == 0
-    assert theItem.charCount == 0
-    assert theItem.cursorPos == 0
     assert theItem.itemClass == nwItemClass.NOVEL
-    assert theItem.itemType == nwItemType.FOLDER
-    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
-    assert theItem.itemStatus == statusKeys[1]
-    assert theItem.itemImport == importKeys[0]  # Was None, should now be default
-
-    # Errors
-    # ======
-
-    # Not an Item
-    mockXml = etree.SubElement(nwXML, "stuff")
-    assert theItem.unpackXML(mockXml) is False
-
-    # Item without Handle
-    mockXml = etree.SubElement(nwXML, "item", attrib={"stuff": "nah"})
-    assert theItem.unpackXML(mockXml) is False
-
-    # Item with Invalid SubElement is Accepted w/Error
-    mockXml = etree.SubElement(nwXML, "item", attrib={"handle": "0123456789abc"})
-    xParam = etree.SubElement(mockXml, "invalid")
-    xParam.text = "stuff"
-    caplog.clear()
-    assert theItem.unpackXML(mockXml) is True
-    assert "Unknown tag 'invalid'" in caplog.text
-
-    # Pack Valid Item
-    mockXml = etree.SubElement(nwXML, "group")
-    theItem._subPack(mockXml, "subGroup", {"one": "two"}, "value", False)
-    assert etree.tostring(mockXml, pretty_print=False, encoding="utf-8") == (
-        b"<group><subGroup one=\"two\">value</subGroup></group>"
-    )
-
-    # Pack Not Allowed None
-    mockXml = etree.SubElement(nwXML, "group")
-    assert theItem._subPack(mockXml, "subGroup", {}, None, False) is None
-    assert theItem._subPack(mockXml, "subGroup", {}, "None", False) is None
-    assert etree.tostring(mockXml, pretty_print=False, encoding="utf-8") == (
-        b"<group/>"
-    )
-
-# END Test testCoreItem_XMLPackUnpack
-
-
-@pytest.mark.core
-def testCoreItem_ConvertFromFmt12(mockGUI):
-    """Test the setter for all the nwItemLayout values for the NWItem
-    class using the class names that were present in file format 1.2.
-    """
-    theProject = NWProject(mockGUI)
-    theItem = NWItem(theProject)
-
-    # Deprecated Layouts
-    theItem.setLayout("TITLE")
     assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("PAGE")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("BOOK")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("PARTITION")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("UNNUMBERED")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("CHAPTER")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("SCENE")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("MUMBOJUMBO")
-    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
-
-# END Test testCoreItem_ConvertFromFmt12
-
-
-@pytest.mark.core
-def testCoreItem_ConvertFromFmt13(mockGUI):
-    """Test packing and unpacking XML objects for the NWItem class from
-    format version 1.3
-    """
-    theProject = NWProject(mockGUI)
-
-    # Make Version 1.3 XML
-    nwXML = etree.Element("novelWriterXML")
-    xContent = etree.SubElement(nwXML, "content")
-
-    # Folder
-    xPack = etree.SubElement(xContent, "item", attrib={
-        "handle": "a000000000001",
-        "order":  "1",
-        "parent": "b000000000001",
-    })
-    NWItem._subPack(xPack, "name",     text="Folder")
-    NWItem._subPack(xPack, "type",     text="FOLDER")
-    NWItem._subPack(xPack, "class",    text="NOVEL")
-    NWItem._subPack(xPack, "status",   text="New")
-    NWItem._subPack(xPack, "expanded", text="True")
-
-    # Unpack Folder
-    theItem = NWItem(theProject)
-    theItem.unpackXML(xContent[0])
-    assert theItem.itemHandle == "a000000000001"
-    assert theItem.itemParent == "b000000000001"
-    assert theItem.itemOrder == 1
+    assert theItem.itemStatus == "s000000"
+    assert theItem.itemImport == "i000001"
+    assert theItem.isActive is False
     assert theItem.isExpanded is True
-    assert theItem.isExported is True
-    assert theItem.charCount == 0
-    assert theItem.wordCount == 0
-    assert theItem.paraCount == 0
-    assert theItem.cursorPos == 0
-    assert theItem.itemClass == nwItemClass.NOVEL
-    assert theItem.itemType == nwItemType.FOLDER
-    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
-
-    # File
-    xPack = etree.SubElement(xContent, "item", attrib={
-        "handle": "c000000000001",
-        "order":  "2",
-        "parent": "a000000000001",
-    })
-    NWItem._subPack(xPack, "name",      text="Scene")
-    NWItem._subPack(xPack, "type",      text="FILE")
-    NWItem._subPack(xPack, "class",     text="NOVEL")
-    NWItem._subPack(xPack, "status",    text="New")
-    NWItem._subPack(xPack, "exported",  text="True")
-    NWItem._subPack(xPack, "layout",    text="DOCUMENT")
-    NWItem._subPack(xPack, "charCount", text="600")
-    NWItem._subPack(xPack, "wordCount", text="100")
-    NWItem._subPack(xPack, "paraCount", text="6")
-    NWItem._subPack(xPack, "cursorPos", text="50")
-
-    # Unpack File
-    theItem = NWItem(theProject)
-    theItem.unpackXML(xContent[1])
-    assert theItem.itemHandle == "c000000000001"
-    assert theItem.itemParent == "a000000000001"
-    assert theItem.itemOrder == 2
-    assert theItem.isExpanded is False
-    assert theItem.isExported is True
-    assert theItem.charCount == 600
-    assert theItem.wordCount == 100
-    assert theItem.paraCount == 6
+    assert theItem.mainHeading == "H1"
+    assert theItem.charCount == 100
+    assert theItem.wordCount == 20
+    assert theItem.paraCount == 2
     assert theItem.cursorPos == 50
+
+    assert theItem.pack() == {
+        "name": "A File",
+        "itemAttr": {
+            "handle": "0000000000003",
+            "parent": "0000000000002",
+            "root": "0000000000001",
+            "order": "1",
+            "type": "FILE",
+            "class": "NOVEL",
+            "layout": "DOCUMENT",
+        },
+        "metaAttr": {
+            "expanded": "yes",
+            "heading": "H1",
+            "charCount": "100",
+            "wordCount": "20",
+            "paraCount": "2",
+            "cursorPos": "50",
+        },
+        "nameAttr": {
+            "status": "s000000",
+            "import": "i000001",
+            "active": "no",
+        }
+    }
+
+    # Folder
+    theItem = NWItem(theProject)
+    assert theItem.unpack({
+        "name": "A Folder",
+        "itemAttr": {
+            "handle": "0000000000003",
+            "parent": "0000000000002",
+            "root": "0000000000001",
+            "order": 1,
+            "type": "FOLDER",
+            "class": "NOVEL",
+            "layout": "DOCUMENT",
+        },
+        "metaAttr": {
+            "expanded": True,
+            "heading": "H1",
+            "charCount": 100,
+            "wordCount": 20,
+            "paraCount": 2,
+            "cursorPos": 50,
+        },
+        "nameAttr": {
+            "status": "",
+            "import": "",
+            "active": True,
+        }
+    }) is True
+
+    assert theItem.itemName == "A Folder"
+    assert theItem.itemHandle == "0000000000003"
+    assert theItem.itemParent == "0000000000002"
+    assert theItem.itemRoot == "0000000000001"
+    assert theItem.itemOrder == 1
+    assert theItem.itemType == nwItemType.FOLDER
     assert theItem.itemClass == nwItemClass.NOVEL
-    assert theItem.itemType == nwItemType.FILE
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
+    assert theItem.itemStatus == "s000000"
+    assert theItem.itemImport == "i000001"
+    assert theItem.isActive is False
+    assert theItem.isExpanded is True
+    assert theItem.mainHeading == "H0"
+    assert theItem.charCount == 0
+    assert theItem.wordCount == 0
+    assert theItem.paraCount == 0
+    assert theItem.cursorPos == 0
 
-    # Deprecated Type
-    theItem.setType("TRASH")
+    assert theItem.pack() == {
+        "name": "A Folder",
+        "itemAttr": {
+            "handle": "0000000000003",
+            "parent": "0000000000002",
+            "root": "0000000000001",
+            "order": "1",
+            "type": "FOLDER",
+            "class": "NOVEL",
+        },
+        "metaAttr": {
+            "expanded": "yes",
+        },
+        "nameAttr": {
+            "status": "s000000",
+            "import": "i000001",
+        }
+    }
+
+    # Root
+    theItem = NWItem(theProject)
+    assert theItem.unpack({
+        "name": "A Novel",
+        "itemAttr": {
+            "handle": "0000000000003",
+            "parent": "0000000000002",
+            "root": "0000000000001",
+            "order": 1,
+            "type": "ROOT",
+            "class": "NOVEL",
+            "layout": "DOCUMENT",
+        },
+        "metaAttr": {
+            "expanded": True,
+            "heading": "H1",
+            "charCount": 100,
+            "wordCount": 20,
+            "paraCount": 2,
+            "cursorPos": 50,
+        },
+        "nameAttr": {
+            "status": None,
+            "import": None,
+            "active": True,
+        },
+    }) is True
+
+    assert theItem.itemName == "A Novel"
+    assert theItem.itemHandle == "0000000000003"
+    assert theItem.itemParent is None
+    assert theItem.itemRoot == "0000000000003"
+    assert theItem.itemOrder == 1
     assert theItem.itemType == nwItemType.ROOT
+    assert theItem.itemClass == nwItemClass.NOVEL
+    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
+    assert theItem.itemStatus == "s000000"
+    assert theItem.itemImport == "i000001"
+    assert theItem.isActive is False
+    assert theItem.isExpanded is True
+    assert theItem.mainHeading == "H0"
+    assert theItem.charCount == 0
+    assert theItem.wordCount == 0
+    assert theItem.paraCount == 0
+    assert theItem.cursorPos == 0
 
-# END Test testCoreItem_ConvertFromFmt13
+    assert theItem.pack() == {
+        "name": "A Novel",
+        "itemAttr": {
+            "handle": "0000000000003",
+            "parent": "None",
+            "root": "0000000000003",
+            "order": "1",
+            "type": "ROOT",
+            "class": "NOVEL",
+        },
+        "metaAttr": {
+            "expanded": "yes",
+        },
+        "nameAttr": {
+            "status": "s000000",
+            "import": "i000001",
+        }
+    }
+
+# END Test testCoreItem_PackUnpack

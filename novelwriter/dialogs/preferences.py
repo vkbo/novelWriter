@@ -23,7 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import logging
 import novelwriter
 
@@ -34,8 +33,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
 )
 
-from novelwriter.enum import nwAlert
-from novelwriter.gui.custom import QSwitch, QConfigLayout, PagedDialog
+from novelwriter.custom import QSwitch, QConfigLayout, PagedDialog
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 
 logger = logging.getLogger(__name__)
@@ -44,7 +42,7 @@ logger = logging.getLogger(__name__)
 class GuiPreferences(PagedDialog):
 
     def __init__(self, mainGui):
-        PagedDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiPreferences ...")
         self.setObjectName("GuiPreferences")
@@ -55,13 +53,13 @@ class GuiPreferences(PagedDialog):
 
         self.setWindowTitle(self.tr("Preferences"))
 
-        self.tabGeneral  = GuiPreferencesGeneral(self.mainGui)
-        self.tabProjects = GuiPreferencesProjects(self.mainGui)
-        self.tabDocs     = GuiPreferencesDocuments(self.mainGui)
-        self.tabEditor   = GuiPreferencesEditor(self.mainGui)
-        self.tabSyntax   = GuiPreferencesSyntax(self.mainGui)
-        self.tabAuto     = GuiPreferencesAutomation(self.mainGui)
-        self.tabQuote    = GuiPreferencesQuotes(self.mainGui)
+        self.tabGeneral  = GuiPreferencesGeneral(self)
+        self.tabProjects = GuiPreferencesProjects(self)
+        self.tabDocs     = GuiPreferencesDocuments(self)
+        self.tabEditor   = GuiPreferencesEditor(self)
+        self.tabSyntax   = GuiPreferencesSyntax(self)
+        self.tabAuto     = GuiPreferencesAutomation(self)
+        self.tabQuote    = GuiPreferencesQuotes(self)
 
         self.addTab(self.tabGeneral,  self.tr("General"))
         self.addTab(self.tabProjects, self.tr("Projects"))
@@ -76,11 +74,37 @@ class GuiPreferences(PagedDialog):
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
 
-        self.resize(*self.mainConf.getPreferencesSize())
+        self.resize(*self.mainConf.preferencesWinSize)
+
+        # Settings
+        self._updateTheme = False
+        self._updateSyntax = False
+        self._needsRestart = False
+        self._refreshTree = False
 
         logger.debug("GuiPreferences initialisation complete")
 
         return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def updateTheme(self):
+        return self._updateTheme
+
+    @property
+    def updateSyntax(self):
+        return self._updateSyntax
+
+    @property
+    def needsRestart(self):
+        return self._needsRestart
+
+    @property
+    def refreshTree(self):
+        return self._refreshTree
 
     ##
     #  Slots
@@ -92,8 +116,7 @@ class GuiPreferences(PagedDialog):
         """
         logger.debug("Saving new preferences")
 
-        needsRestart, refreshTree = self.tabGeneral.saveValues()
-
+        self.tabGeneral.saveValues()
         self.tabProjects.saveValues()
         self.tabDocs.saveValues()
         self.tabEditor.saveValues()
@@ -101,15 +124,8 @@ class GuiPreferences(PagedDialog):
         self.tabAuto.saveValues()
         self.tabQuote.saveValues()
 
-        if needsRestart:
-            self.mainGui.makeAlert(self.tr(
-                "Some changes will not be applied until novelWriter has been restarted."
-            ), nwAlert.INFO)
-
-        if refreshTree:
-            self.mainGui.projView.populateTree()
-
         self._saveWindowSize()
+        self.mainConf.saveConfig()
         self.accept()
 
         return
@@ -128,9 +144,7 @@ class GuiPreferences(PagedDialog):
     def _saveWindowSize(self):
         """Save the dialog window size.
         """
-        winWidth = self.mainConf.rpxInt(self.width())
-        winHeight = self.mainConf.rpxInt(self.height())
-        self.mainConf.setPreferencesSize(winWidth, winHeight)
+        self.mainConf.setPreferencesWinSize(self.width(), self.height())
         return
 
 # END Class GuiPreferences
@@ -138,12 +152,13 @@ class GuiPreferences(PagedDialog):
 
 class GuiPreferencesGeneral(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.prefsGui  = prefsGui
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -156,19 +171,19 @@ class GuiPreferencesGeneral(QWidget):
         minWidth = self.mainConf.pxInt(200)
 
         # Select Locale
-        self.guiLang = QComboBox()
-        self.guiLang.setMinimumWidth(minWidth)
+        self.guiLocale = QComboBox()
+        self.guiLocale.setMinimumWidth(minWidth)
         theLangs = self.mainConf.listLanguages(self.mainConf.LANG_NW)
         for lang, langName in theLangs:
-            self.guiLang.addItem(langName, lang)
-        langIdx = self.guiLang.findData(self.mainConf.guiLang)
+            self.guiLocale.addItem(langName, lang)
+        langIdx = self.guiLocale.findData(self.mainConf.guiLocale)
         if langIdx != -1:
-            self.guiLang.setCurrentIndex(langIdx)
+            self.guiLocale.setCurrentIndex(langIdx)
 
         self.mainForm.addRow(
             self.tr("Main GUI language"),
-            self.guiLang,
-            self.tr("Requires restart.")
+            self.guiLocale,
+            self.tr("Requires restart to take effect.")
         )
 
         # Select Theme
@@ -184,23 +199,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Main GUI theme"),
             self.guiTheme,
-            self.tr("Requires restart.")
-        )
-
-        # Select Icon Theme
-        self.guiIcons = QComboBox()
-        self.guiIcons.setMinimumWidth(minWidth)
-        self.iconCache = self.mainTheme.iconCache.listThemes()
-        for iconDir, iconName in self.iconCache:
-            self.guiIcons.addItem(iconName, iconDir)
-        iconIdx = self.guiIcons.findData(self.mainConf.guiIcons)
-        if iconIdx != -1:
-            self.guiIcons.setCurrentIndex(iconIdx)
-
-        self.mainForm.addRow(
-            self.tr("Main icon theme"),
-            self.guiIcons,
-            self.tr("Requires restart.")
+            self.tr("General colour theme and icons.")
         )
 
         # Editor Theme
@@ -230,7 +229,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Font family"),
             self.guiFont,
-            self.tr("Requires restart."),
+            self.tr("Requires restart to take effect."),
             theButton=self.fontButton
         )
 
@@ -243,7 +242,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainForm.addRow(
             self.tr("Font size"),
             self.guiFontSize,
-            self.tr("Requires restart."),
+            self.tr("Requires restart to take effect."),
             theUnit=self.tr("pt")
         )
 
@@ -288,29 +287,23 @@ class GuiPreferencesGeneral(QWidget):
     def saveValues(self):
         """Save the values set for this tab.
         """
-        guiLang     = self.guiLang.currentData()
+        guiLocale   = self.guiLocale.currentData()
         guiTheme    = self.guiTheme.currentData()
-        guiIcons    = self.guiIcons.currentData()
         guiSyntax   = self.guiSyntax.currentData()
         guiFont     = self.guiFont.text()
         guiFontSize = self.guiFontSize.value()
         emphLabels  = self.emphLabels.isChecked()
 
-        # Check if restart is needed
-        needsRestart = False
-        needsRestart |= self.mainConf.guiLang != guiLang
-        needsRestart |= self.mainConf.guiTheme != guiTheme
-        needsRestart |= self.mainConf.guiIcons != guiIcons
-        needsRestart |= self.mainConf.guiFont != guiFont
-        needsRestart |= self.mainConf.guiFontSize != guiFontSize
+        # Update Flags
+        self.prefsGui._updateTheme |= self.mainConf.guiTheme != guiTheme
+        self.prefsGui._updateSyntax |= self.mainConf.guiSyntax != guiSyntax
+        self.prefsGui._needsRestart |= self.mainConf.guiLocale != guiLocale
+        self.prefsGui._needsRestart |= self.mainConf.guiFont != guiFont
+        self.prefsGui._needsRestart |= self.mainConf.guiFontSize != guiFontSize
+        self.prefsGui._refreshTree |= self.mainConf.emphLabels != emphLabels
 
-        # Check if refreshing project tree is needed
-        refreshTree = False
-        refreshTree |= self.mainConf.emphLabels != emphLabels
-
-        self.mainConf.guiLang      = guiLang
+        self.mainConf.guiLocale    = guiLocale
         self.mainConf.guiTheme     = guiTheme
-        self.mainConf.guiIcons     = guiIcons
         self.mainConf.guiSyntax    = guiSyntax
         self.mainConf.guiFont      = guiFont
         self.mainConf.guiFontSize  = guiFontSize
@@ -319,9 +312,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainConf.hideVScroll  = self.hideVScroll.isChecked()
         self.mainConf.hideHScroll  = self.hideHScroll.isChecked()
 
-        self.mainConf.confChanged = True
-
-        return needsRestart, refreshTree
+        return
 
     ##
     #  Slots
@@ -344,12 +335,12 @@ class GuiPreferencesGeneral(QWidget):
 
 class GuiPreferencesProjects(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -391,7 +382,7 @@ class GuiPreferencesProjects(QWidget):
         self.mainForm.addGroupLabel(self.tr("Project Backup"))
 
         # Backup Path
-        self.backupPath = self.mainConf.backupPath
+        self.backupPath = self.mainConf.backupPath()
         self.backupGetPath = QPushButton(self.tr("Browse"))
         self.backupGetPath.clicked.connect(self._backupFolder)
         self.backupPathRow = self.mainForm.addRow(
@@ -458,15 +449,13 @@ class GuiPreferencesProjects(QWidget):
         self.mainConf.autoSaveProj = self.autoSaveProj.value()
 
         # Project Backup
-        self.mainConf.backupPath      = self.backupPath
+        self.mainConf.setBackupPath(self.backupPath)
         self.mainConf.backupOnClose   = self.backupOnClose.isChecked()
         self.mainConf.askBeforeBackup = self.askBeforeBackup.isChecked()
 
         # Session Timer
         self.mainConf.stopWhenIdle = self.stopWhenIdle.isChecked()
         self.mainConf.userIdleTime = round(self.userIdleTime.value() * 60)
-
-        self.mainConf.confChanged = True
 
         return
 
@@ -477,12 +466,9 @@ class GuiPreferencesProjects(QWidget):
     def _backupFolder(self):
         """Open a dialog to select the backup folder.
         """
-        currDir = self.backupPath
-        if not os.path.isdir(currDir):
-            currDir = ""
-
+        currDir = self.backupPath or ""
         newDir = QFileDialog.getExistingDirectory(
-            self, self.tr("Backup Directory"), currDir, options=QFileDialog.ShowDirsOnly
+            self, self.tr("Backup Directory"), str(currDir), options=QFileDialog.ShowDirsOnly
         )
         if newDir:
             self.backupPath = newDir
@@ -505,12 +491,12 @@ class GuiPreferencesProjects(QWidget):
 
 class GuiPreferencesDocuments(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -640,8 +626,6 @@ class GuiPreferencesDocuments(QWidget):
         self.mainConf.textMargin      = self.textMargin.value()
         self.mainConf.tabWidth        = self.tabWidth.value()
 
-        self.mainConf.confChanged = True
-
         return
 
     ##
@@ -666,12 +650,12 @@ class GuiPreferencesDocuments(QWidget):
 
 class GuiPreferencesEditor(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -831,8 +815,6 @@ class GuiPreferencesEditor(QWidget):
         self.mainConf.autoScroll    = self.autoScroll.isChecked()
         self.mainConf.autoScrollPos = self.autoScrollPos.value()
 
-        self.mainConf.confChanged = True
-
         return
 
 # END Class GuiPreferencesEditor
@@ -840,12 +822,12 @@ class GuiPreferencesEditor(QWidget):
 
 class GuiPreferencesSyntax(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -922,8 +904,6 @@ class GuiPreferencesSyntax(QWidget):
         # Text Errors
         self.mainConf.showMultiSpaces = self.showMultiSpaces.isChecked()
 
-        self.mainConf.confChanged = True
-
         return
 
     ##
@@ -943,12 +923,12 @@ class GuiPreferencesSyntax(QWidget):
 
 class GuiPreferencesAutomation(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -1076,8 +1056,6 @@ class GuiPreferencesAutomation(QWidget):
         self.mainConf.fmtPadAfter  = self.fmtPadAfter.text().strip()
         self.mainConf.fmtPadThin   = self.fmtPadThin.isChecked()
 
-        self.mainConf.confChanged = True
-
         return
 
     ##
@@ -1100,12 +1078,12 @@ class GuiPreferencesAutomation(QWidget):
 
 class GuiPreferencesQuotes(QWidget):
 
-    def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+    def __init__(self, prefsGui):
+        super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui   = prefsGui.mainGui
+        self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
         self.mainForm = QConfigLayout()
@@ -1126,7 +1104,7 @@ class GuiPreferencesQuotes(QWidget):
         self.quoteSym["SO"].setReadOnly(True)
         self.quoteSym["SO"].setFixedWidth(qWidth)
         self.quoteSym["SO"].setAlignment(Qt.AlignCenter)
-        self.quoteSym["SO"].setText(self.mainConf.fmtSingleQuotes[0])
+        self.quoteSym["SO"].setText(self.mainConf.fmtSQuoteOpen)
         self.btnSingleStyleO = QPushButton("...")
         self.btnSingleStyleO.setMaximumWidth(bWidth)
         self.btnSingleStyleO.clicked.connect(lambda: self._getQuote("SO"))
@@ -1142,7 +1120,7 @@ class GuiPreferencesQuotes(QWidget):
         self.quoteSym["SC"].setReadOnly(True)
         self.quoteSym["SC"].setFixedWidth(qWidth)
         self.quoteSym["SC"].setAlignment(Qt.AlignCenter)
-        self.quoteSym["SC"].setText(self.mainConf.fmtSingleQuotes[1])
+        self.quoteSym["SC"].setText(self.mainConf.fmtSQuoteClose)
         self.btnSingleStyleC = QPushButton("...")
         self.btnSingleStyleC.setMaximumWidth(bWidth)
         self.btnSingleStyleC.clicked.connect(lambda: self._getQuote("SC"))
@@ -1159,7 +1137,7 @@ class GuiPreferencesQuotes(QWidget):
         self.quoteSym["DO"].setReadOnly(True)
         self.quoteSym["DO"].setFixedWidth(qWidth)
         self.quoteSym["DO"].setAlignment(Qt.AlignCenter)
-        self.quoteSym["DO"].setText(self.mainConf.fmtDoubleQuotes[0])
+        self.quoteSym["DO"].setText(self.mainConf.fmtDQuoteOpen)
         self.btnDoubleStyleO = QPushButton("...")
         self.btnDoubleStyleO.setMaximumWidth(bWidth)
         self.btnDoubleStyleO.clicked.connect(lambda: self._getQuote("DO"))
@@ -1175,7 +1153,7 @@ class GuiPreferencesQuotes(QWidget):
         self.quoteSym["DC"].setReadOnly(True)
         self.quoteSym["DC"].setFixedWidth(qWidth)
         self.quoteSym["DC"].setAlignment(Qt.AlignCenter)
-        self.quoteSym["DC"].setText(self.mainConf.fmtDoubleQuotes[1])
+        self.quoteSym["DC"].setText(self.mainConf.fmtDQuoteClose)
         self.btnDoubleStyleC = QPushButton("...")
         self.btnDoubleStyleC.setMaximumWidth(bWidth)
         self.btnDoubleStyleC.clicked.connect(lambda: self._getQuote("DC"))
@@ -1192,13 +1170,10 @@ class GuiPreferencesQuotes(QWidget):
         """Save the values set for this tab.
         """
         # Quotation Style
-        self.mainConf.fmtSingleQuotes[0] = self.quoteSym["SO"].text()
-        self.mainConf.fmtSingleQuotes[1] = self.quoteSym["SC"].text()
-        self.mainConf.fmtDoubleQuotes[0] = self.quoteSym["DO"].text()
-        self.mainConf.fmtDoubleQuotes[1] = self.quoteSym["DC"].text()
-
-        self.mainConf.confChanged = True
-
+        self.mainConf.fmtSQuoteOpen = self.quoteSym["SO"].text()
+        self.mainConf.fmtSQuoteClose = self.quoteSym["SC"].text()
+        self.mainConf.fmtDQuoteOpen = self.quoteSym["DO"].text()
+        self.mainConf.fmtDQuoteClose = self.quoteSym["DC"].text()
         return
 
     ##

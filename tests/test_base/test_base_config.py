@@ -19,16 +19,16 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import sys
 import pytest
 
 from shutil import copyfile
+from pathlib import Path
 
 from mock import causeOSError, MockApp
 from tools import cmpFiles, writeFile
 
-from novelwriter.config import Config
+from novelwriter.config import Config, RecentProjects
 from novelwriter.constants import nwFiles
 
 
@@ -37,204 +37,142 @@ def testBaseConfig_Constructor(monkeypatch):
     """Test config contructor.
     """
     # Linux
-    monkeypatch.setattr("sys.platform", "linux")
-    tstConf = Config()
-    assert tstConf.osLinux is True
-    assert tstConf.osDarwin is False
-    assert tstConf.osWindows is False
-    assert tstConf.osUnknown is False
+    with monkeypatch.context() as mp:
+        mp.setattr("sys.platform", "linux")
+        tstConf = Config()
+        assert tstConf.osLinux is True
+        assert tstConf.osDarwin is False
+        assert tstConf.osWindows is False
+        assert tstConf.osUnknown is False
 
     # macOS
-    monkeypatch.setattr("sys.platform", "darwin")
-    tstConf = Config()
-    assert tstConf.osLinux is False
-    assert tstConf.osDarwin is True
-    assert tstConf.osWindows is False
-    assert tstConf.osUnknown is False
+    with monkeypatch.context() as mp:
+        mp.setattr("sys.platform", "darwin")
+        tstConf = Config()
+        assert tstConf.osLinux is False
+        assert tstConf.osDarwin is True
+        assert tstConf.osWindows is False
+        assert tstConf.osUnknown is False
 
     # Windows
-    monkeypatch.setattr("sys.platform", "win32")
-    tstConf = Config()
-    assert tstConf.osLinux is False
-    assert tstConf.osDarwin is False
-    assert tstConf.osWindows is True
-    assert tstConf.osUnknown is False
+    with monkeypatch.context() as mp:
+        mp.setattr("sys.platform", "win32")
+        tstConf = Config()
+        assert tstConf.osLinux is False
+        assert tstConf.osDarwin is False
+        assert tstConf.osWindows is True
+        assert tstConf.osUnknown is False
 
     # Cygwin
-    monkeypatch.setattr("sys.platform", "cygwin")
-    tstConf = Config()
-    assert tstConf.osLinux is False
-    assert tstConf.osDarwin is False
-    assert tstConf.osWindows is True
-    assert tstConf.osUnknown is False
+    with monkeypatch.context() as mp:
+        mp.setattr("sys.platform", "cygwin")
+        tstConf = Config()
+        assert tstConf.osLinux is False
+        assert tstConf.osDarwin is False
+        assert tstConf.osWindows is True
+        assert tstConf.osUnknown is False
 
     # Other
-    monkeypatch.setattr("sys.platform", "some_other_os")
-    tstConf = Config()
-    assert tstConf.osLinux is False
-    assert tstConf.osDarwin is False
-    assert tstConf.osWindows is False
-    assert tstConf.osUnknown is True
+    with monkeypatch.context() as mp:
+        mp.setattr("sys.platform", "some_other_os")
+        tstConf = Config()
+        assert tstConf.osLinux is False
+        assert tstConf.osDarwin is False
+        assert tstConf.osWindows is False
+        assert tstConf.osUnknown is True
+
+    # App is single file
+    with monkeypatch.context() as mp:
+        mp.setattr("pathlib.Path.is_file", lambda *a: True)
+        tstConf = Config()
+        assert tstConf._appPath == tstConf._appRoot
 
 # END Test testBaseConfig_Constructor
 
 
 @pytest.mark.base
-def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
+def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
     """Test config intialisation.
     """
     tstConf = Config()
 
-    confFile = os.path.join(tmpDir, "novelwriter.conf")
-    testFile = os.path.join(outDir, "baseConfig_novelwriter.conf")
-    compFile = os.path.join(refDir, "baseConfig_novelwriter.conf")
+    confFile = fncPath / nwFiles.CONF_FILE
+    testFile = tstPaths.outDir / "baseConfig_novelwriter.conf"
+    compFile = tstPaths.refDir / "baseConfig_novelwriter.conf"
 
     # Make sure we don't have any old conf file
-    if os.path.isfile(confFile):
-        os.unlink(confFile)
+    if confFile.is_file():
+        confFile.unlink()
 
-    # Let the config class figure out the path
-    with monkeypatch.context() as mp:
-        mp.setattr("PyQt5.QtCore.QStandardPaths.writableLocation", lambda *a: fncDir)
-        tstConf.verQtValue = 50600
-        tstConf.initConfig()
-        assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
-        assert tstConf.dataPath == os.path.join(fncDir, tstConf.appHandle)
-        assert not os.path.isfile(confFile)
-        tstConf.verQtValue = 50000
-        tstConf.initConfig()
-        assert tstConf.confPath == os.path.join(fncDir, tstConf.appHandle)
-        assert tstConf.dataPath == os.path.join(fncDir, tstConf.appHandle)
-        assert not os.path.isfile(confFile)
+    # Running init against a new oath should write a new config file
+    tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
+    assert tstConf._confPath == fncPath
+    assert tstConf._dataPath == fncPath
+    assert confFile.exists()
 
-    # Fail to make folders
-    with monkeypatch.context() as mp:
-        mp.setattr("os.mkdir", causeOSError)
+    # Check that we have a default file
+    copyfile(confFile, testFile)
+    ignore = ("timestamp", "lastnotes", "localisation", "lastpath")
+    assert cmpFiles(testFile, compFile, ignoreStart=ignore)
+    tstConf.errorText()  # This clears the error cache
 
-        tstConfDir = os.path.join(fncDir, "test_conf")
-        tstConf.initConfig(confPath=tstConfDir, dataPath=tmpDir)
-        assert tstConf.confPath is None
-        assert tstConf.dataPath == tmpDir
-        assert not os.path.isfile(confFile)
-
-        tstDataDir = os.path.join(fncDir, "test_data")
-        tstConf.initConfig(confPath=tmpDir, dataPath=tstDataDir)
-        assert tstConf.confPath == tmpDir
-        assert tstConf.dataPath is None
-        assert os.path.isfile(confFile)
-        os.unlink(confFile)
-
-    # Test load/save with no path
-    tstConf.confPath = None
-    assert tstConf.loadConfig() is False
-    assert tstConf.saveConfig() is False
-
-    # Run again and set the paths directly and correctly
-    # This should create a config file as well
-    with monkeypatch.context() as mp:
-        mp.setattr("os.path.expanduser", lambda *a: "")
-        tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
-        assert tstConf.confPath == tmpDir
-        assert tstConf.dataPath == tmpDir
-        assert os.path.isfile(confFile)
-
-        copyfile(confFile, testFile)
-        assert cmpFiles(testFile, compFile, ignoreStart=("timestamp", "lastnotes", "guilang"))
-
-    # Load and save with OSError
+    # Block saving the file
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-
-        assert not tstConf.loadConfig()
+        assert tstConf.saveConfig() is False
         assert tstConf.hasError is True
-        assert tstConf.errData != []
-        assert tstConf.getErrData().startswith("Could not")
-        assert tstConf.hasError is False
-        assert tstConf.errData == []
+        assert tstConf.errorText().startswith("Could not save config file")
 
-        assert not tstConf.saveConfig()
-        assert tstConf.hasError is True
-        assert tstConf.errData != []
-        assert tstConf.getErrData().startswith("Could not")
-        assert tstConf.hasError is False
-        assert tstConf.errData == []
-
-    # Check handling of novelWriter as a package
+    # Block loading the file
     with monkeypatch.context() as mp:
-        tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
-        assert tstConf.confPath == tmpDir
-        assert tstConf.dataPath == tmpDir
-        appRoot = tstConf.appRoot
+        mp.setattr("builtins.open", causeOSError)
+        assert tstConf.loadConfig() is False
+        assert tstConf.hasError is True
+        assert tstConf.errorText().startswith("Could not load config file")
 
-        mp.setattr("os.path.isfile", lambda *a: True)
-        tstConf.initConfig(confPath=tmpDir, dataPath=tmpDir)
-        assert tstConf.confPath == tmpDir
-        assert tstConf.dataPath == tmpDir
-        assert tstConf.appRoot == os.path.dirname(appRoot)
-        assert tstConf.appPath == os.path.dirname(appRoot)
-
-    assert tstConf.loadConfig() is True
+    # Change a few settings, save, reset, and reload
+    tstConf.guiTheme = "foo"
+    tstConf.guiSyntax = "bar"
     assert tstConf.saveConfig() is True
 
-    # Test Correcting Quote Settings
-    origDbl = tstConf.fmtDoubleQuotes
-    origSng = tstConf.fmtSingleQuotes
-    orDoDbl = tstConf.doReplaceDQuote
-    orDoSng = tstConf.doReplaceSQuote
+    newConf = Config()
+    newConf.initConfig(confPath=fncPath, dataPath=fncPath)
+    assert newConf.guiTheme == "foo"
+    assert newConf.guiSyntax == "bar"
 
-    tstConf.fmtDoubleQuotes = ["\"", "\""]
-    tstConf.fmtSingleQuotes = ["'", "'"]
+    # Test Correcting Quote Settings
+    tstConf.fmtDQuoteOpen = "\""
+    tstConf.fmtDQuoteClose = "\""
+    tstConf.fmtSQuoteOpen = "'"
+    tstConf.fmtSQuoteClose = "'"
     tstConf.doReplaceDQuote = True
     tstConf.doReplaceSQuote = True
     assert tstConf.saveConfig() is True
 
-    assert tstConf.loadConfig() is True
-    assert tstConf.doReplaceDQuote is False
-    assert tstConf.doReplaceSQuote is False
+    assert newConf.loadConfig() is True
+    assert newConf.doReplaceDQuote is False
+    assert newConf.doReplaceSQuote is False
 
-    tstConf.fmtDoubleQuotes = origDbl
-    tstConf.fmtSingleQuotes = origSng
-    tstConf.doReplaceDQuote = orDoDbl
-    tstConf.doReplaceSQuote = orDoSng
-    assert tstConf.saveConfig() is True
+# END Test testBaseConfig_InitLoadSave
 
-    # Test Correcting icon theme
-    origIcons = tstConf.guiIcons
 
-    tstConf.guiIcons = "typicons_colour_dark"
-    assert tstConf.saveConfig() is True
-    assert tstConf.loadConfig() is True
-    assert tstConf.guiIcons == "typicons_dark"
-
-    tstConf.guiIcons = "typicons_grey_dark"
-    assert tstConf.saveConfig() is True
-    assert tstConf.loadConfig() is True
-    assert tstConf.guiIcons == "typicons_dark"
-
-    tstConf.guiIcons = "typicons_colour_light"
-    assert tstConf.saveConfig() is True
-    assert tstConf.loadConfig() is True
-    assert tstConf.guiIcons == "typicons_light"
-
-    tstConf.guiIcons = "typicons_grey_light"
-    assert tstConf.saveConfig() is True
-    assert tstConf.loadConfig() is True
-    assert tstConf.guiIcons == "typicons_light"
-
-    tstConf.guiIcons = origIcons
-    assert tstConf.saveConfig()
+@pytest.mark.base
+def testBaseConfig_Localisation(fncPath, tstPaths):
+    """Test localisation.
+    """
+    tstConf = Config()
+    tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
 
     # Localisation
     # ============
 
-    i18nDir = os.path.join(fncDir, "i18n")
-    os.mkdir(i18nDir)
-    os.mkdir(os.path.join(i18nDir, "stuff"))
-    tstConf.nwLangPath = i18nDir
+    i18nDir = fncPath / "i18n"
+    i18nDir.mkdir()
+    tstConf._nwLangPath = str(i18nDir)
 
-    copyfile(os.path.join(filesDir, "nw_en_GB.qm"), os.path.join(i18nDir, "nw_en_GB.qm"))
-    writeFile(os.path.join(i18nDir, "nw_en_GB.ts"), "")
-    writeFile(os.path.join(i18nDir, "nw_abcd.qm"), "")
+    copyfile(tstPaths.filesDir / "nw_en_GB.qm", i18nDir / "nw_en_GB.qm")
+    writeFile(i18nDir / "nw_en_GB.ts", "")
+    writeFile(i18nDir / "nw_abcd.qm", "")
 
     tstApp = MockApp()
     tstConf.initLocalisation(tstApp)
@@ -248,120 +186,55 @@ def testBaseConfig_Init(monkeypatch, tmpDir, fncDir, outDir, refDir, filesDir):
     assert theList == []
 
     # Add Language
-    copyfile(os.path.join(filesDir, "nw_en_GB.qm"), os.path.join(i18nDir, "nw_fr.qm"))
-    writeFile(os.path.join(i18nDir, "nw_fr.ts"), "")
+    copyfile(tstPaths.filesDir / "nw_en_GB.qm", i18nDir / "nw_fr.qm")
+    writeFile(i18nDir / "nw_fr.ts", "")
 
     theList = tstConf.listLanguages(tstConf.LANG_NW)
     assert theList == [("en_GB", "British English"), ("fr", "Français")]
 
-    copyfile(confFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=("timestamp", "lastnotes", "guilang"))
-
-# END Test testBaseConfig_Init
+# END Test testBaseConfig_Localisation
 
 
 @pytest.mark.base
-def testBaseConfig_RecentCache(monkeypatch, tmpConf, tmpDir, fncDir):
-    """Test recent cache file.
+def testBaseConfig_Methods(tmpConf, tmpPath):
+    """Check class methods.
     """
-    # Check failing
-    tmpConf.dataPath = None
-    assert not tmpConf.loadRecentCache()
-    assert not tmpConf.saveRecentCache()
-    tmpConf.dataPath = tmpDir
-
-    # Add a couple of values
-    pathOne = os.path.join(fncDir, "projPathOne", nwFiles.PROJ_FILE)
-    pathTwo = os.path.join(fncDir, "projPathTwo", nwFiles.PROJ_FILE)
-    assert tmpConf.updateRecentCache(pathOne, "Proj One", 100, 1600002000)
-    assert tmpConf.updateRecentCache(pathTwo, "Proj Two", 200, 1600005600)
-    assert tmpConf.recentProj == {
-        pathOne: {"time": 1600002000, "title": "Proj One", "words": 100},
-        pathTwo: {"time": 1600005600, "title": "Proj Two", "words": 200},
-    }
-
-    # Fail to Save
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert not tmpConf.saveRecentCache()
-
-    # Save Proper
-    cacheFile = os.path.join(tmpDir, nwFiles.RECENT_FILE)
-    assert tmpConf.saveRecentCache()
-    assert tmpConf.saveRecentCache()
-    assert os.path.isfile(cacheFile)
-
-    # Fail to Load
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        tmpConf.recentProj = {}
-        assert not tmpConf.loadRecentCache()
-        assert tmpConf.recentProj == {}
-
-    # Load Proper
-    tmpConf.recentProj = {}
-    assert tmpConf.loadRecentCache()
-    assert tmpConf.recentProj == {
-        pathOne: {"time": 1600002000, "title": "Proj One", "words": 100},
-        pathTwo: {"time": 1600005600, "title": "Proj Two", "words": 200},
-    }
-
-    # Remove Non-Existent Entry
-    assert not tmpConf.removeFromRecentCache("stuff")
-    assert tmpConf.recentProj == {
-        pathOne: {"time": 1600002000, "title": "Proj One", "words": 100},
-        pathTwo: {"time": 1600005600, "title": "Proj Two", "words": 200},
-    }
-
-    # Remove Second Entry
-    assert tmpConf.removeFromRecentCache(pathTwo)
-    assert tmpConf.recentProj == {
-        pathOne: {"time": 1600002000, "title": "Proj One", "words": 100},
-    }
-
-# END Test testBaseConfig_RecentCache
-
-
-@pytest.mark.base
-def testBaseConfig_SetPath(tmpConf, tmpDir):
-    """Test path setters.
-    """
-    # Conf Path
-    assert tmpConf.setConfPath(None)
-    assert not tmpConf.setConfPath(os.path.join("somewhere", "over", "the", "rainbow"))
-    assert tmpConf.setConfPath(os.path.join(tmpDir, "novelwriter.conf"))
-    assert tmpConf.confPath == tmpDir
-    assert tmpConf.confFile == "novelwriter.conf"
-    assert not tmpConf.confChanged
-
     # Data Path
-    assert tmpConf.setDataPath(None)
-    assert not tmpConf.setDataPath(os.path.join("somewhere", "over", "the", "rainbow"))
-    assert tmpConf.setDataPath(tmpDir)
-    assert tmpConf.dataPath == tmpDir
-    assert not tmpConf.confChanged
+    assert tmpConf.dataPath() == tmpPath
+    assert tmpConf.dataPath("stuff") == tmpPath / "stuff"
+
+    # Assets Path
+    appPath = tmpConf._appPath
+    assert tmpConf.assetPath() == appPath / "assets"
+    assert tmpConf.assetPath("stuff") == appPath / "assets" / "stuff"
 
     # Last Path
-    assert tmpConf.setLastPath(None)
-    assert tmpConf.lastPath == ""
+    assert tmpConf.lastPath() == tmpPath
 
-    assert tmpConf.setLastPath(os.path.join(tmpDir, "file.tmp"))
-    assert tmpConf.lastPath == tmpDir
+    tmpStuff = tmpPath / "stuff"
+    tmpStuff.mkdir()
+    tmpConf.setLastPath(tmpStuff)
+    assert tmpConf.lastPath() == tmpStuff
 
-    assert tmpConf.setLastPath("")
-    assert tmpConf.lastPath == ""
+    fileStuff = tmpStuff / "more_stuff.txt"
+    fileStuff.write_text("Stuff")
+    tmpConf.setLastPath(fileStuff)
+    assert tmpConf.lastPath() == tmpStuff
 
-# END Test testBaseConfig_SetPath
+    fileStuff.unlink()
+    tmpStuff.rmdir()
+    assert tmpConf.lastPath() == Path.home().absolute()
+
+    # Recent Projects
+    assert isinstance(tmpConf.recentProjects, RecentProjects)
+
+# END Test testBaseConfig_Methods
 
 
 @pytest.mark.base
-def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
+def testBaseConfig_SettersGetters(tmpConf):
     """Set various sizes and positions
     """
-    confFile = os.path.join(tmpDir, "novelwriter.conf")
-    testFile = os.path.join(outDir, "baseConfig_novelwriter.conf")
-    compFile = os.path.join(refDir, "baseConfig_novelwriter.conf")
-
     # GUI Scaling
     # ===========
 
@@ -382,164 +255,100 @@ def testBaseConfig_SettersGetters(tmpConf, tmpDir, outDir, refDir):
 
     # Window Size
     tmpConf.guiScale = 1.0
-    assert tmpConf.setWinSize(1205, 655)
-    assert not tmpConf.confChanged
+    tmpConf.setMainWinSize(1205, 655)
+    assert tmpConf.mainWinSize == [1200, 650]
 
     tmpConf.guiScale = 2.0
-    assert tmpConf.setWinSize(70, 70)
-    assert tmpConf.getWinSize() == [70, 70]
-    assert tmpConf.winGeometry == [35, 35]
+    tmpConf.setMainWinSize(70, 70)
+    assert tmpConf.mainWinSize == [70, 70]
+    assert tmpConf._mainWinSize == [35, 35]
 
     tmpConf.guiScale = 1.0
-    assert tmpConf.setWinSize(70, 70)
-    assert tmpConf.getWinSize() == [70, 70]
-    assert tmpConf.winGeometry == [70, 70]
+    tmpConf.setMainWinSize(70, 70)
+    assert tmpConf.mainWinSize == [70, 70]
+    assert tmpConf._mainWinSize == [70, 70]
 
-    assert tmpConf.setWinSize(1200, 650)
+    tmpConf.setMainWinSize(1200, 650)
 
     # Preferences Size
     tmpConf.guiScale = 2.0
-    assert tmpConf.setPreferencesSize(70, 70)
-    assert tmpConf.getPreferencesSize() == [70, 70]
-    assert tmpConf.prefGeometry == [35, 35]
+    tmpConf.setPreferencesWinSize(70, 70)
+    assert tmpConf.preferencesWinSize == [70, 70]
+    assert tmpConf._prefsWinSize == [35, 35]
 
     tmpConf.guiScale = 1.0
-    assert tmpConf.setPreferencesSize(70, 70)
-    assert tmpConf.getPreferencesSize() == [70, 70]
-    assert tmpConf.prefGeometry == [70, 70]
+    tmpConf.setPreferencesWinSize(70, 70)
+    assert tmpConf.preferencesWinSize == [70, 70]
+    assert tmpConf._prefsWinSize == [70, 70]
 
-    assert tmpConf.setPreferencesSize(700, 615)
-
-    # Project Tree Columns
-    tmpConf.guiScale = 2.0
-    assert tmpConf.setTreeColWidths([10, 20, 25])
-    assert tmpConf.getTreeColWidths() == [10, 20, 24]
-    assert tmpConf.treeColWidth == [5, 10, 12]
-
-    tmpConf.guiScale = 1.0
-    assert tmpConf.setTreeColWidths([10, 20, 25])
-    assert tmpConf.getTreeColWidths() == [10, 20, 25]
-    assert tmpConf.treeColWidth == [10, 20, 25]
-
-    assert tmpConf.setTreeColWidths([200, 50, 30])
-
-    # Novel Tree Columns
-    tmpConf.guiScale = 2.0
-    assert tmpConf.setNovelColWidths([10, 20])
-    assert tmpConf.getNovelColWidths() == [10, 20]
-    assert tmpConf.novelColWidth == [5, 10]
-
-    tmpConf.guiScale = 1.0
-    assert tmpConf.setNovelColWidths([10, 20])
-    assert tmpConf.getNovelColWidths() == [10, 20]
-    assert tmpConf.novelColWidth == [10, 20]
-
-    assert tmpConf.setNovelColWidths([200, 50])
+    tmpConf.setPreferencesWinSize(700, 615)
 
     # Project Settings Tree Columns
     tmpConf.guiScale = 2.0
-    assert tmpConf.setProjColWidths([10, 20, 30])
-    assert tmpConf.getProjColWidths() == [10, 20, 30]
-    assert tmpConf.projColWidth == [5, 10, 15]
+    tmpConf.setProjLoadColWidths([10, 20, 30])
+    assert tmpConf.projLoadColWidths == [10, 20, 30]
+    assert tmpConf._projLoadCols == [5, 10, 15]
 
     tmpConf.guiScale = 1.0
-    assert tmpConf.setProjColWidths([10, 20, 30])
-    assert tmpConf.getProjColWidths() == [10, 20, 30]
-    assert tmpConf.projColWidth == [10, 20, 30]
+    tmpConf.setProjLoadColWidths([10, 20, 30])
+    assert tmpConf.projLoadColWidths == [10, 20, 30]
+    assert tmpConf._projLoadCols == [10, 20, 30]
 
-    assert tmpConf.setProjColWidths([200, 60, 140])
+    tmpConf.setProjLoadColWidths([200, 60, 140])
 
     # Main Pane Splitter
     tmpConf.guiScale = 2.0
-    assert tmpConf.setMainPanePos([200, 700])
-    assert tmpConf.getMainPanePos() == [200, 700]
-    assert tmpConf.mainPanePos == [100, 350]
-
-    tmpConf.guiScale = 1.0
-    assert tmpConf.setMainPanePos([200, 700])
-    assert tmpConf.getMainPanePos() == [200, 700]
+    tmpConf.setMainPanePos([200, 700])
     assert tmpConf.mainPanePos == [200, 700]
-
-    assert tmpConf.setMainPanePos([300, 800])
-
-    # Doc Pane Splitter
-    tmpConf.guiScale = 2.0
-    assert tmpConf.setDocPanePos([300, 300])
-    assert tmpConf.getDocPanePos() == [300, 300]
-    assert tmpConf.docPanePos == [150, 150]
+    assert tmpConf._mainPanePos == [100, 350]
 
     tmpConf.guiScale = 1.0
-    assert tmpConf.setDocPanePos([300, 300])
-    assert tmpConf.getDocPanePos() == [300, 300]
-    assert tmpConf.docPanePos == [300, 300]
+    tmpConf.setMainPanePos([200, 700])
+    assert tmpConf.mainPanePos == [200, 700]
+    assert tmpConf._mainPanePos == [200, 700]
 
-    assert tmpConf.setDocPanePos([400, 400])
+    tmpConf.setMainPanePos([300, 800])
 
     # View Pane Splitter
     tmpConf.guiScale = 2.0
-    assert tmpConf.setViewPanePos([400, 250])
-    assert tmpConf.getViewPanePos() == [400, 250]
-    assert tmpConf.viewPanePos == [200, 125]
+    tmpConf.setViewPanePos([400, 250])
+    assert tmpConf.viewPanePos == [400, 250]
+    assert tmpConf._viewPanePos == [200, 125]
 
     tmpConf.guiScale = 1.0
-    assert tmpConf.setViewPanePos([400, 250])
-    assert tmpConf.getViewPanePos() == [400, 250]
+    tmpConf.setViewPanePos([400, 250])
     assert tmpConf.viewPanePos == [400, 250]
+    assert tmpConf._viewPanePos == [400, 250]
 
-    assert tmpConf.setViewPanePos([500, 150])
+    tmpConf.setViewPanePos([500, 150])
 
     # Outline Pane Splitter
     tmpConf.guiScale = 2.0
-    assert tmpConf.setOutlinePanePos([400, 250])
-    assert tmpConf.getOutlinePanePos() == [400, 250]
-    assert tmpConf.outlnPanePos == [200, 125]
+    tmpConf.setOutlinePanePos([400, 250])
+    assert tmpConf.outlinePanePos == [400, 250]
+    assert tmpConf._outlnPanePos == [200, 125]
 
     tmpConf.guiScale = 1.0
-    assert tmpConf.setOutlinePanePos([400, 250])
-    assert tmpConf.getOutlinePanePos() == [400, 250]
-    assert tmpConf.outlnPanePos == [400, 250]
+    tmpConf.setOutlinePanePos([400, 250])
+    assert tmpConf.outlinePanePos == [400, 250]
+    assert tmpConf._outlnPanePos == [400, 250]
 
-    assert tmpConf.setOutlinePanePos([500, 150])
+    tmpConf.setOutlinePanePos([500, 150])
 
     # Getters Only
     # ============
 
     tmpConf.guiScale = 1.0
-    assert tmpConf.getTextWidth(False) == 600
+    assert tmpConf.getTextWidth(False) == 700
     assert tmpConf.getTextWidth(True) == 800
     assert tmpConf.getTextMargin() == 40
     assert tmpConf.getTabWidth() == 40
 
     tmpConf.guiScale = 2.0
-    assert tmpConf.getTextWidth(False) == 1200
+    assert tmpConf.getTextWidth(False) == 1400
     assert tmpConf.getTextWidth(True) == 1600
     assert tmpConf.getTextMargin() == 80
     assert tmpConf.getTabWidth() == 80
-
-    # Flag Setters
-    # ============
-
-    assert tmpConf.setShowRefPanel(False) is False
-    assert tmpConf.showRefPanel is False
-    assert tmpConf.setShowRefPanel(True) is True
-
-    assert tmpConf.setViewComments(False) is False
-    assert tmpConf.viewComments is False
-    assert tmpConf.setViewComments(True) is True
-
-    assert tmpConf.setViewSynopsis(False) is False
-    assert tmpConf.viewSynopsis is False
-    assert tmpConf.setViewSynopsis(True) is True
-
-    # Check Final File
-    # ================
-
-    assert tmpConf.confChanged is True
-    assert tmpConf.saveConfig() is True
-    assert tmpConf.confChanged is False
-
-    copyfile(confFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=("timestamp", "lastnotes", "guilang"))
 
 # END Test testBaseConfig_SettersGetters
 
@@ -570,3 +379,68 @@ def testBaseConfig_Internal(monkeypatch, tmpConf):
         assert tmpConf.hasEnchant is False
 
 # END Test testBaseConfig_Internal
+
+
+@pytest.mark.base
+def testBaseConfig_RecentCache(monkeypatch, fncConf, fncPath):
+    """Test recent cache file.
+    """
+    cacheFile = fncPath / nwFiles.RECENT_FILE
+    recent = RecentProjects(fncConf)
+
+    # Load when there is no file should pass, but load nothing
+    assert not cacheFile.exists()
+    assert recent.loadCache() is True
+    assert recent.listEntries() == []
+
+    # Add a couple of values
+    pathOne = fncPath / "projPathOne" / nwFiles.PROJ_FILE
+    pathTwo = fncPath / "projPathTwo" / nwFiles.PROJ_FILE
+
+    recent.update(pathOne, "Proj One", 100, 1600002000)
+    recent.update(pathTwo, "Proj Two", 200, 1600005600)
+    assert recent.listEntries() == [
+        (str(pathOne), "Proj One", 100, 1600002000),
+        (str(pathTwo), "Proj Two", 200, 1600005600),
+    ]
+    assert cacheFile.exists()
+    cacheFile.unlink()
+    assert not cacheFile.exists()
+
+    # Fail to Save
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert recent.saveCache() is False
+        assert not cacheFile.exists()
+
+    # Save Proper
+    assert recent.saveCache() is True
+    assert cacheFile.exists()
+
+    # Fail to Load
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert recent.loadCache() is False
+        assert recent.listEntries() == []
+
+    # Load Proper
+    assert recent.loadCache() is True
+    assert recent.listEntries() == [
+        (str(pathOne), "Proj One", 100, 1600002000),
+        (str(pathTwo), "Proj Two", 200, 1600005600),
+    ]
+
+    # Remove Non-Existent Entry
+    recent.remove("stuff")
+    assert recent.listEntries() == [
+        (str(pathOne), "Proj One", 100, 1600002000),
+        (str(pathTwo), "Proj Two", 200, 1600005600),
+    ]
+
+    # Remove Second Entry
+    recent.remove(pathTwo)
+    assert recent.listEntries() == [
+        (str(pathOne), "Proj One", 100, 1600002000),
+    ]
+
+# END Test testBaseConfig_RecentCache

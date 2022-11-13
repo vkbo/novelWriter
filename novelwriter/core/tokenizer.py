@@ -36,7 +36,6 @@ from PyQt5.QtCore import QCoreApplication, QRegularExpression
 from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.common import numberToRoman, checkInt
 from novelwriter.constants import nwConst, nwRegEx, nwUnicode
-from novelwriter.core.document import NWDoc
 
 logger = logging.getLogger(__name__)
 
@@ -304,16 +303,10 @@ class Tokenizer(ABC):
         if self._theItem is None:
             return False
 
-        self._theText = ""
-        if theText is not None:
-            # If the text is set, just use that
-            self._theText = theText
-        else:
-            # Otherwise, load it from file
-            theDoc  = NWDoc(self.theProject, theHandle)
-            theText = theDoc.readDocument()
-            if theText:
-                self._theText = theText
+        if theText is None:
+            theText = self.theProject.storage.getDocument(theHandle).readDocument() or ""
+
+        self._theText = theText
 
         docSize = len(self._theText)
         if docSize > nwConst.MAX_DOCSIZE:
@@ -333,9 +326,10 @@ class Tokenizer(ABC):
         """Run trough the various replace doctionaries.
         """
         # Process the user's auto-replace dictionary
-        if len(self.theProject.autoReplace) > 0:
+        autoReplace = self.theProject.data.autoReplace
+        if len(autoReplace) > 0:
             repDict = {}
-            for aKey, aVal in self.theProject.autoReplace.items():
+            for aKey, aVal in autoReplace.items():
                 repDict[f"<{aKey}>"] = aVal
             xRep = re.compile("|".join([re.escape(k) for k in repDict.keys()]), flags=re.DOTALL)
             self._theText = xRep.sub(lambda x: repDict[x.group(0)], self._theText)

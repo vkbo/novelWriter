@@ -23,11 +23,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
 import logging
 import novelwriter
 
+from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtGui import QPixmap, QCursor
@@ -39,9 +39,9 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.enum import nwAlert
 from novelwriter.error import formatException
-from novelwriter.common import formatTime, checkInt, checkIntRange, checkIntTuple
+from novelwriter.common import formatTime, checkInt, checkIntTuple, minmax
+from novelwriter.custom import QSwitch
 from novelwriter.constants import nwConst, nwFiles
-from novelwriter.gui.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class GuiWritingStats(QDialog):
     FMT_CSV  = 1
 
     def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiWritingStats ...")
         self.setObjectName("GuiWritingStats")
@@ -112,11 +112,12 @@ class GuiWritingStats(QDialog):
         self.listBox.setColumnWidth(self.C_COUNT, wCol3)
 
         hHeader = self.listBox.headerItem()
-        hHeader.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
-        hHeader.setTextAlignment(self.C_IDLE, Qt.AlignRight)
-        hHeader.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+        if hHeader is not None:
+            hHeader.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
+            hHeader.setTextAlignment(self.C_IDLE, Qt.AlignRight)
+            hHeader.setTextAlignment(self.C_COUNT, Qt.AlignRight)
 
-        sortCol = checkIntRange(pOptions.getInt("GuiWritingStats", "sortCol", 0), 0, 2, 0)
+        sortCol = minmax(pOptions.getInt("GuiWritingStats", "sortCol", 0), 0, 2)
         sortOrder = checkIntTuple(
             pOptions.getInt("GuiWritingStats", "sortOrder", Qt.DescendingOrder),
             (Qt.AscendingOrder, Qt.DescendingOrder), Qt.DescendingOrder
@@ -361,15 +362,9 @@ class GuiWritingStats(QDialog):
             return False
 
         # Generate the file name
-        saveDir = self.mainConf.lastPath
-        if not os.path.isdir(saveDir):
-            saveDir = os.path.expanduser("~")
-
-        fileName = "sessionStats.%s" % fileExt
-        savePath = os.path.join(saveDir, fileName)
-
+        savePath = self.mainConf.lastPath() / f"sessionStats.{fileExt}"
         savePath, _ = QFileDialog.getSaveFileName(
-            self, self.tr("Save Data As"), savePath, "%s (*.%s)" % (textFmt, fileExt)
+            self, self.tr("Save Data As"), str(savePath), "%s (*.%s)" % (textFmt, fileExt)
         )
         if not savePath:
             return False
@@ -438,8 +433,8 @@ class GuiWritingStats(QDialog):
         ttTime = 0
         ttIdle = 0
 
-        logFile = os.path.join(self.theProject.projMeta, nwFiles.SESS_STATS)
-        if not os.path.isfile(logFile):
+        logFile = self.theProject.storage.getMetaFile(nwFiles.SESS_STATS)
+        if not isinstance(logFile, Path) or not logFile.exists():
             logger.info("This project has no writing stats logfile")
             return False
 
@@ -449,7 +444,7 @@ class GuiWritingStats(QDialog):
                     if inLine.startswith("#"):
                         if inLine.startswith("# Offset"):
                             self.wordOffset = checkInt(inLine[9:].strip(), 0)
-                            logger.verbose(
+                            logger.debug(
                                 "Initial word count when log was started is %d" % self.wordOffset
                             )
                         continue

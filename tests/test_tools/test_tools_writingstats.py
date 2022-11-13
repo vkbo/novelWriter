@@ -19,54 +19,41 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import pytest
 import json
-import os
+import pytest
 
 from mock import causeOSError
 from tools import getGuiItem, writeFile, buildTestProject
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QAction, QFileDialog
 
 from novelwriter.tools import GuiWritingStats
 from novelwriter.constants import nwFiles
 
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
-
 
 @pytest.mark.gui
-def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
+def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     """Test the full writing stats tool.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Create a project to work on
-    buildTestProject(nwGUI, fncProj)
+    buildTestProject(nwGUI, projPath)
     qtbot.wait(100)
     assert nwGUI.saveProject()
-    sessFile = os.path.join(fncProj, "meta", nwFiles.SESS_STATS)
+    sessFile = projPath / "meta" / nwFiles.SESS_STATS
 
     # Open the Writing Stats dialog
-    nwGUI.mainConf.lastPath = ""
     nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiWritingStats") is not None, timeout=1000)
 
     sessLog = getGuiItem("GuiWritingStats")
     assert isinstance(sessLog, GuiWritingStats)
-    qtbot.wait(stepDelay)
 
     # Test Loading
     # ============
 
     # No initial logfile
-    assert not os.path.isfile(sessFile)
+    assert not sessFile.is_file()
     assert not sessLog._loadLogFile()
 
     # Make a test log file
@@ -78,7 +65,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
         "2020-01-03 21:30:00  2020-01-03 21:30:15       125         5\n"
         "2020-01-06 21:00:00  2020-01-06 21:00:10       125         5\n"
     ))
-    assert os.path.isfile(sessFile)
+    assert sessFile.is_file()
     assert sessLog._loadLogFile()
     assert sessLog.wordOffset == 123
     assert len(sessLog.logData) == 4
@@ -122,9 +109,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert not sessLog._saveData(None)
 
     # Make the save succeed
-    monkeypatch.setattr("os.path.expanduser", lambda *a: fncDir)
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
-
     sessLog.listBox.sortByColumn(sessLog.C_TIME, 0)
 
     assert sessLog.novelWords.text() == "{:n}".format(600)
@@ -146,10 +131,8 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert sessLog._saveData(sessLog.FMT_JSON)
     qtbot.wait(100)
 
-    assert nwGUI.mainConf.lastPath == fncDir
-
     # Check the exported files
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
+    jsonStats = fncPath / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -186,11 +169,9 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     # No Novel Files
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
 
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
+    jsonStats = fncPath / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
@@ -234,11 +215,9 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # No Note Files
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
     qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
 
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
+    jsonStats = fncPath / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -282,13 +261,11 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # No Negative Entries
     qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
     qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
+    jsonStats = fncPath / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -316,11 +293,9 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     # Un-hide Zero Entries
     qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
     qtbot.mouseClick(sessLog.hideZeros, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
 
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
+    jsonStats = fncPath / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -371,11 +346,9 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
 
     # Group by Day
     qtbot.mouseClick(sessLog.groupByDay, Qt.LeftButton)
-    qtbot.wait(stepDelay)
     assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(stepDelay)
 
-    jsonStats = os.path.join(fncDir, "sessionStats.json")
+    jsonStats = fncPath / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -422,10 +395,9 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncDir, fncProj):
     assert not sessLog._loadLogFile()
     assert not sessLog._saveData(sessLog.FMT_CSV)
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
     sessLog._doClose()
     assert nwGUI.closeProject()
-    qtbot.wait(stepDelay)
 
 # END Test testToolWritingStats_Main

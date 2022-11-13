@@ -19,82 +19,132 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import hashlib
-import os
 import time
 import pytest
+import hashlib
+
+from pathlib import Path
 
 from mock import causeOSError
 from tools import writeFile
 
 from novelwriter.guimain import GuiMain
 from novelwriter.common import (
-    checkString, checkInt, checkFloat, checkBool, checkHandle, isHandle,
-    isTitleTag, isItemClass, isItemType, isItemLayout, hexToInt, checkIntRange,
-    minmax, checkIntTuple, formatInt, formatTimeStamp, formatTime, simplified,
-    splitVersionNumber, transferCase, fuzzyTime, numberToRoman, jsonEncode,
-    readTextFile, makeFileNameSafe, sha256sum, getGuiItem, NWConfigParser
+    checkStringNone, checkString, checkInt, checkFloat, checkBool, checkHandle,
+    checkUuid, checkPath, isHandle, isTitleTag, isItemClass, isItemType,
+    isItemLayout, hexToInt, minmax, checkIntTuple, formatInt, formatTimeStamp,
+    formatTime, simplified, yesNo, splitVersionNumber, transferCase, fuzzyTime,
+    numberToRoman, jsonEncode, readTextFile, makeFileNameSafe, sha256sum,
+    getGuiItem, NWConfigParser
 )
 
 
 @pytest.mark.base
-def testBaseCommon_CheckString():
-    """Test the checkString function.
+def testBaseCommon_CheckStringNone():
+    """Test the checkStringNone function.
     """
-    assert checkString(None, "NotNone", True) is None
-    assert checkString("None", "NotNone", True) is None
-    assert checkString("None", "NotNone", False) == "None"
-    assert checkString(None, "NotNone", False) == "NotNone"
-    assert checkString(1, "NotNone", False) == "NotNone"
-    assert checkString(1.0, "NotNone", False) == "NotNone"
-    assert checkString(True, "NotNone", False) == "NotNone"
+    assert checkStringNone("Stuff", "NotNone") == "Stuff"
+    assert checkStringNone("None", "NotNone") is None
+    assert checkStringNone(None, "NotNone") is None
+    assert checkStringNone(1, "NotNone") == "NotNone"
+    assert checkStringNone(1.0, "NotNone") == "NotNone"
+    assert checkStringNone(True, "NotNone") == "NotNone"
+
+# END Test testBaseCommon_CheckStringNone
+
+
+@pytest.mark.base
+def testBaseCommon_CheckString():
+    """Test the checkString function. Anything that is a string should
+    be returned, otherwise it returns the default.
+    """
+    assert checkString("None", "default") == "None"
+    assert checkString("Text", "default") == "Text"
+    assert checkString(None, "default") == "default"
+    assert checkString(1, "default") == "default"
+    assert checkString(1.0, "default") == "default"
+    assert checkString(True, "default") == "default"
 
 # END Test testBaseCommon_CheckString
 
 
 @pytest.mark.base
 def testBaseCommon_CheckInt():
-    """Test the checkInt function.
+    """Test the checkInt function. Anything that can be converted to an
+    integer should be returned, otherwise it returns the default.
     """
-    assert checkInt(None, 3, True) is None
-    assert checkInt("None", 3, True) is None
-    assert checkInt(None, 3, False) == 3
-    assert checkInt(1, 3, False) == 1
-    assert checkInt(1.0, 3, False) == 1
-    assert checkInt(True, 3, False) == 1
+    assert checkInt(1, 3) == 1
+    assert checkInt(1.0, 3) == 1
+    assert checkInt(True, 3) == 1
+    assert checkInt(False, 3) == 0
+    assert checkInt(None, 3) == 3
+    assert checkInt("1", 3) == 1
+    assert checkInt("1.0", 3) == 3
 
 # END Test testBaseCommon_CheckInt
 
 
 @pytest.mark.base
 def testBaseCommon_CheckFloat():
-    """Test the checkFloat function.
+    """Test the checkFloat function. Anything that can be converted to an
+    integer should be returned, otherwise it returns the default.
     """
-    assert checkFloat(None, 3.0, True) is None
-    assert checkFloat("None", 3.0, True) is None
-    assert checkFloat(None, 3.0, False) == 3.0
-    assert checkFloat(1, 3.0, False) == 1.0
-    assert checkFloat(1.0, 3.0, False) == 1.0
-    assert checkFloat(True, 3.0, False) == 1.0
+    assert checkFloat(1, 3.0) == 1.0
+    assert checkFloat(1.0, 3.0) == 1.0
+    assert checkFloat(True, 3.0) == 1.0
+    assert checkFloat(False, 3.0) == 0.0
+    assert checkFloat(None, 3.0) == 3.0
+    assert checkFloat("1", 3.0) == 1.0
+    assert checkFloat("1.0", 3.0) == 1.0
 
 # END Test testBaseCommon_CheckInt
 
 
 @pytest.mark.base
 def testBaseCommon_CheckBool():
-    """Test the checkBool function.
+    """Test the checkBool function. Any bool, string version of Python
+    bool, or integer 1 or 0, are returned as bool. Otherwise, the
+    default is returned.
     """
-    assert checkBool(None, 3, True) is None
-    assert checkBool("None", 3, True) is None
-    assert checkBool("True", False, False) is True
-    assert checkBool("False", True, False) is False
-    assert checkBool("Boo", None, False) is None
-    assert checkBool(0, None, False) is False
-    assert checkBool(1, None, False) is True
-    assert checkBool(2, None, False) is None
-    assert checkBool(0.0, None, False) is None
-    assert checkBool(1.0, None, False) is None
-    assert checkBool(2.0, None, False) is None
+    # Bools
+    assert checkBool(True, False) is True
+    assert checkBool(False, True) is False
+
+    # Valid Strings
+    assert checkBool("True", False) is True
+    assert checkBool("False", True) is False
+    assert checkBool("true", False) is True
+    assert checkBool("false", True) is False
+    assert checkBool("Yes", False) is True
+    assert checkBool("No", True) is False
+    assert checkBool("yes", False) is True
+    assert checkBool("no", True) is False
+    assert checkBool("On", False) is True
+    assert checkBool("Off", True) is False
+    assert checkBool("on", False) is True
+    assert checkBool("off", True) is False
+
+    # Invalid Strings
+    assert checkBool("Foo", False) is False
+    assert checkBool("Foo", True) is True
+    assert checkBool("bar", False) is False
+    assert checkBool("bar", True) is True
+
+    # Valid Integers
+    assert checkBool(0, True) is False
+    assert checkBool(1, False) is True
+
+    # Inalid Integers
+    assert checkBool(2, True) is True
+    assert checkBool(2, False) is False
+
+    # Other Types
+    assert checkBool(None, True) is True
+    assert checkBool(None, False) is False
+    assert checkBool(0.0, True) is True
+    assert checkBool(1.0, False) is False
+    assert checkBool(2.0, True) is True
+    assert checkBool(2.0, False) is False
 
 # END Test testBaseCommon_CheckBool
 
@@ -111,6 +161,33 @@ def testBaseCommon_CheckHandle():
     assert checkHandle("h7666c91c7ccf", None, False) is None
 
 # END Test testBaseCommon_CheckHandle
+
+
+@pytest.mark.base
+def testBaseCommon_CheckUuid():
+    """Test the checkUuid function.
+    """
+    testUuid = "e2be99af-f9bf-4403-857a-c3d1ac25abea"
+    assert checkUuid("", None) is None
+    assert checkUuid("e2be99af-f9bf-4403-857a-c3d1ac25abe", None) is None
+    assert checkUuid("e2be99af-f9bf-qq03-857a-c3d1ac25abea", None) is None
+    assert checkUuid("e2be99af-f9bf-4403-857a-c3d1ac25abeaa", None) is None
+    assert checkUuid(testUuid, None) == testUuid
+
+# END Test testBaseCommon_CheckUuid
+
+
+@pytest.mark.base
+def testBaseCommon_CheckPath():
+    """Test the checkPath function.
+    """
+    assert checkPath(Path("test"), None) == Path("test")
+    assert checkPath("test", None) == Path("test")
+    assert checkPath(None, None) is None
+    assert checkPath("", None) is None
+    assert checkPath("   ", None) is None
+
+# END Test testBaseCommon_CheckPath
 
 
 @pytest.mark.base
@@ -229,18 +306,6 @@ def testBaseCommon_HexToInt():
 
 
 @pytest.mark.base
-def testBaseCommon_CheckIntRange():
-    """Test the checkIntRange function.
-    """
-    assert checkIntRange(5, 0, 9, 3) == 5
-    assert checkIntRange(5, 0, 4, 3) == 3
-    assert checkIntRange(5, 0, 5, 3) == 5
-    assert checkIntRange(0, 0, 5, 3) == 0
-
-# END Test testBaseCommon_CheckIntRange
-
-
-@pytest.mark.base
 def testBaseCommon_MinMax():
     """Test the minmax function.
     """
@@ -306,20 +371,48 @@ def testBaseCommon_Simplified():
 
 
 @pytest.mark.base
+def testBaseCommon_YesNo():
+    """Test the yesNo function.
+    """
+    # Bool
+    assert yesNo(True) == "yes"
+    assert yesNo(False) == "no"
+
+    # None
+    assert yesNo(None) == "no"
+
+    # String
+    assert yesNo("foo") == "yes"
+    assert yesNo("") == "no"
+
+    # Integer
+    assert yesNo(0) == "no"
+    assert yesNo(1) == "yes"
+    assert yesNo(2) == "yes"
+
+    # Float
+    assert yesNo(0.0) == "no"
+    assert yesNo(1.0) == "yes"
+    assert yesNo(2.0) == "yes"
+
+# END Test testBaseCommon_YesNo
+
+
+@pytest.mark.base
 def testBaseCommon_SplitVersionNumber():
     """Test the splitVersionNumber function.
     """
     # OK Values
-    assert splitVersionNumber("1") == [1, 0, 0, 10000]
-    assert splitVersionNumber("1.2") == [1, 2, 0, 10200]
-    assert splitVersionNumber("1.2.3") == [1, 2, 3, 10203]
-    assert splitVersionNumber("1.2.3.4") == [1, 2, 3, 10203]
-    assert splitVersionNumber("99.99.99") == [99, 99, 99, 999999]
+    assert splitVersionNumber("1") == (1, 0, 0, 10000)
+    assert splitVersionNumber("1.2") == (1, 2, 0, 10200)
+    assert splitVersionNumber("1.2.3") == (1, 2, 3, 10203)
+    assert splitVersionNumber("1.2.3.4") == (1, 2, 3, 10203)
+    assert splitVersionNumber("99.99.99") == (99, 99, 99, 999999)
 
     # Failed Values
-    assert splitVersionNumber(None) == [0, 0, 0, 0]
-    assert splitVersionNumber(1234) == [0, 0, 0, 0]
-    assert splitVersionNumber("1.2abc") == [1, 0, 0, 10000]
+    assert splitVersionNumber(None) == (0, 0, 0, 0)
+    assert splitVersionNumber(1234) == (0, 0, 0, 0)
+    assert splitVersionNumber("1.2abc") == (1, 0, 0, 10000)
 
 # END Test testBaseCommon_SplitVersionNumber
 
@@ -512,18 +605,18 @@ def testBaseCommon_JsonEncode():
 
 
 @pytest.mark.base
-def testBaseCommon_ReadTextFile(monkeypatch, fncDir, ipsumText):
+def testBaseCommon_ReadTextFile(monkeypatch, fncPath, ipsumText):
     """Test the readTextFile function.
     """
     testText = "\n\n".join(ipsumText) + "\n"
-    testFile = os.path.join(fncDir, "ipsum.txt")
+    testFile = fncPath / "ipsum.txt"
     writeFile(testFile, testText)
 
-    assert readTextFile(os.path.join(fncDir, "not_a_file.txt")) == ""
+    assert readTextFile(fncPath / "not_a_file.txt") == ""
     assert readTextFile(testFile) == testText
 
     with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
+        mp.setattr("pathlib.Path.read_text", causeOSError)
         assert readTextFile(testFile) == ""
 
 # END Test testBaseCommon_ReadTextFile
@@ -542,7 +635,7 @@ def testBaseCommon_MakeFileNameSafe():
 
 
 @pytest.mark.base
-def testBaseCommon_Sha256Sum(monkeypatch, fncDir, ipsumText):
+def testBaseCommon_Sha256Sum(monkeypatch, fncPath, ipsumText):
     """Test the sha256sum function.
     """
     longText = 50*(" ".join(ipsumText) + " ")
@@ -551,9 +644,9 @@ def testBaseCommon_Sha256Sum(monkeypatch, fncDir, ipsumText):
 
     assert len(longText) == 175650
 
-    longFile = os.path.join(fncDir, "long_file.txt")
-    shortFile = os.path.join(fncDir, "short_file.txt")
-    noneFile = os.path.join(fncDir, "none_file.txt")
+    longFile  = fncPath / "long_file.txt"
+    shortFile = fncPath / "short_file.txt"
+    noneFile  = fncPath / "none_file.txt"
 
     writeFile(longFile, longText)
     writeFile(shortFile, shortText)
@@ -592,10 +685,10 @@ def testBaseCommon_GetGuiItem(nwGUI):
 
 
 @pytest.mark.base
-def testBaseCommon_NWConfigParser(fncDir):
+def testBaseCommon_NWConfigParser(fncPath):
     """Test the NWConfigParser subclass.
     """
-    tstConf = os.path.join(fncDir, "test.cfg")
+    tstConf = fncPath / "test.cfg"
     writeFile(tstConf, (
         "[main]\n"
         "stropt = value\n"
@@ -645,10 +738,10 @@ def testBaseCommon_NWConfigParser(fncDir):
     # Read Float
     assert cfgParser.rdFlt("main", "intopt1", 13.0) == 42.0
     assert cfgParser.rdFlt("main", "float1",  13.0) == 4.2
-    assert cfgParser.rdInt("main", "stropt",  13.0) == 13.0
+    assert cfgParser.rdFlt("main", "stropt",  13.0) == 13.0
 
-    assert cfgParser.rdInt("nope", "intopt1", 13.0) == 13.0
-    assert cfgParser.rdInt("main", "blabla",  13.0) == 13.0
+    assert cfgParser.rdFlt("nope", "intopt1", 13.0) == 13.0
+    assert cfgParser.rdFlt("main", "blabla",  13.0) == 13.0
 
     # Read String List
     assert cfgParser.rdStrList("main", "list1", []) == []
@@ -675,10 +768,5 @@ def testBaseCommon_NWConfigParser(fncDir):
 
     assert cfgParser.rdIntList("nope", "list2", [1]) == [1]
     assert cfgParser.rdIntList("main", "blabla", [1]) == [1]
-
-    # Internal
-    # ========
-
-    assert cfgParser._parseLine("main", "stropt", None, 999) is None
 
 # END Test testBaseCommon_NWConfigParser

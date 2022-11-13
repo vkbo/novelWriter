@@ -23,38 +23,26 @@ import pytest
 
 from tools import getGuiItem
 
-from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt5.QtWidgets import QAction
 
-from novelwriter.dialogs import GuiProjectDetails
-
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
+from novelwriter.dialogs.projdetails import GuiProjectDetails
 
 
 @pytest.mark.gui
-def testDlgProjDetails_Dialog(qtbot, monkeypatch, nwGUI, nwLipsum):
+def testDlgProjDetails_Dialog(qtbot, nwGUI, nwLipsum):
     """Test the project details dialog.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Yes)
-
     # Create a project to work on
     assert nwGUI.openProject(nwLipsum)
     assert nwGUI.rebuildIndex(beQuiet=True)
     qtbot.wait(100)
 
     # Open the Writing Stats dialog
-    nwGUI.mainConf.lastPath = ""
     nwGUI.mainMenu.aProjectDetails.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiProjectDetails") is not None, timeout=1000)
 
     projDet = getGuiItem("GuiProjectDetails")
     assert isinstance(projDet, GuiProjectDetails)
-    qtbot.wait(stepDelay)
 
     # Overview Page
     # =============
@@ -66,7 +54,7 @@ def testDlgProjDetails_Dialog(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert projDet.tabMain.wordCountVal.text() == f"{3000:n}"
     assert projDet.tabMain.chapCountVal.text() == f"{3:n}"
     assert projDet.tabMain.sceneCountVal.text() == f"{5:n}"
-    assert projDet.tabMain.revCountVal.text() == f"{nwGUI.theProject.saveCount:n}"
+    assert projDet.tabMain.revCountVal.text() == f"{nwGUI.theProject.data.saveCount:n}"
 
     assert projDet.tabMain.projPathVal.text() == nwLipsum
 
@@ -105,7 +93,7 @@ def testDlgProjDetails_Dialog(qtbot, monkeypatch, nwGUI, nwLipsum):
         assert tocTree.topLevelItem(i).text(tocTab.C_PAGES) == thePages[i]
         assert tocTree.topLevelItem(i).text(tocTab.C_PAGE) == thePage[i]
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
     # Clean Up
     projDet._doClose()

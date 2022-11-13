@@ -23,11 +23,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
+import uuid
 import hashlib
 import logging
 
+from pathlib import Path
 from datetime import datetime
 from configparser import ConfigParser
 
@@ -45,52 +46,55 @@ logger = logging.getLogger(__name__)
 #  Checker Functions
 # =============================================================================================== #
 
-def checkString(value, default, allowNone=False):
+def checkStringNone(value, default):
     """Check if a variable is a string or a None.
     """
-    if allowNone and (value is None or value == "None"):
+    if value is None or value == "None":
         return None
     if isinstance(value, str):
         return str(value)
     return default
 
 
-def checkInt(value, default, allowNone=False):
-    """Check if a variable is an integer or a None.
+def checkString(value, default):
+    """Check if a variable is a string.
     """
-    if allowNone and (value is None or value == "None"):
-        return None
+    if isinstance(value, str):
+        return str(value)
+    return default
+
+
+def checkInt(value, default):
+    """Check if a variable is an integer.
+    """
     try:
         return int(value)
     except Exception:
         return default
 
 
-def checkFloat(value, default, allowNone=False):
-    """Check if a variable is a float or a None.
+def checkFloat(value, default):
+    """Check if a variable is a float.
     """
-    if allowNone and (value is None or value == "None"):
-        return None
     try:
         return float(value)
     except Exception:
         return default
 
 
-def checkBool(value, default, allowNone=False):
-    """Check if a variable is a boolean or a None.
+def checkBool(value, default):
+    """Check if a variable is a boolean.
     """
-    if allowNone and (value is None or value == "None"):
-        return None
-
-    if isinstance(value, str):
-        if value == "True":
+    if isinstance(value, bool):
+        return value
+    elif isinstance(value, str):
+        check = value.lower()
+        if check in ("true", "yes", "on"):
             return True
-        elif value == "False":
+        elif check in ("false", "no", "off"):
             return False
         else:
             return default
-
     elif isinstance(value, int):
         if value == 1:
             return True
@@ -98,7 +102,6 @@ def checkBool(value, default, allowNone=False):
             return False
         else:
             return default
-
     return default
 
 
@@ -109,6 +112,26 @@ def checkHandle(value, default, allowNone=False):
         return None
     if isHandle(value):
         return str(value)
+    return default
+
+
+def checkUuid(value, default):
+    """Try to process a value as an uuid, or return a default.
+    """
+    try:
+        return str(uuid.UUID(value))
+    except Exception:
+        return default
+
+
+def checkPath(value, default):
+    """Check if a value is a valid path. Non-empty strings are accepted.
+    """
+    if isinstance(value, Path):
+        return value
+    elif isinstance(value, str):
+        if value.strip():
+            return Path(value)
     return default
 
 
@@ -174,16 +197,6 @@ def hexToInt(value, default=0):
     return default
 
 
-def checkIntRange(value, first, last, default):
-    """Check that an int is in a given range. If it isn't, return the
-    default value.
-    """
-    if isinstance(value, int):
-        if value >= first and value <= last:
-            return value
-    return default
-
-
 def minmax(value, minVal, maxVal):
     """Make sure an integer is between min and max value (inclusive).
     """
@@ -225,25 +238,25 @@ def formatInt(value):
     return str(value)
 
 
-def formatTimeStamp(theTime, fileSafe=False):
+def formatTimeStamp(value, fileSafe=False):
     """Take a number (on the format returned by time.time()) and convert
     it to a timestamp string.
     """
     if fileSafe:
-        return datetime.fromtimestamp(theTime).strftime(nwConst.FMT_FSTAMP)
+        return datetime.fromtimestamp(value).strftime(nwConst.FMT_FSTAMP)
     else:
-        return datetime.fromtimestamp(theTime).strftime(nwConst.FMT_TSTAMP)
+        return datetime.fromtimestamp(value).strftime(nwConst.FMT_TSTAMP)
 
 
-def formatTime(tS):
+def formatTime(t):
     """Format a time in seconds in HH:MM:SS format or d-HH:MM:SS format
     if a full day or longer.
     """
-    if isinstance(tS, int):
-        if tS >= 86400:
-            return f"{tS//86400:d}-{tS%86400//3600:02d}:{tS%3600//60:02d}:{tS%60:02d}"
+    if isinstance(t, int):
+        if t >= 86400:
+            return f"{t//86400:d}-{t%86400//3600:02d}:{t%3600//60:02d}:{t%60:02d}"
         else:
-            return f"{tS//3600:02d}:{tS%3600//60:02d}:{tS%60:02d}"
+            return f"{t//3600:02d}:{t%3600//60:02d}:{t%60:02d}"
     return "ERROR"
 
 
@@ -258,12 +271,18 @@ def simplified(string):
     return " ".join(str(string).strip().split())
 
 
+def yesNo(value):
+    """Convert a boolean evaluated variable to a yes or no.
+    """
+    return "yes" if value else "no"
+
+
 def splitVersionNumber(value):
     """Split a version string on the form aa.bb.cc into major, minor
     and patch, and computes an integer value aabbcc.
     """
     if not isinstance(value, str):
-        return [0, 0, 0, 0]
+        return 0, 0, 0, 0
 
     vMajor = 0
     vMinor = 0
@@ -282,114 +301,114 @@ def splitVersionNumber(value):
 
     vInt = vMajor*10000 + vMinor*100 + vPatch
 
-    return [vMajor, vMinor, vPatch, vInt]
+    return vMajor, vMinor, vPatch, vInt
 
 
-def transferCase(theSource, theTarget):
+def transferCase(source, target):
     """Transfers the case of the source word to the target word. This
     will consider all upper or lower, and first char capitalisation.
     """
-    theResult = theTarget
+    theResult = target
 
-    if not isinstance(theSource, str) or not isinstance(theTarget, str):
+    if not isinstance(source, str) or not isinstance(target, str):
         return theResult
-    if len(theTarget) < 1 or len(theSource) < 1:
+    if len(target) < 1 or len(source) < 1:
         return theResult
 
-    if theSource.istitle():
-        theResult = theTarget.title()
+    if source.istitle():
+        theResult = target.title()
 
-    if theSource.isupper():
-        theResult = theTarget.upper()
-    elif theSource.islower():
-        theResult = theTarget.lower()
+    if source.isupper():
+        theResult = target.upper()
+    elif source.islower():
+        theResult = target.lower()
 
     return theResult
 
 
-def fuzzyTime(secDiff):
+def fuzzyTime(seconds):
     """Converts a time difference in seconds into a fuzzy time string.
     """
-    if secDiff < 0:
+    if seconds < 0:
         return QCoreApplication.translate(
             "Common", "in the future"
         )
-    elif secDiff < 30:
+    elif seconds < 30:
         return QCoreApplication.translate(
             "Common", "just now"
         )
-    elif secDiff < 90:
+    elif seconds < 90:
         return QCoreApplication.translate(
             "Common", "a minute ago"
         )
-    elif secDiff < 3300:  # 55 minutes
+    elif seconds < 3300:  # 55 minutes
         return QCoreApplication.translate(
             "Common", "{0} minutes ago"
-        ).format(int(round(secDiff/60)))
-    elif secDiff < 5400:  # 90 minutes
+        ).format(int(round(seconds/60)))
+    elif seconds < 5400:  # 90 minutes
         return QCoreApplication.translate(
             "Common", "an hour ago"
         )
-    elif secDiff < 84600:  # 23.5 hours
+    elif seconds < 84600:  # 23.5 hours
         return QCoreApplication.translate(
             "Common", "{0} hours ago"
-        ).format(int(round(secDiff/3600)))
-    elif secDiff < 129600:  # 1.5 days
+        ).format(int(round(seconds/3600)))
+    elif seconds < 129600:  # 1.5 days
         return QCoreApplication.translate(
             "Common", "a day ago"
         )
-    elif secDiff < 561600:  # 6.5 days
+    elif seconds < 561600:  # 6.5 days
         return QCoreApplication.translate(
             "Common", "{0} days ago"
-        ).format(int(round(secDiff/86400)))
-    elif secDiff < 907200:  # 10.5 days
+        ).format(int(round(seconds/86400)))
+    elif seconds < 907200:  # 10.5 days
         return QCoreApplication.translate(
             "Common", "a week ago"
         )
-    elif secDiff < 2419200:  # 28 days
+    elif seconds < 2419200:  # 28 days
         return QCoreApplication.translate(
             "Common", "{0} weeks ago"
-        ).format(int(round(secDiff/604800)))
-    elif secDiff < 3888000:  # 45 days
+        ).format(int(round(seconds/604800)))
+    elif seconds < 3888000:  # 45 days
         return QCoreApplication.translate(
             "Common", "a month ago"
         )
-    elif secDiff < 29808000:  # 345 days
+    elif seconds < 29808000:  # 345 days
         return QCoreApplication.translate(
             "Common", "{0} months ago"
-        ).format(int(round(secDiff/2592000)))
-    elif secDiff < 47336400:  # 1.5 years
+        ).format(int(round(seconds/2592000)))
+    elif seconds < 47336400:  # 1.5 years
         return QCoreApplication.translate(
             "Common", "a year ago"
         )
     else:
         return QCoreApplication.translate(
             "Common", "{0} years ago"
-        ).format(int(round(secDiff/31557600)))
+        ).format(int(round(seconds/31557600)))
 
 
-def numberToRoman(numVal, toLower=False):
+def numberToRoman(value, toLower=False):
     """Convert an integer to a Roman number.
     """
-    if not isinstance(numVal, int):
+    if not isinstance(value, int):
         return "NAN"
-    if numVal < 1 or numVal > 4999:
+    if value < 1 or value > 4999:
         return "OOR"
 
-    theValues = [
+    lookup = [
         (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"), (100, "C"), (90, "XC"),
         (50, "L"), (40, "XL"), (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I"),
     ]
 
-    romNum = ""
-    for theDiv, theSym in theValues:
-        n = numVal//theDiv
-        romNum += n*theSym
-        numVal -= n*theDiv
-        if numVal <= 0:
+    roman = ""
+    for divisor, symbol in lookup:
+        n = value//divisor
+        roman += n*symbol
+        value -= n*divisor
+        if value <= 0:
             break
 
-    return romNum.lower() if toLower else romNum
+    return roman.lower() if toLower else roman
 
 
 # =============================================================================================== #
@@ -447,51 +466,47 @@ def jsonEncode(data, n=0, nmax=0):
 #  File and File System Functions
 # =============================================================================================== #
 
-def readTextFile(filePath):
+def readTextFile(path):
     """Read the content of a text file in a robust manner.
     """
-    if not os.path.isfile(filePath):
+    path = Path(path)
+    if not path.is_file():
         return ""
-
-    fileText = ""
     try:
-        with open(filePath, mode="r", encoding="utf-8") as inFile:
-            fileText = inFile.read()
+        return path.read_text(encoding="utf-8")
     except Exception:
-        logger.error("Could not read file: %s", filePath)
+        logger.error("Could not read file: %s", path)
         logException()
         return ""
-
-    return fileText
 
 
 def makeFileNameSafe(value):
     """Returns a filename safe string of the value.
     """
-    cleanName = ""
+    clean = ""
     for c in str(value).strip():
         if c.isalpha() or c.isdigit() or c == " ":
-            cleanName += c
-    return cleanName
+            clean += c
+    return clean
 
 
-def sha256sum(filePath):
+def sha256sum(path):
     """Make a shasum of a file using a buffer.
     Based on: https://stackoverflow.com/a/44873382/5825851
     """
-    hDigest = hashlib.sha256()
+    digest = hashlib.sha256()
     bData = bytearray(65536)
     mData = memoryview(bData)
     try:
-        with open(filePath, mode="rb", buffering=0) as inFile:
+        with open(path, mode="rb", buffering=0) as inFile:
             for n in iter(lambda: inFile.readinto(mData), 0):
-                hDigest.update(mData[:n])
+                digest.update(mData[:n])
     except Exception:
-        logger.error("Could not create sha256sum of: %s", filePath)
+        logger.error("Could not create sha256sum of: %s", path)
         logException()
         return None
 
-    return hDigest.hexdigest()
+    return digest.hexdigest()
 
 
 # =============================================================================================== #
@@ -513,87 +528,64 @@ def getGuiItem(objName):
 
 class NWConfigParser(ConfigParser):
 
-    CNF_STR   = 0
-    CNF_INT   = 1
-    CNF_FLOAT = 2
-    CNF_BOOL  = 3
-    CNF_S_LST = 4
-    CNF_I_LST = 5
-
     def __init__(self):
         super().__init__()
 
     def rdStr(self, section, option, default):
         """Read string value.
         """
-        return self._parseLine(section, option, default, self.CNF_STR)
+        return self.get(section, option, fallback=default)
 
     def rdInt(self, section, option, default):
         """Read integer value.
         """
-        return self._parseLine(section, option, default, self.CNF_INT)
+        try:
+            return self.getint(section, option, fallback=default)
+        except ValueError:
+            logger.error("Could not read '%s':'%s' from config", section, option)
+        return default
 
     def rdFlt(self, section, option, default):
         """Read float value.
         """
-        return self._parseLine(section, option, default, self.CNF_FLOAT)
+        try:
+            return self.getfloat(section, option, fallback=default)
+        except ValueError:
+            logger.error("Could not read '%s':'%s' from config", section, option)
+        return default
 
     def rdBool(self, section, option, default):
         """Read boolean value.
         """
-        return self._parseLine(section, option, default, self.CNF_BOOL)
+        try:
+            return self.getboolean(section, option, fallback=default)
+        except ValueError:
+            logger.error("Could not read '%s':'%s' from config", section, option)
+        return default
+
+    def rdPath(self, section, option, default):
+        """Read a path value.
+        """
+        return checkPath(self.get(section, option, fallback=default), default)
 
     def rdStrList(self, section, option, default):
         """Read string list.
         """
-        return self._parseLine(section, option, default, self.CNF_S_LST)
+        result = default.copy() if isinstance(default, list) else []
+        if self.has_option(section, option):
+            data = self.get(section, option, fallback="").split(",")
+            for i in range(min(len(data), len(result))):
+                result[i] = data[i].strip()
+        return result
 
     def rdIntList(self, section, option, default):
         """Read integer list.
         """
-        return self._parseLine(section, option, default, self.CNF_I_LST)
-
-    ##
-    #  Internal Functions
-    ##
-
-    def _unpackList(self, value, default, type):
-        """Unpack a comma-separated string of items into a list.
-        """
-        inList = value.split(",")
-        outList = []
-        if isinstance(default, list):
-            outList = default.copy()
-        for i in range(min(len(inList), len(outList))):
-            try:
-                if type == self.CNF_S_LST:
-                    outList[i] = inList[i].strip()
-                elif type == self.CNF_I_LST:
-                    outList[i] = int(inList[i].strip())
-            except Exception:
-                continue
-        return outList
-
-    def _parseLine(self, section, option, default, type):
-        """Parse a line and return the correct datatype.
-        """
+        result = default.copy() if isinstance(default, list) else []
         if self.has_option(section, option):
-            try:
-                if type == self.CNF_STR:
-                    return self.get(section, option)
-                elif type == self.CNF_INT:
-                    return self.getint(section, option)
-                elif type == self.CNF_FLOAT:
-                    return self.getfloat(section, option)
-                elif type == self.CNF_BOOL:
-                    return self.getboolean(section, option)
-                elif type in (self.CNF_I_LST, self.CNF_S_LST):
-                    return self._unpackList(self.get(section, option), default, type)
-            except ValueError:
-                logger.error("Could not read '%s':'%s' from config", str(section), str(option))
-                logException()
-                return default
-
-        return default
+            data = self.get(section, option, fallback="").split(",")
+            for i in range(min(len(data), len(result))):
+                result[i] = checkInt(data[i].strip(), result[i])
+        return result
 
 # END Class NWConfigParser

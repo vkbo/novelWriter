@@ -19,12 +19,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 
 from tools import readFile
 
-from novelwriter.core import NWProject, ToMarkdown
+from novelwriter.core.tomd import ToMarkdown
+from novelwriter.core.project import NWProject
 
 
 @pytest.mark.core
@@ -207,7 +207,7 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToMarkdown_Complex(mockGUI, fncDir):
+def testCoreToMarkdown_Complex(mockGUI, fncPath):
     """Test the save method of the ToMarkdown class.
     """
     theProject = NWProject(mockGUI)
@@ -252,7 +252,7 @@ def testCoreToMarkdown_Complex(mockGUI, fncDir):
     # Check File
     # ==========
 
-    saveFile = os.path.join(fncDir, "outFile.md")
+    saveFile = fncPath / "outFile.md"
     theMD.saveMarkdown(saveFile)
     assert readFile(saveFile) == "".join(resText)
 

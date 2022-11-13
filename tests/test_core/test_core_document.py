@@ -1,6 +1,6 @@
 """
-novelWriter – NWDoc Class Tester
-================================
+novelWriter – NWDocument Class Tester
+=====================================
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -19,76 +19,84 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 
 from mock import causeOSError
-from tools import readFile, writeFile
+from tools import C, buildTestProject, readFile, writeFile
 
-from novelwriter.core import NWProject, NWDoc
 from novelwriter.enum import nwItemClass, nwItemLayout
+from novelwriter.core.project import NWProject
+from novelwriter.core.document import NWDocument
 
 
 @pytest.mark.core
-def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
-    """Test loading and saving a document with the NWDoc class.
+def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
+    """Test loading and saving a document with the NWDocument class.
     """
     theProject = NWProject(mockGUI)
-    assert theProject.openProject(nwMinimal) is True
-    assert theProject.projPath == nwMinimal
-
-    sHandle = "8c659a11cd429"
+    mockRnd.reset()
+    buildTestProject(theProject, fncPath)
 
     # Read Document
     # =============
 
     # Not a valid handle
-    theDoc = NWDoc(theProject, "stuff")
+    theDoc = NWDocument(theProject, "stuff")
     assert bool(theDoc) is False
     assert theDoc.readDocument() is None
 
     # Non-existent handle
-    theDoc = NWDoc(theProject, "0000000000000")
+    theDoc = NWDocument(theProject, C.hInvalid)
     assert theDoc.readDocument() is None
     assert theDoc._currHash is None
+
+    # No content path
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.contentPath", property(lambda *a: None))
+        theDoc = NWDocument(theProject, C.hSceneDoc)
+        assert theDoc.readDocument() is None
 
     # Cause open() to fail while loading
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        theDoc = NWDoc(theProject, sHandle)
+        theDoc = NWDocument(theProject, C.hSceneDoc)
         assert theDoc.readDocument() is None
         assert theDoc.getError() == "OSError: Mock OSError"
 
     # Load the text
-    theDoc = NWDoc(theProject, sHandle)
+    theDoc = NWDocument(theProject, C.hSceneDoc)
     assert theDoc.readDocument() == "### New Scene\n\n"
 
     # Try to open a new (non-existent) file
-    nHandle = theProject.tree.findRoot(nwItemClass.NOVEL)
-    assert nHandle is not None
-    xHandle = theProject.newFile("New File", nHandle)
-    theDoc = NWDoc(theProject, xHandle)
+    xHandle = theProject.newFile("New File", C.hNovelRoot)
+    theDoc = NWDocument(theProject, xHandle)
     assert bool(theDoc) is True
-    assert repr(theDoc) == f"<NWDoc handle={xHandle}>"
+    assert repr(theDoc) == f"<NWDocument handle={xHandle}>"
     assert theDoc.readDocument() == ""
 
     # Write Document
     # ==============
 
-    # Set handle and save again
+    # No content path
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.contentPath", property(lambda *a: None))
+        theDoc = NWDocument(theProject, xHandle)
+        assert theDoc.writeDocument("") is False
+
+    # Set handle and save
     theText = "### Test File\n\nText ...\n\n"
-    theDoc = NWDoc(theProject, xHandle)
+    theDoc = NWDocument(theProject, xHandle)
     assert theDoc.readDocument(xHandle) == ""
     assert theDoc.writeDocument(theText) is True
 
     # Save again to ensure temp file and previous file is handled
-    assert theDoc.writeDocument(theText)
+    assert theDoc.writeDocument(theText) is True
 
     # Check file content
-    docPath = os.path.join(nwMinimal, "content", xHandle+".nwd")
+    docPath = fncPath / "content" / f"{xHandle}.nwd"
     assert readFile(docPath) == (
         "%%~name: New File\n"
-        f"%%~path: a508bb932959c/{xHandle}\n"
+        f"%%~path: {C.hNovelRoot}/{xHandle}\n"
         "%%~kind: NOVEL/DOCUMENT\n"
         "### Test File\n\n"
         "Text ...\n\n"
@@ -117,7 +125,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
 
     # Cause os.replace() to fail while saving
     with monkeypatch.context() as mp:
-        mp.setattr("os.replace", causeOSError)
+        mp.setattr("pathlib.Path.replace", causeOSError)
         assert theDoc.writeDocument(theText) is False
         assert theDoc.getError() == "OSError: Mock OSError"
 
@@ -131,51 +139,56 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, nwMinimal):
     # Delete Document
     # ===============
 
-    # Delete the last document
-    theDoc = NWDoc(theProject, "stuff")
+    # Delete a non-existing document
+    theDoc = NWDocument(theProject, "stuff")
     assert theDoc.deleteDocument() is False
-    assert os.path.isfile(docPath)
+    assert docPath.exists()
+
+    # No content path
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.contentPath", property(lambda *a: None))
+        theDoc = NWDocument(theProject, xHandle)
+        assert theDoc.deleteDocument() is False
 
     # Cause the delete to fail
     with monkeypatch.context() as mp:
-        mp.setattr("os.unlink", causeOSError)
-        theDoc = NWDoc(theProject, xHandle)
+        mp.setattr("pathlib.Path.unlink", causeOSError)
+        theDoc = NWDocument(theProject, xHandle)
         assert theDoc.deleteDocument() is False
         assert theDoc.getError() == "OSError: Mock OSError"
 
     # Make the delete pass
-    theDoc = NWDoc(theProject, xHandle)
+    theDoc = NWDocument(theProject, xHandle)
     assert theDoc.deleteDocument() is True
-    assert not os.path.isfile(docPath)
+    assert not docPath.exists()
 
 # END Test testCoreDocument_Load
 
 
 @pytest.mark.core
-def testCoreDocument_Methods(mockGUI, nwMinimal):
-    """Test other methods of the NWDoc class.
+def testCoreDocument_Methods(mockGUI, fncPath, mockRnd):
+    """Test other methods of the NWDocument class.
     """
     theProject = NWProject(mockGUI)
-    assert theProject.openProject(nwMinimal)
-    assert theProject.projPath == nwMinimal
+    mockRnd.reset()
+    buildTestProject(theProject, fncPath)
 
-    sHandle = "8c659a11cd429"
-    theDoc = NWDoc(theProject, sHandle)
-    docPath = os.path.join(nwMinimal, "content", sHandle+".nwd")
+    theDoc = NWDocument(theProject, C.hSceneDoc)
+    docPath = fncPath / "content" / f"{C.hSceneDoc}.nwd"
 
     assert theDoc.readDocument() == "### New Scene\n\n"
 
     # Check location
-    assert theDoc.getFileLocation() == docPath
+    assert theDoc.getFileLocation() == str(docPath)
 
     # Check the item
     assert theDoc.getCurrentItem() is not None
-    assert theDoc.getCurrentItem().itemHandle == sHandle
+    assert theDoc.getCurrentItem().itemHandle == C.hSceneDoc
 
     # Check the meta
     theName, theParent, theClass, theLayout = theDoc.getMeta()
     assert theName == "New Scene"
-    assert theParent == "a6d311a93600a"
+    assert theParent == C.hChapterDir
     assert theClass == nwItemClass.NOVEL
     assert theLayout == nwItemLayout.DOCUMENT
 
@@ -183,7 +196,7 @@ def testCoreDocument_Methods(mockGUI, nwMinimal):
     assert theDoc.writeDocument("%%~ stuff\n### Test File\n\nText ...\n\n")
     assert readFile(docPath) == (
         "%%~name: New Scene\n"
-        f"%%~path: a6d311a93600a/{sHandle}\n"
+        f"%%~path: {C.hChapterDir}/{C.hSceneDoc}\n"
         "%%~kind: NOVEL/DOCUMENT\n"
         "%%~ stuff\n"
         "### Test File\n\n"

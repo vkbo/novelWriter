@@ -1,10 +1,11 @@
 """
-novelWriter – GUI Doc Split Tool
-================================
-GUI class for splitting a single document into multiple documents
+novelWriter – GUI Doc Split Dialog
+==================================
+Custom dialog class for splitting documents.
 
 File History:
-Created: 2020-02-01 [0.4.3]
+Created:   2020-02-01 [0.4.3]
+Rewritten: 2022-10-12 [2.0b1]
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -29,32 +30,34 @@ import novelwriter
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QComboBox, QListWidget, QAbstractItemView,
-    QListWidgetItem, QDialogButtonBox, QLabel
+    QListWidgetItem, QDialogButtonBox, QLabel, QGridLayout
 )
 
-from novelwriter.core import NWDoc
-from novelwriter.enum import nwAlert, nwItemType
-from novelwriter.gui.custom import QHelpLabel
+from novelwriter.custom import QHelpLabel, QSwitch
 
 logger = logging.getLogger(__name__)
 
 
 class GuiDocSplit(QDialog):
 
-    def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+    LINE_ROLE = Qt.UserRole
+    LEVEL_ROLE = Qt.UserRole + 1
+    LABEL_ROLE = Qt.UserRole + 2
+
+    def __init__(self, mainGui, sHandle):
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiDocSplit ...")
         self.setObjectName("GuiDocSplit")
 
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
-        self.sourceItem = None
-        self.sourceText = []
+        self._data = {}
+        self._text = []
 
-        self.outerBox = QVBoxLayout()
         self.setWindowTitle(self.tr("Split Document"))
 
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headers")))
@@ -63,6 +66,18 @@ class GuiDocSplit(QDialog):
             self.mainGui.mainTheme.helpText
         )
 
+        # Values
+        iPx = self.mainTheme.baseIconSize
+        hSp = self.mainConf.pxInt(12)
+        vSp = self.mainConf.pxInt(8)
+        bSp = self.mainConf.pxInt(12)
+
+        pOptions = self.theProject.options
+        spLevel = pOptions.getInt("GuiDocSplit", "spLevel", 3)
+        intoFolder = pOptions.getBool("GuiDocSplit", "intoFolder", True)
+        docHierarchy = pOptions.getBool("GuiDocSplit", "docHierarchy", True)
+
+        # Header Selection
         self.listBox = QListWidget()
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
         self.listBox.setMinimumWidth(self.mainConf.pxInt(400))
@@ -73,206 +88,162 @@ class GuiDocSplit(QDialog):
         self.splitLevel.addItem(self.tr("Split up to Header Level 2 (Chapter)"), 2)
         self.splitLevel.addItem(self.tr("Split up to Header Level 3 (Scene)"),   3)
         self.splitLevel.addItem(self.tr("Split up to Header Level 4 (Section)"), 4)
-        spIndex = self.splitLevel.findData(
-            self.theProject.options.getInt("GuiDocSplit", "spLevel", 3)
-        )
+        spIndex = self.splitLevel.findData(spLevel)
         if spIndex != -1:
             self.splitLevel.setCurrentIndex(spIndex)
-        self.splitLevel.currentIndexChanged.connect(self._populateList)
+        self.splitLevel.currentIndexChanged.connect(self._reloadList)
 
+        # Split Options
+        self.folderLabel = QLabel(self.tr("Split into a new folder"))
+        self.folderSwitch = QSwitch(width=2*iPx, height=iPx)
+        self.folderSwitch.setChecked(intoFolder)
+
+        self.hierarchyLabel = QLabel(self.tr("Create document hierarchy"))
+        self.hierarchySwitch = QSwitch(width=2*iPx, height=iPx)
+        self.hierarchySwitch.setChecked(docHierarchy)
+
+        self.trashLabel = QLabel(self.tr("Move split document to Trash"))
+        self.trashSwitch = QSwitch(width=2*iPx, height=iPx)
+
+        self.optBox = QGridLayout()
+        self.optBox.addWidget(self.folderLabel,  0, 0)
+        self.optBox.addWidget(self.folderSwitch, 0, 1)
+        self.optBox.addWidget(self.hierarchyLabel,  1, 0)
+        self.optBox.addWidget(self.hierarchySwitch, 1, 1)
+        self.optBox.addWidget(self.trashLabel,  2, 0)
+        self.optBox.addWidget(self.trashSwitch, 2, 1)
+        self.optBox.setVerticalSpacing(vSp)
+        self.optBox.setHorizontalSpacing(hSp)
+        self.optBox.setColumnStretch(3, 1)
+
+        # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self._doSplit)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
 
+        # Assemble
+        self.outerBox = QVBoxLayout()
         self.outerBox.setSpacing(0)
         self.outerBox.addWidget(self.headLabel)
         self.outerBox.addWidget(self.helpLabel)
-        self.outerBox.addSpacing(self.mainConf.pxInt(8))
+        self.outerBox.addSpacing(vSp)
         self.outerBox.addWidget(self.listBox)
         self.outerBox.addWidget(self.splitLevel)
-        self.outerBox.addSpacing(self.mainConf.pxInt(12))
+        self.outerBox.addSpacing(vSp)
+        self.outerBox.addLayout(self.optBox)
+        self.outerBox.addSpacing(bSp)
         self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
 
-        self.rejected.connect(self._doClose)
-
-        self._populateList()
+        # Load Content
+        self._loadContent(sHandle)
 
         logger.debug("GuiDocSplit initialisation complete")
 
         return
 
-    ##
-    #  Buttons
-    ##
-
-    def _doSplit(self):
-        """Perform the split of the file, create a new folder in the
-        same parent folder, and multiple files depending on split level
-        settings. The old file is not removed in the split process, and
-        must be deleted manually.
+    def getData(self):
+        """Return the user's choices. Also save the users options for
+        the next time the dialog is used.
         """
-        logger.verbose("GuiDocSplit split button clicked")
-
-        if self.sourceItem is None:
-            self.mainGui.makeAlert(self.tr(
-                "No source document selected. Nothing to do."
-            ), nwAlert.ERROR)
-            return False
-
-        srcItem = self.theProject.tree[self.sourceItem]
-        if srcItem is None:
-            self.mainGui.makeAlert(self.tr(
-                "Could not parse source document."
-            ), nwAlert.ERROR)
-            return False
-
-        inDoc = NWDoc(self.theProject, self.sourceItem)
-        theText = inDoc.readDocument()
-
-        docErr = inDoc.getError()
-        if theText is None and docErr:
-            self.mainGui.makeAlert([
-                self.tr("Failed to open document file."), docErr
-            ], nwAlert.ERROR)
-
-        if theText is None:
-            theText = ""
-
-        nLines = len(self.sourceText)
-        logger.debug("Splitting document %s with %d lines", self.sourceItem, nLines)
-
-        finalOrder = []
+        headerList = []
         for i in range(self.listBox.count()):
-            listItem = self.listBox.item(i)
-            wTitle = listItem.text()
-            lineNo = listItem.data(Qt.UserRole)
-            finalOrder.append([wTitle, lineNo, nLines])
-            if i > 0:
-                finalOrder[i-1][2] = lineNo
+            item = self.listBox.item(i)
+            if item is not None:
+                headerList.append((
+                    item.data(self.LINE_ROLE),
+                    item.data(self.LEVEL_ROLE),
+                    item.data(self.LABEL_ROLE),
+                ))
 
-        nFiles = len(finalOrder)
-        if nFiles == 0:
-            self.mainGui.makeAlert(self.tr(
-                "No headers found. Nothing to do."
-            ), nwAlert.ERROR)
-            return False
+        spLevel = self.splitLevel.currentData()
+        intoFolder = self.folderSwitch.isChecked()
+        docHierarchy = self.hierarchySwitch.isChecked()
+        moveToTrash = self.trashSwitch.isChecked()
 
-        msgYes = self.mainGui.askQuestion(
-            self.tr("Split Document"),
-            "{0}<br><br>{1}".format(
-                self.tr(
-                    "The document will be split into {0} file(s) in a new folder. "
-                    "The original document will remain intact."
-                ).format(nFiles),
-                self.tr(
-                    "Continue with the splitting process?"
-                )
-            )
-        )
-        if not msgYes:
-            return False
+        self._data["spLevel"] = spLevel
+        self._data["headerList"] = headerList
+        self._data["intoFolder"] = intoFolder
+        self._data["docHierarchy"] = docHierarchy
+        self._data["moveToTrash"] = moveToTrash
 
-        # Create the folder
-        fHandle = self.theProject.newFolder(srcItem.itemName, srcItem.itemParent)
-        self.mainGui.projView.revealNewTreeItem(fHandle)
-        logger.verbose("Creating folder '%s'", fHandle)
+        pOptions = self.theProject.options
+        pOptions.setValue("GuiDocSplit", "spLevel", spLevel)
+        pOptions.setValue("GuiDocSplit", "intoFolder", intoFolder)
+        pOptions.setValue("GuiDocSplit", "docHierarchy", docHierarchy)
 
-        # Loop through, and create the files
-        for wTitle, iStart, iEnd in finalOrder:
+        return self._data, self._text
 
-            wTitle = wTitle.lstrip("#").strip()
-            nHandle = self.theProject.newFile(wTitle, fHandle)
-            newItem = self.theProject.tree[nHandle]
-            newItem.setStatus(srcItem.itemStatus)
-            newItem.setImport(srcItem.itemImport)
-            logger.verbose(
-                "Creating new document '%s' with text from line %d to %d",
-                nHandle, iStart+1, iEnd
-            )
+    ##
+    #  Slots
+    ##
 
-            theText = "\n".join(self.sourceText[iStart:iEnd])
-            theText = theText.rstrip("\n") + "\n\n"
-
-            outDoc = NWDoc(self.theProject, nHandle)
-            if not outDoc.writeDocument(theText):
-                self.mainGui.makeAlert([
-                    self.tr("Could not save document."), outDoc.getError()
-                ], nwAlert.ERROR)
-                return False
-
-            self.mainGui.projView.revealNewTreeItem(nHandle)
-
-        self._doClose()
-
-        return True
-
-    def _doClose(self):
-        """Close the dialog window without doing anything.
+    def _reloadList(self):
+        """Reload the content of the list box.
         """
-        self.theProject.options.saveSettings()
-        self.close()
+        sHandle = self._data.get("sHandle", None)
+        self._loadContent(sHandle)
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _populateList(self):
-        """Get the item selected in the tree, check that it is a folder,
-        and try to find all files associated with it. The valid files
-        are then added to the list view in order. The list itself can be
-        reordered by the user.
+    def _loadContent(self, sHandle):
+        """Load content from a given source item.
         """
+        self._data = {}
+        self._data["sHandle"] = sHandle
+
         self.listBox.clear()
-        if self.sourceItem is None:
-            self.sourceItem = self.mainGui.projView.getSelectedHandle()
 
-        if self.sourceItem is None:
-            return False
-
-        nwItem = self.theProject.tree[self.sourceItem]
-        if nwItem is None:
-            return False
-
-        if nwItem.itemType is not nwItemType.FILE:
-            self.mainGui.makeAlert(self.tr(
-                "Element selected in the project tree must be a file."
-            ), nwAlert.ERROR)
-            return False
-
-        inDoc = NWDoc(self.theProject, self.sourceItem)
-        theText = inDoc.readDocument()
-        if theText is None:
-            theText = ""
-            return False
+        nwItem = self.theProject.tree[sHandle]
+        if nwItem is None or not nwItem.isFileType():
+            return
 
         spLevel = self.splitLevel.currentData()
-        self.theProject.options.setValue("GuiDocSplit", "spLevel", spLevel)
-        logger.debug(
-            "Scanning document '%s' for headings level <= %d",
-            self.sourceItem, spLevel
-        )
+        if not self._text:
+            inDoc = self.theProject.storage.getDocument(sHandle)
+            self._text = (inDoc.readDocument() or "").splitlines()
 
-        self.sourceText = theText.splitlines()
-        for lineNo, aLine in enumerate(self.sourceText):
+        for lineNo, aLine in enumerate(self._text):
 
             onLine = -1
+            hLevel = 0
+            hLabel = aLine.strip()
             if aLine.startswith("# ") and spLevel >= 1:
                 onLine = lineNo
+                hLevel = 1
+                hLabel = aLine[2:].strip()
             elif aLine.startswith("## ") and spLevel >= 2:
                 onLine = lineNo
+                hLevel = 2
+                hLabel = aLine[3:].strip()
             elif aLine.startswith("### ") and spLevel >= 3:
                 onLine = lineNo
+                hLevel = 3
+                hLabel = aLine[4:].strip()
             elif aLine.startswith("#### ") and spLevel >= 4:
                 onLine = lineNo
+                hLevel = 4
+                hLabel = aLine[5:].strip()
+            elif aLine.startswith("#! ") and spLevel >= 1:
+                onLine = lineNo
+                hLevel = 1
+                hLabel = aLine[3:].strip()
+            elif aLine.startswith("##! ") and spLevel >= 2:
+                onLine = lineNo
+                hLevel = 2
+                hLabel = aLine[4:].strip()
 
-            if onLine >= 0:
+            if onLine >= 0 and hLevel > 0:
                 newItem = QListWidgetItem()
                 newItem.setText(aLine.strip())
-                newItem.setData(Qt.UserRole, onLine)
+                newItem.setData(self.LINE_ROLE, onLine)
+                newItem.setData(self.LEVEL_ROLE, hLevel)
+                newItem.setData(self.LABEL_ROLE, hLabel)
                 self.listBox.addItem(newItem)
 
-        return True
+        return
 
 # END Class GuiDocSplit

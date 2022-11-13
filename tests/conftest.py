@@ -19,15 +19,16 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import sys
 import pytest
 import shutil
 
+from pathlib import Path
+
 from mock import MockGuiMain
 from tools import cleanProject
 
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 
 import novelwriter  # noqa: E402
 
@@ -48,71 +49,53 @@ def initQt(qtbot):
 ##
 
 @pytest.fixture(scope="session")
-def tmpDir():
-    """A temporary folder for the test session. This folder is
-    presistent after the test so that the status of generated files can
-    be checked. The folder is instead cleared before a new test session.
+def tmpPath():
+    """A temporary folder for the test session. Path version.
     """
-    testDir = os.path.dirname(__file__)
-    theDir = os.path.join(testDir, "temp")
-    if os.path.isdir(theDir):
-        shutil.rmtree(theDir)
-    if not os.path.isdir(theDir):
-        os.mkdir(theDir)
-    return theDir
+    theTemp = Path(__file__).parent / "temp"
+    if theTemp.exists():
+        shutil.rmtree(theTemp)
+    theTemp.mkdir(exist_ok=True)
+    return theTemp
 
 
 @pytest.fixture(scope="session")
-def refDir():
-    """The folder where all the reference files are stored for verifying
-    the results of tests.
+def tstPaths(tmpPath):
+    """Returns an object that can provide the various paths needed for
+    running tests.
     """
-    testDir = os.path.dirname(__file__)
-    theDir = os.path.join(testDir, "reference")
-    return theDir
+    class _Store:
+        testDir = Path(__file__).parent
+        filesDir = testDir / "files"
+        refDir = testDir / "reference"
+        outDir = tmpPath / "results"
 
+    store = _Store()
+    store.outDir.mkdir(exist_ok=True)
 
-@pytest.fixture(scope="session")
-def filesDir():
-    """The folder where additional test files are stored.
-    """
-    testDir = os.path.dirname(__file__)
-    theDir = os.path.join(testDir, "files")
-    return theDir
-
-
-@pytest.fixture(scope="session")
-def outDir(tmpDir):
-    """An output folder for test results
-    """
-    theDir = os.path.join(tmpDir, "results")
-    if not os.path.isdir(theDir):
-        os.mkdir(theDir)
-    return theDir
+    return store
 
 
 @pytest.fixture(scope="function")
-def fncDir(tmpDir):
-    """A temporary folder for a single test function.
+def fncPath(tmpPath):
+    """A temporary folder for a single test function. Path version.
     """
-    fncDir = os.path.join(tmpDir, "f_temp")
-    if os.path.isdir(fncDir):
-        shutil.rmtree(fncDir)
-    if not os.path.isdir(fncDir):
-        os.mkdir(fncDir)
-    return fncDir
+    fncPath = tmpPath / "function"
+    if fncPath.is_dir():
+        shutil.rmtree(fncPath)
+    fncPath.mkdir(exist_ok=True)
+    return fncPath
 
 
 @pytest.fixture(scope="function")
-def fncProj(fncDir):
+def projPath(fncPath):
     """A temporary folder for a single test function,
     with a project folder.
     """
-    prjDir = os.path.join(fncDir, "project")
-    if os.path.isdir(prjDir):
+    prjDir = fncPath / "project"
+    if prjDir.exists():
         shutil.rmtree(prjDir)
-    if not os.path.isdir(prjDir):
-        os.mkdir(prjDir)
+    prjDir.mkdir(exist_ok=True)
     return prjDir
 
 
@@ -121,30 +104,30 @@ def fncProj(fncDir):
 ##
 
 @pytest.fixture(scope="function")
-def tmpConf(tmpDir):
+def tmpConf(tmpPath):
     """Create a temporary novelWriter configuration object.
     """
-    confFile = os.path.join(tmpDir, "novelwriter.conf")
-    if os.path.isfile(confFile):
-        os.unlink(confFile)
+    confFile = tmpPath / "novelwriter.conf"
+    if confFile.is_file():
+        confFile.unlink()
     theConf = Config()
-    theConf.initConfig(tmpDir, tmpDir)
-    theConf.setLastPath("")
-    theConf.guiLang = "en_GB"
+    theConf.initConfig(tmpPath, tmpPath)
+    theConf.setLastPath(tmpPath)
+    theConf.guiLocale = "en_GB"
     return theConf
 
 
 @pytest.fixture(scope="function")
-def fncConf(fncDir):
+def fncConf(fncPath):
     """Create a temporary novelWriter configuration object.
     """
-    confFile = os.path.join(fncDir, "novelwriter.conf")
-    if os.path.isfile(confFile):
-        os.unlink(confFile)
+    confFile = fncPath / "novelwriter.conf"
+    if confFile.is_file():
+        confFile.unlink()
     theConf = Config()
-    theConf.initConfig(fncDir, fncDir)
-    theConf.setLastPath("")
-    theConf.guiLang = "en_GB"
+    theConf.initConfig(fncPath, fncPath)
+    theConf.setLastPath(fncPath)
+    theConf.guiLocale = "en_GB"
     return theConf
 
 
@@ -159,17 +142,21 @@ def mockGUI(monkeypatch, tmpConf):
 
 
 @pytest.fixture(scope="function")
-def nwGUI(qtbot, monkeypatch, fncDir, fncConf):
+def nwGUI(qtbot, monkeypatch, fncPath, fncConf):
     """Create an instance of the novelWriter GUI.
     """
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Ok)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
+    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Ok)
+    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+
     monkeypatch.setattr("novelwriter.CONFIG", fncConf)
-    nwGUI = novelwriter.main(["--testmode", "--config=%s" % fncDir, "--data=%s" % fncDir])
+    nwGUI = novelwriter.main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.wait(20)
 
-    nwGUI.mainConf.lastPath = fncDir
+    nwGUI.mainConf.setLastPath(fncPath)
 
     yield nwGUI
 
@@ -190,14 +177,20 @@ def mockRnd(monkeypatch):
     from 0. This one will generate status/importance flags and handles
     in a predictable sequence.
     """
-    def rnd(n):
-        for x in range(n):
-            yield x
+    class MockRnd:
 
-    gen = rnd(1000)
-    monkeypatch.setattr("random.getrandbits", lambda *a: next(gen))
+        def __init__(self):
+            self.reset()
 
-    return
+        def _rnd(self, n):
+            for x in range(n):
+                yield x
+
+        def reset(self):
+            gen = self._rnd(1000)
+            monkeypatch.setattr("random.getrandbits", lambda *a: next(gen))
+
+    return MockRnd()
 
 
 ##
@@ -205,35 +198,36 @@ def mockRnd(monkeypatch):
 ##
 
 @pytest.fixture(scope="function")
-def nwMinimal(tmpDir):
-    """A minimal novelWriter example project.
-    """
-    tstDir = os.path.dirname(__file__)
-    srcDir = os.path.join(tstDir, "minimal")
-    dstDir = os.path.join(tmpDir, "minimal")
-    if os.path.isdir(dstDir):
-        shutil.rmtree(dstDir)
-
-    shutil.copytree(srcDir, dstDir)
-    cleanProject(dstDir)
-
-    yield dstDir
-
-    if os.path.isdir(dstDir):
-        shutil.rmtree(dstDir)
-
-    return
-
-
-@pytest.fixture(scope="function")
-def nwLipsum(tmpDir):
+def nwLipsum(tmpPath):
     """A medium sized novelWriter example project with a lot of Lorem
     Ipsum text.
     """
-    tstDir = os.path.dirname(__file__)
-    srcDir = os.path.join(tstDir, "lipsum")
-    dstDir = os.path.join(tmpDir, "lipsum")
-    if os.path.isdir(dstDir):
+    tstDir = Path(__file__).parent
+    srcDir = tstDir / "lipsum"
+    dstDir = tmpPath / "lipsum"
+    if dstDir.exists():
+        shutil.rmtree(dstDir)
+
+    shutil.copytree(srcDir, dstDir)
+    cleanProject(dstDir)
+
+    yield str(dstDir)
+
+    if dstDir.exists():
+        shutil.rmtree(dstDir)
+
+    return
+
+
+@pytest.fixture(scope="function")
+def prjLipsum(tmpPath):
+    """A medium sized novelWriter example project with a lot of Lorem
+    Ipsum text.
+    """
+    tstDir = Path(__file__).parent
+    srcDir = tstDir / "lipsum"
+    dstDir = tmpPath / "lipsum"
+    if dstDir.exists():
         shutil.rmtree(dstDir)
 
     shutil.copytree(srcDir, dstDir)
@@ -241,28 +235,7 @@ def nwLipsum(tmpDir):
 
     yield dstDir
 
-    if os.path.isdir(dstDir):
-        shutil.rmtree(dstDir)
-
-    return
-
-
-@pytest.fixture(scope="function")
-def nwOldProj(tmpDir):
-    """A minimal movelWriter project using the old folder structure used
-    for storage versions < 1.2.
-    """
-    tstDir = os.path.dirname(__file__)
-    srcDir = os.path.join(tstDir, "oldproj")
-    dstDir = os.path.join(tmpDir, "oldproj")
-    if os.path.isdir(dstDir):
-        shutil.rmtree(dstDir)
-
-    shutil.copytree(srcDir, dstDir)
-
-    yield dstDir
-
-    if os.path.isdir(dstDir):
+    if dstDir.exists():
         shutil.rmtree(dstDir)
 
     return

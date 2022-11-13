@@ -20,23 +20,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import pytest
-import random
 
-from lxml import etree
+from tools import C
 
 from PyQt5.QtGui import QIcon
 
 from novelwriter.core.status import NWStatus
 
-statusKeys = ["sa3b179", "s1c8031", "s06671a", "sbdd640"]
-importKeys = ["i466852", "i3eb13b", "i392456", "i23b8c1"]
+statusKeys = [C.sNew, C.sNote, C.sDraft, C.sFinished]
+importKeys = [C.iNew, C.iMinor, C.iMajor, C.iMain]
 
 
 @pytest.mark.core
-def testCoreStatus_Internal():
+def testCoreStatus_Internal(mockRnd):
     """Test all the internal functions of the NWStatus class.
     """
-    random.seed(42)
     theStatus = NWStatus(NWStatus.STATUS)
     theImport = NWStatus(NWStatus.IMPORT)
 
@@ -87,10 +85,9 @@ def testCoreStatus_Internal():
 
 
 @pytest.mark.core
-def testCoreStatus_Iterator():
+def testCoreStatus_Iterator(mockRnd):
     """Test the iterator functions of the NWStatus class.
     """
-    random.seed(42)
     theStatus = NWStatus(NWStatus.STATUS)
 
     theStatus.write(None, "New",      (100, 100, 100))
@@ -132,10 +129,9 @@ def testCoreStatus_Iterator():
 
 
 @pytest.mark.core
-def testCoreStatus_Entries():
+def testCoreStatus_Entries(mockRnd):
     """Test all the simple setters for the NWStatus class.
     """
-    random.seed(42)
     theStatus = NWStatus(NWStatus.STATUS)
 
     # Write
@@ -161,14 +157,6 @@ def testCoreStatus_Entries():
     assert theStatus[statusKeys[3]]["name"] == "Entry 4"
     assert theStatus[statusKeys[3]]["cols"] == (100, 100, 100)
 
-    # Check reverse map
-    assert theStatus._reverse == {
-        "Entry 1": statusKeys[0],
-        "Entry 2": statusKeys[1],
-        "Entry 3": statusKeys[2],
-        "Entry 4": statusKeys[3],
-    }
-
     # Check
     # =====
 
@@ -176,14 +164,8 @@ def testCoreStatus_Entries():
     for key in statusKeys:
         assert theStatus.check(key) == key
 
-    # Reverse map lookup
-    assert theStatus.check("Entry 1") == statusKeys[0]
-    assert theStatus.check("Entry 2") == statusKeys[1]
-    assert theStatus.check("Entry 3") == statusKeys[2]
-    assert theStatus.check("Entry 4") == statusKeys[3]
-
     # Non-existing name
-    assert theStatus.check("Entry 5") == statusKeys[0]
+    assert theStatus.check("s987654") == statusKeys[0]
 
     # Name Access
     # ===========
@@ -314,10 +296,9 @@ def testCoreStatus_Entries():
 
 
 @pytest.mark.core
-def testCoreStatus_XMLPackUnpack():
-    """Test all the XML pack/unpack of the NWStatus class.
+def testCoreStatus_PackUnpack(mockRnd):
+    """Test all the pack/unpack of the NWStatus class.
     """
-    random.seed(42)
     theStatus = NWStatus(NWStatus.STATUS)
     theStatus.write(None, "New",      (100, 100, 100))
     theStatus.write(None, "Note",     (200, 50,  0))
@@ -329,36 +310,59 @@ def testCoreStatus_XMLPackUnpack():
         for _ in range(n):
             theStatus.increment(statusKeys[i])
 
-    nwXML = etree.Element("novelWriterXML")
-
     # Pack
-    xStatus = etree.SubElement(nwXML, "status")
-    theStatus.packXML(xStatus)
-    assert etree.tostring(xStatus, pretty_print=False, encoding="utf-8") == (
-        b'<status>'
-        b'<entry key="sa3b179" count="3" red="100" green="100" blue="100">New</entry>'
-        b'<entry key="s1c8031" count="5" red="200" green="50" blue="0">Note</entry>'
-        b'<entry key="s06671a" count="7" red="200" green="150" blue="0">Draft</entry>'
-        b'<entry key="sbdd640" count="9" red="50" green="200" blue="0">Finished</entry>'
-        b'</status>'
-    )
+    assert list(theStatus.pack()) == [
+        ("New", {
+            "key": statusKeys[0],
+            "count": "3",
+            "red": "100",
+            "green": "100",
+            "blue": "100"
+        }),
+        ("Note", {
+            "key": statusKeys[1],
+            "count": "5",
+            "red": "200",
+            "green": "50",
+            "blue": "0"
+        }),
+        ("Draft", {
+            "key": statusKeys[2],
+            "count": "7",
+            "red": "200",
+            "green": "150",
+            "blue": "0"
+        }),
+        ("Finished", {
+            "key": statusKeys[3],
+            "count": "9",
+            "red": "50",
+            "green": "200",
+            "blue": "0"
+        }),
+    ]
 
     # Unpack
     theStatus = NWStatus(NWStatus.STATUS)
-    assert theStatus.unpackXML(xStatus)
+    assert theStatus.unpack({
+        statusKeys[0]: {"label": "New0", "colour": (100, 100, 100), "count": countTo[0]},
+        statusKeys[1]: {"label": "New1", "colour": (150, 150, 150), "count": countTo[1]},
+        statusKeys[2]: {"label": "New2", "colour": (200, 200, 200), "count": countTo[2]},
+        statusKeys[3]: {"label": "New3", "colour": (250, 250, 250), "count": countTo[3]},
+    })
     assert len(theStatus._store) == 4
     assert list(theStatus._store.keys()) == statusKeys
-    assert theStatus._store[statusKeys[0]]["name"] == "New"
-    assert theStatus._store[statusKeys[1]]["name"] == "Note"
-    assert theStatus._store[statusKeys[2]]["name"] == "Draft"
-    assert theStatus._store[statusKeys[3]]["name"] == "Finished"
+    assert theStatus._store[statusKeys[0]]["name"] == "New0"
+    assert theStatus._store[statusKeys[1]]["name"] == "New1"
+    assert theStatus._store[statusKeys[2]]["name"] == "New2"
+    assert theStatus._store[statusKeys[3]]["name"] == "New3"
     assert theStatus._store[statusKeys[0]]["cols"] == (100, 100, 100)
-    assert theStatus._store[statusKeys[1]]["cols"] == (200, 50,  0)
-    assert theStatus._store[statusKeys[2]]["cols"] == (200, 150, 0)
-    assert theStatus._store[statusKeys[3]]["cols"] == (50,  200, 0)
+    assert theStatus._store[statusKeys[1]]["cols"] == (150, 150, 150)
+    assert theStatus._store[statusKeys[2]]["cols"] == (200, 200, 200)
+    assert theStatus._store[statusKeys[3]]["cols"] == (250, 250, 250)
     assert theStatus._store[statusKeys[0]]["count"] == countTo[0]
     assert theStatus._store[statusKeys[1]]["count"] == countTo[1]
     assert theStatus._store[statusKeys[2]]["count"] == countTo[2]
     assert theStatus._store[statusKeys[3]]["count"] == countTo[3]
 
-# END Test testCoreStatus_XMLPackUnpack
+# END Test testCoreStatus_PackUnpack

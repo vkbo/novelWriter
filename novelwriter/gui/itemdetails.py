@@ -30,7 +30,6 @@ from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 
-from novelwriter.enum import nwItemType
 from novelwriter.constants import trConst, nwLabels
 
 logger = logging.getLogger(__name__)
@@ -39,7 +38,7 @@ logger = logging.getLogger(__name__)
 class GuiItemDetails(QWidget):
 
     def __init__(self, mainGui):
-        QWidget.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiItemDetails ...")
         self.mainConf   = novelwriter.CONFIG
@@ -54,11 +53,7 @@ class GuiItemDetails(QWidget):
         hSp = self.mainConf.pxInt(6)
         vSp = self.mainConf.pxInt(1)
         mPx = self.mainConf.pxInt(6)
-        iPx = self.mainTheme.baseIconSize
         fPt = self.mainTheme.fontPointSize
-
-        self._expCheck = self.mainTheme.getPixmap("check", (iPx, iPx))
-        self._expCross = self.mainTheme.getPixmap("cross", (iPx, iPx))
 
         fntLabel = QFont()
         fntLabel.setBold(True)
@@ -180,6 +175,8 @@ class GuiItemDetails(QWidget):
 
         self.setLayout(self.mainBox)
 
+        self.updateTheme()
+
         # Make sure the columns for flags and counts don't resize too often
         flagWidth  = self.mainTheme.getTextWidth("Mm", fntValue)
         countWidth = self.mainTheme.getTextWidth("99,999", fntValue)
@@ -220,6 +217,12 @@ class GuiItemDetails(QWidget):
         """
         self.updateViewBox(self._itemHandle)
 
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        self.updateViewBox(self._itemHandle)
+        return
+
     ##
     #  Public Slots
     ##
@@ -247,13 +250,13 @@ class GuiItemDetails(QWidget):
         if len(theLabel) > 100:
             theLabel = theLabel[:96].rstrip()+" ..."
 
-        if nwItem.itemType == nwItemType.FILE:
-            if nwItem.isExported:
-                self.labelIcon.setPixmap(self._expCheck)
+        if nwItem.isFileType():
+            if nwItem.isActive:
+                self.labelIcon.setPixmap(self.mainTheme.getPixmap("checked", (iPx, iPx)))
             else:
-                self.labelIcon.setPixmap(self._expCross)
+                self.labelIcon.setPixmap(self.mainTheme.getPixmap("unchecked", (iPx, iPx)))
         else:
-            self.labelIcon.setPixmap(QPixmap(1, 1))
+            self.labelIcon.setPixmap(self.mainTheme.getPixmap("noncheckable", (iPx, iPx)))
 
         self.labelData.setText(theLabel)
 
@@ -274,17 +277,16 @@ class GuiItemDetails(QWidget):
         # Layout
         # ======
 
-        hLevel = self.theProject.index.getHandleHeaderLevel(tHandle)
         usageIcon = self.mainTheme.getItemIcon(
-            nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
+            nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, nwItem.mainHeading
         )
         self.usageIcon.setPixmap(usageIcon.pixmap(iPx, iPx))
-        self.usageData.setText(nwItem.describeMe(hLevel))
+        self.usageData.setText(nwItem.describeMe())
 
         # Counts
         # ======
 
-        if nwItem.itemType == nwItemType.FILE:
+        if nwItem.isFileType():
             self.cCountData.setText(f"{nwItem.charCount:n}")
             self.wCountData.setText(f"{nwItem.wordCount:n}")
             self.pCountData.setText(f"{nwItem.paraCount:n}")

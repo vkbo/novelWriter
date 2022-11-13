@@ -22,18 +22,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import pytest
 
 from PyQt5.QtCore import QItemSelectionModel
-from PyQt5.QtWidgets import QAction, QListWidgetItem, QDialog, QMessageBox
+from PyQt5.QtWidgets import QAction, QListWidgetItem, QDialog
 
-from novelwriter.dialogs import GuiQuoteSelect, GuiUpdates, GuiEditLabel
+from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.dialogs.updates import GuiUpdates
+from novelwriter.dialogs.editlabel import GuiEditLabel
 
 
 @pytest.mark.gui
-def testDlgOther_QuoteSelect(qtbot, monkeypatch, nwGUI):
+def testDlgOther_QuoteSelect(qtbot, nwGUI):
     """Test the quote symbols dialog.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-
     nwQuot = GuiQuoteSelect(nwGUI)
     nwQuot.show()
 
@@ -50,7 +49,7 @@ def testDlgOther_QuoteSelect(qtbot, monkeypatch, nwGUI):
     assert nwQuot.result() == QDialog.Accepted
     assert nwQuot.selectedQuote == lastItem
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
     nwQuot._doReject()
     nwQuot.close()
 
@@ -61,9 +60,6 @@ def testDlgOther_QuoteSelect(qtbot, monkeypatch, nwGUI):
 def testDlgOther_Updates(qtbot, monkeypatch, nwGUI):
     """Test the check for updates dialog.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-
     nwUpdate = GuiUpdates(nwGUI)
     nwUpdate.show()
 
@@ -93,7 +89,7 @@ def testDlgOther_Updates(qtbot, monkeypatch, nwGUI):
     # Trigger from Menu
     nwGUI.mainMenu.aUpdates.activate(QAction.Trigger)
 
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
     nwUpdate._doClose()
 
 # END Test testDlgOther_Updates

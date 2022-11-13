@@ -68,6 +68,7 @@ class nwHeaders:
 
 class nwFiles:
 
+    CONF_FILE   = "novelwriter.conf"
     PROJ_FILE   = "nwProject.nwx"
     PROJ_DICT   = "wordlist.txt"
     PROJ_LOCK   = "nwProject.lock"
@@ -157,6 +158,7 @@ class nwLabels:
         "doc_h1":   QT_TRANSLATE_NOOP("Constant", "Novel Title Page"),
         "doc_h2":   QT_TRANSLATE_NOOP("Constant", "Novel Chapter"),
         "doc_h3":   QT_TRANSLATE_NOOP("Constant", "Novel Scene"),
+        "doc_h4":   QT_TRANSLATE_NOOP("Constant", "Novel Section"),
         "note":     QT_TRANSLATE_NOOP("Constant", "Project Note"),
     }
     KEY_NAME = {

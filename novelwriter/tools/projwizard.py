@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.common import makeFileNameSafe
-from novelwriter.gui.custom import QSwitch
+from novelwriter.custom import QSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ PAGE_FINAL  = 4
 class GuiProjectWizard(QWizard):
 
     def __init__(self, mainGui):
-        QWizard.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiProjectWizard ...")
         self.setObjectName("GuiProjectWizard")
@@ -88,7 +88,7 @@ class GuiProjectWizard(QWizard):
 class ProjWizardIntroPage(QWizardPage):
 
     def __init__(self, theWizard):
-        QWizardPage.__init__(self)
+        super().__init__()
 
         self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
@@ -158,7 +158,7 @@ class ProjWizardIntroPage(QWizardPage):
 class ProjWizardFolderPage(QWizardPage):
 
     def __init__(self, theWizard):
-        QWizardPage.__init__(self)
+        super().__init__()
 
         self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
@@ -209,12 +209,12 @@ class ProjWizardFolderPage(QWizardPage):
         """Check that the selected path isn't already being used.
         """
         self.errLabel.setText("")
-        if not QWizardPage.isComplete(self):
+        if not super().isComplete():
             return False
 
         setPath = os.path.abspath(os.path.expanduser(self.projPath.text()))
         parPath = os.path.dirname(setPath)
-        logger.verbose("Path is: %s", setPath)
+        logger.debug("Path is: %s", setPath)
         if parPath and not os.path.isdir(parPath):
             self.errLabel.setText(self.tr(
                 "Error: A project folder cannot be created using this path."
@@ -236,12 +236,9 @@ class ProjWizardFolderPage(QWizardPage):
     def _doBrowse(self):
         """Select a project folder.
         """
-        lastPath = self.mainConf.lastPath
-        if not os.path.isdir(lastPath):
-            lastPath = ""
-
+        lastPath = self.mainConf.lastPath()
         projDir = QFileDialog.getExistingDirectory(
-            self, self.tr("Select Project Folder"), lastPath, options=QFileDialog.ShowDirsOnly
+            self, self.tr("Select Project Folder"), str(lastPath), options=QFileDialog.ShowDirsOnly
         )
         if projDir:
             projName = self.field("projName")
@@ -259,7 +256,7 @@ class ProjWizardFolderPage(QWizardPage):
 class ProjWizardPopulatePage(QWizardPage):
 
     def __init__(self, theWizard):
-        QWizardPage.__init__(self)
+        super().__init__()
 
         self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
@@ -315,7 +312,7 @@ class ProjWizardPopulatePage(QWizardPage):
 class ProjWizardCustomPage(QWizardPage):
 
     def __init__(self, theWizard):
-        QWizardPage.__init__(self)
+        super().__init__()
 
         self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
@@ -334,13 +331,18 @@ class ProjWizardCustomPage(QWizardPage):
 
         # Root Folders
         self.addPlot = QSwitch()
-        self.addChar = QSwitch()
-        self.addWorld = QSwitch()
-        self.addNotes = QSwitch()
-
         self.addPlot.setChecked(True)
+        self.addPlot.clicked.connect(self._syncSwitches)
+
+        self.addChar = QSwitch()
         self.addChar.setChecked(True)
+        self.addChar.clicked.connect(self._syncSwitches)
+
+        self.addWorld = QSwitch()
         self.addWorld.setChecked(False)
+        self.addWorld.clicked.connect(self._syncSwitches)
+
+        self.addNotes = QSwitch()
         self.addNotes.setChecked(False)
 
         # Generate Content
@@ -391,13 +393,27 @@ class ProjWizardCustomPage(QWizardPage):
 
         return
 
+    ##
+    #  Internal Functions
+    ##
+
+    def _syncSwitches(self):
+        """Check if the add notes option should also be switched off.
+        """
+        addPlot = self.addPlot.isChecked()
+        addChar = self.addChar.isChecked()
+        addWorld = self.addWorld.isChecked()
+        if not (addPlot or addChar or addWorld):
+            self.addNotes.setChecked(False)
+        return
+
 # END Class ProjWizardCustomPage
 
 
 class ProjWizardFinalPage(QWizardPage):
 
     def __init__(self, theWizard):
-        QWizardPage.__init__(self)
+        super().__init__()
 
         self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
@@ -418,7 +434,7 @@ class ProjWizardFinalPage(QWizardPage):
     def initializePage(self):
         """Update the summary information on the final page.
         """
-        QWizardPage.initializePage(self)
+        super().initializePage()
 
         sumList = []
         sumList.append(self.tr("Project Name: {0}").format(self.field("projName")))

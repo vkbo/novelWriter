@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 class GuiUpdates(QDialog):
 
     def __init__(self, mainGui):
-        QDialog.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiUpdates ...")
         self.setObjectName("GuiUpdates")
@@ -135,7 +135,7 @@ class GuiUpdates(QDialog):
             logException()
 
         relVersion = rawData.get("tag_name", "Unknown")
-        relDate = rawData.get("created_at", None)
+        relDate = rawData.get("created_at", "")
 
         try:
             relDate = datetime.strptime(relDate[:10], "%Y-%m-%d").strftime("%x")

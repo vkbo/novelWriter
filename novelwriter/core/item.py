@@ -25,23 +25,27 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 
-from lxml import etree
-
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
 from novelwriter.common import (
-    checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified
+    checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified, yesNo
 )
-from novelwriter.constants import nwLabels, trConst
+from novelwriter.constants import nwHeaders, nwLabels, trConst
 
 logger = logging.getLogger(__name__)
 
 
-class NWItem():
+class NWItem:
 
-    def __init__(self, theProject):
+    __slots__ = (
+        "_project", "_name", "_handle", "_parent", "_root", "_order",
+        "_type", "_class", "_layout", "_status", "_import", "_active",
+        "_expanded", "_heading", "_charCount", "_wordCount",
+        "_paraCount", "_cursorPos", "_initCount",
+    )
 
-        self.theProject = theProject
+    def __init__(self, project):
 
+        self._project  = project
         self._name     = ""
         self._handle   = None
         self._parent   = None
@@ -52,15 +56,16 @@ class NWItem():
         self._layout   = nwItemLayout.NO_LAYOUT
         self._status   = None
         self._import   = None
+        self._active   = True
         self._expanded = False
-        self._exported = True
 
         # Document Meta Data
-        self._charCount = 0  # Current character count
-        self._wordCount = 0  # Current word count
-        self._paraCount = 0  # Current paragraph count
-        self._cursorPos = 0  # Last cursor position
-        self._initCount = 0  # Initial word count
+        self._heading   = "H0"  # The main heading
+        self._charCount = 0     # Current character count
+        self._wordCount = 0     # Current word count
+        self._paraCount = 0     # Current paragraph count
+        self._cursorPos = 0     # Last cursor position
+        self._initCount = 0     # Initial word count
 
         return
 
@@ -115,12 +120,16 @@ class NWItem():
         return self._import
 
     @property
+    def isActive(self):
+        return self._active
+
+    @property
     def isExpanded(self):
         return self._expanded
 
     @property
-    def isExported(self):
-        return self._exported
+    def mainHeading(self):
+        return self._heading
 
     @property
     def charCount(self):
@@ -143,101 +152,75 @@ class NWItem():
         return self._cursorPos
 
     ##
-    #  XML Pack/Unpack
+    #  Pack/Unpack Data
     ##
 
-    def packXML(self, xParent):
-        """Pack all the data in the class instance into an XML object.
+    def pack(self):
+        """Pack all the data in the class instance into a dictionary.
         """
-        itemAttrib = {}
-        itemAttrib["handle"] = str(self._handle)
-        itemAttrib["parent"] = str(self._parent)
-        itemAttrib["root"]   = str(self._root)
-        itemAttrib["order"]  = str(self._order)
-        itemAttrib["type"]   = str(self._type.name)
-        itemAttrib["class"]  = str(self._class.name)
+        item = {}
+        meta = {}
+        name = {}
+
+        item["handle"]   = str(self._handle)
+        item["parent"]   = str(self._parent)
+        item["root"]     = str(self._root)
+        item["order"]    = str(self._order)
+        item["type"]     = str(self._type.name)
+        item["class"]    = str(self._class.name)
+        meta["expanded"] = yesNo(self._expanded)
+        name["status"]   = str(self._status)
+        name["import"]   = str(self._import)
+
         if self._type == nwItemType.FILE:
-            itemAttrib["layout"] = str(self._layout.name)
+            item["layout"]    = str(self._layout.name)
+            meta["heading"]   = str(self._heading)
+            meta["charCount"] = str(self._charCount)
+            meta["wordCount"] = str(self._wordCount)
+            meta["paraCount"] = str(self._paraCount)
+            meta["cursorPos"] = str(self._cursorPos)
+            name["active"]    = yesNo(self._active)
 
-        metaAttrib = {}
-        metaAttrib["expanded"] = str(self._expanded)
-        if self._type == nwItemType.FILE:
-            metaAttrib["charCount"] = str(self._charCount)
-            metaAttrib["wordCount"] = str(self._wordCount)
-            metaAttrib["paraCount"] = str(self._paraCount)
-            metaAttrib["cursorPos"] = str(self._cursorPos)
+        data = {
+            "name": str(self._name),
+            "itemAttr": item,
+            "metaAttr": meta,
+            "nameAttr": name,
+        }
 
-        nameAttrib = {}
-        nameAttrib["status"] = str(self._status)
-        nameAttrib["import"] = str(self._import)
-        if self._type == nwItemType.FILE:
-            nameAttrib["exported"] = str(self._exported)
+        return data
 
-        xPack = etree.SubElement(xParent, "item", attrib=itemAttrib)
-        self._subPack(xPack, "meta", attrib=metaAttrib)
-        self._subPack(xPack, "name", text=str(self._name), attrib=nameAttrib)
-
-        return
-
-    def unpackXML(self, xItem):
-        """Set the values from an XML entry of type 'item'.
+    def unpack(self, data):
+        """Set the values from a data dictionary.
         """
-        if xItem.tag != "item":
-            logger.error("XML entry is not an NWItem")
-            return False
+        item = data.get("itemAttr", {})
+        meta = data.get("metaAttr", {})
+        name = data.get("nameAttr", {})
 
-        if "handle" in xItem.attrib:
-            self.setHandle(xItem.attrib["handle"])
+        if "handle" in item:
+            self.setHandle(item["handle"])
         else:
-            logger.error("XML item entry does not have a handle")
+            logger.error("Item does not have a handle")
             return False
 
-        self.setParent(xItem.attrib.get("parent", None))
-        self.setRoot(xItem.attrib.get("root", None))
-        self.setOrder(xItem.attrib.get("order", 0))
-        self.setType(xItem.attrib.get("type", nwItemType.NO_TYPE))
-        self.setClass(xItem.attrib.get("class", nwItemClass.NO_CLASS))
-        self.setLayout(xItem.attrib.get("layout", nwItemLayout.NO_LAYOUT))
+        self.setName(data.get("name", ""))
+        self.setParent(item.get("parent", None))
+        self.setRoot(item.get("root", None))
+        self.setOrder(item.get("order", 0))
+        self.setType(item.get("type", nwItemType.NO_TYPE))
+        self.setClass(item.get("class", nwItemClass.NO_CLASS))
+        self.setExpanded(meta.get("expanded", False))
+        self.setStatus(name.get("status", None))
+        self.setImport(name.get("import", None))
 
-        for xValue in xItem:
-            if xValue.tag == "meta":
-                self.setExpanded(xValue.attrib.get("expanded", False))
-                self.setCharCount(xValue.attrib.get("charCount", 0))
-                self.setWordCount(xValue.attrib.get("wordCount", 0))
-                self.setParaCount(xValue.attrib.get("paraCount", 0))
-                self.setCursorPos(xValue.attrib.get("cursorPos", 0))
-            elif xValue.tag == "name":
-                self.setName(xValue.text)
-                self.setStatus(xValue.attrib.get("status", None))
-                self.setImport(xValue.attrib.get("import", None))
-                self.setExported(xValue.attrib.get("exported", True))
-
-            # Legacy Format (1.3 and earlier)
-            elif xValue.tag == "status":
-                self.setImportStatus(xValue.text)
-            elif xValue.tag == "type":
-                self.setType(xValue.text)
-            elif xValue.tag == "class":
-                self.setClass(xValue.text)
-            elif xValue.tag == "layout":
-                self.setLayout(xValue.text)
-            elif xValue.tag == "expanded":
-                self.setExpanded(xValue.text)
-            elif xValue.tag == "exported":
-                self.setExported(xValue.text)
-            elif xValue.tag == "charCount":
-                self.setCharCount(xValue.text)
-            elif xValue.tag == "wordCount":
-                self.setWordCount(xValue.text)
-            elif xValue.tag == "paraCount":
-                self.setParaCount(xValue.text)
-            elif xValue.tag == "cursorPos":
-                self.setCursorPos(xValue.text)
-            else:
-                # Sliently skip as we may otherwise cause orphaned
-                # items if an otherwise valid file is opened by a
-                # version of novelWriter that doesn't know the tag
-                logger.error("Unknown tag '%s'", xValue.tag)
+        if self._type == nwItemType.FILE:
+            self.setLayout(item.get("layout", nwItemLayout.NO_LAYOUT))
+            self.setMainHeading(meta.get("heading", "H0"))
+            self.setCharCount(meta.get("charCount", 0))
+            self.setWordCount(meta.get("wordCount", 0))
+            self.setParaCount(meta.get("paraCount", 0))
+            self.setCursorPos(meta.get("cursorPos", 0))
+            self.setActive(name.get("active", True))
 
         # Make some checks to ensure consistency
         if self._type == nwItemType.ROOT:
@@ -245,31 +228,22 @@ class NWItem():
             self._parent = None        # Root items cannot have a parent
 
         if self._type != nwItemType.FILE:
-            self._charCount = 0  # Only set for files
-            self._wordCount = 0  # Only set for files
-            self._paraCount = 0  # Only set for files
-            self._cursorPos = 0  # Only set for files
+            # Reset values that should only be set for files
+            self._layout = nwItemLayout.NO_LAYOUT
+            self._heading = "H0"
+            self._active = False
+            self._charCount = 0
+            self._wordCount = 0
+            self._paraCount = 0
+            self._cursorPos = 0
 
         return True
-
-    @staticmethod
-    def _subPack(xParent, name, attrib=None, text=None, none=True):
-        """Pack the values into an XML element.
-        """
-        if not none and (text is None or text == "None"):
-            return None
-        xAttr = {} if attrib is None else attrib
-        xSub = etree.SubElement(xParent, name, attrib=xAttr)
-        if text is not None:
-            xSub.text = text
-
-        return
 
     ##
     #  Lookup Methods
     ##
 
-    def describeMe(self, hLevel=None):
+    def describeMe(self):
         """Return a string description of the item.
         """
         descKey = "none"
@@ -279,18 +253,36 @@ class NWItem():
             descKey = "folder"
         elif self._type == nwItemType.FILE:
             if self._layout == nwItemLayout.DOCUMENT:
-                if hLevel == "H1":
+                if self._heading == "H1":
                     descKey = "doc_h1"
-                elif hLevel == "H2":
+                elif self._heading == "H2":
                     descKey = "doc_h2"
-                elif hLevel == "H3":
+                elif self._heading == "H3":
                     descKey = "doc_h3"
+                elif self._heading == "H4":
+                    descKey = "doc_h4"
                 else:
                     descKey = "document"
             elif self._layout == nwItemLayout.NOTE:
                 descKey = "note"
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
+
+    def getImportStatus(self, incIcon=True):
+        """Return the relevant importance or status label and icon for
+        the current item based on its class.
+        """
+        if self.isNovelLike():
+            stName = self._project.data.itemStatus.name(self._status)
+            stIcon = self._project.data.itemStatus.icon(self._status) if incIcon else None
+        else:
+            stName = self._project.data.itemImport.name(self._import)
+            stIcon = self._project.data.itemImport.icon(self._import) if incIcon else None
+        return stName, stIcon
+
+    ##
+    #  Checker Methods
+    ##
 
     def isNovelLike(self):
         """Returns true if the item is of a novel-like class.
@@ -307,17 +299,20 @@ class NWItem():
         """
         return self._class in (nwItemClass.NO_CLASS, nwItemClass.ARCHIVE, nwItemClass.TRASH)
 
-    def getImportStatus(self):
-        """Return the relevant importance or status label and icon for
-        the current item based on its class.
-        """
-        if self.isNovelLike():
-            stName = self.theProject.statusItems.name(self._status)
-            stIcon = self.theProject.statusItems.icon(self._status)
-        else:
-            stName = self.theProject.importItems.name(self._import)
-            stIcon = self.theProject.importItems.icon(self._import)
-        return stName, stIcon
+    def isRootType(self):
+        return self._type == nwItemType.ROOT
+
+    def isFolderType(self):
+        return self._type == nwItemType.FOLDER
+
+    def isFileType(self):
+        return self._type == nwItemType.FILE
+
+    def isNoteLayout(self):
+        return self._layout == nwItemLayout.NOTE
+
+    def isDocumentLayout(self):
+        return self._layout == nwItemLayout.DOCUMENT
 
     ##
     #  Special Setters
@@ -419,8 +414,6 @@ class NWItem():
             self._type = value
         elif isItemType(value):
             self._type = nwItemType[value]
-        elif value == "TRASH":
-            self._type = nwItemType.ROOT
         else:
             logger.error("Unrecognised item type '%s'", value)
             self._type = nwItemType.NO_TYPE
@@ -447,8 +440,6 @@ class NWItem():
             self._layout = value
         elif isItemLayout(value):
             self._layout = nwItemLayout[value]
-        elif value in ("TITLE", "PAGE", "BOOK", "PARTITION", "UNNUMBERED", "CHAPTER", "SCENE"):
-            self._layout = nwItemLayout.DOCUMENT
         else:
             logger.error("Unrecognised item layout '%s'", value)
             self._layout = nwItemLayout.NO_LAYOUT
@@ -458,60 +449,79 @@ class NWItem():
         """Set the item status by looking it up in the valid status
         items of the current project.
         """
-        self._status = self.theProject.statusItems.check(value)
+        self._status = self._project.data.itemStatus.check(value)
         return
 
     def setImport(self, value):
         """Set the item importance by looking it up in the valid import
         items of the current project.
         """
-        self._import = self.theProject.importItems.check(value)
+        self._import = self._project.data.itemImport.check(value)
+        return
+
+    def setActive(self, state):
+        """Set the active flag.
+        """
+        if isinstance(state, bool):
+            self._active = state
+        else:
+            self._active = False
         return
 
     def setExpanded(self, state):
         """Set the expanded status of an item in the project tree.
         """
-        if isinstance(state, str):
-            self._expanded = (state == str(True))
+        if isinstance(state, bool):
+            self._expanded = state
         else:
-            self._expanded = (state is True)
-        return
-
-    def setExported(self, state):
-        """Set the export flag.
-        """
-        if isinstance(state, str):
-            self._exported = (state == str(True))
-        else:
-            self._exported = (state is True)
+            self._expanded = False
         return
 
     ##
     #  Set Document Meta Data
     ##
 
+    def setMainHeading(self, value):
+        """Set the main heading level.
+        """
+        if value in nwHeaders.H_LEVEL:
+            self._heading = value
+        return
+
     def setCharCount(self, count):
         """Set the character count, and ensure that it is an integer.
         """
-        self._charCount = max(0, checkInt(count, 0))
+        if isinstance(count, int):
+            self._charCount = max(0, count)
+        else:
+            self._charCount = 0
         return
 
     def setWordCount(self, count):
         """Set the word count, and ensure that it is an integer.
         """
-        self._wordCount = max(0, checkInt(count, 0))
+        if isinstance(count, int):
+            self._wordCount = max(0, count)
+        else:
+            self._wordCount = 0
         return
 
     def setParaCount(self, count):
         """Set the paragraph count, and ensure that it is an integer.
         """
-        self._paraCount = max(0, checkInt(count, 0))
+        if isinstance(count, int):
+            self._paraCount = max(0, count)
+        else:
+            self._paraCount = 0
         return
 
     def setCursorPos(self, position):
         """Set the cursor position, and ensure that it is an integer.
         """
-        self._cursorPos = max(0, checkInt(position, 0))
+        if isinstance(position, int):
+            self._cursorPos = max(0, position)
+        else:
+            self._cursorPos = 0
         return
 
     def saveInitialCount(self):

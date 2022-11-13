@@ -24,11 +24,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
 import logging
 
 from enum import Enum
+from pathlib import Path
 
 from novelwriter.error import logException
 from novelwriter.common import checkBool, checkFloat, checkInt, checkString
@@ -40,30 +40,30 @@ VALID_MAP = {
     "GuiWritingStats": {
         "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
         "widthCol3", "sortCol", "sortOrder", "incNovel", "incNotes",
-        "hideZeros", "hideNegative", "groupByDay", "showIdleTime", "histMax"
+        "hideZeros", "hideNegative", "groupByDay", "showIdleTime", "histMax",
     },
-    "GuiDocSplit": {"spLevel"},
+    "GuiDocSplit": {"spLevel", "intoFolder", "docHierarchy"},
     "GuiBuildNovel": {
         "winWidth", "winHeight", "boxWidth", "docWidth", "hideScene",
         "hideSection", "addNovel", "addNotes", "ignoreFlag", "justifyText",
         "excludeBody", "textFont", "textSize", "lineHeight", "noStyling",
         "incSynopsis", "incComments", "incKeywords", "incBodyText",
-        "replaceTabs", "replaceUCode"
+        "replaceTabs", "replaceUCode", "rootFilter",
     },
     "GuiOutline": {"headerOrder", "columnWidth", "columnHidden"},
     "GuiProjectSettings": {
-        "winWidth", "winHeight", "replaceColW", "statusColW", "importColW"
+        "winWidth", "winHeight", "replaceColW", "statusColW", "importColW",
     },
     "GuiProjectDetails": {
         "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
-        "widthCol3", "widthCol4", "wordsPerPage", "countFrom", "clearDouble"
+        "widthCol3", "widthCol4", "wordsPerPage", "countFrom", "clearDouble",
     },
     "GuiWordList": {"winWidth", "winHeight"},
     "GuiNovelView": {"lastCol"},
 }
 
 
-class OptionState():
+class OptionState:
 
     def __init__(self, theProject):
         self.theProject = theProject
@@ -77,13 +77,12 @@ class OptionState():
     def loadSettings(self):
         """Load the options dictionary from the project settings file.
         """
-        if self.theProject.projMeta is None:
+        stateFile = self.theProject.storage.getMetaFile(nwFiles.OPTS_FILE)
+        if not isinstance(stateFile, Path):
             return False
 
-        stateFile = os.path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
         theState = {}
-
-        if os.path.isfile(stateFile):
+        if stateFile.exists():
             logger.debug("Loading GUI options file")
             try:
                 with open(stateFile, mode="r", encoding="utf-8") as inFile:
@@ -106,12 +105,11 @@ class OptionState():
     def saveSettings(self):
         """Save the options dictionary to the project settings file.
         """
-        if self.theProject.projMeta is None:
+        stateFile = self.theProject.storage.getMetaFile(nwFiles.OPTS_FILE)
+        if not isinstance(stateFile, Path):
             return False
 
-        stateFile = os.path.join(self.theProject.projMeta, nwFiles.OPTS_FILE)
         logger.debug("Saving GUI options file")
-
         try:
             with open(stateFile, mode="w+", encoding="utf-8") as outFile:
                 json.dump(self._theState, outFile, indent=2)
@@ -188,8 +186,7 @@ class OptionState():
         the default value.
         """
         if group in self._theState:
-            if name in self._theState[group]:
-                return checkBool(self._theState[group].get(name, default), default)
+            return checkBool(self._theState[group].get(name, default), default)
         return default
 
     def getEnum(self, group, name, lookup, default):

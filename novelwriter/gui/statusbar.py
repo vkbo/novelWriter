@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 class GuiMainStatus(QStatusBar):
 
     def __init__(self, mainGui):
-        QStatusBar.__init__(self, mainGui)
+        super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiMainStatus ...")
 
@@ -66,7 +66,6 @@ class GuiMainStatus(QStatusBar):
         # The Spell Checker Language
         self.langIcon = QLabel("")
         self.langText = QLabel(self.tr("None"))
-        self.langIcon.setPixmap(self.mainTheme.getPixmap("status_lang", (iPx, iPx)))
         self.langIcon.setContentsMargins(0, 0, 0, 0)
         self.langText.setContentsMargins(0, 0, xM, 0)
         self.addPermanentWidget(self.langIcon)
@@ -91,7 +90,6 @@ class GuiMainStatus(QStatusBar):
         # The Project and Session Stats
         self.statsIcon = QLabel()
         self.statsText = QLabel("")
-        self.statsIcon.setPixmap(self.mainTheme.getPixmap("status_stats", (iPx, iPx)))
         self.statsIcon.setContentsMargins(0, 0, 0, 0)
         self.statsText.setContentsMargins(0, 0, xM, 0)
         self.addPermanentWidget(self.statsIcon)
@@ -99,12 +97,8 @@ class GuiMainStatus(QStatusBar):
 
         # The Session Clock
         # Set the mimimum width so the label doesn't rescale every second
-        self.timePixmap = self.mainTheme.getPixmap("status_time", (iPx, iPx))
-        self.idlePixmap = self.mainTheme.getPixmap("status_idle", (iPx, iPx))
-
         self.timeIcon = QLabel()
         self.timeText = QLabel("")
-        self.timeIcon.setPixmap(self.timePixmap)
         self.timeText.setToolTip(self.tr("Session Time"))
         self.timeText.setMinimumWidth(self.mainTheme.getTextWidth("00:00:00:"))
         self.timeIcon.setContentsMargins(0, 0, 0, 0)
@@ -117,6 +111,7 @@ class GuiMainStatus(QStatusBar):
 
         logger.debug("GuiMainStatus initialisation complete")
 
+        self.updateTheme()
         self.clearStatus()
 
         return
@@ -131,6 +126,21 @@ class GuiMainStatus(QStatusBar):
         self.setDocumentStatus(nwState.NONE)
         self.updateTime()
         return True
+
+    def updateTheme(self):
+        """Update theme elements.
+        """
+        iPx = self.mainTheme.baseIconSize
+
+        self.langIcon.setPixmap(self.mainTheme.getPixmap("status_lang", (iPx, iPx)))
+        self.statsIcon.setPixmap(self.mainTheme.getPixmap("status_stats", (iPx, iPx)))
+
+        self.timePixmap = self.mainTheme.getPixmap("status_time", (iPx, iPx))
+        self.idlePixmap = self.mainTheme.getPixmap("status_idle", (iPx, iPx))
+
+        self.timeIcon.setPixmap(self.timePixmap)
+
+        return
 
     ##
     #  Setters

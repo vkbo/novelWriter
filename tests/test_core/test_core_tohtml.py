@@ -19,12 +19,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import pytest
 
 from tools import readFile
 
-from novelwriter.core import NWProject, ToHtml
+from novelwriter.core.tohtml import ToHtml
+from novelwriter.core.project import NWProject
 
 
 @pytest.mark.core
@@ -440,7 +440,7 @@ def testCoreToHtml_SpecialCases(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToHtml_Complex(mockGUI, fncDir):
+def testCoreToHtml_Complex(mockGUI, fncPath):
     """Test the save method of the ToHtml class.
     """
     theProject = NWProject(mockGUI)
@@ -528,7 +528,7 @@ def testCoreToHtml_Complex(mockGUI, fncDir):
         bodyText="".join(resText).rstrip()
     )
 
-    saveFile = os.path.join(fncDir, "outFile.htm")
+    saveFile = fncPath / "outFile.htm"
     theHtml.saveHTML5(saveFile)
     assert readFile(saveFile) == htmlDoc
 

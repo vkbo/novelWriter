@@ -26,22 +26,17 @@ import pytest
 from tools import buildTestProject, writeFile
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QMessageBox, QAction
+from PyQt5.QtWidgets import QWidget, QAction
 
 from novelwriter.enum import nwItemClass, nwOutline, nwView
 
 
 @pytest.mark.gui
-def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
+def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
     """Test the outline view.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-
     # Create a project
-    prjDir = os.path.join(fncDir, "project")
-    buildTestProject(nwGUI, prjDir)
+    buildTestProject(nwGUI, projPath)
 
     nwGUI.rebuildIndex()
     nwGUI._changeView(nwView.OUTLINE)
@@ -54,7 +49,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
     # Toggle scrollbars
     nwGUI.mainConf.hideVScroll = True
     nwGUI.mainConf.hideHScroll = True
-    outlineView.initOutline()
+    outlineView.initSettings()
     assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
@@ -62,7 +57,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
 
     nwGUI.mainConf.hideVScroll = False
     nwGUI.mainConf.hideHScroll = False
-    outlineView.initOutline()
+    outlineView.initSettings()
     assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
@@ -156,15 +151,10 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, fncDir):
 
 
 @pytest.mark.gui
-def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
+def testGuiOutline_Content(qtbot, nwGUI, nwLipsum):
     """Test the outline view.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-
     assert nwGUI.openProject(nwLipsum)
-    nwGUI.mainConf.lastPath = nwLipsum
 
     nwGUI.rebuildIndex()
     nwGUI._changeView(nwView.OUTLINE)
@@ -183,7 +173,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
 
     # Add a second novel folder
     newHandle = nwGUI.theProject.newRoot(nwItemClass.NOVEL)
-    nwGUI.projView.revealNewTreeItem(newHandle)
+    nwGUI.projView.projTree.revealNewTreeItem(newHandle)
 
     # Check new values in dropdown list
     assert outlineBar.novelValue.itemData(0) == lipHandle
@@ -202,7 +192,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
         aHandle = nwGUI.theProject.newFile(dTitle, newHandle)
         hHash = "#"*hLevel
         writeFile(os.path.join(nwLipsum, "content", f"{aHandle}.nwd"), f"{hHash} {dTitle}\n\n")
-        nwGUI.projView.revealNewTreeItem(aHandle)
+        nwGUI.projView.projTree.revealNewTreeItem(aHandle)
 
     nwGUI.rebuildIndex()
 
@@ -232,9 +222,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert outlineData.pCValue.text() == "3"
 
     # Scene One
-    actItem = outlineTree.topLevelItem(1)
-    chpItem = actItem.child(0)
-    selItem = chpItem.child(0)
+    selItem = outlineTree.topLevelItem(4)
 
     outlineTree.setCurrentItem(selItem)
     tHandle, tLine = outlineTree.getSelectedHandle()
@@ -252,10 +240,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
 
     # Scene One, Section Two
-    actItem = outlineTree.topLevelItem(1)
-    chpItem = actItem.child(0)
-    scnItem = chpItem.child(0)
-    selItem = scnItem.child(0)
+    selItem = outlineTree.topLevelItem(5)
 
     outlineTree.setCurrentItem(selItem)
     tHandle, tLine = outlineTree.getSelectedHandle()

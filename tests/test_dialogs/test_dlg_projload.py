@@ -20,35 +20,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import pytest
-import os
 
-from tools import getGuiItem
+from tools import buildTestProject, getGuiItem
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QDialogButtonBox, QTreeWidgetItem, QDialog, QAction, QFileDialog,
-    QMessageBox
+    QDialogButtonBox, QTreeWidgetItem, QDialog, QAction, QFileDialog
 )
 
-from novelwriter.dialogs import GuiProjectLoad
-
-keyDelay = 2
-typeDelay = 1
-stepDelay = 20
+from novelwriter.dialogs.projload import GuiProjectLoad
 
 
 @pytest.mark.gui
-def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
+def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, projPath):
     """Test the load project wizard.
     """
-    # Block message box
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Yes)
-
-    assert nwGUI.openProject(nwMinimal)
+    buildTestProject(nwGUI, projPath)
     assert nwGUI.closeProject()
 
-    qtbot.wait(stepDelay)
     monkeypatch.setattr(GuiProjectLoad, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiProjectLoad, "result", lambda *a: QDialog.Accepted)
     nwGUI.mainMenu.aOpenProject.activate(QAction.Trigger)
@@ -58,22 +47,18 @@ def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     assert isinstance(nwLoad, GuiProjectLoad)
     nwLoad.show()
 
-    qtbot.wait(stepDelay)
     recentCount = nwLoad.listBox.topLevelItemCount()
     assert recentCount > 0
 
-    qtbot.wait(stepDelay)
     selItem = nwLoad.listBox.topLevelItem(0)
     selPath = selItem.data(nwLoad.C_NAME, Qt.UserRole)
     assert isinstance(selItem, QTreeWidgetItem)
 
-    qtbot.wait(stepDelay)
     nwLoad.selPath.setText("")
     nwLoad.listBox.setCurrentItem(selItem)
     nwLoad._doSelectRecent()
     assert nwLoad.selPath.text() == selPath
 
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwLoad.buttonBox.button(QDialogButtonBox.Open), Qt.LeftButton)
     assert nwLoad.openPath == selPath
     assert nwLoad.openState == nwLoad.OPEN_STATE
@@ -81,38 +66,33 @@ def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, nwMinimal):
     # Just create a new project load from scratch for the rest of the test
     del nwLoad
 
-    qtbot.wait(stepDelay)
     nwGUI.mainMenu.aOpenProject.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiProjectLoad") is not None, timeout=1000)
 
-    qtbot.wait(stepDelay)
     nwLoad = getGuiItem("GuiProjectLoad")
     assert isinstance(nwLoad, GuiProjectLoad)
     nwLoad.show()
 
-    qtbot.wait(stepDelay)
     qtbot.mouseClick(nwLoad.buttonBox.button(QDialogButtonBox.Cancel), Qt.LeftButton)
     assert nwLoad.openPath is None
     assert nwLoad.openState == nwLoad.NONE_STATE
 
-    qtbot.wait(stepDelay)
     nwLoad.show()
     qtbot.mouseClick(nwLoad.newButton, Qt.LeftButton)
     assert nwLoad.openPath is None
     assert nwLoad.openState == nwLoad.NEW_STATE
 
-    qtbot.wait(stepDelay)
     nwLoad.show()
     nwLoad._doDeleteRecent()
     assert nwLoad.listBox.topLevelItemCount() == recentCount - 1
 
-    getFile = os.path.join(nwMinimal, "nwProject.nwx")
+    getFile = str(projPath / "nwProject.nwx")
     monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (getFile, None))
     qtbot.mouseClick(nwLoad.browseButton, Qt.LeftButton)
-    assert nwLoad.openPath == nwMinimal
+    assert nwLoad.openPath == projPath / "nwProject.nwx"
     assert nwLoad.openState == nwLoad.OPEN_STATE
 
     nwLoad.close()
-    # qtbot.stopForInteraction()
+    # qtbot.stop()
 
 # END Test testDlgLoadProject_Main

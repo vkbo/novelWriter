@@ -19,13 +19,41 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import time
 import shutil
 
+from pathlib import Path
+
 from PyQt5.QtWidgets import qApp
 
-XML_IGNORE = ("<novelWriterXML", "<saveCount", "<autoCount", "<editTime")
+XML_IGNORE = ("<novelWriterXML", "<project")
+
+
+class C:
+
+    # Import and status items from test project when random generator is mocked
+    sNew      = "s000000"
+    sNote     = "s000001"
+    sDraft    = "s000002"
+    sFinished = "s000003"
+
+    iNew   = "i000004"
+    iMinor = "i000005"
+    iMajor = "i000006"
+    iMain  = "i000007"
+
+    # Handles from test project when random generator is mocked
+    hInvalid    = "0000000000000"
+    hNovelRoot  = "0000000000008"
+    hPlotRoot   = "0000000000009"
+    hCharRoot   = "000000000000a"
+    hWorldRoot  = "000000000000b"
+    hTitlePage  = "000000000000c"
+    hChapterDir = "000000000000d"
+    hChapterDoc = "000000000000e"
+    hSceneDoc   = "000000000000f"
+
+# END Class C
 
 
 def cmpFiles(fileOne, fileTwo, ignoreLines=None, ignoreStart=None):
@@ -102,24 +130,25 @@ def writeFile(fileName, fileData):
         outFile.write(fileData)
 
 
-def cleanProject(projPath):
+def cleanProject(path):
     """Delete all generated files in a project.
     """
-    cacheDir = os.path.join(projPath, "cache")
-    if os.path.isdir(cacheDir):
+    path = Path(path)
+    cacheDir = path / "cache"
+    if cacheDir.is_dir():
         shutil.rmtree(cacheDir)
 
-    metaDir = os.path.join(projPath, "meta")
-    if os.path.isdir(metaDir):
+    metaDir = path / "meta"
+    if metaDir.is_dir():
         shutil.rmtree(metaDir)
 
-    bakFile = os.path.join(projPath, "nwProject.bak")
-    if os.path.isfile(bakFile):
-        os.unlink(bakFile)
+    bakFile = path / "nwProject.bak"
+    if bakFile.is_file():
+        bakFile.unlink()
 
-    tocFile = os.path.join(projPath, "ToC.txt")
-    if os.path.isfile(tocFile):
-        os.unlink(tocFile)
+    tocFile = path / "ToC.txt"
+    if tocFile.is_file():
+        tocFile.unlink()
 
     return
 
@@ -129,7 +158,7 @@ def buildTestProject(theObject, projPath):
     object as the parent.
     """
     from novelwriter.enum import nwItemClass
-    from novelwriter.core import NWProject, NWDoc
+    from novelwriter.core import NWProject
 
     if isinstance(theObject, NWProject):
         theGUI = None
@@ -139,10 +168,13 @@ def buildTestProject(theObject, projPath):
         theProject = theObject.theProject
 
     theProject.clearProject()
-    theProject.setProjectPath(projPath, newProject=True)
-    theProject.setProjectName("New Project")
-    theProject.setBookTitle("New Novel")
-    theProject.setBookAuthors("Jane Doe")
+    theProject.storage.openProjectInPlace(projPath)
+    theProject.setDefaultStatusImport()
+
+    theProject.data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
+    theProject.data.setName("New Project")
+    theProject.data.setTitle("New Novel")
+    theProject.data.setAuthors("Jane Doe")
 
     # Creating a minimal project with a few root folders and a
     # single chapter folder with a single file.
@@ -156,22 +188,24 @@ def buildTestProject(theObject, projPath):
     xHandle[7] = theProject.newFile("New Chapter", xHandle[6])
     xHandle[8] = theProject.newFile("New Scene", xHandle[6])
 
-    aDoc = NWDoc(theProject, xHandle[5])
-    aDoc.writeDocument("#! New Novel\n\n>> By Jane DOe <<\n")
+    aDoc = theProject.storage.getDocument(xHandle[5])
+    aDoc.writeDocument("#! New Novel\n\n>> By Jane Doe <<\n")
+    theProject.index.reIndexHandle(xHandle[5])
 
-    aDoc = NWDoc(theProject, xHandle[7])
+    aDoc = theProject.storage.getDocument(xHandle[7])
     aDoc.writeDocument("## %s\n\n" % theProject.tr("New Chapter"))
+    theProject.index.reIndexHandle(xHandle[7])
 
-    aDoc = NWDoc(theProject, xHandle[8])
+    aDoc = theProject.storage.getDocument(xHandle[8])
     aDoc.writeDocument("### %s\n\n" % theProject.tr("New Scene"))
+    theProject.index.reIndexHandle(xHandle[8])
 
-    theProject.projOpened = time.time()
+    theProject._projOpened = time.time()
     theProject.setProjectChanged(True)
     theProject.saveProject(autoSave=True)
 
     if theGUI is not None:
         theGUI.hasProject = True
         theGUI.rebuildTrees()
-        theGUI.rebuildIndex(beQuiet=True)
 
     return
