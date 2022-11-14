@@ -41,6 +41,8 @@ from novelwriter.common import (
 
 logger = logging.getLogger(__name__)
 
+TT_NONE = "T0000"
+
 
 class NWIndex:
     """This class holds the entire index for a given project. The index
@@ -281,50 +283,58 @@ class NWIndex:
     def _scanActive(self, tHandle, theItem, theText, itemTags):
         """Scan an active document for meta data.
         """
-        nTitle = 0
-        findHeader = True
-        theLines = theText.splitlines()
+        nTitle = 0          # Line Number of the previous title
+        cTitle = TT_NONE    # Tag of the current title
+        pTitle = TT_NONE    # Tag of the previous title
+        firstHeader = True  # First header has been seen
 
+        theLines = theText.splitlines()
         for nLine, aLine in enumerate(theLines, start=1):
 
-            if len(aLine.strip()) == 0:
+            if aLine.strip() == "":
                 continue
 
             if aLine.startswith("#"):
-                if findHeader:
-                    hDepth, _ = self._splitHeading(aLine)
-                    if hDepth != "H0":
-                        theItem.setMainHeading(hDepth)
-                        findHeader = False
+                hDepth, hText = self._splitHeading(aLine)
+                if hDepth == "H0":
+                    continue
 
-                isTitle = self._indexTitle(tHandle, aLine, nLine)
-                if isTitle and nLine > 0:
+                if firstHeader:
+                    theItem.setMainHeading(hDepth)
+                    firstHeader = False
+
+                cTitle = self._itemIndex.addItemHeading(tHandle, nLine, hDepth, hText)
+                if cTitle != TT_NONE:
                     if nTitle > 0:
+                        # We have a new title, so we need to count the words of the previous one
                         lastText = "\n".join(theLines[nTitle-1:nLine-1])
-                        self._indexWordCounts(tHandle, lastText, nTitle)
+                        self._indexWordCounts(tHandle, lastText, pTitle)
                     nTitle = nLine
+                    pTitle = cTitle
 
             elif aLine.startswith("@"):
-                self._indexKeyword(tHandle, aLine, nTitle, theItem.itemClass, itemTags)
+                if cTitle != TT_NONE:
+                    self._indexKeyword(tHandle, aLine, cTitle, theItem.itemClass, itemTags)
 
             elif aLine.startswith("%"):
-                if nTitle > 0:
+                if cTitle != TT_NONE:
                     toCheck = aLine[1:].lstrip()
                     synTag = toCheck[:9].lower()
                     tLen = len(aLine)
                     cLen = len(toCheck)
                     cOff = tLen - cLen
                     if synTag == "synopsis:":
-                        self._indexSynopsis(tHandle, aLine[cOff+9:].strip(), nTitle)
+                        sText = aLine[cOff+9:].strip()
+                        self._itemIndex.setHeadingSynopsis(tHandle, cTitle, sText)
 
         # Count words for remaining text after last heading
-        if nTitle > 0:
+        if pTitle != TT_NONE:
             lastText = "\n".join(theLines[nTitle-1:])
-            self._indexWordCounts(tHandle, lastText, nTitle)
+            self._indexWordCounts(tHandle, lastText, pTitle)
 
         # Also count words on a page with no titles
-        if nTitle == 0:
-            self._indexWordCounts(tHandle, theText, nTitle)
+        if cTitle == TT_NONE:
+            self._indexWordCounts(tHandle, theText, cTitle)
 
         # Prune no longer used tags
         for tTag, isActive in itemTags.items():
@@ -362,34 +372,14 @@ class NWIndex:
             return "H2", aLine[4:].strip()
         return "H0", ""
 
-    def _indexTitle(self, tHandle, aLine, nTitle):
-        """Save information about the title and its location in the
-        file to the index.
-        """
-        hDepth, hText = self._splitHeading(aLine)
-        if hDepth == "H0":
-            return False
-
-        sTitle = f"T{nTitle:06d}"
-        self._itemIndex.addItemHeading(tHandle, sTitle, hDepth, hText)
-        return True
-
-    def _indexWordCounts(self, tHandle, theText, nTitle):
+    def _indexWordCounts(self, tHandle, theText, sTitle):
         """Count text stats and save the counts to the index.
         """
-        sTitle = f"T{nTitle:06d}"
         cC, wC, pC = countWords(theText)
-        self._itemIndex.setHeadingCounts(tHandle, sTitle,  cC, wC, pC)
+        self._itemIndex.setHeadingCounts(tHandle, sTitle, cC, wC, pC)
         return
 
-    def _indexSynopsis(self, tHandle, theText, nTitle):
-        """Save the synopsis to the index.
-        """
-        sTitle = f"T{nTitle:06d}"
-        self._itemIndex.setHeadingSynopsis(tHandle, sTitle, theText)
-        return
-
-    def _indexKeyword(self, tHandle, aLine, nTitle, itemClass, itemTags):
+    def _indexKeyword(self, tHandle, aLine, sTitle, itemClass, itemTags):
         """Validate and save the information about a reference to a tag
         in another file, or the setting of a tag in the file. A record
         of active tags is updated so that no longer used tags can be
@@ -404,7 +394,6 @@ class NWIndex:
             logger.warning("Skipping invalid keyword '%s' in '%s'", theBits[0], tHandle)
             return
 
-        sTitle = f"T{nTitle:06d}"
         if theBits[0] == nwKeyWords.TAG_KEY:
             tagName = theBits[1]
             self._tagsIndex.add(tagName, tHandle, sTitle, itemClass)
@@ -505,6 +494,14 @@ class NWIndex:
         """Get the index data for a given item.
         """
         return self._itemIndex[tHandle]
+
+    def getItemHeader(self, tHandle, sTitle):
+        """Get the header entry for a specific item and heading.
+        """
+        tItem = self._itemIndex[tHandle]
+        if isinstance(tItem, IndexItem):
+            return tItem[sTitle]
+        return None
 
     def getNovelWordCount(self, skipExcl=True):
         """Count the number of words in the novel project.
@@ -649,6 +646,8 @@ class TagsIndex:
     control of the keys.
     """
 
+    __slots__ = ("_tags")
+
     def __init__(self):
         self._tags = {}
         return
@@ -695,7 +694,7 @@ class TagsIndex:
     def tagHeading(self, tagKey):
         """Get the heading of a given tag.
         """
-        return self._tags.get(tagKey, {}).get("heading", nwHeaders.TT_NONE)
+        return self._tags.get(tagKey, {}).get("heading", TT_NONE)
 
     def tagClass(self, tagKey):
         """Get the class of a given tag.
@@ -753,6 +752,8 @@ class ItemIndex:
     item is stored in an IndexItem object, which again holds an
     IndexHeading object for each header of the text.
     """
+
+    __slots__ = ("_project", "_items")
 
     def __init__(self, project):
         self._project = project
@@ -844,13 +845,15 @@ class ItemIndex:
     #  Setters
     ##
 
-    def addItemHeading(self, tHandle, sTitle, hDepth, hText):
-        """Set the main heading level of an item.
+    def addItemHeading(self, tHandle, lineNo, hDepth, hText):
+        """Add a heading to an item.
         """
         if tHandle in self._items:
             tItem = self._items[tHandle]
-            tItem.addHeading(IndexHeading(sTitle, hDepth, hText))
-        return
+            sTitle = tItem.nextHeading()
+            tItem.addHeading(IndexHeading(sTitle, lineNo, hDepth, hText))
+            return sTitle
+        return TT_NONE
 
     def setHeadingCounts(self, tHandle, sTitle, cC, wC, pC):
         """Set the character, word and paragraph counts of a heading
@@ -921,14 +924,16 @@ class IndexItem:
     must be reset each time the item is re-indexed.
     """
 
+    __slots__ = ("_handle", "_item", "_headings", "_headings", "_count")
+
     def __init__(self, tHandle, tItem):
         self._handle = tHandle
         self._item = tItem
         self._headings = {}
-        self._index = 0
+        self._count = 0
 
         # Add a placeholder heading
-        self._headings[nwHeaders.TT_NONE] = IndexHeading(nwHeaders.TT_NONE)
+        self._headings[TT_NONE] = IndexHeading(TT_NONE)
 
         return
 
@@ -951,8 +956,8 @@ class IndexItem:
         """Add a heading to the item. Also remove the placeholder entry
         if it exists.
         """
-        if nwHeaders.TT_NONE in self._headings:
-            self._headings.pop(nwHeaders.TT_NONE)
+        if TT_NONE in self._headings:
+            self._headings.pop(TT_NONE)
         self._headings[tHeading.key] = tHeading
         return
 
@@ -1011,6 +1016,12 @@ class IndexItem:
                 tags.append(tag)
         return tags
 
+    def nextHeading(self):
+        """Return the next heading key to be used.
+        """
+        self._count += 1
+        return f"T{self._count:04d}"
+
     ##
     #  Pack/Unpack
     ##
@@ -1056,8 +1067,14 @@ class IndexHeading:
     of all references made under each heading.
     """
 
-    def __init__(self, key, level="H0", title=""):
+    __slots__ = (
+        "_key", "_line", "_level", "_title", "_charCount", "_wordCount",
+        "_paraCount", "_synopsis", "_tag", "_refs",
+    )
+
+    def __init__(self, key, line=0, level="H0", title=""):
         self._key = key
+        self._line = line
         self._level = level
         self._title = title
 
@@ -1081,6 +1098,10 @@ class IndexHeading:
     @property
     def key(self):
         return self._key
+
+    @property
+    def line(self):
+        return self._line
 
     @property
     def level(self):
@@ -1125,6 +1146,12 @@ class IndexHeading:
             self._level = level
         return
 
+    def setLine(self, line):
+        """Set the line number of a heading.
+        """
+        self._line = max(0, checkInt(line, 0))
+        return
+
     def setCounts(self, charCount, wordCount, paraCount):
         """Set the character, word and paragraph count. Make sure the
         value is an integer and is not smaller than 0.
@@ -1166,6 +1193,7 @@ class IndexHeading:
         return {
             "level": self._level,
             "title": self._title,
+            "line": self._line,
             "tag": self._tag,
             "cCount": self._charCount,
             "wCount": self._wordCount,
@@ -1187,6 +1215,7 @@ class IndexHeading:
         self.setLevel(data.get("level", "H0"))
         self._title = str(data.get("title", ""))
         self._tag = str(data.get("tag", ""))
+        self.setLine(data.get("line", 0))
         self.setCounts(
             data.get("cCount", 0),
             data.get("wCount", 0),

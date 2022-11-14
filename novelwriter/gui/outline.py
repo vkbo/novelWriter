@@ -55,6 +55,7 @@ logger = logging.getLogger(__name__)
 class GuiOutlineView(QWidget):
 
     loadDocumentTagRequest = pyqtSignal(str, Enum)
+    openDocumentRequest = pyqtSignal(str, Enum, str)
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -375,15 +376,16 @@ class GuiOutlineTree(QTreeWidget):
     hiddenStateChanged = pyqtSignal()
     activeItemChanged = pyqtSignal(str, str)
 
-    def __init__(self, theOutline):
-        super().__init__(parent=theOutline)
+    def __init__(self, outlineView):
+        super().__init__(parent=outlineView)
 
         logger.debug("Initialising GuiOutlineTree ...")
 
-        self.mainConf   = novelwriter.CONFIG
-        self.mainGui    = theOutline.mainGui
-        self.theProject = theOutline.mainGui.theProject
-        self.mainTheme  = theOutline.mainGui.mainTheme
+        self.mainConf    = novelwriter.CONFIG
+        self.outlineView = outlineView
+        self.mainGui     = outlineView.mainGui
+        self.theProject  = outlineView.mainGui.theProject
+        self.mainTheme   = outlineView.mainGui.mainTheme
 
         self.setUniformRowHeights(True)
         self.setFrameStyle(QFrame.NoFrame)
@@ -524,13 +526,11 @@ class GuiOutlineTree(QTreeWidget):
         selected, return the first.
         """
         selItem = self.selectedItems()
-        tHandle = None
-        tLine = 0
         if selItem:
             tHandle = selItem[0].data(self._colIdx[nwOutline.TITLE], self.D_HANDLE)
-            tLine = checkInt(selItem[0].text(self._colIdx[nwOutline.LINE]), 1) - 1
-
-        return tHandle, tLine
+            sTitle = selItem[0].data(self._colIdx[nwOutline.TITLE], self.D_TITLE)
+            return tHandle, sTitle
+        return None, None
 
     ##
     #  Slots
@@ -542,8 +542,10 @@ class GuiOutlineTree(QTreeWidget):
         clicked, and send it to the main gui class for opening in the
         document editor.
         """
-        tHandle, tLine = self.getSelectedHandle()
-        self.mainGui.openDocument(tHandle, tLine=tLine - 1, doScroll=True)
+        tHandle, sTitle = self.getSelectedHandle()
+        if tHandle is None:
+            return
+        self.outlineView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle or "")
         return
 
     @pyqtSlot()
@@ -554,9 +556,8 @@ class GuiOutlineTree(QTreeWidget):
         selItems = self.selectedItems()
         if selItems:
             tHandle = selItems[0].data(self._colIdx[nwOutline.TITLE], self.D_HANDLE)
-            sTitle  = selItems[0].data(self._colIdx[nwOutline.TITLE], self.D_TITLE)
+            sTitle = selItems[0].data(self._colIdx[nwOutline.TITLE], self.D_TITLE)
             self.activeItemChanged.emit(tHandle, sTitle)
-
         return
 
     @pyqtSlot(int, int, int)
@@ -718,7 +719,7 @@ class GuiOutlineTree(QTreeWidget):
             trItem.setText(self._colIdx[nwOutline.LEVEL], novIdx.level)
             trItem.setIcon(self._colIdx[nwOutline.LABEL], self._dIcon[nwItem.mainHeading])
             trItem.setText(self._colIdx[nwOutline.LABEL], nwItem.itemName)
-            trItem.setText(self._colIdx[nwOutline.LINE], sTitle[1:].lstrip("0"))
+            trItem.setText(self._colIdx[nwOutline.LINE], f"{novIdx.line:n}")
             trItem.setText(self._colIdx[nwOutline.SYNOP], novIdx.synopsis)
             trItem.setText(self._colIdx[nwOutline.CCOUNT], f"{novIdx.charCount:n}")
             trItem.setText(self._colIdx[nwOutline.WCOUNT], f"{novIdx.wordCount:n}")

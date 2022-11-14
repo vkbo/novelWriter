@@ -40,7 +40,6 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
-from novelwriter.common import checkInt
 from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
 
 logger = logging.getLogger(__name__)
@@ -60,7 +59,7 @@ class GuiNovelView(QWidget):
 
     # Signals for user interaction with the novel tree
     selectedItemChanged = pyqtSignal(str)
-    openDocumentRequest = pyqtSignal(str, Enum, int, str)
+    openDocumentRequest = pyqtSignal(str, Enum, str)
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -543,14 +542,11 @@ class GuiNovelTree(QTreeWidget):
         selected, return the first.
         """
         selItem = self.selectedItems()
-        tHandle = None
-        tLine = 0
         if selItem:
             tHandle = selItem[0].data(self.C_TITLE, self.D_HANDLE)
             sTitle = selItem[0].data(self.C_TITLE, self.D_TITLE)
-            tLine = checkInt(sTitle[1:], 1) - 1
-
-        return tHandle, tLine
+            return tHandle, sTitle
+        return None, None
 
     def setLastColType(self, colType, doRefresh=True):
         """Change the content type of the last column and rebuild.
@@ -609,11 +605,11 @@ class GuiNovelTree(QTreeWidget):
             if not isinstance(selItem, QTreeWidgetItem):
                 return
 
-            tHandle, _ = self.getSelectedHandle()
+            tHandle, sTitle = self.getSelectedHandle()
             if tHandle is None:
                 return
 
-            self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
+            self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, sTitle or "")
 
         return
 
@@ -655,8 +651,8 @@ class GuiNovelTree(QTreeWidget):
         clicked, and send it to the main gui class for opening in the
         document editor.
         """
-        tHandle, tLine = self.getSelectedHandle()
-        self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, tLine, "")
+        tHandle, sTitle = self.getSelectedHandle()
+        self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle or "")
         return
 
     ##
