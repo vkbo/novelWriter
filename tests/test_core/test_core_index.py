@@ -580,12 +580,13 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert wC == 12  # Words in text and title only
     assert pC == 2   # Paragraphs in text only
 
-    # getItemData
-    # ===========
+    # getItemData + getHandleHeaderCount
+    # ==================================
 
     theItem = theIndex.getItemData(nHandle)
     assert isinstance(theItem, IndexItem)
     assert theItem.headings() == ["T0001"]
+    assert theIndex.getHandleHeaderCount(nHandle) == 1
 
     # getReferences
     # =============
@@ -786,17 +787,6 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
 
     assert theIndex.saveIndex() is True
     assert theProject.saveProject() is True
-
-    # Header Record
-    bHandle = "0000000000000"
-    assert theIndex.getHandleHeaders(bHandle) == []
-    assert theIndex.getHandleHeaders(hHandle) == [("T0001", "H2", "Chapter One")]
-    assert theIndex.getHandleHeaders(sHandle) == [("T0001", "H3", "Scene One")]
-    assert theIndex.getHandleHeaders(tHandle) == [("T0001", "H3", "Scene Two")]
-    assert theIndex.getHandleHeaders(nHandle) == [
-        ("T0001", "H1", "Hello World!"), ("T0002", "H1", "Hello World!")
-    ]
-
     assert theProject.closeProject() is True
 
 # END Test testCoreIndex_ExtractData

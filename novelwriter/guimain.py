@@ -818,16 +818,7 @@ class GuiMain(QMainWindow):
         """Rebuild the project tree.
         """
         self.projView.populateTree()
-        # self.novelView.refreshTree()
         return
-
-    def requestNovelTreeRefresh(self):
-        """Update the novel tree, but only if it is visible.
-        """
-        if self.projStack.currentIndex() == self.idxNovelView and self.hasProject:
-            self.novelView.refreshTree()
-            return True
-        return False
 
     def rebuildIndex(self, beQuiet=False):
         """Rebuild the entire index.
@@ -843,6 +834,7 @@ class GuiMain(QMainWindow):
         self.projView.saveProjectTasks()
         self.theProject.index.rebuildIndex()
         self.projView.populateTree()
+        self.novelView.refreshTree()
 
         tEnd = time()
         self.setStatus(
@@ -1578,7 +1570,6 @@ class GuiMain(QMainWindow):
             self.docEditor.closeSearch()
         elif self.isFocusMode:
             self.toggleFocusMode()
-
         return
 
     @pyqtSlot(int)
@@ -1595,17 +1586,11 @@ class GuiMain(QMainWindow):
         """Activated when the project view tab is changed.
         """
         sHandle = None
-
         if stIndex == self.idxProjView:
             sHandle = self.projView.getSelectedHandle()
-
         elif stIndex == self.idxNovelView:
-            if self.hasProject:
-                self.novelView.refreshTree()
-                sHandle, _ = self.novelView.getSelectedHandle()
-
+            sHandle, _ = self.novelView.getSelectedHandle()
         self.itemDetails.updateViewBox(sHandle)
-
         return
 
 # END Class GuiMain

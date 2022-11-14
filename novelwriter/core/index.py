@@ -528,13 +528,13 @@ class NWIndex:
             for sTitle, hItem in self._itemIndex.iterItemHeaders(tHandle)
         ]
 
-    def getHandleHeaders(self, tHandle):
-        """Get all headers for a specific handle.
+    def getHandleHeaderCount(self, tHandle):
+        """Get the number of headers in an item.
         """
-        return [
-            (sTitle, hItem.level, hItem.title)
-            for sTitle, hItem in self._itemIndex.iterItemHeaders(tHandle)
-        ]
+        tItem = self._itemIndex[tHandle]
+        if isinstance(tItem, IndexItem):
+            return len(tItem)
+        return 0
 
     def getTableOfContents(self, rootHandle, maxDepth, skipExcl=True):
         """Generate a table of contents up to a maximum depth.
@@ -645,6 +645,16 @@ class TagsIndex:
         self._tags = {}
         return
 
+    def __contains__(self, tagKey):
+        return tagKey in self._tags
+
+    def __delitem__(self, tagKey):
+        self._tags.pop(tagKey, None)
+        return
+
+    def __getitem__(self, tagKey):
+        return self._tags.get(tagKey, None)
+
     ##
     #  Methods
     ##
@@ -654,22 +664,6 @@ class TagsIndex:
         """
         self._tags = {}
         return
-
-    def __contains__(self, tagKey):
-        """Check if a tag exists in the index,
-        """
-        return tagKey in self._tags
-
-    def __delitem__(self, tagKey):
-        """Delete an entry in the index.
-        """
-        self._tags.pop(tagKey, None)
-        return
-
-    def __getitem__(self, tagKey):
-        """Return a tag, or return None if it isn't found.
-        """
-        return self._tags.get(tagKey, None)
 
     def add(self, tagKey, tHandle, sTitle, itemClass):
         """Add a key to the index and set all values.
@@ -753,6 +747,16 @@ class ItemIndex:
         self._items = {}
         return
 
+    def __contains__(self, tHandle):
+        return tHandle in self._items
+
+    def __delitem__(self, tHandle):
+        self._items.pop(tHandle, None)
+        return
+
+    def __getitem__(self, tHandle):
+        return self._items.get(tHandle, None)
+
     ##
     #  Methods
     ##
@@ -762,22 +766,6 @@ class ItemIndex:
         """
         self._items = {}
         return
-
-    def __contains__(self, tHandle):
-        """Check if an item exists in the index,
-        """
-        return tHandle in self._items
-
-    def __delitem__(self, tHandle):
-        """Delete an entry in the index.
-        """
-        self._items.pop(tHandle, None)
-        return
-
-    def __getitem__(self, tHandle):
-        """Return an item, or return None if it isn't found.
-        """
-        return self._items.get(tHandle, None)
 
     def add(self, tHandle, tItem):
         """Add a new item to the index. This will overwrite the item if
@@ -933,6 +921,15 @@ class IndexItem:
     def __repr__(self):
         return f"<IndexItem handle='{self._handle}'>"
 
+    def __len__(self):
+        return len(self._headings)
+
+    def __getitem__(self, sTitle):
+        return self._headings.get(sTitle, None)
+
+    def __contains__(self, sTitle):
+        return sTitle in self._headings
+
     ##
     # Properties
     ##
@@ -986,12 +983,6 @@ class IndexItem:
     ##
     #  Data Methods
     ##
-
-    def __getitem__(self, sTitle):
-        return self._headings.get(sTitle, None)
-
-    def __contains__(self, sTitle):
-        return sTitle in self._headings
 
     def items(self):
         return self._headings.items()

@@ -477,7 +477,7 @@ class GuiNovelTree(QTreeWidget):
         return
 
     def refreshTree(self, rootHandle=None, overRide=False):
-        """Called whenever the Novel tab is activated.
+        """Refresh the tree if it has been changed.
         """
         logger.debug("Requesting refresh of the novel tree")
         if rootHandle is None:
@@ -509,31 +509,16 @@ class GuiNovelTree(QTreeWidget):
         if idxData is None:
             return
 
+        logger.debug("Refreshing meta data for item '%s'", tHandle)
         for sTitle, tHeading in idxData.items():
             sKey = f"{tHandle}:{sTitle}"
             trItem = self._treeMap.get(sKey, None)
             if trItem is None:
                 logger.debug("Heading '%s' not in novel tree", sKey)
-                continue
+                self.refreshTree()
+                return
 
-            iLevel = nwHeaders.H_LEVEL.get(tHeading.level, 0)
-            if iLevel == 0:
-                continue
-
-            hDec = self.mainTheme.getHeaderDecoration(iLevel)
-
-            trItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
-            trItem.setText(self.C_TITLE, tHeading.title)
-            trItem.setFont(self.C_TITLE, self._hFonts[iLevel])
-            trItem.setText(self.C_WORDS, f"{tHeading.wordCount:n}")
-            trItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
-            trItem.setData(self.C_MORE, Qt.DecorationRole, self._pMore)
-
-            # Custom column
-            lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
-            trItem.setText(self.C_EXTRA, lastText)
-            if lastText:
-                trItem.setToolTip(self.C_EXTRA, toolTip)
+            self._updateTreeItemValues(trItem, tHeading, tHandle, sTitle)
 
         return
 
@@ -668,30 +653,16 @@ class GuiNovelTree(QTreeWidget):
 
         novStruct = self.theProject.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
         for tKey, tHandle, sTitle, novIdx in novStruct:
-
-            iLevel = nwHeaders.H_LEVEL.get(novIdx.level, 0)
-            if iLevel == 0:
+            if novIdx.level == "H0":
                 continue
 
-            hDec = self.mainTheme.getHeaderDecoration(iLevel)
-
             newItem = QTreeWidgetItem()
-            newItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
-            newItem.setText(self.C_TITLE, novIdx.title)
             newItem.setData(self.C_TITLE, self.D_HANDLE, tHandle)
             newItem.setData(self.C_TITLE, self.D_TITLE, sTitle)
             newItem.setData(self.C_TITLE, self.D_KEY, tKey)
-            newItem.setFont(self.C_TITLE, self._hFonts[iLevel])
-            newItem.setText(self.C_WORDS, f"{novIdx.wordCount:n}")
             newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
-            newItem.setData(self.C_MORE, Qt.DecorationRole, self._pMore)
 
-            # Custom column
-            lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
-            newItem.setText(self.C_EXTRA, lastText)
-            if lastText:
-                newItem.setToolTip(self.C_EXTRA, toolTip)
-
+            self._updateTreeItemValues(newItem, novIdx, tHandle, sTitle)
             self._treeMap[tKey] = newItem
             self.addTopLevelItem(newItem)
 
@@ -699,6 +670,26 @@ class GuiNovelTree(QTreeWidget):
 
         logger.debug("Novel Tree built in %.3f ms", (time() - tStart)*1000)
         self._lastBuild = time()
+
+        return
+
+    def _updateTreeItemValues(self, trItem, idxItem, tHandle, sTitle):
+        """Set the tree item values from the index entry.
+        """
+        iLevel = nwHeaders.H_LEVEL.get(idxItem.level, 0)
+        hDec = self.mainTheme.getHeaderDecoration(iLevel)
+
+        trItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
+        trItem.setText(self.C_TITLE, idxItem.title)
+        trItem.setFont(self.C_TITLE, self._hFonts[iLevel])
+        trItem.setText(self.C_WORDS, f"{idxItem.wordCount:n}")
+        trItem.setData(self.C_MORE, Qt.DecorationRole, self._pMore)
+
+        # Custom column
+        lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
+        trItem.setText(self.C_EXTRA, lastText)
+        if lastText:
+            trItem.setToolTip(self.C_EXTRA, toolTip)
 
         return
 
