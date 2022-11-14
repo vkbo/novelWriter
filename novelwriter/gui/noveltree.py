@@ -83,7 +83,6 @@ class GuiNovelView(QWidget):
         self.setLayout(self.outerBox)
 
         # Function Mappings
-        self.updateWordCounts = self.novelTree.updateWordCounts
         self.getSelectedHandle = self.novelTree.getSelectedHandle
         self.setActiveHandle = self.novelTree.setActiveHandle
 
@@ -105,12 +104,6 @@ class GuiNovelView(QWidget):
         """Initialise GUI elements that depend on specific settings.
         """
         self.novelTree.initSettings()
-        return
-
-    def refreshTree(self):
-        """Refresh the current tree.
-        """
-        self.novelTree.refreshTree(rootHandle=self.theProject.data.getLastHandle("novelTree"))
         return
 
     def clearProject(self):
@@ -164,11 +157,26 @@ class GuiNovelView(QWidget):
     #  Public Slots
     ##
 
+    @pyqtSlot()
+    def refreshTree(self):
+        """Refresh the current tree.
+        """
+        self.novelTree.refreshTree(rootHandle=self.theProject.data.getLastHandle("novelTree"))
+        return
+
     @pyqtSlot(str)
     def updateRootItem(self, tHandle):
         """If any root item changes, rebuild the novel root menu.
         """
         self.novelBar.buildNovelRootMenu()
+        return
+
+    @pyqtSlot(str)
+    def updateNovelItemMeta(self, tHandle):
+        """The meta data of a novel item has changed, and the tree item
+        needs to be refreshed.
+        """
+        self.novelTree.refreshHandle(tHandle)
         return
 
 # END Class GuiNovelView
@@ -495,13 +503,39 @@ class GuiNovelTree(QTreeWidget):
 
         return
 
-    def updateWordCounts(self, tHandle):
-        """Update the word count for a given handle.
+    def refreshHandle(self, tHandle):
+        """Refresh the data for a given handle.
         """
-        tHeaders = self.theProject.index.getHandleWordCounts(tHandle)
-        for titleKey, wCount in tHeaders:
-            if titleKey in self._treeMap:
-                self._treeMap[titleKey].setText(self.C_WORDS, f"{wCount:n}")
+        idxData = self.theProject.index.getItemData(tHandle)
+        if idxData is None:
+            return
+
+        for sTitle, tHeading in idxData.items():
+            sKey = f"{tHandle}:{sTitle}"
+            trItem = self._treeMap.get(sKey, None)
+            if trItem is None:
+                logger.debug("Heading '%s' not in novel tree", sKey)
+                continue
+
+            iLevel = nwHeaders.H_LEVEL.get(tHeading.level, 0)
+            if iLevel == 0:
+                continue
+
+            hDec = self.mainTheme.getHeaderDecoration(iLevel)
+
+            trItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
+            trItem.setText(self.C_TITLE, tHeading.title)
+            trItem.setFont(self.C_TITLE, self._hFonts[iLevel])
+            trItem.setText(self.C_WORDS, f"{tHeading.wordCount:n}")
+            trItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
+            trItem.setData(self.C_MORE, Qt.DecorationRole, self._pMore)
+
+            # Custom column
+            lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
+            trItem.setText(self.C_EXTRA, lastText)
+            if lastText:
+                trItem.setToolTip(self.C_EXTRA, toolTip)
+
         return
 
     def getSelectedHandle(self):

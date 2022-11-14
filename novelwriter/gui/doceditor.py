@@ -51,7 +51,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import NWSpellEnchant, countWords
-from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode
+from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode, nwItemClass
 from novelwriter.common import transferCase
 from novelwriter.constants import nwConst, nwFiles, nwKeyWords, nwUnicode
 from novelwriter.gui.dochighlight import GuiDocHighlighter
@@ -71,6 +71,8 @@ class GuiDocEditor(QTextEdit):
     docEditedStatusChanged = pyqtSignal(bool)
     docCountsChanged = pyqtSignal(str, int, int, int)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
+    novelStructureChanged = pyqtSignal()
+    novelItemMetaChanged = pyqtSignal(str)
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -534,11 +536,11 @@ class GuiDocEditor(QTextEdit):
         self.theProject.index.scanText(tHandle, docText)
         newHeader = self._nwItem.mainHeading
 
-        # ToDo: This should be a signal
-        if self._updateHeaders():
-            self.mainGui.requestNovelTreeRefresh()
-        else:
-            self.mainGui.novelView.updateWordCounts(tHandle)
+        if self._nwItem.itemClass == nwItemClass.NOVEL:
+            if self._updateHeaders():
+                self.novelStructureChanged.emit()
+            else:
+                self.novelItemMetaChanged.emit(tHandle)
 
         # ToDo: This should be a signal
         if oldHeader != newHeader:

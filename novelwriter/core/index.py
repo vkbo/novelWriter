@@ -501,6 +501,11 @@ class NWIndex:
             yield f"{tHandle}:{sTitle}", tHandle, sTitle, hItem
         return
 
+    def getItemData(self, tHandle):
+        """Get the index data for a given item.
+        """
+        return self._itemIndex[tHandle]
+
     def getNovelWordCount(self, skipExcl=True):
         """Count the number of words in the novel project.
         """

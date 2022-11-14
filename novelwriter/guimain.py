@@ -224,6 +224,8 @@ class GuiMain(QMainWindow):
         self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
         self.docEditor.docCountsChanged.connect(self.projView.updateCounts)
         self.docEditor.loadDocumentTagRequest.connect(self._followTag)
+        self.docEditor.novelStructureChanged.connect(self.novelView.refreshTree)
+        self.docEditor.novelItemMetaChanged.connect(self.novelView.updateNovelItemMeta)
 
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
 
