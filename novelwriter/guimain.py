@@ -224,10 +224,13 @@ class GuiMain(QMainWindow):
         self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
         self.docEditor.docCountsChanged.connect(self.projView.updateCounts)
         self.docEditor.loadDocumentTagRequest.connect(self._followTag)
+        self.docEditor.novelStructureChanged.connect(self.novelView.refreshTree)
+        self.docEditor.novelItemMetaChanged.connect(self.novelView.updateNovelItemMeta)
 
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
 
         self.outlineView.loadDocumentTagRequest.connect(self._followTag)
+        self.outlineView.openDocumentRequest.connect(self._openDocument)
 
         # Finalise Initialisation
         # =======================
@@ -648,7 +651,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def viewDocument(self, tHandle=None, tAnchor=None):
+    def viewDocument(self, tHandle=None, sTitle=None):
         """Load a document for viewing in the view panel.
         """
         if not self.hasProject:
@@ -687,7 +690,8 @@ class GuiMain(QMainWindow):
                 self.splitDocs.setSizes(vPos)
                 self.viewMeta.setVisible(self.mainConf.showRefPanel)
 
-            self.docViewer.navigateTo(tAnchor)
+            if sTitle:
+                self.docViewer.navigateTo(f"#{sTitle}")
 
         return True
 
@@ -775,16 +779,22 @@ class GuiMain(QMainWindow):
             return False
 
         tHandle = None
+        sTitle = None
         tLine = None
         if self.projView.treeHasFocus():
             tHandle = self.projView.getSelectedHandle()
         elif self.novelView.treeHasFocus():
-            tHandle, tLine = self.novelView.getSelectedHandle()
+            tHandle, sTitle = self.novelView.getSelectedHandle()
         elif self.outlineView.treeHasFocus():
-            tHandle, tLine = self.outlineView.getSelectedHandle()
+            tHandle, sTitle = self.outlineView.getSelectedHandle()
         else:
             logger.warning("No item selected")
             return False
+
+        if tHandle is not None and sTitle is not None:
+            hItem = self.theProject.index.getItemHeader(tHandle, sTitle)
+            if hItem is not None:
+                tLine = hItem.line
 
         if tHandle is not None:
             self.openDocument(tHandle, tLine=tLine, changeFocus=False, doScroll=False)
@@ -808,16 +818,7 @@ class GuiMain(QMainWindow):
         """Rebuild the project tree.
         """
         self.projView.populateTree()
-        # self.novelView.refreshTree()
         return
-
-    def requestNovelTreeRefresh(self):
-        """Update the novel tree, but only if it is visible.
-        """
-        if self.projStack.currentIndex() == self.idxNovelView and self.hasProject:
-            self.novelView.refreshTree()
-            return True
-        return False
 
     def rebuildIndex(self, beQuiet=False):
         """Rebuild the entire index.
@@ -833,6 +834,7 @@ class GuiMain(QMainWindow):
         self.projView.saveProjectTasks()
         self.theProject.index.rebuildIndex()
         self.projView.populateTree()
+        self.novelView.refreshTree()
 
         tEnd = time()
         self.setStatus(
@@ -1471,18 +1473,22 @@ class GuiMain(QMainWindow):
             if tMode == nwDocMode.EDIT:
                 self.openDocument(tHandle)
             elif tMode == nwDocMode.VIEW:
-                self.viewDocument(tHandle=tHandle, tAnchor=f"#{sTitle}")
+                self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return
 
-    @pyqtSlot(str, Enum, int, str)
-    def _openDocument(self, tHandle, tMode, tLine, tAnchor):
+    @pyqtSlot(str, Enum, str)
+    def _openDocument(self, tHandle, tMode, sTitle):
         """Handle an open document request from one of the tree views.
         """
         if tHandle is not None:
             if tMode == nwDocMode.EDIT:
+                tLine = None
+                hItem = self.theProject.index.getItemHeader(tHandle, sTitle)
+                if hItem is not None:
+                    tLine = hItem.line
                 self.openDocument(tHandle, tLine=tLine, changeFocus=False)
             elif tMode == nwDocMode.VIEW:
-                self.viewDocument(tHandle=tHandle, tAnchor=(tAnchor or None))
+                self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return
 
     @pyqtSlot(nwView)
@@ -1564,7 +1570,6 @@ class GuiMain(QMainWindow):
             self.docEditor.closeSearch()
         elif self.isFocusMode:
             self.toggleFocusMode()
-
         return
 
     @pyqtSlot(int)
@@ -1581,17 +1586,11 @@ class GuiMain(QMainWindow):
         """Activated when the project view tab is changed.
         """
         sHandle = None
-
         if stIndex == self.idxProjView:
             sHandle = self.projView.getSelectedHandle()
-
         elif stIndex == self.idxNovelView:
-            if self.hasProject:
-                self.novelView.refreshTree()
-                sHandle, _ = self.novelView.getSelectedHandle()
-
+            sHandle, _ = self.novelView.getSelectedHandle()
         self.itemDetails.updateViewBox(sHandle)
-
         return
 
 # END Class GuiMain

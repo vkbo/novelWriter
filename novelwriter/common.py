@@ -154,11 +154,11 @@ def isHandle(value):
 
 
 def isTitleTag(value):
-    """Check if a string is a valid title string.
+    """Check if a string is a valid title tag string.
     """
     if not isinstance(value, str):
         return False
-    if len(value) != 7:
+    if len(value) != 5:
         return False
     if not value.startswith("T"):
         return False

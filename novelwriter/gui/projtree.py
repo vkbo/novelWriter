@@ -60,7 +60,7 @@ class GuiProjectView(QWidget):
 
     # Signals for user interaction with the project tree
     selectedItemChanged = pyqtSignal(str)
-    openDocumentRequest = pyqtSignal(str, Enum, int, str)
+    openDocumentRequest = pyqtSignal(str, Enum, str)
 
     # Requests for the main GUI
     projectSettingsRequest = pyqtSignal(int)
@@ -1144,7 +1144,7 @@ class GuiProjectTree(QTreeWidget):
             return
 
         if tItem.isFileType():
-            self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, -1, "")
+            self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, "")
         else:
             trItem.setExpanded(not trItem.isExpanded())
 
@@ -1190,11 +1190,11 @@ class GuiProjectTree(QTreeWidget):
         if isFile:
             aOpenDoc = ctxMenu.addAction(self.tr("Open Document"))
             aOpenDoc.triggered.connect(
-                lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, -1, "")
+                lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, "")
             )
             aViewDoc = ctxMenu.addAction(self.tr("View Document"))
             aViewDoc.triggered.connect(
-                lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
+                lambda: self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "")
             )
             ctxMenu.addSeparator()
 
@@ -1324,7 +1324,7 @@ class GuiProjectTree(QTreeWidget):
                 return
 
             if tItem.isFileType():
-                self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
+                self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "")
 
         return
 

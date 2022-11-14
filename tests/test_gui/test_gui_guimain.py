@@ -57,7 +57,6 @@ def testGuiMain_ProjectBlocker(nwGUI):
     assert nwGUI.importDocument() is False
     assert nwGUI.openSelectedItem() is False
     assert nwGUI.editItemLabel() is False
-    assert nwGUI.requestNovelTreeRefresh() is False
     assert nwGUI.rebuildIndex() is False
     assert nwGUI.showProjectSettingsDialog() is False
     assert nwGUI.showProjectDetailsDialog() is False

@@ -51,7 +51,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import NWSpellEnchant, countWords
-from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode
+from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode, nwItemClass
 from novelwriter.common import transferCase
 from novelwriter.constants import nwConst, nwFiles, nwKeyWords, nwUnicode
 from novelwriter.gui.dochighlight import GuiDocHighlighter
@@ -71,6 +71,8 @@ class GuiDocEditor(QTextEdit):
     docEditedStatusChanged = pyqtSignal(bool)
     docCountsChanged = pyqtSignal(str, int, int, int)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
+    novelStructureChanged = pyqtSignal()
+    novelItemMetaChanged = pyqtSignal(str)
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -88,7 +90,6 @@ class GuiDocEditor(QTextEdit):
 
         self._docChanged = False  # Flag for changed status of document
         self._docHandle  = None   # The handle of the open file
-        self._docHeaders = []     # Record of headers in the file
 
         self._spellCheck = False  # Flag for spell checking enabled
         self._nonWord    = "\"'"  # Characters to not include in spell checking
@@ -415,8 +416,8 @@ class GuiDocEditor(QTextEdit):
                 self._queuePos = self._nwItem.cursorPos
             else:
                 self.setCursorPosition(self._nwItem.cursorPos)
-        else:
-            self.setCursorLine(tLine)
+        elif isinstance(tLine, int):
+            self.setCursorLine(tLine - 1)
 
         if self.mainConf.scrollPastEnd > 0:
             fSize = QFontMetrics(self.font()).lineSpacing()
@@ -425,7 +426,6 @@ class GuiDocEditor(QTextEdit):
             self.document().rootFrame().setFrameFormat(docFrame)
 
         self.docFooter.updateLineCount()
-        self._docHeaders = self.theProject.index.getHandleHeaders(self._docHandle)
 
         qApp.processEvents()
         self.document().clearUndoRedoStacks()
@@ -531,14 +531,16 @@ class GuiDocEditor(QTextEdit):
         self.setDocumentChanged(False)
 
         oldHeader = self._nwItem.mainHeading
+        oldCount = self.theProject.index.getHandleHeaderCount(tHandle)
         self.theProject.index.scanText(tHandle, docText)
         newHeader = self._nwItem.mainHeading
+        newCount = self.theProject.index.getHandleHeaderCount(tHandle)
 
-        # ToDo: This should be a signal
-        if self._updateHeaders():
-            self.mainGui.requestNovelTreeRefresh()
-        else:
-            self.mainGui.novelView.updateWordCounts(tHandle)
+        if self._nwItem.itemClass == nwItemClass.NOVEL:
+            if oldCount == newCount:
+                self.novelItemMetaChanged.emit(tHandle)
+            else:
+                self.novelStructureChanged.emit()
 
         # ToDo: This should be a signal
         if oldHeader != newHeader:
@@ -2064,21 +2066,6 @@ class GuiDocEditor(QTextEdit):
                 if text[1:].lstrip()[:9].lower() == "synopsis:":
                     return False
         return True
-
-    def _updateHeaders(self):
-        """Update the headers record and return True if anything
-        changed, if a check flag was provided.
-        """
-        if self._docHandle is None:
-            return False
-
-        newHeaders = self.theProject.index.getHandleHeaders(self._docHandle)
-        newLev = [x[1] for x in newHeaders]
-        oldLev = [x[1] for x in self._docHeaders]
-
-        self._docHeaders = newHeaders
-
-        return newLev != oldLev
 
     def _checkDocSize(self, theSize):
         """Check if document size crosses the big document limit set in

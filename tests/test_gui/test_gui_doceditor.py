@@ -118,10 +118,10 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
     assert nwGUI.docEditor.loadText(C.hSceneDoc) is True
     assert nwGUI.docEditor._bigDoc is True
 
-    # Regular open, with line number
+    # Regular open, with line number (1 indexed)
     assert nwGUI.docEditor.loadText(C.hSceneDoc, tLine=4) is True
     cursPos = nwGUI.docEditor.getCursorPosition()
-    assert nwGUI.docEditor.document().findBlock(cursPos).blockNumber() == 4
+    assert nwGUI.docEditor.document().findBlock(cursPos).blockNumber() == 3
 
     # Load empty document
     nwGUI.docEditor.replaceText("")
