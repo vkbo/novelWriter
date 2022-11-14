@@ -480,16 +480,6 @@ class NWIndex:
     #  Extract Data
     ##
 
-    def novelStructure(self, rootHandle=None, skipExcl=True):
-        """Iterate over all titles in the novel, in the correct order as
-        they appear in the tree view and in the respective document
-        files, but skipping all note files.
-        """
-        novStruct = self._itemIndex.iterNovelStructure(rootHandle=rootHandle, skipExcl=skipExcl)
-        for tHandle, sTitle, hItem in novStruct:
-            yield f"{tHandle}:{sTitle}", tHandle, sTitle, hItem
-        return
-
     def getItemData(self, tHandle):
         """Get the index data for a given item.
         """
@@ -502,6 +492,16 @@ class NWIndex:
         if isinstance(tItem, IndexItem):
             return tItem[sTitle]
         return None
+
+    def novelStructure(self, rootHandle=None, skipExcl=True):
+        """Iterate over all titles in the novel, in the correct order as
+        they appear in the tree view and in the respective document
+        files, but skipping all note files.
+        """
+        novStruct = self._itemIndex.iterNovelStructure(rootHandle=rootHandle, skipExcl=skipExcl)
+        for tHandle, sTitle, hItem in novStruct:
+            yield f"{tHandle}:{sTitle}", tHandle, sTitle, hItem
+        return
 
     def getNovelWordCount(self, skipExcl=True):
         """Count the number of words in the novel project.
@@ -599,13 +599,6 @@ class NWIndex:
                             theRefs[refType].append(aTag)
 
         return theRefs
-
-    def getNovelData(self, tHandle, sTitle):
-        """Return the novel data of a given handle and title.
-        """
-        if tHandle in self._itemIndex:
-            return self._itemIndex[tHandle][sTitle]
-        return None
 
     def getBackReferenceList(self, tHandle):
         """Build a list of files referring back to our file, specified

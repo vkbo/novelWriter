@@ -92,7 +92,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert not topItem.isSelected()
     topItem.setSelected(True)
     assert novelTree.selectedItems()[0] == topItem
-    assert novelView.getSelectedHandle() == (C.hTitlePage, 0)
+    assert novelView.getSelectedHandle() == (C.hTitlePage, "T0001")
 
     # Refresh using the slot for the butoom
     novelBar._refreshNovelTree()
@@ -142,31 +142,31 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     novelBar.setLastColType(NovelTreeColumn.HIDDEN)
     assert novelTree.isColumnHidden(novelTree.C_EXTRA) is True
     assert novelTree.lastColType == NovelTreeColumn.HIDDEN
-    assert novelTree._getLastColumnText(C.hSceneDoc, "T000001") == ("", "")
+    assert novelTree._getLastColumnText(C.hSceneDoc, "T0001") == ("", "")
 
     novelBar.setLastColType(NovelTreeColumn.POV)
     assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
     assert novelTree.lastColType == NovelTreeColumn.POV
-    assert novelTree._getLastColumnText(C.hSceneDoc, "T000001") == (
+    assert novelTree._getLastColumnText(C.hSceneDoc, "T0001") == (
         "Jane", "Point of View: Jane"
     )
 
     novelBar.setLastColType(NovelTreeColumn.FOCUS)
     assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
     assert novelTree.lastColType == NovelTreeColumn.FOCUS
-    assert novelTree._getLastColumnText(C.hSceneDoc, "T000001") == (
+    assert novelTree._getLastColumnText(C.hSceneDoc, "T0001") == (
         "Jane", "Focus: Jane"
     )
 
     novelBar.setLastColType(NovelTreeColumn.PLOT)
     assert novelTree.isColumnHidden(novelTree.C_EXTRA) is False
     assert novelTree.lastColType == NovelTreeColumn.PLOT
-    assert novelTree._getLastColumnText(C.hSceneDoc, "T000001") == (
+    assert novelTree._getLastColumnText(C.hSceneDoc, "T0001") == (
         "", "Plot: "
     )
 
     novelTree._lastCol = None
-    assert novelTree._getLastColumnText("0000000000000", "T000000") == ("", "")
+    assert novelTree._getLastColumnText("0000000000000", "T0000") == ("", "")
 
     # Item Meta
     # =========

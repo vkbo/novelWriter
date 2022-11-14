@@ -29,7 +29,7 @@ from tools import C, buildTestProject, cmpFiles, writeFile
 
 from novelwriter.enum import nwItemClass, nwItemLayout
 from novelwriter.constants import nwFiles
-from novelwriter.core.index import NWIndex, countWords, TagsIndex
+from novelwriter.core.index import IndexItem, NWIndex, countWords, TagsIndex
 from novelwriter.core.project import NWProject
 
 
@@ -231,10 +231,10 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
         "@invalid: John\n"  # Checks for issue #688
     ))
     assert theIndex._tagsIndex.tagHandle("Jane") == cHandle
-    assert theIndex._tagsIndex.tagHeading("Jane") == "T000001"
+    assert theIndex._tagsIndex.tagHeading("Jane") == "T0001"
     assert theIndex._tagsIndex.tagClass("Jane") == "CHARACTER"
-    assert theIndex.getNovelData(nHandle, "T000001").title == "Hello World!"
-    assert theIndex.getReferences(nHandle, "T000001") == {
+    assert theIndex.getItemHeader(nHandle, "T0001").title == "Hello World!"
+    assert theIndex.getReferences(nHandle, "T0001") == {
         "@char": [],
         "@custom": [],
         "@entity": [],
@@ -345,9 +345,9 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
         "Well, not really.\n"
     ))
     assert theIndex._tagsIndex.tagHandle("Jane") == cHandle
-    assert theIndex._tagsIndex.tagHeading("Jane") == "T000001"
+    assert theIndex._tagsIndex.tagHeading("Jane") == "T0001"
     assert theIndex._tagsIndex.tagClass("Jane") == "CHARACTER"
-    assert theIndex.getNovelData(nHandle, "T000001").title == "Hello World!"
+    assert theIndex.getItemHeader(nHandle, "T0001").title == "Hello World!"
 
     # Title Indexing
     # ==============
@@ -369,40 +369,45 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
         "##### Title Five\n\n"  # Not interpreted as a title, the hashes are counted as a word
         "Paragraph Five.\n\n"
     ))
-    assert theIndex._itemIndex[nHandle]["T000001"].references == {}
-    assert theIndex._itemIndex[nHandle]["T000007"].references == {}
-    assert theIndex._itemIndex[nHandle]["T000013"].references == {}
-    assert theIndex._itemIndex[nHandle]["T000019"].references == {}
+    assert theIndex._itemIndex[nHandle]["T0001"].references == {}
+    assert theIndex._itemIndex[nHandle]["T0002"].references == {}
+    assert theIndex._itemIndex[nHandle]["T0003"].references == {}
+    assert theIndex._itemIndex[nHandle]["T0004"].references == {}
 
-    assert theIndex._itemIndex[nHandle]["T000001"].level == "H1"
-    assert theIndex._itemIndex[nHandle]["T000007"].level == "H2"
-    assert theIndex._itemIndex[nHandle]["T000013"].level == "H3"
-    assert theIndex._itemIndex[nHandle]["T000019"].level == "H4"
+    assert theIndex._itemIndex[nHandle]["T0001"].level == "H1"
+    assert theIndex._itemIndex[nHandle]["T0002"].level == "H2"
+    assert theIndex._itemIndex[nHandle]["T0003"].level == "H3"
+    assert theIndex._itemIndex[nHandle]["T0004"].level == "H4"
 
-    assert theIndex._itemIndex[nHandle]["T000001"].title == "Title One"
-    assert theIndex._itemIndex[nHandle]["T000007"].title == "Title Two"
-    assert theIndex._itemIndex[nHandle]["T000013"].title == "Title Three"
-    assert theIndex._itemIndex[nHandle]["T000019"].title == "Title Four"
+    assert theIndex._itemIndex[nHandle]["T0001"].line == 1
+    assert theIndex._itemIndex[nHandle]["T0002"].line == 7
+    assert theIndex._itemIndex[nHandle]["T0003"].line == 13
+    assert theIndex._itemIndex[nHandle]["T0004"].line == 19
 
-    assert theIndex._itemIndex[nHandle]["T000001"].charCount == 23
-    assert theIndex._itemIndex[nHandle]["T000007"].charCount == 23
-    assert theIndex._itemIndex[nHandle]["T000013"].charCount == 27
-    assert theIndex._itemIndex[nHandle]["T000019"].charCount == 56
+    assert theIndex._itemIndex[nHandle]["T0001"].title == "Title One"
+    assert theIndex._itemIndex[nHandle]["T0002"].title == "Title Two"
+    assert theIndex._itemIndex[nHandle]["T0003"].title == "Title Three"
+    assert theIndex._itemIndex[nHandle]["T0004"].title == "Title Four"
 
-    assert theIndex._itemIndex[nHandle]["T000001"].wordCount == 4
-    assert theIndex._itemIndex[nHandle]["T000007"].wordCount == 4
-    assert theIndex._itemIndex[nHandle]["T000013"].wordCount == 4
-    assert theIndex._itemIndex[nHandle]["T000019"].wordCount == 9
+    assert theIndex._itemIndex[nHandle]["T0001"].charCount == 23
+    assert theIndex._itemIndex[nHandle]["T0002"].charCount == 23
+    assert theIndex._itemIndex[nHandle]["T0003"].charCount == 27
+    assert theIndex._itemIndex[nHandle]["T0004"].charCount == 56
 
-    assert theIndex._itemIndex[nHandle]["T000001"].paraCount == 1
-    assert theIndex._itemIndex[nHandle]["T000007"].paraCount == 1
-    assert theIndex._itemIndex[nHandle]["T000013"].paraCount == 1
-    assert theIndex._itemIndex[nHandle]["T000019"].paraCount == 3
+    assert theIndex._itemIndex[nHandle]["T0001"].wordCount == 4
+    assert theIndex._itemIndex[nHandle]["T0002"].wordCount == 4
+    assert theIndex._itemIndex[nHandle]["T0003"].wordCount == 4
+    assert theIndex._itemIndex[nHandle]["T0004"].wordCount == 9
 
-    assert theIndex._itemIndex[nHandle]["T000001"].synopsis == "Synopsis One."
-    assert theIndex._itemIndex[nHandle]["T000007"].synopsis == "Synopsis Two."
-    assert theIndex._itemIndex[nHandle]["T000013"].synopsis == "Synopsis Three."
-    assert theIndex._itemIndex[nHandle]["T000019"].synopsis == "Synopsis Four."
+    assert theIndex._itemIndex[nHandle]["T0001"].paraCount == 1
+    assert theIndex._itemIndex[nHandle]["T0002"].paraCount == 1
+    assert theIndex._itemIndex[nHandle]["T0003"].paraCount == 1
+    assert theIndex._itemIndex[nHandle]["T0004"].paraCount == 3
+
+    assert theIndex._itemIndex[nHandle]["T0001"].synopsis == "Synopsis One."
+    assert theIndex._itemIndex[nHandle]["T0002"].synopsis == "Synopsis Two."
+    assert theIndex._itemIndex[nHandle]["T0003"].synopsis == "Synopsis Three."
+    assert theIndex._itemIndex[nHandle]["T0004"].synopsis == "Synopsis Four."
 
     # Note File
     assert theIndex.scanText(cHandle, (
@@ -411,13 +416,14 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
         "% synopsis: Synopsis One.\n\n"
         "Paragraph One.\n\n"
     ))
-    assert theIndex._itemIndex[cHandle]["T000001"].references == {}
-    assert theIndex._itemIndex[cHandle]["T000001"].level == "H1"
-    assert theIndex._itemIndex[cHandle]["T000001"].title == "Title One"
-    assert theIndex._itemIndex[cHandle]["T000001"].charCount == 23
-    assert theIndex._itemIndex[cHandle]["T000001"].wordCount == 4
-    assert theIndex._itemIndex[cHandle]["T000001"].paraCount == 1
-    assert theIndex._itemIndex[cHandle]["T000001"].synopsis == "Synopsis One."
+    assert theIndex._itemIndex[cHandle]["T0001"].references == {}
+    assert theIndex._itemIndex[cHandle]["T0001"].level == "H1"
+    assert theIndex._itemIndex[cHandle]["T0001"].line == 1
+    assert theIndex._itemIndex[cHandle]["T0001"].title == "Title One"
+    assert theIndex._itemIndex[cHandle]["T0001"].charCount == 23
+    assert theIndex._itemIndex[cHandle]["T0001"].wordCount == 4
+    assert theIndex._itemIndex[cHandle]["T0001"].paraCount == 1
+    assert theIndex._itemIndex[cHandle]["T0001"].synopsis == "Synopsis One."
 
     # Valid and Invalid References
     assert theIndex.scanText(sHandle, (
@@ -428,7 +434,7 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
         "% synopsis: Synopsis One.\n\n"
         "Paragraph One.\n\n"
     ))
-    assert theIndex._itemIndex[sHandle]["T000001"].references == {
+    assert theIndex._itemIndex[sHandle]["T0001"].references == {
         "One": {"@pov"}, "Two": {"@char"}
     }
 
@@ -439,25 +445,27 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
         "#! My Project\n\n"
         ">> By Jane Doe <<\n\n"
     ))
-    assert theIndex._itemIndex[cHandle]["T000001"].references == {}
-    assert theIndex._itemIndex[tHandle]["T000001"].level == "H1"
-    assert theIndex._itemIndex[tHandle]["T000001"].title == "My Project"
-    assert theIndex._itemIndex[tHandle]["T000001"].charCount == 21
-    assert theIndex._itemIndex[tHandle]["T000001"].wordCount == 5
-    assert theIndex._itemIndex[tHandle]["T000001"].paraCount == 1
-    assert theIndex._itemIndex[tHandle]["T000001"].synopsis == ""
+    assert theIndex._itemIndex[cHandle]["T0001"].references == {}
+    assert theIndex._itemIndex[tHandle]["T0001"].level == "H1"
+    assert theIndex._itemIndex[tHandle]["T0001"].line == 1
+    assert theIndex._itemIndex[tHandle]["T0001"].title == "My Project"
+    assert theIndex._itemIndex[tHandle]["T0001"].charCount == 21
+    assert theIndex._itemIndex[tHandle]["T0001"].wordCount == 5
+    assert theIndex._itemIndex[tHandle]["T0001"].paraCount == 1
+    assert theIndex._itemIndex[tHandle]["T0001"].synopsis == ""
 
     assert theIndex.scanText(tHandle, (
         "##! Prologue\n\n"
         "In the beginning there was time ...\n\n"
     ))
-    assert theIndex._itemIndex[cHandle]["T000001"].references == {}
-    assert theIndex._itemIndex[tHandle]["T000001"].level == "H2"
-    assert theIndex._itemIndex[tHandle]["T000001"].title == "Prologue"
-    assert theIndex._itemIndex[tHandle]["T000001"].charCount == 43
-    assert theIndex._itemIndex[tHandle]["T000001"].wordCount == 8
-    assert theIndex._itemIndex[tHandle]["T000001"].paraCount == 1
-    assert theIndex._itemIndex[tHandle]["T000001"].synopsis == ""
+    assert theIndex._itemIndex[cHandle]["T0001"].references == {}
+    assert theIndex._itemIndex[tHandle]["T0001"].level == "H2"
+    assert theIndex._itemIndex[tHandle]["T0001"].line == 1
+    assert theIndex._itemIndex[tHandle]["T0001"].title == "Prologue"
+    assert theIndex._itemIndex[tHandle]["T0001"].charCount == 43
+    assert theIndex._itemIndex[tHandle]["T0001"].wordCount == 8
+    assert theIndex._itemIndex[tHandle]["T0001"].paraCount == 1
+    assert theIndex._itemIndex[tHandle]["T0001"].synopsis == ""
 
     # Page wo/Title
     # =============
@@ -466,25 +474,27 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))
-    assert theIndex._itemIndex[pHandle]["T000000"].references == {}
-    assert theIndex._itemIndex[pHandle]["T000000"].level == "H0"
-    assert theIndex._itemIndex[pHandle]["T000000"].title == ""
-    assert theIndex._itemIndex[pHandle]["T000000"].charCount == 36
-    assert theIndex._itemIndex[pHandle]["T000000"].wordCount == 9
-    assert theIndex._itemIndex[pHandle]["T000000"].paraCount == 1
-    assert theIndex._itemIndex[pHandle]["T000000"].synopsis == ""
+    assert theIndex._itemIndex[pHandle]["T0000"].references == {}
+    assert theIndex._itemIndex[pHandle]["T0000"].level == "H0"
+    assert theIndex._itemIndex[pHandle]["T0000"].line == 0
+    assert theIndex._itemIndex[pHandle]["T0000"].title == ""
+    assert theIndex._itemIndex[pHandle]["T0000"].charCount == 36
+    assert theIndex._itemIndex[pHandle]["T0000"].wordCount == 9
+    assert theIndex._itemIndex[pHandle]["T0000"].paraCount == 1
+    assert theIndex._itemIndex[pHandle]["T0000"].synopsis == ""
 
     theProject.tree[pHandle]._layout = nwItemLayout.NOTE
     assert theIndex.scanText(pHandle, (
         "This is a page with some text on it.\n\n"
     ))
-    assert theIndex._itemIndex[pHandle]["T000000"].references == {}
-    assert theIndex._itemIndex[pHandle]["T000000"].level == "H0"
-    assert theIndex._itemIndex[pHandle]["T000000"].title == ""
-    assert theIndex._itemIndex[pHandle]["T000000"].charCount == 36
-    assert theIndex._itemIndex[pHandle]["T000000"].wordCount == 9
-    assert theIndex._itemIndex[pHandle]["T000000"].paraCount == 1
-    assert theIndex._itemIndex[pHandle]["T000000"].synopsis == ""
+    assert theIndex._itemIndex[pHandle]["T0000"].references == {}
+    assert theIndex._itemIndex[pHandle]["T0000"].level == "H0"
+    assert theIndex._itemIndex[pHandle]["T0000"].line == 0
+    assert theIndex._itemIndex[pHandle]["T0000"].title == ""
+    assert theIndex._itemIndex[pHandle]["T0000"].charCount == 36
+    assert theIndex._itemIndex[pHandle]["T0000"].wordCount == 9
+    assert theIndex._itemIndex[pHandle]["T0000"].paraCount == 1
+    assert theIndex._itemIndex[pHandle]["T0000"].synopsis == ""
 
     assert theProject.closeProject() is True
 
@@ -512,8 +522,8 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     nHandle = theProject.newFile("Hello", C.hNovelRoot)
     cHandle = theProject.newFile("Jane",  C.hCharRoot)
 
-    assert theIndex.getNovelData("", "") is None
-    assert theIndex.getNovelData(C.hNovelRoot, "") is None
+    assert theIndex.getItemHeader("", "") is None
+    assert theIndex.getItemHeader(C.hNovelRoot, "") is None
 
     assert theIndex.scanText(cHandle, (
         "# Jane Smith\n"
@@ -534,10 +544,10 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
         theKeys.append(aKey)
 
     assert theKeys == [
-        f"{C.hTitlePage}:T000001",
-        f"{C.hChapterDoc}:T000001",
-        f"{C.hSceneDoc}:T000001",
-        f"{nHandle}:T000001",
+        f"{C.hTitlePage}:T0001",
+        f"{C.hChapterDoc}:T0001",
+        f"{C.hSceneDoc}:T0001",
+        f"{nHandle}:T0001",
     ]
 
     # Check that excluded files can be skipped
@@ -548,10 +558,10 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
         theKeys.append(aKey)
 
     assert theKeys == [
-        f"{C.hTitlePage}:T000001",
-        f"{C.hChapterDoc}:T000001",
-        f"{C.hSceneDoc}:T000001",
-        f"{nHandle}:T000001",
+        f"{C.hTitlePage}:T0001",
+        f"{C.hChapterDoc}:T0001",
+        f"{C.hSceneDoc}:T0001",
+        f"{nHandle}:T0001",
     ]
 
     theKeys = []
@@ -559,9 +569,9 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
         theKeys.append(aKey)
 
     assert theKeys == [
-        f"{C.hTitlePage}:T000001",
-        f"{C.hChapterDoc}:T000001",
-        f"{C.hSceneDoc}:T000001",
+        f"{C.hTitlePage}:T0001",
+        f"{C.hChapterDoc}:T0001",
+        f"{C.hSceneDoc}:T0001",
     ]
 
     # The novel file should have the correct counts
@@ -569,6 +579,13 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert cC == 62  # Characters in text and title only
     assert wC == 12  # Words in text and title only
     assert pC == 2   # Paragraphs in text only
+
+    # getItemData
+    # ===========
+
+    theItem = theIndex.getItemData(nHandle)
+    assert isinstance(theItem, IndexItem)
+    assert theItem.headings() == ["T0001"]
 
     # getReferences
     # =============
@@ -594,13 +611,13 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
 
     # The character file should have a record of the reference from the novel file
     theRefs = theIndex.getBackReferenceList(cHandle)
-    assert theRefs == {nHandle: "T000001"}
+    assert theRefs == {nHandle: "T0001"}
 
     # getTagSource
     # ============
 
-    assert theIndex.getTagSource("Jane") == (cHandle, "T000001")
-    assert theIndex.getTagSource("John") == (None, "T000000")
+    assert theIndex.getTagSource("Jane") == (cHandle, "T0001")
+    assert theIndex.getTagSource("John") == (None, "T0000")
 
     # getCounts
     # =========
@@ -632,13 +649,13 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert pC == 4
 
     # First part
-    cC, wC, pC = theIndex.getCounts(nHandle, "T000001")
+    cC, wC, pC = theIndex.getCounts(nHandle, "T0001")
     assert cC == 62
     assert wC == 12
     assert pC == 2
 
     # Second part
-    cC, wC, pC = theIndex.getCounts(nHandle, "T000011")
+    cC, wC, pC = theIndex.getCounts(nHandle, "T0002")
     assert cC == 90
     assert wC == 16
     assert pC == 2
@@ -665,13 +682,13 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert pC == 4
 
     # First part
-    cC, wC, pC = theIndex.getCounts(cHandle, "T000001")
+    cC, wC, pC = theIndex.getCounts(cHandle, "T0001")
     assert cC == 62
     assert wC == 12
     assert pC == 2
 
     # Second part
-    cC, wC, pC = theIndex.getCounts(cHandle, "T000011")
+    cC, wC, pC = theIndex.getCounts(cHandle, "T0002")
     assert cC == 90
     assert wC == 16
     assert pC == 2
@@ -692,36 +709,36 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert theIndex.scanText(tHandle, "### Scene Two\n\n")
 
     assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=False)] == [
-        (C.hTitlePage, "T000001"),
-        (C.hChapterDoc, "T000001"),
-        (C.hSceneDoc, "T000001"),
-        (nHandle, "T000001"),
-        (nHandle, "T000011"),
-        (hHandle, "T000001"),
-        (sHandle, "T000001"),
-        (tHandle, "T000001"),
+        (C.hTitlePage, "T0001"),
+        (C.hChapterDoc, "T0001"),
+        (C.hSceneDoc, "T0001"),
+        (nHandle, "T0001"),
+        (nHandle, "T0002"),
+        (hHandle, "T0001"),
+        (sHandle, "T0001"),
+        (tHandle, "T0001"),
     ]
 
     assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=True)] == [
-        (C.hTitlePage, "T000001"),
-        (C.hChapterDoc, "T000001"),
-        (C.hSceneDoc, "T000001"),
-        (hHandle, "T000001"),
-        (sHandle, "T000001"),
-        (tHandle, "T000001"),
+        (C.hTitlePage, "T0001"),
+        (C.hChapterDoc, "T0001"),
+        (C.hSceneDoc, "T0001"),
+        (hHandle, "T0001"),
+        (sHandle, "T0001"),
+        (tHandle, "T0001"),
     ]
 
     # Add a fake handle to the tree and check that it's ignored
     theProject.tree._treeOrder.append("0000000000000")
     assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=False)] == [
-        (C.hTitlePage, "T000001"),
-        (C.hChapterDoc, "T000001"),
-        (C.hSceneDoc, "T000001"),
-        (nHandle, "T000001"),
-        (nHandle, "T000011"),
-        (hHandle, "T000001"),
-        (sHandle, "T000001"),
-        (tHandle, "T000001"),
+        (C.hTitlePage, "T0001"),
+        (C.hChapterDoc, "T0001"),
+        (C.hSceneDoc, "T0001"),
+        (nHandle, "T0001"),
+        (nHandle, "T0002"),
+        (hHandle, "T0001"),
+        (sHandle, "T0001"),
+        (tHandle, "T0001"),
     ]
     theProject.tree._treeOrder.remove("0000000000000")
 
@@ -734,37 +751,37 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     # Table of Contents
     assert theIndex.getTableOfContents(C.hNovelRoot, 0, skipExcl=True) == []
     assert theIndex.getTableOfContents(C.hNovelRoot, 1, skipExcl=True) == [
-        (f"{C.hTitlePage}:T000001", 1, "New Novel", 15),
+        (f"{C.hTitlePage}:T0001", 1, "New Novel", 15),
     ]
     assert theIndex.getTableOfContents(C.hNovelRoot, 2, skipExcl=True) == [
-        (f"{C.hTitlePage}:T000001", 1, "New Novel", 5),
-        (f"{C.hChapterDoc}:T000001", 2, "New Chapter", 4),
-        (f"{hHandle}:T000001", 2, "Chapter One", 6),
+        (f"{C.hTitlePage}:T0001", 1, "New Novel", 5),
+        (f"{C.hChapterDoc}:T0001", 2, "New Chapter", 4),
+        (f"{hHandle}:T0001", 2, "Chapter One", 6),
     ]
     assert theIndex.getTableOfContents(C.hNovelRoot, 3, skipExcl=True) == [
-        (f"{C.hTitlePage}:T000001", 1, "New Novel", 5),
-        (f"{C.hChapterDoc}:T000001", 2, "New Chapter", 2),
-        (f"{C.hSceneDoc}:T000001", 3, "New Scene", 2),
-        (f"{hHandle}:T000001", 2, "Chapter One", 2),
-        (f"{sHandle}:T000001", 3, "Scene One", 2),
-        (f"{tHandle}:T000001", 3, "Scene Two", 2),
+        (f"{C.hTitlePage}:T0001", 1, "New Novel", 5),
+        (f"{C.hChapterDoc}:T0001", 2, "New Chapter", 2),
+        (f"{C.hSceneDoc}:T0001", 3, "New Scene", 2),
+        (f"{hHandle}:T0001", 2, "Chapter One", 2),
+        (f"{sHandle}:T0001", 3, "Scene One", 2),
+        (f"{tHandle}:T0001", 3, "Scene Two", 2),
     ]
 
     assert theIndex.getTableOfContents(C.hNovelRoot, 0, skipExcl=False) == []
     assert theIndex.getTableOfContents(C.hNovelRoot, 1, skipExcl=False) == [
-        (f"{C.hTitlePage}:T000001", 1, "New Novel", 9),
-        (f"{nHandle}:T000001", 1, "Hello World!", 12),
-        (f"{nHandle}:T000011", 1, "Hello World!", 22),
+        (f"{C.hTitlePage}:T0001", 1, "New Novel", 9),
+        (f"{nHandle}:T0001", 1, "Hello World!", 12),
+        (f"{nHandle}:T0002", 1, "Hello World!", 22),
     ]
 
     # Header Word Counts
     bHandle = "0000000000000"
     assert theIndex.getHandleWordCounts(bHandle) == []
-    assert theIndex.getHandleWordCounts(hHandle) == [("%s:T000001" % hHandle, 2)]
-    assert theIndex.getHandleWordCounts(sHandle) == [("%s:T000001" % sHandle, 2)]
-    assert theIndex.getHandleWordCounts(tHandle) == [("%s:T000001" % tHandle, 2)]
+    assert theIndex.getHandleWordCounts(hHandle) == [("%s:T0001" % hHandle, 2)]
+    assert theIndex.getHandleWordCounts(sHandle) == [("%s:T0001" % sHandle, 2)]
+    assert theIndex.getHandleWordCounts(tHandle) == [("%s:T0001" % tHandle, 2)]
     assert theIndex.getHandleWordCounts(nHandle) == [
-        (f"{nHandle}:T000001", 12), (f"{nHandle}:T000011", 16)
+        (f"{nHandle}:T0001", 12), (f"{nHandle}:T0002", 16)
     ]
 
     assert theIndex.saveIndex() is True
@@ -773,11 +790,11 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     # Header Record
     bHandle = "0000000000000"
     assert theIndex.getHandleHeaders(bHandle) == []
-    assert theIndex.getHandleHeaders(hHandle) == [("T000001", "H2", "Chapter One")]
-    assert theIndex.getHandleHeaders(sHandle) == [("T000001", "H3", "Scene One")]
-    assert theIndex.getHandleHeaders(tHandle) == [("T000001", "H3", "Scene Two")]
+    assert theIndex.getHandleHeaders(hHandle) == [("T0001", "H2", "Chapter One")]
+    assert theIndex.getHandleHeaders(sHandle) == [("T0001", "H3", "Scene One")]
+    assert theIndex.getHandleHeaders(tHandle) == [("T0001", "H3", "Scene Two")]
     assert theIndex.getHandleHeaders(nHandle) == [
-        ("T000001", "H1", "Hello World!"), ("T000011", "H1", "Hello World!")
+        ("T0001", "H1", "Hello World!"), ("T0002", "H1", "Hello World!")
     ]
 
     assert theProject.closeProject() is True
@@ -796,25 +813,25 @@ def testCoreIndex_TagsIndex():
     content = {
         "Tag1": {
             "handle": "0000000000001",
-            "heading": "T000001",
+            "heading": "T0001",
             "class": nwItemClass.NOVEL.name,
         },
         "Tag2": {
             "handle": "0000000000002",
-            "heading": "T000002",
+            "heading": "T0002",
             "class": nwItemClass.CHARACTER.name,
         },
         "Tag3": {
             "handle": "0000000000003",
-            "heading": "T000003",
+            "heading": "T0003",
             "class": nwItemClass.PLOT.name,
         },
     }
 
     # Add data
-    tagsIndex.add("Tag1", "0000000000001", "T000001", nwItemClass.NOVEL)
-    tagsIndex.add("Tag2", "0000000000002", "T000002", nwItemClass.CHARACTER)
-    tagsIndex.add("Tag3", "0000000000003", "T000003", nwItemClass.PLOT)
+    tagsIndex.add("Tag1", "0000000000001", "T0001", nwItemClass.NOVEL)
+    tagsIndex.add("Tag2", "0000000000002", "T0002", nwItemClass.CHARACTER)
+    tagsIndex.add("Tag3", "0000000000003", "T0003", nwItemClass.PLOT)
     assert tagsIndex._tags == content
 
     # Get items
@@ -836,10 +853,10 @@ def testCoreIndex_TagsIndex():
     assert tagsIndex.tagHandle("Tag4") is None
 
     # Read back headings
-    assert tagsIndex.tagHeading("Tag1") == "T000001"
-    assert tagsIndex.tagHeading("Tag2") == "T000002"
-    assert tagsIndex.tagHeading("Tag3") == "T000003"
-    assert tagsIndex.tagHeading("Tag4") == "T000000"
+    assert tagsIndex.tagHeading("Tag1") == "T0001"
+    assert tagsIndex.tagHeading("Tag2") == "T0002"
+    assert tagsIndex.tagHeading("Tag3") == "T0003"
+    assert tagsIndex.tagHeading("Tag4") == "T0000"
 
     # Read back classes
     assert tagsIndex.tagClass("Tag1") == nwItemClass.NOVEL.name
@@ -880,7 +897,7 @@ def testCoreIndex_TagsIndex():
         tagsIndex.unpackData({
             1234: {
                 "handle": "0000000000001",
-                "heading": "T000001",
+                "heading": "T0001",
                 "class": "NOVEL",
             }
         })
@@ -889,7 +906,7 @@ def testCoreIndex_TagsIndex():
     with pytest.raises(KeyError):
         tagsIndex.unpackData({
             "Tag1": {
-                "heading": "T000001",
+                "heading": "T0001",
                 "class": "NOVEL",
             }
         })
@@ -908,7 +925,7 @@ def testCoreIndex_TagsIndex():
         tagsIndex.unpackData({
             "Tag1": {
                 "handle": "0000000000001",
-                "heading": "T000001",
+                "heading": "T0001",
             }
         })
 
@@ -917,7 +934,7 @@ def testCoreIndex_TagsIndex():
         tagsIndex.unpackData({
             "Tag1": {
                 "handle": "blablabla",
-                "heading": "T000001",
+                "heading": "T0001",
                 "class": "NOVEL",
             }
         })
@@ -937,7 +954,7 @@ def testCoreIndex_TagsIndex():
         tagsIndex.unpackData({
             "Tag1": {
                 "handle": "0000000000001",
-                "heading": "T000001",
+                "heading": "T0001",
                 "class": "blabla",
             }
         })
@@ -975,66 +992,70 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     assert cHandle in itemIndex
     assert itemIndex[cHandle].item == theProject.tree[cHandle]
     assert itemIndex.allItemTags(cHandle) == []
-    assert list(itemIndex.iterItemHeaders(cHandle))[0][0] == "T000000"
+    assert list(itemIndex.iterItemHeaders(cHandle))[0][0] == "T0000"
 
     # Add a heading to the item, which should replace the T000000 heading
-    itemIndex.addItemHeading(cHandle, "T000001", "H2", "Chapter One")
-    assert list(itemIndex.iterItemHeaders(cHandle))[0][0] == "T000001"
+    assert itemIndex.addItemHeading(cHandle, 1, "H2", "Chapter One") == "T0001"
+    assert list(itemIndex.iterItemHeaders(cHandle))[0][0] == "T0001"
+
+    # Add a heading to an invalid item
+    assert itemIndex.addItemHeading(C.hInvalid, 1, "H1", "Stuff") == "T0000"
 
     # Set the remainig data values
-    itemIndex.setHeadingCounts(cHandle, "T000001", 60, 10, 2)
-    itemIndex.setHeadingSynopsis(cHandle, "T000001", "In the beginning ...")
-    itemIndex.setHeadingTag(cHandle, "T000001", "One")
-    itemIndex.addHeadingReferences(cHandle, "T000001", ["Jane"], "@pov")
-    itemIndex.addHeadingReferences(cHandle, "T000001", ["Jane"], "@focus")
-    itemIndex.addHeadingReferences(cHandle, "T000001", ["Jane", "John"], "@char")
+    itemIndex.setHeadingCounts(cHandle, "T0001", 60, 10, 2)
+    itemIndex.setHeadingSynopsis(cHandle, "T0001", "In the beginning ...")
+    itemIndex.setHeadingTag(cHandle, "T0001", "One")
+    itemIndex.addHeadingReferences(cHandle, "T0001", ["Jane"], "@pov")
+    itemIndex.addHeadingReferences(cHandle, "T0001", ["Jane"], "@focus")
+    itemIndex.addHeadingReferences(cHandle, "T0001", ["Jane", "John"], "@char")
     idxData = itemIndex.packData()
 
-    assert idxData[cHandle]["headings"]["T000001"] == {
-        "level": "H2", "title": "Chapter One", "tag": "One",
+    assert idxData[cHandle]["headings"]["T0001"] == {
+        "level": "H2", "line": 1, "title": "Chapter One", "tag": "One",
         "cCount": 60, "wCount": 10, "pCount": 2, "synopsis": "In the beginning ...",
     }
-    assert "@pov" in idxData[cHandle]["references"]["T000001"]["Jane"]
-    assert "@focus" in idxData[cHandle]["references"]["T000001"]["Jane"]
-    assert "@char" in idxData[cHandle]["references"]["T000001"]["Jane"]
-    assert "@char" in idxData[cHandle]["references"]["T000001"]["John"]
+    assert "@pov" in idxData[cHandle]["references"]["T0001"]["Jane"]
+    assert "@focus" in idxData[cHandle]["references"]["T0001"]["Jane"]
+    assert "@char" in idxData[cHandle]["references"]["T0001"]["Jane"]
+    assert "@char" in idxData[cHandle]["references"]["T0001"]["John"]
 
     # Add the other two files
     itemIndex.add(nHandle, theProject.tree[nHandle])
     itemIndex.add(sHandle, theProject.tree[sHandle])
-    itemIndex.addItemHeading(nHandle, "T000001", "H1", "Novel")
-    itemIndex.addItemHeading(sHandle, "T000001", "H3", "Scene One")
+    itemIndex.addItemHeading(nHandle, 1, "H1", "Novel")
+    itemIndex.addItemHeading(sHandle, 1, "H3", "Scene One")
 
     # Check Item and Heading Direct Access
     # ====================================
 
     # Check repr strings
     assert repr(itemIndex[nHandle]) == f"<IndexItem handle='{nHandle}'>"
-    assert repr(itemIndex[nHandle]["T000001"]) == "<IndexHeading key='T000001'>"
+    assert repr(itemIndex[nHandle]["T0001"]) == "<IndexHeading key='T0001'>"
 
     # Check content of a single item
-    assert "T000001" in itemIndex[nHandle]
+    assert "T0001" in itemIndex[nHandle]
     assert itemIndex[cHandle].allTags() == ["One"]
 
     # Check the content of a single heading
-    assert itemIndex[cHandle]["T000001"].key == "T000001"
-    assert itemIndex[cHandle]["T000001"].level == "H2"
-    assert itemIndex[cHandle]["T000001"].title == "Chapter One"
-    assert itemIndex[cHandle]["T000001"].tag == "One"
-    assert itemIndex[cHandle]["T000001"].charCount == 60
-    assert itemIndex[cHandle]["T000001"].wordCount == 10
-    assert itemIndex[cHandle]["T000001"].paraCount == 2
-    assert itemIndex[cHandle]["T000001"].synopsis == "In the beginning ..."
-    assert "Jane" in itemIndex[cHandle]["T000001"].references
-    assert "John" in itemIndex[cHandle]["T000001"].references
+    assert itemIndex[cHandle]["T0001"].key == "T0001"
+    assert itemIndex[cHandle]["T0001"].level == "H2"
+    assert itemIndex[cHandle]["T0001"].line == 1
+    assert itemIndex[cHandle]["T0001"].title == "Chapter One"
+    assert itemIndex[cHandle]["T0001"].tag == "One"
+    assert itemIndex[cHandle]["T0001"].charCount == 60
+    assert itemIndex[cHandle]["T0001"].wordCount == 10
+    assert itemIndex[cHandle]["T0001"].paraCount == 2
+    assert itemIndex[cHandle]["T0001"].synopsis == "In the beginning ..."
+    assert "Jane" in itemIndex[cHandle]["T0001"].references
+    assert "John" in itemIndex[cHandle]["T0001"].references
 
     # Check heading level setter
-    itemIndex[cHandle]["T000001"].setLevel("H3")  # Change it
-    assert itemIndex[cHandle]["T000001"].level == "H3"
-    itemIndex[cHandle]["T000001"].setLevel("H2")  # Set it back
-    assert itemIndex[cHandle]["T000001"].level == "H2"
-    itemIndex[cHandle]["T000001"].setLevel("H5")  # Invalid level
-    assert itemIndex[cHandle]["T000001"].level == "H2"
+    itemIndex[cHandle]["T0001"].setLevel("H3")  # Change it
+    assert itemIndex[cHandle]["T0001"].level == "H3"
+    itemIndex[cHandle]["T0001"].setLevel("H2")  # Set it back
+    assert itemIndex[cHandle]["T0001"].level == "H2"
+    itemIndex[cHandle]["T0001"].setLevel("H5")  # Invalid level
+    assert itemIndex[cHandle]["T0001"].level == "H2"
 
     # Data Extraction
     # ===============
@@ -1044,9 +1065,9 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     assert allHeads[0][0] == cHandle
     assert allHeads[1][0] == nHandle
     assert allHeads[2][0] == sHandle
-    assert allHeads[0][1] == "T000001"
-    assert allHeads[1][1] == "T000001"
-    assert allHeads[2][1] == "T000001"
+    assert allHeads[0][1] == "T0001"
+    assert allHeads[1][1] == "T0001"
+    assert allHeads[2][1] == "T0001"
 
     # Ask for stuff that doesn't exist
     assert itemIndex.allItemTags("blablabla") == []
@@ -1058,7 +1079,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     mHandle = theProject.newRoot(nwItemClass.NOVEL)
     uHandle = theProject.newFile("Title Page", mHandle)
     itemIndex.add(uHandle, theProject.tree[uHandle])
-    itemIndex.addItemHeading(uHandle, "T000001", "H1", "Novel 2")
+    itemIndex.addItemHeading(uHandle, "T0001", "H1", "Novel 2")
     assert uHandle in itemIndex
 
     # Structure of all novels
@@ -1134,20 +1155,20 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     # Reference without a heading should be rejected
     itemIndex.unpackData({
         cHandle: {
-            "headings": {"T000001": {}},
-            "references": {"T000001": {}, "T000002": {}},
+            "headings": {"T0001": {}},
+            "references": {"T0001": {}, "T0002": {}},
         }
     })
-    assert "T000001" in itemIndex[cHandle]
-    assert "T000002" not in itemIndex[cHandle]
+    assert "T0001" in itemIndex[cHandle]
+    assert "T0002" not in itemIndex[cHandle]
     itemIndex.clear()
 
     # Tag keys must be strings
     with pytest.raises(ValueError):
         itemIndex.unpackData({
             cHandle: {
-                "headings": {"T000001": {}},
-                "references": {"T000001": {1234: "@pov"}},
+                "headings": {"T0001": {}},
+                "references": {"T0001": {1234: "@pov"}},
             }
         })
 
@@ -1155,8 +1176,8 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     with pytest.raises(ValueError):
         itemIndex.unpackData({
             cHandle: {
-                "headings": {"T000001": {}},
-                "references": {"T000001": {"John": []}},
+                "headings": {"T0001": {}},
+                "references": {"T0001": {"John": []}},
             }
         })
 
@@ -1164,16 +1185,16 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     with pytest.raises(ValueError):
         itemIndex.unpackData({
             cHandle: {
-                "headings": {"T000001": {}},
-                "references": {"T000001": {"John": "@pov,@char,@stuff"}},
+                "headings": {"T0001": {}},
+                "references": {"T0001": {"John": "@pov,@char,@stuff"}},
             }
         })
 
     # This should pass
     itemIndex.unpackData({
         cHandle: {
-            "headings": {"T000001": {}},
-            "references": {"T000001": {"John": "@pov,@char"}},
+            "headings": {"T0001": {}},
+            "references": {"T0001": {"John": "@pov,@char"}},
         }
     })
 

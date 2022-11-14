@@ -729,7 +729,7 @@ class GuiNovelTree(QTreeWidget):
         logger.debug("Generating meta data tooltip for '%s:%s'", tHandle, sTitle)
 
         pIndex = self.theProject.index
-        novIdx = pIndex.getNovelData(tHandle, sTitle)
+        novIdx = pIndex.getItemHeader(tHandle, sTitle)
         refTags = pIndex.getReferences(tHandle, sTitle)
 
         synopText = novIdx.synopsis

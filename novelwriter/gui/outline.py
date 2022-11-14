@@ -1049,7 +1049,7 @@ class GuiOutlineDetails(QScrollArea):
         """
         pIndex = self.theProject.index
         nwItem = self.theProject.tree[tHandle]
-        novIdx = pIndex.getNovelData(tHandle, sTitle)
+        novIdx = pIndex.getItemHeader(tHandle, sTitle)
         theRefs = pIndex.getReferences(tHandle, sTitle)
         if nwItem is None or novIdx is None:
             return False

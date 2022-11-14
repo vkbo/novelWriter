@@ -225,9 +225,9 @@ def testGuiOutline_Content(qtbot, nwGUI, nwLipsum):
     selItem = outlineTree.topLevelItem(4)
 
     outlineTree.setCurrentItem(selItem)
-    tHandle, tLine = outlineTree.getSelectedHandle()
+    tHandle, sTitle = outlineTree.getSelectedHandle()
     assert tHandle == "88243afbe5ed8"
-    assert tLine == 0
+    assert sTitle == "T0001"
 
     assert outlineData.titleLabel.text() == "<b>Scene</b>"
     assert outlineData.titleValue.text() == "Scene One"
@@ -243,9 +243,9 @@ def testGuiOutline_Content(qtbot, nwGUI, nwLipsum):
     selItem = outlineTree.topLevelItem(5)
 
     outlineTree.setCurrentItem(selItem)
-    tHandle, tLine = outlineTree.getSelectedHandle()
+    tHandle, sTitle = outlineTree.getSelectedHandle()
     assert tHandle == "88243afbe5ed8"
-    assert tLine == 12
+    assert sTitle == "T0002"
 
     assert outlineData.titleLabel.text() == "<b>Section</b>"
     assert outlineData.titleValue.text() == "Scene One, Section Two"
