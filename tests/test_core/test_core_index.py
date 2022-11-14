@@ -775,16 +775,6 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
         (f"{nHandle}:T0002", 1, "Hello World!", 22),
     ]
 
-    # Header Word Counts
-    bHandle = "0000000000000"
-    assert theIndex.getHandleWordCounts(bHandle) == []
-    assert theIndex.getHandleWordCounts(hHandle) == [("%s:T0001" % hHandle, 2)]
-    assert theIndex.getHandleWordCounts(sHandle) == [("%s:T0001" % sHandle, 2)]
-    assert theIndex.getHandleWordCounts(tHandle) == [("%s:T0001" % tHandle, 2)]
-    assert theIndex.getHandleWordCounts(nHandle) == [
-        (f"{nHandle}:T0001", 12), (f"{nHandle}:T0002", 16)
-    ]
-
     assert theIndex.saveIndex() is True
     assert theProject.saveProject() is True
     assert theProject.closeProject() is True

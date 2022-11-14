@@ -520,14 +520,6 @@ class NWIndex:
             hCount[iLevel] += 1
         return hCount
 
-    def getHandleWordCounts(self, tHandle):
-        """Get all header word counts for a specific handle.
-        """
-        return [
-            (f"{tHandle}:{sTitle}", hItem.wordCount)
-            for sTitle, hItem in self._itemIndex.iterItemHeaders(tHandle)
-        ]
-
     def getHandleHeaderCount(self, tHandle):
         """Get the number of headers in an item.
         """
