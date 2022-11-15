@@ -596,14 +596,21 @@ class GuiMain(QMainWindow):
             logger.debug("Requested item '%s' is not a document", tHandle)
             return False
 
+        cHandle = self.docEditor.docHandle()
+        if cHandle == tHandle:
+            self.docEditor.setCursorLine(tLine)
+            if changeFocus:
+                self.docEditor.setFocus()
+            return True
+
         self.closeDocument(beforeOpen=True)
         self._changeView(nwView.EDITOR)
         if self.docEditor.loadText(tHandle, tLine):
-            if changeFocus:
-                self.docEditor.setFocus()
             self.theProject.data.setLastHandle(tHandle, "editor")
             self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
             self.novelView.setActiveHandle(tHandle)
+            if changeFocus:
+                self.docEditor.setFocus()
         else:
             return False
 
@@ -1476,8 +1483,8 @@ class GuiMain(QMainWindow):
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return
 
-    @pyqtSlot(str, Enum, str)
-    def _openDocument(self, tHandle, tMode, sTitle):
+    @pyqtSlot(str, Enum, str, bool)
+    def _openDocument(self, tHandle, tMode, sTitle, setFocus):
         """Handle an open document request from one of the tree views.
         """
         if tHandle is not None:
@@ -1486,7 +1493,7 @@ class GuiMain(QMainWindow):
                 hItem = self.theProject.index.getItemHeader(tHandle, sTitle)
                 if hItem is not None:
                     tLine = hItem.line
-                self.openDocument(tHandle, tLine=tLine, changeFocus=False)
+                self.openDocument(tHandle, tLine=tLine, changeFocus=setFocus)
             elif tMode == nwDocMode.VIEW:
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return

@@ -324,41 +324,8 @@ class GuiDocViewer(QTextBrowser):
         return
 
     ##
-    #  Properties
-    ##
-
-    def docHandle(self):
-        """Return the handle of the currently open document. Returns
-        None if no document is open.
-        """
-        return self._docHandle
-
-    ##
     #  Setters
     ##
-
-    def setCursorPosition(self, thePosition):
-        """Move the cursor to a given position in the document.
-        """
-        if not isinstance(thePosition, int):
-            return False
-        if thePosition >= 0:
-            theCursor = self.textCursor()
-            theCursor.setPosition(thePosition)
-            self.setTextCursor(theCursor)
-        return True
-
-    def setCursorLine(self, theLine):
-        """Move the cursor to a given line in the document.
-        """
-        if not isinstance(theLine, int):
-            return False
-        if theLine >= 0:
-            theBlock = self.document().findBlockByLineNumber(theLine)
-            if theBlock:
-                self.setCursorPosition(theBlock.position())
-                logger.debug("Cursor moved to line %d", theLine)
-        return True
 
     def setScrollPosition(self, thePos):
         """Set the scrollbar position.
@@ -371,6 +338,12 @@ class GuiDocViewer(QTextBrowser):
     ##
     #  Getters
     ##
+
+    def docHandle(self):
+        """Return the handle of the currently open document. Returns
+        None if no document is open.
+        """
+        return self._docHandle
 
     def getScrollPosition(self):
         """Get the scrollbar position. Returns 0 if no scrollbar.

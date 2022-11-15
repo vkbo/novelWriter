@@ -59,7 +59,7 @@ class GuiNovelView(QWidget):
 
     # Signals for user interaction with the novel tree
     selectedItemChanged = pyqtSignal(str)
-    openDocumentRequest = pyqtSignal(str, Enum, str)
+    openDocumentRequest = pyqtSignal(str, Enum, str, bool)
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -594,7 +594,7 @@ class GuiNovelTree(QTreeWidget):
             if tHandle is None:
                 return
 
-            self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, sTitle or "")
+            self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, sTitle or "", False)
 
         return
 
@@ -637,7 +637,7 @@ class GuiNovelTree(QTreeWidget):
         document editor.
         """
         tHandle, sTitle = self.getSelectedHandle()
-        self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle or "")
+        self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle or "", True)
         return
 
     ##
