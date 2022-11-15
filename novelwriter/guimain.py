@@ -628,7 +628,7 @@ class GuiMain(QMainWindow):
         fHandle = None   # The first file handle we encounter
         foundIt = False  # We've found tHandle, pick the next we see
         for tItem in self.theProject.tree:
-            if tItem is None or not tItem.isFileType():
+            if not tItem.isFileType():
                 continue
             if fHandle is None:
                 fHandle = tItem.itemHandle
