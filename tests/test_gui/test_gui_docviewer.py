@@ -57,17 +57,10 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.docViewer.docHeader._refreshDocument()
     assert nwGUI.docViewer.toPlainText() == origText
 
-    # Cursor line
-    assert nwGUI.docViewer.setCursorLine("not a number") is False
-    assert nwGUI.docViewer.setCursorLine(3) is True
-    theCursor = nwGUI.docViewer.textCursor()
-    assert theCursor.position() == 40
-
-    # Cursor position
-    assert nwGUI.docViewer.setCursorPosition("not a number") is False
-    assert nwGUI.docViewer.setCursorPosition(100) is True
-
     # Select word
+    theCursor = nwGUI.docViewer.textCursor()
+    theCursor.setPosition(100)
+    nwGUI.docViewer.setTextCursor(theCursor)
     nwGUI.docViewer._makeSelection(QTextCursor.WordUnderCursor)
 
     qClip = qApp.clipboard()
@@ -113,7 +106,9 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     nwGUI.mainMenu.aViewDoc.activate(QAction.Trigger)
 
     # Select "Bod" link
-    assert nwGUI.docViewer.setCursorPosition(27) is True
+    theCursor = nwGUI.docViewer.textCursor()
+    theCursor.setPosition(27)
+    nwGUI.docViewer.setTextCursor(theCursor)
     nwGUI.docViewer._makeSelection(QTextCursor.WordUnderCursor)
     theRect = nwGUI.docViewer.cursorRect()
     # qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.LeftButton, pos=theRect.center(), delay=100)

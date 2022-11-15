@@ -515,17 +515,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.saveProject()
     assert nwGUI.closeDocViewer()
 
-    # Check a Quick Create and Delete
-    assert nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None)
-    newHandle = nwGUI.projView.getSelectedHandle()
-    assert newHandle == "0000000000013"
-    assert nwGUI.theProject.tree[newHandle] is not None
-    assert nwGUI.projView.requestDeleteItem()
-    assert nwGUI.projView.setSelectedHandle(newHandle)
-    assert nwGUI.projView.requestDeleteItem()
-    assert nwGUI.theProject.tree["0000000000014"] is not None  # Trash
-    assert nwGUI.saveProject()
-
     # Check the files
     projFile = projPath / "nwProject.nwx"
     testFile = tstPaths.outDir / "guiEditor_Main_Final_nwProject.nwx"
