@@ -140,12 +140,14 @@ class GuiMain(QMainWindow):
         self.splitView.addWidget(self.docViewer)
         self.splitView.addWidget(self.viewMeta)
         self.splitView.setHandleWidth(hWd)
+        self.splitView.setOpaqueResize(False)
         self.splitView.setSizes(self.mainConf.viewPanePos)
 
         # Splitter : Document Editor / Document Viewer
         self.splitDocs = QSplitter(Qt.Horizontal)
         self.splitDocs.addWidget(self.docEditor)
         self.splitDocs.addWidget(self.splitView)
+        self.splitDocs.setOpaqueResize(False)
         self.splitDocs.setHandleWidth(hWd)
 
         # Splitter : Project Tree / Main Tabs
@@ -153,6 +155,7 @@ class GuiMain(QMainWindow):
         self.splitMain.setContentsMargins(0, 0, 0, 0)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.splitDocs)
+        self.splitMain.setOpaqueResize(False)
         self.splitMain.setHandleWidth(hWd)
         self.splitMain.setSizes(self.mainConf.mainPanePos)
 
