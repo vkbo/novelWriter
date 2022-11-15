@@ -15,12 +15,12 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Python Setup
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.10"
           architecture: x64
       - name: Checkout Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
@@ -30,4 +30,4 @@ jobs:
         run: |
           pytest -v --cov=novelwriter --timeout=60
       - name: Upload to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3

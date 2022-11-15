@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Python Setup
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
@@ -27,7 +27,7 @@ jobs:
           sudo apt update
           sudo apt install libenchant-dev qttools5-dev-tools aspell-en
       - name: Checkout Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install Dependencies (pip)
         run: |
           pip install --upgrade pip
@@ -40,4 +40,4 @@ jobs:
           export QT_QPA_PLATFORM=offscreen
           pytest -v --cov=novelwriter --timeout=60
       - name: Upload to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
