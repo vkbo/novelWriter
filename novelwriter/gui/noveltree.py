@@ -605,6 +605,22 @@ class GuiNovelTree(QTreeWidget):
         self.clearSelection()
         return
 
+    def resizeEvent(self, event):
+        """Elide labels in the extra column.
+        """
+        super().resizeEvent(event)
+        newW = event.size().width()
+        oldW = event.oldSize().width()
+        if newW != oldW:
+            eliW = int(0.25 * newW)
+            fMetric = self.fontMetrics()
+            for i in range(self.topLevelItemCount()):
+                trItem = self.topLevelItem(i)
+                if isinstance(trItem, QTreeWidgetItem):
+                    lastText = trItem.data(self.C_EXTRA, Qt.UserRole)
+                    trItem.setText(self.C_EXTRA, fMetric.elidedText(lastText, Qt.ElideRight, eliW))
+        return
+
     ##
     #  Private Slots
     ##
@@ -686,10 +702,12 @@ class GuiNovelTree(QTreeWidget):
         trItem.setData(self.C_MORE, Qt.DecorationRole, self._pMore)
 
         # Custom column
+        mW = int(0.25 * self.viewport().width())
         lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
-        trItem.setText(self.C_EXTRA, lastText)
-        if lastText:
-            trItem.setToolTip(self.C_EXTRA, toolTip)
+        elideText = self.fontMetrics().elidedText(lastText, Qt.ElideRight, mW)
+        trItem.setText(self.C_EXTRA, elideText)
+        trItem.setData(self.C_EXTRA, Qt.UserRole, lastText)
+        trItem.setToolTip(self.C_EXTRA, toolTip)
 
         return
 
@@ -699,18 +717,24 @@ class GuiNovelTree(QTreeWidget):
         if self._lastCol == NovelTreeColumn.HIDDEN:
             return "", ""
 
+        refData = []
+        refName = ""
         theRefs = self.theProject.index.getReferences(tHandle, sTitle)
         if self._lastCol == NovelTreeColumn.POV:
-            newText = ", ".join(theRefs[nwKeyWords.POV_KEY])
-            return newText, f"{self._povLabel}: {newText}"
+            refData = theRefs[nwKeyWords.POV_KEY]
+            refName = self._povLabel
 
         elif self._lastCol == NovelTreeColumn.FOCUS:
-            newText = ", ".join(theRefs[nwKeyWords.FOCUS_KEY])
-            return newText, f"{self._focLabel}: {newText}"
+            refData = theRefs[nwKeyWords.FOCUS_KEY]
+            refName = self._focLabel
 
         elif self._lastCol == NovelTreeColumn.PLOT:
-            newText = ", ".join(theRefs[nwKeyWords.PLOT_KEY])
-            return newText, f"{self._pltLabel}: {newText}"
+            refData = theRefs[nwKeyWords.PLOT_KEY]
+            refName = self._pltLabel
+
+        if refData:
+            toolText = ", ".join(refData)
+            return refData[0], f"{refName}: {toolText}"
 
         return "", ""
 

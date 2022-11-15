@@ -50,7 +50,6 @@ class NWTree:
         self._treeRoots   = {}     # The root items of the tree
         self._trashRoot   = None   # The handle of the trash root folder
         self._archRoot    = None   # The handle of the archive root folder
-        self._theIndex    = 0      # The current iterator index
         self._treeChanged = False  # True if tree structure has changed
 
         return
@@ -62,12 +61,11 @@ class NWTree:
     def clear(self):
         """Clear the item tree entirely.
         """
-        self._projTree  = {}
-        self._treeOrder = []
-        self._treeRoots = {}
-        self._trashRoot = None
-        self._archRoot  = None
-        self._theIndex  = 0
+        self._projTree    = {}
+        self._treeOrder   = []
+        self._treeRoots   = {}
+        self._trashRoot   = None
+        self._archRoot    = None
         self._treeChanged = False
         return
 
@@ -278,7 +276,7 @@ class NWTree:
         """
         for tHandle in self._treeOrder:
             nwItem = self.__getitem__(tHandle)
-            if nwItem is not None and nwItem.isRootType():
+            if isinstance(nwItem, NWItem) and nwItem.isRootType():
                 if itemClass is None or nwItem.itemClass == itemClass:
                     yield tHandle, nwItem
         return
@@ -365,22 +363,18 @@ class NWTree:
         return True
 
     ##
-    #  Meta Methods
+    #  Special Methods
     ##
 
     def __len__(self):
-        """Return the length counter. Does not check that it is correct!
+        """The number of items in the project.
         """
         return len(self._treeOrder)
 
     def __bool__(self):
-        """Returns True if the tree has any entries.
+        """True if there are any items in the project.
         """
-        return len(self._treeOrder) > 0
-
-    ##
-    #  Item Access Methods
-    ##
+        return bool(self._treeOrder)
 
     def __getitem__(self, tHandle):
         """Return a project item based on its handle. Returns None if
@@ -417,25 +411,14 @@ class NWTree:
         """
         return tHandle in self._treeOrder
 
-    ##
-    #  Iterator Methods
-    ##
-
     def __iter__(self):
-        """Initiates the iterator.
+        """Iterate through project items.
         """
-        self._theIndex = 0
-        return self
-
-    def __next__(self):
-        """Returns the item from the next entry in the _treeOrder list.
-        """
-        if self._theIndex < len(self._treeOrder):
-            theItem = self.__getitem__(self._treeOrder[self._theIndex])
-            self._theIndex += 1
-            return theItem
-        else:
-            raise StopIteration
+        for tHandle in self._treeOrder:
+            tItem = self._projTree.get(tHandle)
+            if isinstance(tItem, NWItem):
+                yield tItem
+        return
 
     ##
     #  Internal Functions
