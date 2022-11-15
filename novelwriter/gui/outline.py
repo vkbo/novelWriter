@@ -55,7 +55,7 @@ logger = logging.getLogger(__name__)
 class GuiOutlineView(QWidget):
 
     loadDocumentTagRequest = pyqtSignal(str, Enum)
-    openDocumentRequest = pyqtSignal(str, Enum, str)
+    openDocumentRequest = pyqtSignal(str, Enum, str, bool)
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -545,7 +545,7 @@ class GuiOutlineTree(QTreeWidget):
         tHandle, sTitle = self.getSelectedHandle()
         if tHandle is None:
             return
-        self.outlineView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle or "")
+        self.outlineView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle or "", True)
         return
 
     @pyqtSlot()

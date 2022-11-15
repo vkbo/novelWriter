@@ -417,7 +417,7 @@ class GuiDocEditor(QTextEdit):
             else:
                 self.setCursorPosition(self._nwItem.cursorPos)
         elif isinstance(tLine, int):
-            self.setCursorLine(tLine - 1)
+            self.setCursorLine(tLine)
 
         if self.mainConf.scrollPastEnd > 0:
             fSize = QFontMetrics(self.font()).lineSpacing()
@@ -691,8 +691,9 @@ class GuiDocEditor(QTextEdit):
         if not isinstance(lineNo, int):
             return False
 
-        if lineNo >= 0:
-            theBlock = self.document().findBlockByLineNumber(lineNo)
+        lineIdx = lineNo - 1  # Block index is 0 offset, lineNo is 1 offset
+        if lineIdx >= 0:
+            theBlock = self.document().findBlockByLineNumber(lineIdx)
             if theBlock:
                 self.setCursorPosition(theBlock.position())
                 logger.debug("Cursor moved to line %d", lineNo)
