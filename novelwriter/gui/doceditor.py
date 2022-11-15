@@ -52,7 +52,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.core import NWSpellEnchant, countWords
 from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode, nwItemClass
-from novelwriter.common import transferCase
+from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwConst, nwFiles, nwKeyWords, nwUnicode
 from novelwriter.gui.dochighlight import GuiDocHighlighter
 
@@ -654,17 +654,25 @@ class GuiDocEditor(QTextEdit):
         self.docEditedStatusChanged.emit(self._docChanged)
         return self._docChanged
 
-    def setCursorPosition(self, thePosition):
+    def setCursorPosition(self, position):
         """Move the cursor to a given position in the document.
         """
-        if not isinstance(thePosition, int):
+        if not isinstance(position, int):
             return False
 
         nChars = self.document().characterCount()
         if nChars > 1:
             theCursor = self.textCursor()
-            theCursor.setPosition(min(max(thePosition, 0), nChars-1))
+            theCursor.setPosition(minmax(position, 0, nChars-1))
             self.setTextCursor(theCursor)
+
+            # The editor scrolls so the cursor is on the last line, so we must correct
+            vPos = self.verticalScrollBar().value()       # Current scrollbar position
+            cPos = self.cursorRect().topLeft().y()        # Cursor position to scroll to
+            dMrg = int(self.document().documentMargin())  # Document margin to subtract
+            mPos = int(self.viewport().height()*0.1)      # Distance from top to adjust for (10%)
+            self.verticalScrollBar().setValue(max(0, vPos + cPos - dMrg - mPos))
+
             self.docFooter.updateLineCount()
 
         return True
@@ -677,18 +685,17 @@ class GuiDocEditor(QTextEdit):
             self._nwItem.setCursorPos(cursPos)
         return
 
-    def setCursorLine(self, theLine):
+    def setCursorLine(self, lineNo):
         """Move the cursor to a given line in the document.
         """
-        if not isinstance(theLine, int):
+        if not isinstance(lineNo, int):
             return False
 
-        if theLine >= 0:
-            theBlock = self.document().findBlockByLineNumber(theLine)
+        if lineNo >= 0:
+            theBlock = self.document().findBlockByLineNumber(lineNo)
             if theBlock:
                 self.setCursorPosition(theBlock.position())
-                self.docFooter.updateLineCount()
-                logger.debug("Cursor moved to line %d", theLine)
+                logger.debug("Cursor moved to line %d", lineNo)
 
         return True
 
