@@ -104,7 +104,7 @@ class NWIndex:
         """
         self.clearIndex()
         for nwItem in self._project.tree:
-            if nwItem is not None and nwItem.isFileType():
+            if nwItem.isFileType():
                 tHandle = nwItem.itemHandle
                 theDoc = self._project.storage.getDocument(tHandle)
                 self.scanText(tHandle, theDoc.readDocument() or "")
@@ -794,8 +794,6 @@ class ItemIndex:
         a given root handle, or for all if root handle is None.
         """
         for tItem in self._project.tree:
-            if tItem is None:
-                continue
             if tItem.isNoteLayout():
                 continue
             if skipExcl and not tItem.isActive:
