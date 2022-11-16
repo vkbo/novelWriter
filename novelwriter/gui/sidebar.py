@@ -1,7 +1,7 @@
 """
-novelWriter – GUI Main Window Views ToolBar
+novelWriter – GUI Main Window SideBar
 ===========================================
-GUI class for the main window "Views" toolbar
+GUI class for the main window side bar
 
 File History:
 Created: 2022-05-10 [1.7b1]
@@ -36,14 +36,14 @@ from novelwriter.enum import nwView
 logger = logging.getLogger(__name__)
 
 
-class GuiViewsBar(QToolBar):
+class GuiSideBar(QToolBar):
 
     viewChangeRequested = pyqtSignal(nwView)
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiViewsBar ...")
+        logger.debug("Initialising GuiSideBar ...")
 
         self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui
@@ -123,7 +123,7 @@ class GuiViewsBar(QToolBar):
 
         self.updateTheme()
 
-        logger.debug("GuiViewsBar initialisation complete")
+        logger.debug("GuiSideBar initialisation complete")
 
         return
 
@@ -142,4 +142,4 @@ class GuiViewsBar(QToolBar):
 
         return
 
-# END Class GuiViewsBar
+# END Class GuiSideBar

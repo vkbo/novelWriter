@@ -22,10 +22,9 @@ Four levels of headings are supported, signified by the number of hashes (``#``)
 title. See also the :ref:`a_fmt` section for more details about the markdown syntax.
 
 .. note::
-   The header levels are not only important when generating the exported novel file, they are also
-   used by the indexer when building the outline tree in the :guilabel:`Outline` tab as well as the
-   :guilabel:`Novel` tab of the project tree. Each heading also starts a new region where new
-   references and tags can be defined.
+   The header levels are not only important when generating the manuscript, they are also used by
+   the indexer when building the outline tree in the Outline as well as the Novel Tree. Each
+   heading also starts a new region where new references and tags can be defined.
 
 The syntax for the four basic header types, and the two special header types, is listed in section
 :ref:`a_fmt_head`. The meaning of the four levels for the structure of your novel is as follows:
@@ -33,8 +32,7 @@ The syntax for the four basic header types, and the two special header types, is
 **Header Level 1: Partition**
    This header level signifies that the text refers to a top level partition. This is useful when
    you want to split the manuscript up into books, parts, or acts. These headings are not required.
-   The novel title itself should use the special header level one code explained in
-   :ref:`a_fmt_head`.
+   The novel title itself should use the special header level explained in :ref:`a_fmt_head`.
 
 **Header Level 2: Chapter**
    This header level signifies a chapter level partition. Each time you want to start a new
@@ -46,7 +44,7 @@ The syntax for the four basic header types, and the two special header types, is
 
 **Header Level 3: Scene**
    This header level signifies a scene level partition. You must provide a title text, but the
-   title text can be replaced with a scene separator or just skipped entirely when you export your
+   title text can be replaced with a scene separator or just skipped entirely when you build your
    manuscript.
 
 **Header Level 4: Section**
@@ -55,12 +53,12 @@ The syntax for the four basic header types, and the two special header types, is
    mid-scene, like if you change the point-of-view character. You are free to use sections as you
    wish, and can filter them out of the final manuscript just like with scene titles.
 
-Page breaks are automatically added before level 1 and 2 headers when you export your project to a
+Page breaks are automatically added before level 1 and 2 headers when you build your project to a
 format that supports page breaks, or when you print the document directly from the build tool. If
 you want page breaks in other places, you have to specify them manually. See :ref:`a_fmt_break`.
 
 .. tip::
-   There are multiple options of how to process novel titles when exporting the manuscript. For
+   There are multiple options of how to process novel titles when building the manuscript. For
    instance, chapter numbers can be applied automatically, and so can scene numbers if you want
    them in a draft manuscript. See the :ref:`a_export` page for more details.
 
@@ -70,19 +68,19 @@ you want page breaks in other places, you have to specify them manually. See :re
 Novel Title and Front Matter
 ----------------------------
 
-It is recommended that you add a document at the very top of your project with the novel title as
-the first line. You should modify the level 1 header format code with an ``!`` in order to render
-it as a document title that is excluded from any automatic Table of Content in an exported
-document, like so:
+It is recommended that you add a document at the very top of each Novel root folder with the novel
+title as the first line. You should modify the level 1 header format code with an ``!`` in order to
+render it as a document title that is excluded from any automatic Table of Content in a manuscript
+build document, like so:
 
 ``#! My Novel``
 
-The title is by default centred on the page when exported. You can add more text to the page as you
-wish, like for instance the author's name and details.
+The title is by default centred on the page. You can add more text to the page as you wish, like
+for instance the author's name and details.
 
 If you want an additional page of text after the title page, starting on a fresh page, you can add
 ``[NEW PAGE]`` on a line by itself, and continue the text after it. This will insert a page break
-when the project is exported.
+before the text.
 
 
 .. _a_struct_heads_unnum:
@@ -97,9 +95,9 @@ build tool to skip these chapters.
 ``##! Unnumbered Chapter Title``
 
 There is a separate formatting feature for such chapters in the :guilabel:`Build Novel Project`
-tool as well. See the :ref:`a_export` page for more details. When exporting to a format that
-supports page breaks, also unnumbered chapters will have a page break added just like for normal
-chapters.
+tool as well. See the :ref:`a_export` page for more details. When building a document of a format
+that supports page breaks, also unnumbered chapters will have a page break added just like for
+normal chapters.
 
 .. Note::
    Previously, you could also disable the automatic numbering of a chapter by adding an ``*`` as
@@ -110,14 +108,13 @@ chapters.
 
 .. _a_struct_tags:
 
-Tag References
-==============
+Note References
+===============
 
 Each text partition, indicated by a heading of any level, can contain references to tags set in the
-supporting notes of the project. The references are gathered by the indexer and used to generate an
-outline view on the :guilabel:`Outline` tab of how the different parts of the novel are connected.
-This section covers how to set references to tags. See :ref:`a_notes_tags` for how to define tags
-the references can point to.
+project notes of the project. The references are gathered by the indexer and used to generate the
+Outline View. This section covers how to make references to tags. See :ref:`a_notes_tags` for how
+to define tags the references can point to.
 
 References and tags are also clickable in the document editor and viewer, making it easy to
 navigate between reference notes while writing. Clicked links are always opened in the view panel.
@@ -171,6 +168,22 @@ The highlighter may be mistaken if the index of defined tags is out of date. If 
 to regenerate it, or select :guilabel:`Rebuild Index` from the :guilabel:`Tools` menu. In general,
 the index for a document is regenerated when it is saved, so this shouldn't normally be necessary.
 
+Example of a novel document with references to characters and plots:
+
+.. code-block:: none
+   :linenos:
+
+   ## Chapter 1
+
+   @pov: Jane
+
+   ### Scene 1
+
+   @char: John, Sam
+   @plot: Main
+
+   Once upon a time ...
+
 
 .. _a_struct_layout:
 
@@ -181,15 +194,13 @@ All documents in the project can have a layout format set. Previously, there wer
 available to change how the documents where formatted on export. These have now been reduced to
 just two layouts: :guilabel:`Novel Document` and :guilabel:`Project Note`.
 
-Novel documents can only live in the :guilabel:`Novel` root folder. You can also move them to
+Novel documents can only live in a :guilabel:`Novel` type root folder. You can also move them to
 :guilabel:`Archive` and :guilabel:`Trash` of course. Project notes can be added anywhere in the
 project.
 
-Depending on which icon theme you're using, the project tree can distinguish between the different
-layouts and header levels of the documents to help indicate which are project notes and which are
-novel documents containing a partition, chapter, or scene. If the icon theme you've selected
-doesn't show a difference, you can still see the layout description in the details panel below the
-project tree.
+The project tree can distinguish between the different layouts and header levels of the documents
+using coloured icons, and optionally add emphasis on the label (See the :guilabel:`Preferences`.)
+For novel documents, the heading level of the first heading is recorded, and indicated by the icon.
 
 .. tip::
    You can always start writing with a coarse setup with one or a few documents, and then later use

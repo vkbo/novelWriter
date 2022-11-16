@@ -33,12 +33,14 @@ other root folders. These other root folder types are intended for your notes on
 elements of your story. Using them is of course entirely optional.
 
 A new project may not have all of the root folders present, but you can add the ones you want from
-:guilabel:`Create Root Folder` in the :guilabel:`Project` menu.
+the project tree.
 
 Each root folder has one or more reference keyword associated with it that can be used to reference
-content in your notes from other documents and notes. The intended usage of each type of root
-folder is listed below. However, aside from the :guilabel:`Novel` folder, no restrictions are
-applied by the application. You can use them however you want.
+tags in your notes from other documents and notes. The intended usage of each type of root folder
+is listed below. However, aside from the :guilabel:`Novel` folder, no restrictions are applied by
+the application. You can use them however you want.
+
+You can make multiple root folders of each kind.
 
 :guilabel:`Novel`
    This is the root folder of all text that goes into the final novel. This class of documents have
@@ -51,9 +53,9 @@ applied by the application. You can use them however you want.
    folder can be references using the ``@plot`` keyword.
 
 :guilabel:`Characters`
-   Character notes go in this root folder. These are especially important if one wants to use the
-   Outline view to see which character appears where, and which part of the story is told from a
-   specific character's point-of-view or focusing on a particular character's storyline. Tags in
+   Character notes go in this root folder. These are especially important if you want to use the
+   Outline View to see which character appears where, and which part of the story is told from a
+   specific character's point-of-view, or focusing on a particular character's storyline. Tags in
    this folder can be referenced using the ``@pov`` keyword for point-of-view characters,
    ``@focus`` for a focus character, or the ``@char`` keyword for any other characters.
 
@@ -86,6 +88,28 @@ information about the tags listed, see :ref:`a_struct_tags`.
    You can rename root folders to whatever you want. However, this doesn't change the reference
    keyword.
 
+Example of a character note:
+
+.. code-block:: none
+   :linenos:
+
+   # Jane Doe
+
+   @tag: Jane
+
+   Some information about the character Jane Doe.
+
+Example of a novel scene referencing the above character:
+
+.. code-block:: none
+   :linenos:
+
+   ### Chapter 1, Scene 1
+
+   @pov: Jane
+
+   When Jane woke up that morning ...
+
 
 .. _a_proj_roots_del:
 
@@ -97,9 +121,8 @@ trash folder can then be deleted permanently, either individually, or by emptyin
 the menu. Documents in the trash folder are removed from the project index and cannot be
 referenced.
 
-Folders and root folders can only be deleted when they are empty. Recursive deletion is not
-supported. A document or a folder can be deleted from the :guilabel:`Project` menu, or by pressing
-:kbd:`Ctrl`:kbd:`Shift`:kbd:`Del`.
+A document or a folder can be deleted from the :guilabel:`Project` menu, or by pressing
+:kbd:`Ctrl`:kbd:`Shift`:kbd:`Del`. Root folders can only be deleted when they are empty.
 
 
 .. _a_proj_roots_out:
@@ -109,9 +132,7 @@ Archived Documents
 
 If you don't want to delete a document, or put it in the :guilabel:`Trash` folder where it may be
 deleted, but still want it out of your main project tree, you can create an :guilabel:`Archive`
-root folder from the :guilabel:`Project` menu. You are not allowed to move entire folders to this
-root folder, only documents. If you need folders in it to organise your documents, you can of
-course create new ones there.
+root folder.
 
 You can drag any document to this folder and preserve its settings. The document will always be
 excluded from the :guilabel:`Build Novel Project` builds. It is also removed from the project
@@ -179,9 +200,10 @@ and to be able to collapse and hide them in the project tree when you're not wor
 documents.
 
 .. tip::
-   You can use folders to sort your scene documents into chapters. You will still need to add a
-   chapter document as the first item of your chapter folder, and the scene documents as the
-   following items. Other ways to use folders is to make a folder for each act or part.
+   You can add child documents to other documents. This is particularly useful when you create
+   chapters and scenes. If you add separate scene documents, you should also add separate chapter
+   documents, even if they only contain a chapter heading. You can then add scene documents as
+   child items to the chapters.
 
 
 .. _a_proj_files:
@@ -189,21 +211,15 @@ documents.
 Project Documents
 =================
 
-New documents can be created from the :guilabel:`Document` menu, or by pressing :kbd:`Ctrl`:kbd:`N`
-while in the project tree. This will create a new, empty document, and open the :guilabel:`Item
-Settings` dialog where the document label and various other settings can be changed. This dialog
-can also be opened again later from either the :guilabel:`Project` menu, selecting :guilabel:`Edit
-Project Item`, or by pressing :kbd:`F2` with the item selected.
+New documents can be created from tool bar in the Project Tree, or by pressing :kbd:`Ctrl`:kbd:`N`.
+This will open the create new item menu and let you choose between a number of pre-defined
+documents and folders. You will be prompted for a label for the new item. You can always rename an
+item by selecting :guilabel:`Rename Item` from the :guilabel:`Project` menu, or by pressing
+:kbd:`F2`.
 
-The layout of the document is also defined here. The two options available are :guilabel:`Novel
-Document` and :guilabel:`Project Note`. These behave differently when the project is built. A
-project note is never treated as part of the novel, no matter where in the project it is located.
-See :ref:`a_struct_layout` for more details.
-
-You can also select whether the document is by default included when building the project. This
-setting can be overridden in the :guilabel:`Build Novel Project` tool if you wish to include them
-anyway. This is covered in the :ref:`a_export_files` section. You can also toggle the included
-state of a document from the right-click context menu.
+Other settings for project items are available from the context menu that you can activate by
+right-clicking on them inb the Project Tree. The :guilabel:`Transform` submenu includes options for
+converting, splitting, or merging items.
 
 
 .. _a_proj_files_counts:
@@ -237,17 +253,16 @@ The :guilabel:`Project Settings` can be accessed from the :guilabel:`Project` me
 Settings Tab
 ------------
 
-The :guilabel:`Settings` tab holds the project title and author settings.
+The :guilabel:`Settings` tab holds the project name, title, and author settings.
 
-The :guilabel:`Working Title` can be set to a different title than the :guilabel:`Book Title`. The
-difference between them is simply that the :guilabel:`Working Title` is used for the GUI (main
-window title) and for generating the backup files. The intention is that the :guilabel:`Working
-Title` should remain unchanged throughout the project, otherwise the name of exported files and
+The :guilabel:`Project Name` can be set to a different value than the :guilabel:`Novel Title`. The
+difference between them is simply that the :guilabel:`Project Name` is used for the GUI (main
+window title) and for generating the backup files. The intention is that the :guilabel:`Project
+Name` should remain unchanged throughout the project, otherwise the name of exported files and
 backup files may change too.
 
-The :guilabel:`Book Title` and :guilabel:`Book Authors` settings are currently not used for
-anything, so setting them is just for the benefit of the author. Future features may use them, and
-they are exported on some export formats in the :guilabel:`Build Novel Project` tool.
+The :guilabel:`Novel Title` and :guilabel:`Authors` settings are used when building the manuscript,
+for some formats.
 
 If your project is in a different language than your main spell checking is set to, you can
 override the default spell checking language here. You can also override the automatic backup
@@ -257,14 +272,14 @@ setting.
 Status and Importance Tabs
 --------------------------
 
-Each document or folder of type :guilabel:`Novel` can be given a status level, signified by a
-coloured icon, and each document or folder of the remaining types can be given an importance level.
-These are colour coded icons and labels that can be applied to each document or folder.
+Each document or folder of type :guilabel:`Novel` can be given a _Status_ label accompanied by a
+coloured icon, and each document or folder of the remaining types can be given an _Importance_
+label.
 
 These are purely there for the user's convenience, and you are not required to use them for any
 other features to work. No other part of novelWriter accesses this information. The intention is to
 use these to indicate at what stage of completion each novel document is, or how important the
-content of a note is to the plot. You don't have to use them this way, that's just what they were
+content of a note is to the story. You don't have to use them this way, that's just what they were
 intended for, but you can make them whatever you want.
 
 See also :ref:`a_ui_tree_status`.
@@ -279,7 +294,7 @@ Auto-Replace Tab
 
 A set of automatically replaced keywords can be added in this tab. The keywords in the left column
 will be replaced by the text in the right column when documents are opened in the viewer. They will
-also be applied to exports.
+also be applied to manuscript builds.
 
 The auto-replace feature will replace text in angle brackets that are in this list. The syntax
 highlighter will add an alternate colour to text marching the syntax, but it doesn't check if the
@@ -300,16 +315,17 @@ An automatic backup system is built into novelWriter. In order to use it, a back
 the backup files are to be stored must be provided in :guilabel:`Preferences`.
 
 Backups can be run automatically when a project is closed, which also implies it is run when the
-application itself is closed. Backups are date stamped zip files of the entire project folder, and
-are stored in a subfolder of the backup path. The subfolder will have the same name as the project
-:guilabel:`Working Title` set in :ref:`a_proj_settings`.
+application itself is closed. Backups are date stamped zip files of the project files in the
+project folder (files not strictly a part of the project are ignored). The zip archives are stored
+in a subfolder of the backup path. The subfolder will have the same name as the
+:guilabel:`Project Name` as defined in :ref:`a_proj_settings`.
 
 The backup feature, when configured, can also be run manually from the :guilabel:`Tools` menu.
-It is also possible to disable automated backups for a given project in :guilabel:`Project
-Settings`.
+It is also possible to disable automated backups for a given project in
+:guilabel:`Project Settings`.
 
 .. note::
-   For the backup to be able to run, the :guilabel:`Working Title` must be set in
+   For the backup to be able to run, the :guilabel:`Project Name` must be set in
    :guilabel:`Project Settings`. This value is used to generate the folder name for the zip files.
    Without it, the backup will not run at all, but it will produce a warning message.
 
@@ -320,7 +336,8 @@ Writing Statistics
 ==================
 
 When you work on a project, a log file records when you opened it, when you closed it, and the
-total word counts of your novel documents and notes at the end of the session. You can view this
+total word counts of your novel documents and notes at the end of the session provided that the
+session lasted either more than 5 minutes, or that the total word count changed. You can view this
 file in the ``meta`` folder in the directory where you saved your project. The file is named
 ``sessionStats.log``.
 
