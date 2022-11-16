@@ -1,11 +1,12 @@
 .. _a_export:
 
-******************
-Exporting Projects
-******************
+***********************
+Building the Manuscript
+***********************
 
-The novelWriter project can be exported in various formats using the build tool available from
-:guilabel:`Build Novel Project` in the :guilabel:`Tools` menu, or by pressing :kbd:`F5`.
+You can at any time build a manuscript, an outline of your notes, or any other type of document
+from the text in your project. All of this is handled by the :guilabel:`Build Novel Project` tool.
+You can activate it from the sidebar, the :guilabel:`Tools` menu, or by pressing :kbd:`F5`.
 
 
 .. _a_export_headers:
@@ -66,7 +67,7 @@ Scene Separators
 
 If you don't want any titles for your scenes (or for your sections if you have them), you can leave
 the formatting boxes empty. If so, an empty paragraph will be inserted between the scenes or
-sections instead resulting in a gap in the text.
+sections instead, resulting in a gap in the text.
 
 Alternatively, if you want a separator between them, like the common ``* * *``, you can enter the
 desired separator text in the formatting box. In fact, if the format is a piece of static text, it
@@ -78,13 +79,9 @@ will always be treated as a separator.
 File Selection
 ==============
 
-Which documents and notes are selected for export can be controlled from the options on the left
-side of the dialog window. The switch for :guilabel:`Include novel files` will enable or disable
-inclusion of novel documents, and the switch for :guilabel:`Include note files` will do the same
-for project notes. This allows for exporting just the novel, just your notes, or both, as you wish.
-
-In addition, you can select to export the synopsis comments, regular comments, keywords, and even
-exclude the body text itself.
+Which documents and notes are selected for the build can be controlled from the options on the left
+side of the dialog window. In addition, you can select to include the synopsis comments, regular
+comments, keywords, and even exclude the body text itself if you just want an outline.
 
 .. tip::
    If you for instance want to export a document with an outline of the novel, you can enable
@@ -92,11 +89,9 @@ exclude the body text itself.
    followed by the tags and references and the synopsis.
 
 If you need to exclude specific documents from your exports, like draft documents or documents you
-want to take out of your manuscript, but don't want to delete, you can un-check the
-:guilabel:`Include when building project` option for each such document in the project tree. An
-included document has a checkmark after in the third column of the project tree. The
-:guilabel:`Build Novel Project` tool has a switch to ignore this flag if you need to collectively
-override these settings.
+want to take out of your manuscript, but don't want to delete, you can set the documents as
+"inactive" in the project tree. :guilabel:`Build Novel Project` tool has a switch to collectively
+exclude inactive documents.
 
 
 .. _a_export_print:
@@ -108,13 +103,17 @@ The print button allows you to print the content in the preview window. You can 
 of your system's printers, or print directly to a file as PDF. You can also print to file from the
 regular print dialog. The direct to file option is just a shortcut.
 
+.. note::
+   The paper format should in all cases default to whatever your system default is. Of you want to
+   change it, you have to select it from the :guilabel:`Print Preview`` dialog.
+
 
 .. _a_export_formats:
 
 Export Formats
 ==============
 
-Currently, six formats are supported for exporting.
+Currently, six formats are supported.
 
 Open Document Format
    The Build tool can produce either an ``.odt`` file, or an ``.fodt`` file. The latter is just a
@@ -122,9 +121,9 @@ Open Document Format
    former, and a few the latter.
 
 novelWriter HTML
-   The HTML export format writes a single ``.htm`` file with minimal style formatting. The exported
-   HTML document is suitable for further processing by document conversion tools like Pandoc, for
-   importing in word processors, or for printing from browser.
+   The HTML format writes a single ``.htm`` file with minimal style formatting. The HTML document
+   is suitable for further processing by document conversion tools like Pandoc, for importing in
+   word processors, or for printing from browser.
 
 novelWriter Markdown
    This is simply a concatenation of the project documents selected by the filters. The documents
@@ -133,23 +132,23 @@ novelWriter Markdown
    import back into novelWriter.
 
 Standard/GitHub Markdown
-   The Markdown export format comes in both Standard and GitHub flavour. The *only* difference in
-   terms of novelWriter functionality is the support for strikethrough text, which is not supported
-   by the Standard flavour, but *is* supported by the GitHub flavour.
+   The Markdown format comes in both Standard and GitHub flavour. The *only* difference in terms of
+   novelWriter functionality is the support for strikethrough text, which is not supported by the
+   Standard flavour, but *is* supported by the GitHub flavour.
 
 
 .. _a_export_options:
 
-Additional Export Options
-=========================
+Additional Formats
+==================
 
 In addition to the above document formats, the novelWriter HTML and Markdown formats can also be
 wrapped in a JSON file. These files will have a meta data entry and a body entry. For HTML, also
-the accompanying css styles are exported.
+the accompanying css styles are included.
 
-The text body is saved in a two-level list. The outer list contains one entry per exported
-document, in the order they appear in the project tree. Each document is then split up into a list
-as well, with one entry per paragraph it contains.
+The text body is saved in a two-level list. The outer list contains one entry per document, in the
+order they appear in the project tree. Each document is then split up into a list as well, with one
+entry per paragraph it contains.
 
 These files are mainly intended for scripted post-processing for those who want that option. A JSON
 file can be imported directly into a Python dict object or a PHP array, to mentions a few options.
