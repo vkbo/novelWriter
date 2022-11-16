@@ -34,7 +34,6 @@ from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
 
 from novelwriter.common import formatTime
-from novelwriter.enum import nwState
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +52,8 @@ class GuiMainStatus(QStatusBar):
         self.userIdle  = False
 
         colNone = QColor(*self.mainTheme.statNone)
-        colTrue = QColor(*self.mainTheme.statUnsaved)
-        colFalse = QColor(*self.mainTheme.statSaved)
+        colSaved = QColor(*self.mainTheme.statSaved)
+        colUnsaved = QColor(*self.mainTheme.statUnsaved)
 
         iPx = self.mainTheme.baseIconSize
 
@@ -72,7 +71,7 @@ class GuiMainStatus(QStatusBar):
         self.addPermanentWidget(self.langText)
 
         # The Editor Status
-        self.docIcon = StatusLED(colNone, colTrue, colFalse, iPx, iPx, self)
+        self.docIcon = StatusLED(colNone, colSaved, colUnsaved, iPx, iPx, self)
         self.docText = QLabel(self.tr("Editor"))
         self.docIcon.setContentsMargins(0, 0, 0, 0)
         self.docText.setContentsMargins(0, 0, xM, 0)
@@ -80,7 +79,7 @@ class GuiMainStatus(QStatusBar):
         self.addPermanentWidget(self.docText)
 
         # The Project Status
-        self.projIcon = StatusLED(colNone, colTrue, colFalse, iPx, iPx, self)
+        self.projIcon = StatusLED(colNone, colSaved, colUnsaved, iPx, iPx, self)
         self.projText = QLabel(self.tr("Project"))
         self.projIcon.setContentsMargins(0, 0, 0, 0)
         self.projText.setContentsMargins(0, 0, xM, 0)
@@ -122,8 +121,8 @@ class GuiMainStatus(QStatusBar):
         self.setRefTime(None)
         self.setLanguage(None, "")
         self.setProjectStats(0, 0)
-        self.setProjectStatus(nwState.NONE)
-        self.setDocumentStatus(nwState.NONE)
+        self.setProjectStatus(StatusLED.S_NONE)
+        self.setDocumentStatus(StatusLED.S_NONE)
         self.updateTime()
         return True
 
@@ -236,20 +235,24 @@ class GuiMainStatus(QStatusBar):
     def doUpdateProjectStatus(self, isChanged):
         """Slot for updating the project status.
         """
-        self.setProjectStatus(nwState.GOOD if isChanged else nwState.BAD)
+        self.setProjectStatus(StatusLED.S_BAD if isChanged else StatusLED.S_GOOD)
         return
 
     @pyqtSlot(bool)
     def doUpdateDocumentStatus(self, isChanged):
         """Slot for updating the document status.
         """
-        self.setDocumentStatus(nwState.GOOD if isChanged else nwState.BAD)
+        self.setDocumentStatus(StatusLED.S_BAD if isChanged else StatusLED.S_GOOD)
         return
 
 # END Class GuiMainStatus
 
 
 class StatusLED(QAbstractButton):
+
+    S_NONE = 0
+    S_BAD  = 1
+    S_GOOD = 2
 
     def __init__(self, colNone, colGood, colBad, sW, sH, parent=None):
         super().__init__(parent=parent)
@@ -271,9 +274,9 @@ class StatusLED(QAbstractButton):
     def setState(self, theState):
         """Set the colour state.
         """
-        if theState == nwState.GOOD:
+        if theState == self.S_GOOD:
             self._theCol = self._colGood
-        elif theState == nwState.BAD:
+        elif theState == self.S_BAD:
             self._theCol = self._colBad
         else:
             self._theCol = self._colNone
