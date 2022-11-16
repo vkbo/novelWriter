@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import (
 from novelwriter.gui import (
     GuiDocEditor, GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiMainMenu,
     GuiMainStatus, GuiNovelView, GuiOutlineView, GuiProjectView, GuiTheme,
-    GuiViewsBar
+    GuiSideBar
 )
 from novelwriter.dialogs import (
     GuiAbout, GuiPreferences, GuiProjectDetails, GuiProjectLoad,
@@ -118,7 +118,7 @@ class GuiMain(QMainWindow):
         self.itemDetails = GuiItemDetails(self)
         self.outlineView = GuiOutlineView(self)
         self.mainMenu    = GuiMainMenu(self)
-        self.viewsBar    = GuiViewsBar(self)
+        self.viewsBar    = GuiSideBar(self)
 
         # Project Tree Stack
         self.projStack = QStackedWidget()

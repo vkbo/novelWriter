@@ -28,7 +28,7 @@ from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectView
 from novelwriter.gui.statusbar import GuiMainStatus
 from novelwriter.gui.theme import GuiTheme
-from novelwriter.gui.viewsbar import GuiViewsBar
+from novelwriter.gui.sidebar import GuiSideBar
 
 __all__ = [
     "GuiDocEditor",
@@ -41,5 +41,5 @@ __all__ = [
     "GuiOutlineView",
     "GuiProjectView",
     "GuiTheme",
-    "GuiViewsBar",
+    "GuiSideBar",
 ]
