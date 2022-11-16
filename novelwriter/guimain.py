@@ -312,7 +312,7 @@ class GuiMain(QMainWindow):
         # Work Area
         self.docEditor.clearEditor()
         self.docEditor.setDictionaries()
-        self.closeDocViewer()
+        self.closeDocViewer(byUser=False)
         self.outlineView.clearProject()
 
         # General
@@ -1220,14 +1220,19 @@ class GuiMain(QMainWindow):
         self.theProject.data.setLastHandle(None, "editor")
         return
 
-    def closeDocViewer(self):
+    def closeDocViewer(self, byUser=True):
         """Close the document view panel.
         """
         self.docViewer.clearViewer()
-        self.theProject.data.setLastHandle(None, "viewer")
+        if byUser:
+            # Only reset the last handle if the user called this
+            self.theProject.data.setLastHandle(None, "viewer")
+
+        # Hide the panel
         bPos = self.splitMain.sizes()
         self.splitView.setVisible(False)
         self.splitDocs.setSizes([bPos[1], 0])
+
         return not self.splitView.isVisible()
 
     def toggleFocusMode(self):

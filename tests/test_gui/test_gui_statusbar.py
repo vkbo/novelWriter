@@ -24,7 +24,7 @@ import pytest
 
 from tools import C, buildTestProject
 
-from novelwriter.enum import nwState
+from novelwriter.gui.statusbar import StatusLED
 
 
 @pytest.mark.gui
@@ -44,19 +44,19 @@ def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.mainStatus.refTime == refTime
 
     # Project Status
-    nwGUI.mainStatus.setProjectStatus(nwState.NONE)
+    nwGUI.mainStatus.setProjectStatus(StatusLED.S_NONE)
     assert nwGUI.mainStatus.projIcon._theCol == nwGUI.mainStatus.projIcon._colNone
-    nwGUI.mainStatus.setProjectStatus(nwState.BAD)
+    nwGUI.mainStatus.setProjectStatus(StatusLED.S_BAD)
     assert nwGUI.mainStatus.projIcon._theCol == nwGUI.mainStatus.projIcon._colBad
-    nwGUI.mainStatus.setProjectStatus(nwState.GOOD)
+    nwGUI.mainStatus.setProjectStatus(StatusLED.S_GOOD)
     assert nwGUI.mainStatus.projIcon._theCol == nwGUI.mainStatus.projIcon._colGood
 
     # Document Status
-    nwGUI.mainStatus.setDocumentStatus(nwState.NONE)
+    nwGUI.mainStatus.setDocumentStatus(StatusLED.S_NONE)
     assert nwGUI.mainStatus.docIcon._theCol == nwGUI.mainStatus.docIcon._colNone
-    nwGUI.mainStatus.setDocumentStatus(nwState.BAD)
+    nwGUI.mainStatus.setDocumentStatus(StatusLED.S_BAD)
     assert nwGUI.mainStatus.docIcon._theCol == nwGUI.mainStatus.docIcon._colBad
-    nwGUI.mainStatus.setDocumentStatus(nwState.GOOD)
+    nwGUI.mainStatus.setDocumentStatus(StatusLED.S_GOOD)
     assert nwGUI.mainStatus.docIcon._theCol == nwGUI.mainStatus.docIcon._colGood
 
     # Idle Status
