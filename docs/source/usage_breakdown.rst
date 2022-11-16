@@ -8,7 +8,7 @@ How it Works
 
 The main features of novelWriter are listed in the :ref:`a_intro` section. Here, we go into some
 more details on how they are implemented. Later on in this documentation, these features will be
-covered in more detail.
+covered in even more detail.
 
 
 .. _a_breakdown_design:
@@ -19,52 +19,80 @@ GUI Layout and Design
 The user interface of novelWriter is intended to be as minimalistic as practically possible, while
 at the same time provide a complete set of features needed for writing a novel.
 
-The main window does not have a toolbar like many other applications do. This reduces clutter, and
-since the documents are formatted with style tags, is more or less redundant. However, most
-formatting features supported are available through convenient keyboard shortcuts. They are also
-available in the main menu so you don't have to look up formatting codes every time you need them.
-However, a list of all shortcuts can be found in the :ref:`a_kb` section.
+The main window does not have an editor toolbar like many other applications do. This reduces
+clutter, and since the documents are formatted with style tags, is more or less redundant. However,
+most formatting features supported are available through convenient keyboard shortcuts. They are
+alsoavailable in the main menu so you don't have to look up formatting codes every time you need
+them. However, a list of all shortcuts can be found in the :ref:`a_kb` section.
 
 .. note::
    novelWriter is not intended to be a full office type word processor. It doesn't support images,
    links, tables, and other complex structures and objects often needed for such documents.
    Formatting is limited to headers, emphasis, text alignment, and a few other simple features.
 
+On the left edge of the main window, you will find a sidebar. This bar has buttons for the standard
+views you can switch between, a quick link to the :guilabel:`Build Novel Project` tool, and a set
+of project-related tools as well as quick access to settings at the bottom.
 
-Window Tabs and Areas
----------------------
 
-The main window is split in two, or optionally three, panels. The left-most panel contains the
-project tree and all the documents in your project. The second panel is the document editor. An
-optional third panel is a document viewer which can view any document in your project independently
-of what is open in the document editor. It is not intended as a preview window, although you can
-use it for this as well as it will apply the formatting tags you have specified. The main purpose
-of the viewer is for viewing your notes next to your editor while you're writing.
+Project Tree View
+-----------------
+
+When in :guilabel:`Project Tree View` mode, the main work area of the main window is split in two,
+or optionally three, panels. The left-most panel contains the project tree and all the documents in
+your project. The second panel is the document editor. An optional third panel is a document viewer
+which can view any document in your project independently of what is open in the document editor.
+It is not intended as a preview window, although you can use it for this as well as it will apply
+the formatting tags you have specified. The main purpose of the viewer is for viewing your notes
+next to your editor while you're writing.
 
 The editor also has a :guilabel:`Focus Mode` you can toggle either from the menu, or from the icon
 in the editor header. When :guilabel:`Focus Mode` is enabled, all the user interface elements other
 than the document editor itself are hidden away.
 
-A second tab is also available on the main window. This is the :guilabel:`Outline` tab where the
-entire novel structure can be displayed, with all the tags and references listed. Depending on how
-you structure your novel documents, this outline can be quite different from your project tree.
-Your project tree lists individual documents, your Outline tree lists the structure of the novel
-itself in terms of partitions, chapters and scenes as it appears in the text of those documents.
+
+Novel Tree View
+---------------
+
+When in :guilabel:`Novel Tree View` mode, the project tree is replaces by an overview of your novel
+structure. Instead of showing individual documents, the tree shows all headings of your novel text.
+Each heading is indented according to the heading level. You can open and edit your novel documents
+from this view as well. All headings contained in the currently open document should be highlighted
+in the view.
+
+If you have multiple Novel root folders, you can switch between them from the dropdown menu from
+the buttons at the top of the tree view. You can also select to view an extra column of data. To
+select its content, see the menu icon button.
+
+If you click the arrow to the right of each item, a tooltip will pop up showing you all the meta
+data collected for that heading entry.
+
+
+Novel Outline View
+------------------
+
+When in :guilabel:`Novel Outline View` mode, the tree, editor and viewer will be replaced by a
+large table that shows the entire novel structure with all the tags and references listed. Pretty
+much all collected meta data is available here in different columns.
+
+You can select which novel root folder to display from the dropdown box, and you can select which
+columns to show or hide from the menu button. You can also rearrange the columns by drag and drop.
 
 
 Colour Themes
 -------------
 
-The colour theme of the user interface defaults to that of the host operating system. Some other
-light and dark colour themes are provided, and can be enabled in :guilabel:`Preferences` from the
-:guilabel:`Tools` menu. A number of syntax highlighting themes are also available in
-:guilabel:`Preferences`. Icon themes for light and dark GUIs are also available. The icons are
-based on the Typicons_ icon set designed by Stephen Hutchings.
+The default colour theme of the user interface is the default theme from the Qt library. There is a
+standard dark theme provided as well, which is similar to the default Qt theme. Some other light
+and dark colour themes are also provided. You can select which one you prefer from in
+:guilabel:`Preferences` from :guilabel:`Settings` or the :guilabel:`Tools` menu.
+
+A number of syntax highlighting themes are also available in :guilabel:`Preferences`. These are
+separate settings because there are a lot more options for syntax highlighting.
 
 .. note::
-   The GUI colour theme and the syntax highlighting theme are separate settings in
-   :guilabel:`Preferences`. If you switch to dark mode on the GUI, you should also switch the icon
-   theme and syntax highlighting theme.
+   If you switch to dark mode on the GUI, you should also switch the icon theme and syntax
+   highlighting theme, otherwise icons may be hard to see.
 
 
 .. _a_breakdown_project:
@@ -75,10 +103,11 @@ Project Layout
 This is a brief introduction to how you structure your writing projects. All of this will be
 covered in more detail later.
 
-The main point is that you are free to organise your project documents as you wish into subfolders,
-and split the text between documents in whatever way suits you. All that matters to novelWriter is
-the linear order the documents appear at in the project tree (top to bottom). The chapters, scenes
-and sections of the novel are determined by the headings within those documents.
+The main point of novelWriter is that you are free to organise your project documents as you wish
+into subfolders or subdocuments, and split the text between these documents in whatever way suits
+you. All that matters to novelWriter is the linear order the documents appear at in the project
+tree (top to bottom). The chapters, scenes and sections of the novel are determined by the headings
+within those documents.
 
 The four heading levels (**H1** to **H4**) are treated as follows:
 
@@ -87,33 +116,40 @@ The four heading levels (**H1** to **H4**) are treated as follows:
 * **H3** is used for scene titles – optionally replaced by separators.
 * **H4** is for section titles within scenes, if such granularity is needed.
 
+The project tree will select an icon for the document based on the first heading in it.
+
 This header level structure is only taken into account for novel documents. For the project notes,
 the header levels have no structural meaning, and the user is free to do whatever they want. See
 :ref:`a_struct` and :ref:`a_notes` for more details.
 
+.. note::
+   You can add documents as child items of other documents if you wish. This is often more useful
+   than adding folders, since you may want to have the chapter heading in a separate document from
+   your individual scene documents.
+
 
 .. _a_breakdown_export:
 
-Project Export
-==============
+Building the Manuscript
+=======================
 
-The project can at any time be exported to a range of different formats through the
-:guilabel:`Build Novel Project` tool. Natively, novelWriter supports export to Open Document,
-HTML5, and various flavours of Markdown.
+The project can at any time be assembled into a range of different formats through the
+:guilabel:`Build Novel Project` tool. Natively, novelWriter supports Open Document, HTML5, and
+various flavours of Markdown.
 
-The HTML5 export format is suitable for conversion by a number of other tools like Pandoc, or for
+The HTML5 format is suitable for conversion by a number of other tools like Pandoc, or for
 importing into word processors if the Open Document format isn't suitable. In addition, printing
 and printing to PDF is also possible. 
 
 You can also export the content of the project to a JSON file. This is useful if you want to write
-your own processing script in for instance Python as the entire novel can be read into a Python
+your own processing script in for instance Python, as the entire novel can be read into a Python
 dictionary with a couple of lines of code. The JSON file can be populated either with HTML
 formatted text, or with the raw text as typed into the novel documents. See :ref:`a_export_options`
 for more details.
 
 A number of filter options can be applied to the :guilabel:`Build Novel Project` tool, allowing you
-to export a draft manuscript, a reference document of notes, an outline based on chapter and scene
-titles with a synopsis each, and so on. See :ref:`a_export` for more details on export features and
+to make a draft manuscript, a reference document of notes, an outline based on chapter and scene
+titles with a synopsis each, and so on. See :ref:`a_export` for more details on build features and
 formats.
 
 
@@ -132,7 +168,8 @@ project is saved directly to your project folder in separate files. Only the pro
 the text you are currently editing is stored in memory at any given time. Secondly, having multiple
 small files means it is very easy to sync them between computers with standard file synchronisation
 tools. Thirdly, if you use version control software to track the changes to your project, the file
-formats used for the files are well suited. Also the JSON documents have line breaks and indents.
+formats used for the files are well suited. Also the JSON documents have line breaks and indents,
+which makes it easier to track them with version control software.
 
 .. note::
 

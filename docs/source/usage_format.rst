@@ -37,34 +37,34 @@ can select them for :guilabel:`Preferences`.
 Headings
 ========
 
-Four levels of headings are allowed. For project notes they are free to be used as you see fit.
-That is, novelWriter doesn't assign the different headings any meaning. However, for novel
-documents they indicate the structural level of the novel and must be used correctly to produce the
-intended result. See :ref:`a_struct_heads` for more details.
+Four levels of headings are allowed. For project notes, they are free to be used as you see fit.
+That is, novelWriter doesn't assign the different headings any particular meaning. However, for
+novel documents they indicate the structural level of the novel and must be used correctly to
+produce the intended result. See :ref:`a_struct_heads` for more details.
 
 ``# Title Text``
    Heading level one. For novel documents, the header level indicates the start of a new partition.
 
 ``## Title Text``
    Heading level two. For novel documents, the header level indicates the start of a new chapter.
-   Chapter numbers can be inserted automatically when exporting the manuscript.
+   Chapter numbers can be inserted automatically when building the manuscript.
 
 ``### Title Text``
    Heading level three. For novel documents, the header level indicates the start of a new scene.
-   Scene numbers or scene separators can be inserted automatically when exporting the manuscript,
+   Scene numbers or scene separators can be inserted automatically when building the manuscript,
    so you can use the title field as a working title for your scenes if you wish.
 
 ``#### Title Text``
    Heading level four. For novel documents, the header level indicates the start of a new section.
-   Section titles can be replaced by separators or removed completely when exporting the
-   manuscript.
+   Section titles can be replaced by separators or removed completely when building the manuscript.
 
 For headers level one and two, adding a ``!`` modifies the behaviour of the heading:
 
 ``#! Title Text``
    This tells the build tool that the level one heading is intended to be used for the novel's
-   main title, like for instance on the front page. When exporting, this will use a different
-   styling and will exclude the title from for instance a Table of Contents in Libre Office.
+   main title, like for instance on the front page. When building the manuscript, this will use a
+   different styling and will exclude the title from for instance a Table of Contents in Libre
+   Office.
 
 ``##! Title Text``
    This tells the build tool to not assign a chapter number to this chapter title if automatic
@@ -121,7 +121,7 @@ A minimal set of text emphasis styles are supported.
    Strikethrough text.
 
 In markdown guides it is often recommended to differentiate between strong importance and emphasis
-by using ``**`` for strong and ``_`` for emphasis, although markdown generally also supports ``__``
+by using ``**`` for strong and ``_`` for emphasis, although Markdown generally also supports ``__``
 for strong and ``*`` for emphasis. However, since the differentiation makes the highlighting and
 conversion significantly simpler and faster, in novelWriter this is a rule, not just a
 recommendation.
@@ -144,9 +144,9 @@ In addition, the following rules apply:
 Comments and Synopsis
 =====================
 
-In addition to these standard markdown features, novelWriter also allows for comments in documents.
+In addition to these standard Markdown features, novelWriter also allows for comments in documents.
 The text of a comment is ignored by the word counter. The text can also be filtered out when
-exporting or viewing the document.
+building the manuscript or viewing the document.
 
 If the first word of a comment is ``Synopsis:`` (with the colon included), the comment is treated
 specially and will show up in the :ref:`a_ui_outline` in a dedicated column. The word ``synopsis``
@@ -154,13 +154,13 @@ is not case sensitive. If it is correctly formatted, the syntax highlighter will
 altering the colour of the word.
 
 ``% text...``
-   This is a comment. The text is not exported by default (this can be overridden), seen in the
+   This is a comment. The text is not renderred by default (this can be overridden), seen in the
    document viewer, or counted towards word counts.
 
 ``% Synopsis: text...``
    This is a synopsis comment. It is generally treated in the same way as a regular comment, except
    that it is also captured by the indexing algorithm and displayed in the :ref:`a_ui_outline`. It
-   can also be filtered separately when exporting the project to for instance generate an outline
+   can also be filtered separately when building the project to for instance generate an outline
    document of the whole project.
 
 .. note::
@@ -174,8 +174,9 @@ Tags and References
 ===================
 
 The document editor supports a minimal set of keywords used for setting tags, and making references
-between documents. The tags and references can be set once per section defined by a heading. Using
-them multiple times under the same heading will just override the previous setting.
+between documents. The tag can be set once per section defined by a heading. Setting it multiple
+times under the same heading will just override the previous setting. References can be set
+anywhere within a section, and are collected according to their category.
 
 ``@keyword: value``
    A keyword argument followed by a value, or a comma separated list of values.
@@ -226,7 +227,7 @@ Vertical Space and Page Breaks
 ==============================
 
 Adding more than one line break between paragraphs will *not* increase the space between those
-paragraphs when exporting the project. To add additional space between paragraphs, add the text
+paragraphs when building the project. To add additional space between paragraphs, add the text
 ``[VSPACE]`` on a line of its own, and the build tool will insert a blank paragraph in its place.
 
 If you need multiple blank paragraphs just add a colon and a number to the above code. For
@@ -242,6 +243,6 @@ Page breaks are automatically added to partition, chapter and unnumbered chapter
 documents. If you want such breaks for scenes and sections, you must add them manually.
 
 .. note::
-   The page break code is applied to the text that follows. It adds a "page break before" mark to
-   the text when exporting to HTML or Open Document. This means that a ``[NEW PAGE]`` which has no
-   text following it will not result in a page break.
+   The page break code is applied to the text that follows it. It adds a "page break before" mark
+   to the text when exporting to HTML or Open Document. This means that a ``[NEW PAGE]`` which has
+   no text following it, it will not result in a page break.
