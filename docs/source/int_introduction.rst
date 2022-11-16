@@ -4,10 +4,10 @@
 Key Features
 ************
 
-novelWriter is a multi-document plain text editor using a markup syntax inspired by markdown to
+novelWriter is a multi-document plain text editor using a markup syntax inspired by Markdown to
 apply simple formatting to the text. It is designed for writing novels, so the formatting features
-are limited. Your novel project is organised as a collection of separate plain text documents
-instead of a single, large document.
+are limited to those relevant for this purpose. Your novel project is organised as a collection of
+separate plain text documents instead of a single, large document.
 
 Below are some key features of novelWriter.
 
@@ -27,7 +27,9 @@ Below are some key features of novelWriter.
    You can split your novel project up into as many individual documents as you want to. When you
    build the project, they are all glued together in the top-to-bottom order in which they appear
    in the project tree. You can use as few text documents as you like, but splitting the project up
-   into chapters and scenes means you can easily reorder them using the drag and drop feature.
+   into chapters and scenes means you can easily reorder them using the drag and drop feature. You
+   can start out with a few documents and then later split the document into multiple documents
+   based on its headers.
 
 **Keep track of your plot elements**
    All notes in your project can be assigned a *tag* you can *reference* from any other document or
@@ -36,11 +38,12 @@ Below are some key features of novelWriter.
    keywords.
 
 **Get an overview of your plot elements**
-   In the :guilabel:`Outline` tab on the main window you can see an outline of all the chapter and
-   scene sections of your project. If they have any references in them, these are listed in
+   In the :guilabel:`Outline View` on the main window you can see an outline of all the chapters,
+   scenes, and sections of your project. If they have any references in them, these are listed in
    columns. You can also add a synopsis to each document, which can be listed here. You have the
    option to add or remove columns of information from the outline. A subset of the outline
-   information is also available in the :guilabel:`Novel` tab under the main project tree.
+   information is also available in the :guilabel:`Novel View` as a replacement for the main
+   project tree.
 
 **Building your manuscript**
    Whether you want to compile a manuscript, or export all your notes, or generate an outline of
