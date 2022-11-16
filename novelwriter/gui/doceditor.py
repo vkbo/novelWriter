@@ -666,12 +666,17 @@ class GuiDocEditor(QTextEdit):
             theCursor.setPosition(minmax(position, 0, nChars-1))
             self.setTextCursor(theCursor)
 
-            # The editor scrolls so the cursor is on the last line, so we must correct
-            vPos = self.verticalScrollBar().value()       # Current scrollbar position
-            cPos = self.cursorRect().topLeft().y()        # Cursor position to scroll to
-            dMrg = int(self.document().documentMargin())  # Document margin to subtract
-            mPos = int(self.viewport().height()*0.1)      # Distance from top to adjust for (10%)
-            self.verticalScrollBar().setValue(max(0, vPos + cPos - dMrg - mPos))
+            # By default, the editor scrolls so the cursor is on the
+            # last line, so we must correct it. The user setting for
+            # auto-scroll is used to determine the scroll distance. This
+            # makes it compatible with the typewriter scrolling feature
+            # when it is enabled. By default, it's 30% of viewport.
+            vPos = self.verticalScrollBar().value()
+            cPos = self.cursorRect().topLeft().y()
+            mPos = int(self.mainConf.autoScrollPos*0.01 * self.viewport().height())
+            if cPos > mPos:
+                # Only scroll if the cursor is past the auto-scroll limit
+                self.verticalScrollBar().setValue(max(0, vPos + cPos - mPos))
 
             self.docFooter.updateLineCount()
 
