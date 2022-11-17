@@ -4,12 +4,19 @@
 Project Format Changes
 **********************
 
+.. _File Format Spec 1.5: _static/fileformatspec15.pdf
+.. _documentation: https://novelwriter.readthedocs.io
+
 Most of the changes to the file formats over the history of novelWriter have no impact on the
 user-side of things. The project files are generally updated automatically. However, some of the
 changes require minor actions from the user.
 
-The key changes in the formats are listed below, as well as the user actions required where
+The key changes in the formats are listed below, as well as the user actions required, where
 applicable.
+
+.. only:: not html
+
+   A full project file format specification is available in the online documentation_.
 
 .. caution::
 
@@ -18,13 +25,22 @@ applicable.
    introduced. You will get a notification about any updates to your project file format and will
    have the option to decline the upgrade.
 
+.. only:: html
+
+   **For Developers**
+
+   A full description of the current file format is available in the `File Format Spec 1.5`_
+   document, available as a PDF. This document is intended for contributors to novelWriter, those
+   building project conversion tools, either to or from tne novelWriter format, and for those who
+   wish to make their own templating system.
+
 
 .. _a_prjfmt_1_5:
 
 Format 1.5 Changes
 ==================
 
-This project format was introduced in novelWriter version 2.0.
+This project format was introduced in novelWriter version 2.0 RC 2.
 
 This is a modification of the 1.4 format. It makes the XML more consistent in that meta data have
 been moved to the section nodes, and key/value settings now have a consistent format. Logical flags
