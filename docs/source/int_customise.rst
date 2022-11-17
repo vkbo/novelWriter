@@ -58,18 +58,3 @@ For novelWriter to be able to locate the custom theme files, you must copy them 
 
 Once the files are copied there, they should show up in :guilabel:`Preferences` with the label you
 set as ``name`` inside the file.
-
-
-Theme CSS Files
----------------
-
-If you wish, you can also modify the CSS styles of the GUI in addition to change colour settings.
-This is only available for GUI themes, and you do this by creating a file with the exact same file
-name as the ``.conf`` file with colour settings and give it the ``.qss`` extension.
-
-On Windows, file extensions may not be visible by default, so make sure you only have one file
-extension, and don't end up with two.
-
-The QSS files are Qt Style Sheet files. See Qt's
-`The Style Sheet Syntax <https://doc.qt.io/qt-5/stylesheet-syntax.html>`_ documentation for more
-details.

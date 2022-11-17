@@ -40,7 +40,6 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
-from novelwriter.common import checkInt
 from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
 
 logger = logging.getLogger(__name__)
@@ -60,7 +59,7 @@ class GuiNovelView(QWidget):
 
     # Signals for user interaction with the novel tree
     selectedItemChanged = pyqtSignal(str)
-    openDocumentRequest = pyqtSignal(str, Enum, int, str)
+    openDocumentRequest = pyqtSignal(str, Enum, str, bool)
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -83,7 +82,6 @@ class GuiNovelView(QWidget):
         self.setLayout(self.outerBox)
 
         # Function Mappings
-        self.updateWordCounts = self.novelTree.updateWordCounts
         self.getSelectedHandle = self.novelTree.getSelectedHandle
         self.setActiveHandle = self.novelTree.setActiveHandle
 
@@ -105,12 +103,6 @@ class GuiNovelView(QWidget):
         """Initialise GUI elements that depend on specific settings.
         """
         self.novelTree.initSettings()
-        return
-
-    def refreshTree(self):
-        """Refresh the current tree.
-        """
-        self.novelTree.refreshTree(rootHandle=self.theProject.data.getLastHandle("novelTree"))
         return
 
     def clearProject(self):
@@ -164,11 +156,26 @@ class GuiNovelView(QWidget):
     #  Public Slots
     ##
 
+    @pyqtSlot()
+    def refreshTree(self):
+        """Refresh the current tree.
+        """
+        self.novelTree.refreshTree(rootHandle=self.theProject.data.getLastHandle("novelTree"))
+        return
+
     @pyqtSlot(str)
     def updateRootItem(self, tHandle):
         """If any root item changes, rebuild the novel root menu.
         """
         self.novelBar.buildNovelRootMenu()
+        return
+
+    @pyqtSlot(str)
+    def updateNovelItemMeta(self, tHandle):
+        """The meta data of a novel item has changed, and the tree item
+        needs to be refreshed.
+        """
+        self.novelTree.refreshHandle(tHandle)
         return
 
 # END Class GuiNovelView
@@ -470,7 +477,7 @@ class GuiNovelTree(QTreeWidget):
         return
 
     def refreshTree(self, rootHandle=None, overRide=False):
-        """Called whenever the Novel tab is activated.
+        """Refresh the tree if it has been changed.
         """
         logger.debug("Requesting refresh of the novel tree")
         if rootHandle is None:
@@ -495,13 +502,24 @@ class GuiNovelTree(QTreeWidget):
 
         return
 
-    def updateWordCounts(self, tHandle):
-        """Update the word count for a given handle.
+    def refreshHandle(self, tHandle):
+        """Refresh the data for a given handle.
         """
-        tHeaders = self.theProject.index.getHandleWordCounts(tHandle)
-        for titleKey, wCount in tHeaders:
-            if titleKey in self._treeMap:
-                self._treeMap[titleKey].setText(self.C_WORDS, f"{wCount:n}")
+        idxData = self.theProject.index.getItemData(tHandle)
+        if idxData is None:
+            return
+
+        logger.debug("Refreshing meta data for item '%s'", tHandle)
+        for sTitle, tHeading in idxData.items():
+            sKey = f"{tHandle}:{sTitle}"
+            trItem = self._treeMap.get(sKey, None)
+            if trItem is None:
+                logger.debug("Heading '%s' not in novel tree", sKey)
+                self.refreshTree()
+                return
+
+            self._updateTreeItemValues(trItem, tHeading, tHandle, sTitle)
+
         return
 
     def getSelectedHandle(self):
@@ -509,14 +527,11 @@ class GuiNovelTree(QTreeWidget):
         selected, return the first.
         """
         selItem = self.selectedItems()
-        tHandle = None
-        tLine = 0
         if selItem:
             tHandle = selItem[0].data(self.C_TITLE, self.D_HANDLE)
             sTitle = selItem[0].data(self.C_TITLE, self.D_TITLE)
-            tLine = checkInt(sTitle[1:], 1) - 1
-
-        return tHandle, tLine
+            return tHandle, sTitle
+        return None, None
 
     def setLastColType(self, colType, doRefresh=True):
         """Change the content type of the last column and rebuild.
@@ -575,11 +590,11 @@ class GuiNovelTree(QTreeWidget):
             if not isinstance(selItem, QTreeWidgetItem):
                 return
 
-            tHandle, _ = self.getSelectedHandle()
+            tHandle, sTitle = self.getSelectedHandle()
             if tHandle is None:
                 return
 
-            self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, -1, "")
+            self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, sTitle or "", False)
 
         return
 
@@ -588,6 +603,22 @@ class GuiNovelTree(QTreeWidget):
         """
         super().focusOutEvent(theEvent)
         self.clearSelection()
+        return
+
+    def resizeEvent(self, event):
+        """Elide labels in the extra column.
+        """
+        super().resizeEvent(event)
+        newW = event.size().width()
+        oldW = event.oldSize().width()
+        if newW != oldW:
+            eliW = int(0.25 * newW)
+            fMetric = self.fontMetrics()
+            for i in range(self.topLevelItemCount()):
+                trItem = self.topLevelItem(i)
+                if isinstance(trItem, QTreeWidgetItem):
+                    lastText = trItem.data(self.C_EXTRA, Qt.UserRole)
+                    trItem.setText(self.C_EXTRA, fMetric.elidedText(lastText, Qt.ElideRight, eliW))
         return
 
     ##
@@ -621,8 +652,8 @@ class GuiNovelTree(QTreeWidget):
         clicked, and send it to the main gui class for opening in the
         document editor.
         """
-        tHandle, tLine = self.getSelectedHandle()
-        self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, tLine, "")
+        tHandle, sTitle = self.getSelectedHandle()
+        self.novelView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle or "", True)
         return
 
     ##
@@ -638,30 +669,16 @@ class GuiNovelTree(QTreeWidget):
 
         novStruct = self.theProject.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
         for tKey, tHandle, sTitle, novIdx in novStruct:
-
-            iLevel = nwHeaders.H_LEVEL.get(novIdx.level, 0)
-            if iLevel == 0:
+            if novIdx.level == "H0":
                 continue
 
-            hDec = self.mainTheme.getHeaderDecoration(iLevel)
-
             newItem = QTreeWidgetItem()
-            newItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
-            newItem.setText(self.C_TITLE, novIdx.title)
             newItem.setData(self.C_TITLE, self.D_HANDLE, tHandle)
             newItem.setData(self.C_TITLE, self.D_TITLE, sTitle)
             newItem.setData(self.C_TITLE, self.D_KEY, tKey)
-            newItem.setFont(self.C_TITLE, self._hFonts[iLevel])
-            newItem.setText(self.C_WORDS, f"{novIdx.wordCount:n}")
             newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
-            newItem.setData(self.C_MORE, Qt.DecorationRole, self._pMore)
 
-            # Custom column
-            lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
-            newItem.setText(self.C_EXTRA, lastText)
-            if lastText:
-                newItem.setToolTip(self.C_EXTRA, toolTip)
-
+            self._updateTreeItemValues(newItem, novIdx, tHandle, sTitle)
             self._treeMap[tKey] = newItem
             self.addTopLevelItem(newItem)
 
@@ -672,24 +689,52 @@ class GuiNovelTree(QTreeWidget):
 
         return
 
+    def _updateTreeItemValues(self, trItem, idxItem, tHandle, sTitle):
+        """Set the tree item values from the index entry.
+        """
+        iLevel = nwHeaders.H_LEVEL.get(idxItem.level, 0)
+        hDec = self.mainTheme.getHeaderDecoration(iLevel)
+
+        trItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
+        trItem.setText(self.C_TITLE, idxItem.title)
+        trItem.setFont(self.C_TITLE, self._hFonts[iLevel])
+        trItem.setText(self.C_WORDS, f"{idxItem.wordCount:n}")
+        trItem.setData(self.C_MORE, Qt.DecorationRole, self._pMore)
+
+        # Custom column
+        mW = int(0.25 * self.viewport().width())
+        lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
+        elideText = self.fontMetrics().elidedText(lastText, Qt.ElideRight, mW)
+        trItem.setText(self.C_EXTRA, elideText)
+        trItem.setData(self.C_EXTRA, Qt.UserRole, lastText)
+        trItem.setToolTip(self.C_EXTRA, toolTip)
+
+        return
+
     def _getLastColumnText(self, tHandle, sTitle):
         """Generate the text for the last column based on user settings.
         """
         if self._lastCol == NovelTreeColumn.HIDDEN:
             return "", ""
 
+        refData = []
+        refName = ""
         theRefs = self.theProject.index.getReferences(tHandle, sTitle)
         if self._lastCol == NovelTreeColumn.POV:
-            newText = ", ".join(theRefs[nwKeyWords.POV_KEY])
-            return newText, f"{self._povLabel}: {newText}"
+            refData = theRefs[nwKeyWords.POV_KEY]
+            refName = self._povLabel
 
         elif self._lastCol == NovelTreeColumn.FOCUS:
-            newText = ", ".join(theRefs[nwKeyWords.FOCUS_KEY])
-            return newText, f"{self._focLabel}: {newText}"
+            refData = theRefs[nwKeyWords.FOCUS_KEY]
+            refName = self._focLabel
 
         elif self._lastCol == NovelTreeColumn.PLOT:
-            newText = ", ".join(theRefs[nwKeyWords.PLOT_KEY])
-            return newText, f"{self._pltLabel}: {newText}"
+            refData = theRefs[nwKeyWords.PLOT_KEY]
+            refName = self._pltLabel
+
+        if refData:
+            toolText = ", ".join(refData)
+            return refData[0], f"{refName}: {toolText}"
 
         return "", ""
 
@@ -699,7 +744,7 @@ class GuiNovelTree(QTreeWidget):
         logger.debug("Generating meta data tooltip for '%s:%s'", tHandle, sTitle)
 
         pIndex = self.theProject.index
-        novIdx = pIndex.getNovelData(tHandle, sTitle)
+        novIdx = pIndex.getItemHeader(tHandle, sTitle)
         refTags = pIndex.getReferences(tHandle, sTitle)
 
         synopText = novIdx.synopsis

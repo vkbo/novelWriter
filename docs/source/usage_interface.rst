@@ -22,7 +22,8 @@ the project, and has four columns:
    The first column shows the icon and label of each folder, document, or note in your project. The
    label is not the same as the title you set inside the document. However, the document's label
    will appear in the header above the document text itself so you know where in the project an
-   open document belongs.
+   open document belongs. The icon is selected based on the type of item, and for novel documents,
+   the level of the first header in the document text.
 
 **Column 2**
    The second column shows the word count of the document, or the sum of words of the child items
@@ -30,20 +31,34 @@ the project, and has four columns:
    from the :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
 
 **Column 3**
-   The third column indicates whether the document is included in the final project build or not.
-   You may want to filter out documents that you no longer want to keep in the final manuscript,
-   but want to keep in the project tree for reference.
+   The third column indicates whether the document is considered active or inactive in the project.
+   You can use this flag to indicate that a document is still in the project, but should not be
+   considered an active part of it. When you run the :guilabel:`Build Novel Project` tool, you can
+   filter based on this flag. You can change this value from the context menu.
 
 **Column 4**
    The fourth column shows the user-defined status or importance labels you've assigned to each
-   project item. See :ref:`a_ui_tree_status` for more details.
+   project item. See :ref:`a_ui_tree_status` for more details. You can change these labels from the
+   context menu.
 
 Right-clicking an item in the project tree will open a context menu under the cursor, displaying
 a selection of actions that can be performed on the selected item.
 
-The label, status or importance setting, the layout, and the include flag can all be edited using
-the :guilabel:`Item Settings` dialog box. The dialog can be opened from the :guilabel:`Project`
-menu, or by pressing :kbd:`F2` with the item selected.
+At the top of the tree, you will find a set of buttons.
+
+* The first button is a quick links button that will show you a dropdown menu of all the root 
+  folders in your project. Selecting one will scroll to that position in the tree. You can also
+  activate this menu by pressing :kbd:`Ctrl`:kbd:`L`.
+* The next buttons can be used to move items up and down in the project tree. This is the only way 
+  to move root folders.
+* The next button opens a dropdown menu for adding new items to the tree. This includes root 
+  folders. You can also activate this dropdown menu by pressing :kbd:`Ctrl`:kbd:`N`.
+* The last button is a menu of further actions on the entire project tree.
+
+.. tip::
+   Under the :guilabel:`Transform` submenu in the context menu of an item, you will find several
+   options on how to change a document or folder. This includes changing between document and note,
+   splitting them into multiple documents, or merging child items into a single document.
 
 Below the project tree you will find a small details panel showing the full information of the
 currently selected item. This panel also includes the latest paragraph and character counts in
@@ -56,13 +71,15 @@ The Novel Tree
 --------------
 
 An alternative way to view the project structure is the novel tree. You can switch to this view by
-selecting the :guilabel:`Novel` tab under the project tree. This view is a simplified version of
-the view in the :guilabel:`Outline`. It is convenient when you want to browse the structure of the
-story itself rather than the document files.
+selecting the :guilabel:`Novel Tree View` button in the sidebar. This view is a simplified version
+of the view in the :guilabel:`Outline`. It is convenient when you want to browse the structure of
+the story itself rather than the document files.
 
 .. note::
-   You cannot reorganise the entries in the novel tree, or add any new ones, as that would imply
-   restructuring the content of the document files. Any editing must be done in the project tree.
+   You cannot reorganise the entries in the novel tree, or add any new documents, as that would
+   imply restructuring the content of the document files. Any editing must be done in the project
+   tree. However, you can add new headings to existing documents, which will be updated in this
+   view.
 
 
 .. _a_ui_tree_status:
@@ -96,19 +113,15 @@ Drag & drop has only limited support for moving documents. In general, bulk acti
 allowed. This is deliberate to avoid accidentally messing up your project. If you make a mistake,
 the last move action can be undone by pressing :kbd:`Ctrl`:kbd:`Shift`:kbd:`Z`.
 
-Documents and their folders can be rearranged freely within their root folders. Novel documents
-cannot be moved out of the :guilabel:`Novel` folder, except to :guilabel:`Trash` and the
-:guilabel:`Archive` folders. Notes can be moved freely between all root folders, but keep in mind
-that if you move a note into a :guilabel:`Novel`, its "Importance" setting will be reset to the
-default "Status" setting. See :ref:`a_ui_tree_status`.
-
-Folders cannot be moved at all outside their root tree. Neither can a folder containing documents
-be deleted. You must first delete the containing documents.
+Documents and their folders can be rearranged freely within their root folders. If you move a Novel
+documents out of a Novel folder, it will be converted to a project note. Notes can be moved freely
+between all root folders, but keep in mind that if you move a note into a :guilabel:`Novel`, its
+"Importance" setting will be switched with a "Status" setting. See :ref:`a_ui_tree_status`. The old
+value will not be overwritten though, and should be restored if you move it back.
 
 Root folders in the project tree cannot be dragged & dropped at all. If you want to reorder them,
-you can move them up or down with respect to eachother from the :guilabel:`Project` menu, the
-right-click context menu, or by pressing :kbd:`Ctrl`:kbd:`Shift` and the :kbd:`Up` or :kbd:`Down`
-key.
+you can move them up or down with respect to eachother from the arrow buttons at the top of the
+project tree, or by pressing :kbd:`Ctrl`:kbd:`Shift` and the :kbd:`Up` or :kbd:`Down` key.
 
 
 .. _a_ui_edit:
@@ -118,19 +131,23 @@ Editing and Viewing Documents
 
 To edit a document, double-click it in the project tree, or press the :kbd:`Return` key while
 having it selected. This will open the document in the document editor. The editor uses a
-markdown-like syntax for some features, and a novelWriter-specific syntax for others. The syntax
-format is described in the :ref:`a_fmt` section. The editor has a maximise button (toggles the
-:guilabel:`Focus Mode`) and a close button in the top–right corner. On the top–left side you will
-find an edit button that opens the :guilabel:`Item Settings` dialog for the currently open
-document, and a search button to open the search dialog.
+Markdown-like syntax for some features, and a novelWriter-specific syntax for others. The syntax
+format is described in the :ref:`a_fmt` section.
+
+The editor has a maximise button (toggles the :guilabel:`Focus Mode`) and a close button in the
+top–right corner. On the top–left side you will find an edit button that opens the
+:guilabel:`Item Label` dialog for the currently open document, and a search button to open the
+search dialog.
 
 Any document in the project tree can also be viewed in parallel in a right hand side document
 viewer. To view a document, press :kbd:`Ctrl`:kbd:`R`, or select :guilabel:`View Document` in the
-menu. If you have a middle mouse button, middle-clicking on the document will also open it in the
-viewer. The document viewed does not have to be the same document as currently being edited.
-However, If you *are* viewing the same document, pressing :kbd:`Ctrl`:kbd:`R` again will update the
-document with your latest changes. You can also press the reload button in the top–right corner of
-the view panel, next to the close button, to achieve the same thing.
+menu or context menu. If you have a middle mouse button, middle-clicking on the document will also
+open it in the viewer.
+
+The document viewed does not have to be the same document as currently being edited. However, If
+you *are* viewing the same document, pressing :kbd:`Ctrl`:kbd:`R` again will update the document
+with your latest changes. You can also press the reload button in the top–right corner of the view
+panel, next to the close button, to achieve the same thing.
 
 Both the document editor and viewer will show the label of the document in the header at the top of
 the edit or view panel. Optionally, the full project path to the document can be shown. This can be
@@ -218,14 +235,16 @@ tricky for languages that use the same symbol for these, like English does.
 Project Outline View
 ====================
 
-The project's Outline view is available as the second tab on the right hand side of the main window
-labelled :guilabel:`Outline`. The outline provides an overview of the novel structure, displaying a
-tree hierarchy of the elements of the novel, that is, the level 1 to 4 headings representing
-partitions, chapters, scenes and sections.
+The project's Outline view is available as another view option from the views bar. The outline
+provides an overview of the novel structure, displaying a tree hierarchy of the elements of the
+novel, that is, the level 1 to 4 headings representing partitions, chapters, scenes and sections.
 
 The document containing the heading can also be displayed as a separate column, as well as the line
 number where it occurs. Double-clicking an entry will open the corresponding document in the
 editor.
+
+You can select which novel folder to display from the dropdown menu. You can optionally also choose
+to show a combination of all novel folders.
 
 .. note::
    Since the internal structure of the novel does not depend directly on the folder and document
@@ -233,9 +252,9 @@ editor.
    choose to organise your documents. See the :ref:`a_struct` page for more details.
 
 Various meta data and information extracted from tags can be displayed in columns in the outline.
-A default set of such columns is visible, but you can turn on or off more columns by right clicking
-the header and selecting the columns you want to show. The order of the columns can also be
-rearranged by dragging them to a different position.
+A default set of such columns is visible, but you can turn on or off more columns from the menu
+button in the toolbar. The order of the columns can also be rearranged by dragging them to a
+different position.
 
 .. note::
    The :guilabel:`Title` column cannot be disabled or moved.
@@ -244,10 +263,8 @@ The information viewed in the outline is based on the project's main index. Whil
 its best to keep the index up to date when contents change, you can always rebuild it manually by
 pressing :kbd:`F9` if something isn't right.
 
-The outline view itself can be regenerated by pressing :kbd:`F10`. You can also enable automatic
-updating in the :guilabel:`Tools` menu, which will trigger an update whenever the index is updated
-and the :guilabel:`Outline` tab is active. You may want to disable this feature if your project is
-very large,
+The outline view itself can be regenerated by pressing the refresh button. By default, the content
+is refreshed each time you switch to this view.
 
 The :guilabel:`Synopsis` column of the outline view takes its information from a specially
 formatted comment. See :ref:`a_fmt_comm`.

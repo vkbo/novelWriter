@@ -15,7 +15,7 @@ language that doesn't require a compiler to build and run. That means that the c
 computer right out of the box, or from a zip file.
 
 While it is developed for Linux primarily, it runs just fine on Windows as well. It also works fine
-on macOS, but the author is not a mac user so less attention is paid to that platform.
+on macOS, but the author is not a mac user, so less attention is paid to that platform.
 
 In order to run novelWriter, you also need a few additional packages. The user interface is built
 with `Qt 5 <https://www.qt.io/>`_, a cross platform library for building graphical user interface
@@ -86,5 +86,5 @@ meta data for it to extract.
    them for tags you've set so that it knows which file to open when you click on a reference.
 
 :ref:`a_export` - Recommended Reading
-   This section explains in more detail how the export tool works. In particular how you can
+   This section explains in more detail how the build tool works. In particular how you can
    control the way chapter titles are formatted, and how scene and section breaks are handled.

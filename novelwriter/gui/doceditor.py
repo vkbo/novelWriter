@@ -51,8 +51,8 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.core import NWSpellEnchant, countWords
-from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode
-from novelwriter.common import transferCase
+from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode, nwItemClass
+from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwConst, nwFiles, nwKeyWords, nwUnicode
 from novelwriter.gui.dochighlight import GuiDocHighlighter
 
@@ -71,6 +71,8 @@ class GuiDocEditor(QTextEdit):
     docEditedStatusChanged = pyqtSignal(bool)
     docCountsChanged = pyqtSignal(str, int, int, int)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
+    novelStructureChanged = pyqtSignal()
+    novelItemMetaChanged = pyqtSignal(str)
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -88,7 +90,6 @@ class GuiDocEditor(QTextEdit):
 
         self._docChanged = False  # Flag for changed status of document
         self._docHandle  = None   # The handle of the open file
-        self._docHeaders = []     # Record of headers in the file
 
         self._spellCheck = False  # Flag for spell checking enabled
         self._nonWord    = "\"'"  # Characters to not include in spell checking
@@ -415,7 +416,7 @@ class GuiDocEditor(QTextEdit):
                 self._queuePos = self._nwItem.cursorPos
             else:
                 self.setCursorPosition(self._nwItem.cursorPos)
-        else:
+        elif isinstance(tLine, int):
             self.setCursorLine(tLine)
 
         if self.mainConf.scrollPastEnd > 0:
@@ -425,7 +426,6 @@ class GuiDocEditor(QTextEdit):
             self.document().rootFrame().setFrameFormat(docFrame)
 
         self.docFooter.updateLineCount()
-        self._docHeaders = self.theProject.index.getHandleHeaders(self._docHandle)
 
         qApp.processEvents()
         self.document().clearUndoRedoStacks()
@@ -531,14 +531,16 @@ class GuiDocEditor(QTextEdit):
         self.setDocumentChanged(False)
 
         oldHeader = self._nwItem.mainHeading
+        oldCount = self.theProject.index.getHandleHeaderCount(tHandle)
         self.theProject.index.scanText(tHandle, docText)
         newHeader = self._nwItem.mainHeading
+        newCount = self.theProject.index.getHandleHeaderCount(tHandle)
 
-        # ToDo: This should be a signal
-        if self._updateHeaders():
-            self.mainGui.requestNovelTreeRefresh()
-        else:
-            self.mainGui.novelView.updateWordCounts(tHandle)
+        if self._nwItem.itemClass == nwItemClass.NOVEL:
+            if oldCount == newCount:
+                self.novelItemMetaChanged.emit(tHandle)
+            else:
+                self.novelStructureChanged.emit()
 
         # ToDo: This should be a signal
         if oldHeader != newHeader:
@@ -652,17 +654,30 @@ class GuiDocEditor(QTextEdit):
         self.docEditedStatusChanged.emit(self._docChanged)
         return self._docChanged
 
-    def setCursorPosition(self, thePosition):
+    def setCursorPosition(self, position):
         """Move the cursor to a given position in the document.
         """
-        if not isinstance(thePosition, int):
+        if not isinstance(position, int):
             return False
 
         nChars = self.document().characterCount()
         if nChars > 1:
             theCursor = self.textCursor()
-            theCursor.setPosition(min(max(thePosition, 0), nChars-1))
+            theCursor.setPosition(minmax(position, 0, nChars-1))
             self.setTextCursor(theCursor)
+
+            # By default, the editor scrolls so the cursor is on the
+            # last line, so we must correct it. The user setting for
+            # auto-scroll is used to determine the scroll distance. This
+            # makes it compatible with the typewriter scrolling feature
+            # when it is enabled. By default, it's 30% of viewport.
+            vPos = self.verticalScrollBar().value()
+            cPos = self.cursorRect().topLeft().y()
+            mPos = int(self.mainConf.autoScrollPos*0.01 * self.viewport().height())
+            if cPos > mPos:
+                # Only scroll if the cursor is past the auto-scroll limit
+                self.verticalScrollBar().setValue(max(0, vPos + cPos - mPos))
+
             self.docFooter.updateLineCount()
 
         return True
@@ -675,18 +690,18 @@ class GuiDocEditor(QTextEdit):
             self._nwItem.setCursorPos(cursPos)
         return
 
-    def setCursorLine(self, theLine):
+    def setCursorLine(self, lineNo):
         """Move the cursor to a given line in the document.
         """
-        if not isinstance(theLine, int):
+        if not isinstance(lineNo, int):
             return False
 
-        if theLine >= 0:
-            theBlock = self.document().findBlockByLineNumber(theLine)
+        lineIdx = lineNo - 1  # Block index is 0 offset, lineNo is 1 offset
+        if lineIdx >= 0:
+            theBlock = self.document().findBlockByLineNumber(lineIdx)
             if theBlock:
                 self.setCursorPosition(theBlock.position())
-                self.docFooter.updateLineCount()
-                logger.debug("Cursor moved to line %d", theLine)
+                logger.debug("Cursor moved to line %d", lineNo)
 
         return True
 
@@ -2064,21 +2079,6 @@ class GuiDocEditor(QTextEdit):
                 if text[1:].lstrip()[:9].lower() == "synopsis:":
                     return False
         return True
-
-    def _updateHeaders(self):
-        """Update the headers record and return True if anything
-        changed, if a check flag was provided.
-        """
-        if self._docHandle is None:
-            return False
-
-        newHeaders = self.theProject.index.getHandleHeaders(self._docHandle)
-        newLev = [x[1] for x in newHeaders]
-        oldLev = [x[1] for x in self._docHeaders]
-
-        self._docHeaders = newHeaders
-
-        return newLev != oldLev
 
     def _checkDocSize(self, theSize):
         """Check if document size crosses the big document limit set in

@@ -208,12 +208,12 @@ def testBaseCommon_IsHandle():
 def testBaseCommon_IsTitleTag():
     """Test the isItemClass function.
     """
-    assert isTitleTag("T123456") is True
+    assert isTitleTag("T1234") is True
 
-    assert isTitleTag("t123456") is False
-    assert isTitleTag("S123456") is False
-    assert isTitleTag("T12345A") is False
-    assert isTitleTag("T1234567") is False
+    assert isTitleTag("t1234") is False
+    assert isTitleTag("S1234") is False
+    assert isTitleTag("T123A") is False
+    assert isTitleTag("T12345") is False
 
     assert isTitleTag("None") is False
     assert isTitleTag(None) is False

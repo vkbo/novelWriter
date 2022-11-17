@@ -118,10 +118,10 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
     assert nwGUI.docEditor.loadText(C.hSceneDoc) is True
     assert nwGUI.docEditor._bigDoc is True
 
-    # Regular open, with line number
+    # Regular open, with line number (1 indexed)
     assert nwGUI.docEditor.loadText(C.hSceneDoc, tLine=4) is True
     cursPos = nwGUI.docEditor.getCursorPosition()
-    assert nwGUI.docEditor.document().findBlock(cursPos).blockNumber() == 4
+    assert nwGUI.docEditor.document().findBlock(cursPos).blockNumber() == 3
 
     # Load empty document
     nwGUI.docEditor.replaceText("")
@@ -211,7 +211,7 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.theProject.tree[C.hSceneDoc].cursorPos == 10
 
     assert nwGUI.docEditor.setCursorLine(None) is False
-    assert nwGUI.docEditor.setCursorLine(2) is True
+    assert nwGUI.docEditor.setCursorLine(3) is True
     assert nwGUI.docEditor.getCursorPosition() == 15
 
     # Document Changed Signal
@@ -510,7 +510,7 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd
 
     theText = "### A Scene\n\n\n%s" % ipsumText[0]
     assert nwGUI.docEditor.replaceText(theText) is True
-    assert nwGUI.docEditor.setCursorLine(2)
+    assert nwGUI.docEditor.setCursorLine(3)
 
     # Invalid Keyword
     assert nwGUI.docEditor.insertKeyWord("stuff") is False
@@ -1049,10 +1049,10 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText
     assert nwGUI.docEditor.getText() == "Title\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 5
 
-    # Second Line
+    # Third Line
     # This also needs to add a new block
     assert nwGUI.docEditor.replaceText("#### Title\n\nThe Text\n\n") is True
-    assert nwGUI.docEditor.setCursorLine(2) is True
+    assert nwGUI.docEditor.setCursorLine(3) is True
     assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
     assert nwGUI.docEditor.getText() == "#### Title\n\n% The Text\n\n"
 
@@ -1086,11 +1086,11 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     # Empty Block
-    assert nwGUI.docEditor.setCursorLine(1) is True
+    assert nwGUI.docEditor.setCursorLine(2) is True
     assert nwGUI.docEditor._followTag() is False
 
     # Not On Tag
-    assert nwGUI.docEditor.setCursorLine(0) is True
+    assert nwGUI.docEditor.setCursorLine(1) is True
     assert nwGUI.docEditor._followTag() is False
 
     # On Tag Keyword

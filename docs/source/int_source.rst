@@ -110,6 +110,19 @@ needed package is called `qttools5-dev-tools`.
    the ``i18n`` folder of the source code.
 
 
+.. _a_source_sample:
+
+Building the Example Project
+============================
+
+In order to be able to create new projects from example files, you need a ``sample.zip`` file in
+the ``assets`` folder of the source. This file can be built from setup script by running:
+
+.. code-block:: bash
+
+   python setup.py sample
+
+
 .. _a_source_docs:
 
 Building the Documentation

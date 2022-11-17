@@ -15,6 +15,7 @@ Getting Started
 .. _python.org: https://www.python.org/downloads/windows
 .. _Releases: https://github.com/vkbo/novelWriter/releases
 .. _RPM: https://github.com/vkbo/novelWriter/issues/907
+.. _AppImage: https://appimage.org/
 
 If you are using Windows or a Debian-based Linux distribtuion, you can install novelWriter from
 package installers. If you are on macOS, you have the option to run novelWriter from a standalone
@@ -46,10 +47,10 @@ If you have any issues, try uninstalling the previous version and making a fresh
 already had a version installed via a different method, you should uninstall that first.
 
 
-.. _a_started_debian:
+.. _a_started_linux:
 
-Install on Debian/Ubuntu/Mint
-=============================
+Install on Linux
+================
 
 A Debian package can be downloaded from the `main website`_, or from the Releases_ page on GitHub.
 This package should work on both Debian, Ubuntu and Linux Mint.
@@ -57,8 +58,8 @@ This package should work on both Debian, Ubuntu and Linux Mint.
 If you prefer, you can also add the novelWriter repository on Launchpad to your package manager.
 
 
-Ubuntu and Mint
----------------
+Ubuntu
+------
 
 You can add the Ubuntu PPA_ and install novelWriter with the following commands.
 
@@ -71,11 +72,11 @@ You can add the Ubuntu PPA_ and install novelWriter with the following commands.
 If you want pre-releases, add the ``ppa:vkbo/novelwriter-pre`` repository instead.
 
 
-Debian
-------
+Debian and Mint
+---------------
 
-Since this is a pure Python package, the Launchpad PPA can in principle also be used on Debian.
-However, the above command will fail to add the signing key.
+Since this is a pure Python package, the Launchpad PPA can in principle also be used on Debian or
+Mint. However, the above command will fail to add the signing key.
 
 Instead, run the following commands to add the repository and key:
 
@@ -95,6 +96,14 @@ Then run the update and install commands as for Ubuntu:
 
    Please use the Ubuntu 20.04 (focal) packages for Debian. The newer Ubuntu packages use a
    different compression algorithm that Debian doesn't currently support.
+
+
+Other Distros
+-------------
+
+For other Linux distros than the ones mentioned above, the primary option is AppImage_. These are
+completely standalone images for the app that include the necessary environment to run novelWriter.
+They can be run on any Linux distro.
 
 
 .. _a_started_minimal:

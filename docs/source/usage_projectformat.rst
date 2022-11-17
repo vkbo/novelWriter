@@ -4,12 +4,19 @@
 Project Format Changes
 **********************
 
+.. _File Format Spec 1.5: _static/fileformatspec15.pdf
+.. _documentation: https://novelwriter.readthedocs.io
+
 Most of the changes to the file formats over the history of novelWriter have no impact on the
 user-side of things. The project files are generally updated automatically. However, some of the
 changes require minor actions from the user.
 
-The key changes in the formats are listed below, as well as the user actions required where
+The key changes in the formats are listed below, as well as the user actions required, where
 applicable.
+
+.. only:: not html
+
+   A full project file format specification is available in the online documentation_.
 
 .. caution::
 
@@ -18,13 +25,37 @@ applicable.
    introduced. You will get a notification about any updates to your project file format and will
    have the option to decline the upgrade.
 
+.. only:: html
+
+   **For Developers**
+
+   A full description of the current file format is available in the `File Format Spec 1.5`_
+   document, available as a PDF. This document is intended for contributors to novelWriter, those
+   building project conversion tools, either to or from tne novelWriter format, and for those who
+   wish to make their own templating system.
+
+
+.. _a_prjfmt_1_5:
+
+Format 1.5 Changes
+==================
+
+This project format was introduced in novelWriter version 2.0 RC 2.
+
+This is a modification of the 1.4 format. It makes the XML more consistent in that meta data have
+been moved to the section nodes, and key/value settings now have a consistent format. Logical flags
+are saved as yes/no instead of Python True/False, and the main heading of the document is now saved
+to the item rather than in the index.
+
 
 .. _a_prjfmt_1_4:
 
 Format 1.4 Changes
 ==================
 
-This project format was introduced in novelWriter version 1.7.
+This project format was introduced in novelWriter version 2.0 RC 1. Since this was a release
+candidate, it is unlikely that your project uses it, but it may be the case if you've installed a
+pre-release.
 
 This format changes the way project items (folders, documents and notes) are stored. It is a more
 compact format that is simpler and faster to parse, and easier to extend. The conversion is done
@@ -77,10 +108,6 @@ Format 1.2 Changes
 This project format was introduced in novelWriter version 0.10.
 
 With this format, the way auto-replace entries were stored in the main project XML file changed.
-Opening an old project automatically converts the storage format up to and including version 1.1.1.
-
-Format 1.2 projects can be opened without loss of information up until version 1.1.1, and if the
-auto-replace is not being used, can still be opened in novelWriter as of version |release|.
 
 
 .. _a_prjfmt_1_1:
@@ -96,9 +123,6 @@ novelWriter documents were saved in a series of folders numbered from ``data_0``
 It also reduces the number of meta data and cache files. These files are automatically deleted if
 an old project is opened. This was also when the Table of Contents file was introduced.
 
-Format 1.1 projects can be opened without loss of information up until version 1.1.1, and if the
-auto-replace is not being used, can still be opened in novelWriter as of version |release|.
-
 
 .. _a_prjfmt_1_0:
 
@@ -106,6 +130,3 @@ Format 1.0 Changes
 ==================
 
 This is the original file format and project structure. It was in use up to version 0.6.3.
-
-Format 1.0 projects can be opened without loss of information up until version 1.1.1, and if the
-auto-replace is not being used, can still be opened in novelWriter as of version |release|.
