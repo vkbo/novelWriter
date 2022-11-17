@@ -26,19 +26,12 @@ import pytest
 
 from PyQt5.QtWidgets import qApp, QMessageBox
 
-LANG_DATA = {}
-if sys.platform.startswith("linux"):
-    try:
-        from setup import buildQtI18n
-        buildQtI18n()
-        LANG_DATA = novelwriter.CONFIG.listLanguages(novelwriter.CONFIG.LANG_NW)
-    except Exception:
-        pass
+LANG_DATA = novelwriter.CONFIG.listLanguages(novelwriter.CONFIG.LANG_NW)
 
 
 @pytest.mark.gui
 @pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Linux Only")
-@pytest.mark.skipif(not LANG_DATA, reason="No language data")
+@pytest.mark.skipif(not LANG_DATA, reason="No i18n Data")
 @pytest.mark.parametrize("language", [a for a, b in LANG_DATA])
 def testI18n_Localisation(qtbot, monkeypatch, language, fncPath, fncConf):
     """test loading the gui with a specific language.
