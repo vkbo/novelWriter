@@ -358,9 +358,9 @@
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="224" />
-      <location filename="../novelwriter/dialogs/about.py" line="213" />
-      <location filename="../novelwriter/dialogs/about.py" line="202" />
+      <location filename="../novelwriter/dialogs/about.py" line="225" />
+      <location filename="../novelwriter/dialogs/about.py" line="214" />
+      <location filename="../novelwriter/dialogs/about.py" line="203" />
       <location filename="../novelwriter/dialogs/about.py" line="96" />
       <source>Licence</source>
       <translation type="unfinished" />
@@ -416,31 +416,31 @@
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="198" />
+      <location filename="../novelwriter/dialogs/about.py" line="199" />
       <source>Theme: {0}</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/about.py" line="222" />
-      <location filename="../novelwriter/dialogs/about.py" line="211" />
-      <location filename="../novelwriter/dialogs/about.py" line="200" />
-      <source>Author</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/dialogs/about.py" line="223" />
       <location filename="../novelwriter/dialogs/about.py" line="212" />
       <location filename="../novelwriter/dialogs/about.py" line="201" />
+      <source>Author</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/about.py" line="224" />
+      <location filename="../novelwriter/dialogs/about.py" line="213" />
+      <location filename="../novelwriter/dialogs/about.py" line="202" />
       <source>Credit</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="209" />
+      <location filename="../novelwriter/dialogs/about.py" line="210" />
       <source>Icons: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="220" />
+      <location filename="../novelwriter/dialogs/about.py" line="221" />
       <source>Syntax: {0}</source>
       <translation type="unfinished" />
     </message>
