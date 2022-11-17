@@ -4,7 +4,8 @@ novelWriter – GUI Components Module
 A module of various small GUI components
 
 File History:
-Created: 2020-05-17 [0.5.1] StatusLED
+Created: 2020-05-17 [0.5.1]  StatusLED
+Created: 2022-11-17 [2.0rc2] NovelSelector
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
@@ -26,9 +27,70 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 
 from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import QAbstractButton
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtWidgets import QAbstractButton, QComboBox
+
+from novelwriter.enum import nwItemClass
 
 logger = logging.getLogger(__name__)
+
+
+class NovelSelector(QComboBox):
+
+    novelSelectionChanged = pyqtSignal(str)
+
+    def __init__(self, parent, project, icon):
+        super().__init__(parent=parent)
+
+        self._project = project
+        self._icon = icon
+
+        self._blockSignal = False
+
+        self.currentIndexChanged.connect(self._indexChanged)
+
+        return
+
+    @property
+    def handle(self):
+        return self.currentData()
+
+    def setHandle(self, tHandle, blockSignal=True):
+        """Set the currently selected handle.
+        """
+        self._blockSignal = blockSignal
+        if tHandle is None:
+            index = self.count() - 1
+        else:
+            index = self.findData(tHandle)
+        if index >= 0:
+            self.setCurrentIndex(index)
+        self._blockSignal = False
+        return
+
+    def updateList(self):
+        """Rebuild the list of novel items.
+        """
+        self._blockSignal = True
+        self.clear()
+        for tHandle, nwItem in self._project.tree.iterRoots(nwItemClass.NOVEL):
+            self.addItem(self._icon, nwItem.itemName, tHandle)
+        self.insertSeparator(self.count())
+        self.addItem(self._icon, self.tr("All Novel Folders"), "")
+        self._blockSignal = False
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(int)
+    def _indexChanged(self, index):
+        if not self._blockSignal:
+            self.novelSelectionChanged.emit(self.currentData())
+        return
+
+# END Class NovelSelector
 
 
 class StatusLED(QAbstractButton):
