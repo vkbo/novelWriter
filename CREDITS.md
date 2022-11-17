@@ -15,6 +15,7 @@ The default language is English (UK) with English (US) as an option.
 
 * Dutch: Martijn van der Kleijn (@mvdkleijn)
 * French: Jan Lüdke (@jyhelle)
+* German: Myian (@heymyian)
 * Latin American Spanish: Tommy Marplatt (@tmarplatt)
 * Norwegian: Veronica Berglyd Olsen (@vkbo)
 * Portuguese: Bruno Meneguello (@bkmeneguello)

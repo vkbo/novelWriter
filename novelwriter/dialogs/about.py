@@ -180,6 +180,7 @@ class GuiAbout(QDialog):
         aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
             self.tr("Translations"),
             self._wrapTable([
+                ("Deutsch", "Myian"),
                 ("English", "Veronica Berglyd Olsen"),
                 ("Español Latinoamericano", "Tommy Marplatt"),
                 ("Français", "Jan Lüdke (jyhelle)"),
