@@ -67,19 +67,33 @@ class NovelSelector(QComboBox):
         self._blockSignal = False
         return
 
-    def updateList(self):
+    def updateList(self, includeAll=False, prefix=None):
         """Rebuild the list of novel items.
         """
         self._blockSignal = True
         self.clear()
+
         icon = self._theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
         handle = self.currentData()
         for tHandle, nwItem in self._project.tree.iterRoots(nwItemClass.NOVEL):
-            self.addItem(icon, nwItem.itemName, tHandle)
-        self.insertSeparator(self.count())
-        self.addItem(icon, self.tr("All Novel Folders"), "")
+            if prefix:
+                name = prefix.format(nwItem.itemName)
+                self.addItem(name, tHandle)
+            else:
+                name = nwItem.itemName
+                self.addItem(icon, nwItem.itemName, tHandle)
+
+        if includeAll:
+            self.insertSeparator(self.count())
+            if prefix:
+                self.addItem(prefix.format(self.tr("All Novel Folders")), "")
+            else:
+                self.addItem(icon, self.tr("All Novel Folders"), "")
+
         self.setHandle(handle)
+        self.setEnabled(self.count() > 1)
         self._blockSignal = False
+
         return
 
     ##

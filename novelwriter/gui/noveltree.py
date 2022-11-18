@@ -31,11 +31,11 @@ import novelwriter
 from enum import Enum
 from time import time
 
-from PyQt5.QtGui import QPalette
+from PyQt5.QtGui import QFont, QPalette
 from PyQt5.QtCore import Qt, QSize, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView, QLabel,
-    QMenu, QSizePolicy, QToolButton, QToolTip, QTreeWidget, QTreeWidgetItem,
+    QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView, QMenu,
+    QSizePolicy, QToolButton, QToolTip, QTreeWidget, QTreeWidgetItem,
     QVBoxLayout, QWidget
 )
 
@@ -200,17 +200,15 @@ class GuiNovelToolBar(QWidget):
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
 
-        # Widget Label
-        self.viewLabel = QLabel("<b>%s</b>" % self.tr("Novel Outline"))
-        self.viewLabel.setContentsMargins(0, 0, 0, 0)
-        self.viewLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
         # Novel Selector
         selFont = self.font()
-        selFont.setPointSize(int(0.9 * selFont.pointSize()))
+        selFont.setWeight(QFont.Bold)
+        self.novelPrefix = self.tr("Outline of {0}")
         self.novelValue = NovelSelector(self, self.theProject, self.mainTheme)
-        self.novelValue.setMinimumWidth(self.mainConf.pxInt(150))
         self.novelValue.setFont(selFont)
+        self.novelValue.setMinimumWidth(self.mainConf.pxInt(150))
+        self.novelValue.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.novelValue.setToolTip(self.tr("Click to change root folder"))
         self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
 
         # Refresh Button
@@ -238,7 +236,6 @@ class GuiNovelToolBar(QWidget):
 
         # Assemble
         self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.viewLabel)
         self.outerBox.addWidget(self.novelValue)
         self.outerBox.addWidget(self.tbRefresh)
         self.outerBox.addWidget(self.tbMore)
@@ -275,9 +272,14 @@ class GuiNovelToolBar(QWidget):
             "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
         ).format(self.mainConf.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
 
-        self.novelValue.updateList()
         self.tbRefresh.setStyleSheet(buttonStyle)
         self.tbMore.setStyleSheet(buttonStyle)
+
+        self.novelValue.setStyleSheet(
+            "QComboBox {border-style: none; padding-left: 0;} "
+            "QComboBox::drop-down {border-style: none}"
+        )
+        self.novelValue.updateList(prefix=self.novelPrefix)
 
         return
 
@@ -290,7 +292,7 @@ class GuiNovelToolBar(QWidget):
     def buildNovelRootMenu(self):
         """Build the novel root menu.
         """
-        self.novelValue.updateList()
+        self.novelValue.updateList(prefix=self.novelPrefix)
         return
 
     def setCurrentRoot(self, rootHandle):

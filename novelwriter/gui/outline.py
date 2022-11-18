@@ -275,7 +275,7 @@ class GuiOutlineToolBar(QToolBar):
         """
         self.setStyleSheet("QToolBar {border: 0px;}")
 
-        self.novelValue.updateList()
+        self.novelValue.updateList(includeAll=True)
         self.aRefresh.setIcon(self.mainTheme.getIcon("refresh"))
         self.tbColumns.setIcon(self.mainTheme.getIcon("menu"))
 
@@ -284,7 +284,7 @@ class GuiOutlineToolBar(QToolBar):
     def populateNovelList(self):
         """Relaod the content of the novel list.
         """
-        self.novelValue.updateList()
+        self.novelValue.updateList(includeAll=True)
         return
 
     def setCurrentRoot(self, rootHandle):
