@@ -41,6 +41,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
 from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
+from novelwriter.gui.components import NovelSelector
 
 logger = logging.getLogger(__name__)
 
@@ -204,22 +205,19 @@ class GuiNovelToolBar(QWidget):
         self.viewLabel.setContentsMargins(0, 0, 0, 0)
         self.viewLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
+        # Novel Selector
+        selFont = self.font()
+        selFont.setPointSize(int(0.9 * selFont.pointSize()))
+        self.novelValue = NovelSelector(self, self.theProject, self.mainTheme)
+        self.novelValue.setMinimumWidth(self.mainConf.pxInt(150))
+        self.novelValue.setFont(selFont)
+        self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
+
         # Refresh Button
         self.tbRefresh = QToolButton(self)
         self.tbRefresh.setToolTip(self.tr("Refresh"))
         self.tbRefresh.setIconSize(QSize(iPx, iPx))
         self.tbRefresh.clicked.connect(self._refreshNovelTree)
-
-        # Novel Root Menu
-        self.mRoot = QMenu()
-        self.gRoot = QActionGroup(self.mRoot)
-        self.aRoot = {}
-
-        self.tbRoot = QToolButton(self)
-        self.tbRoot.setToolTip(self.tr("Novel Root"))
-        self.tbRoot.setIconSize(QSize(iPx, iPx))
-        self.tbRoot.setMenu(self.mRoot)
-        self.tbRoot.setPopupMode(QToolButton.InstantPopup)
 
         # More Options Menu
         self.mMore = QMenu()
@@ -241,8 +239,8 @@ class GuiNovelToolBar(QWidget):
         # Assemble
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.viewLabel)
+        self.outerBox.addWidget(self.novelValue)
         self.outerBox.addWidget(self.tbRefresh)
-        self.outerBox.addWidget(self.tbRoot)
         self.outerBox.addWidget(self.tbMore)
         self.outerBox.setContentsMargins(mPx, mPx, 0, mPx)
         self.outerBox.setSpacing(0)
@@ -264,7 +262,6 @@ class GuiNovelToolBar(QWidget):
         """
         # Icons
         self.tbRefresh.setIcon(self.mainTheme.getIcon("refresh"))
-        self.tbRoot.setIcon(self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL]))
         self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
 
         qPalette = self.palette()
@@ -278,8 +275,8 @@ class GuiNovelToolBar(QWidget):
             "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
         ).format(self.mainConf.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
 
+        self.novelValue.updateList()
         self.tbRefresh.setStyleSheet(buttonStyle)
-        self.tbRoot.setStyleSheet(buttonStyle)
         self.tbMore.setStyleSheet(buttonStyle)
 
         return
@@ -287,31 +284,20 @@ class GuiNovelToolBar(QWidget):
     def clearContent(self):
         """Run clearing project tasks.
         """
-        self.mRoot.clear()
-        self.aRoot = {}
+        self.novelValue.clear()
         return
 
     def buildNovelRootMenu(self):
         """Build the novel root menu.
         """
-        self.mRoot.clear()
-        self.aRoot = {}
-        for n, (tHandle, nwItem) in enumerate(self.theProject.tree.iterRoots(nwItemClass.NOVEL)):
-            aRoot = self.mRoot.addAction(nwItem.itemName)
-            aRoot.setData(tHandle)
-            aRoot.setCheckable(True)
-            aRoot.triggered.connect(lambda n, tHandle=tHandle: self.setCurrentRoot(tHandle))
-            self.gRoot.addAction(aRoot)
-            self.aRoot[tHandle] = aRoot
-
+        self.novelValue.updateList()
         return
 
     def setCurrentRoot(self, rootHandle):
         """Set the current active root handle.
         """
-        if rootHandle in self.aRoot:
-            self.aRoot[rootHandle].setChecked(True)
-            self.novelView.novelTree.refreshTree(rootHandle=rootHandle, overRide=True)
+        self.novelValue.setHandle(rootHandle)
+        self.novelView.novelTree.refreshTree(rootHandle=rootHandle, overRide=True)
         return
 
     def setLastColType(self, colType, doRefresh=True):

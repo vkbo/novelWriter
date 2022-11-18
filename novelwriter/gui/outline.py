@@ -234,8 +234,7 @@ class GuiOutlineToolBar(QToolBar):
         self.novelLabel = QLabel(self.tr("Outline of"))
         self.novelLabel.setContentsMargins(0, 0, mPx, 0)
 
-        tIcon = self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
-        self.novelValue = NovelSelector(self, self.theProject, tIcon)
+        self.novelValue = NovelSelector(self, self.theProject, self.mainTheme)
         self.novelValue.setMinimumWidth(self.mainConf.pxInt(200))
         self.novelValue.novelSelectionChanged.connect(self._novelValueChanged)
 
@@ -276,6 +275,7 @@ class GuiOutlineToolBar(QToolBar):
         """
         self.setStyleSheet("QToolBar {border: 0px;}")
 
+        self.novelValue.updateList()
         self.aRefresh.setIcon(self.mainTheme.getIcon("refresh"))
         self.tbColumns.setIcon(self.mainTheme.getIcon("menu"))
 

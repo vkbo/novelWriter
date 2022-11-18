@@ -31,6 +31,7 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QAbstractButton, QComboBox
 
 from novelwriter.enum import nwItemClass
+from novelwriter.constants import nwLabels
 
 logger = logging.getLogger(__name__)
 
@@ -39,14 +40,12 @@ class NovelSelector(QComboBox):
 
     novelSelectionChanged = pyqtSignal(str)
 
-    def __init__(self, parent, project, icon):
+    def __init__(self, parent, project, theme):
         super().__init__(parent=parent)
 
         self._project = project
-        self._icon = icon
-
+        self._theme = theme
         self._blockSignal = False
-
         self.currentIndexChanged.connect(self._indexChanged)
 
         return
@@ -73,10 +72,13 @@ class NovelSelector(QComboBox):
         """
         self._blockSignal = True
         self.clear()
+        icon = self._theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
+        handle = self.currentData()
         for tHandle, nwItem in self._project.tree.iterRoots(nwItemClass.NOVEL):
-            self.addItem(self._icon, nwItem.itemName, tHandle)
+            self.addItem(icon, nwItem.itemName, tHandle)
         self.insertSeparator(self.count())
-        self.addItem(self._icon, self.tr("All Novel Folders"), "")
+        self.addItem(icon, self.tr("All Novel Folders"), "")
+        self.setHandle(handle)
         self._blockSignal = False
         return
 
