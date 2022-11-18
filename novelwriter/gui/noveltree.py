@@ -208,7 +208,6 @@ class GuiNovelToolBar(QWidget):
         self.novelValue.setFont(selFont)
         self.novelValue.setMinimumWidth(self.mainConf.pxInt(150))
         self.novelValue.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.novelValue.setToolTip(self.tr("Click to change root folder"))
         self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
 
         # Refresh Button
@@ -280,6 +279,10 @@ class GuiNovelToolBar(QWidget):
             "QComboBox::drop-down {border-style: none}"
         )
         self.novelValue.updateList(prefix=self.novelPrefix)
+        if self.novelValue.count() > 1:
+            self.novelValue.setToolTip(self.tr("Click to change root folder"))
+        else:
+            self.novelValue.setToolTip("")
 
         return
 
@@ -287,12 +290,17 @@ class GuiNovelToolBar(QWidget):
         """Run clearing project tasks.
         """
         self.novelValue.clear()
+        self.novelValue.setToolTip("")
         return
 
     def buildNovelRootMenu(self):
         """Build the novel root menu.
         """
         self.novelValue.updateList(prefix=self.novelPrefix)
+        if self.novelValue.count() > 1:
+            self.novelValue.setToolTip(self.tr("Click to change root folder"))
+        else:
+            self.novelValue.setToolTip("")
         return
 
     def setCurrentRoot(self, rootHandle):
