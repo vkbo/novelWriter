@@ -31,16 +31,17 @@ import novelwriter
 from enum import Enum
 from time import time
 
-from PyQt5.QtGui import QPalette
+from PyQt5.QtGui import QFont, QPalette
 from PyQt5.QtCore import Qt, QSize, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView, QLabel,
-    QMenu, QSizePolicy, QToolButton, QToolTip, QTreeWidget, QTreeWidgetItem,
+    QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView, QMenu,
+    QSizePolicy, QToolButton, QToolTip, QTreeWidget, QTreeWidgetItem,
     QVBoxLayout, QWidget
 )
 
 from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
 from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
+from novelwriter.gui.components import NovelSelector
 
 logger = logging.getLogger(__name__)
 
@@ -199,27 +200,21 @@ class GuiNovelToolBar(QWidget):
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
 
-        # Widget Label
-        self.viewLabel = QLabel("<b>%s</b>" % self.tr("Novel Outline"))
-        self.viewLabel.setContentsMargins(0, 0, 0, 0)
-        self.viewLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # Novel Selector
+        selFont = self.font()
+        selFont.setWeight(QFont.Bold)
+        self.novelPrefix = self.tr("Outline of {0}")
+        self.novelValue = NovelSelector(self, self.theProject, self.mainTheme)
+        self.novelValue.setFont(selFont)
+        self.novelValue.setMinimumWidth(self.mainConf.pxInt(150))
+        self.novelValue.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
 
         # Refresh Button
         self.tbRefresh = QToolButton(self)
         self.tbRefresh.setToolTip(self.tr("Refresh"))
         self.tbRefresh.setIconSize(QSize(iPx, iPx))
         self.tbRefresh.clicked.connect(self._refreshNovelTree)
-
-        # Novel Root Menu
-        self.mRoot = QMenu()
-        self.gRoot = QActionGroup(self.mRoot)
-        self.aRoot = {}
-
-        self.tbRoot = QToolButton(self)
-        self.tbRoot.setToolTip(self.tr("Novel Root"))
-        self.tbRoot.setIconSize(QSize(iPx, iPx))
-        self.tbRoot.setMenu(self.mRoot)
-        self.tbRoot.setPopupMode(QToolButton.InstantPopup)
 
         # More Options Menu
         self.mMore = QMenu()
@@ -240,9 +235,8 @@ class GuiNovelToolBar(QWidget):
 
         # Assemble
         self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.viewLabel)
+        self.outerBox.addWidget(self.novelValue)
         self.outerBox.addWidget(self.tbRefresh)
-        self.outerBox.addWidget(self.tbRoot)
         self.outerBox.addWidget(self.tbMore)
         self.outerBox.setContentsMargins(mPx, mPx, 0, mPx)
         self.outerBox.setSpacing(0)
@@ -264,7 +258,6 @@ class GuiNovelToolBar(QWidget):
         """
         # Icons
         self.tbRefresh.setIcon(self.mainTheme.getIcon("refresh"))
-        self.tbRoot.setIcon(self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL]))
         self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
 
         qPalette = self.palette()
@@ -279,39 +272,42 @@ class GuiNovelToolBar(QWidget):
         ).format(self.mainConf.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
 
         self.tbRefresh.setStyleSheet(buttonStyle)
-        self.tbRoot.setStyleSheet(buttonStyle)
         self.tbMore.setStyleSheet(buttonStyle)
+
+        self.novelValue.setStyleSheet(
+            "QComboBox {border-style: none; padding-left: 0;} "
+            "QComboBox::drop-down {border-style: none}"
+        )
+        self.novelValue.updateList(prefix=self.novelPrefix)
+        if self.novelValue.count() > 1:
+            self.novelValue.setToolTip(self.tr("Click to change root folder"))
+        else:
+            self.novelValue.setToolTip("")
 
         return
 
     def clearContent(self):
         """Run clearing project tasks.
         """
-        self.mRoot.clear()
-        self.aRoot = {}
+        self.novelValue.clear()
+        self.novelValue.setToolTip("")
         return
 
     def buildNovelRootMenu(self):
         """Build the novel root menu.
         """
-        self.mRoot.clear()
-        self.aRoot = {}
-        for n, (tHandle, nwItem) in enumerate(self.theProject.tree.iterRoots(nwItemClass.NOVEL)):
-            aRoot = self.mRoot.addAction(nwItem.itemName)
-            aRoot.setData(tHandle)
-            aRoot.setCheckable(True)
-            aRoot.triggered.connect(lambda n, tHandle=tHandle: self.setCurrentRoot(tHandle))
-            self.gRoot.addAction(aRoot)
-            self.aRoot[tHandle] = aRoot
-
+        self.novelValue.updateList(prefix=self.novelPrefix)
+        if self.novelValue.count() > 1:
+            self.novelValue.setToolTip(self.tr("Click to change root folder"))
+        else:
+            self.novelValue.setToolTip("")
         return
 
     def setCurrentRoot(self, rootHandle):
         """Set the current active root handle.
         """
-        if rootHandle in self.aRoot:
-            self.aRoot[rootHandle].setChecked(True)
-            self.novelView.novelTree.refreshTree(rootHandle=rootHandle, overRide=True)
+        self.novelValue.setHandle(rootHandle)
+        self.novelView.novelTree.refreshTree(rootHandle=rootHandle, overRide=True)
         return
 
     def setLastColType(self, colType, doRefresh=True):

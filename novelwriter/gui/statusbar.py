@@ -30,10 +30,11 @@ import novelwriter
 from time import time
 
 from PyQt5.QtCore import pyqtSlot, QLocale
-from PyQt5.QtGui import QColor, QPainter
-from PyQt5.QtWidgets import qApp, QStatusBar, QLabel, QAbstractButton
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import qApp, QStatusBar, QLabel
 
 from novelwriter.common import formatTime
+from novelwriter.gui.components import StatusLED
 
 logger = logging.getLogger(__name__)
 
@@ -246,59 +247,3 @@ class GuiMainStatus(QStatusBar):
         return
 
 # END Class GuiMainStatus
-
-
-class StatusLED(QAbstractButton):
-
-    S_NONE = 0
-    S_BAD  = 1
-    S_GOOD = 2
-
-    def __init__(self, colNone, colGood, colBad, sW, sH, parent=None):
-        super().__init__(parent=parent)
-
-        self._colNone = colNone
-        self._colGood = colGood
-        self._colBad = colBad
-        self._theCol = colNone
-
-        self.setFixedWidth(sW)
-        self.setFixedHeight(sH)
-
-        return
-
-    ##
-    #  Setters
-    ##
-
-    def setState(self, theState):
-        """Set the colour state.
-        """
-        if theState == self.S_GOOD:
-            self._theCol = self._colGood
-        elif theState == self.S_BAD:
-            self._theCol = self._colBad
-        else:
-            self._theCol = self._colNone
-
-        self.update()
-
-        return
-
-    ##
-    #  Events
-    ##
-
-    def paintEvent(self, _):
-        """Drawing the LED.
-        """
-        qPalette = self.palette()
-        qPaint = QPainter(self)
-        qPaint.setRenderHint(QPainter.Antialiasing, True)
-        qPaint.setPen(qPalette.dark().color())
-        qPaint.setBrush(self._theCol)
-        qPaint.setOpacity(1.0)
-        qPaint.drawEllipse(1, 1, self.width() - 2, self.height() - 2)
-        return
-
-# END Class StatusLED
