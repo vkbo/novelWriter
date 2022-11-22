@@ -529,13 +529,14 @@ class GuiNovelTree(QTreeWidget):
         return
 
     def getSelectedHandle(self):
-        """Get the currently selected handle. If multiple items are
-        selected, return the first.
+        """Get the currently selected or active handle. If multiple
+        items are selected, return the first.
         """
-        selItem = self.selectedItems()
-        if selItem:
-            tHandle = selItem[0].data(self.C_TITLE, self.D_HANDLE)
-            sTitle = selItem[0].data(self.C_TITLE, self.D_TITLE)
+        selList = self.selectedItems()
+        trItem = selList[0] if selList else self.currentItem()
+        if isinstance(trItem, QTreeWidgetItem):
+            tHandle = trItem.data(self.C_TITLE, self.D_HANDLE)
+            sTitle = trItem.data(self.C_TITLE, self.D_TITLE)
             return tHandle, sTitle
         return None, None
 
