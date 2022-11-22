@@ -93,6 +93,11 @@ def testDlgProjDetails_Dialog(qtbot, nwGUI, nwLipsum):
         assert tocTree.topLevelItem(i).text(tocTab.C_PAGES) == thePages[i]
         assert tocTree.topLevelItem(i).text(tocTab.C_PAGE) == thePage[i]
 
+    # Re-populate
+    assert tocTab._currentRoot is None
+    tocTab._novelValueChanged("7a992350f3eb6")     # Not a root
+    assert tocTab._currentRoot == "b3643d0f92e32"  # The actual novel root
+
     # qtbot.stop()
 
     # Clean Up

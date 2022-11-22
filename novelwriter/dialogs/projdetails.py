@@ -30,15 +30,14 @@ import novelwriter
 from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QComboBox, QDialogButtonBox, QGridLayout, QHBoxLayout,
-    QLabel, QLineEdit, QSpinBox, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget
+    QAbstractItemView, QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel,
+    QLineEdit, QSpinBox, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
-from novelwriter.enum import nwItemClass
 from novelwriter.common import numberToRoman
 from novelwriter.custom import PagedDialog, QSwitch
-from novelwriter.constants import nwLabels, nwUnicode
+from novelwriter.constants import nwUnicode
+from novelwriter.gui.components import NovelSelector
 
 logger = logging.getLogger(__name__)
 
@@ -297,9 +296,9 @@ class GuiProjectDetailsContents(QWidget):
 
         self.tocLabel = QLabel("<b>%s</b>" % self.tr("Table of Contents"))
 
-        self.novelValue = QComboBox(self)
+        self.novelValue = NovelSelector(self, self.theProject, self.mainGui)
         self.novelValue.setMinimumWidth(self.mainConf.pxInt(200))
-        self.novelValue.currentIndexChanged.connect(self._novelValueChanged)
+        self.novelValue.novelSelectionChanged.connect(self._novelValueChanged)
 
         self.headBox = QHBoxLayout()
         self.headBox.addWidget(self.tocLabel)
@@ -431,10 +430,9 @@ class GuiProjectDetailsContents(QWidget):
         """Populate the tree.
         """
         self._currentRoot = None
-        self._populateNovelList()
-
-        rootHandle = self.novelValue.currentData()
-        self._prepareData(rootHandle)
+        self.novelValue.updateList()
+        self.novelValue.setHandle(self.novelValue.firstHandle)
+        self._prepareData(self.novelValue.firstHandle)
         self._populateTree()
 
         return
@@ -442,17 +440,6 @@ class GuiProjectDetailsContents(QWidget):
     ##
     #  Internal Functions
     ##
-
-    def _populateNovelList(self):
-        """Fill the novel combo box with a list of all novel folders.
-        """
-        self.novelValue.clear()
-
-        tIcon = self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
-        for tHandle, nwItem in self.theProject.tree.iterRoots(nwItemClass.NOVEL):
-            self.novelValue.addItem(tIcon, nwItem.itemName, tHandle)
-
-        return
 
     def _prepareData(self, rootHandle):
         """Extract the information from the project index.
@@ -466,15 +453,14 @@ class GuiProjectDetailsContents(QWidget):
     #  Slots
     ##
 
-    @pyqtSlot()
-    def _novelValueChanged(self):
+    @pyqtSlot(str)
+    def _novelValueChanged(self, tHandle):
         """Refresh the tree with another root item.
         """
-        rootHandle = self.novelValue.currentData()
-        if rootHandle != self._currentRoot:
-            self._prepareData(rootHandle)
+        if tHandle != self._currentRoot:
+            self._prepareData(tHandle)
             self._populateTree()
-            self._currentRoot = rootHandle
+            self._currentRoot = self.novelValue.handle
         return
 
     @pyqtSlot()

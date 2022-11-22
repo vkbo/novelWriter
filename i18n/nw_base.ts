@@ -2063,38 +2063,38 @@
   <context>
     <name>GuiMainStatus</name>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="221" />
-      <location filename="../novelwriter/gui/statusbar.py" line="67" />
+      <location filename="../novelwriter/gui/statusbar.py" line="222" />
+      <location filename="../novelwriter/gui/statusbar.py" line="68" />
       <source>None</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="75" />
+      <location filename="../novelwriter/gui/statusbar.py" line="76" />
       <source>Editor</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="83" />
+      <location filename="../novelwriter/gui/statusbar.py" line="84" />
       <source>Project</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="101" />
+      <location filename="../novelwriter/gui/statusbar.py" line="102" />
       <source>Session Time</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="192" />
+      <location filename="../novelwriter/gui/statusbar.py" line="193" />
       <source>Words: {0} ({1})</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="194" />
+      <location filename="../novelwriter/gui/statusbar.py" line="195" />
       <source>Project word count (session change)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="196" />
+      <location filename="../novelwriter/gui/statusbar.py" line="197" />
       <source>Novel word count (session change)</source>
       <translation type="unfinished" />
     </message>
@@ -2102,47 +2102,47 @@
   <context>
     <name>GuiNovelToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="203" />
-      <source>Novel Outline</source>
+      <location filename="../novelwriter/gui/noveltree.py" line="207" />
+      <source>Outline of {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="209" />
-      <source>Refresh</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="219" />
+      <location filename="../novelwriter/gui/noveltree.py" line="215" />
       <source>Novel Root</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="227" />
+      <location filename="../novelwriter/gui/noveltree.py" line="221" />
+      <source>Refresh</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/noveltree.py" line="228" />
       <source>Last Column</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="230" />
+      <location filename="../novelwriter/gui/noveltree.py" line="231" />
       <source>Hidden</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="231" />
+      <location filename="../novelwriter/gui/noveltree.py" line="232" />
       <source>Point of View Character</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="232" />
+      <location filename="../novelwriter/gui/noveltree.py" line="233" />
       <source>Focus Character</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="233" />
+      <location filename="../novelwriter/gui/noveltree.py" line="234" />
       <source>Novel Plot</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="236" />
+      <location filename="../novelwriter/gui/noveltree.py" line="237" />
       <source>More Options</source>
       <translation type="unfinished" />
     </message>
@@ -2150,7 +2150,7 @@
   <context>
     <name>GuiNovelTree</name>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="771" />
+      <location filename="../novelwriter/gui/noveltree.py" line="778" />
       <source>No meta data</source>
       <translation type="unfinished" />
     </message>
@@ -2158,65 +2158,65 @@
   <context>
     <name>GuiOutlineDetails</name>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="1061" />
-      <location filename="../novelwriter/gui/outline.py" line="1022" />
-      <location filename="../novelwriter/gui/outline.py" line="826" />
-      <location filename="../novelwriter/gui/outline.py" line="799" />
+      <location filename="../novelwriter/gui/outline.py" line="1053" />
+      <location filename="../novelwriter/gui/outline.py" line="1014" />
+      <location filename="../novelwriter/gui/outline.py" line="818" />
+      <location filename="../novelwriter/gui/outline.py" line="791" />
       <source>Title</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="800" />
+      <location filename="../novelwriter/gui/outline.py" line="792" />
       <source>Chapter</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="801" />
+      <location filename="../novelwriter/gui/outline.py" line="793" />
       <source>Scene</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="802" />
+      <location filename="../novelwriter/gui/outline.py" line="794" />
       <source>Section</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="827" />
+      <location filename="../novelwriter/gui/outline.py" line="819" />
       <source>Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="828" />
+      <location filename="../novelwriter/gui/outline.py" line="820" />
       <source>Status</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="841" />
+      <location filename="../novelwriter/gui/outline.py" line="833" />
       <source>Characters</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="842" />
+      <location filename="../novelwriter/gui/outline.py" line="834" />
       <source>Words</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="843" />
+      <location filename="../novelwriter/gui/outline.py" line="835" />
       <source>Paragraphs</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="856" />
+      <location filename="../novelwriter/gui/outline.py" line="848" />
       <source>Synopsis</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="928" />
+      <location filename="../novelwriter/gui/outline.py" line="920" />
       <source>Title Details</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="953" />
+      <location filename="../novelwriter/gui/outline.py" line="945" />
       <source>Reference Tags</source>
       <translation type="unfinished" />
     </message>
@@ -2224,7 +2224,7 @@
   <context>
     <name>GuiOutlineHeaderMenu</name>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="761" />
+      <location filename="../novelwriter/gui/outline.py" line="753" />
       <source>Select Columns</source>
       <translation type="unfinished" />
     </message>
@@ -2232,18 +2232,13 @@
   <context>
     <name>GuiOutlineToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="233" />
+      <location filename="../novelwriter/gui/outline.py" line="234" />
       <source>Outline of</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="241" />
+      <location filename="../novelwriter/gui/outline.py" line="242" />
       <source>Refresh</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/gui/outline.py" line="290" />
-      <source>All Novel Folders</source>
       <translation type="unfinished" />
     </message>
   </context>
@@ -2923,17 +2918,17 @@
   <context>
     <name>GuiProjectDetails</name>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="58" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="57" />
       <source>Project Details</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="74" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="73" />
       <source>Overview</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="75" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="74" />
       <source>Contents</source>
       <translation type="unfinished" />
     </message>
@@ -2941,72 +2936,72 @@
   <context>
     <name>GuiProjectDetailsContents</name>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="298" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="297" />
       <source>Table of Contents</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="317" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="316" />
       <source>Title</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="318" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="317" />
       <source>Words</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="319" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="318" />
       <source>Pages</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="320" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="319" />
       <source>Page</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="321" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="320" />
       <source>Progress</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="356" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="355" />
       <source>Typical word count for a 5 by 8 inch book page with 11 pt font is 350.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="359" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="358" />
       <source>Start counting page numbers from this page.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="362" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="361" />
       <source>Assume a new chapter or partition always start on an odd numbered page.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="365" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="364" />
       <source>Words per page</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="376" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="375" />
       <source>Count pages from</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="387" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="386" />
       <source>Clear double pages</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="462" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="449" />
       <source>END</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="517" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="503" />
       <source>Untitled</source>
       <translation type="unfinished" />
     </message>
@@ -3014,42 +3009,42 @@
   <context>
     <name>GuiProjectDetailsMain</name>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="169" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="168" />
       <source>Working Title: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="178" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="177" />
       <source>By {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="190" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="189" />
       <source>Words</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="193" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="192" />
       <source>Chapters</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="196" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="195" />
       <source>Scenes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="199" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="198" />
       <source>Revisions</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="202" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="201" />
       <source>Editing Time</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="222" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="221" />
       <source>Path</source>
       <translation type="unfinished" />
     </message>
@@ -4001,6 +3996,14 @@
     <message>
       <location filename="../novelwriter/core/project.py" line="808" />
       <source>One or more orphaned files could not be added back into the project. Make sure at least a Novel root folder exists.</source>
+      <translation type="unfinished" />
+    </message>
+  </context>
+  <context>
+    <name>NovelSelector</name>
+    <message>
+      <location filename="../novelwriter/gui/components.py" line="106" />
+      <source>All Novel Folders</source>
       <translation type="unfinished" />
     </message>
   </context>

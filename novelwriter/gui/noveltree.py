@@ -191,6 +191,7 @@ class GuiNovelToolBar(QWidget):
 
         self.mainConf   = novelwriter.CONFIG
         self.novelView  = novelView
+        self.mainGui    = novelView.mainGui
         self.theProject = novelView.mainGui.theProject
         self.mainTheme  = novelView.mainGui.mainTheme
 
@@ -204,11 +205,16 @@ class GuiNovelToolBar(QWidget):
         selFont = self.font()
         selFont.setWeight(QFont.Bold)
         self.novelPrefix = self.tr("Outline of {0}")
-        self.novelValue = NovelSelector(self, self.theProject, self.mainTheme)
+        self.novelValue = NovelSelector(self, self.theProject, self.mainGui)
         self.novelValue.setFont(selFont)
         self.novelValue.setMinimumWidth(self.mainConf.pxInt(150))
         self.novelValue.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
+
+        self.tbNovel = QToolButton(self)
+        self.tbNovel.setToolTip(self.tr("Novel Root"))
+        self.tbNovel.setIconSize(QSize(iPx, iPx))
+        self.tbNovel.clicked.connect(self._openNovelSelector)
 
         # Refresh Button
         self.tbRefresh = QToolButton(self)
@@ -236,6 +242,7 @@ class GuiNovelToolBar(QWidget):
         # Assemble
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.novelValue)
+        self.outerBox.addWidget(self.tbNovel)
         self.outerBox.addWidget(self.tbRefresh)
         self.outerBox.addWidget(self.tbMore)
         self.outerBox.setContentsMargins(mPx, mPx, 0, mPx)
@@ -257,6 +264,7 @@ class GuiNovelToolBar(QWidget):
         """Update theme elements.
         """
         # Icons
+        self.tbNovel.setIcon(self.mainTheme.getIcon("cls_novel"))
         self.tbRefresh.setIcon(self.mainTheme.getIcon("refresh"))
         self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
 
@@ -271,6 +279,7 @@ class GuiNovelToolBar(QWidget):
             "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
         ).format(self.mainConf.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
 
+        self.tbNovel.setStyleSheet(buttonStyle)
         self.tbRefresh.setStyleSheet(buttonStyle)
         self.tbMore.setStyleSheet(buttonStyle)
 
@@ -279,10 +288,7 @@ class GuiNovelToolBar(QWidget):
             "QComboBox::drop-down {border-style: none}"
         )
         self.novelValue.updateList(prefix=self.novelPrefix)
-        if self.novelValue.count() > 1:
-            self.novelValue.setToolTip(self.tr("Click to change root folder"))
-        else:
-            self.novelValue.setToolTip("")
+        self.tbNovel.setVisible(self.novelValue.count() > 1)
 
         return
 
@@ -297,10 +303,7 @@ class GuiNovelToolBar(QWidget):
         """Build the novel root menu.
         """
         self.novelValue.updateList(prefix=self.novelPrefix)
-        if self.novelValue.count() > 1:
-            self.novelValue.setToolTip(self.tr("Click to change root folder"))
-        else:
-            self.novelValue.setToolTip("")
+        self.tbNovel.setVisible(self.novelValue.count() > 1)
         return
 
     def setCurrentRoot(self, rootHandle):
@@ -320,6 +323,13 @@ class GuiNovelToolBar(QWidget):
     ##
     #  Private Slots
     ##
+
+    @pyqtSlot()
+    def _openNovelSelector(self):
+        """Trigger the dropdown list of the novel selector.
+        """
+        self.novelValue.showPopup()
+        return
 
     @pyqtSlot()
     def _refreshNovelTree(self):
@@ -519,13 +529,14 @@ class GuiNovelTree(QTreeWidget):
         return
 
     def getSelectedHandle(self):
-        """Get the currently selected handle. If multiple items are
-        selected, return the first.
+        """Get the currently selected or active handle. If multiple
+        items are selected, return the first.
         """
-        selItem = self.selectedItems()
-        if selItem:
-            tHandle = selItem[0].data(self.C_TITLE, self.D_HANDLE)
-            sTitle = selItem[0].data(self.C_TITLE, self.D_TITLE)
+        selList = self.selectedItems()
+        trItem = selList[0] if selList else self.currentItem()
+        if isinstance(trItem, QTreeWidgetItem):
+            tHandle = trItem.data(self.C_TITLE, self.D_HANDLE)
+            sTitle = trItem.data(self.C_TITLE, self.D_TITLE)
             return tHandle, sTitle
         return None, None
 

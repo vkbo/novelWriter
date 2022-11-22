@@ -40,19 +40,34 @@ class NovelSelector(QComboBox):
 
     novelSelectionChanged = pyqtSignal(str)
 
-    def __init__(self, parent, project, theme):
+    def __init__(self, parent, project, mainGui):
         super().__init__(parent=parent)
 
+        self._mainGui = mainGui
         self._project = project
-        self._theme = theme
+        self._theme = mainGui.mainTheme
         self._blockSignal = False
+        self._firstHandle = None
+
         self.currentIndexChanged.connect(self._indexChanged)
 
         return
 
+    ##
+    #  Properties
+    ##
+
     @property
     def handle(self):
         return self.currentData()
+
+    @property
+    def firstHandle(self):
+        return self._firstHandle
+
+    ##
+    #  Methods
+    ##
 
     def setHandle(self, tHandle, blockSignal=True):
         """Set the currently selected handle.
@@ -71,6 +86,7 @@ class NovelSelector(QComboBox):
         """Rebuild the list of novel items.
         """
         self._blockSignal = True
+        self._firstHandle = None
         self.clear()
 
         icon = self._theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
@@ -82,13 +98,12 @@ class NovelSelector(QComboBox):
             else:
                 name = nwItem.itemName
                 self.addItem(icon, nwItem.itemName, tHandle)
+            if self._firstHandle is None:
+                self._firstHandle = tHandle
 
         if includeAll:
             self.insertSeparator(self.count())
-            if prefix:
-                self.addItem(prefix.format(self.tr("All Novel Folders")), "")
-            else:
-                self.addItem(icon, self.tr("All Novel Folders"), "")
+            self.addItem(icon, self.tr("All Novel Folders"), "")
 
         self.setHandle(handle)
         self.setEnabled(self.count() > 1)
@@ -102,6 +117,8 @@ class NovelSelector(QComboBox):
 
     @pyqtSlot(int)
     def _indexChanged(self, index):
+        """Re-emit the change of selected novel signal, unless blocked.
+        """
         if not self._blockSignal:
             self.novelSelectionChanged.emit(self.currentData())
         return
