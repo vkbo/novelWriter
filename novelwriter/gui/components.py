@@ -103,10 +103,7 @@ class NovelSelector(QComboBox):
 
         if includeAll:
             self.insertSeparator(self.count())
-            if prefix:
-                self.addItem(prefix.format(self.tr("All Novel Folders")), "")
-            else:
-                self.addItem(icon, self.tr("All Novel Folders"), "")
+            self.addItem(icon, self.tr("All Novel Folders"), "")
 
         self.setHandle(handle)
         self.setEnabled(self.count() > 1)
@@ -120,6 +117,8 @@ class NovelSelector(QComboBox):
 
     @pyqtSlot(int)
     def _indexChanged(self, index):
+        """Re-emit the change of selected novel signal, unless blocked.
+        """
         if not self._blockSignal:
             self.novelSelectionChanged.emit(self.currentData())
         return

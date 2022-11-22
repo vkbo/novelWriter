@@ -460,7 +460,7 @@ class GuiProjectDetailsContents(QWidget):
         if tHandle != self._currentRoot:
             self._prepareData(tHandle)
             self._populateTree()
-            self._currentRoot = tHandle
+            self._currentRoot = self.novelValue.handle
         return
 
     @pyqtSlot()
