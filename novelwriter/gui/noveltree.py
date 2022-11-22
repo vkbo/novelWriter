@@ -326,6 +326,8 @@ class GuiNovelToolBar(QWidget):
 
     @pyqtSlot()
     def _openNovelSelector(self):
+        """Trigger the dropdown list of the novel selector.
+        """
         self.novelValue.showPopup()
         return
 

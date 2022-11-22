@@ -47,13 +47,27 @@ class NovelSelector(QComboBox):
         self._project = project
         self._theme = mainGui.mainTheme
         self._blockSignal = False
+        self._firstHandle = None
+
         self.currentIndexChanged.connect(self._indexChanged)
 
         return
 
+    ##
+    #  Properties
+    ##
+
     @property
     def handle(self):
         return self.currentData()
+
+    @property
+    def firstHandle(self):
+        return self._firstHandle
+
+    ##
+    #  Methods
+    ##
 
     def setHandle(self, tHandle, blockSignal=True):
         """Set the currently selected handle.
@@ -72,6 +86,7 @@ class NovelSelector(QComboBox):
         """Rebuild the list of novel items.
         """
         self._blockSignal = True
+        self._firstHandle = None
         self.clear()
 
         icon = self._theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
@@ -83,6 +98,8 @@ class NovelSelector(QComboBox):
             else:
                 name = nwItem.itemName
                 self.addItem(icon, nwItem.itemName, tHandle)
+            if self._firstHandle is None:
+                self._firstHandle = tHandle
 
         if includeAll:
             self.insertSeparator(self.count())
