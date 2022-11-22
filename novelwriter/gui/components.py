@@ -40,11 +40,12 @@ class NovelSelector(QComboBox):
 
     novelSelectionChanged = pyqtSignal(str)
 
-    def __init__(self, parent, project, theme):
+    def __init__(self, parent, project, mainGui):
         super().__init__(parent=parent)
 
+        self._mainGui = mainGui
         self._project = project
-        self._theme = theme
+        self._theme = mainGui.mainTheme
         self._blockSignal = False
         self.currentIndexChanged.connect(self._indexChanged)
 
