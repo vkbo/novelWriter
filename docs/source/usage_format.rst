@@ -6,8 +6,8 @@ Formatting Your Text
 
 The novelWriter text editor is a plain text editor that uses formatting codes for setting meta data
 values and allowing for some text formatting. The syntax is based on Markdown, but novelWriter is
-*not* strictly a Markdown editor. It supports basic formatting like emphasis (italic), strong
-importance (bold) and strikethrough text, as well as four levels of headings.
+*not* a Markdown editor. It supports basic formatting like emphasis (italic), strong importance
+(bold) and strikethrough text, as well as four levels of headings.
 
 In addition to formatting codes, novelWriter allows for comments, a synopsis tag, and a set of
 keyword and value sets used for tags and references. There are also some codes that apply two whole
@@ -26,7 +26,7 @@ dialogue in your text.
 
 When you use the commands to set tags and references, these also change colour. Correct commands
 have a dedicated colour, and the references themselves will get a colour if they are valid. Invalid
-references will get a squiggly error line underneath.
+references will get a squiggly error line underneath. The same applies to duplicate tags.
 
 There are a number of syntax highlighter colour themes available, both for light and dark GUIs. You
 can select them for :guilabel:`Preferences`.
@@ -173,10 +173,10 @@ altering the colour of the word.
 Tags and References
 ===================
 
-The document editor supports a minimal set of keywords used for setting tags, and making references
-between documents. The tag can be set once per section defined by a heading. Setting it multiple
-times under the same heading will just override the previous setting. References can be set
-anywhere within a section, and are collected according to their category.
+The document editor supports a set of keywords used for setting tags, and making references between
+documents. The tag can be set once per section defined by a heading. Setting it multiple times
+under the same heading will just override the previous setting. References can be set anywhere
+within a section, and are collected according to their category.
 
 ``@keyword: value``
    A keyword argument followed by a value, or a comma separated list of values.
@@ -208,12 +208,12 @@ Examples:
    :widths: 40, 60
    :class: "tight-table"
 
-   "``>> Right aligned text``", "The text paragraph is right-aligned."
-   "``Left aligned text <<``",  "The text paragraph is left-aligned."
-   "``>> Centred text <<``",    "The text paragraph is centred."
-   "``> Indented text``",       "The text has an increased left margin."
-   "``Indented text <``",       "The text has an increased right margin."
-   "``> Indented text <``",     "The text has an both margins increased."
+   "``>> Right aligned text``",        "The text paragraph is right-aligned."
+   "``Left aligned text <<``",         "The text paragraph is left-aligned."
+   "``>> Centred text <<``",           "The text paragraph is centred."
+   "``> Left indented text``",         "The text has an increased left margin."
+   "``Right indented text <``",        "The text has an increased right margin."
+   "``> Left/right indented text <``", "The text has an both margins increased."
 
 .. note::
    The text editor will not show the alignment and indentation live. But the viewer will show them

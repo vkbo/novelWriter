@@ -27,8 +27,8 @@ the project, and has four columns:
 
 **Column 2**
    The second column shows the word count of the document, or the sum of words of the child items
-   for folders. If the counts seem incorrect, they can be updated by rebuilding the project index
-   from the :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
+   for folders and documents with subdocuments. If the counts seem incorrect, they can be updated
+   by rebuilding the project index from the :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
 
 **Column 3**
    The third column indicates whether the document is considered active or inactive in the project.
@@ -47,10 +47,10 @@ a selection of actions that can be performed on the selected item.
 At the top of the tree, you will find a set of buttons.
 
 * The first button is a quick links button that will show you a dropdown menu of all the root 
-  folders in your project. Selecting one will scroll to that position in the tree. You can also
+  folders in your project. Selecting one will move to that position in the tree. You can also
   activate this menu by pressing :kbd:`Ctrl`:kbd:`L`.
-* The next buttons can be used to move items up and down in the project tree. This is the only way 
-  to move root folders.
+* The next two buttons can be used to move items up and down in the project tree. This is the only 
+  way to move root folders.
 * The next button opens a dropdown menu for adding new items to the tree. This includes root 
   folders. You can also activate this dropdown menu by pressing :kbd:`Ctrl`:kbd:`N`.
 * The last button is a menu of further actions on the entire project tree.
@@ -78,8 +78,8 @@ the story itself rather than the document files.
 .. note::
    You cannot reorganise the entries in the novel tree, or add any new documents, as that would
    imply restructuring the content of the document files. Any editing must be done in the project
-   tree. However, you can add new headings to existing documents, which will be updated in this
-   view.
+   tree. However, you can add new headings to existing documents, or change references, which will
+   be updated in this view.
 
 
 .. _a_ui_tree_status:
@@ -88,8 +88,8 @@ Document Importance and Status
 ------------------------------
 
 Each document or folder in your project can have either a "Status" or "Importance" flag set. These
-are flags that you control and define yourself. To modify the labels, go to their respective tabs
-in :guilabel:`Project Settings`.
+are flags that you control and define yourself. The app doesn't do anything with them at all. To
+modify the labels, go to their respective tabs in :guilabel:`Project Settings`.
 
 The "Status" flag is intended to tag a Novel document as for instance a draft or as completed, and
 the "Importance" flag is intended to tag character notes, or other notes, as for instance a main,
@@ -105,9 +105,9 @@ If it's in the :guilabel:`Novel` folder, it uses the "Status" flag, otherwise it
 Project Tree Drag & Drop
 ------------------------
 
-The project tree allows drag & drop to a certain extent. This feature is primarily intended for
-reordering your documents within each root folder. Moving a document in the project tree will also
-put it in a different place when you build the novel project.
+The project tree allows drag & drop to a certain extent to allow you to reorder your documents and
+folders. Moving a document in the project tree will affect the text's position when you assemble
+your manuscript in the build tool.
 
 Drag & drop has only limited support for moving documents. In general, bulk actions are not
 allowed. This is deliberate to avoid accidentally messing up your project. If you make a mistake,
@@ -115,9 +115,10 @@ the last move action can be undone by pressing :kbd:`Ctrl`:kbd:`Shift`:kbd:`Z`.
 
 Documents and their folders can be rearranged freely within their root folders. If you move a Novel
 documents out of a Novel folder, it will be converted to a project note. Notes can be moved freely
-between all root folders, but keep in mind that if you move a note into a :guilabel:`Novel`, its
-"Importance" setting will be switched with a "Status" setting. See :ref:`a_ui_tree_status`. The old
-value will not be overwritten though, and should be restored if you move it back.
+between all root folders, but keep in mind that if you move a note into a :guilabel:`Novel` root
+folder, its "Importance" setting will be switched with a "Status" setting. See
+:ref:`a_ui_tree_status`. The old value will not be overwritten though, and should be restored if
+you move it back at some point.
 
 Root folders in the project tree cannot be dragged & dropped at all. If you want to reorder them,
 you can move them up or down with respect to eachother from the arrow buttons at the top of the
@@ -162,8 +163,8 @@ pressing :kbd:`Ctrl`:kbd:`Return`. You can also control-click them with your mou
 the references become clickable links. Clicking them will replace the content of the viewer with
 the content of the document the reference points to.
 
-The document viewer keeps a history of viewed documents, which you can navigate through with the
-arrow buttons in the top–left corner of the viewer. If your mouse has back and forward navigation
+The document viewer keeps a history of viewed documents, which you can navigate with the arrow
+buttons in the top–left corner of the viewer. If your mouse has backward and forward navigation
 buttons, these can be used as well. They work just like the backward and forward features in a
 browser.
 
@@ -254,7 +255,7 @@ to show a combination of all novel folders.
 Various meta data and information extracted from tags can be displayed in columns in the outline.
 A default set of such columns is visible, but you can turn on or off more columns from the menu
 button in the toolbar. The order of the columns can also be rearranged by dragging them to a
-different position.
+different position. You column settings are saved between sessions on a per-project basis.
 
 .. note::
    The :guilabel:`Title` column cannot be disabled or moved.

@@ -4,6 +4,11 @@
 Typographical Notes
 *******************
 
+.. _Prime: https://en.wikipedia.org/wiki/Prime_(symbol)
+.. _thin space: https://en.wikipedia.org/wiki/Thin_space
+.. _Quotation Mark: https://en.wikipedia.org/wiki/Quotation_mark
+.. _Modifier letter apostrophe: https://en.wikipedia.org/wiki/Modifier_letter_apostrophe
+
 novelWriter has some support for typographical symbols that are not usually easily available in
 many text editors. This includes for instance the proper unicode quotation marks, dashes, ellipsis,
 thin spaces, etc. All these symbols are available from the :guilabel:`Insert` menu, and via
@@ -17,7 +22,7 @@ This chapter provides some additional information on how novelWriter handles the
 Special Notes on Symbols
 ========================
 
-Some additional notes on the available symbols.
+This section contains additional notes on the available special symbols.
 
 
 Dashes and Ellipsis
@@ -49,8 +54,6 @@ user-selected double quote symbols. This is to help the writer recognise which p
 are not using the chosen quote symbols. Two convenience functions in the :guilabel:`Format` menu
 can be used to re-format a selected section of text with the correct quote symbols.
 
-.. _Quotation Mark: https://en.wikipedia.org/wiki/Quotation_mark
-
 
 Single and Double Prime
 ------------------------
@@ -61,8 +64,6 @@ these is described in more detail on the Wikipedia Prime_ page. They look very s
 and double straight quotes, and may be renderred similarly by the font, but they have different
 codes. Using these correctly will also prevent the auto-replace and dialogue highlighting features
 misunderstanding their meaning in the text.
-
-.. _Prime: https://en.wikipedia.org/wiki/Prime_(symbol)
 
 
 Modifier Letter Apostrophe
@@ -82,8 +83,6 @@ right single quotation marks, depending on the font. There is a Wikipedia articl
    automatically with the corresponding right hand single quote symbol as is generally recommended.
    Therefore it doesn't really matter if you only use them to correct highlighting.
 
-.. _Modifier letter apostrophe: https://en.wikipedia.org/wiki/Modifier_letter_apostrophe
-
 
 Special Space Symbols
 ---------------------
@@ -100,5 +99,3 @@ spot them in the text. The colour will depend on the selected colour theme.
 
 The thin and non-breaking spaces are converted to their corresponding HTML codes on export to HTML
 format.
-
-.. _thin space: https://en.wikipedia.org/wiki/Thin_space

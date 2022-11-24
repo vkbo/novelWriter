@@ -4,11 +4,14 @@
 How it Works
 ************
 
+.. _Fusion: https://doc.qt.io/qt-6/gallery.html
+.. _Pandoc: https://pandoc.org/
 .. _Typicons: https://github.com/stephenhutchings/typicons.font
+.. _Open Document: https://en.wikipedia.org/wiki/OpenDocument
 
 The main features of novelWriter are listed in the :ref:`a_intro` section. Here, we go into some
-more details on how they are implemented. Later on in this documentation, these features will be
-covered in even more detail.
+more details on how they are implemented. This is intended as an overview. Later on in this
+documentation, these features will be covered in even more detail.
 
 
 .. _a_breakdown_design:
@@ -22,8 +25,8 @@ at the same time provide a complete set of features needed for writing a novel.
 The main window does not have an editor toolbar like many other applications do. This reduces
 clutter, and since the documents are formatted with style tags, is more or less redundant. However,
 most formatting features supported are available through convenient keyboard shortcuts. They are
-alsoavailable in the main menu so you don't have to look up formatting codes every time you need
-them. However, a list of all shortcuts can be found in the :ref:`a_kb` section.
+also available in the main menu so you don't have to look up formatting codes every time you need
+them. For reference, a list of all shortcuts can be found in the :ref:`a_kb` section.
 
 .. note::
    novelWriter is not intended to be a full office type word processor. It doesn't support images,
@@ -40,32 +43,43 @@ Project Tree View
 
 When in :guilabel:`Project Tree View` mode, the main work area of the main window is split in two,
 or optionally three, panels. The left-most panel contains the project tree and all the documents in
-your project. The second panel is the document editor. An optional third panel is a document viewer
-which can view any document in your project independently of what is open in the document editor.
-It is not intended as a preview window, although you can use it for this as well as it will apply
-the formatting tags you have specified. The main purpose of the viewer is for viewing your notes
-next to your editor while you're writing.
+your project. The second panel is the document editor. An optional third panel on the right is a
+document viewer which can view any document in your project independently of what is open in the
+document editor. This panel is not intended as a preview window, although you can use it for this
+if you wish as it will apply the formatting tags you have specified. The main purpose of the viewer
+is for viewing your notes next to your editor while you're writing.
 
-The editor also has a :guilabel:`Focus Mode` you can toggle either from the menu, or from the icon
-in the editor header. When :guilabel:`Focus Mode` is enabled, all the user interface elements other
-than the document editor itself are hidden away.
+The editor also has a :guilabel:`Focus Mode` you can toggle either from the menu, from the icon in
+the editor header, or by pressing :kbd:`F8`. When :guilabel:`Focus Mode` is enabled, all the user
+interface elements other than the document editor itself are hidden away.
 
 
 Novel Tree View
 ---------------
 
 When in :guilabel:`Novel Tree View` mode, the project tree is replaces by an overview of your novel
-structure. Instead of showing individual documents, the tree shows all headings of your novel text.
+structure. Instead of showing individual documents, the tree now shows all headings of your novel
+text. This includes multiple headings within the same document.
+
 Each heading is indented according to the heading level. You can open and edit your novel documents
 from this view as well. All headings contained in the currently open document should be highlighted
-in the view.
+in the view to indicate which ones belong together.
 
-If you have multiple Novel root folders, you can switch between them from the dropdown menu from
-the buttons at the top of the tree view. You can also select to view an extra column of data. To
-select its content, see the menu icon button.
+If you have multiple Novel root folders, the header of the novel view becomes a droopdown box. You
+can then switch between them by clicking the "Outline of ..." text. You can also click the novel
+icon button next to it.
 
-If you click the arrow to the right of each item, a tooltip will pop up showing you all the meta
-data collected for that heading entry.
+Generally, the novel view should update when you make changes to the novel structure, including
+edits of the current document in the editor. The information is only updated when the automatic
+save of the document is initiated though. You can adjust the aut-save interval in
+:guilabel:`Preferences`. You can also regenerate the whole novel view by pressing the refresh
+button at the top.
+
+It is possible to show an optional third column in the novel view, The settings are available from
+the menu button ath the top.
+
+If you click the arrow icon to the right of each item, a tooltip will pop up showing you all the
+meta data collected for that heading entry.
 
 
 Novel Outline View
@@ -77,22 +91,26 @@ much all collected meta data is available here in different columns.
 
 You can select which novel root folder to display from the dropdown box, and you can select which
 columns to show or hide from the menu button. You can also rearrange the columns by drag and drop.
+The app will remember you column order and size between sessions, and for each individual project.
 
 
 Colour Themes
 -------------
 
-The default colour theme of the user interface is the default theme from the Qt library. There is a
-standard dark theme provided as well, which is similar to the default Qt theme. Some other light
-and dark colour themes are also provided. You can select which one you prefer from in
-:guilabel:`Preferences` from :guilabel:`Settings` or the :guilabel:`Tools` menu.
+The default colour theme of the user interface is the default theme from the Qt library. By
+default, novelWriter is loaded with the Fusion_ style setting. (You can override this with the
+``--style=`` setting when starting novelWriter.)
+
+There is a standard dark theme provided as well, which is similar to the default Qt theme. Some
+other light and dark colour themes are also provided. You can select which one you prefer from in
+:guilabel:`Preferences` .
 
 A number of syntax highlighting themes are also available in :guilabel:`Preferences`. These are
 separate settings because there are a lot more options for syntax highlighting.
 
 .. note::
-   If you switch to dark mode on the GUI, you should also switch the icon theme and syntax
-   highlighting theme, otherwise icons may be hard to see.
+   If you switch to dark mode on the GUI, you should also switch syntax highlighting theme to
+   match, otherwise icons may be hard to see in the editor and viewer.
 
 
 .. _a_breakdown_project:
@@ -124,8 +142,8 @@ the header levels have no structural meaning, and the user is free to do whateve
 
 .. note::
    You can add documents as child items of other documents if you wish. This is often more useful
-   than adding folders, since you may want to have the chapter heading in a separate document from
-   your individual scene documents.
+   than adding folders, since you anyway may want to have the chapter heading in a separate
+   document from your individual scene documents.
 
 
 .. _a_breakdown_export:
@@ -134,10 +152,10 @@ Building the Manuscript
 =======================
 
 The project can at any time be assembled into a range of different formats through the
-:guilabel:`Build Novel Project` tool. Natively, novelWriter supports Open Document, HTML5, and
+:guilabel:`Build Novel Project` tool. Natively, novelWriter supports `Open Document`_, HTML5, and
 various flavours of Markdown.
 
-The HTML5 format is suitable for conversion by a number of other tools like Pandoc, or for
+The HTML5 format is suitable for conversion by a number of other tools like Pandoc_, or for
 importing into word processors if the Open Document format isn't suitable. In addition, printing
 and printing to PDF is also possible. 
 

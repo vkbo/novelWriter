@@ -15,11 +15,13 @@ language that doesn't require a compiler to build and run. That means that the c
 computer right out of the box, or from a zip file.
 
 While it is developed for Linux primarily, it runs just fine on Windows as well. It also works fine
-on macOS, but the author is not a mac user, so less attention is paid to that platform.
+on macOS, but the author is not a mac user, so support for mac is dependant on user feedback and
+contributions.
 
 In order to run novelWriter, you also need a few additional packages. The user interface is built
 with `Qt 5 <https://www.qt.io/>`_, a cross platform library for building graphical user interface
-applications.
+applications. It also uses a third party XML package. If you want spell checking, you also need the
+spell check package Enchant developed for AbiWord
 
 For install instructions, see :ref:`a_started`.
 
@@ -43,12 +45,12 @@ read on.
 :ref:`a_fmt` – Essential Information
    This section covers how you should format your text. The editor is plain text, so text
    formatting requires some basic markup. The structure of your novel is also inferred by how you
-   use the title headings. Tags and references are implemented by simple codes.
+   use headings. Tags and references are implemented by simple codes.
 
 :ref:`a_kb` – Optional / Lookup
    This section lists all the keyboard shortcuts in novelWriter and what they do. Most of the
-   shortcuts are also listed next to the menu items inside the app, so this section is mostly for
-   reference.
+   shortcuts are also listed next to the menu items inside the app, or in tool tips, so this
+   section is mostly for reference.
 
 :ref:`a_typ` – Optional
    This section gives you an overview of the special typographical symbols available in
@@ -72,8 +74,8 @@ to take advantage of these features, you must structure your text in a specific 
 meta data for it to extract.
 
 :ref:`a_proj` – Essential Information
-   This section explains how you organise the content of your project, how to customise the text,
-   and how to set up automated backups of your work.
+   This section explains how you organise the content of your project, and how to set up automated
+   backups of your work.
 
 :ref:`a_struct` – Essential Information
    This section covers the way your novel's structure is encoded into the text documents. It
