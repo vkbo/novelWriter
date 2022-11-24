@@ -4,10 +4,19 @@
 Key Features
 ************
 
-novelWriter is a multi-document plain text editor using a markup syntax inspired by Markdown to
-apply simple formatting to the text. It is designed for writing novels, so the formatting features
-are limited to those relevant for this purpose. Your novel project is organised as a collection of
-separate plain text documents instead of a single, large document.
+.. _Snowflake : https://www.advancedfictionwriting.com/articles/snowflake-method/
+
+At the core, novelWriter is a multi-document plain text editor. It uses a markup syntax inspired by
+Markdown to apply simple formatting to the text. It is designed for writing fiction, so the
+formatting features are limited to those relevant for this purpose. It is not suitable for
+technical writing.
+
+Your novel project is organised as a collection of separate plain text documents instead of a
+single, large document. The idea here is to make it easier to reorganise your project structure
+without having to cut and paste text.
+
+You can at any point split documents by their header, or merge multiple documents into single
+documents. This makes it easier to use variations of the popular Snowflake_ method for writing.
 
 Below are some key features of novelWriter.
 
@@ -33,24 +42,25 @@ Below are some key features of novelWriter.
 
 **Keep track of your plot elements**
    All notes in your project can be assigned a *tag* you can *reference* from any other document or
-   notes. In fact, you can add a new tag under each heading of a note if you need to be able to
+   note. In fact, you can add a new tag under each heading of a note if you need to be able to
    reference a specific section. Note tags are organised into categories with specific reference
    keywords.
 
 **Get an overview of your plot elements**
    In the :guilabel:`Outline View` on the main window you can see an outline of all the chapters,
    scenes, and sections of your project. If they have any references in them, these are listed in
-   columns. You can also add a synopsis to each document, which can be listed here. You have the
-   option to add or remove columns of information from the outline. A subset of the outline
-   information is also available in the :guilabel:`Novel View` as a replacement for the main
-   project tree.
+   additional columns. You can also add a synopsis to each document, which can be listed here as
+   well. You have the option to add or remove columns of information from this outline. A subset of
+   the outline information is also available in the :guilabel:`Novel View` as a replacement for the
+   main project tree.
 
 **Building your manuscript**
    Whether you want to compile a manuscript, or export all your notes, or generate an outline of
    your chapters and scenes with a synopsis, you can use the :guilabel:`Build Novel Project` tool.
    The tool lets you select what information you want to include in the generated document, and how
    it is formatted. You can send the result to a printer, a PDF, or to an Open Document file that
-   can be opened by most office type word processors.
+   can be opened by most office type word processors. You can also generate the result as HTML, or
+   Markdown, both suitable for further conversion to other formats.
 
 
 .. _a_intro_screenshots:
@@ -58,7 +68,7 @@ Below are some key features of novelWriter.
 Screenshots
 ===========
 
-**novelWriter with default system theme:**
+**novelWriter with default theme:**
 
 .. image:: images/screenshot_default.png
    :width: 800

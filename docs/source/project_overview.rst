@@ -6,9 +6,10 @@ Novel Projects
 
 New projects can be created from the :guilabel:`Project` menu by selecting :guilabel:`New Project`.
 This will open the :guilabel:`New Project Wizard` that will assist you in creating a barebone
-project suited to your needs. A novelWriter project requires a dedicated folder for storing its
-files on the local file system. See :ref:`a_storage` for further details on how files are
-organised.
+project suited to your needs.
+
+A novelWriter project requires a dedicated folder for storing its files on the local file system.
+See :ref:`a_storage` for further details on how files are organised.
 
 A list of recently opened projects is maintained, and displayed in the :guilabel:`Open Project`
 dialog. A project can be removed from this list by selecting it and pressing the :kbd:`Del` key or
@@ -33,23 +34,28 @@ other root folders. These other root folder types are intended for your notes on
 elements of your story. Using them is of course entirely optional.
 
 A new project may not have all of the root folders present, but you can add the ones you want from
-the project tree.
+the project tree tool bar.
 
-Each root folder has one or more reference keyword associated with it that can be used to reference
-tags in your notes from other documents and notes. The intended usage of each type of root folder
-is listed below. However, aside from the :guilabel:`Novel` folder, no restrictions are applied by
-the application. You can use them however you want.
+Each root folder has one or more reference keyword associated with it that is used to reference
+them from other documents and notes. The intended usage of each type of root folder is listed
+below. However, aside from the :guilabel:`Novel` folder, no restrictions are applied by the
+application on what you put in them. You can use them however you want.
 
-You can make multiple root folders of each kind.
+.. tip::
+   You can make multiple root folders of each kind if you wish to split up your notes.
+
+.. note::
+   It is not the notes themselves that are referenced by the listed reference keywords, but tags
+   set within the notes. See the examples below and in :ref:`a_struct_tags`.
 
 :guilabel:`Novel`
-   This is the root folder of all text that goes into the final novel. This class of documents have
-   other rules and features than other documents in the project. See :ref:`a_struct` for more
+   This is the root folder of all text that goes into the final novel or novels. This class of
+   documents have other rules and features than the project notes. See :ref:`a_struct` for more
    details.
 
 :guilabel:`Plot`
    This is the root folder where main plots can be outlined. It is optional, but adding at least
-   brief notes can be useful in order to tag plot elements for the Outline view. Tags in this
+   brief notes can be useful in order to tag plot elements for the Outline View. Tags in this
    folder can be references using the ``@plot`` keyword.
 
 :guilabel:`Characters`
@@ -84,7 +90,7 @@ You can make multiple root folders of each kind.
 The root folders correspond to the categories of tags that can be used to reference them. For more
 information about the tags listed, see :ref:`a_struct_tags`.
 
-.. tip::
+.. note::
    You can rename root folders to whatever you want. However, this doesn't change the reference
    keyword.
 
@@ -183,7 +189,7 @@ this warning, and continue opening the project at your own risk.
    the project are in fact open, you are likely to cause inconsistencies and create diverging
    project files, potentially resulting in loss of data and orphaned files. You are not likely to
    lose any actual text unless both instances have the same document open in the editor, and
-   novelWriter will try to resolve inconsistencies the next time you open the project.
+   novelWriter will try to resolve project inconsistencies the next time you open the project.
 
 
 .. _a_proj_roots_dirs:
@@ -211,15 +217,15 @@ documents.
 Project Documents
 =================
 
-New documents can be created from tool bar in the Project Tree, or by pressing :kbd:`Ctrl`:kbd:`N`.
-This will open the create new item menu and let you choose between a number of pre-defined
-documents and folders. You will be prompted for a label for the new item. You can always rename an
-item by selecting :guilabel:`Rename Item` from the :guilabel:`Project` menu, or by pressing
-:kbd:`F2`.
+New documents can be created from the tool bar in the Project Tree, or by pressing
+:kbd:`Ctrl`:kbd:`N`. This will open the create new item menu and let you choose between a number of
+pre-defined documents and folders. You will be prompted for a label for the new item. You can
+always rename an item by selecting :guilabel:`Rename Item` from the :guilabel:`Project` menu, or by
+pressing :kbd:`F2`.
 
 Other settings for project items are available from the context menu that you can activate by
-right-clicking on them inb the Project Tree. The :guilabel:`Transform` submenu includes options for
-converting, splitting, or merging items.
+right-clicking on an item in the Project Tree. The :guilabel:`Transform` submenu includes options
+for converting, splitting, or merging items.
 
 
 .. _a_proj_files_counts:
@@ -228,7 +234,7 @@ Word Counts
 -----------
 
 A character, word and paragraph count is maintained for each document, as well as for each section
-of a document following a header. The word count, and change of words in the current session, is
+of a document following a header. The word count and change of words in the current session is
 displayed in the footer of any document open in the editor, and all stats are shown in the details
 panel below the project tree for any document selected in the project or novel tree.
 
@@ -257,9 +263,9 @@ The :guilabel:`Settings` tab holds the project name, title, and author settings.
 
 The :guilabel:`Project Name` can be set to a different value than the :guilabel:`Novel Title`. The
 difference between them is simply that the :guilabel:`Project Name` is used for the GUI (main
-window title) and for generating the backup files. The intention is that the :guilabel:`Project
-Name` should remain unchanged throughout the project, otherwise the name of exported files and
-backup files may change too.
+window title) and for generating the backup files. The intention is that the
+:guilabel:`Project Name` should remain unchanged throughout the project's lifetime, otherwise the
+name of exported files and backup files may change too.
 
 The :guilabel:`Novel Title` and :guilabel:`Authors` settings are used when building the manuscript,
 for some formats.
@@ -272,8 +278,8 @@ setting.
 Status and Importance Tabs
 --------------------------
 
-Each document or folder of type :guilabel:`Novel` can be given a _Status_ label accompanied by a
-coloured icon, and each document or folder of the remaining types can be given an _Importance_
+Each document or folder of type :guilabel:`Novel` can be given a *Status*_* label accompanied by a
+coloured icon, and each document or folder of the remaining types can be given an *Importance*
 label.
 
 These are purely there for the user's convenience, and you are not required to use them for any
@@ -297,7 +303,7 @@ will be replaced by the text in the right column when documents are opened in th
 also be applied to manuscript builds.
 
 The auto-replace feature will replace text in angle brackets that are in this list. The syntax
-highlighter will add an alternate colour to text marching the syntax, but it doesn't check if the
+highlighter will add an alternate colour to text matching the syntax, but it doesn't check if the
 text is in this list.
 
 .. note::
@@ -336,13 +342,14 @@ Writing Statistics
 ==================
 
 When you work on a project, a log file records when you opened it, when you closed it, and the
-total word counts of your novel documents and notes at the end of the session provided that the
+total word counts of your novel documents and notes at the end of the session, provided that the
 session lasted either more than 5 minutes, or that the total word count changed. You can view this
 file in the ``meta`` folder in the directory where you saved your project. The file is named
 ``sessionStats.log``.
 
 A tool to view the content of this file is available in the :guilabel:`Tools` menu under
-:guilabel:`Writing Statistics`. You can also launch it by pressing :kbd:`F6`.
+:guilabel:`Writing Statistics`. You can also launch it by pressing :kbd:`F6`, or find it on the
+Sidebar.
 
 The tool will show a list of all your sessions, and a set of filters to apply to the data. You can
 also export the filtered data to a JSON file or to a CSV file that can be opened by a spreadsheet

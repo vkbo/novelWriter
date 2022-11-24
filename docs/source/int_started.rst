@@ -53,7 +53,7 @@ Install on Linux
 ================
 
 A Debian package can be downloaded from the `main website`_, or from the Releases_ page on GitHub.
-This package should work on both Debian, Ubuntu and Linux Mint.
+This package should work on both Debian, Ubuntu and Linux Mint, at least.
 
 If you prefer, you can also add the novelWriter repository on Launchpad to your package manager.
 
@@ -98,12 +98,12 @@ Then run the update and install commands as for Ubuntu:
    different compression algorithm that Debian doesn't currently support.
 
 
-Other Distros
--------------
+AppImage Releases
+-----------------
 
 For other Linux distros than the ones mentioned above, the primary option is AppImage_. These are
 completely standalone images for the app that include the necessary environment to run novelWriter.
-They can be run on any Linux distro.
+They can of course be run on any Linux distro, if you prefer this to native packages.
 
 
 .. _a_started_minimal:
@@ -120,8 +120,8 @@ These zip files don't include any dependencies, so you must install them separat
 
 .. _a_started_minimal_windows:
 
-Windows
--------
+Minimal Package on Windows
+--------------------------
 
 First, make sure you have Python installed on your system. If you don't, you can download it from
 `python.org`_. Python 3.7 or higher is required, but it is recommended that you install the latest
@@ -149,8 +149,8 @@ you can just delete the novelWriter folder.
 
 .. _a_started_minimal_linux:
 
-Linux
------
+Minimal Package on Linux
+------------------------
 
 On Linux you need to install the following packages on Debian-based distros, including Ubuntu and
 Linux Mint:
@@ -167,7 +167,7 @@ On Fedora, you need the following packages:
 
 A standard desktop launcher can be installed via the main setup script. It will create the needed
 desktop file and add it to the Applications menu. The necessary icons will also be installed, and a
-file association with ``.nwx`` files added.
+file association with ``.nwx`` project files added.
 
 To set this up, run the following from inside the extracted novelWriter folder:
 
@@ -186,8 +186,8 @@ To uninstall the icons, run:
 
 .. _a_started_minimal_mac:
 
-macOS
------
+Minimal Package on macOS
+------------------------
 
 These instructions assume you're using brew, and have Python and pip set up. If not, see the
 `brew docs`_ for help. The main requirements for novelWriter are installed via the requirements

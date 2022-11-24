@@ -15,8 +15,7 @@ to build the various components like the translation files and documentation.
 .. note::
    The text below assumes the command ``python`` corresponds to a Python 3 executable. Python 2 is
    now deprecated, but many systems still have both Python 2 and 3. For such systems, the command
-   ``python3`` may be needed instead. On Linux, the scripts can also be made executable and run
-   without the ``python`` command. Likewise, ``pip`` may need to be replaced with ``pip3``.
+   ``python3`` may be needed instead. Likewise, ``pip`` may need to be replaced with ``pip3``.
 
 
 .. _a_source_depend:
@@ -34,10 +33,10 @@ The following Python packages are needed to run novelWriter:
 * ``lxml`` – needed for full XML support.
 * ``PyEnchant`` – needed for spell checking (optional).
 
-PyQt/Qt should be at least 5.10, but ideally 5.13 or higher for nearly all features to work. For
-instance, searching using regular expressions with full Unicode support requires 5.13. There is no
-known minimum version requirement for package ``lxml``, but the code was originally written with
-4.2, which is therefore set as the minimum. It may work on lower versions. You have to test it.
+PyQt/Qt should be at least 5.10, but ideally 5.13 or higher for all features to work. For instance,
+searching using regular expressions with full Unicode support requires 5.13. There is no known
+minimum version requirement for package ``lxml``, but the code was originally written with 4.2,
+which is therefore set as the minimum. It may work on lower versions. You have to test it.
 
 If you want spell checking, you must install the ``PyEnchant`` package. The spell check library
 must be at least 3.0 to work with Windows. On Linux, 2.0 also works fine.
@@ -102,12 +101,12 @@ You can build the ``.qm`` files with:
    python setup.py qtlrelease
 
 This requires that the Qt Linguist tool is installed on your system. On Ubuntu and Debian, the
-needed package is called `qttools5-dev-tools`.
+needed package is called ``qttools5-dev-tools``.
 
 .. note::
    If you want to improve novelWriter with translation files for another language, or update an
-   existing translation, instructions for how to contribute can be found in the README.md file in
-   the ``i18n`` folder of the source code.
+   existing translation, instructions for how to contribute can be found in the ``README.md`` file
+   in the ``i18n`` folder of the source code.
 
 
 .. _a_source_sample:

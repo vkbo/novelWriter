@@ -18,7 +18,7 @@ The dependencies for running the tests can be installed with:
    pip install -r requirements-dev.txt
 
 This will install a couple of extra packages for coverage and test management. The minimum
-requirement is just ``pytest`` and ``pytest-qt``.
+requirement is ``pytest`` and ``pytest-qt``.
 
 
 Simple Test Run
