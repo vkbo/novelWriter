@@ -8,13 +8,18 @@ You can at any time build a manuscript, an outline of your notes, or any other t
 from the text in your project. All of this is handled by the :guilabel:`Build Novel Project` tool.
 You can activate it from the sidebar, the :guilabel:`Tools` menu, or by pressing :kbd:`F5`.
 
+.. note::
+   This tool is scheduled to receive a full update in novelWriter 2.1, adding many new features
+   requested by users. See the `2.1 Milestone <https://github.com/vkbo/novelWriter/milestone/43>`_
+   for an overview.
+
 
 .. _a_export_headers:
 
 Header Formatting
 =================
 
-The titles for the five types of titles (the chapter headings come in a numbered and unnumbered
+The titles for the five types of headings (the chapter headings come in a numbered and unnumbered
 version) of story structure can be formatted collectively in the build tool. This is done through
 a series of keyword–replace steps. They are all on the format ``%keyword%``.
 

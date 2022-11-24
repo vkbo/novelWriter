@@ -13,14 +13,14 @@ Project Structure
 All novelWriter files are written with utf-8 encoding. Since Python automatically converts Unix
 line endings to Windows line endings on Windows systems, novelWriter does not make any adaptations
 to the formatting on Windows systems. This is handled entirely by the Python standard library.
-Python also handles this fairly well when working on the same files on both Windows and Unix-based
-operating systems.
+Python also handles this when working on the same files on both Windows and Unix-based operating
+systems.
 
 
 Main Project File
 -----------------
 
-The project itself requires a dedicated folder for storing its files where novelWriter will create
+The project itself requires a dedicated folder for storing its files, where novelWriter will create
 its own "file system" where the folder and file hierarchy is described in a project XML file. This
 is the main project file in the project's root folder with the name ``nwProject.nwx``. This file
 also contains all the meta data required for the project, and a number of related project settings.
@@ -33,7 +33,7 @@ your own backup solution.
    The novelWriter project folder is structured so that it can easily be added to a version control
    system like git. If you do so, you may want to add a `.gitignore` file to exclude files with the
    extensions `.json` as JSON files are used to cache the index and various run-time settings and
-   are generally large files that change often. You'd also want to exclude the ``cache`` folder.
+   are generally large files that change often.
 
 The project XML file is indent-formatted, and is suitable for diff tools and version control since
 most of the file will stay static, although a timesetamp is set in the meta section on line 2, and
@@ -44,9 +44,8 @@ Project Documents
 =================
 
 All the project documents are saved in a folder in the main project folder named ``content``. Each
-document has a file handle taken from the first 13 characters of a SHA256 hash of the system time
-when the document was first created, plus an incremented number. The documents are saved with a
-filename assembled from this hash and the file extension ``.nwd``.
+document has a file handle based on a 52 bit random number, represented as a hexadecimal string.
+The documents are saved with a filename assembled from this handle and the file extension ``.nwd``.
 
 If you wish to find the file system location of a document in the project, you can either look it
 up in the project XML file, select :guilabel:`Show File Details` from the :guilabel:`Document` menu
@@ -56,7 +55,8 @@ where they are saved.
 
 The reason for this cryptic file naming is to avoid issues with file naming conventions and
 restrictions on different operating systems, and also to have a file name that does not depend on
-what the user names the document within the project, or changes it to.
+what the user names the document within the project, or changes it to. This is particularly useful
+when using a versioning system.
 
 Each document file contains a plain text version of the text from the editor. The file can in
 principle be edited in any text editor, and is suitable for diffing and version control if so
@@ -98,8 +98,8 @@ folder contains semi-important files. That is, they can be lost with only minor 
 project.
 
 If you use version control software on your project, you can exclude this folder, although you may
-want to track the session log file. The JSON files within this folder can safely be ignored as they
-will be automatically regenerated if lost.
+want to track the session log file and the custom words list. The JSON files within this folder can
+safely be ignored as they will be automatically regenerated if lost.
 
 
 The Project Index
@@ -131,6 +131,14 @@ The file is not critical, but if it is lost, all such GUI options will revert ba
 settings.
 
 
+Custom Word List
+----------------
+
+A file named ``meta/wordlist.txt`` contains all the custom words you've added to the project for
+spell checking purposes. The content of the file can be edited from the :guilabel:`Tools` menu. If
+you lose this file, all your custom spell check words will be lost too.
+
+
 Session Stats
 -------------
 
@@ -147,4 +155,5 @@ The project ``cache`` folder contains non-critical files. If these files are los
 impact on the functionality of novelWriter or the history of the project. It contains temporary
 files, like the preview document in the :guilabel:`Build Novel Project` tool.
 
-It should be excluded from version control tools if such are used.
+It should be excluded from version control tools if such are used. The folder will be removed
+entirely in novelWriter 2.1.

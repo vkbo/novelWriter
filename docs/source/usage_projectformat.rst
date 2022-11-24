@@ -43,9 +43,10 @@ Format 1.5 Changes
 This project format was introduced in novelWriter version 2.0 RC 2.
 
 This is a modification of the 1.4 format. It makes the XML more consistent in that meta data have
-been moved to the section nodes, and key/value settings now have a consistent format. Logical flags
-are saved as yes/no instead of Python True/False, and the main heading of the document is now saved
-to the item rather than in the index.
+been moved to their respective section nodes as attributes, and key/value settings now have a
+consistent format. Logical flags are saved as yes/no instead of Python True/False, and the main
+heading of the document is now saved to the item rather than in the index. The conversion is done
+automatically the first time a project is loaded. No user action is required.
 
 
 .. _a_prjfmt_1_4:

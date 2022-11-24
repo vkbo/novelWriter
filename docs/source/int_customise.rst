@@ -4,6 +4,9 @@
 Customisations
 **************
 
+.. _Enchant: https://abiword.github.io/enchant
+.. _Free Desktop: https://cgit.freedesktop.org/libreoffice/dictionaries/tree/
+
 There are a few ways you can customise novelWriter youself. Currently, you can add new GUI themes,
 your own syntax themes, and install additional dictionaries.
 
@@ -13,19 +16,20 @@ your own syntax themes, and install additional dictionaries.
 Spell Check Dictionaries
 ========================
 
-novelWriter uses `Enchant <https://abiword.github.io/enchant/>`_ as the spell checking tool.
-Depending on you operating system, it may or may not load installed spell check dictionaries.
+novelWriter uses Enchant_ as the spell checking tool. Depending on you operating system, it may or
+may not load installed spell check dictionaries.
 
 Linux
    On Linux, you generally only have to install hunspell or aspell dictionaries on your system like
-   you do for other applications. See your distro's documentation for how to do this.
+   you do for other applications. See your distro's documentation for how to do this. These
+   dictionaries should then show up as available spell check languages in novelWriter.
 
 Windows
    For Windows, English is included with the installation. For other languages you have to download
-   and add dictionaries yourself. You can find the various dictionaries on the
-   `Free Desktop <https://cgit.freedesktop.org/libreoffice/dictionaries/tree/>`_ website. You should
-   find a folder for your language, if it is available at all, and download the files ending with
-   ``.aff`` and ``.dic``. These files must then be copied to the following location:
+   and add dictionaries yourself. You can find the various dictionaries on the `Free Desktop`_
+   website. You should find a folder for your language, if it is available at all, and download the
+   files ending with ``.aff`` and ``.dic``. These files must then be copied to the following
+   location:
 
    ``C:\Users\<USER>\AppData\Local\enchant\hunspell``
 
@@ -50,11 +54,12 @@ modify it as you like.
   `novelwriter/assets/themes <https://github.com/vkbo/novelWriter/tree/main/novelwriter/assets/themes>`_.
 
 Remember to also change the name of your theme by modifying the ``name`` setting at the top of the
-file.
+file, otherwise you may not be able to distinguish them in :guilabel:`Preferences`.
 
 For novelWriter to be able to locate the custom theme files, you must copy them to the
 :ref:`a_locations_data` location in your home or user area. There should be a folder there named
-``syntax`` for syntax themes and just ``themes`` for GUI themes.
+``syntax`` for syntax themes and just ``themes`` for GUI themes. These folders are created the
+first time you start novelWriter.
 
 Once the files are copied there, they should show up in :guilabel:`Preferences` with the label you
 set as ``name`` inside the file.

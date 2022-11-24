@@ -51,7 +51,7 @@ The syntax for the four basic header types, and the two special header types, is
    This header level signifies a sub-scene level partition, usually called a "section" in the
    documentation and the user interface. These can be useful if you want to change tag references
    mid-scene, like if you change the point-of-view character. You are free to use sections as you
-   wish, and can filter them out of the final manuscript just like with scene titles.
+   wish, and you can filter them out of the final manuscript just like with scene titles.
 
 Page breaks are automatically added before level 1 and 2 headers when you build your project to a
 format that supports page breaks, or when you print the document directly from the build tool. If
@@ -80,7 +80,7 @@ for instance the author's name and details.
 
 If you want an additional page of text after the title page, starting on a fresh page, you can add
 ``[NEW PAGE]`` on a line by itself, and continue the text after it. This will insert a page break
-before the text.
+before the text. See also :ref:`a_fmt_break`.
 
 
 .. _a_struct_heads_unnum:
@@ -124,42 +124,42 @@ below. The format of a reference line is ``@keyword: value1, [value2] ... [value
 allow multiple values.
 
 ``@pov``
-   The point-of-view character for the current section. The target must be a note tag in the
+   The point-of-view character for the current section. The target must be a note tag in a
    :guilabel:`Character` type root folder.
 
 ``@focus``
    The character that has the focus for the current section. This can be used in cases where the
-   focus is not a point-of-view character. The target must be a note tag in the
-   :guilabel:`Character` type root folder.
+   focus is not a point-of-view character. The target must be a note tag in a :guilabel:`Character`
+   type root folder.
 
 ``@char``
-   Other characters in the current section. The target must be a note tag in the
-   :guilabel:`Character` type root folder. This should not include the point-of-view character.
+   Other characters in the current section. The target must be a note tag in a
+   :guilabel:`Character` type root folder. This should not include the point-of-view or focus
+   character if those references are used.
 
 ``@plot``
-   The plot or subplot advanced in the current section. The target must be a note tag in the
+   The plot or subplot advanced in the current section. The target must be a note tag in a
    :guilabel:`Plot` type root folder.
 
 ``@time``
-   The timelines touched by the current section. The target must be a note tag in the
+   The timelines touched by the current section. The target must be a note tag in a
    :guilabel:`Timeline` type root folder.
 
 ``@location``
-   The location the current section takes place in. The target must be a note tag in the
+   The location the current section takes place in. The target must be a note tag in a
    :guilabel:`Locations` type root folder.
 
 ``@object``
-   Objects present in the current section. The target must be a note tag in the :guilabel:`Object`
+   Objects present in the current section. The target must be a note tag in a :guilabel:`Object`
    type root folder.
 
 ``@entity``
-   Entities present in the current section. The target must be a note tag in the
+   Entities present in the current section. The target must be a note tag in a
    :guilabel:`Entities` type root folder.
 
 ``@custom``
    Custom references in the current section. The target must be a note tag in a :guilabel:`Custom`
-   type root folder. You can add more than one Custom folder, but they all use the same reference
-   keyword.
+   type root folder. The custom folder are for any other category of notes you may want to use.
 
 The syntax highlighter will alert the user that the tags and references are used correctly, and
 that the tags referenced exist.
@@ -204,5 +204,5 @@ For novel documents, the heading level of the first heading is recorded, and ind
 
 .. tip::
    You can always start writing with a coarse setup with one or a few documents, and then later use
-   the split tool to automatically split the documents into separate chapter and scene documents.
-   You can split a document on any of the four header levels.
+   the split tool to split the documents into separate chapter and scene documents. You can split a
+   document on any of the four header levels.
