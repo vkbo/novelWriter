@@ -226,7 +226,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
 
     # Fail saving
     with monkeypatch.context() as mp:
-        mp.setattr("pathlib.Path.write_bytes", causeOSError)
+        mp.setattr("xml.etree.ElementTree.ElementTree.write", causeOSError)
         assert xmlWriter.write(data, packedContent, timeStamp, 1000) is False
         assert str(xmlWriter.error) == "Mock OSError"
 
