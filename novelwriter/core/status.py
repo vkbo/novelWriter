@@ -5,7 +5,7 @@ Data class for the status/importance settings of a project item
 
 File History:
 Created:   2019-05-19 [0.1.3]
-Rewritten: 2022-04-05 [1.7a0]
+Rewritten: 2022-04-05 [2.0b1]
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen

@@ -8,7 +8,7 @@ Created: 2022-05-15 [2.0rc1] GuiOutlineView
 Created: 2022-05-22 [2.0rc1] GuiOutlineToolBar
 Created: 2019-11-16 [0.4.1]  GuiOutlineTree
 Created: 2019-11-16 [0.4.1]  GuiOutlineHeaderMenu
-Created: 2020-06-02 [0.7.0]  GuiOutlineDetails
+Created: 2020-06-02 [0.7]    GuiOutlineDetails
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen

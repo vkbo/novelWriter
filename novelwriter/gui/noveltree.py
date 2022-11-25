@@ -4,7 +4,7 @@ novelWriter – GUI Novel Tree
 GUI classe for the main window novel tree
 
 File History:
-Created: 2020-12-20 [1.1a0]  GuiNovelTree
+Created: 2020-12-20 [1.1rc1] GuiNovelTree
 Created: 2022-06-12 [2.0rc1] GuiNovelView
 Created: 2022-06-12 [2.0rc1] GuiNovelToolBar
 

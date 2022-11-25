@@ -4,7 +4,7 @@ novelWriter – Lorem Ipsum Tool
 Simple tool for inserting placeholder text in a document
 
 File History:
-Created: 2022-04-02 [2.0b1]
+Created: 2022-04-02 [2.0rc1]
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
