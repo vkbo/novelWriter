@@ -4,9 +4,9 @@ novelWriter – GUI Novel Tree
 GUI classe for the main window novel tree
 
 File History:
-Created: 2020-12-20 [1.1a0] GuiNovelTree
-Created: 2022-06-12 [1.7b1] GuiNovelView
-Created: 2022-06-12 [1.7b1] GuiNovelToolBar
+Created: 2020-12-20 [1.1a0]  GuiNovelTree
+Created: 2022-06-12 [2.0rc1] GuiNovelView
+Created: 2022-06-12 [2.0rc1] GuiNovelToolBar
 
 This file is a part of novelWriter
 Copyright 2018–2020, Veronica Berglyd Olsen

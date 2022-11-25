@@ -4,8 +4,8 @@ novelWriter – GUI Components Module
 A module of various small GUI components
 
 File History:
-Created: 2020-05-17 [0.5.1]  StatusLED
-Created: 2022-11-17 [2.0rc2] NovelSelector
+Created: 2020-05-17 [0.5.1] StatusLED
+Created: 2022-11-17 [2.0]   NovelSelector
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen

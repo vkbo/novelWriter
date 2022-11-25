@@ -4,9 +4,9 @@ novelWriter – GUI Project Tree
 GUI classes for the main window project tree
 
 File History:
-Created: 2018-09-29 [0.0.1] GuiProjectTree
-Created: 2022-06-06 [1.7b1] GuiProjectView
-Created: 2022-06-06 [1.7b1] GuiProjectToolBar
+Created: 2018-09-29 [0.0.1]  GuiProjectTree
+Created: 2022-06-06 [2.0rc1] GuiProjectView
+Created: 2022-06-06 [2.0rc1] GuiProjectToolBar
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
