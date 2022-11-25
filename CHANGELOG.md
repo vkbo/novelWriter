@@ -228,7 +228,7 @@ Interface. PR #1146.
 
 ----
 
-## Version 1.7 Beta 1 [2022-05-17]
+## Version 2.0 Beta 1 [2022-05-17]
 
 **Note:** The 1.7 release cycle was renamed 2.0 on 2022-10-06. See #1144.
 
@@ -1886,51 +1886,6 @@ _These Release Notes also include the changes from 1.1 RC 1._
 
 ----
 
-## Version 1.0.4 [2021-02-03]
-
-### Release Notes
-
-This patch release fixes a couple of minor issues with the Preferences dialog and the behaviour of
-one of the keyboard shortcuts.
-
-Aside from these fixes, the main point of this patch is to add new setup features for novelWriter
-on Windows. A Windows installer will no longer be provided for the foreseeable future, and instead
-functionality has been added to the main setup script to create desktop and start menu icons.
-
-### Detailed Changelog
-
-**Bug Fixes**
-
-* Fixed an issue with the Preferences dialog where the setting for justified text was mixed with
-  the setting for fixed text width. This meant that the justified text setting could potentially
-  get overwritten when the Preferences were changed and saved. Issue #623, PR #625.
-* Fixed an issue with the Open Project dialog where the list of recent projects would contain
-  duplicate entries if the dialog was opened multiple times. PR #627.
-
-**User Interface**
-
-* The `Ctrl+Del` keyboard shortcut is now only active when the project tree has focus. Since this
-  is also a common shortcut in many applications for deleting the next word ahead of the cursor,
-  the activation of the delete file function when the editor has focus is unexpected to some users.
-  Issue #629, PR #631.
-
-**Installation**
-
-* A new command has been added to the `setup.py` script. The new command, `win-install`, will
-  create a desktop and start menu icon for novelWriter when run in the source folder. A windows
-  batch file, `setup_windows.bat`, has also been added. Running this file from the source folder,
-  either by command line or by double-click, will install dependencies from PyPi and set up the
-  icons and file association with novelWriter project files. This should make it easier to run
-  novelWriter from the source folder on Windows. PRs #634, #641 and #642.
-
-**Documentation**
-
-* The documentation on how to setup and install novelWriter has been extended and reorganised into
-  one file per operating system. Some of the other documentation files have also been moved to a
-  different section. PR #634.
-
-----
-
 ## Version 1.1 RC 1 [2021-01-31]
 
 ### Release Notes
@@ -1979,8 +1934,8 @@ be left "hanging", that is, no closing quote in the same paragraph.
   options on each tab. PRs #577 and #624.
 * Minor changes to margins and alignments of widgets on the main GUI. PR #565.
 * Added a keyboard shortcut to change focus to the Outline tab. The focus change now also ensures
-  that the main GUI also switches to the tab where the focus is shifted. Issues #609 and #612, PR
-  #615.
+  that the main GUI also switches to the tab where the focus is shifted. Issues #609 and #612,
+  PR #615.
 * The cursor should now also be visible when opening a blank document and the editor has focus.
   Issue #608, PR #621.
 
@@ -1999,6 +1954,51 @@ be left "hanging", that is, no closing quote in the same paragraph.
 
 * Reformatting of source file headers and adding license headers to all test source files. Test
   source files are now also organised into subfolders. PR #563.
+
+----
+
+## Version 1.0.4 [2021-02-03]
+
+### Release Notes
+
+This patch release fixes a couple of minor issues with the Preferences dialog and the behaviour of
+one of the keyboard shortcuts.
+
+Aside from these fixes, the main point of this patch is to add new setup features for novelWriter
+on Windows. A Windows installer will no longer be provided for the foreseeable future, and instead
+functionality has been added to the main setup script to create desktop and start menu icons.
+
+### Detailed Changelog
+
+**Bug Fixes**
+
+* Fixed an issue with the Preferences dialog where the setting for justified text was mixed with
+  the setting for fixed text width. This meant that the justified text setting could potentially
+  get overwritten when the Preferences were changed and saved. Issue #623, PR #625.
+* Fixed an issue with the Open Project dialog where the list of recent projects would contain
+  duplicate entries if the dialog was opened multiple times. PR #627.
+
+**User Interface**
+
+* The `Ctrl+Del` keyboard shortcut is now only active when the project tree has focus. Since this
+  is also a common shortcut in many applications for deleting the next word ahead of the cursor,
+  the activation of the delete file function when the editor has focus is unexpected to some users.
+  Issue #629, PR #631.
+
+**Installation**
+
+* A new command has been added to the `setup.py` script. The new command, `win-install`, will
+  create a desktop and start menu icon for novelWriter when run in the source folder. A windows
+  batch file, `setup_windows.bat`, has also been added. Running this file from the source folder,
+  either by command line or by double-click, will install dependencies from PyPi and set up the
+  icons and file association with novelWriter project files. This should make it easier to run
+  novelWriter from the source folder on Windows. PRs #634, #641 and #642.
+
+**Documentation**
+
+* The documentation on how to setup and install novelWriter has been extended and reorganised into
+  one file per operating system. Some of the other documentation files have also been moved to a
+  different section. PR #634.
 
 ----
 
@@ -2218,7 +2218,7 @@ requests in the issue tracker, or if not fully formed, can be discussed on the
 
 ----
 
-## Version 1.0 Release Candidate 2 [2020-12-13]
+## Version 1.0 RC 2 [2020-12-13]
 
 ### Release Notes
 
@@ -2253,8 +2253,8 @@ issues are discovered, the next release will be the final version 1.0 release.
 
 * The headers and footers of the document editor and viewer would be clipped on high DPI monitors.
   This was due to the QWidget holding these did not automatically scale in the layout. The proper
-  height of these are now calculated and enforced instead of relying on automated scaling. Issue
-  #499, PR #502.
+  height of these are now calculated and enforced instead of relying on automated scaling.
+  Issue #499, PR #502.
 * Fixed a few inconsistencies in scaling of toggle switches, the form layouts, and the margins of
   the Item Editor when viewing on a high DPI screen. PR #502.
 * Switching syntax theme live would not update all colours in the editor and viewer. This has now
@@ -2280,8 +2280,8 @@ issues are discovered, the next release will be the final version 1.0 release.
 
 * The Windows installer now properly sets up the mime type for novelWriter, meaning novelWriter
   project files can be opened from the Explorer directly into novelWriter. PR #511.
-* It is now possible to create new files in the Outtakes root folder from the context menu. Issue
-  #517, PR #519.
+* It is now possible to create new files in the Outtakes root folder from the context menu.
+  Issue #517, PR #519.
 
 **Test Suite**
 
@@ -2297,7 +2297,7 @@ issues are discovered, the next release will be the final version 1.0 release.
 
 ----
 
-## Version 1.0 Release Candidate 1 [2020-11-16]
+## Version 1.0 RC 1 [2020-11-16]
 
 ### Release Notes
 
@@ -2608,8 +2608,8 @@ Switching main GUI theme still requires a restart.
 
 * It is now possible to set a different spell check language for a project than the one set in the
   main Preferences. It is only possible to select a different language, not a different spell check
-  tool. The setting is managed in the first tab of the Project Settings dialog. Issue #368, PR
-  #437.
+  tool. The setting is managed in the first tab of the Project Settings dialog. Issue #368,
+  PR #437.
 * The document editor now has the Cut/Copy/Paste options in the main context menu. In addition,
   Select All, Select Word, and Select Paragraph have been added to the menu. The latter two will
   select the word or paragraph under the mouse pointer, not the cursor as the main menu entries do.
@@ -2649,8 +2649,8 @@ Switching main GUI theme still requires a restart.
 
 * Not technically a bug, but the clearing of the document editor footer bar, both during start-up
   and when a document was closed, would print two ERROR messages to the terminal window. These were
-  benign, but are now prevented from occurring by a slight change in the logic. Issue #418, PR
-  #420.
+  benign, but are now prevented from occurring by a slight change in the logic. Issue #418,
+  PR #420.
 * Fixed spell check highlighting for words separated by a forward slash, which was treated as a
   single word. Issue #427, PR #428.
 
@@ -2783,8 +2783,8 @@ Switching main GUI theme still requires a restart.
 * The Travis CI build system has been altered to first check that the tests pass for Python 3.8,
   for then to move to the other supported Python versions. These are currently 3.6 and 3.7. Python
   3.9 will be added when it is released in October. PR #388.
-* Some clean-up of the source code, mostly in terms of unused imports and missing docstrings. PR
-  #391.
+* Some clean-up of the source code, mostly in terms of unused imports and missing docstrings.
+  PR #391.
 
 ----
 
@@ -2882,8 +2882,8 @@ planned by GitHub. See their [notes](https://github.com/github/renaming) for mor
 **Other Changes**
 
 * The install scripts now try to create folders before copying icons. PR #364.
-* The manifest file now lists the root assets folder, so that it is included in the PyPi build. PR
-  #364.
+* The manifest file now lists the root assets folder, so that it is included in the PyPi build.
+  PR #364.
 * The .desktop template file has the correct categories set according to the FreeDesktop standard.
   PR #364.
 
@@ -2914,8 +2914,8 @@ longer be read by an earlier version due to the change of how autoReplace settin
 * The document editor footer can optionally be hidden in Distraction Free mode. PR #351.
 * The Italic and Bold menu entries have been renamed to Emphasis and Strong Emphasis, which is more
   in line with what they represent in Markdown and HTML. They are still renderred as Italic and
-  Bold in the document viewer, but the HTML export is using the `<em>` and `<strong>` tags. PR
-  #350.
+  Bold in the document viewer, but the HTML export is using the `<em>` and `<strong>` tags.
+  PR #350.
 * Due to several issues with the formatting of emphasised text using `*`, `**`, and `***` wrappers,
   especially when using nested emphasis, the syntax for emphasis (italic) and strong (bold) has
   been reverted to use `_` and `**` wrapping, respectively. This removes the ambiguity, and
@@ -2924,13 +2924,13 @@ longer be read by an earlier version due to the change of how autoReplace settin
   syntax highlighting. I decided therefore to stick with RegEx parsing, and keeping those RegExes
   as short and fast as possible while enforcing the basic formatting rules. Separating the notation
   for emphasis and strong is commonly recommended when writing Markdown anyway, so it is a sensible
-  compromise between speed and flexibility. This PR partially reverses PR #310. Issue #353, PR
-  #355.
+  compromise between speed and flexibility. This PR partially reverses PR #310. Issue #353,
+  PR #355.
 * The syntax highlighter now properly highlights overlapping formattings, including emphasised text
   inside of highlighted quotes. PR #355.
 * The colour highlighting of emphasis, strong and strikethrough, can now be switch off in
-  Preferences. The syntax highlighter will still apply the italic, bold and strike effects. PR
-  #357.
+  Preferences. The syntax highlighter will still apply the italic, bold and strike effects.
+  PR #357.
 * The project path in the Details tab of Project Settings can now be selected and copied to
   clipboard. Issue #354, PR #356.
 
@@ -2950,8 +2950,8 @@ longer be read by an earlier version due to the change of how autoReplace settin
 
 * The project tree word counts were getting mixed up when a file was moved to the trash folder, or
   permanently deleted. This has now been fixed, and moving a file should give a zero net change of
-  project word count. Permanently deleting it will result in a negative net change. Issue #333, PR
-  #335.
+  project word count. Permanently deleting it will result in a negative net change. Issue #333,
+  PR #335.
 
 **User Interface**
 
@@ -2999,15 +2999,15 @@ longer be read by an earlier version due to the change of how autoReplace settin
 * The `Ctrl+Z` key sequence (undo) would not go through the wrapper function for document action
   for the document editor, but act directly on the document. This caused some of the logic
   preventing conflict between auto-replace and undo to be bypassed. This has now been resolved by
-  blocking the keypress itself and let the menu action handle the key sequence. Issue #320, PR
-  #321.
+  blocking the keypress itself and let the menu action handle the key sequence. Issue #320,
+  PR #321.
 * The dialog window size and column width setting for the auto-replace feature in Project Settings
   are now preserved between closing and opening the dialog. Issue #322, PR #324.
 
 **User Interface**
 
-* The Open Project dialog will now ask before removing an entry from the recent projects list. PR
-  #309.
+* The Open Project dialog will now ask before removing an entry from the recent projects list.
+  PR #309.
 * The text emphasis functions, either selected from the menu or via keyboard shortcuts, will now
   try to respond to the command in a more meaningful way. That is, the text editor will try to
   toggle the bold or italics features independently of eachother on the selected text. A menu entry
@@ -3050,8 +3050,8 @@ longer be read by an earlier version due to the change of how autoReplace settin
   construct to prevent crashes caused by potential edge cases in document content. If the rendering
   fails, the view window will show an error message instead of the intended document. Issue #298,
   PR #299.
-* Clipping of the descended part of fonts in the document title bar has been fixed. Issue #295, PR
-  #300.
+* Clipping of the descended part of fonts in the document title bar has been fixed. Issue #295,
+  PR #300.
 * When clicking a tag in the editor while the viewer was closed, nothing would happen. Now, the
   viewer is first opened before navigating to the source of the reference tag. Issue #294, PR #306.
 * The missing optional rendering of synopsis comments in the document view panel has been added.
@@ -3078,11 +3078,11 @@ longer be read by an earlier version due to the change of how autoReplace settin
   changes that may have been made to it. PRs #293, #300, #303 and #306.
 * The References panel below the document viewer has been redesigned. It now sits in a resizeable
   panel below the document, and its controls sit in a footer bar in the document itself. The
-  functionality of the feature is otherwise unchanged, but the buttons have received new icons. PRs
-  #304 and #306.
+  functionality of the feature is otherwise unchanged, but the buttons have received new icons.
+  PRs #304 and #306.
 * The option to render comments and synopsis in the document view panel has been added to
-  Preferences. The toggle option for comments that was previously in the menu has been removed. PR
-  #311.
+  Preferences. The toggle option for comments that was previously in the menu has been removed.
+  PR #311.
 
 **Project Structure**
 
@@ -3153,8 +3153,8 @@ longer be read by an earlier version due to the change of how autoReplace settin
   an older version, and require a new to be built. This is done automatically. PR #234.
 * Moved the Close button on the "Build Novel Project" dialog to the area with the other buttons
   since we anyway increased the size of that area. PR #256.
-* Updated the unit for Preferences > Editor > Big document limit from `kb` to `kB`. Issue #258, PR
-  #260.
+* Updated the unit for Preferences > Editor > Big document limit from `kb` to `kB`. Issue #258,
+  PR #260.
 * Added Typicons-based coloured icon set also for light GUI background. PR #265.
 * The export check mark that was added to the Flags column in the project tree in Version 0.6 has
   been moved to its own column, and been replaced with a proper icon. The details panel below it
@@ -3170,8 +3170,8 @@ longer be read by an earlier version due to the change of how autoReplace settin
 * Fonts are now selected via the system's font dialog rather than the font combo box. PR #270.
 * Word, character and paragraph counts are now updated on the project tree details panel if the
   file currently being edited is also selected in the tree. PR #272.
-* The Build Novel Project dialog now shows the previous generated content when it's opened. PR
-  #272.
+* The Build Novel Project dialog now shows the previous generated content when it's opened.
+  PR #272.
 * The Build Novel Project tool can now export the HTML and NWD output into a JSON data file. This
   file is convenient if the user wants to post-process the output with for instance Python, or one
   of the other numerous languages that can read JSON files. PR #272.
@@ -3220,8 +3220,8 @@ longer be read by an earlier version due to the change of how autoReplace settin
   You must actually click this to be able to export or print. Issue #237, PR #238.
 * Added font family and font size selectors to the "Build Novel Project" tool. You may want a
   different print font than used in the editor itself. Issue #230, PR #238.
-* Removed the "Help" feature in "Build Novel Project" and instead added detailed tooltips. Issue
-  #250, PR #249.
+* Removed the "Help" feature in "Build Novel Project" and instead added detailed tooltips.
+  Issue #250, PR #249.
 * Changed the title formatting codes for "Build Novel Project" to something less verbose. The old
   codes are translated automatically. Issue #247, PR #249.
 * A margin of the viewport (outside the document) has been added to the document editor and viewer
@@ -3230,8 +3230,8 @@ longer be read by an earlier version due to the change of how autoReplace settin
   scrolling). PR #236.
 * Fixed an alignment issue for the status icon on the project tree details panel. Mentioned in
   #235, PR #239.
-* Removed the `Xo` icon for NO_LAYOUT in the project tree details panel. Mentioned in #235, PR
-  #239.
+* Removed the `Xo` icon for NO_LAYOUT in the project tree details panel. Mentioned in #235,
+  PR #239.
 * Added a "Details" tab to the "Project Settings" dialog, which also lists the project path. Issue
   #242, PR #239.
 
@@ -3295,8 +3295,8 @@ longer be read by an earlier version due to the change of how autoReplace settin
   new tool also supports printing. PRs #204, #220 and #221.
 * The Project Settings, Preferences, Item Editor, Merge Documents, and Split Documents dialogs have
   been redesigned. The ones with tabs now have vertical tabs on the left with horizontal labels.
-  The dialog design should be more compact, and have room for more tabs for future settings. PR
-  #212.
+  The dialog design should be more compact, and have room for more tabs for future settings.
+  PR #212.
 * A new icon, as well as a mimetype icon for the project files, have been designed and added to the
   app. PRs #213 and #214.
 * The About dialog has been completely redesigned to allow more information. PR #217.
@@ -3312,8 +3312,8 @@ longer be read by an earlier version due to the change of how autoReplace settin
 **Bugfixes**
 
 * When running on Windows 10, some of the buttons were missing icons. More fallback icons have been
-  added to ensure that all current buttons have a fallback path that always ends in an icon. PR
-  #211.
+  added to ensure that all current buttons have a fallback path that always ends in an icon.
+  PR #211.
 
 **User Interface**
 
@@ -3406,8 +3406,8 @@ helpful feedback and issue reports for the new features added in this, and previ
   data associated with a novel heading in a column-wise manner. The Timeline View feature has been
   dropped in favour of the new Outline View. PRs #140, #181 and #191.
 * A synopsis feature has been added. It allows a comment to be flagged as a synopsis comment to be
-  picked up by the indexer and displayed in the GUI. Currently available in the Outline View. PRs
-  #140 and #191.
+  picked up by the indexer and displayed in the GUI. Currently available in the Outline View.
+  PRs #140 and #191.
 * A document title bar has been added to the top of the editor and viewer. These show the document
   label as seen in the project tree. Optionally, the full document path can be shown. Clicking the
   title will highlight the document in the project tree. PRs #192 and #194.
@@ -3427,8 +3427,8 @@ helpful feedback and issue reports for the new features added in this, and previ
 
 **Bug Fixes**
 
-* The `install.py` script has been fixed to reflect changes in storage location of the themes. PR
-  #174.
+* The `install.py` script has been fixed to reflect changes in storage location of the themes.
+  PR #174.
 * Fixed a bug with launching Preferences without Enchant spell checking installed. PR #190.
 * A minor issue with running backups with no backup path set has been fixed. The backups would be
   written into the source folder, or wherever novelWriter was launched from, which is a very messy
@@ -3437,8 +3437,8 @@ helpful feedback and issue reports for the new features added in this, and previ
 **Documentation**
 
 * Some outdated links and a number of typos and spelling errors have been corrected. PR #173.
-* Documentation has been brought up to date with the current set of features of novelWriter. PR
-  #202.
+* Documentation has been brought up to date with the current set of features of novelWriter.
+  PR #202.
 
 **Project Structure**
 
@@ -3624,8 +3624,8 @@ helpful feedback and issue reports for the new features added in this, and previ
   option that will prevent it from updating if links are followed. PRs #109 and #110.
 * The tag and reference system no longer has any restrictions on file class. That is, any file can
   have tags and references, and they are indexed by the indexer and displayed as links in the
-  document view pane. The timeline view behaves as before, only listing active Novel files. PR
-  #114.
+  document view pane. The timeline view behaves as before, only listing active Novel files.
+  PR #114.
 * A new root folder type and keyword for "Entities" has been added. These can be useful for
   describing plot elements fitting under such a category. PR #115.
 
@@ -3753,8 +3753,8 @@ helpful feedback and issue reports for the new features added in this, and previ
 **User Interface**
 
 * Added a basic search function for the currently open document. This is a simple interface to the
-  find command that exists in the Qt document editor. It will be extended further in the future. PR
-  #49.
+  find command that exists in the Qt document editor. It will be extended further in the future.
+  PR #49.
 
 ----
 
@@ -3856,8 +3856,8 @@ helpful feedback and issue reports for the new features added in this, and previ
 
 **Bug Fixes**
 
-* Fixed a bug where an item had to be selected in the tree view for a root item to be created. PR
-  #16.
+* Fixed a bug where an item had to be selected in the tree view for a root item to be created.
+  PR #16.
 
 **User Interface**
 
