@@ -565,22 +565,6 @@ class NWProject(QObject):
             return self._lockedBy
         return None
 
-    def getFormattedAuthors(self):
-        """Return a formatted string of authors.
-        """
-        authors = self._data.authors
-        nAuth = len(authors)
-
-        result = ""
-        if nAuth == 1:
-            result = authors[0]
-        elif nAuth > 1:
-            result = "%s %s %s" % (
-                ", ".join(authors[0:-1]), self.tr("and"), authors[-1]
-            )
-
-        return result
-
     def getCurrentEditTime(self):
         """Get the total project edit time, including the time spent in
         the current session.

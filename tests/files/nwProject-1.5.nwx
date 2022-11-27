@@ -4,7 +4,6 @@
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
-    <author>Jay Doh</author>
   </project>
   <settings>
     <doBackup>yes</doBackup>

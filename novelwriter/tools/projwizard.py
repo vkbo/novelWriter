@@ -29,9 +29,8 @@ import novelwriter
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QWizard, QWizardPage, QLabel, QVBoxLayout, QLineEdit, QPlainTextEdit,
-    QPushButton, QFileDialog, QHBoxLayout, QRadioButton, QFormLayout,
-    QGridLayout, QSpinBox
+    QFileDialog, QFormLayout, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
+    QPushButton, QRadioButton, QSpinBox, QVBoxLayout, QWizard, QWizardPage
 )
 
 from novelwriter.common import makeFileNameSafe
@@ -111,7 +110,6 @@ class ProjWizardIntroPage(QWizardPage):
         self.imgCredit.setFont(lblFont)
 
         xW = self.mainConf.pxInt(300)
-        xH = self.mainConf.pxInt(100)
         vS = self.mainConf.pxInt(12)
         fS = self.mainConf.pxInt(4)
 
@@ -126,20 +124,20 @@ class ProjWizardIntroPage(QWizardPage):
         self.projTitle.setFixedWidth(xW)
         self.projTitle.setPlaceholderText(self.tr("Optional"))
 
-        self.projAuthors = QPlainTextEdit()
-        self.projAuthors.setFixedHeight(xH)
-        self.projAuthors.setFixedWidth(xW)
-        self.projAuthors.setPlaceholderText(self.tr("Optional. One name per line."))
+        self.projAuthor = QLineEdit()
+        self.projAuthor.setMaxLength(200)
+        self.projAuthor.setFixedWidth(xW)
+        self.projAuthor.setPlaceholderText(self.tr("Optional"))
 
         self.mainForm = QFormLayout()
         self.mainForm.addRow(self.tr("Project Name"), self.projName)
         self.mainForm.addRow(self.tr("Novel Title"), self.projTitle)
-        self.mainForm.addRow(self.tr("Author(s)"), self.projAuthors)
+        self.mainForm.addRow(self.tr("Author(s)"), self.projAuthor)
         self.mainForm.setVerticalSpacing(fS)
 
         self.registerField("projName*", self.projName)
         self.registerField("projTitle", self.projTitle)
-        self.registerField("projAuthors", self.projAuthors, "plainText")
+        self.registerField("projAuthor", self.projAuthor)
 
         # Assemble
         self.outerBox = QVBoxLayout()

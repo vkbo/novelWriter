@@ -205,7 +205,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.theProject.tree.trashRoot() is None
     assert nwGUI.theProject.data.name == ""
     assert nwGUI.theProject.data.title == ""
-    assert nwGUI.theProject.data.authors == []
+    assert nwGUI.theProject.data.author == ""
     assert nwGUI.theProject.data.spellCheck is False
 
     # Check the files
@@ -225,7 +225,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.theProject.tree.trashRoot() is None
     assert nwGUI.theProject.data.name == "New Project"
     assert nwGUI.theProject.data.title == "New Novel"
-    assert nwGUI.theProject.data.authors == ["Jane Doe"]
+    assert nwGUI.theProject.data.author == "Jane Doe"
     assert nwGUI.theProject.data.spellCheck is False
 
     # Check that tree items have been created

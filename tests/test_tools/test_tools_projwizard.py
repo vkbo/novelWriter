@@ -113,7 +113,7 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncPath, prjType):
 
     introPage.projName.setText("Test Wizard")
     introPage.projTitle.setText("My Novel")
-    introPage.projAuthors.setPlainText("Jane Doe")
+    introPage.projAuthor.setText("Jane Doe")
 
     # Setting projName should activate the button
     assert nwWiz.button(QWizard.NextButton).isEnabled()
@@ -214,7 +214,7 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncPath, prjType):
     projData = nwGUI._assembleProjectWizardData(nwWiz)
     assert projData["projName"] == "Test Wizard"
     assert projData["projTitle"] == "My Novel"
-    assert projData["projAuthors"] == "Jane Doe"
+    assert projData["projAuthor"] == "Jane Doe"
     assert projData["projPath"] == str(projPath)
     assert projData["popMinimal"] == prjType.startswith("minimal")
     assert projData["popCustom"] == prjType.startswith("custom")

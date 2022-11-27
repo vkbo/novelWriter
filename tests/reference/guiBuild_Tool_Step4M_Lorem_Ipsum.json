@@ -1,11 +1,9 @@
 {
   "meta": {
-    "workingTitle": "Lorem Ipsum",
+    "projectName": "Lorem Ipsum",
     "novelTitle": "Lorem Ipsum",
-    "authors": [
-      "lipsum.com"
-    ],
-    "buildTime": 1627867578
+    "novelAuthor": "lipsum.com",
+    "buildTime": 1669563891
   },
   "text": {
     "nwd": [

@@ -308,7 +308,7 @@ def testCoreTools_NewCustomA(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
     projData = {
         "projName": "Test Custom",
         "projTitle": "Test Novel",
-        "projAuthors": "Jane Doe\nJohn Doh\n",
+        "projAuthor": "Jane Doe",
         "projPath": fncPath,
         "popSample": False,
         "popMinimal": False,
@@ -346,7 +346,7 @@ def testCoreTools_NewCustomB(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
     projData = {
         "projName": "Test Custom",
         "projTitle": "Test Novel",
-        "projAuthors": "Jane Doe\nJohn Doh\n",
+        "projAuthor": "Jane Doe",
         "projPath": fncPath,
         "popSample": False,
         "popMinimal": False,
@@ -378,7 +378,7 @@ def testCoreTools_NewSample(monkeypatch, fncPath, tmpConf, tmpPath, mockGUI):
     projData = {
         "projName": "Test Sample",
         "projTitle": "Test Novel",
-        "projAuthors": "Jane Doe\nJohn Doh\n",
+        "projAuthor": "Jane Doe",
         "projPath": fncPath,
         "popSample": True,
         "popMinimal": False,
