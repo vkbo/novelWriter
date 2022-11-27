@@ -96,7 +96,7 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockR
     # Set some values
     theProject = nwGUI.theProject
     theProject.data.setSpellLang("en")
-    theProject.data.setAuthors("Jane Smith\nJohn Smith")
+    theProject.data.setAuthor("Jane Smith")
     theProject.data.setAutoReplace({"A": "B", "C": "D"})
 
     # Create Dialog
@@ -111,7 +111,7 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockR
 
     assert tabMain.editName.text() == "New Project"
     assert tabMain.editTitle.text() == "New Novel"
-    assert tabMain.editAuthors.toPlainText() == "Jane Smith\nJohn Smith"
+    assert tabMain.editAuthor.text() == "Jane Smith"
     assert tabMain.spellLang.currentData() == "en"
     assert tabMain.doBackup.isChecked() is False
 
@@ -122,23 +122,19 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockR
     for c in "Project Title":
         qtbot.keyClick(tabMain.editTitle, c, delay=KEY_DELAY)
 
-    tabMain.editAuthors.clear()
+    tabMain.editAuthor.clear()
     for c in "Jane Doe":
-        qtbot.keyClick(tabMain.editAuthors, c, delay=KEY_DELAY)
-    qtbot.keyClick(tabMain.editAuthors, Qt.Key_Return, delay=KEY_DELAY)
-    for c in "John Doh":
-        qtbot.keyClick(tabMain.editAuthors, c, delay=KEY_DELAY)
-    qtbot.keyClick(tabMain.editAuthors, Qt.Key_Return, delay=KEY_DELAY)
+        qtbot.keyClick(tabMain.editAuthor, c, delay=KEY_DELAY)
 
     assert tabMain.editName.text() == "Project Name"
     assert tabMain.editTitle.text() == "Project Title"
-    assert tabMain.editAuthors.toPlainText() == "Jane Doe\nJohn Doh\n"
+    assert tabMain.editAuthor.text() == "Jane Doe"
     assert projSettings.spellChanged is False
 
     projSettings._doSave()
     assert theProject.data.name == "Project Name"
     assert theProject.data.title == "Project Title"
-    assert theProject.data.authors == ["Jane Doe", "John Doh"]
+    assert theProject.data.author == "Jane Doe"
 
     # Clean up
     projSettings._doClose()

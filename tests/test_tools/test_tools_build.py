@@ -216,14 +216,14 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, prjLipsum, tstPaths):
     testFile = tstPaths.outDir / "guiBuild_Tool_Step4H_Lorem_Ipsum.json"
     compFile = tstPaths.refDir / "guiBuild_Tool_Step4H_Lorem_Ipsum.json"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [8])
+    assert cmpFiles(testFile, compFile, [6])
 
     assert nwBuild._saveDocument(nwBuild.FMT_JSON_M)
     projFile = prjLipsum / "Lorem Ipsum.json"
     testFile = tstPaths.outDir / "guiBuild_Tool_Step4M_Lorem_Ipsum.json"
     compFile = tstPaths.refDir / "guiBuild_Tool_Step4M_Lorem_Ipsum.json"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [8])
+    assert cmpFiles(testFile, compFile, [6])
 
     # Since odt and fodt is built by the same code, we don't check the
     # output. but just that the different format can be written as well

@@ -1419,7 +1419,7 @@ class GuiMain(QMainWindow):
         projData = {
             "projName": newProj.field("projName"),
             "projTitle": newProj.field("projTitle"),
-            "projAuthors": newProj.field("projAuthors"),
+            "projAuthor": newProj.field("projAuthor"),
             "projPath": newProj.field("projPath"),
             "popSample": newProj.field("popSample"),
             "popMinimal": newProj.field("popMinimal"),

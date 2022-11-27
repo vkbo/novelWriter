@@ -46,7 +46,7 @@ class NWProjectData:
         self._uuid = ""
         self._name = ""
         self._title = ""
-        self._authors = []
+        self._author = ""
         self._saveCount = 0
         self._autoCount = 0
         self._editTime = 0
@@ -97,8 +97,8 @@ class NWProjectData:
         return self._title
 
     @property
-    def authors(self):
-        return self._authors
+    def author(self):
+        return self._author
 
     @property
     def saveCount(self):
@@ -160,13 +160,6 @@ class NWProjectData:
     #  Methods
     ##
 
-    def addAuthor(self, value):
-        """Add an author to the authors list.
-        """
-        self._authors.append(simplified(str(value)))
-        self.theProject.setProjectChanged(True)
-        return
-
     def incSaveCount(self):
         """Increment the save count by one.
         """
@@ -226,20 +219,12 @@ class NWProjectData:
             self.theProject.setProjectChanged(True)
         return
 
-    def setAuthors(self, value):
-        """Set the list of authors from either a string with one author
-        per line, or a list of authors.
+    def setAuthor(self, value):
+        """Set the author value.
         """
-        self._authors = []
-        self.theProject.setProjectChanged(True)
-        if isinstance(value, str):
-            for author in value.splitlines():
-                author = simplified(author)
-                if author:
-                    self._authors.append(author)
+        if value != self._title:
+            self._author = simplified(str(value))
             self.theProject.setProjectChanged(True)
-        elif isinstance(value, list):
-            self._authors = value
         return
 
     def setSaveCount(self, value):

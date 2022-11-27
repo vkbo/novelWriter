@@ -29,9 +29,8 @@ import novelwriter
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
 from PyQt5.QtCore import Qt, QLocale
 from PyQt5.QtWidgets import (
-    QHBoxLayout, QVBoxLayout, QLineEdit, QPlainTextEdit, QLabel, QWidget,
-    QDialogButtonBox, QPushButton, QColorDialog, QTreeWidget, QTreeWidgetItem,
-    QComboBox
+    QColorDialog, QComboBox, QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit,
+    QPushButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter.enum import nwAlert
@@ -108,15 +107,15 @@ class GuiProjectSettings(PagedDialog):
     def _doSave(self):
         """Save settings and close dialog.
         """
-        projName    = self.tabMain.editName.text()
-        bookTitle   = self.tabMain.editTitle.text()
-        bookAuthors = self.tabMain.editAuthors.toPlainText()
-        spellLang   = self.tabMain.spellLang.currentData()
-        doBackup    = not self.tabMain.doBackup.isChecked()
+        projName   = self.tabMain.editName.text()
+        bookTitle  = self.tabMain.editTitle.text()
+        bookAuthor = self.tabMain.editAuthor.text()
+        spellLang  = self.tabMain.spellLang.currentData()
+        doBackup   = not self.tabMain.doBackup.isChecked()
 
         self.theProject.data.setName(projName)
         self.theProject.data.setTitle(bookTitle)
-        self.theProject.data.setAuthors(bookAuthors)
+        self.theProject.data.setAuthor(bookAuthor)
         self.theProject.data.setDoBackup(doBackup)
 
         # Remember this as updating spell dictionary can be expensive
@@ -204,7 +203,6 @@ class GuiProjectEditMain(QWidget):
         self.mainForm.addGroupLabel(self.tr("Project Settings"))
 
         xW = self.mainConf.pxInt(250)
-        xH = round(4.8*self.mainGui.mainTheme.fontPixelSize)
 
         self.editName = QLineEdit()
         self.editName.setMaxLength(200)
@@ -226,14 +224,14 @@ class GuiProjectEditMain(QWidget):
             self.tr("Change whenever you want!")
         )
 
-        self.editAuthors = QPlainTextEdit()
-        self.editAuthors.setMaximumHeight(xH)
-        self.editAuthors.setMaximumWidth(xW)
-        self.editAuthors.setPlainText("\n".join(self.theProject.data.authors))
+        self.editAuthor = QLineEdit()
+        self.editAuthor.setMaxLength(200)
+        self.editAuthor.setMaximumWidth(xW)
+        self.editAuthor.setText(self.theProject.data.author)
         self.mainForm.addRow(
             self.tr("Author(s)"),
-            self.editAuthors,
-            self.tr("One name per line.")
+            self.editAuthor,
+            self.tr("Change whenever you want!")
         )
 
         self.spellLang = QComboBox(self)

@@ -480,25 +480,9 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     theProject.data.setTitle("  A Title ")
     assert theProject.data.title == "A Title"
 
-    # Project Authors
-    # Check that the list is cleaned up and that it can be extracted as
-    # a properly formatted string, depending on number of names
-    theProject.data.setAuthors([])
-    assert theProject.data.authors == []
-    theProject.data.setAuthors(" Jane Doe \n John Doh \n ")
-    assert theProject.data.authors == ["Jane Doe", "John Doh"]
-
-    theProject.data.setAuthors("")
-    assert theProject.getFormattedAuthors() == ""
-
-    theProject.data.setAuthors("Jane Doe")
-    assert theProject.getFormattedAuthors() == "Jane Doe"
-
-    theProject.data.setAuthors("Jane Doe\nJohn Doh")
-    assert theProject.getFormattedAuthors() == "Jane Doe and John Doh"
-
-    theProject.data.setAuthors("Jane Doe\nJohn Doh\nBod Owens")
-    assert theProject.getFormattedAuthors() == "Jane Doe, John Doh and Bod Owens"
+    # Project Author
+    theProject.data.setAuthor("  Jane\tDoe ")
+    assert theProject.data.author == "Jane Doe"
 
     # Edit Time
     theProject.data.setEditTime(1234)

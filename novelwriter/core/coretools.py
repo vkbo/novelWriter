@@ -315,12 +315,12 @@ class ProjectBuilder:
         # Settings
         projName = data.get("projName", lblNewProject)
         projTitle = data.get("projTitle", lblNewProject)
-        projAuthors = data.get("projAuthors", "")
+        projAuthor = data.get("projAuthor", "")
 
         project.data.setUuid(None)
         project.data.setName(projName)
         project.data.setTitle(projTitle)
-        project.data.setAuthors(projAuthors)
+        project.data.setAuthor(projAuthor)
         project.setDefaultStatusImport()
         project._projOpened = int(time())
 
@@ -330,8 +330,8 @@ class ProjectBuilder:
         novelTitle = project.data.title if project.data.title else project.data.name
 
         titlePage = f"#! {novelTitle}\n\n"
-        if project.data.authors:
-            titlePage += f">> {lblByAuthors} {project.getFormattedAuthors()} <<\n\n"
+        if project.data.author:
+            titlePage += f">> {lblByAuthors} {project.data.author} <<\n\n"
 
         aDoc = project.storage.getDocument(hTitlePage)
         aDoc.writeDocument(titlePage)

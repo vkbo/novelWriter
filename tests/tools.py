@@ -174,7 +174,7 @@ def buildTestProject(theObject, projPath):
     theProject.data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
     theProject.data.setName("New Project")
     theProject.data.setTitle("New Novel")
-    theProject.data.setAuthors("Jane Doe")
+    theProject.data.setAuthor("Jane Doe")
 
     # Creating a minimal project with a few root folders and a
     # single chapter folder with a single file.

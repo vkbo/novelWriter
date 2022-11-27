@@ -968,9 +968,9 @@ class GuiBuildNovel(QDialog):
         elif theFmt == self.FMT_JSON_H or theFmt == self.FMT_JSON_M:
             jsonData = {
                 "meta": {
-                    "workingTitle": self.theProject.data.name,
+                    "projectName": self.theProject.data.name,
                     "novelTitle": self.theProject.data.title,
-                    "authors": self.theProject.data.authors,
+                    "novelAuthor": self.theProject.data.author,
                     "buildTime": self.buildTime,
                 }
             }

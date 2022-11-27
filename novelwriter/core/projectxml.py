@@ -246,7 +246,7 @@ class ProjectXMLReader:
             elif xItem.tag == "title":
                 projData.setTitle(xItem.text)
             elif xItem.tag == "author":
-                projData.addAuthor(xItem.text)
+                projData.setAuthor(xItem.text)
             else:
                 logger.warning("Ignored <root/project/%s> in XML", xItem.tag)
 
@@ -518,7 +518,7 @@ class ProjectXMLWriter:
         xProject = etree.SubElement(xRoot, "project", attrib=projAttr)
         self._packSingleValue(xProject, "name", projData.name)
         self._packSingleValue(xProject, "title", projData.title)
-        self._packListValue(xProject, "author", projData.authors)
+        self._packSingleValue(xProject, "author", projData.author)
 
         # Save Project Settings
         xSettings = etree.SubElement(xRoot, "settings")
@@ -589,14 +589,6 @@ class ProjectXMLWriter:
         """
         xItem = etree.SubElement(xParent, name, attrib=attrib)
         xItem.text = str(value) or ""
-        return
-
-    def _packListValue(self, xParent, name, data):
-        """Pack a list of values into an XML element.
-        """
-        for value in data:
-            xItem = etree.SubElement(xParent, name)
-            xItem.text = str(value) or ""
         return
 
     def _packDictKeyValue(self, xParent, name, data):
