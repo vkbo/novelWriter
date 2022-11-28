@@ -4,7 +4,7 @@ novelWriter – GUI Main Window SideBar
 GUI class for the main window side bar
 
 File History:
-Created: 2022-05-10 [1.7b1]
+Created: 2022-05-10 [2.0rc1]
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen

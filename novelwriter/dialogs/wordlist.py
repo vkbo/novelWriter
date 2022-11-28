@@ -4,7 +4,7 @@ novelWriter – GUI User Wordlist
 Class holding the user's wordlist dialog
 
 File History:
-Created: 2021-02-12 [1.2b1]
+Created: 2021-02-12 [1.2rc1]
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen

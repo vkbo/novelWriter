@@ -5,7 +5,7 @@ Custom dialog class for splitting documents.
 
 File History:
 Created:   2020-02-01 [0.4.3]
-Rewritten: 2022-10-12 [2.0b1]
+Rewritten: 2022-10-12 [2.0rc1]
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen

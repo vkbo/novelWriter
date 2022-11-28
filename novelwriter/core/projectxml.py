@@ -4,8 +4,9 @@ novelWriter – Project XML Read/Write
 Classes for reading and writing the project XML file
 
 File History:
-Created: 2022-09-28 [2.0rc1] ProjectXMLReader
-Created: 2022-09-28 [2.0rc1] XMLReadState
+Created: 2022-09-28 [2.0rc2] XMLReadState
+Created: 2022-09-28 [2.0rc2] ProjectXMLReader
+Created: 2022-10-31 [2.0rc2] ProjectXMLWriter
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen

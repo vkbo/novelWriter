@@ -2063,38 +2063,38 @@
   <context>
     <name>GuiMainStatus</name>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="221" />
-      <location filename="../novelwriter/gui/statusbar.py" line="67" />
+      <location filename="../novelwriter/gui/statusbar.py" line="222" />
+      <location filename="../novelwriter/gui/statusbar.py" line="68" />
       <source>None</source>
       <translation>无</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="75" />
+      <location filename="../novelwriter/gui/statusbar.py" line="76" />
       <source>Editor</source>
       <translation>编辑器</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="83" />
+      <location filename="../novelwriter/gui/statusbar.py" line="84" />
       <source>Project</source>
       <translation>项目</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="101" />
+      <location filename="../novelwriter/gui/statusbar.py" line="102" />
       <source>Session Time</source>
       <translation>会话时间</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="192" />
+      <location filename="../novelwriter/gui/statusbar.py" line="193" />
       <source>Words: {0} ({1})</source>
       <translation>单词: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="194" />
+      <location filename="../novelwriter/gui/statusbar.py" line="195" />
       <source>Project word count (session change)</source>
       <translation>项目单词个数 （session chang）</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="196" />
+      <location filename="../novelwriter/gui/statusbar.py" line="197" />
       <source>Novel word count (session change)</source>
       <translation>单词计数 (会话更改)</translation>
     </message>
@@ -2102,47 +2102,47 @@
   <context>
     <name>GuiNovelToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="203" />
-      <source>Novel Outline</source>
-      <translation>小说提纲</translation>
+      <location filename="../novelwriter/gui/noveltree.py" line="207" />
+      <source>Outline of {0}</source>
+      <translation type="unfinished">Outline of {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="209" />
-      <source>Refresh</source>
-      <translation>刷新</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="219" />
+      <location filename="../novelwriter/gui/noveltree.py" line="215" />
       <source>Novel Root</source>
       <translation>小说根</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="227" />
+      <location filename="../novelwriter/gui/noveltree.py" line="221" />
+      <source>Refresh</source>
+      <translation>刷新</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/noveltree.py" line="228" />
       <source>Last Column</source>
       <translation>最后一列</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="230" />
+      <location filename="../novelwriter/gui/noveltree.py" line="231" />
       <source>Hidden</source>
       <translation>隐藏</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="231" />
+      <location filename="../novelwriter/gui/noveltree.py" line="232" />
       <source>Point of View Character</source>
       <translation>视角人物</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="232" />
+      <location filename="../novelwriter/gui/noveltree.py" line="233" />
       <source>Focus Character</source>
       <translation>聚焦章节</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="233" />
+      <location filename="../novelwriter/gui/noveltree.py" line="234" />
       <source>Novel Plot</source>
       <translation>小说情节</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="236" />
+      <location filename="../novelwriter/gui/noveltree.py" line="237" />
       <source>More Options</source>
       <translation>更多选项</translation>
     </message>
@@ -2150,7 +2150,7 @@
   <context>
     <name>GuiNovelTree</name>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="771" />
+      <location filename="../novelwriter/gui/noveltree.py" line="778" />
       <source>No meta data</source>
       <translation>没有元数据</translation>
     </message>
@@ -2158,65 +2158,65 @@
   <context>
     <name>GuiOutlineDetails</name>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="1061" />
-      <location filename="../novelwriter/gui/outline.py" line="1022" />
-      <location filename="../novelwriter/gui/outline.py" line="826" />
-      <location filename="../novelwriter/gui/outline.py" line="799" />
+      <location filename="../novelwriter/gui/outline.py" line="1053" />
+      <location filename="../novelwriter/gui/outline.py" line="1014" />
+      <location filename="../novelwriter/gui/outline.py" line="818" />
+      <location filename="../novelwriter/gui/outline.py" line="791" />
       <source>Title</source>
       <translation>标题</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="800" />
+      <location filename="../novelwriter/gui/outline.py" line="792" />
       <source>Chapter</source>
       <translation>章节</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="801" />
+      <location filename="../novelwriter/gui/outline.py" line="793" />
       <source>Scene</source>
       <translation>场景</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="802" />
+      <location filename="../novelwriter/gui/outline.py" line="794" />
       <source>Section</source>
       <translation>小结</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="827" />
+      <location filename="../novelwriter/gui/outline.py" line="819" />
       <source>Document</source>
       <translation>文档</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="828" />
+      <location filename="../novelwriter/gui/outline.py" line="820" />
       <source>Status</source>
       <translation>状态</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="841" />
+      <location filename="../novelwriter/gui/outline.py" line="833" />
       <source>Characters</source>
       <translation>人物</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="842" />
+      <location filename="../novelwriter/gui/outline.py" line="834" />
       <source>Words</source>
       <translation>单词</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="843" />
+      <location filename="../novelwriter/gui/outline.py" line="835" />
       <source>Paragraphs</source>
       <translation>段落</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="856" />
+      <location filename="../novelwriter/gui/outline.py" line="848" />
       <source>Synopsis</source>
       <translation>概要</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="928" />
+      <location filename="../novelwriter/gui/outline.py" line="920" />
       <source>Title Details</source>
       <translation>标题详情</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="953" />
+      <location filename="../novelwriter/gui/outline.py" line="945" />
       <source>Reference Tags</source>
       <translation>引用标签</translation>
     </message>
@@ -2224,7 +2224,7 @@
   <context>
     <name>GuiOutlineHeaderMenu</name>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="761" />
+      <location filename="../novelwriter/gui/outline.py" line="753" />
       <source>Select Columns</source>
       <translation>选定列</translation>
     </message>
@@ -2232,19 +2232,14 @@
   <context>
     <name>GuiOutlineToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="233" />
+      <location filename="../novelwriter/gui/outline.py" line="234" />
       <source>Outline of</source>
       <translation>提纲</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="241" />
+      <location filename="../novelwriter/gui/outline.py" line="242" />
       <source>Refresh</source>
       <translation>刷新</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/gui/outline.py" line="290" />
-      <source>All Novel Folders</source>
-      <translation>所有小说文件夹</translation>
     </message>
   </context>
   <context>
@@ -2923,17 +2918,17 @@
   <context>
     <name>GuiProjectDetails</name>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="58" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="57" />
       <source>Project Details</source>
       <translation>项目详情</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="74" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="73" />
       <source>Overview</source>
       <translation>概述</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="75" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="74" />
       <source>Contents</source>
       <translation>内容</translation>
     </message>
@@ -2941,72 +2936,72 @@
   <context>
     <name>GuiProjectDetailsContents</name>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="298" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="295" />
       <source>Table of Contents</source>
       <translation>目录</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="317" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="314" />
       <source>Title</source>
       <translation>标题</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="318" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="315" />
       <source>Words</source>
       <translation>单词</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="319" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="316" />
       <source>Pages</source>
       <translation>页面</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="320" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="317" />
       <source>Page</source>
       <translation>页面</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="321" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="318" />
       <source>Progress</source>
       <translation>进度</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="356" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="353" />
       <source>Typical word count for a 5 by 8 inch book page with 11 pt font is 350.</source>
       <translation>具有 11 pt 字体的 5 x 8 英寸书页的典型字数为 350。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="359" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="356" />
       <source>Start counting page numbers from this page.</source>
       <translation>从此页开始计算页码。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="362" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="359" />
       <source>Assume a new chapter or partition always start on an odd numbered page.</source>
       <translation>假设新的章节或分区总是从奇数页开始的。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="365" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="362" />
       <source>Words per page</source>
       <translation>每页字数</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="376" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="373" />
       <source>Count pages from</source>
       <translation>计算页数</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="387" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="384" />
       <source>Clear double pages</source>
       <translation>清除双页</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="462" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="447" />
       <source>END</source>
       <translation>结束</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="517" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="501" />
       <source>Untitled</source>
       <translation>未命名</translation>
     </message>
@@ -3014,42 +3009,42 @@
   <context>
     <name>GuiProjectDetailsMain</name>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="169" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="168" />
       <source>Working Title: {0}</source>
       <translation>工作标题：{0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="178" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="177" />
       <source>By {0}</source>
       <translation>By {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="190" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="187" />
       <source>Words</source>
       <translation>单词</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="193" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="190" />
       <source>Chapters</source>
       <translation>章节</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="196" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="193" />
       <source>Scenes</source>
       <translation>场景</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="199" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="196" />
       <source>Revisions</source>
       <translation>修订</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="202" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="199" />
       <source>Editing Time</source>
       <translation>编辑时间</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="222" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="219" />
       <source>Path</source>
       <translation>路径</translation>
     </message>
@@ -3057,58 +3052,54 @@
   <context>
     <name>GuiProjectEditMain</name>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="204" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="203" />
       <source>Project Settings</source>
       <translation>项目设置</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="214" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="212" />
       <source>Project name</source>
       <translation>项目名称</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="216" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="214" />
       <source>Should be set only once.</source>
       <translation>只应设置一次。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="224" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="222" />
       <source>Novel title</source>
       <translation>小说标题</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="226" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="234" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="224" />
       <source>Change whenever you want!</source>
       <translation>随时修改！</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="234" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="232" />
       <source>Author(s)</source>
       <translation>作者</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="236" />
-      <source>One name per line.</source>
-      <translation>每行一个名字。</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="241" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="239" />
       <source>Default</source>
       <translation>默认</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="249" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="247" />
       <source>Spell check language</source>
       <translation>拼写检查语言</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="265" />
-      <location filename="../novelwriter/dialogs/projsettings.py" line="251" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="263" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="249" />
       <source>Overrides main preferences.</source>
       <translation>覆盖主要首选项。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="263" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="261" />
       <source>No backup on close</source>
       <translation>关闭时没有备份</translation>
     </message>
@@ -3116,27 +3107,27 @@
   <context>
     <name>GuiProjectEditReplace</name>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="567" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="565" />
       <source>Text Replace List for Preview and Export</source>
       <translation>预览和导出的文本替换列表</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="574" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="572" />
       <source>Keyword</source>
       <translation>关键字</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="575" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="573" />
       <source>Replace With</source>
       <translation>替换为</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="601" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="599" />
       <source>Select item to edit</source>
       <translation>选择要修改的条目</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="609" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="607" />
       <source>Save</source>
       <translation>保存</translation>
     </message>
@@ -3144,67 +3135,67 @@
   <context>
     <name>GuiProjectEditStatus</name>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="292" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="290" />
       <source>Novel File Status Levels</source>
       <translation>Novel 文件状态级别</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="296" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="294" />
       <source>Note File Importance Levels</source>
       <translation>笔记文件重要性等级</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="314" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="312" />
       <source>Label</source>
       <translation>标签</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="314" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="312" />
       <source>Usage</source>
       <translation>用法</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="344" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="342" />
       <source>Select item to edit</source>
       <translation>选择要修改的条目</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="348" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="346" />
       <source>Colour</source>
       <translation>颜色</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="352" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="350" />
       <source>Save</source>
       <translation>保存</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="412" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="410" />
       <source>Select Colour</source>
       <translation>选择颜色</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="425" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="423" />
       <source>New Item</source>
       <translation>新项目</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="438" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="436" />
       <source>Cannot delete a status item that is in use.</source>
       <translation>无法删除正在使用的状态项。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="541" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="539" />
       <source>Not in use</source>
       <translation>未使用</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="543" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="541" />
       <source>Used once</source>
       <translation>使用过一次</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="545" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="543" />
       <source>Used by {0} items</source>
       <translation>被 {0} 项目使用</translation>
     </message>
@@ -3276,27 +3267,27 @@
   <context>
     <name>GuiProjectSettings</name>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="62" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="61" />
       <source>Project Settings</source>
       <translation>项目设置</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="80" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="79" />
       <source>Settings</source>
       <translation>设置</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="81" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="80" />
       <source>Status</source>
       <translation>状态</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="82" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="81" />
       <source>Importance</source>
       <translation>重要性</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="83" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="82" />
       <source>Auto-Replace</source>
       <translation>自动替换</translation>
     </message>
@@ -3974,75 +3965,78 @@
       <translation>主要的</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="579" />
-      <source>and</source>
-      <translation>和</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="751" />
+      <location filename="../novelwriter/core/project.py" line="735" />
       <source>Found {0} orphaned file(s) in project folder.</source>
       <translation>在项目文件夹中找到 {0} 个孤立文件。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="761" />
+      <location filename="../novelwriter/core/project.py" line="745" />
       <source>Recovered</source>
       <translation>已复原</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="775" />
+      <location filename="../novelwriter/core/project.py" line="759" />
       <source>[{0}] {1}</source>
       <translation>[{0}] {1}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="780" />
+      <location filename="../novelwriter/core/project.py" line="764" />
       <source>Recovered File {0}</source>
       <translation>已复原的文件 {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="808" />
+      <location filename="../novelwriter/core/project.py" line="792" />
       <source>One or more orphaned files could not be added back into the project. Make sure at least a Novel root folder exists.</source>
       <translation>无法将一个或多个孤立文件重新添加到项目中。确保至少存在一个 Novel 根文件夹。</translation>
     </message>
   </context>
   <context>
+    <name>NovelSelector</name>
+    <message>
+      <location filename="../novelwriter/gui/components.py" line="106" />
+      <source>All Novel Folders</source>
+      <translation type="unfinished">All Novel Folders</translation>
+    </message>
+  </context>
+  <context>
     <name>ProjWizardCustomPage</name>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="320" />
+      <location filename="../novelwriter/tools/projwizard.py" line="318" />
       <source>Custom Project Options</source>
       <translation>自定义项目选项</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="321" />
+      <location filename="../novelwriter/tools/projwizard.py" line="319" />
       <source>Select which additional elements to populate the project with. You can skip making chapters and add only scenes by setting the number of chapters to 0.</source>
       <translation>选择要使用项目的附加元素。 您可以通过设置章节数量为0来跳过制作章节，只添加场景。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="359" />
+      <location filename="../novelwriter/tools/projwizard.py" line="357" />
       <source>Add a folder for plot notes</source>
       <translation>为情节笔记添加一个文件夹</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="360" />
+      <location filename="../novelwriter/tools/projwizard.py" line="358" />
       <source>Add a folder for character notes</source>
       <translation>为章节注释添加文件夹</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="361" />
+      <location filename="../novelwriter/tools/projwizard.py" line="359" />
       <source>Add a folder for location notes</source>
       <translation>为位置注释添加文件夹</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="362" />
+      <location filename="../novelwriter/tools/projwizard.py" line="360" />
       <source>Add example notes to the above</source>
       <translation>在上面添加示例注释</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="363" />
+      <location filename="../novelwriter/tools/projwizard.py" line="361" />
       <source>Add chapters to the novel folder</source>
       <translation>将章节添加到新建文件夹</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="364" />
+      <location filename="../novelwriter/tools/projwizard.py" line="362" />
       <source>Add scenes to each chapter</source>
       <translation>将场景添加到每个章节</translation>
     </message>
@@ -4050,82 +4044,82 @@
   <context>
     <name>ProjWizardFinalPage</name>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="421" />
+      <location filename="../novelwriter/tools/projwizard.py" line="419" />
       <source>Summary</source>
       <translation>概述</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="440" />
+      <location filename="../novelwriter/tools/projwizard.py" line="438" />
       <source>Project Name: {0}</source>
       <translation>项目名称：{0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="441" />
+      <location filename="../novelwriter/tools/projwizard.py" line="439" />
       <source>Project Path: {0}</source>
       <translation>项目路径：{0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="444" />
+      <location filename="../novelwriter/tools/projwizard.py" line="442" />
       <source>Fill the project with a minimal set of items</source>
       <translation>用最简项目集填充项目</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="446" />
+      <location filename="../novelwriter/tools/projwizard.py" line="444" />
       <source>Fill the project with example files</source>
       <translation>用示例文件集填充项目</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="449" />
+      <location filename="../novelwriter/tools/projwizard.py" line="447" />
       <source>Add a folder for plot notes</source>
       <translation>为情节笔记添加一个文件夹</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="451" />
+      <location filename="../novelwriter/tools/projwizard.py" line="449" />
       <source>Add a folder for character notes</source>
       <translation>为章节笔记添加文件夹</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="453" />
+      <location filename="../novelwriter/tools/projwizard.py" line="451" />
       <source>Add a folder for location notes</source>
       <translation>为位置笔记添加文件夹</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="455" />
+      <location filename="../novelwriter/tools/projwizard.py" line="453" />
       <source>Add example notes to the above</source>
       <translation>在上面添加示例注释</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="457" />
+      <location filename="../novelwriter/tools/projwizard.py" line="455" />
       <source>Add {0} chapters to the novel folder</source>
       <translation>将 {0} 章节添加到新建文件夹</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="461" />
+      <location filename="../novelwriter/tools/projwizard.py" line="459" />
       <source>Add {0} scenes to each chapter</source>
       <translation>将{0} 场景添加到每个章节</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="466" />
+      <location filename="../novelwriter/tools/projwizard.py" line="464" />
       <source>Add {0} scenes</source>
       <translation>添加{0} 场景</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="472" />
+      <location filename="../novelwriter/tools/projwizard.py" line="470" />
       <source>You have selected the following:</source>
       <translation>您选择了以下内容：</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="474" />
+      <location filename="../novelwriter/tools/projwizard.py" line="472" />
       <source>Press '{0}' to create the new project.</source>
       <translation>按下'{0}' 创建新项目。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="475" />
+      <location filename="../novelwriter/tools/projwizard.py" line="473" />
       <source>Done</source>
       <translation>完成</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="475" />
+      <location filename="../novelwriter/tools/projwizard.py" line="473" />
       <source>Finish</source>
       <translation>完成</translation>
     </message>
@@ -4133,33 +4127,33 @@
   <context>
     <name>ProjWizardFolderPage</name>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="241" />
-      <location filename="../novelwriter/tools/projwizard.py" line="167" />
+      <location filename="../novelwriter/tools/projwizard.py" line="239" />
+      <location filename="../novelwriter/tools/projwizard.py" line="165" />
       <source>Select Project Folder</source>
       <translation>选择项目文件夹</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="168" />
+      <location filename="../novelwriter/tools/projwizard.py" line="166" />
       <source>Select a location to store the project. A new project folder will be created in the selected location.</source>
       <translation>选择一个位置来存储项目。 将在所选位置创建一个新的项目文件夹。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="180" />
+      <location filename="../novelwriter/tools/projwizard.py" line="178" />
       <source>Required</source>
       <translation>必须的</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="190" />
+      <location filename="../novelwriter/tools/projwizard.py" line="188" />
       <source>Project Path</source>
       <translation>项目路径</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="219" />
+      <location filename="../novelwriter/tools/projwizard.py" line="217" />
       <source>Error: A project folder cannot be created using this path.</source>
       <translation>错误：无法使用此路径创建项目文件夹。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="225" />
+      <location filename="../novelwriter/tools/projwizard.py" line="223" />
       <source>Error: The selected path already exists.</source>
       <translation>错误：所选路径已存在。</translation>
     </message>
@@ -4167,47 +4161,43 @@
   <context>
     <name>ProjWizardIntroPage</name>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="97" />
+      <location filename="../novelwriter/tools/projwizard.py" line="96" />
       <source>Create New Project</source>
       <translation>新建项目</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="98" />
+      <location filename="../novelwriter/tools/projwizard.py" line="97" />
       <source>Provide at least a project name. The project name should not be changed beyond this point as it is used for generating file names for for instance backups. The other fields are optional and can be changed at any time in Project Settings.</source>
       <translation>至少提供一个项目名称。 项目名称在此后不应被更改，因为它用于生成文件名，例如备份。 其他字段是可选的，可以随时在项目设置中更改。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="106" />
+      <location filename="../novelwriter/tools/projwizard.py" line="105" />
       <source>Side image by {0}, {1}</source>
       <translation>侧面图 {0}, {1}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="122" />
+      <location filename="../novelwriter/tools/projwizard.py" line="120" />
       <source>Required</source>
       <translation>必须</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="127" />
+      <location filename="../novelwriter/tools/projwizard.py" line="130" />
+      <location filename="../novelwriter/tools/projwizard.py" line="125" />
       <source>Optional</source>
       <translation>可选</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="132" />
-      <source>Optional. One name per line.</source>
-      <translation>可选，每行一个名字。</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="135" />
+      <location filename="../novelwriter/tools/projwizard.py" line="133" />
       <source>Project Name</source>
       <translation>项目名称</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="136" />
+      <location filename="../novelwriter/tools/projwizard.py" line="134" />
       <source>Novel Title</source>
       <translation>小说标题</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="137" />
+      <location filename="../novelwriter/tools/projwizard.py" line="135" />
       <source>Author(s)</source>
       <translation>作者</translation>
     </message>
@@ -4215,27 +4205,27 @@
   <context>
     <name>ProjWizardPopulatePage</name>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="264" />
+      <location filename="../novelwriter/tools/projwizard.py" line="262" />
       <source>Populate Project</source>
       <translation>填充项目</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="265" />
+      <location filename="../novelwriter/tools/projwizard.py" line="263" />
       <source>Choose how to pre-fill the project. Either with a minimal set of starter items, an example project explaining and showing many of the features, or show further custom options on the next page.</source>
       <translation>选择如何预填项目。 使用最少的入门项目集，一个显示许多功能的示例；或者在下一页显示更多自定义选项。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="275" />
+      <location filename="../novelwriter/tools/projwizard.py" line="273" />
       <source>Fill the project with a minimal set of items</source>
       <translation>用最少的项目集填充项目</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="276" />
+      <location filename="../novelwriter/tools/projwizard.py" line="274" />
       <source>Fill the project with example files</source>
       <translation>用示例文件集填充项目</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/projwizard.py" line="277" />
+      <location filename="../novelwriter/tools/projwizard.py" line="275" />
       <source>Show detailed options for filling the project</source>
       <translation>显示填充项目的详细选项</translation>
     </message>

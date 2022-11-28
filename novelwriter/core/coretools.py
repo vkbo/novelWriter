@@ -4,8 +4,8 @@ novelWriter – Project Document Tools
 A collection of tools to create and manipulate documents
 
 File History:
-Created: 2022-10-02 [2.0b1] DocMerger
-Created: 2022-10-11 [2.0b1] DocSplitter
+Created: 2022-10-02 [2.0rc1] DocMerger
+Created: 2022-10-11 [2.0rc1] DocSplitter
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen

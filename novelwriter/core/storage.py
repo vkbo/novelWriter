@@ -4,7 +4,7 @@ novelWriter – Project Storage Class
 The main class handling the project storage
 
 File History:
-Created: 2022-11-01 [2.0rc1] NWStorage
+Created: 2022-11-01 [2.0rc2] NWStorage
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen

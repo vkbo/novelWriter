@@ -4,7 +4,7 @@ novelWriter – ODT Text Converter
 Extends the Tokenizer class to generate ODT and FODT files
 
 File History:
-Created: 2021-01-26 [1.2a0]
+Created: 2021-01-26 [1.2b1]
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen

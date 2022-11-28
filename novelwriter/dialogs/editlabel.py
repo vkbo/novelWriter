@@ -4,7 +4,7 @@ novelWriter – Edit Label Dialog
 A simple dialog for editing a label
 
 File History:
-Created: 2022-06-11 [1.7b1]
+Created: 2022-06-11 [2.0rc1]
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen

@@ -4,7 +4,7 @@ novelWriter – Project Data Class
 Data class for novelWriter projects
 
 File History:
-Created: 2022-10-30 [2.0rc1]
+Created: 2022-10-30 [2.0rc2]
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen

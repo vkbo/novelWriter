@@ -6,8 +6,10 @@ Data class for the project index of tags, headers and references
 File History:
 Created: 2019-04-22 [0.0.1]  countWords
 Created: 2019-05-27 [0.1.4]  NWIndex
-Created: 2022-05-28 [1.7rc1] IndexItem, IndexHeading
-Created: 2022-05-29 [1.7rc1] TagsIndex, ItemIndex
+Created: 2022-05-28 [2.0rc1] IndexItem
+Created: 2022-05-28 [2.0rc1] IndexHeading
+Created: 2022-05-29 [2.0rc1] TagsIndex
+Created: 2022-05-29 [2.0rc1] ItemIndex
 
 This file is a part of novelWriter
 Copyright 2018–2022, Veronica Berglyd Olsen
