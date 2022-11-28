@@ -246,7 +246,7 @@ class GuiTheme:
             self.statSaved   = self._parseColour(confParser, cnfSec, "statussaved")
 
         # Icons
-        self.iconCache.loadTheme(self.themeIcons)
+        self.iconCache.loadTheme(self.themeIcons or "typicons_light")
 
         # Update Dependant Colours
         backCol = self._guiPalette.window().color()
