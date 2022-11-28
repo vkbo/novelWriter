@@ -28,7 +28,7 @@ from tools import cmpFiles, getGuiItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog
 
-from novelwriter.tools import GuiBuildNovel
+from novelwriter.tools.build import GuiBuildNovel
 
 
 @pytest.mark.gui

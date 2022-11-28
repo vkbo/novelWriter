@@ -33,8 +33,8 @@ from PyQt5.QtGui import (
     QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
 )
 
-from novelwriter.constants import nwRegEx, nwUnicode
 from novelwriter.common import checkInt
+from novelwriter.constants import nwRegEx, nwUnicode
 
 logger = logging.getLogger(__name__)
 

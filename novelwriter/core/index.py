@@ -36,10 +36,8 @@ from pathlib import Path
 
 from novelwriter.enum import nwItemType, nwItemLayout
 from novelwriter.error import logException
+from novelwriter.common import checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
 from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode, nwHeaders
-from novelwriter.common import (
-    checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
-)
 
 logger = logging.getLogger(__name__)
 

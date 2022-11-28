@@ -38,19 +38,30 @@ from PyQt5.QtWidgets import (
     QMessageBox, QDialog, QStackedWidget
 )
 
-from novelwriter.gui import (
-    GuiDocEditor, GuiDocViewDetails, GuiDocViewer, GuiItemDetails, GuiMainMenu,
-    GuiMainStatus, GuiNovelView, GuiOutlineView, GuiProjectView, GuiTheme,
-    GuiSideBar
-)
-from novelwriter.dialogs import (
-    GuiAbout, GuiPreferences, GuiProjectDetails, GuiProjectLoad,
-    GuiProjectSettings, GuiUpdates, GuiWordList
-)
-from novelwriter.tools import (
-    GuiBuildNovel, GuiLipsum, GuiProjectWizard, GuiWritingStats
-)
-from novelwriter.core import NWProject, ProjectBuilder
+from novelwriter.gui.theme import GuiTheme
+from novelwriter.gui.sidebar import GuiSideBar
+from novelwriter.gui.outline import GuiOutlineView
+from novelwriter.gui.mainmenu import GuiMainMenu
+from novelwriter.gui.projtree import GuiProjectView
+from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.gui.docviewer import GuiDocViewDetails, GuiDocViewer
+from novelwriter.gui.noveltree import GuiNovelView
+from novelwriter.gui.statusbar import GuiMainStatus
+from novelwriter.gui.itemdetails import GuiItemDetails
+from novelwriter.dialogs.about import GuiAbout
+from novelwriter.dialogs.updates import GuiUpdates
+from novelwriter.dialogs.projload import GuiProjectLoad
+from novelwriter.dialogs.wordlist import GuiWordList
+from novelwriter.dialogs.preferences import GuiPreferences
+from novelwriter.dialogs.projdetails import GuiProjectDetails
+from novelwriter.dialogs.projsettings import GuiProjectSettings
+from novelwriter.tools.build import GuiBuildNovel
+from novelwriter.tools.lipsum import GuiLipsum
+from novelwriter.tools.projwizard import GuiProjectWizard
+from novelwriter.tools.writingstats import GuiWritingStats
+from novelwriter.core.project import NWProject
+from novelwriter.core.coretools import ProjectBuilder
+
 from novelwriter.enum import (
     nwDocMode, nwItemType, nwItemClass, nwAlert, nwWidget, nwView
 )

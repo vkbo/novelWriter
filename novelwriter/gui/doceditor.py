@@ -50,10 +50,11 @@ from PyQt5.QtWidgets import (
     QFrame
 )
 
-from novelwriter.core import NWSpellEnchant, countWords
 from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode, nwItemClass
 from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwConst, nwFiles, nwKeyWords, nwUnicode
+from novelwriter.core.index import countWords
+from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.gui.dochighlight import GuiDocHighlighter
 
 logger = logging.getLogger(__name__)
