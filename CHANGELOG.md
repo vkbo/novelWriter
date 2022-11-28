@@ -1,5 +1,57 @@
 # novelWriter Changelog
 
+## Version 2.0 [2022-12-04]
+
+### Release Notes
+
+_These Release Notes also include the changes from 2.0 pre-releases._
+
+### Detailed Changelog
+
+**User Interface**
+
+* The novel tree now updates items that have meta data changes, including for the optional third
+  column. Issue #1240. PR #1241.
+* When the editor opens or moves on a specific line, the line is now scrolled to the position in
+  the editor defined by the typewriter scrolling setting in Preferences. Previously, lines were
+  scrolled to the bottom of the editor. Issue #1239. PR #1243.
+* When a document is requested opened, but is already open, it is no longer re-opened. Previously,
+  this was treated as an implied refresh request, but there are a number of other cases where this
+  may be triggered. The main issue here is that it would reset the undo history, which can be
+  annoying. Issue #1242. PR #1243.
+* The third column in the novel tree now has a max width, and will only display the first reference
+  of the list of references for that item. Issue #1238. PR #1245.
+* The label at the top of the novel tree becomes a dropdown box when there are more than one novel
+  root folder in the project. Issue #1250. PR #1252.
+* The author setting in the New Project Wizard and Project Settings is now a normal text box,
+  instead of a multi line input box. Only one author value is now saved in the project XML file.
+  The field is anyway free text, so the user is free to add multiple authors in the box. For
+  projects that already have multiple authors set, the value needs to be set anew. PR #1258.
+
+**Internationalisation**
+
+* German translation has been added by @HeyMyian. PR #1033.
+* Other translations have been updated from Crowdin for 2.0. PRs #1251, #1253
+
+**Documentation**
+
+* The documentation has been updated to reflect 2.0 changes. Issue #1070, #1158 and #1181.
+  PRs #1248 and #1255.
+* Add project XML file format specification. Issue #1012. PR #1249. and #1254.
+
+**Code Improvements**
+
+* Fix an issue with circular imports mainly triggered from the test suite. PR #1166.
+* Instead of assigning headers in a document a key by its line number, the headings are now
+  assigned sequential keys. This makes it easier to detect actual meta data changes, which would
+  otherwise be triggered by a change of line number as well. PR #1241.
+* Cleaned up the closing project process. Issue #1237. PR #1247.
+* The combo boxes to select which novel root folder to display in various locations have been
+  merged into a special novel selector class to avoid duplication of code and inconsistent
+  behaviour. PRs #1252 and #1253.
+
+----
+
 ## Version 2.0 RC 2 [2022-11-13]
 
 ### Release Notes
