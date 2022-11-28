@@ -25,9 +25,9 @@ from PyQt5.QtGui import QIcon
 
 from tools import C, buildTestProject
 
+from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
-from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 
 
 @pytest.mark.core

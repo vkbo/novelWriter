@@ -25,8 +25,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 
-from novelwriter.core.tokenizer import Tokenizer
 from novelwriter.constants import nwKeyWords, nwLabels, nwHtmlUnicode
+from novelwriter.core.tokenizer import Tokenizer
 
 logger = logging.getLogger(__name__)
 

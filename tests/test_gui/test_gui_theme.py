@@ -26,14 +26,14 @@ from pathlib import Path
 from configparser import ConfigParser
 
 from mock import causeOSError
-from novelwriter.constants import nwLabels
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from tools import writeFile
 
 from PyQt5.QtGui import QIcon, QPalette, QPixmap
 from PyQt5.QtWidgets import QApplication
 
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.config import Config
+from novelwriter.constants import nwLabels
 from novelwriter.gui.theme import GuiIcons, GuiTheme
 
 

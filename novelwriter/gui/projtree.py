@@ -39,10 +39,13 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QWidget
 )
 
-from novelwriter.core import DocMerger, DocSplitter
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
-from novelwriter.dialogs import GuiDocMerge, GuiDocSplit, GuiEditLabel, GuiProjectSettings
 from novelwriter.constants import nwHeaders, nwUnicode, trConst, nwLabels
+from novelwriter.core.coretools import DocMerger, DocSplitter
+from novelwriter.dialogs.docmerge import GuiDocMerge
+from novelwriter.dialogs.docsplit import GuiDocSplit
+from novelwriter.dialogs.editlabel import GuiEditLabel
+from novelwriter.dialogs.projsettings import GuiProjectSettings
 
 logger = logging.getLogger(__name__)
 

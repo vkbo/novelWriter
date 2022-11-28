@@ -31,13 +31,15 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QMessageBox, QInputDialog
 
 from novelwriter.enum import nwItemType, nwView, nwWidget
-from novelwriter.tools import GuiProjectWizard
-from novelwriter.dialogs import GuiEditLabel, GuiAbout, GuiProjectLoad
 from novelwriter.constants import nwFiles
 from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
+from novelwriter.dialogs.about import GuiAbout
+from novelwriter.dialogs.projload import GuiProjectLoad
+from novelwriter.dialogs.editlabel import GuiEditLabel
+from novelwriter.tools.projwizard import GuiProjectWizard
 
 KEY_DELAY = 1
 

@@ -158,7 +158,7 @@ def buildTestProject(theObject, projPath):
     object as the parent.
     """
     from novelwriter.enum import nwItemClass
-    from novelwriter.core import NWProject
+    from novelwriter.core.project import NWProject
 
     if isinstance(theObject, NWProject):
         theGUI = None

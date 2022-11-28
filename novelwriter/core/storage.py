@@ -30,11 +30,11 @@ from time import time
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile
 
+from novelwriter.error import logException
 from novelwriter.common import minmax
 from novelwriter.constants import nwFiles
 from novelwriter.core.document import NWDocument
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
-from novelwriter.error import logException
 
 logger = logging.getLogger(__name__)
 

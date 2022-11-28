@@ -25,7 +25,7 @@ from tools import C, getGuiItem, buildTestProject
 
 from PyQt5.QtWidgets import QAction
 
-from novelwriter.tools import GuiLipsum
+from novelwriter.tools.lipsum import GuiLipsum
 
 
 @pytest.mark.gui

@@ -41,10 +41,10 @@ from PyQt5.QtWidgets import (
     QAction, QMenu, QFrame
 )
 
-from novelwriter.core import ToHtml
 from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
 from novelwriter.error import logException
 from novelwriter.constants import nwUnicode
+from novelwriter.core.tohtml import ToHtml
 
 logger = logging.getLogger(__name__)
 

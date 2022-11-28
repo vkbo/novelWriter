@@ -28,8 +28,8 @@ from tools import getGuiItem, writeFile, buildTestProject
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog
 
-from novelwriter.tools import GuiWritingStats
 from novelwriter.constants import nwFiles
+from novelwriter.tools.writingstats import GuiWritingStats
 
 
 @pytest.mark.gui
