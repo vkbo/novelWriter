@@ -63,3 +63,95 @@ first time you start novelWriter.
 
 Once the files are copied there, they should show up in :guilabel:`Preferences` with the label you
 set as ``name`` inside the file.
+
+.. note::
+   In novelWriter 2.0 the ``icontheme`` value was added to GUI themes. Make sure you set this value
+   in existing custom themes. Otherwise it defaults to ``typicons_light``, which may not match your
+   theme colour scheme.
+
+
+Gustom GUI Theme
+----------------
+
+A GUI theme conf file consists of the follwing settings:
+
+.. code-block:: cfg
+
+   [Main]
+   name        = My Custom Theme
+   description = A description of my custom theme
+   author      = Jane Doe
+   credit      = John Doe
+   url         = https://example.com
+   license     = CC BY-SA 4.0
+   licenseurl  = https://creativecommons.org/licenses/by-sa/4.0/
+   icontheme   = typicons_light
+
+   [Palette]
+   window          = 100, 100, 100
+   windowtext      = 100, 100, 100
+   base            = 100, 100, 100
+   alternatebase   = 100, 100, 100
+   text            = 100, 100, 100
+   tooltipbase     = 100, 100, 100
+   tooltiptext     = 100, 100, 100
+   button          = 100, 100, 100
+   buttontext      = 100, 100, 100
+   brighttext      = 100, 100, 100
+   highlight       = 100, 100, 100
+   highlightedtext = 100, 100, 100
+   link            = 100, 100, 100
+   linkvisited     = 100, 100, 100
+
+   [GUI]
+   statusnone      = 100, 100, 100
+   statussaved     = 100, 100, 100
+   statusunsaved   = 100, 100, 100
+
+In the Main section you must at least define the ``name`` and ``icontheme`` settings. The
+``icontheme`` settings should correspond to one of the internal icon themes. Either
+``typicons_light`` or ``typicons_dark``.
+
+The Palette values correspond the the Qt enum values for QPalette::ColorRole, see the
+`Qt documentation <https://doc.qt.io/qt-5.15/qpalette.html#ColorRole-enum>`_ for more details. The
+colour values are RGB numbers on the format ``r, g, b`` where each is an integer from  to 255.
+Omitted values are not loaded and will use default values.
+
+
+Custom Syntax Theme
+-------------------
+
+A syntax theme conf file consists of the follwing settings:
+
+.. code-block:: cfg
+
+   [Main]
+   name       = My Syntax Theme
+   author     = Jane Doe
+   credit     = John Doe
+   url        = https://example.com
+   license    = CC BY-SA 4.0
+   licenseurl = https://creativecommons.org/licenses/by-sa/4.0/
+
+   [Syntax]
+   background     = 255, 255, 255
+   text           =   0,   0,   0
+   link           =   0,   0,   0
+   headertext     =   0,   0,   0
+   headertag      =   0,   0,   0
+   emphasis       =   0,   0,   0
+   straightquotes =   0,   0,   0
+   doublequotes   =   0,   0,   0
+   singlequotes   =   0,   0,   0
+   hidden         =   0,   0,   0
+   keyword        =   0,   0,   0
+   value          =   0,   0,   0
+   spellcheckline =   0,   0,   0
+   errorline      =   0,   0,   0
+   replacetag     =   0,   0,   0
+   modifier       =   0,   0,   0
+
+
+In the Main section, you must define at least the ``name`` setting. The Syntax colour values are
+RGB numbers on the format ``r, g, b`` where each is an integer from  to 255. Omitted values are set
+to black, except ``background`` which defaults to white,
