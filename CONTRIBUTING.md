@@ -98,14 +98,14 @@ The `setup.cfg` file in the root of this project has the following settings for 
 matches the above code style:
 ```conf
 [flake8]
-ignore = E221,E226,E228,E241
+ignore = E133,E221,E226,E228,E241,W503
 max-line-length = 99
 exclude = docs/*
 ```
 
 The command line equivalent, with reporting, is:
 ```bash
-flake8 . --count --ignore E221,E226,E228,E241 --max-line-length=99 --show-source --statistics
+flake8 . --count --ignore E133,E221,E226,E228,E241,W503 --max-line-length=99 --show-source --statistics
 ```
 
 Passing this check is required before contributions are merged. This is checked automatically when
