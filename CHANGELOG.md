@@ -1,6 +1,6 @@
 # novelWriter Changelog
 
-## Version 2.0 [2022-12-04]
+## Version 2.0 [2022-11-28]
 
 ### Release Notes
 
