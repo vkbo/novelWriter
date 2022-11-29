@@ -1,5 +1,26 @@
 # novelWriter Changelog
 
+## Version 2.0.1 [2022-11-29]
+
+### Release Notes
+
+This is a patch release that fixes a minor issues with loading custom GUI themes that haven't been
+updated to include the icon theme setting. The patch also updates the French translation.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix an issue where starting the app with a custom GUI theme enabled would not load any icons at
+  all if the `icontheme` setting isn't specified. The app now loads the `typicons_light` theme by
+  default if no icon theme is set. Issue #1263. PR #1264.
+
+**Internationalisation**
+
+* The French translations has now been completed by @aaribaud. PR #1265.
+
+----
+
 ## Version 2.0 [2022-11-28]
 
 ### Release Notes
