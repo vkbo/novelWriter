@@ -1146,7 +1146,7 @@ def makeWindowsEmbedded(sysArgs):
             minimalZip = sysArgs[1]
 
     if minimalZip is None:
-        print("Please provide the path to the minimal win pacage as an argument")
+        print("Please provide the path to the minimal win package as an argument")
         sys.exit(1)
 
     packVersion = os.path.basename(minimalZip).split("-")[1]
