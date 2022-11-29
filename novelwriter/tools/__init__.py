@@ -1,0 +1,3 @@
+"""
+novelWriter – Tools Init File
+"""

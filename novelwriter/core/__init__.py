@@ -1,0 +1,3 @@
+"""
+novelWriter – Core Init File
+"""
