@@ -1,0 +1,3 @@
+"""
+novelWriter – GUI Init File
+"""
