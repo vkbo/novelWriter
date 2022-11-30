@@ -17,28 +17,28 @@
     <launchable type="desktop-id">novelwriter.desktop</launchable>
     <url type="homepage">https://novelwriter.io/</url>
     <screenshots>
-        <screenshot type="source">
+        <screenshot type="default">
             <image>https://novelwriter.io/images/screenshot-multi.png</image>
         </screenshot>
-        <screenshot type="source">
+        <screenshot>
             <image>https://novelwriter.io/images/f-nw-build-light.png</image>
         </screenshot>
-        <screenshot type="source">
+        <screenshot>
             <image>https://novelwriter.io/images/f-nw-editor-dark.png</image>
         </screenshot>
-        <screenshot type="source">
+        <screenshot>
             <image>https://novelwriter.io/images/f-nw-editor-light.png</image>
         </screenshot>
-        <screenshot type="source">
+        <screenshot>
             <image>https://novelwriter.io/images/f-nw-novelview-dark.png</image>
         </screenshot>
-        <screenshot type="source">
+        <screenshot>
             <image>https://novelwriter.io/images/f-nw-novelview-light.png</image>
         </screenshot>
-        <screenshot type="source">
+        <screenshot>
             <image>https://novelwriter.io/images/f-nw-outline-dark.png</image>
         </screenshot>
-        <screenshot type="source">
+        <screenshot>
             <image>https://novelwriter.io/images/f-nw-outline-light.png</image>
         </screenshot>
     </screenshots>
