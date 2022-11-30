@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright Copyright 2018–2022, Veronica Berglyd Olsen <code@vkbo.net> -->
+<!-- Copyright 2018–2022, Veronica Berglyd Olsen <code@vkbo.net> -->
 <component type="desktop-application">
     <id>io.novelwriter.novelWriter</id>
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0</project_license>
     <name>novelWriter</name>
-    <summary>A markdown-like text editor for planning and writing novels</summary>
+    <summary>A markdown-like text editor for planning and writing novels.</summary>
     <description>
         <p>novelWriter is a plain text editor designed for writing novels assembled from
         many smaller text documents. It uses a minimal formatting syntax inspired by
