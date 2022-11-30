@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright Copyright 2018–2022, Veronica Berglyd Olsen <code@vkbo.net> -->
+<component type="desktop-application">
+    <id>io.novelwriter.novelWriter</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-3.0</project_license>
+    <name>novelWriter</name>
+    <summary>A markdown-like text editor for planning and writing novels</summary>
+    <description>
+        <p>novelWriter is a plain text editor designed for writing novels assembled from
+        many smaller text documents. It uses a minimal formatting syntax inspired by
+        Markdown, and adds a meta data syntax for comments, synopsis, and
+        cross-referencing. It's designed to be a simple text editor that allows for
+        easy organisation of text and notes, using human readable text files as
+        storage for robustness.</p>
+    </description>
+    <launchable type="desktop-id">novelwriter.desktop</launchable>
+    <url type="homepage">https://novelwriter.io/</url>
+    <screenshots>
+        <screenshot type="source">
+            <image>https://novelwriter.io/images/screenshot-multi.png</image>
+        </screenshot>
+        <screenshot type="source">
+            <image>https://novelwriter.io/images/f-nw-build-light.png</image>
+        </screenshot>
+        <screenshot type="source">
+            <image>https://novelwriter.io/images/f-nw-editor-dark.png</image>
+        </screenshot>
+        <screenshot type="source">
+            <image>https://novelwriter.io/images/f-nw-editor-light.png</image>
+        </screenshot>
+        <screenshot type="source">
+            <image>https://novelwriter.io/images/f-nw-novelview-dark.png</image>
+        </screenshot>
+        <screenshot type="source">
+            <image>https://novelwriter.io/images/f-nw-novelview-light.png</image>
+        </screenshot>
+        <screenshot type="source">
+            <image>https://novelwriter.io/images/f-nw-outline-dark.png</image>
+        </screenshot>
+        <screenshot type="source">
+            <image>https://novelwriter.io/images/f-nw-outline-light.png</image>
+        </screenshot>
+    </screenshots>
+    <provides>
+        <id>novelwriter.desktop</id>
+    </provides>
+    <content_rating type="oars-1.0" />
+    <releases>
+        <release version="v2.0.1" date="2022-11-29">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v2.0.1</url>
+        </release>
+        <release version="v2.0" date="2022-11-28">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v2.0</url>
+        </release>
+        <release version="v1.6.6" date="2022-10-25">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.6.6</url>
+        </release>
+        <release version="v1.6.5" date="2022-10-13">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.6.5</url>
+        </release>
+        <release version="v1.6.4" date="2022-09-29">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.6.4</url>
+        </release>
+        <release version="v1.6.3" date="2022-08-18">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.6.3</url>
+        </release>
+        <release version="v1.6.2" date="2022-03-20">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.6.2</url>
+        </release>
+        <release version="v1.6.1" date="2022-03-16">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.6.1</url>
+        </release>
+        <release version="v1.6" date="2022-02-20">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.6</url>
+        </release>
+        <release version="v1.5.5" date="2022-01-05">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.5.5</url>
+        </release>
+        <release version="v1.5.4" date="2022-01-04">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.5.4</url>
+        </release>
+        <release version="v1.5.3" date="2021-12-31">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.5.3</url>
+        </release>
+        <release version="v1.5.2" date="2021-12-12">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.5.2</url>
+        </release>
+        <release version="v1.5.1" date="2021-10-23">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.5.1</url>
+        </release>
+        <release version="v1.5" date="2021-09-19">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.5</url>
+        </release>
+        <release version="v1.4.2" date="2021-08-30">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.4.2</url>
+        </release>
+        <release version="v1.4.1" date="2021-07-27">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.4.1</url>
+        </release>
+        <release version="v1.4" date="2021-07-27">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.4</url>
+        </release>
+        <release version="v1.3.3" date="2021-06-13">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.3.3</url>
+        </release>
+        <release version="v1.3.2" date="2021-05-30">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v1.3.2</url>
+        </release>
+    </releases>
+</component>

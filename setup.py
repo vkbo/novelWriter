@@ -588,6 +588,7 @@ def makeMinimalPackage(targetOS):
     print("")
 
     rootFiles = [
+        "MANIFEST.in",
         "README.md",
         "LICENSE.md",
         "CREDITS.md",
@@ -1069,8 +1070,7 @@ def makeAppImage(sysArgs):
     # Write Metadata
     # ==============
 
-    appDescription = readFile("setup/description_short.txt")
-    appdataXML = readFile("setup/novelwriter.appdata.xml").format(description=appDescription)
+    appdataXML = readFile("setup/data/novelwriter.appdata.xml")
     writeFile(f"{imageDir}/novelwriter.appdata.xml", appdataXML)
     print("Wrote:  novelwriter.appdata.xml")
 
