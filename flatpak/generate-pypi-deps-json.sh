@@ -1,4 +1,5 @@
 #! /bin/sh
+# uses https://github.com/flatpak/flatpak-builder-tools/blob/master/pip/flatpak-pip-generator
 
 cp ../requirements.txt .
 sed -e '/pyqt5/s/^/#/g' -i requirements.txt
