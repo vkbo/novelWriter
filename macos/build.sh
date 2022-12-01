@@ -88,6 +88,8 @@ EOF
 # make executable
 chmod a+x novelWriter.app/Contents/MacOS/novelWriter
 
+sudo codesign --sign - --deep --force --entitlements "$SCRIPT_DIR/../macos/App.entitlements" --options runtime "novelWriter.app/Contents/MacOS/novelWriter"
+
 # remove bloat
 pushd novelWriter.app/Contents/Resources || exit 1
 
@@ -111,7 +113,10 @@ rm lib/python3.*/site-packages/PyQt5/Qt/lib/libQt5WebEngine* || true
 popd || exit 1
 popd || exit 1
 
-echo "Packageing App"
+echo "Packageing App ..."
+
+
+
 # generate .dmg
 
 brew install create-dmg
