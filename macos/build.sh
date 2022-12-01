@@ -95,7 +95,8 @@ EOF
 # make executable
 chmod a+x novelWriter.app/Contents/MacOS/novelWriter
 
-sudo codesign --sign - --deep --force --entitlements "$SCRIPT_DIR/../macos/App.entitlements" --options runtime "novelWriter.app/Contents/MacOS/novelWriter"
+#do codesigning
+#sudo codesign --sign - --deep --force --entitlements "$SCRIPT_DIR/../macos/App.entitlements" --options runtime "novelWriter.app/Contents/MacOS/novelWriter"
 
 # remove bloat
 pushd novelWriter.app/Contents/Resources || exit 1
