@@ -25,6 +25,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 
+from novelwriter.error import formatException
+from novelwriter.core.toodt import ToOdt
+from novelwriter.core.tohtml import ToHtml
+from novelwriter.core.tomd import ToMarkdown
+
 logger = logging.getLogger(__name__)
 
 
@@ -35,6 +40,7 @@ class NWBuildDocument:
         self._project = project
         self._build = {}
         self._documents = []
+        self._error = None
 
         return
 
@@ -66,14 +72,70 @@ class NWBuildDocument:
     #  Methods
     ##
 
-    def buildOpenDocument(self, fileName, isFlat):
-        pass
+    def buildOpenDocument(self, savePath, isFlat):
+        """Build an Open Document file.
+        """
+        makeOdt = ToOdt(self._project, isFlat=isFlat)
+        self._setupBuild(makeOdt)
 
-    def buildHTML(self, fileName):
-        pass
+        for i, tHandle in enumerate(self._documents):
+            yield i, self._doBuild(makeOdt, tHandle)
 
-    def buildMarkdown(self, fileName, mdFlavour):
-        pass
+        self._error = None
+        try:
+            if isFlat:
+                makeOdt.saveFlatXML(savePath)
+            else:
+                makeOdt.saveOpenDocText(savePath)
+        except Exception as exc:
+            self._error = formatException(exc)
+
+        return
+
+    def buildHTML(self, savePath):
+        """Build an HTML file.
+        """
+        makeHtml = ToHtml(self._project)
+        self._setupBuild(makeHtml)
+
+        if self._build.get("process.replaceTabs", False):
+            makeHtml.replaceTabs()
+
+        for i, tHandle in enumerate(self._documents):
+            yield i, self._doBuild(makeHtml, tHandle)
+
+        self._error = None
+        try:
+            makeHtml.saveHTML5(savePath)
+        except Exception as exc:
+            self._error = formatException(exc)
+
+        return
+
+    def buildMarkdown(self, savePath, extendedMd):
+        """Build a Markdown file.
+        """
+        makeMd = ToMarkdown(self._project)
+        self._setupBuild(makeMd)
+
+        if extendedMd:
+            makeMd.setGitHubMarkdown()
+        else:
+            makeMd.setStandardMarkdown()
+
+        if self._build.get("process.replaceTabs", False):
+            makeMd.replaceTabs(nSpaces=4, spaceChar=" ")
+
+        for i, tHandle in enumerate(self._documents):
+            yield i, self._doBuild(makeMd, tHandle)
+
+        self._error = None
+        try:
+            makeMd.saveMarkdown(savePath)
+        except Exception as exc:
+            self._error = formatException(exc)
+
+        return
 
     ##
     #  Internal Functions
@@ -82,7 +144,7 @@ class NWBuildDocument:
     def _setupBuild(self, bldObj):
         pass
 
-    def _doBuild(self, tHandle):
+    def _doBuild(self, bldObj, tHandle):
         pass
 
 # END Class NWBuildDocument
