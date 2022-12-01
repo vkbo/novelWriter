@@ -25,6 +25,13 @@ OLD_CWD="$(pwd)"
 
 VERSION="$(awk '/^__version__/{print substr($NF,2,length($NF)-2)}' $SCRIPT_DIR/../novelwriter/__init__.py)"
 
+pushd "$SCRIPT_DIR/../" || exit 1
+
+python3 setup.py manual qtlrelease sample
+
+ls -lah .
+
+popd || exit 1
 
 pushd "$BUILD_DIR"/ || exit 1
 
@@ -114,8 +121,6 @@ popd || exit 1
 popd || exit 1
 
 echo "Packageing App ..."
-
-
 
 # generate .dmg
 
