@@ -99,8 +99,6 @@ rm -rf pkgs
 rm -rf cmake
 rm -rf share/{gtk-,}doc
 
-rm -rf lib/python3.1/
-
 #remove web engine
 rm lib/python3.*/site-packages/PyQt5/QtWebEngine* || true
 rm -r lib/python3.*/site-packages/PyQt5/Qt/translations/qtwebengine* || true
