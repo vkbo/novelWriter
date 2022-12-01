@@ -682,7 +682,7 @@ class GuiBuildNovel(QDialog):
         return
 
     def _doBuild(self, bldObj, isPreview=False, doConvert=True):
-        """Rund the build with a specific build object.
+        """Run the build with a specific build object.
         """
         tStart = int(time())
 
