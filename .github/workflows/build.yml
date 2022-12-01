@@ -5,7 +5,7 @@ on:
     tags:
       - '*'
     branches:
-      - 'macos-docs-build'
+      - 'macos-appbundle'
 
 jobs:
   build:
@@ -84,16 +84,16 @@ jobs:
       # UPLOAD BUILDS
       ##
 
-      # - name: Upload binary zip (macOS)
-      #   if: runner.os == 'macOS'
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: novelWriter-${{ matrix.name }}-${{ env.VERSION }}.app.zip
-      #     path: novelWriter.app.zip
+      - name: Upload binary zip (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: novelWriter-${{ matrix.name }}-${{ env.VERSION }}.app.zip
+          path: novelWriter.app.zip
 
-      # - name: Upload dmg (macOS)
-      #   if: runner.os == 'macOS'
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: novelWriter-${{ matrix.name }}-${{ env.VERSION }}.dmg
-      #     path: novelWriter-${{ env.VERSION }}.dmg
+      - name: Upload dmg (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: novelWriter-${{ matrix.name }}-${{ env.VERSION }}.dmg
+          path: novelWriter-${{ env.VERSION }}.dmg
