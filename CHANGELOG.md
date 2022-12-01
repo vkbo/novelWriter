@@ -1,5 +1,27 @@
 # novelWriter Changelog
 
+## Version 2.0.2 [2022-12-01]
+
+### Release Notes
+
+This is a patch release that fixes a minor issues with syntax highlighting not updating when the
+highlighting preferences were changed. It also fixes an issue that broke the FreeBSD release.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix an issue where changing the Highlighting Preferences for highlighting quotes, emphasis, and
+  multiple or trailing spaces would not reload the syntax highlighter in the editor. The changes
+  would only take effect after restarting the app. Issue #1274. PR #1278.
+
+**Packaging and Installation**
+
+* The 2.0.1 release was broken on Linux, but was fixed and the packages rebuilt. However, the
+  FreeBSD port was still broken. This release fixes this issue. Issue #1277. PR #1272.
+
+----
+
 ## Version 2.0.1 [2022-11-29]
 
 ### Release Notes
