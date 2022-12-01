@@ -1,0 +1,66 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - '*'
+    branches:
+      - 'macos-appbundle'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-12
+            name: macos
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      ##
+      # PREPARE
+      ##
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+
+      - name: Set short version
+        shell: bash
+        run: |
+          ver_short=`git rev-parse --short HEAD`
+          echo "VERSION=$ver_short" >> $GITHUB_ENV
+      
+      - name: Install Dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew update
+          brew install create-dmg
+      
+      ##
+      # BUILD
+      ##
+      
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          ./macos/build.sh
+      
+      ##
+      # UPLOAD BUILDS
+      ##
+
+      - name: Upload binary zip (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: novelWriter-${{ matrix.name }}-${{ env.VERSION }}.app.zip
+          path: novelWriter.app.zip
+
+      - name: Upload dmg (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: novelWriter-${{ matrix.name }}-${{ env.VERSION }}.dmg
+          path: novelWriter-${{ env.VERSION }}.dmg
