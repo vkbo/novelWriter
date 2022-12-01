@@ -29,7 +29,7 @@
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>NSHumanReadableCopyright</key>
-  <string>© 2018–2022, Veronica Berglyd Olsen <code@vkbo.net></string>
+  <string>© 2018–2022, Veronica Berglyd Olsen &lt;code@vkbo.net&gt;</string>
   <key>IFMajorVersion</key>
   <integer>0</integer>
   <key>IFMinorVersion</key>
