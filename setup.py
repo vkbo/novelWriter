@@ -835,7 +835,7 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
 ##
 
 def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
-    """Wrapper for building debian packages for launcpad.
+    """Wrapper for building debian packages for launchpad.
     """
     print("")
     print("Launchpad Packages")
