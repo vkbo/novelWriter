@@ -225,9 +225,6 @@ class GuiAbout(QDialog):
             ".alt {{"
             "  color: rgb({kColR},{kColG},{kColB});"
             "}}\n"
-            "ul, li {{"
-            "  margin-left: 0; padding-left: 0;"
-            "}}\n"
         ).format(
             hColR=self.mainGui.mainTheme.colHead[0],
             hColG=self.mainGui.mainTheme.colHead[1],
