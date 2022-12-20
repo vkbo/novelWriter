@@ -36,11 +36,11 @@ contributions are listed on the project's [Members](https://crowdin.com/project/
 
 The following libraries are dependencies of novelWriter:
 
-* Qt5 by [Qt Company](https://www.qt.io/)
-* PyQt5 by [Riverbank Computing](https://www.riverbankcomputing.com/software/pyqt/)
-* lxml by [Martijn Faassen](https://lxml.de/)
-* Enchant by [Dom Lachowicz](https://abiword.github.io/enchant/)
-* PyEnchant by [Dimitri Merejkowsky](https://pyenchant.github.io/pyenchant/)
+* [Qt5](https://www.qt.io) by Qt Company
+* [PyQt5](https://www.riverbankcomputing.com/software/pyqt) by Riverbank Computing
+* [lxml](https://lxml.de) by Martijn Faassen
+* [Enchant](https://abiword.github.io/enchant) by Dom Lachowicz
+* [PyEnchant](https://pyenchant.github.io/pyenchant) by Dimitri Merejkowsky
 
 ## Assets
 
