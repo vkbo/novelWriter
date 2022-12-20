@@ -4,14 +4,18 @@
 
 * Veronica Berglyd Olsen (@vkbo)
 
-## Main Contributors
+## Contributors
 
 * Concept: Marian Lückhof (@Number042)
 * Internationalisation: Bruno Meneguello (@bkmeneguello)
+* Setup and Packaging: Rachel Powers (@Ryex)
+
+For other contributions, see the project's [Contributors](https://github.com/vkbo/novelWriter/graphs/contributors) page.
 
 ## Translations
 
-The default language is English (UK) with English (US) as an option.
+The default language is English (UK) with English (US) as an option. These are the original
+translators for the languages currently available:
 
 * Dutch: Martijn van der Kleijn (@mvdkleijn)
 * French: Jan Lüdke (@jyhelle)
@@ -21,24 +25,31 @@ The default language is English (UK) with English (US) as an option.
 * Portuguese: Bruno Meneguello (@bkmeneguello)
 * Simplified Chinese: Qianzhi Long (@longqzh)
 
+Additional larger translation contributions:
+
+* French: Albert Aribaud (@aaribaud)
+
+Translations are managed on [Crowdin](https://crowdin.com/project/novelwriter), and more
+contributions are listed on the project's [Members](https://crowdin.com/project/novelwriter/members) page.
+
 ## Libraries
 
 The following libraries are dependencies of novelWriter:
 
-* Qt5 by [Qt Company](https://www.qt.io/)
-* PyQt5 by [Riverbank Computing](https://www.riverbankcomputing.com/software/pyqt/)
-* lxml by [Martijn Faassen](https://lxml.de/)
-* Enchant by [Dom Lachowicz](https://abiword.github.io/enchant/)
-* PyEnchant by [Dimitri Merejkowsky](https://pyenchant.github.io/pyenchant/)
+* [Qt5](https://www.qt.io) by Qt Company
+* [PyQt5](https://www.riverbankcomputing.com/software/pyqt) by Riverbank Computing
+* [lxml](https://lxml.de) by Martijn Faassen
+* [Enchant](https://abiword.github.io/enchant) by Dom Lachowicz
+* [PyEnchant](https://pyenchant.github.io/pyenchant) by Dimitri Merejkowsky
 
 ## Assets
 
 Some of the assets bundled with novelWriter were adapted from the following sources:
 
-* Typicons icons by [Stephen Hutchings](https://github.com/stephenhutchings/typicons.font) (CC BY-SA 4.0)
-* Tomorrow syntax themes by Chris Kempson (MIT License)
-* Owl syntax themes by Sarah Drasner (MIT License)
-* Solarized themes by Ethan Schoonover, added by @nullbasis (MIT License)
+* [Typicons](https://github.com/stephenhutchings/typicons.font) icons by Stephen Hutchings (CC BY-SA 4.0)
+* [Tomorrow](https://github.com/chriskempson/base16) syntax themes by Chris Kempson (MIT License)
+* [Owl](https://github.com/sdras/night-owl-vscode-theme) syntax themes by Sarah Drasner (MIT License)
+* [Solarized](https://github.com/altercation/solarized) themes by Ethan Schoonover (MIT License)
 
 ## Special Mentions
 
