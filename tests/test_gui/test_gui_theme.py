@@ -282,7 +282,6 @@ def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, fncPath):
     # Load a broken theme file
     iconsDir = fncPath / "icons"
     testIcons = iconsDir / "testicons"
-    iconsDir.mkdir()
     testIcons.mkdir()
     writeFile(testIcons / "icons.conf", (
         "[Main]\n"
