@@ -507,8 +507,10 @@ class GuiIcons:
         self._themeMap = {}
         themePath = self._iconPath / iconTheme
         if not themePath.is_dir():
-            logger.warning("No icons loaded for '%s'", iconTheme)
-            return False
+            themePath = self.mainConf.dataPath("icons") / iconTheme
+            if not themePath.is_dir():
+                logger.warning("No icons loaded for '%s'", iconTheme)
+                return False
 
         themeConf = themePath / self._confName
         logger.info("Loading icon theme '%s'", iconTheme)
