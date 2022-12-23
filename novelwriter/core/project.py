@@ -251,6 +251,9 @@ class NWProject(QObject):
         """
         self.clearProject()
         if not self._storage.openProjectInPlace(projPath):
+            self.mainGui.makeAlert(self.tr(
+                "Could not open project with path: {0}"
+            ).format(projPath), nwAlert.ERROR)
             return False
 
         logger.info("Opening project: %s", projPath)

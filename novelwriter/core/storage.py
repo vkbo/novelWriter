@@ -102,6 +102,10 @@ class NWStorage:
             # but it can point to a folder containing files
             inPath = inPath.parent
 
+        if not (inPath.is_dir() or newProject):
+            # If the project is not new, the folder must already exist.
+            return False
+
         self._storagePath = inPath
         self._runtimePath = inPath
         self._lockFilePath = inPath / nwFiles.PROJ_LOCK
@@ -114,7 +118,9 @@ class NWStorage:
         return True
 
     def openProjectArchive(self, path):  # pragma: no cover
-        pass
+        """Placeholder for later implementation. See #977.
+        """
+        return False
 
     def runPostSaveTasks(self, autoSave=False):  # pragma: no cover
         """Run tasks after the project has been saved.
