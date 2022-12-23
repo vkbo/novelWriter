@@ -3777,163 +3777,168 @@
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="288" />
+      <location filename="../novelwriter/core/project.py" line="254" />
+      <source>Could not open project with path: {0}</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="291" />
       <source>Unknown</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="292" />
+      <location filename="../novelwriter/core/project.py" line="295" />
       <source>Project file does not appear to be a novelWriterXML file.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="296" />
+      <location filename="../novelwriter/core/project.py" line="299" />
       <source>Unknown or unsupported novelWriter project file format. The project cannot be opened by this version of novelWriter. The file was saved with novelWriter version {0}.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="302" />
+      <location filename="../novelwriter/core/project.py" line="305" />
       <source>Failed to parse project xml.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="314" />
+      <location filename="../novelwriter/core/project.py" line="317" />
       <source>File Version</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="315" />
+      <location filename="../novelwriter/core/project.py" line="318" />
       <source>The file format of your project is about to be updated. If you proceed, older versions of novelWriter will no longer be able to open this project. Continue?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="330" />
+      <location filename="../novelwriter/core/project.py" line="333" />
       <source>Version Conflict</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="331" />
+      <location filename="../novelwriter/core/project.py" line="334" />
       <source>This project was saved by a newer version of novelWriter, version {0}. This is version {1}. If you continue to open the project, some attributes and settings may not be preserved, but the overall project should be fine. Continue opening the project?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="375" />
+      <location filename="../novelwriter/core/project.py" line="378" />
       <source>Opened Project: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="386" />
+      <location filename="../novelwriter/core/project.py" line="389" />
       <source>There is no project open.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="411" />
+      <location filename="../novelwriter/core/project.py" line="414" />
       <source>Failed to save project.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="427" />
+      <location filename="../novelwriter/core/project.py" line="430" />
       <source>Saved Project: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="453" />
+      <location filename="../novelwriter/core/project.py" line="456" />
       <source>Backing up project ...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="457" />
+      <location filename="../novelwriter/core/project.py" line="460" />
       <source>Cannot backup project because no valid backup path is set. Please set a valid backup location in Preferences.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="464" />
+      <location filename="../novelwriter/core/project.py" line="467" />
       <source>Cannot backup project because no project name is set. Please set a Project Name in Project Settings.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="475" />
+      <location filename="../novelwriter/core/project.py" line="478" />
       <source>Could not create backup folder.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="480" />
+      <location filename="../novelwriter/core/project.py" line="483" />
       <source>Backup from {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="485" />
+      <location filename="../novelwriter/core/project.py" line="488" />
       <source>Backup archive file written to: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="489" />
+      <location filename="../novelwriter/core/project.py" line="492" />
       <source>Could not write backup archive.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="494" />
+      <location filename="../novelwriter/core/project.py" line="497" />
       <source>Project backed up to '{0}'</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="511" />
-      <location filename="../novelwriter/core/project.py" line="507" />
+      <location filename="../novelwriter/core/project.py" line="514" />
+      <location filename="../novelwriter/core/project.py" line="510" />
       <source>New</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="508" />
+      <location filename="../novelwriter/core/project.py" line="511" />
       <source>Note</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="509" />
+      <location filename="../novelwriter/core/project.py" line="512" />
       <source>Draft</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="510" />
+      <location filename="../novelwriter/core/project.py" line="513" />
       <source>Finished</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="512" />
+      <location filename="../novelwriter/core/project.py" line="515" />
       <source>Minor</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="513" />
+      <location filename="../novelwriter/core/project.py" line="516" />
       <source>Major</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="514" />
+      <location filename="../novelwriter/core/project.py" line="517" />
       <source>Main</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="735" />
+      <location filename="../novelwriter/core/project.py" line="738" />
       <source>Found {0} orphaned file(s) in project folder.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="745" />
+      <location filename="../novelwriter/core/project.py" line="748" />
       <source>Recovered</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="759" />
+      <location filename="../novelwriter/core/project.py" line="762" />
       <source>[{0}] {1}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="764" />
+      <location filename="../novelwriter/core/project.py" line="767" />
       <source>Recovered File {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="792" />
+      <location filename="../novelwriter/core/project.py" line="795" />
       <source>One or more orphaned files could not be added back into the project. Make sure at least a Novel root folder exists.</source>
       <translation type="unfinished" />
     </message>
