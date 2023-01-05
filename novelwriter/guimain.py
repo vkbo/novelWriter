@@ -610,6 +610,7 @@ class GuiMain(QMainWindow):
             logger.debug("Requested item '%s' is not a document", tHandle)
             return False
 
+        self._changeView(nwView.EDITOR)
         cHandle = self.docEditor.docHandle()
         if cHandle == tHandle:
             self.docEditor.setCursorLine(tLine)
@@ -618,7 +619,6 @@ class GuiMain(QMainWindow):
             return True
 
         self.closeDocument(beforeOpen=True)
-        self._changeView(nwView.EDITOR)
         if self.docEditor.loadText(tHandle, tLine):
             self.theProject.data.setLastHandle(tHandle, "editor")
             self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
