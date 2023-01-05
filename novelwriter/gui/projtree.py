@@ -1251,16 +1251,28 @@ class GuiProjectTree(QTreeWidget):
             isDocFile = isFile and tItem.isDocumentLayout()
             isNoteFile = isFile and tItem.isNoteLayout()
 
-            if (isNoteFile or isFolder) and tItem.documentAllowed():
+            if isNoteFile and tItem.documentAllowed():
                 aConvert1 = mTrans.addAction(self.tr("Convert to {0}").format(trDoc))
                 aConvert1.triggered.connect(
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.DOCUMENT)
                 )
 
-            if isDocFile or isFolder:
+            if isDocFile:
                 aConvert2 = mTrans.addAction(self.tr("Convert to {0}").format(trNote))
                 aConvert2.triggered.connect(
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.NOTE)
+                )
+
+            if isFolder and tItem.documentAllowed():
+                aConvert3 = mTrans.addAction(self.tr("Convert to {0}").format(trDoc))
+                aConvert3.triggered.connect(
+                    lambda: self._covertFolderToFile(tHandle, nwItemLayout.DOCUMENT)
+                )
+
+            if isFolder:
+                aConvert4 = mTrans.addAction(self.tr("Convert to {0}").format(trNote))
+                aConvert4.triggered.connect(
+                    lambda: self._covertFolderToFile(tHandle, nwItemLayout.NOTE)
                 )
 
             if hasChild and isFile:
