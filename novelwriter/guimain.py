@@ -1512,8 +1512,10 @@ class GuiMain(QMainWindow):
                 hItem = self.theProject.index.getItemHeader(tHandle, sTitle)
                 if hItem is not None:
                     tLine = hItem.line
+                self.mainStack.setCurrentWidget(self.splitMain)
                 self.openDocument(tHandle, tLine=tLine, changeFocus=setFocus)
             elif tMode == nwDocMode.VIEW:
+                self.mainStack.setCurrentWidget(self.splitMain)
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return
 
