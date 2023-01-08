@@ -338,16 +338,18 @@ class GuiProjectEditStatus(QWidget):
 
         self.editName = QLineEdit()
         self.editName.setMaxLength(40)
-        self.editName.setEnabled(False)
         self.editName.setPlaceholderText(self.tr("Select item to edit"))
+        self.editName.setEnabled(False)
 
         self.colPixmap = QPixmap(self.iPx, self.iPx)
         self.colPixmap.fill(QColor(100, 100, 100))
         self.colButton = QPushButton(QIcon(self.colPixmap), self.tr("Colour"))
         self.colButton.setIconSize(self.colPixmap.rect().size())
+        self.colButton.setEnabled(False)
         self.colButton.clicked.connect(self._selectColour)
 
         self.saveButton = QPushButton(self.tr("Save"))
+        self.saveButton.setEnabled(False)
         self.saveButton.clicked.connect(self._saveItem)
 
         # Assemble
@@ -446,14 +448,15 @@ class GuiProjectEditStatus(QWidget):
         """Save changes made to a status item.
         """
         selItem = self._getSelectedItem()
-        if selItem is not None:
-            selItem.setText(self.COL_LABEL, simplified(self.editName.text()))
-            selItem.setIcon(self.COL_LABEL, self.colButton.icon())
-            selItem.setData(self.COL_LABEL, self.COL_ROLE, (
-                self.selColour.red(), self.selColour.green(), self.selColour.blue()
-            ))
-            self.editName.setEnabled(False)
-            self.colChanged = True
+        if selItem is None:
+            return
+
+        selItem.setText(self.COL_LABEL, simplified(self.editName.text()))
+        selItem.setIcon(self.COL_LABEL, self.colButton.icon())
+        selItem.setData(self.COL_LABEL, self.COL_ROLE, (
+            self.selColour.red(), self.selColour.green(), self.selColour.blue()
+        ))
+        self.colChanged = True
 
         return
 
@@ -503,20 +506,32 @@ class GuiProjectEditStatus(QWidget):
         boxes and button.
         """
         selItem = self._getSelectedItem()
-        if selItem is None:
-            return
+        if isinstance(selItem, QTreeWidgetItem):
+            cols = selItem.data(self.COL_LABEL, self.COL_ROLE)
+            name = selItem.text(self.COL_LABEL)
 
-        cols = selItem.data(self.COL_LABEL, self.COL_ROLE)
-        name = selItem.text(self.COL_LABEL)
+            pixmap = QPixmap(self.iPx, self.iPx)
+            pixmap.fill(QColor(*cols))
+            self.selColour = QColor(*cols)
+            self.editName.setText(name)
+            self.colButton.setIcon(QIcon(pixmap))
+            self.editName.selectAll()
+            self.editName.setFocus()
 
-        pixmap = QPixmap(self.iPx, self.iPx)
-        pixmap.fill(QColor(*cols))
-        self.selColour = QColor(*cols)
-        self.editName.setText(name)
-        self.colButton.setIcon(QIcon(pixmap))
-        self.editName.setEnabled(True)
-        self.editName.selectAll()
-        self.editName.setFocus()
+            self.editName.setEnabled(True)
+            self.colButton.setEnabled(True)
+            self.saveButton.setEnabled(True)
+
+        else:
+            pixmap = QPixmap(self.iPx, self.iPx)
+            pixmap.fill(QColor(100, 100, 100))
+            self.selColour = QColor(100, 100, 100)
+            self.editName.setText("")
+            self.colButton.setIcon(QIcon(pixmap))
+
+            self.editName.setEnabled(False)
+            self.colButton.setEnabled(False)
+            self.saveButton.setEnabled(False)
 
         return
 
