@@ -8,7 +8,7 @@ Created: 2019-04-20 [0.0.1] GuiMainStatus
 Created: 2020-05-17 [0.5.1] StatusLED
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

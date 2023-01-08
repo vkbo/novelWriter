@@ -9,7 +9,7 @@ Created: 2022-06-06 [2.0rc1] GuiProjectView
 Created: 2022-06-06 [2.0rc1] GuiProjectToolBar
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -1251,16 +1251,28 @@ class GuiProjectTree(QTreeWidget):
             isDocFile = isFile and tItem.isDocumentLayout()
             isNoteFile = isFile and tItem.isNoteLayout()
 
-            if (isNoteFile or isFolder) and tItem.documentAllowed():
+            if isNoteFile and tItem.documentAllowed():
                 aConvert1 = mTrans.addAction(self.tr("Convert to {0}").format(trDoc))
                 aConvert1.triggered.connect(
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.DOCUMENT)
                 )
 
-            if isDocFile or isFolder:
+            if isDocFile:
                 aConvert2 = mTrans.addAction(self.tr("Convert to {0}").format(trNote))
                 aConvert2.triggered.connect(
                     lambda: self._changeItemLayout(tHandle, nwItemLayout.NOTE)
+                )
+
+            if isFolder and tItem.documentAllowed():
+                aConvert3 = mTrans.addAction(self.tr("Convert to {0}").format(trDoc))
+                aConvert3.triggered.connect(
+                    lambda: self._covertFolderToFile(tHandle, nwItemLayout.DOCUMENT)
+                )
+
+            if isFolder:
+                aConvert4 = mTrans.addAction(self.tr("Convert to {0}").format(trNote))
+                aConvert4.triggered.connect(
+                    lambda: self._covertFolderToFile(tHandle, nwItemLayout.NOTE)
                 )
 
             if hasChild and isFile:
@@ -1681,18 +1693,22 @@ class GuiProjectTree(QTreeWidget):
                 del self._treeMap[tHandle]
                 return None
 
-        else:
+        elif pHandle in self._treeMap:
             byIndex = -1
             if nHandle is not None and nHandle in self._treeMap:
-                try:
-                    byIndex = self._treeMap[pHandle].indexOfChild(self._treeMap[nHandle])
-                except Exception:
-                    logger.error("Failed to get index of item with handle '%s'", nHandle)
+                byIndex = self._treeMap[pHandle].indexOfChild(self._treeMap[nHandle])
             if byIndex >= 0:
                 self._treeMap[pHandle].insertChild(byIndex + 1, newItem)
             else:
                 self._treeMap[pHandle].addChild(newItem)
             self.propagateCount(tHandle, nwItem.wordCount, countChildren=True)
+
+        else:
+            self.mainGui.makeAlert(self.tr(
+                "There is nowhere to add item with name '{0}'."
+            ).format(nwItem.itemName), nwAlert.ERROR)
+            del self._treeMap[tHandle]
+            return None
 
         self.setTreeItemValues(tHandle)
         newItem.setExpanded(nwItem.isExpanded)

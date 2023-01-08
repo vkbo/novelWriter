@@ -52,14 +52,16 @@ modify it as you like.
   `novelwriter/assets/syntax <https://github.com/vkbo/novelWriter/tree/main/novelwriter/assets/syntax>`_.
 * The existing GUI themes are stored in
   `novelwriter/assets/themes <https://github.com/vkbo/novelWriter/tree/main/novelwriter/assets/themes>`_.
+* The existing icon themes are stored in
+  `novelwriter/assets/icons <https://github.com/vkbo/novelWriter/tree/main/novelwriter/assets/icons>`_.
 
 Remember to also change the name of your theme by modifying the ``name`` setting at the top of the
 file, otherwise you may not be able to distinguish them in :guilabel:`Preferences`.
 
 For novelWriter to be able to locate the custom theme files, you must copy them to the
 :ref:`a_locations_data` location in your home or user area. There should be a folder there named
-``syntax`` for syntax themes and just ``themes`` for GUI themes. These folders are created the
-first time you start novelWriter.
+``syntax`` for syntax themes, just ``themes`` for GUI themes, and ``icons`` for icon themes. These
+folders are created the first time you start novelWriter.
 
 Once the files are copied there, they should show up in :guilabel:`Preferences` with the label you
 set as ``name`` inside the file.
@@ -70,8 +72,8 @@ set as ``name`` inside the file.
    theme colour scheme.
 
 
-Gustom GUI Theme
-----------------
+Gustom GUI and Icons Theme
+--------------------------
 
 A GUI theme conf file consists of the follwing settings:
 
@@ -109,8 +111,9 @@ A GUI theme conf file consists of the follwing settings:
    statusunsaved   = 100, 100, 100
 
 In the Main section you must at least define the ``name`` and ``icontheme`` settings. The
-``icontheme`` settings should correspond to one of the internal icon themes. Either
-``typicons_light`` or ``typicons_dark``.
+``icontheme`` settings should correspond to one of the internal icon themes, either
+``typicons_light`` or ``typicons_dark``, or to an icon theme in your custom icons directory. The
+setting must match the icon theme's folder name.
 
 The Palette values correspond the the Qt enum values for QPalette::ColorRole, see the
 `Qt documentation <https://doc.qt.io/qt-5.15/qpalette.html#ColorRole-enum>`_ for more details. The

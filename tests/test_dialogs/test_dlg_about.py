@@ -3,7 +3,7 @@ novelWriter – About Dialog Class Tester
 =======================================
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -51,6 +51,8 @@ def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
         mp.setattr("novelwriter.config.Config.assetPath", lambda *a: Path("whatever"))
         msgAbout._fillNotesPage()
         assert msgAbout.pageNotes.toPlainText() == "Error loading release notes text ..."
+        msgAbout._fillCreditsPage()
+        assert msgAbout.pageCredits.toPlainText() == "Error loading credits text ..."
         msgAbout._fillLicensePage()
         assert msgAbout.pageLicense.toPlainText() == "Error loading licence text ..."
 

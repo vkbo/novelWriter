@@ -8,7 +8,7 @@ File History:
 Created: 2019-05-16 [0.5.1]
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -835,7 +835,7 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
 ##
 
 def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
-    """Wrapper for building debian packages for launcpad.
+    """Wrapper for building debian packages for launchpad.
     """
     print("")
     print("Launchpad Packages")
@@ -853,6 +853,7 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
         ("20.04", "focal"),
         ("22.04", "jammy"),
         ("22.10", "kinetic"),
+        ("23.04", "lunar"),
     ]
 
     tStamp = datetime.datetime.now().strftime("%Y%m%d~%H%M%S")

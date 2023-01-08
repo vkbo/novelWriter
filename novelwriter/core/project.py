@@ -7,7 +7,7 @@ File History:
 Created: 2018-09-29 [0.0.1]
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -251,6 +251,9 @@ class NWProject(QObject):
         """
         self.clearProject()
         if not self._storage.openProjectInPlace(projPath):
+            self.mainGui.makeAlert(self.tr(
+                "Could not open project with path: {0}"
+            ).format(projPath), nwAlert.ERROR)
             return False
 
         logger.info("Opening project: %s", projPath)

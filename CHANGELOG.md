@@ -1,5 +1,61 @@
 # novelWriter Changelog
 
+## Version 2.0.3 [2023-01-08]
+
+### Release Notes
+
+This is a patch release that fixes a few bugs and usability issues. The editing of status and
+importance labels in Project Settings should now be a bit more intuitive. Opening a document from
+the Outline View that is already open in the editor should now switch to the editor view. The
+convert folder to note or document feature in the project tree has also been fixed. Some icons have
+been updated and a renderring issue with one of them fixed. Chinese, Norwegian, US English, German
+and Spanish translations have been updated as well. A new credits tab has been added to the About
+dialog box, replacing the Credits section on the main About tab.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix an issue with one of the active icons for the project tree. The SVG paths were not properly
+  joined. Issue #1297. PR #1299.
+* Fix an issue where the new open project routine for 2.0 would not check that a project exists
+  before trying to open it. This resulted in the open process creating all the expected folders in
+  the designated location before realising there was no project there. Issue #1300. PR #1301.
+* Fix an issue with the convert folder to document or note functionality was no longer working. The
+  context menu entries were actually just calling the function for converting a file. Issue #1305.
+  PR #1306.
+* Fix an issue where the app may crash if an item is added as a child of an item that exists, but
+  has invalid settings such that it is rejected by the project tree builder function when the
+  project is opened. Now, only items with a parent item that has already been added will be allowed
+  into the project tree. The issue was caused by an invalid project file, and is not likely to
+  occur during normal use, but such events should still be handled rather than crash the app.
+  Issue #1283. PR #1309.
+
+**User Interface**
+
+* The CREDITS.md file has been updated, and its content is now also available in a "Credits" tab in
+  the About dialog in the app. The old credits section of the "About" tab has been removed.
+  PR #1298.
+* Fix a usability issue where double-clicking an entry in the Outline that belongs to a document
+  that is already open in the editor does nothing. Now, the app switches view to the editor when
+  the heading is clicked. Issue #1291. PR #1306.
+* Change how the editing of status and importance labels work in Project Settings. The form at the
+  bottom of the tabs is now always active when a label is selected, and always inactive when none
+  is selected. Issue #1290. PR #1308.
+
+**Internationalisation**
+
+* Update Chinese translation. PR #1298.
+* Update Norwegian, US English, German and Spanish translations. PR #1311.
+
+**Other CHanges**
+
+* An icon theme can now be loaded from the user's data folder alongside a custom user theme.
+  Issue #1297. PR #1299.
+* Some Inkscape format SVG files have been converted to Plain SVG. PR #1299.
+
+----
+
 ## Version 2.0.2 [2022-12-01]
 
 ### Release Notes

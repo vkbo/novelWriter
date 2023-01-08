@@ -8,7 +8,7 @@ Created: 2022-10-02 [2.0rc1] DocMerger
 Created: 2022-10-11 [2.0rc1] DocSplitter
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
