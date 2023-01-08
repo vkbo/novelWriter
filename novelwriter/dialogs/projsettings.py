@@ -26,8 +26,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
-from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
-from PyQt5.QtCore import Qt, QLocale
+from PyQt5.QtGui import QIcon, QPixmap, QColor
+from PyQt5.QtCore import Qt, QLocale, pyqtSlot
 from PyQt5.QtWidgets import (
     QColorDialog, QComboBox, QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
@@ -300,7 +300,7 @@ class GuiProjectEditStatus(QWidget):
 
         self.colDeleted = []
         self.colChanged = False
-        self.selColour  = QColor(100, 100, 100)
+        self.selColour = QColor(100, 100, 100)
 
         self.iPx = self.mainTheme.baseIconSize
 
@@ -401,9 +401,10 @@ class GuiProjectEditStatus(QWidget):
         return [], []
 
     ##
-    #  User Actions
+    #  Private Slots
     ##
 
+    @pyqtSlot()
     def _selectColour(self):
         """Open a dialog to select the status icon colour.
         """
@@ -419,20 +420,20 @@ class GuiProjectEditStatus(QWidget):
                 self.colButton.setIconSize(pixmap.rect().size())
         return
 
+    @pyqtSlot()
     def _newItem(self):
         """Create a new status item.
         """
-        newItem = self._addItem(None, self.tr("New Item"), (100, 100, 100), 0)
-        newItem.setBackground(self.COL_LABEL, QBrush(QColor(0, 255, 0, 70)))
-        newItem.setBackground(self.COL_USAGE, QBrush(QColor(0, 255, 0, 70)))
+        self._addItem(None, self.tr("New Item"), (100, 100, 100), 0)
         self.colChanged = True
         return
 
+    @pyqtSlot()
     def _delItem(self):
         """Delete a status item.
         """
         selItem = self._getSelectedItem()
-        if selItem is not None:
+        if isinstance(selItem, QTreeWidgetItem):
             iRow = self.listBox.indexOfTopLevelItem(selItem)
             if selItem.data(self.COL_LABEL, self.NUM_ROLE) > 0:
                 self.mainGui.makeAlert(self.tr(
@@ -444,66 +445,25 @@ class GuiProjectEditStatus(QWidget):
                 self.colChanged = True
         return
 
+    @pyqtSlot()
     def _saveItem(self):
         """Save changes made to a status item.
         """
         selItem = self._getSelectedItem()
-        if selItem is None:
-            return
-
-        selItem.setText(self.COL_LABEL, simplified(self.editName.text()))
-        selItem.setIcon(self.COL_LABEL, self.colButton.icon())
-        selItem.setData(self.COL_LABEL, self.COL_ROLE, (
-            self.selColour.red(), self.selColour.green(), self.selColour.blue()
-        ))
-        self.colChanged = True
+        if isinstance(selItem, QTreeWidgetItem):
+            selItem.setText(self.COL_LABEL, simplified(self.editName.text()))
+            selItem.setIcon(self.COL_LABEL, self.colButton.icon())
+            selItem.setData(self.COL_LABEL, self.COL_ROLE, (
+                self.selColour.red(), self.selColour.green(), self.selColour.blue()
+            ))
+            self.colChanged = True
 
         return
 
-    def _addItem(self, key, name, cols, count):
-        """Add a status item to the list.
-        """
-        pixmap = QPixmap(self.iPx, self.iPx)
-        pixmap.fill(QColor(*cols))
-
-        item = QTreeWidgetItem()
-        item.setText(self.COL_LABEL, name)
-        item.setIcon(self.COL_LABEL, QIcon(pixmap))
-        item.setData(self.COL_LABEL, self.KEY_ROLE, key)
-        item.setData(self.COL_LABEL, self.COL_ROLE, cols)
-        item.setData(self.COL_LABEL, self.NUM_ROLE, count)
-        item.setText(self.COL_USAGE, self._usageString(count))
-
-        self.listBox.addTopLevelItem(item)
-
-        return item
-
-    def _moveItem(self, step):
-        """Move and item up or down step.
-        """
-        selItem = self._getSelectedItem()
-        if selItem is None:
-            return
-
-        tIndex = self.listBox.indexOfTopLevelItem(selItem)
-        nChild = self.listBox.topLevelItemCount()
-        nIndex = tIndex + step
-        if nIndex < 0 or nIndex >= nChild:
-            return
-
-        cItem = self.listBox.takeTopLevelItem(tIndex)
-        self.listBox.insertTopLevelItem(nIndex, cItem)
-        self.listBox.clearSelection()
-
-        if cItem is not None:
-            cItem.setSelected(True)
-        self.colChanged = True
-
-        return
-
+    @pyqtSlot()
     def _selectedItem(self):
         """Extract the info of a selected item and populate the settings
-        boxes and button.
+        boxes and button. If no item is selected, clear the form.
         """
         selItem = self._getSelectedItem()
         if isinstance(selItem, QTreeWidgetItem):
@@ -538,6 +498,47 @@ class GuiProjectEditStatus(QWidget):
     ##
     #  Internal Functions
     ##
+
+    def _addItem(self, key, name, cols, count):
+        """Add a status item to the list.
+        """
+        pixmap = QPixmap(self.iPx, self.iPx)
+        pixmap.fill(QColor(*cols))
+
+        item = QTreeWidgetItem()
+        item.setText(self.COL_LABEL, name)
+        item.setIcon(self.COL_LABEL, QIcon(pixmap))
+        item.setData(self.COL_LABEL, self.KEY_ROLE, key)
+        item.setData(self.COL_LABEL, self.COL_ROLE, cols)
+        item.setData(self.COL_LABEL, self.NUM_ROLE, count)
+        item.setText(self.COL_USAGE, self._usageString(count))
+
+        self.listBox.addTopLevelItem(item)
+
+        return
+
+    def _moveItem(self, step):
+        """Move and item up or down step.
+        """
+        selItem = self._getSelectedItem()
+        if selItem is None:
+            return
+
+        tIndex = self.listBox.indexOfTopLevelItem(selItem)
+        nChild = self.listBox.topLevelItemCount()
+        nIndex = tIndex + step
+        if nIndex < 0 or nIndex >= nChild:
+            return
+
+        cItem = self.listBox.takeTopLevelItem(tIndex)
+        self.listBox.insertTopLevelItem(nIndex, cItem)
+        self.listBox.clearSelection()
+
+        if cItem is not None:
+            cItem.setSelected(True)
+        self.colChanged = True
+
+        return
 
     def _getSelectedItem(self):
         """Get the currently selected item.
