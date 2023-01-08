@@ -3055,27 +3055,27 @@
   <context>
     <name>GuiProjectEditReplace</name>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="565" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="581" />
       <source>Text Replace List for Preview and Export</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="572" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="588" />
       <source>Keyword</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="573" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="589" />
       <source>Replace With</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="599" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="615" />
       <source>Select item to edit</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="607" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="623" />
       <source>Save</source>
       <translation type="unfinished" />
     </message>
@@ -3103,7 +3103,7 @@
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="342" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="341" />
       <source>Select item to edit</source>
       <translation type="unfinished" />
     </message>
@@ -3113,37 +3113,37 @@
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="350" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="351" />
       <source>Save</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="410" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="413" />
       <source>Select Colour</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="423" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="427" />
       <source>New Item</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="436" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="439" />
       <source>Cannot delete a status item that is in use.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="539" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="555" />
       <source>Not in use</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="541" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="557" />
       <source>Used once</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="543" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="559" />
       <source>Used by {0} items</source>
       <translation type="unfinished" />
     </message>
@@ -3418,79 +3418,82 @@
       <translation type="unfinished" />
     </message>
     <message>
+      <location filename="../novelwriter/gui/projtree.py" line="1273" />
+      <location filename="../novelwriter/gui/projtree.py" line="1267" />
       <location filename="../novelwriter/gui/projtree.py" line="1261" />
       <location filename="../novelwriter/gui/projtree.py" line="1255" />
       <source>Convert to {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1267" />
+      <location filename="../novelwriter/gui/projtree.py" line="1279" />
       <source>Merge Child Items into Self</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1269" />
+      <location filename="../novelwriter/gui/projtree.py" line="1281" />
       <source>Merge Child Items into New</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1273" />
+      <location filename="../novelwriter/gui/projtree.py" line="1285" />
       <source>Merge Documents in Folder</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1277" />
+      <location filename="../novelwriter/gui/projtree.py" line="1289" />
       <source>Split Document by Headers</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1286" />
+      <location filename="../novelwriter/gui/projtree.py" line="1298" />
       <source>Expand All</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1288" />
+      <location filename="../novelwriter/gui/projtree.py" line="1300" />
       <source>Collapse All</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1292" />
+      <location filename="../novelwriter/gui/projtree.py" line="1304" />
       <source>Delete Permanently</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1295" />
+      <location filename="../novelwriter/gui/projtree.py" line="1307" />
       <source>Move to Trash</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1483" />
+      <location filename="../novelwriter/gui/projtree.py" line="1495" />
       <source>Convert Folder</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1484" />
+      <location filename="../novelwriter/gui/projtree.py" line="1496" />
       <source>Do you want to convert the folder to a {0}? This action cannot be reversed.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1529" />
+      <location filename="../novelwriter/gui/projtree.py" line="1541" />
       <source>No documents selected for merging.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1538" />
+      <location filename="../novelwriter/gui/projtree.py" line="1550" />
       <source>Merged</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1618" />
-      <location filename="../novelwriter/gui/projtree.py" line="1554" />
+      <location filename="../novelwriter/gui/projtree.py" line="1630" />
+      <location filename="../novelwriter/gui/projtree.py" line="1566" />
       <source>Could not write document content.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1678" />
+      <location filename="../novelwriter/gui/projtree.py" line="1707" />
+      <location filename="../novelwriter/gui/projtree.py" line="1690" />
       <source>There is nowhere to add item with name '{0}'.</source>
       <translation type="unfinished" />
     </message>
