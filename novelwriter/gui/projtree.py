@@ -1693,18 +1693,22 @@ class GuiProjectTree(QTreeWidget):
                 del self._treeMap[tHandle]
                 return None
 
-        else:
+        elif pHandle in self._treeMap:
             byIndex = -1
             if nHandle is not None and nHandle in self._treeMap:
-                try:
-                    byIndex = self._treeMap[pHandle].indexOfChild(self._treeMap[nHandle])
-                except Exception:
-                    logger.error("Failed to get index of item with handle '%s'", nHandle)
+                byIndex = self._treeMap[pHandle].indexOfChild(self._treeMap[nHandle])
             if byIndex >= 0:
                 self._treeMap[pHandle].insertChild(byIndex + 1, newItem)
             else:
                 self._treeMap[pHandle].addChild(newItem)
             self.propagateCount(tHandle, nwItem.wordCount, countChildren=True)
+
+        else:
+            self.mainGui.makeAlert(self.tr(
+                "There is nowhere to add item with name '{0}'."
+            ).format(nwItem.itemName), nwAlert.ERROR)
+            del self._treeMap[tHandle]
+            return None
 
         self.setTreeItemValues(tHandle)
         newItem.setExpanded(nwItem.isExpanded)

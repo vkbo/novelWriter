@@ -885,6 +885,11 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.theProject.tree[nHandle].setParent(None)
     assert projTree.revealNewTreeItem(nHandle) is False
 
+    # Try to add an item with unknown parent to the tree
+    nHandle = nwGUI.theProject.newFile("Test", C.hNovelRoot)
+    nwGUI.theProject.tree[nHandle].setParent(C.hInvalid)
+    assert projTree.revealNewTreeItem(nHandle) is False
+
     # Method: undoLastMove
     # ====================
 
