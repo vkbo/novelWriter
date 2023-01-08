@@ -342,107 +342,55 @@
   <context>
     <name>GuiAbout</name>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="146" />
+      <location filename="../novelwriter/dialogs/about.py" line="150" />
       <location filename="../novelwriter/dialogs/about.py" line="59" />
       <source>About novelWriter</source>
       <translation>关于 novelWriter</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="94" />
+      <location filename="../novelwriter/dialogs/about.py" line="98" />
       <source>About</source>
       <translation>关于</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="95" />
+      <location filename="../novelwriter/dialogs/about.py" line="99" />
       <source>Release</source>
       <translation>发布</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="225" />
-      <location filename="../novelwriter/dialogs/about.py" line="214" />
-      <location filename="../novelwriter/dialogs/about.py" line="203" />
-      <location filename="../novelwriter/dialogs/about.py" line="96" />
-      <source>Licence</source>
-      <translation>许可证</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/about.py" line="148" />
-      <source>Website: {0}</source>
-      <translation>网站: {0}</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/about.py" line="151" />
+      <location filename="../novelwriter/dialogs/about.py" line="100" />
       <source>Credits</source>
       <translation>赞助</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="153" />
-      <source>Developer</source>
-      <translation>开发者</translation>
+      <location filename="../novelwriter/dialogs/about.py" line="101" />
+      <source>Licence</source>
+      <translation>许可证</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="154" />
-      <source>Concept</source>
-      <translation>概念</translation>
+      <location filename="../novelwriter/dialogs/about.py" line="152" />
+      <source>Website: {0}</source>
+      <translation>网站: {0}</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/about.py" line="155" />
-      <source>i18n</source>
-      <translation>i18n</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/about.py" line="157" />
       <source>novelWriter is a markdown-like text editor designed for organising and writing novels. It is written in Python 3 with a Qt5 GUI, using PyQt5.</source>
       <translation>novelWriter 是一个类似 Markdown 的文本编辑器，用于组织和编写小说。 它是用 Python 3 编写的，使用 PyQt5提供 Qt5 图形界面。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="161" />
+      <location filename="../novelwriter/dialogs/about.py" line="159" />
       <source>novelWriter is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</source>
       <translation>novelWriter 是免费软件：您可以根据自由软件基金会发布的 GNU 通用公共许可证（许可证的第 3 版或（由您选择）任何更高版本）的条款重新分发和/或修改它。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="167" />
+      <location filename="../novelwriter/dialogs/about.py" line="165" />
       <source>novelWriter is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</source>
       <translation>发布novelWriter 是希望它有用，没有任何保证； 甚至没有对适销性或针对特定目的的适用性的暗示保证。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="172" />
+      <location filename="../novelwriter/dialogs/about.py" line="170" />
       <source>See the Licence tab for the full licence text, or visit the GNU website at {0} for more details.</source>
       <translation>在许可证页面查看完整的许可证内容，或者访问GNU 网站 {0}。</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/about.py" line="181" />
-      <source>Translations</source>
-      <translation>翻译</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/about.py" line="199" />
-      <source>Theme: {0}</source>
-      <translation>主题 {0}</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/about.py" line="223" />
-      <location filename="../novelwriter/dialogs/about.py" line="212" />
-      <location filename="../novelwriter/dialogs/about.py" line="201" />
-      <source>Author</source>
-      <translation>作者</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/about.py" line="224" />
-      <location filename="../novelwriter/dialogs/about.py" line="213" />
-      <location filename="../novelwriter/dialogs/about.py" line="202" />
-      <source>Credit</source>
-      <translation>赞助</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/about.py" line="210" />
-      <source>Icons: {0}</source>
-      <translation>图标: {0}</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/about.py" line="221" />
-      <source>Syntax: {0}</source>
-      <translation>语法: {0}</translation>
     </message>
   </context>
   <context>
@@ -3107,27 +3055,27 @@
   <context>
     <name>GuiProjectEditReplace</name>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="565" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="581" />
       <source>Text Replace List for Preview and Export</source>
       <translation>预览和导出的文本替换列表</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="572" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="588" />
       <source>Keyword</source>
       <translation>关键字</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="573" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="589" />
       <source>Replace With</source>
       <translation>替换为</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="599" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="615" />
       <source>Select item to edit</source>
       <translation>选择要修改的条目</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="607" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="623" />
       <source>Save</source>
       <translation>保存</translation>
     </message>
@@ -3155,7 +3103,7 @@
       <translation>用法</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="342" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="341" />
       <source>Select item to edit</source>
       <translation>选择要修改的条目</translation>
     </message>
@@ -3165,37 +3113,37 @@
       <translation>颜色</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="350" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="351" />
       <source>Save</source>
       <translation>保存</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="410" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="413" />
       <source>Select Colour</source>
       <translation>选择颜色</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="423" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="427" />
       <source>New Item</source>
       <translation>新项目</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="436" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="439" />
       <source>Cannot delete a status item that is in use.</source>
       <translation>无法删除正在使用的状态项。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="539" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="555" />
       <source>Not in use</source>
       <translation>未使用</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="541" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="557" />
       <source>Used once</source>
       <translation>使用过一次</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="543" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="559" />
       <source>Used by {0} items</source>
       <translation>被 {0} 项目使用</translation>
     </message>
@@ -3470,79 +3418,82 @@
       <translation>变换</translation>
     </message>
     <message>
+      <location filename="../novelwriter/gui/projtree.py" line="1273" />
+      <location filename="../novelwriter/gui/projtree.py" line="1267" />
       <location filename="../novelwriter/gui/projtree.py" line="1261" />
       <location filename="../novelwriter/gui/projtree.py" line="1255" />
       <source>Convert to {0}</source>
       <translation>转换为 {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1267" />
+      <location filename="../novelwriter/gui/projtree.py" line="1279" />
       <source>Merge Child Items into Self</source>
       <translation>将子项合并到自己中</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1269" />
+      <location filename="../novelwriter/gui/projtree.py" line="1281" />
       <source>Merge Child Items into New</source>
       <translation>将子项合并为新项</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1273" />
+      <location filename="../novelwriter/gui/projtree.py" line="1285" />
       <source>Merge Documents in Folder</source>
       <translation>合并文件夹中的文档</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1277" />
+      <location filename="../novelwriter/gui/projtree.py" line="1289" />
       <source>Split Document by Headers</source>
       <translation>按标题拆分文档</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1286" />
+      <location filename="../novelwriter/gui/projtree.py" line="1298" />
       <source>Expand All</source>
       <translation>全部展开</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1288" />
+      <location filename="../novelwriter/gui/projtree.py" line="1300" />
       <source>Collapse All</source>
       <translation>全部折叠</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1292" />
+      <location filename="../novelwriter/gui/projtree.py" line="1304" />
       <source>Delete Permanently</source>
       <translation>永久删除</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1295" />
+      <location filename="../novelwriter/gui/projtree.py" line="1307" />
       <source>Move to Trash</source>
       <translation>移到废纸篓</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1483" />
+      <location filename="../novelwriter/gui/projtree.py" line="1495" />
       <source>Convert Folder</source>
       <translation>转换文件夹</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1484" />
+      <location filename="../novelwriter/gui/projtree.py" line="1496" />
       <source>Do you want to convert the folder to a {0}? This action cannot be reversed.</source>
       <translation>您想要将文件夹转换为 {0} 吗？此操作不能被撤销。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1529" />
+      <location filename="../novelwriter/gui/projtree.py" line="1541" />
       <source>No documents selected for merging.</source>
       <translation>未选择要合并的文档。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1538" />
+      <location filename="../novelwriter/gui/projtree.py" line="1550" />
       <source>Merged</source>
       <translation>已合并</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1618" />
-      <location filename="../novelwriter/gui/projtree.py" line="1554" />
+      <location filename="../novelwriter/gui/projtree.py" line="1630" />
+      <location filename="../novelwriter/gui/projtree.py" line="1566" />
       <source>Could not write document content.</source>
       <translation>无法写入文档内容。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1678" />
+      <location filename="../novelwriter/gui/projtree.py" line="1707" />
+      <location filename="../novelwriter/gui/projtree.py" line="1690" />
       <source>There is nowhere to add item with name '{0}'.</source>
       <translation>无处可添加名为 '{0}' 的项目。</translation>
     </message>
@@ -3829,163 +3780,168 @@
       <translation>无法删除文档文件。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="288" />
+      <location filename="../novelwriter/core/project.py" line="254" />
+      <source>Could not open project with path: {0}</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="291" />
       <source>Unknown</source>
       <translation>未知</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="292" />
+      <location filename="../novelwriter/core/project.py" line="295" />
       <source>Project file does not appear to be a novelWriterXML file.</source>
       <translation>项目文件似乎不是 NovelWriterXML 文件。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="296" />
+      <location filename="../novelwriter/core/project.py" line="299" />
       <source>Unknown or unsupported novelWriter project file format. The project cannot be opened by this version of novelWriter. The file was saved with novelWriter version {0}.</source>
       <translation>未知或不受支持的 NovelWriter 项目文件格式。 此版本的NovelWriter 无法打开该项目。 该文件是用 NovelWriter 版本 {0} 保存的。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="302" />
+      <location filename="../novelwriter/core/project.py" line="305" />
       <source>Failed to parse project xml.</source>
       <translation>无法解析项目 xml。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="314" />
+      <location filename="../novelwriter/core/project.py" line="317" />
       <source>File Version</source>
       <translation>文件版本</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="315" />
+      <location filename="../novelwriter/core/project.py" line="318" />
       <source>The file format of your project is about to be updated. If you proceed, older versions of novelWriter will no longer be able to open this project. Continue?</source>
       <translation>您的项目的文件格式即将更新。 如果您继续，较旧版本的新作家将无法再打开此项目，是否继续？</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="330" />
+      <location filename="../novelwriter/core/project.py" line="333" />
       <source>Version Conflict</source>
       <translation>版本冲突</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="331" />
+      <location filename="../novelwriter/core/project.py" line="334" />
       <source>This project was saved by a newer version of novelWriter, version {0}. This is version {1}. If you continue to open the project, some attributes and settings may not be preserved, but the overall project should be fine. Continue opening the project?</source>
       <translation>此项目由较新版本的 novelWriter 版本 {0} 保存。 这是版本 {1}。 如果继续打开项目，可能有些属性和设置不会保留，但整体项目应该没问题。 继续打开项目？</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="375" />
+      <location filename="../novelwriter/core/project.py" line="378" />
       <source>Opened Project: {0}</source>
       <translation>已打开的项目：{0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="386" />
+      <location filename="../novelwriter/core/project.py" line="389" />
       <source>There is no project open.</source>
       <translation>没有打开的项目。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="411" />
+      <location filename="../novelwriter/core/project.py" line="414" />
       <source>Failed to save project.</source>
       <translation>保存项目失败。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="427" />
+      <location filename="../novelwriter/core/project.py" line="430" />
       <source>Saved Project: {0}</source>
       <translation>已保存项目： {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="453" />
+      <location filename="../novelwriter/core/project.py" line="456" />
       <source>Backing up project ...</source>
       <translation>项目备份中……</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="457" />
+      <location filename="../novelwriter/core/project.py" line="460" />
       <source>Cannot backup project because no valid backup path is set. Please set a valid backup location in Preferences.</source>
       <translation>由于未设置备份路径，无法备份项目。 请在首选项中设置一个有效的备份位置。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="464" />
+      <location filename="../novelwriter/core/project.py" line="467" />
       <source>Cannot backup project because no project name is set. Please set a Project Name in Project Settings.</source>
       <translation>由于未设置项目名，无法备份项目。 请在项目设置中指定项目名。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="475" />
+      <location filename="../novelwriter/core/project.py" line="478" />
       <source>Could not create backup folder.</source>
       <translation>无法创建备份文件夹。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="480" />
+      <location filename="../novelwriter/core/project.py" line="483" />
       <source>Backup from {0}</source>
       <translation>从 {0} 中备份</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="485" />
+      <location filename="../novelwriter/core/project.py" line="488" />
       <source>Backup archive file written to: {0}</source>
       <translation>备份存档文件写入：{0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="489" />
+      <location filename="../novelwriter/core/project.py" line="492" />
       <source>Could not write backup archive.</source>
       <translation>无法写入备份存档。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="494" />
+      <location filename="../novelwriter/core/project.py" line="497" />
       <source>Project backed up to '{0}'</source>
       <translation>项目备份到{0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="511" />
-      <location filename="../novelwriter/core/project.py" line="507" />
+      <location filename="../novelwriter/core/project.py" line="514" />
+      <location filename="../novelwriter/core/project.py" line="510" />
       <source>New</source>
       <translation>新建</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="508" />
+      <location filename="../novelwriter/core/project.py" line="511" />
       <source>Note</source>
       <translation>笔记</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="509" />
+      <location filename="../novelwriter/core/project.py" line="512" />
       <source>Draft</source>
       <translation>草稿</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="510" />
+      <location filename="../novelwriter/core/project.py" line="513" />
       <source>Finished</source>
       <translation>已完成</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="512" />
+      <location filename="../novelwriter/core/project.py" line="515" />
       <source>Minor</source>
       <translation>次要</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="513" />
+      <location filename="../novelwriter/core/project.py" line="516" />
       <source>Major</source>
       <translation>主要</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="514" />
+      <location filename="../novelwriter/core/project.py" line="517" />
       <source>Main</source>
       <translation>主要的</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="735" />
+      <location filename="../novelwriter/core/project.py" line="738" />
       <source>Found {0} orphaned file(s) in project folder.</source>
       <translation>在项目文件夹中找到 {0} 个孤立文件。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="745" />
+      <location filename="../novelwriter/core/project.py" line="748" />
       <source>Recovered</source>
       <translation>已复原</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="759" />
+      <location filename="../novelwriter/core/project.py" line="762" />
       <source>[{0}] {1}</source>
       <translation>[{0}] {1}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="764" />
+      <location filename="../novelwriter/core/project.py" line="767" />
       <source>Recovered File {0}</source>
       <translation>已复原的文件 {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="792" />
+      <location filename="../novelwriter/core/project.py" line="795" />
       <source>One or more orphaned files could not be added back into the project. Make sure at least a Novel root folder exists.</source>
       <translation>无法将一个或多个孤立文件重新添加到项目中。确保至少存在一个 Novel 根文件夹。</translation>
     </message>
