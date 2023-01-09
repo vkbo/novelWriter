@@ -76,22 +76,17 @@ jobs:
       - name: Build (macOS)
         if: runner.os == 'macOS'
         run: |
-          ./macos/build.sh
+          ./setup/macos/build.sh
       
       ##
       # UPLOAD BUILDS
       ##
 
-      - name: Upload binary zip (macOS)
+      - name: Upload binary zip / dmg (macOS)
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v3
         with:
           name: novelWriter-${{ matrix.name }}-${{ env.VERSION }}.app.zip
-          path: novelWriter.app.zip
-
-      - name: Upload dmg (macOS)
-        if: runner.os == 'macOS'
-        uses: actions/upload-artifact@v3
-        with:
-          name: novelWriter-${{ matrix.name }}-${{ env.VERSION }}.dmg
-          path: novelWriter-${{ env.VERSION }}.dmg
+          path: |
+            dist_macos/novelWriter-${{ env.VERSION }}.zip
+            dist_macos/novelWriter-${{ env.VERSION }}.dmg

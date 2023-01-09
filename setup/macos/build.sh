@@ -11,6 +11,10 @@ BUILD_DIR=$(mktemp -d "$TEMP_BASE/novelWriter-build-XXXXXX")
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+SRC_DIR="$SCRIPT_DIR/../.."
+
+RLS_DIR="$SRC_DIR/dist_macos"
+
 cleanup () {
     if [ -d "$BUILD_DIR" ]; then
         rm -rf "$BUILD_DIR"
@@ -23,11 +27,11 @@ echo "Building in: $BUILD_DIR"
 
 OLD_CWD="$(pwd)"
 
-VERSION="$(awk '/^__version__/{print substr($NF,2,length($NF)-2)}' $SCRIPT_DIR/../novelwriter/__init__.py)"
+VERSION="$(awk '/^__version__/{print substr($NF,2,length($NF)-2)}' $SRC_DIR/novelwriter/__init__.py)"
 
-pushd "$SCRIPT_DIR/../" || exit 1
+pushd "$SRC_DIR" || exit 1
 
-python3 setup.py manual qtlrelease sample
+python3 setup.py manual qtlrelease sample gen-plist
 
 ls -lah .
 
@@ -52,7 +56,7 @@ conda install -c conda-forge enchant hunspell-en --yes
 
 echo "installing python deps ..."
 # install dependencies
-pip install -r "$SCRIPT_DIR/../requirements.txt"
+pip install -r "$SRC_DIR/requirements.txt"
 
 # leave conda env
 conda deactivate
@@ -61,7 +65,7 @@ echo "Building app bundle ..."
 # create .app Framework
 mkdir -p novelWriter.app/Contents/
 mkdir novelWriter.app/Contents/MacOS novelWriter.app/Contents/Resources novelWriter.app/Contents/Resources/novelWriter
-cp $SCRIPT_DIR/../macos/Info.plist novelWriter.app/Contents/Info.plist
+cp $SRC_DIR/setup/macos/Info.plist novelWriter.app/Contents/Info.plist
 
 echo "Copying miniconda env to bundle ..."
 # copy Miniconda env
@@ -77,13 +81,11 @@ FILES_COPY=(
 )
 
 for file in "${FILES_COPY[@]}"; do
-    echo "Copying $SCRIPT_DIR/../$file ..."
-    cp -R $SCRIPT_DIR/../$file novelWriter.app/Contents/Resources/novelWriter/
+    echo "Copying $SRC_DIR/$file ..."
+    cp -R $SRC_DIR/$file novelWriter.app/Contents/Resources/novelWriter/
 done
 
-cp $SCRIPT_DIR/../macos/novelwriter.icns novelWriter.app/Contents/Resources/
-#cp -R $SCRIPT_DIR/../* novelWriter.app/Contents/Resources/novelWriter/
-
+cp $SRC_DIR/setup/macos/novelwriter.icns novelWriter.app/Contents/Resources/
 
 # create entry script
 cat > novelWriter.app/Contents/MacOS/novelWriter <<\EOF
@@ -123,16 +125,18 @@ popd || exit 1
 
 echo "Packageing App ..."
 
+mkdir -p $RLS_DIR
+
 # generate .dmg
 
 brew install create-dmg
 # "--skip-jenkins" is a temporary workaround for https://github.com/create-dmg/create-dmg/issues/72
-create-dmg --volname "novelWriter $VERSION" --volicon $SCRIPT_DIR/../macos/novelwriter.icns \
+create-dmg --volname "novelWriter $VERSION" --volicon $SCR_DIR/setup/macos/novelwriter.icns \
     --window-pos 200 120 --window-size 800 400 --icon-size 100 --icon novelWriter.app 200 190 --hide-extension novelWriter.app \
-    --app-drop-link 600 185 novelWriter-"${VERSION}".dmg "$BUILD_DIR"/
+    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}"-macos.dmg "$BUILD_DIR"/
 
 pushd $BUILD_DIR || exit 1
 zip -qr novelWriter.app.zip  novelWriter.app
 popd || exit 1
 
-mv $BUILD_DIR/novelWriter.app.zip novelWriter.app.zip
+mv $BUILD_DIR/novelWriter.app.zip $RLS_DIR/novelWriter-"${VERSION}"-macos.zip
