@@ -15,6 +15,8 @@ SRC_DIR="$SCRIPT_DIR/../.."
 
 RLS_DIR="$SRC_DIR/dist_macos"
 
+echo "Script Dir: $SCRIPT_DIR"
+
 cleanup () {
     if [ -d "$BUILD_DIR" ]; then
         rm -rf "$BUILD_DIR"
@@ -131,12 +133,12 @@ mkdir -p $RLS_DIR
 
 brew install create-dmg
 # "--skip-jenkins" is a temporary workaround for https://github.com/create-dmg/create-dmg/issues/72
-create-dmg --volname "novelWriter $VERSION" --volicon $SCR_DIR/setup/macos/novelwriter.icns \
+create-dmg --volname "novelWriter $VERSION" --volicon $SRC_DIR/setup/macos/novelwriter.icns \
     --window-pos 200 120 --window-size 800 400 --icon-size 100 --icon novelWriter.app 200 190 --hide-extension novelWriter.app \
-    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}"-macos.dmg "$BUILD_DIR"/
+    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}".dmg "$BUILD_DIR"/
 
 pushd $BUILD_DIR || exit 1
 zip -qr novelWriter.app.zip  novelWriter.app
 popd || exit 1
 
-mv $BUILD_DIR/novelWriter.app.zip $RLS_DIR/novelWriter-"${VERSION}"-macos.zip
+mv $BUILD_DIR/novelWriter.app.zip $RLS_DIR/novelWriter-"${VERSION}".app.zip

@@ -82,11 +82,17 @@ jobs:
       # UPLOAD BUILDS
       ##
 
-      - name: Upload binary zip / dmg (macOS)
+      - name: Upload binary zip (macOS)
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v3
         with:
-          name: novelWriter-${{ matrix.name }}-${{ env.VERSION }}.app.zip
-          path: |
-            dist_macos/novelWriter-${{ env.VERSION }}.zip
-            dist_macos/novelWriter-${{ env.VERSION }}.dmg
+          name: novelWriter-${{ env.VERSION }}-${{ matrix.name }}.app.zip
+          path: dist_macos/novelWriter-${{ env.VERSION }}.app.zip
+      
+      - name: Upload dmg (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: novelWriter-${{ env.VERSION }}-${{ matrix.name }}.dmg
+          path: dist_macos/novelWriter-${{ env.VERSION }}.dmg
+      
