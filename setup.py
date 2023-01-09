@@ -1123,6 +1123,79 @@ def makeAppImage(sysArgs):
     return unparsedArgs
 
 
+
+##
+#  Make a flatpak
+##
+
+def makeFlatpak():
+    """build and install a flatpak localy (not for flathub)
+    """
+
+
+    print("")
+    print("Build flatpak")
+    print("==============")
+    print("")
+
+    numVers, _, relDate = extractVersion()
+    pkgVers = compactVersion(numVers)
+    relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
+
+    bldDir = "dist_flatpak"
+    bldPkg = f"novelwriter_{pkgVers}"
+    outDir = f"{bldDir}/{bldPkg}"
+
+
+    # Set Up Folders
+    # ==============
+
+    if not os.path.isdir(bldDir):
+        os.mkdir(bldDir)
+
+    if os.path.isdir(outDir):
+        print("Removing old build files ...")
+        print("")
+        shutil.rmtree(outDir)
+
+    os.mkdir(outDir)
+
+    # Build Additional Assets
+    # =======================
+
+    buildQtI18n()
+    buildSampleZip()
+    buildPdfManual()
+
+    # Build flatpak
+    # ==============
+
+    manifestPath = "setup/flatpak/io.novelwriter.novelWriter.yml"
+
+    bundlFile = f"{bldDir}/novelWriter-{pkgVers}-linux.flatpak"
+
+    try:
+        subprocess.call([
+            "flatpak-builder", f"--repo={outDir}/repo", "--install-deps-from=flathub", "--force-clean", outDir, manifestPath
+        ])
+        subprocess.call([
+            "flatpak", "build-bundle", f"{outDir}/repo",  bundlFile,  "io.novelwriter.novelWriter",
+        ])
+    except Exception as exc:
+        print("Flatpak build: FAILED")
+        print("")
+        print(str(exc))
+        print("")
+        print("Dependencies:")
+        print(" * flatpak flatpak-builder")
+        print("")
+        sys.exit(1)
+
+    shaFile = makeCheckSum(os.path.basename(bundlFile), cwd=bldDir)
+
+    toUpload(bundlFile)
+    toUpload(shaFile)
+
 ##
 #  Make Windows Setup EXE (build-win-exe)
 ##
@@ -1879,6 +1952,8 @@ if __name__ == "__main__":
         "                   The package must be built from a minimal windows zip file.",
         "    build-appimage Build an AppImage. Argument --linux-tag defaults to",
         "                   manylinux1_x86_64 / i386, and --python-version to 3.10.",
+        "    build-flatpak  Build a flatpak bundle. Builds a local flatpak for install,",
+        "                   not for distribution to flathub.",
         "",
         "System Install:",
         "",
@@ -1987,6 +2062,14 @@ if __name__ == "__main__":
             sys.argv = makeAppImage(sys.argv)  # Build appimage and prune its args
         else:
             print("ERROR: Command 'build-appimage' can only be used on Linux")
+            sys.exit(1)
+    
+    if "build-flatpak" in sys.argv:
+        sys.argv.remove("build-flatpak")
+        if hostOS == OS_LINUX:
+            makeFlatpak()
+        else:
+            print("ERROR: Command 'install-flatpak' can only be used on Linux")
             sys.exit(1)
 
     # General Installers

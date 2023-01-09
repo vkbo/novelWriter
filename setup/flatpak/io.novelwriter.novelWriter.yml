@@ -48,9 +48,9 @@ modules:
       - sed -i 's/novelwriter.desktop/io.novelwriter.novelWriter.desktop/' ${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml
     sources:
       - type: dir
-        path: ../
+        path: ../../
       # - type: archive
-      #   path: ../dist_minimal/novelwriter-1.7b1-minimal-linux.zip
+      #   path: ../../dist_minimal/novelwriter-1.7b1-minimal-linux.zip
       #   sha256: d4ff96280d5c86c2b14d7ed3b9bc3ced0fc401530afd1eeaa5aabc63d10ceba6
       #   strip-components: 0
 
