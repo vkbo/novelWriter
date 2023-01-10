@@ -7,7 +7,7 @@ File History:
 Created: 2022-12-01 [2.1b1]
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,11 +24,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
+import novelwriter
+
+from PyQt5.QtGui import QFont, QFontInfo
 
 from novelwriter.error import formatException
+from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
 from novelwriter.core.tohtml import ToHtml
-from novelwriter.core.tomd import ToMarkdown
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +40,7 @@ class NWBuildDocument:
 
     def __init__(self, project):
 
+        self._conf = novelwriter.CONFIG
         self._project = project
         self._build = {}
         self._documents = []
@@ -47,6 +51,10 @@ class NWBuildDocument:
     ##
     #  Properties
     ##
+
+    @property
+    def error(self):
+        return self._error
 
     @property
     def buildLength(self):
@@ -142,9 +150,89 @@ class NWBuildDocument:
     ##
 
     def _setupBuild(self, bldObj):
-        pass
+        """Configure the build object.
+        """
+        # Get Settings
+        fmtTitle      = self._build.get("format.fmtTitle", "%title%")
+        fmtChapter    = self._build.get("format.fmtChapter", "%title%")
+        fmtUnnumbered = self._build.get("format.fmtUnnumbered", "%title%")
+        fmtScene      = self._build.get("format.fmtScene", "%title%")
+        fmtSection    = self._build.get("format.fmtSection", "%title%")
+        buildLang     = self._build.get("format.buildLang", "en_GB")
+        hideScene     = self._build.get("format.hideScene", False)
+        hideSection   = self._build.get("format.hideSection", False)
+        textFont      = self._build.get("format.textFont", self._conf.textFont)
+        textSize      = self._build.get("format.textSize", self._conf.textSize)
+        lineHeight    = self._build.get("format.lineHeight", 1.15)
+        justifyText   = self._build.get("format.justifyText", False)
+        noStyling     = self._build.get("format.noStyling", False)
+        replaceUCode  = self._build.get("format.replaceUCode", False)
+        incSynopsis   = self._build.get("filter.includeSynopsis", False)
+        incComments   = self._build.get("filter.includeComments", False)
+        incKeywords   = self._build.get("filter.includeKeywords", False)
+        includeBody   = self._build.get("filter.includeBody", True)
+
+        # The language lookup dict is reloaded if needed
+        self._project.setProjectLang(buildLang)
+
+        # Get font information
+        fontInfo = QFontInfo(QFont(textFont, textSize))
+        textFixed = fontInfo.fixedPitch()
+
+        bldObj.setTitleFormat(fmtTitle)
+        bldObj.setChapterFormat(fmtChapter)
+        bldObj.setUnNumberedFormat(fmtUnnumbered)
+        bldObj.setSceneFormat(fmtScene, hideScene)
+        bldObj.setSectionFormat(fmtSection, hideSection)
+
+        bldObj.setFont(textFont, textSize, textFixed)
+        bldObj.setJustify(justifyText)
+        bldObj.setLineHeight(lineHeight)
+
+        bldObj.setSynopsis(incSynopsis)
+        bldObj.setComments(incComments)
+        bldObj.setKeywords(incKeywords)
+        bldObj.setBodyText(includeBody)
+
+        if isinstance(bldObj, ToHtml):
+            bldObj.setStyles(not noStyling)
+            bldObj.setReplaceUnicode(replaceUCode)
+
+        if isinstance(bldObj, ToOdt):
+            bldObj.setColourHeaders(not noStyling)
+            bldObj.setLanguage(buildLang)
+            bldObj.initDocument()
+
+        return
 
     def _doBuild(self, bldObj, tHandle):
-        pass
+        """Build a single document and add it to the build object.
+        """
+        tItem = self._project.tree[tHandle]
+        if tItem is None:
+            self._error = f"Build: Unknown item '{tHandle}'"
+            logger.error(self._error)
+            return False
+
+        try:
+            if tItem.isRootType() and not tItem.isNovelLike():
+                bldObj.addRootHeading(tItem.itemHandle)
+                bldObj.doConvert()
+            elif tItem.isFileType():
+                bldObj.setText(tItem.itemHandle)
+                bldObj.doPreProcessing()
+                bldObj.tokenizeText()
+                bldObj.doHeaders()
+                bldObj.doConvert()
+                bldObj.doPostProcessing()
+            else:
+                logger.info(f"Build: Skipping '{tHandle}'")
+
+        except Exception:
+            self._error = f"Build: Failed to build '{tHandle}'"
+            logger.error(self._error)
+            return False
+
+        return True
 
 # END Class NWBuildDocument
