@@ -8,7 +8,7 @@ Created: 2019-05-18 [0.1.3] GuiTheme
 Created: 2019-11-08 [0.4]   GuiIcons
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -507,8 +507,10 @@ class GuiIcons:
         self._themeMap = {}
         themePath = self._iconPath / iconTheme
         if not themePath.is_dir():
-            logger.warning("No icons loaded for '%s'", iconTheme)
-            return False
+            themePath = self.mainConf.dataPath("icons") / iconTheme
+            if not themePath.is_dir():
+                logger.warning("No icons loaded for '%s'", iconTheme)
+                return False
 
         themeConf = themePath / self._confName
         logger.info("Loading icon theme '%s'", iconTheme)

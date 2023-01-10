@@ -7,7 +7,7 @@ File History:
 Created: 2018-09-29 [0.0.1]
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
-from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
-from PyQt5.QtCore import Qt, QLocale
+from PyQt5.QtGui import QIcon, QPixmap, QColor
+from PyQt5.QtCore import Qt, QLocale, pyqtSlot
 from PyQt5.QtWidgets import (
     QColorDialog, QComboBox, QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
@@ -300,7 +300,7 @@ class GuiProjectEditStatus(QWidget):
 
         self.colDeleted = []
         self.colChanged = False
-        self.selColour  = QColor(100, 100, 100)
+        self.selColour = QColor(100, 100, 100)
 
         self.iPx = self.mainTheme.baseIconSize
 
@@ -338,16 +338,18 @@ class GuiProjectEditStatus(QWidget):
 
         self.editName = QLineEdit()
         self.editName.setMaxLength(40)
-        self.editName.setEnabled(False)
         self.editName.setPlaceholderText(self.tr("Select item to edit"))
+        self.editName.setEnabled(False)
 
         self.colPixmap = QPixmap(self.iPx, self.iPx)
         self.colPixmap.fill(QColor(100, 100, 100))
         self.colButton = QPushButton(QIcon(self.colPixmap), self.tr("Colour"))
         self.colButton.setIconSize(self.colPixmap.rect().size())
+        self.colButton.setEnabled(False)
         self.colButton.clicked.connect(self._selectColour)
 
         self.saveButton = QPushButton(self.tr("Save"))
+        self.saveButton.setEnabled(False)
         self.saveButton.clicked.connect(self._saveItem)
 
         # Assemble
@@ -399,9 +401,10 @@ class GuiProjectEditStatus(QWidget):
         return [], []
 
     ##
-    #  User Actions
+    #  Private Slots
     ##
 
+    @pyqtSlot()
     def _selectColour(self):
         """Open a dialog to select the status icon colour.
         """
@@ -417,20 +420,20 @@ class GuiProjectEditStatus(QWidget):
                 self.colButton.setIconSize(pixmap.rect().size())
         return
 
+    @pyqtSlot()
     def _newItem(self):
         """Create a new status item.
         """
-        newItem = self._addItem(None, self.tr("New Item"), (100, 100, 100), 0)
-        newItem.setBackground(self.COL_LABEL, QBrush(QColor(0, 255, 0, 70)))
-        newItem.setBackground(self.COL_USAGE, QBrush(QColor(0, 255, 0, 70)))
+        self._addItem(None, self.tr("New Item"), (100, 100, 100), 0)
         self.colChanged = True
         return
 
+    @pyqtSlot()
     def _delItem(self):
         """Delete a status item.
         """
         selItem = self._getSelectedItem()
-        if selItem is not None:
+        if isinstance(selItem, QTreeWidgetItem):
             iRow = self.listBox.indexOfTopLevelItem(selItem)
             if selItem.data(self.COL_LABEL, self.NUM_ROLE) > 0:
                 self.mainGui.makeAlert(self.tr(
@@ -442,20 +445,59 @@ class GuiProjectEditStatus(QWidget):
                 self.colChanged = True
         return
 
+    @pyqtSlot()
     def _saveItem(self):
         """Save changes made to a status item.
         """
         selItem = self._getSelectedItem()
-        if selItem is not None:
+        if isinstance(selItem, QTreeWidgetItem):
             selItem.setText(self.COL_LABEL, simplified(self.editName.text()))
             selItem.setIcon(self.COL_LABEL, self.colButton.icon())
             selItem.setData(self.COL_LABEL, self.COL_ROLE, (
                 self.selColour.red(), self.selColour.green(), self.selColour.blue()
             ))
-            self.editName.setEnabled(False)
             self.colChanged = True
 
         return
+
+    @pyqtSlot()
+    def _selectedItem(self):
+        """Extract the info of a selected item and populate the settings
+        boxes and button. If no item is selected, clear the form.
+        """
+        selItem = self._getSelectedItem()
+        if isinstance(selItem, QTreeWidgetItem):
+            cols = selItem.data(self.COL_LABEL, self.COL_ROLE)
+            name = selItem.text(self.COL_LABEL)
+
+            pixmap = QPixmap(self.iPx, self.iPx)
+            pixmap.fill(QColor(*cols))
+            self.selColour = QColor(*cols)
+            self.editName.setText(name)
+            self.colButton.setIcon(QIcon(pixmap))
+            self.editName.selectAll()
+            self.editName.setFocus()
+
+            self.editName.setEnabled(True)
+            self.colButton.setEnabled(True)
+            self.saveButton.setEnabled(True)
+
+        else:
+            pixmap = QPixmap(self.iPx, self.iPx)
+            pixmap.fill(QColor(100, 100, 100))
+            self.selColour = QColor(100, 100, 100)
+            self.editName.setText("")
+            self.colButton.setIcon(QIcon(pixmap))
+
+            self.editName.setEnabled(False)
+            self.colButton.setEnabled(False)
+            self.saveButton.setEnabled(False)
+
+        return
+
+    ##
+    #  Internal Functions
+    ##
 
     def _addItem(self, key, name, cols, count):
         """Add a status item to the list.
@@ -473,7 +515,7 @@ class GuiProjectEditStatus(QWidget):
 
         self.listBox.addTopLevelItem(item)
 
-        return item
+        return
 
     def _moveItem(self, step):
         """Move and item up or down step.
@@ -497,32 +539,6 @@ class GuiProjectEditStatus(QWidget):
         self.colChanged = True
 
         return
-
-    def _selectedItem(self):
-        """Extract the info of a selected item and populate the settings
-        boxes and button.
-        """
-        selItem = self._getSelectedItem()
-        if selItem is None:
-            return
-
-        cols = selItem.data(self.COL_LABEL, self.COL_ROLE)
-        name = selItem.text(self.COL_LABEL)
-
-        pixmap = QPixmap(self.iPx, self.iPx)
-        pixmap.fill(QColor(*cols))
-        self.selColour = QColor(*cols)
-        self.editName.setText(name)
-        self.colButton.setIcon(QIcon(pixmap))
-        self.editName.setEnabled(True)
-        self.editName.selectAll()
-        self.editName.setFocus()
-
-        return
-
-    ##
-    #  Internal Functions
-    ##
 
     def _getSelectedItem(self):
         """Get the currently selected item.

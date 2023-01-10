@@ -3,7 +3,7 @@ novelWriter – GUI Theme and Icons Classes Tester
 ================================================
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -282,7 +282,6 @@ def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, fncPath):
     # Load a broken theme file
     iconsDir = fncPath / "icons"
     testIcons = iconsDir / "testicons"
-    iconsDir.mkdir()
     testIcons.mkdir()
     writeFile(testIcons / "icons.conf", (
         "[Main]\n"

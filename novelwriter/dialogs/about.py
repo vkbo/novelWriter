@@ -7,7 +7,7 @@ File History:
 Created: 2020-05-21 [0.5.2]
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -85,6 +85,10 @@ class GuiAbout(QDialog):
         self.pageNotes.setOpenExternalLinks(True)
         self.pageNotes.document().setDocumentMargin(self.mainConf.pxInt(16))
 
+        self.pageCredits = QTextBrowser()
+        self.pageCredits.setOpenExternalLinks(True)
+        self.pageCredits.document().setDocumentMargin(self.mainConf.pxInt(16))
+
         self.pageLicense = QTextBrowser()
         self.pageLicense.setOpenExternalLinks(True)
         self.pageLicense.document().setDocumentMargin(self.mainConf.pxInt(16))
@@ -93,6 +97,7 @@ class GuiAbout(QDialog):
         self.tabBox = QTabWidget()
         self.tabBox.addTab(self.pageAbout, self.tr("About"))
         self.tabBox.addTab(self.pageNotes, self.tr("Release"))
+        self.tabBox.addTab(self.pageCredits, self.tr("Credits"))
         self.tabBox.addTab(self.pageLicense, self.tr("Licence"))
         self.innerBox.addWidget(self.tabBox)
 
@@ -115,6 +120,7 @@ class GuiAbout(QDialog):
         self._setStyleSheet()
         self._fillAboutPage()
         self._fillNotesPage()
+        self._fillCreditsPage()
         self._fillLicensePage()
         qApp.restoreOverrideCursor()
         return
@@ -140,20 +146,12 @@ class GuiAbout(QDialog):
             "<p>{license1}</p>"
             "<p>{license2}</p>"
             "<p>{license3}</p>"
-            "<h3>{title2}</h3>"
-            "<p>{credits}</p>"
         ).format(
             title1=self.tr("About novelWriter"),
             copy=novelwriter.__copyright__,
             link=self.tr("Website: {0}").format(
                 f"<a href='{novelwriter.__url__}'>{novelwriter.__domain__}</a>"
             ),
-            title2=self.tr("Credits"),
-            credits=self._wrapTable([
-                (self.tr("Developer"), "Veronica Berglyd Olsen"),
-                (self.tr("Concept"), "Veronica Berglyd Olsen, Marian Lückhof"),
-                (self.tr("i18n"), "Bruno Meneguello"),
-            ]),
             intro=self.tr(
                 "novelWriter is a markdown-like text editor designed for organising and "
                 "writing novels. It is written in Python 3 with a Qt5 GUI, using PyQt5."
@@ -177,55 +175,6 @@ class GuiAbout(QDialog):
             ),
         )
 
-        aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
-            self.tr("Translations"),
-            self._wrapTable([
-                ("Deutsch", "Myian"),
-                ("English", "Veronica Berglyd Olsen"),
-                ("Español Latinoamericano", "Tommy Marplatt"),
-                ("Français", "Jan Lüdke (jyhelle)"),
-                ("Nederlands", "Martijn van der Kleijn"),
-                ("Norsk Bokmål", "Veronica Berglyd Olsen"),
-                ("Português", "Bruno Meneguello"),
-                ("简体中文", "Qianzhi Long"),
-            ])
-        )
-
-        mainTheme = self.mainGui.mainTheme
-        iconCache = self.mainGui.mainTheme.iconCache
-        if mainTheme.themeName and mainTheme.themeAuthor != "N/A":
-            licURL = f"<a href='{mainTheme.themeLicenseUrl}'>{mainTheme.themeLicense}</a>"
-            aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
-                self.tr("Theme: {0}").format(mainTheme.themeName),
-                self._wrapTable([
-                    (self.tr("Author"), mainTheme.themeAuthor),
-                    (self.tr("Credit"), mainTheme.themeCredit),
-                    (self.tr("Licence"), licURL),
-                ])
-            )
-
-        if iconCache.themeName:
-            licURL = f"<a href='{iconCache.themeLicenseUrl}'>{iconCache.themeLicense}</a>"
-            aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
-                self.tr("Icons: {0}").format(iconCache.themeName),
-                self._wrapTable([
-                    (self.tr("Author"), iconCache.themeAuthor),
-                    (self.tr("Credit"), iconCache.themeCredit),
-                    (self.tr("Licence"), licURL),
-                ])
-            )
-
-        if mainTheme.syntaxName:
-            licURL = f"<a href='{mainTheme.syntaxLicenseUrl}'>{mainTheme.syntaxLicense}</a>"
-            aboutMsg += "<h4>{0}</h4><p>{1}</p>".format(
-                self.tr("Syntax: {0}").format(mainTheme.syntaxName),
-                self._wrapTable([
-                    (self.tr("Author"), mainTheme.syntaxAuthor),
-                    (self.tr("Credit"), mainTheme.syntaxCredit),
-                    (self.tr("Licence"), licURL),
-                ])
-            )
-
         self.pageAbout.setHtml(aboutMsg)
 
         return
@@ -241,6 +190,17 @@ class GuiAbout(QDialog):
             self.pageNotes.setHtml("Error loading release notes text ...")
         return
 
+    def _fillCreditsPage(self):
+        """Load the content for the Credits page.
+        """
+        docPath = self.mainConf.assetPath("text") / "credits_en.htm"
+        docText = readTextFile(docPath)
+        if docText:
+            self.pageCredits.setHtml(docText)
+        else:
+            self.pageCredits.setHtml("Error loading credits text ...")
+        return
+
     def _fillLicensePage(self):
         """Load the content for the Licence page.
         """
@@ -251,16 +211,6 @@ class GuiAbout(QDialog):
         else:
             self.pageLicense.setHtml("Error loading licence text ...")
         return
-
-    def _wrapTable(self, theData):
-        """Wrap a list of label/value tuples in an html table.
-        """
-        theTable = []
-        for aLabel, aValue in theData:
-            theTable.append(
-                f"<tr><td><b>{aLabel}:</b></td><td>{aValue}</td></tr>"
-            )
-        return "<table>{0}</table>".format("".join(theTable))
 
     def _setStyleSheet(self):
         """Set stylesheet for all browser tabs
@@ -275,9 +225,6 @@ class GuiAbout(QDialog):
             ".alt {{"
             "  color: rgb({kColR},{kColG},{kColB});"
             "}}\n"
-            "td {{"
-            "  padding-right: 0.8em;"
-            "}}\n"
         ).format(
             hColR=self.mainGui.mainTheme.colHead[0],
             hColG=self.mainGui.mainTheme.colHead[1],
@@ -288,6 +235,7 @@ class GuiAbout(QDialog):
         )
         self.pageAbout.document().setDefaultStyleSheet(styleSheet)
         self.pageNotes.document().setDefaultStyleSheet(styleSheet)
+        self.pageCredits.document().setDefaultStyleSheet(styleSheet)
         self.pageLicense.document().setDefaultStyleSheet(styleSheet)
 
         return

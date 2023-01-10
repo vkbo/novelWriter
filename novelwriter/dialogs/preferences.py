@@ -7,7 +7,7 @@ File History:
 Created: 2019-06-10 [0.1.5]
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -826,6 +826,7 @@ class GuiPreferencesSyntax(QWidget):
         super().__init__(parent=prefsGui)
 
         self.mainConf  = novelwriter.CONFIG
+        self.prefsGui  = prefsGui
         self.mainGui   = prefsGui.mainGui
         self.mainTheme = prefsGui.mainGui.mainTheme
 
@@ -893,16 +894,21 @@ class GuiPreferencesSyntax(QWidget):
     def saveValues(self):
         """Save the values set for this tab.
         """
-        # Quotes & Dialogue
-        self.mainConf.highlightQuotes = self.highlightQuotes.isChecked()
-        self.mainConf.allowOpenSQuote = self.allowOpenSQuote.isChecked()
-        self.mainConf.allowOpenDQuote = self.allowOpenDQuote.isChecked()
+        highlightQuotes = self.highlightQuotes.isChecked()
+        allowOpenSQuote = self.allowOpenSQuote.isChecked()
+        allowOpenDQuote = self.allowOpenDQuote.isChecked()
+        highlightEmph   = self.highlightEmph.isChecked()
+        showMultiSpaces = self.showMultiSpaces.isChecked()
 
-        # Text Emphasis
-        self.mainConf.highlightEmph = self.highlightEmph.isChecked()
+        self.prefsGui._updateSyntax |= self.mainConf.highlightQuotes != highlightQuotes
+        self.prefsGui._updateSyntax |= self.mainConf.highlightEmph != highlightEmph
+        self.prefsGui._updateSyntax |= self.mainConf.showMultiSpaces != showMultiSpaces
 
-        # Text Errors
-        self.mainConf.showMultiSpaces = self.showMultiSpaces.isChecked()
+        self.mainConf.highlightQuotes = highlightQuotes
+        self.mainConf.allowOpenSQuote = allowOpenSQuote
+        self.mainConf.allowOpenDQuote = allowOpenDQuote
+        self.mainConf.highlightEmph   = highlightEmph
+        self.mainConf.showMultiSpaces = showMultiSpaces
 
         return
 

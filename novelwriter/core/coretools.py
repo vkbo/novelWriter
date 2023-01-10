@@ -9,7 +9,7 @@ Created: 2022-10-11 [2.0rc1] DocSplitter
 Created: 2022-11-03 [2.0rc2] ProjectBuilder
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

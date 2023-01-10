@@ -3,7 +3,7 @@ novelWriter – NWStorage Class Tester
 ====================================
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -64,11 +64,14 @@ def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
     # Open project as a new project should fail
     assert storage.openProjectInPlace(fncPath, newProject=True) is False
 
-    # Opening as a no-new project is fine
+    # Opening as a non-new project is fine
     assert storage.openProjectInPlace(fncPath, newProject=False) is True
 
     # Opening the project file is also fine
     assert storage.openProjectInPlace(fncPath / nwFiles.PROJ_FILE, newProject=False) is True
+
+    # Opening as a non-new project on a non-existing folder should fail
+    assert storage.openProjectInPlace(fncPath / "foobar", newProject=False) is False
 
     # Check settings
     assert storage.storagePath == fncPath

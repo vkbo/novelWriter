@@ -7,7 +7,7 @@ File History:
 Created: 2018-09-22 [0.0.1]
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -610,6 +610,7 @@ class GuiMain(QMainWindow):
             logger.debug("Requested item '%s' is not a document", tHandle)
             return False
 
+        self._changeView(nwView.EDITOR)
         cHandle = self.docEditor.docHandle()
         if cHandle == tHandle:
             self.docEditor.setCursorLine(tLine)
@@ -618,7 +619,6 @@ class GuiMain(QMainWindow):
             return True
 
         self.closeDocument(beforeOpen=True)
-        self._changeView(nwView.EDITOR)
         if self.docEditor.loadText(tHandle, tLine):
             self.theProject.data.setLastHandle(tHandle, "editor")
             self.projView.setSelectedHandle(tHandle, doScroll=doScroll)

@@ -7,7 +7,7 @@ File History:
 Created: 2018-09-22 [0.0.1]
 
 This file is a part of novelWriter
-Copyright 2018–2022, Veronica Berglyd Olsen
+Copyright 2018–2023, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -461,10 +461,11 @@ class Config:
         self._confPath.mkdir(exist_ok=True)
         self._dataPath.mkdir(exist_ok=True)
 
-        # Also create the syntax and themes folders if possible
+        # Also create the syntax, themes and icons folders if possible
         if self._dataPath.is_dir():
             (self._dataPath / "syntax").mkdir(exist_ok=True)
             (self._dataPath / "themes").mkdir(exist_ok=True)
+            (self._dataPath / "icons").mkdir(exist_ok=True)
 
         # Check if config file exists, and load it. If not, we save defaults
         if (self._confPath / nwFiles.CONF_FILE).is_file():
