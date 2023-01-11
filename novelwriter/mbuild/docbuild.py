@@ -85,9 +85,12 @@ class NWBuildDocument:
         """
         makeOdt = ToOdt(self._project, isFlat=isFlat)
         self._setupBuild(makeOdt)
+        makeOdt.initDocument()
 
         for i, tHandle in enumerate(self._documents):
             yield i, self._doBuild(makeOdt, tHandle)
+
+        makeOdt.closeDocument()
 
         self._error = None
         try:
@@ -201,13 +204,13 @@ class NWBuildDocument:
         if isinstance(bldObj, ToOdt):
             bldObj.setColourHeaders(not noStyling)
             bldObj.setLanguage(buildLang)
-            bldObj.initDocument()
 
         return
 
     def _doBuild(self, bldObj, tHandle):
         """Build a single document and add it to the build object.
         """
+        self._error = None
         tItem = self._project.tree[tHandle]
         if tItem is None:
             self._error = f"Build: Unknown item '{tHandle}'"
@@ -219,7 +222,7 @@ class NWBuildDocument:
                 bldObj.addRootHeading(tItem.itemHandle)
                 bldObj.doConvert()
             elif tItem.isFileType():
-                bldObj.setText(tItem.itemHandle)
+                bldObj.setText(tHandle)
                 bldObj.doPreProcessing()
                 bldObj.tokenizeText()
                 bldObj.doHeaders()
