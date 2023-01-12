@@ -80,7 +80,7 @@ class NWBuildDocument:
     #  Methods
     ##
 
-    def buildOpenDocument(self, savePath, isFlat):
+    def iterBuildOpenDocument(self, savePath, isFlat):
         """Build an Open Document file.
         """
         makeOdt = ToOdt(self._project, isFlat=isFlat)
@@ -103,7 +103,7 @@ class NWBuildDocument:
 
         return
 
-    def buildHTML(self, savePath):
+    def iterBuildHTML(self, savePath):
         """Build an HTML file.
         """
         makeHtml = ToHtml(self._project)
@@ -123,7 +123,7 @@ class NWBuildDocument:
 
         return
 
-    def buildMarkdown(self, savePath, extendedMd):
+    def iterBuildMarkdown(self, savePath, extendedMd):
         """Build a Markdown file.
         """
         makeMd = ToMarkdown(self._project)

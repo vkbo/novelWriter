@@ -76,7 +76,7 @@ def testMBuildDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, ts
 
     count = 0
     error = []
-    for _, success in docBuild.buildOpenDocument(docFile, True):
+    for _, success in docBuild.iterBuildOpenDocument(docFile, True):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -94,7 +94,7 @@ def testMBuildDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, ts
 
     count = 0
     error = []
-    for _, success in docBuild.buildOpenDocument(docFile, False):
+    for _, success in docBuild.iterBuildOpenDocument(docFile, False):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -111,7 +111,7 @@ def testMBuildDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, ts
         mp.setattr("builtins.open", causeOSError)
 
         docFile = fncPath / "Lorem Ipsum Err.fodt"
-        for _ in docBuild.buildOpenDocument(docFile, True):
+        for _ in docBuild.iterBuildOpenDocument(docFile, True):
             pass
 
         assert docBuild.error == "OSError: Mock OSError"
@@ -129,7 +129,7 @@ def testMBuildDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, ts
         count = 0
         error = []
         docFile = fncPath / "Lorem Ipsum Err.fodt"
-        for _, success in docBuild.buildOpenDocument(docFile, True):
+        for _, success in docBuild.iterBuildOpenDocument(docFile, True):
             count += 1 if success else 0
             if docBuild.error:
                 error.append(docBuild.error)
@@ -184,7 +184,7 @@ def testMBuildDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
 
     count = 0
     error = []
-    for _, success in docBuild.buildHTML(docFile):
+    for _, success in docBuild.iterBuildHTML(docFile):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -202,7 +202,7 @@ def testMBuildDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
         mp.setattr("builtins.open", causeOSError)
 
         docFile = fncPath / "Lorem Ipsum Err.htm"
-        for _ in docBuild.buildHTML(docFile):
+        for _ in docBuild.iterBuildHTML(docFile):
             pass
 
         assert docBuild.error == "OSError: Mock OSError"
@@ -235,7 +235,7 @@ def testMBuildDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPat
 
     count = 0
     error = []
-    for _, success in docBuild.buildMarkdown(docFile, False):
+    for _, success in docBuild.iterBuildMarkdown(docFile, False):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -255,7 +255,7 @@ def testMBuildDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPat
 
     count = 0
     error = []
-    for _, success in docBuild.buildMarkdown(docFile, True):
+    for _, success in docBuild.iterBuildMarkdown(docFile, True):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -273,7 +273,7 @@ def testMBuildDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPat
         mp.setattr("builtins.open", causeOSError)
 
         docFile = fncPath / "Lorem Ipsum Err.md"
-        for _ in docBuild.buildMarkdown(docFile, False):
+        for _ in docBuild.iterBuildMarkdown(docFile, False):
             pass
 
         assert docBuild.error == "OSError: Mock OSError"
