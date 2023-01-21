@@ -48,6 +48,13 @@ source, dependencies can still be installed from PyPi with:
 
    pip install -r requirements.txt
 
+.. note::
+
+   On Linux distros, the Qt library is usually split up into multiple packages. In some cases,
+   secondary dependencies may not be installed automatically. For novelWriter, the library files
+   for renderring the SVG icons may be left out and needs to be installed manually. This is the
+   case on for instance Arch Linux.
+
 
 .. _a_source_install:
 
