@@ -277,33 +277,6 @@ def yesNo(value):
     return "yes" if value else "no"
 
 
-def splitVersionNumber(value):
-    """Split a version string on the form aa.bb.cc into major, minor
-    and patch, and computes an integer value aabbcc.
-    """
-    if not isinstance(value, str):
-        return 0, 0, 0, 0
-
-    vMajor = 0
-    vMinor = 0
-    vPatch = 0
-    vInt = 0
-
-    vBits = value.split(".")
-    nBits = len(vBits)
-
-    if nBits > 0:
-        vMajor = checkInt(vBits[0], 0)
-    if nBits > 1:
-        vMinor = checkInt(vBits[1], 0)
-    if nBits > 2:
-        vPatch = checkInt(vBits[2], 0)
-
-    vInt = vMajor*10000 + vMinor*100 + vPatch
-
-    return vMajor, vMinor, vPatch, vInt
-
-
 def transferCase(source, target):
     """Transfers the case of the source word to the target word. This
     will consider all upper or lower, and first char capitalisation.
