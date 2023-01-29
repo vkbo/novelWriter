@@ -112,8 +112,7 @@ class NWErrorMessage(QDialog):
         """
         from traceback import format_tb
         from novelwriter import __issuesurl__, __version__
-        from PyQt5.Qt import PYQT_VERSION_STR
-        from PyQt5.QtCore import QT_VERSION_STR, QSysInfo
+        from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR, QSysInfo
 
         self.msgHead.setText((
             "<p>An unhandled error has been encountered.</p>"
