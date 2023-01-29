@@ -87,9 +87,9 @@ class GuiMain(QMainWindow):
         logger.info("OS: %s", self.mainConf.osType)
         logger.info("Kernel: %s", self.mainConf.kernelVer)
         logger.info("Host: %s", self.mainConf.hostName)
-        logger.info("Qt5: %s (%d)", self.mainConf.verQtString, self.mainConf.verQtValue)
-        logger.info("PyQt5: %s (%d)", self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
-        logger.info("Python: %s (0x%x)", self.mainConf.verPyString, self.mainConf.verPyHexVal)
+        logger.info("Qt5: %s (0x%06x)", self.mainConf.verQtString, self.mainConf.verQtValue)
+        logger.info("PyQt5: %s (0x%06x)", self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
+        logger.info("Python: %s (0x%08x)", self.mainConf.verPyString, self.mainConf.verPyHexVal)
         logger.info("GUI Language: %s", self.mainConf.guiLocale)
 
         # Core Classes
