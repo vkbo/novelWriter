@@ -155,8 +155,8 @@ def testBaseInit_Imports(caplog, monkeypatch, tmpPath):
     monkeypatch.setattr("PyQt5.QtWidgets.QErrorMessage.showMessage", lambda *a: None)
     monkeypatch.setitem(sys.modules, "lxml", None)
     monkeypatch.setattr("sys.hexversion", 0x0)
-    monkeypatch.setattr("novelwriter.CONFIG.verQtValue", 50000)
-    monkeypatch.setattr("novelwriter.CONFIG.verPyQtValue", 50000)
+    monkeypatch.setattr("novelwriter.CONFIG.verQtValue", 0x050000)
+    monkeypatch.setattr("novelwriter.CONFIG.verPyQtValue", 0x050000)
 
     with pytest.raises(SystemExit) as ex:
         _ = novelwriter.main(

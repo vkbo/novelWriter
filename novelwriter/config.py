@@ -30,14 +30,13 @@ import logging
 from time import time
 from pathlib import Path
 
-from PyQt5.Qt import PYQT_VERSION_STR
 from PyQt5.QtCore import (
-    QT_VERSION_STR, QStandardPaths, QSysInfo, QLocale, QLibraryInfo,
-    QTranslator
+    QT_VERSION, QT_VERSION_STR, PYQT_VERSION, PYQT_VERSION_STR, QStandardPaths,
+    QSysInfo, QLocale, QLibraryInfo, QTranslator
 )
 
 from novelwriter.error import logException, formatException
-from novelwriter.common import checkPath, splitVersionNumber, formatTimeStamp, NWConfigParser
+from novelwriter.common import checkPath, formatTimeStamp, NWConfigParser
 from novelwriter.constants import nwFiles, nwUnicode
 
 logger = logging.getLogger(__name__)
@@ -190,25 +189,13 @@ class Config:
         # ==========================
 
         # Check Qt5 Versions
-        verQt = splitVersionNumber(QT_VERSION_STR)
-        self.verQtString = QT_VERSION_STR
-        self.verQtMajor  = verQt[0]
-        self.verQtMinor  = verQt[1]
-        self.verQtPatch  = verQt[2]
-        self.verQtValue  = verQt[3]
-
-        verQt = splitVersionNumber(PYQT_VERSION_STR)
+        self.verQtString   = QT_VERSION_STR
+        self.verQtValue    = QT_VERSION
         self.verPyQtString = PYQT_VERSION_STR
-        self.verPyQtMajor  = verQt[0]
-        self.verPyQtMinor  = verQt[1]
-        self.verPyQtPatch  = verQt[2]
-        self.verPyQtValue  = verQt[3]
+        self.verPyQtValue  = PYQT_VERSION
 
         # Check Python Version
         self.verPyString = sys.version.split()[0]
-        self.verPyMajor  = sys.version_info[0]
-        self.verPyMinor  = sys.version_info[1]
-        self.verPyPatch  = sys.version_info[2]
         self.verPyHexVal = sys.hexversion
 
         # Check OS Type
