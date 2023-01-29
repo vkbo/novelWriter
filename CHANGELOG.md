@@ -1,5 +1,21 @@
 # novelWriter Changelog
 
+## Version 2.0.4 [2023-01-29]
+
+### Release Notes
+
+This is a patch release that fixes a bug where novelWriter would crash if PyQt5 version 5.15.8 was
+installed and imported.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix an issue with the version check against PyQt5, which was imported from the wrong package when
+  running novelWriter with PyQt5 version 5.15.8, released 2023-01-28. Issue #1324. PR #1325.
+
+----
+
 ## Version 2.0.3 [2023-01-08]
 
 ### Release Notes
