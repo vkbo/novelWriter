@@ -2512,7 +2512,7 @@ class GuiDocEditSearch(QFrame):
             # Using the Unicode-capable QRegularExpression class was
             # only added in Qt 5.13. Otherwise, 5.3 and up supports
             # only the QRegExp class.
-            if self.mainConf.verQtValue >= 51300:
+            if self.mainConf.verQtValue >= 0x050d00:
                 rxOpt = QRegularExpression.UseUnicodePropertiesOption
                 if not self.isCaseSense:
                     rxOpt |= QRegularExpression.CaseInsensitiveOption

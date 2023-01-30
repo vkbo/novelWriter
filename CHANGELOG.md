@@ -1,5 +1,21 @@
 # novelWriter Changelog
 
+## Version 2.0.4 [2023-01-29]
+
+### Release Notes
+
+This is a patch release that fixes a bug where novelWriter would crash if PyQt5 version 5.15.8 was
+installed and imported.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix an issue with the version check against PyQt5, which was imported from the wrong package when
+  running novelWriter with PyQt5 version 5.15.8, released 2023-01-28. Issue #1324. PR #1325.
+
+----
+
 ## Version 2.0.3 [2023-01-08]
 
 ### Release Notes
@@ -178,7 +194,7 @@ icons. They are technically no longer tree views, but rather a Table of Contents
 novel root folder. If you have multiple novel root folders, you can select which one to view.
 
 In the Novel Tree View, you now also have the option to hide or show a third column of data.
-Currently, you can chose between "Point of View Character", "Focus Character" and "Novel Plot". If
+Currently, you can choose between "Point of View Character", "Focus Character" and "Novel Plot". If
 you referenced more than one in the document, the column will only show the first entry, so make
 sure the most important one is listed first in your document if you use this feature. An arrow icon
 is also visible at the end of each row in the tree, and if you click on it, a tool tip should pop
