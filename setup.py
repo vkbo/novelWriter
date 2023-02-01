@@ -462,6 +462,8 @@ def genMacOSPlist():
         f"<string>{macosBundleIdent}</string>\n"
         "<key>CFBundleName</key>\n"
         f"<string>{macosBundleName}</string>\n"
+        "<key>CFBundleDisplayName</key>\n"
+        f"<string>{macosBundleName}</string>\n"
         "<key>CFBundleInfoDictionaryVersion</key>\n"
         "<string>6.0</string>\n"
         "<key>CFBundleShortVersionString</key>\n"
@@ -503,6 +505,8 @@ def genMacOSPlist():
         "</dict>\n"
         "</plist>\n"
     )
+
+    print(f"Writing Info.plist to {outDir}/Info.plist")
 
     writeFile(f"{outDir}/Info.plist", plistXML)
 

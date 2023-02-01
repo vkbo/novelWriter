@@ -100,6 +100,7 @@ EOF
 chmod a+x novelWriter.app/Contents/MacOS/novelWriter
 
 #do codesigning
+#echo "Signing bundle ..."
 #sudo codesign --sign - --deep --force --entitlements "$SCRIPT_DIR/../macos/App.entitlements" --options runtime "novelWriter.app/Contents/MacOS/novelWriter"
 
 # remove bloat

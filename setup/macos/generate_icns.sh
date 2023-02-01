@@ -1,19 +1,70 @@
 #! /usr/bin/env bash
 
-if ! command -v png2icns &> /dev/null
-then
-    echo "png2icns cound not be found, it is required. Please install a package like icnsutils or libicns."
-    exit
-fi
-
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-mkdir -p $SCRIPT_DIR/icons
+function generate_linux () {
+    echo "Generating on Linux ..."
+    if ! command -v png2icns &> /dev/null
+    then
+        echo "png2icns cound not be found, it is required. Please install a package like icnsutils or libicns."
+        exit
+    fi
 
-for size in 16x16 32x32 48x48 128x128 256x256; do
-    cp $SCRIPT_DIR/../setup/data/hicolor/$size/apps/novelwriter.png $SCRIPT_DIR/icons/icon_${size}px.png
-done
+    if ! command -v convert $> /dev/null
+    then
+        echo "convert could not be found, it is required. please install a imagemagick package."
+        exit
+    fi
 
-png2icns $SCRIPT_DIR/novelwriter.icns $SCRIPT_DIR/icons/icon_*px.png
+    mkdir -p $SCRIPT_DIR/icons
 
-rm -r $SCRIPT_DIR/icons
+    sizes=( 16 32 64 128 256 )
+    for base in "${sizes[@]}"; do
+        let basex2=${base}*2
+        size="${base}x${base}"
+        echo "Copying files for $size"
+        double=${basex2}x${basex2}
+        cp $SCRIPT_DIR/../data/hicolor/${size}/apps/novelwriter.png $SCRIPT_DIR/icons/icon_${size}.png
+        echo "Resizing ${size}@2x to $double from $size"
+        convert $SCRIPT_DIR/icons/icon_${size}.png -resize $double $SCRIPT_DIR/icons/icon_${size}@2x.png    
+    done
+
+    png2icns $SCRIPT_DIR/novelwriter.icns $SCRIPT_DIR/icons/icon_*.png
+
+    rm -r $SCRIPT_DIR/icons
+
+    echo "Done"
+}
+
+function generate_macos () {
+    echo "Generating on MacOs ..."
+    mkdir -p $SCRIPT_DIR/icons
+
+    echo "Building Iconset ..."
+    sizes=( 16 32 64 128 256 )
+    for base in "${sizes[@]}"; do
+        let basex2=${base}*2
+        size="${base}x${base}"
+        echo "Copying files for $size"
+        double=${basex2}x${basex2}
+        cp $SCRIPT_DIR/../data/hicolor/${size}/apps/novelwriter.png $SCRIPT_DIR/icons/icon_${size}.png
+        cp $SCRIPT_DIR/../data/hicolor/${size}/apps/novelwriter.png $SCRIPT_DIR/icons/icon_${size}@2x.png
+        echo "Resizing ${size}@2x to $double from $size"
+        sips -Z $basex2 $SCRIPT_DIR/icons/icon_${size}@2x.png    
+    done
+
+    rm -rf $SCRIPT_DIR/novelwriter.iconset
+    mv $SCRIPT_DIR/icons $SCRIPT_DIR/novelwriter.iconset
+
+    echo "Generating icns ..."
+    iconutil -c icns $SCRIPT_DIR/novelwriter.iconset
+
+    echo "Done"
+}
+
+unameOut="$(uname -s)"
+case "$unameOut" in
+    Linux*)    generate_linux;;
+    Darwin*)    generate_macos;;
+    *)    echo "Unsupported OS"
+esac
