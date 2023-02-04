@@ -71,11 +71,11 @@ jobs:
         with:
           name: novelWriter-${{ env.VERSION }}-macos.app.zip
           path: dist_macos/novelWriter-${{ env.VERSION }}.app.zip
-          retention-days: 1
+          # retention-days: 1
 
       - name: Upload DMG
         uses: actions/upload-artifact@v3
         with:
           name: novelWriter-${{ env.VERSION }}-macos.dmg
           path: dist_macos/novelWriter-${{ env.VERSION }}.dmg
-          retention-days: 1
+          # retention-days: 1
