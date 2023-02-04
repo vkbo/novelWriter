@@ -137,14 +137,17 @@ rm -rf pkgs
 rm -rf cmake
 rm -rf share/{gtk-,}doc
 
+# Remove the files from the 3.1 symlink
+rm -rf lib/python3.1
+
 # remove web engine
-rm lib/python3.*/site-packages/PyQt5/QtWebEngine* || true
-rm -r lib/python3.*/site-packages/PyQt5/Qt/translations/qtwebengine* || true
-rm lib/python3.*/site-packages/PyQt5/Qt/resources/qtwebengine* || true
-rm -r lib/python3.*/site-packages/PyQt5/Qt/qml/QtWebEngine* || true
-rm -r lib/python3.*/site-packages/PyQt5/Qt/plugins/webview/libqtwebview* || true
-rm lib/python3.*/site-packages/PyQt5/Qt/libexec/QtWebEngineProcess* || true
-rm lib/python3.*/site-packages/PyQt5/Qt/lib/libQt5WebEngine* || true
+rm lib/python3.10/site-packages/PyQt5/QtWebEngine* || true
+rm -r lib/python3.10/site-packages/PyQt5/Qt/translations/qtwebengine* || true
+rm lib/python3.10/site-packages/PyQt5/Qt/resources/qtwebengine* || true
+rm -r lib/python3.10/site-packages/PyQt5/Qt/qml/QtWebEngine* || true
+rm -r lib/python3.10/site-packages/PyQt5/Qt/plugins/webview/libqtwebview* || true
+rm lib/python3.10/site-packages/PyQt5/Qt/libexec/QtWebEngineProcess* || true
+rm lib/python3.10/site-packages/PyQt5/Qt/lib/libQt5WebEngine* || true
 
 popd || exit 1
 popd || exit 1
