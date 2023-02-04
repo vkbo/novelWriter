@@ -1,6 +1,10 @@
 name: Packaging
 
-on: workflow_dispatch
+on:
+  push:
+    tags:
+      - v**
+      - tt**
 
 jobs:
   buildAssets:
