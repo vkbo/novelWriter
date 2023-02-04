@@ -96,7 +96,7 @@ mkdir novelWriter.app/Contents/MacOS novelWriter.app/Contents/Resources novelWri
 cp $SRC_DIR/setup/macos/Info.plist novelWriter.app/Contents/Info.plist
 
 echo "Copying miniconda env to bundle ..."
-cp -a ~/miniconda/envs/novelWriter/* novelWriter.app/Contents/Resources/
+cp -R ~/miniconda/envs/novelWriter/* novelWriter.app/Contents/Resources/
 
 echo "Copying novelWriter to bundle ..."
 FILES_COPY=(
@@ -141,13 +141,13 @@ rm -rf share/{gtk-,}doc
 rm -rf lib/python3.1
 
 # remove web engine
-rm lib/python3.10/site-packages/PyQt5/QtWebEngine* || true
-rm -r lib/python3.10/site-packages/PyQt5/Qt/translations/qtwebengine* || true
-rm lib/python3.10/site-packages/PyQt5/Qt/resources/qtwebengine* || true
-rm -r lib/python3.10/site-packages/PyQt5/Qt/qml/QtWebEngine* || true
-rm -r lib/python3.10/site-packages/PyQt5/Qt/plugins/webview/libqtwebview* || true
-rm lib/python3.10/site-packages/PyQt5/Qt/libexec/QtWebEngineProcess* || true
-rm lib/python3.10/site-packages/PyQt5/Qt/lib/libQt5WebEngine* || true
+rm lib/python3.*/site-packages/PyQt5/QtWebEngine* || true
+rm -r lib/python3.*/site-packages/PyQt5/Qt/translations/qtwebengine* || true
+rm lib/python3.*/site-packages/PyQt5/Qt/resources/qtwebengine* || true
+rm -r lib/python3.*/site-packages/PyQt5/Qt/qml/QtWebEngine* || true
+rm -r lib/python3.*/site-packages/PyQt5/Qt/plugins/webview/libqtwebview* || true
+rm lib/python3.*/site-packages/PyQt5/Qt/libexec/QtWebEngineProcess* || true
+rm lib/python3.*/site-packages/PyQt5/Qt/lib/libQt5WebEngine* || true
 
 popd || exit 1
 popd || exit 1
