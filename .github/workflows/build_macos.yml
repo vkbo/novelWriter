@@ -1,19 +1,10 @@
 name: Packaging
 
-on:
-  push:
-    branches: 
-      - main
-      - patch
-  pull_request:
-    branches:
-      - main
-      - patch
+on: workflow_dispatch
 
 jobs:
   buildAssets:
     runs-on: ubuntu-latest
-    environment: Release
     steps:
       - name: Python Setup
         uses: actions/setup-python@v4
@@ -48,7 +39,6 @@ jobs:
     strategy:
       fail-fast: false
     runs-on: macos-12
-    environment: Release
     steps:
       - name: Checkout
         uses: actions/checkout@v3
