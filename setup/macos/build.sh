@@ -96,7 +96,7 @@ mkdir novelWriter.app/Contents/MacOS novelWriter.app/Contents/Resources novelWri
 cp $SRC_DIR/setup/macos/Info.plist novelWriter.app/Contents/Info.plist
 
 echo "Copying miniconda env to bundle ..."
-cp -R --preserve=links ~/miniconda/envs/novelWriter/* novelWriter.app/Contents/Resources/
+cp -a ~/miniconda/envs/novelWriter/* novelWriter.app/Contents/Resources/
 
 echo "Copying novelWriter to bundle ..."
 FILES_COPY=(
