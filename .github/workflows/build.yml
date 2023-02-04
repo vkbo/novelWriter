@@ -1,0 +1,35 @@
+name: Build
+
+on: workflow_dispatch
+
+jobs:
+  buildAssets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Python Setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3
+          architecture: x64
+
+      - name: Install Packages (apt)
+        run: |
+          sudo apt update
+          sudo apt install qttools5-dev-tools python3-sphinx latexmk texlive texlive-latex-extra
+
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Run Build Commands
+        run: python setup.py qtlrelease sample manual
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: nw-assets-${{ github.sha }}
+          path: |
+            novelwriter/assets/sample.zip
+            novelwriter/assets/manual.pdf
+            novelwriter/assets/i18n/*.qm
+          if-no-files-found: error
+          retention-days: 1
