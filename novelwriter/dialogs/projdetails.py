@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QSpinBox, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
-from novelwriter.common import numberToRoman
+from novelwriter.common import formatTime, numberToRoman
 from novelwriter.custom import PagedDialog, QSwitch
 from novelwriter.constants import nwUnicode
 from novelwriter.gui.components import NovelSelector
@@ -257,7 +257,7 @@ class GuiProjectDetailsMain(QWidget):
         self.chapCountVal.setText(f"{hCounts[2]:n}")
         self.sceneCountVal.setText(f"{hCounts[3]:n}")
         self.revCountVal.setText(f"{self.theProject.data.saveCount:n}")
-        self.editTimeVal.setText(f"{edTime//3600:02d}:{edTime%3600//60:02d}")
+        self.editTimeVal.setText(formatTime(edTime))
 
         self.projPathVal.setText(str(self.theProject.storage.storagePath))
 
