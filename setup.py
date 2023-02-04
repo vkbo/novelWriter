@@ -71,6 +71,25 @@ def extractVersion():
 
     return numVers, hexVers, relDate
 
+def extractCopyright():
+    """Extract the novelWriter copyright notice without having to import
+    anything else from the main package.
+    """
+    copyright = "Unknown"
+    initFile = os.path.join("novelwriter", "__init__.py")
+    try:
+        with open(initFile, mode="r", encoding="utf-8") as inFile:
+            for aLine in inFile:
+                if aLine.startswith("__copyright__"):
+                    copyright = (aLine).partition("=")[2].strip().strip('"')
+    except Exception as exc:
+        print("Could not read file: %s" % initFile)
+        print(str(exc))
+
+    print("novelWriter copyright: %s " % (copyright))
+
+    return copyright
+
 
 def compactVersion(numVers):
     """Make the version number more compact."""
@@ -394,6 +413,102 @@ def buildQtI18nTS(sysArgs):
     print("")
 
     return
+
+##
+#  Generage MacOS PList
+##
+
+def genMacOSPlist():
+
+    # Set Up Folder
+    # =============
+
+    numVers, _, _ = extractVersion()
+    pkgVers = compactVersion(numVers)
+
+    outDir = "setup/macos"
+
+    macosBundleName    = "novelWriter"
+    macosBundleExeName = "novelWriter"
+    macosBundleInfo    = "novelWriter: A markdown-like text editor for planning and writing novels."
+    macosBundleIcon    = "novelwriter.icns"
+    macosBundleIdent   = "io.novelwriter.novelWriter"
+    macosBundleSVers   = pkgVers
+    macosBundleVers    = numVers
+    macosBundleCopyright = extractCopyright()
+
+    # These keys are no longer used but are present for compatability
+    macosBundleVersMajor, macosBundleVersMinor, _ = pkgVers.split(".")
+
+
+    plistXML = (
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
+        "<plist version=\"1.0\">\n"
+        "<dict>\n"
+        "<key>NSPrincipalClass</key>\n"
+        "<string>NSApplication</string>\n"
+        "<key>NSHighResolutionCapable</key>\n"
+        "<string>True</string>\n"
+        "<key>CFBundleDevelopmentRegion</key>\n"
+        "<string>English</string>\n"
+        "<key>CFBundleExecutable</key>\n"
+        f"<string>{macosBundleExeName}</string>\n"
+        "<key>CFBundleGetInfoString</key>\n"
+        f"<string>{macosBundleInfo}</string>\n"
+        "<key>CFBundleIconFile</key>\n"
+        f"<string>{macosBundleIcon}</string>\n"
+        "<key>CFBundleIdentifier</key>\n"
+        f"<string>{macosBundleIdent}</string>\n"
+        "<key>CFBundleName</key>\n"
+        f"<string>{macosBundleName}</string>\n"
+        "<key>CFBundleDisplayName</key>\n"
+        f"<string>{macosBundleName}</string>\n"
+        "<key>CFBundleInfoDictionaryVersion</key>\n"
+        "<string>6.0</string>\n"
+        "<key>CFBundleShortVersionString</key>\n"
+        f"<string>{macosBundleSVers}</string>\n"
+        "<key>CFBundleSignature</key>\n"
+        "<string>????</string>\n"
+        "<key>CFBundleVersion</key>\n"
+        f"<string>{macosBundleVers}</string>\n"
+        "<key>CFBundlePackageType</key>\n"
+        "<string>APPL</string>\n"
+        "<key>NSHumanReadableCopyright</key>\n"
+        f"<string>{macosBundleCopyright}</string>\n"
+        "<key>IFMajorVersion</key>\n"
+        f"<integer>{macosBundleVersMajor}</integer>\n"
+        "<key>IFMinorVersion</key>\n"
+        f"<integer>{macosBundleVersMinor}</integer>\n"
+        "<key>CFBundleDocumentTypes</key>\n"
+        "    <array>\n"
+        "        <dict>\n"
+        "            <key>CFBundleTypeExtensions</key>\n"
+        "            <array>\n"
+        "                <string>nwx</string>\n"
+        "            </array>\n"
+        "            <key>CFBundleTypeName</key>\n"
+        "            <string>novelWriter Project</string>\n"
+        "            <key>CFBundleTypeOSTypes</key>\n"
+        "            <array>\n"
+        "                <string>TEXT</string>\n"
+        "                <string>utxt</string>\n"
+        "                <string>TUTX</string>\n"
+        "                <string>****</string>\n"
+        "            </array>\n"
+        "            <key>CFBundleTypeRole</key>\n"
+        "            <string>Viewer</string>\n"
+        "            <key>LSHandlerRank</key>\n"
+        "            <string>Alternate</string>\n"
+        "        </dict>\n"
+        "    </array>\n"
+        "</dict>\n"
+        "</plist>\n"
+    )
+
+    print(f"Writing Info.plist to {outDir}/Info.plist")
+
+    writeFile(f"{outDir}/Info.plist", plistXML)
 
 
 ##
@@ -1862,6 +1977,7 @@ if __name__ == "__main__":
         "                   The files to be updated must be provided as arguments.",
         "    qtlrelease     Build the language files for internationalisation.",
         "    clean-assets   Delete assets built by manual, sample and qtlrelease.",
+        "    gen-plist      Generates an Info.plist for use in a MacOS Bundle",
         "",
         "Python Packaging:",
         "",
@@ -1943,6 +2059,10 @@ if __name__ == "__main__":
     if "clean-assets" in sys.argv:
         sys.argv.remove("clean-assets")
         cleanBuiltAssets()
+    
+    if "gen-plist" in sys.argv:
+        sys.argv.remove("gen-plist")
+        genMacOSPlist()
 
     # Python Packaging
     # ================

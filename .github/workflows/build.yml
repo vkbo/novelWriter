@@ -1,0 +1,98 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-12
+            name: macos
+            qt_ver: 5
+            qt_host: mac
+            qt_version: '5.15.2'
+            qt_modules: ''
+            qt_tools: ''
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      ##
+      # PREPARE
+      ##
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+
+      - name: Set short version
+        shell: bash
+        run: |
+          ver_short=`git rev-parse --short HEAD`
+          ver_novelwriter=`awk '/^__version__/{print substr($NF,2,length($NF)-2)}' novelwriter/__init__.py`
+          echo "VERSION=$ver_novelwriter" >> $GITHUB_ENV
+          echo "VERSION_SHORT=$ver_short" >> $GITHUB_ENV
+
+      - name: Install Qt (Linux)
+        if: runner.os == 'Linux' && matrix.qt_ver != 6
+        run: |
+          sudo apt-get -y install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libqt5core5a libqt5network5 libqt5gui5
+ 
+      - name: Install Qt (macOS, AppImage & Windows MSVC)
+        if: runner.os == 'Linux' && matrix.qt_ver == 6 || runner.os == 'macOS' || (runner.os == 'Windows' && matrix.msystem == '')
+        uses: jurplel/install-qt-action@v3
+        with:
+           version: ${{ matrix.qt_version }}
+           host: ${{ matrix.qt_host }}
+           target: 'desktop'
+           arch: ${{ matrix.qt_arch }}
+           modules: ${{ matrix.qt_modules }}
+           tools: ${{ matrix.qt_tools }}
+           cache: true
+      
+      - name: Setup TeX Live
+        uses: teatimeguest/setup-texlive-action@v2
+        with:
+          packages: >-
+            scheme-basic
+            collection-latexextra
+            latexmk
+            tex-gyre
+      
+      - name: Install Dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          pip3 install sphinx
+      
+      ##
+      # BUILD
+      ##
+      
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          ./setup/macos/build.sh
+      
+      ##
+      # UPLOAD BUILDS
+      ##
+
+      - name: Upload binary zip (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: novelWriter-${{ env.VERSION }}-${{ matrix.name }}.app.zip
+          path: dist_macos/novelWriter-${{ env.VERSION }}.app.zip
+      
+      - name: Upload dmg (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: novelWriter-${{ env.VERSION }}-${{ matrix.name }}.dmg
+          path: dist_macos/novelWriter-${{ env.VERSION }}.dmg
+      
