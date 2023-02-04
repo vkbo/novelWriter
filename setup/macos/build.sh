@@ -33,7 +33,33 @@ VERSION="$(awk '/^__version__/{print substr($NF,2,length($NF)-2)}' $SRC_DIR/nove
 
 pushd "$SRC_DIR" || exit 1
 
-python3 setup.py manual qtlrelease sample gen-plist
+python3 setup.py gen-plist
+if [ -f $SRC_DIR/setup/macos/Info.plist ]; then
+    echo "Found: setup/macos/Info.plist"
+else
+    echo "Missing: setup/macos/Info.plist"
+    exit 1
+fi
+
+# Check that other assets are present
+if [ -f $SRC_DIR/novelwriter/assets/sample.zip ]; then
+    echo "Found: novelwriter/assets/sample.zip"
+else
+    echo "Missing: novelwriter/assets/sample.zip"
+    exit 1
+fi
+if [ -f $SRC_DIR/novelwriter/assets/manual.pdf ]; then
+    echo "Found: novelwriter/assets/manual.pdf"
+else
+    echo "Missing: novelwriter/assets/manual.pdf"
+    exit 1
+fi
+if [ -f $SRC_DIR/novelwriter/assets/i18n/nw_en_US.qm ]; then
+    echo "Found: novelwriter/assets/i18n/nw_en_US.qm"
+else
+    echo "Missing: novelwriter/assets/i18n/nw_en_US.qm"
+    exit 1
+fi
 
 ls -lah .
 
@@ -70,15 +96,12 @@ mkdir novelWriter.app/Contents/MacOS novelWriter.app/Contents/Resources novelWri
 cp $SRC_DIR/setup/macos/Info.plist novelWriter.app/Contents/Info.plist
 
 echo "Copying miniconda env to bundle ..."
-# copy Miniconda env
 cp -R ~/miniconda/envs/novelWriter/* novelWriter.app/Contents/Resources/
 
 echo "Copying novelWriter to bundle ..."
-# copy novelWriter
-
 FILES_COPY=(
     "CHANGELOG.md" "MANIFEST.in" "CREDITS.md" "LICENSE.md"
-    "CONTRIBUTING.md" "CODE_OF_CONDUCT.md" "i18n" "novelwriter"
+    "CONTRIBUTING.md" "CODE_OF_CONDUCT.md" "novelwriter"
     "novelWriter.py"
 )
 
@@ -114,7 +137,10 @@ rm -rf pkgs
 rm -rf cmake
 rm -rf share/{gtk-,}doc
 
-#remove web engine
+# Remove the files from the 3.1 symlink
+rm -rf lib/python3.1
+
+# remove web engine
 rm lib/python3.*/site-packages/PyQt5/QtWebEngine* || true
 rm -r lib/python3.*/site-packages/PyQt5/Qt/translations/qtwebengine* || true
 rm lib/python3.*/site-packages/PyQt5/Qt/resources/qtwebengine* || true
