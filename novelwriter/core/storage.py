@@ -79,8 +79,16 @@ class NWStorage:
 
     @property
     def contentPath(self):
+        """Return the path used for project content. The folder must
+        already exist, otherwise this property is None.
+        """
         if self._runtimePath is not None:
-            return self._runtimePath / "content"
+            contentPath = self._runtimePath / "content"
+            if contentPath.is_dir():
+                return contentPath
+            else:
+                logger.error("Path not found: %s", contentPath)
+                return None
         return None
 
     ##
