@@ -469,6 +469,7 @@ def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpPath):
         assert theTree.writeToCFile() is False
 
     theProject._storage._runtimePath = tmpPath
+    (tmpPath / "content").mkdir()
     assert theTree.writeToCFile() is True
 
     pathA = str(Path("content") / "c000000000001.nwd")
