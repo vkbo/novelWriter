@@ -49,15 +49,24 @@ class NWIndex:
     contains the data that isn't stored in the project items themselves.
     The content of the index is updated every time a file item is saved.
 
-    The primary index data is contained in the ItemIndex class, which
-    contains an IndexItem representing each NWItem. Each IndexItem holds
-    an IndexHeading object for each heading of the item's text.
+    Some information needed by the NWItem object of a project item can
+    only be known after a text file has been scanned by the indexer, so
+    this data is set directly by the indexer class in the NWItem object.
 
-    A reverse index of all tags is contained in the TagsIndex class.
-    This is duplicate information used for quicker lookups from the tags
-    and back to items where they are defined.
+    The primary index data is contained in a single instance of the
+    ItemIndex class. This object contains an IndexItem representing each
+    NWItem of the project. Each IndexItem holds an IndexHeading object
+    for each heading of the item's text.
 
-    The index data is cached in a JSON file between writing sessions.
+    A reverse index of all tags is contained in a single instance of the
+    TagsIndex class. This is duplicate information used for quicker
+    lookups from the tags and back to items where they are defined.
+
+    The index data is cached in a JSON file between writing sessions in
+    order to save startup time. The cached index is validated on input,
+    and a broken flag set if it is not valid. If it is invalid, the
+    loaded data is cleared and it is up to the calling code to initiate
+    a rebuild of the index data.
     """
 
     def __init__(self, project):
@@ -283,10 +292,10 @@ class NWIndex:
     def _scanActive(self, tHandle, theItem, theText, itemTags):
         """Scan an active document for meta data.
         """
-        nTitle = 0          # Line Number of the previous title
-        cTitle = TT_NONE    # Tag of the current title
-        pTitle = TT_NONE    # Tag of the previous title
-        firstHeader = True  # First header has been seen
+        nTitle = 0           # Line Number of the previous title
+        cTitle = TT_NONE     # Tag of the current title
+        pTitle = TT_NONE     # Tag of the previous title
+        canSetHeader = True  # First header has not yet been set
 
         theLines = theText.splitlines()
         for nLine, aLine in enumerate(theLines, start=1):
@@ -299,9 +308,9 @@ class NWIndex:
                 if hDepth == "H0":
                     continue
 
-                if firstHeader:
+                if canSetHeader:
                     theItem.setMainHeading(hDepth)
-                    firstHeader = False
+                    canSetHeader = False
 
                 cTitle = self._itemIndex.addItemHeading(tHandle, nLine, hDepth, hText)
                 if cTitle != TT_NONE:
