@@ -48,6 +48,11 @@ the pip tool. See :ref:`a_started` for more details.
 * Social Media: https://fosstodon.org/@novelwriter
 
 .. toctree::
+   :hidden:
+
+   Main Page <self>
+
+.. toctree::
    :maxdepth: 1
    :caption: Introduction
    :hidden:
