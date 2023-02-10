@@ -741,7 +741,7 @@ class GuiNovelTree(QTreeWidget):
 
         if refData:
             toolText = ", ".join(refData)
-            return refData[0], f"{refName}: {toolText}"
+            return toolText, f"{refName}: {toolText}"
 
         return "", ""
 
