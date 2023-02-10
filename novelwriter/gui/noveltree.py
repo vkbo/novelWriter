@@ -34,12 +34,13 @@ from time import time
 from PyQt5.QtGui import QFont, QPalette
 from PyQt5.QtCore import Qt, QSize, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView, QMenu,
-    QSizePolicy, QToolButton, QToolTip, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget
+    QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView,
+    QInputDialog, QMenu, QSizePolicy, QToolButton, QToolTip, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
+from novelwriter.common import minmax
 from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
 from novelwriter.gui.components import NovelSelector
 
@@ -126,12 +127,18 @@ class GuiNovelView(QWidget):
         lastCol = self.theProject.options.getEnum(
             "GuiNovelView", "lastCol", NovelTreeColumn, NovelTreeColumn.HIDDEN
         )
+        lastColSize = self.theProject.options.getInt(
+            "GuiNovelView", "lastColSize", 25
+        )
 
         self.clearProject()
+
         self.novelBar.buildNovelRootMenu()
         self.novelBar.setLastColType(lastCol, doRefresh=False)
         self.novelBar.setCurrentRoot(lastNovel)
         self.novelBar.setEnabled(True)
+
+        self.novelTree.setLastColSize(lastColSize)
 
         return
 
@@ -139,7 +146,9 @@ class GuiNovelView(QWidget):
         """Run closing project tasks.
         """
         lastColType = self.novelTree.lastColType
+        lastColSize = self.novelTree.lastColSize
         self.theProject.options.setValue("GuiNovelView", "lastCol", lastColType)
+        self.theProject.options.setValue("GuiNovelView", "lastColSize", lastColSize)
         return
 
     def setTreeFocus(self):
@@ -232,6 +241,10 @@ class GuiNovelToolBar(QWidget):
         self._addLastColAction(NovelTreeColumn.POV,    self.tr("Point of View Character"))
         self._addLastColAction(NovelTreeColumn.FOCUS,  self.tr("Focus Character"))
         self._addLastColAction(NovelTreeColumn.PLOT,   self.tr("Novel Plot"))
+
+        self.mLastCol.addSeparator()
+        self.aLastColSize = self.mLastCol.addAction(self.tr("Column Size"))
+        self.aLastColSize.triggered.connect(self._selectLastColumnSize)
 
         self.tbMore = QToolButton(self)
         self.tbMore.setToolTip(self.tr("More Options"))
@@ -339,6 +352,19 @@ class GuiNovelToolBar(QWidget):
         self.novelView.novelTree.refreshTree(rootHandle=rootHandle, overRide=True)
         return
 
+    @pyqtSlot()
+    def _selectLastColumnSize(self):
+        """Set the maximum width for the last column.
+        """
+        oldSize = self.novelView.novelTree.lastColSize
+        newSize, isOk = QInputDialog.getInt(
+            self, self.tr("Column Size"), self.tr("Maximum column size in %"), oldSize, 15, 75, 5
+        )
+        if isOk:
+            self.novelView.novelTree.setLastColSize(newSize)
+            self._refreshNovelTree()
+        return
+
     ##
     #  Internal Functions
     ##
@@ -379,10 +405,11 @@ class GuiNovelTree(QTreeWidget):
         self.theProject = novelView.mainGui.theProject
 
         # Internal Variables
-        self._treeMap   = {}
-        self._lastBuild = 0
-        self._lastCol   = NovelTreeColumn.POV
-        self._actHandle = None
+        self._treeMap     = {}
+        self._lastBuild   = 0
+        self._lastCol     = NovelTreeColumn.POV
+        self._lastColSize = 0.25
+        self._actHandle   = None
 
         # Cached Strings
         self._povLabel = trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY])
@@ -470,6 +497,10 @@ class GuiNovelTree(QTreeWidget):
     def lastColType(self):
         return self._lastCol
 
+    @property
+    def lastColSize(self):
+        return int(self._lastColSize * 100)
+
     ##
     #  Class Methods
     ##
@@ -552,6 +583,12 @@ class GuiNovelTree(QTreeWidget):
                 self.refreshTree(rootHandle=lastNovel, overRide=True)
         return
 
+    def setLastColSize(self, colSize):
+        """Set the column size in integer values between 15 and 75.
+        """
+        self._lastColSize = minmax(colSize, 15, 75)/100.0
+        return
+
     def setActiveHandle(self, tHandle):
         """Highlight the rows associated with a given handle.
         """
@@ -619,7 +656,7 @@ class GuiNovelTree(QTreeWidget):
         newW = event.size().width()
         oldW = event.oldSize().width()
         if newW != oldW:
-            eliW = int(0.25 * newW)
+            eliW = int(self._lastColSize * newW)
             fMetric = self.fontMetrics()
             for i in range(self.topLevelItemCount()):
                 trItem = self.topLevelItem(i)
@@ -709,7 +746,7 @@ class GuiNovelTree(QTreeWidget):
         trItem.setData(self.C_MORE, Qt.DecorationRole, self._pMore)
 
         # Custom column
-        mW = int(0.25 * self.viewport().width())
+        mW = int(self._lastColSize * self.viewport().width())
         lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
         elideText = self.fontMetrics().elidedText(lastText, Qt.ElideRight, mW)
         trItem.setText(self.C_EXTRA, elideText)
@@ -741,7 +778,7 @@ class GuiNovelTree(QTreeWidget):
 
         if refData:
             toolText = ", ".join(refData)
-            return refData[0], f"{refName}: {toolText}"
+            return toolText, f"{refName}: {toolText}"
 
         return "", ""
 
