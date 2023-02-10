@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <office:document xmlns:officeooo="http://openoffice.org/2009/office" xmlns:css3t="http://www.w3.org/TR/css3-text/" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:oooc="http://openoffice.org/2004/calc" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:ooow="http://openoffice.org/2004/writer" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rpt="http://openoffice.org/2005/report" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:ooo="http://openoffice.org/2004/office" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" xmlns:tableooo="http://openoffice.org/2009/table" xmlns:drawooo="http://openoffice.org/2010/draw" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:xforms="http://www.w3.org/2002/xforms" office:version="1.3" office:mimetype="application/vnd.oasis.opendocument.text">
- <office:meta><meta:initial-creator>Veronica Olsen</meta:initial-creator><meta:creation-date>2022-11-05T18:25:44.887473159</meta:creation-date><dc:date>2022-11-27T16:59:09.712224049</dc:date><dc:creator>Veronica Olsen</dc:creator><meta:editing-duration>PT3H37M58S</meta:editing-duration><meta:editing-cycles>40</meta:editing-cycles><meta:generator>LibreOffice/7.0.4.2$Linux_X86_64 LibreOffice_project/00$Build-2</meta:generator><meta:document-statistic meta:table-count="12" meta:image-count="0" meta:object-count="0" meta:page-count="7" meta:paragraph-count="283" meta:word-count="2105" meta:character-count="13209" meta:non-whitespace-character-count="11150"/></office:meta>
+ <office:meta><meta:initial-creator>Veronica Olsen</meta:initial-creator><meta:creation-date>2022-11-05T18:25:44.887473159</meta:creation-date><dc:date>2023-02-09T13:03:44.196703858</dc:date><dc:creator>Veronica Olsen</dc:creator><meta:editing-duration>PT3H48M55S</meta:editing-duration><meta:editing-cycles>42</meta:editing-cycles><meta:generator>LibreOffice/7.0.4.2$Linux_X86_64 LibreOffice_project/00$Build-2</meta:generator><meta:document-statistic meta:table-count="12" meta:image-count="0" meta:object-count="0" meta:page-count="7" meta:paragraph-count="284" meta:word-count="2233" meta:character-count="13945" meta:non-whitespace-character-count="11759"/></office:meta>
  <office:settings>
   <config:config-item-set config:name="ooo:view-settings">
-   <config:config-item config:name="ViewAreaTop" config:type="long">0</config:config-item>
+   <config:config-item config:name="ViewAreaTop" config:type="long">9825</config:config-item>
    <config:config-item config:name="ViewAreaLeft" config:type="long">0</config:config-item>
-   <config:config-item config:name="ViewAreaWidth" config:type="long">26555</config:config-item>
-   <config:config-item config:name="ViewAreaHeight" config:type="long">20394</config:config-item>
+   <config:config-item config:name="ViewAreaWidth" config:type="long">35909</config:config-item>
+   <config:config-item config:name="ViewAreaHeight" config:type="long">19657</config:config-item>
    <config:config-item config:name="ShowRedlineChanges" config:type="boolean">true</config:config-item>
    <config:config-item config:name="InBrowseMode" config:type="boolean">false</config:config-item>
    <config:config-item-map-indexed config:name="Views">
     <config:config-item-map-entry>
      <config:config-item config:name="ViewId" config:type="string">view2</config:config-item>
-     <config:config-item config:name="ViewLeft" config:type="long">10569</config:config-item>
-     <config:config-item config:name="ViewTop" config:type="long">2925</config:config-item>
+     <config:config-item config:name="ViewLeft" config:type="long">23216</config:config-item>
+     <config:config-item config:name="ViewTop" config:type="long">176844</config:config-item>
      <config:config-item config:name="VisibleLeft" config:type="long">0</config:config-item>
-     <config:config-item config:name="VisibleTop" config:type="long">0</config:config-item>
-     <config:config-item config:name="VisibleRight" config:type="long">26554</config:config-item>
-     <config:config-item config:name="VisibleBottom" config:type="long">20392</config:config-item>
+     <config:config-item config:name="VisibleTop" config:type="long">9825</config:config-item>
+     <config:config-item config:name="VisibleRight" config:type="long">35907</config:config-item>
+     <config:config-item config:name="VisibleBottom" config:type="long">29480</config:config-item>
      <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
      <config:config-item config:name="ViewLayoutColumns" config:type="short">1</config:config-item>
      <config:config-item config:name="ViewLayoutBookMode" config:type="boolean">false</config:config-item>
@@ -85,7 +85,7 @@
    <config:config-item config:name="ChartAutoUpdate" config:type="boolean">true</config:config-item>
    <config:config-item config:name="PrinterSetup" config:type="base64Binary"/>
    <config:config-item config:name="AddParaTableSpacingAtStart" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="Rsid" config:type="int">421923</config:config-item>
+   <config:config-item config:name="Rsid" config:type="int">695346</config:config-item>
    <config:config-item config:name="EmbeddedDatabaseName" config:type="string"/>
    <config:config-item config:name="FieldAutoUpdate" config:type="boolean">true</config:config-item>
    <config:config-item config:name="OutlineLevelYieldsNumbering" config:type="boolean">false</config:config-item>
@@ -149,7 +149,7 @@
  <office:styles>
   <style:default-style style:family="graphic">
    <style:graphic-properties svg:stroke-color="#3465a4" draw:fill-color="#729fcf" fo:wrap-option="no-wrap" draw:shadow-offset-x="0.3cm" draw:shadow-offset-y="0.3cm" draw:start-line-spacing-horizontal="0.283cm" draw:start-line-spacing-vertical="0.283cm" draw:end-line-spacing-horizontal="0.283cm" draw:end-line-spacing-vertical="0.283cm" style:flow-with-text="false"/>
-   <style:paragraph-properties style:text-autospace="ideograph-alpha" style:line-break="strict" style:font-independent-line-spacing="false">
+   <style:paragraph-properties style:text-autospace="ideograph-alpha" style:line-break="strict" style:writing-mode="lr-tb" style:font-independent-line-spacing="false">
     <style:tab-stops/>
    </style:paragraph-properties>
    <style:text-properties style:use-window-font-color="true" loext:opacity="0%" style:font-name="Liberation Serif" fo:font-size="12pt" fo:language="nb" fo:country="NO" style:letter-kerning="true" style:font-name-asian="Noto Serif CJK SC" style:font-size-asian="10.5pt" style:language-asian="zh" style:country-asian="CN" style:font-name-complex="FreeSans" style:font-size-complex="12pt" style:language-complex="hi" style:country-complex="IN"/>
@@ -1203,6 +1203,12 @@
   <style:style style:name="P63" style:family="paragraph" style:parent-style-name="Heading_20_5">
    <style:text-properties fo:language="en" fo:country="GB" officeooo:paragraph-rsid="00048e47"/>
   </style:style>
+  <style:style style:name="P64" style:family="paragraph" style:parent-style-name="Table_20_Contents">
+   <style:text-properties fo:font-size="10pt" fo:language="en" fo:country="GB" officeooo:rsid="00048e47" officeooo:paragraph-rsid="00048e47"/>
+  </style:style>
+  <style:style style:name="P65" style:family="paragraph" style:parent-style-name="Text_20_body">
+   <style:text-properties fo:font-size="10pt" fo:language="en" fo:country="GB" officeooo:rsid="00048e47" officeooo:paragraph-rsid="00098d04"/>
+  </style:style>
   <style:style style:name="T1" style:family="text">
    <style:text-properties officeooo:rsid="0002e28e"/>
   </style:style>
@@ -1228,49 +1234,61 @@
    <style:text-properties fo:font-size="10pt" officeooo:rsid="00064b83"/>
   </style:style>
   <style:style style:name="T9" style:family="text">
-   <style:text-properties fo:color="#b85c00" loext:opacity="100%"/>
+   <style:text-properties fo:font-size="10pt" officeooo:rsid="0007af22"/>
   </style:style>
   <style:style style:name="T10" style:family="text">
-   <style:text-properties fo:color="#127622" loext:opacity="100%"/>
+   <style:text-properties fo:color="#b85c00" loext:opacity="100%"/>
   </style:style>
   <style:style style:name="T11" style:family="text">
-   <style:text-properties fo:color="#000000" loext:opacity="100%"/>
+   <style:text-properties fo:color="#127622" loext:opacity="100%"/>
   </style:style>
   <style:style style:name="T12" style:family="text">
-   <style:text-properties fo:color="#000000" loext:opacity="100%" style:font-name="Liberation Mono" fo:font-size="10pt" officeooo:rsid="00048e47" style:font-name-asian="Noto Sans Mono CJK SC" style:font-size-asian="10pt" style:font-name-complex="Liberation Mono" style:font-size-complex="10pt"/>
+   <style:text-properties fo:color="#000000" loext:opacity="100%"/>
   </style:style>
   <style:style style:name="T13" style:family="text">
-   <style:text-properties fo:font-weight="normal" officeooo:rsid="0002e28e" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
+   <style:text-properties fo:color="#000000" loext:opacity="100%" style:font-name="Liberation Mono" fo:font-size="10pt" officeooo:rsid="00048e47" style:font-name-asian="Noto Sans Mono CJK SC" style:font-size-asian="10pt" style:font-name-complex="Liberation Mono" style:font-size-complex="10pt"/>
   </style:style>
   <style:style style:name="T14" style:family="text">
-   <style:text-properties style:font-name="Liberation Sans" fo:font-size="18.2000007629395pt" fo:font-weight="bold" officeooo:rsid="0002e28e" style:font-name-asian="Noto Sans CJK SC" style:font-size-asian="18.2000007629395pt" style:font-weight-asian="bold" style:font-name-complex="FreeSans" style:font-size-complex="18.2000007629395pt" style:font-weight-complex="bold"/>
+   <style:text-properties fo:font-weight="normal" officeooo:rsid="0002e28e" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
   </style:style>
   <style:style style:name="T15" style:family="text">
-   <style:text-properties style:font-name="Liberation Sans" fo:font-size="16.1000003814697pt" fo:font-weight="bold" style:font-name-asian="Noto Sans CJK SC" style:font-size-asian="16.1000003814697pt" style:font-weight-asian="bold" style:font-name-complex="FreeSans" style:font-size-complex="16.1000003814697pt" style:font-weight-complex="bold"/>
+   <style:text-properties style:font-name="Liberation Sans" fo:font-size="18.2000007629395pt" fo:font-weight="bold" officeooo:rsid="0002e28e" style:font-name-asian="Noto Sans CJK SC" style:font-size-asian="18.2000007629395pt" style:font-weight-asian="bold" style:font-name-complex="FreeSans" style:font-size-complex="18.2000007629395pt" style:font-weight-complex="bold"/>
   </style:style>
   <style:style style:name="T16" style:family="text">
-   <style:text-properties style:font-name="Liberation Sans" fo:font-size="16.1000003814697pt" fo:font-weight="bold" officeooo:rsid="00048e47" style:font-name-asian="Noto Sans CJK SC" style:font-size-asian="16.1000003814697pt" style:font-weight-asian="bold" style:font-name-complex="FreeSans" style:font-size-complex="16.1000003814697pt" style:font-weight-complex="bold"/>
+   <style:text-properties style:font-name="Liberation Sans" fo:font-size="16.1000003814697pt" fo:font-weight="bold" style:font-name-asian="Noto Sans CJK SC" style:font-size-asian="16.1000003814697pt" style:font-weight-asian="bold" style:font-name-complex="FreeSans" style:font-size-complex="16.1000003814697pt" style:font-weight-complex="bold"/>
   </style:style>
   <style:style style:name="T17" style:family="text">
-   <style:text-properties style:font-name="Liberation Sans" fo:font-size="14.1000003814697pt" fo:font-weight="bold" officeooo:rsid="0004ff85" style:font-name-asian="Noto Sans CJK SC" style:font-size-asian="14.1000003814697pt" style:font-weight-asian="bold" style:font-name-complex="FreeSans" style:font-size-complex="14.1000003814697pt" style:font-weight-complex="bold"/>
+   <style:text-properties style:font-name="Liberation Sans" fo:font-size="16.1000003814697pt" fo:font-weight="bold" officeooo:rsid="00048e47" style:font-name-asian="Noto Sans CJK SC" style:font-size-asian="16.1000003814697pt" style:font-weight-asian="bold" style:font-name-complex="FreeSans" style:font-size-complex="16.1000003814697pt" style:font-weight-complex="bold"/>
   </style:style>
   <style:style style:name="T18" style:family="text">
-   <style:text-properties officeooo:rsid="00048e47"/>
+   <style:text-properties style:font-name="Liberation Sans" fo:font-size="14.1000003814697pt" fo:font-weight="bold" officeooo:rsid="0004ff85" style:font-name-asian="Noto Sans CJK SC" style:font-size-asian="14.1000003814697pt" style:font-weight-asian="bold" style:font-name-complex="FreeSans" style:font-size-complex="14.1000003814697pt" style:font-weight-complex="bold"/>
   </style:style>
   <style:style style:name="T19" style:family="text">
-   <style:text-properties fo:color="#c9211e" loext:opacity="100%"/>
+   <style:text-properties officeooo:rsid="00048e47"/>
   </style:style>
   <style:style style:name="T20" style:family="text">
-   <style:text-properties officeooo:rsid="0004ff85"/>
+   <style:text-properties fo:color="#c9211e" loext:opacity="100%"/>
   </style:style>
   <style:style style:name="T21" style:family="text">
-   <style:text-properties style:font-name="Liberation Mono" officeooo:rsid="0004ff85"/>
+   <style:text-properties officeooo:rsid="0004ff85"/>
   </style:style>
   <style:style style:name="T22" style:family="text">
-   <style:text-properties style:font-name="Liberation Mono" fo:font-size="9pt" officeooo:rsid="0004ff85" style:font-size-asian="9pt" style:font-size-complex="9pt"/>
+   <style:text-properties style:font-name="Liberation Mono" officeooo:rsid="0004ff85"/>
   </style:style>
   <style:style style:name="T23" style:family="text">
+   <style:text-properties style:font-name="Liberation Mono" fo:font-size="9pt" officeooo:rsid="0004ff85" style:font-size-asian="9pt" style:font-size-complex="9pt"/>
+  </style:style>
+  <style:style style:name="T24" style:family="text">
    <style:text-properties officeooo:rsid="00064b83"/>
+  </style:style>
+  <style:style style:name="T25" style:family="text">
+   <style:text-properties officeooo:rsid="0007af22"/>
+  </style:style>
+  <style:style style:name="T26" style:family="text">
+   <style:text-properties officeooo:rsid="00098d04"/>
+  </style:style>
+  <style:style style:name="T27" style:family="text">
+   <style:text-properties officeooo:rsid="000a9c32"/>
   </style:style>
   <style:page-layout style:name="pm1">
    <style:page-layout-properties fo:page-width="21.001cm" fo:page-height="29.7cm" style:num-format="1" style:print-orientation="portrait" fo:margin-top="2cm" fo:margin-bottom="2cm" fo:margin-left="2cm" fo:margin-right="2cm" style:writing-mode="lr-tb" style:layout-grid-color="#c0c0c0" style:layout-grid-lines="20" style:layout-grid-base-height="0.706cm" style:layout-grid-ruby-height="0.353cm" style:layout-grid-mode="none" style:layout-grid-ruby-below="false" style:layout-grid-print="false" style:layout-grid-display="false" style:footnote-max-height="0cm">
@@ -1293,12 +1311,12 @@
     <text:sequence-decl text:display-outline-level="0" text:name="Figure"/>
    </text:sequence-decls>
    <text:p text:style-name="P49">novelWriter</text:p>
-   <text:p text:style-name="P22">Project File Format 1.5 <text:span text:style-name="T1">Spec</text:span><text:span text:style-name="T20">ification</text:span></text:p>
+   <text:p text:style-name="P22">Project File Format 1.5 <text:span text:style-name="T1">Spec</text:span><text:span text:style-name="T21">ification</text:span></text:p>
    <text:p text:style-name="P42"/>
    <text:p text:style-name="P47">This document covers the file format specification for the 1.5 file format for novelWriter project files. See the <text:a xlink:type="simple" xlink:href="https://novelwriter.readthedocs.io/" text:style-name="Internet_20_link" text:visited-style-name="Visited_20_Internet_20_Link">documentation</text:a><text:note text:id="ftn1" text:note-class="footnote"><text:note-citation>1</text:note-citation><text:note-body>
       <text:p text:style-name="P50">See: <text:a xlink:type="simple" xlink:href="https://novelwriter.readthedocs.io/" text:style-name="Internet_20_link" text:visited-style-name="Visited_20_Internet_20_Link">https://novelwriter.readthedocs.io/</text:a></text:p></text:note-body></text:note> for a full description of the app’s functionality.</text:p>
    <text:p text:style-name="P47">The target audience of this document is developers who intend to write a tool or script that generates valid novelWriter project files from data from other applications, or for templating purposes.</text:p>
-   <text:p text:style-name="P47">Note that flags are generally written out as yes/no values, but also true/false and on/off are understood by the application. The None value that occasionally occurs is the text representation of the Python None value, and must be used in those cases.</text:p>
+   <text:p text:style-name="P47">Note that flags are generally written out as yes/no values, but also true/false and on/off are understood by the application. The None value that occasionally occurs <text:span text:style-name="T25">in actual project files</text:span> is the text representation of the Python None value, <text:span text:style-name="T9">and indicates that there is no value set</text:span>.</text:p>
    <text:h text:style-name="P2" text:outline-level="1">XML Root</text:h>
    <text:p text:style-name="P43">Tag: <text:tab/><text:span text:style-name="T2">novelWriterXML</text:span></text:p>
    <text:p text:style-name="P45">The root tag of a novelWriter project file must be named “<text:span text:style-name="T2">novelWriterXML</text:span>”. This value is case sensitive. The <text:span text:style-name="T2">fileVersion</text:span> attribute must also be set to the appropriate format version in order to be parsed correctly.</text:p>
@@ -1318,7 +1336,7 @@
       <text:p text:style-name="P35">Description</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250146032">
+    <table:table-row table:style-name="TableLine94488389152192">
      <table:table-cell table:style-name="Table1.A2" office:value-type="string">
       <text:p text:style-name="P23">appVersion</text:p>
      </table:table-cell>
@@ -1329,7 +1347,7 @@
       <text:p text:style-name="P27">A string representation of the novelWriter version used to write the file. The value is not required, but is used to report to the user when the file format is converted.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250148032">
+    <table:table-row table:style-name="TableLine94488389154192">
      <table:table-cell table:style-name="Table1.A4" office:value-type="string">
       <text:p text:style-name="P23">hexVersion</text:p>
      </table:table-cell>
@@ -1340,7 +1358,7 @@
       <text:p text:style-name="P27">A hex representation of the novelWriter version used to write the file. The value is used to check if the project is opened by a lower version than was used to write it, which issues a warning. Defaults to 0x0.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250150528">
+    <table:table-row table:style-name="TableLine94488389156688">
      <table:table-cell table:style-name="Table1.A4" office:value-type="string">
       <text:p text:style-name="P23">fileVersion</text:p>
      </table:table-cell>
@@ -1348,10 +1366,10 @@
       <text:p text:style-name="P27">Yes</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table1.C4" office:value-type="string">
-      <text:p text:style-name="P27">The file format version used when writing the project file. This determines how the file is parsed, so it is important that it is set correctly.</text:p>
+      <text:p text:style-name="P27">The file format version used when writing the project file. This determines how the file is parsed, so it is important that it is set correctly. <text:span text:style-name="T25">Valid values are “1.0”, “1.1”, “1.2”, “1.3”, “1.4”, and “1.5”.</text:span></text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250152512">
+    <table:table-row table:style-name="TableLine94488389158672">
      <table:table-cell table:style-name="Table1.A5" office:value-type="string">
       <text:p text:style-name="P23">timeStamp</text:p>
      </table:table-cell>
@@ -1364,12 +1382,12 @@
     </table:table-row>
    </table:table>
    <text:h text:style-name="P12" text:outline-level="5">Example</text:h>
-   <text:p text:style-name="P20">&lt;novelWriterXML <text:span text:style-name="T9">appVersion</text:span>=<text:span text:style-name="T10">&quot;2.0-rc1&quot; </text:span><text:span text:style-name="T9">hexVersion</text:span>=<text:span text:style-name="T10">&quot;0x020000c1&quot;</text:span></text:p>
-   <text:p text:style-name="P20"><text:span text:style-name="T10"><text:s text:c="16"/></text:span><text:span text:style-name="T9">fileVersion</text:span>=<text:span text:style-name="T10">&quot;1.5&quot; </text:span><text:span text:style-name="T9">timeStamp</text:span>=<text:span text:style-name="T10">&quot;2022-11-05 17:46:51&quot;</text:span>&gt;</text:p>
+   <text:p text:style-name="P20">&lt;novelWriterXML <text:span text:style-name="T10">appVersion</text:span>=<text:span text:style-name="T11">&quot;2.0-rc1&quot; </text:span><text:span text:style-name="T10">hexVersion</text:span>=<text:span text:style-name="T11">&quot;0x020000c1&quot;</text:span></text:p>
+   <text:p text:style-name="P20"><text:span text:style-name="T11"><text:s text:c="16"/></text:span><text:span text:style-name="T10">fileVersion</text:span>=<text:span text:style-name="T11">&quot;1.5&quot; </text:span><text:span text:style-name="T10">timeStamp</text:span>=<text:span text:style-name="T11">&quot;2022-11-05 17:46:51&quot;</text:span>&gt;</text:p>
    <text:h text:style-name="P53" text:outline-level="1"/>
    <text:h text:style-name="P4" text:outline-level="1">Project <text:span text:style-name="T1">Node</text:span></text:h>
    <text:p text:style-name="P43">Tag: <text:tab/><text:span text:style-name="T2">project</text:span></text:p>
-   <text:p text:style-name="P45">The project section is a level one node under the root. It stores the primary settings for the project. The only required values are the <text:span text:style-name="T2">id</text:span> attribute and the <text:span text:style-name="T2">name</text:span> value. All other entries are set to default values during parsing and can be ommitted from the XML.</text:p>
+   <text:p text:style-name="P45">The project section is a level one node under the root. It stores the primary settings for the project. The only required values are the <text:span text:style-name="T2">id</text:span> attribute and the <text:span text:style-name="T2">name</text:span> value. All other entries are set to default values during parsing <text:span text:style-name="T25">if ommitted from</text:span> the XML.</text:p>
    <text:h text:style-name="P12" text:outline-level="5">Attributes</text:h>
    <table:table table:name="Table2" table:style-name="Table2">
     <table:table-column table:style-name="Table2.A"/>
@@ -1386,7 +1404,7 @@
       <text:p text:style-name="P36">Description</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250185456">
+    <table:table-row table:style-name="TableLine94488389192048">
      <table:table-cell table:style-name="Table2.A2" office:value-type="string">
       <text:p text:style-name="P25">id</text:p>
      </table:table-cell>
@@ -1394,10 +1412,10 @@
       <text:p text:style-name="P31">Yes</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table2.C2" office:value-type="string">
-      <text:p text:style-name="P31">A UUID that is unique for the project and does not change during the lifetime of the project. It is used by novelWriter for to keep track of temporary files and associate cross-project settings with different projects without relying on the project name.</text:p>
+      <text:p text:style-name="P31">A UUID that is unique for the project and does not change during the lifetime of the project. It is used by novelWriter to keep track of temporary files and <text:span text:style-name="T25">to </text:span>associate cross-project settings with <text:span text:style-name="T25">specific</text:span> projects without relying on the project name.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250187264">
+    <table:table-row table:style-name="TableLine94488389193728">
      <table:table-cell table:style-name="Table2.A4" office:value-type="string">
       <text:p text:style-name="P23">saveCount</text:p>
      </table:table-cell>
@@ -1408,7 +1426,7 @@
       <text:p text:style-name="P27">A number representing the number of times the project file has been written as a result of user interaction with the application.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250189632">
+    <table:table-row table:style-name="TableLine94488389196096">
      <table:table-cell table:style-name="Table2.A4" office:value-type="string">
       <text:p text:style-name="P23">autoCount</text:p>
      </table:table-cell>
@@ -1419,7 +1437,7 @@
       <text:p text:style-name="P27">A number representing the number of times the project file has been written as a result of internal timed automatic operations of the application.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250191616">
+    <table:table-row table:style-name="TableLine94488389198080">
      <table:table-cell table:style-name="Table2.A5" office:value-type="string">
       <text:p text:style-name="P23">editTime</text:p>
      </table:table-cell>
@@ -1447,7 +1465,7 @@
       <text:p text:style-name="P36">Description</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250208496">
+    <table:table-row table:style-name="TableLine94488389214528">
      <table:table-cell table:style-name="Table3.A2" office:value-type="string">
       <text:p text:style-name="P25">name</text:p>
      </table:table-cell>
@@ -1458,7 +1476,7 @@
       <text:p text:style-name="P31">The name the user has given to the project.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250210048">
+    <table:table-row table:style-name="TableLine94488389216080">
      <table:table-cell table:style-name="Table3.A4" office:value-type="string">
       <text:p text:style-name="P23">title</text:p>
      </table:table-cell>
@@ -1469,7 +1487,7 @@
       <text:p text:style-name="P27">The title the user has given to the project, which may differ from the project name. The value is used in some places in the user interface, and can be added to manuscript builds.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250212544">
+    <table:table-row table:style-name="TableLine94488389218576">
      <table:table-cell table:style-name="Table3.A4" office:value-type="string">
       <text:p text:style-name="P23">author</text:p>
      </table:table-cell>
@@ -1482,16 +1500,16 @@
     </table:table-row>
    </table:table>
    <text:h text:style-name="P12" text:outline-level="5">Example</text:h>
-   <text:p text:style-name="P20">&lt;project <text:span text:style-name="T9">id</text:span>=<text:span text:style-name="T10">&quot;e2be99af-f9bf-4403-857a-c3d1ac25abea&quot;</text:span></text:p>
-   <text:p text:style-name="P20"><text:s text:c="9"/><text:span text:style-name="T9">saveCount</text:span>=<text:span text:style-name="T10">&quot;5&quot;</text:span> <text:span text:style-name="T9">autoCount</text:span>=<text:span text:style-name="T10">&quot;10&quot;</text:span> <text:span text:style-name="T9">editTime</text:span>=<text:span text:style-name="T10">&quot;1000&quot;</text:span>&gt;</text:p>
-   <text:p text:style-name="P20"><text:s text:c="4"/>&lt;name&gt;<text:span text:style-name="T11">Sample Project</text:span>&lt;/name&gt;</text:p>
-   <text:p text:style-name="P20"><text:s text:c="4"/>&lt;title&gt;<text:span text:style-name="T11">Sample Project</text:span>&lt;/title&gt;</text:p>
-   <text:p text:style-name="P20"><text:s text:c="4"/>&lt;author&gt;<text:span text:style-name="T11">Jane Smith</text:span>&lt;/author&gt;</text:p>
+   <text:p text:style-name="P20">&lt;project <text:span text:style-name="T10">id</text:span>=<text:span text:style-name="T11">&quot;e2be99af-f9bf-4403-857a-c3d1ac25abea&quot;</text:span></text:p>
+   <text:p text:style-name="P20"><text:s text:c="9"/><text:span text:style-name="T10">saveCount</text:span>=<text:span text:style-name="T11">&quot;5&quot;</text:span> <text:span text:style-name="T10">autoCount</text:span>=<text:span text:style-name="T11">&quot;10&quot;</text:span> <text:span text:style-name="T10">editTime</text:span>=<text:span text:style-name="T11">&quot;1000&quot;</text:span>&gt;</text:p>
+   <text:p text:style-name="P20"><text:s text:c="4"/>&lt;name&gt;<text:span text:style-name="T12">Sample Project</text:span>&lt;/name&gt;</text:p>
+   <text:p text:style-name="P20"><text:s text:c="4"/>&lt;title&gt;<text:span text:style-name="T12">Sample Project</text:span>&lt;/title&gt;</text:p>
+   <text:p text:style-name="P20"><text:s text:c="4"/>&lt;author&gt;<text:span text:style-name="T12">Jane Smith</text:span>&lt;/author&gt;</text:p>
    <text:p text:style-name="P20">&lt;/project&gt;</text:p>
    <text:h text:style-name="P53" text:outline-level="1"/>
-   <text:h text:style-name="P4" text:outline-level="1">Settings <text:span text:style-name="T14">Node</text:span></text:h>
+   <text:h text:style-name="P4" text:outline-level="1">Settings <text:span text:style-name="T15">Node</text:span></text:h>
    <text:p text:style-name="P43">Tag: <text:tab/><text:span text:style-name="T3">settings</text:span></text:p>
-   <text:p text:style-name="P45">The <text:span text:style-name="T6">settings</text:span> section is a level one node under the root. It stores the various runtime values for the project, and the settings available from the Project Settings panel. None of these settings are required, and if missing, will be set to default values. <text:span text:style-name="T20">The entire settings section can thus be ommitted.</text:span></text:p>
+   <text:p text:style-name="P45">The <text:span text:style-name="T6">settings</text:span> section is a level one node under the root. It stores the various runtime values for the project, and the settings available from the Project Settings panel. None of these settings are required, and if missing, will be set to default values. <text:span text:style-name="T21">The entire settings section can thus be ommitted.</text:span></text:p>
    <text:h text:style-name="P12" text:outline-level="5">Attributes</text:h>
    <text:p text:style-name="P45">None</text:p>
    <text:h text:style-name="P12" text:outline-level="5">Values</text:h>
@@ -1510,7 +1528,7 @@
       <text:p text:style-name="P36">Description</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250253184">
+    <table:table-row table:style-name="TableLine94488389262576">
      <table:table-cell table:style-name="Table5.A2" office:value-type="string">
       <text:p text:style-name="P25">doBackup</text:p>
      </table:table-cell>
@@ -1521,7 +1539,7 @@
       <text:p text:style-name="P31">User-controlled setting for whether or not to run backup when the project is closed.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250254736">
+    <table:table-row table:style-name="TableLine94488389264128">
      <table:table-cell table:style-name="Table5.A3" office:value-type="string">
       <text:p text:style-name="P23">language</text:p>
      </table:table-cell>
@@ -1529,10 +1547,10 @@
       <text:p text:style-name="P27">No</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table5.C3" office:value-type="string">
-      <text:p text:style-name="P27">The language used when building the manuscript. The settings is controlled from the Build Novel Project tool.</text:p>
+      <text:p text:style-name="P27">The language used when building the manuscript. The setting is controlled from the Build Novel Project tool.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250257232">
+    <table:table-row table:style-name="TableLine94488389266624">
      <table:table-cell table:style-name="Table5.A4" office:value-type="string">
       <text:p text:style-name="P23">spellChecking</text:p>
      </table:table-cell>
@@ -1545,7 +1563,7 @@
       <text:p text:style-name="P30">Attribute <text:span text:style-name="T2">auto</text:span>: A flag determining whether the spell checking is automatic or not.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250259776">
+    <table:table-row table:style-name="TableLine94488389269168">
      <table:table-cell table:style-name="Table5.A5" office:value-type="string">
       <text:p text:style-name="P23">lastHandle</text:p>
      </table:table-cell>
@@ -1556,7 +1574,7 @@
       <text:p text:style-name="P27">An auto-generated list of the last documents open in the editor and viewer, and which novel root folder was last viewed in the Novel Tree and Outline <text:span text:style-name="T6">View</text:span>. These are saved as key/value pairs. See separate section for how they are stored as XML.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250262160">
+    <table:table-row table:style-name="TableLine94488389271552">
      <table:table-cell table:style-name="Table5.A6" office:value-type="string">
       <text:p text:style-name="P23">autoReplace</text:p>
      </table:table-cell>
@@ -1564,10 +1582,10 @@
       <text:p text:style-name="P27">No</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table5.C6" office:value-type="string">
-      <text:p text:style-name="P27">The entries of the auto-replace feature available from the Project Settings. These are saved as key/value pairs. See separate section for how they are stored as XML.</text:p>
+      <text:p text:style-name="P27">The entries of the auto-replace feature available from Project Settings. These are saved as key/value pairs. See separate section for how they are stored as XML.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250264880">
+    <table:table-row table:style-name="TableLine94488389274272">
      <table:table-cell table:style-name="Table5.A7" office:value-type="string">
       <text:p text:style-name="P23">titleFormat</text:p>
      </table:table-cell>
@@ -1578,7 +1596,7 @@
       <text:p text:style-name="P27">The formatting specifications set by the user in the Build Novel Project tool for formatting headers in the manuscript. These are saved as key/value pairs. See separate section for how they are stored as XML.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250267376">
+    <table:table-row table:style-name="TableLine94488389276768">
      <table:table-cell table:style-name="Table5.A8" office:value-type="string">
       <text:p text:style-name="P23">status</text:p>
      </table:table-cell>
@@ -1589,7 +1607,7 @@
       <text:p text:style-name="P27">The status labels as defined by the user in Project Settings. <text:span text:style-name="T6">These are saved as special key/value pars. See separate section for how they are stored as XML.</text:span></text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250269872">
+    <table:table-row table:style-name="TableLine94488389279264">
      <table:table-cell table:style-name="Table5.A9" office:value-type="string">
       <text:p text:style-name="P23">importance</text:p>
      </table:table-cell>
@@ -1603,9 +1621,9 @@
    </table:table>
    <text:h text:style-name="P12" text:outline-level="5">Example</text:h>
    <text:p text:style-name="P17">&lt;settings&gt;</text:p>
-   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;doBackup&gt;<text:span text:style-name="T12">yes</text:span>&lt;/doBackup&gt;</text:p>
-   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;language&gt;<text:span text:style-name="T11">en_GB</text:span>&lt;/language&gt;</text:p>
-   <text:p text:style-name="P18"><text:s text:c="4"/>&lt;spellChecking <text:span text:style-name="T9">auto</text:span>=<text:span text:style-name="T10">&quot;yes&quot;</text:span>&gt;<text:span text:style-name="T11">en_GB</text:span>&lt;/spellChecking&gt;</text:p>
+   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;doBackup&gt;<text:span text:style-name="T13">yes</text:span>&lt;/doBackup&gt;</text:p>
+   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;language&gt;<text:span text:style-name="T12">en_GB</text:span>&lt;/language&gt;</text:p>
+   <text:p text:style-name="P18"><text:s text:c="4"/>&lt;spellChecking <text:span text:style-name="T10">auto</text:span>=<text:span text:style-name="T11">&quot;yes&quot;</text:span>&gt;<text:span text:style-name="T12">en_GB</text:span>&lt;/spellChecking&gt;</text:p>
    <text:p text:style-name="P17"><text:s text:c="4"/>&lt;lastHandle /&gt;</text:p>
    <text:p text:style-name="P17"><text:s text:c="4"/>&lt;autoReplace /&gt;</text:p>
    <text:p text:style-name="P17"><text:s text:c="4"/>&lt;titleFormat /&gt;</text:p>
@@ -1613,7 +1631,7 @@
    <text:p text:style-name="P17"><text:s text:c="4"/>&lt;importance /&gt;</text:p>
    <text:p text:style-name="P17">&lt;/settings&gt;</text:p>
    <text:h text:style-name="P56" text:outline-level="2"/>
-   <text:h text:style-name="P7" text:outline-level="2">Key/Value <text:span text:style-name="T15">Nodes</text:span></text:h>
+   <text:h text:style-name="P7" text:outline-level="2">Key/Value <text:span text:style-name="T16">Nodes</text:span></text:h>
    <text:p text:style-name="P43">The key/value nodes are used for <text:span text:style-name="T2">lastHandle</text:span>, <text:span text:style-name="T2">autoReplace</text:span> and <text:span text:style-name="T2">titleFormat</text:span> settings. The lookup key is stored as an attribute, and the value is the text of the node.</text:p>
    <text:h text:style-name="P12" text:outline-level="5">Attributes</text:h>
    <table:table table:name="Table6" table:style-name="Table6">
@@ -1631,7 +1649,7 @@
       <text:p text:style-name="P36">Description</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250291568">
+    <table:table-row table:style-name="TableLine94488389306704">
      <table:table-cell table:style-name="Table6.A2" office:value-type="string">
       <text:p text:style-name="P25">key</text:p>
      </table:table-cell>
@@ -1645,13 +1663,13 @@
    </table:table>
    <text:h text:style-name="P12" text:outline-level="5">Example</text:h>
    <text:p text:style-name="P17">&lt;lastHandle&gt;</text:p>
-   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T9">key</text:span>=<text:span text:style-name="T10">&quot;editor&quot;</text:span>&gt;<text:span text:style-name="T11">636b6aa9b697b</text:span>&lt;/entry&gt;</text:p>
-   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T9">key</text:span>=<text:span text:style-name="T10">&quot;viewer&quot;</text:span>&gt;<text:span text:style-name="T11">636b6aa9b697b</text:span>&lt;/entry&gt;</text:p>
-   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T9">key</text:span>=<text:span text:style-name="T10">&quot;novelTree&quot;</text:span>&gt;<text:span text:style-name="T11">7031beac91f75</text:span>&lt;/entry&gt;</text:p>
-   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T9">key</text:span>=<text:span text:style-name="T10">&quot;outline&quot;</text:span>&gt;<text:span text:style-name="T11">7031beac91f75</text:span>&lt;/entry&gt;</text:p>
+   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T10">key</text:span>=<text:span text:style-name="T11">&quot;editor&quot;</text:span>&gt;<text:span text:style-name="T12">636b6aa9b697b</text:span>&lt;/entry&gt;</text:p>
+   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T10">key</text:span>=<text:span text:style-name="T11">&quot;viewer&quot;</text:span>&gt;<text:span text:style-name="T12">636b6aa9b697b</text:span>&lt;/entry&gt;</text:p>
+   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T10">key</text:span>=<text:span text:style-name="T11">&quot;novelTree&quot;</text:span>&gt;<text:span text:style-name="T12">7031beac91f75</text:span>&lt;/entry&gt;</text:p>
+   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T10">key</text:span>=<text:span text:style-name="T11">&quot;outline&quot;</text:span>&gt;<text:span text:style-name="T12">7031beac91f75</text:span>&lt;/entry&gt;</text:p>
    <text:p text:style-name="P17">&lt;/lastHandle&gt;</text:p>
    <text:h text:style-name="P9" text:outline-level="2">Status/Importance Key/Value Nodes</text:h>
-   <text:p text:style-name="P43">The status and importance settings anre stored as key/value nodes with additional data attributes.</text:p>
+   <text:p text:style-name="P43">The status and importance settings are stored as key/value nodes with additional data attributes. <text:span text:style-name="T25">The label of the status or importance setting is saved as the node text value.</text:span></text:p>
    <text:h text:style-name="P12" text:outline-level="5">Attributes</text:h>
    <table:table table:name="Table4" table:style-name="Table4">
     <table:table-column table:style-name="Table4.A"/>
@@ -1668,7 +1686,7 @@
       <text:p text:style-name="P36">Description</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250327696">
+    <table:table-row table:style-name="TableLine94488389335056">
      <table:table-cell table:style-name="Table4.A2" office:value-type="string">
       <text:p text:style-name="P25">key</text:p>
      </table:table-cell>
@@ -1676,10 +1694,10 @@
       <text:p text:style-name="P31">Yes</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table4.C2" office:value-type="string">
-      <text:p text:style-name="P31">The lookup key. For status labels, it must consist of an “s” followed by six hexadecimal numbers. These must be unique for each entry. For importance labels it must consist of an “i” followed by six hexadecimal numbers.</text:p>
+      <text:p text:style-name="P31">The lookup key. For status labels, it must consist of an “s” followed by six hexadecimal numbers. For importance labels it must consist of an “i” followed by six hexadecimal numbers. <text:span text:style-name="T25">Each key string must be unique. Internally, they are random numbers, but also sequential values are valid.</text:span></text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250329376">
+    <table:table-row table:style-name="TableLine94488389336736">
      <table:table-cell table:style-name="Table4.A4" office:value-type="string">
       <text:p text:style-name="P23">count</text:p>
      </table:table-cell>
@@ -1690,7 +1708,7 @@
       <text:p text:style-name="P27">A record of the number of times each label is used in the project content.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250331808">
+    <table:table-row table:style-name="TableLine94488389339168">
      <table:table-cell table:style-name="Table4.A4" office:value-type="string">
       <text:p text:style-name="P23">red</text:p>
      </table:table-cell>
@@ -1701,7 +1719,7 @@
       <text:p text:style-name="P27">A number between 0 and 255 representing the red component of the label colour.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250333792">
+    <table:table-row table:style-name="TableLine94488389341152">
      <table:table-cell table:style-name="Table4.A5" office:value-type="string">
       <text:p text:style-name="P23">green</text:p>
      </table:table-cell>
@@ -1712,7 +1730,7 @@
       <text:p text:style-name="P27">A number between 0 and 255 representing the <text:span text:style-name="T6">green</text:span> component of the label colour.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250336288">
+    <table:table-row table:style-name="TableLine94488389343648">
      <table:table-cell table:style-name="Table4.A6" office:value-type="string">
       <text:p text:style-name="P23">blue</text:p>
      </table:table-cell>
@@ -1726,25 +1744,25 @@
    </table:table>
    <text:h text:style-name="P13" text:outline-level="5">Example</text:h>
    <text:p text:style-name="P17">&lt;status&gt;</text:p>
-   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T9">key</text:span>=<text:span text:style-name="T10">&quot;sf12341&quot;</text:span> <text:span text:style-name="T9">count</text:span>=<text:span text:style-name="T10">&quot;4&quot;</text:span></text:p>
-   <text:p text:style-name="P17"><text:s text:c="11"/><text:span text:style-name="T9">red</text:span>=<text:span text:style-name="T10">&quot;100&quot;</text:span> <text:span text:style-name="T9">green</text:span>=<text:span text:style-name="T10">&quot;100&quot;</text:span> <text:span text:style-name="T9">blue</text:span>=<text:span text:style-name="T10">&quot;100&quot;</text:span>&gt;<text:span text:style-name="T11">New</text:span>&lt;/entry&gt;</text:p>
-   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T9">key</text:span>=<text:span text:style-name="T10">&quot;sd51c5b&quot;</text:span> <text:span text:style-name="T9">count</text:span>=<text:span text:style-name="T10">&quot;0&quot;</text:span></text:p>
-   <text:p text:style-name="P17"><text:s text:c="11"/><text:span text:style-name="T9">red</text:span>=<text:span text:style-name="T10">&quot;193&quot;</text:span> <text:span text:style-name="T9">green</text:span>=<text:span text:style-name="T10">&quot;129&quot;</text:span> <text:span text:style-name="T9">blue</text:span>=<text:span text:style-name="T10">&quot;0&quot;</text:span>&gt;<text:span text:style-name="T11">Draft</text:span>&lt;/entry&gt;</text:p>
-   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T9">key</text:span>=<text:span text:style-name="T10">&quot;s78ea90&quot;</text:span> <text:span text:style-name="T9">count</text:span>=<text:span text:style-name="T10">&quot;1&quot;</text:span></text:p>
-   <text:p text:style-name="P17"><text:s text:c="11"/><text:span text:style-name="T9">red</text:span>=<text:span text:style-name="T10">&quot;58&quot;</text:span> <text:span text:style-name="T9">green</text:span>=<text:span text:style-name="T10">&quot;180&quot;</text:span> <text:span text:style-name="T9">blue</text:span>=<text:span text:style-name="T10">&quot;58&quot;</text:span>&gt;<text:span text:style-name="T11">Finished</text:span>&lt;/entry&gt;</text:p>
+   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T10">key</text:span>=<text:span text:style-name="T11">&quot;sf12341&quot;</text:span> <text:span text:style-name="T10">count</text:span>=<text:span text:style-name="T11">&quot;4&quot;</text:span></text:p>
+   <text:p text:style-name="P17"><text:s text:c="11"/><text:span text:style-name="T10">red</text:span>=<text:span text:style-name="T11">&quot;100&quot;</text:span> <text:span text:style-name="T10">green</text:span>=<text:span text:style-name="T11">&quot;100&quot;</text:span> <text:span text:style-name="T10">blue</text:span>=<text:span text:style-name="T11">&quot;100&quot;</text:span>&gt;<text:span text:style-name="T12">New</text:span>&lt;/entry&gt;</text:p>
+   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T10">key</text:span>=<text:span text:style-name="T11">&quot;sd51c5b&quot;</text:span> <text:span text:style-name="T10">count</text:span>=<text:span text:style-name="T11">&quot;0&quot;</text:span></text:p>
+   <text:p text:style-name="P17"><text:s text:c="11"/><text:span text:style-name="T10">red</text:span>=<text:span text:style-name="T11">&quot;193&quot;</text:span> <text:span text:style-name="T10">green</text:span>=<text:span text:style-name="T11">&quot;129&quot;</text:span> <text:span text:style-name="T10">blue</text:span>=<text:span text:style-name="T11">&quot;0&quot;</text:span>&gt;<text:span text:style-name="T12">Draft</text:span>&lt;/entry&gt;</text:p>
+   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T10">key</text:span>=<text:span text:style-name="T11">&quot;s78ea90&quot;</text:span> <text:span text:style-name="T10">count</text:span>=<text:span text:style-name="T11">&quot;1&quot;</text:span></text:p>
+   <text:p text:style-name="P17"><text:s text:c="11"/><text:span text:style-name="T10">red</text:span>=<text:span text:style-name="T11">&quot;58&quot;</text:span> <text:span text:style-name="T10">green</text:span>=<text:span text:style-name="T11">&quot;180&quot;</text:span> <text:span text:style-name="T10">blue</text:span>=<text:span text:style-name="T11">&quot;58&quot;</text:span>&gt;<text:span text:style-name="T12">Finished</text:span>&lt;/entry&gt;</text:p>
    <text:p text:style-name="P17">&lt;/status&gt;</text:p>
    <text:p text:style-name="P17">&lt;importance&gt;</text:p>
-   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T9">key</text:span>=<text:span text:style-name="T10">&quot;ia857f0&quot;</text:span> <text:span text:style-name="T9">count</text:span>=<text:span text:style-name="T10">&quot;5&quot;</text:span></text:p>
-   <text:p text:style-name="P17"><text:s text:c="11"/><text:span text:style-name="T9">red</text:span>=<text:span text:style-name="T10">&quot;100&quot;</text:span> <text:span text:style-name="T9">green</text:span>=<text:span text:style-name="T10">&quot;100&quot;</text:span> <text:span text:style-name="T9">blue</text:span>=<text:span text:style-name="T10">&quot;100&quot;</text:span>&gt;<text:span text:style-name="T11">None</text:span>&lt;/entry&gt;</text:p>
-   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T9">key</text:span>=<text:span text:style-name="T10">&quot;icfb3a5&quot;</text:span> <text:span text:style-name="T9">count</text:span>=<text:span text:style-name="T10">&quot;2&quot;</text:span></text:p>
-   <text:p text:style-name="P17"><text:s text:c="11"/><text:span text:style-name="T9">red</text:span>=<text:span text:style-name="T10">&quot;0&quot;</text:span> <text:span text:style-name="T9">green</text:span>=<text:span text:style-name="T10">&quot;122&quot;</text:span> <text:span text:style-name="T9">blue</text:span>=<text:span text:style-name="T10">&quot;188&quot;</text:span>&gt;<text:span text:style-name="T11">Minor</text:span>&lt;/entry&gt;</text:p>
-   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T9">key</text:span>=<text:span text:style-name="T10">&quot;i2d7a54&quot;</text:span> <text:span text:style-name="T9">count</text:span>=<text:span text:style-name="T10">&quot;2&quot;</text:span></text:p>
-   <text:p text:style-name="P17"><text:s text:c="11"/><text:span text:style-name="T9">red</text:span>=<text:span text:style-name="T10">&quot;21&quot;</text:span> <text:span text:style-name="T9">green</text:span>=<text:span text:style-name="T10">&quot;0&quot;</text:span> <text:span text:style-name="T9">blue</text:span>=<text:span text:style-name="T10">&quot;180&quot;</text:span>&gt;<text:span text:style-name="T11">Major</text:span>&lt;/entry&gt;</text:p>
+   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T10">key</text:span>=<text:span text:style-name="T11">&quot;ia857f0&quot;</text:span> <text:span text:style-name="T10">count</text:span>=<text:span text:style-name="T11">&quot;5&quot;</text:span></text:p>
+   <text:p text:style-name="P17"><text:s text:c="11"/><text:span text:style-name="T10">red</text:span>=<text:span text:style-name="T11">&quot;100&quot;</text:span> <text:span text:style-name="T10">green</text:span>=<text:span text:style-name="T11">&quot;100&quot;</text:span> <text:span text:style-name="T10">blue</text:span>=<text:span text:style-name="T11">&quot;100&quot;</text:span>&gt;<text:span text:style-name="T12">None</text:span>&lt;/entry&gt;</text:p>
+   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T10">key</text:span>=<text:span text:style-name="T11">&quot;icfb3a5&quot;</text:span> <text:span text:style-name="T10">count</text:span>=<text:span text:style-name="T11">&quot;2&quot;</text:span></text:p>
+   <text:p text:style-name="P17"><text:s text:c="11"/><text:span text:style-name="T10">red</text:span>=<text:span text:style-name="T11">&quot;0&quot;</text:span> <text:span text:style-name="T10">green</text:span>=<text:span text:style-name="T11">&quot;122&quot;</text:span> <text:span text:style-name="T10">blue</text:span>=<text:span text:style-name="T11">&quot;188&quot;</text:span>&gt;<text:span text:style-name="T12">Minor</text:span>&lt;/entry&gt;</text:p>
+   <text:p text:style-name="P17"><text:s text:c="4"/>&lt;entry <text:span text:style-name="T10">key</text:span>=<text:span text:style-name="T11">&quot;i2d7a54&quot;</text:span> <text:span text:style-name="T10">count</text:span>=<text:span text:style-name="T11">&quot;2&quot;</text:span></text:p>
+   <text:p text:style-name="P17"><text:s text:c="11"/><text:span text:style-name="T10">red</text:span>=<text:span text:style-name="T11">&quot;21&quot;</text:span> <text:span text:style-name="T10">green</text:span>=<text:span text:style-name="T11">&quot;0&quot;</text:span> <text:span text:style-name="T10">blue</text:span>=<text:span text:style-name="T11">&quot;180&quot;</text:span>&gt;<text:span text:style-name="T12">Major</text:span>&lt;/entry&gt;</text:p>
    <text:p text:style-name="P17">&lt;/importance&gt;</text:p>
    <text:h text:style-name="P56" text:outline-level="2"/>
    <text:h text:style-name="P5" text:outline-level="1">Content Node</text:h>
    <text:p text:style-name="P44">Tag: <text:tab/><text:span text:style-name="T4">content</text:span></text:p>
-   <text:p text:style-name="P46">The <text:span text:style-name="T7">content</text:span> section is a level one node under the root. It stores <text:span text:style-name="T18">all the project items of the project. The items are stored in the order in which they appear in the project tree, so altering the order will affect the structure. The attribute with the order number is not used when processing the data. It is mainly written to the XML for debugging purposes.</text:span></text:p>
+   <text:p text:style-name="P46">The <text:span text:style-name="T7">content</text:span> section is a level one node under the root. It stores <text:span text:style-name="T19">all the project items of the project. The items are stored in the order in which they appear in the project tree, so altering the order will affect the </text:span><text:span text:style-name="T26">project</text:span><text:span text:style-name="T19"> structure. The attribute with the order number is not used when processing the data. It is written to the XML for debugging purposes.</text:span></text:p>
    <text:h text:style-name="P14" text:outline-level="5">Attributes</text:h>
    <table:table table:name="Table7" table:style-name="Table7">
     <table:table-column table:style-name="Table7.A"/>
@@ -1761,7 +1779,7 @@
       <text:p text:style-name="P37">Description</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250376112">
+    <table:table-row table:style-name="TableLine94488389386528">
      <table:table-cell table:style-name="Table7.A3" office:value-type="string">
       <text:p text:style-name="P24">items</text:p>
      </table:table-cell>
@@ -1772,7 +1790,7 @@
       <text:p text:style-name="P33">The number of project items in the content section.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250377920">
+    <table:table-row table:style-name="TableLine94488389388336">
      <table:table-cell table:style-name="Table7.A3" office:value-type="string">
       <text:p text:style-name="P24">novelWords</text:p>
      </table:table-cell>
@@ -1780,10 +1798,10 @@
       <text:p text:style-name="P28">No</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table7.C3" office:value-type="string">
-      <text:p text:style-name="P33">The number of words in total for all document nodes layout DOCUMENT. The value defaults to 0, but this number forms the basis of computing writing statistics during a session, so the number should be properly set in order to ensure correct statistics.</text:p>
+      <text:p text:style-name="P33">The number of words in total for all document nodes <text:span text:style-name="T26">with </text:span>layout DOCUMENT. The value defaults to 0, but this number forms the basis of computing writing statistics during a session, so the number should be properly set to ensure correct statistics.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250379728">
+    <table:table-row table:style-name="TableLine94488389390144">
      <table:table-cell table:style-name="Table7.A4" office:value-type="string">
       <text:p text:style-name="P24">notesWords</text:p>
      </table:table-cell>
@@ -1791,7 +1809,7 @@
       <text:p text:style-name="P28">No</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table7.C4" office:value-type="string">
-      <text:p text:style-name="P33">The number of words in total for all document nodes layout NOTE. The value defaults to 0, but this number forms the basis of computing writing statistics during a session, so the number should be properly set in order to ensure correct statistics.</text:p>
+      <text:p text:style-name="P33">The number of words in total for all document nodes <text:span text:style-name="T26">with </text:span>layout NOTE. The value defaults to 0, but this number forms the basis of computing writing statistics during a session, so the number should be properly set to ensure correct statistics.</text:p>
      </table:table-cell>
     </table:table-row>
    </table:table>
@@ -1811,7 +1829,7 @@
       <text:p text:style-name="P37">Description</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250390256">
+    <table:table-row table:style-name="TableLine94488389398960">
      <table:table-cell table:style-name="Table8.A2" office:value-type="string">
       <text:p text:style-name="P26">item</text:p>
      </table:table-cell>
@@ -1824,18 +1842,20 @@
     </table:table-row>
    </table:table>
    <text:h text:style-name="P14" text:outline-level="5">Example</text:h>
-   <text:p text:style-name="P18">&lt;content <text:span text:style-name="T9">items</text:span>=<text:span text:style-name="T10">&quot;27&quot;</text:span> <text:span text:style-name="T9">novelWords</text:span>=<text:span text:style-name="T10">&quot;954&quot;</text:span> <text:span text:style-name="T9">notesWords</text:span>=<text:span text:style-name="T10">&quot;409&quot;</text:span>&gt;</text:p>
-   <text:p text:style-name="P18"><text:s text:c="4"/>&lt;item <text:span text:style-name="T9">handle</text:span>=<text:span text:style-name="T10">&quot;7031beac91f75&quot;</text:span> <text:span text:style-name="T9">parent</text:span>=<text:span text:style-name="T10">&quot;None&quot;</text:span> <text:span text:style-name="T9">root</text:span>=<text:span text:style-name="T10">&quot;7031beac91f75&quot;</text:span></text:p>
-   <text:p text:style-name="P18"><text:span text:style-name="T9"><text:s text:c="10"/>order</text:span>=<text:span text:style-name="T10">&quot;0&quot;</text:span> <text:span text:style-name="T9">type</text:span>=<text:span text:style-name="T10">&quot;ROOT&quot;</text:span> <text:span text:style-name="T9">class</text:span>=<text:span text:style-name="T10">&quot;NOVEL&quot;</text:span>&gt;</text:p>
-   <text:p text:style-name="P18"><text:s text:c="6"/>&lt;meta <text:span text:style-name="T9">expanded</text:span>=<text:span text:style-name="T10">&quot;yes&quot;</text:span>/&gt;</text:p>
-   <text:p text:style-name="P18"><text:s text:c="6"/>&lt;name <text:span text:style-name="T9">status</text:span>=<text:span text:style-name="T10">&quot;sc24b8f&quot;</text:span> <text:span text:style-name="T9">import</text:span>=<text:span text:style-name="T10">&quot;ia857f0&quot;</text:span>&gt;<text:span text:style-name="T11">Novel</text:span>&lt;/name&gt;</text:p>
+   <text:p text:style-name="P18">&lt;content <text:span text:style-name="T10">items</text:span>=<text:span text:style-name="T11">&quot;27&quot;</text:span> <text:span text:style-name="T10">novelWords</text:span>=<text:span text:style-name="T11">&quot;954&quot;</text:span> <text:span text:style-name="T10">notesWords</text:span>=<text:span text:style-name="T11">&quot;409&quot;</text:span>&gt;</text:p>
+   <text:p text:style-name="P18"><text:s text:c="4"/>&lt;item <text:span text:style-name="T10">handle</text:span>=<text:span text:style-name="T11">&quot;7031beac91f75&quot;</text:span> <text:span text:style-name="T10">parent</text:span>=<text:span text:style-name="T11">&quot;None&quot;</text:span> <text:span text:style-name="T10">root</text:span>=<text:span text:style-name="T11">&quot;7031beac91f75&quot;</text:span></text:p>
+   <text:p text:style-name="P18"><text:span text:style-name="T10"><text:s text:c="10"/>order</text:span>=<text:span text:style-name="T11">&quot;0&quot;</text:span> <text:span text:style-name="T10">type</text:span>=<text:span text:style-name="T11">&quot;ROOT&quot;</text:span> <text:span text:style-name="T10">class</text:span>=<text:span text:style-name="T11">&quot;NOVEL&quot;</text:span>&gt;</text:p>
+   <text:p text:style-name="P18"><text:s text:c="6"/>&lt;meta <text:span text:style-name="T10">expanded</text:span>=<text:span text:style-name="T11">&quot;yes&quot;</text:span>/&gt;</text:p>
+   <text:p text:style-name="P18"><text:s text:c="6"/>&lt;name <text:span text:style-name="T10">status</text:span>=<text:span text:style-name="T11">&quot;sc24b8f&quot;</text:span> <text:span text:style-name="T10">import</text:span>=<text:span text:style-name="T11">&quot;ia857f0&quot;</text:span>&gt;<text:span text:style-name="T12">Novel</text:span>&lt;/name&gt;</text:p>
    <text:p text:style-name="P18"><text:s text:c="4"/>&lt;/item&gt;</text:p>
    <text:p text:style-name="P19"><text:s text:c="4"/>...</text:p>
    <text:p text:style-name="P18">&lt;/content&gt;</text:p>
-   <text:h text:style-name="P10" text:outline-level="2"><text:span text:style-name="T16">Item</text:span> <text:span text:style-name="T15">Nodes</text:span></text:h>
-   <text:p text:style-name="P48">The item nodes make up the actual project content of the project. Each node represents either a root folder, a regular folder, or a document. Each node has a type, class and layout setting that determine its category. Each item is given a handle that is a random hexadecimal string of length 13. For the items that are document files, this handle corresponds to its filename. <text:span text:style-name="T20">It is therefore important that these match. Each document node is expected to correspond to a file in the contents folder of the project named “</text:span><text:span text:style-name="T22">content/7031beac91f75.nwd</text:span><text:span text:style-name="T20">” for the item handle “</text:span><text:span text:style-name="T22">7031beac91f75</text:span><text:span text:style-name="T20">”.</text:span></text:p>
-   <text:p text:style-name="P48">Each item node has a meta data node and a name node. The meta data node contains only collected information, and is thus not strictly required. However, an accurate word count and the correct icon in the project tree depend on these values. These values are set by the indexer class, so rebuilding the index should restore the data.</text:p>
-   <text:p text:style-name="P48">The name node contains the primary user defined settings for an item, and is required.</text:p>
+   <text:h text:style-name="P10" text:outline-level="2"><text:span text:style-name="T17">Item</text:span> <text:span text:style-name="T16">Nodes</text:span></text:h>
+   <text:p text:style-name="P65">The item nodes make up the actual project content of the project. Each node represents either a root folder, a regular folder, or a document. Each node has a type, class and layout setting that determine its category. Each item is given a handle that is a random hexadecimal string of length 13.</text:p>
+   <text:p text:style-name="P65">For the items that are document files, th<text:span text:style-name="T26">e</text:span> handle corresponds to its <text:span text:style-name="T26">expected</text:span> filename. <text:span text:style-name="T21">It is therefore important that the</text:span><text:span text:style-name="T26">y</text:span><text:span text:style-name="T21"> match </text:span><text:span text:style-name="T26">in generated projects</text:span><text:span text:style-name="T21">. Each document node is expected to correspond to a file in the contents folder of the project named “</text:span><text:span text:style-name="T23">content/7031beac91f75.nwd</text:span><text:span text:style-name="T21">” for the item handle “</text:span><text:span text:style-name="T23">7031beac91f75</text:span><text:span text:style-name="T21">”. </text:span><text:span text:style-name="T26">If there is no such file, the document item is assumed to contain no text, and a file is created when the user tries to save text to it.</text:span></text:p>
+   <text:p text:style-name="P48">Each item node has a meta data node and a name node. The meta data node contains only collected information, and is thus not strictly required. However, an accurate word count and <text:span text:style-name="T26">setting the</text:span> correct icon in the project tree depend on these values. These values are set by the indexer class, so rebuilding the index should restore the data.</text:p>
+   <text:p text:style-name="P48">The name node contains the primary user defined settings for an item, and is required <text:span text:style-name="T26">for the entry to be valid</text:span>.</text:p>
+   <text:h text:style-name="P14" text:outline-level="5"><text:soft-page-break/></text:h>
    <text:h text:style-name="P14" text:outline-level="5">Attributes</text:h>
    <table:table table:name="Table9" table:style-name="Table9">
     <table:table-column table:style-name="Table9.A"/>
@@ -1852,7 +1872,7 @@
       <text:p text:style-name="P37">Description</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250431936">
+    <table:table-row table:style-name="TableLine94488389440224">
      <table:table-cell table:style-name="Table9.A2" office:value-type="string">
       <text:p text:style-name="P26">handle</text:p>
      </table:table-cell>
@@ -1860,10 +1880,10 @@
       <text:p text:style-name="P32">Yes</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table9.C2" office:value-type="string">
-      <text:p text:style-name="P33">The 13 value hexadecimal string that represents the item in the project. This is the primary identifier of a project item, and is required.</text:p>
+      <text:p text:style-name="P33">The 13 value hexadecimal string that represents the item in the project. This is the primary identifier of a project item, and is required. <text:span text:style-name="T26">It must be unique withing a project. Internally, it is generated as a random value, but it can also be sequential.</text:span></text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250433744">
+    <table:table-row table:style-name="TableLine94488389442032">
      <table:table-cell table:style-name="Table9.A7" office:value-type="string">
       <text:p text:style-name="P26">parent</text:p>
      </table:table-cell>
@@ -1871,10 +1891,10 @@
       <text:p text:style-name="P33">Yes</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table9.C7" office:value-type="string">
-      <text:p text:style-name="P33">The handle of the parent item in the tree. This value should only be None for root <text:soft-page-break/>folders. All other items must have a parent handle set. If the parent handle is None for an item that isn’t a root folder, the item will be treated as orphaned during project loading.</text:p>
+      <text:p text:style-name="P33">The handle of the parent item in the tree. This value should only be None for root folders. All other items must have a parent handle set. If the parent handle is None for an item that isn’t a root folder, the item will be treated as orphaned during project loading.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250436112">
+    <table:table-row table:style-name="TableLine94488389444400">
      <table:table-cell table:style-name="Table9.A7" office:value-type="string">
       <text:p text:style-name="P26">root</text:p>
      </table:table-cell>
@@ -1882,10 +1902,10 @@
       <text:p text:style-name="P33">No</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table9.C7" office:value-type="string">
-      <text:p text:style-name="P33">The handle of the top of its hierarchy of parent items. That is, the root folder which it ultimately sits under. If the attribute is not set, it will be computed during loading. It is primarily saved to the XML file for efficiency reasons.</text:p>
+      <text:p text:style-name="P33">The handle of the top of its hierarchy of parent items. That is, the root folder which it ultimately sits under. If the attribute is not set, it will be computed during loading. It is saved to the XML file for efficiency reasons.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250436976">
+    <table:table-row table:style-name="TableLine94488389445264">
      <table:table-cell table:style-name="Table9.A7" office:value-type="string">
       <text:p text:style-name="P26">order</text:p>
      </table:table-cell>
@@ -1896,7 +1916,7 @@
       <text:p text:style-name="P33">The numerical order of the item under its parent item. This value is not used during the loading process as the physical item order in the content node is used instead. It is primarily saved to the XML for debugging purposes.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250437744">
+    <table:table-row table:style-name="TableLine94488389446160">
      <table:table-cell table:style-name="Table9.A7" office:value-type="string">
       <text:p text:style-name="P26">type</text:p>
      </table:table-cell>
@@ -1907,7 +1927,7 @@
       <text:p text:style-name="P33">The item type of the item node. Allowed values are ROOT, FOLDER and FILE.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250438736">
+    <table:table-row table:style-name="TableLine94488389447360">
      <table:table-cell table:style-name="Table9.A7" office:value-type="string">
       <text:p text:style-name="P26">class</text:p>
      </table:table-cell>
@@ -1915,10 +1935,10 @@
       <text:p text:style-name="P33">Yes</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table9.C7" office:value-type="string">
-      <text:p text:style-name="P33">The item class of the item node. There are a number of item classes available in the app, all corresponding to a specific type of root folder. Each item in a root folder should have the same class set as the root folder itself. The attribute is not strictly required for items that aren’t root folders as it will be automatically set to match during loading.</text:p>
+      <text:p text:style-name="P33">The item class of the item node. There are a number of item classes available in the app, all corresponding to a specific type of root folder. Each item in a root folder should have the same class set as the root folder itself. The attribute is not strictly required for items that aren’t root folders as it will be automatically set to match during loading. <text:span text:style-name="T27">Allowed values are NOVEL, </text:span>PLOT, CHARACTER, WORLD, TIMELINE, OBJECT, ENTITY, CUSTOM, ARCHIVE <text:span text:style-name="T27">and </text:span>TRASH.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250439712">
+    <table:table-row table:style-name="TableLine94488389448336">
      <table:table-cell table:style-name="Table9.A8" office:value-type="string">
       <text:p text:style-name="P26">layout</text:p>
      </table:table-cell>
@@ -1946,7 +1966,7 @@
       <text:p text:style-name="P37">Description</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250450624">
+    <table:table-row table:style-name="TableLine94488389458928">
      <table:table-cell table:style-name="Table10.A2" office:value-type="string">
       <text:p text:style-name="P26">meta</text:p>
      </table:table-cell>
@@ -1957,7 +1977,7 @@
       <text:p text:style-name="P33">A node of meta data attributes for the item.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250452432">
+    <table:table-row table:style-name="TableLine94488389460736">
      <table:table-cell table:style-name="Table10.A3" office:value-type="string">
       <text:p text:style-name="P26">name</text:p>
      </table:table-cell>
@@ -1969,8 +1989,8 @@
      </table:table-cell>
     </table:table-row>
    </table:table>
-   <text:h text:style-name="P51" text:outline-level="3"><text:span text:style-name="T16">Meta</text:span> <text:span text:style-name="T17">N</text:span><text:span text:style-name="T18">odes</text:span></text:h>
-   <text:p text:style-name="P48">The meta data collected for the current item. This data is collected primarily by the indexer class. It can be restored by rebuilding the index, so the data is not essential.</text:p>
+   <text:h text:style-name="P51" text:outline-level="3"><text:span text:style-name="T17">Meta</text:span> <text:span text:style-name="T18">N</text:span><text:span text:style-name="T19">odes</text:span></text:h>
+   <text:p text:style-name="P48">The meta data collected for the current item. This data <text:span text:style-name="T27">either represents the item’s last state in the app, or consists of data collected </text:span>by the indexer. It can be restored by rebuilding the index, so the data is not essential.</text:p>
    <text:h text:style-name="P14" text:outline-level="5">Attributes</text:h>
    <table:table table:name="Table11" table:style-name="Table11">
     <table:table-column table:style-name="Table11.A"/>
@@ -1987,7 +2007,7 @@
       <text:p text:style-name="P37">Description</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250482800">
+    <table:table-row table:style-name="TableLine94488389489504">
      <table:table-cell table:style-name="Table11.A2" office:value-type="string">
       <text:p text:style-name="P26">expanded</text:p>
      </table:table-cell>
@@ -1995,10 +2015,10 @@
       <text:p text:style-name="P33">No</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table11.C2" office:value-type="string">
-      <text:p text:style-name="P33">Whether the tree node in the project tree was expanded or collapsed during the last session. Applies to all item types.</text:p>
+      <text:p text:style-name="P33">Whether the tree node in the project tree was expanded or collapsed during the last session. Applies to all item types, <text:span text:style-name="T27">but is ignored for items without child items.</text:span></text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250484608">
+    <table:table-row table:style-name="TableLine94488389490928">
      <table:table-cell table:style-name="Table11.A7" office:value-type="string">
       <text:p text:style-name="P26">heading</text:p>
      </table:table-cell>
@@ -2009,7 +2029,7 @@
       <text:p text:style-name="P33">The heading level of the first heading of the text of the item. Only applies to FILE item types. Allowed values are H0, H1, H2, H3, and H4. Other values are reset to H0.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250486912">
+    <table:table-row table:style-name="TableLine94488389493168">
      <table:table-cell table:style-name="Table11.A7" office:value-type="string">
       <text:p text:style-name="P26">charCount</text:p>
      </table:table-cell>
@@ -2020,7 +2040,7 @@
       <text:p text:style-name="P33">The number of characters in the text of the item. Only applies to FILE item types.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250487776">
+    <table:table-row table:style-name="TableLine94488389494032">
      <table:table-cell table:style-name="Table11.A7" office:value-type="string">
       <text:p text:style-name="P26">wordCount</text:p>
      </table:table-cell>
@@ -2031,7 +2051,7 @@
       <text:p text:style-name="P33">The number of words in the text of the item. Only applies to FILE item types.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250488672">
+    <table:table-row table:style-name="TableLine94488389494928">
      <table:table-cell table:style-name="Table11.A7" office:value-type="string">
       <text:p text:style-name="P26">paraCount</text:p>
      </table:table-cell>
@@ -2042,7 +2062,7 @@
       <text:p text:style-name="P33">The number of paragraphs in the text of the item. Only applies to FILE item types.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250489872">
+    <table:table-row table:style-name="TableLine94488389496128">
      <table:table-cell table:style-name="Table11.A7" office:value-type="string">
       <text:p text:style-name="P26">cursorPos</text:p>
      </table:table-cell>
@@ -2050,12 +2070,12 @@
       <text:p text:style-name="P33">No</text:p>
      </table:table-cell>
      <table:table-cell table:style-name="Table11.C7" office:value-type="string">
-      <text:p text:style-name="P33">The last cursor position in the text of the item from the last session. Only applies to FILE item types. The value is used to restore the cursor position when the document is opened in the editor.</text:p>
+      <text:p text:style-name="P33">The last cursor position in the text of the item from the last <text:span text:style-name="T27">editing </text:span>session. Only applies to FILE item types. The value is used to restore the cursor position when the document is opened in the editor.</text:p>
      </table:table-cell>
     </table:table-row>
    </table:table>
-   <text:h text:style-name="P51" text:outline-level="3"><text:span text:style-name="T16">Name</text:span> <text:span text:style-name="T20">N</text:span><text:span text:style-name="T18">odes</text:span></text:h>
-   <text:p text:style-name="P48">The name node contains information about an item that is set by the user. Including its label, which is the text value of the node. <text:span text:style-name="T20">This is the label that is displayed in the project tree.</text:span></text:p>
+   <text:h text:style-name="P51" text:outline-level="3"><text:soft-page-break/><text:span text:style-name="T17">Name</text:span> <text:span text:style-name="T21">N</text:span><text:span text:style-name="T19">odes</text:span></text:h>
+   <text:p text:style-name="P48">The name node contains information about an item that is set by the user. Including its label, which is the text value of the node. <text:span text:style-name="T21">This is the label that is displayed in the project tree.</text:span></text:p>
    <text:h text:style-name="P14" text:outline-level="5">Attributes</text:h>
    <table:table table:name="Table12" table:style-name="Table12">
     <table:table-column table:style-name="Table12.A"/>
@@ -2072,7 +2092,7 @@
       <text:p text:style-name="P37">Description</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250504064">
+    <table:table-row table:style-name="TableLine94488389510048">
      <table:table-cell table:style-name="Table12.A2" office:value-type="string">
       <text:p text:style-name="P26">status</text:p>
      </table:table-cell>
@@ -2083,7 +2103,7 @@
       <text:p text:style-name="P33">The ID of the status label that has been set for this item. Defaults to the first status item defined in the status section of the settings node.</text:p>
      </table:table-cell>
     </table:table-row>
-    <table:table-row table:style-name="TableLine94536250505744">
+    <table:table-row table:style-name="TableLine94488389511584">
      <table:table-cell table:style-name="Table12.A4" office:value-type="string">
       <text:p text:style-name="P26">import</text:p>
      </table:table-cell>
@@ -2094,8 +2114,7 @@
       <text:p text:style-name="P33">The ID of the importance label that has been set for this item. Defaults to the first importance item defined in the importance section of the settings node.</text:p>
      </table:table-cell>
     </table:table-row>
-    <text:soft-page-break/>
-    <table:table-row table:style-name="TableLine94536250508112">
+    <table:table-row table:style-name="TableLine94488389513568">
      <table:table-cell table:style-name="Table12.A4" office:value-type="string">
       <text:p text:style-name="P26">active</text:p>
      </table:table-cell>
@@ -2108,11 +2127,11 @@
     </table:table-row>
    </table:table>
    <text:h text:style-name="P14" text:outline-level="5">Example</text:h>
-   <text:p text:style-name="P18">&lt;item <text:span text:style-name="T9">handle</text:span>=<text:span text:style-name="T10">&quot;53b69b83cdafc&quot;</text:span> <text:span text:style-name="T9">parent</text:span>=<text:span text:style-name="T10">&quot;7031beac91f75&quot;</text:span> <text:span text:style-name="T9">root</text:span>=<text:span text:style-name="T10">&quot;7031beac91f75&quot;</text:span></text:p>
-   <text:p text:style-name="P18"><text:s text:c="6"/><text:span text:style-name="T9">order</text:span>=<text:span text:style-name="T10">&quot;0&quot;</text:span> <text:span text:style-name="T9">type</text:span>=<text:span text:style-name="T10">&quot;FILE&quot;</text:span> <text:span text:style-name="T9">class</text:span>=<text:span text:style-name="T10">&quot;NOVEL&quot;</text:span> <text:span text:style-name="T9">layout</text:span>=<text:span text:style-name="T10">&quot;DOCUMENT&quot;</text:span>&gt;</text:p>
-   <text:p text:style-name="P18"><text:s text:c="4"/>&lt;meta <text:span text:style-name="T9">expanded</text:span>=<text:span text:style-name="T10">&quot;no&quot;</text:span> <text:span text:style-name="T9">heading</text:span>=<text:span text:style-name="T10">&quot;H1&quot;</text:span> <text:span text:style-name="T9">charCount</text:span>=<text:span text:style-name="T10">&quot;93&quot;</text:span> <text:span text:style-name="T9">wordCount</text:span>=<text:span text:style-name="T10">&quot;19&quot;</text:span></text:p>
-   <text:p text:style-name="P18"><text:s text:c="10"/><text:span text:style-name="T9">paraCount</text:span>=<text:span text:style-name="T10">&quot;2&quot;</text:span> <text:span text:style-name="T9">cursorPos</text:span>=<text:span text:style-name="T10">&quot;119&quot;</text:span>/&gt;</text:p>
-   <text:p text:style-name="P18"><text:s text:c="4"/>&lt;name <text:span text:style-name="T9">status</text:span>=<text:span text:style-name="T10">&quot;sc24b8f&quot;</text:span> <text:span text:style-name="T9">import</text:span>=<text:span text:style-name="T10">&quot;ia857f0&quot;</text:span> <text:span text:style-name="T9">active</text:span>=<text:span text:style-name="T10">&quot;yes&quot;</text:span>&gt;<text:span text:style-name="T11">Title Page</text:span>&lt;/name&gt;</text:p>
+   <text:p text:style-name="P18">&lt;item <text:span text:style-name="T10">handle</text:span>=<text:span text:style-name="T11">&quot;53b69b83cdafc&quot;</text:span> <text:span text:style-name="T10">parent</text:span>=<text:span text:style-name="T11">&quot;7031beac91f75&quot;</text:span> <text:span text:style-name="T10">root</text:span>=<text:span text:style-name="T11">&quot;7031beac91f75&quot;</text:span></text:p>
+   <text:p text:style-name="P18"><text:s text:c="6"/><text:span text:style-name="T10">order</text:span>=<text:span text:style-name="T11">&quot;0&quot;</text:span> <text:span text:style-name="T10">type</text:span>=<text:span text:style-name="T11">&quot;FILE&quot;</text:span> <text:span text:style-name="T10">class</text:span>=<text:span text:style-name="T11">&quot;NOVEL&quot;</text:span> <text:span text:style-name="T10">layout</text:span>=<text:span text:style-name="T11">&quot;DOCUMENT&quot;</text:span>&gt;</text:p>
+   <text:p text:style-name="P18"><text:s text:c="4"/>&lt;meta <text:span text:style-name="T10">expanded</text:span>=<text:span text:style-name="T11">&quot;no&quot;</text:span> <text:span text:style-name="T10">heading</text:span>=<text:span text:style-name="T11">&quot;H1&quot;</text:span> <text:span text:style-name="T10">charCount</text:span>=<text:span text:style-name="T11">&quot;93&quot;</text:span> <text:span text:style-name="T10">wordCount</text:span>=<text:span text:style-name="T11">&quot;19&quot;</text:span></text:p>
+   <text:p text:style-name="P18"><text:s text:c="10"/><text:span text:style-name="T10">paraCount</text:span>=<text:span text:style-name="T11">&quot;2&quot;</text:span> <text:span text:style-name="T10">cursorPos</text:span>=<text:span text:style-name="T11">&quot;119&quot;</text:span>/&gt;</text:p>
+   <text:p text:style-name="P18"><text:s text:c="4"/>&lt;name <text:span text:style-name="T10">status</text:span>=<text:span text:style-name="T11">&quot;sc24b8f&quot;</text:span> <text:span text:style-name="T10">import</text:span>=<text:span text:style-name="T11">&quot;ia857f0&quot;</text:span> <text:span text:style-name="T10">active</text:span>=<text:span text:style-name="T11">&quot;yes&quot;</text:span>&gt;<text:span text:style-name="T12">Title Page</text:span>&lt;/name&gt;</text:p>
    <text:p text:style-name="P18">&lt;/item&gt;</text:p>
   </office:text>
  </office:body>
