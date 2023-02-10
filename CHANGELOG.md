@@ -1,5 +1,45 @@
 # novelWriter Changelog
 
+## Version 2.0.5 [2023-02-12]
+
+### Release Notes
+
+This is a patch release that fixes a number of minor bugs and usability issues. The Project Details
+dialog now properly updates when another project is opened, and the "Total editing time" value has
+a less ambiguous time format. The editor no longer inserts blank lines if block formats are applied
+to an empty line. The optional last column in the Novel Tree will now show all items of the
+selected type, not only the first, and the column size can be adjusted from the same menu where the
+column content is selected.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where the Title, Project Name and Author values of the Project Dialog would not
+  refresh when a project was closed and another opened. The issue is with the Qt library and
+  caching of the dialog, but novelWriter forces a refresh of the labels. These three were
+  previously missing though. Issue #1336. PR #1339.
+* Add a check to the data storage class that a path exists before it is returned to other classes
+  that uses them for file I/O. Issue #1317. PR #1342.
+
+**Usability Fixes**
+
+* The "Total editing time" label on the Project Details dialog now uses the same time format as the
+  status bar. That is, HH:MM:SS for times less than 24 hours, and D-HH:MM:SS for times from 24
+  hours and above. Issue #1335. PR #1339.
+* Fixed an issue where applying block formatting to an empty line would insert a blank line before
+  it. This is a consequence of the change from #1175. The line break is now only added if the line
+  is _not_ blank. Issues #1349 and #1350. PR #1354.
+* The optional third column in the Novel Tree now shows all references for the selected category
+  instead of just the first one. The maximum width of the column can also be selected from the
+  Novel Tree config menu. Issue #1351. PR #1355.
+
+**Packaging**
+
+* Added App Bundle and DMG packages for MacOS. Contributed by @Ryex. PRs #1276 and #1340.
+
+----
+
 ## Version 2.0.4 [2023-01-29]
 
 ### Release Notes
@@ -11,8 +51,8 @@ installed and imported.
 
 **Bugfixes**
 
-* Fix an issue with the version check against PyQt5, which was imported from the wrong package when
-  running novelWriter with PyQt5 version 5.15.8, released 2023-01-28. Issue #1324. PR #1325.
+* Fixed an issue with the version check against PyQt5, which was imported from the wrong package
+  when running novelWriter with PyQt5 version 5.15.8, released 2023-01-28. Issue #1324. PR #1325.
 
 ----
 
@@ -32,15 +72,15 @@ dialog box, replacing the Credits section on the main About tab.
 
 **Bugfixes**
 
-* Fix an issue with one of the active icons for the project tree. The SVG paths were not properly
+* Fixed an issue with one of the active icons for the project tree. The SVG paths were not properly
   joined. Issue #1297. PR #1299.
-* Fix an issue where the new open project routine for 2.0 would not check that a project exists
+* Fixed an issue where the new open project routine for 2.0 would not check that a project exists
   before trying to open it. This resulted in the open process creating all the expected folders in
   the designated location before realising there was no project there. Issue #1300. PR #1301.
-* Fix an issue with the convert folder to document or note functionality was no longer working. The
-  context menu entries were actually just calling the function for converting a file. Issue #1305.
-  PR #1306.
-* Fix an issue where the app may crash if an item is added as a child of an item that exists, but
+* Fixed an issue with the convert folder to document or note functionality was no longer working.
+  The context menu entries were actually just calling the function for converting a file.
+  Issue #1305. PR #1306.
+* Fixed an issue where the app may crash if an item is added as a child of an item that exists, but
   has invalid settings such that it is rejected by the project tree builder function when the
   project is opened. Now, only items with a parent item that has already been added will be allowed
   into the project tree. The issue was caused by an invalid project file, and is not likely to
@@ -52,7 +92,7 @@ dialog box, replacing the Credits section on the main About tab.
 * The CREDITS.md file has been updated, and its content is now also available in a "Credits" tab in
   the About dialog in the app. The old credits section of the "About" tab has been removed.
   PR #1298.
-* Fix a usability issue where double-clicking an entry in the Outline that belongs to a document
+* Fixed a usability issue where double-clicking an entry in the Outline that belongs to a document
   that is already open in the editor does nothing. Now, the app switches view to the editor when
   the heading is clicked. Issue #1291. PR #1306.
 * Change how the editing of status and importance labels work in Project Settings. The form at the
@@ -83,7 +123,7 @@ highlighting preferences were changed. It also fixes an issue that broke the Fre
 
 **Bugfixes**
 
-* Fix an issue where changing the Highlighting Preferences for highlighting quotes, emphasis, and
+* Fixed an issue where changing the Highlighting Preferences for highlighting quotes, emphasis, and
   multiple or trailing spaces would not reload the syntax highlighter in the editor. The changes
   would only take effect after restarting the app. Issue #1274. PR #1278.
 
@@ -105,7 +145,7 @@ updated to include the icon theme setting. The patch also updates the French tra
 
 **Bugfixes**
 
-* Fix an issue where starting the app with a custom GUI theme enabled would not load any icons at
+* Fixed an issue where starting the app with a custom GUI theme enabled would not load any icons at
   all if the `icontheme` setting isn't specified. The app now loads the `typicons_light` theme by
   default if no icon theme is set. Issue #1263. PR #1264.
 
@@ -248,7 +288,7 @@ _These Release Notes also include the changes from 2.0 pre-releases._
 
 **Code Improvements**
 
-* Fix an issue with circular imports mainly triggered from the test suite. PR #1166.
+* Fixed an issue with circular imports mainly triggered from the test suite. PR #1166.
 * Instead of assigning headers in a document a key by its line number, the headings are now
   assigned sequential keys. This makes it easier to detect actual meta data changes, which would
   otherwise be triggered by a change of line number as well. PR #1241.
@@ -386,7 +426,7 @@ Interface. PR #1146.
 
 **Bugfixes**
 
-* Fix a typo in the Lorem Ipsum tool and set a max width for the views bar. PR #1065.
+* Fixed a typo in the Lorem Ipsum tool and set a max width for the views bar. PR #1065.
 * The language set in the Build Tool is now properly exported to Open Document files. Previously,
   it would be set to English regardless of the user's selection. Issue #1073. PR #1077.
 * Since the text editor cursor extends to the right of its position in the window, it would
