@@ -67,13 +67,13 @@ jobs:
           path: novelwriter/assets
 
       - name: Build AppImage
-        run: python setup.py build-appimage --linux-tag {{env.LINUX_TAG}} --python-version {{env.PY_VER}}
+        run: python setup.py build-appimage --linux-tag ${{ env.LINUX_TAG }} --python-version ${{ env.PY_VER }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: novelWriter-{{env.VERSION}}-py{{env.PY_VER}}-{{env.LINUX_TAG}}.AppImage
-          path: dist_appimage/novelWriter-{{env.VERSION}}-py{{env.PY_VER}}-{{env.LINUX_TAG}}.AppImage
+          name: novelWriter-${{ env.VERSION }}-py${{ env.PY_VER }}-${{ env.LINUX_TAG }}.AppImage
+          path: dist_appimage/novelWriter-${{ env.VERSION }}-py${{ env.PY_VER }}-${{ env.LINUX_TAG }}.AppImage
           if-no-files-found: error
           retention-days: 1
 
