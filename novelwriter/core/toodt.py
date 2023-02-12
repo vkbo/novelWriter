@@ -65,7 +65,7 @@ def _mkTag(nsName, tagName, nsMap=XML_NS):
 
 # Mimetype and Version
 X_MIME = "application/vnd.oasis.opendocument.text"
-X_VERS = "1.2"
+X_VERS = "1.3"
 
 # Text Formatting Tags
 TAG_BR   = _mkTag("text", "line-break")
@@ -503,9 +503,8 @@ class ToOdt(Tokenizer):
         etree.SubElement(xMani, mFile, attrib={mPath: "styles.xml", mType: "text/xml"})
 
         oRoot = _mkTag("office", "document-settings", nsMap=OFFICE_NS)
-        oSett = _mkTag("office", "settings", nsMap=OFFICE_NS)
-        xSett = etree.Element(oRoot, nsmap=OFFICE_NS)
-        etree.SubElement(xSett, oSett)
+        oVers = _mkTag("office", "version", nsMap=OFFICE_NS)
+        xSett = etree.Element(oRoot, nsmap=OFFICE_NS, attrib={oVers: X_VERS})
 
         with ZipFile(savePath, mode="w") as outFile:
             outFile.writestr("mimetype", X_MIME)
