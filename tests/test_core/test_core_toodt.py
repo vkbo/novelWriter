@@ -25,7 +25,7 @@ import zipfile
 from lxml import etree
 from shutil import copyfile
 
-from tools import cmpFiles
+from tools import ODT_IGNORE, cmpFiles
 
 from novelwriter.core.toodt import ToOdt, ODTParagraphStyle, ODTTextStyle, XMLParagraph, _mkTag
 from novelwriter.core.project import NWProject
@@ -37,6 +37,7 @@ XML_NS = [
     ' xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"',
     ' xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"',
     ' xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"',
+    ' xmlns:dc="http://purl.org/dc/elements/1.1/"'
 ]
 
 
@@ -304,7 +305,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:h text:style-name="Title">Title</text:h>'
+        '<text:p text:style-name="Title">Title</text:p>'
         '</office:text>'
     )
 
@@ -615,6 +616,10 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     """Test the document save functions.
     """
     theProject = NWProject(mockGUI)
+    theProject.data.setAuthor("Jane Smith")
+    theProject.data.setName("Test Project")
+    theProject.data.setSaveCount(1234)
+    theProject.data.setEditTime(3674096)
 
     theDoc = ToOdt(theProject, isFlat=True)
     theDoc._isNovel = True
@@ -641,7 +646,7 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     assert flatFile.exists()
 
     copyfile(flatFile, testFile)
-    assert cmpFiles(testFile, compFile, [4, 5])
+    assert cmpFiles(testFile, compFile, ignoreStart=ODT_IGNORE)
 
 # END Test testCoreToOdt_SaveFlat
 
@@ -651,6 +656,10 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     """Test the document save functions.
     """
     theProject = NWProject(mockGUI)
+    theProject.data.setAuthor("Jane Smith")
+    theProject.data.setName("Test Project")
+    theProject.data.setSaveCount(1234)
+    theProject.data.setEditTime(3674096)
 
     theDoc = ToOdt(theProject, isFlat=False)
     theDoc._isNovel = True
@@ -719,7 +728,7 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     assert cmpFiles(maniFile, maniComp)
     assert cmpFiles(settFile, settComp)
     assert cmpFiles(contFile, contComp)
-    assert cmpFiles(metaFile, metaComp, [4, 5])
+    assert cmpFiles(metaFile, metaComp, ignoreStart=ODT_IGNORE)
     assert cmpFiles(stylFile, stylComp)
 
 # END Test testCoreToOdt_SaveFull
