@@ -44,12 +44,13 @@ XML_NS = {
     "text":   "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
     "meta":   "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
     "fo":     "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
+    "dc":     "http://purl.org/dc/elements/1.1/",
 }
 MANI_NS = {
     "manifest": "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
 }
 OFFICE_NS = {
-    "office": XML_NS["office"]
+    "office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
 }
 
 
@@ -328,12 +329,36 @@ class ToOdt(Tokenizer):
 
         self._xText = etree.SubElement(self._xBody, _mkTag("office", "text"))
 
-        # Meta Data
+        timeStamp = datetime.now().isoformat(sep="T", timespec="seconds")
+
+        # Office Meta Data
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "creation-date"))
-        xMeta.text = datetime.now().isoformat(sep="T", timespec="seconds")
+        xMeta.text = timeStamp
 
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "generator"))
         xMeta.text = f"novelWriter/{novelwriter.__version__}"
+
+        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "initial-creator"))
+        xMeta.text = self.theProject.data.author
+
+        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "editing-cycles"))
+        xMeta.text = str(self.theProject.data.saveCount)
+
+        # Format is: PnYnMnDTnHnMnS
+        # https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#duration
+        eT = self.theProject.data.editTime
+        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "editing-duration"))
+        xMeta.text = f"P{eT//86400:d}DT{eT%86400//3600:d}H{eT%3600//60:d}M{eT%60:d}S"
+
+        # Dublin Core Meta Data
+        xMeta = etree.SubElement(self._xMeta, _mkTag("dc", "title"))
+        xMeta.text = self.theProject.data.title or self.theProject.data.name
+
+        xMeta = etree.SubElement(self._xMeta, _mkTag("dc", "date"))
+        xMeta.text = timeStamp
+
+        xMeta = etree.SubElement(self._xMeta, _mkTag("dc", "creator"))
+        xMeta.text = self.theProject.data.author
 
         self._pageStyles()
         self._defaultStyles()
@@ -408,7 +433,7 @@ class ToOdt(Tokenizer):
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(r"\\", "\n")
-                self._addTextPar("Title", oStyle, tHead, isHead=False)
+                self._addTextPar("Title", oStyle, tHead, isHead=False)  # Title must be text:p
 
             elif tType == self.T_UNNUM:
                 tHead = tText.replace(r"\\", "\n")
