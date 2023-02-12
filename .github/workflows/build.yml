@@ -73,4 +73,3 @@ jobs:
           name: novelWriter-${{ env.VERSION }}-macos.dmg
           path: dist_macos/novelWriter-${{ env.VERSION }}.dmg
           retention-days: 1
-

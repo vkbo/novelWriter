@@ -83,7 +83,7 @@ Instead, run the following commands to add the repository and key:
 .. code-block:: bash
 
    sudo gpg --no-default-keyring --keyring /usr/share/keyrings/novelwriter-ppa-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F19F1FCE50043114
-   echo "deb [signed-by=/usr/share/keyrings/novelwriter-ppa-keyring.gpg] http://ppa.launchpad.net/vkbo/novelwriter/ubuntu focal main" | sudo tee /etc/apt/sources.list.d/novelwriter.list
+   echo "deb [signed-by=/usr/share/keyrings/novelwriter-ppa-keyring.gpg] http://ppa.launchpad.net/vkbo/novelwriter/ubuntu jammy main" | sudo tee /etc/apt/sources.list.d/novelwriter.list
 
 Then run the update and install commands as for Ubuntu:
 
@@ -94,8 +94,8 @@ Then run the update and install commands as for Ubuntu:
 
 .. note::
 
-   Please use the Ubuntu 20.04 (focal) packages for Debian. The newer Ubuntu packages use a
-   different compression algorithm that Debian doesn't currently support.
+   You may need to use the Ubuntu 20.04 (focal) packages for Debian 11 or earlier. The newer Ubuntu
+   packages use a different compression algorithm that may not be supported.
 
 
 AppImage Releases
