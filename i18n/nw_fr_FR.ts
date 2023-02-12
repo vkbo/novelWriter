@@ -4,72 +4,72 @@
   <context>
     <name>Common</name>
     <message>
-      <location filename="../novelwriter/common.py" line="333" />
+      <location filename="../novelwriter/common.py" line="306" />
       <source>in the future</source>
       <translation>dans le futur</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="337" />
+      <location filename="../novelwriter/common.py" line="310" />
       <source>just now</source>
       <translation>maintenant</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="341" />
+      <location filename="../novelwriter/common.py" line="314" />
       <source>a minute ago</source>
       <translation>il y a une minute</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="345" />
+      <location filename="../novelwriter/common.py" line="318" />
       <source>{0} minutes ago</source>
       <translation>il y a {0} minutes</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="349" />
+      <location filename="../novelwriter/common.py" line="322" />
       <source>an hour ago</source>
       <translation>il y a une heure</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="353" />
+      <location filename="../novelwriter/common.py" line="326" />
       <source>{0} hours ago</source>
       <translation>il y a {0} heures</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="357" />
+      <location filename="../novelwriter/common.py" line="330" />
       <source>a day ago</source>
       <translation>hier</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="361" />
+      <location filename="../novelwriter/common.py" line="334" />
       <source>{0} days ago</source>
       <translation>il y a {0} jours</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="365" />
+      <location filename="../novelwriter/common.py" line="338" />
       <source>a week ago</source>
       <translation>il y a une semaine</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="369" />
+      <location filename="../novelwriter/common.py" line="342" />
       <source>{0} weeks ago</source>
       <translation>il y a {0} semaines</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="373" />
+      <location filename="../novelwriter/common.py" line="346" />
       <source>a month ago</source>
       <translation>il y a un mois</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="377" />
+      <location filename="../novelwriter/common.py" line="350" />
       <source>{0} months ago</source>
       <translation>il y a {0} mois</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="381" />
+      <location filename="../novelwriter/common.py" line="354" />
       <source>a year ago</source>
       <translation>il y a un an</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="385" />
+      <location filename="../novelwriter/common.py" line="358" />
       <source>{0} years ago</source>
       <translation>il y a {0} ans</translation>
     </message>
@@ -2884,72 +2884,72 @@
   <context>
     <name>GuiProjectDetailsContents</name>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="295" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="297" />
       <source>Table of Contents</source>
       <translation>Table des matières</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="314" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="316" />
       <source>Title</source>
       <translation>Titre</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="315" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="317" />
       <source>Words</source>
       <translation>Mots</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="316" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="318" />
       <source>Pages</source>
       <translation>Pages</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="317" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="319" />
       <source>Page</source>
       <translation>Page</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="318" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="320" />
       <source>Progress</source>
       <translation>Progression</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="353" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="355" />
       <source>Typical word count for a 5 by 8 inch book page with 11 pt font is 350.</source>
       <translation>Le nombre de mots moyen pour une page de livre de format 13 X 20 cm avec une police en taille 11pt est de 350.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="356" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="358" />
       <source>Start counting page numbers from this page.</source>
       <translation>Commencer à compter les pages depuis cette page.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="359" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="361" />
       <source>Assume a new chapter or partition always start on an odd numbered page.</source>
       <translation>On suppose qu'un nouveau chapitre ou une nouvelle partie débute sur une page de droite, numérotée impaire.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="362" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="364" />
       <source>Words per page</source>
       <translation>Mots par page</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="373" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="375" />
       <source>Count pages from</source>
       <translation>Compter les pages depuis</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="384" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="386" />
       <source>Clear double pages</source>
       <translation>Ignorer les doubles pages</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="447" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="449" />
       <source>END</source>
       <translation>FIN</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="501" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="503" />
       <source>Untitled</source>
       <translation>Sans titre</translation>
     </message>
@@ -2957,44 +2957,44 @@
   <context>
     <name>GuiProjectDetailsMain</name>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="168" />
-      <source>Working Title: {0}</source>
-      <translation>Titre de travail : {0}</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="177" />
-      <source>By {0}</source>
-      <translation>Par {0}</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="187" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="185" />
       <source>Words</source>
       <translation>Mots</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="190" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="188" />
       <source>Chapters</source>
       <translation>Chapitres</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="193" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="191" />
       <source>Scenes</source>
       <translation>Scènes</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="196" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="194" />
       <source>Revisions</source>
       <translation>Révisions</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="199" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="197" />
       <source>Editing Time</source>
       <translation>Durée d'édition</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="219" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="217" />
       <source>Path</source>
       <translation>Chemin</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/projdetails.py" line="253" />
+      <source>Project: {0}</source>
+      <translation>Projet : {0}</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/projdetails.py" line="254" />
+      <source>By {0}</source>
+      <translation>Par {0}</translation>
     </message>
   </context>
   <context>
@@ -3782,7 +3782,7 @@
     <message>
       <location filename="../novelwriter/core/project.py" line="254" />
       <source>Could not open project with path: {0}</source>
-      <translation type="unfinished" />
+      <translation>N'a pas pu ouvrir le projet avec le chemin : {0}</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/project.py" line="291" />

@@ -397,6 +397,36 @@ def buildQtI18nTS(sysArgs):
 
 
 ##
+#  Generage MacOS PList
+##
+
+def genMacOSPlist():
+    """Set necessary values for .plist file.
+    """
+    numVers, _, _ = extractVersion()
+    pkgVers = compactVersion(numVers)
+    outDir = "setup/macos"
+
+    copyrightYear = datetime.datetime.now().year
+
+    # These keys are no longer used but are present for compatability
+    pkgVersMaj, pkgVersMin, _ = pkgVers.split(".")
+
+    plistXML = readFile(f"{outDir}/Info.plist.template").format(
+        macosBundleSVers=pkgVers,
+        macosBundleVers=numVers,
+        macosBundleVersMajor=pkgVersMaj,
+        macosBundleVersMinor=pkgVersMin,
+        macosBundleCopyright=f"Copyright 2018–{copyrightYear}, Veronica Berglyd Olsen",
+    )
+
+    print(f"Writing Info.plist to {outDir}/Info.plist")
+    writeFile(f"{outDir}/Info.plist", plistXML)
+
+    return
+
+
+##
 #  Sample Project ZIP File Builder (sample)
 ##
 
@@ -1862,6 +1892,7 @@ if __name__ == "__main__":
         "                   The files to be updated must be provided as arguments.",
         "    qtlrelease     Build the language files for internationalisation.",
         "    clean-assets   Delete assets built by manual, sample and qtlrelease.",
+        "    gen-plist      Generates an Info.plist for use in a MacOS Bundle",
         "",
         "Python Packaging:",
         "",
@@ -1943,6 +1974,10 @@ if __name__ == "__main__":
     if "clean-assets" in sys.argv:
         sys.argv.remove("clean-assets")
         cleanBuiltAssets()
+
+    if "gen-plist" in sys.argv:
+        sys.argv.remove("gen-plist")
+        genMacOSPlist()
 
     # Python Packaging
     # ================

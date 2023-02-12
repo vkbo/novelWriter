@@ -20,6 +20,7 @@ translators for the languages currently available:
 * Dutch: Martijn van der Kleijn (@mvdkleijn)
 * French: Jan Lüdke (@jyhelle)
 * German: Myian (@heymyian)
+* Italian: Riccardo Mangili
 * Latin American Spanish: Tommy Marplatt (@tmarplatt)
 * Norwegian: Veronica Berglyd Olsen (@vkbo)
 * Portuguese: Bruno Meneguello (@bkmeneguello)

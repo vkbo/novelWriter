@@ -4,72 +4,72 @@
   <context>
     <name>Common</name>
     <message>
-      <location filename="../novelwriter/common.py" line="333" />
+      <location filename="../novelwriter/common.py" line="306" />
       <source>in the future</source>
       <translation>i fremtiden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="337" />
+      <location filename="../novelwriter/common.py" line="310" />
       <source>just now</source>
       <translation>nå nettopp</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="341" />
+      <location filename="../novelwriter/common.py" line="314" />
       <source>a minute ago</source>
       <translation>for et minutt siden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="345" />
+      <location filename="../novelwriter/common.py" line="318" />
       <source>{0} minutes ago</source>
       <translation>for {0} minutter siden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="349" />
+      <location filename="../novelwriter/common.py" line="322" />
       <source>an hour ago</source>
       <translation>for en time siden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="353" />
+      <location filename="../novelwriter/common.py" line="326" />
       <source>{0} hours ago</source>
       <translation>for {0} timer siden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="357" />
+      <location filename="../novelwriter/common.py" line="330" />
       <source>a day ago</source>
       <translation>for en dag siden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="361" />
+      <location filename="../novelwriter/common.py" line="334" />
       <source>{0} days ago</source>
       <translation>for {0} dager siden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="365" />
+      <location filename="../novelwriter/common.py" line="338" />
       <source>a week ago</source>
       <translation>for en uke siden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="369" />
+      <location filename="../novelwriter/common.py" line="342" />
       <source>{0} weeks ago</source>
       <translation>for {0} uker siden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="373" />
+      <location filename="../novelwriter/common.py" line="346" />
       <source>a month ago</source>
       <translation>for en måned siden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="377" />
+      <location filename="../novelwriter/common.py" line="350" />
       <source>{0} months ago</source>
       <translation>for {0} måneder siden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="381" />
+      <location filename="../novelwriter/common.py" line="354" />
       <source>a year ago</source>
       <translation>for et år siden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="385" />
+      <location filename="../novelwriter/common.py" line="358" />
       <source>{0} years ago</source>
       <translation>for {0} år siden</translation>
     </message>
@@ -757,32 +757,32 @@
   <context>
     <name>GuiDocEditFooter</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2924" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2931" />
       <source>Status</source>
       <translation>Status</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3073" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3080" />
       <source>Line: {0} ({1})</source>
       <translation>Linje: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3102" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3109" />
       <source>Words: {0} ({1})</source>
       <translation>Ord: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3107" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3114" />
       <source>Document size is {0} bytes</source>
       <translation>Dokumentet er {0} byte</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3119" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3126" />
       <source>Words: {0} selected</source>
       <translation>Ord: {0} valgt</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3122" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3129" />
       <source>Character count: {0}</source>
       <translation>Antall tegn: {0}</translation>
     </message>
@@ -790,22 +790,22 @@
   <context>
     <name>GuiDocEditHeader</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2694" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2701" />
       <source>Edit document label</source>
       <translation>Endre dokumentnavn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2703" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2710" />
       <source>Search document</source>
       <translation>Søk i dokumentet</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2712" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2719" />
       <source>Toggle Focus Mode</source>
       <translation>Slå av/på "Fokus-modus"</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2721" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2728" />
       <source>Close the document</source>
       <translation>Lukk dokumentet</translation>
     </message>
@@ -813,58 +813,58 @@
   <context>
     <name>GuiDocEditSearch</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2287" />
-      <location filename="../novelwriter/gui/doceditor.py" line="2274" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2294" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2281" />
       <source>Search</source>
       <translation>Søk</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2279" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2286" />
       <source>Replace</source>
       <translation>Erstatt</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2295" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2302" />
       <source>Case Sensitive</source>
       <translation>Skill store/små bokstaver</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2301" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2308" />
       <source>Whole Words Only</source>
       <translation>Kun hele ord</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2307" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2314" />
       <source>RegEx Mode</source>
       <translation>RegEx-modus</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2313" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2320" />
       <source>Loop Search</source>
       <translation>Søk rundt</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2319" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2326" />
       <source>Search Next File</source>
       <translation>Søk i neste file</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2327" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2334" />
       <source>Preserve Case</source>
       <translation>Behold store/små bokstaver</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2335" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2342" />
       <source>Close Search</source>
       <translation>Lukk søk</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2351" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2358" />
       <source>Find in current document</source>
       <translation>Søk i det åpne dokumentet</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2356" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2363" />
       <source>Find and replace in current document</source>
       <translation>Søk og erstatt i det åpne dokumentet</translation>
     </message>
@@ -2050,55 +2050,66 @@
   <context>
     <name>GuiNovelToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="207" />
+      <location filename="../novelwriter/gui/noveltree.py" line="216" />
       <source>Outline of {0}</source>
       <translation>Innhold i {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="215" />
+      <location filename="../novelwriter/gui/noveltree.py" line="224" />
       <source>Novel Root</source>
       <translation>Roman-mappe</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="221" />
+      <location filename="../novelwriter/gui/noveltree.py" line="230" />
       <source>Refresh</source>
       <translation>Oppdatér</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="228" />
+      <location filename="../novelwriter/gui/noveltree.py" line="237" />
       <source>Last Column</source>
       <translation>Siste kolonne</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="231" />
+      <location filename="../novelwriter/gui/noveltree.py" line="240" />
       <source>Hidden</source>
       <translation>Skjult</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="232" />
+      <location filename="../novelwriter/gui/noveltree.py" line="241" />
       <source>Point of View Character</source>
       <translation>Synsvinkel-karakter</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="233" />
+      <location filename="../novelwriter/gui/noveltree.py" line="242" />
       <source>Focus Character</source>
       <translation>Fokus-karakter</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="234" />
+      <location filename="../novelwriter/gui/noveltree.py" line="243" />
       <source>Novel Plot</source>
       <translation>Roman-plott</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="237" />
+      <location filename="../novelwriter/gui/noveltree.py" line="361" />
+      <location filename="../novelwriter/gui/noveltree.py" line="246" />
+      <source>Column Size</source>
+      <translation>Kolonnebredde</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/noveltree.py" line="250" />
       <source>More Options</source>
       <translation>Flere valg</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/noveltree.py" line="361" />
+      <source>Maximum column size in %</source>
+      <translation>Maksimal kolonnebredde i %</translation>
     </message>
   </context>
   <context>
     <name>GuiNovelTree</name>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="778" />
+      <location filename="../novelwriter/gui/noveltree.py" line="815" />
       <source>No meta data</source>
       <translation>Ingen meta-data</translation>
     </message>
@@ -2884,72 +2895,72 @@
   <context>
     <name>GuiProjectDetailsContents</name>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="295" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="297" />
       <source>Table of Contents</source>
       <translation>Innholdsfortegnelse</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="314" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="316" />
       <source>Title</source>
       <translation>Tittel</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="315" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="317" />
       <source>Words</source>
       <translation>Ord</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="316" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="318" />
       <source>Pages</source>
       <translation>Sider</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="317" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="319" />
       <source>Page</source>
       <translation>Side</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="318" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="320" />
       <source>Progress</source>
       <translation>Fremdrift</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="353" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="355" />
       <source>Typical word count for a 5 by 8 inch book page with 11 pt font is 350.</source>
       <translation>Typisk antall ord for en 5 x 8 tommers bokside med 11 pt tekst er 350.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="356" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="358" />
       <source>Start counting page numbers from this page.</source>
       <translation>Begynn sidetall fra denne siden.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="359" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="361" />
       <source>Assume a new chapter or partition always start on an odd numbered page.</source>
       <translation>Beregn at nye kapitler og partisjoner alltid starter på en høyreside.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="362" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="364" />
       <source>Words per page</source>
       <translation>Ord per side</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="373" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="375" />
       <source>Count pages from</source>
       <translation>Tell sider fra</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="384" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="386" />
       <source>Clear double pages</source>
       <translation>Tøm doble sider</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="447" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="449" />
       <source>END</source>
       <translation>SLUTT</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="501" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="503" />
       <source>Untitled</source>
       <translation>Uten tittel</translation>
     </message>
@@ -2957,44 +2968,44 @@
   <context>
     <name>GuiProjectDetailsMain</name>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="168" />
-      <source>Working Title: {0}</source>
-      <translation>Arbeidstittel: {0}</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="177" />
-      <source>By {0}</source>
-      <translation>Av {0}</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="187" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="185" />
       <source>Words</source>
       <translation>Ord</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="190" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="188" />
       <source>Chapters</source>
       <translation>Kapitler</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="193" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="191" />
       <source>Scenes</source>
       <translation>Scener</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="196" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="194" />
       <source>Revisions</source>
       <translation>Revisjoner</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="199" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="197" />
       <source>Editing Time</source>
       <translation>Redigeringstid</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="219" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="217" />
       <source>Path</source>
       <translation>Filbane</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/projdetails.py" line="253" />
+      <source>Project: {0}</source>
+      <translation>Prosjekt: {0}</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/projdetails.py" line="254" />
+      <source>By {0}</source>
+      <translation>Av {0}</translation>
     </message>
   </context>
   <context>

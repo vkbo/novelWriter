@@ -1750,6 +1750,7 @@ class GuiDocEditor(QTextEdit):
 
         # Remove existing format first, if any
         theText = theBlock.text()
+        hasText = len(theText) > 0
         if theText.startswith("@"):
             logger.error("Cannot apply block format to keyword/value line")
             return False
@@ -1855,11 +1856,17 @@ class GuiDocEditor(QTextEdit):
         posS = theCursor.selectionStart()
         theCursor.removeSelectedText()
         theCursor.setPosition(posS)
-        if posS > 0:
+
+        if posS > 0 and hasText:
+            # If the block already had text, we must insert a new block
+            # first before we can add back the text to it.
             theCursor.insertBlock()
+
         theCursor.insertText(theText)
+
         if posO - cOffset >= 0:
             theCursor.setPosition(posO - cOffset)
+
         theCursor.endEditBlock()
         self.setTextCursor(theCursor)
 

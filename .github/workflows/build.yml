@@ -33,3 +33,44 @@ jobs:
             novelwriter/assets/i18n/*.qm
           if-no-files-found: error
           retention-days: 1
+
+  buildMac:
+    needs: buildAssets
+    strategy:
+      fail-fast: false
+    runs-on: macos-12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get Version
+        shell: bash
+        run: |
+          NW_VERSION=`awk '/^__version__/{print substr($NF,2,length($NF)-2)}' novelwriter/__init__.py`
+          echo "novelWriter Version: $NW_VERSION"
+          echo "VERSION=$NW_VERSION" >> $GITHUB_ENV
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: nw-assets-${{ github.sha }}
+          path: novelwriter/assets
+
+      - name: Build
+        run: |
+          ./setup/macos/build.sh
+
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v3
+        with:
+          name: novelWriter-${{ env.VERSION }}-macos.app.zip
+          path: dist_macos/novelWriter-${{ env.VERSION }}.app.zip
+          retention-days: 1
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v3
+        with:
+          name: novelWriter-${{ env.VERSION }}-macos.dmg
+          path: dist_macos/novelWriter-${{ env.VERSION }}.dmg
+          retention-days: 1
+
