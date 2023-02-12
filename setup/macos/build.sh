@@ -38,7 +38,6 @@ else
     echo "Missing: setup/macos/Info.plist"
     exit 1
 fi
-echo ""
 
 # Check that other assets are present
 echo "Checking assets"
@@ -60,11 +59,9 @@ else
     echo "Missing: novelwriter/assets/i18n/nw_en_US.qm"
     exit 1
 fi
-echo ""
 
 echo "Content of current dir:"
 ls -lah .
-echo ""
 
 popd || exit 1
 pushd "$BUILD_DIR"/ || exit 1
@@ -77,17 +74,14 @@ curl -LO https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
 bash Miniconda3-latest-MacOSX-x86_64.sh -b -p ~/miniconda -f
 rm Miniconda3-latest-MacOSX-x86_64.sh 
 export PATH="$HOME/miniconda/bin:$PATH"
-echo ""
 
 echo "Creating conda env ..."
 # create conda env
 conda create -n novelWriter -c conda-forge python=3.10 --yes
 source activate novelWriter
-echo ""
 
 echo "installing dictionaries ..."
 conda install -c conda-forge enchant hunspell-en --yes
-echo ""
 
 # Install dependencies
 echo "installing python dependencies ..."
@@ -95,7 +89,6 @@ pip install -r "$SRC_DIR/requirements.txt"
 
 # Leave conda env
 conda deactivate
-echo ""
 
 # --- Build App --------------------------------------------------------------------------------- #
 
@@ -104,7 +97,6 @@ echo "Building app bundle ..."
 mkdir -p novelWriter.app/Contents/
 mkdir novelWriter.app/Contents/MacOS novelWriter.app/Contents/Resources novelWriter.app/Contents/Resources/novelWriter
 cp $SRC_DIR/setup/macos/Info.plist novelWriter.app/Contents/Info.plist
-echo ""
 
 echo "Copying miniconda env to bundle ..."
 cp -R ~/miniconda/envs/novelWriter/* novelWriter.app/Contents/Resources/
@@ -122,7 +114,6 @@ for file in "${FILES_COPY[@]}"; do
 done
 
 cp $SRC_DIR/setup/macos/novelwriter.icns novelWriter.app/Contents/Resources/
-echo ""
 
 # Create entry script
 echo "Creating entry script ..."
@@ -134,7 +125,6 @@ EOF
 
 # Make it executable
 chmod a+x novelWriter.app/Contents/MacOS/novelWriter
-echo ""
 
 # Do codesigning
 # echo "Signing bundle ..."
@@ -167,7 +157,6 @@ rm lib/python3.*/site-packages/PyQt5/Qt/lib/libQt5WebEngine* || true
 
 popd || exit 1
 popd || exit 1
-echo ""
 
 # --- Create App Bundle-------------------------------------------------------------------------- #
 
@@ -179,7 +168,6 @@ zip -qr novelWriter.app.zip  novelWriter.app
 popd || exit 1
 
 mv -v $BUILD_DIR/novelWriter.app.zip $RLS_DIR/novelWriter-"${VERSION}"-macos.app.zip
-echo ""
 
 # --- Create DMG -------------------------------------------------------------------------------- #
 
