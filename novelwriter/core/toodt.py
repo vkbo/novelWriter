@@ -262,7 +262,7 @@ class ToOdt(Tokenizer):
         # ===============
 
         if self._headerText == "":
-            theTitle = self.theProject.data.title
+            theTitle = self.theProject.data.title or self.theProject.data.name
             theAuth = self.theProject.data.author
             self._headerText = f"{theTitle} / {theAuth} /"
 
