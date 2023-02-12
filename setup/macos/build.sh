@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# use RAM disk if possible
+# Use RAM disk if possible
 if [ -d /dev/shm ]; then
     TEMP_BASE=/dev/shm
 else
@@ -8,11 +8,8 @@ else
 fi
 
 BUILD_DIR=$(mktemp -d "$TEMP_BASE/novelWriter-build-XXXXXX")
-
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-
 SRC_DIR="$SCRIPT_DIR/../.."
-
 RLS_DIR="$SRC_DIR/dist_macos"
 
 echo "Script Dir: $SCRIPT_DIR"
@@ -22,17 +19,18 @@ cleanup () {
         rm -rf "$BUILD_DIR"
     fi
 }
-
 trap cleanup EXIT
 
 echo "Building in: $BUILD_DIR"
 
 OLD_CWD="$(pwd)"
-
 VERSION="$(awk '/^__version__/{print substr($NF,2,length($NF)-2)}' $SRC_DIR/novelwriter/__init__.py)"
 
 pushd "$SRC_DIR" || exit 1
 
+# --- Prepare Files ----------------------------------------------------------------------------- #
+
+echo "Generating Info.plist"
 python3 setup.py gen-plist
 if [ -f $SRC_DIR/setup/macos/Info.plist ]; then
     echo "Found: setup/macos/Info.plist"
@@ -42,6 +40,7 @@ else
 fi
 
 # Check that other assets are present
+echo "Checking assets"
 if [ -f $SRC_DIR/novelwriter/assets/sample.zip ]; then
     echo "Found: novelwriter/assets/sample.zip"
 else
@@ -61,14 +60,16 @@ else
     exit 1
 fi
 
+echo "Content of current dir:"
 ls -lah .
 
 popd || exit 1
-
 pushd "$BUILD_DIR"/ || exit 1
 
-echo "Downloading Miniconda ..."
+# --- Create Miniconda Env ---------------------------------------------------------------------- #
+
 # install Miniconda, a self-contained Python distribution
+echo "Downloading Miniconda ..."
 curl -LO https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
 bash Miniconda3-latest-MacOSX-x86_64.sh -b -p ~/miniconda -f
 rm Miniconda3-latest-MacOSX-x86_64.sh 
@@ -82,12 +83,14 @@ source activate novelWriter
 echo "installing dictionaries ..."
 conda install -c conda-forge enchant hunspell-en --yes
 
-echo "installing python deps ..."
-# install dependencies
+# Install dependencies
+echo "installing python dependencies ..."
 pip install -r "$SRC_DIR/requirements.txt"
 
-# leave conda env
+# Leave conda env
 conda deactivate
+
+# --- Build App --------------------------------------------------------------------------------- #
 
 echo "Building app bundle ..."
 # create .app Framework
@@ -112,22 +115,25 @@ done
 
 cp $SRC_DIR/setup/macos/novelwriter.icns novelWriter.app/Contents/Resources/
 
-# create entry script
+# Create entry script
+echo "Creating entry script ..."
 cat > novelWriter.app/Contents/MacOS/novelWriter <<\EOF
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 $DIR/../Resources/bin/python -sE $DIR/../Resources/novelWriter/novelWriter.py $@
 EOF
 
-# make executable
+# Make it executable
 chmod a+x novelWriter.app/Contents/MacOS/novelWriter
 
-#do codesigning
-#echo "Signing bundle ..."
-#sudo codesign --sign - --deep --force --entitlements "$SCRIPT_DIR/../macos/App.entitlements" --options runtime "novelWriter.app/Contents/MacOS/novelWriter"
+# Do codesigning
+# echo "Signing bundle ..."
+# sudo codesign --sign - --deep --force --entitlements "$SCRIPT_DIR/../macos/App.entitlements" --options runtime "novelWriter.app/Contents/MacOS/novelWriter"
 
-# remove bloat
+# Remove bloat
 pushd novelWriter.app/Contents/Resources || exit 1
+
+# --- Cleanup ----------------------------------------------------------------------------------- #
 
 echo "Cleaning unused files from bundle ..."
 # cleanup commands HERE
@@ -152,20 +158,25 @@ rm lib/python3.*/site-packages/PyQt5/Qt/lib/libQt5WebEngine* || true
 popd || exit 1
 popd || exit 1
 
+# --- Create App Bundle-------------------------------------------------------------------------- #
+
 echo "Packageing App ..."
-
 mkdir -p $RLS_DIR
-
-# generate .dmg
-
-brew install create-dmg
-# "--skip-jenkins" is a temporary workaround for https://github.com/create-dmg/create-dmg/issues/72
-create-dmg --volname "novelWriter $VERSION" --volicon $SRC_DIR/setup/macos/novelwriter.icns \
-    --window-pos 200 120 --window-size 800 400 --icon-size 100 --icon novelWriter.app 200 190 --hide-extension novelWriter.app \
-    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}".dmg "$BUILD_DIR"/
 
 pushd $BUILD_DIR || exit 1
 zip -qr novelWriter.app.zip  novelWriter.app
 popd || exit 1
 
-mv $BUILD_DIR/novelWriter.app.zip $RLS_DIR/novelWriter-"${VERSION}".app.zip
+mv -v $BUILD_DIR/novelWriter.app.zip $RLS_DIR/novelWriter-"${VERSION}"-macos.app.zip
+
+# --- Create DMG -------------------------------------------------------------------------------- #
+
+# Generate .dmg
+echo "Packageing DMG ..."
+brew install create-dmg
+
+# "--skip-jenkins" is a temporary workaround for https://github.com/create-dmg/create-dmg/issues/72
+create-dmg --volname "novelWriter $VERSION" --volicon $SRC_DIR/setup/macos/novelwriter.icns \
+    --window-pos 200 120 --window-size 800 400 --icon-size 100 \
+    --icon novelWriter.app 200 190 --hide-extension novelWriter.app \
+    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}"-macos.dmg "$BUILD_DIR"/
