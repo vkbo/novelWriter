@@ -4,12 +4,17 @@
 
 ### Release Notes
 
-This is a patch release that fixes a number of minor bugs and usability issues. The Project Details
-dialog now properly updates when another project is opened, and the "Total editing time" value has
-a less ambiguous time format. The editor no longer inserts blank lines if block formats are applied
-to an empty line. The optional last column in the Novel Tree will now show all items of the
-selected type, not only the first, and the column size can be adjusted from the same menu where the
-column content is selected.
+This is a patch release that fixes a number of minor bugs and usability issues.
+
+The Project Details dialog now properly updates when another project is opened, and the "Total
+editing time" value has a less ambiguous time format. The editor no longer inserts blank lines if
+block formats are applied to an empty line. The optional last column in the Novel Tree will now
+show all items of the selected type, not only the first, and the column size can be adjusted from
+the same menu where the column content is selected. The Open Document build output has been updated
+to ODF 1.3 extended format, and passes validation.
+
+An Italian translation has been added, and Russian is currently available for project builds. A
+full translation into Russian is on its way.
 
 ### Detailed Changelog
 
@@ -21,6 +26,8 @@ column content is selected.
   previously missing though. Issue #1336. PR #1339.
 * Add a check to the data storage class that a path exists before it is returned to other classes
   that uses them for file I/O. Issue #1317. PR #1342.
+* Fixed some issues with the Open Document build format as the produced document wasn't compliant
+  with the standard. It is now compliant with ODF 1.3 extended format. Issue #1359. PR #1360.
 
 **Usability Fixes**
 
@@ -33,6 +40,17 @@ column content is selected.
 * The optional third column in the Novel Tree now shows all references for the selected category
   instead of just the first one. The maximum width of the column can also be selected from the
   Novel Tree config menu. Issue #1351. PR #1355.
+* The Open Document produced by the build tool now has the necessary title and author meta data set
+  so that it can be used in LibreOffice. Other meta data has also been added. Issue #1359.
+  PR #1360.
+
+**Internationalisation**
+
+* Existing translations for US English, Norwegian, Brazilian Portuguese, Latin American Spanish,
+  and German have been updated. French and Dutch are partially updated. PR #1341.
+* Russian project variables have been added. Full translation is forthcoming. Contributed by
+  Aleksey (@SKYnv). PR #1341.
+* A complete Italian translation has been added. Contributed by Riccardo Mangili. PR #1341.
 
 **Packaging**
 
