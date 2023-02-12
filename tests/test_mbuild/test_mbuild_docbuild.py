@@ -24,7 +24,7 @@ import pytest
 from shutil import copyfile
 
 from mock import causeException, causeOSError
-from tools import cmpFiles
+from tools import ODT_IGNORE, cmpFiles
 
 from novelwriter.core.project import NWProject
 from novelwriter.mbuild.docbuild import NWBuildDocument
@@ -85,7 +85,7 @@ def testMBuildDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, ts
     assert error == []
 
     copyfile(docFile, tstFile)
-    assert cmpFiles(tstFile, cmpFile, ignoreStart="<meta:")
+    assert cmpFiles(tstFile, cmpFile, ignoreStart=ODT_IGNORE)
 
     # Check ODT Build
     # ===============
