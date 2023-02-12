@@ -1,9 +1,6 @@
 #
 # Configuration file for the Sphinx documentation builder.
-#
-# This file does only contain a selection of the most common options. For a
-# full list see the documentation:
-# http://www.sphinx-doc.org/en/master/config
+# Documentation: http://www.sphinx-doc.org/en/master/config
 #
 
 # -- Imports -----------------------------------------------------------------
@@ -38,14 +35,13 @@ os.environ["TZ"] = "Europe/Oslo"
 time.tzset()
 
 needs_sphinx = "4.0"
+extensions = []
 templates_path = ["_templates"]
 source_suffix = ".rst"
 master_doc = "index"
 today_fmt = "%A, %d %B %Y at %H:%M"
 language = "en"
 exclude_patterns = []
-pygments_style = "sphinx"
-pygments_dark_style = "monokai"
 
 # -- Options for HTML Output -------------------------------------------------
 
@@ -54,8 +50,11 @@ html_static_path = ["_static"]
 html_theme_options = {
     "light_logo": "novelwriter-light.png",
     "dark_logo": "novelwriter-dark.png",
+    "navigation_with_keys": True,
 }
 html_title = f"<div style='text-align: center'>Documentation Version {release}</div>"
+pygments_style = "tango"
+pygments_dark_style = "native"
 
 # -- Options for HTMLHelp Output ---------------------------------------------
 
