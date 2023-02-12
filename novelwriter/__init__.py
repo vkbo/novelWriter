@@ -59,9 +59,9 @@ __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "2.0.3"
-__hexversion__ = "0x020003f0"
-__date__       = "2023-01-08"
+__version__    = "2.0.5"
+__hexversion__ = "0x020005f0"
+__date__       = "2023-02-12"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 __url__        = "https://novelwriter.io"
@@ -179,12 +179,12 @@ def main(sysArgs=None):
             "At least Python 3.7 is required, found %s" % CONFIG.verPyString
         )
         errorCode |= 0x04
-    if CONFIG.verQtValue < 51000:
+    if CONFIG.verQtValue < 0x050a00:
         errorData.append(
             "At least Qt5 version 5.10 is required, found %s" % CONFIG.verQtString
         )
         errorCode |= 0x08
-    if CONFIG.verPyQtValue < 51000:
+    if CONFIG.verPyQtValue < 0x050a00:
         errorData.append(
             "At least PyQt5 version 5.10 is required, found %s" % CONFIG.verPyQtString
         )

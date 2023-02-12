@@ -27,7 +27,7 @@ from tools import C, buildTestProject
 
 from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtCore import Qt, QEvent
-from PyQt5.QtWidgets import QToolTip
+from PyQt5.QtWidgets import QInputDialog, QToolTip
 
 from novelwriter.enum import nwWidget, nwItemType
 from novelwriter.gui.noveltree import NovelTreeColumn
@@ -81,6 +81,8 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Populate Tree
     # =============
+
+    novelView.setTreeFocus()
 
     nwGUI.projStack.setCurrentIndex(nwGUI.idxNovelView)
     nwGUI.rebuildIndex()
@@ -171,6 +173,11 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # This forces the resizeEvent function to process labels
     spSize = nwGUI.splitMain.sizes()
     nwGUI.splitMain.setSizes([spSize[0] + 10, spSize[1] - 10])
+
+    # Resize the last column
+    with monkeypatch.context() as mp:
+        mp.setattr(QInputDialog, "getInt", lambda *a, **k: (40, True))
+        novelBar._selectLastColumnSize()
 
     # Item Meta
     # =========

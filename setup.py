@@ -42,7 +42,7 @@ OS_DARWIN = 3
 #  Utilities
 # =============================================================================================== #
 
-def extractVersion():
+def extractVersion(beQuiet=False):
     """Extract the novelWriter version number without having to import
     anything else from the main package.
     """
@@ -67,7 +67,8 @@ def extractVersion():
         print("Could not read file: %s" % initFile)
         print(str(exc))
 
-    print("novelWriter version: %s (%s) at %s" % (numVers, hexVers, relDate))
+    if not beQuiet:
+        print("novelWriter version: %s (%s) at %s" % (numVers, hexVers, relDate))
 
     return numVers, hexVers, relDate
 
@@ -392,6 +393,36 @@ def buildQtI18nTS(sysArgs):
     lupdate(srcList, tsList, no_obsolete=True, no_summary=False)
 
     print("")
+
+    return
+
+
+##
+#  Generage MacOS PList
+##
+
+def genMacOSPlist():
+    """Set necessary values for .plist file.
+    """
+    numVers, _, _ = extractVersion()
+    pkgVers = compactVersion(numVers)
+    outDir = "setup/macos"
+
+    copyrightYear = datetime.datetime.now().year
+
+    # These keys are no longer used but are present for compatability
+    pkgVersMaj, pkgVersMin, _ = pkgVers.split(".")
+
+    plistXML = readFile(f"{outDir}/Info.plist.template").format(
+        macosBundleSVers=pkgVers,
+        macosBundleVers=numVers,
+        macosBundleVersMajor=pkgVersMaj,
+        macosBundleVersMinor=pkgVersMin,
+        macosBundleCopyright=f"Copyright 2018–{copyrightYear}, Veronica Berglyd Olsen",
+    )
+
+    print(f"Writing Info.plist to {outDir}/Info.plist")
+    writeFile(f"{outDir}/Info.plist", plistXML)
 
     return
 
@@ -906,7 +937,7 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
 ##
 
 def makeAppImage(sysArgs):
-    """Build an Appimage
+    """Build an Appimage.
     """
     import glob
     import argparse
@@ -997,13 +1028,6 @@ def makeAppImage(sysArgs):
                 os.remove(image)
             except OSError:
                 print("Error while deleting file : ", image)
-
-    # Build Additional Assets
-    # =======================
-
-    buildQtI18n()
-    buildSampleZip()
-    buildPdfManual()
 
     # Copy novelWriter Source
     # =======================
@@ -1925,6 +1949,7 @@ if __name__ == "__main__":
         "",
         "    help           Print the help message.",
         "    pip            Install all package dependencies for novelWriter using pip.",
+        "    version        Print the novelWriter version.",
         "    build-clean    Will attempt to delete 'build' and 'dist' folders.",
         "",
         "Additional Builds:",
@@ -1935,6 +1960,7 @@ if __name__ == "__main__":
         "                   The files to be updated must be provided as arguments.",
         "    qtlrelease     Build the language files for internationalisation.",
         "    clean-assets   Delete assets built by manual, sample and qtlrelease.",
+        "    gen-plist      Generates an Info.plist for use in a MacOS Bundle",
         "",
         "Python Packaging:",
         "",
@@ -1983,8 +2009,8 @@ if __name__ == "__main__":
 
     if "version" in sys.argv:
         sys.argv.remove("version")
-        print("Checking source version info ...")
-        extractVersion()
+        numVers, _, _ = extractVersion(beQuiet=True)
+        print(numVers, end=None)
         sys.exit(0)
 
     if "pip" in sys.argv:
@@ -2018,6 +2044,10 @@ if __name__ == "__main__":
     if "clean-assets" in sys.argv:
         sys.argv.remove("clean-assets")
         cleanBuiltAssets()
+
+    if "gen-plist" in sys.argv:
+        sys.argv.remove("gen-plist")
+        genMacOSPlist()
 
     # Python Packaging
     # ================

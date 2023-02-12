@@ -33,9 +33,9 @@ from novelwriter.common import (
     checkStringNone, checkString, checkInt, checkFloat, checkBool, checkHandle,
     checkUuid, checkPath, isHandle, isTitleTag, isItemClass, isItemType,
     isItemLayout, hexToInt, minmax, checkIntTuple, formatInt, formatTimeStamp,
-    formatTime, simplified, yesNo, splitVersionNumber, transferCase, fuzzyTime,
-    numberToRoman, jsonEncode, readTextFile, makeFileNameSafe, sha256sum,
-    getGuiItem, NWConfigParser
+    formatTime, simplified, yesNo, transferCase, fuzzyTime, numberToRoman,
+    jsonEncode, readTextFile, makeFileNameSafe, sha256sum, getGuiItem,
+    NWConfigParser
 )
 
 
@@ -396,25 +396,6 @@ def testBaseCommon_YesNo():
     assert yesNo(2.0) == "yes"
 
 # END Test testBaseCommon_YesNo
-
-
-@pytest.mark.base
-def testBaseCommon_SplitVersionNumber():
-    """Test the splitVersionNumber function.
-    """
-    # OK Values
-    assert splitVersionNumber("1") == (1, 0, 0, 10000)
-    assert splitVersionNumber("1.2") == (1, 2, 0, 10200)
-    assert splitVersionNumber("1.2.3") == (1, 2, 3, 10203)
-    assert splitVersionNumber("1.2.3.4") == (1, 2, 3, 10203)
-    assert splitVersionNumber("99.99.99") == (99, 99, 99, 999999)
-
-    # Failed Values
-    assert splitVersionNumber(None) == (0, 0, 0, 0)
-    assert splitVersionNumber(1234) == (0, 0, 0, 0)
-    assert splitVersionNumber("1.2abc") == (1, 0, 0, 10000)
-
-# END Test testBaseCommon_SplitVersionNumber
 
 
 @pytest.mark.base

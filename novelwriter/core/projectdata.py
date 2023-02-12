@@ -207,7 +207,7 @@ class NWProjectData:
         """Set a new project name.
         """
         if value != self._name:
-            self._name = simplified(str(value))
+            self._name = simplified(str(value or ""))
             self.theProject.setProjectChanged(True)
         return
 
@@ -215,7 +215,7 @@ class NWProjectData:
         """Set a new novel title.
         """
         if value != self._title:
-            self._title = simplified(str(value))
+            self._title = simplified(str(value or ""))
             self.theProject.setProjectChanged(True)
         return
 
@@ -223,7 +223,7 @@ class NWProjectData:
         """Set the author value.
         """
         if value != self._title:
-            self._author = simplified(str(value))
+            self._author = simplified(str(value or ""))
             self.theProject.setProjectChanged(True)
         return
 

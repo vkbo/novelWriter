@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QSpinBox, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
-from novelwriter.common import numberToRoman
+from novelwriter.common import formatTime, numberToRoman
 from novelwriter.custom import PagedDialog, QSwitch
 from novelwriter.constants import nwUnicode
 from novelwriter.gui.components import NovelSelector
@@ -156,7 +156,7 @@ class GuiProjectDetailsMain(QWidget):
         # Header
         # ======
 
-        self.bookTitle = QLabel(self.theProject.data.title)
+        self.bookTitle = QLabel("")
         bookFont = self.bookTitle.font()
         bookFont.setPointSizeF(2.2*fPt)
         bookFont.setWeight(QFont.Bold)
@@ -164,9 +164,7 @@ class GuiProjectDetailsMain(QWidget):
         self.bookTitle.setAlignment(Qt.AlignHCenter)
         self.bookTitle.setWordWrap(True)
 
-        self.projName = QLabel(
-            self.tr("Working Title: {0}").format(self.theProject.data.name)
-        )
+        self.projName = QLabel("")
         workFont = self.projName.font()
         workFont.setPointSizeF(0.8*fPt)
         workFont.setItalic(True)
@@ -174,7 +172,7 @@ class GuiProjectDetailsMain(QWidget):
         self.projName.setAlignment(Qt.AlignHCenter)
         self.projName.setWordWrap(True)
 
-        self.bookAuthors = QLabel(self.tr("By {0}").format(self.theProject.data.author))
+        self.bookAuthors = QLabel("")
         authFont = self.bookAuthors.font()
         authFont.setPointSizeF(1.2*fPt)
         self.bookAuthors.setFont(authFont)
@@ -251,11 +249,15 @@ class GuiProjectDetailsMain(QWidget):
         nwCount = pIndex.getNovelWordCount()
         edTime = self.theProject.getCurrentEditTime()
 
+        self.bookTitle.setText(self.theProject.data.title or self.theProject.data.name)
+        self.projName.setText(self.tr("Project: {0}").format(self.theProject.data.name))
+        self.bookAuthors.setText(self.tr("By {0}").format(self.theProject.data.author))
+
         self.wordCountVal.setText(f"{nwCount:n}")
         self.chapCountVal.setText(f"{hCounts[2]:n}")
         self.sceneCountVal.setText(f"{hCounts[3]:n}")
         self.revCountVal.setText(f"{self.theProject.data.saveCount:n}")
-        self.editTimeVal.setText(f"{edTime//3600:02d}:{edTime%3600//60:02d}")
+        self.editTimeVal.setText(formatTime(edTime))
 
         self.projPathVal.setText(str(self.theProject.storage.storagePath))
 
