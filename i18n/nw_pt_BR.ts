@@ -2093,7 +2093,7 @@
       <location filename="../novelwriter/gui/noveltree.py" line="361" />
       <location filename="../novelwriter/gui/noveltree.py" line="246" />
       <source>Column Size</source>
-      <translation>Tamanho da coluna</translation>
+      <translation>Tamanho da Coluna</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/noveltree.py" line="250" />
