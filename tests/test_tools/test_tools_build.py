@@ -23,7 +23,7 @@ import pytest
 
 from shutil import copyfile
 
-from tools import cmpFiles, getGuiItem
+from tools import ODT_IGNORE, cmpFiles, getGuiItem
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog
@@ -103,7 +103,7 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, prjLipsum, tstPaths):
     testFile = tstPaths.outDir / "guiBuild_Tool_Step1_Lorem_Ipsum.fodt"
     compFile = tstPaths.refDir / "guiBuild_Tool_Step1_Lorem_Ipsum.fodt"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [4, 5])
+    assert cmpFiles(testFile, compFile, ignoreStart=ODT_IGNORE)
 
     # Change Title Formats and Flip Switches
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
@@ -147,7 +147,7 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, prjLipsum, tstPaths):
     testFile = tstPaths.outDir / "guiBuild_Tool_Step2_Lorem_Ipsum.fodt"
     compFile = tstPaths.refDir / "guiBuild_Tool_Step2_Lorem_Ipsum.fodt"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [4, 5])
+    assert cmpFiles(testFile, compFile, ignoreStart=ODT_IGNORE)
 
     # Replace Tabs with Spaces
     qtbot.mouseClick(nwBuild.replaceTabs, Qt.LeftButton)
@@ -181,7 +181,7 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, prjLipsum, tstPaths):
     testFile = tstPaths.outDir / "guiBuild_Tool_Step3_Lorem_Ipsum.fodt"
     compFile = tstPaths.refDir / "guiBuild_Tool_Step3_Lorem_Ipsum.fodt"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, [4, 5])
+    assert cmpFiles(testFile, compFile, ignoreStart=ODT_IGNORE)
 
     # Putline Mode
     nwBuild.fmtChapter.setText(r"Chapter %chw%: %title%")
