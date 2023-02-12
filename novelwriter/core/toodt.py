@@ -408,7 +408,7 @@ class ToOdt(Tokenizer):
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(r"\\", "\n")
-                self._addTextPar("Title", oStyle, tHead, isHead=True)
+                self._addTextPar("Title", oStyle, tHead, isHead=False)
 
             elif tType == self.T_UNNUM:
                 tHead = tText.replace(r"\\", "\n")
