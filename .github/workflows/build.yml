@@ -20,17 +20,60 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v3
 
-      - name: Run Build Commands
+      - name: Build Assets
         run: python setup.py qtlrelease sample manual
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: nw-assets-${{ github.sha }}
+          name: nw-assets
           path: |
             novelwriter/assets/sample.zip
             novelwriter/assets/manual.pdf
             novelwriter/assets/i18n/*.qm
+          if-no-files-found: error
+          retention-days: 1
+
+  buildLinux:
+    needs: buildAssets
+    runs-on: ubuntu-latest
+    env:
+      LINUX_TAG: "manylinux_2_28_x86_64"
+      PY_VER: "3.10"
+    steps:
+      - name: Python Setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3
+          architecture: x64
+
+      - name: Install Packages (pip)
+        run: pip install python-appimage
+
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Get Version
+        shell: bash
+        run: |
+          NW_VER=$(python setup.py version)
+          echo "novelWriter Version: $NW_VER"
+          echo "VERSION=$NW_VER" >> $GITHUB_ENV
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: nw-assets
+          path: novelwriter/assets
+
+      - name: Build AppImage
+        run: python setup.py build-appimage --linux-tag {{env.LINUX_TAG}} --python-version {{env.PY_VER}}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: novelWriter-{{env.VERSION}}-py{{env.PY_VER}}-{{env.LINUX_TAG}}.AppImage
+          path: dist_appimage/novelWriter-{{env.VERSION}}-py{{env.PY_VER}}-{{env.LINUX_TAG}}.AppImage
           if-no-files-found: error
           retention-days: 1
 
@@ -46,21 +89,20 @@ jobs:
       - name: Get Version
         shell: bash
         run: |
-          NW_VERSION=`awk '/^__version__/{print substr($NF,2,length($NF)-2)}' novelwriter/__init__.py`
-          echo "novelWriter Version: $NW_VERSION"
-          echo "VERSION=$NW_VERSION" >> $GITHUB_ENV
+          NW_VER=$(python setup.py version)
+          echo "novelWriter Version: $NW_VER"
+          echo "VERSION=$NW_VER" >> $GITHUB_ENV
 
-      - name: Download Artifact
+      - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
-          name: nw-assets-${{ github.sha }}
+          name: nw-assets
           path: novelwriter/assets
 
-      - name: Build
-        run: |
-          ./setup/macos/build.sh
+      - name: Build App Bundle
+        run: ./setup/macos/build.sh
 
-      - name: Upload ZIP
+      - name: Upload App Zip
         uses: actions/upload-artifact@v3
         with:
           name: novelWriter-${{ env.VERSION }}-macos.app.zip
@@ -72,4 +114,5 @@ jobs:
         with:
           name: novelWriter-${{ env.VERSION }}-macos.dmg
           path: dist_macos/novelWriter-${{ env.VERSION }}-macos.dmg
+          if-no-files-found: error
           retention-days: 1
