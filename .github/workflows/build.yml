@@ -89,7 +89,7 @@ jobs:
       - name: Get Version
         shell: bash
         run: |
-          NW_VER=$(python setup.py version)
+          NW_VER=$(python3 setup.py version)
           echo "novelWriter Version: $NW_VER"
           echo "VERSION=$NW_VER" >> $GITHUB_ENV
 

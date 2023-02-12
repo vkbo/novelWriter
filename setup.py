@@ -1028,13 +1028,6 @@ def makeAppImage(sysArgs):
             except OSError:
                 print("Error while deleting file : ", image)
 
-    # Build Additional Assets
-    # =======================
-
-    buildQtI18n()
-    buildSampleZip()
-    buildPdfManual()
-
     # Copy novelWriter Source
     # =======================
 
