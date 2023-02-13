@@ -87,8 +87,10 @@ jobs:
           python-version: 3
           architecture: x64
 
-      - name: Install Packages (pip)
-        run: pip install python-appimage
+      - name: Install Packages (apt)
+        run: |
+          sudo apt update
+          sudo apt install flatpak flatpak-builder
 
       - name: Checkout Source
         uses: actions/checkout@v3
