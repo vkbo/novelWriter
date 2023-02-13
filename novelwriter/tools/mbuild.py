@@ -26,7 +26,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QHBoxLayout, QTabWidget, QWidget
+
+from novelwriter.custom import VerticalTabBar
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +42,54 @@ class GuiBuildManuscript(QDialog):
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
 
+        self.setWindowTitle(self.tr("Build Manuscript"))
+        self.setMinimumWidth(self.mainConf.pxInt(700))
+        self.setMinimumHeight(self.mainConf.pxInt(600))
+
+        # Optiuons Area
+        # =============
+
+        self.optTabBar = VerticalTabBar(self)
+        self.optTabBar.setExpanding(False)
+
+        self.optTabBox = QTabWidget(self)
+        self.optTabBox.setTabBar(self.optTabBar)
+        self.optTabBox.setTabPosition(QTabWidget.West)
+
+        # Create Tabs
+        self.optTabSelect = GuiBuildSelectionTab(self)
+        self.optTabFormat = GuiBuildFormattingTab(self)
+
+        # Add Tabs
+        self.optTabBox.addTab(self.optTabSelect, self.tr("Selection"))
+        self.optTabBox.addTab(self.optTabFormat, self.tr("Formatting"))
+
+        # Assemble
+        self.outerBox = QHBoxLayout()
+        self.outerBox.addWidget(self.optTabBox)
+
+        self.setLayout(self.outerBox)
+
         return
 
 # END Class GuiBuildManuscript
+
+
+class GuiBuildSelectionTab(QWidget):
+
+    def __init__(self, buildMain):
+        super().__init__(parent=buildMain)
+
+        return
+
+# END Class GuiBuildSelectionTab
+
+
+class GuiBuildFormattingTab(QWidget):
+
+    def __init__(self, buildMain):
+        super().__init__(parent=buildMain)
+
+        return
+
+# END Class GuiBuildFormattingTab

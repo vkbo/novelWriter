@@ -382,7 +382,7 @@ class PagedDialog(QDialog):
         self._tabBar = VerticalTabBar(self)
         self._tabBar.setExpanding(False)
 
-        self._tabBox = QTabWidget()
+        self._tabBox = QTabWidget(self)
         self._tabBox.setTabBar(self._tabBar)
         self._tabBox.setTabPosition(QTabWidget.West)
 
