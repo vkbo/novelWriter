@@ -4,7 +4,7 @@
     <id>io.novelwriter.novelWriter</id>
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0</project_license>
-    <developer_name>Veronica Berglyd Olsen<developer_name/>
+    <developer_name>Veronica Berglyd Olsen</developer_name>
     <name>novelWriter</name>
     <url type="homepage">https://novelwriter.io/</url>
     <url type="help">https://novelwriter.readthedocs.io/en/stable/</url>
@@ -14,6 +14,7 @@
     <url type="contribute">https://github.com/vkbo/novelWriter/blob/main/CONTRIBUTING.md</url>
     <provides>
         <mediatype>application/x-novelwriter-project</mediatype>
+        <id>novelwriter.desktop</id>
     </provides>
     <summary>A markdown-like text editor for planning and writing novels.</summary>
     <description>
@@ -49,9 +50,6 @@
             <image>https://novelwriter.io/images/f-nw-outline-light.png</image>
         </screenshot>
     </screenshots>
-    <provides>
-        <id>novelwriter.desktop</id>
-    </provides>
     <content_rating type="oars-1.0" />
     <releases>
         {releases}

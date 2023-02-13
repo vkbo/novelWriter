@@ -448,9 +448,10 @@ def generateAppdateXML():
 
     strVersions = tagsOutput.decode("utf-8").split("\n")
 
-    versions = [v.lstrip("v") for v in reversed(strVersions) if v]
+    versions = [tuple(map(int, v.lstrip("v").split("."))) for v in strVersions if v]
+    sortedVersions = [".".join(map(str, v)) for v in reversed(sorted(versions))] 
 
-    xmlVersions = [releaseTemplate.format(version=v, date="") for v in versions if v != pkgVers]
+    xmlVersions = [releaseTemplate.format(version=v, date="") for v in sortedVersions if v != pkgVers]
     xmlVersions.insert(0, releaseTemplate.format(version=pkgVers, date=curDate))
 
     from textwrap import indent
