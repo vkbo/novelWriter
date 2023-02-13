@@ -406,6 +406,7 @@ def genMacOSPlist():
     """
     numVers, _, _ = extractVersion()
     pkgVers = compactVersion(numVers)
+    
     outDir = "setup/macos"
 
     copyrightYear = datetime.datetime.now().year
@@ -423,6 +424,48 @@ def genMacOSPlist():
 
     print(f"Writing Info.plist to {outDir}/Info.plist")
     writeFile(f"{outDir}/Info.plist", plistXML)
+
+    return
+
+
+def generateAppdateXML():
+    """update the appdata.xml used by appimage and flatpak.
+    """
+    numVers, _, relDate = extractVersion()
+    pkgVers = compactVersion(numVers)
+
+    outDir = "setup/data"
+
+    curDate = f"date=\"{relDate}\""
+
+    releaseTemplate = (
+        "<release version=\"{version}\" {date}>\n"
+        "    <url>https://github.com/vkbo/novelWriter/releases/tag/v{version}</url>\n"
+        "</release>"
+    )
+
+    tagsOutput = subprocess.check_output(["git", "--no-pager", "tag", "-l", "v*.*.*"])
+
+    strVersions = tagsOutput.decode("utf-8").split("\n")
+
+    versions = [v.lstrip("v") for v in reversed(strVersions) if v]
+
+    xmlVersions = [releaseTemplate.format(version=v, date="") for v in versions if v != pkgVers]
+    xmlVersions.insert(0, releaseTemplate.format(version=pkgVers, date=curDate))
+
+    from textwrap import indent
+
+    versionsXMLBlock = indent("\n".join(xmlVersions) + "\n", "    " * 2).lstrip()
+
+    desc = indent(readFile("setup/description_short.txt"), "    " * 2).lstrip()
+
+    xmlAppData = readFile("setup/linux/novelwriter.appdata.xml.template").format(
+        releases=versionsXMLBlock,
+        description=desc
+    )
+
+    print(f"Writing novelwriter.appdata.xml to {outDir}/novelwriter.appdata.xml")
+    writeFile(f"{outDir}/novelwriter.appdata.xml", xmlAppData)
 
     return
 
@@ -1153,7 +1196,7 @@ def makeAppImage(sysArgs):
 ##
 
 def makeFlatpak():
-    """build and install a flatpak localy (not for flathub)
+    """build a flatpak bundle localy (not for flathub)
     """
 
     print("")
@@ -2040,6 +2083,10 @@ if __name__ == "__main__":
     if "gen-plist" in sys.argv:
         sys.argv.remove("gen-plist")
         genMacOSPlist()
+    
+    if "gen-appdata" in sys.argv:
+        sys.argv.remove("gen-appdata")
+        generateAppdateXML()
 
     # Python Packaging
     # ================
