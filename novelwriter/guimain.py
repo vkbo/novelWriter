@@ -57,6 +57,7 @@ from novelwriter.dialogs.projdetails import GuiProjectDetails
 from novelwriter.dialogs.projsettings import GuiProjectSettings
 from novelwriter.tools.build import GuiBuildNovel
 from novelwriter.tools.lipsum import GuiLipsum
+from novelwriter.tools.mbuild import GuiBuildManuscript
 from novelwriter.tools.projwizard import GuiProjectWizard
 from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.core.project import NWProject
@@ -1006,6 +1007,26 @@ class GuiMain(QMainWindow):
         dlgBuild.raise_()
         qApp.processEvents()
         dlgBuild.viewCachedDoc()
+
+        return True
+
+    @pyqtSlot()
+    def showBuildManuscriptDialog(self):
+        """Open the build manuscript dialog.
+        """
+        if not self.hasProject:
+            logger.error("No project open")
+            return False
+
+        dlgBuild = getGuiItem("GuiBuildManuscript")
+        if dlgBuild is None:
+            dlgBuild = GuiBuildManuscript(self)
+        assert isinstance(dlgBuild, GuiBuildManuscript)
+
+        dlgBuild.setModal(False)
+        dlgBuild.show()
+        dlgBuild.raise_()
+        qApp.processEvents()
 
         return True
 

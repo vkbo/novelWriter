@@ -830,9 +830,9 @@ class GuiMainMenu(QMenuBar):
         self.toolsMenu.addAction(self.aBackupProject)
 
         # Tools > Export Project
-        self.aBuildProject = QAction(self.tr("Build Novel Project"), self)
+        self.aBuildProject = QAction(self.tr("Build Manuscript"), self)
         self.aBuildProject.setShortcut("F5")
-        self.aBuildProject.triggered.connect(lambda: self.mainGui.showBuildProjectDialog())
+        self.aBuildProject.triggered.connect(self.mainGui.showBuildManuscriptDialog)
         self.toolsMenu.addAction(self.aBuildProject)
 
         # Tools > Writing Stats
