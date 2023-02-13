@@ -141,31 +141,6 @@ These zip files don't include any dependencies, so you must install them separat
 
 .. _a_started_minimal_windows:
 
-Minimal Package on Windows
---------------------------
-
-First, make sure you have Python installed on your system. If you don't, you can download it from
-`python.org`_. Python 3.7 or higher is required, but it is recommended that you install the latest
-version.
-
-Make sure you select the "Add Python to PATH" option during installation, otherwise the ``python``
-command will not work in the command line window.
-
-.. figure:: images/python_win_install.png
-   :align: center
-   :width: 500
-
-When Python is installed, extract the novelWriter zip file and move the extracted folder to a
-suitable location. You should probably not keep it on your desktop or in your downloads folder
-where it may be accidentally deleted. Instead, move and rename it to for instance
-``C:\novelWriter``.
-
-After you've got the folder where you want it, open it and double-click the file named
-``windows_install.bat``. This will open a command line window and run the setup script to install
-dependencies, and add desktop and start menu icons.
-
-Running ``windows_uninstall.bat`` will reverse the process if you wish to uninstall. After that,
-you can just delete the novelWriter folder.
 
 
 .. _a_started_minimal_linux:
@@ -243,8 +218,8 @@ novelWriter is also available on the Python Package Index, or PyPi_. This instal
 all supported operating systems.
 
 To install from PyPi you must first have the ``python`` and ``pip`` commands available on your
-system. If you don't, see specific instructions for your operating system in this documentation on
-how to get the Python environment set up.
+system. If you are on Windows, and don't have Python installed, see :ref:`a_started_win_py` for
+help.
 
 To install novelWriter from PyPi, use the following command:
 
@@ -268,4 +243,35 @@ Make sure the install location for pip is in your PATH variable. This is not alw
 default.
 
 .. note::
+
    On systems with both Python 2 and 3, you may have to replace the ``pip`` command with ``pip3``.
+
+
+.. _a_started_win_py:
+
+Installing Python on Windows
+----------------------------
+
+In order to run novelWriter from source, or install from PyPi, you need to have Python set up on
+your system. Unlike Linux and MacOS, Windows does not come with Python pre-installed.
+
+You can download Python from `python.org`_. Python 3.7 or higher is required for running
+novelWriter, but it is recommended that you install the latest version.
+
+Make sure you select the "Add Python to PATH" option during installation, otherwise the ``python``
+command will not work in the command line window.
+
+.. figure:: images/python_win_install.png
+   :align: center
+   :width: 500
+
+   Screenshot of the Python installer on Windows.
+
+When Python is installed, you should be able to run Python commands from the COmmand Prompt or
+from PowerShell. You can verify this by running:
+
+.. code-block:: bash
+
+   python --version
+
+This should print out the version number of the Python installation.
