@@ -1156,7 +1156,6 @@ def makeFlatpak():
     """build and install a flatpak localy (not for flathub)
     """
 
-
     print("")
     print("Build flatpak")
     print("==============")
@@ -1183,13 +1182,6 @@ def makeFlatpak():
         shutil.rmtree(outDir)
 
     os.mkdir(outDir)
-
-    # Build Additional Assets
-    # =======================
-
-    buildQtI18n()
-    buildSampleZip()
-    buildPdfManual()
 
     # Build flatpak
     # ==============

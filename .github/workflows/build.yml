@@ -77,6 +77,46 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+  buildFlatpak:
+    needs: buildAssets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Python Setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3
+          architecture: x64
+
+      - name: Install Packages (pip)
+        run: pip install python-appimage
+
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Get Version
+        shell: bash
+        run: |
+          NW_VER=$(python setup.py version)
+          echo "novelWriter Version: $NW_VER"
+          echo "VERSION=$NW_VER" >> $GITHUB_ENV
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: nw-assets
+          path: novelwriter/assets
+
+      - name: Build Flatpak
+        run: python setup.py build-flatpak
+        
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: novelWriter-${{ env.VERSION }}-linux.flatpak
+          path: dist_flatpak/novelWriter-${{ env.VERSION }}-linux.flatpak
+          if-no-files-found: error
+          retention-days: 1
+
   buildMac:
     needs: buildAssets
     strategy:
