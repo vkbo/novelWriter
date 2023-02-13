@@ -110,7 +110,7 @@ jobs:
           path: novelwriter/assets
 
       - name: Build Flatpak
-        run: python setup.py build-flatpak
+        run: sudo python setup.py build-flatpak
         
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
