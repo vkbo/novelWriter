@@ -106,6 +106,25 @@ completely standalone images for the app that include the necessary environment 
 They can of course be run on any Linux distro, if you prefer this to native packages.
 
 
+.. _a_started_macos:
+
+Install on MacOS
+================
+
+You can install novelWriter with both its Python and library dependencies embedded using the
+DMG application image file from the `main website`_, or from the Releases_ page on GitHub.
+Installing it should be straightforward.
+
+Download the DMG file and open it. Then drag the novelWriter icon to the Applications folder on
+the right. This will install it into your Applications. The first time you try to launch it, it will
+say that the bundle cannot be verified, simply press the “open” button to add an exception. 
+If you are not presented with an "open" button in the dialog launch the application again by 
+right clicking on the application in Finder and selecting "Open" from the context menu.
+
+The context menu can also be accessed by option clicking if you have a one button mouse.
+This is done by holding down the option key on your keyboard and clicking on the application in Finder.
+
+
 .. _a_started_minimal:
 
 Minimal Package Install
