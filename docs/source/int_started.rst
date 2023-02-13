@@ -4,43 +4,35 @@
 Getting Started
 ***************
 
-.. _brew docs: https://docs.brew.sh/Homebrew-and-Python
 .. _Enchant: https://abiword.github.io/enchant/
 .. _GitHub: https://github.com/vkbo/novelWriter
-.. _macOS: https://github.com/vkbo/novelWriter/issues/867
 .. _main website: https://novelwriter.io
 .. _PPA: https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter
 .. _Pre-Release PPA: https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter-pre
 .. _PyPi: https://pypi.org/project/novelWriter/
 .. _python.org: https://www.python.org/downloads/windows
 .. _Releases: https://github.com/vkbo/novelWriter/releases
-.. _RPM: https://github.com/vkbo/novelWriter/issues/907
 .. _AppImage: https://appimage.org/
 
-If you are using Windows or a Debian-based Linux distribtuion, you can install novelWriter from
-package installers. If you are on macOS, you have the option to run novelWriter from a standalone
-folder. See :ref:`a_started_minimal`. This option is also available for Windows and Linux. The
-third option is to install novelWriter from the Python Package Index. See :ref:`a_started_pip`.
+Package installers are available for all major platforms, including Linux, Windows and MacOS. See
+below for install instructions for each platform.
+
+You can also install novelWriter from the Python Package Index (PyPi). See :ref:`a_started_pip`.
+Installing from PyPi does not set up icon launchers, so you will either have to do this yourself,
+or start novelWriter from command line.
 
 Spell checking in novelWriter is provided by a third party library called Enchant_. Generally, it
 should pull dictionaries from your operating system automatically. However, on Windows they must be
 installed manually. See :ref:`a_custom_dict` for more details.
 
-.. admonition:: Help Wanted
-   :class: seealso
-
-   If you would like to help making more installers, the project is currently looking for people
-   who can help make releases for Red Hat-based Linux distros (RPM) and for macOS. See the issues
-   posted for RPM_ and macOS_ on GitHub_.
-
 
 .. _a_started_windows:
 
-Install on Windows
-==================
+Installing on Windows
+=====================
 
 You can install novelWriter with both Python and library dependencies embedded using the Windows
-Installer (setup.exe) file from the `main website`_, or from the Releases_ page on GitHub.
+Installer (setup.exe) file from the `main website`_, or from the Releases_ page on GitHub_.
 Installing it should be straightforward.
 
 If you have any issues, try uninstalling the previous version and making a fresh install. If you
@@ -49,10 +41,10 @@ already had a version installed via a different method, you should uninstall tha
 
 .. _a_started_linux:
 
-Install on Linux
-================
+Installing on Linux
+===================
 
-A Debian package can be downloaded from the `main website`_, or from the Releases_ page on GitHub.
+A Debian package can be downloaded from the `main website`_, or from the Releases_ page on GitHub_.
 This package should work on both Debian, Ubuntu and Linux Mint, at least.
 
 If you prefer, you can also add the novelWriter repository on Launchpad to your package manager.
@@ -69,7 +61,7 @@ You can add the Ubuntu PPA_ and install novelWriter with the following commands.
    sudo apt update
    sudo apt install novelwriter
 
-If you want pre-releases, add the ``ppa:vkbo/novelwriter-pre`` repository instead.
+If you want the `Pre-Release PPA`_ instead, add the ``ppa:vkbo/novelwriter-pre`` repository.
 
 
 Debian and Mint
@@ -108,11 +100,11 @@ They can of course be run on any Linux distro, if you prefer this to native pack
 
 .. _a_started_macos:
 
-Install on MacOS
-================
+Installing on MacOS
+===================
 
 You can install novelWriter with both its Python and library dependencies embedded using the DMG
-application image file from the `main website`_, or from the Releases_ page on GitHub. Installing
+application image file from the `main website`_, or from the Releases_ page on GitHub_. Installing
 it should be straightforward.
 
 * Download the DMG file and open it. Then drag the novelWriter icon to the :guilabel:`Applications`
@@ -127,92 +119,10 @@ The context menu can also be accessed by option-clicking if you have a one butto
 done by holding down the option key on your keyboard and clicking on the application in Finder.
 
 
-.. _a_started_minimal:
-
-Minimal Package Install
-=======================
-
-On the `main website`_ and on the Releases_ page on GitHub you will also find "Minimal Package"
-install files for Windows, Linux and macOS. These are zip files of just the files you need to run
-novelWriter on that specific platform.
-
-These zip files don't include any dependencies, so you must install them separately.
-
-
-.. _a_started_minimal_windows:
-
-
-
-.. _a_started_minimal_linux:
-
-Minimal Package on Linux
-------------------------
-
-On Linux you need to install the following packages on Debian-based distros, including Ubuntu and
-Linux Mint:
-
-.. code-block:: bash
-
-   sudo apt install python3-pyqt5 python3-lxml python3-enchant
-
-On Fedora, you need the following packages:
-
-.. code-block:: bash
-
-   sudo dnf install python3-qt5 python3-lxml python3-enchant
-
-A standard desktop launcher can be installed via the main setup script. It will create the needed
-desktop file and add it to the Applications menu. The necessary icons will also be installed, and a
-file association with ``.nwx`` project files added.
-
-To set this up, run the following from inside the extracted novelWriter folder:
-
-.. code-block:: bash
-
-   python3 setup.py xdg-install
-
-This installs icons for the current user. Run with ``sudo`` to install system-wide.
-
-To uninstall the icons, run:
-
-.. code-block:: bash
-
-   python3 setup.py xdg-uninstall
-
-
-.. _a_started_minimal_mac:
-
-Minimal Package on macOS
-------------------------
-
-These instructions assume you're using brew, and have Python and pip set up. If not, see the
-`brew docs`_ for help. The main requirements for novelWriter are installed via the requirements
-file. You also need to install the ``pyobjc`` package, so you should run:
-
-.. code-block:: bash
-
-   pip3 install --user -r requirements.txt
-   pip3 install --user pyobjc
-
-For spell checking you may also need to install the enchant package. It comes with a lot of default
-dictionaries.
-
-.. code-block:: bash
-
-   brew install enchant
-
-With the dependencies in place, you can launch the ``novelWriter.py`` script directly to run
-novelWriter.
-
-.. note::
-   Right now there isn't a better integration with macOS available. Contributions from someone more
-   familiar with macOS would be very much appreciated. See the macOS_ issue on GitHub.
-
-
 .. _a_started_pip:
 
-Install from PyPi
-=================
+Installing from PyPi
+====================
 
 novelWriter is also available on the Python Package Index, or PyPi_. This install method works on
 all supported operating systems.
