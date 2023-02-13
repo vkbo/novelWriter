@@ -47,6 +47,12 @@
     </provides>
     <content_rating type="oars-1.0" />
     <releases>
+        <release version="v2.0.5" date="2023-1-8">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v2.0.5</url>
+        </release>
+        <release version="v2.0.4" date="2023-1-8">
+            <url>https://github.com/vkbo/novelWriter/releases/tag/v2.0.4</url>
+        </release>
         <release version="v2.0.3" date="2023-1-8">
             <url>https://github.com/vkbo/novelWriter/releases/tag/v2.0.3</url>
         </release>
