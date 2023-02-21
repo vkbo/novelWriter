@@ -35,14 +35,15 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.common import formatTime, numberToRoman
-from novelwriter.custom import PagedDialog, QSwitch
 from novelwriter.constants import nwUnicode
+from novelwriter.custom.switch import NSwitch
+from novelwriter.custom.pageddialog import NPagedDialog
 from novelwriter.gui.components import NovelSelector
 
 logger = logging.getLogger(__name__)
 
 
-class GuiProjectDetails(PagedDialog):
+class GuiProjectDetails(NPagedDialog):
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -386,7 +387,7 @@ class GuiProjectDetailsContents(QWidget):
         self.dblLabel = QLabel(self.tr("Clear double pages"))
         self.dblLabel.setToolTip(dblHelp)
 
-        self.dblValue = QSwitch(self, 2*iPx, iPx)
+        self.dblValue = NSwitch(self, 2*iPx, iPx)
         self.dblValue.setChecked(clearDouble)
         self.dblValue.setToolTip(dblHelp)
         self.dblValue.clicked.connect(self._populateTree)

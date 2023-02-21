@@ -35,12 +35,14 @@ from PyQt5.QtWidgets import (
 
 from novelwriter.enum import nwAlert
 from novelwriter.common import simplified
-from novelwriter.custom import QSwitch, PagedDialog, QConfigLayout
+from novelwriter.custom.switch import NSwitch
+from novelwriter.custom.pageddialog import NPagedDialog
+from novelwriter.custom.configlayout import NConfigLayout
 
 logger = logging.getLogger(__name__)
 
 
-class GuiProjectSettings(PagedDialog):
+class GuiProjectSettings(NPagedDialog):
 
     TAB_MAIN    = 0
     TAB_STATUS  = 1
@@ -196,7 +198,7 @@ class GuiProjectEditMain(QWidget):
         self.theProject = projGui.theProject
 
         # The Form
-        self.mainForm = QConfigLayout()
+        self.mainForm = NConfigLayout()
         self.mainForm.setHelpTextStyle(self.mainGui.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
@@ -255,7 +257,7 @@ class GuiProjectEditMain(QWidget):
         if spellIdx != -1:
             self.spellLang.setCurrentIndex(spellIdx)
 
-        self.doBackup = QSwitch(self)
+        self.doBackup = NSwitch(self)
         self.doBackup.setChecked(not self.theProject.data.doBackup)
         self.mainForm.addRow(
             self.tr("No backup on close"),

@@ -33,7 +33,8 @@ from PyQt5.QtWidgets import (
     QListWidget, QListWidgetItem, QVBoxLayout,
 )
 
-from novelwriter.custom import QHelpLabel, QSwitch
+from novelwriter.custom.switch import NSwitch
+from novelwriter.custom.configlayout import NHelpLabel
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +57,7 @@ class GuiDocMerge(QDialog):
         self.setWindowTitle(self.tr("Merge Documents"))
 
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Documents to Merge")))
-        self.helpLabel = QHelpLabel(self.tr(
+        self.helpLabel = NHelpLabel(self.tr(
             "Drag and drop items to change the order, or uncheck to exclude."
         ), self.mainTheme.helpText)
 
@@ -75,7 +76,7 @@ class GuiDocMerge(QDialog):
 
         # Merge Options
         self.trashLabel = QLabel(self.tr("Move merged items to Trash"))
-        self.trashSwitch = QSwitch(width=2*iPx, height=iPx)
+        self.trashSwitch = NSwitch(width=2*iPx, height=iPx)
 
         self.optBox = QGridLayout()
         self.optBox.addWidget(self.trashLabel,  0, 0)

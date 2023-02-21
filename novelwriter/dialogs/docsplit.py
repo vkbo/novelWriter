@@ -33,7 +33,8 @@ from PyQt5.QtWidgets import (
     QListWidgetItem, QDialogButtonBox, QLabel, QGridLayout
 )
 
-from novelwriter.custom import QHelpLabel, QSwitch
+from novelwriter.custom.switch import NSwitch
+from novelwriter.custom.configlayout import NHelpLabel
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +62,7 @@ class GuiDocSplit(QDialog):
         self.setWindowTitle(self.tr("Split Document"))
 
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headers")))
-        self.helpLabel = QHelpLabel(
+        self.helpLabel = NHelpLabel(
             self.tr("Select the maximum level to split into files."),
             self.mainGui.mainTheme.helpText
         )
@@ -95,15 +96,15 @@ class GuiDocSplit(QDialog):
 
         # Split Options
         self.folderLabel = QLabel(self.tr("Split into a new folder"))
-        self.folderSwitch = QSwitch(width=2*iPx, height=iPx)
+        self.folderSwitch = NSwitch(width=2*iPx, height=iPx)
         self.folderSwitch.setChecked(intoFolder)
 
         self.hierarchyLabel = QLabel(self.tr("Create document hierarchy"))
-        self.hierarchySwitch = QSwitch(width=2*iPx, height=iPx)
+        self.hierarchySwitch = NSwitch(width=2*iPx, height=iPx)
         self.hierarchySwitch.setChecked(docHierarchy)
 
         self.trashLabel = QLabel(self.tr("Move split document to Trash"))
-        self.trashSwitch = QSwitch(width=2*iPx, height=iPx)
+        self.trashSwitch = NSwitch(width=2*iPx, height=iPx)
 
         self.optBox = QGridLayout()
         self.optBox.addWidget(self.folderLabel,  0, 0)

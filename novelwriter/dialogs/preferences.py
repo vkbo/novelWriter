@@ -33,13 +33,15 @@ from PyQt5.QtWidgets import (
     QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
 )
 
-from novelwriter.custom import QSwitch, QConfigLayout, PagedDialog
+from novelwriter.custom.switch import NSwitch
+from novelwriter.custom.pageddialog import NPagedDialog
+from novelwriter.custom.configlayout import NConfigLayout
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 
 logger = logging.getLogger(__name__)
 
 
-class GuiPreferences(PagedDialog):
+class GuiPreferences(NPagedDialog):
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -161,7 +163,7 @@ class GuiPreferencesGeneral(QWidget):
         self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
-        self.mainForm = QConfigLayout()
+        self.mainForm = NConfigLayout()
         self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
@@ -250,7 +252,7 @@ class GuiPreferencesGeneral(QWidget):
         # ============
         self.mainForm.addGroupLabel(self.tr("GUI Settings"))
 
-        self.emphLabels = QSwitch()
+        self.emphLabels = NSwitch()
         self.emphLabels.setChecked(self.mainConf.emphLabels)
         self.mainForm.addRow(
             self.tr("Emphasise partition and chapter labels"),
@@ -258,7 +260,7 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Makes them stand out in the project tree."),
         )
 
-        self.showFullPath = QSwitch()
+        self.showFullPath = NSwitch()
         self.showFullPath.setChecked(self.mainConf.showFullPath)
         self.mainForm.addRow(
             self.tr("Show full path in document header"),
@@ -266,7 +268,7 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Add the parent folder names to the header.")
         )
 
-        self.hideVScroll = QSwitch()
+        self.hideVScroll = NSwitch()
         self.hideVScroll.setChecked(self.mainConf.hideVScroll)
         self.mainForm.addRow(
             self.tr("Hide vertical scroll bars in main windows"),
@@ -274,7 +276,7 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Scrolling available with mouse wheel and keys only.")
         )
 
-        self.hideHScroll = QSwitch()
+        self.hideHScroll = NSwitch()
         self.hideHScroll.setChecked(self.mainConf.hideHScroll)
         self.mainForm.addRow(
             self.tr("Hide horizontal scroll bars in main windows"),
@@ -343,7 +345,7 @@ class GuiPreferencesProjects(QWidget):
         self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
-        self.mainForm = QConfigLayout()
+        self.mainForm = NConfigLayout()
         self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
@@ -392,7 +394,7 @@ class GuiPreferencesProjects(QWidget):
         )
 
         # Run when closing
-        self.backupOnClose = QSwitch()
+        self.backupOnClose = NSwitch()
         self.backupOnClose.setChecked(self.mainConf.backupOnClose)
         self.backupOnClose.toggled.connect(self._toggledBackupOnClose)
         self.mainForm.addRow(
@@ -403,7 +405,7 @@ class GuiPreferencesProjects(QWidget):
 
         # Ask before backup
         # Only enabled when "Run when closing" is checked
-        self.askBeforeBackup = QSwitch()
+        self.askBeforeBackup = NSwitch()
         self.askBeforeBackup.setChecked(self.mainConf.askBeforeBackup)
         self.askBeforeBackup.setEnabled(self.mainConf.backupOnClose)
         self.mainForm.addRow(
@@ -417,7 +419,7 @@ class GuiPreferencesProjects(QWidget):
         self.mainForm.addGroupLabel(self.tr("Session Timer"))
 
         # Pause when idle
-        self.stopWhenIdle = QSwitch()
+        self.stopWhenIdle = NSwitch()
         self.stopWhenIdle.setChecked(self.mainConf.stopWhenIdle)
         self.mainForm.addRow(
             self.tr("Pause the session timer when not writing"),
@@ -499,7 +501,7 @@ class GuiPreferencesDocuments(QWidget):
         self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
-        self.mainForm = QConfigLayout()
+        self.mainForm = NConfigLayout()
         self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
@@ -566,7 +568,7 @@ class GuiPreferencesDocuments(QWidget):
         )
 
         # Focus Mode Footer
-        self.hideFocusFooter = QSwitch()
+        self.hideFocusFooter = NSwitch()
         self.hideFocusFooter.setChecked(self.mainConf.hideFocusFooter)
         self.mainForm.addRow(
             self.tr("Hide document footer in \"Focus Mode\""),
@@ -575,7 +577,7 @@ class GuiPreferencesDocuments(QWidget):
         )
 
         # Justify Text
-        self.doJustify = QSwitch()
+        self.doJustify = NSwitch()
         self.doJustify.setChecked(self.mainConf.doJustify)
         self.mainForm.addRow(
             self.tr("Justify the text margins"),
@@ -658,7 +660,7 @@ class GuiPreferencesEditor(QWidget):
         self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
-        self.mainForm = QConfigLayout()
+        self.mainForm = NConfigLayout()
         self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
@@ -727,7 +729,7 @@ class GuiPreferencesEditor(QWidget):
         )
 
         # Include Notes in Word Count
-        self.incNotesWCount = QSwitch()
+        self.incNotesWCount = NSwitch()
         self.incNotesWCount.setChecked(self.mainConf.incNotesWCount)
         self.mainForm.addRow(
             self.tr("Include project notes in status bar word count"),
@@ -739,7 +741,7 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.addGroupLabel(self.tr("Writing Guides"))
 
         # Show Tabs and Spaces
-        self.showTabsNSpaces = QSwitch()
+        self.showTabsNSpaces = NSwitch()
         self.showTabsNSpaces.setChecked(self.mainConf.showTabsNSpaces)
         self.mainForm.addRow(
             self.tr("Show tabs and spaces"),
@@ -747,7 +749,7 @@ class GuiPreferencesEditor(QWidget):
         )
 
         # Show Line Endings
-        self.showLineEndings = QSwitch()
+        self.showLineEndings = NSwitch()
         self.showLineEndings.setChecked(self.mainConf.showLineEndings)
         self.mainForm.addRow(
             self.tr("Show line endings"),
@@ -772,7 +774,7 @@ class GuiPreferencesEditor(QWidget):
         )
 
         # Typewriter Scrolling
-        self.autoScroll = QSwitch()
+        self.autoScroll = NSwitch()
         self.autoScroll.setChecked(self.mainConf.autoScroll)
         self.mainForm.addRow(
             self.tr("Typewriter style scrolling when you type"),
@@ -831,7 +833,7 @@ class GuiPreferencesSyntax(QWidget):
         self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
-        self.mainForm = QConfigLayout()
+        self.mainForm = NConfigLayout()
         self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
@@ -839,7 +841,7 @@ class GuiPreferencesSyntax(QWidget):
         # =================
         self.mainForm.addGroupLabel(self.tr("Quotes & Dialogue"))
 
-        self.highlightQuotes = QSwitch()
+        self.highlightQuotes = NSwitch()
         self.highlightQuotes.setChecked(self.mainConf.highlightQuotes)
         self.highlightQuotes.toggled.connect(self._toggleHighlightQuotes)
         self.mainForm.addRow(
@@ -848,7 +850,7 @@ class GuiPreferencesSyntax(QWidget):
             self.tr("Applies to the document editor only.")
         )
 
-        self.allowOpenSQuote = QSwitch()
+        self.allowOpenSQuote = NSwitch()
         self.allowOpenSQuote.setChecked(self.mainConf.allowOpenSQuote)
         self.mainForm.addRow(
             self.tr("Allow open-ended single quotes"),
@@ -856,7 +858,7 @@ class GuiPreferencesSyntax(QWidget):
             self.tr("Highlight single-quoted line with no closing quote.")
         )
 
-        self.allowOpenDQuote = QSwitch()
+        self.allowOpenDQuote = NSwitch()
         self.allowOpenDQuote.setChecked(self.mainConf.allowOpenDQuote)
         self.mainForm.addRow(
             self.tr("Allow open-ended double quotes"),
@@ -868,7 +870,7 @@ class GuiPreferencesSyntax(QWidget):
         # =============
         self.mainForm.addGroupLabel(self.tr("Text Emphasis"))
 
-        self.highlightEmph = QSwitch()
+        self.highlightEmph = NSwitch()
         self.highlightEmph.setChecked(self.mainConf.highlightEmph)
         self.mainForm.addRow(
             self.tr("Add highlight colour to emphasised text"),
@@ -881,7 +883,7 @@ class GuiPreferencesSyntax(QWidget):
 
         self.mainForm.addGroupLabel(self.tr("Text Errors"))
 
-        self.showMultiSpaces = QSwitch()
+        self.showMultiSpaces = NSwitch()
         self.showMultiSpaces.setChecked(self.mainConf.showMultiSpaces)
         self.mainForm.addRow(
             self.tr("Highlight multiple or trailing spaces"),
@@ -937,7 +939,7 @@ class GuiPreferencesAutomation(QWidget):
         self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
-        self.mainForm = QConfigLayout()
+        self.mainForm = NConfigLayout()
         self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
@@ -946,7 +948,7 @@ class GuiPreferencesAutomation(QWidget):
         self.mainForm.addGroupLabel(self.tr("Automatic Features"))
 
         # Auto-Select Word Under Cursor
-        self.autoSelect = QSwitch()
+        self.autoSelect = NSwitch()
         self.autoSelect.setChecked(self.mainConf.autoSelect)
         self.mainForm.addRow(
             self.tr("Auto-select word under cursor"),
@@ -955,7 +957,7 @@ class GuiPreferencesAutomation(QWidget):
         )
 
         # Auto-Replace as You Type Main Switch
-        self.doReplace = QSwitch()
+        self.doReplace = NSwitch()
         self.doReplace.setChecked(self.mainConf.doReplace)
         self.doReplace.toggled.connect(self._toggleAutoReplaceMain)
         self.mainForm.addRow(
@@ -969,7 +971,7 @@ class GuiPreferencesAutomation(QWidget):
         self.mainForm.addGroupLabel(self.tr("Replace as You Type"))
 
         # Auto-Replace Single Quotes
-        self.doReplaceSQuote = QSwitch()
+        self.doReplaceSQuote = NSwitch()
         self.doReplaceSQuote.setChecked(self.mainConf.doReplaceSQuote)
         self.doReplaceSQuote.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
@@ -979,7 +981,7 @@ class GuiPreferencesAutomation(QWidget):
         )
 
         # Auto-Replace Double Quotes
-        self.doReplaceDQuote = QSwitch()
+        self.doReplaceDQuote = NSwitch()
         self.doReplaceDQuote.setChecked(self.mainConf.doReplaceDQuote)
         self.doReplaceDQuote.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
@@ -989,7 +991,7 @@ class GuiPreferencesAutomation(QWidget):
         )
 
         # Auto-Replace Hyphens
-        self.doReplaceDash = QSwitch()
+        self.doReplaceDash = NSwitch()
         self.doReplaceDash.setChecked(self.mainConf.doReplaceDash)
         self.doReplaceDash.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
@@ -999,7 +1001,7 @@ class GuiPreferencesAutomation(QWidget):
         )
 
         # Auto-Replace Dots
-        self.doReplaceDots = QSwitch()
+        self.doReplaceDots = NSwitch()
         self.doReplaceDots.setChecked(self.mainConf.doReplaceDots)
         self.doReplaceDots.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
@@ -1033,7 +1035,7 @@ class GuiPreferencesAutomation(QWidget):
         )
 
         # Use Thin Space
-        self.fmtPadThin = QSwitch()
+        self.fmtPadThin = NSwitch()
         self.fmtPadThin.setChecked(self.mainConf.fmtPadThin)
         self.fmtPadThin.setEnabled(self.mainConf.doReplace)
         self.mainForm.addRow(
@@ -1092,7 +1094,7 @@ class GuiPreferencesQuotes(QWidget):
         self.mainTheme = prefsGui.mainGui.mainTheme
 
         # The Form
-        self.mainForm = QConfigLayout()
+        self.mainForm = NConfigLayout()
         self.mainForm.setHelpTextStyle(self.mainTheme.helpText)
         self.setLayout(self.mainForm)
 

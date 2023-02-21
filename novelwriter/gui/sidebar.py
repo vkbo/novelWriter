@@ -1,6 +1,6 @@
 """
 novelWriter – GUI Main Window SideBar
-===========================================
+=====================================
 GUI class for the main window side bar
 
 File History:

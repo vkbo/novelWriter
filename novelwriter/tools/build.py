@@ -46,11 +46,11 @@ from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from novelwriter.enum import nwAlert, nwItemType, nwItemLayout, nwItemClass
 from novelwriter.error import formatException, logException
 from novelwriter.common import fuzzyTime, makeFileNameSafe
-from novelwriter.custom import QSwitch
 from novelwriter.constants import nwConst, nwFiles
 from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
 from novelwriter.core.tohtml import ToHtml
+from novelwriter.custom.switch import NSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -174,12 +174,12 @@ class GuiBuildNovel(QDialog):
         if langIdx != -1:
             self.buildLang.setCurrentIndex(langIdx)
 
-        self.hideScene = QSwitch(width=wS, height=hS)
+        self.hideScene = NSwitch(width=wS, height=hS)
         self.hideScene.setChecked(
             pOptions.getBool("GuiBuildNovel", "hideScene", False)
         )
 
-        self.hideSection = QSwitch(width=wS, height=hS)
+        self.hideSection = NSwitch(width=wS, height=hS)
         self.hideSection.setChecked(
             pOptions.getBool("GuiBuildNovel", "hideSection", True)
         )
@@ -291,12 +291,12 @@ class GuiBuildNovel(QDialog):
         self.styleForm  = QGridLayout(self)
         self.styleGroup.setLayout(self.styleForm)
 
-        self.justifyText = QSwitch(width=wS, height=hS)
+        self.justifyText = NSwitch(width=wS, height=hS)
         self.justifyText.setChecked(
             pOptions.getBool("GuiBuildNovel", "justifyText", False)
         )
 
-        self.noStyling = QSwitch(width=wS, height=hS)
+        self.noStyling = NSwitch(width=wS, height=hS)
         self.noStyling.setChecked(
             pOptions.getBool("GuiBuildNovel", "noStyling", False)
         )
@@ -316,22 +316,22 @@ class GuiBuildNovel(QDialog):
         self.textForm  = QGridLayout(self)
         self.textGroup.setLayout(self.textForm)
 
-        self.includeSynopsis = QSwitch(width=wS, height=hS)
+        self.includeSynopsis = NSwitch(width=wS, height=hS)
         self.includeSynopsis.setChecked(
             pOptions.getBool("GuiBuildNovel", "incSynopsis", False)
         )
 
-        self.includeComments = QSwitch(width=wS, height=hS)
+        self.includeComments = NSwitch(width=wS, height=hS)
         self.includeComments.setChecked(
             pOptions.getBool("GuiBuildNovel", "incComments", False)
         )
 
-        self.includeKeywords = QSwitch(width=wS, height=hS)
+        self.includeKeywords = NSwitch(width=wS, height=hS)
         self.includeKeywords.setChecked(
             pOptions.getBool("GuiBuildNovel", "incKeywords", False)
         )
 
-        self.includeBody = QSwitch(width=wS, height=hS)
+        self.includeBody = NSwitch(width=wS, height=hS)
         self.includeBody.setChecked(
             pOptions.getBool("GuiBuildNovel", "incBodyText", True)
         )
@@ -371,7 +371,7 @@ class GuiBuildNovel(QDialog):
                 rootLabel = QLabel(nwItem.itemName)
                 rootLabel.setWordWrap(True)
 
-                rootValue = QSwitch(width=wS, height=hS)
+                rootValue = NSwitch(width=wS, height=hS)
                 rootValue.setChecked(tHandle not in rootFilter)
 
                 self.rootSelection[tHandle] = rootValue
@@ -390,17 +390,17 @@ class GuiBuildNovel(QDialog):
         self.fileForm  = QGridLayout(self)
         self.fileGroup.setLayout(self.fileForm)
 
-        self.novelFiles = QSwitch(width=wS, height=hS)
+        self.novelFiles = NSwitch(width=wS, height=hS)
         self.novelFiles.setChecked(
             pOptions.getBool("GuiBuildNovel", "addNovel", True)
         )
 
-        self.noteFiles = QSwitch(width=wS, height=hS)
+        self.noteFiles = NSwitch(width=wS, height=hS)
         self.noteFiles.setChecked(
             pOptions.getBool("GuiBuildNovel", "addNotes", False)
         )
 
-        self.ignoreFlag = QSwitch(width=wS, height=hS)
+        self.ignoreFlag = NSwitch(width=wS, height=hS)
         self.ignoreFlag.setChecked(
             pOptions.getBool("GuiBuildNovel", "ignoreFlag", False)
         )
@@ -426,12 +426,12 @@ class GuiBuildNovel(QDialog):
         self.exportForm  = QGridLayout(self)
         self.exportGroup.setLayout(self.exportForm)
 
-        self.replaceTabs = QSwitch(width=wS, height=hS)
+        self.replaceTabs = NSwitch(width=wS, height=hS)
         self.replaceTabs.setChecked(
             pOptions.getBool("GuiBuildNovel", "replaceTabs", False)
         )
 
-        self.replaceUCode = QSwitch(width=wS, height=hS)
+        self.replaceUCode = NSwitch(width=wS, height=hS)
         self.replaceUCode.setChecked(
             pOptions.getBool("GuiBuildNovel", "replaceUCode", False)
         )
