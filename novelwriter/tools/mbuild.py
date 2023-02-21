@@ -4,7 +4,7 @@ novelWriter – GUI Build Manuscript
 GUI classes for the Manuscript build tool
 
 File History:
-Created: 2023-02-13 [2.1-a0]
+Created: 2023-02-13 [2.1b1]
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -24,11 +24,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
+
 import novelwriter
 
-from PyQt5.QtWidgets import QDialog, QHBoxLayout, QTabWidget, QWidget
+from PyQt5.QtWidgets import (
+    QAbstractItemView, QDialog, QHBoxLayout, QTabWidget, QTreeWidget,
+    QWidget
+)
 
-from novelwriter.custom import VerticalTabBar
+from novelwriter.extensions.pageddialog import NVerticalTabBar
+from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
 logger = logging.getLogger(__name__)
 
@@ -40,16 +45,41 @@ class GuiBuildManuscript(QDialog):
 
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
+        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
         self.setWindowTitle(self.tr("Build Manuscript"))
         self.setMinimumWidth(self.mainConf.pxInt(700))
         self.setMinimumHeight(self.mainConf.pxInt(600))
 
-        # Optiuons Area
-        # =============
+        # Style
+        mPx = self.mainConf.pxInt(150)
+        # tPx = int(self.mainTheme.fontPixelSize * 1.5)
 
-        self.optTabBar = VerticalTabBar(self)
+        # Options SideBar
+        # ===============
+
+        self.optSideBar = NPagedSideBar(self)
+        self.optSideBar.setMinimumWidth(mPx)
+        self.optSideBar.setMaximumWidth(mPx)
+        self.optSideBar.setLabelColor(self.mainTheme.helpText)
+
+        self.optSideBar.addLabel(self.tr("Options"))
+        self.optFilters  = self.optSideBar.addButton(self.tr("Filters"))
+        self.optHeadings = self.optSideBar.addButton(self.tr("Headings"))
+        self.optFormat   = self.optSideBar.addButton(self.tr("Format"))
+        self.optContent  = self.optSideBar.addButton(self.tr("Content"))
+        self.optSideBar.addSeparator()
+
+        self.optSideBar.addLabel(self.tr("Build"))
+        self.bldHtml = self.optSideBar.addButton(self.tr("HTML"))
+        self.bldMd   = self.optSideBar.addButton(self.tr("Markdown"))
+        self.bldOdt  = self.optSideBar.addButton(self.tr("Open Document"))
+
+        # Options Area
+        # ============
+
+        self.optTabBar = NVerticalTabBar(self)
         self.optTabBar.setExpanding(False)
 
         self.optTabBox = QTabWidget(self)
@@ -66,6 +96,7 @@ class GuiBuildManuscript(QDialog):
 
         # Assemble
         self.outerBox = QHBoxLayout()
+        self.outerBox.addWidget(self.optSideBar)
         self.outerBox.addWidget(self.optTabBox)
 
         self.setLayout(self.outerBox)
@@ -79,6 +110,21 @@ class GuiBuildSelectionTab(QWidget):
 
     def __init__(self, buildMain):
         super().__init__(parent=buildMain)
+
+        self.optTree = QTreeWidget(self)
+        self.optTree.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.optTree.setDragDropMode(QAbstractItemView.NoDragDrop)
+        self.optTree.setColumnCount(2)
+        self.optTree.setHeaderLabels([
+            self.tr("Setting"),
+            self.tr("Value"),
+        ])
+        self.optTree.setRootIsDecorated(False)
+
+        self.outerBox = QHBoxLayout()
+        self.outerBox.addWidget(self.optTree)
+
+        self.setLayout(self.outerBox)
 
         return
 
