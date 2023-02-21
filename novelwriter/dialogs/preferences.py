@@ -33,10 +33,10 @@ from PyQt5.QtWidgets import (
     QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
 )
 
-from novelwriter.custom.switch import NSwitch
-from novelwriter.custom.pageddialog import NPagedDialog
-from novelwriter.custom.configlayout import NConfigLayout
 from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.extensions.switch import NSwitch
+from novelwriter.extensions.pageddialog import NPagedDialog
+from novelwriter.extensions.configlayout import NConfigLayout
 
 logger = logging.getLogger(__name__)
 

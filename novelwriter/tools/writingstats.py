@@ -41,7 +41,7 @@ from novelwriter.enum import nwAlert
 from novelwriter.error import formatException
 from novelwriter.common import formatTime, checkInt, checkIntTuple, minmax
 from novelwriter.constants import nwConst, nwFiles
-from novelwriter.custom.switch import NSwitch
+from novelwriter.extensions.switch import NSwitch
 
 logger = logging.getLogger(__name__)
 

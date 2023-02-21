@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter.common import makeFileNameSafe
-from novelwriter.custom.switch import NSwitch
+from novelwriter.extensions.switch import NSwitch
 
 logger = logging.getLogger(__name__)
 

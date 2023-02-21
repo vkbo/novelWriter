@@ -33,8 +33,8 @@ from PyQt5.QtWidgets import (
     QListWidget, QListWidgetItem, QVBoxLayout,
 )
 
-from novelwriter.custom.switch import NSwitch
-from novelwriter.custom.configlayout import NHelpLabel
+from novelwriter.extensions.switch import NSwitch
+from novelwriter.extensions.configlayout import NHelpLabel
 
 logger = logging.getLogger(__name__)
 

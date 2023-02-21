@@ -50,7 +50,7 @@ from novelwriter.constants import nwConst, nwFiles
 from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
 from novelwriter.core.tohtml import ToHtml
-from novelwriter.custom.switch import NSwitch
+from novelwriter.extensions.switch import NSwitch
 
 logger = logging.getLogger(__name__)
 

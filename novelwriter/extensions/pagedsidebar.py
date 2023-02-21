@@ -25,7 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QToolBar, QToolButton
+from PyQt5.QtWidgets import QActionGroup, QSizePolicy, QToolBar, QToolButton, QWidget
 
 
 class NPagedSideBar(QToolBar):
@@ -34,21 +34,38 @@ class NPagedSideBar(QToolBar):
         super().__init__(parent=parent)
 
         self._buttons = []
+        self._actions = []
+        self._group = QActionGroup(self)
+        self._group.setExclusive(True)
 
         self.setMovable(False)
         self.setOrientation(Qt.Vertical)
 
+        stretch = QWidget(self)
+        stretch.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self._stretchAction = self.addWidget(stretch)
+
         return
 
-    def addLabel(self, text):
+    def addLabel(self, text, height):
         """Add a new label to the toolbar.
         """
         return
 
-    def addButton(self, text):
+    def addButton(self, text, height):
         """Add a new button to the toolbar.
         """
-        return
+        button = NToolLabelButton(self)
+        button.setFixedHeight(height)
+        button.setText(text)
+
+        action = self.insertWidget(self._stretchAction, button)
+        self._group.addAction(action)
+
+        self._buttons.append(button)
+        self._actions.append(action)
+
+        return action
 
 # END Class NPagedSideBar
 
@@ -57,6 +74,10 @@ class NToolLabelButton(QToolButton):
 
     def __init__(self, parent):
         super().__init__(parent=parent)
+
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setCheckable(True)
+
         return
 
 # END Class NToolLabelButton
