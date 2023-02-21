@@ -27,7 +27,7 @@ from mock import causeException, causeOSError
 from tools import ODT_IGNORE, cmpFiles
 
 from novelwriter.core.project import NWProject
-from novelwriter.mbuild.docbuild import NWBuildDocument
+from novelwriter.core.docbuild import NWBuildDocument
 
 BUILD_CONF = {
     "format.fmtTitle": "Title: %title%",
@@ -53,7 +53,7 @@ BUILD_CONF = {
 
 
 @pytest.mark.core
-def testMBuildDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
+def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test builing an open document manuscript.
     """
     theProject = NWProject(mockGUI)
@@ -157,11 +157,11 @@ def testMBuildDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, ts
             "Build: Unknown item '0000000000000'",
         ]
 
-# END Test testMBuildDocBuild_OpenDocument
+# END Test testCoreDocBuild_OpenDocument
 
 
 @pytest.mark.core
-def testMBuildDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
+def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test builing an HTML manuscript.
     """
     theProject = NWProject(mockGUI)
@@ -208,11 +208,11 @@ def testMBuildDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
         assert docBuild.error == "OSError: Mock OSError"
         assert not docFile.is_file()
 
-# END Test testMBuildDocBuild_HTML
+# END Test testCoreDocBuild_HTML
 
 
 @pytest.mark.core
-def testMBuildDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
+def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test builing an Markdown manuscript.
     """
     theProject = NWProject(mockGUI)
@@ -279,4 +279,4 @@ def testMBuildDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPat
         assert docBuild.error == "OSError: Mock OSError"
         assert not docFile.is_file()
 
-# END Test testMBuildDocBuild_Markdown
+# END Test testCoreDocBuild_Markdown
