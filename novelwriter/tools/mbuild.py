@@ -24,21 +24,28 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-
 import novelwriter
 
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QHBoxLayout, QTabWidget, QTreeWidget,
+    QAbstractItemView, QDialog, QHBoxLayout, QStackedWidget, QTreeWidget,
     QWidget
 )
 
-from novelwriter.extensions.pageddialog import NVerticalTabBar
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
 logger = logging.getLogger(__name__)
 
 
 class GuiBuildManuscript(QDialog):
+
+    OPT_FILTERS  = 1
+    OPT_HEADINGS = 2
+    OPT_FORMAT   = 3
+    OPT_CONTENT  = 4
+    BLD_HTML     = 5
+    BLD_MARKDOWN = 6
+    BLD_ODT      = 7
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
@@ -65,42 +72,52 @@ class GuiBuildManuscript(QDialog):
         self.optSideBar.setLabelColor(self.mainTheme.helpText)
 
         self.optSideBar.addLabel(self.tr("Options"))
-        self.optFilters  = self.optSideBar.addButton(self.tr("Filters"))
-        self.optHeadings = self.optSideBar.addButton(self.tr("Headings"))
-        self.optFormat   = self.optSideBar.addButton(self.tr("Format"))
-        self.optContent  = self.optSideBar.addButton(self.tr("Content"))
+        self.optSideBar.addButton(self.tr("Filters"), self.OPT_FILTERS)
+        self.optSideBar.addButton(self.tr("Headings"), self.OPT_HEADINGS)
+        self.optSideBar.addButton(self.tr("Format"), self.OPT_FORMAT)
+        self.optSideBar.addButton(self.tr("Content"), self.OPT_CONTENT)
         self.optSideBar.addSeparator()
 
         self.optSideBar.addLabel(self.tr("Build"))
-        self.bldHtml = self.optSideBar.addButton(self.tr("HTML"))
-        self.bldMd   = self.optSideBar.addButton(self.tr("Markdown"))
-        self.bldOdt  = self.optSideBar.addButton(self.tr("Open Document"))
+        self.optSideBar.addButton(self.tr("HTML"), self.BLD_HTML)
+        self.optSideBar.addButton(self.tr("Markdown"), self.BLD_MARKDOWN)
+        self.optSideBar.addButton(self.tr("Open Document"), self.BLD_ODT)
+
+        self.optSideBar.buttonClicked.connect(self._stackPageSelected)
 
         # Options Area
         # ============
-
-        self.optTabBar = NVerticalTabBar(self)
-        self.optTabBar.setExpanding(False)
-
-        self.optTabBox = QTabWidget(self)
-        self.optTabBox.setTabBar(self.optTabBar)
-        self.optTabBox.setTabPosition(QTabWidget.West)
 
         # Create Tabs
         self.optTabSelect = GuiBuildSelectionTab(self)
         self.optTabFormat = GuiBuildFormattingTab(self)
 
         # Add Tabs
-        self.optTabBox.addTab(self.optTabSelect, self.tr("Selection"))
-        self.optTabBox.addTab(self.optTabFormat, self.tr("Formatting"))
+        self.toolStack = QStackedWidget(self)
+        self.toolStack.addWidget(self.optTabSelect)
+        self.toolStack.addWidget(self.optTabFormat)
 
         # Assemble
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.optSideBar)
-        self.outerBox.addWidget(self.optTabBox)
+        self.outerBox.addWidget(self.toolStack)
 
         self.setLayout(self.outerBox)
 
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(int)
+    def _stackPageSelected(self, pageId):
+        """Process a user request to switch page.
+        """
+        if pageId == self.OPT_FILTERS:
+            self.toolStack.setCurrentWidget(self.optTabSelect)
+        elif pageId == self.OPT_FORMAT:
+            self.toolStack.setCurrentWidget(self.optTabFormat)
         return
 
 # END Class GuiBuildManuscript

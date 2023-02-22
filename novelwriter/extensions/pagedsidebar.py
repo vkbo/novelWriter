@@ -6,6 +6,7 @@ A custom widget for making a sidebar for flipping through pages
 File History:
 Created: 2023-02-21 [2.1b1] NPagedSideBar
 Created: 2023-02-21 [2.1b1] NPagedToolButton
+Created: 2023-02-21 [2.1b1] NPagedToolLabel
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -24,8 +25,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtGui import QColor, QPainter
+from PyQt5.QtCore import QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QButtonGroup, QLabel, QSizePolicy, QStyle, QStyleOptionToolButton, QToolBar,
     QToolButton, QWidget
@@ -34,15 +35,19 @@ from PyQt5.QtWidgets import (
 
 class NPagedSideBar(QToolBar):
 
+    buttonClicked = pyqtSignal(int)
+
     def __init__(self, parent):
         super().__init__(parent=parent)
 
         self._buttons = []
         self._actions = []
-        self._group = QButtonGroup(self)
-        self._group.setExclusive(True)
         self._labelCol = None
         self._spacerHeight = self.fontMetrics().height() // 2
+
+        self._group = QButtonGroup(self)
+        self._group.setExclusive(True)
+        self._group.buttonClicked.connect(self._buttonClicked)
 
         self.setMovable(False)
         self.setOrientation(Qt.Vertical)
@@ -79,26 +84,39 @@ class NPagedSideBar(QToolBar):
         self.insertWidget(self._stretchAction, label)
         return
 
-    def addButton(self, text):
+    def addButton(self, text, buttonId=-1):
         """Add a new button to the toolbar.
         """
         button = NPagedToolButton(self)
         button.setText(text)
 
         action = self.insertWidget(self._stretchAction, button)
-        self._group.addButton(button)
+        self._group.addButton(button, id=buttonId)
 
         self._buttons.append(button)
         self._actions.append(action)
 
         return action
 
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot("QAbstractButton*")
+    def _buttonClicked(self, button):
+        """A button was clicked in the group, emit its id.
+        """
+        buttonId = self._group.id(button)
+        if buttonId != -1:
+            self.buttonClicked.emit(buttonId)
+        return
+
 # END Class NPagedSideBar
 
 
 class NPagedToolButton(QToolButton):
 
-    __slots__ = ["_bH", "_tM", "_lM", "_cR"]
+    __slots__ = ("_bH", "_tM", "_lM", "_cR")
 
     def __init__(self, parent):
         super().__init__(parent=parent)
@@ -160,7 +178,7 @@ class NPagedToolButton(QToolButton):
 
 class NPagedToolLabel(QLabel):
 
-    __slots__ = ["_bH", "_tM", "_lM", "_textCol"]
+    __slots__ = ("_bH", "_tM", "_lM", "_textCol")
 
     def __init__(self, parent, textColor=None):
         super().__init__(parent=parent)
