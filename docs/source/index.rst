@@ -61,6 +61,7 @@ the pip tool. See :ref:`a_started` for more details.
    int_overview
    int_started
    int_source
+   int_howto
    int_customise
 
 .. toctree::
