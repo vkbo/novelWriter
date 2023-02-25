@@ -4,7 +4,14 @@
 Tips & Tricks
 *************
 
+.. _Discussions Page: https://github.com/vkbo/novelWriter/discussions
+
 This is a list of hopefully helpful little tips on how to get the most out of novelWriter.
+
+.. note::
+
+    This section will be expanded over time, and if you would like to have something added, feel
+    free to contribute, or start a discussion on the project's `Discussions Page`_
 
 
 Overview
