@@ -47,10 +47,17 @@ exclude_patterns = []
 
 html_theme = "furo"
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 html_theme_options = {
     "light_logo": "novelwriter-light.png",
     "dark_logo": "novelwriter-dark.png",
     "navigation_with_keys": True,
+    "dark_css_variables": {
+        "admonition-font-size": "92%",
+    },
+    "light_css_variables": {
+        "admonition-font-size": "92%",
+    },
 }
 html_title = f"<div style='text-align: center'>Documentation Version {release}</div>"
 pygments_style = "tango"
