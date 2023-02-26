@@ -757,32 +757,32 @@
   <context>
     <name>GuiDocEditFooter</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2924" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2931" />
       <source>Status</source>
       <translation>Status</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3073" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3080" />
       <source>Line: {0} ({1})</source>
       <translation>Regel: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3102" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3109" />
       <source>Words: {0} ({1})</source>
       <translation>Woorden: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3107" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3114" />
       <source>Document size is {0} bytes</source>
       <translation>Document grootte is {0} bytes</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3119" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3126" />
       <source>Words: {0} selected</source>
       <translation>Woorden: {0} geselecteerd</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3122" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3129" />
       <source>Character count: {0}</source>
       <translation>Aantal tekens: {0}</translation>
     </message>
@@ -790,22 +790,22 @@
   <context>
     <name>GuiDocEditHeader</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2694" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2701" />
       <source>Edit document label</source>
       <translation>Bewerk document label</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2703" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2710" />
       <source>Search document</source>
       <translation>Doorzoek document</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2712" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2719" />
       <source>Toggle Focus Mode</source>
       <translation>Schakel focus modus in/uit</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2721" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2728" />
       <source>Close the document</source>
       <translation>Sluit het document</translation>
     </message>
@@ -813,58 +813,58 @@
   <context>
     <name>GuiDocEditSearch</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2287" />
-      <location filename="../novelwriter/gui/doceditor.py" line="2274" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2294" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2281" />
       <source>Search</source>
       <translation>Zoek</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2279" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2286" />
       <source>Replace</source>
       <translation>Vervang</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2295" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2302" />
       <source>Case Sensitive</source>
       <translation>Hoofdlettergevoelig</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2301" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2308" />
       <source>Whole Words Only</source>
       <translation>Alleen hele woorden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2307" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2314" />
       <source>RegEx Mode</source>
       <translation>RegEx modus</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2313" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2320" />
       <source>Loop Search</source>
       <translation>Zoekopdracht lus</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2319" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2326" />
       <source>Search Next File</source>
       <translation>Doorzoek volgend bestand</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2327" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2334" />
       <source>Preserve Case</source>
       <translation>Behoud hoofd/kleine letters</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2335" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2342" />
       <source>Close Search</source>
       <translation>Zoekopdracht afsluiten</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2351" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2358" />
       <source>Find in current document</source>
       <translation>Zoeken in huidige document</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2356" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2363" />
       <source>Find and replace in current document</source>
       <translation>Zoek en vervang in huidig document</translation>
     </message>
@@ -2050,55 +2050,66 @@
   <context>
     <name>GuiNovelToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="207" />
+      <location filename="../novelwriter/gui/noveltree.py" line="216" />
       <source>Outline of {0}</source>
       <translation>Omlijning van {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="215" />
+      <location filename="../novelwriter/gui/noveltree.py" line="224" />
       <source>Novel Root</source>
       <translation>Roman Hoofdmap</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="221" />
+      <location filename="../novelwriter/gui/noveltree.py" line="230" />
       <source>Refresh</source>
       <translation>Verversen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="228" />
+      <location filename="../novelwriter/gui/noveltree.py" line="237" />
       <source>Last Column</source>
       <translation>Laatste Kolom</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="231" />
+      <location filename="../novelwriter/gui/noveltree.py" line="240" />
       <source>Hidden</source>
       <translation>Verborgen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="232" />
+      <location filename="../novelwriter/gui/noveltree.py" line="241" />
       <source>Point of View Character</source>
       <translation>Perspectief Karakter</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="233" />
+      <location filename="../novelwriter/gui/noveltree.py" line="242" />
       <source>Focus Character</source>
       <translation>Focus Karakter</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="234" />
+      <location filename="../novelwriter/gui/noveltree.py" line="243" />
       <source>Novel Plot</source>
       <translation>Roman Plot</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="237" />
+      <location filename="../novelwriter/gui/noveltree.py" line="361" />
+      <location filename="../novelwriter/gui/noveltree.py" line="246" />
+      <source>Column Size</source>
+      <translation>Kolom grootte</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/noveltree.py" line="250" />
       <source>More Options</source>
       <translation>Meer Opties</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/noveltree.py" line="361" />
+      <source>Maximum column size in %</source>
+      <translation>Maximum kolom grootte in %</translation>
     </message>
   </context>
   <context>
     <name>GuiNovelTree</name>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="778" />
+      <location filename="../novelwriter/gui/noveltree.py" line="815" />
       <source>No meta data</source>
       <translation>Geen metadata</translation>
     </message>
@@ -3341,44 +3352,44 @@
       <translation>Nieuwe map</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="788" />
+      <location filename="../novelwriter/gui/projtree.py" line="789" />
       <source>There is currently no Trash folder in this project.</source>
       <translation>Er is momenteel geen Prullenbak map in dit project.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="799" />
+      <location filename="../novelwriter/gui/projtree.py" line="800" />
       <source>The Trash folder is already empty.</source>
       <translation>De Prullenbak map is al leeg.</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1181" />
-      <location filename="../novelwriter/gui/projtree.py" line="805" />
+      <location filename="../novelwriter/gui/projtree.py" line="806" />
       <source>Empty Trash</source>
       <translation>Prullenbak legen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="806" />
+      <location filename="../novelwriter/gui/projtree.py" line="807" />
       <source>Permanently delete {0} file(s) from Trash?</source>
       <translation>{0} bestand(en) permanent verwijderen uit de prullenbak?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="908" />
-      <location filename="../novelwriter/gui/projtree.py" line="852" />
+      <location filename="../novelwriter/gui/projtree.py" line="909" />
+      <location filename="../novelwriter/gui/projtree.py" line="853" />
       <source>Delete</source>
       <translation>Verwijderen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="853" />
+      <location filename="../novelwriter/gui/projtree.py" line="854" />
       <source>Move '{0}' to Trash?</source>
       <translation>Verplaats '{0}' naar Prullenbak?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="887" />
+      <location filename="../novelwriter/gui/projtree.py" line="888" />
       <source>Root folders can only be deleted when they are empty.</source>
       <translation>Root mappen kunnen alleen verwijderd worden wanneer ze leeg zijn.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="909" />
+      <location filename="../novelwriter/gui/projtree.py" line="910" />
       <source>Permanently delete '{0}'?</source>
       <translation>'{0}' permanent verwijderen?</translation>
     </message>
