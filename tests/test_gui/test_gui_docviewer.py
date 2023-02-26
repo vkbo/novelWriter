@@ -171,6 +171,19 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
         assert nwGUI.docViewer.loadText("846352075de7d") is False
         assert nwGUI.docViewer.toPlainText() == "An error occurred while generating the preview."
 
+    # Check reference panel (issue #1378)
+    assert nwGUI.viewDocument("4c4f28287af27") is True
+    assert nwGUI.docViewer.toPlainText().startswith("Nobody Owens")
+
+    nwGUI.viewMeta._linkClicked("fb609cd8319dc")
+    assert nwGUI.docViewer.toPlainText().startswith("Chapter One")
+
+    nwGUI.viewMeta._linkClicked("88243afbe5ed8#T0001")
+    assert nwGUI.docViewer.toPlainText().startswith("Scene One")
+
+    nwGUI.viewMeta._linkClicked("88243afbe5ed8#ABCD")
+    assert nwGUI.docViewer.toPlainText().startswith("Scene One")
+
     # qtbot.stop()
 
 # END Test testGuiViewer_Main

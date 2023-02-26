@@ -1201,17 +1201,18 @@ class GuiDocViewDetails(QScrollArea):
         return
 
     ##
-    #  Internal Functions
+    #  Private Slots
     ##
 
+    @pyqtSlot(str)
     def _linkClicked(self, theLink):
         """Capture the link-click and forward it to the document viewer
         class for handling.
         """
         logger.debug("Clicked link: '%s'", theLink)
-        if len(theLink) == 21:
+        if len(theLink) >= 13:
             tHandle = theLink[:13]
-            tAnchor = theLink[13:]
+            tAnchor = theLink[13:] or None
             self.mainGui.viewDocument(tHandle, tAnchor)
         return
 
