@@ -1,4 +1,4 @@
 furo
 sphinx>=4.0
 pygments>=2.7
-docutils==0.17.1
+docutils>=0.17.1
