@@ -4,6 +4,8 @@
 How Data is Stored
 ******************
 
+.. _documentation: https://novelwriter.readthedocs.io
+
 This section contains details of how novelWriter stores and handles the project data.
 
 
@@ -38,6 +40,15 @@ your own backup solution.
 The project XML file is indent-formatted, and is suitable for diff tools and version control since
 most of the file will stay static, although a timesetamp is set in the meta section on line 2, and
 various meta data entries incremented, on each save.
+
+.. only:: not html
+
+   A full project file format specification is available in the online documentation_.
+
+.. only:: html
+
+   A full description of the current file format is available in the
+   :download:`File Format Spec 1.5 <fileformatspec15.pdf>` document, available as a PDF.
 
 
 Project Documents
