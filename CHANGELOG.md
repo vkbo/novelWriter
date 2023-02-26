@@ -1,5 +1,20 @@
 # novelWriter Changelog
 
+## Version 2.0.6 [2023-02-26]
+
+### Release Notes
+
+This is a patch release that fixes a few minor bugs and a broken feature.
+
+When opening a document from the Novel Tree or Outline View, the Project Tree would receive focus
+even when it was hidden. This has been corrected and no focus change is made. The Project Tree now
+also receives focus automatically when a new Project Item is created.
+
+The backlinks in the Reference Panel below the Document Viewer were no longer working. They have
+now been fixed. They were broken due to a change in the link format in 2.0.
+
+----
+
 ## Version 2.0.5 [2023-02-12]
 
 ### Release Notes
