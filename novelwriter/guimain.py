@@ -270,9 +270,17 @@ class GuiMain(QMainWindow):
         keyReturn.setKey(QKeySequence(Qt.Key_Return))
         keyReturn.activated.connect(self._keyPressReturn)
 
+        keyCtrlReturn = QShortcut(self)
+        keyCtrlReturn.setKey(QKeySequence(Qt.ControlModifier | Qt.Key_Return))
+        keyCtrlReturn.activated.connect(self._keyPressCtrlReturn)
+
         keyEnter = QShortcut(self)
         keyEnter.setKey(QKeySequence(Qt.Key_Enter))
         keyEnter.activated.connect(self._keyPressReturn)
+
+        keyCtrlEnter = QShortcut(self)
+        keyCtrlEnter.setKey(QKeySequence(Qt.ControlModifier | Qt.Key_Enter))
+        keyCtrlEnter.activated.connect(self._keyPressCtrlReturn)
 
         keyEscape = QShortcut(self)
         keyEscape.setKey(QKeySequence(Qt.Key_Escape))
@@ -790,7 +798,7 @@ class GuiMain(QMainWindow):
     #  Tree Item Actions
     ##
 
-    def openSelectedItem(self):
+    def openSelectedItem(self, changeFocus=False):
         """Open the selected item from the tree that is currently
         active. It is not checked that the item is actually a document.
         That should be handled by the openDocument function.
@@ -818,7 +826,7 @@ class GuiMain(QMainWindow):
                 tLine = hItem.line
 
         if tHandle is not None:
-            self.openDocument(tHandle, tLine=tLine, changeFocus=False, doScroll=False)
+            self.openDocument(tHandle, tLine=tLine, changeFocus=changeFocus, doScroll=False)
 
         return True
 
@@ -1585,6 +1593,15 @@ class GuiMain(QMainWindow):
         the currently selected item.
         """
         self.openSelectedItem()
+        return
+
+    @pyqtSlot()
+    def _keyPressCtrlReturn(self):
+        """Forward the control + return/enter keypress to the function
+        that opens the currently selected item and switches focus to the
+        editor.
+        """
+        self.openSelectedItem(changeFocus=True)
         return
 
     @pyqtSlot()
