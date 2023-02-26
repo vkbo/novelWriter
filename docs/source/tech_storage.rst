@@ -4,7 +4,6 @@
 How Data is Stored
 ******************
 
-.. _File Format Spec 1.5: _static/fileformatspec15.pdf
 .. _documentation: https://novelwriter.readthedocs.io
 
 This section contains details of how novelWriter stores and handles the project data.
@@ -48,8 +47,8 @@ various meta data entries incremented, on each save.
 
 .. only:: html
 
-   A full description of the current file format is available in the `File Format Spec 1.5`_
-   document, available as a PDF.
+   A full description of the current file format is available in the
+   :download:`File Format Spec 1.5 <fileformatspec15.pdf>` document, available as a PDF.
 
 
 Project Documents
