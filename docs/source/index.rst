@@ -31,7 +31,7 @@ as well. novelWriter can also be run directly from the Python source, or install
 the pip tool. See :ref:`a_started` for more details.
 
 .. note::
-   Version 1.5 introduced a few changes that will require you to make some minor modifications to
+   Version 1.3 introduced a few changes that will require you to make some minor modifications to
    some of the headings in your project. It should be fairly quick and straightforward. Please see
    the :ref:`a_prjfmt_1_3` section for more details.
 
@@ -48,6 +48,11 @@ the pip tool. See :ref:`a_started` for more details.
 * Social Media: https://fosstodon.org/@novelwriter
 
 .. toctree::
+   :hidden:
+
+   Main Page <self>
+
+.. toctree::
    :maxdepth: 1
    :caption: Introduction
    :hidden:
@@ -56,6 +61,7 @@ the pip tool. See :ref:`a_started` for more details.
    int_overview
    int_started
    int_source
+   int_howto
    int_customise
 
 .. toctree::
