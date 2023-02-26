@@ -1088,7 +1088,6 @@ class GuiProjectTree(QTreeWidget):
         if tItem is None:
             return False
 
-        self.setFocus()
         if tHandle in self._treeMap:
             self.setCurrentItem(self._treeMap[tHandle])
 
