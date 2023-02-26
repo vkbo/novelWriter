@@ -39,7 +39,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QWidget
 )
 
-from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
+from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert, nwWidget
 from novelwriter.constants import nwHeaders, nwUnicode, trConst, nwLabels
 from novelwriter.core.coretools import DocMerger, DocSplitter
 from novelwriter.dialogs.docmerge import GuiDocMerge
@@ -630,6 +630,7 @@ class GuiProjectTree(QTreeWidget):
 
         # Add the new item to the project tree
         self.revealNewTreeItem(tHandle, nHandle=nHandle, wordCount=True)
+        self.mainGui.switchFocus(nwWidget.TREE)
 
         return True
 
