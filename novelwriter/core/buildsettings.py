@@ -98,8 +98,38 @@ class BuildSettings:
 
         self._data = {}
 
+        self._excluded = set()
+        self._included = set()
+
         self._loadTemplate()
 
+        return
+
+    def isIncluded(self, tHandle):
+        return tHandle in self._included
+
+    def isExcluded(self, tHandle):
+        return tHandle in self._excluded
+
+    def setFiltered(self, tHandle):
+        """Set an item as filtered.
+        """
+        self._excluded.discard(tHandle)
+        self._included.discard(tHandle)
+        return
+
+    def setIncluded(self, tHandle):
+        """Set an item as explicitly included.
+        """
+        self._excluded.discard(tHandle)
+        self._included.add(tHandle)
+        return
+
+    def setExcluded(self, tHandle):
+        """Set an item as explicitly excluded.
+        """
+        self._excluded.add(tHandle)
+        self._included.discard(tHandle)
         return
 
     ##

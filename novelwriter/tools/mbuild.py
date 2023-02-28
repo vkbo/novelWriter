@@ -29,10 +29,11 @@ import novelwriter
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QHBoxLayout, QHeaderView, QStackedWidget,
-    QTreeWidget, QTreeWidgetItem, QWidget
+    QAbstractItemView, QDialog, QHBoxLayout, QHeaderView, QPushButton, QStackedWidget,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
+from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
 logger = logging.getLogger(__name__)
@@ -56,13 +57,17 @@ class GuiBuildManuscript(QDialog):
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
+        self.buildOpts = {
+            "name": self.tr("Default Settings"),
+            "settings": BuildSettings(),
+        }
+
         self.setWindowTitle(self.tr("Build Manuscript"))
         self.setMinimumWidth(self.mainConf.pxInt(700))
         self.setMinimumHeight(self.mainConf.pxInt(600))
 
         # Style
         mPx = self.mainConf.pxInt(150)
-        # tPx = int(self.mainTheme.fontPixelSize * 1.5)
 
         # Options SideBar
         # ===============
@@ -155,11 +160,13 @@ class GuiBuildManuscript(QDialog):
 
 class GuiBuildFilterTab(QWidget):
 
+    C_DATA   = 0
     C_NAME   = 0
     C_ACTIVE = 1
     C_STATUS = 2
 
     D_HANDLE = Qt.UserRole
+    D_FILE   = Qt.UserRole + 1
 
     F_NONE     = 0
     F_FILTERED = 1
@@ -173,6 +180,7 @@ class GuiBuildFilterTab(QWidget):
         self.mainGui    = buildMain.mainGui
         self.mainTheme  = buildMain.mainGui.mainTheme
         self.theProject = buildMain.mainGui.theProject
+        self.buildOpts  = buildMain.buildOpts
 
         self._treeMap = {}
 
@@ -183,14 +191,14 @@ class GuiBuildFilterTab(QWidget):
             self.F_EXCLUDED: (self.tr("Excluded"), self.mainTheme.getIcon("build_excluded")),
         }
 
-        # Widgets
-        # =======
+        # Project Tree
+        # ============
 
         # Tree Settings
         iPx = self.mainTheme.baseIconSize
         cMg = self.mainConf.pxInt(6)
 
-        # Project Tree
+        # Tree Widget
         self.optTree = QTreeWidget(self)
         self.optTree.setIconSize(QSize(iPx, iPx))
         self.optTree.setUniformRowHeights(True)
@@ -211,9 +219,37 @@ class GuiBuildFilterTab(QWidget):
         self.optTree.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.optTree.setDragDropMode(QAbstractItemView.NoDragDrop)
 
+        # Filters
+        # =======
+
+        self.filteredButton = QPushButton(self)
+        self.filteredButton.setText(self._statusFlags[self.F_FILTERED][0])
+        self.filteredButton.setIcon(self._statusFlags[self.F_FILTERED][1])
+        self.filteredButton.clicked.connect(lambda: self._setSelectedMode(self.F_FILTERED))
+
+        self.includedButton = QPushButton(self)
+        self.includedButton.setText(self._statusFlags[self.F_INCLUDED][0])
+        self.includedButton.setIcon(self._statusFlags[self.F_INCLUDED][1])
+        self.includedButton.clicked.connect(lambda: self._setSelectedMode(self.F_INCLUDED))
+
+        self.excludedButton = QPushButton(self)
+        self.excludedButton.setText(self._statusFlags[self.F_EXCLUDED][0])
+        self.excludedButton.setIcon(self._statusFlags[self.F_EXCLUDED][1])
+        self.excludedButton.clicked.connect(lambda: self._setSelectedMode(self.F_EXCLUDED))
+
+        self.modeBox = QHBoxLayout()
+        self.modeBox.addWidget(self.filteredButton)
+        self.modeBox.addWidget(self.includedButton)
+        self.modeBox.addWidget(self.excludedButton)
+
         # Assemble
+        self.selectionBox = QVBoxLayout()
+        self.selectionBox.addLayout(self.modeBox)
+        self.selectionBox.addStretch()
+
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.optTree)
+        self.outerBox.addLayout(self.selectionBox)
 
         self.setLayout(self.outerBox)
 
@@ -228,6 +264,7 @@ class GuiBuildFilterTab(QWidget):
 
             tHandle = nwItem.itemHandle
             pHandle = nwItem.itemParent
+            isFile = nwItem.isFileType()
 
             if nwItem.isInactiveClass():
                 logger.debug("Skipping inactive class item '%s'", tHandle)
@@ -238,21 +275,17 @@ class GuiBuildFilterTab(QWidget):
                 nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
             )
 
-            if nwItem.isFileType():
+            if isFile:
                 iconName = "checked" if nwItem.isActive else "unchecked"
-                statusIcon = self._statusFlags[
-                    self.F_FILTERED if nwItem.isActive else self.F_NONE
-                ][1]
             else:
                 iconName = "noncheckable"
-                statusIcon = self._statusFlags[self.F_NONE][1]
 
             trItem = QTreeWidgetItem()
             trItem.setIcon(self.C_NAME, itemIcon)
             trItem.setText(self.C_NAME, nwItem.itemName)
-            trItem.setData(self.C_NAME, self.D_HANDLE, tHandle)
+            trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
+            trItem.setData(self.C_DATA, self.D_FILE, isFile)
             trItem.setIcon(self.C_ACTIVE, self.mainTheme.getIcon(iconName))
-            trItem.setIcon(self.C_STATUS, statusIcon)
 
             trItem.setTextAlignment(self.C_NAME, Qt.AlignLeft)
 
@@ -272,6 +305,52 @@ class GuiBuildFilterTab(QWidget):
 
             self._treeMap[tHandle] = trItem
             trItem.setExpanded(True)
+
+        self._setTreeItemMode()
+
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _setSelectedMode(self, mode):
+        """Set the mode for the selected items.
+        """
+        buildSettings = self.buildOpts["settings"]
+
+        for item in self.optTree.selectedItems():
+            if not isinstance(item, QTreeWidgetItem):
+                continue
+
+            tHandle = item.data(self.C_DATA, self.D_HANDLE)
+            isFile = item.data(self.C_DATA, self.D_FILE)
+            if isFile:
+                if mode == self.F_FILTERED:
+                    buildSettings.setFiltered(tHandle)
+                elif mode == self.F_INCLUDED:
+                    buildSettings.setIncluded(tHandle)
+                elif mode == self.F_EXCLUDED:
+                    buildSettings.setExcluded(tHandle)
+
+        self._setTreeItemMode()
+
+        return
+
+    def _setTreeItemMode(self):
+        """Update the filtered mode icon on all items.
+        """
+        buildSettings = self.buildOpts["settings"]
+        for tHandle, item in self._treeMap.items():
+            if item.data(self.C_DATA, self.D_FILE):
+                if buildSettings.isIncluded(tHandle):
+                    item.setIcon(self.C_STATUS, self._statusFlags[self.F_INCLUDED][1])
+                elif buildSettings.isExcluded(tHandle):
+                    item.setIcon(self.C_STATUS, self._statusFlags[self.F_EXCLUDED][1])
+                else:
+                    item.setIcon(self.C_STATUS, self._statusFlags[self.F_FILTERED][1])
+            else:
+                item.setIcon(self.C_STATUS, self._statusFlags[self.F_NONE][1])
 
         return
 
