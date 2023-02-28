@@ -829,8 +829,8 @@ class GuiMainMenu(QMenuBar):
         self.aBackupProject.triggered.connect(lambda: self.theProject.backupProject(True))
         self.toolsMenu.addAction(self.aBackupProject)
 
-        # Tools > Build Project
-        self.aBuildProject = QAction(self.tr("Build Project"), self)
+        # Tools > Build Novel Project
+        self.aBuildProject = QAction(self.tr("Build Novel Project"), self)
         self.aBuildProject.triggered.connect(self.mainGui.showBuildProjectDialog)
         self.toolsMenu.addAction(self.aBuildProject)
 

@@ -26,10 +26,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QHBoxLayout, QStackedWidget, QTreeWidget,
-    QWidget
+    QAbstractItemView, QDialog, QHBoxLayout, QHeaderView, QStackedWidget,
+    QTreeWidget, QTreeWidgetItem, QWidget
 )
 
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
@@ -119,6 +120,12 @@ class GuiBuildManuscript(QDialog):
 
         return
 
+    def loadContent(self):
+        """Populate the tool widgets.
+        """
+        self.optTabSelect.populateTree()
+        return
+
     ##
     #  Private Slots
     ##
@@ -148,23 +155,123 @@ class GuiBuildManuscript(QDialog):
 
 class GuiBuildFilterTab(QWidget):
 
+    C_NAME   = 0
+    C_ACTIVE = 1
+    C_STATUS = 2
+
+    D_HANDLE = Qt.UserRole
+
+    F_NONE     = 0
+    F_FILTERED = 1
+    F_INCLUDED = 2
+    F_EXCLUDED = 3
+
     def __init__(self, buildMain):
         super().__init__(parent=buildMain)
 
+        self.mainConf   = novelwriter.CONFIG
+        self.mainGui    = buildMain.mainGui
+        self.mainTheme  = buildMain.mainGui.mainTheme
+        self.theProject = buildMain.mainGui.theProject
+
+        self._treeMap = {}
+
+        self._statusFlags = {
+            self.F_NONE:     ("", QIcon()),
+            self.F_FILTERED: (self.tr("Filtered"), self.mainTheme.getIcon("build_filtered")),
+            self.F_INCLUDED: (self.tr("Included"), self.mainTheme.getIcon("build_included")),
+            self.F_EXCLUDED: (self.tr("Excluded"), self.mainTheme.getIcon("build_excluded")),
+        }
+
+        # Widgets
+        # =======
+
+        # Tree Settings
+        iPx = self.mainTheme.baseIconSize
+        cMg = self.mainConf.pxInt(6)
+
+        # Project Tree
         self.optTree = QTreeWidget(self)
-        self.optTree.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.optTree.setDragDropMode(QAbstractItemView.NoDragDrop)
-        self.optTree.setColumnCount(2)
-        self.optTree.setHeaderLabels([
-            self.tr("Setting"),
-            self.tr("Value"),
-        ])
+        self.optTree.setIconSize(QSize(iPx, iPx))
+        self.optTree.setUniformRowHeights(True)
+        self.optTree.setAllColumnsShowFocus(True)
+        self.optTree.setHeaderHidden(True)
+        self.optTree.setIndentation(iPx)
+        self.optTree.setColumnCount(3)
         self.optTree.setRootIsDecorated(False)
 
+        treeHeader = self.optTree.header()
+        treeHeader.setStretchLastSection(False)
+        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.Stretch)
+        treeHeader.setSectionResizeMode(self.C_ACTIVE, QHeaderView.Fixed)
+        treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.Fixed)
+        treeHeader.resizeSection(self.C_ACTIVE, iPx + cMg)
+        treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
+
+        self.optTree.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.optTree.setDragDropMode(QAbstractItemView.NoDragDrop)
+
+        # Assemble
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.optTree)
 
         self.setLayout(self.outerBox)
+
+        return
+
+    def populateTree(self):
+        """Build the tree of project items.
+        """
+        self._treeMap = {}
+        self.optTree.clear()
+        for nwItem in self.theProject.getProjectItems():
+
+            tHandle = nwItem.itemHandle
+            pHandle = nwItem.itemParent
+
+            if nwItem.isInactiveClass():
+                logger.debug("Skipping inactive class item '%s'", tHandle)
+                continue
+
+            hLevel = nwItem.mainHeading
+            itemIcon = self.mainTheme.getItemIcon(
+                nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
+            )
+
+            if nwItem.isFileType():
+                iconName = "checked" if nwItem.isActive else "unchecked"
+                statusIcon = self._statusFlags[
+                    self.F_FILTERED if nwItem.isActive else self.F_NONE
+                ][1]
+            else:
+                iconName = "noncheckable"
+                statusIcon = self._statusFlags[self.F_NONE][1]
+
+            trItem = QTreeWidgetItem()
+            trItem.setIcon(self.C_NAME, itemIcon)
+            trItem.setText(self.C_NAME, nwItem.itemName)
+            trItem.setData(self.C_NAME, self.D_HANDLE, tHandle)
+            trItem.setIcon(self.C_ACTIVE, self.mainTheme.getIcon(iconName))
+            trItem.setIcon(self.C_STATUS, statusIcon)
+
+            trItem.setTextAlignment(self.C_NAME, Qt.AlignLeft)
+
+            if pHandle is None:
+                if nwItem.isRootType():
+                    self.optTree.addTopLevelItem(trItem)
+                else:
+                    logger.debug("Skipping item '%s'", tHandle)
+                    continue
+
+            elif pHandle in self._treeMap:
+                self._treeMap[pHandle].addChild(trItem)
+
+            else:
+                logger.debug("Skipping item '%s'", tHandle)
+                continue
+
+            self._treeMap[tHandle] = trItem
+            trItem.setExpanded(True)
 
         return
 

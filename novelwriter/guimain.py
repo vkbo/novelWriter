@@ -1031,6 +1031,8 @@ class GuiMain(QMainWindow):
         dlgBuild.raise_()
         qApp.processEvents()
 
+        dlgBuild.loadContent()
+
         return True
 
     def showLoremIpsumDialog(self):
