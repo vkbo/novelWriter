@@ -162,7 +162,7 @@ class GuiMain(QMainWindow):
         self.splitDocs.setOpaqueResize(False)
         self.splitDocs.setHandleWidth(hWd)
 
-        # Splitter : Project Tree / Main Tabs
+        # Splitter : Project Tree / Document Area
         self.splitMain = QSplitter(Qt.Horizontal)
         self.splitMain.setContentsMargins(0, 0, 0, 0)
         self.splitMain.addWidget(self.treePane)
@@ -185,7 +185,7 @@ class GuiMain(QMainWindow):
         self.idxViewDoc  = self.splitView.indexOf(self.docViewer)
         self.idxViewMeta = self.splitView.indexOf(self.viewMeta)
 
-        # Indices of Tab Widgets
+        # Indices of Stack Widgets
         self.idxEditorView  = self.mainStack.indexOf(self.splitMain)
         self.idxOutlineView = self.mainStack.indexOf(self.outlineView)
         self.idxProjView    = self.projStack.indexOf(self.projView)
@@ -198,6 +198,9 @@ class GuiMain(QMainWindow):
         self.splitDocs.setCollapsible(self.idxViewer, False)
         self.splitView.setCollapsible(self.idxViewDoc, False)
         self.splitView.setCollapsible(self.idxViewMeta, False)
+
+        self.splitMain.setStretchFactor(self.idxTree, 0)
+        self.splitMain.setStretchFactor(self.idxMain, 1)
 
         # Editor / Viewer Default State
         self.splitView.setVisible(False)
