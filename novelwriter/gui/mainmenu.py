@@ -815,7 +815,7 @@ class GuiMainMenu(QMenuBar):
         # Tools > Separator
         self.toolsMenu.addSeparator()
 
-        # Tools > Rebuild Indices
+        # Tools > Rebuild Index
         self.aRebuildIndex = QAction(self.tr("Rebuild Index"), self)
         self.aRebuildIndex.setShortcut("F9")
         self.aRebuildIndex.triggered.connect(lambda: self.mainGui.rebuildIndex())
@@ -824,24 +824,29 @@ class GuiMainMenu(QMenuBar):
         # Tools > Separator
         self.toolsMenu.addSeparator()
 
-        # Tools > Backup
+        # Tools > Backup Project
         self.aBackupProject = QAction(self.tr("Backup Project"), self)
         self.aBackupProject.triggered.connect(lambda: self.theProject.backupProject(True))
         self.toolsMenu.addAction(self.aBackupProject)
 
-        # Tools > Export Project
-        self.aBuildProject = QAction(self.tr("Build Manuscript"), self)
-        self.aBuildProject.setShortcut("F5")
-        self.aBuildProject.triggered.connect(self.mainGui.showBuildManuscriptDialog)
+        # Tools > Build Project
+        self.aBuildProject = QAction(self.tr("Build Project"), self)
+        self.aBuildProject.triggered.connect(self.mainGui.showBuildProjectDialog)
         self.toolsMenu.addAction(self.aBuildProject)
 
-        # Tools > Writing Stats
+        # Tools > Build Manuscript
+        self.aBuildManuscript = QAction(self.tr("Build Manuscript"), self)
+        self.aBuildManuscript.setShortcut("F5")
+        self.aBuildManuscript.triggered.connect(self.mainGui.showBuildManuscriptDialog)
+        self.toolsMenu.addAction(self.aBuildManuscript)
+
+        # Tools > Writing Statistics
         self.aWritingStats = QAction(self.tr("Writing Statistics"), self)
         self.aWritingStats.setShortcut("F6")
         self.aWritingStats.triggered.connect(lambda: self.mainGui.showWritingStatsDialog())
         self.toolsMenu.addAction(self.aWritingStats)
 
-        # Tools > Settings
+        # Tools > Preferences
         self.aPreferences = QAction(self.tr("Preferences"), self)
         self.aPreferences.setShortcut("Ctrl+,")
         self.aPreferences.setMenuRole(QAction.PreferencesRole)
