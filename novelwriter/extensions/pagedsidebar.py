@@ -98,6 +98,12 @@ class NPagedSideBar(QToolBar):
 
         return action
 
+    def setSelected(self, buttonId):
+        """Set the selected button.
+        """
+        self._group.button(buttonId).setChecked(True)
+        return
+
     ##
     #  Private Slots
     ##

@@ -89,13 +89,23 @@ class GuiBuildManuscript(QDialog):
         # ============
 
         # Create Tabs
-        self.optTabSelect = GuiBuildSelectionTab(self)
-        self.optTabFormat = GuiBuildFormattingTab(self)
+        self.optTabSelect = GuiBuildFilterTab(self)
+        self.optTabHeadings = GuiBuildHeadingsTab(self)
+        self.optTabFormat = GuiBuildFormatTab(self)
+        self.optTabContent = GuiBuildContentTab(self)
+        self.buildTabHTML = GuiBuildHTMLTab(self)
+        self.buildTabMarkdown = GuiBuildMarkdownTab(self)
+        self.buildTabODT = GuiBuildODTTab(self)
 
         # Add Tabs
         self.toolStack = QStackedWidget(self)
         self.toolStack.addWidget(self.optTabSelect)
+        self.toolStack.addWidget(self.optTabHeadings)
         self.toolStack.addWidget(self.optTabFormat)
+        self.toolStack.addWidget(self.optTabContent)
+        self.toolStack.addWidget(self.buildTabHTML)
+        self.toolStack.addWidget(self.buildTabMarkdown)
+        self.toolStack.addWidget(self.buildTabODT)
 
         # Assemble
         self.outerBox = QHBoxLayout()
@@ -103,6 +113,9 @@ class GuiBuildManuscript(QDialog):
         self.outerBox.addWidget(self.toolStack)
 
         self.setLayout(self.outerBox)
+
+        # Set Default Tab
+        self.optSideBar.setSelected(self.OPT_FILTERS)
 
         return
 
@@ -116,14 +129,24 @@ class GuiBuildManuscript(QDialog):
         """
         if pageId == self.OPT_FILTERS:
             self.toolStack.setCurrentWidget(self.optTabSelect)
+        elif pageId == self.OPT_HEADINGS:
+            self.toolStack.setCurrentWidget(self.optTabHeadings)
         elif pageId == self.OPT_FORMAT:
             self.toolStack.setCurrentWidget(self.optTabFormat)
+        elif pageId == self.OPT_CONTENT:
+            self.toolStack.setCurrentWidget(self.optTabContent)
+        elif pageId == self.BLD_HTML:
+            self.toolStack.setCurrentWidget(self.buildTabHTML)
+        elif pageId == self.BLD_MARKDOWN:
+            self.toolStack.setCurrentWidget(self.buildTabMarkdown)
+        elif pageId == self.BLD_ODT:
+            self.toolStack.setCurrentWidget(self.buildTabODT)
         return
 
 # END Class GuiBuildManuscript
 
 
-class GuiBuildSelectionTab(QWidget):
+class GuiBuildFilterTab(QWidget):
 
     def __init__(self, buildMain):
         super().__init__(parent=buildMain)
@@ -145,14 +168,64 @@ class GuiBuildSelectionTab(QWidget):
 
         return
 
-# END Class GuiBuildSelectionTab
+# END Class GuiBuildFilterTab
 
 
-class GuiBuildFormattingTab(QWidget):
+class GuiBuildHeadingsTab(QWidget):
 
     def __init__(self, buildMain):
         super().__init__(parent=buildMain)
 
         return
 
-# END Class GuiBuildFormattingTab
+# END Class GuiBuildHeadingsTab
+
+
+class GuiBuildFormatTab(QWidget):
+
+    def __init__(self, buildMain):
+        super().__init__(parent=buildMain)
+
+        return
+
+# END Class GuiBuildFormatTab
+
+
+class GuiBuildContentTab(QWidget):
+
+    def __init__(self, buildMain):
+        super().__init__(parent=buildMain)
+
+        return
+
+# END Class GuiBuildContentTab
+
+
+class GuiBuildHTMLTab(QWidget):
+
+    def __init__(self, buildMain):
+        super().__init__(parent=buildMain)
+
+        return
+
+# END Class GuiBuildHTMLTab
+
+
+class GuiBuildMarkdownTab(QWidget):
+
+    def __init__(self, buildMain):
+        super().__init__(parent=buildMain)
+
+        return
+
+# END Class GuiBuildMarkdownTab
+
+
+class GuiBuildODTTab(QWidget):
+
+    def __init__(self, buildMain):
+        super().__init__(parent=buildMain)
+
+        return
+
+# END Class GuiBuildODTTab
