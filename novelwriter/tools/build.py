@@ -367,7 +367,7 @@ class GuiBuildNovel(QDialog):
         iRow = 0
         self.rootSelection = {}
         for tHandle, nwItem in self.theProject.tree.iterRoots(None):
-            if not nwItem.isInactive():
+            if not nwItem.isInactiveClass():
                 rootLabel = QLabel(nwItem.itemName)
                 rootLabel.setWordWrap(True)
 
@@ -823,7 +823,7 @@ class GuiBuildNovel(QDialog):
 
         isNone  = not theItem.isFileType()
         isNone |= theItem.itemLayout == nwItemLayout.NO_LAYOUT
-        isNone |= theItem.isInactive()
+        isNone |= theItem.isInactiveClass()
         isNone |= theItem.itemParent is None
         isNote  = theItem.isNoteLayout()
         isNovel = not isNone and not isNote

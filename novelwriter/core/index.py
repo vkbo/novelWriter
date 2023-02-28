@@ -273,7 +273,7 @@ class NWIndex:
             return False
 
         logger.debug("Indexing item with handle '%s'", tHandle)
-        if theItem.isInactive():
+        if theItem.isInactiveClass():
             self._scanInactive(theItem, theText)
         else:
             self._scanActive(tHandle, theItem, theText, itemTags)

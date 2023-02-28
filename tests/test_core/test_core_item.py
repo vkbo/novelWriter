@@ -340,67 +340,67 @@ def testCoreItem_ClassSetter(mockGUI):
     assert theItem.itemClass == nwItemClass.NO_CLASS
     assert theItem.isNovelLike() is False
     assert theItem.documentAllowed() is False
-    assert theItem.isInactive() is True
+    assert theItem.isInactiveClass() is True
 
     theItem.setClass("NOVEL")
     assert theItem.itemClass == nwItemClass.NOVEL
     assert theItem.isNovelLike() is True
     assert theItem.documentAllowed() is True
-    assert theItem.isInactive() is False
+    assert theItem.isInactiveClass() is False
 
     theItem.setClass("PLOT")
     assert theItem.itemClass == nwItemClass.PLOT
     assert theItem.isNovelLike() is False
     assert theItem.documentAllowed() is False
-    assert theItem.isInactive() is False
+    assert theItem.isInactiveClass() is False
 
     theItem.setClass("CHARACTER")
     assert theItem.itemClass == nwItemClass.CHARACTER
     assert theItem.isNovelLike() is False
     assert theItem.documentAllowed() is False
-    assert theItem.isInactive() is False
+    assert theItem.isInactiveClass() is False
 
     theItem.setClass("WORLD")
     assert theItem.itemClass == nwItemClass.WORLD
     assert theItem.isNovelLike() is False
     assert theItem.documentAllowed() is False
-    assert theItem.isInactive() is False
+    assert theItem.isInactiveClass() is False
 
     theItem.setClass("TIMELINE")
     assert theItem.itemClass == nwItemClass.TIMELINE
     assert theItem.isNovelLike() is False
     assert theItem.documentAllowed() is False
-    assert theItem.isInactive() is False
+    assert theItem.isInactiveClass() is False
 
     theItem.setClass("OBJECT")
     assert theItem.itemClass == nwItemClass.OBJECT
     assert theItem.isNovelLike() is False
     assert theItem.documentAllowed() is False
-    assert theItem.isInactive() is False
+    assert theItem.isInactiveClass() is False
 
     theItem.setClass("ENTITY")
     assert theItem.itemClass == nwItemClass.ENTITY
     assert theItem.isNovelLike() is False
     assert theItem.documentAllowed() is False
-    assert theItem.isInactive() is False
+    assert theItem.isInactiveClass() is False
 
     theItem.setClass("CUSTOM")
     assert theItem.itemClass == nwItemClass.CUSTOM
     assert theItem.isNovelLike() is False
     assert theItem.documentAllowed() is False
-    assert theItem.isInactive() is False
+    assert theItem.isInactiveClass() is False
 
     theItem.setClass("ARCHIVE")
     assert theItem.itemClass == nwItemClass.ARCHIVE
     assert theItem.isNovelLike() is True
     assert theItem.documentAllowed() is True
-    assert theItem.isInactive() is True
+    assert theItem.isInactiveClass() is True
 
     theItem.setClass("TRASH")
     assert theItem.itemClass == nwItemClass.TRASH
     assert theItem.isNovelLike() is False
     assert theItem.documentAllowed() is True
-    assert theItem.isInactive() is True
+    assert theItem.isInactiveClass() is True
 
     # Alternative
     theItem.setClass(nwItemClass.NOVEL)

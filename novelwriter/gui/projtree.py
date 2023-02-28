@@ -1404,7 +1404,7 @@ class GuiProjectTree(QTreeWidget):
             self.theProject.tree.updateItemData(mHandle)
 
             # Update the index
-            if nwItemS.isInactive():
+            if nwItemS.isInactiveClass():
                 self.theProject.index.deleteHandle(mHandle)
             else:
                 self.theProject.index.reIndexHandle(mHandle)
