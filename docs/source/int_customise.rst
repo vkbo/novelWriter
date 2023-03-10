@@ -16,7 +16,7 @@ your own syntax themes, and install additional dictionaries.
 Spell Check Dictionaries
 ========================
 
-novelWriter uses Enchant_ as the spell checking tool. Depending on you operating system, it may or
+novelWriter uses Enchant_ as the spell checking tool. Depending on your operating system, it may or
 may not load installed spell check dictionaries.
 
 Linux
