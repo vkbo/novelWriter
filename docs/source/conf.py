@@ -1,7 +1,7 @@
-#
-# Configuration file for the Sphinx documentation builder.
-# Documentation: http://www.sphinx-doc.org/en/master/config
-#
+"""
+Configuration file for the Sphinx documentation builder.
+Documentation: http://www.sphinx-doc.org/en/master/config
+"""
 
 # -- Imports -----------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import datetime
 # -- Project Information -----------------------------------------------------
 
 project = "novelWriter"
-copyright = f"{datetime.date.today().year}, Veronica Berglyd Olsen"
+copyright = f"{datetime.date.today().year}"
 author = "Veronica Berglyd Olsen"
 
 initFile = os.path.join(
@@ -34,7 +34,7 @@ version = release.split("-")[0]
 os.environ["TZ"] = "Europe/Oslo"
 time.tzset()
 
-needs_sphinx = "4.0"
+needs_sphinx = "5.0"
 extensions = []
 templates_path = ["_templates"]
 source_suffix = ".rst"
@@ -45,23 +45,27 @@ exclude_patterns = []
 
 # -- Options for HTML Output -------------------------------------------------
 
-html_theme = "furo"
+html_theme = "sphinx_book_theme"
+html_title = f"Version {release}"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 html_theme_options = {
-    "light_logo": "novelwriter-light.png",
-    "dark_logo": "novelwriter-dark.png",
+    "logo": {
+        "image_light": "_static/novelwriter-light.png",
+        "image_dark": "_static/novelwriter-dark.png",
+    },
+    "show_toc_level": 2,
+    "show_navbar_depth": 1,
+    "repository_url": "https://github.com/vkbo/novelwriter",
     "navigation_with_keys": True,
-    "dark_css_variables": {
-        "admonition-font-size": "92%",
-    },
-    "light_css_variables": {
-        "admonition-font-size": "92%",
-    },
+    "use_repository_button": True,
+    "use_issues_button": True,
+    "pygment_light_style": "tango",
+    "pygment_dark_style": "dracula",
 }
-html_title = f"<div style='text-align: center'>Documentation Version {release}</div>"
-pygments_style = "tango"
-pygments_dark_style = "native"
+html_sidebars = {
+    "**": ["navbar-logo", "sidebar-title", "sbt-sidebar-nav"],
+}
 
 # -- Options for HTMLHelp Output ---------------------------------------------
 
@@ -110,13 +114,6 @@ texinfo_documents = [(
 
 # Bibliographic Dublin Core info.
 epub_title = project
-
-# The unique identifier of the text. This can be a ISBN number
-# or the project homepage.
-# epub_identifier = ""
-
-# A unique identification for the text.
-# epub_uid = ""
 
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ["search.html"]
