@@ -246,6 +246,8 @@ def main(sysArgs=None):
         nwApp.setApplicationName(CONFIG.appName)
         nwApp.setApplicationVersion(__version__)
         nwApp.setOrganizationDomain(__domain__)
+        nwApp.setOrganizationName(__domain__)
+        nwApp.setDesktopFileName(CONFIG.appName)
 
         # Connect the exception handler before making the main GUI
         sys.excepthook = exceptionHandler

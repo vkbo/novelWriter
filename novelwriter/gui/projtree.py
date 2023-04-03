@@ -1204,7 +1204,7 @@ class GuiProjectTree(QTreeWidget):
         # Edit Item Settings
         # ==================
 
-        aLabel = ctxMenu.addAction(self.tr("Change Label"))
+        aLabel = ctxMenu.addAction(self.tr("Rename"))
         aLabel.triggered.connect(lambda: self.renameTreeItem(tHandle))
 
         if isFile:
