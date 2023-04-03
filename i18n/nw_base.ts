@@ -3405,7 +3405,7 @@
     </message>
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1207" />
-      <source>Change Label</source>
+      <source>Rename</source>
       <translation type="unfinished" />
     </message>
     <message>

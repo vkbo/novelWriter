@@ -89,6 +89,15 @@ Then run the update and install commands as for Ubuntu:
    You may need to use the Ubuntu 20.04 (focal) packages for Debian 11 or earlier. The newer Ubuntu
    packages use a different compression algorithm that may not be supported.
 
+.. tip::
+
+   If you get an error message like ``gpg: failed to create temporary file`` when importing the key
+   from the Ubuntu keyserver, try creating the folder it fails on, and import the key again:
+
+   .. code-block:: bash
+
+      sudo mkdir /root/.gnupg/
+
 
 AppImage Releases
 -----------------
