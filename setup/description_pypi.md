@@ -17,5 +17,5 @@ are met. It is regularly tested on Debian and Ubuntu Linux, Windows, and macOS.
 novelWriter is developed and maintained by [Veronica Berglyd Olsen](https://github.com/vkbo).
 
 **Website:** https://novelwriter.io  
-**Documentation:** https://novelwriter.readthedocs.io  
+**Documentation:** https://docs.novelwriter.io/  
 **Source Code:** https://github.com/vkbo/novelWriter
