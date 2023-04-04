@@ -1,4 +1,5 @@
-furo
-sphinx>=4.0
+sphinx-book-theme
+sphinx>=5.0
+sphinx-favicon
 pygments>=2.7
-docutils==0.17.1
+docutils>=0.17.1

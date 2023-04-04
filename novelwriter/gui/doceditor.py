@@ -1359,7 +1359,7 @@ class GuiDocEditor(QTextEdit):
         if self._docHandle is None or self._nwItem is None:
             return
 
-        logger.debug("User selectee %d words", wCount)
+        logger.debug("User selected %d words", wCount)
         self.docFooter.updateCounts(wCount=wCount, cCount=cCount)
         self.wcTimerSel.stop()
 

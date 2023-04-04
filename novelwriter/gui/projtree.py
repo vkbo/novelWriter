@@ -38,8 +38,9 @@ from PyQt5.QtWidgets import (
     QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem,
     QVBoxLayout, QWidget
 )
+from novelwriter.core.item import NWItem
 
-from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert
+from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert, nwWidget
 from novelwriter.constants import nwHeaders, nwUnicode, trConst, nwLabels
 from novelwriter.core.coretools import DocMerger, DocSplitter
 from novelwriter.dialogs.docmerge import GuiDocMerge
@@ -107,6 +108,9 @@ class GuiProjectView(QWidget):
         self.keyContext.setKey("Ctrl+.")
         self.keyContext.setContext(Qt.WidgetShortcut)
         self.keyContext.activated.connect(lambda: self.projTree.openContextOnSelected())
+
+        # Signals
+        self.selectedItemChanged.connect(self.projBar._treeSelectionChanged)
 
         # Function Mappings
         self.emptyTrash = self.projTree.emptyTrash
@@ -418,6 +422,23 @@ class GuiProjectToolBar(QWidget):
 
         return
 
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot(str)
+    def _treeSelectionChanged(self, tHandle):
+        """Toggle the visibility of the new item enties for novel
+        documents. They should only be visible if novel documents can
+        actually be added.
+        """
+        nwItem = self.theProject.tree[tHandle]
+        allowDoc = isinstance(nwItem, NWItem) and nwItem.documentAllowed()
+        self.aAddEmpty.setVisible(allowDoc)
+        self.aAddChap.setVisible(allowDoc)
+        self.aAddScene.setVisible(allowDoc)
+        return
+
 # END Class GuiProjectToolBar
 
 
@@ -630,6 +651,7 @@ class GuiProjectTree(QTreeWidget):
 
         # Add the new item to the project tree
         self.revealNewTreeItem(tHandle, nHandle=nHandle, wordCount=True)
+        self.mainGui.switchFocus(nwWidget.TREE)
 
         return True
 
@@ -1087,7 +1109,6 @@ class GuiProjectTree(QTreeWidget):
         if tItem is None:
             return False
 
-        self.setFocus()
         if tHandle in self._treeMap:
             self.setCurrentItem(self._treeMap[tHandle])
 
@@ -1204,7 +1225,7 @@ class GuiProjectTree(QTreeWidget):
         # Edit Item Settings
         # ==================
 
-        aLabel = ctxMenu.addAction(self.tr("Change Label"))
+        aLabel = ctxMenu.addAction(self.tr("Rename"))
         aLabel.triggered.connect(lambda: self.renameTreeItem(tHandle))
 
         if isFile:

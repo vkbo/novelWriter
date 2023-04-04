@@ -3,8 +3,9 @@ Documentation for novelWriter
 #############################
 
 .. image:: images/novelwriter_logo.png
+   :class: dark-light
    :align: right
-   :width: 48
+   :width: 64
 
 | **For Release:** |release|
 | **Last Updated:** |today|
@@ -17,6 +18,7 @@ editor that allows for easy organisation of text and notes, using human readable
 storage for robustness.
 
 .. figure:: images/screenshot_multi.png
+   :class: dark-light
    :align: center
    :width: 500
 
@@ -31,7 +33,7 @@ as well. novelWriter can also be run directly from the Python source, or install
 the pip tool. See :ref:`a_started` for more details.
 
 .. note::
-   Version 1.5 introduced a few changes that will require you to make some minor modifications to
+   Release 1.5 introduced a few changes that will require you to make some minor modifications to
    some of the headings in your project. It should be fairly quick and straightforward. Please see
    the :ref:`a_prjfmt_1_3` section for more details.
 
@@ -48,6 +50,11 @@ the pip tool. See :ref:`a_started` for more details.
 * Social Media: https://fosstodon.org/@novelwriter
 
 .. toctree::
+   :hidden:
+
+   Main Page <self>
+
+.. toctree::
    :maxdepth: 1
    :caption: Introduction
    :hidden:
@@ -56,6 +63,7 @@ the pip tool. See :ref:`a_started` for more details.
    int_overview
    int_started
    int_source
+   int_howto
    int_customise
 
 .. toctree::

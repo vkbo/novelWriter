@@ -68,12 +68,12 @@ Below are some key features of novelWriter.
 Screenshots
 ===========
 
-**novelWriter with default theme:**
+.. figure:: images/screenshot_default.png
+   :class: dark-light
 
-.. image:: images/screenshot_default.png
-   :width: 800
+   novelWriter with default theme
 
-**novelWriter with dark theme:**
+.. figure:: images/screenshot_dark.png
+   :class: dark-light
 
-.. image:: images/screenshot_dark.png
-   :width: 800
+   novelWriter with dark theme

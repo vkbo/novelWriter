@@ -3352,44 +3352,44 @@
       <translation>Ny mappe</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="788" />
+      <location filename="../novelwriter/gui/projtree.py" line="789" />
       <source>There is currently no Trash folder in this project.</source>
       <translation>Det er for øyeblikket ingen papirkurv i dette prosjektet.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="799" />
+      <location filename="../novelwriter/gui/projtree.py" line="800" />
       <source>The Trash folder is already empty.</source>
       <translation>Papirkurven er allerede tom.</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1181" />
-      <location filename="../novelwriter/gui/projtree.py" line="805" />
+      <location filename="../novelwriter/gui/projtree.py" line="806" />
       <source>Empty Trash</source>
       <translation>Tøm papirkurven</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="806" />
+      <location filename="../novelwriter/gui/projtree.py" line="807" />
       <source>Permanently delete {0} file(s) from Trash?</source>
       <translation>Vil du slette {0} filer i papirkurven for godt?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="908" />
-      <location filename="../novelwriter/gui/projtree.py" line="852" />
+      <location filename="../novelwriter/gui/projtree.py" line="909" />
+      <location filename="../novelwriter/gui/projtree.py" line="853" />
       <source>Delete</source>
       <translation>Slett</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="853" />
+      <location filename="../novelwriter/gui/projtree.py" line="854" />
       <source>Move '{0}' to Trash?</source>
       <translation>Vil du flytte filen "{0}" til søpla?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="887" />
+      <location filename="../novelwriter/gui/projtree.py" line="888" />
       <source>Root folders can only be deleted when they are empty.</source>
       <translation>Rotmapper kan bare slettes når de er tomme.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="909" />
+      <location filename="../novelwriter/gui/projtree.py" line="910" />
       <source>Permanently delete '{0}'?</source>
       <translation>Slette filen "{0}" for godt?</translation>
     </message>

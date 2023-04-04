@@ -3352,44 +3352,44 @@
       <translation>Nuova cartella</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="788" />
+      <location filename="../novelwriter/gui/projtree.py" line="789" />
       <source>There is currently no Trash folder in this project.</source>
       <translation>Al momento non c'è una cartella Cestino in questo progetto.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="799" />
+      <location filename="../novelwriter/gui/projtree.py" line="800" />
       <source>The Trash folder is already empty.</source>
       <translation>La cartella Cestino è già vuota.</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1181" />
-      <location filename="../novelwriter/gui/projtree.py" line="805" />
+      <location filename="../novelwriter/gui/projtree.py" line="806" />
       <source>Empty Trash</source>
       <translation>Svuota il cestino</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="806" />
+      <location filename="../novelwriter/gui/projtree.py" line="807" />
       <source>Permanently delete {0} file(s) from Trash?</source>
       <translation>Eliminare definitivamente {0} file(s) dal cestino?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="908" />
-      <location filename="../novelwriter/gui/projtree.py" line="852" />
+      <location filename="../novelwriter/gui/projtree.py" line="909" />
+      <location filename="../novelwriter/gui/projtree.py" line="853" />
       <source>Delete</source>
       <translation>Elimina</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="853" />
+      <location filename="../novelwriter/gui/projtree.py" line="854" />
       <source>Move '{0}' to Trash?</source>
       <translation>Spostare '{0}' nel Cestino?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="887" />
+      <location filename="../novelwriter/gui/projtree.py" line="888" />
       <source>Root folders can only be deleted when they are empty.</source>
       <translation>Le cartelle radice possono essere eliminate solo quando sono vuote.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="909" />
+      <location filename="../novelwriter/gui/projtree.py" line="910" />
       <source>Permanently delete '{0}'?</source>
       <translation>Eliminare definitivamente '{0}'?</translation>
     </message>
