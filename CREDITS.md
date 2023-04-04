@@ -21,6 +21,7 @@ translators for the languages currently available:
 * French: Jan Lüdke (@jyhelle)
 * German: Myian (@heymyian)
 * Italian: Riccardo Mangili
+* Japanese: hebekeg (@hebekeg)
 * Latin American Spanish: Tommy Marplatt (@tmarplatt)
 * Norwegian: Veronica Berglyd Olsen (@vkbo)
 * Portuguese: Bruno Meneguello (@bkmeneguello)
