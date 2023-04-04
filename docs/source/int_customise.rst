@@ -19,22 +19,34 @@ Spell Check Dictionaries
 novelWriter uses Enchant_ as the spell checking tool. Depending on your operating system, it may or
 may not load installed spell check dictionaries.
 
-Linux
-   On Linux, you generally only have to install hunspell or aspell dictionaries on your system like
-   you do for other applications. See your distro's documentation for how to do this. These
-   dictionaries should then show up as available spell check languages in novelWriter.
+Linux and MacOS
+---------------
+
+On Linux and MacOS, you generally only have to install hunspell or aspell dictionaries on your
+system like you do for other applications. See your distro or OS documentation for how to do this.
+These dictionaries should then show up as available spell check languages in novelWriter.
 
 Windows
-   For Windows, English is included with the installation. For other languages you have to download
-   and add dictionaries yourself. You can find the various dictionaries on the `Free Desktop`_
-   website. You should find a folder for your language, if it is available at all, and download the
-   files ending with ``.aff`` and ``.dic``. These files must then be copied to the following
-   location:
+-------
 
-   ``C:\Users\<USER>\AppData\Local\enchant\hunspell``
+For Windows, English is included with the installation. For other languages you have to download
+and add dictionaries yourself. You can find the various dictionaries on the `Free Desktop`_
+website. You should find a folder for your language, if it is available at all, and download the
+files ending with ``.aff`` and ``.dic``. These files must then be copied to the following location:
 
-   This assumes your user profile is stored at ``C:\Users\<USER>``. The last one or two folders may
-   not exist, so you may need to create them.
+``C:\Users\<USER>\AppData\Local\enchant\hunspell``
+
+This assumes your user profile is stored at ``C:\Users\<USER>``. The last one or two folders may
+not exist, so you may need to create them.
+
+.. note::
+
+   The Free Desktop link points to a repository, and what may look like file links inside the
+   dictionary folder are actually links to web pages. If you right-click and download those, you
+   get HTML files, not dictionaries!
+
+   In order to download the actual dictionary files, right-click the "plain" label at the end of
+   each line and download that.
 
 
 .. _a_custom_theme:
