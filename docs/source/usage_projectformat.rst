@@ -5,7 +5,7 @@ Project Format Changes
 **********************
 
 .. _File Format Spec 1.5: _static/fileformatspec15.pdf
-.. _documentation: https://novelwriter.readthedocs.io
+.. _documentation: https://docs.novelwriter.io/
 
 Most of the changes to the file formats over the history of novelWriter have no impact on the
 user-side of things. The project files are generally updated automatically. However, some of the
