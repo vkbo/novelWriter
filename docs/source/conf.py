@@ -83,37 +83,12 @@ latex_elements = {
     ),
     "figure_align": "htbp",
 }
+latex_logo = "_static/novelwriter-pdf.png"
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [(
-    master_doc, "manual.tex", "novelWriter Documentation",
+    master_doc, "manual.tex", "User Guide",
     author, "manual"
 )]
-
-# -- Options for Man Page Output ---------------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [(
-    master_doc, "novelwriter", "novelWriter Documentation", [author], 1
-)]
-
-# -- Options for Texinfo Output ----------------------------------------------
-
-# Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
-#  dir menu entry, description, category)
-texinfo_documents = [(
-    master_doc, "novelWriter", "novelWriter Documentation", author,
-    "novelWriter", "Markdown-like editor for novels.", "Miscellaneous"
-)]
-
-# -- Options for EPub Output -------------------------------------------------
-
-# Bibliographic Dublin Core info.
-epub_title = project
-
-# A list of files that should not be packed into the epub file.
-epub_exclude_files = ["search.html"]

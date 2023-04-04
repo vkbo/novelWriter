@@ -65,11 +65,11 @@ __date__       = "2023-02-26"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 __url__        = "https://novelwriter.io"
+__docurl__     = "https://docs.novelwriter.io/"
 __sourceurl__  = "https://github.com/vkbo/novelWriter"
 __issuesurl__  = "https://github.com/vkbo/novelWriter/issues"
 __helpurl__    = "https://github.com/vkbo/novelWriter/discussions"
 __releaseurl__ = "https://github.com/vkbo/novelWriter/releases/latest"
-__docurl__     = "https://novelwriter.readthedocs.io"
 
 logger = logging.getLogger(__name__)
 
