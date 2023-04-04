@@ -1925,7 +1925,7 @@
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="797" />
       <source>Check Spelling</source>
-      <translation>Comprobar Ortografía</translation>
+      <translation>Comprobar la Ortografía</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="805" />
@@ -3352,44 +3352,44 @@
       <translation>Nueva Carpeta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="788" />
+      <location filename="../novelwriter/gui/projtree.py" line="789" />
       <source>There is currently no Trash folder in this project.</source>
       <translation>No hay actualmente una carpeta Papelera en este proyecto.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="799" />
+      <location filename="../novelwriter/gui/projtree.py" line="800" />
       <source>The Trash folder is already empty.</source>
       <translation>La carpeta Papelera ya está vacía.</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1181" />
-      <location filename="../novelwriter/gui/projtree.py" line="805" />
+      <location filename="../novelwriter/gui/projtree.py" line="806" />
       <source>Empty Trash</source>
       <translation>Vaciar la Papelera</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="806" />
+      <location filename="../novelwriter/gui/projtree.py" line="807" />
       <source>Permanently delete {0} file(s) from Trash?</source>
       <translation>¿Eliminar {0} archivo(s) permanentemente de la Papelera?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="908" />
-      <location filename="../novelwriter/gui/projtree.py" line="852" />
+      <location filename="../novelwriter/gui/projtree.py" line="909" />
+      <location filename="../novelwriter/gui/projtree.py" line="853" />
       <source>Delete</source>
       <translation>Eliminar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="853" />
+      <location filename="../novelwriter/gui/projtree.py" line="854" />
       <source>Move '{0}' to Trash?</source>
       <translation>¿Mover '{0}' a la Papelera?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="887" />
+      <location filename="../novelwriter/gui/projtree.py" line="888" />
       <source>Root folders can only be deleted when they are empty.</source>
       <translation>Las carpetas raíz sólo pueden eliminarse si están vacías.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="909" />
+      <location filename="../novelwriter/gui/projtree.py" line="910" />
       <source>Permanently delete '{0}'?</source>
       <translation>¿Eliminar Permanentemente '{0}'?</translation>
     </message>

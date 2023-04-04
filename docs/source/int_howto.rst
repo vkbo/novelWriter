@@ -51,7 +51,7 @@ Merge Multiple Documents Into One
 If you need to merge a set of documents in your project into a single document, you can achieve
 this by first making a new folder for just that purpose, and drag all the files you want merged
 into this folder. Then you can right click the folder, select :guilabel:`Transform` and
-:guilabel:`Merge Documents in FOlder`.
+:guilabel:`Merge Documents in Folder`.
 
 In the dialog that pops up, the documents will be in the same order as in the folder, but you can
 also rearrange them here of you wish.
