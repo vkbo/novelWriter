@@ -167,14 +167,13 @@ pip install -r requirements.txt
 
 On Linux, the dependencies are generally available in the standard package repository.
 
-For more details on running or installing from source, see
-[Other Setup Methods](https://novelwriter.readthedocs.io/en/latest/setup_other.html).
+For more details on running or installing from source, see the
+[documentation](https://novelwriter.readthedocs.io).
 
 ## Debugging
 
-If you need to debug novelWriter, you must run it from the command line. It takes a few parameters,
-which can be listed with the switch `--help`. The `--info`, `--debug` or `--verbose` flags are
-particularly useful for increasing logging output for debugging.
+If you need to debug novelWriter, you can run it from the command line and increase terminal output
+by adding the `--info` or `--debug` flags. By default, only warnings and errors are printed.
 
 ## Licence
 
