@@ -4,7 +4,7 @@
 How Data is Stored
 ******************
 
-.. _documentation: https://novelwriter.readthedocs.io
+.. _documentation: https://docs.novelwriter.io/
 
 This section contains details of how novelWriter stores and handles the project data.
 

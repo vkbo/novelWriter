@@ -1,15 +1,9 @@
-#############################
-Documentation for novelWriter
-#############################
+######################
+novelWriter User Guide
+######################
 
-.. image:: images/novelwriter_logo.png
-   :class: dark-light
-   :align: right
-   :width: 64
-
-| **For Release:** |release|
-| **Last Updated:** |today|
-|
+| **Release Version:** |release|
+| **Updated:** |today|
 
 novelWriter is an open source plain text editor designed for writing novels assembled from many
 smaller text documents. It uses a minimal formatting syntax inspired by Markdown, and adds a meta
@@ -40,7 +34,7 @@ the pip tool. See :ref:`a_started` for more details.
 **Useful Links**
 
 * Website: https://novelwriter.io
-* Documentation: https://novelwriter.readthedocs.io
+* Documentation: https://docs.novelwriter.io
 * Internationalisation: https://crowdin.com/project/novelwriter
 * Source Code: https://github.com/vkbo/novelWriter
 * Source Releases: https://github.com/vkbo/novelWriter/releases
