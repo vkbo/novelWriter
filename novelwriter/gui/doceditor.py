@@ -753,7 +753,8 @@ class GuiDocEditor(QTextEdit):
         self.mainGui.mainMenu.setSpellCheck(theMode)
         self.theProject.data.setSpellCheck(theMode)
         self.highLight.setSpellCheck(theMode)
-        if not self._bigDoc:
+        if not self._bigDoc or theMode is False:
+            # We don't run the spell checker automatically on big docs
             self.spellCheckDocument()
 
         logger.debug("Spell check is set to '%s'", str(theMode))
