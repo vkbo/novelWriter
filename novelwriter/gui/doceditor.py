@@ -724,14 +724,13 @@ class GuiDocEditor(QTextEdit):
         _, theProvider = self.spEnchant.describeDict()
 
         self.spellDictionaryChanged.emit(str(theLang), str(theProvider))
-
         if not self._bigDoc:
             self.spellCheckDocument()
 
         return True
 
     def toggleSpellCheck(self, theMode):
-        """This is the master spell check setting function, and this one
+        """This is the main spell check setting function, and this one
         should call all other setSpellCheck functions in other classes.
         If the spell check mode (theMode) is not defined (None), then
         toggle the current status saved in this class.
@@ -768,18 +767,16 @@ class GuiDocEditor(QTextEdit):
         the undo stack, so we only do it for big documents.
         """
         logger.debug("Running spell checker")
-        if self._spellCheck:
-            bfTime = time()
-            qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
-            if self._bigDoc:
-                theText = self.getText()
-                self.setPlainText(theText)
-            else:
-                self.highLight.rehighlight()
-            qApp.restoreOverrideCursor()
-            afTime = time()
-            logger.debug("Document highlighted in %.3f ms", 1000*(afTime-bfTime))
-            self.mainGui.mainStatus.setStatus(self.tr("Spell check complete"))
+        start = time()
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+        if self._bigDoc:
+            # This is much faster for large documents
+            self.setPlainText(self.getText())
+        else:
+            self.highLight.rehighlight()
+        qApp.restoreOverrideCursor()
+        logger.debug("Document highlighted in %.3f ms", 1000*(time() - start))
+        self.mainGui.mainStatus.setStatus(self.tr("Spell check complete"))
 
         return True
 
