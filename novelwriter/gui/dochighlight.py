@@ -224,13 +224,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             hReg.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
             self.rxRules.append((hReg, regRules))
 
-        # Build a QRegExp for spell checker
+        # Build a QRegExp for the spell checker
         # Include additional characters that the highlighter should
         # consider to be word separators
-        wordSep  = r"\-_\+/"
-        wordSep += nwUnicode.U_ENDASH
-        wordSep += nwUnicode.U_EMDASH
-        self.spellRx = QRegularExpression(r"\b[^\s"+wordSep+r"]+\b")
+        uCode = nwUnicode.U_ENDASH + nwUnicode.U_EMDASH
+        self.spellRx = QRegularExpression(r"\b[^\s\-\+\/" + uCode + r"]+\b")
         self.spellRx.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
         return True
@@ -389,7 +387,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         if not self.spellCheck:
             return
 
-        rxSpell = self.spellRx.globalMatch(theText, 0)
+        rxSpell = self.spellRx.globalMatch(theText.replace("_", " "), 0)
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not self.spEnchant.checkWord(rxMatch.captured(0)):
