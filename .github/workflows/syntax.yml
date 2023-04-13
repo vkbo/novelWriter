@@ -4,11 +4,11 @@ on:
   push:
     branches: 
       - main
-      - patch
+      - dev
   pull_request:
     branches:
       - main
-      - patch
+      - dev
 
 jobs:
   checkSyntax:

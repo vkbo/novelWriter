@@ -59,17 +59,17 @@ __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "2.1-alpha0"
-__hexversion__ = "0x020100a0"
-__date__       = "2023-02-12"
+__version__    = "2.0.6"
+__hexversion__ = "0x020006f0"
+__date__       = "2023-02-26"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 __url__        = "https://novelwriter.io"
+__docurl__     = "https://docs.novelwriter.io/"
 __sourceurl__  = "https://github.com/vkbo/novelWriter"
 __issuesurl__  = "https://github.com/vkbo/novelWriter/issues"
 __helpurl__    = "https://github.com/vkbo/novelWriter/discussions"
 __releaseurl__ = "https://github.com/vkbo/novelWriter/releases/latest"
-__docurl__     = "https://novelwriter.readthedocs.io"
 
 logger = logging.getLogger(__name__)
 
@@ -246,6 +246,8 @@ def main(sysArgs=None):
         nwApp.setApplicationName(CONFIG.appName)
         nwApp.setApplicationVersion(__version__)
         nwApp.setOrganizationDomain(__domain__)
+        nwApp.setOrganizationName(__domain__)
+        nwApp.setDesktopFileName(CONFIG.appName)
 
         # Connect the exception handler before making the main GUI
         sys.excepthook = exceptionHandler

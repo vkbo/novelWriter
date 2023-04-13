@@ -15,10 +15,13 @@ jobs:
       - name: Install Packages (apt)
         run: |
           sudo apt update
-          sudo apt install qttools5-dev-tools python3-sphinx latexmk texlive texlive-latex-extra
+          sudo apt install qttools5-dev-tools latexmk texlive texlive-latex-extra
 
       - name: Checkout Source
         uses: actions/checkout@v3
+
+      - name: Install Packages (pip)
+        run: pip install -r docs/source/requirements.txt
 
       - name: Build Assets
         run: python setup.py qtlrelease sample manual
@@ -37,9 +40,10 @@ jobs:
   buildLinux:
     needs: buildAssets
     runs-on: ubuntu-latest
-    env:
-      LINUX_TAG: "manylinux_2_28_x86_64"
-      PY_VER: "3.10"
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+        linux-tag: ["manylinux_2_24_x86_64", "manylinux_2_28_x86_64"]
     steps:
       - name: Python Setup
         uses: actions/setup-python@v4
@@ -67,13 +71,13 @@ jobs:
           path: novelwriter/assets
 
       - name: Build AppImage
-        run: python setup.py build-appimage --linux-tag ${{ env.LINUX_TAG }} --python-version ${{ env.PY_VER }}
+        run: python setup.py build-appimage --linux-tag ${{ matrix.linux-tag }} --python-version ${{ matrix.python-version }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: novelWriter-${{ env.VERSION }}-py${{ env.PY_VER }}-${{ env.LINUX_TAG }}.AppImage
-          path: dist_appimage/novelWriter-${{ env.VERSION }}-py${{ env.PY_VER }}-${{ env.LINUX_TAG }}.AppImage
+          name: novelWriter-${{ env.VERSION }}-py${{ matrix.python-version }}-${{ matrix.linux-tag }}.AppImage
+          path: dist_appimage/novelWriter-${{ env.VERSION }}-py${{ matrix.python-version }}-${{ matrix.linux-tag }}.AppImage
           if-no-files-found: error
           retention-days: 1
 
