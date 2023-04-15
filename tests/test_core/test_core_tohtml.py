@@ -574,10 +574,6 @@ def testCoreToHtml_Methods(mockGUI):
     assert theHtml.theMarkdown[-1] == (
         "Text with <brackets> &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
     )
-    theHtml.doPostProcessing()
-    assert theHtml.theMarkdown[-1] == (
-        "Text with <brackets> &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
-    )
 
     # Result Size
     assert theHtml.getFullResultSize() == 147

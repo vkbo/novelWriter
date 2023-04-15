@@ -40,6 +40,17 @@ from novelwriter.constants import nwConst, nwRegEx, nwUnicode
 logger = logging.getLogger(__name__)
 
 
+def stripEscape(text):
+    """Helper function to strip escaped markdown characters from
+    paragraph text.
+    """
+    if "\\" in text:
+        # Checking first is slightly slower when there are escaped
+        # characters in the text, but significantly faster when not
+        return text.replace(r"\*", "*").replace(r"\~", "~").replace(r"\_", "_")
+    return text
+
+
 class Tokenizer(ABC):
 
     # In-Text Format
@@ -338,23 +349,6 @@ class Tokenizer(ABC):
         trDict = {nwUnicode.U_MAPOSS: nwUnicode.U_RSQUO}
         self._theText = self._theText.translate(str.maketrans(trDict))
 
-        return
-
-    def doPostProcessing(self):
-        """Do some postprocessing. Overloaded by subclasses. This just
-        does the standard escaped characters.
-        """
-        escapeDict = {
-            r"\*": "*",
-            r"\~": "~",
-            r"\_": "_",
-        }
-        escReplace = re.compile(
-            "|".join([re.escape(k) for k in escapeDict.keys()]), flags=re.DOTALL
-        )
-        self._theResult = escReplace.sub(
-            lambda x: escapeDict[x.group(0)], self._theResult
-        )
         return
 
     def tokenizeText(self):

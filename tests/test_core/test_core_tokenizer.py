@@ -24,7 +24,7 @@ import pytest
 from tools import C, buildTestProject, readFile
 
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import Tokenizer
+from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
 
 class BareTokenizer(Tokenizer):
@@ -203,11 +203,6 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     theToken.doPreProcessing()
     assert theToken._theText == docTextR
 
-    # Post Processing
-    theToken._theResult = r"This is text with escapes: \** \~~ \__"
-    theToken.doPostProcessing()
-    assert theToken.theResult == "This is text with escapes: ** ~~ __"
-
     # Save File
     savePath = fncPath / "dump.nwd"
     theToken.saveRawMarkdown(savePath)
@@ -221,6 +216,16 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
         theToken.doConvert()
 
 # END Test testCoreToken_TextOps
+
+
+@pytest.mark.core
+def testCoreToken_StripEscape():
+    """Test the stripEscape helper function.
+    """
+    text = r"This is text with escapes: \** \~~ \__"
+    assert stripEscape(text) == "This is text with escapes: ** ~~ __"
+
+    return
 
 
 @pytest.mark.core
