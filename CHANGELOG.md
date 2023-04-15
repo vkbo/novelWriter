@@ -1,5 +1,57 @@
 # novelWriter Changelog
 
+## Version 2.0.7 [2023-04-16]
+
+### Release Notes
+
+This is a patch release that fixes a few issues and adds a Japanese translation.
+
+The issues were mostly related to spell checking. In particular, issues with finding the word
+boundary when using underscore characters for italics markup. These issues should now be resolved.
+In addition, escaped markup characters are now renderred properly in HTML and ODT build formats.
+
+A few usability improvements have also been made. The Add Item menu in the project tree no longer
+shows the options to create Novel Documents when an item in the tree is selected that cannot hold
+such a document. In addition, the "Change Label" context menu entry has been changed to say
+"Rename", which is a more logical choice.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where novelWriter sometimes shows up in the desktop environment on Linux under
+  another name than it's supposed to, which meant it would show up without the correct icon. The
+  desktop environment was apparently guessing its name based on various values. It is now set
+  explicitly. PR #1405.
+* Fixed an issue where the syntax highlighting for spell checked words were not cleared when spell
+  checking was disabled. Issue #1414. PR #1416.
+* Fixed a series of issues with spell checking of words and sentences with italics styling using
+  underscores. The spell checker relies on RegEx for splitting words, and RegEx considers the
+  underscore a word character. Issue #1415. PR #1417.
+* Fixed an issue where escaped markup characters were not being cleaned up when building HTML and
+    ODT outputs. Issue #1412. PR #1418.
+
+**Usability Fixes**
+
+* The context menu entry "Change Label" in the project tree has now been changed to say "Rename",
+  which matches with the main menu, and is also more in line with what users expect. PR #1403.
+* The entries for creating new Novel Documents in the project tree's Add Item menu are now hidden
+  when the select item in the tree does not allow Novel Documents. This is less confusing than the
+  previous behaviour where it would just create a Project Note regardless of selected file option.
+  Issue #1404. PR #1406.
+
+**Internationalisation**
+
+* Added Japanese translation, contributed by @hebekeg. PR #1407.
+* Updated existing translations. PR #1407.
+
+**Packaging**
+
+* Legacy AppImage formats have been added to support glibc 2.24. This is a temporary solution until
+  the AppImage base image is deprecated later in 2023. Issue #1391. PR #1410.
+
+----
+
 ## Version 2.0.6 [2023-02-26]
 
 ### Release Notes
