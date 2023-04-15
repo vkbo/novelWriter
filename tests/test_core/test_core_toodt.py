@@ -221,7 +221,21 @@ def testCoreToOdt_TextFormatting(mockGUI):
         "</office:text>"
     )
 
-    # Tabs and Breaks
+    # Test for issue #1412
+    # ====================
+    # See: https://github.com/vkbo/novelWriter/issues/1412
+
+    theDoc.initDocument()
+    theTxt = "Test text \\**_bold_** and more."
+    theFmt = "             I    i            "
+    theDoc._addTextPar("Standard", oStyle, theTxt, theFmt=theFmt)
+    assert theDoc.getErrors() == []
+    assert xmlToText(theDoc._xText) == (
+        "<office:text>"
+        "<text:p text:style-name=\"Standard\">Test text **<text:span text:style-name=\"T2\">"
+        "bold</text:span>** and more.</text:p>"
+        "</office:text>"
+    )
 
 # END Test testCoreToOdt_TextFormatting
 

@@ -222,10 +222,12 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
 def testCoreToken_StripEscape():
     """Test the stripEscape helper function.
     """
-    text = r"This is text with escapes: \** \~~ \__"
-    assert stripEscape(text) == "This is text with escapes: ** ~~ __"
+    text1 = "This is text with escapes: \\** \\~~ \\__"
+    text2 = "This is text with escapes: ** ~~ __"
+    assert stripEscape(text1) == "This is text with escapes: ** ~~ __"
+    assert stripEscape(text2) == "This is text with escapes: ** ~~ __"
 
-    return
+# END Test testCoreToken_StripEscape
 
 
 @pytest.mark.core
