@@ -378,7 +378,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
 @pytest.mark.core
 def testCoreToHtml_SpecialCases(mockGUI):
-    """Test some special cases that has caused errors in the past.
+    """Test some special cases that have caused errors in the past.
     """
     theProject = NWProject(mockGUI)
     theHtml = ToHtml(theProject)
@@ -415,8 +415,8 @@ def testCoreToHtml_SpecialCases(mockGUI):
         "<p>Test &gt; text <em>&lt;<strong>bold</strong>&gt;</em> and more.</p>\n"
     )
 
-    # Test for bug #950
-    # =================
+    # Test for issue #950
+    # ===================
     # See: https://github.com/vkbo/novelWriter/issues/950
 
     theHtml.setComments(True)
@@ -434,6 +434,17 @@ def testCoreToHtml_SpecialCases(mockGUI):
     theHtml.doConvert()
     assert theHtml.theResult == (
         "<h1 style='page-break-before: always;'>Heading &lt;1&gt;</h1>\n"
+    )
+
+    # Test for issue #1412
+    # ====================
+    # See: https://github.com/vkbo/novelWriter/issues/1412
+
+    theHtml._theText = "Test text \\**_bold_** and more.\n"
+    theHtml.tokenizeText()
+    theHtml.doConvert()
+    assert theHtml.theResult == (
+        "<p>Test text **<em>bold</em>** and more.</p>\n"
     )
 
 # END Test testCoreToHtml_SpecialCases
@@ -571,10 +582,6 @@ def testCoreToHtml_Methods(mockGUI):
     theHtml.doPreProcessing()
     theHtml.tokenizeText()
     theHtml.doConvert()
-    assert theHtml.theMarkdown[-1] == (
-        "Text with <brackets> &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
-    )
-    theHtml.doPostProcessing()
     assert theHtml.theMarkdown[-1] == (
         "Text with <brackets> &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
     )

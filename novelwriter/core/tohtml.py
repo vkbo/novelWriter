@@ -26,7 +26,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 
 from novelwriter.constants import nwKeyWords, nwLabels, nwHtmlUnicode
-from novelwriter.core.tokenizer import Tokenizer
+from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
 logger = logging.getLogger(__name__)
 
@@ -269,7 +269,7 @@ class ToHtml(Tokenizer):
                     parStyle = hStyle
                 for xPos, xLen, xFmt in reversed(tFormat):
                     tTemp = tTemp[:xPos] + htmlTags[xFmt] + tTemp[xPos+xLen:]
-                thisPar.append(tTemp.rstrip())
+                thisPar.append(stripEscape(tTemp.rstrip()))
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 tmpResult.append(self._formatSynopsis(tText))

@@ -32,7 +32,7 @@ from zipfile import ZipFile
 from datetime import datetime
 
 from novelwriter.constants import nwKeyWords, nwLabels
-from novelwriter.core.tokenizer import Tokenizer
+from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
 logger = logging.getLogger(__name__)
 
@@ -1356,16 +1356,17 @@ class XMLParagraph:
 
         return
 
-    def appendText(self, tText):
+    def appendText(self, text):
         """Append text to the XML element. We do this one character at
         the time in order to be able to process line breaks, tabs and
         spaces separately. Multiple spaces above one are concatenated
         into a single tag, and must therefore be processed separately.
         """
+        text = stripEscape(text)
         nSpaces = 0
-        self._rawTxt += tText
+        self._rawTxt += text
 
-        for c in tText:
+        for c in text:
             if c == " ":
                 nSpaces += 1
                 continue
