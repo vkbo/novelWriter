@@ -23,7 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import novelwriter
 
 from PyQt5.QtCore import QRect, QPoint
@@ -31,8 +30,6 @@ from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QStyle, QStyleOptionTab, QStylePainter, QTabBar,
     QTabWidget, QVBoxLayout
 )
-
-logger = logging.getLogger(__name__)
 
 
 class NPagedDialog(QDialog):

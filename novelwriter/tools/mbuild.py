@@ -24,16 +24,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
+
 import novelwriter
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QHBoxLayout, QHeaderView, QPushButton, QStackedWidget,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView, QDialog, QHBoxLayout, QHeaderView, QPushButton,
+    QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter.core.buildsettings import BuildSettings
+from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
 logger = logging.getLogger(__name__)
@@ -242,10 +244,28 @@ class GuiBuildFilterTab(QWidget):
         self.modeBox.addWidget(self.includedButton)
         self.modeBox.addWidget(self.excludedButton)
 
+        # Filer Options
+        self.filterOpt = NSwitchBox(self, iPx)
+
+        self.filterOpt.addLabel(self.tr("Document Types"))
+        self.filterOpt.addItem(QIcon(), "Novel Documents", "doc:novel")
+        self.filterOpt.addItem(QIcon(), "Project Notes", "doc:notes")
+        self.filterOpt.addItem(QIcon(), "Inactive Documents", "doc:inactive")
+        self.filterOpt.addSeparator()
+
+        # Root Classes
+        self.filterOpt.addLabel(self.tr("Root Folders"))
+        for tHandle, nwItem in self.theProject.tree.iterRoots(None):
+            if not nwItem.isInactiveClass():
+                itemIcon = self.mainTheme.getItemIcon(
+                    nwItem.itemType, nwItem.itemClass, nwItem.itemLayout
+                )
+                self.filterOpt.addItem(itemIcon, nwItem.itemName, f"root:{tHandle}")
+
         # Assemble
         self.selectionBox = QVBoxLayout()
         self.selectionBox.addLayout(self.modeBox)
-        self.selectionBox.addStretch()
+        self.selectionBox.addWidget(self.filterOpt)
 
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.optTree)

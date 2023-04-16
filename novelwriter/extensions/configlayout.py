@@ -23,7 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
 import novelwriter
 
 from PyQt5.QtGui import QColor, QPalette
@@ -32,8 +31,6 @@ from PyQt5.QtWidgets import (
     QGridLayout, QHBoxLayout, QLabel, QLineEdit, QSizePolicy, QVBoxLayout,
     QWidget
 )
-
-logger = logging.getLogger(__name__)
 
 
 class NConfigLayout(QGridLayout):
