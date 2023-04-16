@@ -771,7 +771,6 @@ class GuiBuildNovel(QDialog):
                     bldObj.doHeaders()
                     if doConvert:
                         bldObj.doConvert()
-                    bldObj.doPostProcessing()
 
             except Exception:
                 logger.error("Failed to build document '%s'", tItem.itemHandle)
