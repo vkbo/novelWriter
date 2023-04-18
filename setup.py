@@ -331,6 +331,12 @@ def buildQtI18nTS(sysArgs):
     print("Building Qt Translation Files")
     print("=============================")
 
+    try:
+        from PyQt6.lupdate import lupdate
+    except ImportError:
+        print("ERROR: This command requires lupdate from PyQt6")
+        sys.exit(1)
+
     print("")
     print("Scanning Source Tree:")
     print("")
@@ -386,10 +392,7 @@ def buildQtI18nTS(sysArgs):
     print("Updating Language Files:")
     print("")
 
-    # Using the pylupdate tool from PyQt6 instead as it supports TS file
-    # format 2.1. This can perhaps be changed back to the installed tool
-    # at a later time.
-    from i18n.pylupdate6 import lupdate
+    # Using the pylupdate tool from PyQt6 as it supports TS file format 2.1.
     lupdate(srcList, tsList, no_obsolete=True, no_summary=False)
 
     print("")
