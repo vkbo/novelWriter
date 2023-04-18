@@ -20,13 +20,14 @@ cleanup () {
 trap cleanup EXIT
 
 echo "Script Dir: $SCRIPT_DIR"
-echo "Building in: $BUILD_DIR"
-
-# --- Prepare Files ----------------------------------------------------------------------------- #
+echo "Build Dir: $BUILD_DIR"
 
 pushd "$SRC_DIR" || exit 1
 
 VERSION="$(python3 setup.py version)"
+echo "novelWriter Version: $VERSION"
+
+# --- Prepare Files ----------------------------------------------------------------------------- #
 
 echo "Generating Info.plist"
 python3 setup.py gen-plist
@@ -72,16 +73,15 @@ bash Miniconda3-latest-MacOSX-x86_64.sh -b -p ~/miniconda -f
 rm Miniconda3-latest-MacOSX-x86_64.sh 
 export PATH="$HOME/miniconda/bin:$PATH"
 
-echo "Creating conda env ..."
-
+echo "Creating Conda env ..."
 conda create -n novelWriter -c conda-forge python=3.10 --yes
 source activate novelWriter
 
-echo "installing dictionaries ..."
+echo "Installing dictionaries ..."
 conda install -c conda-forge enchant hunspell-en --yes
 
 # Install dependencies
-echo "installing python dependencies ..."
+echo "Installing Python dependencies ..."
 pip install -r "$SRC_DIR/requirements.txt"
 
 # Leave conda env
@@ -89,7 +89,7 @@ conda deactivate
 
 # --- Build App --------------------------------------------------------------------------------- #
 
-echo "Building app bundle ..."
+echo "Building App bundle ..."
 
 # Create .app Framework
 mkdir -p novelWriter.app/Contents/
@@ -127,7 +127,6 @@ chmod a+x novelWriter.app/Contents/MacOS/novelWriter
 # Do codesigning
 # echo "Signing bundle ..."
 # sudo codesign --sign - --deep --force --entitlements "$SCRIPT_DIR/../macos/App.entitlements" --options runtime "novelWriter.app/Contents/MacOS/novelWriter"
-
 
 # --- Cleanup ----------------------------------------------------------------------------------- #
 
