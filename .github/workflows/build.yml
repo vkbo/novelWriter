@@ -83,8 +83,6 @@ jobs:
 
   buildMac:
     needs: buildAssets
-    strategy:
-      fail-fast: false
     runs-on: macos-12
     steps:
       - name: Checkout
@@ -109,14 +107,14 @@ jobs:
       - name: Upload App Zip
         uses: actions/upload-artifact@v3
         with:
-          name: novelWriter-${{ env.VERSION }}-macos.app.zip
-          path: dist_macos/novelWriter-${{ env.VERSION }}-macos.app.zip
+          name: novelWriter-${{ env.VERSION }}.app.zip
+          path: dist_macos/novelWriter-*.app.zip
           retention-days: 1
 
       - name: Upload DMG
         uses: actions/upload-artifact@v3
         with:
-          name: novelWriter-${{ env.VERSION }}-macos.dmg
-          path: dist_macos/novelWriter-${{ env.VERSION }}-macos.dmg
+          name: novelWriter-${{ env.VERSION }}.dmg
+          path: dist_macos/novelWriter-*.dmg
           if-no-files-found: error
           retention-days: 1
