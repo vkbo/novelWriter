@@ -406,6 +406,7 @@ def genMacOSPlist():
     """
     numVers, _, _ = extractVersion()
     pkgVers = compactVersion(numVers)
+    
     outDir = "setup/macos"
 
     copyrightYear = datetime.datetime.now().year
@@ -423,6 +424,49 @@ def genMacOSPlist():
 
     print(f"Writing Info.plist to {outDir}/Info.plist")
     writeFile(f"{outDir}/Info.plist", plistXML)
+
+    return
+
+
+def generateAppdateXML():
+    """update the appdata.xml used by appimage and flatpak.
+    """
+    numVers, _, relDate = extractVersion()
+    pkgVers = compactVersion(numVers)
+
+    outDir = "setup/data"
+
+    curDate = f"date=\"{relDate}\""
+
+    releaseTemplate = (
+        "<release version=\"{version}\" {date}>\n"
+        "    <url>https://github.com/vkbo/novelWriter/releases/tag/v{version}</url>\n"
+        "</release>"
+    )
+
+    tagsOutput = subprocess.check_output(["git", "--no-pager", "tag", "-l", "v*.*.*"])
+
+    strVersions = tagsOutput.decode("utf-8").split("\n")
+
+    versions = [tuple(map(int, v.lstrip("v").split("."))) for v in strVersions if v]
+    sortedVersions = [".".join(map(str, v)) for v in reversed(sorted(versions))] 
+
+    xmlVersions = [releaseTemplate.format(version=v, date="") for v in sortedVersions if v != pkgVers]
+    xmlVersions.insert(0, releaseTemplate.format(version=pkgVers, date=curDate))
+
+    from textwrap import indent
+
+    versionsXMLBlock = indent("\n".join(xmlVersions) + "\n", "    " * 2).lstrip()
+
+    desc = indent(readFile("setup/description_short.txt"), "    " * 2).lstrip()
+
+    xmlAppData = readFile("setup/linux/novelwriter.appdata.xml.template").format(
+        releases=versionsXMLBlock,
+        description=desc
+    )
+
+    print(f"Writing novelwriter.appdata.xml to {outDir}/novelwriter.appdata.xml")
+    writeFile(f"{outDir}/novelwriter.appdata.xml", xmlAppData)
 
     return
 
@@ -619,6 +663,7 @@ def makeMinimalPackage(targetOS):
     print("")
 
     rootFiles = [
+        "MANIFEST.in",
         "README.md",
         "LICENSE.md",
         "CREDITS.md",
@@ -1093,8 +1138,7 @@ def makeAppImage(sysArgs):
     # Write Metadata
     # ==============
 
-    appDescription = readFile("setup/description_short.txt")
-    appdataXML = readFile("setup/novelwriter.appdata.xml").format(description=appDescription)
+    appdataXML = readFile("setup/data/novelwriter.appdata.xml")
     writeFile(f"{imageDir}/novelwriter.appdata.xml", appdataXML)
     print("Wrote:  novelwriter.appdata.xml")
 
@@ -1146,6 +1190,71 @@ def makeAppImage(sysArgs):
 
     return unparsedArgs
 
+
+
+##
+#  Make a flatpak
+##
+
+def makeFlatpak():
+    """build a flatpak bundle localy (not for flathub)
+    """
+
+    print("")
+    print("Build flatpak")
+    print("==============")
+    print("")
+
+    numVers, _, relDate = extractVersion()
+    pkgVers = compactVersion(numVers)
+    relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
+
+    bldDir = "dist_flatpak"
+    bldPkg = f"novelwriter_{pkgVers}"
+    outDir = f"{bldDir}/{bldPkg}"
+
+
+    # Set Up Folders
+    # ==============
+
+    if not os.path.isdir(bldDir):
+        os.mkdir(bldDir)
+
+    if os.path.isdir(outDir):
+        print("Removing old build files ...")
+        print("")
+        shutil.rmtree(outDir)
+
+    os.mkdir(outDir)
+
+    # Build flatpak
+    # ==============
+
+    manifestPath = "setup/flatpak/io.novelwriter.novelWriter.yml"
+
+    bundlFile = f"{bldDir}/novelWriter-{pkgVers}-linux.flatpak"
+
+    try:
+        subprocess.call([
+            "flatpak-builder", f"--repo={outDir}/repo", "--install-deps-from=flathub", "--force-clean", outDir, manifestPath
+        ])
+        subprocess.call([
+            "flatpak", "build-bundle", f"{outDir}/repo",  bundlFile,  "io.novelwriter.novelWriter",
+        ])
+    except Exception as exc:
+        print("Flatpak build: FAILED")
+        print("")
+        print(str(exc))
+        print("")
+        print("Dependencies:")
+        print(" * flatpak flatpak-builder")
+        print("")
+        sys.exit(1)
+
+    shaFile = makeCheckSum(os.path.basename(bundlFile), cwd=bldDir)
+
+    toUpload(bundlFile)
+    toUpload(shaFile)
 
 ##
 #  Make Windows Setup EXE (build-win-exe)
@@ -1905,6 +2014,8 @@ if __name__ == "__main__":
         "                   The package must be built from a minimal windows zip file.",
         "    build-appimage Build an AppImage. Argument --linux-tag defaults to",
         "                   manylinux1_x86_64 / i386, and --python-version to 3.10.",
+        "    build-flatpak  Build a flatpak bundle. Builds a local flatpak for install,",
+        "                   not for distribution to flathub.",
         "",
         "System Install:",
         "",
@@ -1973,6 +2084,10 @@ if __name__ == "__main__":
     if "gen-plist" in sys.argv:
         sys.argv.remove("gen-plist")
         genMacOSPlist()
+    
+    if "gen-appdata" in sys.argv:
+        sys.argv.remove("gen-appdata")
+        generateAppdateXML()
 
     # Python Packaging
     # ================
@@ -2017,6 +2132,14 @@ if __name__ == "__main__":
             sys.argv = makeAppImage(sys.argv)  # Build appimage and prune its args
         else:
             print("ERROR: Command 'build-appimage' can only be used on Linux")
+            sys.exit(1)
+    
+    if "build-flatpak" in sys.argv:
+        sys.argv.remove("build-flatpak")
+        if hostOS == OS_LINUX:
+            makeFlatpak()
+        else:
+            print("ERROR: Command 'install-flatpak' can only be used on Linux")
             sys.exit(1)
 
     # General Installers

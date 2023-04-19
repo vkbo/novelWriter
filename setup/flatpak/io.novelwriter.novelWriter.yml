@@ -1,0 +1,56 @@
+app-id: io.novelwriter.novelWriter
+runtime: org.kde.Platform
+runtime-version: '5.15-22.08'
+sdk: org.kde.Sdk
+base: com.riverbankcomputing.PyQt.BaseApp
+base-version: '5.15-22.08'
+cleanup-commands:
+  - /app/cleanup-BaseApp.sh
+command: novelwriter
+build-options:
+  env:
+    - BASEAPP_REMOVE_WEBENGINE=1
+finish-args:
+  # X11 + XShm access
+  - --share=ipc
+  - --socket=x11
+  # Wayland access
+  - --socket=wayland
+  # Needs to talk to the network:
+  - --share=network
+  # Needs to save files locally
+  #- --filesystem=xdg-documents
+  #- --filesystem=home
+  - --filesystem=host
+  # OpenGL rendering
+  - --device=dri
+modules:
+  - pypi-deps.json
+  - name: enchant
+    buildsystem: autotools
+    sources:
+      - type: archive
+        url: https://github.com/AbiWord/enchant/releases/download/v2.3.3/enchant-2.3.3.tar.gz
+        sha256: 3da12103f11cf49c3cf2fd2ce3017575c5321a489e5b9bfa81dd91ec413f3891
+  - name: novelWriter
+    buildsystem: simple
+    build-commands:
+      - python3 setup.py install --prefix=${FLATPAK_DEST} --root=/
+      - install -Dm644 setup/data/novelwriter.desktop -T ${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop
+      - sed -i 's/Icon=novelwriter/Icon=io.novelwriter.novelWriter/' ${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop
+      - for size in 16x16 24x24 32x32 48x48 64x64 128x128 256x256; do 
+        install -Dm644 -T setup/data/hicolor/$size/apps/novelwriter.png ${FLATPAK_DEST}/share/icons/hicolor/$size/apps/${FLATPAK_ID}.png;
+        install -Dm644 -T setup/data/hicolor/$size/mimetypes/application-x-novelwriter-project.png ${FLATPAK_DEST}/share/icons/hicolor/$size/mimetypes/application-x-novelwriter-project.png;
+        done
+      - install -Dm644 -T setup/data/hicolor/scalable/apps/novelwriter.svg ${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg;
+      - install -Dm644 -T setup/data/hicolor/scalable/mimetypes/application-x-novelwriter-project.svg ${FLATPAK_DEST}/share/icons/hicolor/scalable/mimetypes/application-x-novelwriter-project.svg;
+      - install -Dm644 -T setup/data/novelwriter.appdata.xml ${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml
+      - sed -i 's/novelwriter.desktop/io.novelwriter.novelWriter.desktop/' ${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml
+    sources:
+      - type: dir
+        path: ../../
+      # - type: archive
+      #   path: ../../dist_minimal/novelwriter-1.7b1-minimal-linux.zip
+      #   sha256: d4ff96280d5c86c2b14d7ed3b9bc3ced0fc401530afd1eeaa5aabc63d10ceba6
+      #   strip-components: 0
+
