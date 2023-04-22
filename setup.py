@@ -108,7 +108,8 @@ def writeFile(fileName, writeText):
 
 def toUpload(srcPath, dstName=None):
     """Copy a file produced by one of the build functions to the uplaod
-    directory. The file can optionally be given a new name."""
+    directory. The file can optionally be given a new name.
+    """
     uplDir = "dist_upload"
     if not os.path.isdir(uplDir):
         os.mkdir(uplDir)
