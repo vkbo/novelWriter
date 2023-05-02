@@ -77,7 +77,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: novelWriter-${{ env.VERSION }}-py${{ matrix.python-version }}-${{ matrix.linux-tag }}.AppImage
-          path: dist_appimage/novelWriter-${{ env.VERSION }}-py${{ matrix.python-version }}-${{ matrix.linux-tag }}.AppImage
+          path: dist_appimage/*.AppImage
           if-no-files-found: error
           retention-days: 1
 
