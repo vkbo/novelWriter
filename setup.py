@@ -940,11 +940,10 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
 ##
 
 def makeAppImage(sysArgs):
-    """Build an Appimage.
+    """Build an AppImage.
     """
     import glob
     import argparse
-    import platform
 
     try:
         import python_appimage  # noqa F401
@@ -968,15 +967,15 @@ def makeAppImage(sysArgs):
     parser.add_argument(
         "--linux-tag",
         nargs="?",
-        default=f"manylinux2010_{platform.machine()}",
+        default="manylinux_2_28_x86_64",
         help=(
-            "linux compatibility tag (e.g. manylinux1_x86_64) \n"
+            "linux compatibility tag (e.g. manylinux_2_28_x86_64) \n"
             "see https://python-appimage.readthedocs.io/en/latest/#available-python-appimages \n"
             "and https://github.com/pypa/manylinux for a list of valid tags"
         ),
     )
     parser.add_argument(
-        "--python-version", nargs="?", default="3.10", help="python version (e.g. 3.10)"
+        "--python-version", nargs="?", default="3.11", help="python version (e.g. 3.11)"
     )
 
     args, unparsedArgs = parser.parse_known_args(sysArgs)
@@ -1020,9 +1019,8 @@ def makeAppImage(sysArgs):
 
     os.mkdir(imageDir)
 
-    # Remove old Appimages
+    # Remove old AppImages
     outFiles = glob.glob(f"{bldDir}/*.AppImage")
-
     if outFiles:
         print("Removing old AppImages")
         print("")
@@ -1112,17 +1110,17 @@ def makeAppImage(sysArgs):
     print("Wrote:  requirements.txt")
 
     shutil.copyfile("setup/data/novelwriter.desktop", f"{imageDir}/novelwriter.desktop")
-    print("Copied: setup/data/novelwriter.desktop")
+    print("Copied: novelwriter.desktop")
 
     shutil.copyfile("setup/icons/novelwriter.svg", f"{imageDir}/novelwriter.svg")
-    print("Copied: setup/icons/novelwriter.svg")
+    print("Copied: novelwriter.svg")
 
     shutil.copyfile(
         "setup/data/hicolor/256x256/apps/novelwriter.png", f"{imageDir}/novelwriter.png"
     )
-    print("Copied: setup/data/hicolor/256x256/apps/novelwriter.png")
+    print("Copied: novelwriter.png")
 
-    # Build Appimage
+    # Build AppImage
     # ==============
 
     try:
@@ -1135,13 +1133,17 @@ def makeAppImage(sysArgs):
         print("")
         print(str(exc))
         print("")
-        print("Dependencies:")
-        print(" * pip install python-appimage")
-        print("")
         sys.exit(1)
 
+    linuxLabel = ""
+    if not linuxTag.startswith("manylinux_2_28"):
+        linuxLabel = "-oldlinux"
+        if not linuxTag.endswith("x86_64"):
+            # manylinux_2_28 only comes in 64 bit, so this one only applies to older images
+            linuxLabel += "-32bit"
+
     bldFile = glob.glob(f"{bldDir}/*.AppImage")[0]
-    outFile = f"{bldDir}/novelWriter-{pkgVers}-py{pythonVer}-{linuxTag}.AppImage"
+    outFile = f"{bldDir}/novelWriter-{pkgVers}{linuxLabel}.AppImage"
     os.rename(bldFile, outFile)
     shaFile = makeCheckSum(os.path.basename(outFile), cwd=bldDir)
 
@@ -1372,11 +1374,8 @@ def makeWindowsEmbedded(sysArgs):
         print(str(exc))
         sys.exit(1)
 
-    issName = os.path.join("dist", f"novelwriter-{packVersion}-win10-amd64-setup.exe")
-    newName = os.path.join("dist", f"novelwriter-{packVersion}-py{pyVers}-win10-amd64-setup.exe")
-    os.replace(issName, newName)
-
-    print(f"Installer: {newName}")
+    print("")
+    print("Done")
     print("")
 
     return
@@ -1908,7 +1907,7 @@ if __name__ == "__main__":
         "    build-win-exe  Build a setup.exe file with Python embedded for Windows.",
         "                   The package must be built from a minimal windows zip file.",
         "    build-appimage Build an AppImage. Argument --linux-tag defaults to",
-        "                   manylinux1_x86_64 / i386, and --python-version to 3.10.",
+        "                   manylinux_2_28_x86_64 / i386, and --python-version to 3.11.",
         "",
         "System Install:",
         "",

@@ -154,16 +154,7 @@ rm lib/python3.*/site-packages/PyQt5/Qt/lib/libQt5WebEngine* || true
 popd || exit 1
 popd || exit 1
 
-# --- Create App Bundle-------------------------------------------------------------------------- #
-
-echo "Packageing App ..."
 mkdir -p $RLS_DIR
-
-pushd $BUILD_DIR || exit 1
-zip -qr novelWriter.app.zip  novelWriter.app
-popd || exit 1
-
-mv -v $BUILD_DIR/novelWriter.app.zip $RLS_DIR/novelWriter-"${VERSION}".app.zip
 
 # --- Create DMG -------------------------------------------------------------------------------- #
 
