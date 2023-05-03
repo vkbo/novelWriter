@@ -166,3 +166,7 @@ create-dmg --volname "novelWriter $VERSION" --volicon $SRC_DIR/setup/macos/novel
     --window-pos 200 120 --window-size 800 400 --icon-size 100 \
     --icon novelWriter.app 200 190 --hide-extension novelWriter.app \
     --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}".dmg "$BUILD_DIR"/
+
+pushd $RLS_DIR || exit 1
+sha256sum novelWriter-"${VERSION}".dmg | tee novelWriter-"${VERSION}".dmg.sha256
+popd || exit 1
