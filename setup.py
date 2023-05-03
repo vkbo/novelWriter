@@ -73,12 +73,10 @@ def extractVersion(beQuiet=False):
     return numVers, hexVers, relDate
 
 
-def compactVersion(numVers):
-    """Make the version number more compact."""
-    numVers = numVers.replace("-alpha", "a")
-    numVers = numVers.replace("-beta", "b")
-    numVers = numVers.replace("-rc", "rc")
-    return numVers
+def compactVersion(version):
+    """Make the version number more compact.
+    """
+    return version.replace("-alpha", "a").replace("-beta", "b").replace("-rc", "rc")
 
 
 def sysCall(callArgs, cwd=None):
@@ -95,14 +93,14 @@ def sysCall(callArgs, cwd=None):
 def readFile(fileName):
     """Read an entire file and return as a string.
     """
-    with open(fileName, mode="r") as inFile:
+    with open(fileName, mode="r", encoding="utf-8") as inFile:
         return inFile.read()
 
 
 def writeFile(fileName, writeText):
     """Write string to file.
     """
-    with open(fileName, mode="w+") as outFile:
+    with open(fileName, mode="w+", encoding="utf-8") as outFile:
         outFile.write(writeText)
 
 
@@ -128,7 +126,7 @@ def makeCheckSum(sumFile, cwd=None):
         else:
             shaFile = os.path.join(cwd, sumFile+".sha256")
         with open(shaFile, mode="w") as fOut:
-            subprocess.call(["sha256sum", sumFile], stdout=fOut, cwd=cwd)
+            subprocess.call(["shasum", "-a", "256", sumFile], stdout=fOut, cwd=cwd)
         print("SHA256 Sum: %s" % shaFile)
     except Exception as exc:
         print("Could not generate sha256 file")
@@ -406,7 +404,7 @@ def buildQtI18nTS(sysArgs):
 ##
 
 def genMacOSPlist():
-    """Set necessary values for .plist file.
+    """Set necessary values for .plist file for MacOS build.
     """
     numVers, _, _ = extractVersion()
     pkgVers = compactVersion(numVers)
@@ -969,13 +967,13 @@ def makeAppImage(sysArgs):
         nargs="?",
         default="manylinux_2_28_x86_64",
         help=(
-            "linux compatibility tag (e.g. manylinux_2_28_x86_64) \n"
+            "Linux compatibility tag (e.g. manylinux_2_28_x86_64)\n"
             "see https://python-appimage.readthedocs.io/en/latest/#available-python-appimages \n"
             "and https://github.com/pypa/manylinux for a list of valid tags"
         ),
     )
     parser.add_argument(
-        "--python-version", nargs="?", default="3.11", help="python version (e.g. 3.11)"
+        "--python-version", nargs="?", default="3.11", help="Python version (e.g. 3.11)"
     )
 
     args, unparsedArgs = parser.parse_known_args(sysArgs)
@@ -1907,7 +1905,7 @@ if __name__ == "__main__":
         "    build-win-exe  Build a setup.exe file with Python embedded for Windows.",
         "                   The package must be built from a minimal windows zip file.",
         "    build-appimage Build an AppImage. Argument --linux-tag defaults to",
-        "                   manylinux_2_28_x86_64 / i386, and --python-version to 3.11.",
+        "                   manylinux_2_28_x86_64, and --python-version to 3.11.",
         "",
         "System Install:",
         "",
