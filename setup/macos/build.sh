@@ -168,5 +168,5 @@ create-dmg --volname "novelWriter $VERSION" --volicon $SRC_DIR/setup/macos/novel
     --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}".dmg "$BUILD_DIR"/
 
 pushd $RLS_DIR || exit 1
-sha256sum novelWriter-"${VERSION}".dmg | tee novelWriter-"${VERSION}".dmg.sha256
+shasum -a 256 novelWriter-"${VERSION}".dmg | tee novelWriter-"${VERSION}".dmg.sha256
 popd || exit 1
