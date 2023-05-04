@@ -1,4 +1,3 @@
-# Minimal PEP 518 pyproject file
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
