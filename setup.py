@@ -2064,6 +2064,14 @@ if __name__ == "__main__":
 
     # Run the standard setup
     import setuptools  # noqa: F401
+    import warnings  # noqa: F401
+    warnings.warn(
+        "The setuptools section of setup.py is deprecated and will be removed "
+        "in a future release and the setup.py file will be renamed to avoid "
+        "conflicts with build tools. Please don't use the 'setup.py install' "
+        "command, and instead use the pip and build commands.",
+        DeprecationWarning
+    )
     setuptools.setup()
 
 # END Main

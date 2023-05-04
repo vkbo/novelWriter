@@ -25,6 +25,14 @@ running:
 
    python setup.py help
 
+.. warning::
+
+   Calling ``setup.py install`` has been deprecated for a while, and this approach is no longer
+   actively supported in novelWriter either.
+
+   In a future version, the packaging and asset build tools part of the current ``setup.py`` file
+   will be moved to another script and the ``setup.py`` file removed entirely.
+
 
 .. _a_source_depend:
 
@@ -95,11 +103,6 @@ install, here with example version number 2.0.7, but your may be different:
 .. code-block:: bash
 
    pip install --user dist/novelWriter-2.0.7-py3-none-any.whl
-
-.. warning::
-
-   Calling ``setup.py install`` has been deprecated for a while, and this approach is no longer
-   actively supported in novelWriter either.
 
 
 .. _a_source_i18n:
