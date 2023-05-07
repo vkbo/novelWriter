@@ -45,6 +45,13 @@ class NSwitchBox(QScrollArea):
         self._wSwitch = 2*self._hSwitch
         self._sIcon = int(round(0.8*baseSize))
 
+        self.clear()
+
+        return
+
+    def clear(self):
+        """Rebuild the content of the core widget.
+        """
         self._content = QGridLayout()
         self._content.setColumnStretch(1, 1)
 

@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
     QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
-from novelwriter.core.buildsettings import BuildSettings
+from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
@@ -62,6 +62,7 @@ class GuiBuildManuscript(QDialog):
         self.buildOpts = {
             "name": self.tr("Default Settings"),
             "settings": BuildSettings(),
+            "filter": {},
         }
 
         self.setWindowTitle(self.tr("Build Manuscript"))
@@ -131,6 +132,7 @@ class GuiBuildManuscript(QDialog):
         """Populate the tool widgets.
         """
         self.optTabSelect.populateTree()
+        self.optTabSelect.populateFilters()
         return
 
     ##
@@ -168,7 +170,10 @@ class GuiBuildFilterTab(QWidget):
     C_STATUS = 2
 
     D_HANDLE = Qt.UserRole
-    D_FILE   = Qt.UserRole + 1
+    D_FILTER = Qt.UserRole + 1
+    D_FILE   = Qt.UserRole + 2
+    D_NOVEL  = Qt.UserRole + 3
+    D_ACTIVE = Qt.UserRole + 4
 
     F_NONE     = 0
     F_FILTERED = 1
@@ -246,21 +251,7 @@ class GuiBuildFilterTab(QWidget):
 
         # Filer Options
         self.filterOpt = NSwitchBox(self, iPx)
-
-        self.filterOpt.addLabel(self.tr("Document Types"))
-        self.filterOpt.addItem(QIcon(), "Novel Documents", "doc:novel")
-        self.filterOpt.addItem(QIcon(), "Project Notes", "doc:notes")
-        self.filterOpt.addItem(QIcon(), "Inactive Documents", "doc:inactive")
-        self.filterOpt.addSeparator()
-
-        # Root Classes
-        self.filterOpt.addLabel(self.tr("Root Folders"))
-        for tHandle, nwItem in self.theProject.tree.iterRoots(None):
-            if not nwItem.isInactiveClass():
-                itemIcon = self.mainTheme.getItemIcon(
-                    nwItem.itemType, nwItem.itemClass, nwItem.itemLayout
-                )
-                self.filterOpt.addItem(itemIcon, nwItem.itemName, f"root:{tHandle}")
+        self.filterOpt.switchToggled.connect(self._applyFilterSwitch)
 
         # Assemble
         self.selectionBox = QVBoxLayout()
@@ -285,6 +276,8 @@ class GuiBuildFilterTab(QWidget):
             tHandle = nwItem.itemHandle
             pHandle = nwItem.itemParent
             isFile = nwItem.isFileType()
+            isNovel = nwItem.isNovelLike()
+            isActive = nwItem.isActive
 
             if nwItem.isInactiveClass():
                 logger.debug("Skipping inactive class item '%s'", tHandle)
@@ -296,7 +289,7 @@ class GuiBuildFilterTab(QWidget):
             )
 
             if isFile:
-                iconName = "checked" if nwItem.isActive else "unchecked"
+                iconName = "checked" if isActive else "unchecked"
             else:
                 iconName = "noncheckable"
 
@@ -304,7 +297,10 @@ class GuiBuildFilterTab(QWidget):
             trItem.setIcon(self.C_NAME, itemIcon)
             trItem.setText(self.C_NAME, nwItem.itemName)
             trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
+            trItem.setData(self.C_DATA, self.D_FILTER, False)
             trItem.setData(self.C_DATA, self.D_FILE, isFile)
+            trItem.setData(self.C_DATA, self.D_NOVEL, isNovel)
+            trItem.setData(self.C_DATA, self.D_ACTIVE, isActive)
             trItem.setIcon(self.C_ACTIVE, self.mainTheme.getIcon(iconName))
 
             trItem.setTextAlignment(self.C_NAME, Qt.AlignLeft)
@@ -328,6 +324,45 @@ class GuiBuildFilterTab(QWidget):
 
         self._setTreeItemMode()
 
+        return
+
+    def populateFilters(self):
+        """Populate the filter options switches.
+        """
+        self.filterOpt.clear()
+        buildSettings = self.buildOpts["settings"]
+
+        self.filterOpt.addLabel(buildSettings.getLabel("filter"))
+        for key in ["filter.includeNovel", "filter.includeNotes", "filter.includeInactive"]:
+            label = buildSettings.getLabel(key)
+            value = buildSettings.getValue(key)
+            if isinstance(value, bool):
+                self.filterOpt.addItem(QIcon(), label, f"doc:{key}", default=value)
+
+        self.filterOpt.addSeparator()
+
+        # Root Classes
+        self.filterOpt.addLabel(self.tr("Root Folders"))
+        for tHandle, nwItem in self.theProject.tree.iterRoots(None):
+            if not nwItem.isInactiveClass():
+                itemIcon = self.mainTheme.getItemIcon(
+                    nwItem.itemType, nwItem.itemClass, nwItem.itemLayout
+                )
+                self.filterOpt.addItem(itemIcon, nwItem.itemName, f"root:{tHandle}", default=True)
+
+        return
+
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot(str, bool)
+    def _applyFilterSwitch(self, key, state):
+        """A filter switch has been toggled, so update the settings.
+        """
+        if key.startswith("doc:"):
+            self.buildOpts["settings"].setValue(key[4:], state)
+            self._setTreeItemMode()
         return
 
     ##
@@ -360,15 +395,15 @@ class GuiBuildFilterTab(QWidget):
     def _setTreeItemMode(self):
         """Update the filtered mode icon on all items.
         """
-        buildSettings = self.buildOpts["settings"]
+        filtered = self.buildOpts["settings"].checkItemFilter(self.theProject)
         for tHandle, item in self._treeMap.items():
-            if item.data(self.C_DATA, self.D_FILE):
-                if buildSettings.isIncluded(tHandle):
-                    item.setIcon(self.C_STATUS, self._statusFlags[self.F_INCLUDED][1])
-                elif buildSettings.isExcluded(tHandle):
-                    item.setIcon(self.C_STATUS, self._statusFlags[self.F_EXCLUDED][1])
-                else:
-                    item.setIcon(self.C_STATUS, self._statusFlags[self.F_FILTERED][1])
+            allow, mode = filtered.get(tHandle, (False, FilterMode.UNKNOWN))
+            if mode == FilterMode.INCLUDED:
+                item.setIcon(self.C_STATUS, self._statusFlags[self.F_INCLUDED][1])
+            elif mode == FilterMode.EXCLUDED:
+                item.setIcon(self.C_STATUS, self._statusFlags[self.F_EXCLUDED][1])
+            elif mode == FilterMode.FILTERED and allow:
+                item.setIcon(self.C_STATUS, self._statusFlags[self.F_FILTERED][1])
             else:
                 item.setIcon(self.C_STATUS, self._statusFlags[self.F_NONE][1])
 

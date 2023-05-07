@@ -25,7 +25,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 
+from enum import Enum
+
 from PyQt5.QtCore import QT_TRANSLATE_NOOP
+
+from novelwriter.core.item import NWItem
+from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +40,9 @@ logger = logging.getLogger(__name__)
 # (type, default, [min value, max value])
 
 SETTINGS_TEMPLATE = {
+    "filter.includeNovel":    (bool, True),
+    "filter.includeNotes":    (bool, False),
+    "filter.includeInactive": (bool, False),
     "headings.fmtTitle":      (str, "%title%"),
     "headings.fmtChapter":    (str, "%title%"),
     "headings.fmtUnnumbered": (str, "%title%"),
@@ -42,6 +50,10 @@ SETTINGS_TEMPLATE = {
     "headings.fmtSection":    (str, "%title%"),
     "headings.hideScene":     (bool, False),
     "headings.hideSection":   (bool, False),
+    "text.includeSynopsis":   (bool, False),
+    "text.includeComments":   (bool, False),
+    "text.includeKeywords":   (bool, False),
+    "text.includeBody":       (bool, True),
     "format.buildLang":       (str, "en_GB"),
     "format.textFont":        (str, ""),
     "format.textSize":        (str, ""),
@@ -52,14 +64,12 @@ SETTINGS_TEMPLATE = {
     "html.addStyles":         (bool, False),
 }
 
-FILTER_TEMPLATE = {
-    "filter.includeSynopsis": (bool, False),
-    "filter.includeComments": (bool, False),
-    "filter.includeKeywords": (bool, False),
-    "filter.includeBody":     (bool, True),
-}
-
 SETTINGS_LABELS = {
+    "filter":                 QT_TRANSLATE_NOOP("Builds", "Document Types"),
+    "filter.includeNovel":    QT_TRANSLATE_NOOP("Builds", "Novel Documents"),
+    "filter.includeNotes":    QT_TRANSLATE_NOOP("Builds", "Project Notes"),
+    "filter.includeInactive": QT_TRANSLATE_NOOP("Builds", "Inactive Documents"),
+
     "headings":               QT_TRANSLATE_NOOP("Builds", "Headings"),
     "headings.fmtTitle":      QT_TRANSLATE_NOOP("Builds", "Title Heading"),
     "headings.fmtChapter":    QT_TRANSLATE_NOOP("Builds", "Chapter Heading"),
@@ -68,6 +78,12 @@ SETTINGS_LABELS = {
     "headings.fmtSection":    QT_TRANSLATE_NOOP("Builds", "Section Heading"),
     "headings.hideScene":     QT_TRANSLATE_NOOP("Builds", "Hide Scene"),
     "headings.hideSection":   QT_TRANSLATE_NOOP("Builds", "Hide Section"),
+
+    "text":                   QT_TRANSLATE_NOOP("Builds", "Text Content"),
+    "text.includeSynopsis":   QT_TRANSLATE_NOOP("Builds", "Synopsis"),
+    "text.includeComments":   QT_TRANSLATE_NOOP("Builds", "Comments"),
+    "text.includeKeywords":   QT_TRANSLATE_NOOP("Builds", "Keywords"),
+    "text.includeBody":       QT_TRANSLATE_NOOP("Builds", "Body Text"),
 
     "format":                 QT_TRANSLATE_NOOP("Builds", "Text Format"),
     "format.buildLang":       QT_TRANSLATE_NOOP("Builds", "Build Language"),
@@ -84,26 +100,27 @@ SETTINGS_LABELS = {
     "html.addStyles":         QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
 }
 
-FILTER_LABELS = {
-    "filter.includeSynopsis": QT_TRANSLATE_NOOP("Builds", "Synopsis"),
-    "filter.includeComments": QT_TRANSLATE_NOOP("Builds", "Comments"),
-    "filter.includeKeywords": QT_TRANSLATE_NOOP("Builds", "Keywords"),
-    "filter.includeBody":     QT_TRANSLATE_NOOP("Builds", "Body Text"),
-}
+
+class FilterMode(Enum):
+
+    UNKNOWN = 0
+    FILTERED = 1
+    INCLUDED = 2
+    EXCLUDED = 3
+
+# END Enum FilterMode
 
 
 class BuildSettings:
 
     def __init__(self):
-
-        self._data = {}
-
         self._excluded = set()
         self._included = set()
-
-        self._loadTemplate()
-
+        self._settings = {k: v[1] for k, v in SETTINGS_TEMPLATE.items()}
         return
+
+    def isFiltered(self, tHandle):
+        return tHandle not in self._included and tHandle not in self._excluded
 
     def isIncluded(self, tHandle):
         return tHandle in self._included
@@ -132,13 +149,68 @@ class BuildSettings:
         self._included.discard(tHandle)
         return
 
-    ##
-    #  Internal Functions
-    ##
-
-    def _loadTemplate(self):
-        """Populate the data dictionary from the template.
+    def setValue(self, key, value):
+        """Set a specific value for a build setting.
         """
-        return
+        if key not in SETTINGS_TEMPLATE:
+            return False
+        definition = SETTINGS_TEMPLATE[key]
+        if not isinstance(value, definition[0]):
+            return False
+        if len(definition) == 4:
+            value = min(max(value, definition[2]), definition[3])
+        self._settings[key] = value
+        logger.debug(f"Build Setting '{key}' set to: {value}")
+        return True
+
+    def getLabel(self, key):
+        """Extract the label for a specific item.
+        """
+        return SETTINGS_LABELS.get(key, "ERROR")
+
+    def getValue(self, key):
+        """Get the value for a specific item, or return the default.
+        """
+        return self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+
+    def checkItemFilter(self, project):
+        """Return a dictionary of item handles with filter decissions
+        applied.
+        """
+        result = {}
+        if not isinstance(project, NWProject):
+            return result
+
+        incNovel = self.getValue("filter.includeNovel") or False
+        incNotes = self.getValue("filter.includeNotes") or False
+        incInactive = self.getValue("filter.includeInactive") or False
+
+        for item in project.tree:
+            tHandle = item.itemHandle
+            if not isinstance(item, NWItem):
+                result[tHandle] = (False, FilterMode.UNKNOWN)
+                continue
+            if not item.isFileType():
+                result[tHandle] = (False, FilterMode.FILTERED)
+                continue
+            if tHandle in self._included:
+                result[tHandle] = (True, FilterMode.INCLUDED)
+                continue
+            if tHandle in self._excluded:
+                result[tHandle] = (False, FilterMode.EXCLUDED)
+                continue
+
+            isNote = item.isNoteLayout()
+            isNovel = item.isDocumentLayout()
+            isActive = item.isActive
+
+            byActive = isActive or (not isActive and incInactive)
+            byLayout = (isNote and incNotes) or (isNovel and incNovel)
+
+            isAllowed = byActive and byLayout
+
+            result[tHandle] = (isAllowed, FilterMode.FILTERED)
+
+        return result
 
 # END Class BuildSettings
