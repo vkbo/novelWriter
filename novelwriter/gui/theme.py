@@ -444,7 +444,7 @@ class GuiIcons:
     """
 
     ICON_KEYS = {
-        # Project and GUI icons
+        # Project and GUI Icons
         "novelwriter", "build_excluded", "build_filtered", "build_included", "cls_archive",
         "cls_character", "cls_custom", "cls_entity", "cls_none", "cls_novel", "cls_object",
         "cls_plot", "cls_timeline", "cls_trash", "cls_world", "proj_chapter", "proj_details",

@@ -333,11 +333,24 @@ class GuiBuildFilterTab(QWidget):
         buildSettings = self.buildOpts["settings"]
 
         self.filterOpt.addLabel(buildSettings.getLabel("filter"))
-        for key in ["filter.includeNovel", "filter.includeNotes", "filter.includeInactive"]:
-            label = buildSettings.getLabel(key)
-            value = buildSettings.getValue(key)
-            if isinstance(value, bool):
-                self.filterOpt.addItem(QIcon(), label, f"doc:{key}", default=value)
+        self.filterOpt.addItem(
+            self.mainTheme.getIcon("proj_scene"),
+            buildSettings.getLabel("filter.includeNovel"),
+            "doc:filter.includeNovel",
+            default=buildSettings.getValue("filter.includeNovel") or False
+        )
+        self.filterOpt.addItem(
+            self.mainTheme.getIcon("proj_note"),
+            buildSettings.getLabel("filter.includeNotes"),
+            "doc:filter.includeNotes",
+            default=buildSettings.getValue("filter.includeNotes") or False
+        )
+        self.filterOpt.addItem(
+            self.mainTheme.getIcon("unchecked"),
+            buildSettings.getLabel("filter.includeInactive"),
+            "doc:filter.includeInactive",
+            default=buildSettings.getValue("filter.includeInactive") or False
+        )
 
         self.filterOpt.addSeparator()
 

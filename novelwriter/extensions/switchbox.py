@@ -43,7 +43,7 @@ class NSwitchBox(QScrollArea):
         self._index = 0
         self._hSwitch = baseSize
         self._wSwitch = 2*self._hSwitch
-        self._sIcon = int(round(0.8*baseSize))
+        self._sIcon = baseSize
 
         self.clear()
 
