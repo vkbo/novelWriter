@@ -11,9 +11,13 @@ echo " Building Packages"
 echo "================================================================================"
 echo ""
 python3 setup.py qtlrelease manual sample
-python3 setup.py sdist bdist_wheel
+python3 -m build
 mkdir -pv dist_upload
 cp -v dist/novelWriter-*.whl dist_upload/
+cd dist_upload
+FILE=$(ls -t | head -1)
+shasum -a 256 $FILE | tee $FILE.sha256
+cd ..
 
 echo ""
 echo " Checking Packages"

@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.11"]
         linux-tag: ["manylinux_2_24_x86_64", "manylinux_2_28_x86_64"]
     steps:
       - name: Python Setup
@@ -57,13 +57,6 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v3
 
-      - name: Get Version
-        shell: bash
-        run: |
-          NW_VER=$(python setup.py version)
-          echo "novelWriter Version: $NW_VER"
-          echo "VERSION=$NW_VER" >> $GITHUB_ENV
-
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
@@ -76,26 +69,19 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: novelWriter-${{ env.VERSION }}-py${{ matrix.python-version }}-${{ matrix.linux-tag }}.AppImage
-          path: dist_appimage/novelWriter-${{ env.VERSION }}-py${{ matrix.python-version }}-${{ matrix.linux-tag }}.AppImage
+          name: novelWriter-Packages
+          path: |
+            dist_appimage/novelWriter*.AppImage
+            dist_appimage/novelWriter*.AppImage.sha256
           if-no-files-found: error
           retention-days: 1
 
   buildMac:
     needs: buildAssets
-    strategy:
-      fail-fast: false
     runs-on: macos-12
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Get Version
-        shell: bash
-        run: |
-          NW_VER=$(python3 setup.py version)
-          echo "novelWriter Version: $NW_VER"
-          echo "VERSION=$NW_VER" >> $GITHUB_ENV
 
       - name: Download Artifacts
         uses: actions/download-artifact@v3
@@ -106,17 +92,12 @@ jobs:
       - name: Build App Bundle
         run: ./setup/macos/build.sh
 
-      - name: Upload App Zip
-        uses: actions/upload-artifact@v3
-        with:
-          name: novelWriter-${{ env.VERSION }}-macos.app.zip
-          path: dist_macos/novelWriter-${{ env.VERSION }}-macos.app.zip
-          retention-days: 1
-
       - name: Upload DMG
         uses: actions/upload-artifact@v3
         with:
-          name: novelWriter-${{ env.VERSION }}-macos.dmg
-          path: dist_macos/novelWriter-${{ env.VERSION }}-macos.dmg
+          name: novelWriter-Packages
+          path: |
+            dist_macos/novelWriter*.dmg
+            dist_macos/novelWriter*.dmg.sha256
           if-no-files-found: error
           retention-days: 1
