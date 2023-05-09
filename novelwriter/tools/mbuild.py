@@ -170,10 +170,7 @@ class GuiBuildFilterTab(QWidget):
     C_STATUS = 2
 
     D_HANDLE = Qt.UserRole
-    D_FILTER = Qt.UserRole + 1
-    D_FILE   = Qt.UserRole + 2
-    D_NOVEL  = Qt.UserRole + 3
-    D_ACTIVE = Qt.UserRole + 4
+    D_FILE   = Qt.UserRole + 1
 
     F_NONE     = 0
     F_FILTERED = 1
@@ -213,7 +210,6 @@ class GuiBuildFilterTab(QWidget):
         self.optTree.setHeaderHidden(True)
         self.optTree.setIndentation(iPx)
         self.optTree.setColumnCount(3)
-        self.optTree.setRootIsDecorated(False)
 
         treeHeader = self.optTree.header()
         treeHeader.setStretchLastSection(False)
@@ -269,18 +265,19 @@ class GuiBuildFilterTab(QWidget):
     def populateTree(self):
         """Build the tree of project items.
         """
+        logger.debug("Building project tree")
         self._treeMap = {}
         self.optTree.clear()
+        bSettings = self.buildOpts["settings"]
         for nwItem in self.theProject.getProjectItems():
 
             tHandle = nwItem.itemHandle
             pHandle = nwItem.itemParent
+            rHandle = nwItem.itemRoot
             isFile = nwItem.isFileType()
-            isNovel = nwItem.isNovelLike()
             isActive = nwItem.isActive
 
-            if nwItem.isInactiveClass():
-                logger.debug("Skipping inactive class item '%s'", tHandle)
+            if nwItem.isInactiveClass() or not bSettings.isRootAllowed(rHandle):
                 continue
 
             hLevel = nwItem.mainHeading
@@ -297,10 +294,7 @@ class GuiBuildFilterTab(QWidget):
             trItem.setIcon(self.C_NAME, itemIcon)
             trItem.setText(self.C_NAME, nwItem.itemName)
             trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
-            trItem.setData(self.C_DATA, self.D_FILTER, False)
             trItem.setData(self.C_DATA, self.D_FILE, isFile)
-            trItem.setData(self.C_DATA, self.D_NOVEL, isNovel)
-            trItem.setData(self.C_DATA, self.D_ACTIVE, isActive)
             trItem.setIcon(self.C_ACTIVE, self.mainTheme.getIcon(iconName))
 
             trItem.setTextAlignment(self.C_NAME, Qt.AlignLeft)
@@ -330,26 +324,26 @@ class GuiBuildFilterTab(QWidget):
         """Populate the filter options switches.
         """
         self.filterOpt.clear()
-        buildSettings = self.buildOpts["settings"]
+        bSettings = self.buildOpts["settings"]
 
-        self.filterOpt.addLabel(buildSettings.getLabel("filter"))
+        self.filterOpt.addLabel(bSettings.getLabel("filter"))
         self.filterOpt.addItem(
             self.mainTheme.getIcon("proj_scene"),
-            buildSettings.getLabel("filter.includeNovel"),
+            bSettings.getLabel("filter.includeNovel"),
             "doc:filter.includeNovel",
-            default=buildSettings.getValue("filter.includeNovel") or False
+            default=bSettings.getValue("filter.includeNovel") or False
         )
         self.filterOpt.addItem(
             self.mainTheme.getIcon("proj_note"),
-            buildSettings.getLabel("filter.includeNotes"),
+            bSettings.getLabel("filter.includeNotes"),
             "doc:filter.includeNotes",
-            default=buildSettings.getValue("filter.includeNotes") or False
+            default=bSettings.getValue("filter.includeNotes") or False
         )
         self.filterOpt.addItem(
             self.mainTheme.getIcon("unchecked"),
-            buildSettings.getLabel("filter.includeInactive"),
+            bSettings.getLabel("filter.includeInactive"),
             "doc:filter.includeInactive",
-            default=buildSettings.getValue("filter.includeInactive") or False
+            default=bSettings.getValue("filter.includeInactive") or False
         )
 
         self.filterOpt.addSeparator()
@@ -376,6 +370,9 @@ class GuiBuildFilterTab(QWidget):
         if key.startswith("doc:"):
             self.buildOpts["settings"].setValue(key[4:], state)
             self._setTreeItemMode()
+        elif key.startswith("root:"):
+            self.buildOpts["settings"].setSkipRoot(key[5:], state)
+            self.populateTree()
         return
 
     ##
@@ -385,7 +382,7 @@ class GuiBuildFilterTab(QWidget):
     def _setSelectedMode(self, mode):
         """Set the mode for the selected items.
         """
-        buildSettings = self.buildOpts["settings"]
+        bSettings = self.buildOpts["settings"]
 
         for item in self.optTree.selectedItems():
             if not isinstance(item, QTreeWidgetItem):
@@ -395,11 +392,11 @@ class GuiBuildFilterTab(QWidget):
             isFile = item.data(self.C_DATA, self.D_FILE)
             if isFile:
                 if mode == self.F_FILTERED:
-                    buildSettings.setFiltered(tHandle)
+                    bSettings.setFiltered(tHandle)
                 elif mode == self.F_INCLUDED:
-                    buildSettings.setIncluded(tHandle)
+                    bSettings.setIncluded(tHandle)
                 elif mode == self.F_EXCLUDED:
-                    buildSettings.setExcluded(tHandle)
+                    bSettings.setExcluded(tHandle)
 
         self._setTreeItemMode()
 
@@ -419,7 +416,6 @@ class GuiBuildFilterTab(QWidget):
                 item.setIcon(self.C_STATUS, self._statusFlags[self.F_FILTERED][1])
             else:
                 item.setIcon(self.C_STATUS, self._statusFlags[self.F_NONE][1])
-
         return
 
 # END Class GuiBuildFilterTab

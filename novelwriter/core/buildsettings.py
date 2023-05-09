@@ -103,10 +103,11 @@ SETTINGS_LABELS = {
 
 class FilterMode(Enum):
 
-    UNKNOWN = 0
+    UNKNOWN  = 0
     FILTERED = 1
     INCLUDED = 2
     EXCLUDED = 3
+    SKIPPED  = 4
 
 # END Enum FilterMode
 
@@ -114,6 +115,7 @@ class FilterMode(Enum):
 class BuildSettings:
 
     def __init__(self):
+        self._skiproot = set()
         self._excluded = set()
         self._included = set()
         self._settings = {k: v[1] for k, v in SETTINGS_TEMPLATE.items()}
@@ -127,6 +129,9 @@ class BuildSettings:
 
     def isExcluded(self, tHandle):
         return tHandle in self._excluded
+
+    def isRootAllowed(self, tHandle):
+        return tHandle not in self._skiproot
 
     def setFiltered(self, tHandle):
         """Set an item as filtered.
@@ -147,6 +152,15 @@ class BuildSettings:
         """
         self._excluded.add(tHandle)
         self._included.discard(tHandle)
+        return
+
+    def setSkipRoot(self, tHandle, state):
+        """Set a specific root folder as skipped or not.
+        """
+        if state is True:
+            self._skiproot.discard(tHandle)
+        elif state is False:
+            self._skiproot.add(tHandle)
         return
 
     def setValue(self, key, value):
@@ -190,8 +204,11 @@ class BuildSettings:
             if not isinstance(item, NWItem):
                 result[tHandle] = (False, FilterMode.UNKNOWN)
                 continue
+            if item.isInactiveClass() or (item.itemRoot in self._skiproot):
+                result[tHandle] = (False, FilterMode.SKIPPED)
+                continue
             if not item.isFileType():
-                result[tHandle] = (False, FilterMode.FILTERED)
+                result[tHandle] = (False, FilterMode.SKIPPED)
                 continue
             if tHandle in self._included:
                 result[tHandle] = (True, FilterMode.INCLUDED)
