@@ -26,7 +26,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import novelwriter
 
-from PyQt5.QtWidgets import QDialog, QGridLayout, QSplitter, QTextBrowser, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import (
+    QDialog, QGridLayout, QPushButton, QSplitter, QTextBrowser, QVBoxLayout,
+    QWidget, qApp
+)
+
+from novelwriter.common import getGuiItem
+from novelwriter.tools.manussettings import GuiBuildSettings
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +63,11 @@ class GuiBuildManuscript(QDialog):
         # Controls
         # ========
 
+        self.btnNew = QPushButton(self.tr("New Build"))
+        self.btnNew.clicked.connect(self._createNewBuild)
+
         self.optsGrid = QGridLayout()
+        self.optsGrid.addWidget(self.btnNew, 0, 0)
 
         self.manPreview = GuiManuscriptPreview(self)
 
@@ -96,6 +106,27 @@ class GuiBuildManuscript(QDialog):
         """
         self._saveSettings()
         event.accept()
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    def _createNewBuild(self):
+        """Open the build settings dialog for a new build.
+        """
+        dlgSettings = getGuiItem("GuiBuildSettings")
+        if dlgSettings is None:
+            dlgSettings = GuiBuildSettings(self)
+        assert isinstance(dlgSettings, GuiBuildSettings)
+
+        dlgSettings.setModal(False)
+        dlgSettings.show()
+        dlgSettings.raise_()
+        qApp.processEvents()
+
+        dlgSettings.loadContent({"name": self.tr("My Manuscript")})
+
         return
 
     ##

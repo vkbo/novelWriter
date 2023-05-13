@@ -60,11 +60,7 @@ class GuiBuildSettings(QDialog):
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
-        self.buildOpts = {
-            "name": self.tr("Default Settings"),
-            "settings": BuildSettings(),
-            "filter": {},
-        }
+        self._build = None
 
         self.setWindowTitle(self.tr("Manuscript Build Settings"))
         self.setMinimumWidth(self.mainConf.pxInt(700))
@@ -136,11 +132,17 @@ class GuiBuildSettings(QDialog):
 
         return
 
-    def loadContent(self):
-        """Populate the tool widgets.
+    def loadContent(self, data):
+        """Populate the child widgets.
         """
-        self.optTabSelect.populateTree()
-        self.optTabSelect.populateFilters()
+        if isinstance(self._build, BuildSettings) and self._build.changed:
+            logger.error("There are unsaved changes in this GUI")
+            return
+
+        self._build = BuildSettings()
+        self._build.unpack(data)
+        self.optTabSelect.loadContent(self._build)
+
         return
 
     ##
@@ -226,9 +228,9 @@ class GuiBuildFilterTab(QWidget):
         self.mainGui    = buildMain.mainGui
         self.mainTheme  = buildMain.mainGui.mainTheme
         self.theProject = buildMain.mainGui.theProject
-        self.buildOpts  = buildMain.buildOpts
 
         self._treeMap = {}
+        self._build = None
 
         self._statusFlags = {
             self.F_NONE:     ("", QIcon()),
@@ -319,6 +321,14 @@ class GuiBuildFilterTab(QWidget):
 
         return
 
+    def loadContent(self, build):
+        """Populate the widgets.
+        """
+        self._build = build
+        self._populateTree()
+        self._populateFilters()
+        return
+
     def mainSplitSizes(self):
         """Extract the sizes of the main splitter.
         """
@@ -327,13 +337,37 @@ class GuiBuildFilterTab(QWidget):
             return 0, 0
         return sizes[0], sizes[1]
 
-    def populateTree(self):
+    ##
+    #  Slots
+    ##
+
+    @pyqtSlot(str, bool)
+    def _applyFilterSwitch(self, key, state):
+        """A filter switch has been toggled, so update the settings.
+        """
+        if not isinstance(self._build, BuildSettings):
+            return
+        if key.startswith("doc:"):
+            self._build.setValue(key[4:], state)
+            self._setTreeItemMode()
+        elif key.startswith("root:"):
+            self._build.setSkipRoot(key[5:], state)
+            self._populateTree()
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _populateTree(self):
         """Build the tree of project items.
         """
+        if not isinstance(self._build, BuildSettings):
+            return
+
         logger.debug("Building project tree")
         self._treeMap = {}
         self.optTree.clear()
-        bSettings = self.buildOpts["settings"]
         for nwItem in self.theProject.getProjectItems():
 
             tHandle = nwItem.itemHandle
@@ -342,7 +376,7 @@ class GuiBuildFilterTab(QWidget):
             isFile = nwItem.isFileType()
             isActive = nwItem.isActive
 
-            if nwItem.isInactiveClass() or not bSettings.isRootAllowed(rHandle):
+            if nwItem.isInactiveClass() or not self._build.isRootAllowed(rHandle):
                 continue
 
             hLevel = nwItem.mainHeading
@@ -385,30 +419,31 @@ class GuiBuildFilterTab(QWidget):
 
         return
 
-    def populateFilters(self):
+    def _populateFilters(self):
         """Populate the filter options switches.
         """
         self.filterOpt.clear()
-        bSettings = self.buildOpts["settings"]
+        if not isinstance(self._build, BuildSettings):
+            return
 
-        self.filterOpt.addLabel(bSettings.getLabel("filter"))
+        self.filterOpt.addLabel(self._build.getLabel("filter"))
         self.filterOpt.addItem(
             self.mainTheme.getIcon("proj_scene"),
-            bSettings.getLabel("filter.includeNovel"),
+            self._build.getLabel("filter.includeNovel"),
             "doc:filter.includeNovel",
-            default=bSettings.getValue("filter.includeNovel") or False
+            default=self._build.getValue("filter.includeNovel") or False
         )
         self.filterOpt.addItem(
             self.mainTheme.getIcon("proj_note"),
-            bSettings.getLabel("filter.includeNotes"),
+            self._build.getLabel("filter.includeNotes"),
             "doc:filter.includeNotes",
-            default=bSettings.getValue("filter.includeNotes") or False
+            default=self._build.getValue("filter.includeNotes") or False
         )
         self.filterOpt.addItem(
             self.mainTheme.getIcon("unchecked"),
-            bSettings.getLabel("filter.includeInactive"),
+            self._build.getLabel("filter.includeInactive"),
             "doc:filter.includeInactive",
-            default=bSettings.getValue("filter.includeInactive") or False
+            default=self._build.getValue("filter.includeInactive") or False
         )
 
         self.filterOpt.addSeparator()
@@ -424,30 +459,11 @@ class GuiBuildFilterTab(QWidget):
 
         return
 
-    ##
-    #  Slots
-    ##
-
-    @pyqtSlot(str, bool)
-    def _applyFilterSwitch(self, key, state):
-        """A filter switch has been toggled, so update the settings.
-        """
-        if key.startswith("doc:"):
-            self.buildOpts["settings"].setValue(key[4:], state)
-            self._setTreeItemMode()
-        elif key.startswith("root:"):
-            self.buildOpts["settings"].setSkipRoot(key[5:], state)
-            self.populateTree()
-        return
-
-    ##
-    #  Internal Functions
-    ##
-
     def _setSelectedMode(self, mode):
         """Set the mode for the selected items.
         """
-        bSettings = self.buildOpts["settings"]
+        if not isinstance(self._build, BuildSettings):
+            return
 
         for item in self.optTree.selectedItems():
             if not isinstance(item, QTreeWidgetItem):
@@ -457,11 +473,11 @@ class GuiBuildFilterTab(QWidget):
             isFile = item.data(self.C_DATA, self.D_FILE)
             if isFile:
                 if mode == self.F_FILTERED:
-                    bSettings.setFiltered(tHandle)
+                    self._build.setFiltered(tHandle)
                 elif mode == self.F_INCLUDED:
-                    bSettings.setIncluded(tHandle)
+                    self._build.setIncluded(tHandle)
                 elif mode == self.F_EXCLUDED:
-                    bSettings.setExcluded(tHandle)
+                    self._build.setExcluded(tHandle)
 
         self._setTreeItemMode()
 
@@ -470,7 +486,10 @@ class GuiBuildFilterTab(QWidget):
     def _setTreeItemMode(self):
         """Update the filtered mode icon on all items.
         """
-        filtered = self.buildOpts["settings"].checkItemFilter(self.theProject)
+        if not isinstance(self._build, BuildSettings):
+            return
+
+        filtered = self._build.buildItemFilter(self.theProject)
         for tHandle, item in self._treeMap.items():
             allow, mode = filtered.get(tHandle, (False, FilterMode.UNKNOWN))
             if mode == FilterMode.INCLUDED:
@@ -495,12 +514,10 @@ class GuiBuildHeadingsTab(QWidget):
         self.mainGui    = buildMain.mainGui
         self.mainTheme  = buildMain.mainGui.mainTheme
         self.theProject = buildMain.mainGui.theProject
-        self.buildOpts  = buildMain.buildOpts
 
         iPx = self.mainTheme.baseIconSize
         vSp = self.mainConf.pxInt(12)
         bSp = self.mainConf.pxInt(6)
-        bSettings = self.buildOpts["settings"]
 
         # Format Boxes
         # ============
@@ -508,7 +525,7 @@ class GuiBuildHeadingsTab(QWidget):
         self.formatBox.setHorizontalSpacing(vSp)
 
         # Title Heading
-        self.lblTitle = QLabel(bSettings.getLabel("headings.fmtTitle"))
+        self.lblTitle = QLabel(BuildSettings.getLabel("headings.fmtTitle"))
         self.fmtTitle = QLineEdit("")
         self.fmtTitle.setEnabled(False)
         self.btnTitle = QToolButton()
@@ -523,7 +540,7 @@ class GuiBuildHeadingsTab(QWidget):
         self.formatBox.addLayout(wrapTitle,     0, 1, Qt.AlignLeft)
 
         # Chapter Heading
-        self.lblChapter = QLabel(bSettings.getLabel("headings.fmtChapter"))
+        self.lblChapter = QLabel(BuildSettings.getLabel("headings.fmtChapter"))
         self.fmtChapter = QLineEdit("")
         self.fmtChapter.setEnabled(False)
         self.btnChapter = QToolButton()
@@ -538,7 +555,7 @@ class GuiBuildHeadingsTab(QWidget):
         self.formatBox.addLayout(wrapChapter,     1, 1, Qt.AlignLeft)
 
         # Unnumbered Chapter Heading
-        self.lblUnChapter = QLabel(bSettings.getLabel("headings.fmtUnnumbered"))
+        self.lblUnChapter = QLabel(BuildSettings.getLabel("headings.fmtUnnumbered"))
         self.fmtUnChapter = QLineEdit("")
         self.fmtUnChapter.setEnabled(False)
         self.btnUnChapter = QToolButton()
@@ -553,7 +570,7 @@ class GuiBuildHeadingsTab(QWidget):
         self.formatBox.addLayout(wrapUnChapter,     2, 1, Qt.AlignLeft)
 
         # Scene Heading
-        self.lblScene = QLabel(bSettings.getLabel("headings.fmtScene"))
+        self.lblScene = QLabel(BuildSettings.getLabel("headings.fmtScene"))
         self.fmtScene = QLineEdit("")
         self.fmtScene.setEnabled(False)
         self.btnScene = QToolButton()
@@ -575,7 +592,7 @@ class GuiBuildHeadingsTab(QWidget):
         self.formatBox.addLayout(wrapSceneHide, 3, 2, Qt.AlignLeft)
 
         # Section Heading
-        self.lblSection = QLabel(bSettings.getLabel("headings.fmtSection"))
+        self.lblSection = QLabel(BuildSettings.getLabel("headings.fmtSection"))
         self.fmtSection = QLineEdit("")
         self.fmtSection.setEnabled(False)
         self.btnSection = QToolButton()

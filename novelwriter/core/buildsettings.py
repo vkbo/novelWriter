@@ -23,12 +23,14 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import uuid
 import logging
 
 from enum import Enum
 
 from PyQt5.QtCore import QT_TRANSLATE_NOOP
 
+from novelwriter.common import checkUuid, isHandle
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 
@@ -115,29 +117,72 @@ class FilterMode(Enum):
 class BuildSettings:
 
     def __init__(self):
-        self._skiproot = set()
+        self._name = ""
+        self._uuid = ""
+        self._skipRoot = set()
         self._excluded = set()
         self._included = set()
         self._settings = {k: v[1] for k, v in SETTINGS_TEMPLATE.items()}
+        self._changed = False
         return
 
-    def isFiltered(self, tHandle):
-        return tHandle not in self._included and tHandle not in self._excluded
+    ##
+    #  Properties
+    ##
 
-    def isIncluded(self, tHandle):
-        return tHandle in self._included
+    @property
+    def name(self):
+        return self._name
 
-    def isExcluded(self, tHandle):
-        return tHandle in self._excluded
+    @property
+    def buildID(self):
+        return self._uuid
 
-    def isRootAllowed(self, tHandle):
-        return tHandle not in self._skiproot
+    @property
+    def changed(self):
+        return self._changed
+
+    ##
+    #  Getters
+    ##
+
+    @staticmethod
+    def getLabel(key):
+        """Extract the label for a specific item.
+        """
+        return SETTINGS_LABELS.get(key, "ERROR")
+
+    def getValue(self, key):
+        """Get the value for a specific item, or return the default.
+        """
+        return self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+
+    ##
+    #  Setters
+    ##
+
+    def setName(self, name):
+        """Set the build setting display name.
+        """
+        self._name = str(name)
+        return
+
+    def setBuildID(self, value):
+        """Set a UUID build ID.
+        """
+        value = checkUuid(value, "")
+        if not value:
+            self._uuid = str(uuid.uuid4())
+        elif value != self._uuid:
+            self._uuid = value
+        return
 
     def setFiltered(self, tHandle):
         """Set an item as filtered.
         """
         self._excluded.discard(tHandle)
         self._included.discard(tHandle)
+        self._changed = True
         return
 
     def setIncluded(self, tHandle):
@@ -145,6 +190,7 @@ class BuildSettings:
         """
         self._excluded.discard(tHandle)
         self._included.add(tHandle)
+        self._changed = True
         return
 
     def setExcluded(self, tHandle):
@@ -152,15 +198,18 @@ class BuildSettings:
         """
         self._excluded.add(tHandle)
         self._included.discard(tHandle)
+        self._changed = True
         return
 
     def setSkipRoot(self, tHandle, state):
         """Set a specific root folder as skipped or not.
         """
         if state is True:
-            self._skiproot.discard(tHandle)
+            self._skipRoot.discard(tHandle)
+            self._changed = True
         elif state is False:
-            self._skiproot.add(tHandle)
+            self._skipRoot.add(tHandle)
+            self._changed = True
         return
 
     def setValue(self, key, value):
@@ -174,20 +223,27 @@ class BuildSettings:
         if len(definition) == 4:
             value = min(max(value, definition[2]), definition[3])
         self._settings[key] = value
+        self._changed = True
         logger.debug(f"Build Setting '{key}' set to: {value}")
         return True
 
-    def getLabel(self, key):
-        """Extract the label for a specific item.
-        """
-        return SETTINGS_LABELS.get(key, "ERROR")
+    ##
+    #  Methods
+    ##
 
-    def getValue(self, key):
-        """Get the value for a specific item, or return the default.
-        """
-        return self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+    def isFiltered(self, tHandle):
+        return tHandle not in self._included and tHandle not in self._excluded
 
-    def checkItemFilter(self, project):
+    def isIncluded(self, tHandle):
+        return tHandle in self._included
+
+    def isExcluded(self, tHandle):
+        return tHandle in self._excluded
+
+    def isRootAllowed(self, tHandle):
+        return tHandle not in self._skipRoot
+
+    def buildItemFilter(self, project):
         """Return a dictionary of item handles with filter decissions
         applied.
         """
@@ -204,7 +260,7 @@ class BuildSettings:
             if not isinstance(item, NWItem):
                 result[tHandle] = (False, FilterMode.UNKNOWN)
                 continue
-            if item.isInactiveClass() or (item.itemRoot in self._skiproot):
+            if item.isInactiveClass() or (item.itemRoot in self._skipRoot):
                 result[tHandle] = (False, FilterMode.SKIPPED)
                 continue
             if not item.isFileType():
@@ -229,5 +285,50 @@ class BuildSettings:
             result[tHandle] = (isAllowed, FilterMode.FILTERED)
 
         return result
+
+    def resetChangedState(self):
+        """This must be called when the changes to this class has been
+        safely saved to file or passed on.
+        """
+        self._changed = False
+        return
+
+    def pack(self):
+        """Pack all content into a JSON compatible dictionary.
+        """
+        return {
+            "name": self._name,
+            "uuid": self._uuid,
+            "settings": self._settings.copy(),
+            "included": list(self._included),
+            "excluded": list(self._excluded),
+            "skipRoot": list(self._skipRoot),
+        }
+
+    def unpack(self, data):
+        """Unpack a dictionary and populate the class.
+        """
+        included = data.get("included", [])
+        excluded = data.get("excluded", [])
+        skipRoot = data.get("skipRoot", [])
+        settings = data.get("settings", {})
+
+        self.setName(data.get("name", ""))
+        self.setBuildID(data.get("uuid", ""))
+        if isinstance(included, list):
+            self._included = set([h for h in included if isHandle(h)])
+        if isinstance(excluded, list):
+            self._excluded = set([h for h in excluded if isHandle(h)])
+        if isinstance(skipRoot, list):
+            self._skipRoot = set([h for h in skipRoot if isHandle(h)])
+
+        self._settings = {k: v[1] for k, v in SETTINGS_TEMPLATE.items()}
+        if isinstance(settings, dict):
+            for key, value in settings.items():
+                self.setValue(key, value)
+
+        self._changed = False
+
+        return
 
 # END Class BuildSettings
