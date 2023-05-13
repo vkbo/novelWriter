@@ -43,7 +43,7 @@ from novelwriter.extensions.pagedsidebar import NPagedSideBar
 logger = logging.getLogger(__name__)
 
 
-class GuiBuildManuscript(QDialog):
+class GuiBuildSettings(QDialog):
 
     OPT_FILTERS  = 1
     OPT_HEADINGS = 2
@@ -78,8 +78,8 @@ class GuiBuildManuscript(QDialog):
 
         pOptions = self.theProject.options
         self.resize(
-            self.mainConf.pxInt(pOptions.getInt("GuiBuildManuscript", "winWidth",  wWin)),
-            self.mainConf.pxInt(pOptions.getInt("GuiBuildManuscript", "winHeight", hWin))
+            self.mainConf.pxInt(pOptions.getInt("GuiBuildSettings", "winWidth",  wWin)),
+            self.mainConf.pxInt(pOptions.getInt("GuiBuildSettings", "winHeight", hWin))
         )
 
         # Options SideBar
@@ -187,7 +187,7 @@ class GuiBuildManuscript(QDialog):
     def _saveSettings(self):
         """Save the various user settings.
         """
-        logger.debug("Saving GuiBuildManuscript settings")
+        logger.debug("Saving GuiBuildSettings settings")
 
         winWidth  = self.mainConf.rpxInt(self.width())
         winHeight = self.mainConf.rpxInt(self.height())
@@ -195,15 +195,15 @@ class GuiBuildManuscript(QDialog):
         treeWidth, filterWidth = self.optTabSelect.mainSplitSizes()
 
         pOptions = self.theProject.options
-        pOptions.setValue("GuiBuildManuscript", "winWidth", winWidth)
-        pOptions.setValue("GuiBuildManuscript", "winHeight", winHeight)
-        pOptions.setValue("GuiBuildManuscript", "treeWidth", treeWidth)
-        pOptions.setValue("GuiBuildManuscript", "filterWidth", filterWidth)
+        pOptions.setValue("GuiBuildSettings", "winWidth", winWidth)
+        pOptions.setValue("GuiBuildSettings", "winHeight", winHeight)
+        pOptions.setValue("GuiBuildSettings", "treeWidth", treeWidth)
+        pOptions.setValue("GuiBuildSettings", "filterWidth", filterWidth)
         pOptions.saveSettings()
 
         return
 
-# END Class GuiBuildManuscript
+# END Class GuiBuildSettings
 
 
 class GuiBuildFilterTab(QWidget):
@@ -297,8 +297,8 @@ class GuiBuildFilterTab(QWidget):
         # ========
 
         pOptions = self.theProject.options
-        wTree = self.mainConf.pxInt(pOptions.getInt("GuiBuildManuscript", "treeWidth", 0))
-        fTree = self.mainConf.pxInt(pOptions.getInt("GuiBuildManuscript", "filterWidth", 0))
+        wTree = self.mainConf.pxInt(pOptions.getInt("GuiBuildSettings", "treeWidth", 0))
+        fTree = self.mainConf.pxInt(pOptions.getInt("GuiBuildSettings", "filterWidth", 0))
 
         self.selectionBox = QVBoxLayout()
         self.selectionBox.addLayout(self.modeBox)
