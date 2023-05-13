@@ -1,7 +1,7 @@
 """
 novelWriter – GUI Build Manuscript
 ==================================
-GUI classes for the Manuscript build tool
+GUI classes for the Manuscript Build Tool
 
 File History:
 Created: 2023-02-13 [2.1b1]
@@ -30,12 +30,13 @@ import novelwriter
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QHBoxLayout, QHeaderView, QPushButton,
-    QSplitter, QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget
+    QAbstractItemView, QDialog, QGridLayout, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QPushButton, QSplitter, QStackedWidget, QToolButton,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
+from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
@@ -491,6 +492,120 @@ class GuiBuildHeadingsTab(QWidget):
 
     def __init__(self, buildMain):
         super().__init__(parent=buildMain)
+
+        self.mainConf   = novelwriter.CONFIG
+        self.mainGui    = buildMain.mainGui
+        self.mainTheme  = buildMain.mainGui.mainTheme
+        self.theProject = buildMain.mainGui.theProject
+        self.buildOpts  = buildMain.buildOpts
+
+        iPx = self.mainTheme.baseIconSize
+        vSp = self.mainConf.pxInt(12)
+        bSp = self.mainConf.pxInt(6)
+        bSettings = self.buildOpts["settings"]
+
+        # Format Boxes
+        # ============
+        self.formatBox = QGridLayout()
+        self.formatBox.setHorizontalSpacing(vSp)
+
+        # Title Heading
+        self.lblTitle = QLabel(bSettings.getLabel("headings.fmtTitle"))
+        self.fmtTitle = QLineEdit("")
+        self.fmtTitle.setEnabled(False)
+        self.btnTitle = QToolButton()
+        self.btnTitle.setIcon(self.mainTheme.getIcon("edit"))
+
+        wrapTitle = QHBoxLayout()
+        wrapTitle.addWidget(self.fmtTitle)
+        wrapTitle.addWidget(self.btnTitle)
+        wrapTitle.setSpacing(bSp)
+
+        self.formatBox.addWidget(self.lblTitle, 0, 0, Qt.AlignLeft)
+        self.formatBox.addLayout(wrapTitle,     0, 1, Qt.AlignLeft)
+
+        # Chapter Heading
+        self.lblChapter = QLabel(bSettings.getLabel("headings.fmtChapter"))
+        self.fmtChapter = QLineEdit("")
+        self.fmtChapter.setEnabled(False)
+        self.btnChapter = QToolButton()
+        self.btnChapter.setIcon(self.mainTheme.getIcon("edit"))
+
+        wrapChapter = QHBoxLayout()
+        wrapChapter.addWidget(self.fmtChapter)
+        wrapChapter.addWidget(self.btnChapter)
+        wrapChapter.setSpacing(bSp)
+
+        self.formatBox.addWidget(self.lblChapter, 1, 0, Qt.AlignLeft)
+        self.formatBox.addLayout(wrapChapter,     1, 1, Qt.AlignLeft)
+
+        # Unnumbered Chapter Heading
+        self.lblUnChapter = QLabel(bSettings.getLabel("headings.fmtUnnumbered"))
+        self.fmtUnChapter = QLineEdit("")
+        self.fmtUnChapter.setEnabled(False)
+        self.btnUnChapter = QToolButton()
+        self.btnUnChapter.setIcon(self.mainTheme.getIcon("edit"))
+
+        wrapUnChapter = QHBoxLayout()
+        wrapUnChapter.addWidget(self.fmtUnChapter)
+        wrapUnChapter.addWidget(self.btnUnChapter)
+        wrapUnChapter.setSpacing(bSp)
+
+        self.formatBox.addWidget(self.lblUnChapter, 2, 0, Qt.AlignLeft)
+        self.formatBox.addLayout(wrapUnChapter,     2, 1, Qt.AlignLeft)
+
+        # Scene Heading
+        self.lblScene = QLabel(bSettings.getLabel("headings.fmtScene"))
+        self.fmtScene = QLineEdit("")
+        self.fmtScene.setEnabled(False)
+        self.btnScene = QToolButton()
+        self.btnScene.setIcon(self.mainTheme.getIcon("edit"))
+        self.swtScene = NSwitch(width=2*iPx, height=iPx)
+
+        wrapScene = QHBoxLayout()
+        wrapScene.addWidget(self.fmtScene)
+        wrapScene.addWidget(self.btnScene)
+        wrapScene.setSpacing(bSp)
+
+        wrapSceneHide = QHBoxLayout()
+        wrapSceneHide.addWidget(QLabel(self.tr("Hide")))
+        wrapSceneHide.addWidget(self.swtScene)
+        wrapSceneHide.setSpacing(bSp)
+
+        self.formatBox.addWidget(self.lblScene, 3, 0, Qt.AlignLeft)
+        self.formatBox.addLayout(wrapScene,     3, 1, Qt.AlignLeft)
+        self.formatBox.addLayout(wrapSceneHide, 3, 2, Qt.AlignLeft)
+
+        # Section Heading
+        self.lblSection = QLabel(bSettings.getLabel("headings.fmtSection"))
+        self.fmtSection = QLineEdit("")
+        self.fmtSection.setEnabled(False)
+        self.btnSection = QToolButton()
+        self.btnSection.setIcon(self.mainTheme.getIcon("edit"))
+        self.swtSection = NSwitch(width=2*iPx, height=iPx)
+
+        wrapSection = QHBoxLayout()
+        wrapSection.addWidget(self.fmtSection)
+        wrapSection.addWidget(self.btnSection)
+        wrapSection.setSpacing(bSp)
+
+        wrapSectionHide = QHBoxLayout()
+        wrapSectionHide.addWidget(QLabel(self.tr("Hide")))
+        wrapSectionHide.addWidget(self.swtSection)
+        wrapSectionHide.setSpacing(bSp)
+
+        self.formatBox.addWidget(self.lblSection, 4, 0, Qt.AlignLeft)
+        self.formatBox.addLayout(wrapSection,     4, 1, Qt.AlignLeft)
+        self.formatBox.addLayout(wrapSectionHide, 4, 2, Qt.AlignLeft)
+
+        # Assemble
+        # ========
+
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addLayout(self.formatBox)
+        self.outerBox.addStretch(1)
+
+        self.setLayout(self.outerBox)
 
         return
 

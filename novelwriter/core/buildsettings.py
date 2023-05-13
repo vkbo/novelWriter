@@ -73,7 +73,7 @@ SETTINGS_LABELS = {
     "headings":               QT_TRANSLATE_NOOP("Builds", "Headings"),
     "headings.fmtTitle":      QT_TRANSLATE_NOOP("Builds", "Title Heading"),
     "headings.fmtChapter":    QT_TRANSLATE_NOOP("Builds", "Chapter Heading"),
-    "headings.fmtUnnumbered": QT_TRANSLATE_NOOP("Builds", "Unnumbered Chapter"),
+    "headings.fmtUnnumbered": QT_TRANSLATE_NOOP("Builds", "Alt. Chapter Heading"),
     "headings.fmtScene":      QT_TRANSLATE_NOOP("Builds", "Scene Heading"),
     "headings.fmtSection":    QT_TRANSLATE_NOOP("Builds", "Section Heading"),
     "headings.hideScene":     QT_TRANSLATE_NOOP("Builds", "Hide Scene"),
