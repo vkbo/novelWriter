@@ -1,7 +1,7 @@
 """
-novelWriter – GUI Build Manuscript
-==================================
-GUI classes for the Manuscript Build Tool
+novelWriter – GUI Build Settings
+================================
+GUI classes for editing Manuscript Build Settings
 
 File History:
 Created: 2023-02-13 [2.1b1]
@@ -24,7 +24,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-
 import novelwriter
 
 from PyQt5.QtGui import QIcon
@@ -67,18 +66,17 @@ class GuiBuildSettings(QDialog):
             "filter": {},
         }
 
-        self.setWindowTitle(self.tr("Build Manuscript"))
+        self.setWindowTitle(self.tr("Manuscript Build Settings"))
         self.setMinimumWidth(self.mainConf.pxInt(700))
         self.setMinimumHeight(self.mainConf.pxInt(400))
 
-        # Style
         mPx = self.mainConf.pxInt(150)
         wWin = self.mainConf.pxInt(900)
         hWin = self.mainConf.pxInt(600)
 
         pOptions = self.theProject.options
         self.resize(
-            self.mainConf.pxInt(pOptions.getInt("GuiBuildSettings", "winWidth",  wWin)),
+            self.mainConf.pxInt(pOptions.getInt("GuiBuildSettings", "winWidth", wWin)),
             self.mainConf.pxInt(pOptions.getInt("GuiBuildSettings", "winHeight", hWin))
         )
 
