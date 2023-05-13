@@ -31,7 +31,8 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QHBoxLayout, QHeaderView, QPushButton,
-    QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QSplitter, QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
@@ -67,10 +68,18 @@ class GuiBuildManuscript(QDialog):
 
         self.setWindowTitle(self.tr("Build Manuscript"))
         self.setMinimumWidth(self.mainConf.pxInt(700))
-        self.setMinimumHeight(self.mainConf.pxInt(600))
+        self.setMinimumHeight(self.mainConf.pxInt(400))
 
         # Style
         mPx = self.mainConf.pxInt(150)
+        wWin = self.mainConf.pxInt(900)
+        hWin = self.mainConf.pxInt(600)
+
+        pOptions = self.theProject.options
+        self.resize(
+            self.mainConf.pxInt(pOptions.getInt("GuiBuildManuscript", "winWidth",  wWin)),
+            self.mainConf.pxInt(pOptions.getInt("GuiBuildManuscript", "winHeight", hWin))
+        )
 
         # Options SideBar
         # ===============
@@ -157,6 +166,40 @@ class GuiBuildManuscript(QDialog):
             self.toolStack.setCurrentWidget(self.buildTabMarkdown)
         elif pageId == self.BLD_ODT:
             self.toolStack.setCurrentWidget(self.buildTabODT)
+        return
+
+    ##
+    #  Events
+    ##
+
+    def closeEvent(self, event):
+        """Capture the user closing the window so we can save settings.
+        """
+        self._saveSettings()
+        event.accept()
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _saveSettings(self):
+        """Save the various user settings.
+        """
+        logger.debug("Saving GuiBuildManuscript settings")
+
+        winWidth  = self.mainConf.rpxInt(self.width())
+        winHeight = self.mainConf.rpxInt(self.height())
+
+        treeWidth, filterWidth = self.optTabSelect.mainSplitSizes()
+
+        pOptions = self.theProject.options
+        pOptions.setValue("GuiBuildManuscript", "winWidth", winWidth)
+        pOptions.setValue("GuiBuildManuscript", "winHeight", winHeight)
+        pOptions.setValue("GuiBuildManuscript", "treeWidth", treeWidth)
+        pOptions.setValue("GuiBuildManuscript", "filterWidth", filterWidth)
+        pOptions.saveSettings()
+
         return
 
 # END Class GuiBuildManuscript
@@ -250,17 +293,40 @@ class GuiBuildFilterTab(QWidget):
         self.filterOpt.switchToggled.connect(self._applyFilterSwitch)
 
         # Assemble
+        # ========
+
+        pOptions = self.theProject.options
+        wTree = self.mainConf.pxInt(pOptions.getInt("GuiBuildManuscript", "treeWidth", 0))
+        fTree = self.mainConf.pxInt(pOptions.getInt("GuiBuildManuscript", "filterWidth", 0))
+
         self.selectionBox = QVBoxLayout()
         self.selectionBox.addLayout(self.modeBox)
         self.selectionBox.addWidget(self.filterOpt)
+        self.selectionBox.setContentsMargins(0, 0, 0, 0)
+
+        self.selectionWidget = QWidget()
+        self.selectionWidget.setLayout(self.selectionBox)
+
+        self.mainSplit = QSplitter()
+        self.mainSplit.addWidget(self.optTree)
+        self.mainSplit.addWidget(self.selectionWidget)
+        if wTree > 0:
+            self.mainSplit.setSizes([wTree, fTree])
 
         self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.optTree)
-        self.outerBox.addLayout(self.selectionBox)
+        self.outerBox.addWidget(self.mainSplit)
 
         self.setLayout(self.outerBox)
 
         return
+
+    def mainSplitSizes(self):
+        """Extract the sizes of the main splitter.
+        """
+        sizes = self.mainSplit.sizes()
+        if len(sizes) < 2:
+            return 0, 0
+        return sizes[0], sizes[1]
 
     def populateTree(self):
         """Build the tree of project items.

@@ -60,6 +60,9 @@ VALID_MAP = {
     },
     "GuiWordList": {"winWidth", "winHeight"},
     "GuiNovelView": {"lastCol", "lastColSize"},
+    "GuiBuildManuscript": {
+        "winWidth", "winHeight", "treeWidth", "filterWidth"
+    },
 }
 
 
