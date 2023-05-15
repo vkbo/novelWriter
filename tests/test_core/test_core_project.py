@@ -29,6 +29,7 @@ from zipfile import ZipFile
 from mock import causeOSError
 from tools import C, cmpFiles, writeFile, buildTestProject, XML_IGNORE
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwFiles
@@ -721,17 +722,17 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
     # ================
 
     # Invalid path
-    theProject.mainConf._backupPath = None
+    CONFIG._backupPath = None
     assert theProject.backupProject(doNotify=False) is False
 
     # Missing project name
-    theProject.mainConf._backupPath = tstPaths.tmpDir
+    CONFIG._backupPath = tstPaths.tmpDir
     theProject.data.setName("")
     assert theProject.backupProject(doNotify=False) is False
 
     # Valid Settings
     # ==============
-    theProject.mainConf._backupPath = tstPaths.tmpDir
+    CONFIG._backupPath = tstPaths.tmpDir
     theProject.data.setName("Test Minimal")
 
     # Can't make folder

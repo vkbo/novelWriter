@@ -29,6 +29,7 @@ from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QInputDialog, QToolTip
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwWidget, nwItemType
 from novelwriter.gui.noveltree import NovelTreeColumn
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -67,14 +68,14 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Show/Hide Scrollbars
     # ====================
 
-    nwGUI.mainConf.hideVScroll = True
-    nwGUI.mainConf.hideHScroll = True
+    CONFIG.hideVScroll = True
+    CONFIG.hideHScroll = True
     novelView.initSettings()
     assert not novelTree.verticalScrollBar().isVisible()
     assert not novelTree.horizontalScrollBar().isVisible()
 
-    nwGUI.mainConf.hideVScroll = False
-    nwGUI.mainConf.hideHScroll = False
+    CONFIG.hideVScroll = False
+    CONFIG.hideHScroll = False
     novelView.initSettings()
     assert novelTree.verticalScrollBar().isEnabled()
     assert novelTree.horizontalScrollBar().isEnabled()

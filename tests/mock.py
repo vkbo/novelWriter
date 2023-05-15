@@ -31,7 +31,6 @@ class MockGuiMain(QObject):
     def __init__(self):
         super().__init__()
 
-        self.mainConf = None
         self.hasProject = True
         self.theProject = None
         self.mainStatus = MockStatusBar()

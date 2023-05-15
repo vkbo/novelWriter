@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import (
     QDialogButtonBox, QDialog, QAction, QFileDialog, QFontDialog
 )
 
+from novelwriter import CONFIG
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.dialogs.preferences import GuiPreferences
 
@@ -211,7 +212,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     qtbot.mouseClick(nwPrefs.buttonBox.button(QDialogButtonBox.Ok), Qt.LeftButton)
     nwPrefs._doClose()
 
-    assert nwGUI.mainConf.saveConfig()
+    assert CONFIG.saveConfig()
     projFile = tstPaths.cnfDir / "novelwriter.conf"
     testFile = tstPaths.outDir / "guiPreferences_novelwriter.conf"
     compFile = tstPaths.refDir / "guiPreferences_novelwriter.conf"

@@ -28,6 +28,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtWidgets import QAction, qApp
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
@@ -55,18 +56,18 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.docEditor._typPadChar == nwUnicode.U_NBSP
 
     # Check that editor handles settings
-    nwGUI.mainConf.textFont = None
-    nwGUI.mainConf.doJustify = True
-    nwGUI.mainConf.showTabsNSpaces = True
-    nwGUI.mainConf.showLineEndings = True
-    nwGUI.mainConf.hideVScroll = True
-    nwGUI.mainConf.hideHScroll = True
-    nwGUI.mainConf.fmtPadThin = True
+    CONFIG.textFont = None
+    CONFIG.doJustify = True
+    CONFIG.showTabsNSpaces = True
+    CONFIG.showLineEndings = True
+    CONFIG.hideVScroll = True
+    CONFIG.hideHScroll = True
+    CONFIG.fmtPadThin = True
 
     assert nwGUI.docEditor.initEditor()
 
     qDoc = nwGUI.docEditor.document()
-    assert nwGUI.mainConf.textFont == qDoc.defaultFont().family()
+    assert CONFIG.textFont == qDoc.defaultFont().family()
     assert qDoc.defaultTextOption().alignment() == Qt.AlignJustify
     assert qDoc.defaultTextOption().flags() & QTextOption.ShowTabsAndSpaces
     assert qDoc.defaultTextOption().flags() & QTextOption.ShowLineAndParagraphSeparators
@@ -114,7 +115,7 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
         assert "The document you are trying to open is too big." in caplog.text
 
     # Big doc handling
-    nwGUI.mainConf.bigDocLimit = 50
+    CONFIG.bigDocLimit = 50
     assert nwGUI.docEditor.loadText(C.hSceneDoc) is True
     assert nwGUI.docEditor._bigDoc is True
 

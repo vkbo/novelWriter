@@ -21,13 +21,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from novelwriter.enum import nwItemType
 from tools import C, getGuiItem, buildTestProject
 
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QAction, QColorDialog
 
+from novelwriter import CONFIG
+from novelwriter.enum import nwItemType
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projsettings import GuiProjectSettings
 
@@ -91,7 +92,7 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockR
     # Create new project
     buildTestProject(nwGUI, projPath)
     mockRnd.reset()
-    nwGUI.mainConf.setBackupPath(fncPath)
+    CONFIG.setBackupPath(fncPath)
 
     # Set some values
     theProject = nwGUI.theProject
@@ -156,7 +157,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncPath, projPat
     # Create new project
     mockRnd.reset()
     buildTestProject(nwGUI, projPath)
-    nwGUI.mainConf.setBackupPath(fncPath)
+    CONFIG.setBackupPath(fncPath)
 
     # Set some values
     theProject = nwGUI.theProject
@@ -357,7 +358,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncPath, projPath, mo
     # Create new project
     mockRnd.reset()
     buildTestProject(nwGUI, projPath)
-    nwGUI.mainConf.setBackupPath(fncPath)
+    CONFIG.setBackupPath(fncPath)
 
     # Set some values
     theProject = nwGUI.theProject

@@ -24,6 +24,7 @@ import pytest
 
 from tools import C, buildTestProject
 
+from novelwriter import CONFIG
 from novelwriter.gui.statusbar import StatusLED
 
 
@@ -60,13 +61,13 @@ def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.mainStatus.docIcon._theCol == nwGUI.mainStatus.docIcon._colGood
 
     # Idle Status
-    nwGUI.mainStatus.mainConf.stopWhenIdle = False
+    CONFIG.stopWhenIdle = False
     nwGUI.mainStatus.setUserIdle(True)
     nwGUI.mainStatus.updateTime()
     assert nwGUI.mainStatus.userIdle is False
     assert nwGUI.mainStatus.timeText.text() == "00:00:00"
 
-    nwGUI.mainStatus.mainConf.stopWhenIdle = True
+    CONFIG.stopWhenIdle = True
     nwGUI.mainStatus.setUserIdle(True)
     nwGUI.mainStatus.updateTime(5)
     assert nwGUI.mainStatus.userIdle is True
@@ -84,10 +85,10 @@ def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.mainStatus.langText.text() == "American English"
 
     # Project Stats
-    nwGUI.mainStatus.mainConf.incNotesWCount = False
+    CONFIG.incNotesWCount = False
     nwGUI._updateStatusWordCount()
     assert nwGUI.mainStatus.statsText.text() == "Words: 9 (+9)"
-    nwGUI.mainStatus.mainConf.incNotesWCount = True
+    CONFIG.incNotesWCount = True
     nwGUI._updateStatusWordCount()
     assert nwGUI.mainStatus.statsText.text() == "Words: 11 (+11)"
 
