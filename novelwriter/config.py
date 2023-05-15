@@ -430,10 +430,10 @@ class Config:
         """
         logger.debug("Initialising Config ...")
         if isinstance(confPath, (str, Path)):
-            logger.info("Setting config from alternative path: %s", confPath)
+            logger.info("Setting alternative config path: %s", confPath)
             self._confPath = Path(confPath)
         if isinstance(dataPath, (str, Path)):
-            logger.info("Setting data path from alternative path: %s", dataPath)
+            logger.info("Setting alternative data path: %s", dataPath)
             self._dataPath = Path(dataPath)
 
         logger.debug("Config Path: %s", self._confPath)
