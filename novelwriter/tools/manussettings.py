@@ -22,12 +22,15 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 import novelwriter
 
+from typing import TYPE_CHECKING
+
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QSize, Qt, pyqtSlot
+from PyQt5.QtCore import QEvent, QSize, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QGridLayout, QHBoxLayout, QHeaderView, QLabel,
     QLineEdit, QPushButton, QSplitter, QStackedWidget, QToolButton,
@@ -38,6 +41,9 @@ from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
+
+if TYPE_CHECKING:
+    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -52,15 +58,19 @@ class GuiBuildSettings(QDialog):
     BLD_MARKDOWN = 6
     BLD_ODT      = 7
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain, buildData: dict):
         super().__init__(parent=mainGui)
+
+        logger.debug("Initialising GuiBuildSettings ...")
+        self.setObjectName("GuiBuildSettings")
 
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
-        self._build = None
+        self._build = BuildSettings()
+        self._build.unpack(buildData)
 
         self.setWindowTitle(self.tr("Manuscript Build Settings"))
         self.setMinimumWidth(self.mainConf.pxInt(700))
@@ -102,13 +112,13 @@ class GuiBuildSettings(QDialog):
         # ============
 
         # Create Tabs
-        self.optTabSelect = GuiBuildFilterTab(self)
-        self.optTabHeadings = GuiBuildHeadingsTab(self)
-        self.optTabFormat = GuiBuildFormatTab(self)
-        self.optTabContent = GuiBuildContentTab(self)
-        self.buildTabHTML = GuiBuildHTMLTab(self)
-        self.buildTabMarkdown = GuiBuildMarkdownTab(self)
-        self.buildTabODT = GuiBuildODTTab(self)
+        self.optTabSelect = GuiBuildFilterTab(self, self._build)
+        self.optTabHeadings = GuiBuildHeadingsTab(self, self._build)
+        self.optTabFormat = GuiBuildFormatTab(self, self._build)
+        self.optTabContent = GuiBuildContentTab(self, self._build)
+        self.buildTabHTML = GuiBuildHTMLTab(self, self._build)
+        self.buildTabMarkdown = GuiBuildMarkdownTab(self, self._build)
+        self.buildTabODT = GuiBuildODTTab(self, self._build)
 
         # Add Tabs
         self.toolStack = QStackedWidget(self)
@@ -120,29 +130,34 @@ class GuiBuildSettings(QDialog):
         self.toolStack.addWidget(self.buildTabMarkdown)
         self.toolStack.addWidget(self.buildTabODT)
 
-        # Assemble
-        self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.optSideBar)
-        self.outerBox.addWidget(self.toolStack)
+        # Main Settings
+        # =============
+
+        self.lblTitle = QLabel()
+
+        # Assemble GUI
+        # ============
+
+        self.mainBox = QHBoxLayout()
+        self.mainBox.addWidget(self.optSideBar)
+        self.mainBox.addWidget(self.toolStack)
+
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addLayout(self.mainBox)
 
         self.setLayout(self.outerBox)
 
         # Set Default Tab
         self.optSideBar.setSelected(self.OPT_FILTERS)
 
+        logger.debug("GuiBuildSettings initialisation complete")
+
         return
 
-    def loadContent(self, data):
+    def loadContent(self):
         """Populate the child widgets.
         """
-        if isinstance(self._build, BuildSettings) and self._build.changed:
-            logger.error("There are unsaved changes in this GUI")
-            return
-
-        self._build = BuildSettings()
-        self._build.unpack(data)
         self.optTabSelect.loadContent(self._build)
-
         return
 
     ##
@@ -150,7 +165,7 @@ class GuiBuildSettings(QDialog):
     ##
 
     @pyqtSlot(int)
-    def _stackPageSelected(self, pageId):
+    def _stackPageSelected(self, pageId: int):
         """Process a user request to switch page.
         """
         if pageId == self.OPT_FILTERS:
@@ -173,7 +188,7 @@ class GuiBuildSettings(QDialog):
     #  Events
     ##
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QEvent):
         """Capture the user closing the window so we can save settings.
         """
         self._saveSettings()
@@ -221,7 +236,7 @@ class GuiBuildFilterTab(QWidget):
     F_INCLUDED = 2
     F_EXCLUDED = 3
 
-    def __init__(self, buildMain):
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
 
         self.mainConf   = novelwriter.CONFIG
@@ -230,7 +245,7 @@ class GuiBuildFilterTab(QWidget):
         self.theProject = buildMain.mainGui.theProject
 
         self._treeMap = {}
-        self._build = None
+        self._build = build
 
         self._statusFlags = {
             self.F_NONE:     ("", QIcon()),
@@ -321,7 +336,7 @@ class GuiBuildFilterTab(QWidget):
 
         return
 
-    def loadContent(self, build):
+    def loadContent(self, build: BuildSettings):
         """Populate the widgets.
         """
         self._build = build
@@ -329,7 +344,7 @@ class GuiBuildFilterTab(QWidget):
         self._populateFilters()
         return
 
-    def mainSplitSizes(self):
+    def mainSplitSizes(self) -> tuple[int, int]:
         """Extract the sizes of the main splitter.
         """
         sizes = self.mainSplit.sizes()
@@ -342,11 +357,9 @@ class GuiBuildFilterTab(QWidget):
     ##
 
     @pyqtSlot(str, bool)
-    def _applyFilterSwitch(self, key, state):
+    def _applyFilterSwitch(self, key: str, state: bool):
         """A filter switch has been toggled, so update the settings.
         """
-        if not isinstance(self._build, BuildSettings):
-            return
         if key.startswith("doc:"):
             self._build.setValue(key[4:], state)
             self._setTreeItemMode()
@@ -362,9 +375,6 @@ class GuiBuildFilterTab(QWidget):
     def _populateTree(self):
         """Build the tree of project items.
         """
-        if not isinstance(self._build, BuildSettings):
-            return
-
         logger.debug("Building project tree")
         self._treeMap = {}
         self.optTree.clear()
@@ -423,9 +433,6 @@ class GuiBuildFilterTab(QWidget):
         """Populate the filter options switches.
         """
         self.filterOpt.clear()
-        if not isinstance(self._build, BuildSettings):
-            return
-
         self.filterOpt.addLabel(self._build.getLabel("filter"))
         self.filterOpt.addItem(
             self.mainTheme.getIcon("proj_scene"),
@@ -459,12 +466,9 @@ class GuiBuildFilterTab(QWidget):
 
         return
 
-    def _setSelectedMode(self, mode):
+    def _setSelectedMode(self, mode: int):
         """Set the mode for the selected items.
         """
-        if not isinstance(self._build, BuildSettings):
-            return
-
         for item in self.optTree.selectedItems():
             if not isinstance(item, QTreeWidgetItem):
                 continue
@@ -486,9 +490,6 @@ class GuiBuildFilterTab(QWidget):
     def _setTreeItemMode(self):
         """Update the filtered mode icon on all items.
         """
-        if not isinstance(self._build, BuildSettings):
-            return
-
         filtered = self._build.buildItemFilter(self.theProject)
         for tHandle, item in self._treeMap.items():
             allow, mode = filtered.get(tHandle, (False, FilterMode.UNKNOWN))
@@ -507,13 +508,15 @@ class GuiBuildFilterTab(QWidget):
 
 class GuiBuildHeadingsTab(QWidget):
 
-    def __init__(self, buildMain):
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
 
         self.mainConf   = novelwriter.CONFIG
         self.mainGui    = buildMain.mainGui
         self.mainTheme  = buildMain.mainGui.mainTheme
         self.theProject = buildMain.mainGui.theProject
+
+        self._build = build
 
         iPx = self.mainTheme.baseIconSize
         vSp = self.mainConf.pxInt(12)
@@ -629,8 +632,10 @@ class GuiBuildHeadingsTab(QWidget):
 
 class GuiBuildFormatTab(QWidget):
 
-    def __init__(self, buildMain):
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
+
+        self._build = build
 
         return
 
@@ -639,8 +644,10 @@ class GuiBuildFormatTab(QWidget):
 
 class GuiBuildContentTab(QWidget):
 
-    def __init__(self, buildMain):
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
+
+        self._build = build
 
         return
 
@@ -649,8 +656,10 @@ class GuiBuildContentTab(QWidget):
 
 class GuiBuildHTMLTab(QWidget):
 
-    def __init__(self, buildMain):
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
+
+        self._build = build
 
         return
 
@@ -659,8 +668,10 @@ class GuiBuildHTMLTab(QWidget):
 
 class GuiBuildMarkdownTab(QWidget):
 
-    def __init__(self, buildMain):
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
+
+        self._build = build
 
         return
 
@@ -669,8 +680,10 @@ class GuiBuildMarkdownTab(QWidget):
 
 class GuiBuildODTTab(QWidget):
 
-    def __init__(self, buildMain):
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
+
+        self._build = build
 
         return
 

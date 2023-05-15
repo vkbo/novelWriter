@@ -31,7 +31,6 @@ from PyQt5.QtWidgets import (
     QWidget, qApp
 )
 
-from novelwriter.common import getGuiItem
 from novelwriter.tools.manussettings import GuiBuildSettings
 
 logger = logging.getLogger(__name__)
@@ -115,17 +114,14 @@ class GuiBuildManuscript(QDialog):
     def _createNewBuild(self):
         """Open the build settings dialog for a new build.
         """
-        dlgSettings = getGuiItem("GuiBuildSettings")
-        if dlgSettings is None:
-            dlgSettings = GuiBuildSettings(self)
-        assert isinstance(dlgSettings, GuiBuildSettings)
+        data = {"name": self.tr("My Manuscript")}
 
+        dlgSettings = GuiBuildSettings(self.mainGui, data)
         dlgSettings.setModal(False)
         dlgSettings.show()
         dlgSettings.raise_()
         qApp.processEvents()
-
-        dlgSettings.loadContent({"name": self.tr("My Manuscript")})
+        dlgSettings.loadContent()
 
         return
 
