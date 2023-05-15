@@ -91,7 +91,7 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockR
     # Create new project
     buildTestProject(nwGUI, projPath)
     mockRnd.reset()
-    nwGUI.mainConf.backupPath = fncPath
+    nwGUI.mainConf.setBackupPath(fncPath)
 
     # Set some values
     theProject = nwGUI.theProject
@@ -156,7 +156,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncPath, projPat
     # Create new project
     mockRnd.reset()
     buildTestProject(nwGUI, projPath)
-    nwGUI.mainConf.backupPath = fncPath
+    nwGUI.mainConf.setBackupPath(fncPath)
 
     # Set some values
     theProject = nwGUI.theProject
@@ -357,7 +357,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncPath, projPath, mo
     # Create new project
     mockRnd.reset()
     buildTestProject(nwGUI, projPath)
-    nwGUI.mainConf.backupPath = fncPath
+    nwGUI.mainConf.setBackupPath(fncPath)
 
     # Set some values
     theProject = nwGUI.theProject

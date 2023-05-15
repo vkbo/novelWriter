@@ -37,12 +37,9 @@ KEY_DELAY = 1
 
 
 @pytest.mark.gui
-def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
+def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     """Test the load project wizard.
     """
-    theConf = nwGUI.mainConf
-    assert theConf._confPath == fncPath
-
     monkeypatch.setattr(GuiPreferences, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiPreferences, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
@@ -58,7 +55,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     nwPrefs = getGuiItem("GuiPreferences")
     assert isinstance(nwPrefs, GuiPreferences)
     nwPrefs.show()
-    assert nwPrefs.mainConf._confPath == fncPath
 
     assert nwPrefs.updateTheme is False
     assert nwPrefs.updateSyntax is False
@@ -216,7 +212,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, fncPath, tstPaths):
     nwPrefs._doClose()
 
     assert nwGUI.mainConf.saveConfig()
-    projFile = fncPath / "novelwriter.conf"
+    projFile = tstPaths.cnfDir / "novelwriter.conf"
     testFile = tstPaths.outDir / "guiPreferences_novelwriter.conf"
     compFile = tstPaths.refDir / "guiPreferences_novelwriter.conf"
     copyfile(projFile, testFile)
