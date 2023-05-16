@@ -24,7 +24,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from pathlib import Path
 from datetime import datetime
@@ -37,6 +36,7 @@ from PyQt5.QtWidgets import (
     QFileDialog, QLineEdit
 )
 
+from novelwriter import CONFIG
 from novelwriter.common import formatInt
 from novelwriter.constants import nwFiles
 
@@ -59,14 +59,13 @@ class GuiProjectLoad(QDialog):
         logger.debug("Initialising GuiProjectLoad ...")
         self.setObjectName("GuiProjectLoad")
 
-        self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui
         self.mainTheme = mainGui.mainTheme
         self.openState = self.NONE_STATE
         self.openPath  = None
 
-        sPx = self.mainConf.pxInt(16)
-        nPx = self.mainConf.pxInt(96)
+        sPx = CONFIG.pxInt(16)
+        nPx = CONFIG.pxInt(96)
         iPx = self.mainTheme.baseIconSize
 
         self.outerBox = QVBoxLayout()
@@ -75,8 +74,8 @@ class GuiProjectLoad(QDialog):
         self.innerBox.setSpacing(sPx)
 
         self.setWindowTitle(self.tr("Open Project"))
-        self.setMinimumWidth(self.mainConf.pxInt(650))
-        self.setMinimumHeight(self.mainConf.pxInt(400))
+        self.setMinimumWidth(CONFIG.pxInt(650))
+        self.setMinimumHeight(CONFIG.pxInt(400))
 
         self.nwIcon = QLabel()
         self.nwIcon.setPixmap(self.mainGui.mainTheme.getPixmap("novelwriter", (nPx, nPx)))
@@ -120,8 +119,8 @@ class GuiProjectLoad(QDialog):
         self.projectForm.setColumnStretch(0, 0)
         self.projectForm.setColumnStretch(1, 1)
         self.projectForm.setColumnStretch(2, 0)
-        self.projectForm.setVerticalSpacing(self.mainConf.pxInt(4))
-        self.projectForm.setHorizontalSpacing(self.mainConf.pxInt(8))
+        self.projectForm.setVerticalSpacing(CONFIG.pxInt(4))
+        self.projectForm.setHorizontalSpacing(CONFIG.pxInt(8))
 
         self.innerBox.addLayout(self.projectForm)
 
@@ -228,7 +227,7 @@ class GuiProjectLoad(QDialog):
                 ).format(projName)
             )
             if msgYes:
-                self.mainConf.recentProjects.remove(
+                CONFIG.recentProjects.remove(
                     selList[0].data(self.C_NAME, Qt.UserRole)
                 )
                 self._populateList()
@@ -257,14 +256,14 @@ class GuiProjectLoad(QDialog):
         colWidths[self.C_NAME]  = self.listBox.columnWidth(self.C_NAME)
         colWidths[self.C_COUNT] = self.listBox.columnWidth(self.C_COUNT)
         colWidths[self.C_TIME]  = self.listBox.columnWidth(self.C_TIME)
-        self.mainConf.setProjLoadColWidths(colWidths)
+        CONFIG.setProjLoadColWidths(colWidths)
         return
 
     def _populateList(self):
         """Populate the list box with recent project data.
         """
         self.listBox.clear()
-        dataList = self.mainConf.recentProjects.listEntries()
+        dataList = CONFIG.recentProjects.listEntries()
         sortList = sorted(dataList, key=lambda x: x[3], reverse=True)
         nwxIcon = self.mainGui.mainTheme.getIcon("proj_nwx")
         for path, title, words, time in sortList:
@@ -283,7 +282,7 @@ class GuiProjectLoad(QDialog):
         if self.listBox.topLevelItemCount() > 0:
             self.listBox.topLevelItem(0).setSelected(True)
 
-        projColWidth = self.mainConf.projLoadColWidths
+        projColWidth = CONFIG.projLoadColWidths
         if len(projColWidth) == 3:
             self.listBox.setColumnWidth(self.C_NAME,  projColWidth[self.C_NAME])
             self.listBox.setColumnWidth(self.C_COUNT, projColWidth[self.C_COUNT])

@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -33,6 +32,7 @@ from PyQt5.QtWidgets import (
     QListWidgetItem, QDialogButtonBox, QLabel, QGridLayout
 )
 
+from novelwriter import CONFIG
 from novelwriter.custom import QHelpLabel, QSwitch
 
 logger = logging.getLogger(__name__)
@@ -50,7 +50,6 @@ class GuiDocSplit(QDialog):
         logger.debug("Initialising GuiDocSplit ...")
         self.setObjectName("GuiDocSplit")
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
@@ -68,9 +67,9 @@ class GuiDocSplit(QDialog):
 
         # Values
         iPx = self.mainTheme.baseIconSize
-        hSp = self.mainConf.pxInt(12)
-        vSp = self.mainConf.pxInt(8)
-        bSp = self.mainConf.pxInt(12)
+        hSp = CONFIG.pxInt(12)
+        vSp = CONFIG.pxInt(8)
+        bSp = CONFIG.pxInt(12)
 
         pOptions = self.theProject.options
         spLevel = pOptions.getInt("GuiDocSplit", "spLevel", 3)
@@ -80,8 +79,8 @@ class GuiDocSplit(QDialog):
         # Header Selection
         self.listBox = QListWidget()
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
-        self.listBox.setMinimumWidth(self.mainConf.pxInt(400))
-        self.listBox.setMinimumHeight(self.mainConf.pxInt(180))
+        self.listBox.setMinimumWidth(CONFIG.pxInt(400))
+        self.listBox.setMinimumHeight(CONFIG.pxInt(180))
 
         self.splitLevel = QComboBox(self)
         self.splitLevel.addItem(self.tr("Split on Header Level 1 (Title)"),      1)

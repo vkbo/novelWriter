@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import os
 import logging
-import novelwriter
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -33,6 +32,7 @@ from PyQt5.QtWidgets import (
     QPushButton, QRadioButton, QSpinBox, QVBoxLayout, QWizard, QWizardPage
 )
 
+from novelwriter import CONFIG
 from novelwriter.common import makeFileNameSafe
 from novelwriter.custom import QSwitch
 
@@ -53,12 +53,11 @@ class GuiProjectWizard(QWizard):
         logger.debug("Initialising GuiProjectWizard ...")
         self.setObjectName("GuiProjectWizard")
 
-        self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui
         self.mainTheme = mainGui.mainTheme
 
         self.sideImage = self.mainTheme.loadDecoration(
-            "wiz-back", None, self.mainConf.pxInt(370)
+            "wiz-back", None, CONFIG.pxInt(370)
         )
         self.setWizardStyle(QWizard.ModernStyle)
         self.setPixmap(QWizard.WatermarkPixmap, self.sideImage)
@@ -89,7 +88,6 @@ class ProjWizardIntroPage(QWizardPage):
     def __init__(self, theWizard):
         super().__init__()
 
-        self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
         self.mainTheme = theWizard.mainTheme
 
@@ -109,9 +107,9 @@ class ProjWizardIntroPage(QWizardPage):
         lblFont.setPointSizeF(0.6*self.mainTheme.fontPointSize)
         self.imgCredit.setFont(lblFont)
 
-        xW = self.mainConf.pxInt(300)
-        vS = self.mainConf.pxInt(12)
-        fS = self.mainConf.pxInt(4)
+        xW = CONFIG.pxInt(300)
+        vS = CONFIG.pxInt(12)
+        fS = CONFIG.pxInt(4)
 
         # The Page Form
         self.projName = QLineEdit()
@@ -158,7 +156,6 @@ class ProjWizardFolderPage(QWizardPage):
     def __init__(self, theWizard):
         super().__init__()
 
-        self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
         self.mainTheme = theWizard.mainTheme
 
@@ -169,9 +166,9 @@ class ProjWizardFolderPage(QWizardPage):
         ))
         self.theText.setWordWrap(True)
 
-        xW = self.mainConf.pxInt(300)
-        vS = self.mainConf.pxInt(12)
-        fS = self.mainConf.pxInt(8)
+        xW = CONFIG.pxInt(300)
+        vS = CONFIG.pxInt(12)
+        fS = CONFIG.pxInt(8)
 
         self.projPath = QLineEdit("")
         self.projPath.setFixedWidth(xW)
@@ -234,7 +231,7 @@ class ProjWizardFolderPage(QWizardPage):
     def _doBrowse(self):
         """Select a project folder.
         """
-        lastPath = self.mainConf.lastPath()
+        lastPath = CONFIG.lastPath()
         projDir = QFileDialog.getExistingDirectory(
             self, self.tr("Select Project Folder"), str(lastPath), options=QFileDialog.ShowDirsOnly
         )
@@ -256,7 +253,6 @@ class ProjWizardPopulatePage(QWizardPage):
     def __init__(self, theWizard):
         super().__init__()
 
-        self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
 
         self.setTitle(self.tr("Populate Project"))
@@ -267,8 +263,8 @@ class ProjWizardPopulatePage(QWizardPage):
         ))
         self.theText.setWordWrap(True)
 
-        vS = self.mainConf.pxInt(12)
-        fS = self.mainConf.pxInt(4)
+        vS = CONFIG.pxInt(12)
+        fS = CONFIG.pxInt(4)
 
         self.popMinimal = QRadioButton(self.tr("Fill the project with a minimal set of items"))
         self.popSample = QRadioButton(self.tr("Fill the project with example files"))
@@ -312,7 +308,6 @@ class ProjWizardCustomPage(QWizardPage):
     def __init__(self, theWizard):
         super().__init__()
 
-        self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
 
         self.setTitle(self.tr("Custom Project Options"))
@@ -323,9 +318,9 @@ class ProjWizardCustomPage(QWizardPage):
         ))
         self.theText.setWordWrap(True)
 
-        cM = self.mainConf.pxInt(12)
-        mH = self.mainConf.pxInt(26)
-        fS = self.mainConf.pxInt(4)
+        cM = CONFIG.pxInt(12)
+        mH = CONFIG.pxInt(26)
+        fS = CONFIG.pxInt(4)
 
         # Root Folders
         self.addPlot = QSwitch()
@@ -413,7 +408,6 @@ class ProjWizardFinalPage(QWizardPage):
     def __init__(self, theWizard):
         super().__init__()
 
-        self.mainConf  = novelwriter.CONFIG
         self.theWizard = theWizard
 
         self.setTitle(self.tr("Summary"))
@@ -422,7 +416,7 @@ class ProjWizardFinalPage(QWizardPage):
 
         # Assemble
         self.outerBox = QVBoxLayout()
-        self.outerBox.setSpacing(self.mainConf.pxInt(12))
+        self.outerBox.setSpacing(CONFIG.pxInt(12))
         self.outerBox.addWidget(self.theText)
         self.outerBox.addStretch(1)
         self.setLayout(self.outerBox)
@@ -470,7 +464,7 @@ class ProjWizardFinalPage(QWizardPage):
                 self.tr("You have selected the following:"),
                 "<br>&nbsp;&bull;&nbsp;".join(sumList),
                 self.tr("Press '{0}' to create the new project.").format(
-                    self.tr("Done") if self.mainConf.osDarwin else self.tr("Finish")
+                    self.tr("Done") if CONFIG.osDarwin else self.tr("Finish")
                 )
             )
         )

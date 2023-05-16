@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import json
 import logging
-import novelwriter
 
 from datetime import datetime
 from urllib.request import Request, urlopen
@@ -36,6 +35,7 @@ from PyQt5.QtWidgets import (
     qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QLabel
 )
 
+from novelwriter import CONFIG, __version__, __date__, __url__
 from novelwriter.common import logException
 
 logger = logging.getLogger(__name__)
@@ -49,15 +49,14 @@ class GuiUpdates(QDialog):
         logger.debug("Initialising GuiUpdates ...")
         self.setObjectName("GuiUpdates")
 
-        self.mainConf = novelwriter.CONFIG
-        self.mainGui  = mainGui
+        self.mainGui = mainGui
 
         self.setWindowTitle(self.tr("Check for Updates"))
 
-        nPx = self.mainConf.pxInt(96)
-        sPx = self.mainConf.pxInt(16)
-        tPx = self.mainConf.pxInt(8)
-        mPx = self.mainConf.pxInt(4)
+        nPx = CONFIG.pxInt(96)
+        sPx = CONFIG.pxInt(16)
+        tPx = CONFIG.pxInt(8)
+        mPx = CONFIG.pxInt(4)
 
         # Left Box
         self.nwIcon = QLabel()
@@ -72,8 +71,8 @@ class GuiUpdates(QDialog):
         self.currentValue = QLabel(self.tr(
             "novelWriter {0} released on {1}"
         ).format(
-            "v%s" % novelwriter.__version__,
-            datetime.strptime(novelwriter.__date__, "%Y-%m-%d").strftime("%x"))
+            "v%s" % __version__,
+            datetime.strptime(__date__, "%Y-%m-%d").strftime("%x"))
         )
 
         self.latestLabel = QLabel(self.tr("Latest Release"))
@@ -152,7 +151,7 @@ class GuiUpdates(QDialog):
         self.latestLink.setText(self.tr(
             "Download: {0}"
         ).format(
-            f'<a href="{novelwriter.__url__}">{novelwriter.__url__}</a>'
+            f'<a href="{__url__}">{__url__}</a>'
         ))
 
         qApp.restoreOverrideCursor()

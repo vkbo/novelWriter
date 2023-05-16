@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from math import ceil
 
@@ -35,6 +34,7 @@ from PyQt5.QtGui import (
     QPalette, QColor, QIcon, QFont, QFontMetrics, QFontDatabase, QPixmap
 )
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.error import logException
 from novelwriter.common import NWConfigParser, minmax
@@ -52,7 +52,6 @@ class GuiTheme:
 
     def __init__(self):
 
-        self.mainConf = novelwriter.CONFIG
         self.iconCache = GuiIcons(self)
 
         # Loaded Theme Settings
@@ -118,10 +117,10 @@ class GuiTheme:
         self._availThemes = {}
         self._availSyntax = {}
 
-        self._listConf(self._availSyntax, self.mainConf.assetPath("syntax"))
-        self._listConf(self._availThemes, self.mainConf.assetPath("themes"))
-        self._listConf(self._availSyntax, self.mainConf.dataPath("syntax"))
-        self._listConf(self._availThemes, self.mainConf.dataPath("themes"))
+        self._listConf(self._availSyntax, CONFIG.assetPath("syntax"))
+        self._listConf(self._availThemes, CONFIG.assetPath("themes"))
+        self._listConf(self._availSyntax, CONFIG.dataPath("syntax"))
+        self._listConf(self._availThemes, CONFIG.dataPath("themes"))
 
         self.loadTheme()
         self.loadSyntax()
@@ -136,7 +135,7 @@ class GuiTheme:
         # Extract Other Info
         self.guiDPI = qApp.primaryScreen().logicalDotsPerInchX()
         self.guiScale = qApp.primaryScreen().logicalDotsPerInchX()/96.0
-        self.mainConf.guiScale = self.guiScale
+        CONFIG.guiScale = self.guiScale
         logger.debug("GUI DPI: %.1f", self.guiDPI)
         logger.debug("GUI Scale: %.2f", self.guiScale)
 
@@ -184,11 +183,11 @@ class GuiTheme:
     def loadTheme(self):
         """Load the currently specified GUI theme.
         """
-        guiTheme = self.mainConf.guiTheme
+        guiTheme = CONFIG.guiTheme
         if guiTheme not in self._availThemes:
             logger.error("Could not find GUI theme '%s'", guiTheme)
             guiTheme = "default"
-            self.mainConf.guiTheme = guiTheme
+            CONFIG.guiTheme = guiTheme
 
         themeFile = self._availThemes.get(guiTheme, None)
         if themeFile is None:
@@ -270,11 +269,11 @@ class GuiTheme:
     def loadSyntax(self):
         """Load the currently specified syntax highlighter theme.
         """
-        guiSyntax = self.mainConf.guiSyntax
+        guiSyntax = CONFIG.guiSyntax
         if guiSyntax not in self._availSyntax:
             logger.error("Could not find syntax theme '%s'", guiSyntax)
             guiSyntax = "default_light"
-            self.mainConf.guiSyntax = guiSyntax
+            CONFIG.guiSyntax = guiSyntax
 
         syntaxFile = self._availSyntax.get(guiSyntax, None)
         if syntaxFile is None:
@@ -367,18 +366,18 @@ class GuiTheme:
         """Update the GUI's font style from settings.
         """
         theFont = QFont()
-        if self.mainConf.guiFont not in self.guiFontDB.families():
-            if self.mainConf.osWindows and "Arial" in self.guiFontDB.families():
+        if CONFIG.guiFont not in self.guiFontDB.families():
+            if CONFIG.osWindows and "Arial" in self.guiFontDB.families():
                 # On Windows we default to Arial if possible
                 theFont.setFamily("Arial")
                 theFont.setPointSize(10)
             else:
                 theFont = self.guiFontDB.systemFont(QFontDatabase.GeneralFont)
-            self.mainConf.guiFont = theFont.family()
-            self.mainConf.guiFontSize = theFont.pointSize()
+            CONFIG.guiFont = theFont.family()
+            CONFIG.guiFontSize = theFont.pointSize()
         else:
-            theFont.setFamily(self.mainConf.guiFont)
-            theFont.setPointSize(self.mainConf.guiFontSize)
+            theFont.setFamily(CONFIG.guiFont)
+            theFont.setPointSize(CONFIG.guiFontSize)
 
         qApp.setFont(theFont)
 
@@ -472,7 +471,6 @@ class GuiIcons:
 
     def __init__(self, mainTheme):
 
-        self.mainConf = novelwriter.CONFIG
         self.mainTheme = mainTheme
 
         # Storage
@@ -482,7 +480,7 @@ class GuiIcons:
         self._confName  = "icons.conf"
 
         # Icon Theme Path
-        self._iconPath = self.mainConf.assetPath("icons")
+        self._iconPath = CONFIG.assetPath("icons")
 
         # Icon Theme Meta
         self.themeName        = ""
@@ -507,7 +505,7 @@ class GuiIcons:
         self._themeMap = {}
         themePath = self._iconPath / iconTheme
         if not themePath.is_dir():
-            themePath = self.mainConf.dataPath("icons") / iconTheme
+            themePath = CONFIG.dataPath("icons") / iconTheme
             if not themePath.is_dir():
                 logger.warning("No icons loaded for '%s'", iconTheme)
                 return False
@@ -580,7 +578,7 @@ class GuiIcons:
         if decoKey in self._themeMap:
             imgPath = self._themeMap[decoKey]
         elif decoKey in self.IMAGE_MAP:
-            imgPath = self.mainConf.assetPath("images") / self.IMAGE_MAP[decoKey]
+            imgPath = CONFIG.assetPath("images") / self.IMAGE_MAP[decoKey]
         else:
             logger.error("Decoration with name '%s' does not exist", decoKey)
             return QPixmap()

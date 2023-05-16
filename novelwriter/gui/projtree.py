@@ -26,7 +26,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from enum import Enum
 from time import time
@@ -38,10 +37,11 @@ from PyQt5.QtWidgets import (
     QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem,
     QVBoxLayout, QWidget
 )
-from novelwriter.core.item import NWItem
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert, nwWidget
 from novelwriter.constants import nwHeaders, nwUnicode, trConst, nwLabels
+from novelwriter.core.item import NWItem
 from novelwriter.core.coretools import DocMerger, DocSplitter
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
@@ -217,7 +217,6 @@ class GuiProjectToolBar(QWidget):
 
         logger.debug("Initialising GuiProjectToolBar ...")
 
-        self.mainConf   = novelwriter.CONFIG
         self.projView   = projView
         self.projTree   = projView.projTree
         self.mainGui    = projView.mainGui
@@ -225,7 +224,7 @@ class GuiProjectToolBar(QWidget):
         self.mainTheme  = projView.mainGui.mainTheme
 
         iPx = self.mainTheme.baseIconSize
-        mPx = self.mainConf.pxInt(2)
+        mPx = CONFIG.pxInt(2)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -348,7 +347,7 @@ class GuiProjectToolBar(QWidget):
         buttonStyle = (
             "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
-        ).format(self.mainConf.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
+        ).format(CONFIG.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
 
         self.tbQuick.setStyleSheet(buttonStyle)
         self.tbMoveU.setStyleSheet(buttonStyle)
@@ -458,7 +457,6 @@ class GuiProjectTree(QTreeWidget):
 
         logger.debug("Initialising GuiProjectTree ...")
 
-        self.mainConf   = novelwriter.CONFIG
         self.projView   = projView
         self.mainGui    = projView.mainGui
         self.mainTheme  = projView.mainGui.mainTheme
@@ -478,7 +476,7 @@ class GuiProjectTree(QTreeWidget):
 
         # Tree Settings
         iPx = self.mainTheme.baseIconSize
-        cMg = self.mainConf.pxInt(6)
+        cMg = CONFIG.pxInt(6)
 
         self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.NoFrame)
@@ -532,12 +530,12 @@ class GuiProjectTree(QTreeWidget):
         """Set or update tree widget settings.
         """
         # Scroll bars
-        if self.mainConf.hideVScroll:
+        if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
-        if self.mainConf.hideHScroll:
+        if CONFIG.hideHScroll:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -987,7 +985,7 @@ class GuiProjectTree(QTreeWidget):
 
         trItem.setIcon(self.C_ACTIVE, self.mainTheme.getIcon(iconName))
 
-        if self.mainConf.emphLabels and nwItem.isDocumentLayout():
+        if CONFIG.emphLabels and nwItem.isDocumentLayout():
             trFont = trItem.font(self.C_NAME)
             trFont.setBold(hLevel == "H1" or hLevel == "H2")
             trFont.setUnderline(hLevel == "H1")

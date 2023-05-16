@@ -24,7 +24,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from enum import Enum
 from time import time
@@ -38,6 +37,7 @@ from PyQt5.QtWidgets import (
     QMessageBox, QDialog, QStackedWidget
 )
 
+from novelwriter import CONFIG, __hexversion__
 from novelwriter.gui.theme import GuiTheme
 from novelwriter.gui.sidebar import GuiSideBar
 from novelwriter.gui.outline import GuiOutlineView
@@ -78,19 +78,18 @@ class GuiMain(QMainWindow):
 
         logger.debug("Initialising GUI ...")
         self.setObjectName("GuiMain")
-        self.mainConf = novelwriter.CONFIG
         self.threadPool = QThreadPool()
 
         # System Info
         # ===========
 
-        logger.info("OS: %s", self.mainConf.osType)
-        logger.info("Kernel: %s", self.mainConf.kernelVer)
-        logger.info("Host: %s", self.mainConf.hostName)
-        logger.info("Qt5: %s (0x%06x)", self.mainConf.verQtString, self.mainConf.verQtValue)
-        logger.info("PyQt5: %s (0x%06x)", self.mainConf.verPyQtString, self.mainConf.verPyQtValue)
-        logger.info("Python: %s (0x%08x)", self.mainConf.verPyString, self.mainConf.verPyHexVal)
-        logger.info("GUI Language: %s", self.mainConf.guiLocale)
+        logger.info("OS: %s", CONFIG.osType)
+        logger.info("Kernel: %s", CONFIG.kernelVer)
+        logger.info("Host: %s", CONFIG.hostName)
+        logger.info("Qt5: %s (0x%06x)", CONFIG.verQtString, CONFIG.verQtValue)
+        logger.info("PyQt5: %s (0x%06x)", CONFIG.verPyQtString, CONFIG.verPyQtValue)
+        logger.info("Python: %s (0x%08x)", CONFIG.verPyString, CONFIG.verPyHexVal)
+        logger.info("GUI Language: %s", CONFIG.guiLocale)
 
         # Core Classes
         # ============
@@ -104,10 +103,10 @@ class GuiMain(QMainWindow):
         self.idleTime    = 0.0
 
         # Prepare Main Window
-        self.resize(*self.mainConf.mainWinSize)
+        self.resize(*CONFIG.mainWinSize)
         self._updateWindowTitle()
 
-        nwIcon = self.mainConf.assetPath("icons") / "novelwriter.svg"
+        nwIcon = CONFIG.assetPath("icons") / "novelwriter.svg"
         self.nwIcon = QIcon(str(nwIcon)) if nwIcon.is_file() else QIcon()
         self.setWindowIcon(self.nwIcon)
         qApp.setWindowIcon(self.nwIcon)
@@ -116,8 +115,8 @@ class GuiMain(QMainWindow):
         # =============
 
         # Sizes
-        mPx = self.mainConf.pxInt(4)
-        hWd = self.mainConf.pxInt(4)
+        mPx = CONFIG.pxInt(4)
+        hWd = CONFIG.pxInt(4)
 
         # Main GUI Elements
         self.mainStatus  = GuiMainStatus(self)
@@ -152,7 +151,7 @@ class GuiMain(QMainWindow):
         self.splitView.addWidget(self.viewMeta)
         self.splitView.setHandleWidth(hWd)
         self.splitView.setOpaqueResize(False)
-        self.splitView.setSizes(self.mainConf.viewPanePos)
+        self.splitView.setSizes(CONFIG.viewPanePos)
 
         # Splitter : Document Editor / Document Viewer
         self.splitDocs = QSplitter(Qt.Horizontal)
@@ -168,7 +167,7 @@ class GuiMain(QMainWindow):
         self.splitMain.addWidget(self.splitDocs)
         self.splitMain.setOpaqueResize(False)
         self.splitMain.setHandleWidth(hWd)
-        self.splitMain.setSizes(self.mainConf.mainPanePos)
+        self.splitMain.setSizes(CONFIG.mainPanePos)
 
         # Main Stack : Editor / Outline
         self.mainStack = QStackedWidget()
@@ -298,12 +297,12 @@ class GuiMain(QMainWindow):
 
         # Handle Windows Mode
         self.showNormal()
-        if self.mainConf.isFullScreen:
+        if CONFIG.isFullScreen:
             self.toggleFullScreenMode()
 
         logger.debug("GUI initialisation complete")
 
-        if novelwriter.__hexversion__[-2] == "a" and logger.getEffectiveLevel() > logging.DEBUG:
+        if __hexversion__[-2] == "a" and logger.getEffectiveLevel() > logging.DEBUG:
             self.makeAlert(self.tr(
                 "You are running an untested development version of novelWriter. "
                 "Please be careful when working on a live project "
@@ -338,8 +337,8 @@ class GuiMain(QMainWindow):
     def initMain(self):
         """Initialise elements that depend on user settings.
         """
-        self.asProjTimer.setInterval(int(self.mainConf.autoSaveProj*1000))
-        self.asDocTimer.setInterval(int(self.mainConf.autoSaveDoc*1000))
+        self.asProjTimer.setInterval(int(CONFIG.autoSaveProj*1000))
+        self.asDocTimer.setInterval(int(CONFIG.autoSaveDoc*1000))
         return True
 
     def postLaunchTasks(self, cmdOpen):
@@ -354,8 +353,8 @@ class GuiMain(QMainWindow):
             self.showProjectLoadDialog()
 
         # Determine whether release notes need to be shown or not
-        if hexToInt(self.mainConf.lastNotes) < hexToInt(novelwriter.__hexversion__):
-            self.mainConf.lastNotes = novelwriter.__hexversion__
+        if hexToInt(CONFIG.lastNotes) < hexToInt(__hexversion__):
+            CONFIG.lastNotes = __hexversion__
             self.showAboutNWDialog(showNotes=True)
 
         return
@@ -426,9 +425,9 @@ class GuiMain(QMainWindow):
 
         saveOK = self.saveProject()
         doBackup = False
-        if self.theProject.data.doBackup and self.mainConf.backupOnClose:
+        if self.theProject.data.doBackup and CONFIG.backupOnClose:
             doBackup = True
-            if self.mainConf.askBeforeBackup:
+            if CONFIG.askBeforeBackup:
                 msgYes = self.askQuestion(
                     self.tr("Backup Project"),
                     self.tr("Backup the current project?")
@@ -712,7 +711,7 @@ class GuiMain(QMainWindow):
                 vPos[0] = int(bPos[1]/2)
                 vPos[1] = bPos[1] - vPos[0]
                 self.splitDocs.setSizes(vPos)
-                self.viewMeta.setVisible(self.mainConf.showRefPanel)
+                self.viewMeta.setVisible(CONFIG.showRefPanel)
 
             if sTitle:
                 self.docViewer.navigateTo(f"#{sTitle}")
@@ -727,7 +726,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        lastPath = self.mainConf.lastPath()
+        lastPath = CONFIG.lastPath()
         extFilter = [
             self.tr("Text files ({0})").format("*.txt"),
             self.tr("Markdown files ({0})").format("*.md"),
@@ -747,7 +746,7 @@ class GuiMain(QMainWindow):
         try:
             with open(loadFile, mode="rt", encoding="utf-8") as inFile:
                 theText = inFile.read()
-            self.mainConf.setLastPath(loadFile)
+            CONFIG.setLastPath(loadFile)
         except Exception as exc:
             self.makeAlert(self.tr(
                 "Could not read file. The file must be an existing text file."
@@ -1162,8 +1161,8 @@ class GuiMain(QMainWindow):
         the user know if this is the case. The Config module caches
         errors since it is initialised before the GUI itself.
         """
-        if self.mainConf.hasError:
-            self.makeAlert(self.mainConf.errorText(), nwAlert.ERROR)
+        if CONFIG.hasError:
+            self.makeAlert(CONFIG.errorText(), nwAlert.ERROR)
             return True
         return False
 
@@ -1188,19 +1187,19 @@ class GuiMain(QMainWindow):
         logger.info("Exiting novelWriter")
 
         if not self.isFocusMode:
-            self.mainConf.setMainPanePos(self.splitMain.sizes())
-            self.mainConf.setOutlinePanePos(self.outlineView.splitSizes())
+            CONFIG.setMainPanePos(self.splitMain.sizes())
+            CONFIG.setOutlinePanePos(self.outlineView.splitSizes())
             if self.viewMeta.isVisible():
-                self.mainConf.setViewPanePos(self.splitView.sizes())
+                CONFIG.setViewPanePos(self.splitView.sizes())
 
-        self.mainConf.showRefPanel = self.viewMeta.isVisible()
-        if not self.mainConf.isFullScreen:
-            self.mainConf.setMainWinSize(self.width(), self.height())
+        CONFIG.showRefPanel = self.viewMeta.isVisible()
+        if not CONFIG.isFullScreen:
+            CONFIG.setMainWinSize(self.width(), self.height())
 
         if self.hasProject:
             self.closeProject(True)
 
-        self.mainConf.saveConfig()
+        CONFIG.saveConfig()
         self.reportConfErr()
 
         qApp.quit()
@@ -1269,7 +1268,7 @@ class GuiMain(QMainWindow):
         self.mainMenu.setVisible(isVisible)
         self.viewsBar.setVisible(isVisible)
 
-        hideDocFooter = self.isFocusMode and self.mainConf.hideFocusFooter
+        hideDocFooter = self.isFocusMode and CONFIG.hideFocusFooter
         self.docEditor.docFooter.setVisible(not hideDocFooter)
         self.docEditor.docHeader.updateFocusMode()
 
@@ -1295,7 +1294,7 @@ class GuiMain(QMainWindow):
         else:
             logger.debug("Deactivated full screen mode")
 
-        self.mainConf.isFullScreen = winState
+        CONFIG.isFullScreen = winState
 
         return
 
@@ -1390,7 +1389,7 @@ class GuiMain(QMainWindow):
 
         # Help
         self.addAction(self.mainMenu.aHelpDocs)
-        if isinstance(self.mainConf.pdfDocs, Path):
+        if isinstance(CONFIG.pdfDocs, Path):
             self.addAction(self.mainMenu.aPdfDocs)
 
         return True
@@ -1398,7 +1397,7 @@ class GuiMain(QMainWindow):
     def _updateWindowTitle(self, projName=None):
         """Set the window title and add the project's name.
         """
-        winTitle = self.mainConf.appName
+        winTitle = CONFIG.appName
         if projName is not None:
             winTitle += " - %s" % projName
         self.setWindowTitle(winTitle)
@@ -1549,7 +1548,7 @@ class GuiMain(QMainWindow):
             return
 
         currTime = time()
-        editIdle = currTime - self.docEditor.lastActive() > self.mainConf.userIdleTime
+        editIdle = currTime - self.docEditor.lastActive() > CONFIG.userIdleTime
         userIdle = qApp.applicationState() != Qt.ApplicationActive
 
         if editIdle or userIdle:
@@ -1571,7 +1570,7 @@ class GuiMain(QMainWindow):
             self.mainStatus.setProjectStats(0, 0)
 
         self.theProject.updateWordCounts()
-        if self.mainConf.incNotesWCount:
+        if CONFIG.incNotesWCount:
             iTotal = sum(self.theProject.data.initCounts)
             cTotal = sum(self.theProject.data.currCounts)
             self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)

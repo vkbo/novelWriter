@@ -24,7 +24,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from pathlib import Path
 
@@ -34,6 +33,7 @@ from PyQt5.QtWidgets import (
     QAbstractItemView, QPushButton, QLineEdit, QLabel
 )
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwAlert
 from novelwriter.error import logException
 from novelwriter.constants import nwFiles
@@ -49,23 +49,22 @@ class GuiWordList(QDialog):
         logger.debug("Initialising GuiWordList ...")
         self.setObjectName("GuiWordList")
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
         self.setWindowTitle(self.tr("Project Word List"))
 
-        mS = self.mainConf.pxInt(250)
-        wW = self.mainConf.pxInt(320)
-        wH = self.mainConf.pxInt(340)
+        mS = CONFIG.pxInt(250)
+        wW = CONFIG.pxInt(320)
+        wH = CONFIG.pxInt(340)
         pOptions = self.theProject.options
 
         self.setMinimumWidth(mS)
         self.setMinimumHeight(mS)
         self.resize(
-            self.mainConf.pxInt(pOptions.getInt("GuiWordList", "winWidth",  wW)),
-            self.mainConf.pxInt(pOptions.getInt("GuiWordList", "winHeight", wH))
+            CONFIG.pxInt(pOptions.getInt("GuiWordList", "winWidth",  wW)),
+            CONFIG.pxInt(pOptions.getInt("GuiWordList", "winHeight", wH))
         )
 
         # Main Widgets
@@ -99,10 +98,10 @@ class GuiWordList(QDialog):
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.headLabel)
-        self.outerBox.addSpacing(self.mainConf.pxInt(8))
+        self.outerBox.addSpacing(CONFIG.pxInt(8))
         self.outerBox.addWidget(self.listBox, 1)
         self.outerBox.addLayout(self.editBox, 0)
-        self.outerBox.addSpacing(self.mainConf.pxInt(12))
+        self.outerBox.addSpacing(CONFIG.pxInt(12))
         self.outerBox.addWidget(self.buttonBox, 0)
 
         self.setLayout(self.outerBox)
@@ -210,8 +209,8 @@ class GuiWordList(QDialog):
     def _saveGuiSettings(self):
         """Save GUI settings.
         """
-        winWidth  = self.mainConf.rpxInt(self.width())
-        winHeight = self.mainConf.rpxInt(self.height())
+        winWidth  = CONFIG.rpxInt(self.width())
+        winHeight = CONFIG.rpxInt(self.height())
 
         pOptions = self.theProject.options
         pOptions.setValue("GuiWordList", "winWidth",  winWidth)

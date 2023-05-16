@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import random
 import logging
-import novelwriter
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -33,6 +32,7 @@ from PyQt5.QtWidgets import (
     QSpinBox
 )
 
+from novelwriter import CONFIG
 from novelwriter.common import readTextFile
 from novelwriter.custom import QSwitch
 
@@ -47,18 +47,17 @@ class GuiLipsum(QDialog):
         logger.debug("Initialising GuiLipsum ...")
         self.setObjectName("GuiLipsum")
 
-        self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui
         self.mainTheme = mainGui.mainTheme
 
         self.setWindowTitle(self.tr("Insert Placeholder Text"))
 
         self.innerBox = QHBoxLayout()
-        self.innerBox.setSpacing(self.mainConf.pxInt(16))
+        self.innerBox.setSpacing(CONFIG.pxInt(16))
 
         # Icon
-        nPx = self.mainConf.pxInt(64)
-        vSp = self.mainConf.pxInt(4)
+        nPx = CONFIG.pxInt(64)
+        vSp = CONFIG.pxInt(4)
         self.docIcon = QLabel()
         self.docIcon.setPixmap(self.mainTheme.getPixmap("proj_document", (nPx, nPx)))
 
@@ -105,7 +104,7 @@ class GuiLipsum(QDialog):
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.innerBox)
         self.outerBox.addWidget(self.buttonBox)
-        self.outerBox.setSpacing(self.mainConf.pxInt(16))
+        self.outerBox.setSpacing(CONFIG.pxInt(16))
         self.setLayout(self.outerBox)
 
         logger.debug("GuiLipsum initialisation complete")
@@ -119,7 +118,7 @@ class GuiLipsum(QDialog):
     def _doInsert(self):
         """Load the text and insert it in the open document.
         """
-        lipsumFile = self.mainConf.assetPath("text") / "lipsum.txt"
+        lipsumFile = CONFIG.assetPath("text") / "lipsum.txt"
         lipsumText = readTextFile(lipsumFile).splitlines()
 
         if self.randSwitch.isChecked():

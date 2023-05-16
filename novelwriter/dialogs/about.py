@@ -35,6 +35,7 @@ from PyQt5.QtWidgets import (
     QTextBrowser, QLabel
 )
 
+from novelwriter import CONFIG
 from novelwriter.common import readTextFile
 
 logger = logging.getLogger(__name__)
@@ -48,19 +49,18 @@ class GuiAbout(QDialog):
         logger.debug("Initialising GuiAbout ...")
         self.setObjectName("GuiAbout")
 
-        self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui
         self.mainTheme = mainGui.mainTheme
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
-        self.innerBox.setSpacing(self.mainConf.pxInt(16))
+        self.innerBox.setSpacing(CONFIG.pxInt(16))
 
         self.setWindowTitle(self.tr("About novelWriter"))
-        self.setMinimumWidth(self.mainConf.pxInt(650))
-        self.setMinimumHeight(self.mainConf.pxInt(600))
+        self.setMinimumWidth(CONFIG.pxInt(650))
+        self.setMinimumHeight(CONFIG.pxInt(600))
 
-        nPx = self.mainConf.pxInt(96)
+        nPx = CONFIG.pxInt(96)
         self.nwIcon = QLabel()
         self.nwIcon.setPixmap(self.mainGui.mainTheme.getPixmap("novelwriter", (nPx, nPx)))
         self.lblName = QLabel("<b>novelWriter</b>")
@@ -68,7 +68,7 @@ class GuiAbout(QDialog):
         self.lblDate = QLabel(datetime.strptime(novelwriter.__date__, "%Y-%m-%d").strftime("%x"))
 
         self.leftBox = QVBoxLayout()
-        self.leftBox.setSpacing(self.mainConf.pxInt(4))
+        self.leftBox.setSpacing(CONFIG.pxInt(4))
         self.leftBox.addWidget(self.nwIcon,  0, Qt.AlignCenter)
         self.leftBox.addWidget(self.lblName, 0, Qt.AlignCenter)
         self.leftBox.addWidget(self.lblVers, 0, Qt.AlignCenter)
@@ -79,19 +79,19 @@ class GuiAbout(QDialog):
         # Pages
         self.pageAbout = QTextBrowser()
         self.pageAbout.setOpenExternalLinks(True)
-        self.pageAbout.document().setDocumentMargin(self.mainConf.pxInt(16))
+        self.pageAbout.document().setDocumentMargin(CONFIG.pxInt(16))
 
         self.pageNotes = QTextBrowser()
         self.pageNotes.setOpenExternalLinks(True)
-        self.pageNotes.document().setDocumentMargin(self.mainConf.pxInt(16))
+        self.pageNotes.document().setDocumentMargin(CONFIG.pxInt(16))
 
         self.pageCredits = QTextBrowser()
         self.pageCredits.setOpenExternalLinks(True)
-        self.pageCredits.document().setDocumentMargin(self.mainConf.pxInt(16))
+        self.pageCredits.document().setDocumentMargin(CONFIG.pxInt(16))
 
         self.pageLicense = QTextBrowser()
         self.pageLicense.setOpenExternalLinks(True)
-        self.pageLicense.document().setDocumentMargin(self.mainConf.pxInt(16))
+        self.pageLicense.document().setDocumentMargin(CONFIG.pxInt(16))
 
         # Main Tab Area
         self.tabBox = QTabWidget()
@@ -182,7 +182,7 @@ class GuiAbout(QDialog):
     def _fillNotesPage(self):
         """Load the content for the Release Notes page.
         """
-        docPath = self.mainConf.assetPath("text") / "release_notes.htm"
+        docPath = CONFIG.assetPath("text") / "release_notes.htm"
         docText = readTextFile(docPath)
         if docText:
             self.pageNotes.setHtml(docText)
@@ -193,7 +193,7 @@ class GuiAbout(QDialog):
     def _fillCreditsPage(self):
         """Load the content for the Credits page.
         """
-        docPath = self.mainConf.assetPath("text") / "credits_en.htm"
+        docPath = CONFIG.assetPath("text") / "credits_en.htm"
         docText = readTextFile(docPath)
         if docText:
             self.pageCredits.setHtml(docText)
@@ -204,7 +204,7 @@ class GuiAbout(QDialog):
     def _fillLicensePage(self):
         """Load the content for the Licence page.
         """
-        docPath = self.mainConf.assetPath("text") / "gplv3_en.htm"
+        docPath = CONFIG.assetPath("text") / "gplv3_en.htm"
         docText = readTextFile(docPath)
         if docText:
             self.pageLicense.setHtml(docText)

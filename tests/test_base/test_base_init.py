@@ -22,9 +22,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import sys
 import pytest
 import logging
-import novelwriter
 
 from mock import MockGuiMain
+
+from novelwriter import CONFIG, main, logger
 
 
 @pytest.mark.base
@@ -34,34 +35,34 @@ def testBaseInit_Launch(caplog, monkeypatch, fncPath):
     monkeypatch.setattr("novelwriter.guimain.GuiMain", MockGuiMain)
 
     # TestMode Launch
-    nwGUI = novelwriter.main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
+    nwGUI = main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
     assert isinstance(nwGUI, MockGuiMain)
 
     # Darwin Launch
     caplog.clear()
-    osDarwin = novelwriter.CONFIG.osDarwin
-    novelwriter.CONFIG.osDarwin = True
+    osDarwin = CONFIG.osDarwin
+    CONFIG.osDarwin = True
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "Foundation", None)
-        nwGUI = novelwriter.main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
+        nwGUI = main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
         assert isinstance(nwGUI, MockGuiMain)
         assert "Failed" in caplog.text
 
-    novelwriter.CONFIG.osDarwin = osDarwin
+    CONFIG.osDarwin = osDarwin
 
     # Windows Launch
     caplog.clear()
-    osWindows = novelwriter.CONFIG.osWindows
-    novelwriter.CONFIG.osWindows = True
+    osWindows = CONFIG.osWindows
+    CONFIG.osWindows = True
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "ctypes", None)
-        nwGUI = novelwriter.main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
+        nwGUI = main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
         assert isinstance(nwGUI, MockGuiMain)
         if not sys.platform.startswith("darwin"):
             # For some reason, the test doesn't work on macOS
             assert "Failed" in caplog.text
 
-    novelwriter.CONFIG.osWindows = osWindows
+    CONFIG.osWindows = osWindows
 
     # Normal Launch
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.__init__", lambda *a: None)
@@ -71,7 +72,7 @@ def testBaseInit_Launch(caplog, monkeypatch, fncPath):
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setOrganizationDomain", lambda *a: None)
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.exec_", lambda *a: 0)
     with pytest.raises(SystemExit) as ex:
-        novelwriter.main([f"--config={fncPath}", f"--data={fncPath}"])
+        main([f"--config={fncPath}", f"--data={fncPath}"])
         assert ex.value.code == 0
 
 # END Test testBaseInit_Launch
@@ -87,40 +88,40 @@ def testBaseInit_Options(monkeypatch, fncPath):
     ])
 
     # Defaults w/None Args
-    nwGUI = novelwriter.main()
-    assert novelwriter.logger.getEffectiveLevel() == logging.WARNING
+    nwGUI = main()
+    assert logger.getEffectiveLevel() == logging.WARNING
     assert nwGUI.closeMain() == "closeMain"
 
     # Defaults
-    nwGUI = novelwriter.main(
+    nwGUI = main(
         ["--testmode", f"--config={fncPath}", f"--data={fncPath}", "--style=Fusion"]
     )
-    assert novelwriter.logger.getEffectiveLevel() == logging.WARNING
+    assert logger.getEffectiveLevel() == logging.WARNING
     assert nwGUI.closeMain() == "closeMain"
 
     # Log Levels
-    nwGUI = novelwriter.main(
+    nwGUI = main(
         ["--testmode", "--info", f"--config={fncPath}", f"--data={fncPath}"]
     )
-    assert novelwriter.logger.getEffectiveLevel() == logging.INFO
+    assert logger.getEffectiveLevel() == logging.INFO
     assert nwGUI.closeMain() == "closeMain"
 
-    nwGUI = novelwriter.main(
+    nwGUI = main(
         ["--testmode", "--debug", f"--config={fncPath}", f"--data={fncPath}"]
     )
-    assert novelwriter.logger.getEffectiveLevel() == logging.DEBUG
+    assert logger.getEffectiveLevel() == logging.DEBUG
     assert nwGUI.closeMain() == "closeMain"
 
     # Help and Version
     with pytest.raises(SystemExit) as ex:
-        nwGUI = novelwriter.main(
+        nwGUI = main(
             ["--testmode", "--help", f"--config={fncPath}", f"--data={fncPath}"]
         )
     assert nwGUI.closeMain() == "closeMain"
     assert ex.value.code == 0
 
     with pytest.raises(SystemExit) as ex:
-        nwGUI = novelwriter.main(
+        nwGUI = main(
             ["--testmode", "--version", f"--config={fncPath}", f"--data={fncPath}"]
         )
     assert nwGUI.closeMain() == "closeMain"
@@ -128,14 +129,14 @@ def testBaseInit_Options(monkeypatch, fncPath):
 
     # Invalid options
     with pytest.raises(SystemExit) as ex:
-        nwGUI = novelwriter.main(
+        nwGUI = main(
             ["--testmode", "--invalid", f"--config={fncPath}", f"--data={fncPath}"]
         )
     assert nwGUI.closeMain() == "closeMain"
     assert ex.value.code == 2
 
     # Project Path
-    nwGUI = novelwriter.main(
+    nwGUI = main(
         ["--testmode", f"--config={fncPath}", f"--data={fncPath}", "sample/"]
     )
     assert nwGUI.closeMain() == "closeMain"
@@ -159,7 +160,7 @@ def testBaseInit_Imports(caplog, monkeypatch, fncPath):
     monkeypatch.setattr("novelwriter.CONFIG.verPyQtValue", 0x050000)
 
     with pytest.raises(SystemExit) as ex:
-        _ = novelwriter.main(
+        _ = main(
             ["--testmode", f"--config={fncPath}", f"--data={fncPath}"]
         )
 
