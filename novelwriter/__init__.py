@@ -64,12 +64,6 @@ __hexversion__ = "0x020007f0"
 __date__       = "2023-04-16"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
-__url__        = "https://novelwriter.io"
-__docurl__     = "https://docs.novelwriter.io/"
-__sourceurl__  = "https://github.com/vkbo/novelWriter"
-__issuesurl__  = "https://github.com/vkbo/novelWriter/issues"
-__helpurl__    = "https://github.com/vkbo/novelWriter/discussions"
-__releaseurl__ = "https://github.com/vkbo/novelWriter/releases/latest"
 
 logger = logging.getLogger(__name__)
 

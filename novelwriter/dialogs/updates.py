@@ -35,8 +35,9 @@ from PyQt5.QtWidgets import (
     qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QLabel
 )
 
-from novelwriter import CONFIG, __version__, __date__, __url__
+from novelwriter import CONFIG, __version__, __date__
 from novelwriter.common import logException
+from novelwriter.constants import nwConst
 
 logger = logging.getLogger(__name__)
 
@@ -151,7 +152,7 @@ class GuiUpdates(QDialog):
         self.latestLink.setText(self.tr(
             "Download: {0}"
         ).format(
-            f'<a href="{__url__}">{__url__}</a>'
+            f'<a href="{nwConst.URL_WEB}">{nwConst.URL_WEB}</a>'
         ))
 
         qApp.restoreOverrideCursor()

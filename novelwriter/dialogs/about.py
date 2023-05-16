@@ -37,6 +37,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG
 from novelwriter.common import readTextFile
+from novelwriter.constants import nwConst
 
 logger = logging.getLogger(__name__)
 
@@ -150,7 +151,7 @@ class GuiAbout(QDialog):
             title1=self.tr("About novelWriter"),
             copy=novelwriter.__copyright__,
             link=self.tr("Website: {0}").format(
-                f"<a href='{novelwriter.__url__}'>{novelwriter.__domain__}</a>"
+                f"<a href='{nwConst.URL_WEB}'>{novelwriter.__domain__}</a>"
             ),
             intro=self.tr(
                 "novelWriter is a markdown-like text editor designed for organising and "

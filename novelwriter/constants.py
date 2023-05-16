@@ -45,6 +45,14 @@ class nwConst:
     MAX_DOCSIZE   = 5000000   # Maxium size of a single document
     MAX_BUILDSIZE = 10000000  # Maxium size of a project build
 
+    # URLs
+    URL_WEB     = "https://novelwriter.io"
+    URL_DOCS    = "https://docs.novelwriter.io"
+    URL_CODE    = "https://github.com/vkbo/novelWriter"
+    URL_REPORT  = "https://github.com/vkbo/novelWriter/issues"
+    URL_HELP    = "https://github.com/vkbo/novelWriter/discussions"
+    URL_RELEASE = "https://github.com/vkbo/novelWriter/releases/latest"
+
 # END Class nwConst
 
 
