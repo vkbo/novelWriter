@@ -28,6 +28,7 @@ from tools import ODT_IGNORE, cmpFiles, getGuiItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog
 
+from novelwriter import CONFIG
 from novelwriter.tools.build import GuiBuildNovel
 
 
@@ -67,7 +68,7 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, prjLipsum, tstPaths):
         assert not nwBuild._saveDocument(nwBuild.FMT_NWD)
 
     # Default Settings
-    nwGUI.mainConf._lastPath = prjLipsum
+    CONFIG._lastPath = prjLipsum
     qtbot.mouseClick(nwBuild.buildNovel, Qt.LeftButton)
 
     assert nwBuild._saveDocument(nwBuild.FMT_NWD)
@@ -231,7 +232,7 @@ def testToolBuild_Main(qtbot, monkeypatch, nwGUI, prjLipsum, tstPaths):
     assert (prjLipsum / "Lorem Ipsum.odt").is_file()
 
     # Print to PDF
-    if not nwGUI.mainConf.osDarwin:
+    if not CONFIG.osDarwin:
         assert nwBuild._saveDocument(nwBuild.FMT_PDF)
         assert (prjLipsum / "Lorem Ipsum.pdf").is_file()
 

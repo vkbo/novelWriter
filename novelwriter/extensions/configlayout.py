@@ -23,14 +23,14 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import novelwriter
-
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QGridLayout, QHBoxLayout, QLabel, QLineEdit, QSizePolicy, QVBoxLayout,
     QWidget
 )
+
+from novelwriter import CONFIG
 
 
 class NConfigLayout(QGridLayout):
@@ -44,7 +44,7 @@ class NConfigLayout(QGridLayout):
 
         self._itemMap = {}
 
-        wSp = novelwriter.CONFIG.pxInt(8)
+        wSp = CONFIG.pxInt(8)
         self.setHorizontalSpacing(wSp)
         self.setVerticalSpacing(wSp)
         self.setColumnStretch(0, 1)
@@ -94,7 +94,7 @@ class NConfigLayout(QGridLayout):
             qLabel = None
             raise ValueError("theLabel must be a QLabel")
 
-        hM = novelwriter.CONFIG.pxInt(4)
+        hM = CONFIG.pxInt(4)
         qLabel.setContentsMargins(0, hM, 0, hM)
         self.addWidget(qLabel, self._nextRow, 0, 1, 2, Qt.AlignLeft)
 
@@ -128,7 +128,7 @@ class NConfigLayout(QGridLayout):
             qWidget = None
             raise ValueError("theWidget must be a QWidget")
 
-        wSp = novelwriter.CONFIG.pxInt(8)
+        wSp = CONFIG.pxInt(8)
         qLabel.setIndent(wSp)
         if helpText is not None:
             qHelp = NHelpLabel(str(helpText), self._helpCol, self._fontScale)

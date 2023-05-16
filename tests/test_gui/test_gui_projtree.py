@@ -27,6 +27,7 @@ from tools import C, buildTestProject
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidgetItem, QDialog
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.dialogs.docmerge import GuiDocMerge
@@ -862,14 +863,14 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # ====================
 
     # Test that the scrollbar setting works
-    nwGUI.mainConf.hideVScroll = True
-    nwGUI.mainConf.hideHScroll = True
+    CONFIG.hideVScroll = True
+    CONFIG.hideHScroll = True
     projView.initSettings()
     assert projTree.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert projTree.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
 
-    nwGUI.mainConf.hideVScroll = False
-    nwGUI.mainConf.hideHScroll = False
+    CONFIG.hideVScroll = False
+    CONFIG.hideHScroll = False
     projView.initSettings()
     assert projTree.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert projTree.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded

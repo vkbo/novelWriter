@@ -28,7 +28,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from enum import Enum
 
@@ -41,6 +40,7 @@ from PyQt5.QtWidgets import (
     QAction, QMenu, QFrame
 )
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
 from novelwriter.error import logException
 from novelwriter.constants import nwUnicode
@@ -59,7 +59,6 @@ class GuiDocViewer(QTextBrowser):
         logger.debug("Initialising GuiDocViewer ...")
 
         # Class Variables
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
@@ -68,7 +67,7 @@ class GuiDocViewer(QTextBrowser):
         self._docHandle = None
 
         # Settings
-        self.setMinimumWidth(self.mainConf.pxInt(300))
+        self.setMinimumWidth(CONFIG.pxInt(300))
         self.setAutoFillBackground(True)
         self.setOpenExternalLinks(False)
         self.setFocusPolicy(Qt.StrongFocus)
@@ -116,11 +115,11 @@ class GuiDocViewer(QTextBrowser):
 
         # Set Font
         theFont = QFont()
-        if self.mainConf.textFont is None:
+        if CONFIG.textFont is None:
             # If none is defined, set the default back to config
-            self.mainConf.textFont = self.document().defaultFont().family()
-        theFont.setFamily(self.mainConf.textFont)
-        theFont.setPointSize(self.mainConf.textSize)
+            CONFIG.textFont = self.document().defaultFont().family()
+        theFont.setFamily(CONFIG.textFont)
+        theFont.setPointSize(CONFIG.textSize)
         self.setFont(theFont)
 
         # Set the widget colours to match syntax theme
@@ -141,23 +140,23 @@ class GuiDocViewer(QTextBrowser):
         # Set default text margins
         self.document().setDocumentMargin(0)
         theOpt = QTextOption()
-        if self.mainConf.doJustify:
+        if CONFIG.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
         self.document().setDefaultTextOption(theOpt)
 
         # Scroll bars
-        if self.mainConf.hideVScroll:
+        if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
-        if self.mainConf.hideHScroll:
+        if CONFIG.hideHScroll:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Refresh the tab stops
-        self.setTabStopDistance(self.mainConf.getTabWidth())
+        self.setTabStopDistance(CONFIG.getTabWidth())
 
         # If we have a document open, we should reload it in case the font changed
         if self._docHandle is not None:
@@ -177,7 +176,7 @@ class GuiDocViewer(QTextBrowser):
 
         sPos = self.verticalScrollBar().value()
         aDoc = ToHtml(self.theProject)
-        aDoc.setPreview(self.mainConf.viewComments, self.mainConf.viewSynopsis)
+        aDoc.setPreview(CONFIG.viewComments, CONFIG.viewSynopsis)
         aDoc.setLinkHeaders(True)
 
         # Be extra careful here to prevent crashes when first opening a
@@ -196,7 +195,7 @@ class GuiDocViewer(QTextBrowser):
             return False
 
         # Refresh the tab stops
-        self.setTabStopDistance(self.mainConf.getTabWidth())
+        self.setTabStopDistance(CONFIG.getTabWidth())
 
         # Must be before setHtml
         if updateHistory:
@@ -297,7 +296,7 @@ class GuiDocViewer(QTextBrowser):
         """
         wW = self.width()
         wH = self.height()
-        cM = self.mainConf.getTextMargin()
+        cM = CONFIG.getTextMargin()
 
         vBar = self.verticalScrollBar()
         sW = vBar.width() if vBar.isVisible() else 0
@@ -306,8 +305,8 @@ class GuiDocViewer(QTextBrowser):
         sH = hBar.height() if hBar.isVisible() else 0
 
         tM = cM
-        if self.mainConf.textWidth > 0:
-            tW = self.mainConf.getTextWidth()
+        if CONFIG.textWidth > 0:
+            tW = CONFIG.getTextWidth()
             tM = max((wW - sW - tW)//2, cM)
 
         tB = self.frameWidth()
@@ -685,7 +684,6 @@ class GuiDocViewHeader(QWidget):
 
         logger.debug("Initialising GuiDocViewHeader ...")
 
-        self.mainConf   = novelwriter.CONFIG
         self.docViewer  = docViewer
         self.mainGui    = docViewer.mainGui
         self.theProject = docViewer.theProject
@@ -695,7 +693,7 @@ class GuiDocViewHeader(QWidget):
         self._docHandle = None
 
         fPx = int(0.9*self.mainTheme.fontPixelSize)
-        hSp = self.mainConf.pxInt(6)
+        hSp = CONFIG.pxInt(6)
 
         # Main Widget Settings
         self.setAutoFillBackground(True)
@@ -763,7 +761,7 @@ class GuiDocViewHeader(QWidget):
 
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
-        cM = self.mainConf.pxInt(8)
+        cM = CONFIG.pxInt(8)
         self.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setContentsMargins(cM, cM, cM, cM)
         self.setMinimumHeight(fPx + 2*cM)
@@ -828,7 +826,7 @@ class GuiDocViewHeader(QWidget):
             self.refreshButton.setVisible(False)
             return True
 
-        if self.mainConf.showFullPath:
+        if CONFIG.showFullPath:
             tTitle = []
             tTree = self.theProject.tree.getItemPath(tHandle)
             for aHandle in reversed(tTree):
@@ -903,7 +901,6 @@ class GuiDocViewFooter(QWidget):
 
         logger.debug("Initialising GuiDocViewFooter ...")
 
-        self.mainConf  = novelwriter.CONFIG
         self.docViewer = docViewer
         self.mainGui   = docViewer.mainGui
         self.mainTheme = docViewer.mainTheme
@@ -913,8 +910,8 @@ class GuiDocViewFooter(QWidget):
         self._docHandle = None
 
         fPx = int(0.9*self.mainTheme.fontPixelSize)
-        bSp = self.mainConf.pxInt(2)
-        hSp = self.mainConf.pxInt(8)
+        bSp = CONFIG.pxInt(2)
+        hSp = CONFIG.pxInt(8)
 
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
@@ -942,7 +939,7 @@ class GuiDocViewFooter(QWidget):
         # Show Comments
         self.showComments = QToolButton(self)
         self.showComments.setCheckable(True)
-        self.showComments.setChecked(self.mainConf.viewComments)
+        self.showComments.setChecked(CONFIG.viewComments)
         self.showComments.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.showComments.setIconSize(QSize(fPx, fPx))
         self.showComments.setFixedSize(QSize(fPx, fPx))
@@ -952,7 +949,7 @@ class GuiDocViewFooter(QWidget):
         # Show Synopsis
         self.showSynopsis = QToolButton(self)
         self.showSynopsis.setCheckable(True)
-        self.showSynopsis.setChecked(self.mainConf.viewSynopsis)
+        self.showSynopsis.setChecked(CONFIG.viewSynopsis)
         self.showSynopsis.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.showSynopsis.setIconSize(QSize(fPx, fPx))
         self.showSynopsis.setFixedSize(QSize(fPx, fPx))
@@ -1021,7 +1018,7 @@ class GuiDocViewFooter(QWidget):
 
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
-        cM = self.mainConf.pxInt(8)
+        cM = CONFIG.pxInt(8)
         self.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setContentsMargins(cM, cM, cM, cM)
         self.setMinimumHeight(fPx + 2*cM)
@@ -1120,7 +1117,7 @@ class GuiDocViewFooter(QWidget):
     def _doToggleComments(self, theState):
         """Toggle the view comment button and reload the document.
         """
-        self.mainConf.viewComments = theState
+        CONFIG.viewComments = theState
         self.docViewer.reloadText()
         return
 
@@ -1128,7 +1125,7 @@ class GuiDocViewFooter(QWidget):
     def _doToggleSynopsis(self, theState):
         """Toggle the view synopsis button and reload the document.
         """
-        self.mainConf.viewSynopsis = theState
+        CONFIG.viewSynopsis = theState
         self.docViewer.reloadText()
         return
 
@@ -1146,7 +1143,6 @@ class GuiDocViewDetails(QScrollArea):
         super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiDocViewDetails ...")
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
         self.mainTheme  = mainGui.mainTheme
@@ -1172,7 +1168,7 @@ class GuiDocViewDetails(QScrollArea):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setWidgetResizable(True)
-        self.setMinimumHeight(self.mainConf.pxInt(50))
+        self.setMinimumHeight(CONFIG.pxInt(50))
         self.setFrameStyle(QFrame.NoFrame)
 
         logger.debug("GuiDocViewDetails initialisation complete")

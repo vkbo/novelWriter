@@ -24,10 +24,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from PyQt5.QtGui import QFont, QFontInfo
 
+from novelwriter import CONFIG
 from novelwriter.error import formatException
 from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
@@ -40,7 +40,6 @@ class NWBuildDocument:
 
     def __init__(self, project):
 
-        self._conf = novelwriter.CONFIG
         self._project = project
         self._build = {}
         self._documents = []
@@ -164,8 +163,8 @@ class NWBuildDocument:
         buildLang     = self._build.get("format.buildLang", "en_GB")
         hideScene     = self._build.get("format.hideScene", False)
         hideSection   = self._build.get("format.hideSection", False)
-        textFont      = self._build.get("format.textFont", self._conf.textFont)
-        textSize      = self._build.get("format.textSize", self._conf.textSize)
+        textFont      = self._build.get("format.textFont", CONFIG.textFont)
+        textSize      = self._build.get("format.textSize", CONFIG.textSize)
         lineHeight    = self._build.get("format.lineHeight", 1.15)
         justifyText   = self._build.get("format.justifyText", False)
         noStyling     = self._build.get("format.noStyling", False)

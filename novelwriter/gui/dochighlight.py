@@ -24,7 +24,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from time import time
 
@@ -33,6 +32,7 @@ from PyQt5.QtGui import (
     QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
 )
 
+from novelwriter import CONFIG
 from novelwriter.common import checkInt
 from novelwriter.constants import nwRegEx, nwUnicode
 
@@ -50,7 +50,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         super().__init__(theDoc)
 
         logger.debug("Initialising GuiDocHighlighter ...")
-        self.mainConf   = novelwriter.CONFIG
         self.theDoc     = theDoc
         self.spEnchant  = spEnchant
         self.mainGui    = mainGui
@@ -103,7 +102,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.colBreak.setAlpha(64)
 
         self.colEmph = None
-        if self.mainConf.highlightEmph:
+        if CONFIG.highlightEmph:
             self.colEmph = QColor(*self.mainTheme.colEmph)
 
         self.hStyles = {
@@ -135,7 +134,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.hRules = []
 
         # Multiple or Trailing Spaces
-        if self.mainConf.showMultiSpaces:
+        if CONFIG.showMultiSpaces:
             self.hRules.append((
                 r"[ ]{2,}|[ ]*$", {
                     0: self.hStyles["mspaces"],
@@ -150,11 +149,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         ))
 
         # Quoted Strings
-        if self.mainConf.highlightQuotes:
-            fmtDblO = self.mainConf.fmtDQuoteOpen
-            fmtDblC = self.mainConf.fmtDQuoteClose
-            fmtSngO = self.mainConf.fmtSQuoteOpen
-            fmtSngC = self.mainConf.fmtSQuoteClose
+        if CONFIG.highlightQuotes:
+            fmtDblO = CONFIG.fmtDQuoteOpen
+            fmtDblC = CONFIG.fmtDQuoteClose
+            fmtSngO = CONFIG.fmtSQuoteOpen
+            fmtSngC = CONFIG.fmtSQuoteClose
 
             # Straight Quotes
             if not (fmtDblO == fmtDblC == "\""):
@@ -165,7 +164,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 ))
 
             # Double Quotes
-            dblEnd = "|$" if self.mainConf.allowOpenDQuote else ""
+            dblEnd = "|$" if CONFIG.allowOpenDQuote else ""
             self.hRules.append((
                 f"(\\B{fmtDblO})(.*?)({fmtDblC}\\B{dblEnd})", {
                     0: self.hStyles["dialogue2"],
@@ -173,7 +172,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             ))
 
             # Single Quotes
-            sngEnd = "|$" if self.mainConf.allowOpenSQuote else ""
+            sngEnd = "|$" if CONFIG.allowOpenSQuote else ""
             self.hRules.append((
                 f"(\\B{fmtSngO})(.*?)({fmtSngC}\\B{sngEnd})", {
                     0: self.hStyles["dialogue3"],
@@ -432,7 +431,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 theFormat.setBackground(QBrush(fmtCol, Qt.SolidPattern))
 
         if fmtSize is not None:
-            theFormat.setFontPointSize(int(round(fmtSize*self.mainConf.textSize)))
+            theFormat.setFontPointSize(int(round(fmtSize*CONFIG.textSize)))
 
         return theFormat
 

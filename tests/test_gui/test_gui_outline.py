@@ -28,6 +28,7 @@ from tools import buildTestProject, writeFile
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QAction
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwItemClass, nwOutline, nwView
 
 
@@ -47,16 +48,16 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
     outlineMenu = outlineView.outlineBar.mColumns
 
     # Toggle scrollbars
-    nwGUI.mainConf.hideVScroll = True
-    nwGUI.mainConf.hideHScroll = True
+    CONFIG.hideVScroll = True
+    CONFIG.hideHScroll = True
     outlineView.initSettings()
     assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert outlineData.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
 
-    nwGUI.mainConf.hideVScroll = False
-    nwGUI.mainConf.hideHScroll = False
+    CONFIG.hideVScroll = False
+    CONFIG.hideHScroll = False
     outlineView.initSettings()
     assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded

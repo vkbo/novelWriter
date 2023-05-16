@@ -23,13 +23,13 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import novelwriter
-
 from PyQt5.QtCore import QRect, QPoint
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QStyle, QStyleOptionTab, QStylePainter, QTabBar,
     QTabWidget, QVBoxLayout
 )
+
+from novelwriter import CONFIG
 
 
 class NPagedDialog(QDialog):
@@ -92,7 +92,7 @@ class NVerticalTabBar(QTabBar):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self._mW = novelwriter.CONFIG.pxInt(150)
+        self._mW = CONFIG.pxInt(150)
         return
 
     def tabSizeHint(self, index):

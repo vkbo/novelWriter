@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from time import time
 
@@ -33,6 +32,7 @@ from PyQt5.QtCore import pyqtSlot, QLocale
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel
 
+from novelwriter import CONFIG
 from novelwriter.common import formatTime
 from novelwriter.gui.components import StatusLED
 
@@ -46,7 +46,6 @@ class GuiMainStatus(QStatusBar):
 
         logger.debug("Initialising GuiMainStatus ...")
 
-        self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui
         self.mainTheme = mainGui.mainTheme
         self.refTime   = None
@@ -61,7 +60,7 @@ class GuiMainStatus(QStatusBar):
         # Permanent Widgets
         # =================
 
-        xM = self.mainConf.pxInt(8)
+        xM = CONFIG.pxInt(8)
 
         # The Spell Checker Language
         self.langIcon = QLabel("")
@@ -174,7 +173,7 @@ class GuiMainStatus(QStatusBar):
     def setUserIdle(self, userIdle):
         """Change the idle status icon.
         """
-        if not self.mainConf.stopWhenIdle:
+        if not CONFIG.stopWhenIdle:
             userIdle = False
 
         if self.userIdle != userIdle:
@@ -191,7 +190,7 @@ class GuiMainStatus(QStatusBar):
         """Update the current project statistics.
         """
         self.statsText.setText(self.tr("Words: {0} ({1})").format(f"{pWC:n}", f"{sWC:+n}"))
-        if self.mainConf.incNotesWCount:
+        if CONFIG.incNotesWCount:
             self.statsText.setToolTip(self.tr("Project word count (session change)"))
         else:
             self.statsText.setToolTip(self.tr("Novel word count (session change)"))
@@ -203,7 +202,7 @@ class GuiMainStatus(QStatusBar):
         if self.refTime is None:
             self.timeText.setText("00:00:00")
         else:
-            if self.mainConf.stopWhenIdle:
+            if CONFIG.stopWhenIdle:
                 sessTime = round(time() - self.refTime - idleTime)
             else:
                 sessTime = round(time() - self.refTime)

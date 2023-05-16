@@ -23,8 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import novelwriter
-
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QGridLayout, QLabel, QScrollArea, QSizePolicy, QWidget
 
@@ -37,8 +35,6 @@ class NSwitchBox(QScrollArea):
 
     def __init__(self, parent, baseSize):
         super().__init__(parent=parent)
-
-        self.mainConf = novelwriter.CONFIG
 
         self._index = 0
         self._hSwitch = baseSize

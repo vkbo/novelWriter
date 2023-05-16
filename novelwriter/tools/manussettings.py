@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
-import novelwriter
 
 from typing import TYPE_CHECKING
 
@@ -37,6 +36,7 @@ from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
+from novelwriter import CONFIG
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
@@ -64,7 +64,6 @@ class GuiBuildSettings(QDialog):
         logger.debug("Initialising GuiBuildSettings ...")
         self.setObjectName("GuiBuildSettings")
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
@@ -73,17 +72,17 @@ class GuiBuildSettings(QDialog):
         self._build.unpack(buildData)
 
         self.setWindowTitle(self.tr("Manuscript Build Settings"))
-        self.setMinimumWidth(self.mainConf.pxInt(700))
-        self.setMinimumHeight(self.mainConf.pxInt(400))
+        self.setMinimumWidth(CONFIG.pxInt(700))
+        self.setMinimumHeight(CONFIG.pxInt(400))
 
-        mPx = self.mainConf.pxInt(150)
-        wWin = self.mainConf.pxInt(900)
-        hWin = self.mainConf.pxInt(600)
+        mPx = CONFIG.pxInt(150)
+        wWin = CONFIG.pxInt(900)
+        hWin = CONFIG.pxInt(600)
 
         pOptions = self.theProject.options
         self.resize(
-            self.mainConf.pxInt(pOptions.getInt("GuiBuildSettings", "winWidth", wWin)),
-            self.mainConf.pxInt(pOptions.getInt("GuiBuildSettings", "winHeight", hWin))
+            CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "winWidth", wWin)),
+            CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "winHeight", hWin))
         )
 
         # Options SideBar
@@ -204,8 +203,8 @@ class GuiBuildSettings(QDialog):
         """
         logger.debug("Saving GuiBuildSettings settings")
 
-        winWidth  = self.mainConf.rpxInt(self.width())
-        winHeight = self.mainConf.rpxInt(self.height())
+        winWidth  = CONFIG.rpxInt(self.width())
+        winHeight = CONFIG.rpxInt(self.height())
 
         treeWidth, filterWidth = self.optTabSelect.mainSplitSizes()
 
@@ -239,7 +238,6 @@ class GuiBuildFilterTab(QWidget):
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = buildMain.mainGui
         self.mainTheme  = buildMain.mainGui.mainTheme
         self.theProject = buildMain.mainGui.theProject
@@ -259,7 +257,7 @@ class GuiBuildFilterTab(QWidget):
 
         # Tree Settings
         iPx = self.mainTheme.baseIconSize
-        cMg = self.mainConf.pxInt(6)
+        cMg = CONFIG.pxInt(6)
 
         # Tree Widget
         self.optTree = QTreeWidget(self)
@@ -312,8 +310,8 @@ class GuiBuildFilterTab(QWidget):
         # ========
 
         pOptions = self.theProject.options
-        wTree = self.mainConf.pxInt(pOptions.getInt("GuiBuildSettings", "treeWidth", 0))
-        fTree = self.mainConf.pxInt(pOptions.getInt("GuiBuildSettings", "filterWidth", 0))
+        wTree = CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "treeWidth", 0))
+        fTree = CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "filterWidth", 0))
 
         self.selectionBox = QVBoxLayout()
         self.selectionBox.addLayout(self.modeBox)
@@ -511,7 +509,6 @@ class GuiBuildHeadingsTab(QWidget):
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = buildMain.mainGui
         self.mainTheme  = buildMain.mainGui.mainTheme
         self.theProject = buildMain.mainGui.theProject
@@ -519,8 +516,8 @@ class GuiBuildHeadingsTab(QWidget):
         self._build = build
 
         iPx = self.mainTheme.baseIconSize
-        vSp = self.mainConf.pxInt(12)
-        bSp = self.mainConf.pxInt(6)
+        vSp = CONFIG.pxInt(12)
+        bSp = CONFIG.pxInt(6)
 
         # Format Boxes
         # ============

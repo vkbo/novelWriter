@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import math
 import logging
-import novelwriter
 
 from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtGui import QFont
@@ -34,6 +33,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QSpinBox, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
+from novelwriter import CONFIG
 from novelwriter.common import formatTime, numberToRoman
 from novelwriter.constants import nwUnicode
 from novelwriter.gui.components import NovelSelector
@@ -51,21 +51,20 @@ class GuiProjectDetails(NPagedDialog):
         logger.debug("Initialising GuiProjectDetails ...")
         self.setObjectName("GuiProjectDetails")
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
 
         self.setWindowTitle(self.tr("Project Details"))
 
-        wW = self.mainConf.pxInt(600)
-        wH = self.mainConf.pxInt(400)
+        wW = CONFIG.pxInt(600)
+        wH = CONFIG.pxInt(400)
         pOptions = self.theProject.options
 
         self.setMinimumWidth(wW)
         self.setMinimumHeight(wH)
         self.resize(
-            self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "winWidth",  wW)),
-            self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "winHeight", wH))
+            CONFIG.pxInt(pOptions.getInt("GuiProjectDetails", "winWidth",  wW)),
+            CONFIG.pxInt(pOptions.getInt("GuiProjectDetails", "winHeight", wH))
         )
 
         self.tabMain = GuiProjectDetailsMain(self.mainGui, self.theProject)
@@ -108,15 +107,15 @@ class GuiProjectDetails(NPagedDialog):
     def _saveGuiSettings(self):
         """Save GUI settings.
         """
-        winWidth  = self.mainConf.rpxInt(self.width())
-        winHeight = self.mainConf.rpxInt(self.height())
+        winWidth  = CONFIG.rpxInt(self.width())
+        winHeight = CONFIG.rpxInt(self.height())
 
         cColWidth = self.tabContents.getColumnSizes()
-        widthCol0 = self.mainConf.rpxInt(cColWidth[0])
-        widthCol1 = self.mainConf.rpxInt(cColWidth[1])
-        widthCol2 = self.mainConf.rpxInt(cColWidth[2])
-        widthCol3 = self.mainConf.rpxInt(cColWidth[3])
-        widthCol4 = self.mainConf.rpxInt(cColWidth[4])
+        widthCol0 = CONFIG.rpxInt(cColWidth[0])
+        widthCol1 = CONFIG.rpxInt(cColWidth[1])
+        widthCol2 = CONFIG.rpxInt(cColWidth[2])
+        widthCol3 = CONFIG.rpxInt(cColWidth[3])
+        widthCol4 = CONFIG.rpxInt(cColWidth[4])
 
         wordsPerPage = self.tabContents.wpValue.value()
         countFrom    = self.tabContents.poValue.value()
@@ -144,15 +143,14 @@ class GuiProjectDetailsMain(QWidget):
     def __init__(self, mainGui, theProject):
         super().__init__(parent=mainGui)
 
-        self.mainConf   = novelwriter.CONFIG
         self.theProject = theProject
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
 
         fPx = self.mainTheme.fontPixelSize
         fPt = self.mainTheme.fontPointSize
-        vPx = self.mainConf.pxInt(4)
-        hPx = self.mainConf.pxInt(12)
+        vPx = CONFIG.pxInt(4)
+        hPx = CONFIG.pxInt(12)
 
         # Header
         # ======
@@ -278,7 +276,6 @@ class GuiProjectDetailsContents(QWidget):
     def __init__(self, mainGui, theProject):
         super().__init__(parent=mainGui)
 
-        self.mainConf   = novelwriter.CONFIG
         self.theProject = theProject
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
@@ -288,8 +285,8 @@ class GuiProjectDetailsContents(QWidget):
         self._currentRoot = None
 
         iPx = self.mainTheme.baseIconSize
-        hPx = self.mainConf.pxInt(12)
-        vPx = self.mainConf.pxInt(4)
+        hPx = CONFIG.pxInt(12)
+        vPx = CONFIG.pxInt(4)
         pOptions = self.theProject.options
 
         # Header
@@ -298,7 +295,7 @@ class GuiProjectDetailsContents(QWidget):
         self.tocLabel = QLabel("<b>%s</b>" % self.tr("Table of Contents"))
 
         self.novelValue = NovelSelector(self, self.theProject, self.mainGui)
-        self.novelValue.setMinimumWidth(self.mainConf.pxInt(200))
+        self.novelValue.setMinimumWidth(CONFIG.pxInt(200))
         self.novelValue.novelSelectionChanged.connect(self._novelValueChanged)
 
         self.headBox = QHBoxLayout()
@@ -332,11 +329,11 @@ class GuiProjectDetailsContents(QWidget):
         treeHeader.setStretchLastSection(True)
         treeHeader.setMinimumSectionSize(hPx)
 
-        wCol0 = self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol0", 200))
-        wCol1 = self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol1", 60))
-        wCol2 = self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol2", 60))
-        wCol3 = self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol3", 60))
-        wCol4 = self.mainConf.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol4", 90))
+        wCol0 = CONFIG.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol0", 200))
+        wCol1 = CONFIG.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol1", 60))
+        wCol2 = CONFIG.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol2", 60))
+        wCol3 = CONFIG.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol3", 60))
+        wCol4 = CONFIG.pxInt(pOptions.getInt("GuiProjectDetails", "widthCol4", 90))
 
         self.tocTree.setColumnWidth(0, wCol0)
         self.tocTree.setColumnWidth(1, wCol1)

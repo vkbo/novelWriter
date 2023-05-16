@@ -33,7 +33,7 @@ from novelwriter.tools.writingstats import GuiWritingStats
 
 
 @pytest.mark.gui
-def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath):
+def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     """Test the full writing stats tool.
     """
     # Create a project to work on
@@ -126,13 +126,10 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == "{:n}".format(200)
 
     assert sessLog._saveData(sessLog.FMT_CSV)
-    qtbot.wait(100)
-
     assert sessLog._saveData(sessLog.FMT_JSON)
-    qtbot.wait(100)
 
     # Check the exported files
-    jsonStats = fncPath / "sessionStats.json"
+    jsonStats = tstPaths.tmpDir / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -171,7 +168,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
-    jsonStats = fncPath / "sessionStats.json"
+    jsonStats = tstPaths.tmpDir / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
@@ -217,7 +214,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
-    jsonStats = fncPath / "sessionStats.json"
+    jsonStats = tstPaths.tmpDir / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -265,7 +262,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath):
 
     # qtbot.stop()
 
-    jsonStats = fncPath / "sessionStats.json"
+    jsonStats = tstPaths.tmpDir / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -295,7 +292,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     qtbot.mouseClick(sessLog.hideZeros, Qt.LeftButton)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
-    jsonStats = fncPath / "sessionStats.json"
+    jsonStats = tstPaths.tmpDir / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
@@ -348,7 +345,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     qtbot.mouseClick(sessLog.groupByDay, Qt.LeftButton)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
-    jsonStats = fncPath / "sessionStats.json"
+    jsonStats = tstPaths.tmpDir / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 

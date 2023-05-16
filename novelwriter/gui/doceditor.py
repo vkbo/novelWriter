@@ -31,7 +31,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import bisect
 import logging
-import novelwriter
 
 from enum import Enum
 from time import time
@@ -50,6 +49,7 @@ from PyQt5.QtWidgets import (
     QFrame
 )
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode, nwItemClass
 from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwConst, nwFiles, nwKeyWords, nwUnicode
@@ -81,7 +81,6 @@ class GuiDocEditor(QTextEdit):
         logger.debug("Initialising GuiDocEditor ...")
 
         # Class Variables
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
@@ -140,7 +139,7 @@ class GuiDocEditor(QTextEdit):
         self.customContextMenuRequested.connect(self._openContextMenu)
 
         # Editor Settings
-        self.setMinimumWidth(self.mainConf.pxInt(300))
+        self.setMinimumWidth(CONFIG.pxInt(300))
         self.setAcceptRichText(False)
         self.setAutoFillBackground(True)
         self.setFrameStyle(QFrame.NoFrame)
@@ -169,7 +168,7 @@ class GuiDocEditor(QTextEdit):
         self.wCounterDoc.setAutoDelete(False)
         self.wCounterDoc.signals.countsReady.connect(self._updateDocCounts)
 
-        self.wcInterval = self.mainConf.wordCountTimer
+        self.wcInterval = CONFIG.wordCountTimer
 
         # Set Up Selection Word Counter
         self.wcTimerSel = QTimer()
@@ -252,26 +251,26 @@ class GuiDocEditor(QTextEdit):
         # Some Constants
         self._nonWord = (
             "\"'"
-            f"{self.mainConf.fmtSQuoteOpen}{self.mainConf.fmtSQuoteClose}"
-            f"{self.mainConf.fmtDQuoteOpen}{self.mainConf.fmtDQuoteClose}"
+            f"{CONFIG.fmtSQuoteOpen}{CONFIG.fmtSQuoteClose}"
+            f"{CONFIG.fmtDQuoteOpen}{CONFIG.fmtDQuoteClose}"
         )
 
         # Typography
-        if self.mainConf.fmtPadThin:
+        if CONFIG.fmtPadThin:
             self._typPadChar = nwUnicode.U_THNBSP
         else:
             self._typPadChar = nwUnicode.U_NBSP
 
-        self._typSQuoteO = self.mainConf.fmtSQuoteOpen
-        self._typSQuoteC = self.mainConf.fmtSQuoteClose
-        self._typDQuoteO = self.mainConf.fmtDQuoteOpen
-        self._typDQuoteC = self.mainConf.fmtDQuoteClose
-        self._typRepDQuote = self.mainConf.doReplaceDQuote
-        self._typRepSQuote = self.mainConf.doReplaceSQuote
-        self._typRepDash = self.mainConf.doReplaceDash
-        self._typRepDots = self.mainConf.doReplaceDots
-        self._typPadBefore = self.mainConf.fmtPadBefore
-        self._typPadAfter = self.mainConf.fmtPadAfter
+        self._typSQuoteO = CONFIG.fmtSQuoteOpen
+        self._typSQuoteC = CONFIG.fmtSQuoteClose
+        self._typDQuoteO = CONFIG.fmtDQuoteOpen
+        self._typDQuoteC = CONFIG.fmtDQuoteClose
+        self._typRepDQuote = CONFIG.doReplaceDQuote
+        self._typRepSQuote = CONFIG.doReplaceSQuote
+        self._typRepDash = CONFIG.doReplaceDash
+        self._typRepDots = CONFIG.doReplaceDots
+        self._typPadBefore = CONFIG.fmtPadBefore
+        self._typPadAfter = CONFIG.fmtPadAfter
 
         # Reload spell check and dictionaries
         self.setDictionaries()
@@ -279,23 +278,23 @@ class GuiDocEditor(QTextEdit):
         # Set font
         theFont = QFont()
         qDoc = self.document()
-        if self.mainConf.textFont is None:
+        if CONFIG.textFont is None:
             # If none is defined, set a default font
             theFont = QFont()
-            if self.mainConf.osWindows and "Arial" in self.mainTheme.guiFontDB.families():
+            if CONFIG.osWindows and "Arial" in self.mainTheme.guiFontDB.families():
                 theFont.setFamily("Arial")
                 theFont.setPointSize(12)
-            elif self.mainConf.osDarwin and "Courier" in self.mainTheme.guiFontDB.families():
+            elif CONFIG.osDarwin and "Courier" in self.mainTheme.guiFontDB.families():
                 theFont.setFamily("Courier")
                 theFont.setPointSize(12)
             else:
                 theFont = qDoc.defaultFont()
 
-            self.mainConf.textFont = theFont.family()
-            self.mainConf.textSize = theFont.pointSize()
+            CONFIG.textFont = theFont.family()
+            CONFIG.textSize = theFont.pointSize()
 
-        theFont.setFamily(self.mainConf.textFont)
-        theFont.setPointSize(self.mainConf.textSize)
+        theFont.setFamily(CONFIG.textFont)
+        theFont.setPointSize(CONFIG.textSize)
         self.setFont(theFont)
 
         # Set default text margins
@@ -303,37 +302,37 @@ class GuiDocEditor(QTextEdit):
         # allocated to the document itself. See issue #1112.
         cW = self.cursorWidth()
         qDoc.setDocumentMargin(cW)
-        self._vpMargin = max(self.mainConf.getTextMargin() - cW, 0)
+        self._vpMargin = max(CONFIG.getTextMargin() - cW, 0)
         self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)
 
         # Also set the document text options for the document text flow
         theOpt = QTextOption()
 
-        if self.mainConf.doJustify:
+        if CONFIG.doJustify:
             theOpt.setAlignment(Qt.AlignJustify)
-        if self.mainConf.showTabsNSpaces:
+        if CONFIG.showTabsNSpaces:
             theOpt.setFlags(theOpt.flags() | QTextOption.ShowTabsAndSpaces)
-        if self.mainConf.showLineEndings:
+        if CONFIG.showLineEndings:
             theOpt.setFlags(theOpt.flags() | QTextOption.ShowLineAndParagraphSeparators)
 
         qDoc.setDefaultTextOption(theOpt)
 
         # Scroll bars
-        if self.mainConf.hideVScroll:
+        if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
-        if self.mainConf.hideHScroll:
+        if CONFIG.hideHScroll:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Refresh the tab stops
-        self.setTabStopDistance(self.mainConf.getTabWidth())
+        self.setTabStopDistance(CONFIG.getTabWidth())
 
         # Configure word count timer
-        self.wcInterval = self.mainConf.wordCountTimer
+        self.wcInterval = CONFIG.wordCountTimer
         self.wcTimerDoc.setInterval(int(self.wcInterval*1000))
 
         # If we have a document open, we should reload it in case the
@@ -420,10 +419,10 @@ class GuiDocEditor(QTextEdit):
         elif isinstance(tLine, int):
             self.setCursorLine(tLine)
 
-        if self.mainConf.scrollPastEnd > 0:
+        if CONFIG.scrollPastEnd > 0:
             fSize = QFontMetrics(self.font()).lineSpacing()
             docFrame = self.document().rootFrame().frameFormat()
-            docFrame.setBottomMargin(round(self.mainConf.scrollPastEnd * fSize))
+            docFrame.setBottomMargin(round(CONFIG.scrollPastEnd * fSize))
             self.document().rootFrame().setFrameFormat(docFrame)
 
         self.docFooter.updateLineCount()
@@ -571,8 +570,8 @@ class GuiDocEditor(QTextEdit):
         sH = hBar.height() if hBar.isVisible() else 0
 
         tM = self._vpMargin
-        if self.mainConf.textWidth > 0 or self.mainGui.isFocusMode:
-            tW = self.mainConf.getTextWidth(self.mainGui.isFocusMode)
+        if CONFIG.textWidth > 0 or self.mainGui.isFocusMode:
+            tW = CONFIG.getTextWidth(self.mainGui.isFocusMode)
             tM = max((wW - sW - tW)//2, self._vpMargin)
 
         tB = self.frameWidth()
@@ -674,7 +673,7 @@ class GuiDocEditor(QTextEdit):
             # when it is enabled. By default, it's 30% of viewport.
             vPos = self.verticalScrollBar().value()
             cPos = self.cursorRect().topLeft().y()
-            mPos = int(self.mainConf.autoScrollPos*0.01 * self.viewport().height())
+            mPos = int(CONFIG.autoScrollPos*0.01 * self.viewport().height())
             if cPos > mPos:
                 # Only scroll if the cursor is past the auto-scroll limit
                 self.verticalScrollBar().setValue(max(0, vPos + cPos - mPos))
@@ -715,7 +714,7 @@ class GuiDocEditor(QTextEdit):
         dictionary changed signal.
         """
         if self.theProject.data.spellLang is None:
-            theLang = self.mainConf.spellLanguage
+            theLang = CONFIG.spellLanguage
         else:
             theLang = self.theProject.data.spellLang
 
@@ -738,7 +737,7 @@ class GuiDocEditor(QTextEdit):
         if theMode is None:
             theMode = not self._spellCheck
 
-        if not self.mainConf.hasEnchant:
+        if not CONFIG.hasEnchant:
             if theMode:
                 self.mainGui.makeAlert(self.tr(
                     "Spell checking requires the package PyEnchant. "
@@ -1038,7 +1037,7 @@ class GuiDocEditor(QTextEdit):
             self.docAction(nwDocAction.SEL_ALL)
             return
 
-        if self.mainConf.autoScroll:
+        if CONFIG.autoScroll:
 
             cOld = self.cursorRect().center().y()
             super().keyPressEvent(keyEvent)
@@ -1049,7 +1048,7 @@ class GuiDocEditor(QTextEdit):
             if okMod and okKey:
                 cNew = self.cursorRect().center().y()
                 cMov = cNew - cOld
-                mPos = self.mainConf.autoScrollPos*0.01 * self.viewport().height()
+                mPos = CONFIG.autoScrollPos*0.01 * self.viewport().height()
                 if abs(cMov) > 0 and cOld > mPos:
                     # Move the scroll bar
                     vBar = self.verticalScrollBar()
@@ -2090,7 +2089,7 @@ class GuiDocEditor(QTextEdit):
         """Check if document size crosses the big document limit set in
         config. If so, we will set the big document flag to True.
         """
-        bigLim = round(self.mainConf.bigDocLimit*1000)
+        bigLim = round(CONFIG.bigDocLimit*1000)
         newState = theSize > bigLim
 
         if newState != self._bigDoc:
@@ -2114,7 +2113,7 @@ class GuiDocEditor(QTextEdit):
         on user settings and document action.
         """
         theCursor = self.textCursor()
-        if self.mainConf.autoSelect and not theCursor.hasSelection():
+        if CONFIG.autoSelect and not theCursor.hasSelection():
             theCursor.select(QTextCursor.WordUnderCursor)
             posS = theCursor.selectionStart()
             posE = theCursor.selectionEnd()
@@ -2175,7 +2174,7 @@ class GuiDocEditor(QTextEdit):
         """Enable/disable the auto-replace feature temporarily.
         """
         if theState:
-            self._doReplace = self.mainConf.doReplace
+            self._doReplace = CONFIG.doReplace
         else:
             self._doReplace = False
         return
@@ -2245,21 +2244,20 @@ class GuiDocEditSearch(QFrame):
 
         logger.debug("Initialising GuiDocEditSearch ...")
 
-        self.mainConf   = novelwriter.CONFIG
         self.docEditor  = docEditor
         self.mainGui    = docEditor.mainGui
         self.theProject = docEditor.theProject
         self.mainTheme  = docEditor.mainTheme
 
         self.repVisible  = False
-        self.isCaseSense = self.mainConf.searchCase
-        self.isWholeWord = self.mainConf.searchWord
-        self.isRegEx     = self.mainConf.searchRegEx
-        self.doLoop      = self.mainConf.searchLoop
-        self.doNextFile  = self.mainConf.searchNextFile
-        self.doMatchCap  = self.mainConf.searchMatchCap
+        self.isCaseSense = CONFIG.searchCase
+        self.isWholeWord = CONFIG.searchWord
+        self.isRegEx     = CONFIG.searchRegEx
+        self.doLoop      = CONFIG.searchLoop
+        self.doNextFile  = CONFIG.searchNextFile
+        self.doMatchCap  = CONFIG.searchMatchCap
 
-        mPx = self.mainConf.pxInt(6)
+        mPx = CONFIG.pxInt(6)
         tPx = int(0.8*self.mainTheme.fontPixelSize)
         self.boxFont = self.mainTheme.guiFont
         self.boxFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
@@ -2291,7 +2289,7 @@ class GuiDocEditSearch(QFrame):
 
         self.searchLabel = QLabel(self.tr("Search"))
         self.searchLabel.setFont(self.boxFont)
-        self.searchLabel.setIndent(self.mainConf.pxInt(6))
+        self.searchLabel.setIndent(CONFIG.pxInt(6))
 
         self.resultLabel = QLabel("?/?")
         self.resultLabel.setFont(self.boxFont)
@@ -2376,10 +2374,10 @@ class GuiDocEditSearch(QFrame):
         self.mainBox.setColumnStretch(3, 0)
         self.mainBox.setColumnStretch(4, 0)
         self.mainBox.setColumnStretch(5, 0)
-        self.mainBox.setSpacing(self.mainConf.pxInt(2))
+        self.mainBox.setSpacing(CONFIG.pxInt(2))
         self.mainBox.setContentsMargins(mPx, mPx, mPx, mPx)
 
-        boxWidth = self.mainConf.pxInt(200)
+        boxWidth = CONFIG.pxInt(200)
         self.searchBox.setFixedWidth(boxWidth)
         self.replaceBox.setFixedWidth(boxWidth)
         self.replaceBox.setVisible(False)
@@ -2438,12 +2436,12 @@ class GuiDocEditSearch(QFrame):
     def closeSearch(self):
         """Close the search box.
         """
-        self.mainConf.searchCase = self.isCaseSense
-        self.mainConf.searchWord = self.isWholeWord
-        self.mainConf.searchRegEx = self.isRegEx
-        self.mainConf.searchLoop = self.doLoop
-        self.mainConf.searchNextFile = self.doNextFile
-        self.mainConf.searchMatchCap = self.doMatchCap
+        CONFIG.searchCase = self.isCaseSense
+        CONFIG.searchWord = self.isWholeWord
+        CONFIG.searchRegEx = self.isRegEx
+        CONFIG.searchLoop = self.doLoop
+        CONFIG.searchNextFile = self.doNextFile
+        CONFIG.searchMatchCap = self.doMatchCap
 
         self.showReplace.setChecked(False)
         self.setVisible(False)
@@ -2517,7 +2515,7 @@ class GuiDocEditSearch(QFrame):
             # Using the Unicode-capable QRegularExpression class was
             # only added in Qt 5.13. Otherwise, 5.3 and up supports
             # only the QRegExp class.
-            if self.mainConf.verQtValue >= 0x050d00:
+            if CONFIG.verQtValue >= 0x050d00:
                 rxOpt = QRegularExpression.UseUnicodePropertiesOption
                 if not self.isCaseSense:
                     rxOpt |= QRegularExpression.CaseInsensitiveOption
@@ -2661,7 +2659,6 @@ class GuiDocEditHeader(QWidget):
 
         logger.debug("Initialising GuiDocEditHeader ...")
 
-        self.mainConf   = novelwriter.CONFIG
         self.docEditor  = docEditor
         self.mainGui    = docEditor.mainGui
         self.theProject = docEditor.theProject
@@ -2670,7 +2667,7 @@ class GuiDocEditHeader(QWidget):
         self._docHandle = None
 
         fPx = int(0.9*self.mainTheme.fontPixelSize)
-        hSp = self.mainConf.pxInt(6)
+        hSp = CONFIG.pxInt(6)
 
         # Main Widget Settings
         self.setAutoFillBackground(True)
@@ -2738,7 +2735,7 @@ class GuiDocEditHeader(QWidget):
 
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
-        cM = self.mainConf.pxInt(8)
+        cM = CONFIG.pxInt(8)
         self.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setContentsMargins(cM, cM, cM, cM)
         self.setMinimumHeight(fPx + 2*cM)
@@ -2802,7 +2799,7 @@ class GuiDocEditHeader(QWidget):
             self.minmaxButton.setVisible(False)
             return True
 
-        if self.mainConf.showFullPath:
+        if CONFIG.showFullPath:
             tTitle = []
             tTree = self.theProject.tree.getItemPath(tHandle)
             for aHandle in reversed(tTree):
@@ -2897,7 +2894,6 @@ class GuiDocEditFooter(QWidget):
 
         logger.debug("Initialising GuiDocEditFooter ...")
 
-        self.mainConf   = novelwriter.CONFIG
         self.docEditor  = docEditor
         self.mainGui    = docEditor.mainGui
         self.theProject = docEditor.theProject
@@ -2910,8 +2906,8 @@ class GuiDocEditFooter(QWidget):
 
         self.sPx = int(round(0.9*self.mainTheme.baseIconSize))
         fPx = int(0.9*self.mainTheme.fontPixelSize)
-        bSp = self.mainConf.pxInt(4)
-        hSp = self.mainConf.pxInt(6)
+        bSp = CONFIG.pxInt(4)
+        hSp = CONFIG.pxInt(6)
 
         lblFont = self.font()
         lblFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
@@ -2980,7 +2976,7 @@ class GuiDocEditFooter(QWidget):
 
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
-        cM = self.mainConf.pxInt(8)
+        cM = CONFIG.pxInt(8)
         self.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setContentsMargins(cM, cM, cM, cM)
         self.setMinimumHeight(fPx + 2*cM)

@@ -29,6 +29,7 @@ from zipfile import ZipFile
 from mock import causeOSError
 from tools import C, cmpFiles, writeFile, buildTestProject, XML_IGNORE
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwFiles
@@ -704,7 +705,7 @@ def testCoreProject_OrphanedFiles(mockGUI, prjLipsum):
 
 
 @pytest.mark.core
-def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tmpPath):
+def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
     """Test the automated backup feature of the project class. The test
     creates a backup of the Minimal test project, and then unzips the
     backupd file and checks that the project XML file is identical to
@@ -720,23 +721,18 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tmpPath):
     # Invalid Settings
     # ================
 
-    # No project
-    mockGUI.hasProject = False
-    assert theProject.backupProject(doNotify=False) is False
-    mockGUI.hasProject = True
-
     # Invalid path
-    theProject.mainConf._backupPath = None
+    CONFIG._backupPath = None
     assert theProject.backupProject(doNotify=False) is False
 
     # Missing project name
-    theProject.mainConf._backupPath = tmpPath
+    CONFIG._backupPath = tstPaths.tmpDir
     theProject.data.setName("")
     assert theProject.backupProject(doNotify=False) is False
 
     # Valid Settings
     # ==============
-    theProject.mainConf._backupPath = tmpPath
+    CONFIG._backupPath = tstPaths.tmpDir
     theProject.data.setName("Test Minimal")
 
     # Can't make folder
@@ -752,7 +748,7 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tmpPath):
     # Test correct settings
     assert theProject.backupProject(doNotify=True) is True
 
-    theFiles = list((tmpPath / "Test Minimal").iterdir())
+    theFiles = list((tstPaths.tmpDir / "Test Minimal").iterdir())
     assert len(theFiles) == 1
 
     theZip = theFiles[0].name
@@ -760,13 +756,13 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tmpPath):
     assert theZip[-4:] == ".zip"
 
     # Extract the archive
-    with ZipFile(tmpPath / "Test Minimal" / theZip, mode="r") as inZip:
-        inZip.extractall(tmpPath / "extract")
+    with ZipFile(tstPaths.tmpDir / "Test Minimal" / theZip, mode="r") as inZip:
+        inZip.extractall(tstPaths.tmpDir / "extract")
 
     # Check that the main project file was restored
     assert cmpFiles(
         fncPath / "nwProject.nwx",
-        tmpPath / "extract" / "nwProject.nwx"
+        tstPaths.tmpDir / "extract" / "nwProject.nwx"
     )
 
 # END Test testCoreProject_Backup

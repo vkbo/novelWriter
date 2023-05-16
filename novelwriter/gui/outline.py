@@ -28,7 +28,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from time import time
 from enum import Enum
@@ -42,6 +41,7 @@ from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
+from novelwriter import CONFIG
 from novelwriter.enum import (
     nwDocMode, nwItemClass, nwItemLayout, nwItemType, nwOutline
 )
@@ -61,7 +61,6 @@ class GuiOutlineView(QWidget):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
 
@@ -75,7 +74,7 @@ class GuiOutlineView(QWidget):
         self.splitOutline.addWidget(self.outlineTree)
         self.splitOutline.addWidget(self.outlineData)
         self.splitOutline.setOpaqueResize(False)
-        self.splitOutline.setSizes(self.mainConf.outlinePanePos)
+        self.splitOutline.setSizes(CONFIG.outlinePanePos)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -215,13 +214,12 @@ class GuiOutlineToolBar(QToolBar):
 
         logger.debug("Initialising GuiOutlineToolBar ...")
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = theOutline.mainGui
         self.theProject = theOutline.mainGui.theProject
         self.mainTheme  = theOutline.mainGui.mainTheme
 
-        iPx = self.mainConf.pxInt(22)
-        mPx = self.mainConf.pxInt(12)
+        iPx = CONFIG.pxInt(22)
+        mPx = CONFIG.pxInt(12)
 
         self.setMovable(False)
         self.setIconSize(QSize(iPx, iPx))
@@ -235,7 +233,7 @@ class GuiOutlineToolBar(QToolBar):
         self.novelLabel.setContentsMargins(0, 0, mPx, 0)
 
         self.novelValue = NovelSelector(self, self.theProject, self.mainGui)
-        self.novelValue.setMinimumWidth(self.mainConf.pxInt(200))
+        self.novelValue.setMinimumWidth(CONFIG.pxInt(200))
         self.novelValue.novelSelectionChanged.connect(self._novelValueChanged)
 
         # Actions
@@ -373,7 +371,6 @@ class GuiOutlineTree(QTreeWidget):
 
         logger.debug("Initialising GuiOutlineTree ...")
 
-        self.mainConf    = novelwriter.CONFIG
         self.outlineView = outlineView
         self.mainGui     = outlineView.mainGui
         self.theProject  = outlineView.mainGui.theProject
@@ -446,12 +443,12 @@ class GuiOutlineTree(QTreeWidget):
         """Set or update outline settings.
         """
         # Scroll bars
-        if self.mainConf.hideVScroll:
+        if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
-        if self.mainConf.hideHScroll:
+        if CONFIG.hideHScroll:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -610,7 +607,7 @@ class GuiOutlineTree(QTreeWidget):
         tmpWidth = pOptions.getValue("GuiOutline", "columnWidth", {})
         for hName in tmpWidth:
             try:
-                self._colWidth[nwOutline[hName]] = self.mainConf.pxInt(tmpWidth[hName])
+                self._colWidth[nwOutline[hName]] = CONFIG.pxInt(tmpWidth[hName])
             except Exception:
                 logger.warning("Ignored unknown outline column '%s'", str(hName))
 
@@ -640,7 +637,7 @@ class GuiOutlineTree(QTreeWidget):
         colHidden = {}
 
         for hItem in nwOutline:
-            colWidth[hItem.name] = self.mainConf.rpxInt(self._colWidth[hItem])
+            colWidth[hItem.name] = CONFIG.rpxInt(self._colWidth[hItem])
             colHidden[hItem.name] = self._colHidden[hItem]
 
         for iCol in range(self.columnCount()):
@@ -648,7 +645,7 @@ class GuiOutlineTree(QTreeWidget):
             treeOrder.append(hName)
 
             iLog = self.treeHead.logicalIndex(iCol)
-            logWidth = self.mainConf.rpxInt(self.columnWidth(iLog))
+            logWidth = CONFIG.rpxInt(self.columnWidth(iLog))
             logHidden = self.isColumnHidden(iLog)
 
             colHidden[hName] = logHidden
@@ -801,7 +798,6 @@ class GuiOutlineDetails(QScrollArea):
 
         logger.debug("Initialising GuiOutlineDetails ...")
 
-        self.mainConf   = novelwriter.CONFIG
         self.theOutline = theOutline
         self.mainGui    = theOutline.mainGui
         self.theProject = theOutline.mainGui.theProject
@@ -811,8 +807,8 @@ class GuiOutlineDetails(QScrollArea):
         minTitle = 30*self.mainTheme.textNWidth
         maxTitle = 40*self.mainTheme.textNWidth
         wCount = self.mainTheme.getTextWidth("999,999")
-        hSpace = int(self.mainConf.pxInt(10))
-        vSpace = int(self.mainConf.pxInt(4))
+        hSpace = int(CONFIG.pxInt(10))
+        vSpace = int(CONFIG.pxInt(4))
 
         # Details Area
         self.titleLabel = QLabel("<b>%s</b>" % self.tr("Title"))
@@ -994,12 +990,12 @@ class GuiOutlineDetails(QScrollArea):
         """Set or update outline settings.
         """
         # Scroll bars
-        if self.mainConf.hideVScroll:
+        if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
-        if self.mainConf.hideHScroll:
+        if CONFIG.hideHScroll:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)

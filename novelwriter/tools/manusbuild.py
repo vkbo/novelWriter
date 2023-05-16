@@ -24,13 +24,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from PyQt5.QtWidgets import (
     QDialog, QGridLayout, QPushButton, QSplitter, QTextBrowser, QVBoxLayout,
     QWidget, qApp
 )
 
+from novelwriter import CONFIG
 from novelwriter.tools.manussettings import GuiBuildSettings
 
 logger = logging.getLogger(__name__)
@@ -41,22 +41,21 @@ class GuiBuildManuscript(QDialog):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
         self.setWindowTitle(self.tr("Build Manuscript"))
-        self.setMinimumWidth(self.mainConf.pxInt(600))
-        self.setMinimumHeight(self.mainConf.pxInt(500))
+        self.setMinimumWidth(CONFIG.pxInt(600))
+        self.setMinimumHeight(CONFIG.pxInt(500))
 
-        wWin = self.mainConf.pxInt(900)
-        hWin = self.mainConf.pxInt(600)
+        wWin = CONFIG.pxInt(900)
+        hWin = CONFIG.pxInt(600)
 
         pOptions = self.theProject.options
         self.resize(
-            self.mainConf.pxInt(pOptions.getInt("GuiBuildManuscript", "winWidth", wWin)),
-            self.mainConf.pxInt(pOptions.getInt("GuiBuildManuscript", "winHeight", hWin))
+            CONFIG.pxInt(pOptions.getInt("GuiBuildManuscript", "winWidth", wWin)),
+            CONFIG.pxInt(pOptions.getInt("GuiBuildManuscript", "winHeight", hWin))
         )
 
         # Controls
@@ -80,8 +79,8 @@ class GuiBuildManuscript(QDialog):
         self.mainSplit.addWidget(self.optsWidget)
         self.mainSplit.addWidget(self.manPreview)
         self.mainSplit.setSizes([
-            self.mainConf.pxInt(pOptions.getInt("GuiBuildManuscript", "optsWidth", wWin//3)),
-            self.mainConf.pxInt(pOptions.getInt("GuiBuildManuscript", "viewWidth", 2*wWin//3)),
+            CONFIG.pxInt(pOptions.getInt("GuiBuildManuscript", "optsWidth", wWin//3)),
+            CONFIG.pxInt(pOptions.getInt("GuiBuildManuscript", "viewWidth", 2*wWin//3)),
         ])
 
         self.outerBox = QVBoxLayout()
@@ -134,8 +133,8 @@ class GuiBuildManuscript(QDialog):
         """
         logger.debug("Saving GuiBuildManuscript settings")
 
-        winWidth  = self.mainConf.rpxInt(self.width())
-        winHeight = self.mainConf.rpxInt(self.height())
+        winWidth  = CONFIG.rpxInt(self.width())
+        winHeight = CONFIG.rpxInt(self.height())
 
         mainSplit = self.mainSplit.sizes()
         optsWidth = mainSplit[0]
@@ -158,7 +157,6 @@ class GuiManuscriptPreview(QTextBrowser):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject

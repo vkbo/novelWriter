@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import json
 import logging
-import novelwriter
 
 from pathlib import Path
 from datetime import datetime
@@ -37,6 +36,7 @@ from PyQt5.QtWidgets import (
     QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
 )
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwAlert
 from novelwriter.error import formatException
 from novelwriter.common import formatTime, checkInt, checkIntTuple, minmax
@@ -63,7 +63,6 @@ class GuiWritingStats(QDialog):
         logger.debug("Initialising GuiWritingStats ...")
         self.setObjectName("GuiWritingStats")
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
@@ -76,24 +75,24 @@ class GuiWritingStats(QDialog):
         pOptions = self.theProject.options
 
         self.setWindowTitle(self.tr("Writing Statistics"))
-        self.setMinimumWidth(self.mainConf.pxInt(420))
-        self.setMinimumHeight(self.mainConf.pxInt(400))
+        self.setMinimumWidth(CONFIG.pxInt(420))
+        self.setMinimumHeight(CONFIG.pxInt(400))
         self.resize(
-            self.mainConf.pxInt(pOptions.getInt("GuiWritingStats", "winWidth",  550)),
-            self.mainConf.pxInt(pOptions.getInt("GuiWritingStats", "winHeight", 500))
+            CONFIG.pxInt(pOptions.getInt("GuiWritingStats", "winWidth",  550)),
+            CONFIG.pxInt(pOptions.getInt("GuiWritingStats", "winHeight", 500))
         )
 
         # List Box
-        wCol0 = self.mainConf.pxInt(
+        wCol0 = CONFIG.pxInt(
             pOptions.getInt("GuiWritingStats", "widthCol0", 180)
         )
-        wCol1 = self.mainConf.pxInt(
+        wCol1 = CONFIG.pxInt(
             pOptions.getInt("GuiWritingStats", "widthCol1", 80)
         )
-        wCol2 = self.mainConf.pxInt(
+        wCol2 = CONFIG.pxInt(
             pOptions.getInt("GuiWritingStats", "widthCol2", 80)
         )
-        wCol3 = self.mainConf.pxInt(
+        wCol3 = CONFIG.pxInt(
             pOptions.getInt("GuiWritingStats", "widthCol3", 80)
         )
 
@@ -127,7 +126,7 @@ class GuiWritingStats(QDialog):
 
         # Word Bar
         self.barHeight = int(round(0.5*self.mainTheme.fontPixelSize))
-        self.barWidth = self.mainConf.pxInt(200)
+        self.barWidth = CONFIG.pxInt(200)
         self.barImage = QPixmap(self.barHeight, self.barHeight)
         self.barImage.fill(self.palette().highlight().color())
 
@@ -309,12 +308,12 @@ class GuiWritingStats(QDialog):
         """
         self.logData = []
 
-        winWidth     = self.mainConf.rpxInt(self.width())
-        winHeight    = self.mainConf.rpxInt(self.height())
-        widthCol0    = self.mainConf.rpxInt(self.listBox.columnWidth(0))
-        widthCol1    = self.mainConf.rpxInt(self.listBox.columnWidth(1))
-        widthCol2    = self.mainConf.rpxInt(self.listBox.columnWidth(2))
-        widthCol3    = self.mainConf.rpxInt(self.listBox.columnWidth(3))
+        winWidth     = CONFIG.rpxInt(self.width())
+        winHeight    = CONFIG.rpxInt(self.height())
+        widthCol0    = CONFIG.rpxInt(self.listBox.columnWidth(0))
+        widthCol1    = CONFIG.rpxInt(self.listBox.columnWidth(1))
+        widthCol2    = CONFIG.rpxInt(self.listBox.columnWidth(2))
+        widthCol3    = CONFIG.rpxInt(self.listBox.columnWidth(3))
         sortCol      = self.listBox.sortColumn()
         sortOrder    = self.listBox.header().sortIndicatorOrder()
         incNovel     = self.incNovel.isChecked()
@@ -362,14 +361,14 @@ class GuiWritingStats(QDialog):
             return False
 
         # Generate the file name
-        savePath = self.mainConf.lastPath() / f"sessionStats.{fileExt}"
+        savePath = CONFIG.lastPath() / f"sessionStats.{fileExt}"
         savePath, _ = QFileDialog.getSaveFileName(
             self, self.tr("Save Data As"), str(savePath), "%s (*.%s)" % (textFmt, fileExt)
         )
         if not savePath:
             return False
 
-        self.mainConf.setLastPath(savePath)
+        CONFIG.setLastPath(savePath)
 
         # Do the actual writing
         wSuccess = False

@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import (
@@ -33,6 +32,7 @@ from PyQt5.QtWidgets import (
     QListWidget, QListWidgetItem, QVBoxLayout,
 )
 
+from novelwriter import CONFIG
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.configlayout import NHelpLabel
 
@@ -47,7 +47,6 @@ class GuiDocMerge(QDialog):
         logger.debug("Initialising GuiDocMerge ...")
         self.setObjectName("GuiDocMerge")
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
@@ -62,14 +61,14 @@ class GuiDocMerge(QDialog):
         ), self.mainTheme.helpText)
 
         iPx = self.mainTheme.baseIconSize
-        hSp = self.mainConf.pxInt(12)
-        vSp = self.mainConf.pxInt(8)
-        bSp = self.mainConf.pxInt(12)
+        hSp = CONFIG.pxInt(12)
+        vSp = CONFIG.pxInt(8)
+        bSp = CONFIG.pxInt(12)
 
         self.listBox = QListWidget()
         self.listBox.setIconSize(QSize(iPx, iPx))
-        self.listBox.setMinimumWidth(self.mainConf.pxInt(400))
-        self.listBox.setMinimumHeight(self.mainConf.pxInt(180))
+        self.listBox.setMinimumWidth(CONFIG.pxInt(400))
+        self.listBox.setMinimumHeight(CONFIG.pxInt(180))
         self.listBox.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.listBox.setSelectionMode(QAbstractItemView.SingleSelection)
         self.listBox.setDragDropMode(QAbstractItemView.InternalMove)

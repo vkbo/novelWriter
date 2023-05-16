@@ -24,7 +24,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from PyQt5.QtGui import QIcon, QPixmap, QColor
 from PyQt5.QtCore import Qt, QLocale, pyqtSlot
@@ -33,6 +32,7 @@ from PyQt5.QtWidgets import (
     QPushButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwAlert
 from novelwriter.common import simplified
 from novelwriter.extensions.switch import NSwitch
@@ -55,22 +55,21 @@ class GuiProjectSettings(NPagedDialog):
         logger.debug("Initialising GuiProjectSettings ...")
         self.setObjectName("GuiProjectSettings")
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
 
         self.theProject.countStatus()
         self.setWindowTitle(self.tr("Project Settings"))
 
-        wW = self.mainConf.pxInt(570)
-        wH = self.mainConf.pxInt(375)
+        wW = CONFIG.pxInt(570)
+        wH = CONFIG.pxInt(375)
         pOptions = self.theProject.options
 
         self.setMinimumWidth(wW)
         self.setMinimumHeight(wH)
         self.resize(
-            self.mainConf.pxInt(pOptions.getInt("GuiProjectSettings", "winWidth",  wW)),
-            self.mainConf.pxInt(pOptions.getInt("GuiProjectSettings", "winHeight", wH))
+            CONFIG.pxInt(pOptions.getInt("GuiProjectSettings", "winWidth",  wW)),
+            CONFIG.pxInt(pOptions.getInt("GuiProjectSettings", "winHeight", wH))
         )
 
         self.tabMain    = GuiProjectEditMain(self)
@@ -170,11 +169,11 @@ class GuiProjectSettings(NPagedDialog):
     def _saveGuiSettings(self):
         """Save GUI settings.
         """
-        winWidth    = self.mainConf.rpxInt(self.width())
-        winHeight   = self.mainConf.rpxInt(self.height())
-        replaceColW = self.mainConf.rpxInt(self.tabReplace.listBox.columnWidth(0))
-        statusColW  = self.mainConf.rpxInt(self.tabStatus.listBox.columnWidth(0))
-        importColW  = self.mainConf.rpxInt(self.tabImport.listBox.columnWidth(0))
+        winWidth    = CONFIG.rpxInt(self.width())
+        winHeight   = CONFIG.rpxInt(self.height())
+        replaceColW = CONFIG.rpxInt(self.tabReplace.listBox.columnWidth(0))
+        statusColW  = CONFIG.rpxInt(self.tabStatus.listBox.columnWidth(0))
+        importColW  = CONFIG.rpxInt(self.tabImport.listBox.columnWidth(0))
 
         pOptions = self.theProject.options
         pOptions.setValue("GuiProjectSettings", "winWidth",    winWidth)
@@ -193,7 +192,6 @@ class GuiProjectEditMain(QWidget):
     def __init__(self, projGui):
         super().__init__(parent=projGui)
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = projGui.mainGui
         self.theProject = projGui.theProject
 
@@ -204,7 +202,7 @@ class GuiProjectEditMain(QWidget):
 
         self.mainForm.addGroupLabel(self.tr("Project Settings"))
 
-        xW = self.mainConf.pxInt(250)
+        xW = CONFIG.pxInt(250)
 
         self.editName = QLineEdit()
         self.editName.setMaxLength(200)
@@ -282,7 +280,6 @@ class GuiProjectEditStatus(QWidget):
     def __init__(self, projGui, isStatus):
         super().__init__(parent=projGui)
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = projGui.mainGui
         self.theProject = projGui.theProject
         self.mainTheme  = projGui.mainGui.mainTheme
@@ -296,7 +293,7 @@ class GuiProjectEditStatus(QWidget):
             pageLabel = self.tr("Note File Importance Levels")
             colSetting = "importColW"
 
-        wCol0 = self.mainConf.pxInt(
+        wCol0 = CONFIG.pxInt(
             self.theProject.options.getInt("GuiProjectSettings", colSetting, 130)
         )
 
@@ -571,13 +568,12 @@ class GuiProjectEditReplace(QWidget):
     def __init__(self, projGui):
         super().__init__(parent=projGui)
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = projGui.mainGui
         self.mainTheme  = projGui.mainGui.mainTheme
         self.theProject = projGui.theProject
         self.arChanged  = False
 
-        wCol0 = self.mainConf.pxInt(
+        wCol0 = CONFIG.pxInt(
             self.theProject.options.getInt("GuiProjectSettings", "replaceColW", 130)
         )
         pageLabel = self.tr("Text Replace List for Preview and Export")

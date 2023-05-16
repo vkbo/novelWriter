@@ -25,6 +25,7 @@ import pytest
 from mock import causeOSError
 from tools import C, buildTestProject, writeFile
 
+from novelwriter import CONFIG
 from novelwriter.constants import nwFiles
 from novelwriter.core.project import NWProject
 from novelwriter.core.storage import NWStorage
@@ -148,9 +149,9 @@ def testCoreStorage_LockFile(monkeypatch, fncPath):
 
     # Successful read
     assert storage.readLockFile() == [
-        storage.mainConf.hostName,
-        storage.mainConf.osType,
-        storage.mainConf.kernelVer,
+        CONFIG.hostName,
+        CONFIG.osType,
+        CONFIG.kernelVer,
         "1000",
     ]
 
@@ -299,10 +300,10 @@ def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
 
 
 @pytest.mark.core
-def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tmpPath, mockRnd):
+def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
     """Test making a zip archive of a project.
     """
-    zipFile = tmpPath / "project.zip"
+    zipFile = tstPaths.tmpDir / "project.zip"
 
     theProject = NWProject(mockGUI)
     storage = theProject.storage

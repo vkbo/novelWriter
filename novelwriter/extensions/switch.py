@@ -23,12 +23,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import novelwriter
-
 from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import Qt, QRectF, QPropertyAnimation, pyqtProperty
 from PyQt5.QtWidgets import QSizePolicy, QAbstractButton
 
+from novelwriter import CONFIG
 from novelwriter.constants import nwUnicode
 
 
@@ -38,18 +37,18 @@ class NSwitch(QAbstractButton):
         super().__init__(parent=parent)
 
         if width is None:
-            self._xW = novelwriter.CONFIG.pxInt(40)
+            self._xW = CONFIG.pxInt(40)
         else:
             self._xW = width
 
         if height is None:
-            self._xH = novelwriter.CONFIG.pxInt(20)
+            self._xH = CONFIG.pxInt(20)
         else:
             self._xH = height
 
         self._xR = int(self._xH*0.5)
         self._xT = int(self._xH*0.6)
-        self._rB = int(novelwriter.CONFIG.guiScale*2)
+        self._rB = int(CONFIG.guiScale*2)
         self._rH = self._xH - 2*self._rB
         self._rR = self._xR - self._rB
 

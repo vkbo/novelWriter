@@ -28,19 +28,60 @@ from pathlib import Path
 from mock import MockGuiMain
 from tools import cleanProject
 
+from PyQt5.QtWidgets import QMessageBox
+
 sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 
-import novelwriter  # noqa: E402
+from novelwriter import CONFIG, main  # noqa: E402
 
-from PyQt5.QtWidgets import QMessageBox  # noqa: E402
+_TST_ROOT = Path(__file__).parent
+_TMP_ROOT = _TST_ROOT / "temp"
+_TMP_CONF = _TMP_ROOT / "conf"
 
-from novelwriter.config import Config  # noqa: E402
 
+##
+#  Helper Functions
+##
 
-@pytest.fixture(autouse=True)
-def initQt(qtbot):
-    """Ensures that the qt main thread is always available in all tests.
+def resetConfigVars():
+    """Reset the CONFIG object and set various values for testing to
+    prevent interfering with local OS.
     """
+    CONFIG.setLastPath(_TMP_ROOT)
+    CONFIG.setBackupPath(_TMP_ROOT)
+    CONFIG._homePath = _TMP_ROOT
+    CONFIG.guiLocale = "en_GB"
+    return
+
+
+##
+#  Auto Fixtures
+##
+
+@pytest.fixture(scope="session", autouse=True)
+def sessionFixture():
+    """A session wide fixture to set up the test environment.
+    """
+    if _TMP_ROOT.exists():
+        shutil.rmtree(_TMP_ROOT)
+    _TMP_ROOT.mkdir()
+    _TMP_CONF.mkdir()
+    return
+
+
+@pytest.fixture(scope="function", autouse=True)
+def functionFixture(qtbot):
+    """Ensures that the main Qt thread is always available, and reset
+    the config object for each function and redirect its storage paths.
+    """
+    if _TMP_CONF.exists():
+        shutil.rmtree(_TMP_CONF)
+    _TMP_CONF.mkdir()
+
+    CONFIG.__init__()
+    CONFIG.initConfig(confPath=_TMP_CONF, dataPath=_TMP_CONF)
+    resetConfigVars()
+
     return
 
 
@@ -49,26 +90,17 @@ def initQt(qtbot):
 ##
 
 @pytest.fixture(scope="session")
-def tmpPath():
-    """A temporary folder for the test session. Path version.
-    """
-    theTemp = Path(__file__).parent / "temp"
-    if theTemp.exists():
-        shutil.rmtree(theTemp)
-    theTemp.mkdir(exist_ok=True)
-    return theTemp
-
-
-@pytest.fixture(scope="session")
-def tstPaths(tmpPath):
+def tstPaths():
     """Returns an object that can provide the various paths needed for
     running tests.
     """
     class _Store:
-        testDir = Path(__file__).parent
-        filesDir = testDir / "files"
-        refDir = testDir / "reference"
-        outDir = tmpPath / "results"
+        testDir = _TST_ROOT
+        filesDir = _TST_ROOT / "files"
+        refDir = _TST_ROOT / "reference"
+        outDir = _TMP_ROOT / "results"
+        tmpDir = _TMP_ROOT
+        cnfDir = _TMP_CONF
 
     store = _Store()
     store.outDir.mkdir(exist_ok=True)
@@ -77,10 +109,10 @@ def tstPaths(tmpPath):
 
 
 @pytest.fixture(scope="function")
-def fncPath(tmpPath):
-    """A temporary folder for a single test function. Path version.
+def fncPath():
+    """A temporary folder for a single test function.
     """
-    fncPath = tmpPath / "function"
+    fncPath = _TMP_ROOT / "function"
     if fncPath.is_dir():
         shutil.rmtree(fncPath)
     fncPath.mkdir(exist_ok=True)
@@ -103,46 +135,17 @@ def projPath(fncPath):
 #  novelWriter Objects
 ##
 
-@pytest.fixture(scope="function")
-def tmpConf(tmpPath):
-    """Create a temporary novelWriter configuration object.
-    """
-    confFile = tmpPath / "novelwriter.conf"
-    if confFile.is_file():
-        confFile.unlink()
-    theConf = Config()
-    theConf.initConfig(tmpPath, tmpPath)
-    theConf.setLastPath(tmpPath)
-    theConf.guiLocale = "en_GB"
-    return theConf
-
 
 @pytest.fixture(scope="function")
-def fncConf(fncPath):
-    """Create a temporary novelWriter configuration object.
-    """
-    confFile = fncPath / "novelwriter.conf"
-    if confFile.is_file():
-        confFile.unlink()
-    theConf = Config()
-    theConf.initConfig(fncPath, fncPath)
-    theConf.setLastPath(fncPath)
-    theConf.guiLocale = "en_GB"
-    return theConf
-
-
-@pytest.fixture(scope="function")
-def mockGUI(monkeypatch, tmpConf):
+def mockGUI():
     """Create a mock instance of novelWriter's main GUI class.
     """
-    monkeypatch.setattr("novelwriter.CONFIG", tmpConf)
     theGui = MockGuiMain()
-    theGui.mainConf = tmpConf
     return theGui
 
 
 @pytest.fixture(scope="function")
-def nwGUI(qtbot, monkeypatch, fncPath, fncConf):
+def nwGUI(qtbot, monkeypatch, functionFixture):
     """Create an instance of the novelWriter GUI.
     """
     monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Ok)
@@ -150,13 +153,12 @@ def nwGUI(qtbot, monkeypatch, fncPath, fncConf):
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Ok)
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
-    monkeypatch.setattr("novelwriter.CONFIG", fncConf)
-    nwGUI = novelwriter.main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
+    nwGUI = main(["--testmode", f"--config={_TMP_CONF}", f"--data={_TMP_CONF}"])
     qtbot.addWidget(nwGUI)
+    resetConfigVars()
+
     nwGUI.show()
     qtbot.wait(20)
-
-    nwGUI.mainConf.setLastPath(fncPath)
 
     yield nwGUI
 
@@ -198,13 +200,12 @@ def mockRnd(monkeypatch):
 ##
 
 @pytest.fixture(scope="function")
-def nwLipsum(tmpPath):
+def nwLipsum():
     """A medium sized novelWriter example project with a lot of Lorem
     Ipsum text.
     """
-    tstDir = Path(__file__).parent
-    srcDir = tstDir / "lipsum"
-    dstDir = tmpPath / "lipsum"
+    srcDir = _TST_ROOT / "lipsum"
+    dstDir = _TMP_ROOT / "lipsum"
     if dstDir.exists():
         shutil.rmtree(dstDir)
 
@@ -220,13 +221,12 @@ def nwLipsum(tmpPath):
 
 
 @pytest.fixture(scope="function")
-def prjLipsum(tmpPath):
+def prjLipsum():
     """A medium sized novelWriter example project with a lot of Lorem
     Ipsum text.
     """
-    tstDir = Path(__file__).parent
-    srcDir = tstDir / "lipsum"
-    dstDir = tmpPath / "lipsum"
+    srcDir = _TST_ROOT / "lipsum"
+    dstDir = _TMP_ROOT / "lipsum"
     if dstDir.exists():
         shutil.rmtree(dstDir)
 

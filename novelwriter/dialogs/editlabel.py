@@ -24,11 +24,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QLineEdit, QLabel, QDialogButtonBox, QHBoxLayout
 )
+
+from novelwriter import CONFIG
 
 logger = logging.getLogger(__name__)
 
@@ -41,8 +42,8 @@ class GuiEditLabel(QDialog):
         self.setObjectName("GuiEditLabel")
         self.setWindowTitle(self.tr("Item Label"))
 
-        mVd = novelwriter.CONFIG.pxInt(220)
-        mSp = novelwriter.CONFIG.pxInt(12)
+        mVd = CONFIG.pxInt(220)
+        mSp = CONFIG.pxInt(12)
 
         # Item Label
         self.labelValue = QLineEdit()

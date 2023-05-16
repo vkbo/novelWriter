@@ -24,13 +24,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from lxml import etree
 from hashlib import sha256
 from zipfile import ZipFile
 from datetime import datetime
 
+from novelwriter import __version__
 from novelwriter.constants import nwKeyWords, nwLabels
 from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
@@ -336,7 +336,7 @@ class ToOdt(Tokenizer):
         xMeta.text = timeStamp
 
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "generator"))
-        xMeta.text = f"novelWriter/{novelwriter.__version__}"
+        xMeta.text = f"novelWriter/{__version__}"
 
         xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "initial-creator"))
         xMeta.text = self.theProject.data.author
