@@ -26,7 +26,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from enum import Enum
 from time import time
@@ -39,6 +38,7 @@ from PyQt5.QtWidgets import (
     QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
 from novelwriter.common import minmax
 from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
@@ -198,14 +198,13 @@ class GuiNovelToolBar(QWidget):
 
         logger.debug("Initialising GuiNovelToolBar ...")
 
-        self.mainConf   = novelwriter.CONFIG
         self.novelView  = novelView
         self.mainGui    = novelView.mainGui
         self.theProject = novelView.mainGui.theProject
         self.mainTheme  = novelView.mainGui.mainTheme
 
         iPx = self.mainTheme.baseIconSize
-        mPx = self.mainConf.pxInt(2)
+        mPx = CONFIG.pxInt(2)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -216,7 +215,7 @@ class GuiNovelToolBar(QWidget):
         self.novelPrefix = self.tr("Outline of {0}")
         self.novelValue = NovelSelector(self, self.theProject, self.mainGui)
         self.novelValue.setFont(selFont)
-        self.novelValue.setMinimumWidth(self.mainConf.pxInt(150))
+        self.novelValue.setMinimumWidth(CONFIG.pxInt(150))
         self.novelValue.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
 
@@ -290,7 +289,7 @@ class GuiNovelToolBar(QWidget):
         buttonStyle = (
             "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
-        ).format(self.mainConf.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
+        ).format(CONFIG.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
 
         self.tbNovel.setStyleSheet(buttonStyle)
         self.tbRefresh.setStyleSheet(buttonStyle)
@@ -398,7 +397,6 @@ class GuiNovelTree(QTreeWidget):
 
         logger.debug("Initialising GuiNovelTree ...")
 
-        self.mainConf   = novelwriter.CONFIG
         self.novelView  = novelView
         self.mainGui    = novelView.mainGui
         self.mainTheme  = novelView.mainGui.mainTheme
@@ -420,7 +418,7 @@ class GuiNovelTree(QTreeWidget):
         # =========
 
         iPx = self.mainTheme.baseIconSize
-        cMg = self.mainConf.pxInt(6)
+        cMg = CONFIG.pxInt(6)
 
         self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.NoFrame)
@@ -470,12 +468,12 @@ class GuiNovelTree(QTreeWidget):
         """Set or update tree widget settings.
         """
         # Scroll bars
-        if self.mainConf.hideVScroll:
+        if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
-        if self.mainConf.hideHScroll:
+        if CONFIG.hideHScroll:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)

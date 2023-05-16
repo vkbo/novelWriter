@@ -28,6 +28,7 @@ from zipfile import ZipFile
 from mock import causeOSError
 from tools import C, buildTestProject, cmpFiles, XML_IGNORE
 
+from novelwriter import CONFIG
 from novelwriter.constants import nwItemClass
 from novelwriter.core.project import NWProject
 from novelwriter.core.coretools import DocMerger, DocSplitter, ProjectBuilder
@@ -371,7 +372,7 @@ def testCoreTools_NewCustomB(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_NewSample(monkeypatch, fncPath, tmpConf, tmpPath, mockGUI):
+def testCoreTools_NewSample(monkeypatch, fncPath, tstPaths, mockGUI):
     """Check that we can create a new project can be created from the
     provided sample project via a zip file.
     """
@@ -391,10 +392,10 @@ def testCoreTools_NewSample(monkeypatch, fncPath, tmpConf, tmpPath, mockGUI):
     assert projBuild.buildProject({"popSample": True}) is False
 
     # Force the lookup path for assets to our temp folder
-    srcSample = tmpConf._appRoot / "sample"
-    dstSample = tmpPath / "sample.zip"
+    srcSample = CONFIG._appRoot / "sample"
+    dstSample = tstPaths.tmpDir / "sample.zip"
     monkeypatch.setattr(
-        "novelwriter.config.Config.assetPath", lambda *a: tmpPath / "sample.zip"
+        "novelwriter.config.Config.assetPath", lambda *a: tstPaths.tmpDir / "sample.zip"
     )
 
     # Cannot extract when the zip does not exist

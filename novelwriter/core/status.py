@@ -26,11 +26,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import random
 import logging
-import novelwriter
 
 from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor
 from PyQt5.QtCore import QRectF, Qt
 
+from novelwriter import CONFIG
 from novelwriter.common import minmax, simplified
 
 logger = logging.getLogger(__name__)
@@ -47,11 +47,11 @@ class NWStatus:
         self._store = {}
         self._default = None
 
-        self._iPX = novelwriter.CONFIG.pxInt(24)
+        self._iPX = CONFIG.pxInt(24)
 
-        pA = novelwriter.CONFIG.pxInt(2)
-        pB = novelwriter.CONFIG.pxInt(20)
-        pR = float(novelwriter.CONFIG.pxInt(4))
+        pA = CONFIG.pxInt(2)
+        pB = CONFIG.pxInt(20)
+        pR = float(CONFIG.pxInt(4))
         self._iconPath = QPainterPath()
         self._iconPath.addRoundedRect(QRectF(pA, pA, pB, pB), pR, pR)
 

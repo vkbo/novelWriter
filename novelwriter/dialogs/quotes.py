@@ -24,7 +24,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from PyQt5.QtGui import QFontMetrics
 from PyQt5.QtCore import Qt, QSize
@@ -33,6 +32,7 @@ from PyQt5.QtWidgets import (
     QListWidget, QListWidgetItem, QFrame
 )
 
+from novelwriter import CONFIG
 from novelwriter.constants import trConst, nwQuotes
 
 logger = logging.getLogger(__name__)
@@ -44,8 +44,6 @@ class GuiQuoteSelect(QDialog):
 
     def __init__(self, parent=None, currentQuote='"'):
         super().__init__(parent=parent)
-
-        self.mainConf = novelwriter.CONFIG
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
@@ -82,8 +80,8 @@ class GuiQuoteSelect(QDialog):
             if sKey == currentQuote:
                 self.listBox.setCurrentItem(qtItem)
 
-        self.listBox.setMinimumWidth(minSize + self.mainConf.pxInt(40))
-        self.listBox.setMinimumHeight(self.mainConf.pxInt(150))
+        self.listBox.setMinimumWidth(minSize + CONFIG.pxInt(40))
+        self.listBox.setMinimumHeight(CONFIG.pxInt(150))
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)

@@ -27,13 +27,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import shutil
 import logging
-import novelwriter
 
 from time import time
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwAlert
 from novelwriter.common import minmax, simplified
 from novelwriter.constants import nwItemClass
@@ -268,12 +268,8 @@ class ProjectBuilder:
     """
 
     def __init__(self, mainGui):
-
         self.mainGui = mainGui
-        self.mainConf = novelwriter.CONFIG
-
         self.tr = partial(QCoreApplication.translate, "NWProject")
-
         return
 
     ##
@@ -431,7 +427,7 @@ class ProjectBuilder:
             logger.error("No project path set for the example project")
             return False
 
-        pkgSample = self.mainConf.assetPath("sample.zip")
+        pkgSample = CONFIG.assetPath("sample.zip")
         if pkgSample.is_file():
             try:
                 shutil.unpack_archive(pkgSample, projPath)

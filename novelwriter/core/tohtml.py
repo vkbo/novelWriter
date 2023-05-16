@@ -25,6 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 
+from novelwriter import CONFIG
 from novelwriter.constants import nwKeyWords, nwLabels, nwHtmlUnicode
 from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
@@ -204,9 +205,9 @@ class ToHtml(Tokenizer):
                     aStyle.append("margin-top: 0;")
 
                 if tStyle & self.A_IND_L:
-                    aStyle.append(f"margin-left: {self.mainConf.tabWidth:d}px;")
+                    aStyle.append(f"margin-left: {CONFIG.tabWidth:d}px;")
                 if tStyle & self.A_IND_R:
-                    aStyle.append(f"margin-right: {self.mainConf.tabWidth:d}px;")
+                    aStyle.append(f"margin-right: {CONFIG.tabWidth:d}px;")
 
             if len(aStyle) > 0:
                 stVals = " ".join(aStyle)

@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import json
 import logging
-import novelwriter
 
 from time import time
 from pathlib import Path
@@ -33,6 +32,7 @@ from functools import partial
 
 from PyQt5.QtCore import QCoreApplication, QObject, pyqtSignal
 
+from novelwriter import CONFIG, __version__, __hexversion__
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.error import logException
 from novelwriter.constants import trConst, nwFiles, nwLabels
@@ -58,8 +58,7 @@ class NWProject(QObject):
         super().__init__(parent=mainGui)
 
         # Internal
-        self.mainConf = novelwriter.CONFIG
-        self.mainGui  = mainGui
+        self.mainGui = mainGui
 
         # Core Elements
         self._options = OptionState(self)    # Project-specific GUI options
@@ -328,7 +327,7 @@ class NWProject(QObject):
         # Check novelWriter Version
         # =========================
 
-        if xmlReader.hexVersion > hexToInt(novelwriter.__hexversion__):
+        if xmlReader.hexVersion > hexToInt(__hexversion__):
             msgYes = self.mainGui.askQuestion(
                 self.tr("Version Conflict"),
                 self.tr(
@@ -337,7 +336,7 @@ class NWProject(QObject):
                     "continue to open the project, some attributes and "
                     "settings may not be preserved, but the overall project "
                     "should be fine. Continue opening the project?"
-                ).format(appVersion, novelwriter.__version__)
+                ).format(appVersion, __version__)
             )
             if not msgYes:
                 self.clearProject()
@@ -351,7 +350,7 @@ class NWProject(QObject):
         self._loadProjectLocalisation()
 
         # Update recent projects
-        self.mainConf.recentProjects.update(
+        CONFIG.recentProjects.update(
             self._storage.storagePath, self._data.name, sum(self._data.initCounts), time()
         )
 
@@ -422,7 +421,7 @@ class NWProject(QObject):
         self._storage.runPostSaveTasks(autoSave=autoSave)
 
         # Update recent projects
-        self.mainConf.recentProjects.update(
+        CONFIG.recentProjects.update(
             self._storage.storagePath, self._data.name, sum(self._data.currCounts), saveTime
         )
 
@@ -455,7 +454,7 @@ class NWProject(QObject):
         logger.info("Backing up project")
         self.mainGui.setStatus(self.tr("Backing up project ..."))
 
-        backupPath = self.mainConf.backupPath()
+        backupPath = CONFIG.backupPath()
         if not isinstance(backupPath, Path):
             self.mainGui.makeAlert(self.tr(
                 "Cannot backup project because no valid backup path is set. "
@@ -677,13 +676,13 @@ class NWProject(QObject):
     def _loadProjectLocalisation(self):
         """Load the language data for the current project language.
         """
-        if self._data.language is None or self.mainConf._nwLangPath is None:
+        if self._data.language is None or CONFIG._nwLangPath is None:
             self._langData = {}
             return False
 
-        langFile = Path(self.mainConf._nwLangPath) / f"project_{self._data.language}.json"
+        langFile = Path(CONFIG._nwLangPath) / f"project_{self._data.language}.json"
         if not langFile.is_file():
-            langFile = Path(self.mainConf._nwLangPath) / "project_en_GB.json"
+            langFile = Path(CONFIG._nwLangPath) / "project_en_GB.json"
 
         try:
             with open(langFile, mode="r", encoding="utf-8") as inFile:

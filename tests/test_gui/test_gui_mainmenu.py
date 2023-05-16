@@ -27,6 +27,7 @@ from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
 from tools import C, writeFile, buildTestProject
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.gui.doceditor import GuiDocEditor
@@ -461,19 +462,19 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsQuoteLS.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtSQuoteOpen
+    assert nwGUI.docEditor.getText() == CONFIG.fmtSQuoteOpen
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsQuoteRS.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtSQuoteClose
+    assert nwGUI.docEditor.getText() == CONFIG.fmtSQuoteClose
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsQuoteLD.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtDQuoteOpen
+    assert nwGUI.docEditor.getText() == CONFIG.fmtDQuoteOpen
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsQuoteRD.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == nwGUI.mainConf.fmtDQuoteClose
+    assert nwGUI.docEditor.getText() == CONFIG.fmtDQuoteClose
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsMSApos.activate(QAction.Trigger)

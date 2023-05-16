@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import shutil
 import pytest
 
 from pathlib import Path
@@ -31,18 +30,17 @@ from tools import writeFile
 from PyQt5.QtGui import QIcon, QPalette, QPixmap
 from PyQt5.QtWidgets import QApplication
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
-from novelwriter.config import Config
 from novelwriter.constants import nwLabels
 from novelwriter.gui.theme import GuiIcons, GuiTheme
 
 
 @pytest.mark.gui
-def testGuiTheme_Main(qtbot, nwGUI, fncPath):
+def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     """Test the theme class init.
     """
     mainTheme: GuiTheme = nwGUI.mainTheme
-    mainConf: Config = nwGUI.mainConf
 
     # Methods
     # =======
@@ -55,35 +53,35 @@ def testGuiTheme_Main(qtbot, nwGUI, fncPath):
     # ==========
 
     # The defaults should be set
-    defaultFont = mainConf.guiFont
-    defaultSize = mainConf.guiFontSize
+    defaultFont = CONFIG.guiFont
+    defaultSize = CONFIG.guiFontSize
 
     # CHange them to nonsense values
-    mainConf.guiFont = "notafont"
-    mainConf.guiFontSize = 99
+    CONFIG.guiFont = "notafont"
+    CONFIG.guiFontSize = 99
 
     # Let the theme class set them back to default
     mainTheme._setGuiFont()
-    assert mainConf.guiFont == defaultFont
-    assert mainConf.guiFontSize == defaultSize
+    assert CONFIG.guiFont == defaultFont
+    assert CONFIG.guiFontSize == defaultSize
 
     # A second call should just restore the defaults again
     mainTheme._setGuiFont()
-    assert mainConf.guiFont == defaultFont
-    assert mainConf.guiFontSize == defaultSize
+    assert CONFIG.guiFont == defaultFont
+    assert CONFIG.guiFontSize == defaultSize
 
     # Scan for Themes
     # ===============
 
     assert mainTheme._listConf({}, Path("not_a_path")) is False
 
-    themeOne = fncPath / "themes" / "themeone.conf"
-    themeTwo = fncPath / "themes" / "themetwo.conf"
+    themeOne = tstPaths.cnfDir / "themes" / "themeone.conf"
+    themeTwo = tstPaths.cnfDir / "themes" / "themetwo.conf"
     writeFile(themeOne, "# Stuff")
     writeFile(themeTwo, "# Stuff")
 
     result = {}
-    assert mainTheme._listConf(result, fncPath / "themes") is True
+    assert mainTheme._listConf(result, tstPaths.cnfDir / "themes") is True
     assert result["themeone"] == themeOne
     assert result["themetwo"] == themeTwo
 
@@ -123,17 +121,13 @@ def testGuiTheme_Main(qtbot, nwGUI, fncPath):
 
 
 @pytest.mark.gui
-def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, fncPath):
+def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
     """Test the theme part of the class.
     """
     mainTheme: GuiTheme = nwGUI.mainTheme
-    mainConf: Config = nwGUI.mainConf
 
     # List Themes
     # ===========
-
-    shutil.copy(mainConf.assetPath("themes") / "default_dark.conf", fncPath / "themes")
-    shutil.copy(mainConf.assetPath("themes") / "default.conf", fncPath / "themes")
 
     # Block the reading of the files
     with monkeypatch.context() as mp:
@@ -149,14 +143,14 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, fncPath):
     assert mainTheme.listThemes() == mainTheme._themeList
 
     # Check handling of broken theme settings
-    mainConf.guiTheme = "not_a_theme"
+    CONFIG.guiTheme = "not_a_theme"
     availThemes = mainTheme._availThemes
     mainTheme._availThemes = {}
     assert mainTheme.loadTheme() is False
     mainTheme._availThemes = availThemes
 
     # Check handling of unreadable file
-    mainConf.guiTheme = "default"
+    CONFIG.guiTheme = "default"
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         assert mainTheme.loadTheme() is False
@@ -168,7 +162,7 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, fncPath):
     mainTheme._guiPalette.color(QPalette.Window).setRgb(0, 0, 0, 0)
 
     # Load the default theme
-    mainConf.guiTheme = "default"
+    CONFIG.guiTheme = "default"
     assert mainTheme.loadTheme() is True
 
     # This should load a standard palette
@@ -178,7 +172,7 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, fncPath):
     # Load Default Dark Theme
     # =======================
 
-    mainConf.guiTheme = "default_dark"
+    CONFIG.guiTheme = "default_dark"
     assert mainTheme.loadTheme() is True
 
     # Check a few values
@@ -193,17 +187,13 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, fncPath):
 
 
 @pytest.mark.gui
-def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI, fncPath):
+def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
     """Test the syntax part of the class.
     """
     mainTheme: GuiTheme = nwGUI.mainTheme
-    mainConf: Config = nwGUI.mainConf
 
     # List Themes
     # ===========
-
-    shutil.copy(mainConf.assetPath("syntax") / "default_dark.conf", fncPath / "syntax")
-    shutil.copy(mainConf.assetPath("syntax") / "default_light.conf", fncPath / "syntax")
 
     # Block the reading of the files
     with monkeypatch.context() as mp:
@@ -221,12 +211,12 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI, fncPath):
     # Check handling of broken theme settings
     availSyntax = mainTheme._availSyntax
     mainTheme._availSyntax = {}
-    mainConf.guiSyntax = "not_a_syntax"
+    CONFIG.guiSyntax = "not_a_syntax"
     assert mainTheme.loadSyntax() is False
     mainTheme._availSyntax = availSyntax
 
     # Check handling of unreadable file
-    mainConf.guiSyntax = "default_light"
+    CONFIG.guiSyntax = "default_light"
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         assert mainTheme.loadSyntax() is False
@@ -235,7 +225,7 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI, fncPath):
     # =========================
 
     # Load the default syntax
-    mainConf.guiSyntax = "default_light"
+    CONFIG.guiSyntax = "default_light"
     assert mainTheme.loadSyntax() is True
 
     # Check some values
@@ -248,7 +238,7 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI, fncPath):
     # =======================
 
     # Load the default syntax
-    mainConf.guiSyntax = "default_dark"
+    CONFIG.guiSyntax = "default_dark"
     assert mainTheme.loadSyntax() is True
 
     # Check some values
@@ -263,7 +253,7 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI, fncPath):
 
 
 @pytest.mark.gui
-def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, fncPath):
+def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
     """Test the icon cache class.
     """
     iconCache: GuiIcons = nwGUI.mainTheme.iconCache
@@ -280,7 +270,7 @@ def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, fncPath):
         assert iconCache.loadTheme("typicons_dark") is False
 
     # Load a broken theme file
-    iconsDir = fncPath / "icons"
+    iconsDir = tstPaths.cnfDir / "icons"
     testIcons = iconsDir / "testicons"
     testIcons.mkdir()
     writeFile(testIcons / "icons.conf", (
@@ -293,7 +283,7 @@ def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, fncPath):
     ))
 
     iconPath = iconCache._iconPath
-    iconCache._iconPath = fncPath / "icons"
+    iconCache._iconPath = tstPaths.cnfDir / "icons"
 
     caplog.clear()
     assert iconCache.loadTheme("testicons") is True

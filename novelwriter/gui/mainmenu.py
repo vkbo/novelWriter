@@ -24,7 +24,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from pathlib import Path
 from urllib.parse import urljoin
@@ -34,8 +33,9 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwDocAction, nwDocInsert, nwWidget
-from novelwriter.constants import trConst, nwKeyWords, nwLabels, nwUnicode
+from novelwriter.constants import nwConst, trConst, nwKeyWords, nwLabels, nwUnicode
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,6 @@ class GuiMainMenu(QMenuBar):
         super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiMainMenu ...")
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
 
@@ -105,9 +104,9 @@ class GuiMainMenu(QMenuBar):
     def _openUserManualFile(self):
         """Open the documentation in PDF format.
         """
-        if isinstance(self.mainConf.pdfDocs, Path):
+        if isinstance(CONFIG.pdfDocs, Path):
             QDesktopServices.openUrl(
-                QUrl(urljoin("file:", pathname2url(str(self.mainConf.pdfDocs))))
+                QUrl(urljoin("file:", pathname2url(str(CONFIG.pdfDocs))))
             )
         return
 
@@ -310,7 +309,7 @@ class GuiMainMenu(QMenuBar):
 
         # View > TreeView
         self.aFocusTree = QAction(self.tr("Go to Project Tree"), self)
-        if self.mainConf.osWindows:
+        if CONFIG.osWindows:
             self.aFocusTree.setShortcut("Ctrl+Alt+1")
         else:
             self.aFocusTree.setShortcut("Alt+1")
@@ -319,7 +318,7 @@ class GuiMainMenu(QMenuBar):
 
         # View > Document Pane 1
         self.aFocusEditor = QAction(self.tr("Go to Document Editor"), self)
-        if self.mainConf.osWindows:
+        if CONFIG.osWindows:
             self.aFocusEditor.setShortcut("Ctrl+Alt+2")
         else:
             self.aFocusEditor.setShortcut("Alt+2")
@@ -328,7 +327,7 @@ class GuiMainMenu(QMenuBar):
 
         # View > Document Pane 2
         self.aFocusView = QAction(self.tr("Go to Document Viewer"), self)
-        if self.mainConf.osWindows:
+        if CONFIG.osWindows:
             self.aFocusView.setShortcut("Ctrl+Alt+3")
         else:
             self.aFocusView.setShortcut("Alt+3")
@@ -337,7 +336,7 @@ class GuiMainMenu(QMenuBar):
 
         # View > Outline
         self.aFocusOutline = QAction(self.tr("Go to Outline"), self)
-        if self.mainConf.osWindows:
+        if CONFIG.osWindows:
             self.aFocusOutline.setShortcut("Ctrl+Alt+4")
         else:
             self.aFocusOutline.setShortcut("Alt+4")
@@ -754,7 +753,7 @@ class GuiMainMenu(QMenuBar):
 
         # Search > Replace
         self.aReplace = QAction(self.tr("Replace"), self)
-        if self.mainConf.osDarwin:
+        if CONFIG.osDarwin:
             self.aReplace.setShortcut("Ctrl+=")
         else:
             self.aReplace.setShortcut("Ctrl+H")
@@ -763,7 +762,7 @@ class GuiMainMenu(QMenuBar):
 
         # Search > Find Next
         self.aFindNext = QAction(self.tr("Find Next"), self)
-        if self.mainConf.osDarwin:
+        if CONFIG.osDarwin:
             self.aFindNext.setShortcuts(["Ctrl+G", "F3"])
         else:
             self.aFindNext.setShortcuts(["F3", "Ctrl+G"])
@@ -772,7 +771,7 @@ class GuiMainMenu(QMenuBar):
 
         # Search > Find Prev
         self.aFindPrev = QAction(self.tr("Find Previous"), self)
-        if self.mainConf.osDarwin:
+        if CONFIG.osDarwin:
             self.aFindPrev.setShortcuts(["Ctrl+Shift+G", "Shift+F3"])
         else:
             self.aFindPrev.setShortcuts(["Shift+F3", "Ctrl+Shift+G"])
@@ -872,18 +871,13 @@ class GuiMainMenu(QMenuBar):
         self.helpMenu.addSeparator()
 
         # Help > User Manual (Online)
-        if novelwriter.__version__[-2] == "f":
-            docUrl = f"{novelwriter.__docurl__}/en/stable/"
-        else:
-            docUrl = f"{novelwriter.__docurl__}/en/latest/"
-
         self.aHelpDocs = QAction(self.tr("User Manual (Online)"), self)
         self.aHelpDocs.setShortcut("F1")
-        self.aHelpDocs.triggered.connect(lambda: self._openWebsite(docUrl))
+        self.aHelpDocs.triggered.connect(lambda: self._openWebsite(nwConst.URL_DOCS))
         self.helpMenu.addAction(self.aHelpDocs)
 
         # Help > User Manual (PDF)
-        if isinstance(self.mainConf.pdfDocs, Path):
+        if isinstance(CONFIG.pdfDocs, Path):
             self.aPdfDocs = QAction(self.tr("User Manual (PDF)"), self)
             self.aPdfDocs.setShortcut("Shift+F1")
             self.aPdfDocs.triggered.connect(self._openUserManualFile)
@@ -894,17 +888,17 @@ class GuiMainMenu(QMenuBar):
 
         # Document > Report an Issue
         self.aIssue = QAction(self.tr("Report an Issue (GitHub)"), self)
-        self.aIssue.triggered.connect(lambda: self._openWebsite(novelwriter.__issuesurl__))
+        self.aIssue.triggered.connect(lambda: self._openWebsite(nwConst.URL_REPORT))
         self.helpMenu.addAction(self.aIssue)
 
         # Document > Ask a Question
         self.aQuestion = QAction(self.tr("Ask a Question (GitHub)"), self)
-        self.aQuestion.triggered.connect(lambda: self._openWebsite(novelwriter.__helpurl__))
+        self.aQuestion.triggered.connect(lambda: self._openWebsite(nwConst.URL_HELP))
         self.helpMenu.addAction(self.aQuestion)
 
         # Document > Main Website
         self.aWebsite = QAction(self.tr("The novelWriter Website"), self)
-        self.aWebsite.triggered.connect(lambda: self._openWebsite(novelwriter.__url__))
+        self.aWebsite.triggered.connect(lambda: self._openWebsite(nwConst.URL_WEB))
         self.helpMenu.addAction(self.aWebsite)
 
         # Help > Separator

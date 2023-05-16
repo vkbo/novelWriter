@@ -24,12 +24,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from time import time
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile
 
+from novelwriter import CONFIG
 from novelwriter.error import logException
 from novelwriter.common import minmax
 from novelwriter.constants import nwFiles
@@ -47,7 +47,6 @@ class NWStorage:
 
     def __init__(self, theProject):
 
-        self.mainConf = novelwriter.CONFIG
         self.theProject = theProject
 
         self._storagePath = None
@@ -220,8 +219,8 @@ class NWStorage:
             return False
 
         data = [
-            self.mainConf.hostName, self.mainConf.osType,
-            self.mainConf.kernelVer, str(int(time()))
+            CONFIG.hostName, CONFIG.osType,
+            CONFIG.kernelVer, str(int(time()))
         ]
         try:
             self._lockFilePath.write_text(";".join(data), encoding="utf-8")

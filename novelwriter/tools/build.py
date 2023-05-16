@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import json
 import logging
-import novelwriter
 
 from time import time
 from pathlib import Path
@@ -43,6 +42,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwAlert, nwItemType, nwItemLayout, nwItemClass
 from novelwriter.error import formatException, logException
 from novelwriter.common import fuzzyTime, makeFileNameSafe
@@ -73,7 +73,6 @@ class GuiBuildNovel(QDialog):
         logger.debug("Initialising GuiBuildNovel ...")
         self.setObjectName("GuiBuildNovel")
 
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
@@ -84,13 +83,13 @@ class GuiBuildNovel(QDialog):
         self.buildTime = 0   # The timestamp of the last build
 
         self.setWindowTitle(self.tr("Build Novel Project"))
-        self.setMinimumWidth(self.mainConf.pxInt(700))
-        self.setMinimumHeight(self.mainConf.pxInt(600))
+        self.setMinimumWidth(CONFIG.pxInt(700))
+        self.setMinimumHeight(CONFIG.pxInt(600))
 
         pOptions = self.theProject.options
         self.resize(
-            self.mainConf.pxInt(pOptions.getInt("GuiBuildNovel", "winWidth",  900)),
-            self.mainConf.pxInt(pOptions.getInt("GuiBuildNovel", "winHeight", 800))
+            CONFIG.pxInt(pOptions.getInt("GuiBuildNovel", "winWidth",  900)),
+            CONFIG.pxInt(pOptions.getInt("GuiBuildNovel", "winHeight", 800))
         )
 
         self.docView = GuiBuildNovelDocView(self, self.theProject)
@@ -121,7 +120,7 @@ class GuiBuildNovel(QDialog):
             "be centred automatically and only appear between sections of "
             "the same type."
         ).format("* * *")
-        xFmt = self.mainConf.pxInt(100)
+        xFmt = CONFIG.pxInt(100)
 
         self.fmtTitle = QLineEdit()
         self.fmtTitle.setMaxLength(200)
@@ -165,7 +164,7 @@ class GuiBuildNovel(QDialog):
 
         self.buildLang = QComboBox()
         self.buildLang.setMinimumWidth(xFmt)
-        theLangs = self.mainConf.listLanguages(self.mainConf.LANG_PROJ)
+        theLangs = CONFIG.listLanguages(CONFIG.LANG_PROJ)
         self.buildLang.addItem("[%s]" % self.tr("Not Set"), "None")
         for langID, langName in theLangs:
             self.buildLang.addItem(langName, langID)
@@ -237,7 +236,7 @@ class GuiBuildNovel(QDialog):
         self.textFont.setReadOnly(True)
         self.textFont.setMinimumWidth(xFmt)
         self.textFont.setText(
-            pOptions.getString("GuiBuildNovel", "textFont", self.mainConf.textFont)
+            pOptions.getString("GuiBuildNovel", "textFont", CONFIG.textFont)
         )
         self.fontButton = QPushButton("...")
         self.fontButton.setMaximumWidth(int(2.5*self.mainTheme.getTextWidth("...")))
@@ -249,7 +248,7 @@ class GuiBuildNovel(QDialog):
         self.textSize.setMaximum(72)
         self.textSize.setSingleStep(1)
         self.textSize.setValue(
-            pOptions.getInt("GuiBuildNovel", "textSize", self.mainConf.textSize)
+            pOptions.getInt("GuiBuildNovel", "textSize", CONFIG.textSize)
         )
 
         self.lineHeight = QDoubleSpinBox(self)
@@ -518,13 +517,13 @@ class GuiBuildNovel(QDialog):
         self.buttonBox.addWidget(self.btnSave)
         self.buttonBox.addWidget(self.btnPrint)
         self.buttonBox.addWidget(self.btnClose)
-        self.buttonBox.setSpacing(self.mainConf.pxInt(4))
+        self.buttonBox.setSpacing(CONFIG.pxInt(4))
 
         # Assemble GUI
         # ============
 
         # Splitter Position
-        boxWidth = self.mainConf.pxInt(350)
+        boxWidth = CONFIG.pxInt(350)
         boxWidth = pOptions.getInt("GuiBuildNovel", "boxWidth", boxWidth)
         docWidth = max(self.width() - boxWidth, 100)
         docWidth = pOptions.getInt("GuiBuildNovel", "docWidth", docWidth)
@@ -547,22 +546,22 @@ class GuiBuildNovel(QDialog):
 
         # Tool Box Scroll Area
         self.toolsArea = QScrollArea()
-        self.toolsArea.setMinimumWidth(self.mainConf.pxInt(250))
+        self.toolsArea.setMinimumWidth(CONFIG.pxInt(250))
         self.toolsArea.setWidgetResizable(True)
         self.toolsArea.setWidget(self.toolsWidget)
 
-        if self.mainConf.hideVScroll:
+        if CONFIG.hideVScroll:
             self.toolsArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.toolsArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
-        if self.mainConf.hideHScroll:
+        if CONFIG.hideHScroll:
             self.toolsArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.toolsArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Tools and Buttons Layout
-        tSp = self.mainConf.pxInt(8)
+        tSp = CONFIG.pxInt(8)
         self.innerBox = QVBoxLayout()
         self.innerBox.addWidget(self.toolsArea)
         self.innerBox.addSpacing(tSp)
@@ -891,14 +890,14 @@ class GuiBuildNovel(QDialog):
 
         cleanName = makeFileNameSafe(self.theProject.data.name)
         fileName = "%s.%s" % (cleanName, fileExt)
-        savePath = self.mainConf.lastPath() / fileName
+        savePath = CONFIG.lastPath() / fileName
         savePath, _ = QFileDialog.getSaveFileName(
             self, self.tr("Save Document As"), str(savePath)
         )
         if not savePath:
             return False
 
-        self.mainConf.setLastPath(savePath)
+        CONFIG.setLastPath(savePath)
 
         # Build and Write
         # ===============
@@ -1173,8 +1172,8 @@ class GuiBuildNovel(QDialog):
         buildLang    = self.buildLang.currentData()
         hideScene    = self.hideScene.isChecked()
         hideSection  = self.hideSection.isChecked()
-        winWidth     = self.mainConf.rpxInt(self.width())
-        winHeight    = self.mainConf.rpxInt(self.height())
+        winWidth     = CONFIG.rpxInt(self.width())
+        winHeight    = CONFIG.rpxInt(self.height())
         justifyText  = self.justifyText.isChecked()
         noStyling    = self.noStyling.isChecked()
         textFont     = self.textFont.text()
@@ -1192,8 +1191,8 @@ class GuiBuildNovel(QDialog):
         rootFilter   = self._generateRootFilter()
 
         mainSplit = self.mainSplit.sizes()
-        boxWidth  = self.mainConf.rpxInt(mainSplit[0])
-        docWidth  = self.mainConf.rpxInt(mainSplit[1])
+        boxWidth  = CONFIG.rpxInt(mainSplit[0])
+        docWidth  = CONFIG.rpxInt(mainSplit[1])
 
         self.theProject.setProjectLang(buildLang)
 
@@ -1243,7 +1242,6 @@ class GuiBuildNovelDocView(QTextBrowser):
 
         logger.debug("Initialising GuiBuildNovelDocView ...")
 
-        self.mainConf   = novelwriter.CONFIG
         self.theProject = theProject
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
@@ -1252,7 +1250,7 @@ class GuiBuildNovelDocView(QTextBrowser):
         self.setMinimumWidth(40*self.mainGui.mainTheme.textNWidth)
         self.setOpenExternalLinks(False)
 
-        self.document().setDocumentMargin(self.mainConf.getTextMargin())
+        self.document().setDocumentMargin(CONFIG.getTextMargin())
         self.setPlaceholderText(self.tr(
             "This area will show the content of the document to be "
             "exported or printed. Press the \"Build Preview\" button "
@@ -1260,15 +1258,15 @@ class GuiBuildNovelDocView(QTextBrowser):
         ))
 
         theFont = QFont()
-        if self.mainConf.textFont is None:
+        if CONFIG.textFont is None:
             # If none is defined, set the default back to config
-            self.mainConf.textFont = self.document().defaultFont().family()
-        theFont.setFamily(self.mainConf.textFont)
-        theFont.setPointSize(self.mainConf.textSize)
+            CONFIG.textFont = self.document().defaultFont().family()
+        theFont.setFamily(CONFIG.textFont)
+        theFont.setPointSize(CONFIG.textSize)
         self.setFont(theFont)
 
         # Set the tab stops
-        self.setTabStopDistance(self.mainConf.getTabWidth())
+        self.setTabStopDistance(CONFIG.getTabWidth())
 
         docPalette = self.palette()
         docPalette.setColor(QPalette.Base, QColor(255, 255, 255))

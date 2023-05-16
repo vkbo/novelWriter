@@ -26,13 +26,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from enum import Enum
 from lxml import etree
 from time import time
 from pathlib import Path
 
+from novelwriter import __version__, __hexversion__
 from novelwriter.common import (
     checkBool, checkInt, checkString, checkStringNone, formatTimeStamp,
     hexToInt, simplified, yesNo
@@ -501,8 +501,8 @@ class ProjectXMLWriter:
         logger.debug("Writing project XML")
 
         xRoot = etree.Element("novelWriterXML", attrib={
-            "appVersion":  str(novelwriter.__version__),
-            "hexVersion":  str(novelwriter.__hexversion__),
+            "appVersion":  str(__version__),
+            "hexVersion":  str(__hexversion__),
             "fileVersion": FILE_VERSION,
             "timeStamp":   formatTimeStamp(saveTime),
         })

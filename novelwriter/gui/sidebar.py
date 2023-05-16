@@ -24,13 +24,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtWidgets import (
     QToolBar, QWidget, QSizePolicy, QAction, QMenu, QToolButton
 )
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwView
 
 logger = logging.getLogger(__name__)
@@ -45,13 +45,12 @@ class GuiSideBar(QToolBar):
 
         logger.debug("Initialising GuiSideBar ...")
 
-        self.mainConf  = novelwriter.CONFIG
         self.mainGui   = mainGui
         self.mainTheme = mainGui.mainTheme
 
         # Style
-        iPx = self.mainConf.pxInt(22)
-        mPx = self.mainConf.pxInt(60)
+        iPx = CONFIG.pxInt(22)
+        mPx = CONFIG.pxInt(60)
 
         lblFont = self.mainTheme.guiFont
         lblFont.setPointSizeF(0.65*self.mainTheme.fontPointSize)

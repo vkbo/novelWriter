@@ -21,11 +21,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
+from mock import causeException
+
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import qApp, QAction
-from mock import causeException
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwDocAction
 from novelwriter.core.tohtml import ToHtml
 
@@ -134,10 +136,10 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
     assert nwGUI.docViewer.docHeader.theTitle.text() == "Characters  ›  Test Title"
 
     # Ttile without full path
-    nwGUI.mainConf.showFullPath = False
+    CONFIG.showFullPath = False
     nwGUI.docViewer.updateDocInfo("4c4f28287af27")
     assert nwGUI.docViewer.docHeader.theTitle.text() == "Test Title"
-    nwGUI.mainConf.showFullPath = True
+    CONFIG.showFullPath = True
 
     # Document footer show/hide references
     viewState = nwGUI.viewMeta.isVisible()

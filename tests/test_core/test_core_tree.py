@@ -437,7 +437,7 @@ def testCoreTree_Reorder(caplog, mockGUI, mockItems):
 
 
 @pytest.mark.core
-def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpPath):
+def testCoreTree_ToCFile(monkeypatch, tstPaths, mockGUI, mockItems):
     """Test writing the ToC.txt file.
     """
     theProject = NWProject(mockGUI)
@@ -463,20 +463,20 @@ def testCoreTree_ToCFile(monkeypatch, mockGUI, mockItems, tmpPath):
     theProject._storage._runtimePath = None
     assert theTree.writeToCFile() is False
 
-    theProject._storage._runtimePath = tmpPath
+    theProject._storage._runtimePath = tstPaths.tmpDir
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         assert theTree.writeToCFile() is False
 
-    theProject._storage._runtimePath = tmpPath
-    (tmpPath / "content").mkdir()
+    theProject._storage._runtimePath = tstPaths.tmpDir
+    (tstPaths.tmpDir / "content").mkdir()
     assert theTree.writeToCFile() is True
 
     pathA = str(Path("content") / "c000000000001.nwd")
     pathB = str(Path("content") / "c000000000002.nwd")
     pathC = str(Path("content") / "b000000000002.nwd")
 
-    assert readFile(tmpPath / nwFiles.TOC_TXT) == (
+    assert readFile(tstPaths.tmpDir / nwFiles.TOC_TXT) == (
         "\n"
         "Table of Contents\n"
         "=================\n"

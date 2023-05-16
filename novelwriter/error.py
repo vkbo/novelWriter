@@ -111,18 +111,17 @@ class NWErrorMessage(QDialog):
         error traceback.
         """
         from traceback import format_tb
-        from novelwriter import __issuesurl__, __version__
+        from novelwriter import __version__
+        from novelwriter.constants import nwConst
         from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR, QSysInfo
 
-        self.msgHead.setText((
+        self.msgHead.setText(
             "<p>An unhandled error has been encountered.</p>"
             "<p>Please report this error by submitting an issue report on "
             "GitHub, providing a description and including the error "
             "message and traceback shown below.</p>"
-            "<p>URL: <a href='{issueUrl}'>{issueUrl}</a></p>"
-        ).format(
-            issueUrl=__issuesurl__,
-        ))
+            f"<p>URL: <a href='{nwConst.URL_REPORT}'>{nwConst.URL_REPORT}</a></p>"
+        )
 
         try:
             kernelVersion = QSysInfo.kernelVersion()

@@ -40,8 +40,8 @@ class MockProject:
 
 @pytest.fixture(scope="function", autouse=True)
 def mockVersion(monkeypatch):
-    monkeypatch.setattr("novelwriter.__version__", "2.0-rc1")
-    monkeypatch.setattr("novelwriter.__hexversion__", "0x020000c1")
+    monkeypatch.setattr("novelwriter.core.projectxml.__version__", "2.0-rc1")
+    monkeypatch.setattr("novelwriter.core.projectxml.__hexversion__", "0x020000c1")
     return
 
 

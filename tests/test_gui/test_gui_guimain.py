@@ -30,6 +30,7 @@ from tools import (
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QMessageBox, QInputDialog
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwItemType, nwView, nwWidget
 from novelwriter.constants import nwFiles
 from novelwriter.gui.outline import GuiOutlineView
@@ -75,7 +76,7 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, prjLipsum):
     """
     monkeypatch.setattr(GuiProjectLoad, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiProjectLoad, "result", lambda *a: QDialog.Accepted)
-    nwGUI.mainConf.lastNotes = "0x0"
+    CONFIG.lastNotes = "0x0"
 
     # Open Lipsum project
     nwGUI.postLaunchTasks(prjLipsum)
@@ -244,10 +245,10 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.mainMenu._toggleSpellCheck()
 
     # Change some settings
-    nwGUI.mainConf.hideHScroll = True
-    nwGUI.mainConf.hideVScroll = True
-    nwGUI.mainConf.autoScrollPos = 80
-    nwGUI.mainConf.autoScroll = True
+    CONFIG.hideHScroll = True
+    CONFIG.hideVScroll = True
+    CONFIG.autoScrollPos = 80
+    CONFIG.autoScroll = True
 
     # Add a Character File
     nwGUI.switchFocus(nwWidget.TREE)
@@ -589,11 +590,11 @@ def testGuiMain_FocusFullMode(qtbot, nwGUI, projPath, mockRnd):
     # Full Screen Mode
     # ================
 
-    assert nwGUI.mainConf.isFullScreen is False
+    assert CONFIG.isFullScreen is False
     nwGUI.toggleFullScreenMode()
-    assert nwGUI.mainConf.isFullScreen is True
+    assert CONFIG.isFullScreen is True
     nwGUI.toggleFullScreenMode()
-    assert nwGUI.mainConf.isFullScreen is False
+    assert CONFIG.isFullScreen is False
 
     # qtbot.stop()
 

@@ -20,20 +20,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import sys
-import novelwriter
-
 import pytest
 
 from PyQt5.QtWidgets import qApp, QMessageBox
 
-LANG_DATA = novelwriter.CONFIG.listLanguages(novelwriter.CONFIG.LANG_NW)
+from novelwriter import CONFIG, main
+
+LANG_DATA = CONFIG.listLanguages(CONFIG.LANG_NW)
 
 
 @pytest.mark.gui
 @pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Linux Only")
 @pytest.mark.skipif(not LANG_DATA, reason="No i18n Data")
 @pytest.mark.parametrize("language", [a for a, b in LANG_DATA])
-def testI18n_Localisation(qtbot, monkeypatch, language, fncPath, fncConf):
+def testI18n_Localisation(qtbot, monkeypatch, language, fncPath):
     """test loading the gui with a specific language.
     """
     monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Ok)
@@ -42,18 +42,13 @@ def testI18n_Localisation(qtbot, monkeypatch, language, fncPath, fncConf):
     monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
 
     # Set the test langauge
-    monkeypatch.setattr("novelwriter.CONFIG", fncConf)
-    fncConf.guiLocale = language
-    fncConf.initLocalisation(qApp)
+    CONFIG.guiLocale = language
+    CONFIG.initLocalisation(qApp)
 
-    nwGUI = novelwriter.main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
+    nwGUI = main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
     qtbot.addWidget(nwGUI)
     nwGUI.show()
     qtbot.wait(20)
     nwGUI.closeMain()
-
-    # Reset the app language
-    fncConf.guiLocale = "en_GB"
-    fncConf.initLocalisation(qApp)
 
 # END Test testI18n_Localisation

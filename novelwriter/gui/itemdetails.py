@@ -24,12 +24,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import novelwriter
 
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 
+from novelwriter import CONFIG
 from novelwriter.constants import trConst, nwLabels
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,6 @@ class GuiItemDetails(QWidget):
         super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiItemDetails ...")
-        self.mainConf   = novelwriter.CONFIG
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
         self.mainTheme  = mainGui.mainTheme
@@ -50,9 +49,9 @@ class GuiItemDetails(QWidget):
         self._itemHandle  = None
 
         # Sizes
-        hSp = self.mainConf.pxInt(6)
-        vSp = self.mainConf.pxInt(1)
-        mPx = self.mainConf.pxInt(6)
+        hSp = CONFIG.pxInt(6)
+        vSp = CONFIG.pxInt(1)
+        mPx = CONFIG.pxInt(6)
         fPt = self.mainTheme.fontPointSize
 
         fntLabel = QFont()
