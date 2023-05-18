@@ -29,11 +29,12 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QEvent, QSize, Qt, pyqtSlot
+from PyQt5.QtCore import QEvent, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QGridLayout, QHBoxLayout, QHeaderView, QLabel,
-    QLineEdit, QPushButton, QSplitter, QStackedWidget, QToolButton,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox, QGridLayout,
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit, QPushButton, QSplitter,
+    QStackedWidget, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG
@@ -57,6 +58,8 @@ class GuiBuildSettings(QDialog):
     BLD_HTML     = 5
     BLD_MARKDOWN = 6
     BLD_ODT      = 7
+
+    newSettingsReady = pyqtSignal(dict)
 
     def __init__(self, mainGui: GuiMain, buildData: dict):
         super().__init__(parent=mainGui)
@@ -129,10 +132,20 @@ class GuiBuildSettings(QDialog):
         self.toolStack.addWidget(self.buildTabMarkdown)
         self.toolStack.addWidget(self.buildTabODT)
 
-        # Main Settings
-        # =============
+        # Main Settings + Buttons
+        # =======================
 
-        self.lblTitle = QLabel()
+        self.lblBuildName = QLabel(self.tr("Name"))
+        self.editBuildName = QLineEdit()
+        self.dlgButtons = QDialogButtonBox(
+            QDialogButtonBox.Apply | QDialogButtonBox.Save | QDialogButtonBox.Close
+        )
+        self.dlgButtons.clicked.connect(self._dialogButtonClicked)
+
+        self.buttonBox = QHBoxLayout()
+        self.buttonBox.addWidget(self.lblBuildName)
+        self.buttonBox.addWidget(self.editBuildName)
+        self.buttonBox.addWidget(self.dlgButtons)
 
         # Assemble GUI
         # ============
@@ -140,9 +153,12 @@ class GuiBuildSettings(QDialog):
         self.mainBox = QHBoxLayout()
         self.mainBox.addWidget(self.optSideBar)
         self.mainBox.addWidget(self.toolStack)
+        self.mainBox.setContentsMargins(0, 0, 0, 0)
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.mainBox)
+        self.outerBox.addLayout(self.buttonBox)
+        self.outerBox.setSpacing(CONFIG.pxInt(12))
 
         self.setLayout(self.outerBox)
 
@@ -156,6 +172,7 @@ class GuiBuildSettings(QDialog):
     def loadContent(self):
         """Populate the child widgets.
         """
+        self.editBuildName.setText(self._build.name)
         self.optTabSelect.loadContent(self._build)
         return
 
@@ -181,6 +198,22 @@ class GuiBuildSettings(QDialog):
             self.toolStack.setCurrentWidget(self.buildTabMarkdown)
         elif pageId == self.BLD_ODT:
             self.toolStack.setCurrentWidget(self.buildTabODT)
+        return
+
+    @pyqtSlot("QAbstractButton*")
+    def _dialogButtonClicked(self, button: QAbstractButton):
+        """Handle button clicks from the dialog button box.
+        """
+        role = self.dlgButtons.buttonRole(button)
+        if role in (QDialogButtonBox.ApplyRole, QDialogButtonBox.AcceptRole):
+            self._build.setName(self.editBuildName.text())
+            self.newSettingsReady.emit(self._build.pack())
+
+        if role == QDialogButtonBox.AcceptRole:
+            self.accept()
+        elif role == QDialogButtonBox.RejectRole:
+            self.reject()
+
         return
 
     ##
@@ -329,6 +362,7 @@ class GuiBuildFilterTab(QWidget):
 
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.mainSplit)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.outerBox)
 

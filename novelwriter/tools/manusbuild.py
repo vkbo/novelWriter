@@ -22,9 +22,13 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 
+from typing import TYPE_CHECKING
+
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QGridLayout, QPushButton, QSplitter, QTextBrowser, QVBoxLayout,
     QWidget, qApp
@@ -33,12 +37,15 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG
 from novelwriter.tools.manussettings import GuiBuildSettings
 
+if TYPE_CHECKING:
+    from novelwriter.guimain import GuiMain
+
 logger = logging.getLogger(__name__)
 
 
 class GuiBuildManuscript(QDialog):
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
 
         self.mainGui    = mainGui
@@ -110,6 +117,7 @@ class GuiBuildManuscript(QDialog):
     #  Private Slots
     ##
 
+    @pyqtSlot()
     def _createNewBuild(self):
         """Open the build settings dialog for a new build.
         """
@@ -121,7 +129,15 @@ class GuiBuildManuscript(QDialog):
         dlgSettings.raise_()
         qApp.processEvents()
         dlgSettings.loadContent()
+        dlgSettings.newSettingsReady.connect(self._processNewSettings)
 
+        return
+
+    @pyqtSlot(dict)
+    def _processNewSettings(self, data: dict):
+        """
+        """
+        print(data)
         return
 
     ##
