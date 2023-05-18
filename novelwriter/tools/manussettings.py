@@ -28,16 +28,17 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QColor, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt5.QtCore import QEvent, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox, QGridLayout,
-    QHBoxLayout, QHeaderView, QLabel, QLineEdit, QPushButton, QSplitter,
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QPlainTextEdit, QPushButton, QSplitter,
     QStackedWidget, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
     QWidget
 )
 
 from novelwriter import CONFIG
+from novelwriter.constants import nwHeadingFormats
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
@@ -45,6 +46,7 @@ from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
 if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain
+    from novelwriter.gui.theme import GuiTheme
 
 logger = logging.getLogger(__name__)
 
@@ -96,14 +98,14 @@ class GuiBuildSettings(QDialog):
         self.optSideBar.setMaximumWidth(mPx)
         self.optSideBar.setLabelColor(self.mainTheme.helpText)
 
-        self.optSideBar.addLabel(self.tr("Options"))
+        self.optSideBar.addLabel(self.tr("Content"))
         self.optSideBar.addButton(self.tr("Filters"), self.OPT_FILTERS)
         self.optSideBar.addButton(self.tr("Headings"), self.OPT_HEADINGS)
         self.optSideBar.addButton(self.tr("Format"), self.OPT_FORMAT)
         self.optSideBar.addButton(self.tr("Content"), self.OPT_CONTENT)
         self.optSideBar.addSeparator()
 
-        self.optSideBar.addLabel(self.tr("Build"))
+        self.optSideBar.addLabel(self.tr("Output"))
         self.optSideBar.addButton(self.tr("HTML"), self.BLD_HTML)
         self.optSideBar.addButton(self.tr("Markdown"), self.BLD_MARKDOWN)
         self.optSideBar.addButton(self.tr("Open Document"), self.BLD_ODT)
@@ -173,7 +175,8 @@ class GuiBuildSettings(QDialog):
         """Populate the child widgets.
         """
         self.editBuildName.setText(self._build.name)
-        self.optTabSelect.loadContent(self._build)
+        self.optTabSelect.loadContent()
+        self.optTabHeadings.loadContent()
         return
 
     ##
@@ -368,10 +371,9 @@ class GuiBuildFilterTab(QWidget):
 
         return
 
-    def loadContent(self, build: BuildSettings):
+    def loadContent(self):
         """Populate the widgets.
         """
-        self._build = build
         self._populateTree()
         self._populateFilters()
         return
@@ -540,6 +542,12 @@ class GuiBuildFilterTab(QWidget):
 
 class GuiBuildHeadingsTab(QWidget):
 
+    EDIT_TITLE   = 1
+    EDIT_CHAPTER = 2
+    EDIT_UNNUM   = 3
+    EDIT_SCENE   = 4
+    EDIT_SECTION = 5
+
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
 
@@ -548,6 +556,7 @@ class GuiBuildHeadingsTab(QWidget):
         self.theProject = buildMain.mainGui.theProject
 
         self._build = build
+        self._editing = 0
 
         iPx = self.mainTheme.baseIconSize
         vSp = CONFIG.pxInt(12)
@@ -564,6 +573,7 @@ class GuiBuildHeadingsTab(QWidget):
         self.fmtTitle.setEnabled(False)
         self.btnTitle = QToolButton()
         self.btnTitle.setIcon(self.mainTheme.getIcon("edit"))
+        self.btnTitle.clicked.connect(lambda: self._editHeading(self.EDIT_TITLE))
 
         wrapTitle = QHBoxLayout()
         wrapTitle.addWidget(self.fmtTitle)
@@ -579,6 +589,7 @@ class GuiBuildHeadingsTab(QWidget):
         self.fmtChapter.setEnabled(False)
         self.btnChapter = QToolButton()
         self.btnChapter.setIcon(self.mainTheme.getIcon("edit"))
+        self.btnChapter.clicked.connect(lambda: self._editHeading(self.EDIT_CHAPTER))
 
         wrapChapter = QHBoxLayout()
         wrapChapter.addWidget(self.fmtChapter)
@@ -589,19 +600,20 @@ class GuiBuildHeadingsTab(QWidget):
         self.formatBox.addLayout(wrapChapter,     1, 1, Qt.AlignLeft)
 
         # Unnumbered Chapter Heading
-        self.lblUnChapter = QLabel(BuildSettings.getLabel("headings.fmtUnnumbered"))
-        self.fmtUnChapter = QLineEdit("")
-        self.fmtUnChapter.setEnabled(False)
-        self.btnUnChapter = QToolButton()
-        self.btnUnChapter.setIcon(self.mainTheme.getIcon("edit"))
+        self.lblUnnumbered = QLabel(BuildSettings.getLabel("headings.fmtUnnumbered"))
+        self.fmtUnnumbered = QLineEdit("")
+        self.fmtUnnumbered.setEnabled(False)
+        self.btnUnnumbered = QToolButton()
+        self.btnUnnumbered.setIcon(self.mainTheme.getIcon("edit"))
+        self.btnUnnumbered.clicked.connect(lambda: self._editHeading(self.EDIT_UNNUM))
 
-        wrapUnChapter = QHBoxLayout()
-        wrapUnChapter.addWidget(self.fmtUnChapter)
-        wrapUnChapter.addWidget(self.btnUnChapter)
-        wrapUnChapter.setSpacing(bSp)
+        wrapUnnumbered = QHBoxLayout()
+        wrapUnnumbered.addWidget(self.fmtUnnumbered)
+        wrapUnnumbered.addWidget(self.btnUnnumbered)
+        wrapUnnumbered.setSpacing(bSp)
 
-        self.formatBox.addWidget(self.lblUnChapter, 2, 0, Qt.AlignLeft)
-        self.formatBox.addLayout(wrapUnChapter,     2, 1, Qt.AlignLeft)
+        self.formatBox.addWidget(self.lblUnnumbered, 2, 0, Qt.AlignLeft)
+        self.formatBox.addLayout(wrapUnnumbered,     2, 1, Qt.AlignLeft)
 
         # Scene Heading
         self.lblScene = QLabel(BuildSettings.getLabel("headings.fmtScene"))
@@ -609,7 +621,9 @@ class GuiBuildHeadingsTab(QWidget):
         self.fmtScene.setEnabled(False)
         self.btnScene = QToolButton()
         self.btnScene.setIcon(self.mainTheme.getIcon("edit"))
+        self.btnScene.clicked.connect(lambda: self._editHeading(self.EDIT_SCENE))
         self.swtScene = NSwitch(width=2*iPx, height=iPx)
+        self.swtScene.toggled.connect(self._hideScene)
 
         wrapScene = QHBoxLayout()
         wrapScene.addWidget(self.fmtScene)
@@ -631,7 +645,9 @@ class GuiBuildHeadingsTab(QWidget):
         self.fmtSection.setEnabled(False)
         self.btnSection = QToolButton()
         self.btnSection.setIcon(self.mainTheme.getIcon("edit"))
+        self.btnSection.clicked.connect(lambda: self._editHeading(self.EDIT_SECTION))
         self.swtSection = NSwitch(width=2*iPx, height=iPx)
+        self.swtSection.toggled.connect(self._hideSection)
 
         wrapSection = QHBoxLayout()
         wrapSection.addWidget(self.fmtSection)
@@ -647,15 +663,163 @@ class GuiBuildHeadingsTab(QWidget):
         self.formatBox.addLayout(wrapSection,     4, 1, Qt.AlignLeft)
         self.formatBox.addLayout(wrapSectionHide, 4, 2, Qt.AlignLeft)
 
+        # Edit Form
+        # =========
+
+        self.lblEditForm = QLabel(self.tr("Editing: {0}").format(self.tr("None")))
+
+        self.editTextBox = QPlainTextEdit()
+        self.editTextBox.setFixedHeight(5*iPx)
+        self.editTextBox.setEnabled(False)
+
+        self.formSyntax = GuiHeadingSyntax(self.editTextBox.document(), self.mainTheme)
+
+        self.menuInsert = QMenu()
+        self.aInsTitle = self.menuInsert.addAction(self.tr("Title"))
+        self.aInsChNum = self.menuInsert.addAction(self.tr("Chapter Number"))
+        self.aInsChWord = self.menuInsert.addAction(self.tr("Chapter Number (Word)"))
+        self.aInsChRomU = self.menuInsert.addAction(self.tr("Chapter Number (Upper Case Roman)"))
+        self.aInsChRomL = self.menuInsert.addAction(self.tr("Chapter Number (Lower Case Roman)"))
+        self.aInsScNum = self.menuInsert.addAction(self.tr("Scene Number (In Chapter)"))
+        self.aInsScAbs = self.menuInsert.addAction(self.tr("Scene Number (Absolute)"))
+
+        self.aInsTitle.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.TITLE))
+        self.aInsChNum.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.CH_NUM))
+        self.aInsChWord.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.CH_WORD))
+        self.aInsChRomU.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.CH_ROMU))
+        self.aInsChRomL.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.CH_ROML))
+        self.aInsScNum.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.SC_NUM))
+        self.aInsScAbs.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.SC_ABS))
+
+        self.btnInsert = QPushButton(self.tr("Insert"))
+        self.btnInsert.setMenu(self.menuInsert)
+
+        self.btnApply = QPushButton(self.tr("Apply"))
+        self.btnApply.clicked.connect(self._saveFormat)
+
+        self.formButtonBox = QHBoxLayout()
+        self.formButtonBox.addStretch(1)
+        self.formButtonBox.addWidget(self.btnInsert)
+        self.formButtonBox.addWidget(self.btnApply)
+
+        self.editFormBox = QVBoxLayout()
+        self.editFormBox.addWidget(self.lblEditForm)
+        self.editFormBox.addWidget(self.editTextBox)
+        self.editFormBox.addLayout(self.formButtonBox)
+
         # Assemble
         # ========
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.formatBox)
+        self.outerBox.addSpacing(CONFIG.pxInt(16))
+        self.outerBox.addLayout(self.editFormBox)
         self.outerBox.addStretch(1)
 
         self.setLayout(self.outerBox)
 
+        return
+
+    def loadContent(self):
+        """Populate the widgets.
+        """
+        self.fmtTitle.setText(str(self._build.getValue("headings.fmtTitle")))
+        self.fmtChapter.setText(str(self._build.getValue("headings.fmtChapter")))
+        self.fmtUnnumbered.setText(str(self._build.getValue("headings.fmtUnnumbered")))
+        self.fmtScene.setText(str(self._build.getValue("headings.fmtScene")))
+        self.fmtSection.setText(str(self._build.getValue("headings.fmtSection")))
+        self.swtScene.setChecked(bool(self._build.getValue("headings.hideScene")))
+        self.swtSection.setChecked(bool(self._build.getValue("headings.hideSection")))
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _insertIntoForm(self, text: str):
+        """Insert formatting text from the dropdown menu.
+        """
+        if self._editing > 0:
+            cursor = self.editTextBox.textCursor()
+            cursor.insertText(text)
+            self.editTextBox.setFocus()
+        return
+
+    def _editHeading(self, heading: int):
+        """Populate the form with a specific heading format.
+        """
+        self._editing = heading
+        self.editTextBox.setEnabled(True)
+        if heading == self.EDIT_TITLE:
+            text = self.fmtTitle.text()
+            label = self._build.getLabel("headings.fmtTitle")
+        elif heading == self.EDIT_CHAPTER:
+            text = self.fmtChapter.text()
+            label = self._build.getLabel("headings.fmtChapter")
+        elif heading == self.EDIT_UNNUM:
+            text = self.fmtUnnumbered.text()
+            label = self._build.getLabel("headings.fmtUnnumbered")
+        elif heading == self.EDIT_SCENE:
+            text = self.fmtScene.text()
+            label = self._build.getLabel("headings.fmtScene")
+        elif heading == self.EDIT_SECTION:
+            text = self.fmtSection.text()
+            label = self._build.getLabel("headings.fmtSection")
+        else:
+            self._editing = 0
+            self.editTextBox.setEnabled(False)
+            text = ""
+            label = self.tr("None")
+
+        self.editTextBox.setPlainText(text.replace("//", "\n"))
+        self.lblEditForm.setText(self.tr("Editing: {0}").format(label))
+
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    def _saveFormat(self):
+        """Save the format from the edit text box.
+        """
+        heading = self._editing
+        text = self.editTextBox.toPlainText().replace("\n", "//")
+        if heading == self.EDIT_TITLE:
+            self.fmtTitle.setText(text)
+            self._build.setValue("headings.fmtTitle", text)
+        elif heading == self.EDIT_CHAPTER:
+            self.fmtChapter.setText(text)
+            self._build.setValue("headings.fmtChapter", text)
+        elif heading == self.EDIT_UNNUM:
+            self.fmtUnnumbered.setText(text)
+            self._build.setValue("headings.fmtUnnumbered", text)
+        elif heading == self.EDIT_SCENE:
+            self.fmtScene.setText(text)
+            self._build.setValue("headings.fmtScene", text)
+        elif heading == self.EDIT_SECTION:
+            self.fmtSection.setText(text)
+            self._build.setValue("headings.fmtSection", text)
+        else:
+            return
+
+        self._editHeading(0)
+        self.editTextBox.clear()
+
+        return
+
+    @pyqtSlot(bool)
+    def _hideScene(self, status):
+        """Hide scene heading
+        """
+        self._build.setValue("headings.hideScene", status)
+        return
+
+    @pyqtSlot(bool)
+    def _hideSection(self, status):
+        """Hide section heading
+        """
+        self._build.setValue("headings.hideSection", status)
         return
 
 # END Class GuiBuildHeadingsTab
@@ -719,3 +883,44 @@ class GuiBuildODTTab(QWidget):
         return
 
 # END Class GuiBuildODTTab
+
+
+class GuiHeadingSyntax(QSyntaxHighlighter):
+
+    def __init__(self, document: QTextDocument, mainTheme: GuiTheme):
+        super().__init__(document)
+
+        self._valid = [
+            nwHeadingFormats.TITLE.lower(),
+            nwHeadingFormats.CH_NUM.lower(),
+            nwHeadingFormats.CH_WORD.lower(),
+            nwHeadingFormats.CH_ROMU.lower(),
+            nwHeadingFormats.CH_ROML.lower(),
+            nwHeadingFormats.SC_NUM.lower(),
+            nwHeadingFormats.SC_ABS.lower(),
+        ]
+
+        self._fmtSymbol = QTextCharFormat()
+        self._fmtSymbol.setForeground(QColor(*mainTheme.colHead))
+
+        self._fmtFormat = QTextCharFormat()
+        self._fmtFormat.setForeground(QColor(*mainTheme.colEmph))
+
+        return
+
+    def highlightBlock(self, text: str):
+        """Add syntax highlighting to the text block.
+        """
+        check = text.lower()
+        for heading in self._valid:
+            pos = check.find(heading)
+            if pos >= 0:
+                chars = len(heading)
+                self.setFormat(pos, chars, self._fmtSymbol)
+                self.setFormat(pos + 1, chars - 2, self._fmtFormat)
+                ddots = heading.find(":")
+                if ddots > 0:
+                    self.setFormat(pos + ddots, 1, self._fmtSymbol)
+        return
+
+# END Class GuiHeadingSyntax

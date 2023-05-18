@@ -203,6 +203,19 @@ class nwLabels:
 # END Class nwLabels
 
 
+class nwHeadingFormats:
+
+    TITLE = "{Title}"
+    CH_NUM = "{Chapter}"
+    CH_WORD = "{Chapter:Word}"
+    CH_ROMU = "{Chapter:RomanU}"
+    CH_ROML = "{Chapter:RomanL}"
+    SC_NUM = "{Scene}"
+    SC_ABS = "{Scene:Abs}"
+
+# END Class nwHeadingFormats
+
+
 class nwQuotes:
     """Allowed quotation marks.
     Source: https://en.wikipedia.org/wiki/Quotation_mark

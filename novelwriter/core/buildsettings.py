@@ -31,6 +31,7 @@ from enum import Enum
 from PyQt5.QtCore import QT_TRANSLATE_NOOP
 
 from novelwriter.common import checkUuid, isHandle
+from novelwriter.constants import nwHeadingFormats
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 
@@ -45,13 +46,13 @@ SETTINGS_TEMPLATE = {
     "filter.includeNovel":    (bool, True),
     "filter.includeNotes":    (bool, False),
     "filter.includeInactive": (bool, False),
-    "headings.fmtTitle":      (str, "%title%"),
-    "headings.fmtChapter":    (str, "%title%"),
-    "headings.fmtUnnumbered": (str, "%title%"),
-    "headings.fmtScene":      (str, "%title%"),
-    "headings.fmtSection":    (str, "%title%"),
+    "headings.fmtTitle":      (str, nwHeadingFormats.TITLE),
+    "headings.fmtChapter":    (str, nwHeadingFormats.TITLE),
+    "headings.fmtUnnumbered": (str, nwHeadingFormats.TITLE),
+    "headings.fmtScene":      (str, "* * *"),
+    "headings.fmtSection":    (str, ""),
     "headings.hideScene":     (bool, False),
-    "headings.hideSection":   (bool, False),
+    "headings.hideSection":   (bool, True),
     "text.includeSynopsis":   (bool, False),
     "text.includeComments":   (bool, False),
     "text.includeKeywords":   (bool, False),
@@ -222,8 +223,8 @@ class BuildSettings:
             return False
         if len(definition) == 4:
             value = min(max(value, definition[2]), definition[3])
+        self._changed = value != self._settings[key]
         self._settings[key] = value
-        self._changed = True
         logger.debug(f"Build Setting '{key}' set to: {value}")
         return True
 
