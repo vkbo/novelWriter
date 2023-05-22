@@ -205,13 +205,13 @@ class nwLabels:
 
 class nwHeadingFormats:
 
-    TITLE = "{Title}"
-    CH_NUM = "{Chapter}"
+    TITLE   = "{Title}"
+    CH_NUM  = "{Chapter}"
     CH_WORD = "{Chapter:Word}"
-    CH_ROMU = "{Chapter:RomanU}"
-    CH_ROML = "{Chapter:RomanL}"
-    SC_NUM = "{Scene}"
-    SC_ABS = "{Scene:Abs}"
+    CH_ROMU = "{Chapter:URoman}"
+    CH_ROML = "{Chapter:LRoman}"
+    SC_NUM  = "{Scene}"
+    SC_ABS  = "{Scene:Abs}"
 
 # END Class nwHeadingFormats
 

@@ -22,6 +22,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import uuid
 import logging
@@ -59,7 +60,7 @@ SETTINGS_TEMPLATE = {
     "text.includeBody":       (bool, True),
     "format.buildLang":       (str, "en_GB"),
     "format.textFont":        (str, ""),
-    "format.textSize":        (str, ""),
+    "format.textSize":        (int, 12),
     "format.lineHeight":      (float, 1.15, 0.75, 3.0),
     "format.justifyText":     (bool, False),
     "format.stripUnicode":    (bool, False),
@@ -119,7 +120,7 @@ class BuildSettings:
 
     def __init__(self):
         self._name = ""
-        self._uuid = ""
+        self._uuid = str(uuid.uuid4())
         self._skipRoot = set()
         self._excluded = set()
         self._included = set()
@@ -132,15 +133,15 @@ class BuildSettings:
     ##
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @property
-    def buildID(self):
+    def buildID(self) -> str:
         return self._uuid
 
     @property
-    def changed(self):
+    def changed(self) -> bool:
         return self._changed
 
     ##
@@ -148,12 +149,12 @@ class BuildSettings:
     ##
 
     @staticmethod
-    def getLabel(key):
+    def getLabel(key: str) -> str:
         """Extract the label for a specific item.
         """
         return SETTINGS_LABELS.get(key, "ERROR")
 
-    def getValue(self, key):
+    def getValue(self, key: str) -> str | int | bool | float:
         """Get the value for a specific item, or return the default.
         """
         return self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
@@ -162,13 +163,13 @@ class BuildSettings:
     #  Setters
     ##
 
-    def setName(self, name):
+    def setName(self, name: str):
         """Set the build setting display name.
         """
         self._name = str(name)
         return
 
-    def setBuildID(self, value):
+    def setBuildID(self, value: str | uuid.UUID):
         """Set a UUID build ID.
         """
         value = checkUuid(value, "")
@@ -178,7 +179,7 @@ class BuildSettings:
             self._uuid = value
         return
 
-    def setFiltered(self, tHandle):
+    def setFiltered(self, tHandle: str):
         """Set an item as filtered.
         """
         self._excluded.discard(tHandle)
@@ -186,7 +187,7 @@ class BuildSettings:
         self._changed = True
         return
 
-    def setIncluded(self, tHandle):
+    def setIncluded(self, tHandle: str):
         """Set an item as explicitly included.
         """
         self._excluded.discard(tHandle)
@@ -194,7 +195,7 @@ class BuildSettings:
         self._changed = True
         return
 
-    def setExcluded(self, tHandle):
+    def setExcluded(self, tHandle: str):
         """Set an item as explicitly excluded.
         """
         self._excluded.add(tHandle)
@@ -202,7 +203,7 @@ class BuildSettings:
         self._changed = True
         return
 
-    def setSkipRoot(self, tHandle, state):
+    def setSkipRoot(self, tHandle: str, state: bool):
         """Set a specific root folder as skipped or not.
         """
         if state is True:
@@ -213,7 +214,7 @@ class BuildSettings:
             self._changed = True
         return
 
-    def setValue(self, key, value):
+    def setValue(self, key: str, value: str | int | bool | float) -> bool:
         """Set a specific value for a build setting.
         """
         if key not in SETTINGS_TEMPLATE:
@@ -232,32 +233,34 @@ class BuildSettings:
     #  Methods
     ##
 
-    def isFiltered(self, tHandle):
+    def isFiltered(self, tHandle: str) -> bool:
         return tHandle not in self._included and tHandle not in self._excluded
 
-    def isIncluded(self, tHandle):
+    def isIncluded(self, tHandle: str) -> bool:
         return tHandle in self._included
 
-    def isExcluded(self, tHandle):
+    def isExcluded(self, tHandle: str) -> bool:
         return tHandle in self._excluded
 
-    def isRootAllowed(self, tHandle):
+    def isRootAllowed(self, tHandle: str) -> bool:
         return tHandle not in self._skipRoot
 
-    def buildItemFilter(self, project):
+    def buildItemFilter(self, project: NWProject) -> dict:
         """Return a dictionary of item handles with filter decissions
         applied.
         """
-        result = {}
+        result: dict[str, tuple[bool, FilterMode]] = {}
         if not isinstance(project, NWProject):
             return result
 
-        incNovel = self.getValue("filter.includeNovel") or False
-        incNotes = self.getValue("filter.includeNotes") or False
-        incInactive = self.getValue("filter.includeInactive") or False
+        incNovel = bool(self.getValue("filter.includeNovel"))
+        incNotes = bool(self.getValue("filter.includeNotes"))
+        incInactive = bool(self.getValue("filter.includeInactive"))
 
         for item in project.tree:
             tHandle = item.itemHandle
+            if not tHandle:
+                continue
             if not isinstance(item, NWItem):
                 result[tHandle] = (False, FilterMode.UNKNOWN)
                 continue
@@ -294,7 +297,7 @@ class BuildSettings:
         self._changed = False
         return
 
-    def pack(self):
+    def pack(self) -> dict:
         """Pack all content into a JSON compatible dictionary.
         """
         logger.debug("Collecting build setting for '%s'", self._name)
@@ -307,7 +310,7 @@ class BuildSettings:
             "skipRoot": list(self._skipRoot),
         }
 
-    def unpack(self, data):
+    def unpack(self, data: dict):
         """Unpack a dictionary and populate the class.
         """
         included = data.get("included", [])

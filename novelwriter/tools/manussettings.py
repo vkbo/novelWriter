@@ -57,13 +57,11 @@ class GuiBuildSettings(QDialog):
     OPT_HEADINGS = 2
     OPT_FORMAT   = 3
     OPT_CONTENT  = 4
-    BLD_HTML     = 5
-    BLD_MARKDOWN = 6
-    BLD_ODT      = 7
+    OPT_OUTPUT   = 5
 
     newSettingsReady = pyqtSignal(dict)
 
-    def __init__(self, mainGui: GuiMain, buildData: dict):
+    def __init__(self, mainGui: GuiMain, build: BuildSettings):
         super().__init__(parent=mainGui)
 
         logger.debug("Initialising GuiBuildSettings ...")
@@ -73,8 +71,7 @@ class GuiBuildSettings(QDialog):
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
-        self._build = BuildSettings()
-        self._build.unpack(buildData)
+        self._build = build
 
         self.setWindowTitle(self.tr("Manuscript Build Settings"))
         self.setMinimumWidth(CONFIG.pxInt(700))
@@ -98,17 +95,12 @@ class GuiBuildSettings(QDialog):
         self.optSideBar.setMaximumWidth(mPx)
         self.optSideBar.setLabelColor(self.mainTheme.helpText)
 
-        self.optSideBar.addLabel(self.tr("Content"))
+        self.optSideBar.addLabel(self.tr("Options"))
         self.optSideBar.addButton(self.tr("Filters"), self.OPT_FILTERS)
         self.optSideBar.addButton(self.tr("Headings"), self.OPT_HEADINGS)
         self.optSideBar.addButton(self.tr("Format"), self.OPT_FORMAT)
         self.optSideBar.addButton(self.tr("Content"), self.OPT_CONTENT)
-        self.optSideBar.addSeparator()
-
-        self.optSideBar.addLabel(self.tr("Output"))
-        self.optSideBar.addButton(self.tr("HTML"), self.BLD_HTML)
-        self.optSideBar.addButton(self.tr("Markdown"), self.BLD_MARKDOWN)
-        self.optSideBar.addButton(self.tr("Open Document"), self.BLD_ODT)
+        self.optSideBar.addButton(self.tr("Output"), self.OPT_OUTPUT)
 
         self.optSideBar.buttonClicked.connect(self._stackPageSelected)
 
@@ -120,9 +112,7 @@ class GuiBuildSettings(QDialog):
         self.optTabHeadings = GuiBuildHeadingsTab(self, self._build)
         self.optTabFormat = GuiBuildFormatTab(self, self._build)
         self.optTabContent = GuiBuildContentTab(self, self._build)
-        self.buildTabHTML = GuiBuildHTMLTab(self, self._build)
-        self.buildTabMarkdown = GuiBuildMarkdownTab(self, self._build)
-        self.buildTabODT = GuiBuildODTTab(self, self._build)
+        self.optTabOutput = GuiBuildOutputTab(self, self._build)
 
         # Add Tabs
         self.toolStack = QStackedWidget(self)
@@ -130,9 +120,7 @@ class GuiBuildSettings(QDialog):
         self.toolStack.addWidget(self.optTabHeadings)
         self.toolStack.addWidget(self.optTabFormat)
         self.toolStack.addWidget(self.optTabContent)
-        self.toolStack.addWidget(self.buildTabHTML)
-        self.toolStack.addWidget(self.buildTabMarkdown)
-        self.toolStack.addWidget(self.buildTabODT)
+        self.toolStack.addWidget(self.optTabOutput)
 
         # Main Settings + Buttons
         # =======================
@@ -195,12 +183,8 @@ class GuiBuildSettings(QDialog):
             self.toolStack.setCurrentWidget(self.optTabFormat)
         elif pageId == self.OPT_CONTENT:
             self.toolStack.setCurrentWidget(self.optTabContent)
-        elif pageId == self.BLD_HTML:
-            self.toolStack.setCurrentWidget(self.buildTabHTML)
-        elif pageId == self.BLD_MARKDOWN:
-            self.toolStack.setCurrentWidget(self.buildTabMarkdown)
-        elif pageId == self.BLD_ODT:
-            self.toolStack.setCurrentWidget(self.buildTabODT)
+        elif pageId == self.OPT_OUTPUT:
+            self.toolStack.setCurrentWidget(self.optTabOutput)
         return
 
     @pyqtSlot("QAbstractButton*")
@@ -212,6 +196,7 @@ class GuiBuildSettings(QDialog):
             self._build.setName(self.editBuildName.text())
             self.newSettingsReady.emit(self._build.pack())
 
+        self._saveSettings()
         if role == QDialogButtonBox.AcceptRole:
             self.accept()
         elif role == QDialogButtonBox.RejectRole:
@@ -849,7 +834,7 @@ class GuiBuildContentTab(QWidget):
 # END Class GuiBuildContentTab
 
 
-class GuiBuildHTMLTab(QWidget):
+class GuiBuildOutputTab(QWidget):
 
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
@@ -858,31 +843,7 @@ class GuiBuildHTMLTab(QWidget):
 
         return
 
-# END Class GuiBuildHTMLTab
-
-
-class GuiBuildMarkdownTab(QWidget):
-
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
-        super().__init__(parent=buildMain)
-
-        self._build = build
-
-        return
-
-# END Class GuiBuildMarkdownTab
-
-
-class GuiBuildODTTab(QWidget):
-
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
-        super().__init__(parent=buildMain)
-
-        self._build = build
-
-        return
-
-# END Class GuiBuildODTTab
+# END Class GuiBuildOutputTab
 
 
 class GuiHeadingSyntax(QSyntaxHighlighter):

@@ -35,6 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG
+from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.tools.manussettings import GuiBuildSettings
 
 if TYPE_CHECKING:
@@ -121,9 +122,10 @@ class GuiBuildManuscript(QDialog):
     def _createNewBuild(self):
         """Open the build settings dialog for a new build.
         """
-        data = {"name": self.tr("My Manuscript")}
+        build = BuildSettings()
+        build.setName(self.tr("My Manuscript"))
 
-        dlgSettings = GuiBuildSettings(self.mainGui, data)
+        dlgSettings = GuiBuildSettings(self.mainGui, build)
         dlgSettings.setModal(False)
         dlgSettings.show()
         dlgSettings.raise_()
