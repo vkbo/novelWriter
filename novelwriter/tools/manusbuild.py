@@ -30,8 +30,8 @@ from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QSplitter,
-    QTextBrowser, QVBoxLayout, QWidget, qApp
+    QDialog, QHBoxLayout, QListWidget, QListWidgetItem, QMenu, QProgressBar,
+    QPushButton, QSplitter, QTextBrowser, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG
@@ -69,8 +69,8 @@ class GuiBuildManuscript(QDialog):
             CONFIG.pxInt(pOptions.getInt("GuiBuildManuscript", "winHeight", hWin))
         )
 
-        # Controls
-        # ========
+        # Build Controls
+        # ==============
 
         self.buildList = QListWidget()
 
@@ -80,21 +80,57 @@ class GuiBuildManuscript(QDialog):
         self.btnEdit = QPushButton(self.tr("Edit"))
         self.btnEdit.clicked.connect(self._editSelectedBuild)
 
-        self.btnDel = QPushButton(self.tr("Delete"))
+        self.btnDelete = QPushButton(self.tr("Delete"))
 
-        self.buttonBox = QHBoxLayout()
-        self.buttonBox.addWidget(self.btnNew)
-        self.buttonBox.addWidget(self.btnEdit)
-        self.buttonBox.addWidget(self.btnDel)
+        # Process Controls
+        # ================
 
+        self.buildProgress = QProgressBar()
+        self.btnPreview = QPushButton(self.tr("Build Preview"))
         self.manPreview = GuiManuscriptPreview(self)
+
+        self.menuPrint = QMenu(self)
+        self.aPrintSend = self.menuPrint.addAction(self.tr("Print Preview"))
+        self.aPrintFile = self.menuPrint.addAction(self.tr("Print to PDF"))
+
+        self.menuSave = QMenu(self)
+        self.aSaveODT = self.menuSave.addAction(self.tr("Open Document (.odt)"))
+        self.aSaveFODT = self.menuSave.addAction(self.tr("Flat Open Document (.fodt)"))
+        self.aSaveHTM = self.menuSave.addAction(self.tr("novelWriter HTML (.htm)"))
+        self.aSaveNWD = self.menuSave.addAction(self.tr("novelWriter Markdown (.nwd)"))
+        self.aSaveMD = self.menuSave.addAction(self.tr("Standard Markdown (.md)"))
+        self.aSaveGH = self.menuSave.addAction(self.tr("GitHub Markdown (.md)"))
+        self.aSaveJsonH = self.menuSave.addAction(self.tr("JSON + novelWriter HTML (.json)"))
+        self.aSaveJsonM = self.menuSave.addAction(self.tr("JSON + novelWriter Markdown (.json)"))
+
+        self.btnPrint = QPushButton(self.tr("Print"))
+        self.btnPrint.setMenu(self.menuPrint)
+
+        self.btnSave = QPushButton(self.tr("Save As"))
+        self.btnSave.setMenu(self.menuSave)
+
+        self.btnClose = QPushButton(self.tr("Close"))
 
         # Assemble GUI
         # ============
 
+        self.buildBox = QHBoxLayout()
+        self.buildBox.addWidget(self.btnNew)
+        self.buildBox.addWidget(self.btnEdit)
+        self.buildBox.addWidget(self.btnDelete)
+
+        self.processBox = QHBoxLayout()
+        self.processBox.addWidget(self.btnSave)
+        self.processBox.addWidget(self.btnPrint)
+        self.processBox.addWidget(self.btnClose)
+
         self.controlBox = QVBoxLayout()
         self.controlBox.addWidget(self.buildList)
-        self.controlBox.addLayout(self.buttonBox)
+        self.controlBox.addLayout(self.buildBox)
+        self.controlBox.addWidget(self.buildProgress)
+        self.controlBox.addWidget(self.btnPreview)
+        self.controlBox.addLayout(self.processBox)
+        self.controlBox.setContentsMargins(0, 0, 0, 0)
 
         self.optsWidget = QWidget()
         self.optsWidget.setLayout(self.controlBox)

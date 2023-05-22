@@ -63,12 +63,14 @@ SETTINGS_TEMPLATE = {
     "text.includeComments":   (bool, False),
     "text.includeKeywords":   (bool, False),
     "text.includeBody":       (bool, True),
+    "text.addNoteHeadings":   (bool, True),
     "format.buildLang":       (str, "en_GB"),
     "format.textFont":        (str, ""),
     "format.textSize":        (int, 12),
     "format.lineHeight":      (float, 1.15, 0.75, 3.0),
     "format.justifyText":     (bool, False),
     "format.stripUnicode":    (bool, False),
+    "format.replaceTabs":     (bool, False),
     "odt.addColours":         (bool, True),
     "html.addStyles":         (bool, False),
 }
@@ -93,6 +95,7 @@ SETTINGS_LABELS = {
     "text.includeComments":   QT_TRANSLATE_NOOP("Builds", "Comments"),
     "text.includeKeywords":   QT_TRANSLATE_NOOP("Builds", "Keywords"),
     "text.includeBody":       QT_TRANSLATE_NOOP("Builds", "Body Text"),
+    "text.addNoteHeadings":   QT_TRANSLATE_NOOP("Builds", "Add Titles for Notes"),
 
     "format":                 QT_TRANSLATE_NOOP("Builds", "Text Format"),
     "format.buildLang":       QT_TRANSLATE_NOOP("Builds", "Build Language"),
@@ -101,6 +104,7 @@ SETTINGS_LABELS = {
     "format.lineHeight":      QT_TRANSLATE_NOOP("Builds", "Line Height"),
     "format.justifyText":     QT_TRANSLATE_NOOP("Builds", "Justify Text Margins"),
     "format.stripUnicode":    QT_TRANSLATE_NOOP("Builds", "Replace Unicode Characters"),
+    "format.replaceTabs":     QT_TRANSLATE_NOOP("Builds", "Replace Tabs with Spaces"),
 
     "odt":                    QT_TRANSLATE_NOOP("Builds", "Open Document"),
     "odt.addColours":         QT_TRANSLATE_NOOP("Builds", "Add Highlight Colours"),
@@ -159,10 +163,33 @@ class BuildSettings:
         """
         return SETTINGS_LABELS.get(key, "ERROR")
 
-    def getValue(self, key: str) -> str | int | bool | float:
-        """Get the value for a specific item, or return the default.
+    def getStr(self, key: str) -> str:
+        """Type safe value access for strings.
         """
-        return self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+        return str(value)
+
+    def getBool(self, key: str) -> bool:
+        """Type safe value access for bools.
+        """
+        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+        return bool(value)
+
+    def getInt(self, key: str) -> int:
+        """Type safe value access for integers.
+        """
+        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+        if isinstance(value, int):
+            return value
+        return 0
+
+    def getFloat(self, key: str) -> float:
+        """Type safe value access for float.
+        """
+        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+        if isinstance(value, float):
+            return value
+        return 0.0
 
     ##
     #  Setters
@@ -258,9 +285,9 @@ class BuildSettings:
         if not isinstance(project, NWProject):
             return result
 
-        incNovel = bool(self.getValue("filter.includeNovel"))
-        incNotes = bool(self.getValue("filter.includeNotes"))
-        incInactive = bool(self.getValue("filter.includeInactive"))
+        incNovel = bool(self.getBool("filter.includeNovel"))
+        incNotes = bool(self.getBool("filter.includeNotes"))
+        incInactive = bool(self.getBool("filter.includeInactive"))
 
         for item in project.tree:
             tHandle = item.itemHandle

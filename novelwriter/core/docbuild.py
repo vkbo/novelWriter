@@ -22,27 +22,33 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
+from pathlib import Path
+from typing import Iterable
 
-from PyQt5.QtGui import QFont, QFontInfo
+from PyQt5.QtGui import QFont, QFontDatabase, QFontInfo
 
 from novelwriter import CONFIG
+from novelwriter.core.tokenizer import Tokenizer
 from novelwriter.error import formatException
 from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
 from novelwriter.core.tohtml import ToHtml
+from novelwriter.core.project import NWProject
+from novelwriter.core.buildsettings import BuildSettings
 
 logger = logging.getLogger(__name__)
 
 
 class NWBuildDocument:
 
-    def __init__(self, project):
+    def __init__(self, project: NWProject, build: BuildSettings):
 
         self._project = project
-        self._build = {}
-        self._documents = []
+        self._build = build
+        self._queue = []
         self._error = None
 
         return
@@ -52,41 +58,43 @@ class NWBuildDocument:
     ##
 
     @property
-    def error(self):
+    def error(self) -> str | None:
         return self._error
 
     @property
-    def buildLength(self):
-        return len(self._documents)
-
-    ##
-    #  Setters
-    ##
-
-    def setBuildConfig(self, config):
-        """Set the build config dictionary.
-        """
-        self._build = config
-        return
-
-    def addDocument(self, tHandle):
-        """Add a document to the build queue.
-        """
-        self._documents.append(tHandle)
-        return
+    def buildLength(self) -> int:
+        return len(self._queue)
 
     ##
     #  Methods
     ##
 
-    def iterBuildOpenDocument(self, savePath, isFlat):
+    def addDocument(self, tHandle: str):
+        """Add a document to the build queue manually.
+        """
+        self._queue.append(tHandle)
+        return
+
+    def queueAll(self):
+        """Queue all document as defined by the build setup.
+        """
+        filtered = self._build.buildItemFilter(self._project)
+        noteTitles = self._build.getValue("text.addNoteHeadings")
+        for item in self._project.tree:
+            if filtered.get(item.itemHandle, False):
+                self._queue.append(item.itemHandle)
+            elif item.isRootType() and noteTitles:
+                self._queue.append(item.itemHandle)
+        return
+
+    def iterBuildOpenDocument(self, savePath: Path, isFlat: bool) -> Iterable[tuple[int, bool]]:
         """Build an Open Document file.
         """
         makeOdt = ToOdt(self._project, isFlat=isFlat)
         self._setupBuild(makeOdt)
         makeOdt.initDocument()
 
-        for i, tHandle in enumerate(self._documents):
+        for i, tHandle in enumerate(self._queue):
             yield i, self._doBuild(makeOdt, tHandle)
 
         makeOdt.closeDocument()
@@ -102,16 +110,16 @@ class NWBuildDocument:
 
         return
 
-    def iterBuildHTML(self, savePath):
+    def iterBuildHTML(self, savePath: Path) -> Iterable[tuple[int, bool]]:
         """Build an HTML file.
         """
         makeHtml = ToHtml(self._project)
         self._setupBuild(makeHtml)
 
-        if self._build.get("process.replaceTabs", False):
+        if self._build.getValue("format.replaceTabs"):
             makeHtml.replaceTabs()
 
-        for i, tHandle in enumerate(self._documents):
+        for i, tHandle in enumerate(self._queue):
             yield i, self._doBuild(makeHtml, tHandle)
 
         self._error = None
@@ -122,7 +130,7 @@ class NWBuildDocument:
 
         return
 
-    def iterBuildMarkdown(self, savePath, extendedMd):
+    def iterBuildMarkdown(self, savePath: Path, extendedMd: bool) -> Iterable[tuple[int, bool]]:
         """Build a Markdown file.
         """
         makeMd = ToMarkdown(self._project)
@@ -133,10 +141,10 @@ class NWBuildDocument:
         else:
             makeMd.setStandardMarkdown()
 
-        if self._build.get("process.replaceTabs", False):
+        if self._build.getValue("format.replaceTabs"):
             makeMd.replaceTabs(nSpaces=4, spaceChar=" ")
 
-        for i, tHandle in enumerate(self._documents):
+        for i, tHandle in enumerate(self._queue):
             yield i, self._doBuild(makeMd, tHandle)
 
         self._error = None
@@ -151,34 +159,44 @@ class NWBuildDocument:
     #  Internal Functions
     ##
 
-    def _setupBuild(self, bldObj):
+    def _setupBuild(self, bldObj: Tokenizer):
         """Configure the build object.
         """
         # Get Settings
-        fmtTitle      = self._build.get("format.fmtTitle", "%title%")
-        fmtChapter    = self._build.get("format.fmtChapter", "%title%")
-        fmtUnnumbered = self._build.get("format.fmtUnnumbered", "%title%")
-        fmtScene      = self._build.get("format.fmtScene", "%title%")
-        fmtSection    = self._build.get("format.fmtSection", "%title%")
-        buildLang     = self._build.get("format.buildLang", "en_GB")
-        hideScene     = self._build.get("format.hideScene", False)
-        hideSection   = self._build.get("format.hideSection", False)
-        textFont      = self._build.get("format.textFont", CONFIG.textFont)
-        textSize      = self._build.get("format.textSize", CONFIG.textSize)
-        lineHeight    = self._build.get("format.lineHeight", 1.15)
-        justifyText   = self._build.get("format.justifyText", False)
-        noStyling     = self._build.get("format.noStyling", False)
-        replaceUCode  = self._build.get("format.replaceUCode", False)
-        incSynopsis   = self._build.get("filter.includeSynopsis", False)
-        incComments   = self._build.get("filter.includeComments", False)
-        incKeywords   = self._build.get("filter.includeKeywords", False)
-        includeBody   = self._build.get("filter.includeBody", True)
+        fmtTitle      = self._build.getStr("headings.fmtTitle")
+        fmtChapter    = self._build.getStr("headings.fmtChapter")
+        fmtUnnumbered = self._build.getStr("headings.fmtUnnumbered")
+        fmtScene      = self._build.getStr("headings.fmtScene")
+        fmtSection    = self._build.getStr("headings.fmtSection")
+        hideScene     = self._build.getBool("headings.hideScene")
+        hideSection   = self._build.getBool("headings.hideSection")
+
+        incSynopsis   = self._build.getBool("text.includeSynopsis")
+        incComments   = self._build.getBool("text.includeComments")
+        incKeywords   = self._build.getBool("text.includeKeywords")
+        includeBody   = self._build.getBool("text.includeBody")
+
+        buildLang     = self._build.getStr("format.buildLang")
+        textFont      = self._build.getStr("format.textFont")
+        textSize      = self._build.getInt("format.textSize")
+        lineHeight    = self._build.getFloat("format.lineHeight")
+        justifyText   = self._build.getBool("format.justifyText")
+        replaceUCode  = self._build.getBool("format.stripUnicode")
+
+        odtAddColours = self._build.getBool("odt.addColours")
+        htmlAddStyles = self._build.getBool("html.addStyles")
 
         # The language lookup dict is reloaded if needed
         self._project.setProjectLang(buildLang)
 
         # Get font information
-        fontInfo = QFontInfo(QFont(textFont, textSize))
+        if not textFont:
+            textFont = str(CONFIG.textFont)
+        if not textFont:
+            textFont = QFontDatabase.systemFont(QFontDatabase.GeneralFont).family()
+
+        bldFont = QFont(family=textFont, pointSize=textSize)
+        fontInfo = QFontInfo(bldFont)
         textFixed = fontInfo.fixedPitch()
 
         bldObj.setTitleFormat(fmtTitle)
@@ -197,16 +215,16 @@ class NWBuildDocument:
         bldObj.setBodyText(includeBody)
 
         if isinstance(bldObj, ToHtml):
-            bldObj.setStyles(not noStyling)
+            bldObj.setStyles(htmlAddStyles)
             bldObj.setReplaceUnicode(replaceUCode)
 
         if isinstance(bldObj, ToOdt):
-            bldObj.setColourHeaders(not noStyling)
+            bldObj.setColourHeaders(odtAddColours)
             bldObj.setLanguage(buildLang)
 
         return
 
-    def _doBuild(self, bldObj, tHandle):
+    def _doBuild(self, bldObj: Tokenizer, tHandle: str) -> bool:
         """Build a single document and add it to the build object.
         """
         self._error = None
@@ -226,7 +244,6 @@ class NWBuildDocument:
                 bldObj.tokenizeText()
                 bldObj.doHeaders()
                 bldObj.doConvert()
-                bldObj.doPostProcessing()
             else:
                 logger.info(f"Build: Skipping '{tHandle}'")
 

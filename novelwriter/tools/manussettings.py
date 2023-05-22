@@ -457,19 +457,19 @@ class GuiBuildFilterTab(QWidget):
             self.mainTheme.getIcon("proj_scene"),
             self._build.getLabel("filter.includeNovel"),
             "doc:filter.includeNovel",
-            default=self._build.getValue("filter.includeNovel") or False
+            default=self._build.getBool("filter.includeNovel")
         )
         self.filterOpt.addItem(
             self.mainTheme.getIcon("proj_note"),
             self._build.getLabel("filter.includeNotes"),
             "doc:filter.includeNotes",
-            default=self._build.getValue("filter.includeNotes") or False
+            default=self._build.getBool("filter.includeNotes")
         )
         self.filterOpt.addItem(
             self.mainTheme.getIcon("unchecked"),
             self._build.getLabel("filter.includeInactive"),
             "doc:filter.includeInactive",
-            default=self._build.getValue("filter.includeInactive") or False
+            default=self._build.getBool("filter.includeInactive")
         )
 
         self.filterOpt.addSeparator()
@@ -708,13 +708,13 @@ class GuiBuildHeadingsTab(QWidget):
     def loadContent(self):
         """Populate the widgets.
         """
-        self.fmtTitle.setText(str(self._build.getValue("headings.fmtTitle")))
-        self.fmtChapter.setText(str(self._build.getValue("headings.fmtChapter")))
-        self.fmtUnnumbered.setText(str(self._build.getValue("headings.fmtUnnumbered")))
-        self.fmtScene.setText(str(self._build.getValue("headings.fmtScene")))
-        self.fmtSection.setText(str(self._build.getValue("headings.fmtSection")))
-        self.swtScene.setChecked(bool(self._build.getValue("headings.hideScene")))
-        self.swtSection.setChecked(bool(self._build.getValue("headings.hideSection")))
+        self.fmtTitle.setText(self._build.getStr("headings.fmtTitle"))
+        self.fmtChapter.setText(self._build.getStr("headings.fmtChapter"))
+        self.fmtUnnumbered.setText(self._build.getStr("headings.fmtUnnumbered"))
+        self.fmtScene.setText(self._build.getStr("headings.fmtScene"))
+        self.fmtSection.setText(self._build.getStr("headings.fmtSection"))
+        self.swtScene.setChecked(self._build.getBool("headings.hideScene"))
+        self.swtSection.setChecked(self._build.getBool("headings.hideSection"))
         return
 
     ##
