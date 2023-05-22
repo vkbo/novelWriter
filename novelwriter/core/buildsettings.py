@@ -4,7 +4,8 @@ novelWriter – Build Settings Class
 A class to hold build settings for the build tool
 
 File History:
-Created: 2023-02-14 [2.1b1]
+Created: 2023-02-14 [2.1b1] BuildSettings
+Created: 2023-05-22 [2.1b1] BuildCollection
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -24,17 +25,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import json
 import uuid
 import logging
 
 from enum import Enum
+from typing import Iterable
+from pathlib import Path
 
 from PyQt5.QtCore import QT_TRANSLATE_NOOP
 
-from novelwriter.common import checkUuid, isHandle
-from novelwriter.constants import nwHeadingFormats
+from novelwriter.common import checkUuid, isHandle, jsonEncode
+from novelwriter.constants import nwFiles, nwHeadingFormats
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
+from novelwriter.error import logException
 
 logger = logging.getLogger(__name__)
 
@@ -305,18 +310,21 @@ class BuildSettings:
             "name": self._name,
             "uuid": self._uuid,
             "settings": self._settings.copy(),
-            "included": list(self._included),
-            "excluded": list(self._excluded),
-            "skipRoot": list(self._skipRoot),
+            "content": {
+                "included": list(self._included),
+                "excluded": list(self._excluded),
+                "skipRoot": list(self._skipRoot),
+            }
         }
 
     def unpack(self, data: dict):
         """Unpack a dictionary and populate the class.
         """
-        included = data.get("included", [])
-        excluded = data.get("excluded", [])
-        skipRoot = data.get("skipRoot", [])
         settings = data.get("settings", {})
+        content  = data.get("content", {})
+        included = content.get("included", [])
+        excluded = content.get("excluded", [])
+        skipRoot = content.get("skipRoot", [])
 
         self.setName(data.get("name", ""))
         self.setBuildID(data.get("uuid", ""))
@@ -337,3 +345,90 @@ class BuildSettings:
         return
 
 # END Class BuildSettings
+
+
+class BuildCollection:
+
+    def __init__(self, project: NWProject):
+        self._project = project
+        self._builds = {}
+        return
+
+    def getBuild(self, buildID: str) -> BuildSettings | None:
+        """
+        """
+        if buildID not in self._builds:
+            return None
+        build = BuildSettings()
+        build.unpack(self._builds[buildID])
+        return build
+
+    def setBuild(self, build: BuildSettings) -> bool:
+        """
+        """
+        if not isinstance(build, BuildSettings):
+            return False
+        buildID = build.buildID
+        self._builds[buildID] = build.pack()
+        return True
+
+    def builds(self) -> Iterable[tuple[str, str]]:
+        """
+        """
+        for buildID in self._builds:
+            yield buildID, self._builds[buildID].get("name", "")
+        return
+
+    def loadCollection(self) -> bool:
+        """
+        """
+        buildsFile = self._project.storage.getMetaFile(nwFiles.BUILDS_FILE)
+        if not isinstance(buildsFile, Path):
+            return False
+
+        data = {}
+        if buildsFile.exists():
+            logger.debug("Loading builds file")
+            try:
+                with open(buildsFile, mode="r", encoding="utf-8") as inFile:
+                    data = json.load(inFile)
+            except Exception:
+                logger.error("Failed to load builds file")
+                logException()
+                return False
+
+        if not isinstance(data, dict):
+            logger.error("Builds file is not a JSON object")
+            return False
+
+        builds = data.get("novelWriter.builds", None)
+        if not isinstance(builds, dict):
+            logger.error("No novelWriter.builds in the builds file")
+            return False
+
+        for key, entry in builds.items():
+            if isinstance(entry, dict):
+                self._builds[key] = entry
+
+        return True
+
+    def saveCollection(self) -> bool:
+        """
+        """
+        buildsFile = self._project.storage.getMetaFile(nwFiles.BUILDS_FILE)
+        if not isinstance(buildsFile, Path):
+            return False
+
+        logger.debug("Saving builds file")
+        try:
+            data = {"novelWriter.builds": self._builds}
+            with open(buildsFile, mode="w+", encoding="utf-8") as outFile:
+                outFile.write(jsonEncode(data, nmax=4))
+        except Exception:
+            logger.error("Failed to save builds file")
+            logException()
+            return False
+
+        return True
+
+# END Class BuildCollection

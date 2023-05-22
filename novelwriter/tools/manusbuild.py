@@ -28,14 +28,14 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QDialog, QGridLayout, QPushButton, QSplitter, QTextBrowser, QVBoxLayout,
-    QWidget, qApp
+    QDialog, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QSplitter,
+    QTextBrowser, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG
-from novelwriter.core.buildsettings import BuildSettings
+from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.tools.manussettings import GuiBuildSettings
 
 if TYPE_CHECKING:
@@ -53,6 +53,9 @@ class GuiBuildManuscript(QDialog):
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
+        self._builds = BuildCollection(self.theProject)
+        self._buildMap = {}
+
         self.setWindowTitle(self.tr("Build Manuscript"))
         self.setMinimumWidth(CONFIG.pxInt(600))
         self.setMinimumHeight(CONFIG.pxInt(500))
@@ -69,19 +72,32 @@ class GuiBuildManuscript(QDialog):
         # Controls
         # ========
 
-        self.btnNew = QPushButton(self.tr("New Build"))
+        self.buildList = QListWidget()
+
+        self.btnNew = QPushButton(self.tr("New"))
         self.btnNew.clicked.connect(self._createNewBuild)
 
-        self.optsGrid = QGridLayout()
-        self.optsGrid.addWidget(self.btnNew, 0, 0)
+        self.btnEdit = QPushButton(self.tr("Edit"))
+        self.btnEdit.clicked.connect(self._editSelectedBuild)
+
+        self.btnDel = QPushButton(self.tr("Delete"))
+
+        self.buttonBox = QHBoxLayout()
+        self.buttonBox.addWidget(self.btnNew)
+        self.buttonBox.addWidget(self.btnEdit)
+        self.buttonBox.addWidget(self.btnDel)
 
         self.manPreview = GuiManuscriptPreview(self)
 
         # Assemble GUI
         # ============
 
+        self.controlBox = QVBoxLayout()
+        self.controlBox.addWidget(self.buildList)
+        self.controlBox.addLayout(self.buttonBox)
+
         self.optsWidget = QWidget()
-        self.optsWidget.setLayout(self.optsGrid)
+        self.optsWidget.setLayout(self.controlBox)
 
         self.mainSplit = QSplitter()
         self.mainSplit.addWidget(self.optsWidget)
@@ -101,6 +117,8 @@ class GuiBuildManuscript(QDialog):
     def loadContent(self):
         """
         """
+        self._builds.loadCollection()
+        self._updateBuildsList()
         return
 
     ##
@@ -124,22 +142,27 @@ class GuiBuildManuscript(QDialog):
         """
         build = BuildSettings()
         build.setName(self.tr("My Manuscript"))
-
-        dlgSettings = GuiBuildSettings(self.mainGui, build)
-        dlgSettings.setModal(False)
-        dlgSettings.show()
-        dlgSettings.raise_()
-        qApp.processEvents()
-        dlgSettings.loadContent()
-        dlgSettings.newSettingsReady.connect(self._processNewSettings)
-
+        self._openSettingsDialog(build)
         return
 
-    @pyqtSlot(dict)
-    def _processNewSettings(self, data: dict):
+    @pyqtSlot()
+    def _editSelectedBuild(self):
+        """Edit the currently selected build settings entry.
         """
+        bItems = self.buildList.selectedItems()
+        if bItems:
+            build = self._builds.getBuild(bItems[0].data(Qt.UserRole))
+            if isinstance(build, BuildSettings):
+                self._openSettingsDialog(build)
+        return
+
+    @pyqtSlot(BuildSettings)
+    def _processNewSettings(self, build: BuildSettings):
+        """Process new build settings from the settings dialog.
         """
-        print(data)
+        self._builds.setBuild(build)
+        self._builds.saveCollection()
+        self._updateBuildItem(build)
         return
 
     ##
@@ -165,6 +188,40 @@ class GuiBuildManuscript(QDialog):
         pOptions.setValue("GuiBuildManuscript", "viewWidth", viewWidth)
         pOptions.saveSettings()
 
+        return
+
+    def _openSettingsDialog(self, build: BuildSettings):
+        """Open a new build settings dialog.
+        """
+        dlgSettings = GuiBuildSettings(self.mainGui, build)
+        dlgSettings.setModal(False)
+        dlgSettings.show()
+        dlgSettings.raise_()
+        qApp.processEvents()
+        dlgSettings.loadContent()
+        dlgSettings.newSettingsReady.connect(self._processNewSettings)
+        return
+
+    def _updateBuildsList(self):
+        """Update the list of available builds.
+        """
+        self.buildList.clear()
+        for key, name in self._builds.builds():
+            bItem = QListWidgetItem()
+            bItem.setText(name)
+            bItem.setData(Qt.UserRole, key)
+            self.buildList.addItem(bItem)
+            self._buildMap[key] = bItem
+        return
+
+    def _updateBuildItem(self, build: BuildSettings):
+        """Update the entry of a specific build item.
+        """
+        bItem = self._buildMap.get(build.buildID, None)
+        if isinstance(bItem, QListWidgetItem):
+            bItem.setText(build.name)
+        else:  # Propbably a new item
+            self._updateBuildsList()
         return
 
 # END Class GuiBuildManuscript

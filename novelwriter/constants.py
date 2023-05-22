@@ -85,6 +85,7 @@ class nwFiles:
     OPTS_FILE   = "guiOptions.json"
     RECENT_FILE = "recentProjects.json"
     BUILD_CACHE = "prevBuild.json"
+    BUILDS_FILE = "builds.json"
 
 # END Class nwFiles
 

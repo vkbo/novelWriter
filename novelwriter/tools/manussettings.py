@@ -59,7 +59,7 @@ class GuiBuildSettings(QDialog):
     OPT_CONTENT  = 4
     OPT_OUTPUT   = 5
 
-    newSettingsReady = pyqtSignal(dict)
+    newSettingsReady = pyqtSignal(BuildSettings)
 
     def __init__(self, mainGui: GuiMain, build: BuildSettings):
         super().__init__(parent=mainGui)
@@ -194,7 +194,7 @@ class GuiBuildSettings(QDialog):
         role = self.dlgButtons.buttonRole(button)
         if role in (QDialogButtonBox.ApplyRole, QDialogButtonBox.AcceptRole):
             self._build.setName(self.editBuildName.text())
-            self.newSettingsReady.emit(self._build.pack())
+            self.newSettingsReady.emit(self._build)
 
         self._saveSettings()
         if role == QDialogButtonBox.AcceptRole:
