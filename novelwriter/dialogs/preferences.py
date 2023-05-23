@@ -230,7 +230,7 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Font family"),
             self.guiFont,
             self.tr("Requires restart to take effect."),
-            theButton=self.fontButton
+            button=self.fontButton
         )
 
         # Font Size
@@ -243,7 +243,7 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Font size"),
             self.guiFontSize,
             self.tr("Requires restart to take effect."),
-            theUnit=self.tr("pt")
+            unit=self.tr("pt")
         )
 
         # GUI Settings
@@ -360,7 +360,7 @@ class GuiPreferencesProjects(QWidget):
             self.tr("Save document interval"),
             self.autoSaveDoc,
             self.tr("How often the document is automatically saved."),
-            theUnit=self.tr("seconds")
+            unit=self.tr("seconds")
         )
 
         # Project Save Timer
@@ -373,7 +373,7 @@ class GuiPreferencesProjects(QWidget):
             self.tr("Save project interval"),
             self.autoSaveProj,
             self.tr("How often the project is automatically saved."),
-            theUnit=self.tr("seconds")
+            unit=self.tr("seconds")
         )
 
         # Project Backup
@@ -435,7 +435,7 @@ class GuiPreferencesProjects(QWidget):
             self.tr("Editor inactive time before pausing timer"),
             self.userIdleTime,
             self.tr("User activity includes typing and changing the content."),
-            theUnit=self.tr("minutes")
+            unit=self.tr("minutes")
         )
 
         return
@@ -517,7 +517,7 @@ class GuiPreferencesDocuments(QWidget):
             self.tr("Font family"),
             self.textFont,
             self.tr("Applies to both document editor and viewer."),
-            theButton=self.fontButton
+            button=self.fontButton
         )
 
         # Font Size
@@ -530,7 +530,7 @@ class GuiPreferencesDocuments(QWidget):
             self.tr("Font size"),
             self.textSize,
             self.tr("Applies to both document editor and viewer."),
-            theUnit=self.tr("pt")
+            unit=self.tr("pt")
         )
 
         # Text Flow
@@ -547,7 +547,7 @@ class GuiPreferencesDocuments(QWidget):
             self.tr("Maximum text width in \"Normal Mode\""),
             self.textWidth,
             self.tr("Set to 0 to disable this feature."),
-            theUnit=self.tr("px")
+            unit=self.tr("px")
         )
 
         # Max Text Width in Focus Mode
@@ -560,7 +560,7 @@ class GuiPreferencesDocuments(QWidget):
             self.tr("Maximum text width in \"Focus Mode\""),
             self.focusWidth,
             self.tr("The maximum width cannot be disabled."),
-            theUnit=self.tr("px")
+            unit=self.tr("px")
         )
 
         # Focus Mode Footer
@@ -591,7 +591,7 @@ class GuiPreferencesDocuments(QWidget):
             self.tr("Minimum text margin"),
             self.textMargin,
             self.tr("Applies to both document editor and viewer."),
-            theUnit=self.tr("px")
+            unit=self.tr("px")
         )
 
         # Tab Width
@@ -604,7 +604,7 @@ class GuiPreferencesDocuments(QWidget):
             self.tr("Tab width"),
             self.tabWidth,
             self.tr("The width of a tab key press in the editor and viewer."),
-            theUnit=self.tr("px")
+            unit=self.tr("px")
         )
 
         return
@@ -703,7 +703,7 @@ class GuiPreferencesEditor(QWidget):
             self.tr("Big document limit"),
             self.bigDocLimit,
             self.tr("Full spell checking is disabled above this limit."),
-            theUnit=self.tr("kB")
+            unit=self.tr("kB")
         )
 
         # Word Count
@@ -720,7 +720,7 @@ class GuiPreferencesEditor(QWidget):
         self.mainForm.addRow(
             self.tr("Word count interval"),
             self.wordCountTimer,
-            theUnit=self.tr("seconds")
+            unit=self.tr("seconds")
         )
 
         # Include Notes in Word Count
@@ -765,7 +765,7 @@ class GuiPreferencesEditor(QWidget):
             self.tr("Scroll past end of the document"),
             self.scrollPastEnd,
             self.tr("Set to 0 to disable this feature."),
-            theUnit=self.tr("lines")
+            unit=self.tr("lines")
         )
 
         # Typewriter Scrolling
@@ -787,7 +787,7 @@ class GuiPreferencesEditor(QWidget):
             self.tr("Minimum position for Typewriter scrolling"),
             self.autoScrollPos,
             self.tr("Percentage of the editor height from the top."),
-            theUnit="%"
+            unit="%"
         )
 
         return
@@ -1112,7 +1112,7 @@ class GuiPreferencesQuotes(QWidget):
             self.tr("Single quote open style"),
             self.quoteSym["SO"],
             self.tr("The symbol to use for a leading single quote."),
-            theButton=self.btnSingleStyleO
+            button=self.btnSingleStyleO
         )
 
         self.quoteSym["SC"] = QLineEdit()
@@ -1128,7 +1128,7 @@ class GuiPreferencesQuotes(QWidget):
             self.tr("Single quote close style"),
             self.quoteSym["SC"],
             self.tr("The symbol to use for a trailing single quote."),
-            theButton=self.btnSingleStyleC
+            button=self.btnSingleStyleC
         )
 
         # Double Quote Style
@@ -1145,7 +1145,7 @@ class GuiPreferencesQuotes(QWidget):
             self.tr("Double quote open style"),
             self.quoteSym["DO"],
             self.tr("The symbol to use for a leading double quote."),
-            theButton=self.btnDoubleStyleO
+            button=self.btnDoubleStyleO
         )
 
         self.quoteSym["DC"] = QLineEdit()
@@ -1161,7 +1161,7 @@ class GuiPreferencesQuotes(QWidget):
             self.tr("Double quote close style"),
             self.quoteSym["DC"],
             self.tr("The symbol to use for a trailing double quote."),
-            theButton=self.btnDoubleStyleC
+            button=self.btnDoubleStyleC
         )
 
         return

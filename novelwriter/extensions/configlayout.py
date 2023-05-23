@@ -22,15 +22,18 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QGridLayout, QHBoxLayout, QLabel, QLineEdit, QSizePolicy, QVBoxLayout,
-    QWidget
+    QAbstractButton, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QSizePolicy,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG
+
+FONT_SCALE = 0.9
 
 
 class NConfigLayout(QGridLayout):
@@ -40,8 +43,7 @@ class NConfigLayout(QGridLayout):
 
         self._nextRow = 0
         self._helpCol = QColor(0, 0, 0)
-        self._fontScale = 0.9
-
+        self._fontScale = FONT_SCALE
         self._itemMap = {}
 
         wSp = CONFIG.pxInt(8)
@@ -55,81 +57,65 @@ class NConfigLayout(QGridLayout):
     #  Getters and Setters
     ##
 
-    def setHelpTextStyle(self, helpCol, fontScale=0.9):
+    def setHelpTextStyle(self, color: QColor | list | tuple, fontScale: float = FONT_SCALE):
         """Set the text color for the help text.
         """
-        if isinstance(helpCol, QColor):
-            self._helpCol = helpCol
+        if isinstance(color, QColor):
+            self._helpCol = color
         else:
-            self._helpCol = QColor(*helpCol)
+            self._helpCol = QColor(*color)
         self._fontScale = fontScale
         return
 
-    def setHelpText(self, intRow, theText):
+    def setHelpText(self, row: int, text: str):
         """Set the text for the help label.
         """
-        if intRow in self._itemMap:
-            self._itemMap[intRow]["help"].setText(theText)
+        if row in self._itemMap:
+            qHelp = self._itemMap[row][1]
+            if isinstance(qHelp, NHelpLabel):
+                qHelp.setText(text)
         return
 
-    def setLabelText(self, intRow, theText):
+    def setLabelText(self, row: int, text: str):
         """Set the text for the main label.
         """
-        if intRow in self._itemMap:
-            self._itemMap[intRow]["label"].setText(theText)
+        if row in self._itemMap:
+            self._itemMap[row](0).setText(text)
         return
 
     ##
     #  Class Methods
     ##
 
-    def addGroupLabel(self, theLabel):
+    def addGroupLabel(self, label: str):
         """Adds a text label to separate groups of settings.
         """
-        if isinstance(theLabel, QLabel):
-            qLabel = theLabel
-        elif isinstance(theLabel, str):
-            qLabel = QLabel("<b>%s</b>" % theLabel)
-        else:
-            qLabel = None
-            raise ValueError("theLabel must be a QLabel")
-
         hM = CONFIG.pxInt(4)
+        qLabel = QLabel("<b>%s</b>" % label)
         qLabel.setContentsMargins(0, hM, 0, hM)
         self.addWidget(qLabel, self._nextRow, 0, 1, 2, Qt.AlignLeft)
-
         self.setRowStretch(self._nextRow, 0)
         self.setRowStretch(self._nextRow + 1, 1)
-
         self._nextRow += 1
-
         return
 
-    def addRow(self, theLabel, theWidget, helpText=None, theUnit=None, theButton=None):
+    def addRow(
+        self, label: str, widget: QWidget, helpText: str | None = None,
+        unit: str | None = None, button: QWidget | None = None
+    ) -> int:
         """Add a label and a widget as a new row of the grid.
         """
-        thisEntry = {
-            "label": None,
-            "help": None,
-            "widget": None,
-        }
-
-        if isinstance(theLabel, QLabel):
-            qLabel = theLabel
-        elif isinstance(theLabel, str):
-            qLabel = QLabel(theLabel)
-        else:
-            qLabel = None
-            raise ValueError("theLabel must be a QLabel")
-
-        if isinstance(theWidget, QWidget):
-            qWidget = theWidget
+        if isinstance(widget, QWidget):
+            qWidget = widget
         else:
             qWidget = None
-            raise ValueError("theWidget must be a QWidget")
+            raise ValueError("The widget must be a QWidget")
 
         wSp = CONFIG.pxInt(8)
+        qLabel = QLabel(label)
         qLabel.setIndent(wSp)
+
+        qHelp = None
         if helpText is not None:
             qHelp = NHelpLabel(str(helpText), self._helpCol, self._fontScale)
             qHelp.setIndent(wSp)
@@ -140,30 +126,29 @@ class NConfigLayout(QGridLayout):
             labelBox.setSpacing(0)
             labelBox.addStretch(1)
 
-            thisEntry["help"] = qHelp
             self.addLayout(labelBox, self._nextRow, 0, 1, 1, Qt.AlignLeft | Qt.AlignTop)
 
         else:
             self.addWidget(qLabel, self._nextRow, 0, 1, 1, Qt.AlignLeft | Qt.AlignTop)
 
-        if theUnit is not None:
+        if isinstance(unit, str):
             controlBox = QHBoxLayout()
             controlBox.addWidget(qWidget, 0, Qt.AlignVCenter)
-            controlBox.addWidget(QLabel(theUnit), 0, Qt.AlignVCenter)
+            controlBox.addWidget(QLabel(unit), 0, Qt.AlignVCenter)
             controlBox.setSpacing(wSp)
             self.addLayout(controlBox, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
 
-        elif theButton is not None:
+        elif isinstance(button, QAbstractButton):
             controlBox = QHBoxLayout()
             controlBox.addWidget(qWidget, 0, Qt.AlignVCenter)
-            controlBox.addWidget(theButton, 0, Qt.AlignVCenter)
+            controlBox.addWidget(button, 0, Qt.AlignVCenter)
             controlBox.setSpacing(wSp)
             self.addLayout(controlBox, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
 
         else:
-            if isinstance(theWidget, QLineEdit):
+            if isinstance(widget, QLineEdit):
                 qLayout = QHBoxLayout()
-                qLayout.addWidget(theWidget)
+                qLayout.addWidget(widget)
                 self.addLayout(qLayout, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
             else:
                 self.addWidget(qWidget, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
@@ -173,11 +158,7 @@ class NConfigLayout(QGridLayout):
         self.setRowStretch(self._nextRow, 0)
         self.setRowStretch(self._nextRow+1, 1)
 
-        thisEntry["label"] = qLabel
-        thisEntry["widget"] = qWidget
-
-        self._itemMap[self._nextRow] = thisEntry
-
+        self._itemMap[self._nextRow] = (qLabel, qHelp, qWidget)
         self._nextRow += 1
 
         return self._nextRow - 1
@@ -185,15 +166,79 @@ class NConfigLayout(QGridLayout):
 # END Class NConfigLayout
 
 
+class NSimpleLayout(QGridLayout):
+    """Similar to NConfigLayout, but only has a label + widget two
+    column layout.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self._nextRow = 0
+
+        wSp = CONFIG.pxInt(8)
+        self.setHorizontalSpacing(wSp)
+        self.setVerticalSpacing(wSp)
+        self.setColumnStretch(0, 1)
+
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def addGroupLabel(self, label: str):
+        """Adds a text label to separate groups of settings.
+        """
+        hM = CONFIG.pxInt(4)
+        qLabel = QLabel("<b>%s</b>" % label)
+        qLabel.setContentsMargins(0, hM, 0, hM)
+        self.addWidget(qLabel, self._nextRow, 0, 1, 2, Qt.AlignLeft)
+        self.setRowStretch(self._nextRow, 0)
+        self.setRowStretch(self._nextRow + 1, 1)
+        self._nextRow += 1
+        return
+
+    def addRow(self, label: str, widget: QWidget):
+        """Add a label and a widget as a new row of the grid.
+        """
+        if isinstance(widget, QWidget):
+            qWidget = widget
+        else:
+            qWidget = None
+            raise ValueError("The widget must be a QWidget")
+
+        wSp = CONFIG.pxInt(8)
+        qLabel = QLabel(label)
+        qLabel.setIndent(wSp)
+        self.addWidget(qLabel, self._nextRow, 0, 1, 1, Qt.AlignLeft | Qt.AlignTop)
+
+        if isinstance(widget, QLineEdit):
+            qLayout = QHBoxLayout()
+            qLayout.addWidget(widget)
+            self.addLayout(qLayout, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
+        else:
+            self.addWidget(qWidget, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
+
+        qLabel.setBuddy(qWidget)
+
+        self.setRowStretch(self._nextRow, 0)
+        self.setRowStretch(self._nextRow+1, 1)
+        self._nextRow += 1
+
+        return
+
+# END Class NSimpleLayout
+
+
 class NHelpLabel(QLabel):
 
-    def __init__(self, theText, textCol, fontSize=0.9):
-        super().__init__(theText)
+    def __init__(self, text: str, color: QColor | list | tuple, fontSize: float = FONT_SCALE):
+        super().__init__(text)
 
-        if isinstance(textCol, QColor):
-            qCol = textCol
+        if isinstance(color, QColor):
+            qCol = color
         else:
-            qCol = QColor(*textCol)
+            qCol = QColor(*color)
 
         lblCol = self.palette()
         lblCol.setColor(QPalette.WindowText, qCol)
