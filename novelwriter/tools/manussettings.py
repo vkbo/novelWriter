@@ -34,7 +34,7 @@ from PyQt5.QtGui import (
 from PyQt5.QtCore import QEvent, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QAbstractItemView, QComboBox, QDialog, QDialogButtonBox,
-    QDoubleSpinBox, QFontDialog, QGridLayout, QHBoxLayout, QHeaderView, QLabel,
+    QDoubleSpinBox, QFontDialog, QFrame, QGridLayout, QHBoxLayout, QHeaderView, QLabel,
     QLineEdit, QMenu, QPlainTextEdit, QPushButton, QSpinBox, QSplitter,
     QStackedWidget, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
     QWidget
@@ -82,8 +82,8 @@ class GuiBuildSettings(QDialog):
         self.setMinimumHeight(CONFIG.pxInt(400))
 
         mPx = CONFIG.pxInt(150)
-        wWin = CONFIG.pxInt(900)
-        hWin = CONFIG.pxInt(600)
+        wWin = CONFIG.pxInt(750)
+        hWin = CONFIG.pxInt(550)
 
         pOptions = self.theProject.options
         self.resize(
@@ -171,6 +171,7 @@ class GuiBuildSettings(QDialog):
         self.optTabHeadings.loadContent()
         self.optTabContent.loadContent()
         self.optTabFormat.loadContent()
+        self.optTabOutput.loadContent()
         return
 
     ##
@@ -203,6 +204,7 @@ class GuiBuildSettings(QDialog):
             self.optTabHeadings.saveContent()
             self.optTabContent.saveContent()
             self.optTabFormat.saveContent()
+            self.optTabOutput.saveContent()
             self.newSettingsReady.emit(self._build)
 
         self._saveSettings()
@@ -312,22 +314,24 @@ class GuiBuildFilterTab(QWidget):
         # Filters
         # =======
 
-        self.filteredButton = QPushButton(self)
-        self.filteredButton.setText(self._statusFlags[self.F_FILTERED][0])
+        self.filteredButton = QToolButton(self)
+        self.filteredButton.setToolTip(self._statusFlags[self.F_FILTERED][0])
         self.filteredButton.setIcon(self._statusFlags[self.F_FILTERED][1])
         self.filteredButton.clicked.connect(lambda: self._setSelectedMode(self.F_FILTERED))
 
-        self.includedButton = QPushButton(self)
-        self.includedButton.setText(self._statusFlags[self.F_INCLUDED][0])
+        self.includedButton = QToolButton(self)
+        self.includedButton.setToolTip(self._statusFlags[self.F_INCLUDED][0])
         self.includedButton.setIcon(self._statusFlags[self.F_INCLUDED][1])
         self.includedButton.clicked.connect(lambda: self._setSelectedMode(self.F_INCLUDED))
 
-        self.excludedButton = QPushButton(self)
-        self.excludedButton.setText(self._statusFlags[self.F_EXCLUDED][0])
+        self.excludedButton = QToolButton(self)
+        self.excludedButton.setToolTip(self._statusFlags[self.F_EXCLUDED][0])
         self.excludedButton.setIcon(self._statusFlags[self.F_EXCLUDED][1])
         self.excludedButton.clicked.connect(lambda: self._setSelectedMode(self.F_EXCLUDED))
 
         self.modeBox = QHBoxLayout()
+        self.modeBox.addWidget(QLabel(self.tr("Mark items as")))
+        self.modeBox.addStretch(1)
         self.modeBox.addWidget(self.filteredButton)
         self.modeBox.addWidget(self.includedButton)
         self.modeBox.addWidget(self.excludedButton)
@@ -335,25 +339,26 @@ class GuiBuildFilterTab(QWidget):
         # Filer Options
         self.filterOpt = NSwitchBox(self, iPx)
         self.filterOpt.switchToggled.connect(self._applyFilterSwitch)
+        self.filterOpt.setFrameStyle(QFrame.NoFrame)
 
-        # Assemble
-        # ========
+        # Assemble GUI
+        # ============
 
         pOptions = self.theProject.options
         wTree = CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "treeWidth", 0))
         fTree = CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "filterWidth", 0))
 
         self.selectionBox = QVBoxLayout()
+        self.selectionBox.addWidget(self.optTree)
         self.selectionBox.addLayout(self.modeBox)
-        self.selectionBox.addWidget(self.filterOpt)
         self.selectionBox.setContentsMargins(0, 0, 0, 0)
 
         self.selectionWidget = QWidget()
         self.selectionWidget.setLayout(self.selectionBox)
 
         self.mainSplit = QSplitter()
-        self.mainSplit.addWidget(self.optTree)
         self.mainSplit.addWidget(self.selectionWidget)
+        self.mainSplit.addWidget(self.filterOpt)
         if wTree > 0:
             self.mainSplit.setSizes([wTree, fTree])
 
@@ -1073,8 +1078,58 @@ class GuiBuildOutputTab(QWidget):
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
 
+        self.mainGui    = buildMain.mainGui
+        self.mainTheme  = buildMain.mainGui.mainTheme
+
         self._build = build
 
+        iPx = self.mainTheme.baseIconSize
+
+        # Left Form
+        # =========
+
+        self.formLeft = NSimpleLayout()
+        self.formLeft.addGroupLabel(self._build.getLabel("odt"))
+
+        self.odtAddColours = NSwitch(width=2*iPx, height=iPx)
+
+        self.formLeft.addRow(self._build.getLabel("odt.addColours"), self.odtAddColours)
+
+        # Right Form
+        # ==========
+
+        self.formRight = NSimpleLayout()
+        self.formRight.addGroupLabel(self._build.getLabel("html"))
+
+        self.htmlAddStyles = NSwitch(width=2*iPx, height=iPx)
+
+        self.formRight.addRow(self._build.getLabel("html.addStyles"), self.htmlAddStyles)
+
+        # Assemble GUI
+        # ============
+
+        self.outerBox = QHBoxLayout()
+        self.outerBox.addLayout(self.formLeft, 1)
+        self.outerBox.addLayout(self.formRight, 1)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
+        self.outerBox.setSpacing(CONFIG.pxInt(16))
+
+        self.setLayout(self.outerBox)
+
+        return
+
+    def loadContent(self):
+        """Populate the widgets.
+        """
+        self.odtAddColours.setChecked(self._build.getBool("odt.addColours"))
+        self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
+        return
+
+    def saveContent(self):
+        """Save choices back into build object.
+        """
+        self._build.setValue("odt.addColours", self.odtAddColours.isChecked())
+        self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
         return
 
 # END Class GuiBuildOutputTab
