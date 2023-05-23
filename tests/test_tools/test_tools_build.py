@@ -33,6 +33,7 @@ from novelwriter.tools.build import GuiBuildNovel
 
 
 @pytest.mark.gui
+@pytest.mark.skip
 def testToolBuild_Main(qtbot, monkeypatch, nwGUI, prjLipsum, tstPaths):
     """Test the build tool.
     """

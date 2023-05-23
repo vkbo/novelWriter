@@ -24,31 +24,68 @@ import pytest
 from shutil import copyfile
 
 from mock import causeException, causeOSError
+from novelwriter.core.buildsettings import BuildSettings
 from tools import ODT_IGNORE, cmpFiles
 
 from novelwriter.core.project import NWProject
 from novelwriter.core.docbuild import NWBuildDocument
 
+# BUILD_CONF = {
+#     "format.fmtTitle": "Title: %title%",
+#     "format.fmtChapter": "Chapter: %title%",
+#     "format.fmtUnnumbered": "%title%",
+#     "format.fmtScene": "Scene: %title%",
+#     "format.fmtSection": "Section: %title%",
+#     "format.buildLang": "en_GB",
+#     "format.hideScene": False,
+#     "format.hideSection": False,
+#     "format.textFont": "Arial",
+#     "format.textSize": 12,
+#     "format.lineHeight": 1.5,
+#     "format.justifyText": True,
+#     "format.noStyling": False,
+#     "format.replaceUCode": False,
+#     "filter.includeSynopsis": True,
+#     "filter.includeComments": True,
+#     "filter.includeKeywords": True,
+#     "filter.includeBody": True,
+#     "process.replaceTabs": True,
+# }
+
 BUILD_CONF = {
-    "format.fmtTitle": "Title: %title%",
-    "format.fmtChapter": "Chapter: %title%",
-    "format.fmtUnnumbered": "%title%",
-    "format.fmtScene": "Scene: %title%",
-    "format.fmtSection": "Section: %title%",
-    "format.buildLang": "en_GB",
-    "format.hideScene": False,
-    "format.hideSection": False,
-    "format.textFont": "Arial",
-    "format.textSize": 12,
-    "format.lineHeight": 1.5,
-    "format.justifyText": True,
-    "format.noStyling": False,
-    "format.replaceUCode": False,
-    "filter.includeSynopsis": True,
-    "filter.includeComments": True,
-    "filter.includeKeywords": True,
-    "filter.includeBody": True,
-    "process.replaceTabs": True,
+    "name": "Test Build",
+    "uuid": "f8796eee-e234-4e8a-8355-b2709177e53c",
+    "settings": {
+        "filter.includeNovel": True,
+        "filter.includeNotes": True,
+        "filter.includeInactive": False,
+        "headings.fmtTitle": "Title: {Title}",
+        "headings.fmtChapter": "Chapter: {Title}",
+        "headings.fmtUnnumbered": "{Title}",
+        "headings.fmtScene": "Scene: {Title}",
+        "headings.fmtSection": "Section: {Title}",
+        "headings.hideScene": False,
+        "headings.hideSection": False,
+        "text.includeSynopsis": True,
+        "text.includeComments": True,
+        "text.includeKeywords": True,
+        "text.includeBodyText": True,
+        "text.addNoteHeadings": True,
+        "format.buildLang": "en_GB",
+        "format.textFont": "Arial",
+        "format.textSize": 12,
+        "format.lineHeight": 1.5,
+        "format.justifyText": True,
+        "format.stripUnicode": False,
+        "format.replaceTabs": False,
+        "odt.addColours": True,
+        "html.addStyles": True,
+    },
+    "content": {
+        "included": [],
+        "excluded": [],
+        "skipRoot": [],
+    },
 }
 
 
@@ -56,14 +93,14 @@ BUILD_CONF = {
 def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test builing an open document manuscript.
     """
-    theProject = NWProject(mockGUI)
-    theProject.openProject(prjLipsum)
+    project = NWProject(mockGUI)
+    project.openProject(prjLipsum)
 
-    docBuild = NWBuildDocument(theProject)
-    docBuild.setBuildConfig(BUILD_CONF)
+    build = BuildSettings()
+    build.unpack(BUILD_CONF)
 
-    for tItem in theProject.tree:
-        docBuild.addDocument(tItem.itemHandle)
+    docBuild = NWBuildDocument(project, build)
+    docBuild.queueAll()
 
     assert docBuild.buildLength == 21
 
@@ -164,14 +201,14 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
 def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test builing an HTML manuscript.
     """
-    theProject = NWProject(mockGUI)
-    theProject.openProject(prjLipsum)
+    project = NWProject(mockGUI)
+    project.openProject(prjLipsum)
 
-    docBuild = NWBuildDocument(theProject)
-    docBuild.setBuildConfig(BUILD_CONF)
+    build = BuildSettings()
+    build.unpack(BUILD_CONF)
 
-    for tItem in theProject.tree:
-        docBuild.addDocument(tItem.itemHandle)
+    docBuild = NWBuildDocument(project, build)
+    docBuild.queueAll()
 
     assert docBuild.buildLength == 21
 
@@ -215,14 +252,14 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
 def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test builing an Markdown manuscript.
     """
-    theProject = NWProject(mockGUI)
-    theProject.openProject(prjLipsum)
+    project = NWProject(mockGUI)
+    project.openProject(prjLipsum)
 
-    docBuild = NWBuildDocument(theProject)
-    docBuild.setBuildConfig(BUILD_CONF)
+    build = BuildSettings()
+    build.unpack(BUILD_CONF)
 
-    for tItem in theProject.tree:
-        docBuild.addDocument(tItem.itemHandle)
+    docBuild = NWBuildDocument(project, build)
+    docBuild.queueAll()
 
     assert docBuild.buildLength == 21
 

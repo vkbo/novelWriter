@@ -20,6 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import pytest
+from novelwriter.constants import nwHeadingFormats
 
 from tools import C, buildTestProject, readFile
 
@@ -917,7 +918,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H1: Title, First Page
     assert theToken._isFirst is True
     theToken._theText = "# Part One\n"
-    theToken.setTitleFormat(r"T: %title%")
+    theToken.setTitleFormat(f"T: {nwHeadingFormats.TITLE}")
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
@@ -928,7 +929,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H1: Title, Not First Page
     assert theToken._isFirst is False
     theToken._theText = "# Part One\n"
-    theToken.setTitleFormat(r"T: %title%")
+    theToken.setTitleFormat(f"T: {nwHeadingFormats.TITLE}")
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
@@ -941,7 +942,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H2: Chapter
     theToken._theText = "## Chapter One\n"
-    theToken.setChapterFormat(r"C: %title%")
+    theToken.setChapterFormat(f"C: {nwHeadingFormats.TITLE}")
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
@@ -951,7 +952,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H2: Unnumbered Chapter
     theToken._theText = "##! Prologue\n"
-    theToken.setUnNumberedFormat(r"U: %title%")
+    theToken.setUnNumberedFormat(f"U: {nwHeadingFormats.TITLE}")
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
@@ -961,8 +962,8 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H2: Chapter Word Number
     theToken._theText = "## Chapter\n"
-    theToken.setChapterFormat(r"Chapter %chw%")
-    theToken._numChapter = 0
+    theToken.setChapterFormat(f"Chapter {nwHeadingFormats.CH_WORD}")
+    theToken._hFormatter._chCount = 0
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
@@ -972,7 +973,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H2: Chapter Roman Number Upper Case
     theToken._theText = "## Chapter\n"
-    theToken.setChapterFormat(r"Chapter %chI%")
+    theToken.setChapterFormat(f"Chapter {nwHeadingFormats.CH_ROMU}")
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
@@ -982,7 +983,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H2: Chapter Roman Number Lower Case
     theToken._theText = "## Chapter\n"
-    theToken.setChapterFormat(r"Chapter %chi%")
+    theToken.setChapterFormat(f"Chapter {nwHeadingFormats.CH_ROML}")
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
@@ -995,7 +996,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H3: Scene w/Title
     theToken._theText = "### Scene One\n"
-    theToken.setSceneFormat(r"S: %title%", False)
+    theToken.setSceneFormat(f"S: {nwHeadingFormats.TITLE}", False)
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
@@ -1005,7 +1006,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H3: Scene Hidden wo/Format
     theToken._theText = "### Scene One\n"
-    theToken.setSceneFormat(r"", True)
+    theToken.setSceneFormat("", True)
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
@@ -1015,7 +1016,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H3: Scene wo/Format, first
     theToken._theText = "### Scene One\n"
-    theToken.setSceneFormat(r"", False)
+    theToken.setSceneFormat("", False)
     theToken._firstScene = True
     theToken.tokenizeText()
     theToken.doHeaders()
@@ -1026,7 +1027,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H3: Scene wo/Format, not first
     theToken._theText = "### Scene One\n"
-    theToken.setSceneFormat(r"", False)
+    theToken.setSceneFormat("", False)
     theToken._firstScene = False
     theToken.tokenizeText()
     theToken.doHeaders()
@@ -1037,7 +1038,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H3: Scene Separator, first
     theToken._theText = "### Scene One\n"
-    theToken.setSceneFormat(r"* * *", False)
+    theToken.setSceneFormat("* * *", False)
     theToken._firstScene = True
     theToken.tokenizeText()
     theToken.doHeaders()
@@ -1048,7 +1049,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H3: Scene Separator, not first
     theToken._theText = "### Scene One\n"
-    theToken.setSceneFormat(r"* * *", False)
+    theToken.setSceneFormat("* * *", False)
     theToken._firstScene = False
     theToken.tokenizeText()
     theToken.doHeaders()
@@ -1059,9 +1060,9 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H3: Scene w/Absolute Number
     theToken._theText = "### A Scene\n"
-    theToken.setSceneFormat(r"Scene %sca%", False)
-    theToken._numAbsScene = 0
-    theToken._numChScene = 0
+    theToken.setSceneFormat(f"Scene {nwHeadingFormats.SC_ABS}", False)
+    theToken._hFormatter._scAbsCount = 0
+    theToken._hFormatter._scChCount = 0
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
@@ -1071,9 +1072,9 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H3: Scene w/Chapter Number
     theToken._theText = "### A Scene\n"
-    theToken.setSceneFormat(r"Scene %ch%.%sc%", False)
-    theToken._numAbsScene = 0
-    theToken._numChScene = 1
+    theToken.setSceneFormat(f"Scene {nwHeadingFormats.CH_NUM}.{nwHeadingFormats.SC_NUM}", False)
+    theToken._hFormatter._scAbsCount = 0
+    theToken._hFormatter._scChCount = 1
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
@@ -1096,7 +1097,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H4: Section Visible wo/Format
     theToken._theText = "#### A Section\n"
-    theToken.setSectionFormat(r"", False)
+    theToken.setSectionFormat("", False)
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
@@ -1106,7 +1107,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H4: Section w/Format
     theToken._theText = "#### A Section\n"
-    theToken.setSectionFormat(r"X: %title%", False)
+    theToken.setSectionFormat(f"X: {nwHeadingFormats.TITLE}", False)
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
@@ -1116,7 +1117,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H4: Section Separator
     theToken._theText = "#### A Section\n"
-    theToken.setSectionFormat(r"* * *", False)
+    theToken.setSectionFormat("* * *", False)
     theToken.tokenizeText()
     theToken.doHeaders()
     assert theToken._theTokens == [
