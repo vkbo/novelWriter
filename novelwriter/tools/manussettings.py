@@ -28,18 +28,22 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QColor, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
+from PyQt5.QtGui import (
+    QColor, QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
+)
 from PyQt5.QtCore import QEvent, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox, QGridLayout,
-    QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QPlainTextEdit, QPushButton, QSplitter,
+    QAbstractButton, QAbstractItemView, QComboBox, QDialog, QDialogButtonBox,
+    QDoubleSpinBox, QFontDialog, QGridLayout, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QMenu, QPlainTextEdit, QPushButton, QSpinBox, QSplitter,
     QStackedWidget, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
     QWidget
 )
 
 from novelwriter import CONFIG
-from novelwriter.constants import nwHeadingFormats
+from novelwriter.constants import nwConst, nwHeadingFormats
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
+from novelwriter.extensions.configlayout import NConfigLayout, NSimpleLayout
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
@@ -55,8 +59,8 @@ class GuiBuildSettings(QDialog):
 
     OPT_FILTERS  = 1
     OPT_HEADINGS = 2
-    OPT_FORMAT   = 3
-    OPT_CONTENT  = 4
+    OPT_CONTENT  = 3
+    OPT_FORMAT   = 4
     OPT_OUTPUT   = 5
 
     newSettingsReady = pyqtSignal(BuildSettings)
@@ -98,8 +102,8 @@ class GuiBuildSettings(QDialog):
         self.optSideBar.addLabel(self.tr("Options"))
         self.optSideBar.addButton(self.tr("Filters"), self.OPT_FILTERS)
         self.optSideBar.addButton(self.tr("Headings"), self.OPT_HEADINGS)
-        self.optSideBar.addButton(self.tr("Format"), self.OPT_FORMAT)
         self.optSideBar.addButton(self.tr("Content"), self.OPT_CONTENT)
+        self.optSideBar.addButton(self.tr("Format"), self.OPT_FORMAT)
         self.optSideBar.addButton(self.tr("Output"), self.OPT_OUTPUT)
 
         self.optSideBar.buttonClicked.connect(self._stackPageSelected)
@@ -165,6 +169,8 @@ class GuiBuildSettings(QDialog):
         self.editBuildName.setText(self._build.name)
         self.optTabSelect.loadContent()
         self.optTabHeadings.loadContent()
+        self.optTabContent.loadContent()
+        self.optTabFormat.loadContent()
         return
 
     ##
@@ -179,10 +185,10 @@ class GuiBuildSettings(QDialog):
             self.toolStack.setCurrentWidget(self.optTabSelect)
         elif pageId == self.OPT_HEADINGS:
             self.toolStack.setCurrentWidget(self.optTabHeadings)
-        elif pageId == self.OPT_FORMAT:
-            self.toolStack.setCurrentWidget(self.optTabFormat)
         elif pageId == self.OPT_CONTENT:
             self.toolStack.setCurrentWidget(self.optTabContent)
+        elif pageId == self.OPT_FORMAT:
+            self.toolStack.setCurrentWidget(self.optTabFormat)
         elif pageId == self.OPT_OUTPUT:
             self.toolStack.setCurrentWidget(self.optTabOutput)
         return
@@ -194,6 +200,9 @@ class GuiBuildSettings(QDialog):
         role = self.dlgButtons.buttonRole(button)
         if role in (QDialogButtonBox.ApplyRole, QDialogButtonBox.AcceptRole):
             self._build.setName(self.editBuildName.text())
+            self.optTabHeadings.saveContent()
+            self.optTabContent.saveContent()
+            self.optTabFormat.saveContent()
             self.newSettingsReady.emit(self._build)
 
         self._saveSettings()
@@ -553,7 +562,7 @@ class GuiBuildHeadingsTab(QWidget):
         self.formatBox.setHorizontalSpacing(vSp)
 
         # Title Heading
-        self.lblTitle = QLabel(BuildSettings.getLabel("headings.fmtTitle"))
+        self.lblTitle = QLabel(self._build.getLabel("headings.fmtTitle"))
         self.fmtTitle = QLineEdit("")
         self.fmtTitle.setEnabled(False)
         self.btnTitle = QToolButton()
@@ -569,7 +578,7 @@ class GuiBuildHeadingsTab(QWidget):
         self.formatBox.addLayout(wrapTitle,     0, 1, Qt.AlignLeft)
 
         # Chapter Heading
-        self.lblChapter = QLabel(BuildSettings.getLabel("headings.fmtChapter"))
+        self.lblChapter = QLabel(self._build.getLabel("headings.fmtChapter"))
         self.fmtChapter = QLineEdit("")
         self.fmtChapter.setEnabled(False)
         self.btnChapter = QToolButton()
@@ -585,7 +594,7 @@ class GuiBuildHeadingsTab(QWidget):
         self.formatBox.addLayout(wrapChapter,     1, 1, Qt.AlignLeft)
 
         # Unnumbered Chapter Heading
-        self.lblUnnumbered = QLabel(BuildSettings.getLabel("headings.fmtUnnumbered"))
+        self.lblUnnumbered = QLabel(self._build.getLabel("headings.fmtUnnumbered"))
         self.fmtUnnumbered = QLineEdit("")
         self.fmtUnnumbered.setEnabled(False)
         self.btnUnnumbered = QToolButton()
@@ -601,14 +610,17 @@ class GuiBuildHeadingsTab(QWidget):
         self.formatBox.addLayout(wrapUnnumbered,     2, 1, Qt.AlignLeft)
 
         # Scene Heading
-        self.lblScene = QLabel(BuildSettings.getLabel("headings.fmtScene"))
+        sceneHideTip = self._build.getLabel("headings.hideScene")
+        self.lblScene = QLabel(self._build.getLabel("headings.fmtScene"))
         self.fmtScene = QLineEdit("")
         self.fmtScene.setEnabled(False)
         self.btnScene = QToolButton()
         self.btnScene.setIcon(self.mainTheme.getIcon("edit"))
         self.btnScene.clicked.connect(lambda: self._editHeading(self.EDIT_SCENE))
+        self.hdeScene = QLabel(self.tr("Hide"))
+        self.hdeScene.setToolTip(sceneHideTip)
         self.swtScene = NSwitch(width=2*iPx, height=iPx)
-        self.swtScene.toggled.connect(self._hideScene)
+        self.swtScene.setToolTip(sceneHideTip)
 
         wrapScene = QHBoxLayout()
         wrapScene.addWidget(self.fmtScene)
@@ -616,7 +628,7 @@ class GuiBuildHeadingsTab(QWidget):
         wrapScene.setSpacing(bSp)
 
         wrapSceneHide = QHBoxLayout()
-        wrapSceneHide.addWidget(QLabel(self.tr("Hide")))
+        wrapSceneHide.addWidget(self.hdeScene)
         wrapSceneHide.addWidget(self.swtScene)
         wrapSceneHide.setSpacing(bSp)
 
@@ -625,14 +637,17 @@ class GuiBuildHeadingsTab(QWidget):
         self.formatBox.addLayout(wrapSceneHide, 3, 2, Qt.AlignLeft)
 
         # Section Heading
-        self.lblSection = QLabel(BuildSettings.getLabel("headings.fmtSection"))
+        sectionHideTip = self._build.getLabel("headings.hideSection")
+        self.lblSection = QLabel(self._build.getLabel("headings.fmtSection"))
         self.fmtSection = QLineEdit("")
         self.fmtSection.setEnabled(False)
         self.btnSection = QToolButton()
         self.btnSection.setIcon(self.mainTheme.getIcon("edit"))
         self.btnSection.clicked.connect(lambda: self._editHeading(self.EDIT_SECTION))
+        self.hdeSection = QLabel(self.tr("Hide"))
+        self.hdeSection.setToolTip(sectionHideTip)
         self.swtSection = NSwitch(width=2*iPx, height=iPx)
-        self.swtSection.toggled.connect(self._hideSection)
+        self.swtSection.setToolTip(sectionHideTip)
 
         wrapSection = QHBoxLayout()
         wrapSection.addWidget(self.fmtSection)
@@ -640,7 +655,7 @@ class GuiBuildHeadingsTab(QWidget):
         wrapSection.setSpacing(bSp)
 
         wrapSectionHide = QHBoxLayout()
-        wrapSectionHide.addWidget(QLabel(self.tr("Hide")))
+        wrapSectionHide.addWidget(self.hdeSection)
         wrapSectionHide.addWidget(self.swtSection)
         wrapSectionHide.setSpacing(bSp)
 
@@ -715,6 +730,13 @@ class GuiBuildHeadingsTab(QWidget):
         self.fmtSection.setText(self._build.getStr("headings.fmtSection"))
         self.swtScene.setChecked(self._build.getBool("headings.hideScene"))
         self.swtSection.setChecked(self._build.getBool("headings.hideSection"))
+        return
+
+    def saveContent(self):
+        """Save choices back into build object.
+        """
+        self._build.setValue("headings.hideScene", self.swtScene.isChecked())
+        self._build.setValue("headings.hideSection", self.swtSection.isChecked())
         return
 
     ##
@@ -793,57 +815,7 @@ class GuiBuildHeadingsTab(QWidget):
 
         return
 
-    @pyqtSlot(bool)
-    def _hideScene(self, status):
-        """Hide scene heading
-        """
-        self._build.setValue("headings.hideScene", status)
-        return
-
-    @pyqtSlot(bool)
-    def _hideSection(self, status):
-        """Hide section heading
-        """
-        self._build.setValue("headings.hideSection", status)
-        return
-
 # END Class GuiBuildHeadingsTab
-
-
-class GuiBuildFormatTab(QWidget):
-
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
-        super().__init__(parent=buildMain)
-
-        self._build = build
-
-        return
-
-# END Class GuiBuildFormatTab
-
-
-class GuiBuildContentTab(QWidget):
-
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
-        super().__init__(parent=buildMain)
-
-        self._build = build
-
-        return
-
-# END Class GuiBuildContentTab
-
-
-class GuiBuildOutputTab(QWidget):
-
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
-        super().__init__(parent=buildMain)
-
-        self._build = build
-
-        return
-
-# END Class GuiBuildOutputTab
 
 
 class GuiHeadingSyntax(QSyntaxHighlighter):
@@ -885,3 +857,224 @@ class GuiHeadingSyntax(QSyntaxHighlighter):
         return
 
 # END Class GuiHeadingSyntax
+
+
+class GuiBuildContentTab(QWidget):
+
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
+        super().__init__(parent=buildMain)
+
+        self.mainGui    = buildMain.mainGui
+        self.mainTheme  = buildMain.mainGui.mainTheme
+
+        self._build = build
+
+        iPx = self.mainTheme.baseIconSize
+
+        # Left Form
+        # =========
+
+        self.formLeft = NSimpleLayout()
+        self.formLeft.addGroupLabel(self._build.getLabel("text.grpContent"))
+
+        self.incSynopsis = NSwitch(width=2*iPx, height=iPx)
+        self.incComments = NSwitch(width=2*iPx, height=iPx)
+        self.incKeywords = NSwitch(width=2*iPx, height=iPx)
+        self.incBodyText = NSwitch(width=2*iPx, height=iPx)
+
+        self.formLeft.addRow(self._build.getLabel("text.includeSynopsis"), self.incSynopsis)
+        self.formLeft.addRow(self._build.getLabel("text.includeComments"), self.incComments)
+        self.formLeft.addRow(self._build.getLabel("text.includeKeywords"), self.incKeywords)
+        self.formLeft.addRow(self._build.getLabel("text.includeBodyText"), self.incBodyText)
+
+        # Right Form
+        # ==========
+
+        self.formRight = NSimpleLayout()
+        self.formRight.addGroupLabel(self._build.getLabel("text.grpInsert"))
+
+        self.addNoteHead = NSwitch(width=2*iPx, height=iPx)
+
+        self.formRight.addRow(self._build.getLabel("text.addNoteHeadings"), self.addNoteHead)
+
+        # Assemble GUI
+        # ============
+
+        self.outerBox = QHBoxLayout()
+        self.outerBox.addLayout(self.formLeft, 1)
+        self.outerBox.addLayout(self.formRight, 1)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
+        self.outerBox.setSpacing(CONFIG.pxInt(16))
+
+        self.setLayout(self.outerBox)
+
+        return
+
+    def loadContent(self):
+        """Populate the widgets.
+        """
+        self.incSynopsis.setChecked(self._build.getBool("text.includeSynopsis"))
+        self.incComments.setChecked(self._build.getBool("text.includeComments"))
+        self.incKeywords.setChecked(self._build.getBool("text.includeKeywords"))
+        self.incBodyText.setChecked(self._build.getBool("text.includeBodyText"))
+        self.addNoteHead.setChecked(self._build.getBool("text.addNoteHeadings"))
+        return
+
+    def saveContent(self):
+        """Save choices back into build object.
+        """
+        self._build.setValue("text.includeSynopsis", self.incSynopsis.isChecked())
+        self._build.setValue("text.includeComments", self.incComments.isChecked())
+        self._build.setValue("text.includeKeywords", self.incKeywords.isChecked())
+        self._build.setValue("text.includeBodyText", self.incBodyText.isChecked())
+        self._build.setValue("text.addNoteHeadings", self.addNoteHead.isChecked())
+        return
+
+# END Class GuiBuildContentTab
+
+
+class GuiBuildFormatTab(QWidget):
+
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
+        super().__init__(parent=buildMain)
+
+        self.mainGui    = buildMain.mainGui
+        self.mainTheme  = buildMain.mainGui.mainTheme
+
+        self._build = build
+
+        iPx = self.mainTheme.baseIconSize
+
+        # Form
+        # ====
+
+        self.mainForm = NConfigLayout()
+        self.mainForm.addGroupLabel(self._build.getLabel("format.grpFormat"))
+
+        # Build Language
+        self.buildLang = QComboBox()
+        self.buildLang.setMinimumWidth(CONFIG.pxInt(250))
+        langauges = CONFIG.listLanguages(CONFIG.LANG_PROJ)
+        self.buildLang.addItem("[%s]" % self.tr("Not Set"), "None")
+        for langID, langName in langauges:
+            self.buildLang.addItem(langName, langID)
+
+        self.mainForm.addRow(self._build.getLabel("format.buildLang"), self.buildLang)
+
+        # Font Family
+        self.textFont = QLineEdit()
+        self.textFont.setReadOnly(True)
+        self.textFont.setMinimumWidth(CONFIG.pxInt(200))
+        self.btnTextFont = QPushButton("...")
+        self.btnTextFont.setMaximumWidth(int(2.5*self.mainTheme.getTextWidth("...")))
+        self.btnTextFont.clicked.connect(self._selectFont)
+        self.mainForm.addRow(
+            self._build.getLabel("format.textFont"), self.textFont, button=self.btnTextFont
+        )
+
+        # Font Size
+        self.textSize = QSpinBox(self)
+        self.textSize.setMinimum(8)
+        self.textSize.setMaximum(60)
+        self.textSize.setSingleStep(1)
+        self.textSize.setMinimumWidth(CONFIG.pxInt(60))
+        self.mainForm.addRow(
+            self._build.getLabel("format.textSize"), self.textSize, unit="pt"
+        )
+
+        # Line Height
+        self.lineHeight = QDoubleSpinBox(self)
+        self.lineHeight.setFixedWidth(6*self.mainTheme.textNWidth)
+        self.lineHeight.setMinimum(0.75)
+        self.lineHeight.setMaximum(3.0)
+        self.lineHeight.setSingleStep(0.05)
+        self.lineHeight.setDecimals(2)
+        self.lineHeight.setMinimumWidth(CONFIG.pxInt(60))
+        self.mainForm.addRow(
+            self._build.getLabel("format.lineHeight"), self.lineHeight, unit="em"
+        )
+
+        # Switches
+        self.mainForm.addGroupLabel(self._build.getLabel("format.grpOptions"))
+        self.mainForm.setContentsMargins(0, 0, 0, 0)
+
+        self.justifyText = NSwitch(width=2*iPx, height=iPx)
+        self.stripUnicode = NSwitch(width=2*iPx, height=iPx)
+        self.replaceTabs = NSwitch(width=2*iPx, height=iPx)
+
+        self.mainForm.addRow(self._build.getLabel("format.justifyText"), self.justifyText)
+        self.mainForm.addRow(self._build.getLabel("format.stripUnicode"), self.stripUnicode)
+        self.mainForm.addRow(self._build.getLabel("format.replaceTabs"), self.replaceTabs)
+
+        # Assemble GUI
+        # ============
+
+        self.setLayout(self.mainForm)
+
+        return
+
+    def loadContent(self):
+        """Populate the widgets.
+        """
+        langIdx = self.buildLang.findData(self._build.getStr("format.buildLang"))
+        if langIdx != -1:
+            self.buildLang.setCurrentIndex(langIdx)
+
+        textFont = self._build.getStr("format.textFont")
+        if not textFont:
+            textFont = str(CONFIG.textFont)
+        if not textFont:
+            textFont = nwConst.SYSTEM_FONT
+
+        self.textFont.setText(textFont)
+        self.textSize.setValue(self._build.getInt("format.textSize"))
+        self.lineHeight.setValue(self._build.getFloat("format.lineHeight"))
+
+        self.justifyText.setChecked(self._build.getBool("format.justifyText"))
+        self.stripUnicode.setChecked(self._build.getBool("format.stripUnicode"))
+        self.replaceTabs.setChecked(self._build.getBool("format.replaceTabs"))
+
+        return
+
+    def saveContent(self):
+        """Save choices back into build object.
+        """
+        self._build.setValue("format.buildLang", str(self.buildLang.currentData()))
+        self._build.setValue("format.textFont", self.textFont.text())
+        self._build.setValue("format.textSize", self.textSize.value())
+        self._build.setValue("format.lineHeight", self.lineHeight.value())
+        self._build.setValue("format.justifyText", self.justifyText.isChecked())
+        self._build.setValue("format.stripUnicode", self.stripUnicode.isChecked())
+        self._build.setValue("format.replaceTabs", self.replaceTabs.isChecked())
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _selectFont(self):
+        """Open the QFontDialog and set a font for the font style.
+        """
+        currFont = QFont()
+        currFont.setFamily(self.textFont.text())
+        currFont.setPointSize(self.textSize.value())
+        theFont, theStatus = QFontDialog.getFont(currFont, self)
+        if theStatus:
+            self.textFont.setText(theFont.family())
+            self.textSize.setValue(theFont.pointSize())
+        return
+
+# END Class GuiBuildFormatTab
+
+
+class GuiBuildOutputTab(QWidget):
+
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
+        super().__init__(parent=buildMain)
+
+        self._build = build
+
+        return
+
+# END Class GuiBuildOutputTab

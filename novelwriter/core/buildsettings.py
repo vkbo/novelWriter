@@ -36,7 +36,7 @@ from pathlib import Path
 from PyQt5.QtCore import QT_TRANSLATE_NOOP
 
 from novelwriter.common import checkUuid, isHandle, jsonEncode
-from novelwriter.constants import nwFiles, nwHeadingFormats
+from novelwriter.constants import nwConst, nwFiles, nwHeadingFormats
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.error import logException
@@ -62,10 +62,10 @@ SETTINGS_TEMPLATE = {
     "text.includeSynopsis":   (bool, False),
     "text.includeComments":   (bool, False),
     "text.includeKeywords":   (bool, False),
-    "text.includeBody":       (bool, True),
+    "text.includeBodyText":   (bool, True),
     "text.addNoteHeadings":   (bool, True),
     "format.buildLang":       (str, "en_GB"),
-    "format.textFont":        (str, ""),
+    "format.textFont":        (str, nwConst.SYSTEM_FONT),
     "format.textSize":        (int, 12),
     "format.lineHeight":      (float, 1.15, 0.75, 3.0),
     "format.justifyText":     (bool, False),
@@ -82,26 +82,28 @@ SETTINGS_LABELS = {
     "filter.includeInactive": QT_TRANSLATE_NOOP("Builds", "Inactive Documents"),
 
     "headings":               QT_TRANSLATE_NOOP("Builds", "Headings"),
-    "headings.fmtTitle":      QT_TRANSLATE_NOOP("Builds", "Title Heading"),
-    "headings.fmtChapter":    QT_TRANSLATE_NOOP("Builds", "Chapter Heading"),
-    "headings.fmtUnnumbered": QT_TRANSLATE_NOOP("Builds", "Unnumbered Heading"),
-    "headings.fmtScene":      QT_TRANSLATE_NOOP("Builds", "Scene Heading"),
-    "headings.fmtSection":    QT_TRANSLATE_NOOP("Builds", "Section Heading"),
-    "headings.hideScene":     QT_TRANSLATE_NOOP("Builds", "Hide Scene"),
-    "headings.hideSection":   QT_TRANSLATE_NOOP("Builds", "Hide Section"),
+    "headings.fmtTitle":      QT_TRANSLATE_NOOP("Builds", "Title Headings"),
+    "headings.fmtChapter":    QT_TRANSLATE_NOOP("Builds", "Chapter Headings"),
+    "headings.fmtUnnumbered": QT_TRANSLATE_NOOP("Builds", "Unnumbered Headings"),
+    "headings.fmtScene":      QT_TRANSLATE_NOOP("Builds", "Scene Headings"),
+    "headings.fmtSection":    QT_TRANSLATE_NOOP("Builds", "Section Headings"),
+    "headings.hideScene":     QT_TRANSLATE_NOOP("Builds", "Hide Scene Headings"),
+    "headings.hideSection":   QT_TRANSLATE_NOOP("Builds", "Hide Section Headings"),
 
-    "text":                   QT_TRANSLATE_NOOP("Builds", "Text Content"),
-    "text.includeSynopsis":   QT_TRANSLATE_NOOP("Builds", "Synopsis"),
-    "text.includeComments":   QT_TRANSLATE_NOOP("Builds", "Comments"),
-    "text.includeKeywords":   QT_TRANSLATE_NOOP("Builds", "Keywords"),
-    "text.includeBody":       QT_TRANSLATE_NOOP("Builds", "Body Text"),
+    "text.grpContent":        QT_TRANSLATE_NOOP("Builds", "Text Content"),
+    "text.includeSynopsis":   QT_TRANSLATE_NOOP("Builds", "Include Synopsis"),
+    "text.includeComments":   QT_TRANSLATE_NOOP("Builds", "Include Comments"),
+    "text.includeKeywords":   QT_TRANSLATE_NOOP("Builds", "Include Keywords"),
+    "text.includeBodyText":   QT_TRANSLATE_NOOP("Builds", "Include Body Text"),
+    "text.grpInsert":         QT_TRANSLATE_NOOP("Builds", "Insert Content"),
     "text.addNoteHeadings":   QT_TRANSLATE_NOOP("Builds", "Add Titles for Notes"),
 
-    "format":                 QT_TRANSLATE_NOOP("Builds", "Text Format"),
-    "format.buildLang":       QT_TRANSLATE_NOOP("Builds", "Build Language"),
+    "format.grpFormat":       QT_TRANSLATE_NOOP("Builds", "Text Format"),
+    "format.buildLang":       QT_TRANSLATE_NOOP("Builds", "Document Language"),
     "format.textFont":        QT_TRANSLATE_NOOP("Builds", "Font Family"),
     "format.textSize":        QT_TRANSLATE_NOOP("Builds", "Font Size"),
     "format.lineHeight":      QT_TRANSLATE_NOOP("Builds", "Line Height"),
+    "format.grpOptions":      QT_TRANSLATE_NOOP("Builds", "Text Options"),
     "format.justifyText":     QT_TRANSLATE_NOOP("Builds", "Justify Text Margins"),
     "format.stripUnicode":    QT_TRANSLATE_NOOP("Builds", "Replace Unicode Characters"),
     "format.replaceTabs":     QT_TRANSLATE_NOOP("Builds", "Replace Tabs with Spaces"),
@@ -382,7 +384,7 @@ class BuildCollection:
         return
 
     def getBuild(self, buildID: str) -> BuildSettings | None:
-        """
+        """Get a specific build settings object.
         """
         if buildID not in self._builds:
             return None
@@ -391,7 +393,7 @@ class BuildCollection:
         return build
 
     def setBuild(self, build: BuildSettings) -> bool:
-        """
+        """Set build settings data in the collection.
         """
         if not isinstance(build, BuildSettings):
             return False
@@ -400,14 +402,14 @@ class BuildCollection:
         return True
 
     def builds(self) -> Iterable[tuple[str, str]]:
-        """
+        """Iterate over all avaiable builds.
         """
         for buildID in self._builds:
             yield buildID, self._builds[buildID].get("name", "")
         return
 
     def loadCollection(self) -> bool:
-        """
+        """Load build collections file.
         """
         buildsFile = self._project.storage.getMetaFile(nwFiles.BUILDS_FILE)
         if not isinstance(buildsFile, Path):
@@ -440,7 +442,7 @@ class BuildCollection:
         return True
 
     def saveCollection(self) -> bool:
-        """
+        """Save build collections file.
         """
         buildsFile = self._project.storage.getMetaFile(nwFiles.BUILDS_FILE)
         if not isinstance(buildsFile, Path):

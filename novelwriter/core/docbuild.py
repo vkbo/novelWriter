@@ -28,9 +28,10 @@ import logging
 from pathlib import Path
 from typing import Iterable
 
-from PyQt5.QtGui import QFont, QFontDatabase, QFontInfo
+from PyQt5.QtGui import QFont, QFontInfo
 
 from novelwriter import CONFIG
+from novelwriter.constants import nwConst
 from novelwriter.core.tokenizer import Tokenizer
 from novelwriter.error import formatException
 from novelwriter.core.tomd import ToMarkdown
@@ -174,7 +175,7 @@ class NWBuildDocument:
         incSynopsis   = self._build.getBool("text.includeSynopsis")
         incComments   = self._build.getBool("text.includeComments")
         incKeywords   = self._build.getBool("text.includeKeywords")
-        includeBody   = self._build.getBool("text.includeBody")
+        incBodyText   = self._build.getBool("text.includeBodyText")
 
         buildLang     = self._build.getStr("format.buildLang")
         textFont      = self._build.getStr("format.textFont")
@@ -193,7 +194,7 @@ class NWBuildDocument:
         if not textFont:
             textFont = str(CONFIG.textFont)
         if not textFont:
-            textFont = QFontDatabase.systemFont(QFontDatabase.GeneralFont).family()
+            textFont = nwConst.SYSTEM_FONT
 
         bldFont = QFont(family=textFont, pointSize=textSize)
         fontInfo = QFontInfo(bldFont)
@@ -212,7 +213,7 @@ class NWBuildDocument:
         bldObj.setSynopsis(incSynopsis)
         bldObj.setComments(incComments)
         bldObj.setKeywords(incKeywords)
-        bldObj.setBodyText(includeBody)
+        bldObj.setBodyText(incBodyText)
 
         if isinstance(bldObj, ToHtml):
             bldObj.setStyles(htmlAddStyles)
