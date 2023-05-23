@@ -22,6 +22,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import re
 import logging
@@ -34,13 +35,14 @@ from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.common import numberToRoman, checkInt
-from novelwriter.constants import nwConst, nwRegEx, nwUnicode
+from novelwriter.constants import nwConst, nwHeadingFormats, nwRegEx, nwUnicode
+from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
 
 def stripEscape(text):
-    """Helper function to strip escaped markdown characters from
+    """Helper function to strip escaped Markdown characters from
     paragraph text.
     """
     if "\\" in text:
@@ -136,10 +138,8 @@ class Tokenizer(ABC):
         self._linkHeaders = False  # Add an anchor before headers
 
         # Instance Variables
-        self._numChapter  = 0      # Counter for chapter numbers
-        self._numChScene  = 0      # Counter for scene number within chapter
-        self._numAbsScene = 0      # Counter for scene number within novel
-        self._firstScene  = False  # Flag to indicate that the first scene of the chapter
+        self._hFormatter = HeadingFormatter(self.theProject)
+        self._firstScene = False  # Flag to indicate that the first scene of the chapter
 
         # This File
         self._isNone  = False  # Document has unknown layout
@@ -179,26 +179,26 @@ class Tokenizer(ABC):
     #  Setters
     ##
 
-    def setTitleFormat(self, fmtTitle):
-        self._fmtTitle = fmtTitle.strip()
+    def setTitleFormat(self, hFormat):
+        self._fmtTitle = hFormat.strip()
         return
 
-    def setChapterFormat(self, fmtChapter):
-        self._fmtChapter = fmtChapter.strip()
+    def setChapterFormat(self, hFormat):
+        self._fmtChapter = hFormat.strip()
         return
 
-    def setUnNumberedFormat(self, fmtUnNum):
-        self._fmtUnNum = fmtUnNum.strip()
+    def setUnNumberedFormat(self, hFormat):
+        self._fmtUnNum = hFormat.strip()
         return
 
-    def setSceneFormat(self, fmtScene, hideScene):
-        self._fmtScene = fmtScene.strip()
-        self._hideScene = hideScene
+    def setSceneFormat(self, hFormat, hide):
+        self._fmtScene = hFormat.strip()
+        self._hideScene = hide
         return
 
-    def setSectionFormat(self, fmtSection, hideSection):
-        self._fmtSection = fmtSection.strip()
-        self._hideSection = hideSection
+    def setSectionFormat(self, hFormat, hide):
+        self._fmtSection = hFormat.strip()
+        self._hideSection = hide
         return
 
     def setFont(self, textFont, textSize, textFixed=False):
@@ -627,7 +627,7 @@ class Tokenizer(ABC):
             elif tToken[0] == self.T_HEAD1:
                 # Partition
 
-                tTemp = self._formatHeading(self._fmtTitle, tToken[2])
+                tTemp = self._hFormatter.apply(self._fmtTitle, tToken[2])
                 self._theTokens[n] = (
                     tToken[0], tToken[1], tTemp, None, tToken[4]
                 )
@@ -637,10 +637,10 @@ class Tokenizer(ABC):
 
                 # Numbered or Unnumbered
                 if tToken[0] == self.T_UNNUM:
-                    tTemp = self._formatHeading(self._fmtUnNum, tToken[2])
+                    tTemp = self._hFormatter.apply(self._fmtUnNum, tToken[2])
                 else:
-                    self._numChapter += 1
-                    tTemp = self._formatHeading(self._fmtChapter, tToken[2])
+                    self._hFormatter.incChapter()
+                    tTemp = self._hFormatter.apply(self._fmtChapter, tToken[2])
 
                 # Format the chapter header
                 self._theTokens[n] = (
@@ -649,15 +649,14 @@ class Tokenizer(ABC):
 
                 # Set scene variables
                 self._firstScene = True
-                self._numChScene = 0
+                self._hFormatter.resetScene()
 
             elif tToken[0] == self.T_HEAD3:
                 # Scene
 
-                self._numChScene += 1
-                self._numAbsScene += 1
+                self._hFormatter.incScene()
 
-                tTemp = self._formatHeading(self._fmtScene, tToken[2])
+                tTemp = self._hFormatter.apply(self._fmtScene, tToken[2])
                 if tTemp == "" and self._hideScene:
                     self._theTokens[n] = (
                         self.T_EMPTY, tToken[1], "", None, self.A_NONE
@@ -685,13 +684,12 @@ class Tokenizer(ABC):
                         tToken[0], tToken[1], tTemp, None, tToken[4]
                     )
 
-                # Definitely no longer the first scene
                 self._firstScene = False
 
             elif tToken[0] == self.T_HEAD4:
                 # Section
 
-                tTemp = self._formatHeading(self._fmtSection, tToken[2])
+                tTemp = self._hFormatter.apply(self._fmtSection, tToken[2])
                 if tTemp == "" and self._hideSection:
                     self._theTokens[n] = (
                         self.T_EMPTY, tToken[1], "", None, self.A_NONE
@@ -719,24 +717,54 @@ class Tokenizer(ABC):
                 outFile.write(nwdPage)
         return
 
-    ##
-    #  Internal Functions
-    ##
-
-    def _formatHeading(self, theTitle, theText):
-        """Replaces the %keyword% strings.
-        """
-        theTitle = theTitle.replace(r"%title%", theText)
-        theTitle = theTitle.replace(r"%ch%", str(self._numChapter))
-        theTitle = theTitle.replace(r"%sc%", str(self._numChScene))
-        theTitle = theTitle.replace(r"%sca%", str(self._numAbsScene))
-        if r"%chw%" in theTitle:
-            theTitle = theTitle.replace(r"%chw%", self._localLookup(self._numChapter))
-        if r"%chi%" in theTitle:
-            theTitle = theTitle.replace(r"%chi%", numberToRoman(self._numChapter, True))
-        if r"%chI%" in theTitle:
-            theTitle = theTitle.replace(r"%chI%", numberToRoman(self._numChapter, False))
-
-        return theTitle[:1].upper() + theTitle[1:]
-
 # END Class Tokenizer
+
+
+class HeadingFormatter:
+
+    def __init__(self, project: NWProject):
+        self._project = project
+        self._chCount = 0
+        self._scChCount = 0
+        self._scAbsCount = 0
+        return
+
+    def incChapter(self):
+        """Increment the chapter counter.
+        """
+        self._chCount += 1
+        return
+
+    def incScene(self):
+        """Increment the scene counters.
+        """
+        self._scChCount += 1
+        self._scAbsCount += 1
+        return
+
+    def resetScene(self):
+        """Reset the chapter scene counter.
+        """
+        self._scChCount = 0
+        return
+
+    def apply(self, hFormat: str, text: str):
+        """Apply formatting to a specific heading.
+        """
+        hFormat = hFormat.replace(nwHeadingFormats.TITLE, text)
+        hFormat = hFormat.replace(nwHeadingFormats.CH_NUM, str(self._chCount))
+        hFormat = hFormat.replace(nwHeadingFormats.SC_NUM, str(self._scChCount))
+        hFormat = hFormat.replace(nwHeadingFormats.SC_ABS, str(self._scAbsCount))
+        if nwHeadingFormats.CH_WORD in hFormat:
+            chWord = self._project.localLookup(self._chCount)
+            hFormat = hFormat.replace(nwHeadingFormats.CH_WORD, chWord)
+        if nwHeadingFormats.CH_ROML in hFormat:
+            chRom = numberToRoman(self._chCount, True)
+            hFormat = hFormat.replace(nwHeadingFormats.CH_ROML, chRom)
+        if nwHeadingFormats.CH_ROMU in hFormat:
+            chRom = numberToRoman(self._chCount, False)
+            hFormat = hFormat.replace(nwHeadingFormats.CH_ROMU, chRom)
+
+        return hFormat
+
+# END Class HeadingFormatter

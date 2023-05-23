@@ -25,19 +25,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
-from pathlib import Path
+
 from typing import Iterable
+from pathlib import Path
 
 from PyQt5.QtGui import QFont, QFontInfo
 
 from novelwriter import CONFIG
-from novelwriter.constants import nwConst
-from novelwriter.core.tokenizer import Tokenizer
 from novelwriter.error import formatException
+from novelwriter.constants import nwConst
 from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
 from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.project import NWProject
+from novelwriter.core.tokenizer import Tokenizer
 from novelwriter.core.buildsettings import BuildSettings
 
 logger = logging.getLogger(__name__)
@@ -80,7 +81,7 @@ class NWBuildDocument:
         """Queue all document as defined by the build setup.
         """
         filtered = self._build.buildItemFilter(self._project)
-        noteTitles = self._build.getValue("text.addNoteHeadings")
+        noteTitles = self._build.getBool("text.addNoteHeadings")
         for item in self._project.tree:
             if filtered.get(item.itemHandle, False):
                 self._queue.append(item.itemHandle)
@@ -117,7 +118,7 @@ class NWBuildDocument:
         makeHtml = ToHtml(self._project)
         self._setupBuild(makeHtml)
 
-        if self._build.getValue("format.replaceTabs"):
+        if self._build.getBool("format.replaceTabs"):
             makeHtml.replaceTabs()
 
         for i, tHandle in enumerate(self._queue):
@@ -142,7 +143,7 @@ class NWBuildDocument:
         else:
             makeMd.setStandardMarkdown()
 
-        if self._build.getValue("format.replaceTabs"):
+        if self._build.getBool("format.replaceTabs"):
             makeMd.replaceTabs(nSpaces=4, spaceChar=" ")
 
         for i, tHandle in enumerate(self._queue):
@@ -196,7 +197,7 @@ class NWBuildDocument:
         if not textFont:
             textFont = nwConst.SYSTEM_FONT
 
-        bldFont = QFont(family=textFont, pointSize=textSize)
+        bldFont = QFont(textFont, textSize)
         fontInfo = QFontInfo(bldFont)
         textFixed = fontInfo.fixedPitch()
 
