@@ -43,9 +43,9 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG
 from novelwriter.constants import nwConst, nwHeadingFormats
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
-from novelwriter.extensions.configlayout import NConfigLayout, NSimpleLayout
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
+from novelwriter.extensions.configlayout import NConfigLayout, NSimpleLayout
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
 if TYPE_CHECKING:
@@ -211,7 +211,8 @@ class GuiBuildSettings(QDialog):
         if role == QDialogButtonBox.AcceptRole:
             self.accept()
         elif role == QDialogButtonBox.RejectRole:
-            self.reject()
+            if self._checkOkClose():
+                self.reject()
 
         return
 
@@ -222,13 +223,25 @@ class GuiBuildSettings(QDialog):
     def closeEvent(self, event: QEvent):
         """Capture the user closing the window so we can save settings.
         """
-        self._saveSettings()
-        event.accept()
+        if self._checkOkClose():
+            self._saveSettings()
+            event.accept()
         return
 
     ##
     #  Internal Functions
     ##
+
+    def _checkOkClose(self) -> bool:
+        """Check if there are unsaved changes, and if there are, ask if
+        it';'s ok to reject them.
+        """
+        if self._build.changed:
+            return self.mainGui.askQuestion(
+                self.tr("Close"),
+                self.tr("There are unsaved changes. Close anyway?")
+            )
+        return True
 
     def _saveSettings(self):
         """Save the various user settings.
@@ -330,7 +343,7 @@ class GuiBuildFilterTab(QWidget):
         self.excludedButton.clicked.connect(lambda: self._setSelectedMode(self.F_EXCLUDED))
 
         self.modeBox = QHBoxLayout()
-        self.modeBox.addWidget(QLabel(self.tr("Mark items as")))
+        self.modeBox.addWidget(QLabel(self.tr("Mark selection as")))
         self.modeBox.addStretch(1)
         self.modeBox.addWidget(self.filteredButton)
         self.modeBox.addWidget(self.includedButton)
@@ -359,6 +372,8 @@ class GuiBuildFilterTab(QWidget):
         self.mainSplit = QSplitter()
         self.mainSplit.addWidget(self.selectionWidget)
         self.mainSplit.addWidget(self.filterOpt)
+        self.mainSplit.setCollapsible(0, False)
+        self.mainSplit.setCollapsible(1, False)
         if wTree > 0:
             self.mainSplit.setSizes([wTree, fTree])
 
@@ -495,7 +510,10 @@ class GuiBuildFilterTab(QWidget):
                 itemIcon = self.mainTheme.getItemIcon(
                     nwItem.itemType, nwItem.itemClass, nwItem.itemLayout
                 )
-                self.filterOpt.addItem(itemIcon, nwItem.itemName, f"root:{tHandle}", default=True)
+                self.filterOpt.addItem(
+                    itemIcon, nwItem.itemName, f"root:{tHandle}",
+                    default=self._build.isRootAllowed(tHandle)
+                )
 
         return
 
