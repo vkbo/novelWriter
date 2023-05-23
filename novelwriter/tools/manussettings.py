@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG
-from novelwriter.constants import nwConst, nwHeadingFormats
+from novelwriter.constants import nwConst, nwHeadFmt
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
@@ -706,13 +706,13 @@ class GuiBuildHeadingsTab(QWidget):
         self.aInsScNum = self.menuInsert.addAction(self.tr("Scene Number (In Chapter)"))
         self.aInsScAbs = self.menuInsert.addAction(self.tr("Scene Number (Absolute)"))
 
-        self.aInsTitle.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.TITLE))
-        self.aInsChNum.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.CH_NUM))
-        self.aInsChWord.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.CH_WORD))
-        self.aInsChRomU.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.CH_ROMU))
-        self.aInsChRomL.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.CH_ROML))
-        self.aInsScNum.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.SC_NUM))
-        self.aInsScAbs.triggered.connect(lambda: self._insertIntoForm(nwHeadingFormats.SC_ABS))
+        self.aInsTitle.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.TITLE))
+        self.aInsChNum.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CH_NUM))
+        self.aInsChWord.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CH_WORD))
+        self.aInsChRomU.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CH_ROMU))
+        self.aInsChRomL.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CH_ROML))
+        self.aInsScNum.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.SC_NUM))
+        self.aInsScAbs.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.SC_ABS))
 
         self.btnInsert = QPushButton(self.tr("Insert"))
         self.btnInsert.setMenu(self.menuInsert)
@@ -845,31 +845,17 @@ class GuiHeadingSyntax(QSyntaxHighlighter):
 
     def __init__(self, document: QTextDocument, mainTheme: GuiTheme):
         super().__init__(document)
-
-        self._valid = [
-            nwHeadingFormats.TITLE.lower(),
-            nwHeadingFormats.CH_NUM.lower(),
-            nwHeadingFormats.CH_WORD.lower(),
-            nwHeadingFormats.CH_ROMU.lower(),
-            nwHeadingFormats.CH_ROML.lower(),
-            nwHeadingFormats.SC_NUM.lower(),
-            nwHeadingFormats.SC_ABS.lower(),
-        ]
-
         self._fmtSymbol = QTextCharFormat()
         self._fmtSymbol.setForeground(QColor(*mainTheme.colHead))
-
         self._fmtFormat = QTextCharFormat()
         self._fmtFormat.setForeground(QColor(*mainTheme.colEmph))
-
         return
 
     def highlightBlock(self, text: str):
         """Add syntax highlighting to the text block.
         """
-        check = text.lower()
-        for heading in self._valid:
-            pos = check.find(heading)
+        for heading in nwHeadFmt.ALL:
+            pos = text.find(heading)
             if pos >= 0:
                 chars = len(heading)
                 self.setFormat(pos, chars, self._fmtSymbol)

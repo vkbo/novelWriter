@@ -208,7 +208,7 @@ class nwLabels:
 # END Class nwLabels
 
 
-class nwHeadingFormats:
+class nwHeadFmt:
 
     TITLE   = "{Title}"
     CH_NUM  = "{Chapter}"
@@ -218,7 +218,9 @@ class nwHeadingFormats:
     SC_NUM  = "{Scene}"
     SC_ABS  = "{Scene:Abs}"
 
-# END Class nwHeadingFormats
+    ALL = [TITLE, CH_NUM, CH_WORD, CH_ROMU, CH_ROML, SC_NUM, SC_ABS]
+
+# END Class nwHeadFmt
 
 
 class nwQuotes:

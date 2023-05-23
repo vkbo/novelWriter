@@ -30,28 +30,6 @@ from tools import ODT_IGNORE, cmpFiles
 from novelwriter.core.project import NWProject
 from novelwriter.core.docbuild import NWBuildDocument
 
-# BUILD_CONF = {
-#     "format.fmtTitle": "Title: %title%",
-#     "format.fmtChapter": "Chapter: %title%",
-#     "format.fmtUnnumbered": "%title%",
-#     "format.fmtScene": "Scene: %title%",
-#     "format.fmtSection": "Section: %title%",
-#     "format.buildLang": "en_GB",
-#     "format.hideScene": False,
-#     "format.hideSection": False,
-#     "format.textFont": "Arial",
-#     "format.textSize": 12,
-#     "format.lineHeight": 1.5,
-#     "format.justifyText": True,
-#     "format.noStyling": False,
-#     "format.replaceUCode": False,
-#     "filter.includeSynopsis": True,
-#     "filter.includeComments": True,
-#     "filter.includeKeywords": True,
-#     "filter.includeBody": True,
-#     "process.replaceTabs": True,
-# }
-
 BUILD_CONF = {
     "name": "Test Build",
     "uuid": "f8796eee-e234-4e8a-8355-b2709177e53c",

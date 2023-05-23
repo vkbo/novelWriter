@@ -35,7 +35,7 @@ from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from novelwriter.enum import nwItemLayout, nwItemType
 from novelwriter.common import numberToRoman, checkInt
-from novelwriter.constants import nwConst, nwHeadingFormats, nwRegEx, nwUnicode
+from novelwriter.constants import nwConst, nwHeadFmt, nwRegEx, nwUnicode
 from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
@@ -126,11 +126,11 @@ class Tokenizer(ABC):
         self._marginMeta  = (0.000, 0.584)
 
         # Title Formats
-        self._fmtTitle   = "%title%"  # Formatting for titles
-        self._fmtChapter = "%title%"  # Formatting for numbered chapters
-        self._fmtUnNum   = "%title%"  # Formatting for unnumbered chapters
-        self._fmtScene   = "%title%"  # Formatting for scenes
-        self._fmtSection = "%title%"  # Formatting for sections
+        self._fmtTitle   = nwHeadFmt.TITLE  # Formatting for titles
+        self._fmtChapter = nwHeadFmt.TITLE  # Formatting for numbered chapters
+        self._fmtUnNum   = nwHeadFmt.TITLE  # Formatting for unnumbered chapters
+        self._fmtScene   = nwHeadFmt.TITLE  # Formatting for scenes
+        self._fmtSection = nwHeadFmt.TITLE  # Formatting for sections
 
         self._hideScene   = False  # Do not include scene headers
         self._hideSection = False  # Do not include section headers
@@ -751,19 +751,19 @@ class HeadingFormatter:
     def apply(self, hFormat: str, text: str):
         """Apply formatting to a specific heading.
         """
-        hFormat = hFormat.replace(nwHeadingFormats.TITLE, text)
-        hFormat = hFormat.replace(nwHeadingFormats.CH_NUM, str(self._chCount))
-        hFormat = hFormat.replace(nwHeadingFormats.SC_NUM, str(self._scChCount))
-        hFormat = hFormat.replace(nwHeadingFormats.SC_ABS, str(self._scAbsCount))
-        if nwHeadingFormats.CH_WORD in hFormat:
+        hFormat = hFormat.replace(nwHeadFmt.TITLE, text)
+        hFormat = hFormat.replace(nwHeadFmt.CH_NUM, str(self._chCount))
+        hFormat = hFormat.replace(nwHeadFmt.SC_NUM, str(self._scChCount))
+        hFormat = hFormat.replace(nwHeadFmt.SC_ABS, str(self._scAbsCount))
+        if nwHeadFmt.CH_WORD in hFormat:
             chWord = self._project.localLookup(self._chCount)
-            hFormat = hFormat.replace(nwHeadingFormats.CH_WORD, chWord)
-        if nwHeadingFormats.CH_ROML in hFormat:
+            hFormat = hFormat.replace(nwHeadFmt.CH_WORD, chWord)
+        if nwHeadFmt.CH_ROML in hFormat:
             chRom = numberToRoman(self._chCount, True)
-            hFormat = hFormat.replace(nwHeadingFormats.CH_ROML, chRom)
-        if nwHeadingFormats.CH_ROMU in hFormat:
+            hFormat = hFormat.replace(nwHeadFmt.CH_ROML, chRom)
+        if nwHeadFmt.CH_ROMU in hFormat:
             chRom = numberToRoman(self._chCount, False)
-            hFormat = hFormat.replace(nwHeadingFormats.CH_ROMU, chRom)
+            hFormat = hFormat.replace(nwHeadFmt.CH_ROMU, chRom)
 
         return hFormat
 
