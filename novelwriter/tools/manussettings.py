@@ -238,7 +238,7 @@ class GuiBuildSettings(QDialog):
         """
         if self._build.changed:
             return self.mainGui.askQuestion(
-                self.tr("Close"),
+                self.tr("Build Settings"),
                 self.tr("There are unsaved changes. Close anyway?")
             )
         return True

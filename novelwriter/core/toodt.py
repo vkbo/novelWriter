@@ -4,7 +4,10 @@ novelWriter – ODT Text Converter
 Extends the Tokenizer class to generate ODT and FODT files
 
 File History:
-Created: 2021-01-26 [1.2b1]
+Created: 2021-01-26 [1.2b1] ToOdt
+Created: 2021-01-27 [1.2b1] ODTParagraphStyle
+Created: 2021-01-27 [1.2b1] ODTTextStyle
+Created: 2021-08-14 [1.5b1] XMLParagraph
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -1439,7 +1442,8 @@ class XMLParagraph:
 
     def checkError(self):
         """Check that the number of characters written matches the
-        number of characters received."""
+        number of characters received.
+        """
         errMsg = ""
         nMissed = len(self._rawTxt) - self._chrPos
         if nMissed != 0:

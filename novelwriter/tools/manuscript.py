@@ -4,7 +4,9 @@ novelWriter – GUI Build Manuscript
 GUI classes for the Manuscript Build Tool
 
 File History:
-Created: 2023-05-13 [2.1b1]
+Created: 2023-05-13 [2.1b1] GuiManuscript
+Created: 2023-05-13 [2.1b1] GuiManuscriptPreview
+Created: 2023-05-24 [2.1b1] GuiManuscriptBuild
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -44,10 +46,13 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class GuiBuildManuscript(QDialog):
+class GuiManuscript(QDialog):
 
     def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
+
+        logger.debug("Initialising GuiManuscript ...")
+        self.setObjectName("GuiManuscript")
 
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
@@ -65,8 +70,8 @@ class GuiBuildManuscript(QDialog):
 
         pOptions = self.theProject.options
         self.resize(
-            CONFIG.pxInt(pOptions.getInt("GuiBuildManuscript", "winWidth", wWin)),
-            CONFIG.pxInt(pOptions.getInt("GuiBuildManuscript", "winHeight", hWin))
+            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "winWidth", wWin)),
+            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "winHeight", hWin))
         )
 
         # Build Controls
@@ -110,6 +115,7 @@ class GuiBuildManuscript(QDialog):
         self.btnSave.setMenu(self.menuSave)
 
         self.btnClose = QPushButton(self.tr("Close"))
+        self.btnClose.clicked.connect(self._doClose)
 
         # Assemble GUI
         # ============
@@ -139,8 +145,8 @@ class GuiBuildManuscript(QDialog):
         self.mainSplit.addWidget(self.optsWidget)
         self.mainSplit.addWidget(self.manPreview)
         self.mainSplit.setSizes([
-            CONFIG.pxInt(pOptions.getInt("GuiBuildManuscript", "optsWidth", wWin//3)),
-            CONFIG.pxInt(pOptions.getInt("GuiBuildManuscript", "viewWidth", 2*wWin//3)),
+            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "optsWidth", wWin//3)),
+            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "viewWidth", 2*wWin//3)),
         ])
 
         self.outerBox = QVBoxLayout()
@@ -148,10 +154,12 @@ class GuiBuildManuscript(QDialog):
 
         self.setLayout(self.outerBox)
 
+        logger.debug("GuiManuscript initialisation complete")
+
         return
 
     def loadContent(self):
-        """
+        """Load dialog content from project data.
         """
         self._builds.loadCollection()
         self._updateBuildsList()
@@ -164,7 +172,7 @@ class GuiBuildManuscript(QDialog):
     def closeEvent(self, event):
         """Capture the user closing the window so we can save settings.
         """
-        self._saveSettings()
+        self._beforeClose()
         event.accept()
         return
 
@@ -201,14 +209,36 @@ class GuiBuildManuscript(QDialog):
         self._updateBuildItem(build)
         return
 
+    @pyqtSlot()
+    def _doClose(self):
+        """The close button has been clicked.
+        """
+        self._beforeClose()
+        self.close()
+        return
+
     ##
     #  Internal Functions
     ##
 
+    def _saveManuscript(self, outFormat: int):
+        """Save the manuscript file or files.
+        """
+        return
+
+    def _beforeClose(self):
+        """List of things to do before closing.
+        """
+        self._saveSettings()
+        for qWidget in qApp.topLevelWidgets():
+            if qWidget.objectName() == "GuiBuildSettings":
+                qWidget.close()
+        return
+
     def _saveSettings(self):
         """Save the various user settings.
         """
-        logger.debug("Saving GuiBuildManuscript settings")
+        logger.debug("Saving GuiManuscript settings")
 
         winWidth  = CONFIG.rpxInt(self.width())
         winHeight = CONFIG.rpxInt(self.height())
@@ -218,10 +248,10 @@ class GuiBuildManuscript(QDialog):
         viewWidth = mainSplit[1]
 
         pOptions = self.theProject.options
-        pOptions.setValue("GuiBuildManuscript", "winWidth", winWidth)
-        pOptions.setValue("GuiBuildManuscript", "winHeight", winHeight)
-        pOptions.setValue("GuiBuildManuscript", "optsWidth", optsWidth)
-        pOptions.setValue("GuiBuildManuscript", "viewWidth", viewWidth)
+        pOptions.setValue("GuiManuscript", "winWidth", winWidth)
+        pOptions.setValue("GuiManuscript", "winHeight", winHeight)
+        pOptions.setValue("GuiManuscript", "optsWidth", optsWidth)
+        pOptions.setValue("GuiManuscript", "viewWidth", viewWidth)
         pOptions.saveSettings()
 
         return
@@ -260,7 +290,7 @@ class GuiBuildManuscript(QDialog):
             self._updateBuildsList()
         return
 
-# END Class GuiBuildManuscript
+# END Class GuiManuscript
 
 
 class GuiManuscriptPreview(QTextBrowser):
@@ -275,3 +305,14 @@ class GuiManuscriptPreview(QTextBrowser):
         return
 
 # END Class GuiManuscriptPreview
+
+
+class GuiManuscriptBuild(QDialog):
+
+    def __init__(self, parent):
+        super().__init__(parent=parent)
+        self._manusGui = parent
+
+        return
+
+# END Class GuiManuscriptBuild

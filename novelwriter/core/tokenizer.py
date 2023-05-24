@@ -4,7 +4,8 @@ novelWriter – Text Tokenizer
 Split novelWriter plain text into its elements
 
 File History:
-Created: 2019-05-05 [0.0.1]
+Created: 2019-05-05 [0.0.1] Tokenizer
+Created: 2023-05-23 [2.1b1] HeadingFormatter
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

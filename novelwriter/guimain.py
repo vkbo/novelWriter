@@ -57,7 +57,7 @@ from novelwriter.dialogs.projdetails import GuiProjectDetails
 from novelwriter.dialogs.projsettings import GuiProjectSettings
 from novelwriter.tools.build import GuiBuildNovel
 from novelwriter.tools.lipsum import GuiLipsum
-from novelwriter.tools.manusbuild import GuiBuildManuscript
+from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.projwizard import GuiProjectWizard
 from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.core.project import NWProject
@@ -1020,10 +1020,10 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        dlgBuild = getGuiItem("GuiBuildManuscript")
+        dlgBuild = getGuiItem("GuiManuscript")
         if dlgBuild is None:
-            dlgBuild = GuiBuildManuscript(self)
-        assert isinstance(dlgBuild, GuiBuildManuscript)
+            dlgBuild = GuiManuscript(self)
+        assert isinstance(dlgBuild, GuiManuscript)
 
         dlgBuild.setModal(False)
         dlgBuild.show()
