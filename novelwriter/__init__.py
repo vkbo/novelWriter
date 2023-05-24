@@ -155,13 +155,14 @@ def main(sysArgs=None):
         elif inOpt == "--testmode":
             testMode = True
 
-    # Set Logging
-    cHandle = logging.StreamHandler()
-    cHandle.setFormatter(logging.Formatter(fmt=logFormat, style="{"))
-
+    # Setup Logging
     pkgLogger = logging.getLogger(__package__)
-    pkgLogger.addHandler(cHandle)
     pkgLogger.setLevel(logLevel)
+    if len(pkgLogger.handlers) == 0:
+        # Make sure we only create one logger (mostly an issue with tests)
+        cHandle = logging.StreamHandler()
+        cHandle.setFormatter(logging.Formatter(fmt=logFormat, style="{"))
+        pkgLogger.addHandler(cHandle)
 
     logger.info("Starting novelWriter %s (%s) %s", __version__, __hexversion__, __date__)
 
