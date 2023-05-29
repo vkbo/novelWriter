@@ -27,6 +27,7 @@ import json
 import uuid
 import hashlib
 import logging
+import xml.etree.ElementTree as ET
 
 from pathlib import Path
 from datetime import datetime
@@ -562,3 +563,47 @@ class NWConfigParser(ConfigParser):
         return result
 
 # END Class NWConfigParser
+
+
+# =============================================================================================== #
+#  Third Party Code
+# =============================================================================================== #
+
+def xmlIndent(tree, space="  ", level=0):
+    """The XML indent function from CPython, that was only added in Python 3.9.
+    It is included here to support older versions of Python.
+    https://github.com/python/cpython/blob/main/Lib/xml/etree/ElementTree.py
+    """
+    if isinstance(tree, ET.ElementTree):
+        tree = tree.getroot()
+    if level < 0:
+        raise ValueError(f"Initial indentation level must be >= 0, got {level}")
+    if not len(tree):
+        return
+
+    # Reduce the memory consumption by reusing indentation strings.
+    indentations = ["\n" + level * space]
+
+    def _indent_children(elem, level):
+        # Start a new indentation level for the first child.
+        child_level = level + 1
+        try:
+            child_indentation = indentations[child_level]
+        except IndexError:
+            child_indentation = indentations[level] + space
+            indentations.append(child_indentation)
+
+        if not elem.text or not elem.text.strip():
+            elem.text = child_indentation
+
+        for child in elem:
+            if len(child):
+                _indent_children(child, child_level)
+            if not child.tail or not child.tail.strip():
+                child.tail = child_indentation
+
+        # Dedent after the last child by overwriting the previous indentation.
+        if not child.tail.strip():  # type: ignore
+            child.tail = indentations[level]  # type: ignore
+
+    _indent_children(tree, 0)

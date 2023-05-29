@@ -25,17 +25,18 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import sys
 import logging
+import xml.etree.ElementTree as ET
 
 from enum import Enum
-from lxml import etree
 from time import time
 from pathlib import Path
 
 from novelwriter import __version__, __hexversion__
 from novelwriter.common import (
     checkBool, checkInt, checkString, checkStringNone, formatTimeStamp,
-    hexToInt, simplified, yesNo
+    hexToInt, simplified, xmlIndent, yesNo
 )
 from novelwriter.constants import nwFiles
 
@@ -163,7 +164,7 @@ class ProjectXMLReader:
         logger.debug("Reading project XML")
 
         try:
-            xml = etree.parse(str(self._path))
+            xml = ET.parse(str(self._path))
             self._state = XMLReadState.NO_ERROR
 
         except Exception as exc:
@@ -174,7 +175,7 @@ class ProjectXMLReader:
             backFile = self._path.with_suffix(".bak")
             if backFile.is_file():
                 try:
-                    xml = etree.parse(str(backFile))
+                    xml = ET.parse(str(backFile))
                     self._state = XMLReadState.PARSED_BACKUP
                     logger.info("Backup project file parsed")
                 except Exception as exc:
@@ -500,7 +501,7 @@ class ProjectXMLWriter:
         tStart = time()
         logger.debug("Writing project XML")
 
-        xRoot = etree.Element("novelWriterXML", attrib={
+        xRoot = ET.Element("novelWriterXML", attrib={
             "appVersion":  str(__version__),
             "hexVersion":  str(__hexversion__),
             "fileVersion": FILE_VERSION,
@@ -515,13 +516,13 @@ class ProjectXMLWriter:
             "editTime": str(editTime),
         }
 
-        xProject = etree.SubElement(xRoot, "project", attrib=projAttr)
+        xProject = ET.SubElement(xRoot, "project", attrib=projAttr)
         self._packSingleValue(xProject, "name", projData.name)
         self._packSingleValue(xProject, "title", projData.title)
         self._packSingleValue(xProject, "author", projData.author)
 
         # Save Project Settings
-        xSettings = etree.SubElement(xRoot, "settings")
+        xSettings = ET.SubElement(xRoot, "settings")
         self._packSingleValue(xSettings, "doBackup", yesNo(projData.doBackup))
         self._packSingleValue(xSettings, "language", projData.language)
         self._packSingleValue(xSettings, "spellChecking", projData.spellLang, attrib={
@@ -532,11 +533,11 @@ class ProjectXMLWriter:
         self._packDictKeyValue(xSettings, "titleFormat", projData.titleFormat)
 
         # Save Status/Importance
-        xStatus = etree.SubElement(xSettings, "status")
+        xStatus = ET.SubElement(xSettings, "status")
         for label, attrib in projData.itemStatus.pack():
             self._packSingleValue(xStatus, "entry", label, attrib=attrib)
 
-        xImport = etree.SubElement(xSettings, "importance")
+        xImport = ET.SubElement(xSettings, "importance")
         for label, attrib in projData.itemImport.pack():
             self._packSingleValue(xImport, "entry", label, attrib=attrib)
 
@@ -547,11 +548,11 @@ class ProjectXMLWriter:
             "notesWords": str(projData.currCounts[1]),
         }
 
-        xContent = etree.SubElement(xRoot, "content", attrib=contAttr)
+        xContent = ET.SubElement(xRoot, "content", attrib=contAttr)
         for item in projContent:
-            xItem = etree.SubElement(xContent, "item", attrib=item.get("itemAttr", {}))
-            etree.SubElement(xItem, "meta", attrib=item.get("metaAttr", {}))
-            xName = etree.SubElement(xItem, "name", attrib=item.get("nameAttr", {}))
+            xItem = ET.SubElement(xContent, "item", attrib=item.get("itemAttr", {}))
+            ET.SubElement(xItem, "meta", attrib=item.get("metaAttr", {}))
+            xName = ET.SubElement(xItem, "name", attrib=item.get("nameAttr", {}))
             xName.text = item["name"]
 
         # Write the XML tree to file
@@ -559,9 +560,12 @@ class ProjectXMLWriter:
         tempFile = saveFile.with_suffix(".tmp")
         backFile = saveFile.with_suffix(".bak")
         try:
-            tempFile.write_bytes(etree.tostring(
-                xRoot, pretty_print=True, encoding="utf-8", xml_declaration=True
-            ))
+            xml = ET.ElementTree(xRoot)
+            if sys.hexversion < 0x030900f0:
+                xmlIndent(xml, space="  ")
+            else:
+                ET.indent(xml, space="  ")
+            xml.write(tempFile, encoding="utf-8", xml_declaration=True)
         except Exception as exc:
             self._error = exc
             return False
@@ -587,17 +591,17 @@ class ProjectXMLWriter:
     def _packSingleValue(self, xParent, name, value, attrib=None):
         """Pack a single value into an XML element.
         """
-        xItem = etree.SubElement(xParent, name, attrib=attrib)
+        xItem = ET.SubElement(xParent, name, attrib=attrib or {})
         xItem.text = str(value) or ""
         return
 
     def _packDictKeyValue(self, xParent, name, data):
         """Pack the entries of a dictionary into an XML element.
         """
-        xItem = etree.SubElement(xParent, name)
+        xItem = ET.SubElement(xParent, name)
         for key, value in data.items():
             if len(key) > 0:
-                xEntry = etree.SubElement(xItem, "entry", attrib={"key": key})
+                xEntry = ET.SubElement(xItem, "entry", attrib={"key": key})
                 xEntry.text = str(value) or ""
         return
 
