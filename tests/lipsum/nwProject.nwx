@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.5" timeStamp="2022-11-07 13:00:43">
-  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="38" autoCount="24" editTime="1900">
+<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" timeStamp="2023-05-29 17:10:19">
+  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="40" autoCount="24" editTime="1905">
     <name>Lorem Ipsum</name>
     <title>Lorem Ipsum</title>
     <author>lipsum.com</author>
@@ -24,7 +24,7 @@
       <entry key="chapter">Chapter %ch%: %title%</entry>
       <entry key="unnumbered">%title%</entry>
       <entry key="scene">* * *</entry>
-      <entry key="section"></entry>
+      <entry key="section" />
     </titleFormat>
     <status>
       <entry key="sbaa94f" count="3" red="100" green="100" blue="100">New</entry>
@@ -41,87 +41,87 @@
   </settings>
   <content items="21" novelWords="3109" notesWords="738">
     <item handle="b3643d0f92e32" parent="None" root="b3643d0f92e32" order="0" type="ROOT" class="NOVEL">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="sbaa94f" import="i613591">Novel</name>
     </item>
     <item handle="7a992350f3eb6" parent="b3643d0f92e32" root="b3643d0f92e32" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="230" wordCount="40" paraCount="3" cursorPos="148"/>
+      <meta expanded="no" heading="H1" charCount="230" wordCount="40" paraCount="3" cursorPos="148" />
       <name status="sedd043" import="i613591" active="yes">Lorem Ipsum</name>
     </item>
     <item handle="8c58a65414c23" parent="b3643d0f92e32" root="b3643d0f92e32" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H0" charCount="1058" wordCount="176" paraCount="2" cursorPos="43"/>
+      <meta expanded="no" heading="H0" charCount="1058" wordCount="176" paraCount="2" cursorPos="43" />
       <name status="sedd043" import="i613591" active="yes">Front Matter</name>
     </item>
     <item handle="88d59a277361b" parent="b3643d0f92e32" root="b3643d0f92e32" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="584" wordCount="92" paraCount="1" cursorPos="4"/>
+      <meta expanded="no" heading="H2" charCount="584" wordCount="92" paraCount="1" cursorPos="4" />
       <name status="s92a87b" import="i613591" active="yes">Prologue</name>
     </item>
     <item handle="db7e733775d4d" parent="b3643d0f92e32" root="b3643d0f92e32" order="3" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="35" wordCount="6" paraCount="1" cursorPos="42"/>
+      <meta expanded="no" heading="H1" charCount="35" wordCount="6" paraCount="1" cursorPos="42" />
       <name status="sbaa94f" import="i613591" active="yes">Act One</name>
     </item>
     <item handle="45e6b01ca35c1" parent="b3643d0f92e32" root="b3643d0f92e32" order="4" type="FOLDER" class="NOVEL">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="s92a87b" import="i613591">Chapter One</name>
     </item>
     <item handle="fb609cd8319dc" parent="45e6b01ca35c1" root="b3643d0f92e32" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="419" wordCount="67" paraCount="1" cursorPos="56"/>
+      <meta expanded="no" heading="H2" charCount="419" wordCount="67" paraCount="1" cursorPos="56" />
       <name status="s92a87b" import="i613591" active="yes">Chapter One</name>
     </item>
     <item handle="88243afbe5ed8" parent="45e6b01ca35c1" root="b3643d0f92e32" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="2758" wordCount="404" paraCount="4" cursorPos="1528"/>
+      <meta expanded="no" heading="H3" charCount="2758" wordCount="404" paraCount="4" cursorPos="1528" />
       <name status="sedd043" import="i613591" active="yes">Scene One</name>
     </item>
     <item handle="f96ec11c6a3da" parent="45e6b01ca35c1" root="b3643d0f92e32" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="4043" wordCount="600" paraCount="6" cursorPos="2335"/>
+      <meta expanded="no" heading="H3" charCount="4043" wordCount="600" paraCount="6" cursorPos="2335" />
       <name status="sedd043" import="i613591" active="yes">Scene Two</name>
     </item>
     <item handle="846352075de7d" parent="b3643d0f92e32" root="b3643d0f92e32" order="5" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="631" wordCount="109" paraCount="3" cursorPos="376"/>
+      <meta expanded="no" heading="H2" charCount="631" wordCount="109" paraCount="3" cursorPos="376" />
       <name status="sbaa94f" import="i613591" active="no">Interlude</name>
     </item>
     <item handle="6bd935d2490cd" parent="b3643d0f92e32" root="b3643d0f92e32" order="6" type="FOLDER" class="NOVEL">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="s92a87b" import="i613591">Chapter Two</name>
     </item>
     <item handle="441420a886d82" parent="6bd935d2490cd" root="b3643d0f92e32" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="477" wordCount="70" paraCount="1" cursorPos="56"/>
+      <meta expanded="no" heading="H2" charCount="477" wordCount="70" paraCount="1" cursorPos="56" />
       <name status="s92a87b" import="i613591" active="yes">Chapter Two</name>
     </item>
     <item handle="eb103bc70c90c" parent="6bd935d2490cd" root="b3643d0f92e32" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="3006" wordCount="439" paraCount="4" cursorPos="57"/>
+      <meta expanded="no" heading="H3" charCount="3006" wordCount="439" paraCount="4" cursorPos="57" />
       <name status="sedd043" import="i613591" active="yes">Scene Three</name>
     </item>
     <item handle="f8c0562e50f1b" parent="6bd935d2490cd" root="b3643d0f92e32" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="3839" wordCount="563" paraCount="6" cursorPos="56"/>
+      <meta expanded="no" heading="H3" charCount="3839" wordCount="563" paraCount="6" cursorPos="56" />
       <name status="sedd043" import="i613591" active="yes">Scene Four</name>
     </item>
     <item handle="47666c91c7ccf" parent="6bd935d2490cd" root="b3643d0f92e32" order="3" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="3644" wordCount="543" paraCount="5" cursorPos="351"/>
+      <meta expanded="no" heading="H3" charCount="3644" wordCount="543" paraCount="5" cursorPos="351" />
       <name status="sedd043" import="i613591" active="yes">Scene Five</name>
     </item>
     <item handle="67a8707f2f249" parent="None" root="67a8707f2f249" order="1" type="ROOT" class="CHARACTER">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="sbaa94f" import="i613591">Characters</name>
     </item>
     <item handle="4c4f28287af27" parent="67a8707f2f249" root="67a8707f2f249" order="0" type="FILE" class="CHARACTER" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="1864" wordCount="284" paraCount="3" cursorPos="1883"/>
+      <meta expanded="no" heading="H1" charCount="1864" wordCount="284" paraCount="3" cursorPos="1883" />
       <name status="sbaa94f" import="i613591" active="yes">Mr. Nobody</name>
     </item>
     <item handle="6c6afb1247750" parent="None" root="6c6afb1247750" order="2" type="ROOT" class="PLOT">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="sbaa94f" import="i613591">Plot</name>
     </item>
     <item handle="2426c6f0ca922" parent="6c6afb1247750" root="6c6afb1247750" order="0" type="FILE" class="PLOT" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="1369" wordCount="195" paraCount="2" cursorPos="1387"/>
+      <meta expanded="no" heading="H1" charCount="1369" wordCount="195" paraCount="2" cursorPos="1387" />
       <name status="sbaa94f" import="i613591" active="yes">Main</name>
     </item>
     <item handle="60bdf227455cc" parent="None" root="60bdf227455cc" order="3" type="ROOT" class="WORLD">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="sbaa94f" import="i613591">World</name>
     </item>
     <item handle="04468803b92e1" parent="60bdf227455cc" root="60bdf227455cc" order="0" type="FILE" class="WORLD" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="1770" wordCount="259" paraCount="3" cursorPos="1792"/>
+      <meta expanded="no" heading="H1" charCount="1770" wordCount="259" paraCount="3" cursorPos="1792" />
       <name status="sbaa94f" import="i613591" active="yes">Ancient Europe</name>
     </item>
   </content>

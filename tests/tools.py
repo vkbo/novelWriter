@@ -27,7 +27,7 @@ from pathlib import Path
 from PyQt5.QtWidgets import qApp
 
 XML_IGNORE = ("<novelWriterXML", "<project")
-ODT_IGNORE = ("<meta:generator", "<meta:creation-date", "<dc:date")
+ODT_IGNORE = ("<meta:generator", "<meta:creation-date", "<dc:date", "<meta:editing")
 
 
 class C:

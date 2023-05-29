@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.5" timeStamp="2022-11-07 12:57:21">
+<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" timeStamp="2023-05-29 17:01:12">
   <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed" saveCount="2" autoCount="1" editTime="0">
     <name>New Project</name>
     <title>New Novel</title>
@@ -15,13 +15,13 @@
       <entry key="novelTree">None</entry>
       <entry key="outline">None</entry>
     </lastHandle>
-    <autoReplace/>
+    <autoReplace />
     <titleFormat>
       <entry key="title">%title%</entry>
       <entry key="chapter">%title%</entry>
       <entry key="unnumbered">%title%</entry>
       <entry key="scene">* * *</entry>
-      <entry key="section"></entry>
+      <entry key="section" />
     </titleFormat>
     <status>
       <entry key="s000000" count="5" red="100" green="100" blue="100">New</entry>
@@ -38,35 +38,35 @@
   </settings>
   <content items="8" novelWords="9" notesWords="0">
     <item handle="0000000000008" parent="None" root="0000000000008" order="0" type="ROOT" class="NOVEL">
-      <meta expanded="no"/>
+      <meta expanded="no" />
       <name status="s000000" import="i000004">Novel</name>
     </item>
     <item handle="000000000000c" parent="0000000000008" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="20" wordCount="5" paraCount="1" cursorPos="0"/>
+      <meta expanded="no" heading="H1" charCount="20" wordCount="5" paraCount="1" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Title Page</name>
     </item>
     <item handle="000000000000d" parent="0000000000008" root="0000000000008" order="1" type="FOLDER" class="NOVEL">
-      <meta expanded="no"/>
+      <meta expanded="no" />
       <name status="s000000" import="i000004">New Chapter</name>
     </item>
     <item handle="000000000000e" parent="000000000000d" root="0000000000008" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="11" wordCount="2" paraCount="0" cursorPos="0"/>
+      <meta expanded="no" heading="H2" charCount="11" wordCount="2" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">New Chapter</name>
     </item>
     <item handle="000000000000f" parent="000000000000d" root="0000000000008" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="9" wordCount="2" paraCount="0" cursorPos="0"/>
+      <meta expanded="no" heading="H3" charCount="9" wordCount="2" paraCount="0" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">New Scene</name>
     </item>
     <item handle="0000000000009" parent="None" root="0000000000009" order="1" type="ROOT" class="PLOT">
-      <meta expanded="no"/>
+      <meta expanded="no" />
       <name status="s000000" import="i000004">Plot</name>
     </item>
     <item handle="000000000000a" parent="None" root="000000000000a" order="2" type="ROOT" class="CHARACTER">
-      <meta expanded="no"/>
+      <meta expanded="no" />
       <name status="s000000" import="i000004">Characters</name>
     </item>
     <item handle="000000000000b" parent="None" root="000000000000b" order="3" type="ROOT" class="WORLD">
-      <meta expanded="no"/>
+      <meta expanded="no" />
       <name status="s000000" import="i000004">World</name>
     </item>
   </content>
