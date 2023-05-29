@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" timeStamp="2023-04-15 20:52:06">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1475" autoCount="237" editTime="74579">
+<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" timeStamp="2023-05-29 21:29:35">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1505" autoCount="237" editTime="74902">
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
@@ -25,7 +25,7 @@
       <entry key="chapter">Chapter %chw%: %title%</entry>
       <entry key="unnumbered">%title%</entry>
       <entry key="scene">Scene %ch%.%sc%: %title%</entry>
-      <entry key="section"></entry>
+      <entry key="section" />
     </titleFormat>
     <status>
       <entry key="sf12341" count="4" red="100" green="100" blue="100">New</entry>
@@ -45,111 +45,111 @@
   </settings>
   <content items="27" novelWords="954" notesWords="409">
     <item handle="7031beac91f75" parent="None" root="7031beac91f75" order="0" type="ROOT" class="NOVEL">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="sc24b8f" import="ia857f0">Novel</name>
     </item>
     <item handle="53b69b83cdafc" parent="7031beac91f75" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="95" wordCount="19" paraCount="2" cursorPos="31"/>
+      <meta expanded="no" heading="H1" charCount="95" wordCount="19" paraCount="2" cursorPos="31" />
       <name status="sc24b8f" import="ia857f0" active="yes">Title Page</name>
     </item>
     <item handle="974e400180a99" parent="7031beac91f75" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H0" charCount="251" wordCount="50" paraCount="2" cursorPos="277"/>
+      <meta expanded="no" heading="H0" charCount="251" wordCount="50" paraCount="2" cursorPos="277" />
       <name status="sf12341" import="ia857f0" active="yes">Page</name>
     </item>
     <item handle="edca4be2fcaf8" parent="7031beac91f75" root="7031beac91f75" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="26" wordCount="6" paraCount="1" cursorPos="36"/>
+      <meta expanded="no" heading="H1" charCount="26" wordCount="6" paraCount="1" cursorPos="36" />
       <name status="s90e6c9" import="ia857f0" active="yes">Part One</name>
     </item>
     <item handle="6a2d6d5f4f401" parent="7031beac91f75" root="7031beac91f75" order="3" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="yes" heading="H2" charCount="95" wordCount="18" paraCount="1" cursorPos="291"/>
+      <meta expanded="yes" heading="H2" charCount="95" wordCount="18" paraCount="1" cursorPos="291" />
       <name status="sf24ce6" import="ia857f0" active="yes">Chapter One</name>
     </item>
     <item handle="636b6aa9b697b" parent="6a2d6d5f4f401" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="2687" wordCount="479" paraCount="14" cursorPos="67"/>
+      <meta expanded="no" heading="H3" charCount="2687" wordCount="479" paraCount="14" cursorPos="1369" />
       <name status="s90e6c9" import="ia857f0" active="yes">Making a Scene</name>
     </item>
     <item handle="bc0cbd2a407f3" parent="6a2d6d5f4f401" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="548" wordCount="108" paraCount="3" cursorPos="465"/>
+      <meta expanded="no" heading="H3" charCount="548" wordCount="108" paraCount="3" cursorPos="465" />
       <name status="s90e6c9" import="ia857f0" active="yes">Another Scene</name>
     </item>
     <item handle="ba8a28a246524" parent="7031beac91f75" root="7031beac91f75" order="4" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="617" wordCount="101" paraCount="3" cursorPos="310"/>
+      <meta expanded="no" heading="H2" charCount="617" wordCount="101" paraCount="3" cursorPos="310" />
       <name status="s78ea90" import="ia857f0" active="yes">Interlude</name>
     </item>
     <item handle="96b68994dfa3d" parent="7031beac91f75" root="7031beac91f75" order="5" type="FILE" class="NOVEL" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="1909" wordCount="346" paraCount="7" cursorPos="0"/>
+      <meta expanded="no" heading="H1" charCount="1909" wordCount="346" paraCount="7" cursorPos="0" />
       <name status="sf24ce6" import="ia857f0" active="no">A Note on Structure</name>
     </item>
     <item handle="88706ddc78b1b" parent="7031beac91f75" root="7031beac91f75" order="6" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="yes" heading="H2" charCount="139" wordCount="28" paraCount="1" cursorPos="188"/>
+      <meta expanded="yes" heading="H2" charCount="139" wordCount="28" paraCount="1" cursorPos="188" />
       <name status="s90e6c9" import="ia857f0" active="yes">Chapter Two</name>
     </item>
     <item handle="ae7339df26ded" parent="88706ddc78b1b" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="189" wordCount="37" paraCount="1" cursorPos="0"/>
+      <meta expanded="no" heading="H3" charCount="189" wordCount="37" paraCount="1" cursorPos="0" />
       <name status="s90e6c9" import="ia857f0" active="yes">We Found John!</name>
     </item>
     <item handle="e5e47ebf63b1c" parent="None" root="e5e47ebf63b1c" order="1" type="ROOT" class="NOVEL">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="sf12341" import="ia857f0">Sequel</name>
     </item>
     <item handle="bacb7059e3083" parent="e5e47ebf63b1c" root="e5e47ebf63b1c" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="27" wordCount="5" paraCount="1" cursorPos="100"/>
+      <meta expanded="no" heading="H1" charCount="27" wordCount="5" paraCount="1" cursorPos="100" />
       <name status="sc24b8f" import="ia857f0" active="yes">Title Page</name>
     </item>
     <item handle="a520879ca0b45" parent="e5e47ebf63b1c" root="e5e47ebf63b1c" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="299" wordCount="55" paraCount="2" cursorPos="104"/>
+      <meta expanded="no" heading="H2" charCount="299" wordCount="55" paraCount="2" cursorPos="104" />
       <name status="s90e6c9" import="ia857f0" active="yes">Chapter One</name>
     </item>
     <item handle="f6622b4617424" parent="None" root="f6622b4617424" order="2" type="ROOT" class="CHARACTER">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="sf12341" import="ia857f0">Characters</name>
     </item>
     <item handle="f7e2d9f330615" parent="f6622b4617424" root="f6622b4617424" order="0" type="FOLDER" class="CHARACTER">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="sf12341" import="ia857f0">Main Characters</name>
     </item>
     <item handle="14298de4d9524" parent="f7e2d9f330615" root="f6622b4617424" order="0" type="FILE" class="CHARACTER" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="49" wordCount="9" paraCount="1" cursorPos="24"/>
+      <meta expanded="no" heading="H1" charCount="49" wordCount="9" paraCount="1" cursorPos="24" />
       <name status="sf12341" import="icfb3a5" active="yes">John Smith</name>
     </item>
     <item handle="bb2c23b3c42cc" parent="f7e2d9f330615" root="f6622b4617424" order="1" type="FILE" class="CHARACTER" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="55" wordCount="9" paraCount="1" cursorPos="25"/>
+      <meta expanded="no" heading="H1" charCount="55" wordCount="9" paraCount="1" cursorPos="25" />
       <name status="sf12341" import="i2d7a54" active="yes">Jane Smith</name>
     </item>
     <item handle="15c4492bd5107" parent="None" root="15c4492bd5107" order="3" type="ROOT" class="WORLD">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="sf12341" import="ia857f0">Locations</name>
     </item>
     <item handle="b3e74dbc1f584" parent="15c4492bd5107" root="15c4492bd5107" order="0" type="FILE" class="WORLD" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="76" wordCount="15" paraCount="1" cursorPos="20"/>
+      <meta expanded="no" heading="H1" charCount="76" wordCount="15" paraCount="1" cursorPos="20" />
       <name status="sf12341" import="i56be10" active="yes">Earth</name>
     </item>
     <item handle="f1471bef9f2ae" parent="15c4492bd5107" root="15c4492bd5107" order="1" type="FILE" class="WORLD" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="115" wordCount="24" paraCount="1" cursorPos="133"/>
+      <meta expanded="no" heading="H1" charCount="115" wordCount="24" paraCount="1" cursorPos="133" />
       <name status="sf12341" import="icfb3a5" active="yes">Space</name>
     </item>
     <item handle="5eaea4e8cdee8" parent="15c4492bd5107" root="15c4492bd5107" order="2" type="FILE" class="WORLD" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="28" wordCount="6" paraCount="1" cursorPos="45"/>
+      <meta expanded="no" heading="H1" charCount="28" wordCount="6" paraCount="1" cursorPos="45" />
       <name status="sf12341" import="i2d7a54" active="yes">Mars</name>
     </item>
     <item handle="6827118336ac1" parent="None" root="6827118336ac1" order="4" type="ROOT" class="ARCHIVE">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="sf12341" import="ia857f0">Archive</name>
     </item>
     <item handle="ae9bf3c3ea159" parent="6827118336ac1" root="6827118336ac1" order="0" type="FOLDER" class="ARCHIVE">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="sf12341" import="ia857f0">Scenes</name>
     </item>
     <item handle="8a5deb88c0e97" parent="ae9bf3c3ea159" root="6827118336ac1" order="0" type="FILE" class="ARCHIVE" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="232" wordCount="42" paraCount="1" cursorPos="239"/>
+      <meta expanded="no" heading="H3" charCount="232" wordCount="42" paraCount="1" cursorPos="239" />
       <name status="s90e6c9" import="ia857f0" active="yes">Old File</name>
     </item>
     <item handle="98acd8c76c93a" parent="None" root="98acd8c76c93a" order="5" type="ROOT" class="TRASH">
-      <meta expanded="yes"/>
+      <meta expanded="yes" />
       <name status="sf12341" import="ia857f0">Trash</name>
     </item>
     <item handle="b8136a5a774a0" parent="98acd8c76c93a" root="98acd8c76c93a" order="0" type="FILE" class="TRASH" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="30" wordCount="6" paraCount="1" cursorPos="36"/>
+      <meta expanded="no" heading="H3" charCount="30" wordCount="6" paraCount="1" cursorPos="36" />
       <name status="sf12341" import="ia857f0" active="yes">Delete Me!</name>
     </item>
   </content>

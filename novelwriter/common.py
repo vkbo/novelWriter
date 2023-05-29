@@ -23,10 +23,13 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from __future__ import annotations
+
 import json
 import uuid
 import hashlib
 import logging
+import xml.etree.ElementTree as ET
 
 from pathlib import Path
 from datetime import datetime
@@ -433,6 +436,45 @@ def jsonEncode(data, n=0, nmax=0):
             buffer.append(chunk)
 
     return "".join(buffer)
+
+
+def xmlIndent(tree: ET.Element | ET.ElementTree):
+    """A modified version of the XML indent function in the standard
+    library. It behaves more closely to how the one from lxml does.
+    """
+    if isinstance(tree, ET.ElementTree):
+        tree = tree.getroot()
+
+    indentations = ["\n"]
+
+    def indentChildren(elem, level):
+        chLevel = level + 1
+        try:
+            chIndent = indentations[chLevel]
+        except IndexError:
+            chIndent = indentations[level] + "  "
+            indentations.append(chIndent)
+
+        if elem.text is None:
+            elem.text = chIndent
+
+        last = None
+        for child in elem:
+            if len(child):
+                indentChildren(child, chLevel)
+            if child.tail is None:
+                child.tail = chIndent
+                last = child
+
+        # Dedent the last child
+        if last is not None:
+            last.tail = indentations[level]
+
+    if len(tree):
+        indentChildren(tree, 0)
+    tree.tail = "\n"
+
+    return
 
 
 # =============================================================================================== #

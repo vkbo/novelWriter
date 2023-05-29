@@ -154,7 +154,6 @@ def testBaseInit_Imports(caplog, monkeypatch, fncPath):
     monkeypatch.setattr("PyQt5.QtWidgets.QErrorMessage.__init__", lambda *a: None)
     monkeypatch.setattr("PyQt5.QtWidgets.QErrorMessage.resize", lambda *a: None)
     monkeypatch.setattr("PyQt5.QtWidgets.QErrorMessage.showMessage", lambda *a: None)
-    monkeypatch.setitem(sys.modules, "lxml", None)
     monkeypatch.setattr("sys.hexversion", 0x0)
     monkeypatch.setattr("novelwriter.CONFIG.verQtValue", 0x050000)
     monkeypatch.setattr("novelwriter.CONFIG.verPyQtValue", 0x050000)
@@ -167,11 +166,9 @@ def testBaseInit_Imports(caplog, monkeypatch, fncPath):
     assert ex.value.code & 4 == 4    # Python version not satisfied
     assert ex.value.code & 8 == 8    # Qt version not satisfied
     assert ex.value.code & 16 == 16  # PyQt version not satisfied
-    assert ex.value.code & 32 == 32  # lxml package missing
 
     assert "At least Python" in caplog.messages[0]
     assert "At least Qt5" in caplog.messages[1]
     assert "At least PyQt5" in caplog.messages[2]
-    assert "lxml" in caplog.messages[3]
 
 # END Test testBaseInit_Imports

@@ -196,7 +196,6 @@ class Config:
 
         # Check Python Version
         self.verPyString = sys.version.split()[0]
-        self.verPyHexVal = sys.hexversion
 
         # Check OS Type
         self.osType    = sys.platform

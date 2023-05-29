@@ -129,12 +129,6 @@ class NWErrorMessage(QDialog):
             kernelVersion = "Unknown"
 
         try:
-            import lxml
-            lxmlVersion = lxml.__version__  # type: ignore
-        except Exception:
-            lxmlVersion = "Unknown"
-
-        try:
             import enchant
             enchantVersion = enchant.__version__
         except Exception:
@@ -148,7 +142,6 @@ class NWErrorMessage(QDialog):
                 f"Host OS: {sys.platform} ({kernelVersion})\n"
                 f"Python: {sys.version.split()[0]} ({sys.hexversion:#x})\n"
                 f"Qt: {QT_VERSION_STR}, PyQt: {PYQT_VERSION_STR}\n"
-                f"lxml: {lxmlVersion}\n"
                 f"enchant: {enchantVersion}\n\n"
                 f"{exType.__name__}:\n{str(exValue)}\n\n"
                 f"Traceback:\n{exTrace}\n"

@@ -23,6 +23,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import sys
 import logging
 
 from enum import Enum
@@ -31,10 +32,10 @@ from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer, QThreadPool, pyqtSlot
-from PyQt5.QtGui import QIcon, QKeySequence, QCursor
+from PyQt5.QtGui import QCursor, QIcon, QKeySequence
 from PyQt5.QtWidgets import (
-    qApp, QMainWindow, QVBoxLayout, QWidget, QSplitter, QFileDialog, QShortcut,
-    QMessageBox, QDialog, QStackedWidget
+    qApp, QDialog, QFileDialog, QMainWindow, QMessageBox, QShortcut, QSplitter,
+    QStackedWidget, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, __hexversion__
@@ -88,7 +89,7 @@ class GuiMain(QMainWindow):
         logger.info("Host: %s", CONFIG.hostName)
         logger.info("Qt5: %s (0x%06x)", CONFIG.verQtString, CONFIG.verQtValue)
         logger.info("PyQt5: %s (0x%06x)", CONFIG.verPyQtString, CONFIG.verPyQtValue)
-        logger.info("Python: %s (0x%08x)", CONFIG.verPyString, CONFIG.verPyHexVal)
+        logger.info("Python: %s (0x%08x)", CONFIG.verPyString, sys.hexversion)
         logger.info("GUI Language: %s", CONFIG.guiLocale)
 
         # Core Classes
