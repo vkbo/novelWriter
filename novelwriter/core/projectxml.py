@@ -25,7 +25,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import sys
 import logging
 import xml.etree.ElementTree as ET
 
@@ -561,10 +560,7 @@ class ProjectXMLWriter:
         backFile = saveFile.with_suffix(".bak")
         try:
             xml = ET.ElementTree(xRoot)
-            if sys.hexversion < 0x030900f0:
-                xmlIndent(xml, space="  ")
-            else:
-                ET.indent(xml, space="  ")
+            xmlIndent(xml)
             xml.write(tempFile, encoding="utf-8", xml_declaration=True)
         except Exception as exc:
             self._error = exc

@@ -64,21 +64,21 @@ def testCoreToOdt_Init(mockGUI):
     theDoc.initDocument()
 
     # Document XML
-    assert theDoc._dFlat is not None
-    assert theDoc._dCont is None
-    assert theDoc._dMeta is None
-    assert theDoc._dStyl is None
+    assert theDoc._dFlat.tag == _mkTag("office", "document")
+    assert theDoc._dCont.tag == ""
+    assert theDoc._dMeta.tag == ""
+    assert theDoc._dStyl.tag == ""
 
     # Content XML
-    assert theDoc._xMeta is not None
-    assert theDoc._xFont is not None
-    assert theDoc._xFnt2 is None
-    assert theDoc._xStyl is not None
-    assert theDoc._xAuto is not None
-    assert theDoc._xAut2 is None
-    assert theDoc._xMast is not None
-    assert theDoc._xBody is not None
-    assert theDoc._xText is not None
+    assert theDoc._xMeta.tag == _mkTag("office", "meta")
+    assert theDoc._xFont.tag == _mkTag("office", "font-face-decls")
+    assert theDoc._xFnt2.tag == ""
+    assert theDoc._xStyl.tag == _mkTag("office", "styles")
+    assert theDoc._xAuto.tag == _mkTag("office", "automatic-styles")
+    assert theDoc._xAut2.tag == ""
+    assert theDoc._xMast.tag == _mkTag("office", "master-styles")
+    assert theDoc._xBody.tag == _mkTag("office", "body")
+    assert theDoc._xText.tag == _mkTag("office", "text")
 
     # ODT Doc
     # =======
@@ -87,21 +87,22 @@ def testCoreToOdt_Init(mockGUI):
     theDoc.initDocument()
 
     # Document XML
-    assert theDoc._dFlat is None
-    assert theDoc._dCont is not None
-    assert theDoc._dMeta is not None
-    assert theDoc._dStyl is not None
+    assert theDoc._dFlat.tag == ""
+    assert theDoc._dCont.tag == _mkTag("office", "document-content")
+    assert theDoc._dMeta.tag == _mkTag("office", "document-meta")
+    assert theDoc._dStyl.tag == _mkTag("office", "document-styles")
 
     # Content XML
-    assert theDoc._xMeta is not None
-    assert theDoc._xFont is not None
-    assert theDoc._xFnt2 is not None
-    assert theDoc._xStyl is not None
-    assert theDoc._xAuto is not None
-    assert theDoc._xAut2 is not None
-    assert theDoc._xMast is not None
-    assert theDoc._xBody is not None
-    assert theDoc._xText is not None
+    assert theDoc._xMeta.tag == _mkTag("office", "meta")
+    assert theDoc._xFont.tag == _mkTag("office", "font-face-decls")
+    assert theDoc._xFnt2.tag == _mkTag("office", "font-face-decls")
+    assert theDoc._xStyl.tag == _mkTag("office", "styles")
+    assert theDoc._xAuto.tag == _mkTag("office", "automatic-styles")
+    assert theDoc._xAut2.tag == _mkTag("office", "automatic-styles")
+    assert theDoc._xMast.tag == _mkTag("office", "master-styles")
+    assert theDoc._xBody.tag == _mkTag("office", "body")
+    assert theDoc._xText.tag == _mkTag("office", "text")
+
 
 # END Test testCoreToOdt_Init
 
@@ -726,7 +727,7 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     def prettifyXml(inFile, outFile):
         with open(outFile, mode="wb") as fStream:
             xml = ET.parse(inFile)
-            xmlIndent(xml, space="  ")
+            xmlIndent(xml)
             xml.write(fStream, encoding="utf-8", xml_declaration=True)
 
     prettifyXml(maniOut, maniFile)

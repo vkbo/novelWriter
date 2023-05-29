@@ -92,20 +92,20 @@ class ToOdt(Tokenizer):
 
         self._isFlat = isFlat  # Flat: .fodt, otherwise .odt
 
-        self._dFlat = None  # FODT file XML root
-        self._dCont = None  # ODT content.xml root
-        self._dMeta = None  # ODT meta.xml root
-        self._dStyl = None  # ODT styles.xml root
+        self._dFlat = ET.Element("")  # FODT file XML root
+        self._dCont = ET.Element("")  # ODT content.xml root
+        self._dMeta = ET.Element("")  # ODT meta.xml root
+        self._dStyl = ET.Element("")  # ODT styles.xml root
 
-        self._xMeta = None  # Office meta root
-        self._xFont = None  # Office font face declaration
-        self._xFnt2 = None  # Office font face declaration, secondary
-        self._xStyl = None  # Office styles root
-        self._xAuto = None  # Office auto-styles root
-        self._xAut2 = None  # Office auto-styles root, secondary
-        self._xMast = None  # Office master-styles root
-        self._xBody = None  # Office body root
-        self._xText = None  # Office text root
+        self._xMeta = ET.Element("")  # Office meta root
+        self._xFont = ET.Element("")  # Office font face declaration
+        self._xFnt2 = ET.Element("")  # Office font face declaration, secondary
+        self._xStyl = ET.Element("")  # Office styles root
+        self._xAuto = ET.Element("")  # Office auto-styles root
+        self._xAut2 = ET.Element("")  # Office auto-styles root, secondary
+        self._xMast = ET.Element("")  # Office master-styles root
+        self._xBody = ET.Element("")  # Office body root
+        self._xText = ET.Element("")  # Office text root
 
         self._mainPara = {}  # User-accessible paragraph styles
         self._autoPara = {}  # Auto-generated paragraph styles
@@ -502,7 +502,7 @@ class ToOdt(Tokenizer):
         """
         with open(savePath, mode="wb") as outFile:
             xml = ET.ElementTree(self._dFlat)
-            xmlIndent(xml, space="  ")
+            xmlIndent(xml)
             xml.write(outFile, encoding="utf-8", xml_declaration=True)
         return
 
@@ -529,7 +529,6 @@ class ToOdt(Tokenizer):
         def putInZip(name, xObj, zipObj):
             with zipObj.open(name, mode="w") as fObj:
                 xml = ET.ElementTree(xObj)
-                xmlIndent(xml, space="  ")
                 xml.write(fObj, encoding="utf-8", xml_declaration=True)
 
         with ZipFile(savePath, mode="w") as outZip:
@@ -1337,8 +1336,8 @@ class XMLParagraph:
     def __init__(self, xRoot):
 
         self._xRoot = xRoot
-        self._xTail = None
-        self._xSing = None
+        self._xTail = ET.Element("")
+        self._xSing = ET.Element("")
 
         self._nState = X_ROOT_TEXT
         self._chrPos = 0
