@@ -597,7 +597,7 @@ class ToOdt(Tokenizer):
         xElem = ET.SubElement(self._xText, _mkTag("text", pTag), attrib=tAttr)
 
         # It's important to set the initial text field to empty, otherwise
-        # lxml will add a line break if the first subelement is a span.
+        # xmlIndent will add a line break if the first subelement is a span.
         xElem.text = ""
 
         if not theText:
@@ -1314,8 +1314,6 @@ X_SPAN_SING = 3
 class XMLParagraph:
     """This is a helper class to manage the text content of a single
     XML element using mixed content tags.
-
-    See: https://lxml.de/tutorial.html#the-element-class
 
     Rules:
      * The root tag can only have text set, never tail.

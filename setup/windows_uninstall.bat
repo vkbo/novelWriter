@@ -29,7 +29,7 @@ goto afterUninst
 :: Remove the desktop and start menu icons
 python setup.py win-uninstall
 
-:: Remove the PyQt5, lxml and pyenchant dependencies
+:: Remove the PyQt5 and pyenchant dependencies
 pip uninstall --yes -r requirements.txt
 
 :afterUninst

@@ -19,7 +19,7 @@ if exist setup.py (
 )
 echo.
 
-:: Install the PyQt5, lxml and pyenchant dependencies
+:: Install the PyQt5 and pyenchant dependencies
 pip install --user pywin32 -r requirements.txt
 
 :: Create the desktop and start menu icons
