@@ -992,6 +992,7 @@ class ToOdt(Tokenizer):
             _mkTag("text", "select-page"): "current"
         })
         xTail.text = "2"
+        xTail.tail = ""  # Prevent line break in indented XML
 
         # First Page Header
         xHead = ET.SubElement(xPage, _mkTag("style", "header-first"))
