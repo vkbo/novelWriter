@@ -21,12 +21,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 import zipfile
+import xml.etree.ElementTree as ET
 
-from lxml import etree
 from shutil import copyfile
 
 from tools import ODT_IGNORE, cmpFiles
 
+from novelwriter.common import xmlIndent
 from novelwriter.core.toodt import ToOdt, ODTParagraphStyle, ODTTextStyle, XMLParagraph, _mkTag
 from novelwriter.core.project import NWProject
 
@@ -44,7 +45,7 @@ XML_NS = [
 def xmlToText(xElem):
     """Get the text content of an XML element.
     """
-    rTxt = etree.tostring(xElem, encoding="utf-8", xml_declaration=False).decode()
+    rTxt = ET.tostring(xElem, encoding="utf-8", xml_declaration=False).decode()
     for nSpace in XML_NS:
         rTxt = rTxt.replace(nSpace, "")
     return rTxt
@@ -63,21 +64,21 @@ def testCoreToOdt_Init(mockGUI):
     theDoc.initDocument()
 
     # Document XML
-    assert theDoc._dFlat is not None
-    assert theDoc._dCont is None
-    assert theDoc._dMeta is None
-    assert theDoc._dStyl is None
+    assert theDoc._dFlat.tag == _mkTag("office", "document")
+    assert theDoc._dCont.tag == ""
+    assert theDoc._dMeta.tag == ""
+    assert theDoc._dStyl.tag == ""
 
     # Content XML
-    assert theDoc._xMeta is not None
-    assert theDoc._xFont is not None
-    assert theDoc._xFnt2 is None
-    assert theDoc._xStyl is not None
-    assert theDoc._xAuto is not None
-    assert theDoc._xAut2 is None
-    assert theDoc._xMast is not None
-    assert theDoc._xBody is not None
-    assert theDoc._xText is not None
+    assert theDoc._xMeta.tag == _mkTag("office", "meta")
+    assert theDoc._xFont.tag == _mkTag("office", "font-face-decls")
+    assert theDoc._xFnt2.tag == ""
+    assert theDoc._xStyl.tag == _mkTag("office", "styles")
+    assert theDoc._xAuto.tag == _mkTag("office", "automatic-styles")
+    assert theDoc._xAut2.tag == ""
+    assert theDoc._xMast.tag == _mkTag("office", "master-styles")
+    assert theDoc._xBody.tag == _mkTag("office", "body")
+    assert theDoc._xText.tag == _mkTag("office", "text")
 
     # ODT Doc
     # =======
@@ -86,21 +87,22 @@ def testCoreToOdt_Init(mockGUI):
     theDoc.initDocument()
 
     # Document XML
-    assert theDoc._dFlat is None
-    assert theDoc._dCont is not None
-    assert theDoc._dMeta is not None
-    assert theDoc._dStyl is not None
+    assert theDoc._dFlat.tag == ""
+    assert theDoc._dCont.tag == _mkTag("office", "document-content")
+    assert theDoc._dMeta.tag == _mkTag("office", "document-meta")
+    assert theDoc._dStyl.tag == _mkTag("office", "document-styles")
 
     # Content XML
-    assert theDoc._xMeta is not None
-    assert theDoc._xFont is not None
-    assert theDoc._xFnt2 is not None
-    assert theDoc._xStyl is not None
-    assert theDoc._xAuto is not None
-    assert theDoc._xAut2 is not None
-    assert theDoc._xMast is not None
-    assert theDoc._xBody is not None
-    assert theDoc._xText is not None
+    assert theDoc._xMeta.tag == _mkTag("office", "meta")
+    assert theDoc._xFont.tag == _mkTag("office", "font-face-decls")
+    assert theDoc._xFnt2.tag == _mkTag("office", "font-face-decls")
+    assert theDoc._xStyl.tag == _mkTag("office", "styles")
+    assert theDoc._xAuto.tag == _mkTag("office", "automatic-styles")
+    assert theDoc._xAut2.tag == _mkTag("office", "automatic-styles")
+    assert theDoc._xMast.tag == _mkTag("office", "master-styles")
+    assert theDoc._xBody.tag == _mkTag("office", "body")
+    assert theDoc._xText.tag == _mkTag("office", "text")
+
 
 # END Test testCoreToOdt_Init
 
@@ -113,7 +115,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc = ToOdt(theProject, isFlat=True)
 
     theDoc.initDocument()
-    assert xmlToText(theDoc._xText) == "<office:text/>"
+    assert xmlToText(theDoc._xText) == "<office:text />"
 
     # Paragraph Style
     # ===============
@@ -147,7 +149,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc._addTextPar("Standard", oStyle, "")
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
-        "<text:p text:style-name=\"Standard\"></text:p>"
+        "<text:p text:style-name=\"Standard\" />"
         "</office:text>"
     )
 
@@ -217,7 +219,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
-        "<text:p text:style-name=\"Standard\">Hello<text:line-break/><text:tab/>World</text:p>"
+        "<text:p text:style-name=\"Standard\">Hello<text:line-break /><text:tab />World</text:p>"
         "</office:text>"
     )
 
@@ -366,7 +368,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_20_body">Some text.<text:line-break/>Next line</text:p>'
+        '<text:p text:style-name="Text_20_body">Some text.<text:line-break />Next line</text:p>'
         '</office:text>'
     )
 
@@ -379,7 +381,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_20_body"><text:tab/>Item 1<text:tab/>Item 2</text:p>'
+        '<text:p text:style-name="Text_20_body"><text:tab />Item 1<text:tab />Item 2</text:p>'
         '</office:text>'
     )
 
@@ -393,7 +395,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="Text_20_body">Some <text:span text:style-name="T4">'
-        'bold<text:tab/>text</text:span></text:p>'
+        'bold<text:tab />text</text:span></text:p>'
         '</office:text>'
     )
 
@@ -413,8 +415,8 @@ def testCoreToOdt_Convert(mockGUI):
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
         '<text:p text:style-name="Text_20_body">Hello World</text:p>'
-        '<text:p text:style-name="Text_20_body">Hello <text:s/>World</text:p>'
-        '<text:p text:style-name="Text_20_body">Hello <text:s text:c="2"/>World</text:p>'
+        '<text:p text:style-name="Text_20_body">Hello <text:s />World</text:p>'
+        '<text:p text:style-name="Text_20_body">Hello <text:s text:c="2" />World</text:p>'
         '</office:text>'
     )
 
@@ -474,9 +476,9 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.getErrors() == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_20_body"></text:p>'
+        '<text:p text:style-name="Text_20_body" />'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
-        '<text:p text:style-name="Text_20_body"></text:p>'
+        '<text:p text:style-name="Text_20_body" />'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )
@@ -540,7 +542,7 @@ def testCoreToOdt_Convert(mockGUI):
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
         '<text:p text:style-name="Text_20_body">Regular paragraph</text:p>'
-        '<text:p text:style-name="P9">with<text:line-break/>break</text:p>'
+        '<text:p text:style-name="P9">with<text:line-break />break</text:p>'
         '<text:p text:style-name="P9">Left Align</text:p>'
         '</office:text>'
     )
@@ -592,7 +594,7 @@ def testCoreToOdt_ConvertDirect(mockGUI):
     assert (
         '<style:style style:name="P1" style:family="paragraph" '
         'style:parent-style-name="Text_20_body">'
-        '<style:paragraph-properties fo:text-align="justify"/>'
+        '<style:paragraph-properties fo:text-align="justify" />'
         '</style:style>'
     ) in xmlToText(theDoc._xAuto)
     assert xmlToText(theDoc._xText) == (
@@ -613,7 +615,7 @@ def testCoreToOdt_ConvertDirect(mockGUI):
     assert (
         '<style:style style:name="P1" style:family="paragraph" '
         'style:parent-style-name="Text_20_body">'
-        '<style:paragraph-properties fo:break-after="page"/>'
+        '<style:paragraph-properties fo:break-after="page" />'
         '</style:style>'
     ) in xmlToText(theDoc._xAuto)
     assert xmlToText(theDoc._xText) == (
@@ -723,15 +725,10 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     stylOut = tstPaths.outDir / "coreToOdt_SaveFull" / "styles.xml"
 
     def prettifyXml(inFile, outFile):
-        with open(outFile, mode="wb") as fileStream:
-            fileStream.write(
-                etree.tostring(
-                    etree.parse(str(inFile)),
-                    pretty_print=True,
-                    encoding="utf-8",
-                    xml_declaration=True
-                )
-            )
+        with open(outFile, mode="wb") as fStream:
+            xml = ET.parse(inFile)
+            xmlIndent(xml)
+            xml.write(fStream, encoding="utf-8", xml_declaration=True)
 
     prettifyXml(maniOut, maniFile)
     prettifyXml(settOut, settFile)
@@ -949,20 +946,16 @@ def testCoreToOdt_ODTParagraphStyle():
 
     # Pack XML
     # ========
-    xStyle = etree.Element("test", nsmap={
-        "style": "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
-        "loext": "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
-        "fo":    "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
-    })
+    xStyle = ET.Element("test")
     parStyle.packXML(xStyle, "test")
     assert xmlToText(xStyle) == (
         '<test>'
         '<style:style style:name="test" style:family="paragraph" style:display-name="Name" '
         'style:parent-style-name="Name" style:next-style-name="Name">'
         '<style:paragraph-properties fo:margin-top="0.000cm" fo:margin-bottom="0.000cm" '
-        'fo:margin-left="0.000cm" fo:margin-right="0.000cm" fo:line-height="1.15"/>'
+        'fo:margin-left="0.000cm" fo:margin-right="0.000cm" fo:line-height="1.15" />'
         '<style:text-properties style:font-name="Verdana" fo:font-family="Verdana" '
-        'fo:font-size="12pt" fo:color="#000000" loext:opacity="1.00"/>'
+        'fo:font-size="12pt" fo:color="#000000" loext:opacity="1.00" />'
         '</style:style>'
         '</test>'
     )
@@ -1059,15 +1052,12 @@ def testCoreToOdt_ODTTextStyle():
     txtStyle.setFontStyle("italic")
     txtStyle.setStrikeStyle("solid")
     txtStyle.setStrikeType("single")
-    xStyle = etree.Element("test", nsmap={
-        "style": "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
-        "fo":    "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
-    })
+    xStyle = ET.Element("test")
     txtStyle.packXML(xStyle, "test")
     assert xmlToText(xStyle) == (
         '<test><style:style style:name="test" style:family="text"><style:text-properties '
         'fo:font-weight="bold" fo:font-style="italic" style:text-line-through-style="solid" '
-        'style:text-line-through-type="single"/></style:style></test>'
+        'style:text-line-through-type="single" /></style:style></test>'
     )
 
 # END Test testCoreToOdt_ODTTextStyle
@@ -1077,20 +1067,11 @@ def testCoreToOdt_ODTTextStyle():
 def testCoreToOdt_XMLParagraph():
     """Test XML encoding of paragraph.
     """
-    nsMap = {
-        "office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
-        "style":  "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
-        "loext":  "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
-        "text":   "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
-        "meta":   "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
-        "fo":     "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
-    }
-
     # Stage 1 : Text
     # ==============
 
-    xRoot = etree.Element("root", nsmap=nsMap)
-    xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
+    xRoot = ET.Element("root")
+    xElem = ET.SubElement(xRoot, _mkTag("text", "p"))
     xmlPar = XMLParagraph(xElem)
 
     # Plain Text
@@ -1126,15 +1107,15 @@ def testCoreToOdt_XMLParagraph():
     # Stage 2 : Line Breaks
     # =====================
 
-    xRoot = etree.Element("root", nsmap=nsMap)
-    xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
+    xRoot = ET.Element("root")
+    xElem = ET.SubElement(xRoot, _mkTag("text", "p"))
     xmlPar = XMLParagraph(xElem)
 
     # Plain Text w/Line Break
     xmlPar.appendText("Hello\nWorld\n!!")
     assert xmlToText(xRoot) == (
         '<root>'
-        '<text:p>Hello<text:line-break/>World<text:line-break/>!!</text:p>'
+        '<text:p>Hello<text:line-break />World<text:line-break />!!</text:p>'
         '</root>'
     )
 
@@ -1142,8 +1123,8 @@ def testCoreToOdt_XMLParagraph():
     xmlPar.appendSpan("spanned\ntext", "T1")
     assert xmlToText(xRoot) == (
         '<root>'
-        '<text:p>Hello<text:line-break/>World<text:line-break/>!!'
-        '<text:span text:style-name="T1">spanned<text:line-break/>text</text:span></text:p>'
+        '<text:p>Hello<text:line-break />World<text:line-break />!!'
+        '<text:span text:style-name="T1">spanned<text:line-break />text</text:span></text:p>'
         '</root>'
     )
 
@@ -1151,9 +1132,9 @@ def testCoreToOdt_XMLParagraph():
     xmlPar.appendText("more\ntext")
     assert xmlToText(xRoot) == (
         '<root>'
-        '<text:p>Hello<text:line-break/>World<text:line-break/>!!'
-        '<text:span text:style-name="T1">spanned<text:line-break/>text</text:span>'
-        'more<text:line-break/>text</text:p>'
+        '<text:p>Hello<text:line-break />World<text:line-break />!!'
+        '<text:span text:style-name="T1">spanned<text:line-break />text</text:span>'
+        'more<text:line-break />text</text:p>'
         '</root>'
     )
 
@@ -1162,15 +1143,15 @@ def testCoreToOdt_XMLParagraph():
     # Stage 3 : Tabs
     # ==============
 
-    xRoot = etree.Element("root", nsmap=nsMap)
-    xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
+    xRoot = ET.Element("root")
+    xElem = ET.SubElement(xRoot, _mkTag("text", "p"))
     xmlPar = XMLParagraph(xElem)
 
     # Plain Text w/Line Break
     xmlPar.appendText("Hello\tWorld\t!!")
     assert xmlToText(xRoot) == (
         '<root>'
-        '<text:p>Hello<text:tab/>World<text:tab/>!!</text:p>'
+        '<text:p>Hello<text:tab />World<text:tab />!!</text:p>'
         '</root>'
     )
 
@@ -1178,8 +1159,8 @@ def testCoreToOdt_XMLParagraph():
     xmlPar.appendSpan("spanned\ttext", "T1")
     assert xmlToText(xRoot) == (
         '<root>'
-        '<text:p>Hello<text:tab/>World<text:tab/>!!'
-        '<text:span text:style-name="T1">spanned<text:tab/>text</text:span></text:p>'
+        '<text:p>Hello<text:tab />World<text:tab />!!'
+        '<text:span text:style-name="T1">spanned<text:tab />text</text:span></text:p>'
         '</root>'
     )
 
@@ -1187,9 +1168,9 @@ def testCoreToOdt_XMLParagraph():
     xmlPar.appendText("more\ttext")
     assert xmlToText(xRoot) == (
         '<root>'
-        '<text:p>Hello<text:tab/>World<text:tab/>!!'
-        '<text:span text:style-name="T1">spanned<text:tab/>text</text:span>'
-        'more<text:tab/>text</text:p>'
+        '<text:p>Hello<text:tab />World<text:tab />!!'
+        '<text:span text:style-name="T1">spanned<text:tab />text</text:span>'
+        'more<text:tab />text</text:p>'
         '</root>'
     )
 
@@ -1198,15 +1179,15 @@ def testCoreToOdt_XMLParagraph():
     # Stage 4 : Spaces
     # ================
 
-    xRoot = etree.Element("root", nsmap=nsMap)
-    xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
+    xRoot = ET.Element("root")
+    xElem = ET.SubElement(xRoot, _mkTag("text", "p"))
     xmlPar = XMLParagraph(xElem)
 
     # Plain Text w/Spaces
     xmlPar.appendText("Hello  World   !!")
     assert xmlToText(xRoot) == (
         '<root>'
-        '<text:p>Hello <text:s/>World <text:s text:c="2"/>!!</text:p>'
+        '<text:p>Hello <text:s />World <text:s text:c="2" />!!</text:p>'
         '</root>'
     )
 
@@ -1214,8 +1195,8 @@ def testCoreToOdt_XMLParagraph():
     xmlPar.appendSpan("spanned    text", "T1")
     assert xmlToText(xRoot) == (
         '<root>'
-        '<text:p>Hello <text:s/>World <text:s text:c="2"/>!!'
-        '<text:span text:style-name="T1">spanned <text:s text:c="3"/>text</text:span></text:p>'
+        '<text:p>Hello <text:s />World <text:s text:c="2" />!!'
+        '<text:span text:style-name="T1">spanned <text:s text:c="3" />text</text:span></text:p>'
         '</root>'
     )
 
@@ -1223,9 +1204,9 @@ def testCoreToOdt_XMLParagraph():
     xmlPar.appendText("more     text")
     assert xmlToText(xRoot) == (
         '<root>'
-        '<text:p>Hello <text:s/>World <text:s text:c="2"/>!!'
-        '<text:span text:style-name="T1">spanned <text:s text:c="3"/>text</text:span>'
-        'more <text:s text:c="4"/>text</text:p>'
+        '<text:p>Hello <text:s />World <text:s text:c="2" />!!'
+        '<text:span text:style-name="T1">spanned <text:s text:c="3" />text</text:span>'
+        'more <text:s text:c="4" />text</text:p>'
         '</root>'
     )
 
@@ -1234,15 +1215,15 @@ def testCoreToOdt_XMLParagraph():
     # Stage 5 : Lots of Spaces
     # ========================
 
-    xRoot = etree.Element("root", nsmap=nsMap)
-    xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
+    xRoot = ET.Element("root")
+    xElem = ET.SubElement(xRoot, _mkTag("text", "p"))
     xmlPar = XMLParagraph(xElem)
 
     # Plain Text w/Many Spaces
     xmlPar.appendText("  \t A \n  B ")
     assert xmlToText(xRoot) == (
         '<root>'
-        '<text:p><text:s text:c="2"/><text:tab/> A <text:line-break/> <text:s/>B </text:p>'
+        '<text:p><text:s text:c="2" /><text:tab /> A <text:line-break /> <text:s />B </text:p>'
         '</root>'
     )
 
@@ -1250,9 +1231,9 @@ def testCoreToOdt_XMLParagraph():
     xmlPar.appendSpan("  C  \t  D \n E ", "T1")
     assert xmlToText(xRoot) == (
         '<root>'
-        '<text:p><text:s text:c="2"/><text:tab/> A <text:line-break/> <text:s/>B '
-        '<text:span text:style-name="T1"> <text:s/>C <text:s/><text:tab/> <text:s/>D '
-        '<text:line-break/> E </text:span></text:p>'
+        '<text:p><text:s text:c="2" /><text:tab /> A <text:line-break /> <text:s />B '
+        '<text:span text:style-name="T1"> <text:s />C <text:s /><text:tab /> <text:s />D '
+        '<text:line-break /> E </text:span></text:p>'
         '</root>'
     )
 
@@ -1261,8 +1242,8 @@ def testCoreToOdt_XMLParagraph():
     # Check Error
     # ===========
 
-    xRoot = etree.Element("root", nsmap=nsMap)
-    xElem = etree.SubElement(xRoot, "{%s}p" % nsMap["text"])
+    xRoot = ET.Element("root")
+    xElem = ET.SubElement(xRoot, _mkTag("text", "p"))
     xmlPar = XMLParagraph(xElem)
 
     xmlPar.appendText("A")

@@ -27,13 +27,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
+import xml.etree.ElementTree as ET
 
-from lxml import etree
 from hashlib import sha256
 from zipfile import ZipFile
 from datetime import datetime
 
 from novelwriter import __version__
+from novelwriter.common import xmlIndent
 from novelwriter.constants import nwKeyWords, nwLabels
 from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
@@ -41,30 +42,27 @@ logger = logging.getLogger(__name__)
 
 # Main XML NameSpaces
 XML_NS = {
-    "office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
-    "style":  "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
-    "loext":  "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
-    "text":   "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
-    "meta":   "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
-    "fo":     "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
-    "dc":     "http://purl.org/dc/elements/1.1/",
+    "manifest": "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0",
+    "office":   "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
+    "style":    "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
+    "loext":    "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
+    "text":     "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
+    "meta":     "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
+    "fo":       "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
+    "dc":       "http://purl.org/dc/elements/1.1/",
 }
-MANI_NS = {
-    "manifest": "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
-}
-OFFICE_NS = {
-    "office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
-}
+for ns, uri in XML_NS.items():
+    ET.register_namespace(ns, uri)
 
 
-def _mkTag(nsName, tagName, nsMap=XML_NS):
+def _mkTag(ns, tag):
     """Assemble namespace and tag name.
     """
-    theNS = nsMap.get(nsName, "")
-    if theNS:
-        return f"{{{theNS}}}{tagName}"
-    logger.warning("Missing xml namespace '%s'", nsName)
-    return tagName
+    uri = XML_NS.get(ns, "")
+    if uri:
+        return f"{{{uri}}}{tag}"
+    logger.warning("Missing xml namespace '%s'", ns)
+    return tag
 
 
 # Mimetype and Version
@@ -97,20 +95,20 @@ class ToOdt(Tokenizer):
 
         self._isFlat = isFlat  # Flat: .fodt, otherwise .odt
 
-        self._dFlat = None  # FODT file XML root
-        self._dCont = None  # ODT content.xml root
-        self._dMeta = None  # ODT meta.xml root
-        self._dStyl = None  # ODT styles.xml root
+        self._dFlat = ET.Element("")  # FODT file XML root
+        self._dCont = ET.Element("")  # ODT content.xml root
+        self._dMeta = ET.Element("")  # ODT meta.xml root
+        self._dStyl = ET.Element("")  # ODT styles.xml root
 
-        self._xMeta = None  # Office meta root
-        self._xFont = None  # Office font face declaration
-        self._xFnt2 = None  # Office font face declaration, secondary
-        self._xStyl = None  # Office styles root
-        self._xAuto = None  # Office auto-styles root
-        self._xAut2 = None  # Office auto-styles root, secondary
-        self._xMast = None  # Office master-styles root
-        self._xBody = None  # Office body root
-        self._xText = None  # Office text root
+        self._xMeta = ET.Element("")  # Office meta root
+        self._xFont = ET.Element("")  # Office font face declaration
+        self._xFnt2 = ET.Element("")  # Office font face declaration, secondary
+        self._xStyl = ET.Element("")  # Office styles root
+        self._xAuto = ET.Element("")  # Office auto-styles root
+        self._xAut2 = ET.Element("")  # Office auto-styles root, secondary
+        self._xMast = ET.Element("")  # Office master-styles root
+        self._xBody = ET.Element("")  # Office body root
+        self._xText = ET.Element("")  # Office text root
 
         self._mainPara = {}  # User-accessible paragraph styles
         self._autoPara = {}  # Auto-generated paragraph styles
@@ -287,16 +285,16 @@ class ToOdt(Tokenizer):
             tAttr[_mkTag("office", "mimetype")] = X_MIME
 
             tFlat = _mkTag("office", "document")
-            self._dFlat = etree.Element(tFlat, attrib=tAttr, nsmap=XML_NS)
+            self._dFlat = ET.Element(tFlat, attrib=tAttr)
 
-            self._xMeta = etree.SubElement(self._dFlat, _mkTag("office", "meta"))
-            self._xFont = etree.SubElement(self._dFlat, _mkTag("office", "font-face-decls"))
-            self._xStyl = etree.SubElement(self._dFlat, _mkTag("office", "styles"))
-            self._xAuto = etree.SubElement(self._dFlat, _mkTag("office", "automatic-styles"))
-            self._xMast = etree.SubElement(self._dFlat, _mkTag("office", "master-styles"))
-            self._xBody = etree.SubElement(self._dFlat, _mkTag("office", "body"))
+            self._xMeta = ET.SubElement(self._dFlat, _mkTag("office", "meta"))
+            self._xFont = ET.SubElement(self._dFlat, _mkTag("office", "font-face-decls"))
+            self._xStyl = ET.SubElement(self._dFlat, _mkTag("office", "styles"))
+            self._xAuto = ET.SubElement(self._dFlat, _mkTag("office", "automatic-styles"))
+            self._xMast = ET.SubElement(self._dFlat, _mkTag("office", "master-styles"))
+            self._xBody = ET.SubElement(self._dFlat, _mkTag("office", "body"))
 
-            etree.SubElement(self._xFont, _mkTag("style", "font-face"), attrib=fAttr)
+            ET.SubElement(self._xFont, _mkTag("style", "font-face"), attrib=fAttr)
 
         else:
 
@@ -308,59 +306,59 @@ class ToOdt(Tokenizer):
             tStyl = _mkTag("office", "document-styles")
 
             # content.xml
-            self._dCont = etree.Element(tCont, attrib=tAttr, nsmap=XML_NS)
-            self._xFont = etree.SubElement(self._dCont, _mkTag("office", "font-face-decls"))
-            self._xAuto = etree.SubElement(self._dCont, _mkTag("office", "automatic-styles"))
-            self._xBody = etree.SubElement(self._dCont, _mkTag("office", "body"))
+            self._dCont = ET.Element(tCont, attrib=tAttr)
+            self._xFont = ET.SubElement(self._dCont, _mkTag("office", "font-face-decls"))
+            self._xAuto = ET.SubElement(self._dCont, _mkTag("office", "automatic-styles"))
+            self._xBody = ET.SubElement(self._dCont, _mkTag("office", "body"))
 
             # meta.xml
-            self._dMeta = etree.Element(tMeta, attrib=tAttr, nsmap=XML_NS)
-            self._xMeta = etree.SubElement(self._dMeta, _mkTag("office", "meta"))
+            self._dMeta = ET.Element(tMeta, attrib=tAttr)
+            self._xMeta = ET.SubElement(self._dMeta, _mkTag("office", "meta"))
 
             # styles.xml
-            self._dStyl = etree.Element(tStyl, attrib=tAttr, nsmap=XML_NS)
-            self._xFnt2 = etree.SubElement(self._dStyl, _mkTag("office", "font-face-decls"))
-            self._xStyl = etree.SubElement(self._dStyl, _mkTag("office", "styles"))
-            self._xAut2 = etree.SubElement(self._dStyl, _mkTag("office", "automatic-styles"))
-            self._xMast = etree.SubElement(self._dStyl, _mkTag("office", "master-styles"))
+            self._dStyl = ET.Element(tStyl, attrib=tAttr)
+            self._xFnt2 = ET.SubElement(self._dStyl, _mkTag("office", "font-face-decls"))
+            self._xStyl = ET.SubElement(self._dStyl, _mkTag("office", "styles"))
+            self._xAut2 = ET.SubElement(self._dStyl, _mkTag("office", "automatic-styles"))
+            self._xMast = ET.SubElement(self._dStyl, _mkTag("office", "master-styles"))
 
-            etree.SubElement(self._xFont, _mkTag("style", "font-face"), attrib=fAttr)
-            etree.SubElement(self._xFnt2, _mkTag("style", "font-face"), attrib=fAttr)
+            ET.SubElement(self._xFont, _mkTag("style", "font-face"), attrib=fAttr)
+            ET.SubElement(self._xFnt2, _mkTag("style", "font-face"), attrib=fAttr)
 
         # Finalise
         # ========
 
-        self._xText = etree.SubElement(self._xBody, _mkTag("office", "text"))
+        self._xText = ET.SubElement(self._xBody, _mkTag("office", "text"))
 
         timeStamp = datetime.now().isoformat(sep="T", timespec="seconds")
 
         # Office Meta Data
-        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "creation-date"))
+        xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "creation-date"))
         xMeta.text = timeStamp
 
-        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "generator"))
+        xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "generator"))
         xMeta.text = f"novelWriter/{__version__}"
 
-        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "initial-creator"))
+        xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "initial-creator"))
         xMeta.text = self.theProject.data.author
 
-        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "editing-cycles"))
+        xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "editing-cycles"))
         xMeta.text = str(self.theProject.data.saveCount)
 
         # Format is: PnYnMnDTnHnMnS
         # https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#duration
         eT = self.theProject.data.editTime
-        xMeta = etree.SubElement(self._xMeta, _mkTag("meta", "editing-duration"))
+        xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "editing-duration"))
         xMeta.text = f"P{eT//86400:d}DT{eT%86400//3600:d}H{eT%3600//60:d}M{eT%60:d}S"
 
         # Dublin Core Meta Data
-        xMeta = etree.SubElement(self._xMeta, _mkTag("dc", "title"))
+        xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "title"))
         xMeta.text = self.theProject.data.title or self.theProject.data.name
 
-        xMeta = etree.SubElement(self._xMeta, _mkTag("dc", "date"))
+        xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "date"))
         xMeta.text = timeStamp
 
-        xMeta = etree.SubElement(self._xMeta, _mkTag("dc", "creator"))
+        xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "creator"))
         xMeta.text = self.theProject.data.author
 
         self._pageStyles()
@@ -506,51 +504,43 @@ class ToOdt(Tokenizer):
         """Save the data to an .fodt file.
         """
         with open(savePath, mode="wb") as outFile:
-            outFile.write(etree.tostring(
-                self._dFlat,
-                pretty_print=True,
-                encoding="utf-8",
-                xml_declaration=True
-            ))
+            xml = ET.ElementTree(self._dFlat)
+            xmlIndent(xml)
+            xml.write(outFile, encoding="utf-8", xml_declaration=True)
         return
 
     def saveOpenDocText(self, savePath):
         """Save the data to an .odt file.
         """
-        mMani = _mkTag("manifest", "manifest", nsMap=MANI_NS)
-        mVers = _mkTag("manifest", "version", nsMap=MANI_NS)
-        mPath = _mkTag("manifest", "full-path", nsMap=MANI_NS)
-        mType = _mkTag("manifest", "media-type", nsMap=MANI_NS)
-        mFile = _mkTag("manifest", "file-entry", nsMap=MANI_NS)
+        mMani = _mkTag("manifest", "manifest")
+        mVers = _mkTag("manifest", "version")
+        mPath = _mkTag("manifest", "full-path")
+        mType = _mkTag("manifest", "media-type")
+        mFile = _mkTag("manifest", "file-entry")
 
-        xMani = etree.Element(mMani, attrib={mVers: X_VERS}, nsmap=MANI_NS)
-        etree.SubElement(xMani, mFile, attrib={mPath: "/", mVers: X_VERS, mType: X_MIME})
-        etree.SubElement(xMani, mFile, attrib={mPath: "settings.xml", mType: "text/xml"})
-        etree.SubElement(xMani, mFile, attrib={mPath: "content.xml", mType: "text/xml"})
-        etree.SubElement(xMani, mFile, attrib={mPath: "meta.xml", mType: "text/xml"})
-        etree.SubElement(xMani, mFile, attrib={mPath: "styles.xml", mType: "text/xml"})
+        xMani = ET.Element(mMani, attrib={mVers: X_VERS})
+        ET.SubElement(xMani, mFile, attrib={mPath: "/", mVers: X_VERS, mType: X_MIME})
+        ET.SubElement(xMani, mFile, attrib={mPath: "settings.xml", mType: "text/xml"})
+        ET.SubElement(xMani, mFile, attrib={mPath: "content.xml", mType: "text/xml"})
+        ET.SubElement(xMani, mFile, attrib={mPath: "meta.xml", mType: "text/xml"})
+        ET.SubElement(xMani, mFile, attrib={mPath: "styles.xml", mType: "text/xml"})
 
-        oRoot = _mkTag("office", "document-settings", nsMap=OFFICE_NS)
-        oVers = _mkTag("office", "version", nsMap=OFFICE_NS)
-        xSett = etree.Element(oRoot, nsmap=OFFICE_NS, attrib={oVers: X_VERS})
+        oRoot = _mkTag("office", "document-settings")
+        oVers = _mkTag("office", "version")
+        xSett = ET.Element(oRoot, attrib={oVers: X_VERS})
 
-        with ZipFile(savePath, mode="w") as outFile:
-            outFile.writestr("mimetype", X_MIME)
-            outFile.writestr("META-INF/manifest.xml", etree.tostring(
-                xMani, pretty_print=False, encoding="utf-8", xml_declaration=True
-            ))
-            outFile.writestr("settings.xml", etree.tostring(
-                xSett, pretty_print=False, encoding="utf-8", xml_declaration=True
-            ))
-            outFile.writestr("content.xml", etree.tostring(
-                self._dCont, pretty_print=False, encoding="utf-8", xml_declaration=True
-            ))
-            outFile.writestr("meta.xml", etree.tostring(
-                self._dMeta, pretty_print=False, encoding="utf-8", xml_declaration=True
-            ))
-            outFile.writestr("styles.xml", etree.tostring(
-                self._dStyl, pretty_print=False, encoding="utf-8", xml_declaration=True
-            ))
+        def putInZip(name, xObj, zipObj):
+            with zipObj.open(name, mode="w") as fObj:
+                xml = ET.ElementTree(xObj)
+                xml.write(fObj, encoding="utf-8", xml_declaration=True)
+
+        with ZipFile(savePath, mode="w") as outZip:
+            outZip.writestr("mimetype", X_MIME)
+            putInZip("META-INF/manifest.xml", xMani, outZip)
+            putInZip("settings.xml", xSett, outZip)
+            putInZip("content.xml", self._dCont, outZip)
+            putInZip("meta.xml", self._dMeta, outZip)
+            putInZip("styles.xml", self._dStyl, outZip)
 
         return
 
@@ -607,10 +597,10 @@ class ToOdt(Tokenizer):
             tAttr[_mkTag("text", "outline-level")] = oLevel
 
         pTag = "h" if isHead else "p"
-        xElem = etree.SubElement(self._xText, _mkTag("text", pTag), attrib=tAttr)
+        xElem = ET.SubElement(self._xText, _mkTag("text", pTag), attrib=tAttr)
 
         # It's important to set the initial text field to empty, otherwise
-        # lxml will add a line break if the first subelement is a span.
+        # xmlIndent will add a line break if the first subelement is a span.
         xElem.text = ""
 
         if not theText:
@@ -735,25 +725,25 @@ class ToOdt(Tokenizer):
         theAttr = {}
         theAttr[_mkTag("style", "name")] = "PM1"
         if self._isFlat:
-            xPage = etree.SubElement(self._xAuto, _mkTag("style", "page-layout"), attrib=theAttr)
+            xPage = ET.SubElement(self._xAuto, _mkTag("style", "page-layout"), attrib=theAttr)
         else:
-            xPage = etree.SubElement(self._xAut2, _mkTag("style", "page-layout"), attrib=theAttr)
+            xPage = ET.SubElement(self._xAut2, _mkTag("style", "page-layout"), attrib=theAttr)
 
         theAttr = {}
         theAttr[_mkTag("fo", "margin-top")]    = self._mDocTop
         theAttr[_mkTag("fo", "margin-bottom")] = self._mDocBtm
         theAttr[_mkTag("fo", "margin-left")]   = self._mDocLeft
         theAttr[_mkTag("fo", "margin-right")]  = self._mDocRight
-        etree.SubElement(xPage, _mkTag("style", "page-layout-properties"), attrib=theAttr)
+        ET.SubElement(xPage, _mkTag("style", "page-layout-properties"), attrib=theAttr)
 
-        xHead = etree.SubElement(xPage, _mkTag("style", "header-style"))
+        xHead = ET.SubElement(xPage, _mkTag("style", "header-style"))
 
         theAttr = {}
         theAttr[_mkTag("fo", "min-height")]    = "0.600cm"
         theAttr[_mkTag("fo", "margin-left")]   = "0.000cm"
         theAttr[_mkTag("fo", "margin-right")]  = "0.000cm"
         theAttr[_mkTag("fo", "margin-bottom")] = "0.500cm"
-        etree.SubElement(xHead, _mkTag("style", "header-footer-properties"), attrib=theAttr)
+        ET.SubElement(xHead, _mkTag("style", "header-footer-properties"), attrib=theAttr)
 
         return
 
@@ -765,13 +755,13 @@ class ToOdt(Tokenizer):
 
         theAttr = {}
         theAttr[_mkTag("style", "family")] = "paragraph"
-        xStyl = etree.SubElement(self._xStyl, _mkTag("style", "default-style"), attrib=theAttr)
+        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "default-style"), attrib=theAttr)
 
         theAttr = {}
         theAttr[_mkTag("style", "line-break")]        = "strict"
         theAttr[_mkTag("style", "tab-stop-distance")] = "1.251cm"
         theAttr[_mkTag("style", "writing-mode")]      = "page"
-        etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
+        ET.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
 
         theAttr = {}
         theAttr[_mkTag("style", "font-name")]   = self._textFont
@@ -779,7 +769,7 @@ class ToOdt(Tokenizer):
         theAttr[_mkTag("fo",    "font-size")]   = self._fSizeText
         theAttr[_mkTag("fo",    "language")]    = self._dLanguage
         theAttr[_mkTag("fo",    "country")]     = self._dCountry
-        etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
+        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
 
         # Add Standard Paragraph Style
         # ============================
@@ -788,13 +778,13 @@ class ToOdt(Tokenizer):
         theAttr[_mkTag("style", "name")]   = "Standard"
         theAttr[_mkTag("style", "family")] = "paragraph"
         theAttr[_mkTag("style", "class")]  = "text"
-        xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
+        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
 
         theAttr = {}
         theAttr[_mkTag("style", "font-name")]   = self._textFont
         theAttr[_mkTag("fo",    "font-family")] = self._fontFamily
         theAttr[_mkTag("fo",    "font-size")]   = self._fSizeText
-        etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
+        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
 
         # Add Default Heading Style
         # =========================
@@ -805,19 +795,19 @@ class ToOdt(Tokenizer):
         theAttr[_mkTag("style", "parent-style-name")] = "Standard"
         theAttr[_mkTag("style", "next-style-name")]   = "Text_20_body"
         theAttr[_mkTag("style", "class")]             = "text"
-        xStyl = etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
+        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
 
         theAttr = {}
         theAttr[_mkTag("fo", "margin-top")]     = self._mTopHead
         theAttr[_mkTag("fo", "margin-bottom")]  = self._mBotHead
         theAttr[_mkTag("fo", "keep-with-next")] = "always"
-        etree.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
+        ET.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
 
         theAttr = {}
         theAttr[_mkTag("style", "font-name")]   = self._textFont
         theAttr[_mkTag("fo",    "font-family")] = self._fontFamily
         theAttr[_mkTag("fo",    "font-size")]   = self._fSizeHead
-        etree.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
+        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
 
         # Add Header and Footer Styles
         # ============================
@@ -827,7 +817,7 @@ class ToOdt(Tokenizer):
         theAttr[_mkTag("style", "family")]            = "paragraph"
         theAttr[_mkTag("style", "parent-style-name")] = "Standard"
         theAttr[_mkTag("style", "class")]             = "extra"
-        etree.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
+        ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
 
         return
 
@@ -992,23 +982,24 @@ class ToOdt(Tokenizer):
         theAttr = {}
         theAttr[_mkTag("style", "name")]             = "Standard"
         theAttr[_mkTag("style", "page-layout-name")] = "PM1"
-        xPage = etree.SubElement(self._xMast, _mkTag("style", "master-page"), attrib=theAttr)
+        xPage = ET.SubElement(self._xMast, _mkTag("style", "master-page"), attrib=theAttr)
 
         # Standard Page Header
-        xHead = etree.SubElement(xPage, _mkTag("style", "header"))
-        xPar = etree.SubElement(xHead, _mkTag("text", "p"), attrib={
+        xHead = ET.SubElement(xPage, _mkTag("style", "header"))
+        xPar = ET.SubElement(xHead, _mkTag("text", "p"), attrib={
             _mkTag("text", "style-name"): "Header"
         })
         xPar.text = self._headerText.strip() + " "
 
-        xTail = etree.SubElement(xPar, _mkTag("text", "page-number"), attrib={
+        xTail = ET.SubElement(xPar, _mkTag("text", "page-number"), attrib={
             _mkTag("text", "select-page"): "current"
         })
         xTail.text = "2"
+        xTail.tail = ""  # Prevent line break in indented XML
 
         # First Page Header
-        xHead = etree.SubElement(xPage, _mkTag("style", "header-first"))
-        xPar = etree.SubElement(xHead, _mkTag("text", "p"), attrib={
+        xHead = ET.SubElement(xPage, _mkTag("style", "header-first"))
+        xPar = ET.SubElement(xHead, _mkTag("text", "p"), attrib={
             _mkTag("text", "style-name"): "Header"
         })
 
@@ -1212,7 +1203,7 @@ class ODTParagraphStyle:
             if aVal is not None:
                 theAttr[_mkTag(aNm, aName)] = aVal
 
-        xEntry = etree.SubElement(xParent, _mkTag("style", "style"), attrib=theAttr)
+        xEntry = ET.SubElement(xParent, _mkTag("style", "style"), attrib=theAttr)
 
         theAttr = {}
         for aName, (aNm, aVal) in self._pAttr.items():
@@ -1220,7 +1211,7 @@ class ODTParagraphStyle:
                 theAttr[_mkTag(aNm, aName)] = aVal
 
         if theAttr:
-            etree.SubElement(xEntry, _mkTag("style", "paragraph-properties"), attrib=theAttr)
+            ET.SubElement(xEntry, _mkTag("style", "paragraph-properties"), attrib=theAttr)
 
         theAttr = {}
         for aName, (aNm, aVal) in self._tAttr.items():
@@ -1228,7 +1219,7 @@ class ODTParagraphStyle:
                 theAttr[_mkTag(aNm, aName)] = aVal
 
         if theAttr:
-            etree.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=theAttr)
+            ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=theAttr)
 
         return
 
@@ -1299,7 +1290,7 @@ class ODTTextStyle:
         theAttr = {}
         theAttr[_mkTag("style", "name")] = xName
         theAttr[_mkTag("style", "family")] = "text"
-        xEntry = etree.SubElement(xParent, _mkTag("style", "style"), attrib=theAttr)
+        xEntry = ET.SubElement(xParent, _mkTag("style", "style"), attrib=theAttr)
 
         theAttr = {}
         for aName, (aNm, aVal) in self._tAttr.items():
@@ -1307,7 +1298,7 @@ class ODTTextStyle:
                 theAttr[_mkTag(aNm, aName)] = aVal
 
         if theAttr:
-            etree.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=theAttr)
+            ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=theAttr)
 
         return
 
@@ -1328,8 +1319,6 @@ class XMLParagraph:
     """This is a helper class to manage the text content of a single
     XML element using mixed content tags.
 
-    See: https://lxml.de/tutorial.html#the-element-class
-
     Rules:
      * The root tag can only have text set, never tail.
      * Any span must be under root, and the text in the span is set in
@@ -1349,8 +1338,8 @@ class XMLParagraph:
     def __init__(self, xRoot):
 
         self._xRoot = xRoot
-        self._xTail = None
-        self._xSing = None
+        self._xTail = ET.Element("")
+        self._xSing = ET.Element("")
 
         self._nState = X_ROOT_TEXT
         self._chrPos = 0
@@ -1380,26 +1369,26 @@ class XMLParagraph:
 
             if c == "\n":
                 if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
-                    self._xTail = etree.SubElement(self._xRoot, TAG_BR)
+                    self._xTail = ET.SubElement(self._xRoot, TAG_BR)
                     self._xTail.tail = ""
                     self._nState = X_ROOT_TAIL
                     self._chrPos += 1
 
                 elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
-                    self._xSing = etree.SubElement(self._xTail, TAG_BR)
+                    self._xSing = ET.SubElement(self._xTail, TAG_BR)
                     self._xSing.tail = ""
                     self._nState = X_SPAN_SING
                     self._chrPos += 1
 
             elif c == "\t":
                 if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
-                    self._xTail = etree.SubElement(self._xRoot, TAG_TAB)
+                    self._xTail = ET.SubElement(self._xRoot, TAG_TAB)
                     self._xTail.tail = ""
                     self._nState = X_ROOT_TAIL
                     self._chrPos += 1
 
                 elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
-                    self._xSing = etree.SubElement(self._xTail, TAG_TAB)
+                    self._xSing = ET.SubElement(self._xTail, TAG_TAB)
                     self._xSing.tail = ""
                     self._chrPos += 1
                     self._nState = X_SPAN_SING
@@ -1429,7 +1418,7 @@ class XMLParagraph:
         Therefore we return to the root element level when we're done
         processing the text of the span.
         """
-        self._xTail = etree.SubElement(self._xRoot, TAG_SPAN, attrib={
+        self._xTail = ET.SubElement(self._xRoot, TAG_SPAN, attrib={
             TAG_STNM: tFmt
         })
         self._xTail.text = ""  # Defaults to None
@@ -1482,20 +1471,20 @@ class XMLParagraph:
 
         if nSpaces == 2:
             if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
-                self._xTail = etree.SubElement(self._xRoot, TAG_SPC)
+                self._xTail = ET.SubElement(self._xRoot, TAG_SPC)
                 self._xTail.tail = ""
                 self._nState = X_ROOT_TAIL
                 self._chrPos += nSpaces - 1
 
             elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
-                self._xSing = etree.SubElement(self._xTail, TAG_SPC)
+                self._xSing = ET.SubElement(self._xTail, TAG_SPC)
                 self._xSing.tail = ""
                 self._nState = X_SPAN_SING
                 self._chrPos += nSpaces - 1
 
         elif nSpaces > 2:
             if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
-                self._xTail = etree.SubElement(self._xRoot, TAG_SPC, attrib={
+                self._xTail = ET.SubElement(self._xRoot, TAG_SPC, attrib={
                     TAG_NSPC: str(nSpaces - 1)
                 })
                 self._xTail.tail = ""
@@ -1503,7 +1492,7 @@ class XMLParagraph:
                 self._chrPos += nSpaces - 1
 
             elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
-                self._xSing = etree.SubElement(self._xTail, TAG_SPC, attrib={
+                self._xSing = ET.SubElement(self._xTail, TAG_SPC, attrib={
                     TAG_NSPC: str(nSpaces - 1)
                 })
                 self._xSing.tail = ""

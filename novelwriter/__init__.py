@@ -185,12 +185,6 @@ def main(sysArgs=None):
         )
         errorCode |= 0x10
 
-    try:
-        import lxml  # noqa: F401
-    except ImportError:
-        errorData.append("Python module 'lxml' is missing")
-        errorCode |= 0x20
-
     if errorData:
         errApp = QApplication([])
         errDlg = QErrorMessage()
