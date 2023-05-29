@@ -569,7 +569,7 @@ class NWConfigParser(ConfigParser):
 #  Third Party Code
 # =============================================================================================== #
 
-def xmlIndent(tree, space="  ", level=0):
+def xmlIndent(tree, space="  ", level=0):  # pragma: no cover
     """The XML indent function from CPython, that was only added in Python 3.9.
     It is included here to support older versions of Python.
     https://github.com/python/cpython/blob/main/Lib/xml/etree/ElementTree.py
