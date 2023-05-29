@@ -23,6 +23,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from __future__ import annotations
+
 import json
 import uuid
 import hashlib
@@ -436,6 +438,45 @@ def jsonEncode(data, n=0, nmax=0):
     return "".join(buffer)
 
 
+def xmlIndent(tree: ET.Element | ET.ElementTree):
+    """A modified version of the XML indent function in the standard
+    library. It behaves more closely to how the one from lxml does.
+    """
+    if isinstance(tree, ET.ElementTree):
+        tree = tree.getroot()
+
+    indentations = ["\n"]
+
+    def indentChildren(elem, level):
+        chLevel = level + 1
+        try:
+            chIndent = indentations[chLevel]
+        except IndexError:
+            chIndent = indentations[level] + "  "
+            indentations.append(chIndent)
+
+        if elem.text is None:
+            elem.text = chIndent
+
+        last = None
+        for child in elem:
+            if len(child):
+                indentChildren(child, chLevel)
+            if child.tail is None:
+                child.tail = chIndent
+                last = child
+
+        # Dedent the last child
+        if last is not None:
+            last.tail = indentations[level]
+
+    if len(tree):
+        indentChildren(tree, 0)
+    tree.tail = "\n"
+
+    return
+
+
 # =============================================================================================== #
 #  File and File System Functions
 # =============================================================================================== #
@@ -563,47 +604,3 @@ class NWConfigParser(ConfigParser):
         return result
 
 # END Class NWConfigParser
-
-
-# =============================================================================================== #
-#  Third Party Code
-# =============================================================================================== #
-
-def xmlIndent(tree, space="  ", level=0):  # pragma: no cover
-    """The XML indent function from CPython, that was only added in Python 3.9.
-    It is included here to support older versions of Python.
-    https://github.com/python/cpython/blob/main/Lib/xml/etree/ElementTree.py
-    """
-    if isinstance(tree, ET.ElementTree):
-        tree = tree.getroot()
-    if level < 0:
-        raise ValueError(f"Initial indentation level must be >= 0, got {level}")
-    if not len(tree):
-        return
-
-    # Reduce the memory consumption by reusing indentation strings.
-    indentations = ["\n" + level * space]
-
-    def _indent_children(elem, level):
-        # Start a new indentation level for the first child.
-        child_level = level + 1
-        try:
-            child_indentation = indentations[child_level]
-        except IndexError:
-            child_indentation = indentations[level] + space
-            indentations.append(child_indentation)
-
-        if not elem.text or not elem.text.strip():
-            elem.text = child_indentation
-
-        for child in elem:
-            if len(child):
-                _indent_children(child, child_level)
-            if not child.tail or not child.tail.strip():
-                child.tail = child_indentation
-
-        # Dedent after the last child by overwriting the previous indentation.
-        if not child.tail.strip():  # type: ignore
-            child.tail = indentations[level]  # type: ignore
-
-    _indent_children(tree, 0)
