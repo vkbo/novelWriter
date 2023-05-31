@@ -50,7 +50,7 @@ class GuiProjectWizard(QWizard):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiProjectWizard ...")
+        logger.debug("Create: GuiProjectWizard")
         self.setObjectName("GuiProjectWizard")
 
         self.mainGui   = mainGui
@@ -76,8 +76,12 @@ class GuiProjectWizard(QWizard):
 
         self.setOption(QWizard.NoBackButtonOnStartPage, True)
 
-        logger.debug("GuiProjectWizard initialisation complete")
+        logger.debug("Ready: GuiProjectWizard")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiProjectWizard")
         return
 
 # END Class GuiProjectWizard

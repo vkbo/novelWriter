@@ -78,7 +78,7 @@ class GuiMain(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        logger.debug("Initialising GUI ...")
+        logger.debug("Create: GUI")
         self.setObjectName("GuiMain")
         self.threadPool = QThreadPool()
 
@@ -302,7 +302,7 @@ class GuiMain(QMainWindow):
         if CONFIG.isFullScreen:
             self.toggleFullScreenMode()
 
-        logger.debug("GUI initialisation complete")
+        logger.debug("Ready: GUI")
 
         if __hexversion__[-2] == "a" and logger.getEffectiveLevel() > logging.DEBUG:
             self.makeAlert(self.tr(

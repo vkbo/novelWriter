@@ -44,7 +44,7 @@ class GuiDocMerge(QDialog):
     def __init__(self, mainGui, sHandle, itemList):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiDocMerge ...")
+        logger.debug("Create: GuiDocMerge")
         self.setObjectName("GuiDocMerge")
 
         self.mainGui    = mainGui
@@ -107,8 +107,12 @@ class GuiDocMerge(QDialog):
         # Load Content
         self._loadContent(sHandle, itemList)
 
-        logger.debug("GuiDocMerge initialisation complete")
+        logger.debug("Ready: GuiDocMerge")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiDocMerge")
         return
 
     def getData(self):

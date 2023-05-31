@@ -47,7 +47,7 @@ class GuiAbout(QDialog):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiAbout ...")
+        logger.debug("Create: GuiAbout")
         self.setObjectName("GuiAbout")
 
         self.mainGui   = mainGui
@@ -110,8 +110,12 @@ class GuiAbout(QDialog):
         self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
 
-        logger.debug("GuiAbout initialisation complete")
+        logger.debug("Ready: GuiAbout")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiAbout")
         return
 
     def populateGUI(self):

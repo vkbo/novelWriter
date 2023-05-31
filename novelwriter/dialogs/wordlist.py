@@ -46,7 +46,7 @@ class GuiWordList(QDialog):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiWordList ...")
+        logger.debug("Create: GuiWordList")
         self.setObjectName("GuiWordList")
 
         self.mainGui    = mainGui
@@ -108,8 +108,12 @@ class GuiWordList(QDialog):
 
         self._loadWordList()
 
-        logger.debug("GuiWordList initialisation complete")
+        logger.debug("Ready: GuiWordList")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiWordList")
         return
 
     ##

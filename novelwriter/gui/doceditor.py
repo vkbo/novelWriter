@@ -78,7 +78,7 @@ class GuiDocEditor(QTextEdit):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiDocEditor ...")
+        logger.debug("Create: GuiDocEditor")
 
         # Class Variables
         self.mainGui    = mainGui
@@ -183,7 +183,7 @@ class GuiDocEditor(QTextEdit):
         self.updateSyntaxColours()
         self.initEditor()
 
-        logger.debug("GuiDocEditor initialisation complete")
+        logger.debug("Ready: GuiDocEditor")
 
         return
 
@@ -2227,7 +2227,7 @@ class GuiDocEditSearch(QFrame):
     def __init__(self, docEditor):
         super().__init__(parent=docEditor)
 
-        logger.debug("Initialising GuiDocEditSearch ...")
+        logger.debug("Create: GuiDocEditSearch")
 
         self.docEditor  = docEditor
         self.mainGui    = docEditor.mainGui
@@ -2371,7 +2371,7 @@ class GuiDocEditSearch(QFrame):
 
         self.updateTheme()
 
-        logger.debug("GuiDocEditSearch initialisation complete")
+        logger.debug("Ready: GuiDocEditSearch")
 
         return
 
@@ -2642,7 +2642,7 @@ class GuiDocEditHeader(QWidget):
     def __init__(self, docEditor):
         super().__init__(parent=docEditor)
 
-        logger.debug("Initialising GuiDocEditHeader ...")
+        logger.debug("Create: GuiDocEditHeader")
 
         self.docEditor  = docEditor
         self.mainGui    = docEditor.mainGui
@@ -2727,7 +2727,7 @@ class GuiDocEditHeader(QWidget):
 
         self.updateTheme()
 
-        logger.debug("GuiDocEditHeader initialisation complete")
+        logger.debug("Ready: GuiDocEditHeader")
 
         return
 
@@ -2877,7 +2877,7 @@ class GuiDocEditFooter(QWidget):
     def __init__(self, docEditor):
         super().__init__(parent=docEditor)
 
-        logger.debug("Initialising GuiDocEditFooter ...")
+        logger.debug("Create: GuiDocEditFooter")
 
         self.docEditor  = docEditor
         self.mainGui    = docEditor.mainGui
@@ -2971,7 +2971,7 @@ class GuiDocEditFooter(QWidget):
         self.updateLineCount()
         self.updateCounts()
 
-        logger.debug("GuiDocEditFooter initialisation complete")
+        logger.debug("Ready: GuiDocEditFooter")
 
         return
 

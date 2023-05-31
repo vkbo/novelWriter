@@ -52,7 +52,7 @@ class GuiProjectSettings(NPagedDialog):
     def __init__(self, mainGui, focusTab=TAB_MAIN):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiProjectSettings ...")
+        logger.debug("Create: GuiProjectSettings")
         self.setObjectName("GuiProjectSettings")
 
         self.mainGui    = mainGui
@@ -93,8 +93,12 @@ class GuiProjectSettings(NPagedDialog):
         # Focus Tab
         self._focusTab(focusTab)
 
-        logger.debug("GuiProjectSettings initialisation complete")
+        logger.debug("Ready: GuiProjectSettings")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiProjectSettings")
         return
 
     @property

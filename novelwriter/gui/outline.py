@@ -212,7 +212,7 @@ class GuiOutlineToolBar(QToolBar):
     def __init__(self, theOutline):
         super().__init__(parent=theOutline)
 
-        logger.debug("Initialising GuiOutlineToolBar ...")
+        logger.debug("Create: GuiOutlineToolBar")
 
         self.mainGui    = theOutline.mainGui
         self.theProject = theOutline.mainGui.theProject
@@ -260,7 +260,7 @@ class GuiOutlineToolBar(QToolBar):
 
         self.updateTheme()
 
-        logger.debug("GuiOutlineToolBar initialisation complete")
+        logger.debug("Ready: GuiOutlineToolBar")
 
         return
 
@@ -369,7 +369,7 @@ class GuiOutlineTree(QTreeWidget):
     def __init__(self, outlineView):
         super().__init__(parent=outlineView)
 
-        logger.debug("Initialising GuiOutlineTree ...")
+        logger.debug("Create: GuiOutlineTree")
 
         self.outlineView = outlineView
         self.mainGui     = outlineView.mainGui
@@ -423,7 +423,7 @@ class GuiOutlineTree(QTreeWidget):
 
         self.hiddenStateChanged.emit()
 
-        logger.debug("GuiOutlineTree initialisation complete")
+        logger.debug("Ready: GuiOutlineTree")
 
         return
 
@@ -796,7 +796,7 @@ class GuiOutlineDetails(QScrollArea):
     def __init__(self, theOutline):
         super().__init__(parent=theOutline)
 
-        logger.debug("Initialising GuiOutlineDetails ...")
+        logger.debug("Create: GuiOutlineDetails")
 
         self.theOutline = theOutline
         self.mainGui    = theOutline.mainGui
@@ -982,7 +982,7 @@ class GuiOutlineDetails(QScrollArea):
 
         self.initSettings()
 
-        logger.debug("GuiOutlineDetails initialisation complete")
+        logger.debug("Ready: GuiOutlineDetails")
 
         return
 

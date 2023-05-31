@@ -35,8 +35,18 @@ class GuiManuscriptBuild(QDialog):
 
     def __init__(self, parent: QWidget):
         super().__init__(parent=parent)
+
+        logger.debug("Create: GuiManuscriptBuild")
+        self.setObjectName("GuiManuscriptBuild")
+
         self._parent = parent
 
+        logger.debug("Ready: GuiManuscriptBuild")
+
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiManuscriptBuild")
         return
 
 # END Class GuiManuscriptBuild

@@ -49,7 +49,8 @@ class GuiMainMenu(QMenuBar):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiMainMenu ...")
+        logger.debug("Create: GuiMainMenu")
+
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
 
@@ -69,7 +70,7 @@ class GuiMainMenu(QMenuBar):
         self._docInsert     = self.mainGui.docEditor.insertText
         self._insertKeyWord = self.mainGui.docEditor.insertKeyWord
 
-        logger.debug("GuiMainMenu initialisation complete")
+        logger.debug("Ready: GuiMainMenu")
 
         return
 

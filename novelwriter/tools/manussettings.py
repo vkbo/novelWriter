@@ -68,7 +68,7 @@ class GuiBuildSettings(QDialog):
     def __init__(self, parent: QWidget, mainGui: GuiMain, build: BuildSettings):
         super().__init__(parent=parent)
 
-        logger.debug("Created: GuiBuildSettings")
+        logger.debug("Create: GuiBuildSettings")
         self.setObjectName("GuiBuildSettings")
 
         self.mainGui    = mainGui
@@ -164,7 +164,7 @@ class GuiBuildSettings(QDialog):
         return
 
     def __del__(self):
-        logger.debug("Deleted: GuiBuildSettings")
+        logger.debug("Delete: GuiBuildSettings")
 
     def loadContent(self):
         """Populate the child widgets.

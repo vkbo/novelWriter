@@ -56,7 +56,7 @@ class GuiManuscript(QDialog):
     def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
 
-        logger.debug("Created: GuiManuscript")
+        logger.debug("Create: GuiManuscript")
         self.setObjectName("GuiManuscript")
 
         self.mainGui    = mainGui
@@ -166,7 +166,7 @@ class GuiManuscript(QDialog):
         return
 
     def __del__(self):
-        logger.debug("Deleted: GuiManuscript")
+        logger.debug("Delete: GuiManuscript")
         return
 
     def loadContent(self):

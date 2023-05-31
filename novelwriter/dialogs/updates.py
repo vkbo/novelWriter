@@ -47,7 +47,7 @@ class GuiUpdates(QDialog):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiUpdates ...")
+        logger.debug("Create: GuiUpdates")
         self.setObjectName("GuiUpdates")
 
         self.mainGui = mainGui
@@ -113,8 +113,12 @@ class GuiUpdates(QDialog):
 
         self.setLayout(self.outerBox)
 
-        logger.debug("GuiUpdates initialisation complete")
+        logger.debug("Ready: GuiUpdates")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiUpdates")
         return
 
     def checkLatest(self):

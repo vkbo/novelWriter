@@ -56,7 +56,7 @@ class GuiProjectLoad(QDialog):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiProjectLoad ...")
+        logger.debug("Create: GuiProjectLoad")
         self.setObjectName("GuiProjectLoad")
 
         self.mainGui   = mainGui
@@ -145,8 +145,12 @@ class GuiProjectLoad(QDialog):
         keyDelete.setKey(QKeySequence(Qt.Key_Delete))
         keyDelete.activated.connect(self._doDeleteRecent)
 
-        logger.debug("GuiProjectLoad initialisation complete")
+        logger.debug("Ready: GuiProjectLoad")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiProjectLoad")
         return
 
     ##

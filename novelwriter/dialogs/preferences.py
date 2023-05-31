@@ -46,7 +46,7 @@ class GuiPreferences(NPagedDialog):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiPreferences ...")
+        logger.debug("Create: GuiPreferences")
         self.setObjectName("GuiPreferences")
 
         self.mainGui    = mainGui
@@ -83,8 +83,12 @@ class GuiPreferences(NPagedDialog):
         self._needsRestart = False
         self._refreshTree = False
 
-        logger.debug("GuiPreferences initialisation complete")
+        logger.debug("Ready: GuiPreferences")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiPreferences")
         return
 
     ##

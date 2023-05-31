@@ -215,7 +215,7 @@ class GuiProjectToolBar(QWidget):
     def __init__(self, projView):
         super().__init__(parent=projView)
 
-        logger.debug("Initialising GuiProjectToolBar ...")
+        logger.debug("Create: GuiProjectToolBar")
 
         self.projView   = projView
         self.projTree   = projView.projTree
@@ -328,7 +328,7 @@ class GuiProjectToolBar(QWidget):
         self.setLayout(self.outerBox)
         self.updateTheme()
 
-        logger.debug("GuiProjectToolBar initialisation complete")
+        logger.debug("Ready: GuiProjectToolBar")
 
         return
 
@@ -455,7 +455,7 @@ class GuiProjectTree(QTreeWidget):
     def __init__(self, projView):
         super().__init__(parent=projView)
 
-        logger.debug("Initialising GuiProjectTree ...")
+        logger.debug("Create: GuiProjectTree")
 
         self.projView   = projView
         self.mainGui    = projView.mainGui
@@ -522,7 +522,7 @@ class GuiProjectTree(QTreeWidget):
         # Set custom settings
         self.initSettings()
 
-        logger.debug("GuiProjectTree initialisation complete")
+        logger.debug("Ready: GuiProjectTree")
 
         return
 

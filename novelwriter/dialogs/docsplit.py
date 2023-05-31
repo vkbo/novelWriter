@@ -48,7 +48,7 @@ class GuiDocSplit(QDialog):
     def __init__(self, mainGui, sHandle):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiDocSplit ...")
+        logger.debug("Create: GuiDocSplit")
         self.setObjectName("GuiDocSplit")
 
         self.mainGui    = mainGui
@@ -138,8 +138,12 @@ class GuiDocSplit(QDialog):
         # Load Content
         self._loadContent(sHandle)
 
-        logger.debug("GuiDocSplit initialisation complete")
+        logger.debug("Ready: GuiDocSplit")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiDocSplit")
         return
 
     def getData(self):

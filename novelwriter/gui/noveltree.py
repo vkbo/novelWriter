@@ -196,7 +196,7 @@ class GuiNovelToolBar(QWidget):
     def __init__(self, novelView):
         super().__init__(parent=novelView)
 
-        logger.debug("Initialising GuiNovelToolBar ...")
+        logger.debug("Create: GuiNovelToolBar")
 
         self.novelView  = novelView
         self.mainGui    = novelView.mainGui
@@ -264,7 +264,7 @@ class GuiNovelToolBar(QWidget):
 
         self.updateTheme()
 
-        logger.debug("GuiNovelToolBar initialisation complete")
+        logger.debug("Ready: GuiNovelToolBar")
 
         return
 
@@ -395,7 +395,7 @@ class GuiNovelTree(QTreeWidget):
     def __init__(self, novelView):
         super().__init__(parent=novelView)
 
-        logger.debug("Initialising GuiNovelTree ...")
+        logger.debug("Create: GuiNovelTree")
 
         self.novelView  = novelView
         self.mainGui    = novelView.mainGui
@@ -460,7 +460,7 @@ class GuiNovelTree(QTreeWidget):
         self.initSettings()
         self.updateTheme()
 
-        logger.debug("GuiNovelTree initialisation complete")
+        logger.debug("Ready: GuiNovelTree")
 
         return
 

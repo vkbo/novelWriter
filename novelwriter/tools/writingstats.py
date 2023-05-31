@@ -60,7 +60,7 @@ class GuiWritingStats(QDialog):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiWritingStats ...")
+        logger.debug("Create: GuiWritingStats")
         self.setObjectName("GuiWritingStats")
 
         self.mainGui    = mainGui
@@ -286,8 +286,12 @@ class GuiWritingStats(QDialog):
 
         self.setLayout(self.outerBox)
 
-        logger.debug("GuiWritingStats initialisation complete")
+        logger.debug("Ready: GuiWritingStats")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiWritingStats")
         return
 
     def populateGUI(self):

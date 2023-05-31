@@ -48,7 +48,7 @@ class GuiProjectDetails(NPagedDialog):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiProjectDetails ...")
+        logger.debug("Create: GuiProjectDetails")
         self.setObjectName("GuiProjectDetails")
 
         self.mainGui    = mainGui
@@ -78,8 +78,12 @@ class GuiProjectDetails(NPagedDialog):
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
 
-        logger.debug("GuiProjectDetails initialisation complete")
+        logger.debug("Ready: GuiProjectDetails")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiProjectDetails")
         return
 
     def updateValues(self):

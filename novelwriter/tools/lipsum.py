@@ -44,7 +44,7 @@ class GuiLipsum(QDialog):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiLipsum ...")
+        logger.debug("Create: GuiLipsum")
         self.setObjectName("GuiLipsum")
 
         self.mainGui   = mainGui
@@ -107,8 +107,12 @@ class GuiLipsum(QDialog):
         self.outerBox.setSpacing(CONFIG.pxInt(16))
         self.setLayout(self.outerBox)
 
-        logger.debug("GuiLipsum initialisation complete")
+        logger.debug("Ready: GuiLipsum")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiLipsum")
         return
 
     ##

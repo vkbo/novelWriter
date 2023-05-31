@@ -43,7 +43,7 @@ class GuiSideBar(QToolBar):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiSideBar ...")
+        logger.debug("Create: GuiSideBar")
 
         self.mainGui   = mainGui
         self.mainTheme = mainGui.mainTheme
@@ -122,7 +122,7 @@ class GuiSideBar(QToolBar):
 
         self.updateTheme()
 
-        logger.debug("GuiSideBar initialisation complete")
+        logger.debug("Ready: GuiSideBar")
 
         return
 

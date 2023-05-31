@@ -56,7 +56,7 @@ class GuiDocViewer(QTextBrowser):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiDocViewer ...")
+        logger.debug("Create: GuiDocViewer")
 
         # Class Variables
         self.mainGui    = mainGui
@@ -88,7 +88,7 @@ class GuiDocViewer(QTextBrowser):
 
         self.initViewer()
 
-        logger.debug("GuiDocViewer initialisation complete")
+        logger.debug("Ready: GuiDocViewer")
 
         return
 
@@ -679,7 +679,7 @@ class GuiDocViewHeader(QWidget):
     def __init__(self, docViewer):
         super().__init__(parent=docViewer)
 
-        logger.debug("Initialising GuiDocViewHeader ...")
+        logger.debug("Create: GuiDocViewHeader")
 
         self.docViewer  = docViewer
         self.mainGui    = docViewer.mainGui
@@ -766,7 +766,7 @@ class GuiDocViewHeader(QWidget):
         # Fix the Colours
         self.updateTheme()
 
-        logger.debug("GuiDocViewHeader initialisation complete")
+        logger.debug("Ready: GuiDocViewHeader")
 
         return
 
@@ -896,7 +896,7 @@ class GuiDocViewFooter(QWidget):
     def __init__(self, docViewer):
         super().__init__(parent=docViewer)
 
-        logger.debug("Initialising GuiDocViewFooter ...")
+        logger.debug("Create: GuiDocViewFooter")
 
         self.docViewer = docViewer
         self.mainGui   = docViewer.mainGui
@@ -1023,7 +1023,7 @@ class GuiDocViewFooter(QWidget):
         # Fix the Colours
         self.updateTheme()
 
-        logger.debug("GuiDocViewFooter initialisation complete")
+        logger.debug("Ready: GuiDocViewFooter")
 
         return
 
@@ -1139,7 +1139,8 @@ class GuiDocViewDetails(QScrollArea):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiDocViewDetails ...")
+        logger.debug("Create: GuiDocViewDetails")
+
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
         self.mainTheme  = mainGui.mainTheme
@@ -1168,7 +1169,7 @@ class GuiDocViewDetails(QScrollArea):
         self.setMinimumHeight(CONFIG.pxInt(50))
         self.setFrameStyle(QFrame.NoFrame)
 
-        logger.debug("GuiDocViewDetails initialisation complete")
+        logger.debug("Ready: GuiDocViewDetails")
 
         return
 
