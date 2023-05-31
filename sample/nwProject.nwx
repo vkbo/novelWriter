@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" timeStamp="2023-05-29 21:29:35">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1505" autoCount="237" editTime="74902">
+<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" timeStamp="2023-05-31 17:53:27">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1506" autoCount="237" editTime="75085">
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
@@ -65,7 +65,7 @@
       <name status="sf24ce6" import="ia857f0" active="yes">Chapter One</name>
     </item>
     <item handle="636b6aa9b697b" parent="6a2d6d5f4f401" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="2687" wordCount="479" paraCount="14" cursorPos="1369" />
+      <meta expanded="no" heading="H3" charCount="2687" wordCount="479" paraCount="14" cursorPos="18" />
       <name status="s90e6c9" import="ia857f0" active="yes">Making a Scene</name>
     </item>
     <item handle="bc0cbd2a407f3" parent="6a2d6d5f4f401" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">

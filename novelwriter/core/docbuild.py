@@ -33,7 +33,6 @@ from PyQt5.QtGui import QFont, QFontInfo
 
 from novelwriter import CONFIG
 from novelwriter.error import formatException
-from novelwriter.constants import nwConst
 from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
 from novelwriter.core.tohtml import ToHtml
@@ -46,13 +45,14 @@ logger = logging.getLogger(__name__)
 
 class NWBuildDocument:
 
-    def __init__(self, project: NWProject, build: BuildSettings):
+    __slots__ = ("_project", "_build", "_queue", "_error", "_cache")
 
+    def __init__(self, project: NWProject, build: BuildSettings):
         self._project = project
         self._build = build
         self._queue = []
         self._error = None
-
+        self._cache = None
         return
 
     ##
@@ -64,7 +64,14 @@ class NWBuildDocument:
         return self._error
 
     @property
-    def buildLength(self) -> int:
+    def lastBuild(self) -> Tokenizer | None:
+        return self._cache
+
+    ##
+    #  Special Methods
+    ##
+
+    def __len__(self) -> int:
         return len(self._queue)
 
     ##
@@ -89,7 +96,7 @@ class NWBuildDocument:
                 self._queue.append(item.itemHandle)
         return
 
-    def iterBuildOpenDocument(self, savePath: Path, isFlat: bool) -> Iterable[tuple[int, bool]]:
+    def iterBuildOpenDocument(self, path: Path, isFlat: bool) -> Iterable[tuple[int, bool]]:
         """Build an Open Document file.
         """
         makeOdt = ToOdt(self._project, isFlat=isFlat)
@@ -102,18 +109,21 @@ class NWBuildDocument:
         makeOdt.closeDocument()
 
         self._error = None
+        self._cache = makeOdt
+
         try:
             if isFlat:
-                makeOdt.saveFlatXML(savePath)
+                makeOdt.saveFlatXML(path)
             else:
-                makeOdt.saveOpenDocText(savePath)
+                makeOdt.saveOpenDocText(path)
         except Exception as exc:
             self._error = formatException(exc)
 
         return
 
-    def iterBuildHTML(self, savePath: Path) -> Iterable[tuple[int, bool]]:
-        """Build an HTML file.
+    def iterBuildHTML(self, path: Path | None) -> Iterable[tuple[int, bool]]:
+        """Build an HTML file. If path is None, no file is saved. This
+        is used for generating build previews.
         """
         makeHtml = ToHtml(self._project)
         self._setupBuild(makeHtml)
@@ -125,14 +135,17 @@ class NWBuildDocument:
             yield i, self._doBuild(makeHtml, tHandle)
 
         self._error = None
-        try:
-            makeHtml.saveHTML5(savePath)
-        except Exception as exc:
-            self._error = formatException(exc)
+        self._cache = makeHtml
+
+        if isinstance(path, Path):
+            try:
+                makeHtml.saveHTML5(path)
+            except Exception as exc:
+                self._error = formatException(exc)
 
         return
 
-    def iterBuildMarkdown(self, savePath: Path, extendedMd: bool) -> Iterable[tuple[int, bool]]:
+    def iterBuildMarkdown(self, path: Path, extendedMd: bool) -> Iterable[tuple[int, bool]]:
         """Build a Markdown file.
         """
         makeMd = ToMarkdown(self._project)
@@ -150,8 +163,10 @@ class NWBuildDocument:
             yield i, self._doBuild(makeMd, tHandle)
 
         self._error = None
+        self._cache = makeMd
+
         try:
-            makeMd.saveMarkdown(savePath)
+            makeMd.saveMarkdown(path)
         except Exception as exc:
             self._error = formatException(exc)
 
@@ -194,8 +209,6 @@ class NWBuildDocument:
         # Get font information
         if not textFont:
             textFont = str(CONFIG.textFont)
-        if not textFont:
-            textFont = nwConst.SYSTEM_FONT
 
         bldFont = QFont(textFont, textSize)
         fontInfo = QFontInfo(bldFont)

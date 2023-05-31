@@ -80,7 +80,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
 
-    assert docBuild.buildLength == 21
+    assert len(docBuild) == 21
 
     # Check FODT Build
     # ================
@@ -139,7 +139,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
         mp.setattr("novelwriter.core.toodt.ToOdt.doConvert", causeException)
 
         docBuild.addDocument("0000000000000")
-        assert docBuild.buildLength == 22
+        assert len(docBuild) == 22
 
         count = 0
         error = []
@@ -188,7 +188,7 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
 
-    assert docBuild.buildLength == 21
+    assert len(docBuild) == 21
 
     # Check HTML5 Build
     # =================
@@ -239,7 +239,7 @@ def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()
 
-    assert docBuild.buildLength == 21
+    assert len(docBuild) == 21
 
     # Check Standard Markdown Build
     # =============================

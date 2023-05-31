@@ -398,7 +398,7 @@ class GuiBuildFilterTab(QWidget):
         sizes = self.mainSplit.sizes()
         if len(sizes) < 2:
             return 0, 0
-        return sizes[0], sizes[1]
+        return CONFIG.rpxInt(sizes[0]), CONFIG.rpxInt(sizes[1])
 
     ##
     #  Slots

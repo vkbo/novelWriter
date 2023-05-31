@@ -6,7 +6,6 @@ GUI classes for the Manuscript Build Tool
 File History:
 Created: 2023-05-13 [2.1b1] GuiManuscript
 Created: 2023-05-13 [2.1b1] GuiManuscriptPreview
-Created: 2023-05-24 [2.1b1] GuiManuscriptBuild
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -26,10 +25,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import json
 import logging
 
+from time import time
 from typing import TYPE_CHECKING
 
+from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QListWidget, QListWidgetItem, QMenu, QProgressBar,
@@ -37,6 +39,9 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG
+from novelwriter.error import logException
+from novelwriter.core.tohtml import ToHtml
+from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.tools.manussettings import GuiBuildSettings
 
@@ -92,7 +97,8 @@ class GuiManuscript(QDialog):
 
         self.buildProgress = QProgressBar()
         self.btnPreview = QPushButton(self.tr("Build Preview"))
-        self.manPreview = GuiManuscriptPreview(self)
+        self.btnPreview.clicked.connect(self._generatePreview)
+        self.manPreview = GuiManuscriptPreview(self.mainGui)
 
         self.menuPrint = QMenu(self)
         self.aPrintSend = self.menuPrint.addAction(self.tr("Print Preview"))
@@ -153,6 +159,7 @@ class GuiManuscript(QDialog):
         self.outerBox.addWidget(self.mainSplit)
 
         self.setLayout(self.outerBox)
+        self.setSizeGripEnabled(True)
 
         logger.debug("GuiManuscript initialisation complete")
 
@@ -193,11 +200,9 @@ class GuiManuscript(QDialog):
     def _editSelectedBuild(self):
         """Edit the currently selected build settings entry.
         """
-        bItems = self.buildList.selectedItems()
-        if bItems:
-            build = self._builds.getBuild(bItems[0].data(Qt.UserRole))
-            if isinstance(build, BuildSettings):
-                self._openSettingsDialog(build)
+        build = self._getSelectedBuild()
+        if build is not None:
+            self._openSettingsDialog(build)
         return
 
     @pyqtSlot(BuildSettings)
@@ -207,6 +212,43 @@ class GuiManuscript(QDialog):
         self._builds.setBuild(build)
         self._builds.saveCollection()
         self._updateBuildItem(build)
+        return
+
+    @pyqtSlot()
+    def _generatePreview(self):
+        """
+        """
+        build = self._getSelectedBuild()
+        if build is None:
+            return
+
+        docBuild = NWBuildDocument(self.theProject, build)
+        docBuild.queueAll()
+
+        self.buildProgress.setMaximum(len(docBuild))
+        for step, status in docBuild.iterBuildHTML(None):
+            self.buildProgress.setValue(step + 1)
+
+        buildObj = docBuild.lastBuild
+        assert isinstance(buildObj, ToHtml)
+        result = {
+            "time": int(time()),
+            "style": buildObj.getStyleSheet(),
+            "html": buildObj.fullHTML,
+        }
+
+        logger.debug("Saving build cache")
+        cache = CONFIG.dataPath("cache") / f"build_{build.buildID}.json"
+        try:
+            with open(cache, mode="w+", encoding="utf-8") as outFile:
+                outFile.write(json.dumps(result, indent=2))
+        except Exception:
+            logger.error("Failed to save build cache")
+            logException()
+            return
+
+        self.manPreview.setContent(result)
+
         return
 
     @pyqtSlot()
@@ -220,6 +262,16 @@ class GuiManuscript(QDialog):
     ##
     #  Internal Functions
     ##
+
+    def _getSelectedBuild(self) -> BuildSettings | None:
+        """Get the currently selected build.
+        """
+        bItems = self.buildList.selectedItems()
+        if bItems:
+            build = self._builds.getBuild(bItems[0].data(Qt.UserRole))
+            if isinstance(build, BuildSettings):
+                return build
+        return None
 
     def _saveManuscript(self, outFormat: int):
         """Save the manuscript file or files.
@@ -244,8 +296,8 @@ class GuiManuscript(QDialog):
         winHeight = CONFIG.rpxInt(self.height())
 
         mainSplit = self.mainSplit.sizes()
-        optsWidth = mainSplit[0]
-        viewWidth = mainSplit[1]
+        optsWidth = CONFIG.rpxInt(mainSplit[0])
+        viewWidth = CONFIG.rpxInt(mainSplit[1])
 
         pOptions = self.theProject.options
         pOptions.setValue("GuiManuscript", "winWidth", winWidth)
@@ -266,6 +318,7 @@ class GuiManuscript(QDialog):
         qApp.processEvents()
         dlgSettings.loadContent()
         dlgSettings.newSettingsReady.connect(self._processNewSettings)
+
         return
 
     def _updateBuildsList(self):
@@ -295,7 +348,7 @@ class GuiManuscript(QDialog):
 
 class GuiManuscriptPreview(QTextBrowser):
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
 
         self.mainGui    = mainGui
@@ -304,15 +357,25 @@ class GuiManuscriptPreview(QTextBrowser):
 
         return
 
-# END Class GuiManuscriptPreview
+    def setContent(self, data: dict):
+        """
+        """
+        sPos = self.verticalScrollBar().value()
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
 
+        html = "".join(data.get("html", []))
+        html = html.replace("\t", "!!tab!!")
+        html = html.replace("<del>", "<span style='text-decoration: line-through;'>")
+        html = html.replace("</del>", "</span>")
+        self.setHtml(html)
+        qApp.processEvents()
 
-class GuiManuscriptBuild(QDialog):
+        while self.find("!!tab!!"):
+            theCursor = self.textCursor()
+            theCursor.insertText("\t")
 
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-        self._manusGui = parent
+        self.verticalScrollBar().setValue(sPos)
 
         return
 
-# END Class GuiManuscriptBuild
+# END Class GuiManuscriptPreview
