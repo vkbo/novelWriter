@@ -114,13 +114,10 @@ class GuiDocViewer(QTextBrowser):
         self._makeStyleSheet()
 
         # Set Font
-        theFont = QFont()
-        if CONFIG.textFont is None:
-            # If none is defined, set the default back to config
-            CONFIG.textFont = self.document().defaultFont().family()
-        theFont.setFamily(CONFIG.textFont)
-        theFont.setPointSize(CONFIG.textSize)
-        self.setFont(theFont)
+        textFont = QFont()
+        textFont.setFamily(CONFIG.textFont)
+        textFont.setPointSize(CONFIG.textSize)
+        self.setFont(textFont)
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()

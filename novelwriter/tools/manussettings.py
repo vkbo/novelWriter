@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG
-from novelwriter.constants import nwConst, nwHeadFmt
+from novelwriter.constants import nwHeadFmt
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
@@ -1032,8 +1032,6 @@ class GuiBuildFormatTab(QWidget):
         textFont = self._build.getStr("format.textFont")
         if not textFont:
             textFont = str(CONFIG.textFont)
-        if not textFont:
-            textFont = nwConst.SYSTEM_FONT
 
         self.textFont.setText(textFont)
         self.textSize.setValue(self._build.getInt("format.textSize"))

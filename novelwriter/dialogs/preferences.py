@@ -613,8 +613,7 @@ class GuiPreferencesDocuments(QWidget):
         """Save the values set for this tab.
         """
         # Text Style
-        CONFIG.textFont = self.textFont.text()
-        CONFIG.textSize = self.textSize.value()
+        CONFIG.setTextFont(self.textFont.text(), self.textSize.value())
 
         # Text Flow
         CONFIG.textWidth       = self.textWidth.value()

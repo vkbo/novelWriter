@@ -23,7 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
 from novelwriter.enum import nwItemClass, nwItemLayout, nwOutline
@@ -53,9 +52,6 @@ class nwConst:
     URL_REPORT  = "https://github.com/vkbo/novelWriter/issues"
     URL_HELP    = "https://github.com/vkbo/novelWriter/discussions"
     URL_RELEASE = "https://github.com/vkbo/novelWriter/releases/latest"
-
-    # System Values
-    SYSTEM_FONT = QFontDatabase.systemFont(QFontDatabase.GeneralFont).family()
 
 # END Class nwConst
 

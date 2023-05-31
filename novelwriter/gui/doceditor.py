@@ -276,31 +276,16 @@ class GuiDocEditor(QTextEdit):
         self.setDictionaries()
 
         # Set font
-        theFont = QFont()
-        qDoc = self.document()
-        if CONFIG.textFont is None:
-            # If none is defined, set a default font
-            theFont = QFont()
-            if CONFIG.osWindows and "Arial" in self.mainTheme.guiFontDB.families():
-                theFont.setFamily("Arial")
-                theFont.setPointSize(12)
-            elif CONFIG.osDarwin and "Courier" in self.mainTheme.guiFontDB.families():
-                theFont.setFamily("Courier")
-                theFont.setPointSize(12)
-            else:
-                theFont = qDoc.defaultFont()
-
-            CONFIG.textFont = theFont.family()
-            CONFIG.textSize = theFont.pointSize()
-
-        theFont.setFamily(CONFIG.textFont)
-        theFont.setPointSize(CONFIG.textSize)
-        self.setFont(theFont)
+        textFont = QFont()
+        textFont.setFamily(CONFIG.textFont)
+        textFont.setPointSize(CONFIG.textSize)
+        self.setFont(textFont)
 
         # Set default text margins
         # Due to cursor visibility, a part of the margin must be
         # allocated to the document itself. See issue #1112.
         cW = self.cursorWidth()
+        qDoc = self.document()
         qDoc.setDocumentMargin(cW)
         self._vpMargin = max(CONFIG.getTextMargin() - cW, 0)
         self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)

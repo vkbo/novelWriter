@@ -36,7 +36,7 @@ from pathlib import Path
 from PyQt5.QtCore import QT_TRANSLATE_NOOP
 
 from novelwriter.common import checkUuid, isHandle, jsonEncode
-from novelwriter.constants import nwConst, nwFiles, nwHeadFmt
+from novelwriter.constants import nwFiles, nwHeadFmt
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.error import logException
@@ -65,7 +65,7 @@ SETTINGS_TEMPLATE = {
     "text.includeBodyText":   (bool, True),
     "text.addNoteHeadings":   (bool, True),
     "format.buildLang":       (str, "en_GB"),
-    "format.textFont":        (str, nwConst.SYSTEM_FONT),
+    "format.textFont":        (str, ""),
     "format.textSize":        (int, 12),
     "format.lineHeight":      (float, 1.15, 0.75, 3.0),
     "format.justifyText":     (bool, False),

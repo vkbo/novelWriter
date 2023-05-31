@@ -1258,9 +1258,6 @@ class GuiBuildNovelDocView(QTextBrowser):
         ))
 
         theFont = QFont()
-        if CONFIG.textFont is None:
-            # If none is defined, set the default back to config
-            CONFIG.textFont = self.document().defaultFont().family()
         theFont.setFamily(CONFIG.textFont)
         theFont.setPointSize(CONFIG.textSize)
         self.setFont(theFont)

@@ -23,6 +23,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from __future__ import annotations
+
 import sys
 import json
 import logging
@@ -30,6 +32,7 @@ import logging
 from time import time
 from pathlib import Path
 
+from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtCore import (
     QT_VERSION, QT_VERSION_STR, PYQT_VERSION, PYQT_VERSION_STR, QStandardPaths,
     QSysInfo, QLocale, QLibraryInfo, QTranslator
@@ -120,7 +123,7 @@ class Config:
         self.askBeforeBackup = True   # Flag for asking before running automatic backup
 
         # Text Editor Settings
-        self.textFont        = None   # Editor font
+        self.textFont        = ""     # Editor font
         self.textSize        = 12     # Editor font size
         self.textWidth       = 700    # Editor text width
         self.textMargin      = 40     # Editor/viewer text margin
@@ -335,40 +338,59 @@ class Config:
                 logger.debug("Last path updated: %s" % self._lastPath)
         return
 
-    def setBackupPath(self, backupPath):
+    def setBackupPath(self, backupPath: Path | None):
         """Set the current backup path."""
         self._backupPath = checkPath(backupPath, None)
+        return
+
+    def setTextFont(self, family: str | None, pointSize: int = 12):
+        """Set the text font if it exists. If it doesn't, or is None,
+        set to default font.
+        """
+        fontDB = QFontDatabase()
+        fontFam = fontDB.families()
+        self.textSize = pointSize
+        if family is None or family not in fontFam:
+            logger.warning("Unknown font '%s'", family)
+            if self.osWindows and "Arial" in fontFam:
+                self.textFont = "Arial"
+            elif self.osDarwin and "Courier" in fontFam:
+                self.textFont = "Courier"
+            else:
+                self.textFont = fontDB.systemFont(QFontDatabase.GeneralFont).family()
+        else:
+            self.textFont = family
         return
 
     ##
     #  Methods
     ##
 
-    def pxInt(self, theSize):
+    def pxInt(self, value: int) -> int:
         """Used to scale fixed gui sizes by the screen scale factor.
         This function returns an int, which is always rounded down.
         """
-        return int(theSize*self.guiScale)
+        return int(value*self.guiScale)
 
-    def rpxInt(self, theSize):
+    def rpxInt(self, value: int) -> int:
         """Used to un-scale fixed gui sizes by the screen scale factor.
         This function returns an int, which is always rounded down.
         """
-        return int(theSize/self.guiScale)
+        return int(value/self.guiScale)
 
-    def dataPath(self, target=None):
+    def dataPath(self, target: str | None = None) -> Path:
         """Return a path in the data folder."""
         if isinstance(target, str):
             return self._dataPath / target
         return self._dataPath
 
-    def assetPath(self, target=None):
+    def assetPath(self, target: str | None = None) -> Path:
         """Return a path in the assets folder."""
         if isinstance(target, str):
             return self._appPath / "assets" / target
         return self._appPath / "assets"
 
-    def lastPath(self):
+    def lastPath(self) -> Path:
         """Return the last path used by the user, but ensure it exists.
         """
         if isinstance(self._lastPath, Path):
@@ -376,14 +398,14 @@ class Config:
                 return self._lastPath
         return self._homePath
 
-    def backupPath(self):
+    def backupPath(self) -> Path | None:
         """Return the backup path."""
         if isinstance(self._backupPath, Path):
             if self._backupPath.is_dir():
                 return self._backupPath
         return None
 
-    def errorText(self):
+    def errorText(self) -> str:
         """Compile and return error messages from the initialisation of
         the Config class, and clear the error buffer.
         """
@@ -392,7 +414,7 @@ class Config:
         self._errData = []
         return errMessage
 
-    def listLanguages(self, lngSet):
+    def listLanguages(self, lngSet: int) -> list[tuple[str, str]]:
         """List localisation files in the i18n folder. The default GUI
         language is British English (en_GB).
         """
@@ -423,7 +445,7 @@ class Config:
     #  Config Actions
     ##
 
-    def initConfig(self, confPath=None, dataPath=None):
+    def initConfig(self, confPath: str | Path | None = None, dataPath: str | Path | None = None):
         """Initialise the config class. The manual setting of confPath
         and dataPath is mainly intended for the test suite.
         """
@@ -449,9 +471,10 @@ class Config:
 
         # Also create the syntax, themes and icons folders if possible
         if self._dataPath.is_dir():
+            (self._dataPath / "cache").mkdir(exist_ok=True)
+            (self._dataPath / "icons").mkdir(exist_ok=True)
             (self._dataPath / "syntax").mkdir(exist_ok=True)
             (self._dataPath / "themes").mkdir(exist_ok=True)
-            (self._dataPath / "icons").mkdir(exist_ok=True)
 
         # Check if config file exists, and load it. If not, we save defaults
         if (self._confPath / nwFiles.CONF_FILE).is_file():

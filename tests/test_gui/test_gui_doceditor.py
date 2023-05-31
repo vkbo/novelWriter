@@ -56,7 +56,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.docEditor._typPadChar == nwUnicode.U_NBSP
 
     # Check that editor handles settings
-    CONFIG.textFont = None
+    CONFIG.textFont = ""
     CONFIG.doJustify = True
     CONFIG.showTabsNSpaces = True
     CONFIG.showLineEndings = True
