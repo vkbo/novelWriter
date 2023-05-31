@@ -65,10 +65,10 @@ class GuiBuildSettings(QDialog):
 
     newSettingsReady = pyqtSignal(BuildSettings)
 
-    def __init__(self, mainGui: GuiMain, build: BuildSettings):
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget, mainGui: GuiMain, build: BuildSettings):
+        super().__init__(parent=parent)
 
-        logger.debug("Initialising GuiBuildSettings ...")
+        logger.debug("Created: GuiBuildSettings")
         self.setObjectName("GuiBuildSettings")
 
         self.mainGui    = mainGui
@@ -159,9 +159,12 @@ class GuiBuildSettings(QDialog):
         # Set Default Tab
         self.optSideBar.setSelected(self.OPT_FILTERS)
 
-        logger.debug("GuiBuildSettings initialisation complete")
+        logger.debug("Ready: GuiBuildSettings")
 
         return
+
+    def __del__(self):
+        logger.debug("Deleted: GuiBuildSettings")
 
     def loadContent(self):
         """Populate the child widgets.
@@ -199,21 +202,13 @@ class GuiBuildSettings(QDialog):
         """Handle button clicks from the dialog button box.
         """
         role = self.dlgButtons.buttonRole(button)
-        if role in (QDialogButtonBox.ApplyRole, QDialogButtonBox.AcceptRole):
-            self._build.setName(self.editBuildName.text())
-            self.optTabHeadings.saveContent()
-            self.optTabContent.saveContent()
-            self.optTabFormat.saveContent()
-            self.optTabOutput.saveContent()
-            self.newSettingsReady.emit(self._build)
-
-        self._saveSettings()
-        if role == QDialogButtonBox.AcceptRole:
-            self.accept()
+        if role == QDialogButtonBox.ApplyRole:
+            self._emitBuildData()
+        elif role == QDialogButtonBox.AcceptRole:
+            self._emitBuildData()
+            self.close()
         elif role == QDialogButtonBox.RejectRole:
-            if self._checkOkClose():
-                self.reject()
-
+            self.close()
         return
 
     ##
@@ -223,25 +218,30 @@ class GuiBuildSettings(QDialog):
     def closeEvent(self, event: QEvent):
         """Capture the user closing the window so we can save settings.
         """
-        if self._checkOkClose():
-            self._saveSettings()
-            event.accept()
+        logger.debug("Closing: GuiBuildSettings")
+        self._askToSaveBuild()
+        self._saveSettings()
+        event.accept()
+        self.deleteLater()
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _checkOkClose(self) -> bool:
+    def _askToSaveBuild(self):
         """Check if there are unsaved changes, and if there are, ask if
-        it';'s ok to reject them.
+        it's ok to reject them.
         """
         if self._build.changed:
-            return self.mainGui.askQuestion(
+            doSave = self.mainGui.askQuestion(
                 self.tr("Build Settings"),
-                self.tr("There are unsaved changes. Close anyway?")
+                self.tr("Do you want to save your changes?")
             )
-        return True
+            if doSave:
+                self._emitBuildData()
+            self._build.resetChangedState()
+        return
 
     def _saveSettings(self):
         """Save the various user settings.
@@ -260,6 +260,18 @@ class GuiBuildSettings(QDialog):
         pOptions.setValue("GuiBuildSettings", "filterWidth", filterWidth)
         pOptions.saveSettings()
 
+        return
+
+    def _emitBuildData(self):
+        """Assemble the build data and emit the signal.
+        """
+        self._build.setName(self.editBuildName.text())
+        self.optTabHeadings.saveContent()
+        self.optTabContent.saveContent()
+        self.optTabFormat.saveContent()
+        self.optTabOutput.saveContent()
+        self.newSettingsReady.emit(self._build)
+        self._build.resetChangedState()
         return
 
 # END Class GuiBuildSettings

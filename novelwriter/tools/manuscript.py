@@ -56,7 +56,7 @@ class GuiManuscript(QDialog):
     def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiManuscript ...")
+        logger.debug("Created: GuiManuscript")
         self.setObjectName("GuiManuscript")
 
         self.mainGui    = mainGui
@@ -161,8 +161,12 @@ class GuiManuscript(QDialog):
         self.setLayout(self.outerBox)
         self.setSizeGripEnabled(True)
 
-        logger.debug("GuiManuscript initialisation complete")
+        logger.debug("Ready: GuiManuscript")
 
+        return
+
+    def __del__(self):
+        logger.debug("Deleted: GuiManuscript")
         return
 
     def loadContent(self):
@@ -179,8 +183,13 @@ class GuiManuscript(QDialog):
     def closeEvent(self, event):
         """Capture the user closing the window so we can save settings.
         """
-        self._beforeClose()
+        self._saveSettings()
+        for obj in self.children():
+            # Make sure we don't have any settings windows open
+            if isinstance(obj, GuiBuildSettings) and obj.isVisible():
+                obj.close()
         event.accept()
+        self.deleteLater()
         return
 
     ##
@@ -216,7 +225,8 @@ class GuiManuscript(QDialog):
 
     @pyqtSlot()
     def _generatePreview(self):
-        """
+        """Run the document builder on the current build settings for
+        the preview widget.
         """
         build = self._getSelectedBuild()
         if build is None:
@@ -255,7 +265,6 @@ class GuiManuscript(QDialog):
     def _doClose(self):
         """The close button has been clicked.
         """
-        self._beforeClose()
         self.close()
         return
 
@@ -276,15 +285,6 @@ class GuiManuscript(QDialog):
     def _saveManuscript(self, outFormat: int):
         """Save the manuscript file or files.
         """
-        return
-
-    def _beforeClose(self):
-        """List of things to do before closing.
-        """
-        self._saveSettings()
-        for qWidget in qApp.topLevelWidgets():
-            if qWidget.objectName() == "GuiBuildSettings":
-                qWidget.close()
         return
 
     def _saveSettings(self):
@@ -309,16 +309,15 @@ class GuiManuscript(QDialog):
         return
 
     def _openSettingsDialog(self, build: BuildSettings):
-        """Open a new build settings dialog.
+        """Open the build settings dialog.
         """
-        dlgSettings = GuiBuildSettings(self.mainGui, build)
+        dlgSettings = GuiBuildSettings(self, self.mainGui, build)
         dlgSettings.setModal(False)
         dlgSettings.show()
         dlgSettings.raise_()
         qApp.processEvents()
         dlgSettings.loadContent()
         dlgSettings.newSettingsReady.connect(self._processNewSettings)
-
         return
 
     def _updateBuildsList(self):
