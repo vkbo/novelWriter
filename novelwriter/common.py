@@ -1,7 +1,6 @@
 """
 novelWriter – Common Functions
 ==============================
-Various common functions
 
 File History:
 Created: 2019-05-12 [0.1]
@@ -113,9 +112,8 @@ def checkHandle(value, default, allowNone=False):
     return default
 
 
-def checkUuid(value, default):
-    """Try to process a value as an uuid, or return a default.
-    """
+def checkUuid(value: Any, default: str) -> str:
+    """Try to process a value as an uuid, or return a default."""
     try:
         return str(uuid.UUID(value))
     except Exception:
@@ -236,7 +234,7 @@ def formatInt(value):
     return str(value)
 
 
-def formatTimeStamp(value, fileSafe=False):
+def formatTimeStamp(value: float, fileSafe: bool = False) -> str:
     """Take a number (on the format returned by time.time()) and convert
     it to a timestamp string.
     """
@@ -246,7 +244,7 @@ def formatTimeStamp(value, fileSafe=False):
         return datetime.fromtimestamp(value).strftime(nwConst.FMT_TSTAMP)
 
 
-def formatTime(t):
+def formatTime(t: int) -> str:
     """Format a time in seconds in HH:MM:SS format or d-HH:MM:SS format
     if a full day or longer.
     """
