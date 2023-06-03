@@ -43,13 +43,6 @@ VALID_MAP = {
         "hideZeros", "hideNegative", "groupByDay", "showIdleTime", "histMax",
     },
     "GuiDocSplit": {"spLevel", "intoFolder", "docHierarchy"},
-    "GuiBuildNovel": {
-        "winWidth", "winHeight", "boxWidth", "docWidth", "hideScene",
-        "hideSection", "addNovel", "addNotes", "ignoreFlag", "justifyText",
-        "excludeBody", "textFont", "textSize", "lineHeight", "noStyling",
-        "incSynopsis", "incComments", "incKeywords", "incBodyText",
-        "replaceTabs", "replaceUCode", "rootFilter",
-    },
     "GuiOutline": {"headerOrder", "columnWidth", "columnHidden"},
     "GuiProjectSettings": {
         "winWidth", "winHeight", "replaceColW", "statusColW", "importColW",

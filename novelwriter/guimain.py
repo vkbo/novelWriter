@@ -55,7 +55,6 @@ from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projdetails import GuiProjectDetails
 from novelwriter.dialogs.projsettings import GuiProjectSettings
-from novelwriter.tools.build import GuiBuildNovel
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.projwizard import GuiProjectWizard
@@ -1007,26 +1006,6 @@ class GuiMain(QMainWindow):
         dlgDetails.show()
         dlgDetails.raise_()
         dlgDetails.updateValues()
-
-        return True
-
-    def showBuildProjectDialog(self):
-        """Open the build project dialog.
-        """
-        if not self.hasProject:
-            logger.error("No project open")
-            return False
-
-        dlgBuild = getGuiItem("GuiBuildNovel")
-        if dlgBuild is None:
-            dlgBuild = GuiBuildNovel(self)
-        assert isinstance(dlgBuild, GuiBuildNovel)
-
-        dlgBuild.setModal(False)
-        dlgBuild.show()
-        dlgBuild.raise_()
-        qApp.processEvents()
-        dlgBuild.viewCachedDoc()
 
         return True
 

@@ -82,8 +82,8 @@ class GuiSideBar(QToolBar):
 
         self.aBuild = QAction(self.tr("Build"), self)
         self.aBuild.setFont(lblFont)
-        self.aBuild.setToolTip(self.tr("Build Novel Project"))
-        self.aBuild.triggered.connect(lambda: self.mainGui.showBuildProjectDialog())
+        self.aBuild.setToolTip(self.tr("Build Manuscript"))
+        self.aBuild.triggered.connect(lambda: self.mainGui.showBuildManuscriptDialog())
 
         self.aDetails = QAction(self.tr("Details"), self)
         self.aDetails.setFont(lblFont)

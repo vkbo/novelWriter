@@ -63,7 +63,7 @@ def testGuiMain_ProjectBlocker(nwGUI):
     assert nwGUI.rebuildIndex() is False
     assert nwGUI.showProjectSettingsDialog() is False
     assert nwGUI.showProjectDetailsDialog() is False
-    assert nwGUI.showBuildProjectDialog() is False
+    assert nwGUI.showBuildManuscriptDialog() is False
     assert nwGUI.showProjectWordListDialog() is False
     assert nwGUI.showWritingStatsDialog() is False
 

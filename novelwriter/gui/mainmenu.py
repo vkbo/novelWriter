@@ -829,11 +829,6 @@ class GuiMainMenu(QMenuBar):
         self.aBackupProject.triggered.connect(lambda: self.theProject.backupProject(True))
         self.toolsMenu.addAction(self.aBackupProject)
 
-        # Tools > Build Novel Project
-        self.aBuildProject = QAction(self.tr("Build Novel Project"), self)
-        self.aBuildProject.triggered.connect(self.mainGui.showBuildProjectDialog)
-        self.toolsMenu.addAction(self.aBuildProject)
-
         # Tools > Build Manuscript
         self.aBuildManuscript = QAction(self.tr("Build Manuscript"), self)
         self.aBuildManuscript.setShortcut("F5")
