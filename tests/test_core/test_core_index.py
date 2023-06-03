@@ -24,7 +24,7 @@ import pytest
 
 from shutil import copyfile
 
-from mock import causeException
+from mocked import causeException
 from tools import C, buildTestProject, cmpFiles, writeFile
 
 from novelwriter.enum import nwItemClass, nwItemLayout

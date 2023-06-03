@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import json
 import pytest
 
-from mock import causeOSError
+from mocked import causeOSError
 from tools import getGuiItem, writeFile, buildTestProject
 
 from PyQt5.QtCore import Qt

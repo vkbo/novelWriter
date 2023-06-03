@@ -280,11 +280,6 @@ class ProjectXMLReader:
                     data.setAutoReplace(self._parseDictKeyText(xItem))
                 else:  # Pre 1.2 format
                     data.setAutoReplace(self._parseDictTagText(xItem))
-            elif xItem.tag == "titleFormat":
-                if self._version >= 0x0105:
-                    data.setTitleFormat(self._parseDictKeyText(xItem))
-                else:  # Pre 1.4 format
-                    data.setTitleFormat(self._parseDictTagText(xItem))
             else:
                 logger.warning("Ignored <root/settings/%s> in XML", xItem.tag)
 
@@ -523,7 +518,6 @@ class ProjectXMLWriter:
         })
         self._packDictKeyValue(xSettings, "lastHandle", data.lastHandle)
         self._packDictKeyValue(xSettings, "autoReplace", data.autoReplace)
-        self._packDictKeyValue(xSettings, "titleFormat", data.titleFormat)
 
         # Save Status/Importance
         xStatus = ET.SubElement(xSettings, "status")

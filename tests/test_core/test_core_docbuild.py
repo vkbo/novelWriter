@@ -23,7 +23,7 @@ import pytest
 
 from shutil import copyfile
 
-from mock import causeException, causeOSError
+from mocked import causeException, causeOSError
 from novelwriter.core.buildsettings import BuildSettings
 from tools import ODT_IGNORE, cmpFiles
 

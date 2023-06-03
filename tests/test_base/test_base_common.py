@@ -25,7 +25,7 @@ import hashlib
 
 from pathlib import Path
 
-from mock import causeOSError
+from mocked import causeOSError
 from tools import writeFile
 
 from novelwriter.guimain import GuiMain

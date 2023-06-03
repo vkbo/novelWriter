@@ -25,7 +25,7 @@ import shutil
 
 from pathlib import Path
 
-from mock import MockGuiMain
+from mocked import MockGuiMain
 from tools import cleanProject
 
 from PyQt5.QtWidgets import QMessageBox

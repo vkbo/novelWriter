@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import json
 import pytest
 
-from mock import causeOSError
+from mocked import causeOSError
 
 from novelwriter.constants import nwFiles
 from novelwriter.core.options import OptionState

@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from zipfile import ZipFile
 import pytest
 
-from mock import causeOSError
+from mocked import causeOSError
 from tools import C, buildTestProject, writeFile
 
 from novelwriter import CONFIG

@@ -171,11 +171,6 @@ class NWProjectData:
         return self._autoReplace
 
     @property
-    def titleFormat(self):
-        """Delete"""
-        return self._titleFormat
-
-    @property
     def itemStatus(self) -> NWStatus:
         """Return the status settings object."""
         return self._status
@@ -208,10 +203,6 @@ class NWProjectData:
     def getLastHandle(self, component: str) -> str | None:
         """Retrieve the last used handle for a given component."""
         return self._lastHandle.get(component, None)
-
-    def getTitleFormat(self, kind):
-        """Retrieve the title format string for a given kind of header."""
-        return self._titleFormat.get(kind, "%title%")
 
     ##
     #  Setters
@@ -334,15 +325,6 @@ class NWProjectData:
             for key, entry in value.items():
                 if isinstance(entry, str):
                     self._autoReplace[key] = simplified(entry)
-            self.theProject.setProjectChanged(True)
-        return
-
-    def setTitleFormat(self, value):
-        """Set the title formats."""
-        if isinstance(value, dict):
-            for key, entry in value.items():
-                if key in self._titleFormat and isinstance(entry, str):
-                    self._titleFormat[key] = simplified(entry)
             self.theProject.setProjectChanged(True)
         return
 

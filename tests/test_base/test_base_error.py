@@ -21,7 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from mock import causeException
+from mocked import causeException
 
 from novelwriter.error import NWErrorMessage, exceptionHandler
 

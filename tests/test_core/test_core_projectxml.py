@@ -25,8 +25,8 @@ import pytest
 from shutil import copyfile
 from datetime import datetime
 
-from mock import causeOSError
 from tools import cmpFiles, writeFile
+from mocked import causeOSError
 
 from novelwriter.core.item import NWItem
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
@@ -34,12 +34,16 @@ from novelwriter.core.projectdata import NWProjectData
 
 
 class MockProject:
+    """Fake project object."""
+
     def setProjectChanged(self, *a):
+        """Fake project method."""
         pass
 
 
 @pytest.fixture(scope="function", autouse=True)
 def mockVersion(monkeypatch):
+    """Mock the version info to prevent diff from failing."""
     monkeypatch.setattr("novelwriter.core.projectxml.__version__", "2.0-rc1")
     monkeypatch.setattr("novelwriter.core.projectxml.__hexversion__", "0x020000c1")
     return
@@ -47,8 +51,7 @@ def mockVersion(monkeypatch):
 
 @pytest.mark.core
 def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
-    """Test reading the current XML file format.
-    """
+    """Test reading the current XML file format."""
     refFile = tstPaths.filesDir / "nwProject-1.5.nwx"
     tstFile = tstPaths.outDir / "ProjectXML_ReadCurrent.nwx"
     xmlFile = fncPath / "nwProject-1.5.nwx"
@@ -159,12 +162,6 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     assert data.getLastHandle("viewer") == "636b6aa9b697b"
     assert data.getLastHandle("novelTree") == "7031beac91f75"
     assert data.getLastHandle("outline") == "7031beac91f75"
-
-    assert data.getTitleFormat("title") == "%title%"
-    assert data.getTitleFormat("chapter") == "Chapter %chw%: %title%"
-    assert data.getTitleFormat("unnumbered") == "%title%"
-    assert data.getTitleFormat("scene") == "Scene %ch%.%sc%: %title%"
-    assert data.getTitleFormat("section") == ""
 
     assert data.itemStatus.name("sf12341") == "New"
     assert data.itemStatus.name("sf24ce6") == "Notes"
@@ -286,12 +283,6 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
     assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.0
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.0
 
-    assert data.getTitleFormat("title") == "%title%"
-    assert data.getTitleFormat("chapter") == "Chapter %ch%: %title%"
-    assert data.getTitleFormat("unnumbered") == "%title%"
-    assert data.getTitleFormat("scene") == "Scene %ch%.%sc%: %title%"
-    assert data.getTitleFormat("section") == ""
-
     assert data.itemStatus.name("s000000") == "New"
     assert data.itemStatus.name("s000001") == "Notes"
     assert data.itemStatus.name("s000002") == "Started"
@@ -388,8 +379,7 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
 
 @pytest.mark.core
 def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
-    """Test reading the version 1.1 XML file format.
-    """
+    """Test reading the version 1.1 XML file format."""
     refFile = tstPaths.filesDir / "nwProject-1.1.nwx"
     xmlFile = fncPath / "nwProject-1.1.nwx"
     outFile = fncPath / "nwProject.nwx"
@@ -427,12 +417,6 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
     assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.1
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.1
-
-    assert data.getTitleFormat("title") == "%title%"
-    assert data.getTitleFormat("chapter") == "Chapter %ch%: %title%"
-    assert data.getTitleFormat("unnumbered") == "%title%"
-    assert data.getTitleFormat("scene") == "Scene %ch%.%sc%: %title%"
-    assert data.getTitleFormat("section") == ""
 
     assert data.itemStatus.name("s000000") == "New"
     assert data.itemStatus.name("s000001") == "Notes"
@@ -530,8 +514,7 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
 
 @pytest.mark.core
 def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
-    """Test reading the version 1.2 XML file format.
-    """
+    """Test reading the version 1.2 XML file format."""
     refFile = tstPaths.filesDir / "nwProject-1.2.nwx"
     xmlFile = fncPath / "nwProject-1.2.nwx"
     outFile = fncPath / "nwProject.nwx"
@@ -569,12 +552,6 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
     assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.2
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.2
-
-    assert data.getTitleFormat("title") == "%title%"
-    assert data.getTitleFormat("chapter") == "Chapter %chw%: %title%"
-    assert data.getTitleFormat("unnumbered") == "%title%"
-    assert data.getTitleFormat("scene") == "Scene %ch%.%sc%: %title%"
-    assert data.getTitleFormat("section") == ""
 
     assert data.itemStatus.name("s000000") == "New"
     assert data.itemStatus.name("s000001") == "Notes"
@@ -675,8 +652,7 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
 
 @pytest.mark.core
 def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
-    """Test reading the version 1.3 XML file format.
-    """
+    """Test reading the version 1.3 XML file format."""
     refFile = tstPaths.filesDir / "nwProject-1.3.nwx"
     xmlFile = fncPath / "nwProject-1.3.nwx"
     outFile = fncPath / "nwProject.nwx"
@@ -714,12 +690,6 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
     assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.3
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.3
-
-    assert data.getTitleFormat("title") == "%title%"
-    assert data.getTitleFormat("chapter") == "Chapter %chw%: %title%"
-    assert data.getTitleFormat("unnumbered") == "%title%"
-    assert data.getTitleFormat("scene") == "Scene %ch%.%sc%: %title%"
-    assert data.getTitleFormat("section") == ""
 
     assert data.itemStatus.name("s000000") == "New"
     assert data.itemStatus.name("s000001") == "Notes"
@@ -820,8 +790,7 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
 
 @pytest.mark.core
 def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockRnd):
-    """Test reading the version 1.4 XML file format.
-    """
+    """Test reading the version 1.4 XML file format."""
     refFile = tstPaths.filesDir / "nwProject-1.4.nwx"
     xmlFile = fncPath / "nwProject-1.4.nwx"
     outFile = fncPath / "nwProject.nwx"
@@ -859,12 +828,6 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockRnd):
     assert data.getLastHandle("viewer") is None  # Dropped by conversion
     assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.3
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.3
-
-    assert data.getTitleFormat("title") == "%title%"
-    assert data.getTitleFormat("chapter") == "Chapter %chw%: %title%"
-    assert data.getTitleFormat("unnumbered") == "%title%"
-    assert data.getTitleFormat("scene") == "Scene %ch%.%sc%: %title%"
-    assert data.getTitleFormat("section") == ""
 
     assert data.itemStatus.name("sf12341") == "New"
     assert data.itemStatus.name("sf24ce6") == "Notes"

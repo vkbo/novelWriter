@@ -23,7 +23,7 @@ import sys
 import pytest
 import logging
 
-from mock import MockGuiMain
+from mocked import MockGuiMain
 
 from novelwriter import CONFIG, main, logger
 
