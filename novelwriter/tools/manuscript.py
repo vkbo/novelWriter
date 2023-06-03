@@ -28,16 +28,19 @@ import logging
 
 from time import time
 from typing import TYPE_CHECKING
+from datetime import datetime
 
-from PyQt5.QtGui import QCursor
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtGui import QColor, QCursor, QFont, QPalette, QResizeEvent
+from PyQt5.QtCore import QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QListWidget, QListWidgetItem, QMenu, QProgressBar,
-    QPushButton, QSplitter, QTextBrowser, QVBoxLayout, QWidget, qApp
+    QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QMenu,
+    QProgressBar, QPushButton, QSplitter, QTextBrowser, QVBoxLayout, QWidget,
+    qApp
 )
 
 from novelwriter import CONFIG
 from novelwriter.error import logException
+from novelwriter.common import checkInt, fuzzyTime
 from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
@@ -178,6 +181,21 @@ class GuiManuscript(QDialog):
         """Load dialog content from project data."""
         self._builds.loadCollection()
         self._updateBuildsList()
+
+        logger.debug("Loading build cache")
+        cache = CONFIG.dataPath("cache") / f"build_{self.theProject.data.uuid}.json"
+        if cache.is_file():
+            try:
+                with open(cache, mode="r", encoding="utf-8") as fObj:
+                    data = json.load(fObj)
+                build = self._builds.getBuild(data.get("uuid", ""))
+                if isinstance(build, BuildSettings):
+                    self._updatePreview(data, build)
+            except Exception:
+                logger.error("Failed to save build cache")
+                logException()
+                return
+
         return
 
     ##
@@ -245,13 +263,16 @@ class GuiManuscript(QDialog):
         buildObj = docBuild.lastBuild
         assert isinstance(buildObj, ToHtml)
         result = {
+            "uuid": build.buildID,
             "time": int(time()),
-            "style": buildObj.getStyleSheet(),
+            "styles": buildObj.getStyleSheet(),
             "html": buildObj.fullHTML,
         }
 
+        self._updatePreview(result, build)
+
         logger.debug("Saving build cache")
-        cache = CONFIG.dataPath("cache") / f"build_{build.buildID}.json"
+        cache = CONFIG.dataPath("cache") / f"build_{self.theProject.data.uuid}.json"
         try:
             with open(cache, mode="w+", encoding="utf-8") as outFile:
                 outFile.write(json.dumps(result, indent=2))
@@ -259,8 +280,6 @@ class GuiManuscript(QDialog):
             logger.error("Failed to save build cache")
             logException()
             return
-
-        self.manPreview.setContent(result)
 
         return
 
@@ -273,6 +292,19 @@ class GuiManuscript(QDialog):
     ##
     #  Internal Functions
     ##
+
+    def _updatePreview(self, data: dict, build: BuildSettings):
+        """Update the preview widget and set relevant values."""
+        self.manPreview.setContent(data)
+        self.manPreview.setBuildName(build.name)
+        self.manPreview.setTextFont(
+            build.getStr("format.textFont"),
+            build.getInt("format.textSize")
+        )
+        self.manPreview.setJustify(
+            build.getBool("format.justifyText")
+        )
+        return
 
     def _getSelectedBuild(self) -> BuildSettings | None:
         """Get the currently selected build."""
@@ -350,12 +382,96 @@ class _PreviewWidget(QTextBrowser):
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
+        self._docTime = 0
+        self._buildName = ""
+
+        # Document Setup
+        dPalette = self.palette()
+        dPalette.setColor(QPalette.Base, QColor(255, 255, 255))
+        dPalette.setColor(QPalette.Text, QColor(0, 0, 0))
+        self.setPalette(dPalette)
+
+        self.setMinimumWidth(40*self.mainGui.mainTheme.textNWidth)
+        self.setTextFont(CONFIG.textFont, CONFIG.textSize)
+        self.setTabStopDistance(CONFIG.getTabWidth())
+        self.setOpenExternalLinks(False)
+
+        self.document().setDocumentMargin(CONFIG.getTextMargin())
+        self.setPlaceholderText(self.tr(
+            "Press the \"Build Preview\" button to generate ..."
+        ))
+
+        # Document Age
+        aPalette = self.palette()
+        aPalette.setColor(QPalette.Background, aPalette.toolTipBase().color())
+        aPalette.setColor(QPalette.Foreground, aPalette.toolTipText().color())
+
+        aFont = self.font()
+        aFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
+
+        self.ageLabel = QLabel("", self)
+        self.ageLabel.setIndent(0)
+        self.ageLabel.setFont(aFont)
+        self.ageLabel.setPalette(aPalette)
+        self.ageLabel.setAutoFillBackground(True)
+        self.ageLabel.setAlignment(Qt.AlignCenter)
+        self.ageLabel.setFixedHeight(int(2.1*self.mainTheme.fontPixelSize))
+
+        self._updateDocMargins()
+        self._updateBuildAge()
+
+        # Age Timer
+        self.ageTimer = QTimer()
+        self.ageTimer.setInterval(10)
+        self.ageTimer.timeout.connect(self._updateBuildAge)
+        self.ageTimer.start()
+
         return
+
+    ##
+    #  Setters
+    ##
+
+    def setBuildName(self, name: str):
+        """Set the build name for the document label."""
+        self._buildName = name
+        self._updateBuildAge()
+        return
+
+    def setJustify(self, state: bool):
+        """Enable/disable the justify text option."""
+        options = self.document().defaultTextOption()
+        if state:
+            options.setAlignment(Qt.AlignJustify)
+        else:
+            options.setAlignment(Qt.AlignAbsolute)
+        self.document().setDefaultTextOption(options)
+        return
+
+    def setTextFont(self, family: str, size: int):
+        """Set the text font properties."""
+        font = QFont()
+        font.setFamily(family)
+        font.setPointSize(size)
+        self.setFont(font)
+        return
+
+    ##
+    #  Methods
+    ##
 
     def setContent(self, data: dict):
         """Set the content of the preview widget."""
         sPos = self.verticalScrollBar().value()
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+
+        styles = "\n".join(data.get("styles", [
+            "h1, h2 {color: rgb(66, 113, 174);}",
+            "h3, h4 {color: rgb(50, 50, 50);}",
+            "a {color: rgb(66, 113, 174);}",
+            ".tags {color: rgb(245, 135, 31); font-weight: bold;}",
+        ]))
+        self.document().setDefaultStyleSheet(styles)
 
         html = "".join(data.get("html", []))
         html = html.replace("\t", "!!tab!!")
@@ -363,13 +479,66 @@ class _PreviewWidget(QTextBrowser):
         html = html.replace("</del>", "</span>")
         self.setHtml(html)
         qApp.processEvents()
-
         while self.find("!!tab!!"):
             theCursor = self.textCursor()
             theCursor.insertText("\t")
 
         self.verticalScrollBar().setValue(sPos)
+        self._docTime = checkInt(data.get("time"), 0)
+        self._updateBuildAge()
 
+        # Since we change the content while it may still be rendering, we mark
+        # the document dirty again to make sure it's re-rendered properly.
+        self.document().markContentsDirty(0, self.document().characterCount())
+        qApp.restoreOverrideCursor()
+
+        return
+
+    ##
+    #  Events
+    ##
+
+    def resizeEvent(self, event: QResizeEvent):
+        """Capture resize and update the document margins."""
+        super().resizeEvent(event)
+        self._updateDocMargins()
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _updateBuildAge(self):
+        """Update the build time and the fuzzy age."""
+        if self._docTime > 0:
+            strBuildTime = "%s (%s)" % (
+                datetime.fromtimestamp(self._docTime).strftime("%x %X"),
+                fuzzyTime(time() - self._docTime)
+            )
+        else:
+            strBuildTime = self.tr("Unknown")
+        text = "{0} {1}".format(self.tr("Built"), strBuildTime)
+        if self._buildName:
+            text = "<b>{0}</b><br>{1}".format(self._buildName, text)
+        self.ageLabel.setText(text)
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _updateDocMargins(self):
+        """Automatically adjust the header to fill the top of the
+        document within the viewport.
+        """
+        vBar = self.verticalScrollBar()
+        sW = vBar.width() if vBar.isVisible() else 0
+        tB = self.frameWidth()
+        tW = self.width() - 2*tB - sW
+        tH = self.ageLabel.height()
+        self.ageLabel.setGeometry(tB, tB, tW, tH)
+        self.setViewportMargins(0, tH, 0, 0)
         return
 
 # END Class _PreviewWidget

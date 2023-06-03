@@ -22,7 +22,6 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-
 from __future__ import annotations
 
 import json
@@ -31,6 +30,7 @@ import hashlib
 import logging
 import xml.etree.ElementTree as ET
 
+from typing import Any
 from pathlib import Path
 from datetime import datetime
 from configparser import ConfigParser
@@ -49,9 +49,8 @@ logger = logging.getLogger(__name__)
 #  Checker Functions
 # =============================================================================================== #
 
-def checkStringNone(value, default):
-    """Check if a variable is a string or a None.
-    """
+def checkStringNone(value: Any, default: str | None) -> str | None:
+    """Check if a variable is a string or a None."""
     if value is None or value == "None":
         return None
     if isinstance(value, str):
@@ -59,35 +58,31 @@ def checkStringNone(value, default):
     return default
 
 
-def checkString(value, default):
-    """Check if a variable is a string.
-    """
+def checkString(value: Any, default: str) -> str:
+    """Check if a variable is a string."""
     if isinstance(value, str):
         return str(value)
     return default
 
 
-def checkInt(value, default):
-    """Check if a variable is an integer.
-    """
+def checkInt(value: Any, default: int) -> int:
+    """Check if a variable is an integer."""
     try:
         return int(value)
     except Exception:
         return default
 
 
-def checkFloat(value, default):
-    """Check if a variable is a float.
-    """
+def checkFloat(value: Any, default: float) -> float:
+    """Check if a variable is a float."""
     try:
         return float(value)
     except Exception:
         return default
 
 
-def checkBool(value, default):
-    """Check if a variable is a boolean.
-    """
+def checkBool(value: Any, default: bool) -> bool:
+    """Check if a variable is a boolean."""
     if isinstance(value, bool):
         return value
     elif isinstance(value, str):
