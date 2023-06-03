@@ -22,8 +22,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from zipfile import ZipFile
 import pytest
 
-from mocked import causeOSError
 from tools import C, buildTestProject, writeFile
+from mocked import causeOSError
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwFiles
@@ -33,13 +33,14 @@ from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
 
 
 class MockProject:
+    """Test class for projects."""
+
     pass
 
 
 @pytest.mark.core
 def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
-    """Test opening a project in a folder.
-    """
+    """Test opening a project in a folder."""
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
@@ -60,7 +61,6 @@ def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
     assert storage.getXmlWriter() is None
     assert bool(storage.getDocument(C.hSceneDoc)) is False
     assert storage.getMetaFile("file") is None
-    assert storage.getCacheFile("file") is None
 
     # Open project as a new project should fail
     assert storage.openProjectInPlace(fncPath, newProject=True) is False
@@ -93,7 +93,6 @@ def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
 
     # Get paths
     assert storage.getMetaFile("stuff") == fncPath / "meta" / "stuff"
-    assert storage.getCacheFile("stuff") == fncPath / "cache" / "stuff"
 
     # Clean up
     assert theProject.closeProject() is True
@@ -104,15 +103,13 @@ def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
     assert storage.getXmlWriter() is None
     assert bool(storage.getDocument(C.hSceneDoc)) is False
     assert storage.getMetaFile("file") is None
-    assert storage.getCacheFile("file") is None
 
 # END Test testCoreStorage_ProjectInPlace
 
 
 @pytest.mark.core
 def testCoreStorage_LockFile(monkeypatch, fncPath):
-    """Test the project lock file.
-    """
+    """Test the project lock file."""
     monkeypatch.setattr("novelwriter.core.storage.time", lambda: 1000.0)
 
     storage = NWStorage(MockProject())
@@ -174,8 +171,7 @@ def testCoreStorage_LockFile(monkeypatch, fncPath):
 
 @pytest.mark.core
 def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
-    """Test the project path preparation functions.
-    """
+    """Test the project path preparation functions."""
     storage = NWStorage(MockProject())
     assert storage.isOpen() is False
 
@@ -198,8 +194,8 @@ def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
     storage._runtimePath = fncPath
     assert storage._prepareStorage(checkLegacy=False) is True
     assert (fncPath / "content").exists()
-    assert (fncPath / "cache").exists()
     assert (fncPath / "meta").exists()
+    assert not (fncPath / "cache").exists()  # Removed in 2.1b1
 
     # Add a legacy folder
     storage._runtimePath = fncPath
@@ -280,8 +276,10 @@ def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
         fncPath / "meta" / "timelineOptions.json",
         fncPath / "meta" / "docMergeOptions.json",
         fncPath / "meta" / "sessionLogOptions.json",
+        fncPath / "cache" / "prevBuild.json",
         fncPath / "ToC.json",
     ]
+    (fncPath / "cache").mkdir()
     for depFile in remove:
         depFile.write_text("foo")
         assert depFile.exists()
@@ -301,8 +299,7 @@ def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
 
 @pytest.mark.core
 def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
-    """Test making a zip archive of a project.
-    """
+    """Test making a zip archive of a project."""
     zipFile = tstPaths.tmpDir / "project.zip"
 
     theProject = NWProject(mockGUI)

@@ -40,7 +40,7 @@ from novelwriter.common import (
 )
 from novelwriter.constants import nwFiles
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.status import NWStatus
     from novelwriter.core.projectdata import NWProjectData
 

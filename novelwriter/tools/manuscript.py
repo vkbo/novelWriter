@@ -46,7 +46,7 @@ from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.tools.manussettings import GuiBuildSettings
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)

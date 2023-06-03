@@ -47,7 +47,7 @@ from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.extensions.configlayout import NConfigLayout, NSimpleLayout
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
     from novelwriter.gui.theme import GuiTheme
 
