@@ -47,6 +47,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 FILE_VERSION = "1.5"  # The current project file format version
+FILE_REVISION = "1"   # The current project file format revision
 HEX_VERSION = 0x0105
 
 NUM_VERSION = {
@@ -105,6 +106,8 @@ class ProjectXMLReader:
         the content item meta entry. It also moves meta data related to
         the project or the content into their respective section nodes
         as attributes. The id attribute was also added to the project.
+
+        Rev 1: Drops the titleFormat section of settings.
     """
 
     def __init__(self, path):
@@ -112,6 +115,7 @@ class ProjectXMLReader:
         self._state = XMLReadState.NO_ACTION
         self._root = ""
         self._version = 0x0
+        self._revision = 0
         self._appVersion = ""
         self._hexVersion = 0x0
         self._timeStamp = ""
@@ -135,6 +139,11 @@ class ProjectXMLReader:
     def xmlVersion(self) -> int:
         """Return the project XML version number."""
         return self._version
+
+    @property
+    def xmlRevision(self) -> int:
+        """Return the project XML revision number."""
+        return self._revision
 
     @property
     def appVersion(self) -> str:
@@ -196,6 +205,7 @@ class ProjectXMLReader:
 
         logger.debug("XML is '%s' version '%s'", self._root, fileVersion)
 
+        self._revision = checkInt(xRoot.attrib.get("fileRevision"), 0)
         self._appVersion = str(xRoot.attrib.get("appVersion", ""))
         self._hexVersion = hexToInt(xRoot.attrib.get("hexVersion", ""))
         self._timeStamp = str(xRoot.attrib.get("timeStamp", ""))
@@ -490,10 +500,11 @@ class ProjectXMLWriter:
         logger.debug("Writing project XML")
 
         xRoot = ET.Element("novelWriterXML", attrib={
-            "appVersion":  str(__version__),
-            "hexVersion":  str(__hexversion__),
+            "appVersion": str(__version__),
+            "hexVersion": str(__hexversion__),
             "fileVersion": FILE_VERSION,
-            "timeStamp":   formatTimeStamp(saveTime),
+            "fileRevision": FILE_REVISION,
+            "timeStamp": formatTimeStamp(saveTime),
         })
 
         # Save Project Meta
