@@ -1,10 +1,9 @@
 """
 novelWriter – GUI Main Window
 =============================
-The main application window
 
 File History:
-Created: 2018-09-22 [0.0.1]
+Created: 2018-09-22 [0.0.1] GuiMain
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -74,6 +73,24 @@ logger = logging.getLogger(__name__)
 
 
 class GuiMain(QMainWindow):
+    """Main GUI Window
+
+    The Main GUI window class. It is the entry point of the
+    application, and holds all runtime objects aside from the main
+    Config instance, which is created before the Main GUI.
+
+    The Main GUI is split up into GUI components, assembled in the init
+    function. Also, the project instance and theme instance are created
+    here. These should be passed around to all other objects who need
+    them and new instances of them should generally not be created.
+
+      * All other GUI classes that depend on any components from the
+        main GUI should be passed a reference to the instance of this
+        class.
+      * All non-GUI classes can be passed a reference to the NWProject
+        instance if the Main GUI is not needed (which it generally
+        shouldn't need).
+    """
 
     def __init__(self):
         super().__init__()

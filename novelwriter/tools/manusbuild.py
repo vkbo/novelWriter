@@ -1,10 +1,9 @@
 """
 novelWriter – GUI Build Manuscript
 ==================================
-GUI classes for the Manuscript Build Tool
 
 File History:
-Created: 2023-05-24 [2.1b1]
+Created: 2023-05-24 [2.1b1] GuiManuscriptBuild
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -32,6 +31,11 @@ logger = logging.getLogger(__name__)
 
 
 class GuiManuscriptBuild(QDialog):
+    """GUI Tools: Manucript Builder Dialog
+
+    This is the tool for running the build itself. It can be accessed
+    independently of the Manuscript Build Tool.
+    """
 
     def __init__(self, parent: QWidget):
         super().__init__(parent=parent)
@@ -46,6 +50,7 @@ class GuiManuscriptBuild(QDialog):
         return
 
     def __del__(self):
+        """For debug use only."""
         logger.debug("Delete: GuiManuscriptBuild")
         return
 

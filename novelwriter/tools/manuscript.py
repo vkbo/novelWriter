@@ -1,11 +1,9 @@
 """
-novelWriter – GUI Build Manuscript
-==================================
-GUI classes for the Manuscript Build Tool
+novelWriter – GUI Manuscript Tool
+=================================
 
 File History:
 Created: 2023-05-13 [2.1b1] GuiManuscript
-Created: 2023-05-13 [2.1b1] GuiManuscriptPreview
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -52,6 +50,12 @@ logger = logging.getLogger(__name__)
 
 
 class GuiManuscript(QDialog):
+    """GUI Tools: Manuscript Tool
+
+    The dialog displays all the users build definitions, a preview panel
+    for the manuscript, and can trigger the actual build dialog to build
+    a document directly to disk.
+    """
 
     def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
@@ -98,7 +102,7 @@ class GuiManuscript(QDialog):
         self.buildProgress = QProgressBar()
         self.btnPreview = QPushButton(self.tr("Build Preview"))
         self.btnPreview.clicked.connect(self._generatePreview)
-        self.manPreview = GuiManuscriptPreview(self.mainGui)
+        self.manPreview = _PreviewWidget(self.mainGui)
 
         self.menuPrint = QMenu(self)
         self.aPrintSend = self.menuPrint.addAction(self.tr("Print Preview"))
@@ -166,12 +170,12 @@ class GuiManuscript(QDialog):
         return
 
     def __del__(self):
+        """For debug use only."""
         logger.debug("Delete: GuiManuscript")
         return
 
     def loadContent(self):
-        """Load dialog content from project data.
-        """
+        """Load dialog content from project data."""
         self._builds.loadCollection()
         self._updateBuildsList()
         return
@@ -181,7 +185,9 @@ class GuiManuscript(QDialog):
     ##
 
     def closeEvent(self, event):
-        """Capture the user closing the window so we can save settings.
+        """Capture the user closing the window so we can save GUI
+        settings. We also check that we don't have a build settings
+        diralog open.
         """
         self._saveSettings()
         for obj in self.children():
@@ -198,8 +204,7 @@ class GuiManuscript(QDialog):
 
     @pyqtSlot()
     def _createNewBuild(self):
-        """Open the build settings dialog for a new build.
-        """
+        """Open the build settings dialog for a new build."""
         build = BuildSettings()
         build.setName(self.tr("My Manuscript"))
         self._openSettingsDialog(build)
@@ -207,8 +212,7 @@ class GuiManuscript(QDialog):
 
     @pyqtSlot()
     def _editSelectedBuild(self):
-        """Edit the currently selected build settings entry.
-        """
+        """Edit the currently selected build settings entry."""
         build = self._getSelectedBuild()
         if build is not None:
             self._openSettingsDialog(build)
@@ -216,8 +220,7 @@ class GuiManuscript(QDialog):
 
     @pyqtSlot(BuildSettings)
     def _processNewSettings(self, build: BuildSettings):
-        """Process new build settings from the settings dialog.
-        """
+        """Process new build settings from the settings dialog."""
         self._builds.setBuild(build)
         self._builds.saveCollection()
         self._updateBuildItem(build)
@@ -263,8 +266,7 @@ class GuiManuscript(QDialog):
 
     @pyqtSlot()
     def _doClose(self):
-        """The close button has been clicked.
-        """
+        """Forward the close button to the default close method."""
         self.close()
         return
 
@@ -273,8 +275,7 @@ class GuiManuscript(QDialog):
     ##
 
     def _getSelectedBuild(self) -> BuildSettings | None:
-        """Get the currently selected build.
-        """
+        """Get the currently selected build."""
         bItems = self.buildList.selectedItems()
         if bItems:
             build = self._builds.getBuild(bItems[0].data(Qt.UserRole))
@@ -283,13 +284,11 @@ class GuiManuscript(QDialog):
         return None
 
     def _saveManuscript(self, outFormat: int):
-        """Save the manuscript file or files.
-        """
+        """Save the manuscript file or files."""
         return
 
     def _saveSettings(self):
-        """Save the various user settings.
-        """
+        """Save the user GUI settings."""
         logger.debug("Saving GuiManuscript settings")
 
         winWidth  = CONFIG.rpxInt(self.width())
@@ -309,8 +308,7 @@ class GuiManuscript(QDialog):
         return
 
     def _openSettingsDialog(self, build: BuildSettings):
-        """Open the build settings dialog.
-        """
+        """Open the build settings dialog."""
         dlgSettings = GuiBuildSettings(self, self.mainGui, build)
         dlgSettings.setModal(False)
         dlgSettings.show()
@@ -321,8 +319,7 @@ class GuiManuscript(QDialog):
         return
 
     def _updateBuildsList(self):
-        """Update the list of available builds.
-        """
+        """Update the list of available builds."""
         self.buildList.clear()
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
@@ -333,8 +330,7 @@ class GuiManuscript(QDialog):
         return
 
     def _updateBuildItem(self, build: BuildSettings):
-        """Update the entry of a specific build item.
-        """
+        """Update the entry of a specific build item."""
         bItem = self._buildMap.get(build.buildID, None)
         if isinstance(bItem, QListWidgetItem):
             bItem.setText(build.name)
@@ -345,7 +341,7 @@ class GuiManuscript(QDialog):
 # END Class GuiManuscript
 
 
-class GuiManuscriptPreview(QTextBrowser):
+class _PreviewWidget(QTextBrowser):
 
     def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
@@ -357,8 +353,7 @@ class GuiManuscriptPreview(QTextBrowser):
         return
 
     def setContent(self, data: dict):
-        """
-        """
+        """Set the content of the preview widget."""
         sPos = self.verticalScrollBar().value()
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
 
@@ -377,4 +372,4 @@ class GuiManuscriptPreview(QTextBrowser):
 
         return
 
-# END Class GuiManuscriptPreview
+# END Class _PreviewWidget

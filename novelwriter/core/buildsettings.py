@@ -1,7 +1,6 @@
 """
-novelWriter – Build Settings Class
-==================================
-A class to hold build settings for the build tool
+novelWriter – Build Settings
+============================
 
 File History:
 Created: 2023-02-14 [2.1b1] BuildSettings
@@ -117,6 +116,7 @@ SETTINGS_LABELS = {
 
 
 class FilterMode(Enum):
+    """The decision reason for an item in a filtered project."""
 
     UNKNOWN  = 0
     FILTERED = 1
@@ -128,6 +128,11 @@ class FilterMode(Enum):
 
 
 class BuildSettings:
+    """Core: Build Settings Class
+
+    This class manages the build settings for a Manuscript build job.
+    The settings can be packed/unpacked to/from a dictionary for JSON.
+    """
 
     def __init__(self):
         self._name = ""
@@ -145,14 +150,17 @@ class BuildSettings:
 
     @property
     def name(self) -> str:
+        """Return the build name."""
         return self._name
 
     @property
     def buildID(self) -> str:
+        """Return the build ID."""
         return self._uuid
 
     @property
     def changed(self) -> bool:
+        """Return the changed status of the build."""
         return self._changed
 
     ##
@@ -161,33 +169,28 @@ class BuildSettings:
 
     @staticmethod
     def getLabel(key: str) -> str:
-        """Extract the label for a specific item.
-        """
+        """Extract the GUI label for a specific setting."""
         return SETTINGS_LABELS.get(key, "ERROR")
 
     def getStr(self, key: str) -> str:
-        """Type safe value access for strings.
-        """
+        """Type safe value access for strings."""
         value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
         return str(value)
 
     def getBool(self, key: str) -> bool:
-        """Type safe value access for bools.
-        """
+        """Type safe value access for bools."""
         value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
         return bool(value)
 
     def getInt(self, key: str) -> int:
-        """Type safe value access for integers.
-        """
+        """Type safe value access for integers."""
         value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
         if isinstance(value, int):
             return value
         return 0
 
     def getFloat(self, key: str) -> float:
-        """Type safe value access for float.
-        """
+        """Type safe value access for float."""
         value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
         if isinstance(value, float):
             return value
@@ -198,14 +201,12 @@ class BuildSettings:
     ##
 
     def setName(self, name: str):
-        """Set the build setting display name.
-        """
+        """Set the build setting display name."""
         self._name = str(name)
         return
 
     def setBuildID(self, value: str | uuid.UUID):
-        """Set a UUID build ID.
-        """
+        """Set a UUID build ID."""
         value = checkUuid(value, "")
         if not value:
             self._uuid = str(uuid.uuid4())
@@ -214,32 +215,28 @@ class BuildSettings:
         return
 
     def setFiltered(self, tHandle: str):
-        """Set an item as filtered.
-        """
+        """Set an item as filtered."""
         self._excluded.discard(tHandle)
         self._included.discard(tHandle)
         self._changed = True
         return
 
     def setIncluded(self, tHandle: str):
-        """Set an item as explicitly included.
-        """
+        """Set an item as explicitly included."""
         self._excluded.discard(tHandle)
         self._included.add(tHandle)
         self._changed = True
         return
 
     def setExcluded(self, tHandle: str):
-        """Set an item as explicitly excluded.
-        """
+        """Set an item as explicitly excluded."""
         self._excluded.add(tHandle)
         self._included.discard(tHandle)
         self._changed = True
         return
 
     def setSkipRoot(self, tHandle: str, state: bool):
-        """Set a specific root folder as skipped or not.
-        """
+        """Set a specific root folder as skipped or not."""
         if state is True:
             self._skipRoot.discard(tHandle)
             self._changed = True
@@ -249,8 +246,7 @@ class BuildSettings:
         return
 
     def setValue(self, key: str, value: str | int | bool | float) -> bool:
-        """Set a specific value for a build setting.
-        """
+        """Set a specific value for a build setting."""
         if key not in SETTINGS_TEMPLATE:
             return False
         definition = SETTINGS_TEMPLATE[key]
@@ -267,19 +263,11 @@ class BuildSettings:
     #  Methods
     ##
 
-    def isFiltered(self, tHandle: str) -> bool:
-        return tHandle not in self._included and tHandle not in self._excluded
-
-    def isIncluded(self, tHandle: str) -> bool:
-        return tHandle in self._included
-
-    def isExcluded(self, tHandle: str) -> bool:
-        return tHandle in self._excluded
-
     def isRootAllowed(self, tHandle: str) -> bool:
+        """Check if a root handle is allowed in the build."""
         return tHandle not in self._skipRoot
 
-    def buildItemFilter(self, project: NWProject) -> dict:
+    def buildItemFilter(self, project: NWProject) -> dict[str, tuple[bool, FilterMode]]:
         """Return a dictionary of item handles with filter decissions
         applied.
         """
@@ -325,15 +313,14 @@ class BuildSettings:
         return result
 
     def resetChangedState(self):
-        """This must be called when the changes to this class has been
-        safely saved to file or passed on.
+        """Reset the changed status of the settings object. This must be
+        called when the changes have been safely saved or passed on.
         """
         self._changed = False
         return
 
     def pack(self) -> dict:
-        """Pack all content into a JSON compatible dictionary.
-        """
+        """Pack all content into a JSON compatible dictionary."""
         logger.debug("Collecting build setting for '%s'", self._name)
         return {
             "name": self._name,
@@ -347,8 +334,7 @@ class BuildSettings:
         }
 
     def unpack(self, data: dict):
-        """Unpack a dictionary and populate the class.
-        """
+        """Unpack a dictionary and populate the class."""
         settings = data.get("settings", {})
         content  = data.get("content", {})
         included = content.get("included", [])
@@ -377,6 +363,12 @@ class BuildSettings:
 
 
 class BuildCollection:
+    """Core: Build Collection Class
+
+    This object holds all the build setting objects defined by the given
+    project. The build settings are saved as a single JSON file in the
+    project folder.
+    """
 
     def __init__(self, project: NWProject):
         self._project = project
@@ -384,8 +376,7 @@ class BuildCollection:
         return
 
     def getBuild(self, buildID: str) -> BuildSettings | None:
-        """Get a specific build settings object.
-        """
+        """Get a specific build settings object."""
         if buildID not in self._builds:
             return None
         build = BuildSettings()
@@ -393,8 +384,7 @@ class BuildCollection:
         return build
 
     def setBuild(self, build: BuildSettings) -> bool:
-        """Set build settings data in the collection.
-        """
+        """Set build settings data in the collection."""
         if not isinstance(build, BuildSettings):
             return False
         buildID = build.buildID
@@ -402,15 +392,13 @@ class BuildCollection:
         return True
 
     def builds(self) -> Iterable[tuple[str, str]]:
-        """Iterate over all avaiable builds.
-        """
+        """Iterate over all avaiable builds."""
         for buildID in self._builds:
             yield buildID, self._builds[buildID].get("name", "")
         return
 
     def loadCollection(self) -> bool:
-        """Load build collections file.
-        """
+        """Load build collections file."""
         buildsFile = self._project.storage.getMetaFile(nwFiles.BUILDS_FILE)
         if not isinstance(buildsFile, Path):
             return False
@@ -442,8 +430,7 @@ class BuildCollection:
         return True
 
     def saveCollection(self) -> bool:
-        """Save build collections file.
-        """
+        """Save build collections file."""
         buildsFile = self._project.storage.getMetaFile(nwFiles.BUILDS_FILE)
         if not isinstance(buildsFile, Path):
             return False

@@ -1,10 +1,9 @@
 """
 novelWriter – GUI Build Settings
 ================================
-GUI classes for editing Manuscript Build Settings
 
 File History:
-Created: 2023-02-13 [2.1b1]
+Created: 2023-02-13 [2.1b1] GuiBuildSettings
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -34,8 +33,8 @@ from PyQt5.QtGui import (
 from PyQt5.QtCore import QEvent, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QAbstractItemView, QComboBox, QDialog, QDialogButtonBox,
-    QDoubleSpinBox, QFontDialog, QFrame, QGridLayout, QHBoxLayout, QHeaderView, QLabel,
-    QLineEdit, QMenu, QPlainTextEdit, QPushButton, QSpinBox, QSplitter,
+    QDoubleSpinBox, QFontDialog, QFrame, QGridLayout, QHBoxLayout, QHeaderView,
+    QLabel, QLineEdit, QMenu, QPlainTextEdit, QPushButton, QSpinBox, QSplitter,
     QStackedWidget, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
     QWidget
 )
@@ -56,6 +55,11 @@ logger = logging.getLogger(__name__)
 
 
 class GuiBuildSettings(QDialog):
+    """GUI Tools: Manuscript Build Settings Dialog
+
+    The main tool for configuring manuscript builds. It's a GUI tool for
+    editing JSON build definitions, wrapped as a BuildSettings object.
+    """
 
     OPT_FILTERS  = 1
     OPT_HEADINGS = 2
@@ -112,11 +116,11 @@ class GuiBuildSettings(QDialog):
         # ============
 
         # Create Tabs
-        self.optTabSelect = GuiBuildFilterTab(self, self._build)
-        self.optTabHeadings = GuiBuildHeadingsTab(self, self._build)
-        self.optTabFormat = GuiBuildFormatTab(self, self._build)
-        self.optTabContent = GuiBuildContentTab(self, self._build)
-        self.optTabOutput = GuiBuildOutputTab(self, self._build)
+        self.optTabSelect = _FilterTab(self, self._build)
+        self.optTabHeadings = _HeadingsTab(self, self._build)
+        self.optTabFormat = _FormatTab(self, self._build)
+        self.optTabContent = _ContentTab(self, self._build)
+        self.optTabOutput = _OutputTab(self, self._build)
 
         # Add Tabs
         self.toolStack = QStackedWidget(self)
@@ -164,11 +168,11 @@ class GuiBuildSettings(QDialog):
         return
 
     def __del__(self):
+        """For debug use only."""
         logger.debug("Delete: GuiBuildSettings")
 
     def loadContent(self):
-        """Populate the child widgets.
-        """
+        """Populate the child widgets."""
         self.editBuildName.setText(self._build.name)
         self.optTabSelect.loadContent()
         self.optTabHeadings.loadContent()
@@ -183,8 +187,7 @@ class GuiBuildSettings(QDialog):
 
     @pyqtSlot(int)
     def _stackPageSelected(self, pageId: int):
-        """Process a user request to switch page.
-        """
+        """Process a user request to switch page."""
         if pageId == self.OPT_FILTERS:
             self.toolStack.setCurrentWidget(self.optTabSelect)
         elif pageId == self.OPT_HEADINGS:
@@ -199,8 +202,7 @@ class GuiBuildSettings(QDialog):
 
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton):
-        """Handle button clicks from the dialog button box.
-        """
+        """Handle button clicks from the dialog button box."""
         role = self.dlgButtons.buttonRole(button)
         if role == QDialogButtonBox.ApplyRole:
             self._emitBuildData()
@@ -216,7 +218,8 @@ class GuiBuildSettings(QDialog):
     ##
 
     def closeEvent(self, event: QEvent):
-        """Capture the user closing the window so we can save settings.
+        """Capture the user closing the window so we can save
+        settings.
         """
         logger.debug("Closing: GuiBuildSettings")
         self._askToSaveBuild()
@@ -244,8 +247,7 @@ class GuiBuildSettings(QDialog):
         return
 
     def _saveSettings(self):
-        """Save the various user settings.
-        """
+        """Save the various user settings."""
         logger.debug("Saving GuiBuildSettings settings")
 
         winWidth  = CONFIG.rpxInt(self.width())
@@ -263,8 +265,7 @@ class GuiBuildSettings(QDialog):
         return
 
     def _emitBuildData(self):
-        """Assemble the build data and emit the signal.
-        """
+        """Assemble the build data and emit the signal."""
         self._build.setName(self.editBuildName.text())
         self.optTabHeadings.saveContent()
         self.optTabContent.saveContent()
@@ -277,7 +278,7 @@ class GuiBuildSettings(QDialog):
 # END Class GuiBuildSettings
 
 
-class GuiBuildFilterTab(QWidget):
+class _FilterTab(QWidget):
 
     C_DATA   = 0
     C_NAME   = 0
@@ -398,15 +399,13 @@ class GuiBuildFilterTab(QWidget):
         return
 
     def loadContent(self):
-        """Populate the widgets.
-        """
+        """Populate the widgets."""
         self._populateTree()
         self._populateFilters()
         return
 
     def mainSplitSizes(self) -> tuple[int, int]:
-        """Extract the sizes of the main splitter.
-        """
+        """Extract the sizes of the main splitter."""
         sizes = self.mainSplit.sizes()
         if len(sizes) < 2:
             return 0, 0
@@ -418,8 +417,7 @@ class GuiBuildFilterTab(QWidget):
 
     @pyqtSlot(str, bool)
     def _applyFilterSwitch(self, key: str, state: bool):
-        """A filter switch has been toggled, so update the settings.
-        """
+        """Apply filter switch and update the settings."""
         if key.startswith("doc:"):
             self._build.setValue(key[4:], state)
             self._setTreeItemMode()
@@ -433,8 +431,7 @@ class GuiBuildFilterTab(QWidget):
     ##
 
     def _populateTree(self):
-        """Build the tree of project items.
-        """
+        """Build the tree of project items."""
         logger.debug("Building project tree")
         self._treeMap = {}
         self.optTree.clear()
@@ -490,8 +487,7 @@ class GuiBuildFilterTab(QWidget):
         return
 
     def _populateFilters(self):
-        """Populate the filter options switches.
-        """
+        """Populate the filter options switches."""
         self.filterOpt.clear()
         self.filterOpt.addLabel(self._build.getLabel("filter"))
         self.filterOpt.addItem(
@@ -530,8 +526,7 @@ class GuiBuildFilterTab(QWidget):
         return
 
     def _setSelectedMode(self, mode: int):
-        """Set the mode for the selected items.
-        """
+        """Set the mode for the selected items."""
         for item in self.optTree.selectedItems():
             if not isinstance(item, QTreeWidgetItem):
                 continue
@@ -551,8 +546,7 @@ class GuiBuildFilterTab(QWidget):
         return
 
     def _setTreeItemMode(self):
-        """Update the filtered mode icon on all items.
-        """
+        """Update the filtered mode icon on all items."""
         filtered = self._build.buildItemFilter(self.theProject)
         for tHandle, item in self._treeMap.items():
             allow, mode = filtered.get(tHandle, (False, FilterMode.UNKNOWN))
@@ -566,10 +560,10 @@ class GuiBuildFilterTab(QWidget):
                 item.setIcon(self.C_STATUS, self._statusFlags[self.F_NONE][1])
         return
 
-# END Class GuiBuildFilterTab
+# END Class _FilterTab
 
 
-class GuiBuildHeadingsTab(QWidget):
+class _HeadingsTab(QWidget):
 
     EDIT_TITLE   = 1
     EDIT_CHAPTER = 2
@@ -707,7 +701,7 @@ class GuiBuildHeadingsTab(QWidget):
         self.editTextBox.setFixedHeight(5*iPx)
         self.editTextBox.setEnabled(False)
 
-        self.formSyntax = GuiHeadingSyntax(self.editTextBox.document(), self.mainTheme)
+        self.formSyntax = _HeadingSyntaxHighlighter(self.editTextBox.document(), self.mainTheme)
 
         self.menuInsert = QMenu()
         self.aInsTitle = self.menuInsert.addAction(self.tr("Title"))
@@ -756,8 +750,7 @@ class GuiBuildHeadingsTab(QWidget):
         return
 
     def loadContent(self):
-        """Populate the widgets.
-        """
+        """Populate the widgets."""
         self.fmtTitle.setText(self._build.getStr("headings.fmtTitle"))
         self.fmtChapter.setText(self._build.getStr("headings.fmtChapter"))
         self.fmtUnnumbered.setText(self._build.getStr("headings.fmtUnnumbered"))
@@ -768,8 +761,7 @@ class GuiBuildHeadingsTab(QWidget):
         return
 
     def saveContent(self):
-        """Save choices back into build object.
-        """
+        """Save choices back into build object."""
         self._build.setValue("headings.hideScene", self.swtScene.isChecked())
         self._build.setValue("headings.hideSection", self.swtSection.isChecked())
         return
@@ -779,8 +771,7 @@ class GuiBuildHeadingsTab(QWidget):
     ##
 
     def _insertIntoForm(self, text: str):
-        """Insert formatting text from the dropdown menu.
-        """
+        """Insert formatting text from the dropdown menu."""
         if self._editing > 0:
             cursor = self.editTextBox.textCursor()
             cursor.insertText(text)
@@ -788,8 +779,7 @@ class GuiBuildHeadingsTab(QWidget):
         return
 
     def _editHeading(self, heading: int):
-        """Populate the form with a specific heading format.
-        """
+        """Populate the form with a specific heading format."""
         self._editing = heading
         self.editTextBox.setEnabled(True)
         if heading == self.EDIT_TITLE:
@@ -823,8 +813,7 @@ class GuiBuildHeadingsTab(QWidget):
     ##
 
     def _saveFormat(self):
-        """Save the format from the edit text box.
-        """
+        """Save the format from the edit text box."""
         heading = self._editing
         text = self.editTextBox.toPlainText().replace("\n", "//")
         if heading == self.EDIT_TITLE:
@@ -850,10 +839,10 @@ class GuiBuildHeadingsTab(QWidget):
 
         return
 
-# END Class GuiBuildHeadingsTab
+# END Class _HeadingsTab
 
 
-class GuiHeadingSyntax(QSyntaxHighlighter):
+class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
 
     def __init__(self, document: QTextDocument, mainTheme: GuiTheme):
         super().__init__(document)
@@ -864,8 +853,7 @@ class GuiHeadingSyntax(QSyntaxHighlighter):
         return
 
     def highlightBlock(self, text: str):
-        """Add syntax highlighting to the text block.
-        """
+        """Add syntax highlighting to the text block."""
         for heading in nwHeadFmt.ALL:
             pos = text.find(heading)
             if pos >= 0:
@@ -877,10 +865,10 @@ class GuiHeadingSyntax(QSyntaxHighlighter):
                     self.setFormat(pos + ddots, 1, self._fmtSymbol)
         return
 
-# END Class GuiHeadingSyntax
+# END Class _HeadingSyntaxHighlighter
 
 
-class GuiBuildContentTab(QWidget):
+class _ContentTab(QWidget):
 
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
@@ -932,8 +920,7 @@ class GuiBuildContentTab(QWidget):
         return
 
     def loadContent(self):
-        """Populate the widgets.
-        """
+        """Populate the widgets."""
         self.incSynopsis.setChecked(self._build.getBool("text.includeSynopsis"))
         self.incComments.setChecked(self._build.getBool("text.includeComments"))
         self.incKeywords.setChecked(self._build.getBool("text.includeKeywords"))
@@ -942,8 +929,7 @@ class GuiBuildContentTab(QWidget):
         return
 
     def saveContent(self):
-        """Save choices back into build object.
-        """
+        """Save choices back into build object."""
         self._build.setValue("text.includeSynopsis", self.incSynopsis.isChecked())
         self._build.setValue("text.includeComments", self.incComments.isChecked())
         self._build.setValue("text.includeKeywords", self.incKeywords.isChecked())
@@ -951,10 +937,10 @@ class GuiBuildContentTab(QWidget):
         self._build.setValue("text.addNoteHeadings", self.addNoteHead.isChecked())
         return
 
-# END Class GuiBuildContentTab
+# END Class _ContentTab
 
 
-class GuiBuildFormatTab(QWidget):
+class _FormatTab(QWidget):
 
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
@@ -1035,8 +1021,7 @@ class GuiBuildFormatTab(QWidget):
         return
 
     def loadContent(self):
-        """Populate the widgets.
-        """
+        """Populate the widgets."""
         langIdx = self.buildLang.findData(self._build.getStr("format.buildLang"))
         if langIdx != -1:
             self.buildLang.setCurrentIndex(langIdx)
@@ -1056,8 +1041,7 @@ class GuiBuildFormatTab(QWidget):
         return
 
     def saveContent(self):
-        """Save choices back into build object.
-        """
+        """Save choices back into build object."""
         self._build.setValue("format.buildLang", str(self.buildLang.currentData()))
         self._build.setValue("format.textFont", self.textFont.text())
         self._build.setValue("format.textSize", self.textSize.value())
@@ -1073,8 +1057,7 @@ class GuiBuildFormatTab(QWidget):
 
     @pyqtSlot()
     def _selectFont(self):
-        """Open the QFontDialog and set a font for the font style.
-        """
+        """Open the QFontDialog and set a font for the font style."""
         currFont = QFont()
         currFont.setFamily(self.textFont.text())
         currFont.setPointSize(self.textSize.value())
@@ -1084,10 +1067,10 @@ class GuiBuildFormatTab(QWidget):
             self.textSize.setValue(theFont.pointSize())
         return
 
-# END Class GuiBuildFormatTab
+# END Class _FormatTab
 
 
-class GuiBuildOutputTab(QWidget):
+class _OutputTab(QWidget):
 
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
@@ -1133,17 +1116,15 @@ class GuiBuildOutputTab(QWidget):
         return
 
     def loadContent(self):
-        """Populate the widgets.
-        """
+        """Populate the widgets."""
         self.odtAddColours.setChecked(self._build.getBool("odt.addColours"))
         self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
         return
 
     def saveContent(self):
-        """Save choices back into build object.
-        """
+        """Save choices back into build object."""
         self._build.setValue("odt.addColours", self.odtAddColours.isChecked())
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
         return
 
-# END Class GuiBuildOutputTab
+# END Class _OutputTab

@@ -1,10 +1,9 @@
 """
-novelWriter – Build Document Tool
-=================================
-A class to build one or more novelWriter files to a single document
+novelWriter – Manuscript Document Builder
+=========================================
 
 File History:
-Created: 2022-12-01 [2.1b1]
+Created: 2022-12-01 [2.1b1] NWBuildDocument
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -44,6 +43,11 @@ logger = logging.getLogger(__name__)
 
 
 class NWBuildDocument:
+    """Core: Manuscript Document Build Class
+
+    This is the core tool that assembles a project and outputs a
+    manuscript, based on a build definition object (BuildSettings).
+    """
 
     __slots__ = ("_project", "_build", "_queue", "_error", "_cache")
 
@@ -61,10 +65,15 @@ class NWBuildDocument:
 
     @property
     def error(self) -> str | None:
+        """Return the last error, if any."""
         return self._error
 
     @property
     def lastBuild(self) -> Tokenizer | None:
+        """Return the build object of the last build process, if any.
+        This is useful for accessing build details and data after the
+        build job is completed.
+        """
         return self._cache
 
     ##
@@ -72,6 +81,7 @@ class NWBuildDocument:
     ##
 
     def __len__(self) -> int:
+        """Return the length of the build queue."""
         return len(self._queue)
 
     ##
@@ -79,17 +89,17 @@ class NWBuildDocument:
     ##
 
     def addDocument(self, tHandle: str):
-        """Add a document to the build queue manually.
-        """
+        """Add a document to the build queue manually."""
         self._queue.append(tHandle)
         return
 
     def queueAll(self):
-        """Queue all document as defined by the build setup.
-        """
+        """Queue all document as defined by the build settings."""
         filtered = self._build.buildItemFilter(self._project)
         noteTitles = self._build.getBool("text.addNoteHeadings")
         for item in self._project.tree:
+            if not item.itemHandle:
+                continue
             if filtered.get(item.itemHandle, False):
                 self._queue.append(item.itemHandle)
             elif item.isRootType() and noteTitles:
@@ -97,8 +107,7 @@ class NWBuildDocument:
         return
 
     def iterBuildOpenDocument(self, path: Path, isFlat: bool) -> Iterable[tuple[int, bool]]:
-        """Build an Open Document file.
-        """
+        """Build an Open Document file."""
         makeOdt = ToOdt(self._project, isFlat=isFlat)
         self._setupBuild(makeOdt)
         makeOdt.initDocument()
@@ -146,8 +155,7 @@ class NWBuildDocument:
         return
 
     def iterBuildMarkdown(self, path: Path, extendedMd: bool) -> Iterable[tuple[int, bool]]:
-        """Build a Markdown file.
-        """
+        """Build a Markdown file."""
         makeMd = ToMarkdown(self._project)
         self._setupBuild(makeMd)
 
@@ -177,8 +185,7 @@ class NWBuildDocument:
     ##
 
     def _setupBuild(self, bldObj: Tokenizer):
-        """Configure the build object.
-        """
+        """Configure the build object."""
         # Get Settings
         fmtTitle      = self._build.getStr("headings.fmtTitle")
         fmtChapter    = self._build.getStr("headings.fmtChapter")
@@ -240,8 +247,7 @@ class NWBuildDocument:
         return
 
     def _doBuild(self, bldObj: Tokenizer, tHandle: str) -> bool:
-        """Build a single document and add it to the build object.
-        """
+        """Build a single document and add it to the build object."""
         self._error = None
         tItem = self._project.tree[tHandle]
         if tItem is None:
