@@ -30,8 +30,8 @@ import xml.etree.ElementTree as ET
 
 from enum import Enum
 from time import time
-from pathlib import Path
 from typing import TYPE_CHECKING
+from pathlib import Path
 
 from novelwriter import __version__, __hexversion__
 from novelwriter.common import (
@@ -284,7 +284,7 @@ class ProjectXMLReader:
             elif xItem.tag == "importance":
                 self._parseStatusImport(xItem, data.itemImport)
             elif xItem.tag == "lastHandle":
-                data.setLastHandle(self._parseDictKeyText(xItem))
+                data.setLastHandles(self._parseDictKeyText(xItem))
             elif xItem.tag == "autoReplace":
                 if self._version >= 0x0102:
                     data.setAutoReplace(self._parseDictKeyText(xItem))

@@ -170,7 +170,7 @@ class NWStorage:
         xmlWriter = ProjectXMLWriter(self._runtimePath)
         return xmlWriter
 
-    def getDocument(self, tHandle: str) -> NWDocument:
+    def getDocument(self, tHandle: str | None) -> NWDocument:
         """Return a document wrapper object."""
         if self._runtimePath is not None:
             return NWDocument(self._project, tHandle)

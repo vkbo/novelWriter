@@ -285,15 +285,20 @@ class NWProjectData:
             self.theProject.setProjectChanged(True)
         return
 
-    def setLastHandle(self, value: dict, component: str | None = None):
-        """Set a last used handle into the handle registry. If component
-        is None, the value is assumed to be the whole dictionary of
-        values.
+    def setLastHandle(self, value: str | None, component: str):
+        """Set a last used handle into the handle registry for a given
+        component.
         """
         if isinstance(component, str):
             self._lastHandle[component] = checkStringNone(value, None)
             self.theProject.setProjectChanged(True)
-        elif isinstance(value, dict):
+        return
+
+    def setLastHandles(self, value: dict):
+        """Set the full last handles dictionary to a new set of values.
+        This is intended to be used at project load.
+        """
+        if isinstance(value, dict):
             for key, entry in value.items():
                 if key in self._lastHandle:
                     self._lastHandle[key] = str(entry) if isHandle(entry) else None

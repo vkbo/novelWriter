@@ -1,7 +1,6 @@
 """
 novelWriter – Project Options Cache
 ===================================
-Data class for user-defined GUI project options
 
 File History:
 Created:   2019-10-21 [0.3.1]
@@ -23,16 +22,21 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import json
 import logging
 
 from enum import Enum
+from typing import TYPE_CHECKING, Any
 from pathlib import Path
 
 from novelwriter.error import logException
 from novelwriter.common import checkBool, checkFloat, checkInt, checkString
 from novelwriter.constants import nwFiles
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
@@ -63,9 +67,15 @@ VALID_MAP = {
 
 
 class OptionState:
+    """Core: GUI Options Storage
 
-    def __init__(self, theProject):
-        self.theProject = theProject
+    A class for storing the state of the GUI. The data is stored per
+    project. Settings that should be project-independent are stored in
+    the Config instead.
+    """
+
+    def __init__(self, project: NWProject):
+        self._project = project
         self._theState = {}
         return
 
@@ -73,10 +83,10 @@ class OptionState:
     #  Load and Save Cache
     ##
 
-    def loadSettings(self):
+    def loadSettings(self) -> bool:
         """Load the options dictionary from the project settings file.
         """
-        stateFile = self.theProject.storage.getMetaFile(nwFiles.OPTS_FILE)
+        stateFile = self._project.storage.getMetaFile(nwFiles.OPTS_FILE)
         if not isinstance(stateFile, Path):
             return False
 
@@ -101,10 +111,9 @@ class OptionState:
 
         return True
 
-    def saveSettings(self):
-        """Save the options dictionary to the project settings file.
-        """
-        stateFile = self.theProject.storage.getMetaFile(nwFiles.OPTS_FILE)
+    def saveSettings(self) -> bool:
+        """Save the options dictionary to the project settings file."""
+        stateFile = self._project.storage.getMetaFile(nwFiles.OPTS_FILE)
         if not isinstance(stateFile, Path):
             return False
 
@@ -123,9 +132,8 @@ class OptionState:
     #  Setters
     ##
 
-    def setValue(self, group, name, value):
-        """Save a value, with a given group and name.
-        """
+    def setValue(self, group: str, name: str, value: Any) -> bool:
+        """Save a value, with a given group and name."""
         if group not in VALID_MAP:
             logger.error("Unknown option group '%s'", group)
             return False
@@ -148,7 +156,7 @@ class OptionState:
     #  Getters
     ##
 
-    def getValue(self, group, name, default):
+    def getValue(self, group: str, name: str, default: Any) -> Any:
         """Return an arbitrary type value, if it exists. Otherwise,
         return the default value.
         """
@@ -156,7 +164,7 @@ class OptionState:
             return self._theState[group].get(name, default)
         return default
 
-    def getString(self, group, name, default):
+    def getString(self, group: str, name: str, default: str) -> str:
         """Return the value as a string, if it exists. Otherwise, return
         the default value.
         """
@@ -164,7 +172,7 @@ class OptionState:
             return checkString(self._theState[group].get(name, default), default)
         return default
 
-    def getInt(self, group, name, default):
+    def getInt(self, group: str, name: str, default: int) -> int:
         """Return the value as an int, if it exists. Otherwise, return
         the default value.
         """
@@ -172,7 +180,7 @@ class OptionState:
             return checkInt(self._theState[group].get(name, default), default)
         return default
 
-    def getFloat(self, group, name, default):
+    def getFloat(self, group: str, name: str, default: float) -> float:
         """Return the value as a float, if it exists. Otherwise, return
         the default value.
         """
@@ -180,7 +188,7 @@ class OptionState:
             return checkFloat(self._theState[group].get(name, default), default)
         return default
 
-    def getBool(self, group, name, default):
+    def getBool(self, group: str, name: str, default: bool) -> bool:
         """Return the value as a bool, if it exists. Otherwise, return
         the default value.
         """
@@ -188,9 +196,9 @@ class OptionState:
             return checkBool(self._theState[group].get(name, default), default)
         return default
 
-    def getEnum(self, group, name, lookup, default):
+    def getEnum(self, group: str, name: str, lookup: type, default: Enum) -> Enum:
         """Return the value mapped to an enum. Otherwise return the
-        default value
+        default value.
         """
         if issubclass(lookup, Enum):
             if group in self._theState:

@@ -150,17 +150,17 @@ class BuildSettings:
 
     @property
     def name(self) -> str:
-        """Return the build name."""
+        """The build name."""
         return self._name
 
     @property
     def buildID(self) -> str:
-        """Return the build ID."""
+        """The build ID as an UUID."""
         return self._uuid
 
     @property
     def changed(self) -> bool:
-        """Return the changed status of the build."""
+        """The changed status of the build."""
         return self._changed
 
     ##
@@ -190,7 +190,7 @@ class BuildSettings:
         return 0
 
     def getFloat(self, key: str) -> float:
-        """Type safe value access for float."""
+        """Type safe value access for floats."""
         value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
         if isinstance(value, float):
             return value
