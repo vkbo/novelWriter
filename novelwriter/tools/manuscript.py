@@ -44,6 +44,7 @@ from novelwriter.common import checkInt, fuzzyTime
 from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
+from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -107,25 +108,15 @@ class GuiManuscript(QDialog):
         self.btnPreview.clicked.connect(self._generatePreview)
         self.manPreview = _PreviewWidget(self.mainGui)
 
+        self.btnBuild = QPushButton(self.tr("Build"))
+        self.btnBuild.clicked.connect(self._buildManuscript)
+
         self.menuPrint = QMenu(self)
         self.aPrintSend = self.menuPrint.addAction(self.tr("Print Preview"))
         self.aPrintFile = self.menuPrint.addAction(self.tr("Print to PDF"))
 
-        self.menuSave = QMenu(self)
-        self.aSaveODT = self.menuSave.addAction(self.tr("Open Document (.odt)"))
-        self.aSaveFODT = self.menuSave.addAction(self.tr("Flat Open Document (.fodt)"))
-        self.aSaveHTM = self.menuSave.addAction(self.tr("novelWriter HTML (.htm)"))
-        self.aSaveNWD = self.menuSave.addAction(self.tr("novelWriter Markdown (.nwd)"))
-        self.aSaveMD = self.menuSave.addAction(self.tr("Standard Markdown (.md)"))
-        self.aSaveGH = self.menuSave.addAction(self.tr("GitHub Markdown (.md)"))
-        self.aSaveJsonH = self.menuSave.addAction(self.tr("JSON + novelWriter HTML (.json)"))
-        self.aSaveJsonM = self.menuSave.addAction(self.tr("JSON + novelWriter Markdown (.json)"))
-
         self.btnPrint = QPushButton(self.tr("Print"))
         self.btnPrint.setMenu(self.menuPrint)
-
-        self.btnSave = QPushButton(self.tr("Save As"))
-        self.btnSave.setMenu(self.menuSave)
 
         self.btnClose = QPushButton(self.tr("Close"))
         self.btnClose.clicked.connect(self._doClose)
@@ -139,7 +130,7 @@ class GuiManuscript(QDialog):
         self.buildBox.addWidget(self.btnDelete)
 
         self.processBox = QHBoxLayout()
-        self.processBox.addWidget(self.btnSave)
+        self.processBox.addWidget(self.btnBuild)
         self.processBox.addWidget(self.btnPrint)
         self.processBox.addWidget(self.btnClose)
 
@@ -280,6 +271,23 @@ class GuiManuscript(QDialog):
             logger.error("Failed to save build cache")
             logException()
             return
+
+        return
+
+    @pyqtSlot()
+    def _buildManuscript(self):
+        """Open the build dialog and build the manuscript."""
+        build = self._getSelectedBuild()
+        if build is None:
+            return
+
+        dlgBuild = GuiManuscriptBuild(self, self.mainGui, build)
+        dlgBuild.exec_()
+
+        # After the build is done, save build settings changes
+        if build.changed:
+            self._builds.setBuild(build)
+            self._builds.saveCollection()
 
         return
 
@@ -514,7 +522,7 @@ class _PreviewWidget(QTextBrowser):
         if self._docTime > 0:
             strBuildTime = "%s (%s)" % (
                 datetime.fromtimestamp(self._docTime).strftime("%x %X"),
-                fuzzyTime(time() - self._docTime)
+                fuzzyTime(int(time()) - self._docTime)
             )
         else:
             strBuildTime = self.tr("Unknown")

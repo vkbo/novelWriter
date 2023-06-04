@@ -35,7 +35,7 @@ from pathlib import Path
 from PyQt5.QtCore import QT_TRANSLATE_NOOP
 
 from novelwriter.common import checkUuid, isHandle, jsonEncode
-from novelwriter.constants import nwFiles, nwHeadFmt
+from novelwriter.constants import nwFiles, nwHeadFmt, nwLabels
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.error import logException
@@ -72,6 +72,9 @@ SETTINGS_TEMPLATE = {
     "format.replaceTabs":     (bool, False),
     "odt.addColours":         (bool, True),
     "html.addStyles":         (bool, False),
+    "build.splitNovel":       (bool, False),
+    "build.splitNotes":       (bool, False),
+    "build.splitChapters":    (bool, False),
 }
 
 SETTINGS_LABELS = {
@@ -112,6 +115,11 @@ SETTINGS_LABELS = {
 
     "html":                   QT_TRANSLATE_NOOP("Builds", "HTML"),
     "html.addStyles":         QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
+
+    "build":                  QT_TRANSLATE_NOOP("Builds", "Build Options"),
+    "build.splitNovel":       QT_TRANSLATE_NOOP("Builds", "Split Novel Root Folders"),
+    "build.splitNotes":       QT_TRANSLATE_NOOP("Builds", "Split Note Root Folders"),
+    "build.splitChapters":    QT_TRANSLATE_NOOP("Builds", "Split By Chapter Document"),
 }
 
 
@@ -137,6 +145,9 @@ class BuildSettings:
     def __init__(self):
         self._name = ""
         self._uuid = str(uuid.uuid4())
+        self._path = Path.home()
+        self._build = ""
+        self._format = "odt"
         self._skipRoot = set()
         self._excluded = set()
         self._included = set()
@@ -157,6 +168,23 @@ class BuildSettings:
     def buildID(self) -> str:
         """The build ID as an UUID."""
         return self._uuid
+
+    @property
+    def lastPath(self) -> Path:
+        """The last used build path."""
+        if self._path.is_dir():
+            return self._path
+        return Path.home()
+
+    @property
+    def lastBuildName(self) -> str:
+        """The last used build name."""
+        return self._build
+
+    @property
+    def lastFormat(self) -> str:
+        """The last used build format."""
+        return self._format
 
     @property
     def changed(self) -> bool:
@@ -212,6 +240,30 @@ class BuildSettings:
             self._uuid = str(uuid.uuid4())
         elif value != self._uuid:
             self._uuid = value
+        return
+
+    def setLastPath(self, path: Path | str | None):
+        """Set the last used build path."""
+        if isinstance(path, str):
+            path = Path(path)
+        if isinstance(path, Path) and path.is_dir():
+            self._path = path
+        else:
+            self._path = Path.home()
+        self._changed = True
+        return
+
+    def setLastBuildName(self, name: str):
+        """Set the last used build name."""
+        self._build = str(name).strip()
+        self._changed = True
+        return
+
+    def setLastFormat(self, key: str):
+        """Set the last used build format."""
+        if key in nwLabels.BUILD_FORMATS:
+            self._format = key
+            self._changed = True
         return
 
     def setFiltered(self, tHandle: str):
@@ -325,6 +377,9 @@ class BuildSettings:
         return {
             "name": self._name,
             "uuid": self._uuid,
+            "path": str(self._path),
+            "build": self._build,
+            "format": self._format,
             "settings": self._settings.copy(),
             "content": {
                 "included": list(self._included),
@@ -343,6 +398,9 @@ class BuildSettings:
 
         self.setName(data.get("name", ""))
         self.setBuildID(data.get("uuid", ""))
+        self.setLastPath(data.get("path", None))
+        self.setLastBuildName(data.get("build", ""))
+        self.setLastFormat(data.get("format", "odt"))
         if isinstance(included, list):
             self._included = set([h for h in included if isHandle(h)])
         if isinstance(excluded, list):

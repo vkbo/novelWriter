@@ -1,7 +1,6 @@
 """
 novelWriter – Custom Widget: Switch Box
 =======================================
-A box of icons, labels and switches
 
 File History:
 Created: 2023-04-16 [2.1b1]
@@ -22,32 +21,35 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QGridLayout, QLabel, QScrollArea, QSizePolicy, QWidget
 
 from novelwriter.extensions.switch import NSwitch
 
 
 class NSwitchBox(QScrollArea):
+    """Extension: Switch Box Widget
+
+    A widget that can hold a list of switches with labels and optional
+    icons. The switch toggles emits a common signal with a switch key.
+    """
 
     switchToggled = pyqtSignal(str, bool)
 
-    def __init__(self, parent, baseSize):
+    def __init__(self, parent: QWidget, baseSize: int):
         super().__init__(parent=parent)
-
         self._index = 0
         self._hSwitch = baseSize
         self._wSwitch = 2*self._hSwitch
         self._sIcon = baseSize
-
         self.clear()
-
         return
 
     def clear(self):
-        """Rebuild the content of the core widget.
-        """
+        """Rebuild the content of the core widget."""
         self._content = QGridLayout()
         self._content.setColumnStretch(1, 1)
 
@@ -60,9 +62,8 @@ class NSwitchBox(QScrollArea):
 
         return
 
-    def addLabel(self, text):
-        """Add a header label to the content box.
-        """
+    def addLabel(self, text: str):
+        """Add a header label to the content box."""
         label = QLabel(text)
         font = label.font()
         font.setBold(True)
@@ -71,9 +72,8 @@ class NSwitchBox(QScrollArea):
         self._bumpIndex()
         return
 
-    def addItem(self, qIcon, text, identifier, default=False):
-        """Add an item to the content box.
-        """
+    def addItem(self, qIcon: QIcon, text: str, identifier: str, default: bool = False):
+        """Add an item to the content box."""
         icon = QLabel("")
         icon.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         icon.setPixmap(qIcon.pixmap(self._sIcon, self._sIcon))
@@ -100,13 +100,17 @@ class NSwitchBox(QScrollArea):
         self._bumpIndex()
         return
 
+    def setInnerContentsMargins(self, left: int, top: int, right: int, bottom: int):
+        """Set the contents margins of the inner layout."""
+        self._content.setContentsMargins(left, top, right, bottom)
+        return
+
     ##
     #  Internal Functions
     ##
 
-    def _emitSwitchSignal(self, identifier, state):
-        """Emit a signal for a switch toggle.
-        """
+    def _emitSwitchSignal(self, identifier: str, state: bool):
+        """Emit a signal for a switch toggle."""
         self.switchToggled.emit(identifier, state)
         return
 

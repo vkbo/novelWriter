@@ -1,7 +1,6 @@
 """
 novelWriter – Init File
 =======================
-Application initialisation
 
 File History:
 Created: 2018-09-22 [0.0.1]

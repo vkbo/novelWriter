@@ -27,6 +27,7 @@ import json
 import uuid
 import hashlib
 import logging
+import unicodedata
 import xml.etree.ElementTree as ET
 
 from typing import Any, Literal
@@ -469,8 +470,7 @@ def xmlIndent(tree: ET.Element | ET.ElementTree):
 # =============================================================================================== #
 
 def readTextFile(path: str | Path) -> str:
-    """Read the content of a text file in a robust manner.
-    """
+    """Read the content of a text file in a robust manner."""
     path = Path(path)
     if not path.is_file():
         return ""
@@ -482,14 +482,13 @@ def readTextFile(path: str | Path) -> str:
         return ""
 
 
-def makeFileNameSafe(value: str) -> str:
-    """Returns a filename safe string of the value.
+def makeFileNameSafe(text: str) -> str:
+    """Return a filename safe string.
+    See: https://unicode.org/reports/tr15/#Norm_Forms
     """
-    clean = ""
-    for c in str(value).strip():
-        if c.isalpha() or c.isdigit() or c == " ":
-            clean += c
-    return clean
+    text = unicodedata.normalize("NFKC", text).strip()
+    allowed = (" ", ".", "-", "_")
+    return "".join(c for c in text if c.isalnum() or c in allowed)
 
 
 def sha256sum(path: str | Path) -> str | None:
