@@ -53,6 +53,8 @@ class GuiManuscriptBuild(QDialog):
     independently of the Manuscript Build Tool.
     """
 
+    D_KEY = Qt.ItemDataRole.UserRole
+
     def __init__(self, parent: QWidget, mainGui: GuiMain, build: BuildSettings):
         super().__init__(parent=parent)
 
@@ -71,7 +73,7 @@ class GuiManuscriptBuild(QDialog):
         self.setMinimumHeight(CONFIG.pxInt(250))
 
         wWin = CONFIG.pxInt(660)
-        hWin = CONFIG.pxInt(350)
+        hWin = CONFIG.pxInt(390)
 
         pOptions = self.theProject.options
         self.resize(
@@ -88,7 +90,7 @@ class GuiManuscriptBuild(QDialog):
         for key, (_, label) in nwLabels.BUILD_FORMATS.items():
             item = QListWidgetItem()
             item.setText(label)
-            item.setData(Qt.UserRole, key)
+            item.setData(self.D_KEY, key)
             self.listFormats.addItem(item)
             if key == self._build.lastFormat:
                 current = item
@@ -130,6 +132,18 @@ class GuiManuscriptBuild(QDialog):
         # Dialog Controls
         # ===============
 
+        font = self.font()
+        font.setBold(True)
+        font.setUnderline(True)
+        font.setPointSizeF(1.5*font.pointSizeF())
+
+        self.lblMain = QLabel(self._build.name)
+        self.lblMain.setWordWrap(True)
+        self.lblMain.setFont(font)
+
+        self.spaceWidget = QWidget()
+        self.spaceWidget.setFixedHeight(CONFIG.pxInt(8))
+
         # Build Path
         self.lblPath = QLabel(self.tr("Build Folder"))
         self.buildPath = QLineEdit()
@@ -156,11 +170,9 @@ class GuiManuscriptBuild(QDialog):
         self.buildProgress = QProgressBar()
 
         # Dialog Buttons
+        self.btnBuild = QPushButton(self.mainTheme.getIcon("export"), self.tr("&Build"))
         self.dlgButtons = QDialogButtonBox(QDialogButtonBox.Close)
-        self.dlgButtons.addButton(
-            QPushButton(self.mainTheme.getIcon("export"), self.tr("&Build")),
-            QDialogButtonBox.ActionRole
-        )
+        self.dlgButtons.addButton(self.btnBuild, QDialogButtonBox.ActionRole)
         self.dlgButtons.clicked.connect(self._dialogButtonClicked)
 
         # Assemble GUI
@@ -178,14 +190,16 @@ class GuiManuscriptBuild(QDialog):
         ])
 
         self.outerBox = QGridLayout()
-        self.outerBox.addWidget(self.mainSplit,     0, 0, 1, 2)
-        self.outerBox.addWidget(self.lblPath,       1, 0, 1, 1)
-        self.outerBox.addLayout(self.pathBox,       1, 1, 1, 1)
-        self.outerBox.addWidget(self.lblName,       2, 0, 1, 1)
-        self.outerBox.addLayout(self.nameBox,       2, 1, 1, 1)
-        self.outerBox.addWidget(self.lblProgress,   3, 0, 1, 1)
-        self.outerBox.addWidget(self.buildProgress, 3, 1, 1, 1)
-        self.outerBox.addWidget(self.dlgButtons,    4, 0, 1, 2)
+        self.outerBox.addWidget(self.lblMain,       0, 0, 1, 2, Qt.AlignCenter)
+        self.outerBox.addWidget(self.spaceWidget,   1, 0, 1, 2)
+        self.outerBox.addWidget(self.mainSplit,     2, 0, 1, 2)
+        self.outerBox.addWidget(self.lblPath,       3, 0, 1, 1)
+        self.outerBox.addLayout(self.pathBox,       3, 1, 1, 1)
+        self.outerBox.addWidget(self.lblName,       4, 0, 1, 1)
+        self.outerBox.addLayout(self.nameBox,       4, 1, 1, 1)
+        self.outerBox.addWidget(self.lblProgress,   5, 0, 1, 1)
+        self.outerBox.addWidget(self.buildProgress, 5, 1, 1, 1)
+        self.outerBox.addWidget(self.dlgButtons,    6, 0, 1, 2)
 
         self.setLayout(self.outerBox)
 
@@ -193,6 +207,8 @@ class GuiManuscriptBuild(QDialog):
             self.buildName.setText(makeFileNameSafe(self._build.lastBuildName))
         else:
             self._doResetBuildName()
+
+        self.btnBuild.setFocus()
 
         logger.debug("Ready: GuiManuscriptBuild")
 
@@ -267,7 +283,7 @@ class GuiManuscriptBuild(QDialog):
         """Get the currently selected format."""
         items = self.listFormats.selectedItems()
         if items and isinstance(items[0], QListWidgetItem):
-            return str(items[0].data(Qt.UserRole))
+            return str(items[0].data(self.D_KEY))
         return None
 
     def _saveSettings(self):

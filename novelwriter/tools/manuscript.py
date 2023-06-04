@@ -31,10 +31,10 @@ from typing import TYPE_CHECKING
 from datetime import datetime
 
 from PyQt5.QtGui import QColor, QCursor, QFont, QPalette, QResizeEvent
-from PyQt5.QtCore import QTimer, Qt, pyqtSlot
+from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QMenu,
-    QProgressBar, QPushButton, QSplitter, QTextBrowser, QVBoxLayout, QWidget,
+    QProgressBar, QPushButton, QSplitter, QTextBrowser, QToolButton, QVBoxLayout, QWidget,
     qApp
 )
 
@@ -80,6 +80,7 @@ class GuiManuscript(QDialog):
         self.setMinimumWidth(CONFIG.pxInt(600))
         self.setMinimumHeight(CONFIG.pxInt(500))
 
+        iPx = self.mainTheme.baseIconSize
         wWin = CONFIG.pxInt(900)
         hWin = CONFIG.pxInt(600)
 
@@ -92,15 +93,52 @@ class GuiManuscript(QDialog):
         # Build Controls
         # ==============
 
+        qPalette = self.palette()
+        qPalette.setBrush(QPalette.Window, qPalette.base())
+        self.setPalette(qPalette)
+
+        fadeCol = qPalette.text().color()
+        buttonStyle = (
+            "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
+        ).format(CONFIG.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
+
+        self.tbAdd = QToolButton(self)
+        self.tbAdd.setIcon(self.mainTheme.getIcon("add"))
+        self.tbAdd.setIconSize(QSize(iPx, iPx))
+        self.tbAdd.setToolTip(self.tr("Add New Build"))
+        self.tbAdd.setStyleSheet(buttonStyle)
+        self.tbAdd.clicked.connect(self._createNewBuild)
+
+        self.tbDel = QToolButton(self)
+        self.tbDel.setIcon(self.mainTheme.getIcon("remove"))
+        self.tbDel.setIconSize(QSize(iPx, iPx))
+        self.tbDel.setToolTip(self.tr("Remove Selected Build"))
+        self.tbDel.setStyleSheet(buttonStyle)
+
+        self.tbEdit = QToolButton(self)
+        self.tbEdit.setIcon(self.mainTheme.getIcon("edit"))
+        self.tbEdit.setIconSize(QSize(iPx, iPx))
+        self.tbEdit.setToolTip(self.tr("Edit Selected Build"))
+        self.tbEdit.setStyleSheet(buttonStyle)
+        self.tbEdit.clicked.connect(self._editSelectedBuild)
+
+        self.lblBuilds = QLabel("<b>{0}</b>".format(self.tr("Builds")))
         self.buildList = QListWidget()
 
-        self.btnNew = QPushButton(self.tr("New"))
-        self.btnNew.clicked.connect(self._createNewBuild)
+        self.tbMore = QToolButton(self)
+        self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
+        self.tbMore.setIconSize(QSize(iPx, iPx))
+        self.tbMore.setStyleSheet(buttonStyle)
 
-        self.btnEdit = QPushButton(self.tr("Edit"))
-        self.btnEdit.clicked.connect(self._editSelectedBuild)
-
-        self.btnDelete = QPushButton(self.tr("Delete"))
+        self.listToolBox = QHBoxLayout()
+        self.listToolBox.addWidget(self.lblBuilds)
+        self.listToolBox.addStretch(1)
+        self.listToolBox.addWidget(self.tbAdd)
+        self.listToolBox.addWidget(self.tbDel)
+        self.listToolBox.addWidget(self.tbEdit)
+        self.listToolBox.addWidget(self.tbMore)
+        self.listToolBox.setSpacing(0)
 
         # Process Controls
         # ================
@@ -123,22 +161,17 @@ class GuiManuscript(QDialog):
         self.btnClose = QPushButton(self.tr("Close"))
         self.btnClose.clicked.connect(self._doClose)
 
-        # Assemble GUI
-        # ============
-
-        self.buildBox = QHBoxLayout()
-        self.buildBox.addWidget(self.btnNew)
-        self.buildBox.addWidget(self.btnEdit)
-        self.buildBox.addWidget(self.btnDelete)
-
         self.processBox = QHBoxLayout()
         self.processBox.addWidget(self.btnBuild)
         self.processBox.addWidget(self.btnPrint)
         self.processBox.addWidget(self.btnClose)
 
+        # Assemble GUI
+        # ============
+
         self.controlBox = QVBoxLayout()
+        self.controlBox.addLayout(self.listToolBox)
         self.controlBox.addWidget(self.buildList)
-        self.controlBox.addLayout(self.buildBox)
         self.controlBox.addWidget(self.buildProgress)
         self.controlBox.addWidget(self.btnPreview)
         self.controlBox.addLayout(self.processBox)
