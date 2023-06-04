@@ -285,8 +285,8 @@ class _FilterTab(QWidget):
     C_ACTIVE = 1
     C_STATUS = 2
 
-    D_HANDLE = Qt.UserRole
-    D_FILE   = Qt.UserRole + 1
+    D_HANDLE = Qt.ItemDataRole.UserRole
+    D_FILE   = Qt.ItemDataRole.UserRole + 1
 
     F_NONE     = 0
     F_FILTERED = 1

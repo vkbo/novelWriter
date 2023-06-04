@@ -61,6 +61,8 @@ class GuiManuscript(QDialog):
     a document directly to disk.
     """
 
+    D_KEY = Qt.ItemDataRole.UserRole
+
     def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
 
@@ -318,7 +320,7 @@ class GuiManuscript(QDialog):
         """Get the currently selected build."""
         bItems = self.buildList.selectedItems()
         if bItems:
-            build = self._builds.getBuild(bItems[0].data(Qt.UserRole))
+            build = self._builds.getBuild(bItems[0].data(self.D_KEY))
             if isinstance(build, BuildSettings):
                 return build
         return None
@@ -364,7 +366,7 @@ class GuiManuscript(QDialog):
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
             bItem.setText(name)
-            bItem.setData(Qt.UserRole, key)
+            bItem.setData(self.D_KEY, key)
             self.buildList.addItem(bItem)
             self._buildMap[key] = bItem
         return

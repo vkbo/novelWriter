@@ -52,8 +52,8 @@ def testDlgMerge_Main(qtbot, nwGUI, projPath, mockRnd):
     itemOne = nwMerge.listBox.item(0)
     itemTwo = nwMerge.listBox.item(1)
 
-    assert itemOne.data(Qt.UserRole) == C.hChapterDoc
-    assert itemTwo.data(Qt.UserRole) == C.hSceneDoc
+    assert itemOne.data(Qt.ItemDataRole.UserRole) == C.hChapterDoc
+    assert itemTwo.data(Qt.ItemDataRole.UserRole) == C.hSceneDoc
 
     assert itemOne.checkState() == Qt.Checked
     assert itemTwo.checkState() == Qt.Checked

@@ -41,6 +41,8 @@ logger = logging.getLogger(__name__)
 
 class GuiDocMerge(QDialog):
 
+    D_HANDLE = Qt.ItemDataRole.UserRole
+
     def __init__(self, mainGui, sHandle, itemList):
         super().__init__(parent=mainGui)
 
@@ -122,7 +124,7 @@ class GuiDocMerge(QDialog):
         for i in range(self.listBox.count()):
             item = self.listBox.item(i)
             if item is not None and item.checkState() == Qt.Checked:
-                finalItems.append(item.data(Qt.UserRole))
+                finalItems.append(item.data(self.D_HANDLE))
 
         self._data["moveToTrash"] = self.trashSwitch.isChecked()
         self._data["finalItems"] = finalItems
@@ -166,7 +168,7 @@ class GuiDocMerge(QDialog):
             newItem = QListWidgetItem()
             newItem.setIcon(itemIcon)
             newItem.setText(nwItem.itemName)
-            newItem.setData(Qt.UserRole, tHandle)
+            newItem.setData(self.D_HANDLE, tHandle)
             newItem.setCheckState(Qt.Checked)
 
             self.listBox.addItem(newItem)

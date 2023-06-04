@@ -449,8 +449,8 @@ class GuiProjectTree(QTreeWidget):
     C_ACTIVE = 2
     C_STATUS = 3
 
-    D_HANDLE = Qt.UserRole
-    D_WORDS  = Qt.UserRole + 1
+    D_HANDLE = Qt.ItemDataRole.UserRole
+    D_WORDS  = Qt.ItemDataRole.UserRole + 1
 
     def __init__(self, projView):
         super().__init__(parent=projView)

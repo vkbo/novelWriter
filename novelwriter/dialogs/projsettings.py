@@ -277,9 +277,9 @@ class GuiProjectEditStatus(QWidget):
     COL_LABEL = 0
     COL_USAGE = 1
 
-    KEY_ROLE = Qt.UserRole
-    COL_ROLE = Qt.UserRole + 1
-    NUM_ROLE = Qt.UserRole + 2
+    KEY_ROLE = Qt.ItemDataRole.UserRole
+    COL_ROLE = Qt.ItemDataRole.UserRole + 1
+    NUM_ROLE = Qt.ItemDataRole.UserRole + 2
 
     def __init__(self, projGui, isStatus):
         super().__init__(parent=projGui)

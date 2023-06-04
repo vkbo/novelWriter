@@ -41,9 +41,9 @@ logger = logging.getLogger(__name__)
 
 class GuiDocSplit(QDialog):
 
-    LINE_ROLE = Qt.UserRole
-    LEVEL_ROLE = Qt.UserRole + 1
-    LABEL_ROLE = Qt.UserRole + 2
+    LINE_ROLE  = Qt.ItemDataRole.UserRole
+    LEVEL_ROLE = Qt.ItemDataRole.UserRole + 1
+    LABEL_ROLE = Qt.ItemDataRole.UserRole + 2
 
     def __init__(self, mainGui, sHandle):
         super().__init__(parent=mainGui)

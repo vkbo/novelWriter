@@ -42,6 +42,8 @@ class GuiQuoteSelect(QDialog):
 
     selectedQuote = ""
 
+    D_KEY = Qt.ItemDataRole.UserRole
+
     def __init__(self, parent=None, currentQuote='"'):
         super().__init__(parent=parent)
 
@@ -75,7 +77,7 @@ class GuiQuoteSelect(QDialog):
             theText = "[ %s ] %s" % (sKey, trConst(sLabel))
             minSize = max(minSize, qMetrics.boundingRect(theText).width())
             qtItem = QListWidgetItem(theText)
-            qtItem.setData(Qt.UserRole, sKey)
+            qtItem.setData(self.D_KEY, sKey)
             self.listBox.addItem(qtItem)
             if sKey == currentQuote:
                 self.listBox.setCurrentItem(qtItem)
@@ -111,7 +113,7 @@ class GuiQuoteSelect(QDialog):
         """
         selItems = self.listBox.selectedItems()
         if selItems:
-            theSymbol = selItems[0].data(Qt.UserRole)
+            theSymbol = selItems[0].data(self.D_KEY)
             self.previewLabel.setText(theSymbol)
             self.selectedQuote = theSymbol
         return

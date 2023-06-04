@@ -51,7 +51,7 @@ def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, projPath):
     assert recentCount > 0
 
     selItem = nwLoad.listBox.topLevelItem(0)
-    selPath = selItem.data(nwLoad.C_NAME, Qt.UserRole)
+    selPath = selItem.data(nwLoad.C_NAME, Qt.ItemDataRole.UserRole)
     assert isinstance(selItem, QTreeWidgetItem)
 
     nwLoad.selPath.setText("")

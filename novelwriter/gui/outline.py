@@ -360,8 +360,8 @@ class GuiOutlineTree(QTreeWidget):
         nwOutline.SYNOP:  False,
     }
 
-    D_HANDLE = Qt.UserRole
-    D_TITLE  = Qt.UserRole + 1
+    D_HANDLE = Qt.ItemDataRole.UserRole
+    D_TITLE  = Qt.ItemDataRole.UserRole + 1
 
     hiddenStateChanged = pyqtSignal()
     activeItemChanged = pyqtSignal(str, str)
