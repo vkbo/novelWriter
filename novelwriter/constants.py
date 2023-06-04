@@ -75,16 +75,22 @@ class nwHeaders:
 
 class nwFiles:
 
+    # Config Files
     CONF_FILE   = "novelwriter.conf"
+    RECENT_FILE = "recentProjects.json"
+
+    # Project Root Files
     PROJ_FILE   = "nwProject.nwx"
-    PROJ_DICT   = "wordlist.txt"
+    PROJ_BACKUP = "nwProject.bak"
     PROJ_LOCK   = "nwProject.lock"
     TOC_TXT     = "ToC.txt"
-    SESS_STATS  = "sessionStats.log"
+
+    # Project Meta Files
+    BUILDS_FILE = "builds.json"
     INDEX_FILE  = "tagsIndex.json"
     OPTS_FILE   = "guiOptions.json"
-    RECENT_FILE = "recentProjects.json"
-    BUILDS_FILE = "builds.json"
+    PROJ_DICT   = "wordlist.txt"
+    SESS_STATS  = "sessionStats.log"
 
 # END Class nwFiles
 

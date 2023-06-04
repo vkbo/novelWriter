@@ -248,11 +248,13 @@ class NWStorage:
         baseMeta = basePath / "meta"
         baseCont = basePath / "content"
         files = [
-            (basePath / nwFiles.PROJ_FILE,  nwFiles.PROJ_FILE),
-            (baseMeta / nwFiles.OPTS_FILE,  f"meta/{nwFiles.OPTS_FILE}"),
-            (baseMeta / nwFiles.SESS_STATS, f"meta/{nwFiles.SESS_STATS}"),
-            (baseMeta / nwFiles.INDEX_FILE, f"meta/{nwFiles.INDEX_FILE}"),
-            (baseMeta / nwFiles.PROJ_DICT,  f"meta/{nwFiles.PROJ_DICT}"),
+            (basePath / nwFiles.PROJ_FILE,   nwFiles.PROJ_FILE),
+            (basePath / nwFiles.PROJ_BACKUP, nwFiles.PROJ_BACKUP),
+            (baseMeta / nwFiles.BUILDS_FILE, f"meta/{nwFiles.BUILDS_FILE}"),
+            (baseMeta / nwFiles.INDEX_FILE,  f"meta/{nwFiles.INDEX_FILE}"),
+            (baseMeta / nwFiles.OPTS_FILE,   f"meta/{nwFiles.OPTS_FILE}"),
+            (baseMeta / nwFiles.PROJ_DICT,   f"meta/{nwFiles.PROJ_DICT}"),
+            (baseMeta / nwFiles.SESS_STATS,  f"meta/{nwFiles.SESS_STATS}"),
         ]
         for contItem in baseCont.iterdir():
             name = contItem.name
