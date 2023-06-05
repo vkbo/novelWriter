@@ -29,6 +29,7 @@ import re
 import logging
 
 from abc import ABC, abstractmethod
+from pathlib import Path
 from operator import itemgetter
 from functools import partial
 
@@ -102,7 +103,7 @@ class Tokenizer(ABC):
         self._result = ""    # The result of the last document
 
         self._keepMarkdown = False  # Whether to keep the markdown text
-        self._theMarkdown  = []     # The result novelWriter markdown of all documents
+        self._allMarkdown  = []     # The result novelWriter markdown of all documents
 
         # User Settings
         self._textFont    = "Serif"  # Output text font
@@ -164,111 +165,136 @@ class Tokenizer(ABC):
     ##
 
     @property
-    def theResult(self):
+    def theResult(self) -> str:
+        """The result of the build process."""
         return self._result
 
     @property
-    def theMarkdown(self):
-        return self._theMarkdown
+    def theMarkdown(self) -> list:
+        """The combined novelWriter Markdown text."""
+        return self._allMarkdown
 
     @property
-    def errData(self):
+    def errData(self) -> list:
+        """The error data."""
         return self._errData
 
     ##
     #  Setters
     ##
 
-    def setTitleFormat(self, hFormat):
+    def setTitleFormat(self, hFormat: str):
+        """Set the title format pattern."""
         self._fmtTitle = hFormat.strip()
         return
 
-    def setChapterFormat(self, hFormat):
+    def setChapterFormat(self, hFormat: str):
+        """Set the chapert format pattern."""
         self._fmtChapter = hFormat.strip()
         return
 
-    def setUnNumberedFormat(self, hFormat):
+    def setUnNumberedFormat(self, hFormat: str):
+        """Set the unnumbered format pattern."""
         self._fmtUnNum = hFormat.strip()
         return
 
-    def setSceneFormat(self, hFormat, hide):
+    def setSceneFormat(self, hFormat: str, hide: bool):
+        """Set the scene format pattern and hidden status."""
         self._fmtScene = hFormat.strip()
         self._hideScene = hide
         return
 
-    def setSectionFormat(self, hFormat, hide):
+    def setSectionFormat(self, hFormat: str, hide: bool):
+        """Set the section format pattern and hidden status."""
         self._fmtSection = hFormat.strip()
         self._hideSection = hide
         return
 
-    def setFont(self, textFont, textSize, textFixed=False):
-        self._textFont = textFont
-        self._textSize = round(int(textSize))
-        self._textFixed = textFixed
+    def setFont(self, family: str, size: int, isFixed: bool = False):
+        """Set the build font."""
+        self._textFont = family
+        self._textSize = round(int(size))
+        self._textFixed = isFixed
         return
 
-    def setLineHeight(self, lineHeight):
-        self._lineHeight = min(max(float(lineHeight), 0.5), 5.0)
+    def setLineHeight(self, height: float):
+        """Set the line height between 0.5 and 5.0."""
+        self._lineHeight = min(max(float(height), 0.5), 5.0)
         return
 
-    def setBlockIndent(self, blockIndent):
-        self._blockIndent = min(max(float(blockIndent), 0.0), 10.0)
+    def setBlockIndent(self, indent: float):
+        """Set the block indent between 0.0 and 10.0."""
+        self._blockIndent = min(max(float(indent), 0.0), 10.0)
         return
 
-    def setJustify(self, doJustify):
-        self._doJustify = doJustify
+    def setJustify(self, state: bool):
+        """Enable or disable text justification."""
+        self._doJustify = state
         return
 
-    def setTitleMargins(self, mUpper, mLower):
-        self._marginTitle = (float(mUpper), float(mLower))
+    def setTitleMargins(self, upper: float, lower: float):
+        """Set the upper and lower title margin."""
+        self._marginTitle = (float(upper), float(lower))
         return
 
-    def setHead1Margins(self, mUpper, mLower):
-        self._marginHead1 = (float(mUpper), float(mLower))
+    def setHead1Margins(self, upper: float, lower: float):
+        """Set the upper and lower header 1 margin."""
+        self._marginHead1 = (float(upper), float(lower))
         return
 
-    def setHead2Margins(self, mUpper, mLower):
-        self._marginHead2 = (float(mUpper), float(mLower))
+    def setHead2Margins(self, upper: float, lower: float):
+        """Set the upper and lower header 2 margin."""
+        self._marginHead2 = (float(upper), float(lower))
         return
 
-    def setHead3Margins(self, mUpper, mLower):
-        self._marginHead3 = (float(mUpper), float(mLower))
+    def setHead3Margins(self, upper: float, lower: float):
+        """Set the upper and lower header 3 margin."""
+        self._marginHead3 = (float(upper), float(lower))
         return
 
-    def setHead4Margins(self, mUpper, mLower):
-        self._marginHead4 = (float(mUpper), float(mLower))
+    def setHead4Margins(self, upper: float, lower: float):
+        """Set the upper and lower header 4 margin."""
+        self._marginHead4 = (float(upper), float(lower))
         return
 
-    def setTextMargins(self, mUpper, mLower):
-        self._marginText = (float(mUpper), float(mLower))
+    def setTextMargins(self, upper: float, lower: float):
+        """Set the upper and lower text margin."""
+        self._marginText = (float(upper), float(lower))
         return
 
-    def setMetaMargins(self, mUpper, mLower):
-        self._marginMeta = (float(mUpper), float(mLower))
+    def setMetaMargins(self, upper: float, lower: float):
+        """Set the upper and lower meta text margin."""
+        self._marginMeta = (float(upper), float(lower))
         return
 
-    def setLinkHeaders(self, linkHeaders):
-        self._linkHeaders = linkHeaders
+    def setLinkHeaders(self, state: bool):
+        """Enable or disable adding an anchor before headers."""
+        self._linkHeaders = state
         return
 
-    def setBodyText(self, doBodyText):
-        self._doBodyText = doBodyText
+    def setBodyText(self, state: bool):
+        """Include body text in build."""
+        self._doBodyText = state
         return
 
-    def setSynopsis(self, doSynopsis):
-        self._doSynopsis = doSynopsis
+    def setSynopsis(self, state: bool):
+        """Include synopsis comments in build."""
+        self._doSynopsis = state
         return
 
-    def setComments(self, doComments):
-        self._doComments = doComments
+    def setComments(self, state: bool):
+        """Include comments in build."""
+        self._doComments = state
         return
 
-    def setKeywords(self, doKeywords):
-        self._doKeywords = doKeywords
+    def setKeywords(self, state: bool):
+        """Include keywords in build."""
+        self._doKeywords = state
         return
 
-    def setKeepMarkdown(self, keepMarkdown):
-        self._keepMarkdown = keepMarkdown
+    def setKeepMarkdown(self, state: bool):
+        """Keep original markdown during build."""
+        self._keepMarkdown = state
         return
 
     ##
@@ -279,10 +305,9 @@ class Tokenizer(ABC):
     def doConvert(self):
         raise NotImplementedError
 
-    def addRootHeading(self, theHandle):
-        """Add a heading at the start of a new root folder.
-        """
-        if not self._project.tree.checkType(theHandle, nwItemType.ROOT):
+    def addRootHeading(self, tHandle: str) -> bool:
+        """Add a heading at the start of a new root folder."""
+        if not self._project.tree.checkType(tHandle, nwItemType.ROOT):
             return False
 
         if self._isFirst:
@@ -291,7 +316,7 @@ class Tokenizer(ABC):
         else:
             textAlign = self.A_PBB | self.A_CENTRE
 
-        theItem = self._project.tree[theHandle]
+        theItem = self._project.tree[tHandle]
         locNotes = self._localLookup("Notes")
         theTitle = f"{locNotes}: {theItem.itemName}"
         self._tokens = []
@@ -299,22 +324,22 @@ class Tokenizer(ABC):
             self.T_TITLE, 0, theTitle, None, textAlign
         ))
         if self._keepMarkdown:
-            self._theMarkdown.append(f"# {theTitle}\n\n")
+            self._allMarkdown.append(f"# {theTitle}\n\n")
 
         return True
 
-    def setText(self, theHandle, theText=None):
+    def setText(self, tHandle: str, text: str | None = None) -> bool:
         """Set the text for the tokenizer from a handle. If theText is
         not set, load it from the file.
         """
-        self._nwItem = self._project.tree[theHandle]
+        self._nwItem = self._project.tree[tHandle]
         if self._nwItem is None:
             return False
 
-        if theText is None:
-            theText = self._project.storage.getDocument(theHandle).readDocument() or ""
+        if text is None:
+            text = self._project.storage.getDocument(tHandle).readDocument() or ""
 
-        self._text = theText
+        self._text = text
 
         docSize = len(self._text)
         if docSize > nwConst.MAX_DOCSIZE:
@@ -331,8 +356,7 @@ class Tokenizer(ABC):
         return True
 
     def doPreProcessing(self):
-        """Run trough the various replace doctionaries.
-        """
+        """Run trough the various replace dictionaries."""
         # Process the user's auto-replace dictionary
         autoReplace = self._project.data.autoReplace
         if len(autoReplace) > 0:
@@ -582,7 +606,7 @@ class Tokenizer(ABC):
             tmpMarkdown.append("\n")
 
         if self._keepMarkdown:
-            self._theMarkdown.append("".join(tmpMarkdown))
+            self._allMarkdown.append("".join(tmpMarkdown))
 
         # Second Pass
         # ===========
@@ -610,7 +634,7 @@ class Tokenizer(ABC):
 
         return
 
-    def doHeaders(self):
+    def doHeaders(self) -> bool:
         """Apply formatting to the text headers for novel files. This
         also applies chapter and scene numbering.
         """
@@ -708,11 +732,10 @@ class Tokenizer(ABC):
 
         return True
 
-    def saveRawMarkdown(self, savePath):
-        """Save the data to a plain text file.
-        """
+    def saveRawMarkdown(self, savePath: str | Path):
+        """Save the data to a plain text file."""
         with open(savePath, mode="w", encoding="utf-8") as outFile:
-            for nwdPage in self._theMarkdown:
+            for nwdPage in self._allMarkdown:
                 outFile.write(nwdPage)
         return
 
