@@ -107,7 +107,7 @@ class NWBuildDocument:
         return
 
     def iterBuild(self, path: Path, bFormat: str) -> Iterable[tuple[int, bool]]:
-        """Wrapper for builder based on format."""
+        """Wrapper for builders based on format."""
         if bFormat in ("odt", "fodt"):
             yield from self.iterBuildOpenDocument(path, bFormat == "fodt")
         elif bFormat in ("html", "jhtml"):
@@ -238,65 +238,50 @@ class NWBuildDocument:
     def _setupBuild(self, bldObj: Tokenizer) -> dict:
         """Configure the build object."""
         # Get Settings
-        fmtTitle      = self._build.getStr("headings.fmtTitle")
-        fmtChapter    = self._build.getStr("headings.fmtChapter")
-        fmtUnnumbered = self._build.getStr("headings.fmtUnnumbered")
-        fmtScene      = self._build.getStr("headings.fmtScene")
-        fmtSection    = self._build.getStr("headings.fmtSection")
-        hideScene     = self._build.getBool("headings.hideScene")
-        hideSection   = self._build.getBool("headings.hideSection")
-
-        incSynopsis   = self._build.getBool("text.includeSynopsis")
-        incComments   = self._build.getBool("text.includeComments")
-        incKeywords   = self._build.getBool("text.includeKeywords")
-        incBodyText   = self._build.getBool("text.includeBodyText")
-        noteHeadings  = self._build.getBool("text.addNoteHeadings")
-
-        buildLang     = self._build.getStr("format.buildLang")
-        textFont      = self._build.getStr("format.textFont")
-        textSize      = self._build.getInt("format.textSize")
-        lineHeight    = self._build.getFloat("format.lineHeight")
-        justifyText   = self._build.getBool("format.justifyText")
-        replaceUCode  = self._build.getBool("format.stripUnicode")
-
-        odtAddColours = self._build.getBool("odt.addColours")
-        htmlAddStyles = self._build.getBool("html.addStyles")
+        buildLang = self._build.getStr("format.buildLang")
+        textFont  = self._build.getStr("format.textFont")
+        textSize  = self._build.getInt("format.textSize")
 
         # The language lookup dict is reloaded if needed
         self._project.setProjectLang(buildLang)
 
-        # Get font information
-        if not textFont:
-            textFont = str(CONFIG.textFont)
-
-        bldFont = QFont(textFont, textSize)
+        fontFamily = textFont or CONFIG.textFont
+        bldFont = QFont(fontFamily, textSize)
         fontInfo = QFontInfo(bldFont)
         textFixed = fontInfo.fixedPitch()
 
-        bldObj.setTitleFormat(fmtTitle)
-        bldObj.setChapterFormat(fmtChapter)
-        bldObj.setUnNumberedFormat(fmtUnnumbered)
-        bldObj.setSceneFormat(fmtScene, hideScene)
-        bldObj.setSectionFormat(fmtSection, hideSection)
+        bldObj.setTitleFormat(self._build.getStr("headings.fmtTitle"))
+        bldObj.setChapterFormat(self._build.getStr("headings.fmtChapter"))
+        bldObj.setUnNumberedFormat(self._build.getStr("headings.fmtUnnumbered"))
+        bldObj.setSceneFormat(
+            self._build.getStr("headings.fmtScene"),
+            self._build.getBool("headings.hideScene")
+        )
+        bldObj.setSectionFormat(
+            self._build.getStr("headings.fmtSection"),
+            self._build.getBool("headings.hideSection")
+        )
 
-        bldObj.setFont(textFont, textSize, textFixed)
-        bldObj.setJustify(justifyText)
-        bldObj.setLineHeight(lineHeight)
+        bldObj.setFont(fontFamily, textSize, textFixed)
+        bldObj.setJustify(self._build.getBool("format.justifyText"))
+        bldObj.setLineHeight(self._build.getFloat("format.lineHeight"))
 
-        bldObj.setSynopsis(incSynopsis)
-        bldObj.setComments(incComments)
-        bldObj.setKeywords(incKeywords)
-        bldObj.setBodyText(incBodyText)
+        bldObj.setSynopsis(self._build.getBool("text.includeSynopsis"))
+        bldObj.setComments(self._build.getBool("text.includeComments"))
+        bldObj.setKeywords(self._build.getBool("text.includeKeywords"))
+        bldObj.setBodyText(self._build.getBool("text.includeBodyText"))
 
         if isinstance(bldObj, ToHtml):
-            bldObj.setStyles(htmlAddStyles)
-            bldObj.setReplaceUnicode(replaceUCode)
+            bldObj.setStyles(self._build.getBool("html.addStyles"))
+            bldObj.setReplaceUnicode(self._build.getBool("format.stripUnicode"))
 
         if isinstance(bldObj, ToOdt):
-            bldObj.setColourHeaders(odtAddColours)
+            bldObj.setColourHeaders(self._build.getBool("odt.addColours"))
             bldObj.setLanguage(buildLang)
 
-        filtered = self._build.buildItemFilter(self._project, withRoots=noteHeadings)
+        filtered = self._build.buildItemFilter(
+            self._project, withRoots=self._build.getBool("text.addNoteHeadings")
+        )
 
         return filtered
 
