@@ -435,11 +435,15 @@ class _FilterTab(QWidget):
         logger.debug("Building project tree")
         self._treeMap = {}
         self.optTree.clear()
-        for nwItem in self.theProject.getProjectItems():
+        for nwItem in self.theProject.tree:
 
             tHandle = nwItem.itemHandle
             pHandle = nwItem.itemParent
             rHandle = nwItem.itemRoot
+
+            if tHandle is None or rHandle is None:
+                continue
+
             isFile = nwItem.isFileType()
             isActive = nwItem.isActive
 
@@ -465,16 +469,10 @@ class _FilterTab(QWidget):
 
             trItem.setTextAlignment(self.C_NAME, Qt.AlignLeft)
 
-            if pHandle is None:
-                if nwItem.isRootType():
-                    self.optTree.addTopLevelItem(trItem)
-                else:
-                    logger.debug("Skipping item '%s'", tHandle)
-                    continue
-
+            if pHandle is None and nwItem.isRootType():
+                self.optTree.addTopLevelItem(trItem)
             elif pHandle in self._treeMap:
                 self._treeMap[pHandle].addChild(trItem)
-
             else:
                 logger.debug("Skipping item '%s'", tHandle)
                 continue

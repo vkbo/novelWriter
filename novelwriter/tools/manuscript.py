@@ -144,9 +144,12 @@ class GuiManuscript(QDialog):
         # ================
 
         self.buildProgress = QProgressBar()
+        self.buildProgress.setValue(0)
+
         self.btnPreview = QPushButton(self.tr("Build Preview"))
         self.btnPreview.clicked.connect(self._generatePreview)
-        self.manPreview = _PreviewWidget(self.mainGui)
+
+        self.docPreview = _PreviewWidget(self.mainGui)
 
         self.btnBuild = QPushButton(self.tr("Build"))
         self.btnBuild.clicked.connect(self._buildManuscript)
@@ -182,7 +185,7 @@ class GuiManuscript(QDialog):
 
         self.mainSplit = QSplitter()
         self.mainSplit.addWidget(self.optsWidget)
-        self.mainSplit.addWidget(self.manPreview)
+        self.mainSplit.addWidget(self.docPreview)
         self.mainSplit.setSizes([
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "optsWidth", wWin//3)),
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "viewWidth", 2*wWin//3)),
@@ -338,13 +341,13 @@ class GuiManuscript(QDialog):
 
     def _updatePreview(self, data: dict, build: BuildSettings):
         """Update the preview widget and set relevant values."""
-        self.manPreview.setContent(data)
-        self.manPreview.setBuildName(build.name)
-        self.manPreview.setTextFont(
+        self.docPreview.setContent(data)
+        self.docPreview.setBuildName(build.name)
+        self.docPreview.setTextFont(
             build.getStr("format.textFont"),
             build.getInt("format.textSize")
         )
-        self.manPreview.setJustify(
+        self.docPreview.setJustify(
             build.getBool("format.justifyText")
         )
         return

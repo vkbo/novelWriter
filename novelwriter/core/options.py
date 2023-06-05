@@ -64,7 +64,7 @@ VALID_MAP = {
         "winWidth", "winHeight", "optsWidth", "viewWidth"
     },
     "GuiManuscriptBuild": {
-        "winWidth", "winHeight", "fmtWidth", "optsWidth"
+        "winWidth", "winHeight", "fmtWidth", "sumWidth"
     },
 }
 

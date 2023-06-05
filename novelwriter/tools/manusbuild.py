@@ -27,9 +27,9 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractButton, QDialog, QDialogButtonBox, QFrame, QGridLayout,
+    QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox, QGridLayout,
     QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem, QProgressBar,
     QPushButton, QSplitter, QVBoxLayout, QWidget
 )
@@ -37,8 +37,8 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG
 from novelwriter.common import makeFileNameSafe
 from novelwriter.constants import nwLabels
+from novelwriter.core.item import NWItem
 from novelwriter.core.buildsettings import BuildSettings
-from novelwriter.extensions.switchbox import NSwitchBox
 
 if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain
@@ -70,8 +70,9 @@ class GuiManuscriptBuild(QDialog):
 
         self.setWindowTitle(self.tr("Build Manuscript"))
         self.setMinimumWidth(CONFIG.pxInt(500))
-        self.setMinimumHeight(CONFIG.pxInt(250))
+        self.setMinimumHeight(CONFIG.pxInt(300))
 
+        iPx = self.mainTheme.baseIconSize
         wWin = CONFIG.pxInt(660)
         hWin = CONFIG.pxInt(390)
 
@@ -81,11 +82,12 @@ class GuiManuscriptBuild(QDialog):
             CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "winHeight", hWin))
         )
 
-        # Formats
-        # =======
+        # Output Format
+        # =============
 
-        self.lblFormat = QLabel("<b>{0}</b>".format(self.tr("Build Format")))
+        self.lblFormat = QLabel(self.tr("Output Format"))
         self.listFormats = QListWidget()
+        self.listFormats.setIconSize(QSize(iPx, iPx))
         current = None
         for key, (_, label) in nwLabels.BUILD_FORMATS.items():
             item = QListWidgetItem()
@@ -106,28 +108,23 @@ class GuiManuscriptBuild(QDialog):
         self.formatWidget.setLayout(self.formatBox)
         self.formatWidget.setContentsMargins(0, 0, 0, 0)
 
-        # Build Controls
-        # ==============
+        # Table of Contents
+        # =================
 
-        # Build Options
-        self.swtOptions = NSwitchBox(self, self.mainTheme.baseIconSize)
-        self.swtOptions.switchToggled.connect(self._applyBuildOptions)
-        self.swtOptions.setFrameStyle(QFrame.NoFrame)
-        self.swtOptions.setInnerContentsMargins(0, 0, 0, 0)
+        self.lblContent = QLabel(self.tr("Table of Contents"))
 
-        self.swtOptions.addLabel(self._build.getLabel("build"))
-        self.swtOptions.addItem(
-            self.mainTheme.getIcon("cls_novel"), self._build.getLabel("build.splitNovel"),
-            "build.splitNovel", default=self._build.getBool("build.splitNovel")
-        )
-        self.swtOptions.addItem(
-            self.mainTheme.getIcon("cls_custom"), self._build.getLabel("build.splitNotes"),
-            "build.splitNotes", default=self._build.getBool("build.splitNotes")
-        )
-        self.swtOptions.addItem(
-            self.mainTheme.getIcon("proj_chapter"), self._build.getLabel("build.splitChapters"),
-            "build.splitChapters", default=self._build.getBool("build.splitChapters")
-        )
+        self.listContent = QListWidget(self)
+        self.listContent.setIconSize(QSize(iPx, iPx))
+        self.listContent.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+
+        self.contentBox = QVBoxLayout()
+        self.contentBox.addWidget(self.lblContent, 0)
+        self.contentBox.addWidget(self.listContent, 0)
+        self.contentBox.setContentsMargins(0, 0, 0, 0)
+
+        self.contentWidget = QWidget()
+        self.contentWidget.setLayout(self.contentBox)
+        self.contentWidget.setContentsMargins(0, 0, 0, 0)
 
         # Dialog Controls
         # ===============
@@ -168,6 +165,7 @@ class GuiManuscriptBuild(QDialog):
         # Build Progress
         self.lblProgress = QLabel(self.tr("Build Progress"))
         self.buildProgress = QProgressBar()
+        self.buildProgress.setValue(0)
 
         # Dialog Buttons
         self.btnBuild = QPushButton(self.mainTheme.getIcon("export"), self.tr("&Build"))
@@ -180,13 +178,13 @@ class GuiManuscriptBuild(QDialog):
 
         self.mainSplit = QSplitter()
         self.mainSplit.addWidget(self.formatWidget)
-        self.mainSplit.addWidget(self.swtOptions)
+        self.mainSplit.addWidget(self.contentWidget)
         self.mainSplit.setHandleWidth(CONFIG.pxInt(16))
         self.mainSplit.setCollapsible(0, False)
         self.mainSplit.setCollapsible(1, False)
         self.mainSplit.setSizes([
-            CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "fmtWidth", int(0.45*wWin))),
-            CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "optsWidth", int(0.55*wWin))),
+            CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "fmtWidth", wWin//2)),
+            CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "sumWidth", wWin//2)),
         ])
 
         self.outerBox = QGridLayout()
@@ -200,6 +198,7 @@ class GuiManuscriptBuild(QDialog):
         self.outerBox.addWidget(self.lblProgress,   5, 0, 1, 1)
         self.outerBox.addWidget(self.buildProgress, 5, 1, 1, 1)
         self.outerBox.addWidget(self.dlgButtons,    6, 0, 1, 2)
+        self.outerBox.setRowStretch(2, 1)
 
         self.setLayout(self.outerBox)
 
@@ -209,6 +208,7 @@ class GuiManuscriptBuild(QDialog):
             self._doResetBuildName()
 
         self.btnBuild.setFocus()
+        self._populateContentList()
 
         logger.debug("Ready: GuiManuscriptBuild")
 
@@ -294,15 +294,44 @@ class GuiManuscriptBuild(QDialog):
         winHeight = CONFIG.rpxInt(self.height())
 
         mainSplit = self.mainSplit.sizes()
-        fmtWidth  = CONFIG.rpxInt(mainSplit[0])
-        optsWidth = CONFIG.rpxInt(mainSplit[1])
+        fmtWidth = CONFIG.rpxInt(mainSplit[0])
+        sumWidth = CONFIG.rpxInt(mainSplit[1])
 
         pOptions = self.theProject.options
         pOptions.setValue("GuiManuscriptBuild", "winWidth", winWidth)
         pOptions.setValue("GuiManuscriptBuild", "winHeight", winHeight)
         pOptions.setValue("GuiManuscriptBuild", "fmtWidth", fmtWidth)
-        pOptions.setValue("GuiManuscriptBuild", "optsWidth", optsWidth)
+        pOptions.setValue("GuiManuscriptBuild", "sumWidth", sumWidth)
         pOptions.saveSettings()
+
+        return
+
+    def _populateContentList(self):
+        """Build the content list."""
+        rootMap = {}
+        filtered = self._build.buildItemFilter(self.theProject)
+        self.listContent.clear()
+        for nwItem in self.theProject.tree:
+            tHandle = nwItem.itemHandle
+            rHandle = nwItem.itemRoot
+
+            if tHandle is None or rHandle is None or not nwItem.isFileType():
+                continue
+
+            if filtered.get(tHandle, (False, 0))[0]:
+                if rHandle not in rootMap:
+                    rItem = self.theProject.tree[rHandle]
+                    if isinstance(rItem, NWItem):
+                        rootMap[rHandle] = rItem.itemName
+
+                itemIcon = self.mainTheme.getItemIcon(
+                    nwItem.itemType, nwItem.itemClass,
+                    nwItem.itemLayout, nwItem.mainHeading
+                )
+                rootName = rootMap.get(rHandle, "??????")
+                item = QListWidgetItem(f"{rootName}: {nwItem.itemName}")
+                item.setIcon(itemIcon)
+                self.listContent.addItem(item)
 
         return
 

@@ -72,9 +72,6 @@ SETTINGS_TEMPLATE = {
     "format.replaceTabs":     (bool, False),
     "odt.addColours":         (bool, True),
     "html.addStyles":         (bool, False),
-    "build.splitNovel":       (bool, False),
-    "build.splitNotes":       (bool, False),
-    "build.splitChapters":    (bool, False),
 }
 
 SETTINGS_LABELS = {
@@ -115,11 +112,6 @@ SETTINGS_LABELS = {
 
     "html":                   QT_TRANSLATE_NOOP("Builds", "HTML"),
     "html.addStyles":         QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
-
-    "build":                  QT_TRANSLATE_NOOP("Builds", "Build Options"),
-    "build.splitNovel":       QT_TRANSLATE_NOOP("Builds", "Split Novel Root Folders"),
-    "build.splitNotes":       QT_TRANSLATE_NOOP("Builds", "Split Note Root Folders"),
-    "build.splitChapters":    QT_TRANSLATE_NOOP("Builds", "Split By Chapter Document"),
 }
 
 
