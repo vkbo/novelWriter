@@ -261,7 +261,7 @@ def testCoreToOdt_Convert(mockGUI):
     # =======
 
     # Header 1
-    theDoc._theText = "# Title\n"
+    theDoc._text = "# Title\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -274,7 +274,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Header 2
-    theDoc._theText = "## Chapter\n"
+    theDoc._text = "## Chapter\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -287,7 +287,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Header 3
-    theDoc._theText = "### Scene\n"
+    theDoc._text = "### Scene\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -300,7 +300,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Header 4
-    theDoc._theText = "#### Section\n"
+    theDoc._text = "#### Section\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -313,7 +313,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Title
-    theDoc._theText = "#! Title\n"
+    theDoc._text = "#! Title\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -326,7 +326,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Unnumbered chapter
-    theDoc._theText = "##! Prologue\n"
+    theDoc._text = "##! Prologue\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -342,7 +342,7 @@ def testCoreToOdt_Convert(mockGUI):
     # ==========
 
     # Nested Text
-    theDoc._theText = "Some ~~nested **bold** and _italics_ text~~ text."
+    theDoc._text = "Some ~~nested **bold** and _italics_ text~~ text."
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -360,7 +360,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Hard Break
-    theDoc._theText = "Some text.\nNext line\n"
+    theDoc._text = "Some text.\nNext line\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -373,7 +373,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Tab
-    theDoc._theText = "\tItem 1\tItem 2\n"
+    theDoc._text = "\tItem 1\tItem 2\n"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -386,7 +386,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Tab in Format
-    theDoc._theText = "Some **bold\ttext**"
+    theDoc._text = "Some **bold\ttext**"
     theDoc.tokenizeText()
     theDoc.initDocument()
     theDoc.doConvert()
@@ -400,7 +400,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Multiple Spaces
-    theDoc._theText = (
+    theDoc._text = (
         "### Scene\n\n"
         "Hello World\n\n"
         "Hello  World\n\n"
@@ -421,7 +421,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Synopsis, Comment, Keywords
-    theDoc._theText = (
+    theDoc._text = (
         "### Scene\n\n"
         "@pov: Jane\n\n"
         "% synopsis: So it begins\n\n"
@@ -448,7 +448,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Scene Separator
-    theDoc._theText = "### Scene One\n\nText\n\n### Scene Two\n\nText"
+    theDoc._text = "### Scene One\n\nText\n\n### Scene Two\n\nText"
     theDoc.setSceneFormat("* * *", False)
     theDoc.tokenizeText()
     theDoc.doHeaders()
@@ -466,7 +466,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Scene Break
-    theDoc._theText = "### Scene One\n\nText\n\n### Scene Two\n\nText"
+    theDoc._text = "### Scene One\n\nText\n\n### Scene Two\n\nText"
     theDoc.setSceneFormat("", False)
     theDoc.tokenizeText()
     theDoc.doHeaders()
@@ -484,7 +484,7 @@ def testCoreToOdt_Convert(mockGUI):
     )
 
     # Paragraph Styles
-    theDoc._theText = (
+    theDoc._text = (
         "### Scene\n\n"
         "@pov: Jane\n"
         "@char: John\n"
@@ -526,7 +526,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert getStyle("P8")._pAttr["margin-right"] == ["fo", "1.693cm"]
 
     # Justified
-    theDoc._theText = (
+    theDoc._text = (
         "### Scene\n\n"
         "Regular paragraph\n\n"
         "with\nbreak\n\n"
@@ -549,7 +549,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert getStyle("P9")._pAttr["text-align"] == ["fo", "left"]
 
     # Page Breaks
-    theDoc._theText = (
+    theDoc._text = (
         "## Chapter One\n\n"
         "Text\n\n"
         "## Chapter Two\n\n"
@@ -584,7 +584,7 @@ def testCoreToOdt_ConvertDirect(mockGUI):
 
     # Justified
     theDoc = ToOdt(theProject, isFlat=True)
-    theDoc._theTokens = [
+    theDoc._tokens = [
         (theDoc.T_TEXT, 1, "This is a paragraph", [], theDoc.A_JUSTIFY),
         (theDoc.T_EMPTY, 1, "", None, theDoc.A_NONE),
     ]
@@ -605,7 +605,7 @@ def testCoreToOdt_ConvertDirect(mockGUI):
 
     # Page Break After
     theDoc = ToOdt(theProject, isFlat=True)
-    theDoc._theTokens = [
+    theDoc._tokens = [
         (theDoc.T_TEXT, 1, "This is a paragraph", [], theDoc.A_PBA),
         (theDoc.T_EMPTY, 1, "", None, theDoc.A_NONE),
     ]
@@ -643,7 +643,7 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     assert theDoc.setLanguage("nb_NO") is True
     theDoc.setColourHeaders(True)
 
-    theDoc._theText = (
+    theDoc._text = (
         "## Chapter One\n\n"
         "Text\n\n"
         "## Chapter Two\n\n"
@@ -680,7 +680,7 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     theDoc = ToOdt(theProject, isFlat=False)
     theDoc._isNovel = True
 
-    theDoc._theText = (
+    theDoc._text = (
         "## Chapter One\n\n"
         "Text\n\n"
         "## Chapter Two\n\n"

@@ -42,7 +42,7 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     theHtml._isFirst = True
 
     # Header 1
-    theHtml._theText = "# Partition\n"
+    theHtml._text = "# Partition\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -50,7 +50,7 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     )
 
     # Header 2
-    theHtml._theText = "## Chapter Title\n"
+    theHtml._text = "## Chapter Title\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -58,19 +58,19 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     )
 
     # Header 3
-    theHtml._theText = "### Scene Title\n"
+    theHtml._text = "### Scene Title\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == "<h2>Scene Title</h2>\n"
 
     # Header 4
-    theHtml._theText = "#### Section Title\n"
+    theHtml._text = "#### Section Title\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == "<h3>Section Title</h3>\n"
 
     # Title
-    theHtml._theText = "#! Title\n"
+    theHtml._text = "#! Title\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -78,7 +78,7 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     )
 
     # Unnumbered
-    theHtml._theText = "##! Prologue\n"
+    theHtml._text = "##! Prologue\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == "<h1 style='page-break-before: always;'>Prologue</h1>\n"
@@ -92,31 +92,31 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     theHtml.setLinkHeaders(True)
 
     # Header 1
-    theHtml._theText = "# Heading One\n"
+    theHtml._text = "# Heading One\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == "<h1><a name='T000001'></a>Heading One</h1>\n"
 
     # Header 2
-    theHtml._theText = "## Heading Two\n"
+    theHtml._text = "## Heading Two\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == "<h2><a name='T000001'></a>Heading Two</h2>\n"
 
     # Header 3
-    theHtml._theText = "### Heading Three\n"
+    theHtml._text = "### Heading Three\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == "<h3><a name='T000001'></a>Heading Three</h3>\n"
 
     # Header 4
-    theHtml._theText = "#### Heading Four\n"
+    theHtml._text = "#### Heading Four\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == "<h4><a name='T000001'></a>Heading Four</h4>\n"
 
     # Title
-    theHtml._theText = "#! Heading One\n"
+    theHtml._text = "#! Heading One\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -124,7 +124,7 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     )
 
     # Unnumbered
-    theHtml._theText = "##! Heading Two\n"
+    theHtml._text = "##! Heading Two\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == "<h2><a name='T000001'></a>Heading Two</h2>\n"
@@ -133,7 +133,7 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     # ==========
 
     # Text
-    theHtml._theText = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
+    theHtml._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -142,7 +142,7 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     )
 
     # Text w/Hard Break
-    theHtml._theText = "Line one  \nLine two  \nLine three\n"
+    theHtml._text = "Line one  \nLine two  \nLine three\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -150,13 +150,13 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     )
 
     # Synopsis
-    theHtml._theText = "%synopsis: The synopsis ...\n"
+    theHtml._text = "%synopsis: The synopsis ...\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == ""
 
     theHtml.setSynopsis(True)
-    theHtml._theText = "%synopsis: The synopsis ...\n"
+    theHtml._text = "%synopsis: The synopsis ...\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -164,13 +164,13 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     )
 
     # Comment
-    theHtml._theText = "% A comment ...\n"
+    theHtml._text = "% A comment ...\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == ""
 
     theHtml.setComments(True)
-    theHtml._theText = "% A comment ...\n"
+    theHtml._text = "% A comment ...\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -178,13 +178,13 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     )
 
     # Keywords
-    theHtml._theText = "@char: Bod, Jane\n"
+    theHtml._text = "@char: Bod, Jane\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == ""
 
     theHtml.setKeywords(True)
-    theHtml._theText = "@char: Bod, Jane\n"
+    theHtml._text = "@char: Bod, Jane\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -194,7 +194,7 @@ def testCoreToHtml_ConvertFormat(mockGUI):
 
     # Multiple Keywords
     theHtml.setKeywords(True)
-    theHtml._theText = "## Chapter\n\n@pov: Bod\n@plot: Main\n@location: Europe\n\n"
+    theHtml._text = "## Chapter\n\n@pov: Bod\n@plot: Main\n@location: Europe\n\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -217,7 +217,7 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     theHtml.setPreview(True, True)
 
     # Text (HTML4)
-    theHtml._theText = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
+    theHtml._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -244,7 +244,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # ==============
 
     # Title
-    theHtml._theTokens = [
+    theHtml._tokens = [
         (theHtml.T_TITLE, 1, "A Title", None, theHtml.A_PBB | theHtml.A_CENTRE),
         (theHtml.T_EMPTY, 1, "", None, theHtml.A_NONE),
     ]
@@ -255,7 +255,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     )
 
     # Unnumbered
-    theHtml._theTokens = [
+    theHtml._tokens = [
         (theHtml.T_UNNUM, 1, "Prologue", None, theHtml.A_PBB),
         (theHtml.T_EMPTY, 1, "", None, theHtml.A_NONE),
     ]
@@ -269,7 +269,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # ==========
 
     # Separator
-    theHtml._theTokens = [
+    theHtml._tokens = [
         (theHtml.T_SEP, 1, "* * *", None, theHtml.A_CENTRE),
         (theHtml.T_EMPTY, 1, "", None, theHtml.A_NONE),
     ]
@@ -277,7 +277,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     assert theHtml.theResult == "<p class='sep' style='text-align: center;'>* * *</p>\n"
 
     # Skip
-    theHtml._theTokens = [
+    theHtml._tokens = [
         (theHtml.T_SKIP, 1, "", None, theHtml.A_NONE),
         (theHtml.T_EMPTY, 1, "", None, theHtml.A_NONE),
     ]
@@ -291,7 +291,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Align Left
     theHtml.setStyles(False)
-    theHtml._theTokens = [
+    theHtml._tokens = [
         (theHtml.T_HEAD1, 1, "A Title", None, theHtml.A_LEFT),
     ]
     theHtml.doConvert()
@@ -302,7 +302,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     theHtml.setStyles(True)
 
     # Align Left
-    theHtml._theTokens = [
+    theHtml._tokens = [
         (theHtml.T_HEAD1, 1, "A Title", None, theHtml.A_LEFT),
     ]
     theHtml.doConvert()
@@ -311,7 +311,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     )
 
     # Align Right
-    theHtml._theTokens = [
+    theHtml._tokens = [
         (theHtml.T_HEAD1, 1, "A Title", None, theHtml.A_RIGHT),
     ]
     theHtml.doConvert()
@@ -320,7 +320,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     )
 
     # Align Centre
-    theHtml._theTokens = [
+    theHtml._tokens = [
         (theHtml.T_HEAD1, 1, "A Title", None, theHtml.A_CENTRE),
     ]
     theHtml.doConvert()
@@ -329,7 +329,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     )
 
     # Align Justify
-    theHtml._theTokens = [
+    theHtml._tokens = [
         (theHtml.T_HEAD1, 1, "A Title", None, theHtml.A_JUSTIFY),
     ]
     theHtml.doConvert()
@@ -341,7 +341,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # ==========
 
     # Page Break Always
-    theHtml._theTokens = [
+    theHtml._tokens = [
         (theHtml.T_HEAD1, 1, "A Title", None, theHtml.A_PBB | theHtml.A_PBA),
     ]
     theHtml.doConvert()
@@ -354,7 +354,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # ======
 
     # Indent Left
-    theHtml._theTokens = [
+    theHtml._tokens = [
         (theHtml.T_TEXT,  1, "Some text ...", [], theHtml.A_IND_L),
         (theHtml.T_EMPTY, 2, "", None, theHtml.A_NONE),
     ]
@@ -364,7 +364,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     )
 
     # Indent Right
-    theHtml._theTokens = [
+    theHtml._tokens = [
         (theHtml.T_TEXT,  1, "Some text ...", [], theHtml.A_IND_R),
         (theHtml.T_EMPTY, 2, "", None, theHtml.A_NONE),
     ]
@@ -387,28 +387,28 @@ def testCoreToHtml_SpecialCases(mockGUI):
     # Greater/Lesser than symbols
     # ===========================
 
-    theHtml._theText = "Text with > and < with some **bold text** in it.\n"
+    theHtml._text = "Text with > and < with some **bold text** in it.\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
         "<p>Text with &gt; and &lt; with some <strong>bold text</strong> in it.</p>\n"
     )
 
-    theHtml._theText = "Text with some <**bold text**> in it.\n"
+    theHtml._text = "Text with some <**bold text**> in it.\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
         "<p>Text with some &lt;<strong>bold text</strong>&gt; in it.</p>\n"
     )
 
-    theHtml._theText = "Let's > be > _difficult **shall** > we_?\n"
+    theHtml._text = "Let's > be > _difficult **shall** > we_?\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
         "<p>Let's &gt; be &gt; <em>difficult <strong>shall</strong> &gt; we</em>?</p>\n"
     )
 
-    theHtml._theText = "Test > text _<**bold**>_ and more.\n"
+    theHtml._text = "Test > text _<**bold**>_ and more.\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -420,7 +420,7 @@ def testCoreToHtml_SpecialCases(mockGUI):
     # See: https://github.com/vkbo/novelWriter/issues/950
 
     theHtml.setComments(True)
-    theHtml._theText = "% Test > text _<**bold**>_ and more.\n"
+    theHtml._text = "% Test > text _<**bold**>_ and more.\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -429,7 +429,7 @@ def testCoreToHtml_SpecialCases(mockGUI):
         "</p>\n"
     )
 
-    theHtml._theText = "## Heading <1>\n"
+    theHtml._text = "## Heading <1>\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -440,7 +440,7 @@ def testCoreToHtml_SpecialCases(mockGUI):
     # ====================
     # See: https://github.com/vkbo/novelWriter/issues/1412
 
-    theHtml._theText = "Test text \\**_bold_** and more.\n"
+    theHtml._text = "Test text \\**_bold_** and more.\n"
     theHtml.tokenizeText()
     theHtml.doConvert()
     assert theHtml.theResult == (
@@ -502,7 +502,7 @@ def testCoreToHtml_Complex(mockGUI, fncPath):
     ]
 
     for i in range(len(docText)):
-        theHtml._theText = docText[i]
+        theHtml._text = docText[i]
         theHtml.doPreProcessing()
         theHtml.tokenizeText()
         theHtml.doConvert()
@@ -556,7 +556,7 @@ def testCoreToHtml_Methods(mockGUI):
 
     # Auto-Replace, keep Unicode
     docText = "Text with <brackets> & short–dash, long—dash …\n"
-    theHtml._theText = docText
+    theHtml._text = docText
     theHtml.setReplaceUnicode(False)
     theHtml.doPreProcessing()
     theHtml.tokenizeText()
@@ -567,7 +567,7 @@ def testCoreToHtml_Methods(mockGUI):
 
     # Auto-Replace, replace Unicode
     docText = "Text with <brackets> & short–dash, long—dash …\n"
-    theHtml._theText = docText
+    theHtml._text = docText
     theHtml.setReplaceUnicode(True)
     theHtml.doPreProcessing()
     theHtml.tokenizeText()
@@ -578,7 +578,7 @@ def testCoreToHtml_Methods(mockGUI):
 
     # With Preview
     theHtml.setPreview(True, True)
-    theHtml._theText = docText
+    theHtml._text = docText
     theHtml.doPreProcessing()
     theHtml.tokenizeText()
     theHtml.doConvert()

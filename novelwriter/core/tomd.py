@@ -98,12 +98,12 @@ class ToMarkdown(Tokenizer):
                 self.FMT_D_E: "~~",
             }
 
-        self._theResult = ""
+        self._result = ""
 
         thisPar = []
         tmpResult = []
 
-        for tType, _, tText, tFormat, tStyle in self._theTokens:
+        for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Process Text Type
             if tType == self.T_EMPTY:
@@ -159,10 +159,10 @@ class ToMarkdown(Tokenizer):
             elif tType == self.T_KEYWORD and self._doKeywords:
                 tmpResult.append(self._formatKeywords(tText, tStyle))
 
-        self._theResult = "".join(tmpResult)
+        self._result = "".join(tmpResult)
         tmpResult = []
 
-        self._fullMD.append(self._theResult)
+        self._fullMD.append(self._result)
 
         return
 
@@ -193,7 +193,7 @@ class ToMarkdown(Tokenizer):
     def _formatKeywords(self, tText, tStyle):
         """Apply Markdown formatting to keywords.
         """
-        isValid, theBits, _ = self.theProject.index.scanThis("@"+tText)
+        isValid, theBits, _ = self._project.index.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 

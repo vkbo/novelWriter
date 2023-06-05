@@ -109,7 +109,7 @@ class ToHtml(Tokenizer):
         characters into their respective HTML entities.
         """
         super().doPreProcessing()
-        self._theText = self._theText.translate(self._trMap)
+        self._text = self._text.translate(self._trMap)
         return
 
     def doConvert(self):
@@ -149,13 +149,13 @@ class ToHtml(Tokenizer):
             h3 = "h3"
             h4 = "h4"
 
-        self._theResult = ""
+        self._result = ""
 
         thisPar = []
         parStyle = None
         tmpResult = []
 
-        for tType, tLine, tText, tFormat, tStyle in self._theTokens:
+        for tType, tLine, tText, tFormat, tStyle in self._tokens:
 
             # Replace < and > with HTML entities
             if tFormat:
@@ -282,11 +282,11 @@ class ToHtml(Tokenizer):
                 tTemp = f"<p{hStyle}>{self._formatKeywords(tText)}</p>\n"
                 tmpResult.append(tTemp)
 
-        self._theResult = "".join(tmpResult)
+        self._result = "".join(tmpResult)
         tmpResult = []
 
         if self._genMode != self.M_PREVIEW:
-            self._fullHTML.append(self._theResult)
+            self._fullHTML.append(self._result)
 
         return
 
@@ -316,7 +316,7 @@ class ToHtml(Tokenizer):
                 "</body>\n"
                 "</html>\n"
             ).format(
-                projTitle=self.theProject.data.name,
+                projTitle=self._project.data.name,
                 htmlStyle="\n".join(theStyle),
                 bodyText=bodyText,
             )
@@ -452,7 +452,7 @@ class ToHtml(Tokenizer):
     def _formatKeywords(self, tText):
         """Apply HTML formatting to keywords.
         """
-        isValid, theBits, _ = self.theProject.index.scanThis("@"+tText)
+        isValid, theBits, _ = self._project.index.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 

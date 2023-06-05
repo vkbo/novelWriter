@@ -263,8 +263,8 @@ class ToOdt(Tokenizer):
         # ===============
 
         if self._headerText == "":
-            theTitle = self.theProject.data.title or self.theProject.data.name
-            theAuth = self.theProject.data.author
+            theTitle = self._project.data.title or self._project.data.name
+            theAuth = self._project.data.author
             self._headerText = f"{theTitle} / {theAuth} /"
 
         # Create Roots
@@ -340,26 +340,26 @@ class ToOdt(Tokenizer):
         xMeta.text = f"novelWriter/{__version__}"
 
         xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "initial-creator"))
-        xMeta.text = self.theProject.data.author
+        xMeta.text = self._project.data.author
 
         xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "editing-cycles"))
-        xMeta.text = str(self.theProject.data.saveCount)
+        xMeta.text = str(self._project.data.saveCount)
 
         # Format is: PnYnMnDTnHnMnS
         # https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#duration
-        eT = self.theProject.data.editTime
+        eT = self._project.data.editTime
         xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "editing-duration"))
         xMeta.text = f"P{eT//86400:d}DT{eT%86400//3600:d}H{eT%3600//60:d}M{eT%60:d}S"
 
         # Dublin Core Meta Data
         xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "title"))
-        xMeta.text = self.theProject.data.title or self.theProject.data.name
+        xMeta.text = self._project.data.title or self._project.data.name
 
         xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "date"))
         xMeta.text = timeStamp
 
         xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "creator"))
-        xMeta.text = self.theProject.data.author
+        xMeta.text = self._project.data.author
 
         self._pageStyles()
         self._defaultStyles()
@@ -371,7 +371,7 @@ class ToOdt(Tokenizer):
     def doConvert(self):
         """Convert the list of text tokens into XML elements.
         """
-        self._theResult = ""  # Not used, but cleared just in case
+        self._result = ""  # Not used, but cleared just in case
 
         odtTags = {
             self.FMT_B_B: "_B",  # Bold open format
@@ -385,7 +385,7 @@ class ToOdt(Tokenizer):
         thisPar = []
         thisFmt = []
         parStyle = None
-        for tType, _, tText, tFormat, tStyle in self._theTokens:
+        for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Styles
             oStyle = ODTParagraphStyle()
@@ -567,7 +567,7 @@ class ToOdt(Tokenizer):
     def _formatKeywords(self, tText):
         """Apply formatting to keywords.
         """
-        isValid, theBits, _ = self.theProject.index.scanThis("@"+tText)
+        isValid, theBits, _ = self._project.index.scanThis("@"+tText)
         if not isValid or not theBits:
             return ""
 
