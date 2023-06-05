@@ -206,14 +206,14 @@ class nwLabels:
         nwOutline.SYNOP:  QT_TRANSLATE_NOOP("Constant", "Synopsis"),
     }
     BUILD_FORMATS = {
-        "odt":   ("odt",  QT_TRANSLATE_NOOP("Constant", "Open Document (.odt)")),
-        "fodt":  ("fodt", QT_TRANSLATE_NOOP("Constant", "Flat Open Document (.fodt)")),
-        "html":  ("html", QT_TRANSLATE_NOOP("Constant", "novelWriter HTML (.html)")),
-        "nwd":   ("nwd",  QT_TRANSLATE_NOOP("Constant", "novelWriter Markdown (.nwd)")),
-        "md":    ("md",   QT_TRANSLATE_NOOP("Constant", "Standard Markdown (.md)")),
-        "md+":   ("md",   QT_TRANSLATE_NOOP("Constant", "Extended Markdown (.md)")),
-        "jhtml": ("json", QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter HTML (.json)")),
-        "jnwd":  ("json", QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter Markdown (.json)")),
+        "odt":   (".odt",  QT_TRANSLATE_NOOP("Constant", "Open Document (.odt)")),
+        "fodt":  (".fodt", QT_TRANSLATE_NOOP("Constant", "Flat Open Document (.fodt)")),
+        "html":  (".html", QT_TRANSLATE_NOOP("Constant", "novelWriter HTML (.html)")),
+        "nwd":   (".nwd",  QT_TRANSLATE_NOOP("Constant", "novelWriter Markdown (.nwd)")),
+        "md":    (".md",   QT_TRANSLATE_NOOP("Constant", "Standard Markdown (.md)")),
+        "md+":   (".md",   QT_TRANSLATE_NOOP("Constant", "Extended Markdown (.md)")),
+        "jhtml": (".json", QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter HTML (.json)")),
+        "jnwd":  (".json", QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter Markdown (.json)")),
     }
 
 # END Class nwLabels

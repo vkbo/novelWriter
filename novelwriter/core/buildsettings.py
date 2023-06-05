@@ -123,6 +123,7 @@ class FilterMode(Enum):
     INCLUDED = 2
     EXCLUDED = 3
     SKIPPED  = 4
+    ROOT     = 5
 
 # END Enum FilterMode
 
@@ -311,7 +312,9 @@ class BuildSettings:
         """Check if a root handle is allowed in the build."""
         return tHandle not in self._skipRoot
 
-    def buildItemFilter(self, project: NWProject) -> dict[str, tuple[bool, FilterMode]]:
+    def buildItemFilter(
+        self, project: NWProject, withRoots: bool = False
+    ) -> dict[str, tuple[bool, FilterMode]]:
         """Return a dictionary of item handles with filter decissions
         applied.
         """
@@ -332,6 +335,9 @@ class BuildSettings:
                 continue
             if item.isInactiveClass() or (item.itemRoot in self._skipRoot):
                 result[tHandle] = (False, FilterMode.SKIPPED)
+                continue
+            if withRoots and item.isRootType():
+                result[tHandle] = (True, FilterMode.ROOT)
                 continue
             if not item.isFileType():
                 result[tHandle] = (False, FilterMode.SKIPPED)

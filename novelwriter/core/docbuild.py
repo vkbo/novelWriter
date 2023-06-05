@@ -106,25 +106,41 @@ class NWBuildDocument:
                 self._queue.append(item.itemHandle)
         return
 
+    def iterBuild(self, path: Path, bFormat: str) -> Iterable[tuple[int, bool]]:
+        """Wrapper for builder based on format."""
+        if bFormat in ("odt", "fodt"):
+            yield from self.iterBuildOpenDocument(path, bFormat == "fodt")
+        elif bFormat in ("html", "jhtml"):
+            yield from self.iterBuildHTML(path if bFormat == "html" else None)
+        elif bFormat in ("md", "md+"):
+            yield from self.iterBuildMarkdown(path, bFormat == "md+")
+        elif bFormat in ("nwd", "jnwd"):
+            yield from self.iterBuildNovelWriter(path if bFormat == "nwd" else None)
+        return
+
     def iterBuildOpenDocument(self, path: Path, isFlat: bool) -> Iterable[tuple[int, bool]]:
         """Build an Open Document file."""
-        makeOdt = ToOdt(self._project, isFlat=isFlat)
-        self._setupBuild(makeOdt)
-        makeOdt.initDocument()
+        makeObj = ToOdt(self._project, isFlat=isFlat)
+        filtered = self._setupBuild(makeObj)
+        makeObj.initDocument()
 
         for i, tHandle in enumerate(self._queue):
-            yield i, self._doBuild(makeOdt, tHandle)
+            self._error = None
+            if filtered.get(tHandle, (False, 0))[0]:
+                yield i, self._doBuild(makeObj, tHandle)
+            else:
+                yield i, False
 
-        makeOdt.closeDocument()
+        makeObj.closeDocument()
 
         self._error = None
-        self._cache = makeOdt
+        self._cache = makeObj
 
         try:
             if isFlat:
-                makeOdt.saveFlatXML(path)
+                makeObj.saveFlatXML(path)
             else:
-                makeOdt.saveOpenDocText(path)
+                makeObj.saveOpenDocText(path)
         except Exception as exc:
             self._error = formatException(exc)
 
@@ -134,21 +150,25 @@ class NWBuildDocument:
         """Build an HTML file. If path is None, no file is saved. This
         is used for generating build previews.
         """
-        makeHtml = ToHtml(self._project)
-        self._setupBuild(makeHtml)
+        makeObj = ToHtml(self._project)
+        filtered = self._setupBuild(makeObj)
 
         if self._build.getBool("format.replaceTabs"):
-            makeHtml.replaceTabs()
+            makeObj.replaceTabs()
 
         for i, tHandle in enumerate(self._queue):
-            yield i, self._doBuild(makeHtml, tHandle)
+            self._error = None
+            if filtered.get(tHandle, (False, 0))[0]:
+                yield i, self._doBuild(makeObj, tHandle)
+            else:
+                yield i, False
 
         self._error = None
-        self._cache = makeHtml
+        self._cache = makeObj
 
         if isinstance(path, Path):
             try:
-                makeHtml.saveHTML5(path)
+                makeObj.saveHTML5(path)
             except Exception as exc:
                 self._error = formatException(exc)
 
@@ -156,27 +176,58 @@ class NWBuildDocument:
 
     def iterBuildMarkdown(self, path: Path, extendedMd: bool) -> Iterable[tuple[int, bool]]:
         """Build a Markdown file."""
-        makeMd = ToMarkdown(self._project)
-        self._setupBuild(makeMd)
+        makeObj = ToMarkdown(self._project)
+        filtered = self._setupBuild(makeObj)
 
         if extendedMd:
-            makeMd.setGitHubMarkdown()
+            makeObj.setGitHubMarkdown()
         else:
-            makeMd.setStandardMarkdown()
+            makeObj.setStandardMarkdown()
 
         if self._build.getBool("format.replaceTabs"):
-            makeMd.replaceTabs(nSpaces=4, spaceChar=" ")
+            makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
 
         for i, tHandle in enumerate(self._queue):
-            yield i, self._doBuild(makeMd, tHandle)
+            self._error = None
+            if filtered.get(tHandle, (False, 0))[0]:
+                yield i, self._doBuild(makeObj, tHandle)
+            else:
+                yield i, False
 
         self._error = None
-        self._cache = makeMd
+        self._cache = makeObj
 
         try:
-            makeMd.saveMarkdown(path)
+            makeObj.saveMarkdown(path)
         except Exception as exc:
             self._error = formatException(exc)
+
+        return
+
+    def iterBuildNovelWriter(self, path: Path | None) -> Iterable[tuple[int, bool]]:
+        """Build a novelWriter Markdown file."""
+        makeObj = ToMarkdown(self._project)
+        filtered = self._setupBuild(makeObj)
+
+        makeObj.setKeepMarkdown(True)
+        if self._build.getBool("format.replaceTabs"):
+            makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
+
+        for i, tHandle in enumerate(self._queue):
+            self._error = None
+            if filtered.get(tHandle, (False, 0))[0]:
+                yield i, self._doBuild(makeObj, tHandle, convert=False)
+            else:
+                yield i, False
+
+        self._error = None
+        self._cache = makeObj
+
+        if isinstance(path, Path):
+            try:
+                makeObj.saveRawMarkdown(path)
+            except Exception as exc:
+                self._error = formatException(exc)
 
         return
 
@@ -184,7 +235,7 @@ class NWBuildDocument:
     #  Internal Functions
     ##
 
-    def _setupBuild(self, bldObj: Tokenizer):
+    def _setupBuild(self, bldObj: Tokenizer) -> dict:
         """Configure the build object."""
         # Get Settings
         fmtTitle      = self._build.getStr("headings.fmtTitle")
@@ -199,6 +250,7 @@ class NWBuildDocument:
         incComments   = self._build.getBool("text.includeComments")
         incKeywords   = self._build.getBool("text.includeKeywords")
         incBodyText   = self._build.getBool("text.includeBodyText")
+        noteHeadings  = self._build.getBool("text.addNoteHeadings")
 
         buildLang     = self._build.getStr("format.buildLang")
         textFont      = self._build.getStr("format.textFont")
@@ -244,11 +296,12 @@ class NWBuildDocument:
             bldObj.setColourHeaders(odtAddColours)
             bldObj.setLanguage(buildLang)
 
-        return
+        filtered = self._build.buildItemFilter(self._project, withRoots=noteHeadings)
 
-    def _doBuild(self, bldObj: Tokenizer, tHandle: str) -> bool:
+        return filtered
+
+    def _doBuild(self, bldObj: Tokenizer, tHandle: str, convert: bool = True) -> bool:
         """Build a single document and add it to the build object."""
-        self._error = None
         tItem = self._project.tree[tHandle]
         if tItem is None:
             self._error = f"Build: Unknown item '{tHandle}'"
@@ -258,13 +311,15 @@ class NWBuildDocument:
         try:
             if tItem.isRootType() and not tItem.isNovelLike():
                 bldObj.addRootHeading(tItem.itemHandle)
-                bldObj.doConvert()
+                if convert:
+                    bldObj.doConvert()
             elif tItem.isFileType():
                 bldObj.setText(tHandle)
                 bldObj.doPreProcessing()
                 bldObj.tokenizeText()
                 bldObj.doHeaders()
-                bldObj.doConvert()
+                if convert:
+                    bldObj.doConvert()
             else:
                 logger.info(f"Build: Skipping '{tHandle}'")
 

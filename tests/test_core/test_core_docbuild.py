@@ -36,7 +36,7 @@ BUILD_CONF = {
     "settings": {
         "filter.includeNovel": True,
         "filter.includeNotes": True,
-        "filter.includeInactive": False,
+        "filter.includeInactive": True,
         "headings.fmtTitle": "Title: {Title}",
         "headings.fmtChapter": "Chapter: {Title}",
         "headings.fmtUnnumbered": "{Title}",
@@ -96,7 +96,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
         if docBuild.error:
             error.append(docBuild.error)
 
-    assert count == 21
+    assert count == 19
     assert error == []
 
     copyfile(docFile, tstFile)
@@ -114,7 +114,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
         if docBuild.error:
             error.append(docBuild.error)
 
-    assert count == 21
+    assert count == 19
     assert error == []
 
     assert docFile.is_file()
@@ -137,19 +137,17 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.toodt.ToOdt.doConvert", causeException)
-
-        docBuild.addDocument("0000000000000")
-        assert len(docBuild) == 22
+        assert len(docBuild) == 21
 
         count = 0
         error = []
         docFile = fncPath / "Lorem Ipsum Err.fodt"
         for _, success in docBuild.iterBuildOpenDocument(docFile, True):
             count += 1 if success else 0
-            if docBuild.error:
+            if not success and docBuild.error:
                 error.append(docBuild.error)
 
-        assert count == 3
+        assert count == 1
         assert error == [
             "Build: Failed to build '7a992350f3eb6'",
             "Build: Failed to build '8c58a65414c23'",
@@ -169,7 +167,6 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
             "Build: Failed to build '2426c6f0ca922'",
             "Build: Failed to build '60bdf227455cc'",
             "Build: Failed to build '04468803b92e1'",
-            "Build: Unknown item '0000000000000'",
         ]
 
 # END Test testCoreDocBuild_OpenDocument
@@ -204,7 +201,7 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
         if docBuild.error:
             error.append(docBuild.error)
 
-    assert count == 21
+    assert count == 19
     assert error == []
 
     copyfile(docFile, tstFile)
@@ -255,7 +252,7 @@ def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths
         if docBuild.error:
             error.append(docBuild.error)
 
-    assert count == 21
+    assert count == 19
     assert error == []
 
     copyfile(docFile, tstFile)
@@ -275,7 +272,7 @@ def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths
         if docBuild.error:
             error.append(docBuild.error)
 
-    assert count == 21
+    assert count == 19
     assert error == []
 
     copyfile(docFile, tstFile)

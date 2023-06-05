@@ -786,8 +786,7 @@ class ItemIndex:
         """Iterate over all item headers of an item.
         """
         if tHandle in self._items:
-            for sTitle, hItem in self._items[tHandle].items():
-                yield sTitle, hItem
+            yield from self._items[tHandle].items()
         return
 
     def iterAllHeaders(self):
