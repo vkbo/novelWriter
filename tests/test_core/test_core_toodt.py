@@ -43,8 +43,7 @@ XML_NS = [
 
 
 def xmlToText(xElem):
-    """Get the text content of an XML element.
-    """
+    """Get the text content of an XML element."""
     rTxt = ET.tostring(xElem, encoding="utf-8", xml_declaration=False).decode()
     for nSpace in XML_NS:
         rTxt = rTxt.replace(nSpace, "")
@@ -53,8 +52,7 @@ def xmlToText(xElem):
 
 @pytest.mark.core
 def testCoreToOdt_Init(mockGUI):
-    """Test initialisation of the ODT document.
-    """
+    """Test initialisation of the ODT document."""
     theProject = NWProject(mockGUI)
 
     # Flat Doc
@@ -109,8 +107,7 @@ def testCoreToOdt_Init(mockGUI):
 
 @pytest.mark.core
 def testCoreToOdt_TextFormatting(mockGUI):
-    """Test formatting of paragraphs.
-    """
+    """Test formatting of paragraphs."""
     theProject = NWProject(mockGUI)
     theDoc = ToOdt(theProject, isFlat=True)
 
@@ -156,7 +153,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
     # No Format
     theDoc.initDocument()
     theDoc._addTextPar("Standard", oStyle, "Hello World")
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:p text:style-name=\"Standard\">Hello World</text:p>"
@@ -166,7 +163,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
     # Heading Level None
     theDoc.initDocument()
     theDoc._addTextPar("Standard", oStyle, "Hello World", isHead=True)
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:h text:style-name=\"Standard\">Hello World</text:h>"
@@ -176,7 +173,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
     # Heading Level 1
     theDoc.initDocument()
     theDoc._addTextPar("Standard", oStyle, "Hello World", isHead=True, oLevel="1")
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:h text:style-name=\"Standard\" text:outline-level=\"1\">Hello World</text:h>"
@@ -187,8 +184,8 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc.initDocument()
     theTxt = "A **few** _words_ from ~~our~~ sponsor"
     theFmt = "  _B   b_ I     i      _S   s_        "
-    theDoc._addTextPar("Standard", oStyle, theTxt, theFmt=theFmt)
-    assert theDoc.getErrors() == []
+    theDoc._addTextPar("Standard", oStyle, theTxt, tFmt=theFmt)
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:p text:style-name=\"Standard\">A <text:span text:style-name=\"T1\">few</text:span> "
@@ -201,8 +198,8 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc.initDocument()
     theTxt = "A **few** _wordsXXX"
     theFmt = "  _b   b_ I     XXX"
-    theDoc._addTextPar("Standard", oStyle, theTxt, theFmt=theFmt)
-    assert theDoc.getErrors() == ["Unknown format tag encountered"]
+    theDoc._addTextPar("Standard", oStyle, theTxt, tFmt=theFmt)
+    assert theDoc.errData == ["Unknown format tag encountered"]
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:p text:style-name=\"Standard\">"
@@ -215,8 +212,8 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc.initDocument()
     theTxt = "Hello\n\tWorld"
     theFmt = "            "
-    theDoc._addTextPar("Standard", oStyle, theTxt, theFmt=theFmt)
-    assert theDoc.getErrors() == []
+    theDoc._addTextPar("Standard", oStyle, theTxt, tFmt=theFmt)
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:p text:style-name=\"Standard\">Hello<text:line-break /><text:tab />World</text:p>"
@@ -230,8 +227,8 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc.initDocument()
     theTxt = "Test text \\**_bold_** and more."
     theFmt = "             I    i            "
-    theDoc._addTextPar("Standard", oStyle, theTxt, theFmt=theFmt)
-    assert theDoc.getErrors() == []
+    theDoc._addTextPar("Standard", oStyle, theTxt, tFmt=theFmt)
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         "<office:text>"
         "<text:p text:style-name=\"Standard\">Test text **<text:span text:style-name=\"T2\">"
@@ -244,8 +241,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
 
 @pytest.mark.core
 def testCoreToOdt_Convert(mockGUI):
-    """Test the converter of the ToOdt class.
-    """
+    """Test the converter of the ToOdt class."""
     theProject = NWProject(mockGUI)
     theDoc = ToOdt(theProject, isFlat=True)
 
@@ -266,7 +262,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="P1" text:outline-level="1">Title</text:h>'
@@ -279,7 +275,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="P2" text:outline-level="2">Chapter</text:h>'
@@ -292,7 +288,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
@@ -305,7 +301,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_20_4" text:outline-level="4">Section</text:h>'
@@ -318,7 +314,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="Title">Title</text:p>'
@@ -331,7 +327,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="P2" text:outline-level="2">Prologue</text:h>'
@@ -347,7 +343,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="Text_20_body">Some '
@@ -365,7 +361,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="Text_20_body">Some text.<text:line-break />Next line</text:p>'
@@ -378,7 +374,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="Text_20_body"><text:tab />Item 1<text:tab />Item 2</text:p>'
@@ -391,7 +387,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="Text_20_body">Some <text:span text:style-name="T4">'
@@ -410,7 +406,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
@@ -434,7 +430,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
@@ -455,7 +451,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="P3">* * *</text:p>'
@@ -473,7 +469,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:p text:style-name="Text_20_body" />'
@@ -500,7 +496,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
@@ -537,7 +533,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
@@ -559,7 +555,7 @@ def testCoreToOdt_Convert(mockGUI):
     theDoc.initDocument()
     theDoc.doConvert()
     theDoc.closeDocument()
-    assert theDoc.getErrors() == []
+    assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="P2" text:outline-level="2">Chapter One</text:h>'
@@ -629,8 +625,7 @@ def testCoreToOdt_ConvertDirect(mockGUI):
 
 @pytest.mark.core
 def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
-    """Test the document save functions.
-    """
+    """Test the document save functions."""
     theProject = NWProject(mockGUI)
     theProject.data.setAuthor("Jane Smith")
     theProject.data.setName("Test Project")
@@ -639,8 +634,11 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
 
     theDoc = ToOdt(theProject, isFlat=True)
     theDoc._isNovel = True
-    assert theDoc.setLanguage(None) is False
-    assert theDoc.setLanguage("nb_NO") is True
+    theDoc._dLanguage = ""
+    theDoc.setLanguage(None)
+    assert theDoc._dLanguage == ""
+    theDoc.setLanguage("nb_NO")
+    assert theDoc._dLanguage == "nb"
     theDoc.setColourHeaders(True)
 
     theDoc._text = (
@@ -669,8 +667,7 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
 
 @pytest.mark.core
 def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
-    """Test the document save functions.
-    """
+    """Test the document save functions."""
     theProject = NWProject(mockGUI)
     theProject.data.setAuthor("Jane Smith")
     theProject.data.setName("Test Project")
@@ -747,8 +744,7 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
 
 @pytest.mark.core
 def testCoreToOdt_Format(mockGUI):
-    """Test the formatters for the ToOdt class.
-    """
+    """Test the formatters for the ToOdt class."""
     theProject = NWProject(mockGUI)
     theDoc = ToOdt(theProject, isFlat=True)
 
@@ -761,7 +757,7 @@ def testCoreToOdt_Format(mockGUI):
         "_B        b_             "
     )
 
-    assert theDoc._formatKeywords("") == ""
+    assert theDoc._formatKeywords("") == ("", "")
     assert theDoc._formatKeywords("tag: Jane") == (
         "**Tag:** Jane",
         "_B    b_     "
@@ -776,8 +772,7 @@ def testCoreToOdt_Format(mockGUI):
 
 @pytest.mark.core
 def testCoreToOdt_ODTParagraphStyle():
-    """Test the ODTParagraphStyle class.
-    """
+    """Test the ODTParagraphStyle class."""
     parStyle = ODTParagraphStyle()
 
     # Set Attributes
@@ -992,8 +987,7 @@ def testCoreToOdt_ODTParagraphStyle():
 
 @pytest.mark.core
 def testCoreToOdt_ODTTextStyle():
-    """Test the ODTTextStyle class.
-    """
+    """Test the ODTTextStyle class."""
     txtStyle = ODTTextStyle()
 
     # Font Weight
@@ -1065,8 +1059,7 @@ def testCoreToOdt_ODTTextStyle():
 
 @pytest.mark.core
 def testCoreToOdt_XMLParagraph():
-    """Test XML encoding of paragraph.
-    """
+    """Test XML encoding of paragraph."""
     # Stage 1 : Text
     # ==============
 
@@ -1257,8 +1250,7 @@ def testCoreToOdt_XMLParagraph():
 
 @pytest.mark.core
 def testCoreToOdt_MkTag():
-    """Test the tag maker function.
-    """
+    """Test the tag maker function."""
     assert _mkTag("office", "text") == "{urn:oasis:names:tc:opendocument:xmlns:office:1.0}text"
     assert _mkTag("style", "text") == "{urn:oasis:names:tc:opendocument:xmlns:style:1.0}text"
     assert _mkTag("blabla", "text") == "text"

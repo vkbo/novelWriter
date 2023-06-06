@@ -1,7 +1,6 @@
 """
 novelWriter – Markdown Text Converter
 =====================================
-Extends the Tokenizer class to generate Makrdown output
 
 File History:
 Created: 2021-02-06 [1.2b1]
@@ -36,6 +35,12 @@ logger = logging.getLogger(__name__)
 
 
 class ToMarkdown(Tokenizer):
+    """Core: Markdown Document Writer
+
+    Extend the Tokenizer class to writer Markdown output. It supports
+    both Standard Markdown and GitHub Flavour Markdown (Extended). The
+    class also supports concatenating novelWriter markup files.
+    """
 
     M_STD = 0  # Standard Markdown
     M_GH  = 1  # GitHub Markdown

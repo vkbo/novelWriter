@@ -1,7 +1,6 @@
 """
 novelWriter – HTML Text Converter
 =================================
-Extends the Tokenizer class to generate HTML output
 
 File History:
 Created: 2019-05-07 [0.0.1]
@@ -37,6 +36,11 @@ logger = logging.getLogger(__name__)
 
 
 class ToHtml(Tokenizer):
+    """Core: HTML Document Writer
+
+    Extend the Tokenizer class to writer HTML output. This class is
+    also used by the Document Viewer, and Manuscript Build Preview.
+    """
 
     M_PREVIEW = 0  # Tweak output for the DocViewer
     M_EXPORT  = 1  # Tweak output for saving to HTML or printing

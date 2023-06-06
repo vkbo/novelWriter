@@ -1,7 +1,6 @@
 """
 novelWriter – Text Tokenizer
 ============================
-Split novelWriter plain text into its elements
 
 File History:
 Created: 2019-05-05 [0.0.1] Tokenizer
@@ -55,6 +54,13 @@ def stripEscape(text):
 
 
 class Tokenizer(ABC):
+    """Core: Text Tokenizer Abstract Base Class
+
+    This is the base class for all document build classes. It parses the
+    novelWriter markup format and generates a registry of tokens and
+    text that can be further processed into other output formats by
+    subclasses.
+    """
 
     # In-Text Format
     FMT_B_B = 1  # Begin bold
@@ -309,6 +315,9 @@ class Tokenizer(ABC):
         """Add a heading at the start of a new root folder."""
         if not self._project.tree.checkType(tHandle, nwItemType.ROOT):
             return False
+        theItem = self._project.tree[tHandle]
+        if not theItem:
+            return False
 
         if self._isFirst:
             textAlign = self.A_CENTRE
@@ -316,7 +325,6 @@ class Tokenizer(ABC):
         else:
             textAlign = self.A_PBB | self.A_CENTRE
 
-        theItem = self._project.tree[tHandle]
         locNotes = self._localLookup("Notes")
         theTitle = f"{locNotes}: {theItem.itemName}"
         self._tokens = []
@@ -781,10 +789,10 @@ class HeadingFormatter:
             chWord = self._project.localLookup(self._chCount)
             hFormat = hFormat.replace(nwHeadFmt.CH_WORD, chWord)
         if nwHeadFmt.CH_ROML in hFormat:
-            chRom = numberToRoman(self._chCount, True)
+            chRom = numberToRoman(self._chCount, toLower=True)
             hFormat = hFormat.replace(nwHeadFmt.CH_ROML, chRom)
         if nwHeadFmt.CH_ROMU in hFormat:
-            chRom = numberToRoman(self._chCount, False)
+            chRom = numberToRoman(self._chCount, toLower=False)
             hFormat = hFormat.replace(nwHeadFmt.CH_ROMU, chRom)
 
         return hFormat
