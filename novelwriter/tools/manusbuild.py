@@ -31,8 +31,8 @@ from typing import TYPE_CHECKING
 from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox, QFileDialog,
-    QLabel, QListWidget, QListWidgetItem, QProgressBar, QPushButton, QSplitter,
-    QVBoxLayout, QWidget
+    QGridLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
+    QProgressBar, QPushButton, QSplitter, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG
@@ -140,8 +140,18 @@ class GuiManuscriptBuild(QDialog):
         self.lblMain.setWordWrap(True)
         self.lblMain.setFont(font)
 
+        # Build Name
+        self.lblName = QLabel(self.tr("File Name"))
+        self.buildName = QLineEdit()
+        self.btnReset = QPushButton(self.mainTheme.getIcon("revert"), "")
+        self.btnReset.setToolTip(self.tr("Reset file name to default"))
+
+        self.nameBox = QHBoxLayout()
+        self.nameBox.addWidget(self.buildName)
+        self.nameBox.addWidget(self.btnReset)
+
         # Build Progress
-        self.lblProgress = QLabel(self.tr("Build Progress"))
+        self.lblProgress = QLabel(self.tr("Progress"))
 
         self.buildProgress = QProgressBar()
         self.buildProgress.setMinimum(0)
@@ -152,11 +162,18 @@ class GuiManuscriptBuild(QDialog):
         self.progressBox.addWidget(self.buildProgress)
         self.progressBox.setSpacing(CONFIG.pxInt(4))
 
+        # Build Box
+        self.buildBox = QGridLayout()
+        self.buildBox.addWidget(self.lblName,       1, 0)
+        self.buildBox.addLayout(self.nameBox,       1, 1)
+        self.buildBox.addWidget(self.lblProgress,   2, 0)
+        self.buildBox.addWidget(self.buildProgress, 2, 1)
+        self.buildBox.setVerticalSpacing(CONFIG.pxInt(4))
+
         # Dialog Buttons
         self.btnBuild = QPushButton(self.mainTheme.getIcon("export"), self.tr("&Build"))
         self.dlgButtons = QDialogButtonBox(QDialogButtonBox.Close)
         self.dlgButtons.addButton(self.btnBuild, QDialogButtonBox.ActionRole)
-        self.dlgButtons.clicked.connect(self._dialogButtonClicked)
 
         # Assemble GUI
         # ============
@@ -175,7 +192,7 @@ class GuiManuscriptBuild(QDialog):
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.lblMain, 0, Qt.AlignCenter)
         self.outerBox.addWidget(self.mainSplit, 1)
-        self.outerBox.addLayout(self.progressBox, 0)
+        self.outerBox.addLayout(self.buildBox, 0)
         self.outerBox.addWidget(self.dlgButtons, 0)
         self.outerBox.setSpacing(CONFIG.pxInt(12))
 
@@ -183,6 +200,15 @@ class GuiManuscriptBuild(QDialog):
 
         self.btnBuild.setFocus()
         self._populateContentList()
+        if self._build.lastBuildName:
+            self.buildName.setText(self._build.lastBuildName)
+        else:
+            self._doResetBuildName()
+
+        # Signals
+        self.btnReset.clicked.connect(self._doResetBuildName)
+        self.dlgButtons.clicked.connect(self._dialogButtonClicked)
+        self.listFormats.itemSelectionChanged.connect(self._formatSelectionChanged)
 
         logger.debug("Ready: GuiManuscriptBuild")
 
@@ -226,6 +252,22 @@ class GuiManuscriptBuild(QDialog):
             self.close()
         return
 
+    @pyqtSlot()
+    def _doResetBuildName(self):
+        """Generate a default build name."""
+        bName = f"{self.theProject.data.name} - {self._build.name}"
+        self.buildName.setText(bName)
+        self._build.setLastBuildName(bName)
+        return
+
+    @pyqtSlot()
+    def _formatSelectionChanged(self):
+        """The user selected a different format, so we reset the
+        progress bar.
+        """
+        self.buildProgress.setValue(0)
+        return
+
     ##
     #  Internal Functions
     ##
@@ -236,9 +278,9 @@ class GuiManuscriptBuild(QDialog):
         if not selFormat or selFormat not in nwLabels.BUILD_FORMATS:
             return False
 
-        lastName = self._build.lastBuildName
+        lastName = self.buildName.text().strip()
         if not lastName:
-            lastName = f"{self.theProject.data.name} - {self._build.name}.ext"
+            self._doResetBuildName()
 
         lastPath = self._build.lastPath
         selExt = nwLabels.BUILD_FORMATS[selFormat][0]
@@ -262,7 +304,7 @@ class GuiManuscriptBuild(QDialog):
 
         self._build.setLastFormat(selFormat)
         self._build.setLastPath(buildPath.parent)
-        self._build.setLastBuildName(buildPath.name)
+        self._build.setLastBuildName(lastName)
 
         return True
 
