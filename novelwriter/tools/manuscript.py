@@ -34,7 +34,7 @@ from PyQt5.QtGui import QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QMenu,
-    QProgressBar, QPushButton, QSplitter, QTextBrowser, QToolButton, QVBoxLayout, QWidget,
+    QPushButton, QSplitter, QTextBrowser, QToolButton, QVBoxLayout, QWidget,
     qApp
 )
 
@@ -46,6 +46,7 @@ from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
+from novelwriter.extensions.circularprogress import NProgressCircle
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -143,13 +144,11 @@ class GuiManuscript(QDialog):
         # Process Controls
         # ================
 
-        self.buildProgress = QProgressBar()
+        self.buildProgress = NProgressCircle(self, CONFIG.pxInt(140), CONFIG.pxInt(16))
         self.buildProgress.setValue(0)
 
-        self.btnPreview = QPushButton(self.tr("Build Preview"))
+        self.btnPreview = QPushButton(self.tr("Preview"))
         self.btnPreview.clicked.connect(self._generatePreview)
-
-        self.docPreview = _PreviewWidget(self.mainGui)
 
         self.btnBuild = QPushButton(self.tr("Build"))
         self.btnBuild.clicked.connect(self._buildManuscript)
@@ -164,20 +163,28 @@ class GuiManuscript(QDialog):
         self.btnClose = QPushButton(self.tr("Close"))
         self.btnClose.clicked.connect(self._doClose)
 
+        self.buildBox = QVBoxLayout()
+        self.buildBox.addStretch(1)
+        self.buildBox.addWidget(self.btnPreview, 0)
+        self.buildBox.addWidget(self.btnPrint, 0)
+        self.buildBox.addWidget(self.btnBuild, 0)
+        self.buildBox.addWidget(self.btnClose, 0)
+        self.buildBox.addStretch(1)
+        self.buildBox.setSpacing(CONFIG.pxInt(2))
+
         self.processBox = QHBoxLayout()
-        self.processBox.addWidget(self.btnBuild)
-        self.processBox.addWidget(self.btnPrint)
-        self.processBox.addWidget(self.btnClose)
+        self.processBox.addWidget(self.buildProgress)
+        self.processBox.addLayout(self.buildBox)
 
         # Assemble GUI
         # ============
 
+        self.docPreview = _PreviewWidget(self.mainGui)
+
         self.controlBox = QVBoxLayout()
-        self.controlBox.addLayout(self.listToolBox)
-        self.controlBox.addWidget(self.buildList)
-        self.controlBox.addWidget(self.buildProgress)
-        self.controlBox.addWidget(self.btnPreview)
-        self.controlBox.addLayout(self.processBox)
+        self.controlBox.addLayout(self.listToolBox, 0)
+        self.controlBox.addWidget(self.buildList, 1)
+        self.controlBox.addLayout(self.processBox, 0)
         self.controlBox.setContentsMargins(0, 0, 0, 0)
 
         self.optsWidget = QWidget()
@@ -186,6 +193,8 @@ class GuiManuscript(QDialog):
         self.mainSplit = QSplitter()
         self.mainSplit.addWidget(self.optsWidget)
         self.mainSplit.addWidget(self.docPreview)
+        self.mainSplit.setStretchFactor(0, 0)
+        self.mainSplit.setStretchFactor(1, 1)
         self.mainSplit.setSizes([
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "optsWidth", wWin//3)),
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "viewWidth", 2*wWin//3)),
@@ -288,6 +297,7 @@ class GuiManuscript(QDialog):
         self.buildProgress.setMaximum(len(docBuild))
         for step, status in docBuild.iterBuildHTML(None):
             self.buildProgress.setValue(step + 1)
+            qApp.processEvents()
 
         buildObj = docBuild.lastBuild
         assert isinstance(buildObj, ToHtml)
