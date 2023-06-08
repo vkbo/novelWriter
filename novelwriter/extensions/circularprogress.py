@@ -1,6 +1,6 @@
 """
-novelWriter – Custom Widget: ProgressCircle
-===========================================
+novelWriter – Custom Widget: Progress Circle
+============================================
 
 File History:
 Created: 2023-06-07 [2.1b1]
@@ -24,25 +24,61 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from math import ceil
 
-from PyQt5.QtGui import QPaintEvent, QPainter, QPen
+from PyQt5.QtGui import QBrush, QColor, QPaintEvent, QPainter, QPen
 from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtWidgets import QProgressBar, QSizePolicy, QWidget
 
 
 class NProgressCircle(QProgressBar):
+    """Extension: Circular Progress Widget
 
-    __slots__ = ("_mPx", "_bPen", "_cPen", "_cRect", "_tColor")
+    A custom widget that paints a circular progress indicator instead of
+    a straight bar. It is also possible to set custom text for iṫ.
+    """
+
+    __slots__ = (
+        "_text", "_point", "_dRect", "_cRect", "_dPen", "_dBrush",
+        "_cPen", "_bPen", "_tColor"
+    )
 
     def __init__(self, parent: QWidget, size: int, point: int):
         super().__init__(parent=parent)
-        self._mPx = point
-        self._bPen = QPen(self.palette().alternateBase(), point, Qt.SolidLine, Qt.RoundCap)
-        self._cPen = QPen(self.palette().highlight(), point, Qt.SolidLine, Qt.RoundCap)
+        self._text = None
+        self._point = point
+        self._dRect = QRect(0, 0, size, size)
         self._cRect = QRect(point, point, size - 2*point, size - 2*point)
-        self._tColor = self.palette().text().color()
+        self._dPen = QPen(Qt.transparent)
+        self._dBrush = QBrush(Qt.transparent)
+        self.setColours(
+            track=self.palette().alternateBase().color(),
+            bar=self.palette().highlight().color(),
+            text=self.palette().text().color()
+        )
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.setFixedWidth(size)
         self.setFixedHeight(size)
+        return
+
+    def setColours(
+        self, back: QColor | None = None, track: QColor | None = None,
+        bar: QColor | None = None, text: QColor | None = None
+    ):
+        """Set the colours of the widget."""
+        if isinstance(back, QColor):
+            self._dPen = QPen(back)
+            self._dBrush = QBrush(back)
+        if isinstance(bar, QColor):
+            self._cPen = QPen(QBrush(bar), self._point, Qt.SolidLine, Qt.RoundCap)
+        if isinstance(track, QColor):
+            self._bPen = QPen(QBrush(track), self._point, Qt.SolidLine, Qt.RoundCap)
+        if isinstance(text, QColor):
+            self._tColor = text
+        return
+
+    def setCentreText(self, text: str | None):
+        """Replace the progress text with a custom string."""
+        self._text = text
+        self.setValue(self.value())  # Triggers a redraw
         return
 
     def paintEvent(self, event: QPaintEvent):
@@ -51,12 +87,15 @@ class NProgressCircle(QProgressBar):
         angle = ceil(16*3.6*progress)
         qPaint = QPainter(self)
         qPaint.setRenderHint(QPainter.Antialiasing, True)
+        qPaint.setPen(self._dPen)
+        qPaint.setBrush(self._dBrush)
+        qPaint.drawEllipse(self._dRect)
         qPaint.setPen(self._bPen)
         qPaint.drawArc(self._cRect, 0, 360*16)
         qPaint.setPen(self._cPen)
         qPaint.drawArc(self._cRect, 90*16, -angle)
         qPaint.setPen(self._tColor)
-        qPaint.drawText(self._cRect, Qt.AlignCenter, f"{progress:.1f} %")
+        qPaint.drawText(self._cRect, Qt.AlignCenter, self._text or f"{progress:.1f} %")
         return
 
 # END Class NProgressCircle

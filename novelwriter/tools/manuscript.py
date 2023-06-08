@@ -144,10 +144,7 @@ class GuiManuscript(QDialog):
         # Process Controls
         # ================
 
-        self.buildProgress = NProgressCircle(self, CONFIG.pxInt(140), CONFIG.pxInt(16))
-        self.buildProgress.setValue(0)
-
-        self.btnPreview = QPushButton(self.tr("Preview"))
+        self.btnPreview = QPushButton(self.tr("Build Preview"))
         self.btnPreview.clicked.connect(self._generatePreview)
 
         self.btnBuild = QPushButton(self.tr("Build"))
@@ -163,17 +160,13 @@ class GuiManuscript(QDialog):
         self.btnClose = QPushButton(self.tr("Close"))
         self.btnClose.clicked.connect(self._doClose)
 
-        self.buildBox = QVBoxLayout()
-        self.buildBox.addStretch(1)
-        self.buildBox.addWidget(self.btnPreview, 0)
-        self.buildBox.addWidget(self.btnPrint, 0)
+        self.buildBox = QHBoxLayout()
         self.buildBox.addWidget(self.btnBuild, 0)
+        self.buildBox.addWidget(self.btnPrint, 0)
         self.buildBox.addWidget(self.btnClose, 0)
-        self.buildBox.addStretch(1)
-        self.buildBox.setSpacing(CONFIG.pxInt(2))
 
-        self.processBox = QHBoxLayout()
-        self.processBox.addWidget(self.buildProgress)
+        self.processBox = QVBoxLayout()
+        self.processBox.addWidget(self.btnPreview)
         self.processBox.addLayout(self.buildBox)
 
         # Assemble GUI
@@ -294,10 +287,11 @@ class GuiManuscript(QDialog):
         docBuild = NWBuildDocument(self.theProject, build)
         docBuild.queueAll()
 
-        self.buildProgress.setMaximum(len(docBuild))
-        for step, status in docBuild.iterBuildHTML(None):
-            self.buildProgress.setValue(step + 1)
+        self.docPreview.beginNewBuild(len(docBuild))
+        for step, _ in docBuild.iterBuildHTML(None):
+            self.docPreview.buildStep(step + 1)
             qApp.processEvents()
+            qApp.thread().msleep(5)
 
         buildObj = docBuild.lastBuild
         assert isinstance(buildObj, ToHtml)
@@ -457,6 +451,8 @@ class _PreviewWidget(QTextBrowser):
             "Press the \"Build Preview\" button to generate ..."
         ))
 
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+
         # Document Age
         aPalette = self.palette()
         aPalette.setColor(QPalette.Background, aPalette.toolTipBase().color())
@@ -472,6 +468,17 @@ class _PreviewWidget(QTextBrowser):
         self.ageLabel.setAutoFillBackground(True)
         self.ageLabel.setAlignment(Qt.AlignCenter)
         self.ageLabel.setFixedHeight(int(2.1*self.mainTheme.fontPixelSize))
+
+        # Progress
+        self.buildProgress = NProgressCircle(self, CONFIG.pxInt(160), CONFIG.pxInt(16))
+        self.buildProgress.setVisible(False)
+        self.buildProgress.setMaximum(1)
+        self.buildProgress.setValue(0)
+        self.buildProgress.setColours(
+            back=QColor(255, 255, 255, 224),
+            track=QColor(196, 196, 196, 128),
+            text=QColor(0, 0, 0)
+        )
 
         self._updateDocMargins()
         self._updateBuildAge()
@@ -516,10 +523,29 @@ class _PreviewWidget(QTextBrowser):
     #  Methods
     ##
 
+    def beginNewBuild(self, length: int):
+        """Clear the document and show the progress bar."""
+        self.buildProgress.setMaximum(length)
+        self.buildProgress.setValue(0)
+        self.buildProgress.setCentreText(None)
+        self.buildProgress.setVisible(True)
+        self.setPlaceholderText("")
+        self.clear()
+        return
+
+    def buildStep(self, value: int):
+        """Update the progress bar value."""
+        self.buildProgress.setValue(value)
+        qApp.processEvents()
+        return
+
     def setContent(self, data: dict):
         """Set the content of the preview widget."""
         sPos = self.verticalScrollBar().value()
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+
+        self.buildProgress.setCentreText(self.tr("Processing ..."))
+        qApp.processEvents()
 
         styles = "\n".join(data.get("styles", [
             "h1, h2 {color: rgb(66, 113, 174);}",
@@ -544,9 +570,13 @@ class _PreviewWidget(QTextBrowser):
         self._updateBuildAge()
 
         # Since we change the content while it may still be rendering, we mark
-        # the document dirty again to make sure it's re-rendered properly.
+        # the document as dirty again to make sure it's re-rendered properly.
         self.document().markContentsDirty(0, self.document().characterCount())
+
+        self.buildProgress.setCentreText(self.tr("Done"))
         qApp.restoreOverrideCursor()
+        qApp.processEvents()
+        QTimer.singleShot(300, self._hideProgress)
 
         return
 
@@ -580,6 +610,12 @@ class _PreviewWidget(QTextBrowser):
         self.ageLabel.setText(text)
         return
 
+    @pyqtSlot()
+    def _hideProgress(self):
+        """Clean up the build progress bar."""
+        self.buildProgress.setVisible(False)
+        return
+
     ##
     #  Internal Functions
     ##
@@ -591,10 +627,13 @@ class _PreviewWidget(QTextBrowser):
         vBar = self.verticalScrollBar()
         sW = vBar.width() if vBar.isVisible() else 0
         tB = self.frameWidth()
-        tW = self.width() - 2*tB - sW
+        vW = self.width() - 2*tB - sW
+        vH = self.height() - 2*tB
         tH = self.ageLabel.height()
-        self.ageLabel.setGeometry(tB, tB, tW, tH)
+        pS = self.buildProgress.width()
+        self.ageLabel.setGeometry(tB, tB, vW, tH)
         self.setViewportMargins(0, tH, 0, 0)
+        self.buildProgress.move((vW-pS)//2, (vH-pS)//2)
         return
 
 # END Class _PreviewWidget
