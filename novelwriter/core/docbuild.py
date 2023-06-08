@@ -31,6 +31,7 @@ from pathlib import Path
 from PyQt5.QtGui import QFont, QFontInfo
 
 from novelwriter import CONFIG
+from novelwriter.enum import nwBuildFmt
 from novelwriter.error import formatException
 from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
@@ -106,15 +107,15 @@ class NWBuildDocument:
                 self._queue.append(item.itemHandle)
         return
 
-    def iterBuild(self, path: Path, bFormat: str) -> Iterable[tuple[int, bool]]:
+    def iterBuild(self, path: Path, bFormat: nwBuildFmt) -> Iterable[tuple[int, bool]]:
         """Wrapper for builders based on format."""
-        if bFormat in ("odt", "fodt"):
+        if bFormat in (nwBuildFmt.ODT, nwBuildFmt.FODT):
             yield from self.iterBuildOpenDocument(path, bFormat == "fodt")
-        elif bFormat in ("html", "jhtml"):
+        elif bFormat in (nwBuildFmt.HTML, nwBuildFmt.J_HTML):
             yield from self.iterBuildHTML(path if bFormat == "html" else None)
-        elif bFormat in ("md", "md+"):
+        elif bFormat in (nwBuildFmt.STD_MD, nwBuildFmt.EXT_MD):
             yield from self.iterBuildMarkdown(path, bFormat == "md+")
-        elif bFormat in ("nwd", "jnwd"):
+        elif bFormat in (nwBuildFmt.NWD, nwBuildFmt.J_NWD):
             yield from self.iterBuildNovelWriter(path if bFormat == "nwd" else None)
         return
 

@@ -25,7 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
-from novelwriter.enum import nwItemClass, nwItemLayout, nwOutline
+from novelwriter.enum import nwBuildFmt, nwItemClass, nwItemLayout, nwOutline
 
 
 def trConst(tString):
@@ -205,15 +205,25 @@ class nwLabels:
         nwOutline.CUSTOM: KEY_NAME[nwKeyWords.CUSTOM_KEY],
         nwOutline.SYNOP:  QT_TRANSLATE_NOOP("Constant", "Synopsis"),
     }
-    BUILD_FORMATS = {
-        "odt":   (".odt",  QT_TRANSLATE_NOOP("Constant", "Open Document (.odt)")),
-        "fodt":  (".fodt", QT_TRANSLATE_NOOP("Constant", "Flat Open Document (.fodt)")),
-        "html":  (".html", QT_TRANSLATE_NOOP("Constant", "novelWriter HTML (.html)")),
-        "nwd":   (".nwd",  QT_TRANSLATE_NOOP("Constant", "novelWriter Markdown (.nwd)")),
-        "md":    (".md",   QT_TRANSLATE_NOOP("Constant", "Standard Markdown (.md)")),
-        "md+":   (".md",   QT_TRANSLATE_NOOP("Constant", "Extended Markdown (.md)")),
-        "jhtml": (".json", QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter HTML (.json)")),
-        "jnwd":  (".json", QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter Markdown (.json)")),
+    BUILD_FMT = {
+        nwBuildFmt.ODT:    QT_TRANSLATE_NOOP("Constant", "Open Document (.odt)"),
+        nwBuildFmt.FODT:   QT_TRANSLATE_NOOP("Constant", "Flat Open Document (.fodt)"),
+        nwBuildFmt.HTML:   QT_TRANSLATE_NOOP("Constant", "novelWriter HTML (.html)"),
+        nwBuildFmt.NWD:    QT_TRANSLATE_NOOP("Constant", "novelWriter Markup (.txt)"),
+        nwBuildFmt.STD_MD: QT_TRANSLATE_NOOP("Constant", "Standard Markdown (.md)"),
+        nwBuildFmt.EXT_MD: QT_TRANSLATE_NOOP("Constant", "Extended Markdown (.md)"),
+        nwBuildFmt.J_HTML: QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter HTML (.json)"),
+        nwBuildFmt.J_NWD:  QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter Markup (.json)"),
+    }
+    BUILD_EXT = {
+        nwBuildFmt.ODT:    ".odt",
+        nwBuildFmt.FODT:   ".fodt",
+        nwBuildFmt.HTML:   ".html",
+        nwBuildFmt.NWD:    ".txt",
+        nwBuildFmt.STD_MD: ".md",
+        nwBuildFmt.EXT_MD: ".md",
+        nwBuildFmt.J_HTML: ".json",
+        nwBuildFmt.J_NWD:  ".json",
     }
 
 # END Class nwLabels

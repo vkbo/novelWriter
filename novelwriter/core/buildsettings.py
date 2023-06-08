@@ -34,11 +34,12 @@ from pathlib import Path
 
 from PyQt5.QtCore import QT_TRANSLATE_NOOP
 
+from novelwriter.enum import nwBuildFmt
+from novelwriter.error import logException
 from novelwriter.common import checkUuid, isHandle, jsonEncode
-from novelwriter.constants import nwFiles, nwHeadFmt, nwLabels
+from novelwriter.constants import nwFiles, nwHeadFmt
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
-from novelwriter.error import logException
 
 logger = logging.getLogger(__name__)
 
@@ -140,7 +141,7 @@ class BuildSettings:
         self._uuid = str(uuid.uuid4())
         self._path = Path.home()
         self._build = ""
-        self._format = "odt"
+        self._format = nwBuildFmt.ODT
         self._skipRoot = set()
         self._excluded = set()
         self._included = set()
@@ -175,7 +176,7 @@ class BuildSettings:
         return self._build
 
     @property
-    def lastFormat(self) -> str:
+    def lastFormat(self) -> nwBuildFmt:
         """The last used build format."""
         return self._format
 
@@ -252,10 +253,10 @@ class BuildSettings:
         self._changed = True
         return
 
-    def setLastFormat(self, key: str):
+    def setLastFormat(self, value: nwBuildFmt):
         """Set the last used build format."""
-        if key in nwLabels.BUILD_FORMATS:
-            self._format = key
+        if isinstance(value, nwBuildFmt):
+            self._format = value
             self._changed = True
         return
 
@@ -377,7 +378,7 @@ class BuildSettings:
             "uuid": self._uuid,
             "path": str(self._path),
             "build": self._build,
-            "format": self._format,
+            "format": self._format.name,
             "settings": self._settings.copy(),
             "content": {
                 "included": list(self._included),
@@ -398,7 +399,11 @@ class BuildSettings:
         self.setBuildID(data.get("uuid", ""))
         self.setLastPath(data.get("path", None))
         self.setLastBuildName(data.get("build", ""))
-        self.setLastFormat(data.get("format", "odt"))
+
+        buildFmt = str(data.get("build", ""))
+        if buildFmt in nwBuildFmt.__members__:
+            self.setLastFormat(nwBuildFmt[buildFmt])
+
         if isinstance(included, list):
             self._included = set([h for h in included if isHandle(h)])
         if isinstance(excluded, list):

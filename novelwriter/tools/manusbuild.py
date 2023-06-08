@@ -36,10 +36,11 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG
+from novelwriter.enum import nwBuildFmt
 from novelwriter.common import makeFileNameSafe
 from novelwriter.constants import nwLabels
-from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.item import NWItem
+from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.buildsettings import BuildSettings
 
 if TYPE_CHECKING:
@@ -91,9 +92,9 @@ class GuiManuscriptBuild(QDialog):
         self.listFormats = QListWidget()
         self.listFormats.setIconSize(QSize(iPx, iPx))
         current = None
-        for key, (_, label) in nwLabels.BUILD_FORMATS.items():
+        for key in nwBuildFmt:
             item = QListWidgetItem()
-            item.setText(label)
+            item.setText(nwLabels.BUILD_FMT[key])
             item.setData(self.D_KEY, key)
             self.listFormats.addItem(item)
             if key == self._build.lastFormat:
@@ -275,7 +276,7 @@ class GuiManuscriptBuild(QDialog):
     def _runBuild(self) -> bool:
         """Run the currently selected build."""
         selFormat = self._getSelectedFormat()
-        if not selFormat or selFormat not in nwLabels.BUILD_FORMATS:
+        if not isinstance(selFormat, nwBuildFmt):
             return False
 
         lastName = self.buildName.text().strip()
@@ -283,7 +284,7 @@ class GuiManuscriptBuild(QDialog):
             self._doResetBuildName()
 
         lastPath = self._build.lastPath
-        selExt = nwLabels.BUILD_FORMATS[selFormat][0]
+        selExt = nwLabels.BUILD_EXT[selFormat]
         selName = Path(makeFileNameSafe(lastName)).with_suffix(selExt)
 
         self.buildProgress.setValue(0)
@@ -308,11 +309,11 @@ class GuiManuscriptBuild(QDialog):
 
         return True
 
-    def _getSelectedFormat(self) -> str | None:
+    def _getSelectedFormat(self) -> nwBuildFmt | None:
         """Get the currently selected format."""
         items = self.listFormats.selectedItems()
         if items and isinstance(items[0], QListWidgetItem):
-            return str(items[0].data(self.D_KEY))
+            return items[0].data(self.D_KEY)
         return None
 
     def _saveSettings(self):
