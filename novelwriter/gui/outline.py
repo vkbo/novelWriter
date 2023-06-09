@@ -78,7 +78,7 @@ class GuiOutlineView(QWidget):
 
         # Assemble
         self.outerBox = QVBoxLayout()
-        self.outerBox.setContentsMargins(0, 0, 0, 0)
+        self.outerBox.setContentsMargins(0, 0, CONFIG.pxInt(4), 0)
         self.outerBox.addWidget(self.outlineBar)
         self.outerBox.addWidget(self.splitOutline)
 
@@ -663,7 +663,7 @@ class GuiOutlineTree(QTreeWidget):
             self.setColumnHidden(self._colIdx[nwOutline.TITLE], False)
 
             headItem = self.headerItem()
-            if headItem is not None:
+            if isinstance(headItem, QTreeWidgetItem):
                 headItem.setTextAlignment(self._colIdx[nwOutline.CCOUNT], Qt.AlignRight)
                 headItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], Qt.AlignRight)
                 headItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], Qt.AlignRight)
