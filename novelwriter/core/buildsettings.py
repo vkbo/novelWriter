@@ -34,6 +34,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import QT_TRANSLATE_NOOP
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import logException
 from novelwriter.common import checkUuid, isHandle, jsonEncode
@@ -65,14 +66,14 @@ SETTINGS_TEMPLATE = {
     "text.includeBodyText":   (bool, True),
     "text.addNoteHeadings":   (bool, True),
     "format.buildLang":       (str, "en_GB"),
-    "format.textFont":        (str, ""),
+    "format.textFont":        (str, CONFIG.textFont),
     "format.textSize":        (int, 12),
     "format.lineHeight":      (float, 1.15, 0.75, 3.0),
     "format.justifyText":     (bool, False),
     "format.stripUnicode":    (bool, False),
     "format.replaceTabs":     (bool, False),
     "odt.addColours":         (bool, True),
-    "html.addStyles":         (bool, False),
+    "html.addStyles":         (bool, True),
 }
 
 SETTINGS_LABELS = {
@@ -434,7 +435,16 @@ class BuildCollection:
     def __init__(self, project: NWProject):
         self._project = project
         self._builds = {}
+        self._loadCollection()
         return
+
+    def __len__(self):
+        """Return the number of builds."""
+        return len(self._builds)
+
+    ##
+    #  Methods
+    ##
 
     def getBuild(self, buildID: str) -> BuildSettings | None:
         """Get a specific build settings object."""
@@ -450,7 +460,14 @@ class BuildCollection:
             return False
         buildID = build.buildID
         self._builds[buildID] = build.pack()
+        self._saveCollection()
         return True
+
+    def removeBuild(self, buildID: str):
+        """Remove the a build from the collection."""
+        self._builds.pop(buildID, None)
+        self._saveCollection()
+        return
 
     def builds(self) -> Iterable[tuple[str, str]]:
         """Iterate over all avaiable builds."""
@@ -458,7 +475,11 @@ class BuildCollection:
             yield buildID, self._builds[buildID].get("name", "")
         return
 
-    def loadCollection(self) -> bool:
+    ##
+    #  Internal Functions
+    ##
+
+    def _loadCollection(self) -> bool:
         """Load build collections file."""
         buildsFile = self._project.storage.getMetaFile(nwFiles.BUILDS_FILE)
         if not isinstance(buildsFile, Path):
@@ -490,7 +511,7 @@ class BuildCollection:
 
         return True
 
-    def saveCollection(self) -> bool:
+    def _saveCollection(self) -> bool:
         """Save build collections file."""
         buildsFile = self._project.storage.getMetaFile(nwFiles.BUILDS_FILE)
         if not isinstance(buildsFile, Path):

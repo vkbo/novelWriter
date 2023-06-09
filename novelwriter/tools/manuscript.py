@@ -114,8 +114,9 @@ class GuiManuscript(QDialog):
         self.tbDel = QToolButton(self)
         self.tbDel.setIcon(self.mainTheme.getIcon("remove"))
         self.tbDel.setIconSize(QSize(iPx, iPx))
-        self.tbDel.setToolTip(self.tr("Remove Selected Build"))
+        self.tbDel.setToolTip(self.tr("Delete Selected Build"))
         self.tbDel.setStyleSheet(buttonStyle)
+        self.tbDel.clicked.connect(self._deleteSelectedBuild)
 
         self.tbEdit = QToolButton(self)
         self.tbEdit.setIcon(self.mainTheme.getIcon("edit"))
@@ -125,12 +126,10 @@ class GuiManuscript(QDialog):
         self.tbEdit.clicked.connect(self._editSelectedBuild)
 
         self.lblBuilds = QLabel("<b>{0}</b>".format(self.tr("Builds")))
-        self.buildList = QListWidget()
 
-        self.tbMore = QToolButton(self)
-        self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
-        self.tbMore.setIconSize(QSize(iPx, iPx))
-        self.tbMore.setStyleSheet(buttonStyle)
+        self.buildList = QListWidget()
+        self.buildList.setIconSize(QSize(iPx, iPx))
+        self.buildList.doubleClicked.connect(self._editSelectedBuild)
 
         self.listToolBox = QHBoxLayout()
         self.listToolBox.addWidget(self.lblBuilds)
@@ -138,7 +137,6 @@ class GuiManuscript(QDialog):
         self.listToolBox.addWidget(self.tbAdd)
         self.listToolBox.addWidget(self.tbDel)
         self.listToolBox.addWidget(self.tbEdit)
-        self.listToolBox.addWidget(self.tbMore)
         self.listToolBox.setSpacing(0)
 
         # Process Controls
@@ -182,8 +180,8 @@ class GuiManuscript(QDialog):
         self.mainSplit.setStretchFactor(0, 0)
         self.mainSplit.setStretchFactor(1, 1)
         self.mainSplit.setSizes([
-            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "optsWidth", wWin//3)),
-            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "viewWidth", 2*wWin//3)),
+            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "optsWidth", wWin//4)),
+            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "viewWidth", 3*wWin//4)),
         ])
 
         self.outerBox = QVBoxLayout()
@@ -203,7 +201,11 @@ class GuiManuscript(QDialog):
 
     def loadContent(self):
         """Load dialog content from project data."""
-        self._builds.loadCollection()
+        if len(self._builds) == 0:
+            build = BuildSettings()
+            build.setName(self.tr("My Manuscript"))
+            self._builds.setBuild(build)
+
         self._updateBuildsList()
 
         logger.debug("Loading build cache")
@@ -260,11 +262,24 @@ class GuiManuscript(QDialog):
             self._openSettingsDialog(build)
         return
 
+    @pyqtSlot()
+    def _deleteSelectedBuild(self):
+        """Delete the currently selected build settings entry."""
+        build = self._getSelectedBuild()
+        if build is not None:
+            proceed = self.mainGui.askQuestion(
+                self.tr("Delete Build"),
+                self.tr("Delete build '{0}'?".format(build.name))
+            )
+            if proceed:
+                self._builds.removeBuild(build.buildID)
+                self._updateBuildsList()
+        return
+
     @pyqtSlot(BuildSettings)
     def _processNewSettings(self, build: BuildSettings):
         """Process new build settings from the settings dialog."""
         self._builds.setBuild(build)
-        self._builds.saveCollection()
         self._updateBuildItem(build)
         return
 
@@ -322,7 +337,6 @@ class GuiManuscript(QDialog):
         # After the build is done, save build settings changes
         if build.changed:
             self._builds.setBuild(build)
-            self._builds.saveCollection()
 
         return
 
@@ -405,6 +419,7 @@ class GuiManuscript(QDialog):
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
             bItem.setText(name)
+            bItem.setIcon(self.mainTheme.getIcon("export"))
             bItem.setData(self.D_KEY, key)
             self.buildList.addItem(bItem)
             self._buildMap[key] = bItem
