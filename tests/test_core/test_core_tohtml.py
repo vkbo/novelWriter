@@ -517,7 +517,6 @@ def testCoreToHtml_Complex(mockGUI, fncPath):
     # ==========
 
     theStyle = theHtml.getStyleSheet()
-    theStyle.append("article {width: 800px; margin: 40px auto;}")
     htmlDoc = (
         "<!DOCTYPE html>\n"
         "<html>\n"
@@ -540,7 +539,7 @@ def testCoreToHtml_Complex(mockGUI, fncPath):
     )
 
     saveFile = fncPath / "outFile.htm"
-    theHtml.saveHTML5(saveFile)
+    theHtml.saveHtml5(saveFile)
     assert readFile(saveFile) == htmlDoc
 
 # END Test testCoreToHtml_Complex

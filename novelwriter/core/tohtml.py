@@ -23,11 +23,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import json
 import logging
 
+from time import time
 from pathlib import Path
 
 from novelwriter import CONFIG
+from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwKeyWords, nwLabels, nwHtmlUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer, stripEscape
@@ -296,38 +299,52 @@ class ToHtml(Tokenizer):
 
         return
 
-    def saveHTML5(self, savePath: str | Path):
-        """Save the data to an .html file.
-        """
-        with open(savePath, mode="w", encoding="utf-8") as outFile:
-            theStyle = self.getStyleSheet()
-            theStyle.append("article {width: 800px; margin: 40px auto;}")
-            bodyText = "".join(self._fullHTML)
-            bodyText = bodyText.replace("\t", "&#09;").rstrip()
-
-            theHtml = (
+    def saveHtml5(self, path: str | Path):
+        """Save the data to an HTML file."""
+        with open(path, mode="w", encoding="utf-8") as fObj:
+            fObj.write((
                 "<!DOCTYPE html>\n"
                 "<html>\n"
                 "<head>\n"
                 "<meta charset='utf-8'>\n"
-                "<title>{projTitle:s}</title>\n"
+                "<title>{title:s}</title>\n"
                 "</head>\n"
                 "<style>\n"
-                "{htmlStyle:s}\n"
+                "{style:s}\n"
                 "</style>\n"
                 "<body>\n"
                 "<article>\n"
-                "{bodyText:s}\n"
+                "{body:s}\n"
                 "</article>\n"
                 "</body>\n"
                 "</html>\n"
             ).format(
-                projTitle=self._project.data.name,
-                htmlStyle="\n".join(theStyle),
-                bodyText=bodyText,
-            )
-            outFile.write(theHtml)
+                title=self._project.data.name,
+                style="\n".join(self.getStyleSheet()),
+                body=("".join(self._fullHTML)).replace("\t", "&#09;").rstrip(),
+            ))
+        logger.info("Wrote file: %s", path)
+        return
 
+    def saveHtmlJson(self, path: str | Path):
+        """Save the data to a JSON file."""
+        timeStamp = time()
+        data = {
+            "meta": {
+                "projectName": self._project.data.name,
+                "novelTitle": self._project.data.title,
+                "novelAuthor": self._project.data.author,
+                "buildTime": int(timeStamp),
+                "buildTimeStr": formatTimeStamp(timeStamp),
+            },
+            "text": {
+                "css": self.getStyleSheet(),
+                "html": [page.rstrip("\n").split("\n") for page in self.fullHTML],
+            }
+        }
+        with open(path, mode="w", encoding="utf-8") as fObj:
+            json.dump(data, fObj, indent=2)
+        logger.info("Wrote file: %s", path)
         return
 
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = "&nbsp;"):

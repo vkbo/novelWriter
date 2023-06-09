@@ -25,9 +25,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import re
+import json
 import logging
 
 from abc import ABC, abstractmethod
+from time import time
 from pathlib import Path
 from operator import itemgetter
 from functools import partial
@@ -35,7 +37,7 @@ from functools import partial
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from novelwriter.enum import nwItemLayout, nwItemType
-from novelwriter.common import numberToRoman, checkInt
+from novelwriter.common import formatTimeStamp, numberToRoman, checkInt
 from novelwriter.constants import nwConst, nwHeadFmt, nwRegEx, nwUnicode
 from novelwriter.core.project import NWProject
 
@@ -740,11 +742,30 @@ class Tokenizer(ABC):
 
         return True
 
-    def saveRawMarkdown(self, savePath: str | Path):
-        """Save the data to a plain text file."""
-        with open(savePath, mode="w", encoding="utf-8") as outFile:
+    def saveRawMarkdown(self, path: str | Path):
+        """Save the raw text to a plain text file."""
+        with open(path, mode="w", encoding="utf-8") as outFile:
             for nwdPage in self._allMarkdown:
                 outFile.write(nwdPage)
+        return
+
+    def saveRawMarkdownJSON(self, path: str | Path):
+        """Save the raw text to a JSON file."""
+        timeStamp = time()
+        data = {
+            "meta": {
+                "projectName": self._project.data.name,
+                "novelTitle": self._project.data.title,
+                "novelAuthor": self._project.data.author,
+                "buildTime": int(timeStamp),
+                "buildTimeStr": formatTimeStamp(timeStamp),
+            },
+            "text": {
+                "nwd": [page.rstrip("\n").split("\n") for page in self._allMarkdown],
+            }
+        }
+        with open(path, mode="w", encoding="utf-8") as fObj:
+            json.dump(data, fObj, indent=2)
         return
 
 # END Class Tokenizer
@@ -760,27 +781,23 @@ class HeadingFormatter:
         return
 
     def incChapter(self):
-        """Increment the chapter counter.
-        """
+        """Increment the chapter counter."""
         self._chCount += 1
         return
 
     def incScene(self):
-        """Increment the scene counters.
-        """
+        """Increment the scene counters."""
         self._scChCount += 1
         self._scAbsCount += 1
         return
 
     def resetScene(self):
-        """Reset the chapter scene counter.
-        """
+        """Reset the chapter scene counter."""
         self._scChCount = 0
         return
 
     def apply(self, hFormat: str, text: str):
-        """Apply formatting to a specific heading.
-        """
+        """Apply formatting to a specific heading."""
         hFormat = hFormat.replace(nwHeadFmt.TITLE, text)
         hFormat = hFormat.replace(nwHeadFmt.CH_NUM, str(self._chCount))
         hFormat = hFormat.replace(nwHeadFmt.SC_NUM, str(self._scChCount))

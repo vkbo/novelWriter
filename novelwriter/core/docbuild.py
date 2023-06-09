@@ -32,7 +32,7 @@ from PyQt5.QtGui import QFont, QFontInfo
 
 from novelwriter import CONFIG
 from novelwriter.enum import nwBuildFmt
-from novelwriter.error import formatException
+from novelwriter.error import formatException, logException
 from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
 from novelwriter.core.tohtml import ToHtml
@@ -110,13 +110,13 @@ class NWBuildDocument:
     def iterBuild(self, path: Path, bFormat: nwBuildFmt) -> Iterable[tuple[int, bool]]:
         """Wrapper for builders based on format."""
         if bFormat in (nwBuildFmt.ODT, nwBuildFmt.FODT):
-            yield from self.iterBuildOpenDocument(path, bFormat == "fodt")
+            yield from self.iterBuildOpenDocument(path, bFormat == nwBuildFmt.FODT)
         elif bFormat in (nwBuildFmt.HTML, nwBuildFmt.J_HTML):
-            yield from self.iterBuildHTML(path if bFormat == "html" else None)
+            yield from self.iterBuildHTML(path, asJson=bFormat == nwBuildFmt.J_HTML)
         elif bFormat in (nwBuildFmt.STD_MD, nwBuildFmt.EXT_MD):
-            yield from self.iterBuildMarkdown(path, bFormat == "md+")
+            yield from self.iterBuildMarkdown(path, bFormat == nwBuildFmt.EXT_MD)
         elif bFormat in (nwBuildFmt.NWD, nwBuildFmt.J_NWD):
-            yield from self.iterBuildNovelWriter(path if bFormat == "nwd" else None)
+            yield from self.iterBuildNWD(path, asJson=bFormat == nwBuildFmt.J_NWD)
         return
 
     def iterBuildOpenDocument(self, path: Path, isFlat: bool) -> Iterable[tuple[int, bool]]:
@@ -143,11 +143,12 @@ class NWBuildDocument:
             else:
                 makeObj.saveOpenDocText(path)
         except Exception as exc:
+            logException()
             self._error = formatException(exc)
 
         return
 
-    def iterBuildHTML(self, path: Path | None) -> Iterable[tuple[int, bool]]:
+    def iterBuildHTML(self, path: Path | None, asJson: bool = False) -> Iterable[tuple[int, bool]]:
         """Build an HTML file. If path is None, no file is saved. This
         is used for generating build previews.
         """
@@ -169,8 +170,12 @@ class NWBuildDocument:
 
         if isinstance(path, Path):
             try:
-                makeObj.saveHTML5(path)
+                if asJson:
+                    makeObj.saveHtmlJson(path)
+                else:
+                    makeObj.saveHtml5(path)
             except Exception as exc:
+                logException()
                 self._error = formatException(exc)
 
         return
@@ -201,11 +206,12 @@ class NWBuildDocument:
         try:
             makeObj.saveMarkdown(path)
         except Exception as exc:
+            logException()
             self._error = formatException(exc)
 
         return
 
-    def iterBuildNovelWriter(self, path: Path | None) -> Iterable[tuple[int, bool]]:
+    def iterBuildNWD(self, path: Path | None, asJson: bool = False) -> Iterable[tuple[int, bool]]:
         """Build a novelWriter Markdown file."""
         makeObj = ToMarkdown(self._project)
         filtered = self._setupBuild(makeObj)
@@ -226,8 +232,12 @@ class NWBuildDocument:
 
         if isinstance(path, Path):
             try:
-                makeObj.saveRawMarkdown(path)
+                if asJson:
+                    makeObj.saveRawMarkdownJSON(path)
+                else:
+                    makeObj.saveRawMarkdown(path)
             except Exception as exc:
+                logException()
                 self._error = formatException(exc)
 
         return

@@ -24,24 +24,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 
 from typing import TYPE_CHECKING
+from pathlib import Path
 
-from PyQt5.QtCore import QSize, Qt, pyqtSlot
+from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox, QFileDialog,
     QGridLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
-    QProgressBar, QPushButton, QSplitter, QVBoxLayout, QWidget
+    QPushButton, QSplitter, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG
-from novelwriter.enum import nwBuildFmt
+from novelwriter.enum import nwAlert, nwBuildFmt
 from novelwriter.common import makeFileNameSafe
 from novelwriter.constants import nwLabels
 from novelwriter.core.item import NWItem
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.buildsettings import BuildSettings
+from novelwriter.extensions.simpleprogress import NProgressSimple
 
 if TYPE_CHECKING:
     from novelwriter.guimain import GuiMain
@@ -50,7 +51,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiManuscriptBuild(QDialog):
-    """GUI Tools: Manucript Builder Dialog
+    """GUI Tools: Manuscript Build Dialog
 
     This is the tool for running the build itself. It can be accessed
     independently of the Manuscript Build Tool.
@@ -73,10 +74,13 @@ class GuiManuscriptBuild(QDialog):
 
         self.setWindowTitle(self.tr("Build Manuscript"))
         self.setMinimumWidth(CONFIG.pxInt(500))
-        self.setMinimumHeight(CONFIG.pxInt(250))
+        self.setMinimumHeight(CONFIG.pxInt(300))
 
         iPx = self.mainTheme.baseIconSize
-        wWin = CONFIG.pxInt(660)
+        sp4 = CONFIG.pxInt(4)
+        sp8 = CONFIG.pxInt(8)
+        sp16 = CONFIG.pxInt(16)
+        wWin = CONFIG.pxInt(620)
         hWin = CONFIG.pxInt(360)
 
         pOptions = self.theProject.options
@@ -141,35 +145,42 @@ class GuiManuscriptBuild(QDialog):
         self.lblMain.setWordWrap(True)
         self.lblMain.setFont(font)
 
+        # Build Path
+        self.lblPath = QLabel(self.tr("Path"))
+        self.buildPath = QLineEdit(self)
+        self.btnBrowse = QPushButton(self.mainTheme.getIcon("browse"), "")
+
+        self.pathBox = QHBoxLayout()
+        self.pathBox.addWidget(self.buildPath)
+        self.pathBox.addWidget(self.btnBrowse)
+        self.pathBox.setSpacing(sp8)
+
         # Build Name
         self.lblName = QLabel(self.tr("File Name"))
-        self.buildName = QLineEdit()
+        self.buildName = QLineEdit(self)
         self.btnReset = QPushButton(self.mainTheme.getIcon("revert"), "")
         self.btnReset.setToolTip(self.tr("Reset file name to default"))
 
         self.nameBox = QHBoxLayout()
         self.nameBox.addWidget(self.buildName)
         self.nameBox.addWidget(self.btnReset)
+        self.nameBox.setSpacing(sp8)
 
         # Build Progress
-        self.lblProgress = QLabel(self.tr("Progress"))
-
-        self.buildProgress = QProgressBar()
+        self.buildProgress = NProgressSimple(self)
         self.buildProgress.setMinimum(0)
         self.buildProgress.setValue(0)
-
-        self.progressBox = QVBoxLayout()
-        self.progressBox.addWidget(self.lblProgress)
-        self.progressBox.addWidget(self.buildProgress)
-        self.progressBox.setSpacing(CONFIG.pxInt(4))
+        self.buildProgress.setTextVisible(False)
+        self.buildProgress.setFixedHeight(sp8)
 
         # Build Box
         self.buildBox = QGridLayout()
-        self.buildBox.addWidget(self.lblName,       1, 0)
-        self.buildBox.addLayout(self.nameBox,       1, 1)
-        self.buildBox.addWidget(self.lblProgress,   2, 0)
-        self.buildBox.addWidget(self.buildProgress, 2, 1)
-        self.buildBox.setVerticalSpacing(CONFIG.pxInt(4))
+        self.buildBox.addWidget(self.lblPath, 0, 0)
+        self.buildBox.addLayout(self.pathBox, 0, 1)
+        self.buildBox.addWidget(self.lblName, 1, 0)
+        self.buildBox.addLayout(self.nameBox, 1, 1)
+        self.buildBox.setHorizontalSpacing(sp8)
+        self.buildBox.setVerticalSpacing(sp4)
 
         # Dialog Buttons
         self.btnBuild = QPushButton(self.mainTheme.getIcon("export"), self.tr("&Build"))
@@ -182,7 +193,7 @@ class GuiManuscriptBuild(QDialog):
         self.mainSplit = QSplitter()
         self.mainSplit.addWidget(self.formatWidget)
         self.mainSplit.addWidget(self.contentWidget)
-        self.mainSplit.setHandleWidth(CONFIG.pxInt(16))
+        self.mainSplit.setHandleWidth(sp16)
         self.mainSplit.setCollapsible(0, False)
         self.mainSplit.setCollapsible(1, False)
         self.mainSplit.setSizes([
@@ -192,15 +203,21 @@ class GuiManuscriptBuild(QDialog):
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.lblMain, 0, Qt.AlignCenter)
+        self.outerBox.addSpacing(sp16)
         self.outerBox.addWidget(self.mainSplit, 1)
+        self.outerBox.addSpacing(sp4)
+        self.outerBox.addWidget(self.buildProgress, 0)
+        self.outerBox.addSpacing(sp4)
         self.outerBox.addLayout(self.buildBox, 0)
+        self.outerBox.addSpacing(sp16)
         self.outerBox.addWidget(self.dlgButtons, 0)
-        self.outerBox.setSpacing(CONFIG.pxInt(12))
+        self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
 
         self.btnBuild.setFocus()
         self._populateContentList()
+        self.buildPath.setText(str(self._build.lastPath))
         if self._build.lastBuildName:
             self.buildName.setText(self._build.lastBuildName)
         else:
@@ -208,6 +225,7 @@ class GuiManuscriptBuild(QDialog):
 
         # Signals
         self.btnReset.clicked.connect(self._doResetBuildName)
+        self.btnBrowse.clicked.connect(self._doSelectPath)
         self.dlgButtons.clicked.connect(self._dialogButtonClicked)
         self.listFormats.itemSelectionChanged.connect(self._formatSelectionChanged)
 
@@ -254,6 +272,18 @@ class GuiManuscriptBuild(QDialog):
         return
 
     @pyqtSlot()
+    def _doSelectPath(self):
+        """Select a folder for output."""
+        bPath = Path(self.buildPath.text())
+        bPath = bPath if bPath.is_dir() else self._build.lastPath
+        savePath = QFileDialog.getExistingDirectory(
+            self, self.tr("Select Folder"), str(bPath)
+        )
+        if savePath:
+            self.buildPath.setText(savePath)
+        return
+
+    @pyqtSlot()
     def _doResetBuildName(self):
         """Generate a default build name."""
         bName = f"{self.theProject.data.name} - {self._build.name}"
@@ -269,43 +299,55 @@ class GuiManuscriptBuild(QDialog):
         self.buildProgress.setValue(0)
         return
 
+    @pyqtSlot()
+    def _resetProgress(self):
+        """Set the progress bar back to 0."""
+        self.buildProgress.setValue(0)
+        return
+
     ##
     #  Internal Functions
     ##
 
     def _runBuild(self) -> bool:
         """Run the currently selected build."""
-        selFormat = self._getSelectedFormat()
-        if not isinstance(selFormat, nwBuildFmt):
+        bFormat = self._getSelectedFormat()
+        if not isinstance(bFormat, nwBuildFmt):
             return False
 
-        lastName = self.buildName.text().strip()
-        if not lastName:
+        bName = self.buildName.text().strip()
+        if not bName:
             self._doResetBuildName()
-
-        lastPath = self._build.lastPath
-        selExt = nwLabels.BUILD_EXT[selFormat]
-        selName = Path(makeFileNameSafe(lastName)).with_suffix(selExt)
+            bName = self.buildName.text().strip()
 
         self.buildProgress.setValue(0)
-        savePath, _ = QFileDialog.getSaveFileName(
-            self, self.tr("Save Manuscript As"), str(lastPath / selName)
-        )
-        if not savePath:
+        bPath = Path(self.buildPath.text())
+        if not bPath.is_dir():
+            self.mainGui.makeAlert(self.tr("Output folder does not exist."), nwAlert.ERROR)
             return False
 
-        buildPath = Path(savePath)
+        bExt = nwLabels.BUILD_EXT[bFormat]
+        buildPath = (bPath / makeFileNameSafe(bName)).with_suffix(bExt)
+
+        if buildPath.exists():
+            if not self.mainGui.askQuestion(
+                self.tr("File Exists"),
+                self.tr("The file already exists. Do you want to overwrite it?")
+            ):
+                return False
 
         docBuild = NWBuildDocument(self.theProject, self._build)
         docBuild.queueAll()
 
         self.buildProgress.setMaximum(len(docBuild))
-        for i, _ in docBuild.iterBuild(buildPath, selFormat):
+        for i, _ in docBuild.iterBuild(buildPath, bFormat):
             self.buildProgress.setValue(i+1)
 
-        self._build.setLastFormat(selFormat)
-        self._build.setLastPath(buildPath.parent)
-        self._build.setLastBuildName(lastName)
+        self._build.setLastPath(bPath)
+        self._build.setLastBuildName(bName)
+        self._build.setLastFormat(bFormat)
+
+        QTimer.singleShot(1000, self._resetProgress)
 
         return True
 

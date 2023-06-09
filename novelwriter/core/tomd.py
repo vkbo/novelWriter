@@ -179,6 +179,7 @@ class ToMarkdown(Tokenizer):
         """Save the data to a plain text file."""
         with open(path, mode="w", encoding="utf-8") as outFile:
             outFile.write("".join(self._fullMD))
+        logger.info("Wrote file: %s", path)
         return
 
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = " "):

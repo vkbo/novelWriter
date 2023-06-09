@@ -501,6 +501,7 @@ class ToOdt(Tokenizer):
             xml = ET.ElementTree(self._dFlat)
             xmlIndent(xml)
             xml.write(fObj, encoding="utf-8", xml_declaration=True)
+        logger.info("Wrote file: %s", path)
         return
 
     def saveOpenDocText(self, path: str | Path):
@@ -534,6 +535,8 @@ class ToOdt(Tokenizer):
             putInZip("content.xml", self._dCont, outZip)
             putInZip("meta.xml", self._dMeta, outZip)
             putInZip("styles.xml", self._dStyl, outZip)
+
+        logger.info("Wrote file: %s", path)
 
         return
 
