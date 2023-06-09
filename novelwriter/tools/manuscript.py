@@ -32,10 +32,10 @@ from datetime import datetime
 
 from PyQt5.QtGui import QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
+from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QMenu,
-    QPushButton, QSplitter, QTextBrowser, QToolButton, QVBoxLayout, QWidget,
-    qApp
+    QDialog, QGridLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton,
+    QSplitter, QTextBrowser, QToolButton, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG
@@ -75,7 +75,7 @@ class GuiManuscript(QDialog):
         self.theProject = mainGui.theProject
 
         self._builds = BuildCollection(self.theProject)
-        self._buildMap = {}
+        self._buildMap: dict[str, QListWidgetItem] = {}
 
         self.setWindowTitle(self.tr("Build Manuscript"))
         self.setMinimumWidth(CONFIG.pxInt(600))
@@ -144,30 +144,23 @@ class GuiManuscript(QDialog):
         # Process Controls
         # ================
 
-        self.btnPreview = QPushButton(self.tr("Build Preview"))
+        self.btnPreview = QPushButton(self.tr("Preview"))
         self.btnPreview.clicked.connect(self._generatePreview)
+
+        self.btnPrint = QPushButton(self.tr("Print"))
+        self.btnPrint.clicked.connect(self._printDocument)
 
         self.btnBuild = QPushButton(self.tr("Build"))
         self.btnBuild.clicked.connect(self._buildManuscript)
 
-        self.menuPrint = QMenu(self)
-        self.aPrintSend = self.menuPrint.addAction(self.tr("Print Preview"))
-        self.aPrintFile = self.menuPrint.addAction(self.tr("Print to PDF"))
-
-        self.btnPrint = QPushButton(self.tr("Print"))
-        self.btnPrint.setMenu(self.menuPrint)
-
         self.btnClose = QPushButton(self.tr("Close"))
         self.btnClose.clicked.connect(self._doClose)
 
-        self.buildBox = QHBoxLayout()
-        self.buildBox.addWidget(self.btnBuild, 0)
-        self.buildBox.addWidget(self.btnPrint, 0)
-        self.buildBox.addWidget(self.btnClose, 0)
-
-        self.processBox = QVBoxLayout()
-        self.processBox.addWidget(self.btnPreview)
-        self.processBox.addLayout(self.buildBox)
+        self.processBox = QGridLayout()
+        self.processBox.addWidget(self.btnPreview, 0, 0)
+        self.processBox.addWidget(self.btnPrint,   0, 1)
+        self.processBox.addWidget(self.btnBuild,   1, 0)
+        self.processBox.addWidget(self.btnClose,   1, 1)
 
         # Assemble GUI
         # ============
@@ -334,6 +327,14 @@ class GuiManuscript(QDialog):
         return
 
     @pyqtSlot()
+    def _printDocument(self):
+        """Open the print preview dialog."""
+        thePreview = QPrintPreviewDialog(self)
+        thePreview.paintRequested.connect(self.docPreview.printPreview)
+        thePreview.exec_()
+        return
+
+    @pyqtSlot()
     def _doClose(self):
         """Forward the close button to the default close method."""
         self.close()
@@ -354,6 +355,8 @@ class GuiManuscript(QDialog):
         self.docPreview.setJustify(
             build.getBool("format.justifyText")
         )
+        if build.buildID and build.buildID in self._buildMap:
+            self._buildMap[build.buildID].setSelected(True)
         return
 
     def _getSelectedBuild(self) -> BuildSettings | None:
@@ -364,10 +367,6 @@ class GuiManuscript(QDialog):
             if isinstance(build, BuildSettings):
                 return build
         return None
-
-    def _saveManuscript(self, outFormat: int):
-        """Save the manuscript file or files."""
-        return
 
     def _saveSettings(self):
         """Save the user GUI settings."""
@@ -590,6 +589,18 @@ class _PreviewWidget(QTextBrowser):
         self._updateDocMargins()
         return
 
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot("QPrinter*")
+    def printPreview(self, printer: QPrinter):
+        """Connect the print preview painter to the document viewer."""
+        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+        printer.setOrientation(QPrinter.Portrait)
+        self.document().print(printer)
+        qApp.restoreOverrideCursor()
+        return
     ##
     #  Private Slots
     ##

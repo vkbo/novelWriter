@@ -44,7 +44,7 @@ from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.extensions.simpleprogress import NProgressSimple
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
